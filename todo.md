@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 361 Svelte files remaining.
+- Broad dynamic class/style migration scan: 360 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -350,6 +350,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/sections/IndicatorsSection.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/archive/+page.svelte`
 - [x] `frontend/src/routes/admin/consent/templates/+page.svelte`
+- [x] `frontend/src/lib/components/forms/FormEmbedGenerator.svelte`
 
 ## Per-File Completion Checklist
 
