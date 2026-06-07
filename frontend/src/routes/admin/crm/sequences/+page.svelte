@@ -10,12 +10,12 @@
 	- Duplicate and delete functionality
 	- Send test email modal
 	- Pause/Resume sequence controls
-	- Auto-refresh on filter changes via $effect
-	- Full Svelte 5 $state/$derived/$effect reactivity
+	- Debounced reload on search/filter changes
+	- Full Svelte 5 $state/$derived reactivity
 -->
 
 <script lang="ts">
-	import { untrack, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		IconMail,
@@ -107,6 +107,41 @@
 			error = err instanceof Error ? err.message : 'Failed to load sequences';
 		} finally {
 			isLoading = false;
+		}
+	}
+
+	function scheduleSequencesReload() {
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+		}
+
+		if (!isInitialized) return;
+
+		searchTimeout = setTimeout(() => {
+			void loadSequences();
+		}, 300);
+	}
+
+	function handleSearchInput(value: string) {
+		searchQuery = value;
+		scheduleSequencesReload();
+	}
+
+	function clearSearch() {
+		searchQuery = '';
+		scheduleSequencesReload();
+	}
+
+	function handleStatusChange(value: SequenceStatus | 'all') {
+		selectedStatus = value;
+
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+			searchTimeout = null;
+		}
+
+		if (isInitialized) {
+			void loadSequences();
 		}
 	}
 
@@ -243,14 +278,14 @@
 		return ((opened / sent) * 100).toFixed(1) + '%';
 	}
 
-	function getStatusColor(status: SequenceStatus): string {
-		const colors: Record<SequenceStatus, string> = {
-			draft: 'bg-slate-500/20 text-slate-400',
-			active: 'bg-emerald-500/20 text-emerald-400',
-			paused: 'bg-amber-500/20 text-amber-400',
-			completed: 'bg-blue-500/20 text-blue-400'
+	function getStatusClass(status: SequenceStatus): string {
+		const statusClasses: Record<SequenceStatus, string> = {
+			draft: 'status-draft',
+			active: 'status-active',
+			paused: 'status-paused',
+			completed: 'status-completed'
 		};
-		return colors[status];
+		return statusClasses[status];
 	}
 
 	function getStatusIcon(status: SequenceStatus) {
@@ -284,36 +319,8 @@
 			!sendEmailForm.isLoading
 	);
 
-	// EFFECTS
-
-	// Audit P1 #5: the previous filter `$effect` declared no reactive reads
-	// (only a comment said so), so it ran once when `isInitialized` flipped
-	// and then never again — search/status changes never refetched. Now we
-	// explicitly read `searchQuery` and `selectedStatus` so the effect
-	// re-fires whenever either changes; `untrack` keeps the loadSequences
-	// writes off the dependency graph.
-	$effect(() => {
-		// Reactive reads that drive refetch:
-		searchQuery;
-		selectedStatus;
-
-		if (isInitialized) {
-			untrack(() => {
-				loadSequences();
-			});
-		}
-	});
-
-	// Debounced search effect
+	// Debounced search timer. Cleared from the onMount cleanup below.
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
-
-	$effect(() => {
-		return () => {
-			if (searchTimeout) {
-				clearTimeout(searchTimeout);
-			}
-		};
-	});
 
 	// LIFECYCLE
 
@@ -327,6 +334,12 @@
 			await loadSequences();
 			isInitialized = true;
 		})();
+
+		return () => {
+			if (searchTimeout) {
+				clearTimeout(searchTimeout);
+			}
+		};
 	});
 </script>
 
@@ -411,15 +424,22 @@
 					type="text"
 					placeholder="Search sequences..."
 					bind:value={searchQuery}
+					oninput={(event) => handleSearchInput(event.currentTarget.value)}
 					aria-label="Search sequences"
 				/>
 				{#if searchQuery}
-					<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
+					<button class="search-clear" onclick={clearSearch} aria-label="Clear search">
 						<IconX size={14} />
 					</button>
 				{/if}
 			</div>
-			<select class="filter-select" bind:value={selectedStatus} aria-label="Filter by status">
+			<select
+				class="filter-select"
+				bind:value={selectedStatus}
+				onchange={(event) =>
+					handleStatusChange(event.currentTarget.value as SequenceStatus | 'all')}
+				aria-label="Filter by status"
+			>
 				{#each statusOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
@@ -454,7 +474,7 @@
 				</a>
 			</div>
 		{:else}
-			<div class="table-container" class:loading={isLoading}>
+			<div class={['table-container', { loading: isLoading }]}>
 				<table class="data-table">
 					<thead>
 						<tr>
@@ -470,7 +490,7 @@
 					<tbody>
 						{#each filteredSequences as sequence (sequence.id)}
 							{@const StatusIcon = getStatusIcon(sequence.status)}
-							<tr class:action-in-progress={actionInProgress === sequence.id}>
+							<tr class={{ 'action-in-progress': actionInProgress === sequence.id }}>
 								<td>
 									<div class="sequence-cell">
 										<div class="sequence-icon">
@@ -486,7 +506,7 @@
 									</div>
 								</td>
 								<td>
-									<span class="status-badge {getStatusColor(sequence.status)}">
+									<span class={['status-badge', getStatusClass(sequence.status)]}>
 										<StatusIcon size={12} />
 										{sequence.status}
 									</span>
@@ -616,7 +636,7 @@
 								placeholder="Enter email address..."
 								bind:value={sendEmailForm.testEmail}
 								disabled={sendEmailForm.isLoading}
-								class:error={sendEmailForm.error}
+								class={{ error: !!sendEmailForm.error }}
 							/>
 							{#if sendEmailForm.error}
 								<span class="error-message">{sendEmailForm.error}</span>
@@ -1064,6 +1084,26 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: capitalize;
+	}
+
+	.status-badge.status-draft {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-badge.status-active {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-badge.status-paused {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
+	.status-badge.status-completed {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
 	}
 
 	.rate-value {
