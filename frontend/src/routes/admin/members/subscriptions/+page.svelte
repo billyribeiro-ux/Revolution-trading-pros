@@ -94,7 +94,7 @@
 		cancelled: subscriptions.filter((s) => s.status === 'cancelled').length
 	});
 
-	// Lifecycle - Svelte 5 $effect
+	// Lifecycle - Svelte 5 onMount
 
 	onMount(() => {
 		loadSubscriptions();
@@ -205,10 +205,14 @@
 		}
 	}
 
-	function clearFilters() {
+	async function clearFilters() {
+		const shouldReload = Boolean(statusFilter || intervalFilter);
 		searchQuery = '';
 		statusFilter = '';
 		intervalFilter = '';
+		if (shouldReload) {
+			await loadSubscriptions();
+		}
 	}
 
 	// Formatters
@@ -419,7 +423,7 @@
 							<span class="plan-badge">{sub.planId || 'N/A'}</span>
 						</td>
 						<td>
-							<span class="status-badge {getStatusClass(sub.status)}">
+							<span class={['status-badge', getStatusClass(sub.status)]}>
 								{getStatusLabel(sub.status)}
 							</span>
 						</td>
