@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 462 Svelte files remaining.
+- Broad dynamic class/style migration scan: 461 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -117,6 +117,7 @@ Current evidence:
 - [x] `d845ca368` Modernize trade entry manager bindings.
 - [x] `fef2652e6` Modernize small account trader store detail page.
 - [x] `f18c50868` Modernize day trading trader store detail page.
+- [x] `1d0a50318` Modernize CRM webhooks page bindings.
 
 ## Current Priority Queue
 
@@ -178,7 +179,12 @@ Current evidence:
 - [x] `frontend/src/routes/admin/trading-rooms/[slug]/components/TradeEntryManager.svelte`
 - [x] `frontend/src/routes/dashboard/small-account-mentorship/trader-store/[slug]/+page.svelte`
 - [x] `frontend/src/routes/dashboard/day-trading-room/trader-store/[slug]/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/webhooks/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/webhooks/+page.svelte`
+- [ ] `frontend/src/lib/components/cms/blocks/advanced/AuthorBlock.svelte`
+- [ ] `frontend/src/lib/components/admin/MediaUploadHub.svelte`
+- [ ] `frontend/src/routes/account/sessions/+page.svelte`
+- [ ] `frontend/src/lib/components/cms/blocks/trading/ChartBlock.svelte`
+- [ ] `frontend/src/routes/admin/crm/webhooks/new/+page.svelte`
 
 ## Per-File Completion Checklist
 
