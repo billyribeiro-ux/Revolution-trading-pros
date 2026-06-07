@@ -8,7 +8,7 @@
 	- Custom headers configuration
 	- URL validation
 	- Secret key generation
-	- Full Svelte 5 $state/$derived/$effect reactivity
+	- Full Svelte 5 rune-based reactivity
 -->
 
 <script lang="ts">
@@ -140,7 +140,7 @@
 
 			showToast('success', 'Webhook created successfully');
 			setTimeout(() => {
-				goto('/admin/crm/webhooks');
+				void goto('/admin/crm/webhooks');
 			}, 1000);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to create webhook';
@@ -212,7 +212,7 @@
 	// LIFECYCLE
 
 	onMount(() => {
-		loadEvents();
+		void loadEvents();
 	});
 </script>
 
@@ -256,7 +256,7 @@
 					name="name"
 					bind:value={name}
 					placeholder="e.g., Slack Notifications, Zapier Integration"
-					class:error={fieldErrors.name}
+					class={{ error: !!fieldErrors.name }}
 				/>
 				{#if fieldErrors.name}
 					<span class="field-error">{fieldErrors.name}</span>
@@ -273,7 +273,7 @@
 					name="url"
 					bind:value={url}
 					placeholder="https://api.example.com/webhook"
-					class:error={fieldErrors.url}
+					class={{ error: !!fieldErrors.url }}
 				/>
 				{#if fieldErrors.url}
 					<span class="field-error">{fieldErrors.url}</span>
@@ -347,13 +347,13 @@
 			{:else}
 				<div class="events-grid">
 					{#each Object.entries(availableEvents) as [event, label] (event)}
+						{const webhookEvent = event as WebhookEvent}
 						<button
 							type="button"
-							class="event-chip"
-							class:selected={selectedEvents.has(event as WebhookEvent)}
-							onclick={() => toggleEvent(event as WebhookEvent)}
+							class={['event-chip', { selected: selectedEvents.has(webhookEvent) }]}
+							onclick={() => toggleEvent(webhookEvent)}
 						>
-							{#if selectedEvents.has(event as WebhookEvent)}
+							{#if selectedEvents.has(webhookEvent)}
 								<IconCheck size={14} />
 							{/if}
 							<span>{label || formatEventName(event)}</span>
@@ -432,7 +432,7 @@
 {#if toasts.length > 0}
 	<div class="toast-container" role="region" aria-label="Notifications">
 		{#each toasts as toast (toast.id)}
-			<div class="toast toast-{toast.type}" role="alert">
+			<div class={['toast', `toast-${toast.type}`]} role="alert">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
 						<IconCheck size={18} />
