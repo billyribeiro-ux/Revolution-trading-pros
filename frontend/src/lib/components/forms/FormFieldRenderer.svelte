@@ -550,8 +550,7 @@
 				{#each Array(props.field.validation?.max || 5) as _, i (i)}
 					<button
 						type="button"
-						class="star-button"
-						class:active={ratingValue > i}
+						class={['star-button', { active: ratingValue > i }]}
 						onclick={() => props.onchange?.(i + 1)}
 						aria-label={`Rate ${i + 1} stars`}
 					>
@@ -800,10 +799,7 @@
 					{@const optionDescription = typeof option === 'object' ? option.description : undefined}
 					{@const optionIcon = typeof option === 'object' ? option.icon : undefined}
 					{@const optionColor = typeof option === 'object' ? option.color : undefined}
-					<label
-						class="category-card"
-						style={optionColor ? `border-left-color: ${optionColor}` : ''}
-					>
+					<label class="category-card" style:border-left-color={optionColor ?? undefined}>
 						<input
 							type="checkbox"
 							value={optionValue}
