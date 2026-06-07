@@ -420,7 +420,7 @@
 				{#each sectorETFs as sector, i (sector.sector)}
 					{@const Icon = sector.icon}
 					<div class="sector-card" in:fly={{ y: 20, delay: 50 * i, duration: 400 }}>
-						<div class="sector-card__icon sector-card__icon--{sector.variant}">
+						<div class={['sector-card__icon', `sector-card__icon--${sector.variant}`]}>
 							<Icon size={28} />
 						</div>
 						<h3 class="sector-card__title">{sector.sector}</h3>
@@ -467,8 +467,10 @@
 							<tr>
 								<td class="comparison-table__feature">{row.feature}</td>
 								<td
-									class="comparison-table__cell"
-									class:comparison-table__cell--better={row.etfBetter === true}
+									class={[
+										'comparison-table__cell',
+										{ 'comparison-table__cell--better': row.etfBetter === true }
+									]}
 								>
 									{#if row.etfBetter === true}
 										<IconCheck
@@ -479,8 +481,10 @@
 									{row.etf}
 								</td>
 								<td
-									class="comparison-table__cell"
-									class:comparison-table__cell--better={row.etfBetter === false}
+									class={[
+										'comparison-table__cell',
+										{ 'comparison-table__cell--better': row.etfBetter === false }
+									]}
 								>
 									{#if row.etfBetter === false}
 										<IconCheck
