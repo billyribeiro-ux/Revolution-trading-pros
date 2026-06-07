@@ -241,8 +241,7 @@
 		<div class="category-tabs">
 			{#each categories as category (category)}
 				<button
-					class="category-tab"
-					class:active={selectedCategory === category}
+					class={{ 'category-tab': true, active: selectedCategory === category }}
 					onclick={() => (selectedCategory = category)}
 				>
 					{category === 'all' ? 'All Templates' : category}
