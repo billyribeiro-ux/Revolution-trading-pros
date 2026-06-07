@@ -225,9 +225,24 @@
 		}
 	}
 
+	function getFilterButtonClass(filter: string) {
+		return {
+			'filter-btn': true,
+			active: selectedFilter === filter
+		};
+	}
+
+	function getAlertStatusClass(status: string) {
+		return ['alert-status', getStatusClass(status)];
+	}
+
 	function getProfitLossClass(profitLoss: string | null): string {
 		if (!profitLoss) return '';
 		return profitLoss.startsWith('+') ? 'profit' : 'loss';
+	}
+
+	function getAlertProfitLossClass(profitLoss: string | null) {
+		return ['alert-profit-loss', getProfitLossClass(profitLoss)];
 	}
 </script>
 
@@ -250,24 +265,21 @@
 			<div class="filters-container">
 				<div class="filter-buttons">
 					<button
-						class="filter-btn"
-						class:active={selectedFilter === 'all'}
+						class={getFilterButtonClass('all')}
 						aria-pressed={selectedFilter === 'all'}
 						onclick={() => (selectedFilter = 'all')}
 					>
 						All Alerts
 					</button>
 					<button
-						class="filter-btn"
-						class:active={selectedFilter === 'trades'}
+						class={getFilterButtonClass('trades')}
 						aria-pressed={selectedFilter === 'trades'}
 						onclick={() => (selectedFilter = 'trades')}
 					>
 						Trade Alerts
 					</button>
 					<button
-						class="filter-btn"
-						class:active={selectedFilter === 'updates'}
+						class={getFilterButtonClass('updates')}
 						aria-pressed={selectedFilter === 'updates'}
 						onclick={() => (selectedFilter = 'updates')}
 					>
@@ -326,7 +338,7 @@
 									<span class="alert-ticker">{alert.ticker}</span>
 								{/if}
 							</div>
-							<span class="alert-status {getStatusClass(alert.status)}">{alert.status}</span>
+							<span class={getAlertStatusClass(alert.status)}>{alert.status}</span>
 						</div>
 						<h3 class="alert-title">
 							<a href={alert.href}>{alert.title}</a>
@@ -339,7 +351,7 @@
 						{/if}
 						<p class="alert-excerpt">{alert.excerpt}</p>
 						{#if alert.profitLoss}
-							<div class="alert-profit-loss {getProfitLossClass(alert.profitLoss)}">
+							<div class={getAlertProfitLossClass(alert.profitLoss)}>
 								{alert.profitLoss}
 							</div>
 						{/if}
