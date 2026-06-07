@@ -110,7 +110,6 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	let containerElement: HTMLDivElement | null = $state(null);
 	let iframeElement = $state<HTMLIFrameElement | null>(null);
 	let isLoaded = $state(false);
 	let isPlaying = $state(false);
@@ -118,15 +117,11 @@
 	let blurhashDataUrl = $state<string | null>(null);
 	let thumbnailLoaded = $state(false);
 
-	// ICT 7 ADDITION: Progress tracking state
-	let currentTime = $state(0);
+	let playbackTime = $state<number | null>(null);
+	let currentTime = $derived(playbackTime ?? startTime);
 	let progressInterval: ReturnType<typeof setInterval> | null = null;
 	let lastSavedTime = $state(0);
 
-	// Sync currentTime from startTime prop when it changes
-	$effect(() => {
-		currentTime = startTime;
-	});
 	const PROGRESS_SAVE_INTERVAL = 10000; // Save every 10 seconds
 	const PROGRESS_THRESHOLD = 5; // Only save if changed by 5+ seconds
 
@@ -156,6 +151,8 @@
 
 		return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoGuid}?${params.toString()}`;
 	});
+
+	let playerOrigin = $derived(new URL(embedUrl).origin);
 
 	// Default Bunny thumbnail
 	let defaultThumbnailUrl = $derived(
@@ -203,7 +200,7 @@
 			if (progressInterval) {
 				clearInterval(progressInterval);
 			}
-			saveProgress(true); // Force save on unmount
+			void saveProgress(true); // Force save on unmount
 		}
 	});
 
@@ -221,7 +218,7 @@
 
 	function handleIframeMessage(event: MessageEvent) {
 		// Only process messages from Bunny CDN
-		if (!event.origin.includes('mediadelivery.net')) return;
+		if (!isBunnyPlayerOrigin(event.origin)) return;
 
 		const { type, time } = event.data || {};
 
@@ -250,7 +247,7 @@
 			case 'timeupdate':
 				// ICT 7 ADDITION: Handle timeupdate events from Bunny player
 				if (typeof time === 'number') {
-					currentTime = time;
+					playbackTime = time;
 					const percent = duration > 0 ? (time / duration) * 100 : 0;
 					onProgress?.(time, percent);
 				}
@@ -263,9 +260,9 @@
 		if (progressInterval) return;
 		progressInterval = setInterval(() => {
 			// Request current time from iframe
-			iframeElement?.contentWindow?.postMessage({ type: 'getCurrentTime' }, '*');
+			iframeElement?.contentWindow?.postMessage({ type: 'getCurrentTime' }, playerOrigin);
 			// Periodically save progress
-			saveProgress();
+			void saveProgress();
 		}, PROGRESS_SAVE_INTERVAL);
 	}
 
@@ -298,6 +295,25 @@
 		}
 	}
 
+	function isBunnyPlayerOrigin(origin: string) {
+		try {
+			const { hostname } = new URL(origin);
+			return hostname === 'iframe.mediadelivery.net' || hostname.endsWith('.mediadelivery.net');
+		} catch {
+			return false;
+		}
+	}
+
+	function attachPlayerIframe(element: HTMLIFrameElement) {
+		iframeElement = element;
+
+		return () => {
+			if (iframeElement === element) {
+				iframeElement = null;
+			}
+		};
+	}
+
 	function handlePlayClick() {
 		hasInteracted = true;
 
@@ -306,21 +322,21 @@
 			if (iframeElement) {
 				iframeElement.focus();
 				// Send play command via postMessage
-				iframeElement.contentWindow?.postMessage({ type: 'play' }, '*');
+				iframeElement.contentWindow?.postMessage({ type: 'play' }, playerOrigin);
 			}
 		}, 100);
 	}
 
 	function play() {
-		iframeElement?.contentWindow?.postMessage({ type: 'play' }, '*');
+		iframeElement?.contentWindow?.postMessage({ type: 'play' }, playerOrigin);
 	}
 
 	function pause() {
-		iframeElement?.contentWindow?.postMessage({ type: 'pause' }, '*');
+		iframeElement?.contentWindow?.postMessage({ type: 'pause' }, playerOrigin);
 	}
 
 	function seek(time: number) {
-		iframeElement?.contentWindow?.postMessage({ type: 'seek', time }, '*');
+		iframeElement?.contentWindow?.postMessage({ type: 'seek', time }, playerOrigin);
 	}
 
 	function getCurrentTime(): number {
@@ -342,11 +358,8 @@
 
 <!-- Player Container -->
 <div
-	bind:this={containerElement}
-	class="bunny-player {className}"
-	class:is-loaded={isLoaded}
-	class:is-playing={isPlaying}
-	style="--aspect-ratio: {aspectRatioPadding}"
+	class={['bunny-player', className, { 'is-loaded': isLoaded, 'is-playing': isPlaying }]}
+	style:--aspect-ratio={aspectRatioPadding}
 	role="region"
 	aria-label="Video player: {title}"
 >
@@ -355,7 +368,7 @@
 		{#if blurhashDataUrl && !isLoaded}
 			<div
 				class="bunny-player__blurhash"
-				style="background-image: url({blurhashDataUrl})"
+				style:background-image={`url(${blurhashDataUrl})`}
 				aria-hidden="true"
 			></div>
 		{/if}
@@ -389,7 +402,7 @@
 		<!-- Layer 3: Video Iframe (loaded on interaction or autoplay) -->
 		{#if hasInteracted || autoplay}
 			<iframe
-				bind:this={iframeElement}
+				{@attach attachPlayerIframe}
 				src={embedUrl}
 				{title}
 				loading="eager"
