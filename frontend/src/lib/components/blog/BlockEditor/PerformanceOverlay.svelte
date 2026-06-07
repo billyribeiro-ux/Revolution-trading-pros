@@ -192,9 +192,12 @@
 
 {#if dev && isVisible}
 	<div
-		class="perf-overlay"
-		class:minimized={isMinimized}
-		style="left: {position.x}px; top: {position.y}px;"
+		class={{
+			'perf-overlay': true,
+			minimized: isMinimized
+		}}
+		style:left={`${position.x}px`}
+		style:top={`${position.y}px`}
 		role="dialog"
 		aria-label="Performance Monitor"
 		aria-modal="false"
@@ -232,7 +235,7 @@
 				<div class="perf-section">
 					<div class="perf-section-header">
 						<span class="perf-section-title">FPS</span>
-						<span class="perf-fps-value" style="color: {getFpsColor(snapshot.fps)}">
+						<span class="perf-fps-value" style:color={getFpsColor(snapshot.fps)}>
 							{snapshot.fps}
 						</span>
 					</div>
@@ -260,7 +263,7 @@
 								{#if metric}
 									<span
 										class="perf-vital-value"
-										style="color: {getWebVitalColor(vital, metric.value)}"
+										style:color={getWebVitalColor(vital, metric.value)}
 									>
 										{formatWebVitalValue(vital, metric.value)}
 									</span>
@@ -279,7 +282,7 @@
 							<span class="perf-section-title">Memory</span>
 							<span
 								class="perf-memory-value"
-								style="color: {getMemoryColor(snapshot.memoryMetrics.usagePercentage)}"
+								style:color={getMemoryColor(snapshot.memoryMetrics.usagePercentage)}
 							>
 								{formatBytes(snapshot.memoryMetrics.usedJSHeapSize)} / {formatBytes(
 									snapshot.memoryMetrics.jsHeapSizeLimit
@@ -289,10 +292,8 @@
 						<div class="perf-memory-bar">
 							<div
 								class="perf-memory-fill"
-								style="
-									width: {snapshot.memoryMetrics.usagePercentage}%;
-									background-color: {getMemoryColor(snapshot.memoryMetrics.usagePercentage)}
-								"
+								style:width={`${snapshot.memoryMetrics.usagePercentage}%`}
+								style:background-color={getMemoryColor(snapshot.memoryMetrics.usagePercentage)}
 							></div>
 						</div>
 						<div class="perf-sparkline">
@@ -328,7 +329,7 @@
 										.replace(/block render/i, '')
 										.trim() || 'render'}
 								</span>
-								<span class="perf-metric-value" style="color: {color}">
+								<span class="perf-metric-value" style:color>
 									{avg.toFixed(1)}ms
 									<span class="perf-metric-count">({metric.count})</span>
 								</span>
@@ -347,13 +348,15 @@
 									op.duration < 100 ? '#10b981' : op.duration < 500 ? '#f59e0b' : '#ef4444'}
 								<div class="perf-op-row">
 									<span class="perf-op-name">{op.operation}</span>
-									<span class="perf-op-duration" style="color: {color}">
+									<span class="perf-op-duration" style:color>
 										{op.duration.toFixed(0)}ms
 									</span>
 									<span
-										class="perf-op-status"
-										class:success={op.success}
-										class:failure={!op.success}
+										class={{
+											'perf-op-status': true,
+											success: op.success,
+											failure: !op.success
+										}}
 									>
 										{op.success ? 'OK' : 'FAIL'}
 									</span>
