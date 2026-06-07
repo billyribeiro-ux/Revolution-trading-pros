@@ -12,6 +12,7 @@
 	import { generateSrcSet } from '$lib/utils/performance';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
+	import type { Attachment } from 'svelte/attachments';
 
 	// Props
 
@@ -32,13 +33,13 @@
 
 	// Local State
 
-	let imageLoaded = $state(false);
-	let imageError = $state(false);
+	let loadedImageUrl = $state('');
+	let erroredImageUrl = $state('');
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
 	let showObjectFitControls = $state(false);
 	let urlInputValue = $state('');
-	let fileInputRef = $state<HTMLInputElement | null>(null);
+	let fileInputRef: HTMLInputElement | null = null;
 
 	// Derived Values
 
@@ -50,6 +51,8 @@
 	);
 	const hasImage = $derived(!!imageUrl);
 	const sanitizedURL = $derived(imageUrl ? sanitizeURL(imageUrl) : '');
+	const imageLoaded = $derived(!!sanitizedURL && loadedImageUrl === sanitizedURL);
+	const imageError = $derived(!!sanitizedURL && erroredImageUrl === sanitizedURL);
 
 	// Generate srcset for responsive images using performance utility
 	const srcset = $derived.by(() => {
@@ -95,23 +98,25 @@
 	// Image Loading Handlers
 
 	function handleImageLoad(): void {
-		imageLoaded = true;
-		imageError = false;
+		loadedImageUrl = sanitizedURL;
+		erroredImageUrl = '';
 	}
 
 	function handleImageError(): void {
-		imageLoaded = false;
-		imageError = true;
+		loadedImageUrl = '';
+		erroredImageUrl = sanitizedURL;
 		props.onError?.(new Error(`Failed to load image: ${sanitizedURL}`));
 	}
 
-	// Reset loading state when URL changes
-	$effect(() => {
-		if (sanitizedURL) {
-			imageLoaded = false;
-			imageError = false;
-		}
-	});
+	const attachFileInput: Attachment<HTMLInputElement> = (node) => {
+		fileInputRef = node;
+
+		return () => {
+			if (fileInputRef === node) {
+				fileInputRef = null;
+			}
+		};
+	};
 
 	// File Upload Handlers
 
@@ -263,8 +268,8 @@
 			mediaCaption: ''
 		});
 		uploadError = null;
-		imageLoaded = false;
-		imageError = false;
+		loadedImageUrl = '';
+		erroredImageUrl = '';
 	}
 
 	function retryUpload(): void {
@@ -280,9 +285,13 @@
 <svelte:window onkeydown={isLightboxOpen ? handleLightboxKeyDown : undefined} />
 
 <div
-	class="image-block"
-	class:image-block--selected={props.isSelected}
-	class:image-block--editing={props.isEditing}
+	class={[
+		'image-block',
+		{
+			'image-block--selected': props.isSelected,
+			'image-block--editing': props.isEditing
+		}
+	]}
 	role="figure"
 	aria-label={imageAlt || 'Image block'}
 >
@@ -348,8 +357,10 @@
 						{#each OBJECT_FIT_OPTIONS as option (option.value)}
 							<button
 								type="button"
-								class="image-block__fit-btn"
-								class:image-block__fit-btn--active={objectFit === option.value}
+								class={[
+									'image-block__fit-btn',
+									{ 'image-block__fit-btn--active': objectFit === option.value }
+								]}
 								onclick={() => handleObjectFitChange(option.value)}
 								role="radio"
 								aria-checked={objectFit === option.value}
@@ -378,10 +389,14 @@
 					alt={imageAlt}
 					loading="lazy"
 					decoding="async"
-					class="image-block__image"
-					class:image-block__image--loaded={imageLoaded}
-					class:image-block__image--error={imageError}
-					style="object-fit: {objectFit}"
+					class={[
+						'image-block__image',
+						{
+							'image-block__image--loaded': imageLoaded,
+							'image-block__image--error': imageError
+						}
+					]}
+					style:object-fit={objectFit}
 					aria-describedby={caption ? captionId : undefined}
 					onload={handleImageLoad}
 					onerror={handleImageError}
@@ -402,10 +417,14 @@
 						alt={imageAlt}
 						loading="lazy"
 						decoding="async"
-						class="image-block__image"
-						class:image-block__image--loaded={imageLoaded}
-						class:image-block__image--error={imageError}
-						style="object-fit: {objectFit}"
+						class={[
+							'image-block__image',
+							{
+								'image-block__image--loaded': imageLoaded,
+								'image-block__image--error': imageError
+							}
+						]}
+						style:object-fit={objectFit}
 						aria-describedby={caption ? captionId : undefined}
 						onload={handleImageLoad}
 						onerror={handleImageError}
@@ -436,8 +455,10 @@
 			<figcaption
 				id={captionId}
 				contenteditable={props.isEditing}
-				class="image-block__caption"
-				class:image-block__caption--empty={!caption && props.isEditing}
+				class={[
+					'image-block__caption',
+					{ 'image-block__caption--empty': !caption && props.isEditing }
+				]}
 				oninput={props.isEditing ? handleCaptionInput : undefined}
 				onpaste={props.isEditing ? handlePaste : undefined}
 				data-placeholder="Add a caption..."
@@ -451,9 +472,13 @@
 	{:else if props.isEditing}
 		<!-- Upload Placeholder -->
 		<div
-			class="image-block__placeholder"
-			class:image-block__placeholder--error={!!uploadError}
-			class:image-block__placeholder--uploading={isUploading}
+			class={[
+				'image-block__placeholder',
+				{
+					'image-block__placeholder--error': !!uploadError,
+					'image-block__placeholder--uploading': isUploading
+				}
+			]}
 			ondrop={handleDrop}
 			ondragover={handleDragOver}
 			role="region"
@@ -522,7 +547,7 @@
 
 			<!-- Hidden file input -->
 			<input
-				bind:this={fileInputRef}
+				{@attach attachFileInput}
 				type="file"
 				accept="image/*"
 				onchange={handleFileSelect}
