@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 475 Svelte files remaining.
+- Broad dynamic class/style migration scan: 474 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -104,6 +104,7 @@ Current evidence:
 - [x] `8aa315e88` Modernize CRM contact status binding.
 - [x] `544da3d89` Modernize consent banner designer class bindings.
 - [x] `bec3d83dd` Modernize image crop modal bindings.
+- [x] `96b8acea7` Modernize segment detail drawer bindings.
 
 ## Current Priority Queue
 
@@ -152,7 +153,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/crm/+page.svelte`
 - [x] `frontend/src/lib/consent/components/ConsentBannerDesigner.svelte`
 - [x] `frontend/src/lib/components/media/ImageCropModal.svelte`
-- [ ] `frontend/src/lib/components/admin/SegmentDetailDrawer.svelte`
+- [x] `frontend/src/lib/components/admin/SegmentDetailDrawer.svelte`
 - [ ] `frontend/src/lib/components/blog/BlockEditor/VirtualBlockList.svelte`
 - [ ] `frontend/src/routes/admin/seo/bing/+page.svelte`
 - [ ] `frontend/src/routes/admin/members/analytics/+page.svelte`
