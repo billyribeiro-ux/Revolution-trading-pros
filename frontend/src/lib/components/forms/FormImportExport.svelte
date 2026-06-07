@@ -210,15 +210,13 @@
 	<!-- Tabs -->
 	<div class="tabs">
 		<button
-			class="tab"
-			class:active={activeTab === 'export'}
+			class={{ tab: true, active: activeTab === 'export' }}
 			onclick={() => (activeTab = 'export')}
 		>
 			Export
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'import'}
+			class={{ tab: true, active: activeTab === 'import' }}
 			onclick={() => (activeTab = 'import')}
 		>
 			Import
@@ -263,8 +261,7 @@
 					<div class="format-options" id="export-format-group" role="group">
 						{#each exportFormats as format (format.value)}
 							<button
-								class="format-btn"
-								class:selected={exportFormat === format.value}
+								class={{ 'format-btn': true, selected: exportFormat === format.value }}
 								onclick={() => (exportFormat = format.value)}
 								disabled={exportType !== 'form' && format.value === 'json'}
 							>
@@ -327,8 +324,7 @@
 					<div class="source-options" id="import-source-group" role="group">
 						{#each importSources as source (source.value)}
 							<button
-								class="source-btn"
-								class:selected={importSource === source.value}
+								class={{ 'source-btn': true, selected: importSource === source.value }}
 								onclick={() => (importSource = source.value)}
 							>
 								<span class="source-label">{source.label}</span>
@@ -365,9 +361,11 @@
 				<!-- Import Result -->
 				{#if importResult}
 					<div
-						class="import-result"
-						class:success={importResult.success}
-						class:error={!importResult.success}
+						class={{
+							'import-result': true,
+							success: importResult.success,
+							error: !importResult.success
+						}}
 					>
 						{#if importResult.success}
 							<span class="result-icon">✓</span>
