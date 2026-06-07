@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 517 Svelte files remaining.
+- Broad dynamic class/style migration scan: 516 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -62,13 +62,14 @@ Current evidence:
 - [x] `0847a8eb1` Modernize dashboard sidebar bindings.
 - [x] `41199e6ca` Modernize scheduling panel bindings.
 - [x] `80df09e4c` Modernize CRM leads page bindings.
+- [x] `0842c9246` Modernize member detail drawer bindings.
 
 ## Current Priority Queue
 
 - [x] `frontend/src/lib/components/dashboard/DashboardSidebar.svelte`
 - [x] `frontend/src/lib/components/blog/BlockEditor/SchedulingPanel.svelte`
 - [x] `frontend/src/routes/admin/crm/leads/+page.svelte`
-- [ ] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
+- [x] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
 - [ ] `frontend/src/routes/courses/+page.svelte`
 - [ ] `frontend/src/routes/admin/consent/settings/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/explosive-swings/components/WeeklyHero.svelte`
