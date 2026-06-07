@@ -39,7 +39,7 @@
 	let selectedPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
 	onMount(() => {
-		loadData();
+		void loadData();
 	});
 
 	async function loadData() {
@@ -67,7 +67,7 @@
 
 	function changePeriod(period: '7d' | '30d' | '90d') {
 		selectedPeriod = period;
-		loadData();
+		void loadData();
 	}
 
 	function formatNumber(num: number): string {
@@ -102,6 +102,22 @@
 		}
 		return 1;
 	}
+
+	function getPeriodButtonClass(period: '7d' | '30d' | '90d'): string {
+		return selectedPeriod === period ? 'period-btn period-btn--active' : 'period-btn';
+	}
+
+	function getBarHeight(views: number): string {
+		return `${(views / getMaxViewCount()) * 100}%`;
+	}
+
+	function getDevicePercent(count: number, total: number): number {
+		return total > 0 ? (count / total) * 100 : 0;
+	}
+
+	function getDeviceBarWidth(count: number, total: number): string {
+		return `${getDevicePercent(count, total)}%`;
+	}
 </script>
 
 <div class="analytics-dashboard">
@@ -112,26 +128,19 @@
 		</div>
 		<div class="header-right">
 			<div class="period-selector">
-				<button
-					type="button"
-					class="period-btn"
-					class:active={selectedPeriod === '7d'}
-					onclick={() => changePeriod('7d')}
-				>
+				<button type="button" class={getPeriodButtonClass('7d')} onclick={() => changePeriod('7d')}>
 					7 Days
 				</button>
 				<button
 					type="button"
-					class="period-btn"
-					class:active={selectedPeriod === '30d'}
+					class={getPeriodButtonClass('30d')}
 					onclick={() => changePeriod('30d')}
 				>
 					30 Days
 				</button>
 				<button
 					type="button"
-					class="period-btn"
-					class:active={selectedPeriod === '90d'}
+					class={getPeriodButtonClass('90d')}
 					onclick={() => changePeriod('90d')}
 				>
 					90 Days
@@ -200,7 +209,7 @@
 				<div class="bar-chart">
 					{#each videoStats.daily_views as day (day.date)}
 						<div class="bar-wrapper" title="{day.date}: {day.views} views">
-							<div class="bar" style="height: {(day.views / getMaxViewCount()) * 100}%"></div>
+							<div class="bar" style:height={getBarHeight(day.views)}></div>
 							<div class="bar-label">{day.date.slice(5)}</div>
 						</div>
 					{/each}
@@ -239,7 +248,7 @@
 				<div class="bar-chart">
 					{#each dashboard.views_by_day as day (day.date)}
 						<div class="bar-wrapper" title="{day.date}: {day.views} views">
-							<div class="bar" style="height: {(day.views / getMaxViewCount()) * 100}%"></div>
+							<div class="bar" style:height={getBarHeight(day.views)}></div>
 							<div class="bar-label">{day.date.slice(5)}</div>
 						</div>
 					{/each}
@@ -287,10 +296,10 @@
 							<DeviceIcon size={24} />
 							<div class="device-info">
 								<div class="device-name">{device}</div>
-								<div class="device-percent">{Math.round((count / total) * 100)}%</div>
+								<div class="device-percent">{Math.round(getDevicePercent(count, total))}%</div>
 							</div>
 							<div class="device-bar">
-								<div class="device-bar-fill" style="width: {(count / total) * 100}%"></div>
+								<div class="device-bar-fill" style:width={getDeviceBarWidth(count, total)}></div>
 							</div>
 						</div>
 					{/each}
@@ -357,7 +366,7 @@
 		color: var(--text-primary, white);
 	}
 
-	.period-btn.active {
+	.period-btn--active {
 		background: var(--primary, #e6b800);
 		color: #0d1117;
 	}
