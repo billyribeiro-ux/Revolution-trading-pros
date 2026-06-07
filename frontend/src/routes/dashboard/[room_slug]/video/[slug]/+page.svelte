@@ -11,6 +11,7 @@
 -->
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
+	import { onMount } from 'svelte';
 	import type { PageData } from './+page.server';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import { sanitizeHtml } from '$lib/sanitize';
@@ -55,28 +56,26 @@
 		isDropdownOpen = false;
 	}
 
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (isDropdownOpen && typeof window !== 'undefined') {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					closeDropdown();
-				}
-			};
-			const handleEscape = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') {
-					closeDropdown();
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			document.addEventListener('keydown', handleEscape);
-			return () => {
-				document.removeEventListener('click', handleClickOutside);
-				document.removeEventListener('keydown', handleEscape);
-			};
-		}
-		return undefined;
+	onMount(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			if (isDropdownOpen && !target.closest('.dropdown')) {
+				closeDropdown();
+			}
+		};
+		const handleEscape = (event: KeyboardEvent) => {
+			if (isDropdownOpen && event.key === 'Escape') {
+				closeDropdown();
+			}
+		};
+
+		document.addEventListener('click', handleClickOutside);
+		document.addEventListener('keydown', handleEscape);
+
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+			document.removeEventListener('keydown', handleEscape);
+		};
 	});
 
 	// Related videos (could also be fetched from server in the future)
@@ -123,7 +122,7 @@
 		<h1 class="dashboard__page-title">{roomName} Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<div class="dropdown" class:is-open={isDropdownOpen}>
+		<div class={{ dropdown: true, 'is-open': isDropdownOpen }}>
 			<button
 				class="btn btn-orange btn-tradingroom"
 				onclick={toggleDropdown}
@@ -219,7 +218,7 @@
 							<a
 								href="/dashboard/{roomSlug}/video/{relatedVideo.slug}"
 								class="card-image"
-								style="background-image: url({relatedVideo.thumbnail});"
+								style:--thumbnail-url={`url(${relatedVideo.thumbnail})`}
 							>
 								<img
 									src="https://placehold.it/325x183"
@@ -585,6 +584,7 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+		background-image: var(--thumbnail-url);
 		background-size: cover;
 		background-position: center;
 		display: block;
