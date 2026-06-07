@@ -15,6 +15,7 @@
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
+	import type { Attachment } from 'svelte/attachments';
 	import TestimonialCarousel from './TestimonialCarousel.svelte';
 
 	// GSAP loaded dynamically to prevent SSR blocking. The `gsap` package ships
@@ -42,6 +43,30 @@
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let animationId: number | null = null;
 	let gsapContext: globalThis.gsap.Context | null = null; // GSAP context for proper cleanup
+
+	function attachContainer(): Attachment<HTMLElement> {
+		return (node) => {
+			containerRef = node;
+
+			return () => {
+				if (containerRef === node) {
+					containerRef = null;
+				}
+			};
+		};
+	}
+
+	function attachCanvas(): Attachment<HTMLCanvasElement> {
+		return (node) => {
+			canvasRef = node;
+
+			return () => {
+				if (canvasRef === node) {
+					canvasRef = null;
+				}
+			};
+		};
+	}
 
 	// Candlestick data (simulated market movement)
 	interface Candle {
@@ -340,9 +365,9 @@
 	});
 </script>
 
-<div class="trading-hero" bind:this={containerRef}>
+<div class="trading-hero" {@attach attachContainer()}>
 	<!-- Chart Canvas -->
-	<canvas bind:this={canvasRef} class="chart-canvas" aria-hidden="true"></canvas>
+	<canvas {@attach attachCanvas()} class="chart-canvas" aria-hidden="true"></canvas>
 
 	<!-- Gradient Overlays -->
 	<div class="gradient-overlay-top" aria-hidden="true"></div>
@@ -354,17 +379,22 @@
 		<div class="tickers-container" aria-hidden="true">
 			{#each tickers as ticker (ticker.symbol)}
 				<div
-					class="ticker-card"
-					class:bullish={ticker.positive}
-					class:bearish={!ticker.positive}
-					style="left: {ticker.x}%; top: {ticker.y}%;"
+					class={{
+						'ticker-card': true,
+						bullish: ticker.positive,
+						bearish: !ticker.positive
+					}}
+					style:left={`${ticker.x}%`}
+					style:top={`${ticker.y}%`}
 				>
 					<span class="ticker-symbol">{ticker.symbol}</span>
 					<span class="ticker-price">${ticker.price}</span>
 					<span
-						class="ticker-change"
-						class:positive={ticker.positive}
-						class:negative={!ticker.positive}
+						class={{
+							'ticker-change': true,
+							positive: ticker.positive,
+							negative: !ticker.positive
+						}}
 					>
 						{ticker.change}
 					</span>
