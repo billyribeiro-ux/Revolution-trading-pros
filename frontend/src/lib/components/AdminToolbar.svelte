@@ -37,6 +37,7 @@
 	 */
 
 	import { onMount, onDestroy, tick } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	// FIX P1-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
@@ -134,6 +135,38 @@
 	let quickMenuRef = $state<HTMLDivElement>();
 	let userMenuTriggerRef = $state<HTMLButtonElement>();
 	let quickMenuTriggerRef = $state<HTMLButtonElement>();
+
+	const attachDropdownRef: Attachment<HTMLDivElement> = (node) => {
+		dropdownRef = node;
+
+		return () => {
+			dropdownRef = undefined;
+		};
+	};
+
+	const attachQuickMenuRef: Attachment<HTMLDivElement> = (node) => {
+		quickMenuRef = node;
+
+		return () => {
+			quickMenuRef = undefined;
+		};
+	};
+
+	const attachUserMenuTriggerRef: Attachment<HTMLButtonElement> = (node) => {
+		userMenuTriggerRef = node;
+
+		return () => {
+			userMenuTriggerRef = undefined;
+		};
+	};
+
+	const attachQuickMenuTriggerRef: Attachment<HTMLButtonElement> = (node) => {
+		quickMenuTriggerRef = node;
+
+		return () => {
+			quickMenuTriggerRef = undefined;
+		};
+	};
 
 	// Session management
 	let sessionCheckInterval: number | null = null;
@@ -648,7 +681,7 @@
 				<!-- Quick Access Menu -->
 				<div class="quick-menu">
 					<button
-						bind:this={quickMenuTriggerRef}
+						{@attach attachQuickMenuTriggerRef}
 						class="quick-menu-trigger"
 						onclick={(e: MouseEvent) => {
 							e.stopPropagation();
@@ -666,7 +699,7 @@
 
 					{#if showQuickMenu}
 						<div
-							bind:this={quickMenuRef}
+							{@attach attachQuickMenuRef}
 							id="quick-menu-dropdown"
 							class="dropdown-menu"
 							role="menu"
@@ -675,8 +708,7 @@
 							{#each filteredQuickMenuItems as item (item.id)}
 								{@const Icon = item.icon}
 								<button
-									class="dropdown-item"
-									class:disabled={item.disabled}
+									class={['dropdown-item', { disabled: item.disabled }]}
 									onclick={() => !item.disabled && navigateTo(item.path)}
 									role="menuitem"
 									disabled={item.disabled}
@@ -713,7 +745,7 @@
 				<!-- User Menu -->
 				<div class="user-menu">
 					<button
-						bind:this={userMenuTriggerRef}
+						{@attach attachUserMenuTriggerRef}
 						class="user-menu-trigger"
 						onclick={(e: MouseEvent) => {
 							e.stopPropagation();
@@ -735,7 +767,7 @@
 
 					{#if showDropdown}
 						<div
-							bind:this={dropdownRef}
+							{@attach attachDropdownRef}
 							id="user-menu-dropdown"
 							class="dropdown-menu right"
 							role="menu"
