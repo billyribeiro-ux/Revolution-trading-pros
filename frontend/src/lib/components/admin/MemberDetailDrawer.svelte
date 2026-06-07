@@ -25,6 +25,7 @@
 		IconCheck,
 		IconAlertTriangle
 	} from '$lib/icons';
+	import { fromAction } from 'svelte/attachments';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
 	interface Props {
@@ -64,17 +65,7 @@
 	let banReason = $state('');
 	let banDuration = $state<number | undefined>(undefined);
 	let isProcessingAction = $state(false);
-
-	// Load member data when drawer opens
-	$effect(() => {
-		if (isOpen && memberId) {
-			loadMemberData();
-		} else {
-			data = null;
-			activeTab = 'overview';
-			error = '';
-		}
-	});
+	let drawerLoadAttachment = $derived(fromAction(loadDrawerMemberData, () => memberId));
 
 	$effect(() => {
 		if (isOpen) {
@@ -87,18 +78,66 @@
 		};
 	});
 
-	async function loadMemberData() {
-		if (!memberId) return;
+	function loadDrawerMemberData(_node: HTMLElement, currentMemberId: number | null) {
+		let activeMemberId = currentMemberId;
+		let controller = new AbortController();
+
+		function resetDrawerState() {
+			data = null;
+			activeTab = 'overview';
+			error = '';
+		}
+
+		function refresh(nextMemberId: number | null) {
+			controller.abort();
+			controller = new AbortController();
+			resetDrawerState();
+
+			if (!nextMemberId) {
+				isLoading = false;
+				return;
+			}
+
+			void loadMemberData(nextMemberId, controller.signal);
+		}
+
+		refresh(activeMemberId);
+
+		return {
+			update(nextMemberId: number | null) {
+				if (nextMemberId === activeMemberId) {
+					return;
+				}
+
+				activeMemberId = nextMemberId;
+				refresh(activeMemberId);
+			},
+			destroy() {
+				controller.abort();
+				resetDrawerState();
+				isLoading = false;
+			}
+		};
+	}
+
+	async function loadMemberData(targetMemberId = memberId, signal?: AbortSignal) {
+		if (!targetMemberId) return;
 
 		isLoading = true;
 		error = '';
 
 		try {
-			data = await membersApi.getMemberFull(memberId);
+			const result = await membersApi.getMemberFull(targetMemberId);
+			if (signal?.aborted) return;
+			data = result;
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load member data';
+			if (!signal?.aborted) {
+				error = err instanceof Error ? err.message : 'Failed to load member data';
+			}
 		} finally {
-			isLoading = false;
+			if (!signal?.aborted) {
+				isLoading = false;
+			}
 		}
 	}
 
@@ -246,13 +285,14 @@
 {#if isOpen}
 	<div
 		class="drawer-backdrop"
+		{@attach drawerLoadAttachment}
 		role="presentation"
 		onclick={handleBackdropClick}
 		onkeydown={(e) => {
 			if (e.key === 'Escape') handleBackdropClick(e);
 		}}
 	>
-		<aside class="drawer" class:open={isOpen}>
+		<aside class={['drawer', { open: isOpen }]}>
 			{#if isLoading}
 				<div class="loading-state">
 					<div class="spinner-large"></div>
@@ -262,7 +302,8 @@
 				<div class="error-state">
 					<IconAlertTriangle size={48} />
 					<p>{error}</p>
-					<button type="button" class="btn-retry" onclick={loadMemberData}>Try Again</button>
+					<button type="button" class="btn-retry" onclick={() => loadMemberData()}>Try Again</button
+					>
 				</div>
 			{:else if data}
 				<!-- Header -->
@@ -274,10 +315,7 @@
 						<h2 class="member-name">{data.member.name || 'Unknown'}</h2>
 						<p class="member-email">{data.member.email}</p>
 						<div class="member-badges">
-							<span
-								class="status-badge"
-								style="--badge-color: {getStatusColor(data.member.status)}"
-							>
+							<span class="status-badge" style:--badge-color={getStatusColor(data.member.status)}>
 								{data.member.status}
 							</span>
 							{#each data.member.tags || [] as tag (tag)}
@@ -349,8 +387,7 @@
 				<nav class="drawer-tabs" aria-label="Detail tabs">
 					<button
 						type="button"
-						class="tab"
-						class:active={activeTab === 'overview'}
+						class={['tab', { active: activeTab === 'overview' }]}
 						onclick={() => (activeTab = 'overview')}
 					>
 						<IconUser size={16} />
@@ -358,8 +395,7 @@
 					</button>
 					<button
 						type="button"
-						class="tab"
-						class:active={activeTab === 'subscriptions'}
+						class={['tab', { active: activeTab === 'subscriptions' }]}
 						onclick={() => (activeTab = 'subscriptions')}
 					>
 						<IconCreditCard size={16} />
@@ -367,8 +403,7 @@
 					</button>
 					<button
 						type="button"
-						class="tab"
-						class:active={activeTab === 'orders'}
+						class={['tab', { active: activeTab === 'orders' }]}
 						onclick={() => (activeTab = 'orders')}
 					>
 						<IconReceipt size={16} />
@@ -376,8 +411,7 @@
 					</button>
 					<button
 						type="button"
-						class="tab"
-						class:active={activeTab === 'activity'}
+						class={['tab', { active: activeTab === 'activity' }]}
 						onclick={() => (activeTab = 'activity')}
 					>
 						<IconActivity size={16} />
@@ -385,8 +419,7 @@
 					</button>
 					<button
 						type="button"
-						class="tab"
-						class:active={activeTab === 'notes'}
+						class={['tab', { active: activeTab === 'notes' }]}
 						onclick={() => (activeTab = 'notes')}
 					>
 						<IconNotes size={16} />
@@ -467,7 +500,7 @@
 										<div class="timeline-item">
 											<div
 												class="timeline-dot"
-												style="--dot-color: {getStatusColor(event.type)}"
+												style:--dot-color={getStatusColor(event.type)}
 											></div>
 											<div class="timeline-content">
 												<span class="timeline-title">{event.title}</span>
@@ -493,7 +526,7 @@
 												<span class="card-title">{sub.product_name || 'Subscription'}</span>
 												<span
 													class="status-badge small"
-													style="--badge-color: {getStatusColor(sub.status)}"
+													style:--badge-color={getStatusColor(sub.status)}
 												>
 													{sub.status}
 												</span>
@@ -540,7 +573,7 @@
 												<span class="card-title">#{order.order_number || order.id}</span>
 												<span
 													class="status-badge small"
-													style="--badge-color: {getStatusColor(order.status || 'completed')}"
+													style:--badge-color={getStatusColor(order.status || 'completed')}
 												>
 													{order.status || 'completed'}
 												</span>
