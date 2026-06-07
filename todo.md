@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 438 Svelte files remaining.
+- Broad dynamic class/style migration scan: 437 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -141,6 +141,7 @@ Current evidence:
 - [x] `ade2908e2` Modernize risk disclaimer block bindings.
 - [x] `5954573fd` Modernize admin member detail bindings.
 - [x] `2cf3e4eb5` Modernize consent banner bindings.
+- [x] `e298a5ca0` Modernize behavior analytics bindings.
 
 ## Current Priority Queue
 
@@ -226,6 +227,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/cms/blocks/trading/RiskDisclaimerBlock.svelte`
 - [x] `frontend/src/routes/admin/members/[id]/+page.svelte`
 - [x] `frontend/src/lib/components/consent/ConsentBanner.svelte`
+- [x] `frontend/src/routes/admin/behavior/+page.svelte`
 
 ## Per-File Completion Checklist
 
