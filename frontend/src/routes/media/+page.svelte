@@ -46,10 +46,10 @@
 	const selectedCount = $derived(getSelectedCount());
 
 	onMount(() => {
-		mediaStore.initialize();
+		void mediaStore.initialize();
 	});
 
-	function handleFolderSelect(folderId: string | null) {
+	function handleFolderSelect(folderId: string | null): void {
 		mediaStore.setCurrentFolder(folderId);
 	}
 
@@ -78,11 +78,11 @@
 		}
 	}
 
-	function handleBulkDelete() {
+	function handleBulkDelete(): void {
 		showDeleteModal = true;
 	}
 
-	async function confirmBulkDelete() {
+	async function confirmBulkDelete(): Promise<void> {
 		showDeleteModal = false;
 
 		try {
@@ -90,6 +90,22 @@
 		} catch (_error) {
 			showDeleteErrorModal = true;
 		}
+	}
+
+	function getViewButtonClasses(mode: 'grid' | 'list'): Array<string | false> {
+		return ['view-btn', viewMode === mode && 'view-btn--active'];
+	}
+
+	function getFileCardClasses(fileId: string): Array<string | false> {
+		return ['file-card', mediaStore.selectedFiles.has(fileId) && 'file-card--selected'];
+	}
+
+	function getFileRowClasses(fileId: string): Array<string | false> {
+		return ['file-row', mediaStore.selectedFiles.has(fileId) && 'file-row--selected'];
+	}
+
+	function handleRowCheckboxClick(event: MouseEvent): void {
+		event.stopPropagation();
 	}
 </script>
 
@@ -179,16 +195,14 @@
 					<!-- View Mode -->
 					<div class="view-toggle">
 						<button
-							class="view-btn"
-							class:active={viewMode === 'grid'}
+							class={getViewButtonClasses('grid')}
 							onclick={() => mediaStore.setViewMode('grid')}
 							aria-label="Grid view"
 						>
 							<IconTable size={20} />
 						</button>
 						<button
-							class="view-btn"
-							class:active={viewMode === 'list'}
+							class={getViewButtonClasses('list')}
 							onclick={() => mediaStore.setViewMode('list')}
 							aria-label="List view"
 						>
@@ -221,8 +235,7 @@
 					<div class="files-grid">
 						{#each currentFiles as file (file.id)}
 							<div
-								class="file-card"
-								class:selected={mediaStore.selectedFiles.has(file.id)}
+								class={getFileCardClasses(file.id)}
 								onclick={() => mediaStore.toggleFileSelection(file.id)}
 								role="button"
 								tabindex="0"
@@ -281,15 +294,16 @@
 							<tbody>
 								{#each currentFiles as file (file.id)}
 									<tr
-										class:selected={mediaStore.selectedFiles.has(file.id)}
+										class={getFileRowClasses(file.id)}
 										onclick={() => mediaStore.toggleFileSelection(file.id)}
 									>
 										<td>
 											<input
-												id="page-checkbox"
-												name="page-checkbox"
+												id={`media-file-${file.id}`}
+												name={`media-file-${file.id}`}
 												type="checkbox"
 												checked={mediaStore.selectedFiles.has(file.id)}
+												onclick={handleRowCheckboxClick}
 												onchange={() => mediaStore.toggleFileSelection(file.id)}
 											/>
 										</td>
@@ -329,7 +343,7 @@
 						<button
 							class="page-btn"
 							disabled={mediaStore.pagination.page === 1}
-							onclick={() => mediaStore.loadFiles(mediaStore.pagination.page - 1)}
+							onclick={() => void mediaStore.loadFiles(mediaStore.pagination.page - 1)}
 						>
 							Previous
 						</button>
@@ -339,7 +353,7 @@
 						<button
 							class="page-btn"
 							disabled={mediaStore.pagination.page === mediaStore.pagination.total_pages}
-							onclick={() => mediaStore.loadFiles(mediaStore.pagination.page + 1)}
+							onclick={() => void mediaStore.loadFiles(mediaStore.pagination.page + 1)}
 						>
 							Next
 						</button>
@@ -555,7 +569,7 @@
 		color: #fff;
 	}
 
-	.view-btn.active {
+	.view-btn--active {
 		background: #eab308;
 		color: #111827;
 	}
@@ -615,7 +629,7 @@
 		border-color: rgba(234, 179, 8, 0.5);
 	}
 
-	.file-card.selected {
+	.file-card--selected {
 		border-color: #eab308;
 		background: rgba(234, 179, 8, 0.1);
 	}
@@ -710,16 +724,16 @@
 		text-align: left;
 	}
 
-	.files-table tbody tr {
+	.file-row {
 		border-top: 1px solid rgba(55, 65, 81, 0.5);
 		transition: background-color 150ms ease;
 	}
 
-	.files-table tbody tr:hover {
+	.file-row:hover {
 		background: rgba(55, 65, 81, 0.3);
 	}
 
-	.files-table tbody tr.selected {
+	.file-row--selected {
 		background: rgba(234, 179, 8, 0.1);
 	}
 
