@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 482 Svelte files remaining.
+- Broad dynamic class/style migration scan: 481 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -97,6 +97,7 @@ Current evidence:
 - [x] `adf81f179` Modernize webhook edit page bindings.
 - [x] `3eab58bf6` Modernize admin courses page bindings.
 - [x] `5ca370c9f` Modernize dashboard indicator detail bindings.
+- [x] `46dde3b88` Modernize automation create page bindings.
 
 ## Current Priority Queue
 
@@ -138,7 +139,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte`
 - [x] `frontend/src/routes/admin/courses/+page.svelte`
 - [x] `frontend/src/routes/dashboard/indicators/[id]/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/automations/new/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/automations/new/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/day-trading-room/start-here/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/swing-trading-room/start-here/+page.svelte`
 - [ ] `frontend/src/routes/courses/swing-trading-pro/+page.svelte`
