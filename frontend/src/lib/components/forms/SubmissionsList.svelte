@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { FormSubmission } from '$lib/api/forms';
 	import {
 		getSubmissions,
@@ -36,7 +37,7 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let statusFilter: string = $state('');
-	let selectedSubmissions: Set<string> = $state(new Set());
+	let selectedSubmissions = new SvelteSet<string>();
 
 	// Confirmation modal state (replaces native confirm())
 	let showDeleteOneModal = $state(false);
@@ -114,7 +115,7 @@
 				Array.from(selectedSubmissions).map(Number),
 				newStatus
 			);
-			selectedSubmissions.clear();
+			clearSelections();
 			await loadData();
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to update submissions');
@@ -130,7 +131,7 @@
 		showBulkDeleteModal = false;
 		try {
 			await bulkDeleteSubmissions(formId, Array.from(selectedSubmissions).map(Number));
-			selectedSubmissions.clear();
+			clearSelections();
 			await loadData();
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to delete submissions');
@@ -166,10 +167,15 @@
 
 	function toggleSelectAll() {
 		if (selectedSubmissions.size === submissions.length) {
-			selectedSubmissions.clear();
+			clearSelections();
 		} else {
-			selectedSubmissions = new Set(submissions.map((s) => s.submission_id));
+			clearSelections();
+			submissions.forEach((submission) => selectedSubmissions.add(submission.submission_id));
 		}
+	}
+
+	function clearSelections() {
+		selectedSubmissions.clear();
 	}
 
 	function handleFilterChange(event: Event) {
@@ -199,6 +205,16 @@
 			default:
 				return 'badge-default';
 		}
+	}
+
+	function submissionRowClass(submissionId: string) {
+		return {
+			selected: selectedSubmissions.has(submissionId)
+		};
+	}
+
+	function statusBadgeClass(status: string) {
+		return ['badge', getStatusBadgeClass(status)];
 	}
 
 	function formatDate(dateString: string | undefined): string {
@@ -286,7 +302,7 @@
 				</thead>
 				<tbody>
 					{#each submissions as submission (submission.id)}
-						<tr class:selected={selectedSubmissions.has(submission.submission_id)}>
+						<tr class={submissionRowClass(submission.submission_id)}>
 							<td>
 								<input
 									type="checkbox"
@@ -296,7 +312,7 @@
 							</td>
 							<td class="submission-id">{submission.submission_id}</td>
 							<td>
-								<span class="badge {getStatusBadgeClass(submission.status)}">
+								<span class={statusBadgeClass(submission.status)}>
 									{submission.status}
 								</span>
 							</td>
