@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 504 Svelte files remaining.
+- Broad dynamic class/style migration scan: 503 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -75,6 +75,7 @@ Current evidence:
 - [x] `7ac82f449` Modernize revision history bindings.
 - [x] `09b4acb94` Modernize subscription drawer bindings.
 - [x] `f53890721` Modernize ETF resource page bindings.
+- [x] `e2d09c9d7` Modernize dashboard page bindings.
 
 ## Current Priority Queue
 
@@ -94,7 +95,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/blog/BlockEditor/RevisionHistory.svelte`
 - [x] `frontend/src/lib/components/admin/SubscriptionDetailDrawer.svelte`
 - [x] `frontend/src/routes/resources/etf-stocks-list/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/+page.svelte`
+- [x] `frontend/src/routes/dashboard/+page.svelte`
 - [ ] `frontend/src/lib/components/auth/LoginForm.svelte`
 - [ ] `frontend/src/routes/admin/blog/create/+page.svelte`
 - [ ] `frontend/src/routes/admin/crm/sequences/+page.svelte`
