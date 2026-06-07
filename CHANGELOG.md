@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **359 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **358 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -181,6 +181,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - `0992feea6` Modernize consent template tab binding.
 - `654e1f5f2` Modernize form embed generator bindings.
 - `5f79bfcd7` Modernize Bunny video player bindings.
+- `1f1781a43` Modernize reset password bindings.
 - `7b40cfe94` Modernize bulk upload queue bindings.
 - `d66b4892b` Modernize explosive swings trades table bindings.
 - `b3d88942c` Modernize explosive swings video grid style binding.
