@@ -93,7 +93,7 @@
 
 use revolution_api::services::mfa::{
     generate_backup_codes, generate_qr_uri, generate_totp, generate_totp_secret, verify_totp,
-    MfaSecret, MfaSetupResponse, MfaVerifyResult,
+    verify_totp_timestep, MfaSecret, MfaSetupResponse, MfaVerifyResult,
 };
 
 // ── 1. RFC 6238 known-answer test (independent reference vector) ─────
@@ -334,6 +334,33 @@ fn mfa_verify_totp_accepts_current_rejects_far_past() {
             "verify_totp ACCEPTED '000000' when current code is {current_code} — \
              the constant_time_eq comparison MUST distinguish"
         );
+    }
+}
+
+/// RUST_DEEP_AUDIT_2026-06-07 (P2-2): `verify_totp_timestep` MUST return the
+/// accepted time-step (Unix time / 30) for replay tracking, and `None` for a
+/// non-matching code. The returned step is what `verify_mfa` persists so the
+/// same code cannot be replayed within its ±1-period window.
+#[test]
+fn mfa_verify_totp_timestep_returns_counter() {
+    let secret = generate_totp_secret();
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("clock not before epoch")
+        .as_secs();
+    let current_code = generate_totp(&secret, now).expect("generate current TOTP");
+
+    let step = verify_totp_timestep(&secret, &current_code).expect("verify current TOTP");
+    assert_eq!(
+        step,
+        Some((now / 30) as i64),
+        "verify_totp_timestep MUST return the current time-step counter so \
+         verify_mfa can reject replays of this code"
+    );
+
+    let bad = verify_totp_timestep(&secret, "000000").expect("verify bad TOTP");
+    if bad.is_some() && current_code != "000000" {
+        panic!("verify_totp_timestep returned a step for a non-matching code");
     }
 }
 
