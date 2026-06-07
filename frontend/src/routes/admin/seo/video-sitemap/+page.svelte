@@ -138,7 +138,15 @@
 			ted: '#eb0028',
 			wistia: '#54bbff'
 		};
-		return colors[platform] || '#666';
+		return colors[platform] || '#666666';
+	}
+
+	function getPlatformBackgroundColor(platform: string): string {
+		return `${getPlatformColor(platform)}20`;
+	}
+
+	function getDurationBadgeClasses(video: SitemapVideo) {
+		return ['duration-badge', video.isLive && 'live'];
 	}
 
 	async function addVideo() {
@@ -243,7 +251,7 @@
 			<h3>Supported Platforms</h3>
 			<div class="platforms-grid">
 				{#each ['youtube', 'vimeo', 'dailymotion', 'ted', 'wistia'] as platform (platform)}
-					<label class="platform-checkbox" style="--platform-color: {getPlatformColor(platform)}">
+					<label class="platform-checkbox" style:--platform-color={getPlatformColor(platform)}>
 						<input
 							id="page-checkbox"
 							name="page-checkbox"
@@ -288,7 +296,7 @@
 					<div class="video-item">
 						<div class="video-thumbnail">
 							<img src={video.thumbnail} alt={video.title} width="160" height="90" loading="lazy" />
-							<span class="duration-badge" class:live={video.isLive}>
+							<span class={getDurationBadgeClasses(video)}>
 								{#if video.isLive}
 									<span class="live-dot"></span> LIVE
 								{:else}
@@ -301,9 +309,8 @@
 							<div class="video-meta">
 								<span
 									class="platform-badge"
-									style="background: {getPlatformColor(video.platform)}20; color: {getPlatformColor(
-										video.platform
-									)}"
+									style:background-color={getPlatformBackgroundColor(video.platform)}
+									style:color={getPlatformColor(video.platform)}
 								>
 									{video.platform}
 								</span>
