@@ -188,6 +188,18 @@
 				return '#6b7280';
 		}
 	}
+
+	function getTabClasses(tab: typeof activeTab) {
+		return ['tab', activeTab === tab && 'active'];
+	}
+
+	function getIssueClasses(severity: string) {
+		return [
+			'issue-item',
+			severity === 'warning' && 'issue-item--warning',
+			severity === 'info' && 'issue-item--info'
+		];
+	}
 </script>
 
 <div class="ai-assistant">
@@ -201,26 +213,14 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'generate'}
-			onclick={() => (activeTab = 'generate')}
-		>
+		<button class={getTabClasses('generate')} onclick={() => (activeTab = 'generate')}>
 			Generate
 		</button>
 		{#if formId}
-			<button
-				class="tab"
-				class:active={activeTab === 'suggest'}
-				onclick={() => (activeTab = 'suggest')}
-			>
+			<button class={getTabClasses('suggest')} onclick={() => (activeTab = 'suggest')}>
 				Suggest Fields
 			</button>
-			<button
-				class="tab"
-				class:active={activeTab === 'analyze'}
-				onclick={() => (activeTab = 'analyze')}
-			>
+			<button class={getTabClasses('analyze')} onclick={() => (activeTab = 'analyze')}>
 				Analyze
 			</button>
 		{/if}
@@ -352,7 +352,11 @@
 					<div class="analysis-results">
 						<!-- Score -->
 						<div class="score-card">
-							<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
+							<div
+								class="score-circle"
+								style:--score-color={getScoreColor(analysis.score)}
+								style:--score={analysis.score}
+							>
 								<span class="score-value">{analysis.score}</span>
 								<span class="score-label">/ 100</span>
 							</div>
@@ -364,11 +368,7 @@
 							<div class="issues-section">
 								<h4>Issues Found</h4>
 								{#each analysis.issues as issue (issue.message)}
-									<div
-										class="issue-item"
-										class:warning={issue.severity === 'warning'}
-										class:info={issue.severity === 'info'}
-									>
+									<div class={getIssueClasses(issue.severity)}>
 										<span class="issue-icon">
 											{issue.severity === 'warning' ? '⚠️' : 'ℹ️'}
 										</span>
@@ -387,7 +387,7 @@
 										<div class="rec-header">
 											<span
 												class="priority-badge"
-												style="background-color: {getPriorityColor(rec.priority)}"
+												style:background-color={getPriorityColor(rec.priority)}
 											>
 												{rec.priority}
 											</span>
@@ -796,7 +796,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.issue-item.info {
+	.issue-item--info {
 		background: #dbeafe;
 	}
 
