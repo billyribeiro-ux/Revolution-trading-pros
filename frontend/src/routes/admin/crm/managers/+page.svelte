@@ -105,6 +105,13 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
+	function tabClass(tab: typeof activeTab) {
+		return {
+			tab: true,
+			active: activeTab === tab
+		};
+	}
+
 	// Audit P2 #10: was a bare `$effect(() => loadData())`. Migrated to
 	// `onMount` so the lifecycle init isn't on the reactive graph.
 	onMount(() => {
@@ -165,15 +172,11 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'managers'}
-			onclick={() => (activeTab = 'managers')}
-		>
+		<button class={tabClass('managers')} onclick={() => (activeTab = 'managers')}>
 			<IconUsers size={18} />
 			Managers
 		</button>
-		<button class="tab" class:active={activeTab === 'roles'} onclick={() => (activeTab = 'roles')}>
+		<button class={tabClass('roles')} onclick={() => (activeTab = 'roles')}>
 			<IconShieldLock size={18} />
 			Roles
 		</button>
