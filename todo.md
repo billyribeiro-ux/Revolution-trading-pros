@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 433 Svelte files remaining.
+- Broad dynamic class/style migration scan: 432 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -146,6 +146,7 @@ Current evidence:
 - [x] `681f1cae4` Modernize block error boundary classes.
 - [x] `c5db04ef7` Modernize performance dashboard bindings.
 - [x] `ac9ed96ed` Modernize media library selection bindings.
+- [x] `23cc6d364` Modernize smart links bindings.
 
 ## Current Priority Queue
 
@@ -236,6 +237,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/blog/BlockEditor/BlockErrorBoundary.svelte`
 - [x] `frontend/src/routes/admin/performance/+page.svelte`
 - [x] `frontend/src/routes/media/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/smart-links/+page.svelte`
 
 ## Per-File Completion Checklist
 
