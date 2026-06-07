@@ -23,6 +23,7 @@
 	import type { Block, BlockContent, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props Interface
@@ -70,7 +71,7 @@
 	let errorMessage = $state('');
 	let isFullscreen = $state(false);
 	let systemTheme = $state<'light' | 'dark'>('light');
-	let iframeRef = $state<HTMLIFrameElement | null>(null);
+	let iframeRef: HTMLIFrameElement | null = null;
 	let imageLoaded = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -307,6 +308,16 @@
 			? `Trading chart for ${symbol}, ${interval} interval`
 			: imageAlt || 'Trading chart image'
 	);
+
+	const attachIframe: Attachment<HTMLIFrameElement> = (iframe) => {
+		iframeRef = iframe;
+
+		return () => {
+			if (iframeRef === iframe) {
+				iframeRef = null;
+			}
+		};
+	};
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
@@ -314,12 +325,16 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div
-	class="chart-block"
-	class:fullscreen={isFullscreen}
-	class:theme-dark={resolvedTheme === 'dark'}
+	class={[
+		'chart-block',
+		{
+			fullscreen: isFullscreen,
+			'theme-dark': resolvedTheme === 'dark'
+		}
+	]}
 	role="img"
 	aria-label={chartAriaLabel}
-	style:--chart-height="{heightValue}px"
+	style:--chart-height={`${heightValue}px`}
 >
 	<!-- Header with controls -->
 	{#if props.isEditing && props.isSelected}
@@ -328,8 +343,7 @@
 				<div class="mode-toggle">
 					<button
 						type="button"
-						class="mode-btn"
-						class:active={mode === 'embed'}
+						class={['mode-btn', { active: mode === 'embed' }]}
 						onclick={() => handleModeChange('embed')}
 						aria-pressed={mode === 'embed'}
 					>
@@ -338,8 +352,7 @@
 					</button>
 					<button
 						type="button"
-						class="mode-btn"
-						class:active={mode === 'image'}
+						class={['mode-btn', { active: mode === 'image' }]}
 						onclick={() => handleModeChange('image')}
 						aria-pressed={mode === 'image'}
 					>
@@ -369,7 +382,7 @@
 							value={symbol}
 							oninput={handleSymbolChange}
 							placeholder="NASDAQ:AAPL"
-							class:invalid={!isValidSymbol && symbol.length > 0}
+							class={{ invalid: !isValidSymbol && symbol.length > 0 }}
 							aria-invalid={!isValidSymbol && symbol.length > 0}
 						/>
 					</label>
@@ -417,7 +430,7 @@
 							value={imageUrl}
 							oninput={handleImageUrlChange}
 							placeholder="https://example.com/chart.png"
-							class:invalid={!isValidImageUrl && imageUrl.length > 0}
+							class={{ invalid: !isValidImageUrl && imageUrl.length > 0 }}
 							aria-invalid={!isValidImageUrl && imageUrl.length > 0}
 						/>
 					</label>
@@ -478,15 +491,14 @@
 					</div>
 				{:else}
 					<iframe
-						bind:this={iframeRef}
 						src={embedUrl}
 						title={chartAriaLabel}
-						class="chart-iframe"
-						class:loading={isLoading}
+						class={['chart-iframe', { loading: isLoading }]}
 						onload={handleIframeLoad}
 						onerror={handleIframeError}
 						allow="fullscreen"
 						sandbox="allow-scripts allow-same-origin allow-popups"
+						{@attach attachIframe}
 					></iframe>
 				{/if}
 			{/if}
@@ -522,8 +534,7 @@
 				<img
 					src={imageUrl}
 					alt={imageAlt}
-					class="chart-image"
-					class:loading={!imageLoaded}
+					class={['chart-image', { loading: !imageLoaded }]}
 					onload={handleImageLoad}
 					onerror={handleImageError}
 					width="1200"
