@@ -236,7 +236,7 @@
 	<div class="header">
 		<h3>Revision History</h3>
 		<div class="header-actions">
-			<button class="compare-btn" class:active={compareMode} onclick={toggleCompareMode}>
+			<button class={['compare-btn', { active: compareMode }]} onclick={toggleCompareMode}>
 				{compareMode ? 'Cancel Compare' : 'Compare'}
 			</button>
 		</div>
@@ -256,22 +256,19 @@
 		</div>
 		<div class="filter-tabs">
 			<button
-				class="filter-tab"
-				class:active={filterType === 'all'}
+				class={['filter-tab', { active: filterType === 'all' }]}
 				onclick={() => (filterType = 'all')}
 			>
 				All
 			</button>
 			<button
-				class="filter-tab"
-				class:active={filterType === 'manual'}
+				class={['filter-tab', { active: filterType === 'manual' }]}
 				onclick={() => (filterType = 'manual')}
 			>
 				Manual
 			</button>
 			<button
-				class="filter-tab"
-				class:active={filterType === 'autosave'}
+				class={['filter-tab', { active: filterType === 'autosave' }]}
 				onclick={() => (filterType = 'autosave')}
 			>
 				Autosave
@@ -323,10 +320,14 @@
 					? compareRevisionA?.id === revision.id || compareRevisionB?.id === revision.id
 					: selectedRevision?.id === revision.id}
 				<button
-					class="revision-item"
-					class:selected={isSelected}
-					class:compare-a={compareRevisionA?.id === revision.id}
-					class:compare-b={compareRevisionB?.id === revision.id}
+					class={[
+						'revision-item',
+						{
+							selected: isSelected,
+							'compare-a': compareRevisionA?.id === revision.id,
+							'compare-b': compareRevisionB?.id === revision.id
+						}
+					]}
 					onclick={() => selectRevision(revision)}
 				>
 					<div class="revision-header">
