@@ -57,18 +57,57 @@
 	const FOCUSABLE_SELECTOR =
 		'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-	// Subscribe to active popup store
-	$effect(() => {
-		const unsubscribe = activePopup.subscribe((popup) => {
-			if (popup) {
-				showPopup(popup);
-			}
-		});
-		return () => unsubscribe();
-	});
+	const popupDesign = $derived(currentPopup?.design);
+	const backdropClass = $derived(['popup-backdrop', getPositionClass()].filter(Boolean).join(' '));
+	const panelClass = $derived(['popup-panel', getSizeClass(), getAnimationClass()].join(' '));
+	const overlayColor = $derived(popupDesign?.overlay_color || '#000000');
+	const overlayOpacity = $derived((popupDesign?.overlay_opacity || 50) / 100);
+	const panelBackgroundColor = $derived(
+		popupDesign?.background_color || popupDesign?.backgroundColor || '#ffffff'
+	);
+	const panelTextColor = $derived(popupDesign?.text_color || popupDesign?.textColor || '#1f2937');
+	const panelBorderRadius = $derived(
+		`${popupDesign?.border_radius || popupDesign?.borderRadius || 12}px`
+	);
+	const panelBackgroundImage = $derived(
+		popupDesign?.background_image ? `url(${popupDesign.background_image})` : undefined
+	);
+	const popupTitleColor = $derived(
+		popupDesign?.title_color || popupDesign?.titleColor || '#1f2937'
+	);
+	const primaryButtonBackground = $derived(
+		popupDesign?.button_color || popupDesign?.buttonColor || '#3b82f6'
+	);
+	const primaryButtonColor = $derived(
+		popupDesign?.button_text_color || popupDesign?.buttonTextColor || '#ffffff'
+	);
+	const buttonBorderRadius = $derived(
+		`${popupDesign?.button_border_radius || popupDesign?.buttonBorderRadius || 8}px`
+	);
+	const buttonBoxShadow = $derived(
+		popupDesign?.button_shadow || popupDesign?.buttonShadow || 'none'
+	);
+	const buttonPadding = $derived(
+		popupDesign?.button_padding || popupDesign?.buttonPadding || '0.875rem 1.5rem'
+	);
+	const secondaryButtonBackground = $derived(popupDesign?.secondary_button_color || 'transparent');
+	const secondaryButtonColor = $derived(
+		popupDesign?.secondary_button_text_color ||
+			popupDesign?.text_color ||
+			popupDesign?.textColor ||
+			'#6b7280'
+	);
 
 	onMount(async () => {
 		if (!browser) return;
+
+		// Subscribe to active popup store once the browser DOM is available.
+		const unsubscribe = activePopup.subscribe((popup) => {
+			if (popup) {
+				void showPopup(popup);
+			}
+		});
+		cleanupFunctions.push(unsubscribe);
 
 		// Load popups for current page
 		await getActivePopups(window.location.pathname);
@@ -337,6 +376,16 @@
 		}
 	}
 
+	function attachPopupElement(element: HTMLDivElement): () => void {
+		popupElement = element;
+
+		return () => {
+			if (popupElement === element) {
+				popupElement = null;
+			}
+		};
+	}
+
 	// Animation classes based on popup settings
 	function getAnimationClass(): string {
 		const animation = currentPopup?.animation || 'zoom';
@@ -380,13 +429,13 @@
 
 		switch (position) {
 			case 'top':
-				return 'items-start pt-20';
+				return 'popup-backdrop--top';
 			case 'bottom':
-				return 'items-end pb-20';
+				return 'popup-backdrop--bottom';
 			case 'corner':
-				return 'items-end justify-end p-6';
+				return 'popup-backdrop--corner';
 			default:
-				return 'items-center';
+				return '';
 		}
 	}
 
@@ -396,17 +445,17 @@
 
 		switch (size) {
 			case 'sm':
-				return 'max-w-sm';
+				return 'popup-panel--sm';
 			case 'md':
-				return 'max-w-lg';
+				return 'popup-panel--md';
 			case 'lg':
-				return 'max-w-2xl';
+				return 'popup-panel--lg';
 			case 'xl':
-				return 'max-w-4xl';
+				return 'popup-panel--xl';
 			case 'full':
-				return 'max-w-full mx-4';
+				return 'popup-panel--full';
 			default:
-				return 'max-w-lg';
+				return 'popup-panel--md';
 		}
 	}
 </script>
@@ -416,35 +465,27 @@
 {#if isVisible && currentPopup}
 	<!-- Popup Backdrop -->
 	<div
-		class="popup-backdrop {getPositionClass()}"
+		class={backdropClass}
 		onclick={handleBackdropClick}
 		role="presentation"
-		style="--overlay-color: {currentPopup.design?.overlay_color ||
-			'#000000'}; --overlay-opacity: {(currentPopup.design?.overlay_opacity || 50) / 100}"
+		style:--overlay-color={overlayColor}
+		style:--overlay-opacity={overlayOpacity}
 	>
 		<!-- Overlay -->
 		<div class="popup-overlay" aria-hidden="true"></div>
 
 		<!-- Popup Panel -->
 		<div
-			bind:this={popupElement}
-			class="popup-panel {getSizeClass()} {getAnimationClass()}"
+			{@attach attachPopupElement}
+			class={panelClass}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="popup-title"
 			tabindex="-1"
-			style="
-        background-color: {currentPopup.design?.background_color ||
-				currentPopup.design?.backgroundColor ||
-				'#ffffff'};
-        color: {currentPopup.design?.text_color || currentPopup.design?.textColor || '#1f2937'};
-        border-radius: {currentPopup.design?.border_radius ||
-				currentPopup.design?.borderRadius ||
-				12}px;
-        {currentPopup.design?.background_image
-				? `background-image: url(${currentPopup.design.background_image});`
-				: ''}
-      "
+			style:background-color={panelBackgroundColor}
+			style:color={panelTextColor}
+			style:border-radius={panelBorderRadius}
+			style:background-image={panelBackgroundImage}
 		>
 			<!-- Close Button -->
 			{#if currentPopup.show_close_button !== false}
@@ -507,13 +548,7 @@
 				{/if}
 
 				{#if currentPopup.title}
-					<h2
-						id="popup-title"
-						class="popup-title"
-						style="color: {currentPopup.design?.title_color ||
-							currentPopup.design?.titleColor ||
-							'#1f2937'}"
-					>
+					<h2 id="popup-title" class="popup-title" style:color={popupTitleColor}>
 						{currentPopup.title}
 					</h2>
 				{/if}
@@ -532,21 +567,11 @@
 								type="button"
 								class="popup-cta popup-cta-primary"
 								onclick={handleCTAClick}
-								style="
-									background-color: {currentPopup.design?.button_color ||
-									currentPopup.design?.buttonColor ||
-									'#3b82f6'};
-									color: {currentPopup.design?.button_text_color ||
-									currentPopup.design?.buttonTextColor ||
-									'#ffffff'};
-									border-radius: {currentPopup.design?.button_border_radius ||
-									currentPopup.design?.buttonBorderRadius ||
-									8}px;
-									box-shadow: {currentPopup.design?.button_shadow || currentPopup.design?.buttonShadow || 'none'};
-									padding: {currentPopup.design?.button_padding ||
-									currentPopup.design?.buttonPadding ||
-									'0.875rem 1.5rem'};
-								"
+								style:background-color={primaryButtonBackground}
+								style:color={primaryButtonColor}
+								style:border-radius={buttonBorderRadius}
+								style:box-shadow={buttonBoxShadow}
+								style:padding={buttonPadding}
 							>
 								{currentPopup.cta_text}
 							</button>
@@ -557,16 +582,9 @@
 								type="button"
 								class="popup-cta popup-cta-secondary"
 								onclick={handleSecondaryCTAClick}
-								style="
-									background-color: {currentPopup.design?.secondary_button_color || 'transparent'};
-									color: {currentPopup.design?.secondary_button_text_color ||
-									currentPopup.design?.text_color ||
-									currentPopup.design?.textColor ||
-									'#6b7280'};
-									border-radius: {currentPopup.design?.button_border_radius ||
-									currentPopup.design?.buttonBorderRadius ||
-									8}px;
-								"
+								style:background-color={secondaryButtonBackground}
+								style:color={secondaryButtonColor}
+								style:border-radius={buttonBorderRadius}
 							>
 								{currentPopup.design.secondary_cta_text}
 							</button>
@@ -603,9 +621,26 @@
 		inset: 0;
 		z-index: 9999;
 		display: flex;
+		align-items: center;
 		justify-content: center;
 		padding: 1rem;
 		overflow-y: auto;
+	}
+
+	.popup-backdrop--top {
+		align-items: flex-start;
+		padding-top: 5rem;
+	}
+
+	.popup-backdrop--bottom {
+		align-items: flex-end;
+		padding-bottom: 5rem;
+	}
+
+	.popup-backdrop--corner {
+		align-items: flex-end;
+		justify-content: flex-end;
+		padding: 1.5rem;
 	}
 
 	/* Overlay with CSS custom properties */
@@ -628,6 +663,27 @@
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 		background-size: cover;
 		background-position: center;
+	}
+
+	.popup-panel--sm {
+		max-width: 24rem;
+	}
+
+	.popup-panel--md {
+		max-width: 32rem;
+	}
+
+	.popup-panel--lg {
+		max-width: 42rem;
+	}
+
+	.popup-panel--xl {
+		max-width: 56rem;
+	}
+
+	.popup-panel--full {
+		max-width: 100%;
+		margin-inline: 1rem;
 	}
 
 	/* Close button */
