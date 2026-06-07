@@ -44,6 +44,7 @@
 	// Summary stats
 	let totalDuplicates = $derived(duplicates.reduce((sum, g) => sum + g.count - 1, 0));
 	let totalSavings = $derived(duplicates.reduce((sum, g) => sum + g.potential_savings, 0));
+	const scanProgressWidth = $derived(`${scanProgress}%`);
 
 	function formatBytes(bytes: number): string {
 		if (bytes === 0) return '0 B';
@@ -89,10 +90,11 @@
 	async function scanForDuplicates() {
 		isScanning = true;
 		scanProgress = 0;
+		let progressInterval: ReturnType<typeof setInterval> | undefined;
 
 		try {
 			// Simulate progress during scan
-			const progressInterval = setInterval(() => {
+			progressInterval = setInterval(() => {
 				scanProgress = Math.min(scanProgress + Math.random() * 15, 90);
 			}, 500);
 
@@ -104,7 +106,6 @@
 				}
 			});
 
-			clearInterval(progressInterval);
 			scanProgress = 100;
 
 			if (!response.ok) {
@@ -116,6 +117,9 @@
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Scan failed';
 		} finally {
+			if (progressInterval) {
+				clearInterval(progressInterval);
+			}
 			isScanning = false;
 			scanProgress = 0;
 		}
@@ -170,8 +174,12 @@
 	}
 
 	onMount(() => {
-		loadDuplicates();
+		void loadDuplicates();
 	});
+
+	function getFileOptionClass(fileId: number) {
+		return ['file-option', selectedKeepId === fileId && 'file-option--selected'];
+	}
 </script>
 
 <div class="duplicate-detector">
@@ -195,7 +203,7 @@
 	<!-- Scan progress bar -->
 	{#if isScanning}
 		<div class="progress-bar-container">
-			<div class="progress-bar" style="width: {scanProgress}%"></div>
+			<div class="progress-bar" style:width={scanProgressWidth}></div>
 		</div>
 	{/if}
 
@@ -252,7 +260,7 @@
 	{:else if duplicates.length === 0}
 		<!-- Empty state -->
 		<div class="empty-state">
-			<Icon name="IconCircleCheck" size={64} class="text-green-500 mb-4" />
+			<Icon name="IconCircleCheck" size={64} class="empty-state__icon" />
 			<h3>No Duplicates Found</h3>
 			<p>Your media library is clean! No duplicate images were detected.</p>
 		</div>
@@ -342,7 +350,7 @@
 
 					<div class="files-selection">
 						{#each selectedGroup.files as file (file.id)}
-							<label class="file-option" class:selected={selectedKeepId === file.id}>
+							<label class={getFileOptionClass(file.id)}>
 								<input
 									type="radio"
 									name="keep-file"
@@ -572,6 +580,11 @@
 	.empty-state p {
 		color: #64748b;
 		margin: 0;
+	}
+
+	.empty-state :global(.empty-state__icon) {
+		color: #22c55e;
+		margin-bottom: 1rem;
 	}
 
 	.spinner {
@@ -809,7 +822,7 @@
 			background 0.2s;
 	}
 
-	.file-option.selected .file-option-content {
+	.file-option--selected .file-option-content {
 		border-color: #3b82f6;
 		background: #eff6ff;
 	}
