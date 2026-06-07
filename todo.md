@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 403 Svelte files remaining.
+- Broad dynamic class/style migration scan: 402 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -176,6 +176,7 @@ Current evidence:
 - [x] `c89e86f2e` Modernize close position modal bindings.
 - [x] `fa20a16b0` Modernize CRM managers tab bindings.
 - [x] `90cf550bb` Modernize CRM segments status binding.
+- [x] `6a4f02161` Modernize quiz player bindings.
 
 ## Current Priority Queue
 
@@ -296,6 +297,7 @@ Current evidence:
 - [x] `frontend/src/routes/dashboard/explosive-swings/components/ClosePositionModal.svelte`
 - [x] `frontend/src/routes/admin/crm/managers/+page.svelte`
 - [x] `frontend/src/routes/admin/crm/segments/+page.svelte`
+- [x] `frontend/src/lib/components/courses/QuizPlayer.svelte`
 
 ## Per-File Completion Checklist
 
