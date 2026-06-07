@@ -185,11 +185,11 @@
 			<div class="stat-label">With Alt Text</div>
 		</div>
 		<div class="stat-card">
-			<div class="stat-value" style="color: {getScoreColor(stats.avgScore)}">{stats.avgScore}%</div>
+			<div class="stat-value" style:color={getScoreColor(stats.avgScore)}>{stats.avgScore}%</div>
 			<div class="stat-label">Avg SEO Score</div>
 		</div>
 		<div class="stat-card">
-			<div class="stat-value" style="color: {stats.issues > 0 ? '#ef4444' : '#10b981'}">
+			<div class="stat-value" style:color={stats.issues > 0 ? '#ef4444' : '#10b981'}>
 				{stats.issues}
 			</div>
 			<div class="stat-label">Issues Found</div>
@@ -198,16 +198,14 @@
 
 	<div class="tabs">
 		<button
-			class="tab"
-			class:active={activeTab === 'images'}
+			class={{ tab: true, active: activeTab === 'images' }}
 			onclick={() => (activeTab = 'images')}
 		>
 			<IconPhoto size={18} />
 			Images
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'settings'}
+			class={{ tab: true, active: activeTab === 'settings' }}
 			onclick={() => (activeTab = 'settings')}
 		>
 			<IconSettings size={18} />
@@ -236,7 +234,7 @@
 									height="120"
 									loading="lazy"
 								/>
-								<div class="score-badge" style="background: {getScoreColor(image.seoScore)}">
+								<div class="score-badge" style:background={getScoreColor(image.seoScore)}>
 									{image.seoScore}
 								</div>
 							</div>
@@ -245,14 +243,14 @@
 
 								<div class="attribute-row">
 									<span class="attribute-label">Alt Text:</span>
-									<span class="attribute-value" class:empty={!image.generatedAlt}>
+									<span class={{ 'attribute-value': true, empty: !image.generatedAlt }}>
 										{image.generatedAlt || 'Not set'}
 									</span>
 								</div>
 
 								<div class="attribute-row">
 									<span class="attribute-label">Title:</span>
-									<span class="attribute-value" class:empty={!image.generatedTitle}>
+									<span class={{ 'attribute-value': true, empty: !image.generatedTitle }}>
 										{image.generatedTitle || 'Not set'}
 									</span>
 								</div>
