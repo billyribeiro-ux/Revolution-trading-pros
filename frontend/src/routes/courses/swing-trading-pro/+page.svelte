@@ -155,7 +155,7 @@
 
 <div class="course-page">
 	<!-- Hero Section -->
-	<section class="hero-section" class:visible={heroVisible}>
+	<section class={['hero-section', { visible: heroVisible }]}>
 		<div class="hero-background">
 			<div class="glow-orb glow-orb-1"></div>
 			<div class="glow-orb glow-orb-2"></div>
@@ -284,10 +284,9 @@
 			<div class="modules-grid">
 				{#each modules as module, index (module.week)}
 					<div
-						class="module-card"
-						class:visible={modulesVisible[index]}
+						class={['module-card', { visible: modulesVisible[index] }]}
 						data-index={index}
-						style="--delay: {index * 0.1}s"
+						style:--delay={`${index * 0.1}s`}
 					>
 						<div class="module-header">
 							<div class="module-number">Week {module.week}</div>
