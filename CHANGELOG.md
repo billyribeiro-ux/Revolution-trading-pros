@@ -4,6 +4,59 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-06-06 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
+
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **520 Svelte files** and is tracked in `todo.md`.
+
+### Completed migration slices
+
+- `c536dda64` Clean site health background classes.
+- `0032efc91` Modernize admin settings class composition.
+- `65fff3755` Modernize board detail dynamic styling.
+- `92a1e19fa` Modernize abandoned cart dynamic styling.
+- `cefa85b36` Modernize automation detail styling.
+- `6e018e80e` Modernize contact detail class handling.
+- `eb42c7876` Modernize datasource page dynamic styling.
+- `1b489ef0c` Modernize CRM deals dynamic styling.
+- `26ec8d617` Modernize admin dashboard class composition.
+- `d47db2644` Modernize admin blog status classes.
+- `4858ad4cd` Modernize asset manager dynamic styling.
+- `2bf007c46` Modernize block editor class composition.
+- `0fbca9d03` Modernize SPX alert page dynamic styling.
+- `bce717ccf` Modernize navbar dynamic styling.
+- `36a2dc8bc` Modernize day trading room dynamic styling.
+- `df8b28c9f` Modernize VideoEmbed dynamic styling.
+- `2393b464d` Modernize small accounts page styling.
+- `c4d42d017` Modernize swing trading page styling.
+- `90505bcec` Modernize block settings panel styling.
+- `e0108c4f8` Modernize member form modal styling.
+- `9d7c1d783` Modernize admin media page styling.
+- `44f033fb1` Modernize about page icon class styling.
+- `c1c018176` Modernize explosive swings page styling.
+- `83eb8e388` Modernize past members page styling.
+- `38674e355` Modernize global component library styling.
+- `da34af91e` Modernize memberships page styling.
+- `2aaf57377` Modernize admin connections page styling.
+- `4b254bb8f` Modernize CRM templates toast styling.
+- `6a3a8fba3` Modernize CRM lead detail styling.
+- `9b267c75a` Modernize course detail drawer styling.
+- `744b59b8f` Modernize admin categories page styling.
+- `fe9559197` Modernize high octane scanner badges.
+- `52ea78418` Modernize hero binding syntax.
+- `326f0c98d` Modernize popup creation preview styles.
+- `356d12e48` Modernize popup modal styling bindings.
+- `dc57e424d` Modernize weekly publish modal bindings.
+- `768820da1` Modernize gallery block bindings.
+- `25082f7ce` Modernize mission page pillar classes.
+- `0c354db3e` Modernize video upload modal reactivity.
+- `325ab08c7` Modernize SEO analyzer bindings.
+
+### Validation standard for each completed slice
+
+- Svelte MCP `svelte_autofixer` runs on every edited `.svelte` file until it returns `issues: []` and `suggestions: []`, unless a documented false positive is intentionally preserved.
+- Targeted file scan must return no remaining `@apply`, `@reference`, legacy `class:`, interpolated class strings, or interpolated dynamic style strings for the file being completed.
+- Full gates run before commit: `pnpm --dir frontend check`, `pnpm --dir frontend format:check`, `git diff --check`, `pnpm --dir frontend lint`, and `pnpm --dir frontend build`.
+
 ## [Unreleased] — 2026-06-02 — Dependency upgrade: full toolchain + package refresh to latest (Node LTS pinned), breaking-change migrations, zod→valibot consolidation
 
 Every library, package, and dependency bumped to its latest version as of 2026-06-02 (verified against npm / docs.rs / crates.io — no assumptions), **except Node**, which is pinned to the latest LTS. All major-version bumps were migrated through their breaking changes; the backend quality gate is green throughout (`cargo check --all-targets`, `cargo clippy --all-targets -D warnings`, `cargo fmt`, and the no-DB tests `utils_test` 18/18 + `stripe_test` 19/19).
