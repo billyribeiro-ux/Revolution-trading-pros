@@ -48,6 +48,7 @@
 		totalSent: 0,
 		totalRevenue: 0
 	});
+	let loadRequestId = 0;
 
 	const statusOptions = [
 		{ value: 'all', label: 'All Campaigns' },
@@ -56,17 +57,25 @@
 		{ value: 'paused', label: 'Paused' }
 	];
 
-	async function loadCampaigns() {
+	function campaignFilters(
+		search = searchQuery,
+		status = selectedStatus
+	): RecurringCampaignFilters {
+		return {
+			search: search || undefined,
+			status: status !== 'all' ? status : undefined
+		};
+	}
+
+	async function loadCampaigns(search = searchQuery, status = selectedStatus) {
+		const requestId = ++loadRequestId;
 		isLoading = true;
 		error = '';
 
 		try {
-			const filters: RecurringCampaignFilters = {
-				search: searchQuery || undefined,
-				status: selectedStatus !== 'all' ? selectedStatus : undefined
-			};
+			const response = await crmAPI.getRecurringCampaigns(campaignFilters(search, status));
+			if (requestId !== loadRequestId) return;
 
-			const response = await crmAPI.getRecurringCampaigns(filters);
 			campaigns = response.data || [];
 
 			stats = {
@@ -76,9 +85,12 @@
 				totalRevenue: campaigns.reduce((sum, c) => sum + c.total_revenue, 0)
 			};
 		} catch (err) {
+			if (requestId !== loadRequestId) return;
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';
 		} finally {
-			isLoading = false;
+			if (requestId === loadRequestId) {
+				isLoading = false;
+			}
 		}
 	}
 
@@ -127,13 +139,20 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
-	function getStatusColor(status: RecurringCampaignStatus): string {
-		const colors: Record<RecurringCampaignStatus, string> = {
-			draft: 'bg-slate-500/20 text-slate-400',
-			active: 'bg-emerald-500/20 text-emerald-400',
-			paused: 'bg-amber-500/20 text-amber-400'
-		};
-		return colors[status];
+	function statusBadgeClass(status: RecurringCampaignStatus) {
+		return ['status-badge', `status-${status}`];
+	}
+
+	function handleSearchInput(event: Event) {
+		searchQuery = (event.currentTarget as HTMLInputElement).value;
+		void loadCampaigns(searchQuery, selectedStatus);
+	}
+
+	function handleStatusChange(event: Event) {
+		selectedStatus = (event.currentTarget as HTMLSelectElement).value as
+			| RecurringCampaignStatus
+			| 'all';
+		void loadCampaigns(searchQuery, selectedStatus);
 	}
 
 	let filteredCampaigns = $derived(
@@ -145,23 +164,8 @@
 		})
 	);
 
-	let isInitialized = $state(false);
-
 	onMount(() => {
-		(async () => {
-			await loadCampaigns();
-			isInitialized = true;
-		})();
-	});
-
-	// Audit P1 #6: re-fetch from backend whenever search/status filters
-	// change — previously only the initial mount honored these filters.
-	$effect(() => {
-		searchQuery;
-		selectedStatus;
-		if (isInitialized) {
-			loadCampaigns();
-		}
+		void loadCampaigns();
 	});
 </script>
 
@@ -236,10 +240,11 @@
 				id="search-recurring-campaigns"
 				name="search"
 				placeholder="Search campaigns..."
-				bind:value={searchQuery}
+				value={searchQuery}
+				oninput={handleSearchInput}
 			/>
 		</div>
-		<select class="filter-select" bind:value={selectedStatus}>
+		<select class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
 			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
@@ -298,7 +303,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="status-badge {getStatusColor(campaign.status)}">
+								<span class={statusBadgeClass(campaign.status)}>
 									{campaign.status}
 								</span>
 							</td>
@@ -643,6 +648,21 @@
 		font-size: 0.75rem;
 		font-weight: 500;
 		text-transform: capitalize;
+	}
+
+	.status-draft {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-active {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-paused {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
 	}
 
 	.action-buttons {
