@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 491 Svelte files remaining.
+- Broad dynamic class/style migration scan: 490 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -88,6 +88,7 @@ Current evidence:
 - [x] `81f1400e5` Modernize weekly video uploader bindings.
 - [x] `80a0e90ea` Modernize image uploader bindings.
 - [x] `8c3b94903` Modernize preset picker bindings.
+- [x] `7e02c02f9` Modernize mentorship page accordion bindings.
 
 ## Current Priority Queue
 
@@ -120,7 +121,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/trading-rooms/[slug]/components/WeeklyVideoUploader.svelte`
 - [x] `frontend/src/lib/components/blog/BlockEditor/ImageUploader.svelte`
 - [x] `frontend/src/lib/components/blog/BlockEditor/PresetPicker.svelte`
-- [ ] `frontend/src/routes/mentorship/+page.svelte`
+- [x] `frontend/src/routes/mentorship/+page.svelte`
 - [ ] `frontend/src/routes/admin/watchlist/+page.svelte`
 - [ ] `frontend/src/routes/checkout/thank-you/+page.svelte`
 - [ ] `frontend/src/routes/resources/stock-indexes-list/+page.svelte`
