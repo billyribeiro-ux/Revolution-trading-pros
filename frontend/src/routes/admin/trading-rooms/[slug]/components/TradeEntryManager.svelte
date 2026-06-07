@@ -11,7 +11,7 @@
 	
 -->
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
 	import { logger } from '$lib/utils/logger';
 
@@ -253,9 +253,9 @@
 
 	// LIFECYCLE
 
-	$effect(() => {
+	onMount(() => {
 		if (roomSlug) {
-			untrack(() => loadEntries());
+			void loadEntries();
 		}
 	});
 </script>
@@ -269,8 +269,7 @@
 		</div>
 		<div class="header-actions">
 			<button
-				class="btn-quick-add"
-				class:active={showQuickAdd}
+				class={['btn-quick-add', { active: showQuickAdd }]}
 				onclick={() => (showQuickAdd = !showQuickAdd)}
 			>
 				Quick Add
@@ -369,7 +368,7 @@
 								<span class="ticker-badge">{entry.ticker}</span>
 							</td>
 							<td class="col-bias">
-								<span class="bias-badge bias-{entry.bias.toLowerCase()}">{entry.bias}</span>
+								<span class={['bias-badge', `bias-${entry.bias.toLowerCase()}`]}>{entry.bias}</span>
 							</td>
 							<td class="col-entry">{entry.entry || '-'}</td>
 							<td class="col-target">{entry.target1 || '-'}</td>
