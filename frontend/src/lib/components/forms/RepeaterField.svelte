@@ -9,6 +9,7 @@
 	// produced by the inputs below. JSON-shaped because the row round-trips
 	// through PostgreSQL JSONB columns on submit.
 	type RepeaterRow = Record<string, JsonValue | undefined>;
+	type RepeaterItem = { id: string; data: RepeaterRow; collapsed: boolean };
 
 	/**
 	 * RepeaterField - Dynamic Repeating Field Groups
@@ -65,26 +66,25 @@
 		onchange
 	}: Props = $props();
 
-	// State
-	let items: { id: string; data: RepeaterRow; collapsed: boolean }[] = $state([]);
+	let items: RepeaterItem[] = $state(createInitialItems());
 	let draggedIndex: number | null = $state(null);
 	let dragOverIndex: number | null = $state(null);
 
-	// Initialize items from value
-	$effect(() => {
-		if (value && value.length > 0 && items.length === 0) {
-			items = value.map((data, index) => ({
+	function createInitialItems(): RepeaterItem[] {
+		if (value?.length) {
+			return value.map((data, index) => ({
 				id: `item-${index}-${Date.now()}`,
 				data: { ...data },
 				collapsed: false
 			}));
-		} else if (items.length === 0 && minItems > 0) {
-			// Add minimum required items
-			for (let i = 0; i < minItems; i++) {
-				addItem();
-			}
 		}
-	});
+
+		return Array.from({ length: Math.min(minItems, maxItems) }, () => ({
+			id: generateId(),
+			data: createEmptyData(),
+			collapsed: false
+		}));
+	}
 
 	// Generate unique ID
 	function generateId(): string {
@@ -226,7 +226,7 @@
 	// Get item preview text. Note: this takes a full *item wrapper* (with the
 	// `data` key) — kept for backward compat with the call site, even though
 	// the wrapping is awkward.
-	function getItemPreview(item: { data: RepeaterRow }): string {
+	function getItemPreview(item: Pick<RepeaterItem, 'data'>): string {
 		const firstField = fields[0];
 		if (firstField && item.data?.[firstField.name]) {
 			return String(item.data[firstField.name]).substring(0, 50);
@@ -239,7 +239,12 @@
 	let canRemove = $derived(items.length > minItems);
 </script>
 
-<fieldset class="repeater-field" class:repeater-field--error={error && error.length > 0}>
+<fieldset
+	class={{
+		'repeater-field': true,
+		'repeater-field--error': Boolean(error?.length)
+	}}
+>
 	<div class="repeater-field__header">
 		<legend class="repeater-field__label">
 			{label}
@@ -257,10 +262,12 @@
 	<div class="repeater-items" role="list" aria-label="{label} items">
 		{#each items as item, index (item.id)}
 			<div
-				class="repeater-item"
-				class:repeater-item--collapsed={item.collapsed}
-				class:repeater-item--dragging={draggedIndex === index}
-				class:repeater-item--drag-over={dragOverIndex === index}
+				class={{
+					'repeater-item': true,
+					'repeater-item--collapsed': item.collapsed,
+					'repeater-item--dragging': draggedIndex === index,
+					'repeater-item--drag-over': dragOverIndex === index
+				}}
 				animate:flip={{ duration: 200 }}
 				transition:slide={{ duration: 200 }}
 				draggable="true"
@@ -323,7 +330,7 @@
 								class="repeater-item__action"
 								onclick={() => toggleCollapse(index)}
 								aria-label={item.collapsed ? 'Expand' : 'Collapse'}
-								style="transform: rotate({item.collapsed ? -90 : 0}deg); transition: transform 0.2s"
+								style:transform={`rotate(${item.collapsed ? -90 : 0}deg)`}
 							>
 								<Icon name="IconChevronDown" size={16} />
 							</button>
@@ -346,7 +353,7 @@
 					<div class="repeater-item__body" transition:slide={{ duration: 200 }}>
 						<div class="repeater-item__fields">
 							{#each fields as field (field.name)}
-								<div class="repeater-item__field" style="width: {field.width || 100}%">
+								<div class="repeater-item__field" style:width={`${field.width || 100}%`}>
 									<label for="{id}-{index}-{field.name}" class="repeater-item__field-label">
 										{field.label}
 										{#if field.required}
