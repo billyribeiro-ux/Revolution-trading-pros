@@ -117,7 +117,11 @@
 	}
 </script>
 
-<div class="html-block" class:expanded={isExpanded} role="region" aria-label="Custom HTML block">
+<div
+	class={{ 'html-block': true, expanded: isExpanded }}
+	role="region"
+	aria-label="Custom HTML block"
+>
 	{#if props.isEditing}
 		<!-- Edit Mode Header -->
 		<header class="html-header">
@@ -131,8 +135,7 @@
 				<div class="view-toggle">
 					<button
 						type="button"
-						class="toggle-btn"
-						class:active={viewMode === 'edit'}
+						class={{ 'toggle-btn': true, active: viewMode === 'edit' }}
 						aria-label="Edit mode"
 						aria-pressed={viewMode === 'edit'}
 						onclick={() => setViewMode('edit')}
@@ -142,8 +145,7 @@
 					</button>
 					<button
 						type="button"
-						class="toggle-btn"
-						class:active={viewMode === 'preview'}
+						class={{ 'toggle-btn': true, active: viewMode === 'preview' }}
 						aria-label="Preview mode"
 						aria-pressed={viewMode === 'preview'}
 						onclick={() => setViewMode('preview')}
@@ -153,8 +155,7 @@
 					</button>
 					<button
 						type="button"
-						class="toggle-btn"
-						class:active={viewMode === 'split'}
+						class={{ 'toggle-btn': true, active: viewMode === 'split' }}
 						aria-label="Split mode"
 						aria-pressed={viewMode === 'split'}
 						onclick={() => setViewMode('split')}
@@ -191,7 +192,7 @@
 		{/if}
 
 		<!-- Editor Content -->
-		<div class="html-editor-container view-{viewMode}">
+		<div class={['html-editor-container', `view-${viewMode}`]}>
 			<!-- Code Editor -->
 			{#if viewMode === 'edit' || viewMode === 'split'}
 				<div class="editor-pane">
