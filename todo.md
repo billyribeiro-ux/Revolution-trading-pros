@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 446 Svelte files remaining.
+- Broad dynamic class/style migration scan: 445 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -133,6 +133,7 @@ Current evidence:
 - [x] `505cef061` Modernize CRM tags page bindings.
 - [x] `86b2055d0` Modernize checklist block class bindings.
 - [x] `751cffbae` Modernize blog article block styling.
+- [x] `ca1666775` Modernize class videos bindings.
 
 ## Current Priority Queue
 
@@ -210,6 +211,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/crm/tags/+page.svelte`
 - [x] `frontend/src/lib/components/cms/blocks/content/ChecklistBlock.svelte`
 - [x] `frontend/src/routes/blog/[slug]/+page.svelte`
+- [x] `frontend/src/lib/components/ClassVideos.svelte`
 
 ## Per-File Completion Checklist
 
