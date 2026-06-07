@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 520 Svelte files remaining.
+- Broad dynamic class/style migration scan: 517 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -59,12 +59,15 @@ Current evidence:
 - [x] `25082f7ce` Modernize mission page pillar classes.
 - [x] `0c354db3e` Modernize video upload modal reactivity.
 - [x] `325ab08c7` Modernize SEO analyzer bindings.
+- [x] `0847a8eb1` Modernize dashboard sidebar bindings.
+- [x] `41199e6ca` Modernize scheduling panel bindings.
+- [x] `80df09e4c` Modernize CRM leads page bindings.
 
 ## Current Priority Queue
 
-- [ ] `frontend/src/lib/components/dashboard/DashboardSidebar.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/SchedulingPanel.svelte`
-- [ ] `frontend/src/routes/admin/crm/leads/+page.svelte`
+- [x] `frontend/src/lib/components/dashboard/DashboardSidebar.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/SchedulingPanel.svelte`
+- [x] `frontend/src/routes/admin/crm/leads/+page.svelte`
 - [ ] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
 - [ ] `frontend/src/routes/courses/+page.svelte`
 - [ ] `frontend/src/routes/admin/consent/settings/+page.svelte`

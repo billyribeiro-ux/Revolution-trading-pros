@@ -82,10 +82,12 @@
 	let secondarySidebarTitle = $derived(props.secondarySidebarTitle ?? '');
 
 	// State for expanded submenus in secondary nav. Must be a SvelteSet (not a
-	// plain Set): it's read reactively in the template (`class:is-expanded`,
-	// `aria-expanded`, and the `{#if expandedSubmenus.has(...)}` that mounts the
-	// submenu), and toggled on hover — plain-Set mutations don't trigger updates.
+	// plain Set): template class state, `aria-expanded`, and the mounted submenu
+	// all read it reactively, and plain-Set mutations do not trigger updates.
 	let expandedSubmenus = new SvelteSet<string>();
+	const fallbackAvatarUrl = 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g';
+	let profileAvatarUrl = $derived(user.avatar || fallbackAvatarUrl);
+	let profileAvatarBackground = $derived(`url("${profileAvatarUrl}")`);
 
 	// Check if secondary nav should be shown
 	// WordPress: Secondary nav shows based on route/content, not collapse state
@@ -237,9 +239,13 @@
 
 <!-- Main Sidebar -->
 <aside
-	class="dashboard__sidebar"
-	class:is-collapsed={collapsed}
-	class:is-mobile-open={isMobileMenuOpen}
+	class={[
+		'dashboard__sidebar',
+		{
+			'is-collapsed': collapsed,
+			'is-mobile-open': isMobileMenuOpen
+		}
+	]}
 	role="navigation"
 	aria-label="Dashboard navigation"
 >
@@ -248,19 +254,13 @@
 		{#if collapsed}
 			<Tooltip text={user.name} position="right" delay={150}>
 				<a href="/dashboard/account" class="dashboard__profile-nav-item" aria-label={user.name}>
-					<span
-						class="dashboard__profile-photo"
-						style="background-image: url({user.avatar ||
-							'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
+					<span class="dashboard__profile-photo" style:background-image={profileAvatarBackground}
 					></span>
 				</a>
 			</Tooltip>
 		{:else}
 			<a href="/dashboard/account" class="dashboard__profile-nav-item">
-				<span
-					class="dashboard__profile-photo"
-					style="background-image: url({user.avatar ||
-						'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
+				<span class="dashboard__profile-photo" style:background-image={profileAvatarBackground}
 				></span>
 				<span class="dashboard__profile-name">{user.name}</span>
 			</a>
@@ -271,7 +271,7 @@
 			<li></li>
 			<ul class="dash_main_links">
 				{#each mainLinks as link (link.href)}
-					<li class:is-active={isActive(link.href)}>
+					<li class={{ 'is-active': isActive(link.href) }}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
 								<a href={link.href}>
@@ -306,7 +306,7 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each tradingRoomLinks as link (link.href)}
-						<li class:is-active={isWithinSection(link.href)}>
+						<li class={{ 'is-active': isWithinSection(link.href) }}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
 									<a href={link.href}>
@@ -337,7 +337,7 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each mentorshipLinks as link (link.href)}
-						<li class:is-active={isWithinSection(link.href)}>
+						<li class={{ 'is-active': isWithinSection(link.href) }}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
 									<a href={link.href}>
@@ -368,7 +368,7 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each scannerLinks as link (link.href)}
-						<li class:is-active={isWithinSection(link.href)}>
+						<li class={{ 'is-active': isWithinSection(link.href) }}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
 									<a href={link.href}>
@@ -398,7 +398,7 @@
 			</li>
 			<ul class="dash_main_links">
 				{#each toolsLinks as link (link.href)}
-					<li class:is-active={isActive(link.href)}>
+					<li class={{ 'is-active': isActive(link.href) }}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
 								<a
@@ -435,7 +435,7 @@
 			</li>
 			<ul class="dash_main_links">
 				{#each accountLinks as link (link.href)}
-					<li class:is-active={isActive(link.href)}>
+					<li class={{ 'is-active': isActive(link.href) }}>
 						{#if collapsed}
 							<Tooltip text={link.text} position="right" delay={150}>
 								<a href={link.href}>
@@ -469,7 +469,7 @@
 				     Labels are unique within a room's nav, so they're a stable key. -->
 				{#each secondaryNavItems as item (item.text)}
 					<li
-						class:has-submenu={item.submenu && item.submenu.length > 0}
+						class={{ 'has-submenu': item.submenu && item.submenu.length > 0 }}
 						onmouseenter={() =>
 							item.submenu &&
 							item.submenu.length > 0 &&
@@ -484,9 +484,13 @@
 						{#if item.submenu && item.submenu.length > 0}
 							<!-- Item with submenu - opens on HOVER -->
 							<span
-								class="dashboard__nav-secondary-item"
-								class:is-active={hasActiveSubmenuItem(item.submenu)}
-								class:is-expanded={expandedSubmenus.has(item.text)}
+								class={[
+									'dashboard__nav-secondary-item',
+									{
+										'is-active': hasActiveSubmenuItem(item.submenu),
+										'is-expanded': expandedSubmenus.has(item.text)
+									}
+								]}
 								role="button"
 								tabindex="0"
 								aria-expanded={expandedSubmenus.has(item.text)}
@@ -503,7 +507,7 @@
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
 									{#each item.submenu as subitem (subitem.href)}
-										<li class:is-active={isActive(subitem.href)}>
+										<li class={{ 'is-active': isActive(subitem.href) }}>
 											<a href={subitem.href}>{subitem.text}</a>
 										</li>
 									{/each}
@@ -512,8 +516,7 @@
 						{:else}
 							<!-- Regular item -->
 							<a
-								class="dashboard__nav-secondary-item"
-								class:is-active={isActive(item.href)}
+								class={['dashboard__nav-secondary-item', { 'is-active': isActive(item.href) }]}
 								href={item.href}
 							>
 								{#if item.icon}
@@ -549,8 +552,7 @@
 
 	<!-- Overlay for mobile -->
 	<div
-		class="dashboard__overlay"
-		class:is-active={isMobileMenuOpen}
+		class={['dashboard__overlay', { 'is-active': isMobileMenuOpen }]}
 		onclick={closeMobileMenu}
 		onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
 		role="button"
@@ -561,11 +563,10 @@
 
 <!-- Mobile Floating Trigger (visible when sidebar is hidden on mobile) -->
 <button
-	class="dashboard__mobile-trigger"
+	class={['dashboard__mobile-trigger', { 'is-hidden': isMobileMenuOpen }]}
 	onclick={toggleMobileMenu}
 	aria-label="Open dashboard menu"
 	aria-expanded={isMobileMenuOpen}
-	class:is-hidden={isMobileMenuOpen}
 >
 	<span class="dashboard__mobile-trigger-icon">
 		<span></span>

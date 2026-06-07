@@ -551,24 +551,24 @@
 		});
 	}
 
-	function getStatusColor(status: string): string {
+	function getStatusClass(status: string): string {
 		const colors: Record<string, string> = {
-			new: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-			contacted: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-			qualified: 'bg-violet-500/15 text-violet-400 border-violet-500/30',
-			proposal: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-			negotiation: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-			won: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-			lost: 'bg-red-500/15 text-red-400 border-red-500/30'
+			new: 'status-select--new',
+			contacted: 'status-select--contacted',
+			qualified: 'status-select--qualified',
+			proposal: 'status-select--proposal',
+			negotiation: 'status-select--negotiation',
+			won: 'status-select--won',
+			lost: 'status-select--lost'
 		};
 		return colors[status] || colors.new;
 	}
 
-	function getScoreColor(score: number): string {
-		if (score >= 80) return 'text-emerald-400';
-		if (score >= 60) return 'text-amber-400';
-		if (score >= 40) return 'text-orange-400';
-		return 'text-red-400';
+	function getScoreClass(score: number): string {
+		if (score >= 80) return 'score-value--strong';
+		if (score >= 60) return 'score-value--warm';
+		if (score >= 40) return 'score-value--caution';
+		return 'score-value--risk';
 	}
 
 	// LIFECYCLE
@@ -788,7 +788,7 @@
 						</thead>
 						<tbody>
 							{#each paginatedLeads as lead (lead.id)}
-								<tr class:selected={selectedLeads.has(lead.id)}>
+								<tr class={{ selected: selectedLeads.has(lead.id) }}>
 									<td class="checkbox-col">
 										<input
 											id="select-lead-{lead.id}"
@@ -800,8 +800,7 @@
 									</td>
 									<td class="star-col">
 										<button
-											class="btn-star"
-											class:starred={lead.is_starred}
+											class={['btn-star', { starred: lead.is_starred }]}
 											onclick={() => toggleStarred(lead)}
 										>
 											{#if lead.is_starred}
@@ -813,7 +812,7 @@
 									</td>
 									<td>
 										<div class="lead-cell">
-											<div class="lead-avatar" class:hot={lead.is_hot}>
+											<div class={['lead-avatar', { hot: lead.is_hot }]}>
 												{lead.full_name?.charAt(0).toUpperCase() || '?'}
 												{#if lead.is_hot}
 													<span class="hot-indicator"><IconFlame size={10} /></span>
@@ -833,7 +832,7 @@
 									</td>
 									<td>
 										<select
-											class="status-select {getStatusColor(lead.status)}"
+											class={['status-select', getStatusClass(lead.status)]}
 											value={lead.status}
 											onchange={(e) =>
 												updateLeadStatus(lead.id, (e.target as HTMLSelectElement).value)}
@@ -845,11 +844,11 @@
 									</td>
 									<td>
 										<div class="score-cell">
-											<span class="score-value {getScoreColor(lead.lead_score)}">
+											<span class={['score-value', getScoreClass(lead.lead_score)]}>
 												{lead.lead_score}
 											</span>
 											<div class="score-bar">
-												<div class="score-fill" style="width: {lead.lead_score}%"></div>
+												<div class="score-fill" style:width={`${lead.lead_score}%`}></div>
 											</div>
 										</div>
 									</td>
@@ -1385,6 +1384,48 @@
 		outline: none;
 	}
 
+	.status-select--new {
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.3);
+		color: #60a5fa;
+	}
+
+	.status-select--contacted {
+		background: rgba(6, 182, 212, 0.15);
+		border-color: rgba(6, 182, 212, 0.3);
+		color: #22d3ee;
+	}
+
+	.status-select--qualified {
+		background: rgba(139, 92, 246, 0.15);
+		border-color: rgba(139, 92, 246, 0.3);
+		color: #a78bfa;
+	}
+
+	.status-select--proposal {
+		background: rgba(245, 158, 11, 0.15);
+		border-color: rgba(245, 158, 11, 0.3);
+		color: #fbbf24;
+	}
+
+	.status-select--negotiation {
+		background: rgba(249, 115, 22, 0.15);
+		border-color: rgba(249, 115, 22, 0.3);
+		color: #fb923c;
+	}
+
+	.status-select--won {
+		background: rgba(16, 185, 129, 0.15);
+		border-color: rgba(16, 185, 129, 0.3);
+		color: #34d399;
+	}
+
+	.status-select--lost {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #f87171;
+	}
+
 	/* Score Cell */
 	.score-cell {
 		display: flex;
@@ -1396,6 +1437,22 @@
 		font-weight: 700;
 		font-size: 0.9rem;
 		min-width: 28px;
+	}
+
+	.score-value--strong {
+		color: #34d399;
+	}
+
+	.score-value--warm {
+		color: #fbbf24;
+	}
+
+	.score-value--caution {
+		color: #fb923c;
+	}
+
+	.score-value--risk {
+		color: #f87171;
 	}
 
 	.score-bar {
