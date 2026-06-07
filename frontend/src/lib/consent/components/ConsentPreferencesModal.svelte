@@ -17,7 +17,6 @@
 
 	import { fade, scale } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { onDestroy } from 'svelte';
 	import type { ConsentCategory } from '../types';
 	import { consentStore, showPreferencesModal, closePreferencesModal } from '../store.svelte';
 	import { getVendorsByCategory } from '../vendors';
@@ -32,18 +31,6 @@
 		analytics: false,
 		marketing: false,
 		preferences: false
-	});
-
-	// Sync with store when modal opens
-	$effect(() => {
-		if ($showPreferencesModal) {
-			const current = $consentStore;
-			pendingConsent = {
-				analytics: current.analytics,
-				marketing: current.marketing,
-				preferences: current.preferences
-			};
-		}
 	});
 
 	// Category definitions for the UI
@@ -139,44 +126,42 @@
 		}
 	}
 
-	// Focus trap
-	let modalElement = $state<HTMLElement>();
 	let previouslyFocused: HTMLElement | null = null;
 
-	// Focus management when modal opens
-	$effect(() => {
-		if (browser && $showPreferencesModal) {
-			previouslyFocused = document.activeElement as HTMLElement;
-			// Focus the modal after it renders
-			setTimeout(() => {
-				modalElement?.focus();
-			}, 0);
-		}
-	});
+	function resetPendingConsentFromStore(): void {
+		const current = $consentStore;
+		pendingConsent = {
+			analytics: current.analytics,
+			marketing: current.marketing,
+			preferences: current.preferences
+		};
+	}
 
-	// Restore focus on close
-	$effect(() => {
-		if (browser && !$showPreferencesModal && previouslyFocused) {
-			previouslyFocused.focus();
+	function attachModalElement(element: HTMLElement): () => void {
+		if (!browser) return () => {};
+
+		resetPendingConsentFromStore();
+		previouslyFocused = document.activeElement as HTMLElement;
+		const focusTimer = window.setTimeout(() => {
+			element.focus();
+		}, 0);
+
+		return () => {
+			window.clearTimeout(focusTimer);
+			previouslyFocused?.focus();
 			previouslyFocused = null;
-		}
-	});
+		};
+	}
 
 	// Prevent body scroll when modal is open
 	$effect(() => {
-		if (browser) {
-			if ($showPreferencesModal) {
-				document.body.style.overflow = 'hidden';
-			} else {
-				document.body.style.overflow = '';
-			}
-		}
-	});
+		if (!browser) return;
 
-	onDestroy(() => {
-		if (browser) {
+		document.body.style.overflow = $showPreferencesModal ? 'hidden' : '';
+
+		return () => {
 			document.body.style.overflow = '';
-		}
+		};
 	});
 
 	// Check for reduced motion
@@ -189,7 +174,7 @@
 
 {#if $showPreferencesModal}
 	<div
-		class="modal-backdrop {className}"
+		class={['modal-backdrop', className]}
 		role="presentation"
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}
@@ -201,7 +186,7 @@
 			aria-modal="true"
 			aria-labelledby="preferences-modal-title"
 			tabindex="-1"
-			bind:this={modalElement}
+			{@attach attachModalElement}
 			transition:scale={{ start: 0.95, duration: prefersReducedMotion ? 0 : 200 }}
 		>
 			<div class="modal-header">
@@ -251,9 +236,11 @@
 										<span class="category-badge required">Always Active</span>
 									{:else}
 										<span
-											class="category-badge"
-											class:enabled={isEnabled}
-											class:disabled={!isEnabled}
+											class={{
+												'category-badge': true,
+												enabled: isEnabled,
+												disabled: !isEnabled
+											}}
 										>
 											{isEnabled ? 'Enabled' : 'Disabled'}
 										</span>
@@ -262,8 +249,7 @@
 								{#if !category.required}
 									<button
 										type="button"
-										class="toggle-switch"
-										class:active={isEnabled}
+										class={{ 'toggle-switch': true, active: isEnabled }}
 										role="switch"
 										aria-checked={isEnabled}
 										aria-label="Toggle {category.name}"
