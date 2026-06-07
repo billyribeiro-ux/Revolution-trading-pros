@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 441 Svelte files remaining.
+- Broad dynamic class/style migration scan: 440 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -138,6 +138,7 @@ Current evidence:
 - [x] `45a7af0c5` Modernize video uploader bindings.
 - [x] `69ebbea74` Modernize multi-step form renderer bindings.
 - [x] `0cdcf4141` Modernize duplicate detector bindings.
+- [x] `ade2908e2` Modernize risk disclaimer block bindings.
 
 ## Current Priority Queue
 
@@ -220,6 +221,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/admin/VideoUploader.svelte`
 - [x] `frontend/src/lib/components/forms/MultiStepFormRenderer.svelte`
 - [x] `frontend/src/lib/components/media/DuplicateDetector.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/trading/RiskDisclaimerBlock.svelte`
 
 ## Per-File Completion Checklist
 
