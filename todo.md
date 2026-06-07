@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 507 Svelte files remaining.
+- Broad dynamic class/style migration scan: 506 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -72,6 +72,7 @@ Current evidence:
 - [x] `b7f44f88b` Modernize churned members page bindings.
 - [x] `b36701519` Modernize image block bindings.
 - [x] `94a7b4fee` Modernize day trading course page bindings.
+- [x] `7ac82f449` Modernize revision history bindings.
 
 ## Current Priority Queue
 
@@ -88,7 +89,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/members/churned/+page.svelte`
 - [x] `frontend/src/lib/components/cms/blocks/media/ImageBlock.svelte`
 - [x] `frontend/src/routes/courses/day-trading-masterclass/+page.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/RevisionHistory.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/RevisionHistory.svelte`
 - [ ] `frontend/src/lib/components/admin/SubscriptionDetailDrawer.svelte`
 - [ ] `frontend/src/routes/resources/etf-stocks-list/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/+page.svelte`
