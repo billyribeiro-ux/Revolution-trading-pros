@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { onMount, untrack } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
@@ -37,8 +37,8 @@
 	let perPage = $state(20);
 	let search = $state('');
 	// FIX-2026-04-26-audit (P3): the previous `@ts-ignore write-only state` comment
-	// was wrong — `statusFilter` is bound via `bind:value` on the status <select>
-	// further down, so it is read both in the markup and in fetchIndicators().
+	// was wrong — `statusFilter` drives the status <select> value further down,
+	// so it is read both in the markup and in fetchIndicators().
 	let statusFilter = $state('');
 	let deleting = $state<string | null>(null);
 
@@ -112,26 +112,48 @@
 		return new Date(date).toLocaleDateString();
 	};
 
+	const getStatusClasses = (isActive?: boolean) => [
+		'status',
+		isActive ? 'status--published' : 'status--draft'
+	];
+
+	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	const clearSearchDebounce = () => {
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+			searchDebounceTimer = null;
+		}
+	};
+
+	const fetchFilteredIndicators = () => {
+		clearSearchDebounce();
+		page = 1;
+		fetchIndicators();
+	};
+
+	const handleSearchInput = (event: Event) => {
+		search = (event.currentTarget as HTMLInputElement).value;
+		clearSearchDebounce();
+		searchDebounceTimer = setTimeout(fetchFilteredIndicators, 300);
+	};
+
+	const handleSearchKeyup = (event: KeyboardEvent) => {
+		if (event.key === 'Enter') fetchFilteredIndicators();
+	};
+
+	const handleStatusFilterChange = (event: Event) => {
+		statusFilter = (event.currentTarget as HTMLSelectElement).value;
+		fetchFilteredIndicators();
+	};
+
 	// ICT 7: Initial fetch on mount — avoids $effect infinite loop
 	onMount(() => {
 		fetchIndicators();
 	});
 
-	// ICT 7: Reset page when filters change, then re-fetch
-	// Uses untrack on fetchIndicators to prevent circular dependency
-	// FIX-2026-04-26-audit (P3): `searchDebounceTimer` is read by clearTimeout()
-	// — not write-only. Removed the misleading @ts-ignore comment.
-	let searchDebounceTimer: ReturnType<typeof setTimeout>;
-	$effect(() => {
-		// Explicitly subscribe to search and statusFilter as reactive dependencies
-		// Debounce to avoid rapid re-fetches while typing
-		clearTimeout(searchDebounceTimer);
-		searchDebounceTimer = setTimeout(() => {
-			untrack(() => {
-				page = 1;
-				fetchIndicators();
-			});
-		}, 300);
+	onDestroy(() => {
+		clearSearchDebounce();
 	});
 </script>
 
@@ -169,16 +191,17 @@
 					name="search-indicators"
 					type="text"
 					placeholder="Search indicators..."
-					bind:value={search}
-					onkeyup={(e) => e.key === 'Enter' && fetchIndicators()}
+					value={search}
+					oninput={handleSearchInput}
+					onkeyup={handleSearchKeyup}
 				/>
 			</div>
 			<!-- ICT 7 FIX: Backend uses is_active boolean, not status string -->
 			<select
 				id="status-filter"
 				name="status-filter"
-				bind:value={statusFilter}
-				onchange={fetchIndicators}
+				value={statusFilter}
+				onchange={handleStatusFilterChange}
 			>
 				<option value="">All Status</option>
 				<option value="true">Active</option>
@@ -249,11 +272,7 @@
 								</td>
 								<td class="price">{formatPrice(indicator.price)}</td>
 								<td>
-									<span
-										class="status"
-										class:status--published={indicator.is_active}
-										class:status--draft={!indicator.is_active}
-									>
+									<span class={getStatusClasses(indicator.is_active)}>
 										{indicator.is_active ? 'Active' : 'Inactive'}
 									</span>
 								</td>
