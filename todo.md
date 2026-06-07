@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 423 Svelte files remaining.
+- Broad dynamic class/style migration scan: 422 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -156,6 +156,7 @@ Current evidence:
 - [x] `1d048060d` Modernize video sitemap dynamic styling.
 - [x] `992ecc991` Modernize form AI assistant dynamic styling.
 - [x] `b4578c7ec` Modernize cookie consent class composition.
+- [x] `e45a9b79d` Modernize alerts page service card classes.
 
 ## Current Priority Queue
 
@@ -256,6 +257,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/seo/video-sitemap/+page.svelte`
 - [x] `frontend/src/lib/components/forms/FormAIAssistant.svelte`
 - [x] `frontend/src/lib/components/popups/CookieConsent.svelte`
+- [x] `frontend/src/routes/alerts/+page.svelte`
 
 ## Per-File Completion Checklist
 
