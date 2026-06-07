@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import { fade, scale } from 'svelte/transition';
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -100,20 +100,21 @@
 	// Container dimensions
 	let containerWidth = $state(0);
 	let containerHeight = $state(0);
-	let imageScale = $state(1);
+	let imageScale = $derived.by(() => {
+		if (imageLoaded && containerWidth && containerHeight && image) {
+			const scaleX = containerWidth / image.naturalWidth;
+			const scaleY = containerHeight / image.naturalHeight;
+			return Math.min(scaleX, scaleY, 1) * zoom;
+		}
+
+		return 1;
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Lifecycle - Svelte 5 $effect() rune
+	// Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Load image once on mount - use untrack to prevent re-running
-	let hasLoadedImage = $state(false);
-
-	$effect(() => {
-		// Only load once
-		if (hasLoadedImage) return;
-		hasLoadedImage = true;
-
+	onMount(() => {
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
 		img.onload = () => {
@@ -122,25 +123,10 @@
 			untrack(() => initializeCropArea());
 		};
 		img.src = src;
-	});
 
-	// Calculate display scale - derived from dependencies
-	$effect(() => {
-		// Read dependencies
-		const loaded = imageLoaded;
-		const cw = containerWidth;
-		const ch = containerHeight;
-		const img = image;
-		const z = zoom;
-
-		if (loaded && cw && ch && img) {
-			const scaleX = cw / img.naturalWidth;
-			const scaleY = ch / img.naturalHeight;
-			// Use untrack to prevent infinite loop when setting imageScale
-			untrack(() => {
-				imageScale = Math.min(scaleX, scaleY, 1) * z;
-			});
-		}
+		return () => {
+			img.onload = null;
+		};
 	});
 
 	// Initialize crop area based on aspect ratio
@@ -261,7 +247,16 @@
 		const maxY = image.naturalHeight - cropArea.height;
 		cropArea.x = Math.max(0, Math.min(maxX, cropArea.x + dx));
 		cropArea.y = Math.max(0, Math.min(maxY, cropArea.y + dy));
-		cropArea = cropArea; // Trigger reactivity
+	}
+
+	function attachCanvas(node: HTMLCanvasElement) {
+		canvas = node;
+
+		return () => {
+			if (canvas === node) {
+				canvas = undefined;
+			}
+		};
 	}
 
 	// Resize crop area
@@ -399,7 +394,7 @@
 	aria-label="Close modal"
 >
 	<div
-		class="crop-modal {className}"
+		class={['crop-modal', className]}
 		transition:scale
 		onclick={(e: MouseEvent) => e.stopPropagation()}
 		onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
@@ -426,8 +421,7 @@
 				<div class="ratio-buttons">
 					{#each Object.keys(aspectRatios) as ratio (ratio)}
 						<button
-							class="ratio-btn"
-							class:active={selectedRatio === ratio}
+							class={['ratio-btn', { active: selectedRatio === ratio }]}
 							onclick={() => handleRatioChange(ratio)}
 						>
 							{ratio}
@@ -457,8 +451,7 @@
 						<Icon name="IconRotateClockwise" size={20} />
 					</button>
 					<button
-						class="transform-btn"
-						class:active={flipH}
+						class={['transform-btn', { active: flipH }]}
 						onclick={handleFlipH}
 						title="Flip horizontal"
 						aria-label="Flip horizontal"
@@ -466,8 +459,7 @@
 						<Icon name="IconArrowsLeftRight" size={20} />
 					</button>
 					<button
-						class="transform-btn"
-						class:active={flipV}
+						class={['transform-btn', { active: flipV }]}
 						onclick={handleFlipV}
 						title="Flip vertical"
 						aria-label="Flip vertical"
@@ -497,28 +489,25 @@
 			{#if imageLoaded}
 				<div
 					class="image-wrapper"
-					style="transform: scale({imageScale}); transform-origin: center;"
+					style:transform={`scale(${imageScale})`}
+					style:transform-origin="center"
 				>
 					<!-- TODO(cls): crop preview of arbitrary user uploads; intrinsic dims unknown -->
 					<img
 						{src}
 						alt="Crop preview"
 						class="crop-image"
-						style="transform: rotate({rotation}deg) scaleX({flipH ? -1 : 1}) scaleY({flipV
-							? -1
-							: 1});"
+						style:transform={`rotate(${rotation}deg) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`}
 					/>
 
 					<!-- Crop overlay -->
 					<button
 						type="button"
 						class="crop-overlay"
-						style="
-              left: {cropArea.x}px;
-              top: {cropArea.y}px;
-              width: {cropArea.width}px;
-              height: {cropArea.height}px;
-            "
+						style:left={`${cropArea.x}px`}
+						style:top={`${cropArea.y}px`}
+						style:width={`${cropArea.width}px`}
+						style:height={`${cropArea.height}px`}
 						onmousedown={handleMouseDown}
 						ontouchstart={handleMouseDown}
 						aria-label="Crop area - drag to move or resize"
@@ -578,7 +567,7 @@
 		</div>
 
 		<!-- Hidden canvas for export -->
-		<canvas bind:this={canvas} class="hidden"></canvas>
+		<canvas {@attach attachCanvas} class="hidden"></canvas>
 
 		<!-- Footer -->
 		<div class="modal-footer">
