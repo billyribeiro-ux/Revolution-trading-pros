@@ -16,6 +16,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fromAction } from 'svelte/attachments';
 	import { fade, slide } from 'svelte/transition';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -101,7 +102,11 @@
 
 	// Calendar
 	let calendarEntries = $state<CalendarEntry[]>([]);
-	let calendarMonth = $state(new Date());
+	const initialCalendarMonth = new Date();
+	let calendarYear = $state(initialCalendarMonth.getFullYear());
+	let calendarMonthIndex = $state(initialCalendarMonth.getMonth());
+	let calendarDisplayDate = $derived(new Date(calendarYear, calendarMonthIndex, 1));
+	let schedulingPanelAttachment = $derived(fromAction(loadSchedulingPanelData, () => contentId));
 
 	// History
 	interface ScheduleHistoryItem {
@@ -133,56 +138,92 @@
 	// Initialize with today's date/time + 1 hour
 	onMount(() => {
 		const now = new Date();
-		now.setHours(now.getHours() + 1);
-		now.setMinutes(0);
-		scheduleDate = now.toISOString().split('T')[0] || '';
-		scheduleTime = now.toTimeString().slice(0, 5);
-
-		if (isOpen) {
-			loadPendingSchedules();
-			loadReleases();
-		}
+		const defaultScheduleDate = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate(),
+			now.getHours() + 1,
+			0,
+			0,
+			0
+		);
+		scheduleDate = defaultScheduleDate.toISOString().split('T')[0] || '';
+		scheduleTime = defaultScheduleDate.toTimeString().slice(0, 5);
 	});
 
-	// Watch for open state
-	$effect(() => {
-		if (isOpen) {
-			loadPendingSchedules();
-			loadReleases();
+	function loadSchedulingPanelData(_node: HTMLElement, panelContentId: string) {
+		let activeContentId = panelContentId;
+		let controller = new AbortController();
+
+		function refresh(nextContentId: string) {
+			controller.abort();
+			controller = new AbortController();
+
+			void Promise.all([
+				loadPendingSchedules(nextContentId, controller.signal),
+				loadReleases(controller.signal)
+			]);
 		}
-	});
+
+		refresh(activeContentId);
+
+		return {
+			update(nextContentId: string) {
+				if (nextContentId === activeContentId) {
+					return;
+				}
+
+				activeContentId = nextContentId;
+				refresh(activeContentId);
+			},
+			destroy() {
+				controller.abort();
+			}
+		};
+	}
 
 	// API Functions
-	async function loadPendingSchedules() {
+	async function loadPendingSchedules(targetContentId = contentId, signal?: AbortSignal) {
 		try {
 			const response = await fetch(
-				`/api/cms/scheduling/schedules?content_id=${contentId}&status=pending`
+				`/api/cms/scheduling/schedules?content_id=${targetContentId}&status=pending`,
+				{ signal }
 			);
+			if (signal?.aborted) return;
+
 			if (response.ok) {
 				const data = await response.json();
 				pendingSchedules = data.schedules || [];
 			}
 		} catch (e) {
-			logger.error('Failed to load schedules:', e);
+			if (!signal?.aborted) {
+				logger.error('Failed to load schedules:', e);
+			}
 		}
 	}
 
-	async function loadReleases() {
+	async function loadReleases(signal?: AbortSignal) {
 		try {
-			const response = await fetch('/api/cms/scheduling/releases?status=draft,scheduled');
+			const response = await fetch('/api/cms/scheduling/releases?status=draft,scheduled', {
+				signal
+			});
+			if (signal?.aborted) return;
+
 			if (response.ok) {
 				const data = await response.json();
 				releases = data.releases || [];
 			}
 		} catch (e) {
-			logger.error('Failed to load releases:', e);
+			if (!signal?.aborted) {
+				logger.error('Failed to load releases:', e);
+			}
 		}
 	}
 
 	async function loadCalendar() {
 		try {
-			const startDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
-			const endDate = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0);
+			const startDate = new Date(calendarYear, calendarMonthIndex, 1);
+			const endDate = new Date(calendarYear, calendarMonthIndex + 1, 0);
 
 			const response = await fetch(
 				`/api/cms/scheduling/schedules/calendar?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`
@@ -386,42 +427,40 @@
 		return `In ${minutes} minute${minutes !== 1 ? 's' : ''}`;
 	}
 
-	function getActionColor(action: string): string {
+	function getActionClass(action: string): string {
 		switch (action) {
 			case 'publish':
-				return 'bg-green-100 text-green-800';
+				return 'action-badge--publish';
 			case 'unpublish':
-				return 'bg-yellow-100 text-yellow-800';
+				return 'action-badge--unpublish';
 			case 'archive':
-				return 'bg-gray-100 text-gray-800';
+				return 'action-badge--archive';
 			default:
-				return 'bg-blue-100 text-blue-800';
+				return 'action-badge--default';
 		}
 	}
 
-	function getStatusColor(status: string): string {
+	function getStatusClass(status: string): string {
 		switch (status) {
 			case 'pending':
-				return 'bg-blue-100 text-blue-800';
+				return 'status-badge--pending';
 			case 'processing':
-				return 'bg-yellow-100 text-yellow-800';
+				return 'status-badge--processing';
 			case 'completed':
-				return 'bg-green-100 text-green-800';
+				return 'status-badge--completed';
 			case 'failed':
-				return 'bg-red-100 text-red-800';
+				return 'status-badge--failed';
 			case 'cancelled':
-				return 'bg-gray-100 text-gray-800';
+				return 'status-badge--cancelled';
 			default:
-				return 'bg-gray-100 text-gray-800';
+				return 'status-badge--default';
 		}
 	}
 
 	// Calendar helpers
 	function getCalendarDays(): (Date | null)[] {
-		const year = calendarMonth.getFullYear();
-		const month = calendarMonth.getMonth();
-		const firstDay = new Date(year, month, 1);
-		const lastDay = new Date(year, month + 1, 0);
+		const firstDay = new Date(calendarYear, calendarMonthIndex, 1);
+		const lastDay = new Date(calendarYear, calendarMonthIndex + 1, 0);
 		const days: (Date | null)[] = [];
 
 		// Add empty slots for days before the first of the month
@@ -431,7 +470,7 @@
 
 		// Add all days of the month
 		for (let i = 1; i <= lastDay.getDate(); i++) {
-			days.push(new Date(year, month, i));
+			days.push(new Date(calendarYear, calendarMonthIndex, i));
 		}
 
 		return days;
@@ -448,13 +487,21 @@
 		});
 	}
 
+	function isToday(date: Date): boolean {
+		return date.toDateString() === new Date().toDateString();
+	}
+
 	function prevMonth() {
-		calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1);
+		const previousMonth = new Date(calendarYear, calendarMonthIndex - 1, 1);
+		calendarYear = previousMonth.getFullYear();
+		calendarMonthIndex = previousMonth.getMonth();
 		loadCalendar();
 	}
 
 	function nextMonth() {
-		calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1);
+		const nextCalendarMonth = new Date(calendarYear, calendarMonthIndex + 1, 1);
+		calendarYear = nextCalendarMonth.getFullYear();
+		calendarMonthIndex = nextCalendarMonth.getMonth();
 		loadCalendar();
 	}
 
@@ -475,6 +522,7 @@
 {#if isOpen}
 	<div
 		class="scheduling-overlay"
+		{@attach schedulingPanelAttachment}
 		onclick={(e) => {
 			if (e.target === e.currentTarget) onClose();
 		}}
@@ -500,32 +548,28 @@
 			<!-- Tabs -->
 			<div class="tabs">
 				<button
-					class="tab"
-					class:active={activeTab === 'schedule'}
+					class={['tab', { active: activeTab === 'schedule' }]}
 					onclick={() => switchTab('schedule')}
 				>
 					<Icon name="IconClock" size={16} />
 					Schedule
 				</button>
 				<button
-					class="tab"
-					class:active={activeTab === 'releases'}
+					class={['tab', { active: activeTab === 'releases' }]}
 					onclick={() => switchTab('releases')}
 				>
 					<Icon name="IconList" size={16} />
 					Releases
 				</button>
 				<button
-					class="tab"
-					class:active={activeTab === 'calendar'}
+					class={['tab', { active: activeTab === 'calendar' }]}
 					onclick={() => switchTab('calendar')}
 				>
 					<Icon name="IconCalendar" size={16} />
 					Calendar
 				</button>
 				<button
-					class="tab"
-					class:active={activeTab === 'history'}
+					class={['tab', { active: activeTab === 'history' }]}
 					onclick={() => switchTab('history')}
 				>
 					<Icon name="IconHistory" size={16} />
@@ -561,24 +605,21 @@
 								<div class="action-buttons">
 									<button
 										type="button"
-										class="action-btn"
-										class:active={scheduleAction === 'publish'}
+										class={['action-btn', { active: scheduleAction === 'publish' }]}
 										onclick={() => (scheduleAction = 'publish')}
 									>
 										<span class="action-icon publish">Publish</span>
 									</button>
 									<button
 										type="button"
-										class="action-btn"
-										class:active={scheduleAction === 'unpublish'}
+										class={['action-btn', { active: scheduleAction === 'unpublish' }]}
 										onclick={() => (scheduleAction = 'unpublish')}
 									>
 										<span class="action-icon unpublish">Unpublish</span>
 									</button>
 									<button
 										type="button"
-										class="action-btn"
-										class:active={scheduleAction === 'archive'}
+										class={['action-btn', { active: scheduleAction === 'archive' }]}
 										onclick={() => (scheduleAction = 'archive')}
 									>
 										<span class="action-icon archive">Archive</span>
@@ -644,7 +685,7 @@
 									{#each pendingSchedules as schedule (schedule.id)}
 										<div class="schedule-item">
 											<div class="schedule-info">
-												<span class="action-badge {getActionColor(schedule.action)}">
+												<span class={['action-badge', getActionClass(schedule.action)]}>
 													{schedule.action}
 												</span>
 												<span class="schedule-time">{formatDateTime(schedule.scheduled_at)}</span>
@@ -724,7 +765,7 @@
 									<div class="release-item">
 										<div class="release-header">
 											<h4>{release.name}</h4>
-											<span class="status-badge {getStatusColor(release.status)}">
+											<span class={['status-badge', getStatusClass(release.status)]}>
 												{release.status}
 											</span>
 										</div>
@@ -763,7 +804,7 @@
 								<Icon name="IconChevronLeft" size={16} />
 							</button>
 							<h3>
-								{calendarMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+								{calendarDisplayDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
 							</h3>
 							<button class="calendar-nav" onclick={nextMonth} aria-label="Next month">
 								<Icon name="IconChevronRight" size={16} />
@@ -783,17 +824,20 @@
 									{:else}
 										{@const entries = getEntriesForDay(day)}
 										<div
-											class="calendar-day"
-											class:today={day.toDateString() === new Date().toDateString()}
-											class:has-entries={entries.length > 0}
+											class={[
+												'calendar-day',
+												{
+													today: isToday(day),
+													'has-entries': entries.length > 0
+												}
+											]}
 										>
 											<span class="day-number">{day.getDate()}</span>
 											{#if entries.length > 0}
 												<div class="day-entries">
 													{#each entries.slice(0, 2) as entry (entry.id)}
 														<div
-															class="entry-dot"
-															class:is-release={entry.is_release}
+															class={['entry-dot', { 'is-release': entry.is_release }]}
 															title={entry.content_title || entry.release_name}
 														></div>
 													{/each}
@@ -1531,35 +1575,33 @@
 		}
 	}
 
-	/* Color classes */
-	.bg-green-100 {
+	.action-badge--publish,
+	.status-badge--completed {
 		background-color: #dcfce7;
-	}
-	.text-green-800 {
 		color: #166534;
 	}
-	.bg-yellow-100 {
+
+	.action-badge--unpublish,
+	.status-badge--processing {
 		background-color: #fef9c3;
-	}
-	.text-yellow-800 {
 		color: #854d0e;
 	}
-	.bg-gray-100 {
+
+	.action-badge--archive,
+	.status-badge--cancelled,
+	.status-badge--default {
 		background-color: #f3f4f6;
-	}
-	.text-gray-800 {
 		color: #1f2937;
 	}
-	.bg-blue-100 {
+
+	.action-badge--default,
+	.status-badge--pending {
 		background-color: #dbeafe;
-	}
-	.text-blue-800 {
 		color: #1e40af;
 	}
-	.bg-red-100 {
+
+	.status-badge--failed {
 		background-color: #fee2e2;
-	}
-	.text-red-800 {
 		color: #991b1b;
 	}
 </style>
