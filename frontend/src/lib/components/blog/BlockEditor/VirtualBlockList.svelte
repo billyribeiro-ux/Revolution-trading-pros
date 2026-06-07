@@ -19,6 +19,7 @@
 
 <script lang="ts">
 	import { tick, onMount, onDestroy } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import {
 		IconGripVertical,
 		IconTrash,
@@ -65,15 +66,15 @@
 	// ==========================================================================
 
 	// Container and scroll state
-	let containerRef = $state<HTMLDivElement | undefined>(undefined);
+	let containerRef: HTMLDivElement | undefined;
 	let scrollTop = $state(0);
 	let containerHeight = $state(0);
 	let isScrolling = $state(false);
 	let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Block measurements - Map of block ID to measured height
-	let blockMeasurements = $state<Map<string, BlockMeasurement>>(new Map());
-	let blockRefs = $state<Map<string, HTMLDivElement>>(new Map());
+	const blockMeasurements = new SvelteMap<string, BlockMeasurement>();
+	const blockRefs = new SvelteMap<string, HTMLDivElement>();
 
 	// Drag-and-drop state
 	let isDragging = $state(false);
@@ -89,7 +90,7 @@
 	let currentFps = $state(60);
 
 	// ResizeObserver for block height changes
-	let resizeObserver: ResizeObserver | null = null;
+	let blockResizeObserver: ResizeObserver | null = null;
 
 	// ==========================================================================
 	// Derived State
@@ -183,118 +184,6 @@
 	// Effects
 	// ==========================================================================
 
-	// Initialize ResizeObserver for measuring block heights
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			resizeObserver = new ResizeObserver((entries) => {
-				for (const entry of entries) {
-					const blockId = (entry.target as HTMLElement).dataset.blockId;
-					if (blockId) {
-						const height = Math.max(entry.contentRect.height, MIN_BLOCK_HEIGHT);
-						const current = blockMeasurements.get(blockId);
-
-						if (!current || Math.abs(current.height - height) > 1) {
-							blockMeasurements.set(blockId, { height, measured: true });
-						}
-					}
-				}
-			});
-		}
-
-		return () => {
-			resizeObserver?.disconnect();
-		};
-	});
-
-	// Note: Block observation is now handled by the measureBlock action
-	// which automatically observes/unobserves blocks as they enter/leave the DOM
-
-	// Track container size
-	$effect(() => {
-		if (!containerRef) return;
-
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				containerHeight = entry.contentRect.height;
-			}
-		});
-
-		observer.observe(containerRef);
-
-		return () => observer.disconnect();
-	});
-
-	// Auto-scroll during drag
-	$effect(() => {
-		if (isDragging && autoScrollDirection && containerRef) {
-			const scroll = () => {
-				if (!containerRef || !isDragging) {
-					autoScrollRaf = null;
-					return;
-				}
-
-				const delta = autoScrollDirection === 'up' ? -AUTO_SCROLL_SPEED : AUTO_SCROLL_SPEED;
-				containerRef.scrollTop += delta;
-
-				autoScrollRaf = requestAnimationFrame(scroll);
-			};
-
-			autoScrollRaf = requestAnimationFrame(scroll);
-		}
-
-		return () => {
-			if (autoScrollRaf) {
-				cancelAnimationFrame(autoScrollRaf);
-				autoScrollRaf = null;
-			}
-		};
-	});
-
-	// Performance logging
-	$effect(() => {
-		if (typeof window === 'undefined') return;
-
-		let logInterval: ReturnType<typeof setInterval>;
-
-		if (import.meta.env.DEV) {
-			logInterval = setInterval(() => {
-				console.info('[VirtualBlockList Performance]', {
-					...performanceMetrics,
-					timestamp: new Date().toISOString()
-				});
-			}, PERFORMANCE_LOG_INTERVAL_MS);
-		}
-
-		return () => {
-			if (logInterval) clearInterval(logInterval);
-		};
-	});
-
-	// FPS tracking
-	$effect(() => {
-		if (typeof window === 'undefined') return;
-
-		let rafId: number;
-		let lastTime = performance.now();
-		let frames = 0;
-
-		const trackFps = (currentTime: number) => {
-			frames++;
-
-			if (currentTime - lastTime >= 1000) {
-				currentFps = Math.round((frames * 1000) / (currentTime - lastTime));
-				frames = 0;
-				lastTime = currentTime;
-			}
-
-			rafId = requestAnimationFrame(trackFps);
-		};
-
-		rafId = requestAnimationFrame(trackFps);
-
-		return () => cancelAnimationFrame(rafId);
-	});
-
 	// ==========================================================================
 	// Scroll Handling
 	// ==========================================================================
@@ -323,39 +212,94 @@
 	}
 
 	// ==========================================================================
-	// Block Ref Management via Svelte Action
+	// Block Ref Management via Svelte Attachments
 	// ==========================================================================
 
-	function measureBlock(element: HTMLDivElement, blockId: string) {
-		// Store the reference
-		blockRefs.set(blockId, element);
+	function getBlockResizeObserver() {
+		if (!blockResizeObserver) {
+			blockResizeObserver = new ResizeObserver((entries) => {
+				for (const entry of entries) {
+					const blockId = (entry.target as HTMLElement).dataset.blockId;
+					if (!blockId) continue;
 
-		// Observe for height changes
-		if (resizeObserver) {
-			resizeObserver.observe(element);
+					const height = Math.max(entry.contentRect.height, MIN_BLOCK_HEIGHT);
+					const current = blockMeasurements.get(blockId);
+
+					if (!current || Math.abs(current.height - height) > 1) {
+						blockMeasurements.set(blockId, { height, measured: true });
+					}
+				}
+			});
 		}
 
-		// Return cleanup function
-		return {
-			destroy() {
-				if (resizeObserver) {
-					resizeObserver.unobserve(element);
-				}
+		return blockResizeObserver;
+	}
+
+	function measureBlock(blockId: string) {
+		return (element: HTMLDivElement) => {
+			blockRefs.set(blockId, element);
+			getBlockResizeObserver().observe(element);
+
+			return () => {
+				blockResizeObserver?.unobserve(element);
 				blockRefs.delete(blockId);
-			},
-			update(newBlockId: string) {
-				// Handle block ID changes (rare but possible)
-				if (newBlockId !== blockId) {
-					blockRefs.delete(blockId);
-					blockRefs.set(newBlockId, element);
-					blockId = newBlockId;
-				}
+			};
+		};
+	}
+
+	function attachContainer(element: HTMLDivElement) {
+		containerRef = element;
+
+		const observer = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				containerHeight = entry.contentRect.height;
+			}
+		});
+
+		observer.observe(element);
+
+		return () => {
+			observer.disconnect();
+			if (containerRef === element) {
+				containerRef = undefined;
 			}
 		};
 	}
 
+	function stopAutoScroll() {
+		if (autoScrollRaf !== null) {
+			cancelAnimationFrame(autoScrollRaf);
+			autoScrollRaf = null;
+		}
+	}
+
+	function runAutoScroll() {
+		if (!containerRef || !isDragging || !autoScrollDirection) {
+			autoScrollRaf = null;
+			return;
+		}
+
+		const delta = autoScrollDirection === 'up' ? -AUTO_SCROLL_SPEED : AUTO_SCROLL_SPEED;
+		containerRef.scrollTop += delta;
+		autoScrollRaf = requestAnimationFrame(runAutoScroll);
+	}
+
+	function updateAutoScrollDirection(direction: typeof autoScrollDirection) {
+		if (autoScrollDirection === direction) return;
+
+		autoScrollDirection = direction;
+
+		if (direction && isDragging) {
+			if (autoScrollRaf === null) {
+				autoScrollRaf = requestAnimationFrame(runAutoScroll);
+			}
+		} else {
+			stopAutoScroll();
+		}
+	}
+
 	// ==========================================================================
-	// Public Methods (exposed via bind:this)
+	// Public Methods (exposed to parent components)
 	// ==========================================================================
 
 	export function scrollToBlock(id: string): void {
@@ -493,11 +437,11 @@
 			const distanceFromBottom = containerRect.bottom - event.clientY;
 
 			if (distanceFromTop < SCROLL_THRESHOLD) {
-				autoScrollDirection = 'up';
+				updateAutoScrollDirection('up');
 			} else if (distanceFromBottom < SCROLL_THRESHOLD) {
-				autoScrollDirection = 'down';
+				updateAutoScrollDirection('down');
 			} else {
-				autoScrollDirection = null;
+				updateAutoScrollDirection(null);
 			}
 		}
 	}
@@ -507,7 +451,7 @@
 		draggedBlockId = null;
 		draggedBlockIndex = null;
 		dropTargetIndex = null;
-		autoScrollDirection = null;
+		updateAutoScrollDirection(null);
 	}
 
 	function handleDrop(event: DragEvent) {
@@ -598,11 +542,11 @@
 			const distanceFromBottom = containerRect.bottom - touch.clientY;
 
 			if (distanceFromTop < SCROLL_THRESHOLD) {
-				autoScrollDirection = 'up';
+				updateAutoScrollDirection('up');
 			} else if (distanceFromBottom < SCROLL_THRESHOLD) {
-				autoScrollDirection = 'down';
+				updateAutoScrollDirection('down');
 			} else {
-				autoScrollDirection = null;
+				updateAutoScrollDirection(null);
 			}
 		}
 	}
@@ -668,15 +612,48 @@
 	onMount(() => {
 		// Log initial performance
 		console.info('[VirtualBlockList] Mounted with', blocks.length, 'blocks');
+
+		const logInterval =
+			import.meta.env.DEV &&
+			setInterval(() => {
+				console.info('[VirtualBlockList Performance]', {
+					...performanceMetrics,
+					timestamp: new Date().toISOString()
+				});
+			}, PERFORMANCE_LOG_INTERVAL_MS);
+
+		let rafId: number;
+		let lastTime = performance.now();
+		let frames = 0;
+
+		const trackFps = (currentTime: number) => {
+			frames++;
+
+			if (currentTime - lastTime >= 1000) {
+				currentFps = Math.round((frames * 1000) / (currentTime - lastTime));
+				frames = 0;
+				lastTime = currentTime;
+			}
+
+			rafId = requestAnimationFrame(trackFps);
+		};
+
+		rafId = requestAnimationFrame(trackFps);
+
+		return () => {
+			if (logInterval) clearInterval(logInterval);
+			cancelAnimationFrame(rafId);
+		};
 	});
 
 	onDestroy(() => {
+		blockResizeObserver?.disconnect();
+		blockResizeObserver = null;
+
 		if (scrollTimeout) {
 			clearTimeout(scrollTimeout);
 		}
-		if (autoScrollRaf) {
-			cancelAnimationFrame(autoScrollRaf);
-		}
+		stopAutoScroll();
 		if (touchLongPressTimer) {
 			clearTimeout(touchLongPressTimer);
 		}
@@ -684,10 +661,8 @@
 </script>
 
 <div
-	bind:this={containerRef}
-	class="virtual-block-list"
-	class:is-scrolling={isScrolling}
-	class:is-dragging={isDragging}
+	{@attach attachContainer}
+	class={['virtual-block-list', { 'is-scrolling': isScrolling, 'is-dragging': isDragging }]}
 	onscroll={handleScroll}
 	onkeydown={handleKeyDown}
 	ondrop={handleDrop}
@@ -700,17 +675,20 @@
 	tabindex="0"
 >
 	<!-- Spacer for total content height -->
-	<div class="virtual-spacer" style:height="{totalHeight}px">
+	<div class="virtual-spacer" style:height={`${totalHeight}px`}>
 		<!-- Render only visible blocks -->
 		{#each visibleBlocks as { block, index, position } (block.id)}
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 			<div
-				class="virtual-block-wrapper"
-				class:is-selected={selectedBlockId === block.id}
-				class:is-dragging={draggedBlockId === block.id}
-				class:is-drop-target={dropTargetIndex === index}
-				class:is-drop-after={dropTargetIndex === index + 1}
-				style:transform="translateY({position.top}px)"
+				class={[
+					'virtual-block-wrapper',
+					{
+						'is-selected': selectedBlockId === block.id,
+						'is-dragging': draggedBlockId === block.id,
+						'is-drop-target': dropTargetIndex === index,
+						'is-drop-after': dropTargetIndex === index + 1
+					}
+				]}
+				style:transform={`translateY(${position.top}px)`}
 				data-block-id={block.id}
 				data-block-index={index}
 				role="option"
@@ -798,7 +776,7 @@
 				{/if}
 
 				<!-- Block Content -->
-				<div class="block-content" use:measureBlock={block.id}>
+				<div class="block-content" {@attach measureBlock(block.id)}>
 					<BlockRenderer
 						block={block as unknown as CMSBlock}
 						isSelected={selectedBlockId === block.id}
@@ -840,7 +818,7 @@
 			</div>
 			<div class="perf-stat">
 				<span class="perf-label">FPS:</span>
-				<span class="perf-value" class:perf-warning={performanceMetrics.fps < 30}
+				<span class={['perf-value', { 'perf-warning': performanceMetrics.fps < 30 }]}
 					>{performanceMetrics.fps}</span
 				>
 			</div>
