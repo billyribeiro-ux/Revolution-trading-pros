@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 408 Svelte files remaining.
+- Broad dynamic class/style migration scan: 407 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -171,6 +171,7 @@ Current evidence:
 - [x] `1104971b8` Modernize block inserter class bindings.
 - [x] `5dfd8ba03` Modernize blog table of contents bindings.
 - [x] `0584f3ac2` Modernize media preview bindings.
+- [x] `dc1d8163a` Modernize video block bindings.
 
 ## Current Priority Queue
 
@@ -286,6 +287,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/blog/BlockEditor/BlockInserter.svelte`
 - [x] `frontend/src/lib/components/blog/TableOfContents.svelte`
 - [x] `frontend/src/lib/components/media/MediaPreview.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/media/VideoBlock.svelte`
 
 ## Per-File Completion Checklist
 
