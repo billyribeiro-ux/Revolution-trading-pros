@@ -279,7 +279,13 @@
 					case 'image':
 						return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
 					case 'code':
-						return `<pre><code class="language-${content.language || 'text'}">${content.code || ''}</code></pre>`;
+						return (
+							'<pre><code class="' +
+							toCodeLanguageClass(content.language) +
+							'">' +
+							escapeHtml(content.code) +
+							'</code></pre>'
+						);
 					case 'separator':
 						return '<hr />';
 					case 'html':
@@ -311,6 +317,25 @@
 		if (!value) return null;
 		const s = value.replace(/\.\d+Z?$/, '').replace('Z', '');
 		return /T\d{2}:\d{2}$/.test(s) ? `${s}:00` : s;
+	}
+
+	function escapeHtml(value: unknown): string {
+		return String(value ?? '')
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
+	function toCodeLanguageClass(language: unknown): string {
+		const token =
+			String(language || 'text')
+				.toLowerCase()
+				.replace(/[^a-z0-9_-]+/g, '-')
+				.replace(/^-+|-+$/g, '') || 'text';
+
+		return `language-${token}`;
 	}
 
 	async function savePost(status: string) {
