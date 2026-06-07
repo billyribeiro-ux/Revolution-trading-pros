@@ -351,7 +351,7 @@
 
 			<div class="faq-list">
 				{#each faqItems as faq, i (i)}
-					<div class="faq-item" class:faq-item--expanded={expandedFaq === i}>
+					<div class={['faq-item', expandedFaq === i && 'faq-item--expanded']}>
 						<button class="faq-item__question" onclick={() => toggleFaq(i)}>
 							<IconQuestionMark size={20} class="faq-item__icon" />
 							<span>{faq.question}</span>
