@@ -5,6 +5,8 @@
 	 * Complete quiz taking experience with timer, scoring, and results
 	 */
 
+	import { onMount } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { apiFetch } from '$lib/api/config';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -63,9 +65,9 @@
 
 	let quizData: QuizData | null = $state(null);
 	let currentQuestionIndex = $state(0);
-	let selectedAnswers: Map<number, number> = $state(new Map());
+	let selectedAnswers = new SvelteMap<number, number>();
 	let timeRemaining = $state(0);
-	let timerInterval: ReturnType<typeof setInterval> | null = $state(null);
+	let timerInterval: ReturnType<typeof setInterval> | null = null;
 	let isLoading = $state(true);
 	let isSubmitting = $state(false);
 	let result: QuizResult | null = $state(null);
@@ -98,6 +100,44 @@
 		const secs = seconds % 60;
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	};
+
+	function resultIconClass(passed: boolean) {
+		return {
+			'result-icon': true,
+			passed,
+			failed: !passed
+		};
+	}
+
+	function questionResultClass(correct: boolean) {
+		return {
+			'question-result': true,
+			correct,
+			incorrect: !correct
+		};
+	}
+
+	function timerClass() {
+		return {
+			timer: true,
+			warning: timeRemaining < 60
+		};
+	}
+
+	function navDotClass(question: Question, index: number) {
+		return {
+			'nav-dot': true,
+			current: index === currentQuestionIndex,
+			answered: selectedAnswers.has(question.id)
+		};
+	}
+
+	function answerOptionClass(questionId: number, answerId: number) {
+		return {
+			'answer-option': true,
+			selected: selectedAnswers.get(questionId) === answerId
+		};
+	}
 
 	async function startQuiz() {
 		try {
@@ -136,7 +176,6 @@
 
 	function selectAnswer(questionId: number, answerId: number) {
 		selectedAnswers.set(questionId, answerId);
-		selectedAnswers = new Map(selectedAnswers);
 	}
 
 	function nextQuestion() {
@@ -191,8 +230,9 @@
 		}
 	}
 
-	$effect(() => {
-		startQuiz();
+	onMount(() => {
+		void startQuiz();
+
 		return () => {
 			if (timerInterval) clearInterval(timerInterval);
 		};
@@ -213,7 +253,7 @@
 		</div>
 	{:else if result}
 		<div class="result">
-			<div class="result-icon" class:passed={result.passed} class:failed={!result.passed}>
+			<div class={resultIconClass(result.passed)}>
 				{#if result.passed}
 					<Icon name="IconCircleCheck" size={64} />
 				{:else}
@@ -227,7 +267,7 @@
 					: `You scored ${result.score_percent.toFixed(0)}%. You need ${result.passing_score}% to pass.`}
 			</p>
 			<div class="score-display">
-				<div class="score-circle" style="--percent: {result.score_percent}%">
+				<div class="score-circle" style:--percent={`${result.score_percent}%`}>
 					<span class="score-value">{result.score_percent.toFixed(0)}%</span>
 				</div>
 				<div class="score-details">
@@ -241,7 +281,7 @@
 					<h3>Question Results</h3>
 					<div class="results-grid">
 						{#each result.results as qr, i (i)}
-							<div class="question-result" class:correct={qr.correct} class:incorrect={!qr.correct}>
+							<div class={questionResultClass(qr.correct)}>
 								<span class="q-num">Q{i + 1}</span>
 								<span class="q-status">{qr.correct ? '+' : '-'}{qr.points}</span>
 							</div>
@@ -260,7 +300,7 @@
 				<p>Question {currentQuestionIndex + 1} of {totalQuestions}</p>
 			</div>
 			{#if timeRemaining > 0}
-				<div class="timer" class:warning={timeRemaining < 60}>
+				<div class={timerClass()}>
 					<Icon name="IconClock" size={20} />
 					<span>{formatTime(timeRemaining)}</span>
 				</div>
@@ -268,15 +308,13 @@
 		</div>
 
 		<div class="progress-bar">
-			<div class="progress-fill" style="width: {progress}%"></div>
+			<div class="progress-fill" style:width={`${progress}%`}></div>
 		</div>
 
 		<div class="question-nav">
 			{#each quizData.questions as q, i (i)}
 				<button
-					class="nav-dot"
-					class:current={i === currentQuestionIndex}
-					class:answered={selectedAnswers.has(q.id)}
+					class={navDotClass(q, i)}
 					onclick={() => goToQuestion(i)}
 					aria-label="Go to question {i + 1}"
 				>
@@ -297,8 +335,7 @@
 			<div class="answers">
 				{#each currentQuestion.answers as answer (answer.id)}
 					<button
-						class="answer-option"
-						class:selected={selectedAnswers.get(currentQuestion.id) === answer.id}
+						class={answerOptionClass(currentQuestion.id, answer.id)}
 						onclick={() => selectAnswer(currentQuestion.id, answer.id)}
 					>
 						<span class="answer-radio"></span>
