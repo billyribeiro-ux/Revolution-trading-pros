@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -95,6 +95,13 @@
 		}
 	}
 
+	function selectProductType(type: string) {
+		if (selectedType === type) return;
+
+		selectedType = type;
+		void loadProducts();
+	}
+
 	// Delete product with confirmation
 	function deleteProduct(id: number, name: string) {
 		pendingDelete = { id, name };
@@ -159,19 +166,8 @@
 		return { original: `$${price.toFixed(2)}`, sale: null };
 	}
 
-	// FIX-2026-04-26 (P0-5): the previous `untrack(() => loadProducts())`
-	// swallowed the dependency on `selectedType`, so the effect ran exactly
-	// once on mount and clicking a type tab never refetched. Read
-	// `selectedType` *outside* `untrack` so the effect re-runs on filter
-	// change, while the actual fetch (which writes `products`) stays
-	// untracked to avoid a re-fetch loop on the products array.
-	$effect(() => {
-		// Reading these inside the effect (but outside `untrack`) is what
-		// registers the dependency.
-		void selectedType;
-		untrack(() => {
-			loadProducts();
-		});
+	onMount(() => {
+		void loadProducts();
 	});
 </script>
 
@@ -219,9 +215,8 @@
 				{#each productTypes as type (type.value)}
 					{@const Icon = type.icon}
 					<button
-						class="type-btn"
-						class:active={selectedType === type.value}
-						onclick={() => (selectedType = type.value)}
+						class={{ 'type-btn': true, active: selectedType === type.value }}
+						onclick={() => selectProductType(type.value)}
 					>
 						<Icon size={18} />
 						{type.label}
@@ -274,15 +269,14 @@
 				{#each filteredProducts as product (product.id)}
 					{@const TypeIcon = getTypeIcon(product.type)}
 					{@const pricing = formatPrice(product.price, product.sale_price)}
-					<div class="product-card" class:deleting={deleting === product.id}>
+					<div class={{ 'product-card': true, deleting: deleting === product.id }}>
 						<div class="product-header">
 							<div class="product-type-badge">
 								<TypeIcon size={14} />
 								{product.type}
 							</div>
 							<button
-								class="status-toggle"
-								class:active={product.is_active}
+								class={{ 'status-toggle': true, active: product.is_active }}
 								onclick={() => toggleActive(product)}
 								title={product.is_active ? 'Click to deactivate' : 'Click to activate'}
 							>
