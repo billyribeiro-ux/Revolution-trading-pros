@@ -45,19 +45,48 @@
 		const sign = percent > 0 ? '+' : '';
 		return `${sign}${percent.toFixed(1)}%`;
 	}
+
+	function tradeCardClass(result: string) {
+		return {
+			'trade-card': true,
+			active: result === 'ACTIVE'
+		};
+	}
+
+	function expandIconClass(expanded: boolean) {
+		return {
+			'expand-icon': true,
+			expanded
+		};
+	}
+
+	function profitToneClass(baseClass: string, value: number) {
+		return {
+			[baseClass]: true,
+			profit: value > 0,
+			loss: value < 0
+		};
+	}
+
+	function tradeRowClass(result: string, expandable: boolean) {
+		return {
+			active: result === 'ACTIVE',
+			expandable
+		};
+	}
+
+	function resultBadgeClass(result: string) {
+		return ['result-badge', `result--${result.toLowerCase()}`];
+	}
 </script>
 
 <!-- Mobile Card Layout (< 768px) -->
-<div class="mobile-cards trades-mobile md:hidden">
+<div class="mobile-cards trades-mobile">
 	{#each trades as trade (trade.id)}
-		{@const hasNotes = trade.notes && trade.notes.trim().length > 0}
+		{@const hasNotes = !!trade.notes && trade.notes.trim().length > 0}
 		{@const isExpanded = expandedNotes.has(trade.id)}
 
-		<article
-			class="trade-card py-3"
-			class:active={trade.result === 'ACTIVE'}
-			aria-label="{trade.ticker} trade"
-		>
+		<article class={tradeCardClass(trade.result)} aria-label="{trade.ticker} trade">
 			<!-- Card Header: Ticker + Result Badge -->
 			<div class="card-header">
 				<div class="ticker-section">
@@ -69,7 +98,7 @@
 							aria-expanded={isExpanded}
 							aria-controls="mobile-notes-{trade.id}"
 						>
-							<span class="expand-icon" class:expanded={isExpanded}>
+							<span class={expandIconClass(isExpanded)}>
 								<svg
 									viewBox="0 0 24 24"
 									fill="none"
@@ -87,7 +116,7 @@
 						<span class="ticker-text">{trade.ticker}</span>
 					{/if}
 				</div>
-				<span class="result-badge result--{trade.result.toLowerCase()}">
+				<span class={resultBadgeClass(trade.result)}>
 					{trade.result}
 				</span>
 			</div>
@@ -98,19 +127,11 @@
 					<span class="data-label">Entry</span>
 					<span class="data-value">{trade.entryDate}</span>
 				</div>
-				<div
-					class="data-item profit-cell"
-					class:profit={trade.profit > 0}
-					class:loss={trade.profit < 0}
-				>
+				<div class={profitToneClass('data-item profit-cell', trade.profit)}>
 					<span class="data-label">P/L</span>
 					<span class="data-value">{formatProfit(trade.profit)}</span>
 				</div>
-				<div
-					class="data-item"
-					class:profit={trade.profitPercent > 0}
-					class:loss={trade.profitPercent < 0}
-				>
+				<div class={profitToneClass('data-item', trade.profitPercent)}>
 					<span class="data-label">%</span>
 					<span class="data-value">{formatPercent(trade.profitPercent)}</span>
 				</div>
@@ -178,7 +199,7 @@
 </div>
 
 <!-- Desktop/Tablet Table Layout (768px+) -->
-<div class="table-container trades-desktop hidden md:block">
+<div class="table-container trades-desktop">
 	<div class="table-scroll-wrapper">
 		<table class="trades-table" aria-label="Trade history">
 			<thead>
@@ -200,10 +221,10 @@
 			</thead>
 			<tbody>
 				{#each trades as trade (trade.id)}
-					{@const hasNotes = trade.notes && trade.notes.trim().length > 0}
+					{@const hasNotes = !!trade.notes && trade.notes.trim().length > 0}
 					{@const isExpanded = expandedNotes.has(trade.id)}
 
-					<tr class="sm:py-2" class:active={trade.result === 'ACTIVE'} class:expandable={hasNotes}>
+					<tr class={tradeRowClass(trade.result, hasNotes)}>
 						<td class="ticker-cell">
 							{#if hasNotes}
 								<button
@@ -213,7 +234,7 @@
 									aria-expanded={isExpanded}
 									aria-controls="notes-{trade.id}"
 								>
-									<span class="expand-icon" class:expanded={isExpanded}>
+									<span class={expandIconClass(isExpanded)}>
 										<svg
 											viewBox="0 0 24 24"
 											fill="none"
@@ -235,20 +256,16 @@
 						<td class="trades-lg-cell hidden">{trade.exitDate ?? 'Active'}</td>
 						<td class="numeric trades-lg-cell hidden">{formatPrice(trade.entryPrice)}</td>
 						<td class="numeric trades-lg-cell hidden">{formatPrice(trade.exitPrice)}</td>
-						<td class="numeric" class:profit={trade.profit > 0} class:loss={trade.profit < 0}>
+						<td class={profitToneClass('numeric', trade.profit)}>
 							{formatProfit(trade.profit)}
 						</td>
-						<td
-							class="numeric"
-							class:profit={trade.profitPercent > 0}
-							class:loss={trade.profitPercent < 0}
-						>
+						<td class={profitToneClass('numeric', trade.profitPercent)}>
 							{formatPercent(trade.profitPercent)}
 						</td>
 						<td class="numeric trades-xl-cell hidden">{trade.duration || '—'}</td>
 						<td class="trades-xl-cell hidden"><span class="setup-badge">{trade.setup}</span></td>
 						<td>
-							<span class="result-badge result--{trade.result.toLowerCase()}">
+							<span class={resultBadgeClass(trade.result)}>
 								{trade.result}
 							</span>
 						</td>
@@ -274,8 +291,7 @@
 					{#if hasNotes}
 						<tr
 							id="notes-{trade.id}"
-							class="notes-row"
-							class:expanded={isExpanded}
+							class={{ 'notes-row': true, expanded: isExpanded }}
 							aria-hidden={!isExpanded}
 						>
 							<td colspan={isAdmin ? 11 : 10}>
@@ -417,6 +433,10 @@
 		border-radius: var(--radius-xl);
 		padding: var(--space-4);
 		box-shadow: var(--shadow-md);
+	}
+
+	.trades-desktop {
+		display: none;
 	}
 
 	.table-scroll-wrapper {

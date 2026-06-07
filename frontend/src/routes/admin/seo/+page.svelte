@@ -10,7 +10,7 @@
 	 *
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { spring } from 'svelte/motion';
 	import { goto } from '$app/navigation';
@@ -248,10 +248,7 @@
 
 	// Lifecycle
 
-	// Svelte 5: Initialize on mount
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
 		// Built-in SEO - always available (like RankMath Pro)
 		// External connections are optional enhancements
 		isLoading = false;
@@ -259,9 +256,11 @@
 		// Load SEO data from built-in system
 		loadSeoData();
 
-		setTimeout(() => {
+		const metricsTimer = setTimeout(() => {
 			metricsSpring.set(1);
 		}, 100);
+
+		return () => clearTimeout(metricsTimer);
 	});
 
 	// Data Loading
@@ -334,7 +333,7 @@
 				</div>
 
 				<button class="refresh-btn" onclick={handleRefresh} disabled={isLoading}>
-					<span class="refresh-icon" class:spinning={isLoading}>
+					<span class={['refresh-icon', { spinning: isLoading }]}>
 						<IconRefresh size={18} />
 					</span>
 					<span>Refresh</span>
@@ -366,7 +365,7 @@
 								<span class="value">{seoData.searchVisibility.score}</span>
 								<span class="unit">%</span>
 							</div>
-							<div class="stat-change" class:positive={seoData.searchVisibility.change > 0}>
+							<div class={['stat-change', { positive: seoData.searchVisibility.change > 0 }]}>
 								{#if seoData.searchVisibility.change > 0}
 									<IconTrendingUp size={14} />
 								{:else}
@@ -473,13 +472,14 @@
 					<a
 						href={section.href}
 						class="section-card"
-						style="--card-color: {section.color}; --card-gradient: {section.gradient}"
+						style:--card-color={section.color}
+						style:--card-gradient={section.gradient}
 						in:fly={{ y: 20, duration: 400, delay: 400 + i * 30 }}
 					>
 						{#if section.isNew}
 							<span class="new-badge">NEW</span>
 						{/if}
-						<div class="card-icon" style="background: {section.gradient}">
+						<div class="card-icon" style:background={section.gradient}>
 							<SectionIcon size={24} />
 						</div>
 						<h3>{section.title}</h3>

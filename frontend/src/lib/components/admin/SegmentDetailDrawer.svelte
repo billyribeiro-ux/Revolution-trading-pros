@@ -65,6 +65,12 @@
 		top_products: { name: string; count: number }[];
 	}
 
+	interface SegmentData {
+		memberPreviews: MemberPreview[];
+		analytics: SegmentAnalytics | null;
+		error: string;
+	}
+
 	interface Props {
 		isOpen: boolean;
 		segment: Segment | null;
@@ -86,10 +92,7 @@
 
 	// State
 	let activeTab = $state<'overview' | 'members' | 'analytics'>('overview');
-	let memberPreviews = $state<MemberPreview[]>([]);
-	let analytics = $state<SegmentAnalytics | null>(null);
-	let isLoading = $state(false);
-	let error = $state('');
+	let reloadToken = $state(0);
 
 	// Condition field labels
 	const fieldLabels: Record<string, string> = {
@@ -114,16 +117,9 @@
 		not_has: 'does not have'
 	};
 
-	// Load data when drawer opens
-	$effect(() => {
-		if (isOpen && segment) {
-			loadSegmentData();
-		} else {
-			memberPreviews = [];
-			analytics = null;
-			activeTab = 'overview';
-			error = '';
-		}
+	const segmentDataPromise = $derived.by(() => {
+		const version = reloadToken;
+		return isOpen && segment ? loadSegmentData(segment, version) : null;
 	});
 
 	// Lock body scroll when open
@@ -138,40 +134,31 @@
 		};
 	});
 
-	async function loadSegmentData() {
-		if (!segment) return;
-
-		isLoading = true;
-		error = '';
-
+	async function loadSegmentData(currentSegment: Segment, _version: number): Promise<SegmentData> {
 		try {
 			// Parallel requests for member preview and analytics
 			const [membersRes, analyticsRes] = await Promise.all([
-				adminFetch(`/api/admin/members?segment=${segment.id}&per_page=5`).catch(() => null),
-				adminFetch(`/api/admin/members/segments/${segment.id}/analytics`).catch(() => null)
+				adminFetch(`/api/admin/members?segment=${currentSegment.id}&per_page=5`).catch(() => null),
+				adminFetch(`/api/admin/members/segments/${currentSegment.id}/analytics`).catch(() => null)
 			]);
 
-			// Process members
-			if (membersRes?.members) {
-				memberPreviews = membersRes.members;
-			} else {
-				// Mock data fallback
-				memberPreviews = generateMockMembers();
-			}
-
-			// Process analytics
-			if (analyticsRes) {
-				analytics = analyticsRes;
-			} else {
-				// Mock analytics fallback
-				analytics = generateMockAnalytics();
-			}
+			return {
+				memberPreviews: membersRes?.members || generateMockMembers(),
+				analytics: analyticsRes || generateMockAnalytics(currentSegment),
+				error: ''
+			};
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load segment data';
 			console.error('Segment load error:', err);
-		} finally {
-			isLoading = false;
+			return {
+				memberPreviews: [],
+				analytics: null,
+				error: err instanceof Error ? err.message : 'Failed to load segment data'
+			};
 		}
+	}
+
+	function reloadSegmentData() {
+		reloadToken += 1;
 	}
 
 	function generateMockMembers(): MemberPreview[] {
@@ -219,9 +206,9 @@
 		];
 	}
 
-	function generateMockAnalytics(): SegmentAnalytics {
+	function generateMockAnalytics(currentSegment: Segment): SegmentAnalytics {
 		return {
-			total_members: segment?.memberCount || 0,
+			total_members: currentSegment.memberCount || 0,
 			growth_30d: Math.floor(Math.random() * 20) - 5,
 			avg_spending: Math.floor(Math.random() * 1000) + 200,
 			avg_lifetime_days: Math.floor(Math.random() * 365) + 30,
@@ -289,7 +276,7 @@
 	<button class="drawer-backdrop" onclick={onClose} aria-label="Close drawer"></button>
 
 	<!-- Drawer -->
-	<aside class="drawer" class:open={isOpen} aria-labelledby="drawer-title">
+	<aside class={['drawer', { open: isOpen }]} aria-labelledby="drawer-title">
 		<!-- Header -->
 		<header class="drawer-header">
 			<div class="header-content">
@@ -326,24 +313,33 @@
 					<span class="stat-label">Members</span>
 				</div>
 			</div>
-			{#if analytics}
-				<div
-					class="stat"
-					class:positive={analytics.growth_30d > 0}
-					class:negative={analytics.growth_30d < 0}
-				>
-					{#if analytics.growth_30d >= 0}
-						<IconTrendingUp size={20} />
-					{:else}
-						<IconTrendingDown size={20} />
-					{/if}
-					<div class="stat-content">
-						<span class="stat-value"
-							>{analytics.growth_30d > 0 ? '+' : ''}{analytics.growth_30d}%</span
+			{#if segmentDataPromise}
+				{#await segmentDataPromise then data}
+					{#if data.analytics}
+						{@const analytics = data.analytics}
+						<div
+							class={[
+								'stat',
+								{
+									positive: analytics.growth_30d > 0,
+									negative: analytics.growth_30d < 0
+								}
+							]}
 						>
-						<span class="stat-label">30d Growth</span>
-					</div>
-				</div>
+							{#if analytics.growth_30d >= 0}
+								<IconTrendingUp size={20} />
+							{:else}
+								<IconTrendingDown size={20} />
+							{/if}
+							<div class="stat-content">
+								<span class="stat-value"
+									>{analytics.growth_30d > 0 ? '+' : ''}{analytics.growth_30d}%</span
+								>
+								<span class="stat-label">30d Growth</span>
+							</div>
+						</div>
+					{/if}
+				{/await}
 			{/if}
 		</div>
 
@@ -375,8 +371,7 @@
 		<nav class="drawer-tabs" aria-label="Detail tabs">
 			<button
 				type="button"
-				class="tab"
-				class:active={activeTab === 'overview'}
+				class={['tab', { active: activeTab === 'overview' }]}
 				onclick={() => (activeTab = 'overview')}
 			>
 				<IconFilter size={16} />
@@ -384,8 +379,7 @@
 			</button>
 			<button
 				type="button"
-				class="tab"
-				class:active={activeTab === 'members'}
+				class={['tab', { active: activeTab === 'members' }]}
 				onclick={() => (activeTab = 'members')}
 			>
 				<IconUsers size={16} />
@@ -393,8 +387,7 @@
 			</button>
 			<button
 				type="button"
-				class="tab"
-				class:active={activeTab === 'analytics'}
+				class={['tab', { active: activeTab === 'analytics' }]}
 				onclick={() => (activeTab = 'analytics')}
 			>
 				<IconChartBar size={16} />
@@ -404,149 +397,153 @@
 
 		<!-- Content -->
 		<div class="drawer-content">
-			{#if isLoading}
-				<div class="loading-state">
-					<div class="loader"></div>
-					<p>Loading segment data...</p>
-				</div>
-			{:else if error}
-				<div class="error-state">
-					<p>{error}</p>
-					<button onclick={loadSegmentData}>
-						<IconRefresh size={16} />
-						Retry
-					</button>
-				</div>
-			{:else}
-				<!-- Overview Tab -->
-				{#if activeTab === 'overview'}
-					<div class="tab-content">
-						<!-- Description -->
-						<section class="info-section">
-							<h3 class="section-title">Description</h3>
-							<p class="description">{segment.description || 'No description provided.'}</p>
-						</section>
-
-						<!-- Conditions -->
-						<section class="info-section">
-							<h3 class="section-title">Conditions</h3>
-							<div class="conditions-list">
-								{#each segment.conditions as condition, i (i)}
-									<div class="condition-item">
-										{#if i > 0}
-											<span class="condition-connector">AND</span>
-										{/if}
-										<span class="condition-text">{formatCondition(condition)}</span>
-									</div>
-								{/each}
-								{#if segment.conditions.length === 0}
-									<p class="no-conditions">No conditions defined.</p>
-								{/if}
-							</div>
-						</section>
-
-						<!-- Metadata -->
-						<section class="info-section">
-							<h3 class="section-title">Details</h3>
-							<div class="metadata-grid">
-								<div class="metadata-item">
-									<IconCalendar size={16} />
-									<div>
-										<span class="meta-label">Last Updated</span>
-										<span class="meta-value">{formatDate(segment.lastUpdated)}</span>
-									</div>
-								</div>
-								<div class="metadata-item">
-									<IconClock size={16} />
-									<div>
-										<span class="meta-label">Type</span>
-										<span class="meta-value"
-											>{segment.type === 'smart' ? 'Auto-updating' : 'Manual'}</span
-										>
-									</div>
-								</div>
-							</div>
-						</section>
+			{#if segmentDataPromise}
+				{#await segmentDataPromise}
+					<div class="loading-state">
+						<div class="loader"></div>
+						<p>Loading segment data...</p>
 					</div>
-				{/if}
+				{:then data}
+					{#if data.error}
+						<div class="error-state">
+							<p>{data.error}</p>
+							<button onclick={reloadSegmentData}>
+								<IconRefresh size={16} />
+								Retry
+							</button>
+						</div>
+					{:else if activeTab === 'overview'}
+						<div class="tab-content">
+							<!-- Description -->
+							<section class="info-section">
+								<h3 class="section-title">Description</h3>
+								<p class="description">{segment.description || 'No description provided.'}</p>
+							</section>
 
-				<!-- Members Tab -->
-				{#if activeTab === 'members'}
-					<div class="tab-content">
-						<section class="info-section">
-							<div class="section-header">
-								<h3 class="section-title">Member Preview</h3>
-								<button class="view-all-btn" onclick={viewAllMembers}>
-									View All
-									<IconExternalLink size={14} />
-								</button>
-							</div>
+							<!-- Conditions -->
+							<section class="info-section">
+								<h3 class="section-title">Conditions</h3>
+								<div class="conditions-list">
+									{#each segment.conditions as condition, i (i)}
+										<div class="condition-item">
+											{#if i > 0}
+												<span class="condition-connector">AND</span>
+											{/if}
+											<span class="condition-text">{formatCondition(condition)}</span>
+										</div>
+									{/each}
+									{#if segment.conditions.length === 0}
+										<p class="no-conditions">No conditions defined.</p>
+									{/if}
+								</div>
+							</section>
 
-							<div class="members-list">
-								{#each memberPreviews as member (member.email)}
-									<div class="member-row">
-										<div class="member-avatar">
-											{getMemberInitials(member)}
-										</div>
-										<div class="member-info">
-											<span class="member-name">{member.name}</span>
-											<span class="member-email">{member.email}</span>
-										</div>
-										<div class="member-stats">
-											<span class="member-spent">{formatCurrency(member.total_spent)}</span>
-											<span class="member-status" class:active={member.status === 'active'}>
-												{member.status}
-											</span>
+							<!-- Metadata -->
+							<section class="info-section">
+								<h3 class="section-title">Details</h3>
+								<div class="metadata-grid">
+									<div class="metadata-item">
+										<IconCalendar size={16} />
+										<div>
+											<span class="meta-label">Last Updated</span>
+											<span class="meta-value">{formatDate(segment.lastUpdated)}</span>
 										</div>
 									</div>
-								{/each}
-								{#if memberPreviews.length === 0}
-									<p class="no-members">No members in this segment.</p>
-								{/if}
-							</div>
-						</section>
-					</div>
-				{/if}
-
-				<!-- Analytics Tab -->
-				{#if activeTab === 'analytics' && analytics}
-					<div class="tab-content">
-						<section class="info-section">
-							<h3 class="section-title">Segment Performance</h3>
-							<div class="analytics-grid">
-								<div class="analytics-card">
-									<span class="analytics-label">Avg. Spending</span>
-									<span class="analytics-value">{formatCurrency(analytics.avg_spending)}</span>
-								</div>
-								<div class="analytics-card">
-									<span class="analytics-label">Avg. Lifetime</span>
-									<span class="analytics-value">{analytics.avg_lifetime_days} days</span>
-								</div>
-								<div class="analytics-card">
-									<span class="analytics-label">Email Open Rate</span>
-									<span class="analytics-value">{analytics.email_open_rate}%</span>
-								</div>
-								<div class="analytics-card">
-									<span class="analytics-label">Conversion Rate</span>
-									<span class="analytics-value">{analytics.conversion_rate}%</span>
-								</div>
-							</div>
-						</section>
-
-						<section class="info-section">
-							<h3 class="section-title">Top Products</h3>
-							<div class="products-list">
-								{#each analytics.top_products as product, i (i)}
-									<div class="product-row">
-										<span class="product-rank">#{i + 1}</span>
-										<span class="product-name">{product.name}</span>
-										<span class="product-count">{product.count.toLocaleString()}</span>
+									<div class="metadata-item">
+										<IconClock size={16} />
+										<div>
+											<span class="meta-label">Type</span>
+											<span class="meta-value"
+												>{segment.type === 'smart' ? 'Auto-updating' : 'Manual'}</span
+											>
+										</div>
 									</div>
-								{/each}
-							</div>
-						</section>
+								</div>
+							</section>
+						</div>
+					{:else if activeTab === 'members'}
+						<div class="tab-content">
+							<section class="info-section">
+								<div class="section-header">
+									<h3 class="section-title">Member Preview</h3>
+									<button class="view-all-btn" onclick={viewAllMembers}>
+										View All
+										<IconExternalLink size={14} />
+									</button>
+								</div>
+
+								<div class="members-list">
+									{#each data.memberPreviews as member (member.email)}
+										<div class="member-row">
+											<div class="member-avatar">
+												{getMemberInitials(member)}
+											</div>
+											<div class="member-info">
+												<span class="member-name">{member.name}</span>
+												<span class="member-email">{member.email}</span>
+											</div>
+											<div class="member-stats">
+												<span class="member-spent">{formatCurrency(member.total_spent)}</span>
+												<span class={['member-status', { active: member.status === 'active' }]}>
+													{member.status}
+												</span>
+											</div>
+										</div>
+									{/each}
+									{#if data.memberPreviews.length === 0}
+										<p class="no-members">No members in this segment.</p>
+									{/if}
+								</div>
+							</section>
+						</div>
+					{:else if activeTab === 'analytics' && data.analytics}
+						{@const analytics = data.analytics}
+						<div class="tab-content">
+							<section class="info-section">
+								<h3 class="section-title">Segment Performance</h3>
+								<div class="analytics-grid">
+									<div class="analytics-card">
+										<span class="analytics-label">Avg. Spending</span>
+										<span class="analytics-value">{formatCurrency(analytics.avg_spending)}</span>
+									</div>
+									<div class="analytics-card">
+										<span class="analytics-label">Avg. Lifetime</span>
+										<span class="analytics-value">{analytics.avg_lifetime_days} days</span>
+									</div>
+									<div class="analytics-card">
+										<span class="analytics-label">Email Open Rate</span>
+										<span class="analytics-value">{analytics.email_open_rate}%</span>
+									</div>
+									<div class="analytics-card">
+										<span class="analytics-label">Conversion Rate</span>
+										<span class="analytics-value">{analytics.conversion_rate}%</span>
+									</div>
+								</div>
+							</section>
+
+							<section class="info-section">
+								<h3 class="section-title">Top Products</h3>
+								<div class="products-list">
+									{#each analytics.top_products as product, i (i)}
+										<div class="product-row">
+											<span class="product-rank">#{i + 1}</span>
+											<span class="product-name">{product.name}</span>
+											<span class="product-count">{product.count.toLocaleString()}</span>
+										</div>
+									{/each}
+								</div>
+							</section>
+						</div>
+					{/if}
+				{:catch err}
+					<div class="error-state">
+						<p>{err instanceof Error ? err.message : 'Failed to load segment data'}</p>
+						<button onclick={reloadSegmentData}>
+							<IconRefresh size={16} />
+							Retry
+						</button>
 					</div>
-				{/if}
+				{/await}
 			{/if}
 		</div>
 

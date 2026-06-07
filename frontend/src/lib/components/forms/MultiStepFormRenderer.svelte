@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
@@ -46,13 +47,13 @@
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitMessage = $state('');
-	let visibleFields: Set<number> = $state(new Set());
+	const visibleFields = new SvelteSet<number>();
 
 	// Multi-step state
 	let currentStep = $state(0);
 	let steps: FormStep[] = $state([]);
 	let stepValidation: Record<number, boolean> = $state({});
-	let visitedSteps: Set<number> = $state(new Set([0]));
+	const visitedSteps = new SvelteSet<number>([0]);
 	let animationDirection = $state<'forward' | 'backward'>('forward');
 	let isAnimating = $state(false);
 
@@ -181,7 +182,7 @@
 
 			formData = progressData.formData || {};
 			currentStep = Math.min(progressData.currentStep || 0, steps.length - 1);
-			visitedSteps = new Set(progressData.visitedSteps || [0]);
+			setVisitedSteps(progressData.visitedSteps || [0]);
 		} catch (e) {
 			console.warn('Failed to restore form progress:', e);
 		}
@@ -240,13 +241,19 @@
 	function updateVisibleFields() {
 		if (!form.fields) return;
 
-		const newVisibleFields = new Set<number>();
+		visibleFields.clear();
 		form.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
-				newVisibleFields.add(field.id);
+				visibleFields.add(field.id);
 			}
 		});
-		visibleFields = newVisibleFields;
+	}
+
+	function setVisitedSteps(values: Iterable<number>) {
+		visitedSteps.clear();
+		for (const value of values) {
+			visitedSteps.add(value);
+		}
 	}
 
 	// Handle field change
@@ -442,7 +449,7 @@
 				// Reset form
 				formData = {};
 				currentStep = 0;
-				visitedSteps = new Set([0]);
+				setVisitedSteps([0]);
 				if (form.fields) {
 					form.fields.forEach((field) => {
 						if (field.default_value) {
@@ -474,18 +481,43 @@
 		}
 	}
 
-	// Calculate progress percentage
-	$effect(() => {
-		// Reactive progress calculation
-	});
-
 	let progressPercentage = $derived(((currentStep + 1) / steps.length) * 100);
 	let isLastStep = $derived(currentStep === steps.length - 1);
 	let isFirstStep = $derived(currentStep === 0);
 	let currentStepData = $derived(steps[currentStep]);
+	const rootClass = $derived([
+		'multi-step-form',
+		steps.length === 1 && 'multi-step-form--single-step'
+	]);
+	const progressWidth = $derived(`${progressPercentage}%`);
+	const stepContentClass = $derived([
+		'step-content',
+		animationType === 'slide' && animationDirection === 'forward' && 'step-content--slide-forward',
+		animationType === 'slide' &&
+			animationDirection === 'backward' &&
+			'step-content--slide-backward',
+		animationType === 'fade' && 'step-content--fade'
+	]);
+
+	function getStepDotClass(index: number) {
+		return [
+			'step-dot',
+			index === currentStep && 'step-dot--active',
+			index < currentStep && 'step-dot--completed',
+			visitedSteps.has(index) && 'step-dot--visited'
+		];
+	}
+
+	function getStepConnectorClass(index: number) {
+		return ['step-connector', index < currentStep && 'step-connector--completed'];
+	}
+
+	function getFieldWidth(field: FormField): string {
+		return `${field.width || 100}%`;
+	}
 </script>
 
-<div class="multi-step-form" class:single-step={steps.length === 1}>
+<div class={rootClass}>
 	{#if submitSuccess && submitMessage}
 		<div class="alert alert-success" role="alert">
 			<Icon name="IconCircleCheck" size={20} class="icon" />
@@ -497,7 +529,7 @@
 			{#if showProgressBar}
 				<div class="progress-container">
 					<div class="progress-bar">
-						<div class="progress-fill" style="width: {progressPercentage}%"></div>
+						<div class="progress-fill" style:width={progressWidth}></div>
 					</div>
 					<div class="progress-text">
 						Step {currentStep + 1} of {steps.length}
@@ -511,10 +543,7 @@
 					{#each steps as step, index (step.id)}
 						<button
 							type="button"
-							class="step-dot"
-							class:active={index === currentStep}
-							class:completed={index < currentStep}
-							class:visited={visitedSteps.has(index)}
+							class={getStepDotClass(index)}
 							disabled={!visitedSteps.has(index) && index !== Math.max(...visitedSteps) + 1}
 							onclick={() => goToStep(index)}
 							aria-label={`Go to ${step.title}`}
@@ -526,7 +555,7 @@
 							{/if}
 						</button>
 						{#if index < steps.length - 1}
-							<div class="step-connector" class:completed={index < currentStep}></div>
+							<div class={getStepConnectorClass(index)}></div>
 						{/if}
 					{/each}
 				</div>
@@ -542,12 +571,7 @@
 			{/if}
 
 			<!-- Step Content -->
-			<div
-				class="step-content"
-				class:slide-forward={animationType === 'slide' && animationDirection === 'forward'}
-				class:slide-backward={animationType === 'slide' && animationDirection === 'backward'}
-				class:fade={animationType === 'fade'}
-			>
+			<div class={stepContentClass}>
 				{#if currentStepData}
 					{#if currentStepData.title && steps.length > 1}
 						<h3 class="step-title">{currentStepData.title}</h3>
@@ -559,7 +583,7 @@
 					<div class="fields-container">
 						{#each currentStepData.fields.sort((a, b) => a.order - b.order) as field (field.id)}
 							{#if field.id && visibleFields.has(field.id)}
-								<div class="field-wrapper" style="width: {field.width || 100}%">
+								<div class="field-wrapper" style:width={getFieldWidth(field)}>
 									<FormFieldRenderer
 										{field}
 										value={formData[field.name]}
@@ -682,18 +706,18 @@
 		opacity: 0.5;
 	}
 
-	.step-dot.visited:not(:disabled):hover {
+	.step-dot--visited:not(:disabled):hover {
 		border-color: #3b82f6;
 		color: #3b82f6;
 	}
 
-	.step-dot.active {
+	.step-dot--active {
 		border-color: #3b82f6;
 		background: #3b82f6;
 		color: white;
 	}
 
-	.step-dot.completed {
+	.step-dot--completed {
 		border-color: #22c55e;
 		background: #22c55e;
 		color: white;
@@ -711,7 +735,7 @@
 		transition: background 0.3s;
 	}
 
-	.step-connector.completed {
+	.step-connector--completed {
 		background: #22c55e;
 	}
 
@@ -725,15 +749,15 @@
 		animation: fadeIn 0.3s ease;
 	}
 
-	.step-content.slide-forward {
+	.step-content--slide-forward {
 		animation: slideInRight 0.3s ease;
 	}
 
-	.step-content.slide-backward {
+	.step-content--slide-backward {
 		animation: slideInLeft 0.3s ease;
 	}
 
-	.step-content.fade {
+	.step-content--fade {
 		animation: fadeIn 0.3s ease;
 	}
 
@@ -913,9 +937,9 @@
 		color: #22c55e;
 	}
 
-	.single-step .progress-container,
-	.single-step .steps-indicator,
-	.single-step .save-indicator {
+	.multi-step-form--single-step .progress-container,
+	.multi-step-form--single-step .steps-indicator,
+	.multi-step-form--single-step .save-indicator {
 		display: none;
 	}
 </style>

@@ -14,7 +14,7 @@
 -->
 
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		IconLink,
 		IconPlus,
@@ -34,12 +34,14 @@
 	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
+	type LinkActiveFilter = boolean | 'all';
+
 	// Reactive state using Svelte 5 runes
 	let smartLinks = $state<SmartLink[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
-	let filterActive = $state<boolean | 'all'>('all');
+	let filterActive = $state<LinkActiveFilter>('all');
 	let copySuccess = $state<string | null>(null);
 	let togglingId = $state<string | null>(null);
 
@@ -79,14 +81,17 @@
 	);
 
 	// Load smart links from API
-	async function loadSmartLinks() {
+	async function loadSmartLinks(
+		search: string = debouncedSearch,
+		activeFilter: LinkActiveFilter = filterActive
+	): Promise<void> {
 		isLoading = true;
 		error = '';
 
 		try {
 			const filters: SmartLinkFilters = {
-				search: debouncedSearch || undefined,
-				is_active: filterActive !== 'all' ? filterActive : undefined
+				search: search || undefined,
+				is_active: activeFilter !== 'all' ? activeFilter : undefined
 			};
 
 			const response = await crmAPI.getSmartLinks(filters);
@@ -103,7 +108,7 @@
 	}
 
 	// Toggle smart link active status via API
-	async function toggleLinkStatus(link: SmartLink) {
+	async function toggleLinkStatus(link: SmartLink): Promise<void> {
 		togglingId = link.id;
 		error = '';
 
@@ -127,12 +132,12 @@
 	}
 
 	// Delete smart link with confirmation
-	function deleteSmartLink(id: string) {
+	function deleteSmartLink(id: string): void {
 		pendingDeleteId = id;
 		showDeleteModal = true;
 	}
 
-	async function confirmDeleteSmartLink() {
+	async function confirmDeleteSmartLink(): Promise<void> {
 		if (!pendingDeleteId) return;
 		showDeleteModal = false;
 		const id = pendingDeleteId;
@@ -149,7 +154,7 @@
 	}
 
 	// Copy URL to clipboard with feedback
-	async function copyToClipboard(text: string, linkId: string) {
+	async function copyToClipboard(text: string, linkId: string): Promise<void> {
 		try {
 			await navigator.clipboard.writeText(text);
 			copySuccess = linkId;
@@ -166,43 +171,47 @@
 		return (num || 0).toLocaleString();
 	}
 
-	// Debounce search input - triggers API reload
-	$effect(() => {
-		const query = searchQuery;
-
+	function clearSearchTimeout(): void {
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
+			searchTimeout = null;
 		}
+	}
+
+	function handleSearchInput(event: Event): void {
+		const query = (event.currentTarget as HTMLInputElement).value;
+		searchQuery = query;
+		clearSearchTimeout();
 
 		searchTimeout = setTimeout(() => {
-			untrack(() => {
-				debouncedSearch = query;
-			});
+			debouncedSearch = query;
+			void loadSmartLinks(query, filterActive);
 		}, 300);
+	}
 
+	function parseActiveFilter(value: string): LinkActiveFilter {
+		if (value === 'true') return true;
+		if (value === 'false') return false;
+		return 'all';
+	}
+
+	function handleFilterChange(event: Event): void {
+		filterActive = parseActiveFilter((event.currentTarget as HTMLSelectElement).value);
+		void loadSmartLinks(debouncedSearch, filterActive);
+	}
+
+	function getStatusToggleClasses(isActive: boolean): string[] {
+		return ['status-toggle', isActive ? 'status-toggle--active' : 'status-toggle--inactive'];
+	}
+
+	function getCopyButtonClasses(linkId: string): Array<string | false> {
+		return ['btn-copy', copySuccess === linkId && 'btn-copy--copied'];
+	}
+
+	onMount(() => {
+		void loadSmartLinks();
 		return () => {
-			if (searchTimeout) {
-				clearTimeout(searchTimeout);
-			}
-		};
-	});
-
-	// Reload data when debounced search or filter changes (also handles initial load)
-	$effect(() => {
-		// Track dependencies - this effect runs on mount and when these change
-		debouncedSearch;
-		filterActive;
-
-		// Load data (untrack to prevent infinite loops)
-		untrack(() => {
-			loadSmartLinks();
-		});
-
-		// Cleanup function (runs on destroy)
-		return () => {
-			if (searchTimeout) {
-				clearTimeout(searchTimeout);
-			}
+			clearSearchTimeout();
 		};
 	});
 </script>
@@ -225,7 +234,7 @@
 			<h1>Smart Links</h1>
 			<p class="subtitle">Create action links that trigger automations when clicked</p>
 			<div class="header-actions">
-				<button class="btn-secondary" onclick={() => loadSmartLinks()} disabled={isLoading}>
+				<button class="btn-secondary" onclick={() => void loadSmartLinks()} disabled={isLoading}>
 					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/smart-links/new" class="btn-primary">
@@ -285,13 +294,14 @@
 				id="search-smart-links"
 				name="search"
 				placeholder="Search smart links..."
-				bind:value={searchQuery}
+				value={searchQuery}
+				oninput={handleSearchInput}
 			/>
 		</div>
-		<select class="filter-select" bind:value={filterActive}>
+		<select class="filter-select" value={String(filterActive)} onchange={handleFilterChange}>
 			<option value="all">All Links</option>
-			<option value={true}>Active</option>
-			<option value={false}>Inactive</option>
+			<option value="true">Active</option>
+			<option value="false">Inactive</option>
 		</select>
 	</div>
 
@@ -304,7 +314,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button onclick={() => loadSmartLinks()}>Try Again</button>
+			<button onclick={() => void loadSmartLinks()}>Try Again</button>
 		</div>
 	{:else if filteredLinks.length === 0}
 		<div class="empty-state">
@@ -346,8 +356,8 @@
 							</td>
 							<td>
 								<button
-									class="status-toggle {link.is_active ? 'active' : 'inactive'}"
-									onclick={() => toggleLinkStatus(link)}
+									class={getStatusToggleClasses(link.is_active)}
+									onclick={() => void toggleLinkStatus(link)}
 									disabled={togglingId === link.id}
 									title={link.is_active ? 'Click to deactivate' : 'Click to activate'}
 								>
@@ -365,8 +375,8 @@
 								<div class="url-cell">
 									<code class="short-url">{link.short}</code>
 									<button
-										class="btn-copy {copySuccess === link.id ? 'copied' : ''}"
-										onclick={() => copyToClipboard(link.short_url || link.short, link.id)}
+										class={getCopyButtonClasses(link.id)}
+										onclick={() => void copyToClipboard(link.short_url || link.short, link.id)}
 										title={copySuccess === link.id ? 'Copied!' : 'Copy URL'}
 									>
 										{#if copySuccess === link.id}
@@ -738,7 +748,7 @@
 		color: var(--primary-500);
 	}
 
-	.btn-copy.copied {
+	.btn-copy--copied {
 		background: rgba(34, 197, 94, 0.2);
 		color: #4ade80;
 	}
@@ -767,21 +777,21 @@
 		transition: all 0.2s;
 	}
 
-	.status-toggle.active {
+	.status-toggle--active {
 		background: rgba(34, 197, 94, 0.2);
 		color: #4ade80;
 	}
 
-	.status-toggle.active:hover:not(:disabled) {
+	.status-toggle--active:hover:not(:disabled) {
 		background: rgba(34, 197, 94, 0.3);
 	}
 
-	.status-toggle.inactive {
+	.status-toggle--inactive {
 		background: rgba(148, 163, 184, 0.2);
 		color: #94a3b8;
 	}
 
-	.status-toggle.inactive:hover:not(:disabled) {
+	.status-toggle--inactive:hover:not(:disabled) {
 		background: rgba(148, 163, 184, 0.3);
 	}
 

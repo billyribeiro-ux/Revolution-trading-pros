@@ -156,6 +156,16 @@
 	// Generate unique IDs for accessibility
 	let contentId = $derived(`disclaimer-content-${props.blockId}`);
 	let expandedId = $derived(`disclaimer-expanded-${props.blockId}`);
+	const rootClass = $derived(['risk-disclaimer-block', `risk-disclaimer-block--${style}`]);
+	const expandedContentClass = $derived([
+		'expanded-content',
+		isExpanded && 'expanded-content--visible'
+	]);
+	const acknowledgmentClass = $derived([
+		'acknowledgment-checkbox',
+		isAcknowledged && 'acknowledgment-checkbox--checked',
+		animateCheckbox && 'acknowledgment-checkbox--animate'
+	]);
 
 	// Lifecycle
 
@@ -263,16 +273,14 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
 <div
-	class="risk-disclaimer-block style-{style}"
+	class={rootClass}
 	role={ariaRole}
 	aria-labelledby={contentId}
-	style="
-		--bg-gradient: {styleConfig.bgLight};
-		--border-color: {styleConfig.borderLight};
-		--text-color: {styleConfig.textLight};
-		--accent-color: {styleConfig.accentLight};
-		--icon-bg: {styleConfig.iconBg};
-	"
+	style:--bg-gradient={styleConfig.bgLight}
+	style:--border-color={styleConfig.borderLight}
+	style:--text-color={styleConfig.textLight}
+	style:--accent-color={styleConfig.accentLight}
+	style:--icon-bg={styleConfig.iconBg}
 >
 	<!-- Settings Panel (Edit Mode) -->
 	{#if props.isEditing && props.isSelected}
@@ -373,12 +381,7 @@
 						{/if}
 					</button>
 
-					<div
-						id={expandedId}
-						class="expanded-content"
-						class:visible={isExpanded}
-						aria-hidden={!isExpanded}
-					>
+					<div id={expandedId} class={expandedContentClass} aria-hidden={!isExpanded}>
 						<div class="expanded-inner">
 							<p>{expandedText}</p>
 						</div>
@@ -390,11 +393,7 @@
 			{#if requireAcknowledgment && !props.isEditing}
 				<div class="acknowledgment-section">
 					<div class="divider"></div>
-					<label
-						class="acknowledgment-checkbox"
-						class:checked={isAcknowledged}
-						class:animate={animateCheckbox}
-					>
+					<label class={acknowledgmentClass}>
 						<button
 							type="button"
 							class="checkbox-button"
@@ -619,7 +618,7 @@
 			margin-top 0.3s ease-out;
 	}
 
-	.expanded-content.visible {
+	.expanded-content--visible {
 		max-height: 500px;
 		margin-top: 0.75rem;
 	}
@@ -676,7 +675,7 @@
 		border-radius: 4px;
 	}
 
-	.acknowledgment-checkbox.animate .checkbox-button {
+	.acknowledgment-checkbox--animate .checkbox-button {
 		animation: checkPulse 0.3s ease-out;
 	}
 
@@ -698,7 +697,7 @@
 		color: var(--text-color);
 	}
 
-	.acknowledgment-checkbox.checked .checkbox-label {
+	.acknowledgment-checkbox--checked .checkbox-label {
 		color: var(--accent-color);
 	}
 
@@ -763,7 +762,7 @@
 	}
 
 	/* Warning Style Specific */
-	.style-warning {
+	.risk-disclaimer-block--warning {
 		--bg-gradient: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
 		--border-color: #fbbf24;
 		--text-color: #92400e;
@@ -772,7 +771,7 @@
 	}
 
 	/* Danger Style Specific */
-	.style-danger {
+	.risk-disclaimer-block--danger {
 		--bg-gradient: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
 		--border-color: #f87171;
 		--text-color: #991b1b;
@@ -781,7 +780,7 @@
 	}
 
 	/* Info Style Specific */
-	.style-info {
+	.risk-disclaimer-block--info {
 		--bg-gradient: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 		--border-color: #60a5fa;
 		--text-color: #1e40af;
@@ -794,7 +793,7 @@
 		border-width: 1px;
 	}
 
-	:global(.dark) .style-warning {
+	:global(.dark) .risk-disclaimer-block--warning {
 		--bg-gradient: linear-gradient(135deg, #422006 0%, #1c1917 100%);
 		--border-color: #b45309;
 		--text-color: #fcd34d;
@@ -802,7 +801,7 @@
 		--icon-bg: #78350f;
 	}
 
-	:global(.dark) .style-danger {
+	:global(.dark) .risk-disclaimer-block--danger {
 		--bg-gradient: linear-gradient(135deg, #450a0a 0%, #1c1917 100%);
 		--border-color: #991b1b;
 		--text-color: #fca5a5;
@@ -810,7 +809,7 @@
 		--icon-bg: #7f1d1d;
 	}
 
-	:global(.dark) .style-info {
+	:global(.dark) .risk-disclaimer-block--info {
 		--bg-gradient: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
 		--border-color: #1e40af;
 		--text-color: #93c5fd;

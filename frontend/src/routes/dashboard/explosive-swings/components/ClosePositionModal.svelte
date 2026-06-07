@@ -28,14 +28,74 @@
 	}
 
 	let isSaving = $state(false);
-	let errorMessage = $state('');
-	let modalRef = $state<HTMLDivElement | null>(null);
 
-	let form = $state({
+	interface ClosePositionForm {
+		exit_price: string;
+		exit_date: string;
+		notes: string;
+	}
+
+	let formOverrides: Record<string, Partial<ClosePositionForm>> = $state({});
+	let errorByModal: Record<string, string> = $state({});
+
+	const modalKey = $derived(
+		isOpen && position
+			? `${position.ticker}:${position.entryPrice ?? 'unknown'}:${position.notes ?? ''}`
+			: ''
+	);
+
+	const defaultForm = $derived.by<ClosePositionForm>(() => ({
 		exit_price: '',
 		exit_date: new Date().toISOString().split('T')[0],
-		notes: ''
-	});
+		notes: position?.notes || ''
+	}));
+
+	const form = $derived.by<ClosePositionForm>(() => ({
+		...defaultForm,
+		...(modalKey ? (formOverrides[modalKey] ?? {}) : {})
+	}));
+
+	const errorMessage = $derived(modalKey ? (errorByModal[modalKey] ?? '') : '');
+
+	function updateForm(field: keyof ClosePositionForm, value: string) {
+		if (!modalKey) return;
+
+		formOverrides = {
+			...formOverrides,
+			[modalKey]: {
+				...(formOverrides[modalKey] ?? {}),
+				[field]: value
+			}
+		};
+	}
+
+	function setErrorMessage(message: string) {
+		if (!modalKey) return;
+
+		errorByModal = {
+			...errorByModal,
+			[modalKey]: message
+		};
+	}
+
+	function clearErrorMessage() {
+		if (!modalKey) return;
+
+		const { [modalKey]: _cleared, ...nextErrors } = errorByModal;
+		errorByModal = nextErrors;
+	}
+
+	function lockBodyAndFocus(node: HTMLDivElement) {
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		const focusFrame = requestAnimationFrame(() => node.focus());
+
+		return () => {
+			cancelAnimationFrame(focusFrame);
+			document.body.style.overflow = previousOverflow;
+		};
+	}
 
 	// Calculate P&L preview
 	const pnlPreview = $derived.by(() => {
@@ -50,26 +110,16 @@
 		return { priceDiff, pnlPercent, isProfit, result: isProfit ? 'WIN' : 'LOSS' };
 	});
 
-	// Focus trap and body scroll lock
-	$effect(() => {
-		if (!isOpen) return;
+	const unrealizedValueClass = $derived({
+		'summary-value': true,
+		profit: (position?.unrealizedPercent ?? 0) >= 0,
+		loss: (position?.unrealizedPercent ?? 0) < 0
+	});
 
-		const previousOverflow = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
-
-		// Reset form when opening
-		form = {
-			exit_price: '',
-			exit_date: new Date().toISOString().split('T')[0],
-			notes: position?.notes || ''
-		};
-		errorMessage = '';
-
-		requestAnimationFrame(() => modalRef?.focus());
-
-		return () => {
-			document.body.style.overflow = previousOverflow;
-		};
+	const pnlPreviewClass = $derived({
+		'pnl-preview': true,
+		profit: pnlPreview?.isProfit,
+		loss: pnlPreview ? !pnlPreview.isProfit : false
 	});
 
 	function handleClose() {
@@ -90,18 +140,18 @@
 
 	async function handleSubmit() {
 		if (!position || !form.exit_price) {
-			errorMessage = 'Exit price is required';
+			setErrorMessage('Exit price is required');
 			return;
 		}
 
 		const exitPrice = parseFloat(form.exit_price);
 		if (isNaN(exitPrice) || exitPrice <= 0) {
-			errorMessage = 'Please enter a valid exit price';
+			setErrorMessage('Please enter a valid exit price');
 			return;
 		}
 
 		isSaving = true;
-		errorMessage = '';
+		clearErrorMessage();
 
 		try {
 			// We need to find the trade ID from the position
@@ -115,7 +165,7 @@
 			const tradesData = await response.json();
 
 			if (!tradesData.success || !tradesData.data?.length) {
-				errorMessage = 'Could not find matching trade to close';
+				setErrorMessage('Could not find matching trade to close');
 				return;
 			}
 
@@ -129,7 +179,7 @@
 				) || tradesData.data[0]; // Fallback to first if no exact match
 
 			if (!trade) {
-				errorMessage = 'Could not find matching trade to close';
+				setErrorMessage('Could not find matching trade to close');
 				return;
 			}
 
@@ -152,10 +202,10 @@
 				onSuccess?.();
 				onClose();
 			} else {
-				errorMessage = closeData.error || 'Failed to close position';
+				setErrorMessage(closeData.error || 'Failed to close position');
 			}
 		} catch (err) {
-			errorMessage = 'Failed to close position. Please try again.';
+			setErrorMessage('Failed to close position. Please try again.');
 			console.error(err);
 		} finally {
 			isSaving = false;
@@ -173,7 +223,7 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<div class="modal-container" bind:this={modalRef} tabindex="-1">
+		<div class="modal-container" {@attach lockBodyAndFocus} tabindex="-1">
 			<!-- Header -->
 			<div class="modal-header">
 				<div class="header-content">
@@ -234,11 +284,7 @@
 					{#if position.unrealizedPercent !== null}
 						<div class="summary-row">
 							<span class="summary-label">Unrealized</span>
-							<span
-								class="summary-value"
-								class:profit={position.unrealizedPercent >= 0}
-								class:loss={position.unrealizedPercent < 0}
-							>
+							<span class={unrealizedValueClass}>
 								{formatPercent(position.unrealizedPercent)}
 							</span>
 						</div>
@@ -257,7 +303,8 @@
 								type="number"
 								step="0.01"
 								min="0"
-								bind:value={form.exit_price}
+								value={form.exit_price}
+								oninput={(event) => updateForm('exit_price', event.currentTarget.value)}
 								placeholder="0.00"
 								class="form-input price-input"
 								required
@@ -271,7 +318,8 @@
 							id="exit_date"
 							name="exit_date"
 							type="date"
-							bind:value={form.exit_date}
+							value={form.exit_date}
+							oninput={(event) => updateForm('exit_date', event.currentTarget.value)}
 							class="form-input"
 						/>
 					</div>
@@ -280,7 +328,7 @@
 				<!-- P&L Preview -->
 				{#if pnlPreview}
 					{@const preview = pnlPreview}
-					<div class="pnl-preview" class:profit={preview.isProfit} class:loss={!preview.isProfit}>
+					<div class={pnlPreviewClass}>
 						<div class="pnl-result">{preview.result}</div>
 						<div class="pnl-details">
 							<span class="pnl-percent"
@@ -298,7 +346,8 @@
 					<label for="notes">Exit Notes</label>
 					<textarea
 						id="notes"
-						bind:value={form.notes}
+						value={form.notes}
+						oninput={(event) => updateForm('notes', event.currentTarget.value)}
 						placeholder="Why are you closing this position? Target hit, stopped out, etc..."
 						class="form-textarea"
 						rows="3"

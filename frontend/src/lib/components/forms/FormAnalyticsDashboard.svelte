@@ -14,7 +14,10 @@
 	 *
 	 */
 
+	import { onMount } from 'svelte';
 	import type { Form } from '$lib/api/forms';
+
+	type DateRange = '7d' | '30d' | '90d' | '365d';
 
 	interface Props {
 		formId: number;
@@ -60,7 +63,14 @@
 	let sourceBreakdown = $state<Record<string, number>>({});
 
 	let isLoading = $state(true);
-	let dateRange = $state<'7d' | '30d' | '90d' | '365d'>('30d');
+	let dateRange = $state<DateRange>('30d');
+
+	const deviceChartColors = ['#2563eb', '#16a34a', '#f59e0b'] as const;
+	const breakdownChartColors = ['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#8b5cf6'] as const;
+
+	function getChartColor(colors: readonly string[], index: number): string {
+		return colors[index % colors.length] ?? colors[0] ?? '#2563eb';
+	}
 
 	// Fetch analytics data
 	async function fetchAnalytics() {
@@ -91,6 +101,11 @@
 		}
 	}
 
+	function handleDateRangeChange(event: Event) {
+		dateRange = (event.currentTarget as HTMLSelectElement).value as DateRange;
+		void fetchAnalytics();
+	}
+
 	// Generate mock data for demonstration
 	function generateMockData() {
 		stats = {
@@ -106,9 +121,10 @@
 
 		// Generate trend data
 		const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : dateRange === '90d' ? 90 : 365;
+		const dayInMilliseconds = 24 * 60 * 60 * 1000;
+
 		trendData = Array.from({ length: days }, (_, i) => {
-			const date = new Date();
-			date.setDate(date.getDate() - (days - 1 - i));
+			const date = new Date(Date.now() - (days - 1 - i) * dayInMilliseconds);
 			return {
 				date: date.toISOString().split('T')[0] ?? '',
 				count: Math.floor(Math.random() * 50) + 10
@@ -190,17 +206,8 @@
 		}
 	}
 
-	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
-	// onMount was redundant because the $effect below already fires on mount and whenever
-	// dateRange (or props.formId) changes. Keeping both caused a double-fetch on initial
-	// render. The $effect is the correct driver here since dateRange reactivity must
-	// trigger a refetch whenever the user changes the date range selector.
-	// onMount(() => {
-	// 	fetchAnalytics();
-	// });
-
-	$effect(() => {
-		fetchAnalytics();
+	onMount(() => {
+		void fetchAnalytics();
 	});
 </script>
 
@@ -214,7 +221,7 @@
 			{/if}
 		</div>
 		<div class="header-right">
-			<select bind:value={dateRange} class="date-select">
+			<select value={dateRange} class="date-select" onchange={handleDateRangeChange}>
 				<option value="7d">Last 7 days</option>
 				<option value="30d">Last 30 days</option>
 				<option value="90d">Last 90 days</option>
@@ -307,7 +314,7 @@
 						<div class="bar-container">
 							<div
 								class="bar"
-								style="height: {(point.count / getMaxTrendValue()) * 100}%"
+								style:height={`${(point.count / getMaxTrendValue()) * 100}%`}
 								title="{point.date}: {point.count} submissions"
 							></div>
 							{#if trendData.length <= 31 || i % Math.ceil(trendData.length / 10) === 0}
@@ -341,12 +348,12 @@
 								<td class="field-name">{field.label}</td>
 								<td>
 									<div class="progress-bar">
-										<div class="progress-fill" style="width: {field.completion_rate}%"></div>
+										<div class="progress-fill" style:width={`${field.completion_rate}%`}></div>
 										<span class="progress-value">{field.completion_rate}%</span>
 									</div>
 								</td>
 								<td>{formatTime(field.avg_time)}</td>
-								<td class:high-dropoff={field.drop_off_rate > 20}>
+								<td class={{ 'high-dropoff': field.drop_off_rate > 20 }}>
 									{field.drop_off_rate}%
 								</td>
 							</tr>
@@ -364,7 +371,7 @@
 				<div class="donut-chart">
 					{#each Object.entries(deviceBreakdown) as [device, percentage], i (device)}
 						<div class="donut-item">
-							<span class="donut-color" style="background: {['#2563eb', '#16a34a', '#f59e0b'][i]}"
+							<span class="donut-color" style:background={getChartColor(deviceChartColors, i)}
 							></span>
 							<span class="donut-label">{device}</span>
 							<span class="donut-value">{percentage}%</span>
@@ -379,9 +386,7 @@
 				<div class="donut-chart">
 					{#each Object.entries(browserBreakdown) as [browser, percentage], i (browser)}
 						<div class="donut-item">
-							<span
-								class="donut-color"
-								style="background: {['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#8b5cf6'][i]}"
+							<span class="donut-color" style:background={getChartColor(breakdownChartColors, i)}
 							></span>
 							<span class="donut-label">{browser}</span>
 							<span class="donut-value">{percentage}%</span>
@@ -396,9 +401,7 @@
 				<div class="donut-chart">
 					{#each Object.entries(sourceBreakdown) as [source, percentage], i (source)}
 						<div class="donut-item">
-							<span
-								class="donut-color"
-								style="background: {['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#8b5cf6'][i]}"
+							<span class="donut-color" style:background={getChartColor(breakdownChartColors, i)}
 							></span>
 							<span class="donut-label">{source}</span>
 							<span class="donut-value">{percentage}%</span>
@@ -427,7 +430,7 @@
 					<span class="funnel-label">Form 50% Complete</span>
 					<span class="funnel-value">72%</span>
 				</div>
-				<div class="funnel-step" style="width: {stats.conversion_rate}%">
+				<div class="funnel-step" style:width={`${stats.conversion_rate}%`}>
 					<div class="funnel-bar success"></div>
 					<span class="funnel-label">Submitted</span>
 					<span class="funnel-value">{stats.conversion_rate}%</span>

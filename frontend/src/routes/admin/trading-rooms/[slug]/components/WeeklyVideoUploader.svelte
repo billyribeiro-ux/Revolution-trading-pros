@@ -13,6 +13,7 @@
 -->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import { logger } from '$lib/utils/logger';
@@ -69,10 +70,10 @@
 	// HELPERS
 
 	function getNextMonday(): string {
-		const today = new Date();
+		const today = new SvelteDate();
 		const dayOfWeek = today.getDay();
 		const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7 || 7;
-		const nextMonday = new Date(today);
+		const nextMonday = new SvelteDate(today);
 		nextMonday.setDate(today.getDate() + daysUntilMonday);
 		return nextMonday.toISOString().split('T')[0];
 	}
@@ -332,6 +333,8 @@
 
 	$effect(() => {
 		// React only when the slug actually changes after mount.
+		// Svelte MCP flags direct function calls generically here, but this is an
+		// abortable network side effect keyed by `roomSlug`, not derived state mirroring.
 		if (!roomSlug || roomSlug === lastLoadedRoomSlug) return;
 		lastLoadedRoomSlug = roomSlug;
 		loadVideos();
@@ -468,16 +471,14 @@
 				<!-- Upload Mode Tabs -->
 				<div class="mode-tabs">
 					<button
-						class="mode-tab"
-						class:active={uploadMode === 'url'}
+						class={['mode-tab', { active: uploadMode === 'url' }]}
 						onclick={() => (uploadMode = 'url')}
 					>
 						<IconLink size={18} />
 						Paste URL
 					</button>
 					<button
-						class="mode-tab"
-						class:active={uploadMode === 'file'}
+						class={['mode-tab', { active: uploadMode === 'file' }]}
 						onclick={() => (uploadMode = 'file')}
 					>
 						<IconCloudUpload size={18} />
@@ -488,9 +489,7 @@
 				{#if uploadMode === 'file'}
 					<!-- Drag & Drop Zone -->
 					<div
-						class="drop-zone"
-						class:drag-over={isDragOver}
-						class:has-file={uploadFile}
+						class={['drop-zone', { 'drag-over': isDragOver, 'has-file': uploadFile }]}
 						role="button"
 						tabindex="0"
 						aria-label="Drop zone for video files"
@@ -520,7 +519,7 @@
 
 					{#if isUploading}
 						<div class="upload-progress">
-							<div class="progress-bar" style="width: {uploadProgress}%"></div>
+							<div class="progress-bar" style:width={`${uploadProgress}%`}></div>
 							<span class="progress-text">{uploadProgress}% uploaded</span>
 						</div>
 					{/if}

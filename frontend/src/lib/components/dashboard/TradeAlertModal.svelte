@@ -72,6 +72,7 @@
 	let alertType = $state<AlertType>(seedAlert?.alert_type ?? 'ENTRY');
 	let ticker = $state(seedAlert?.ticker ?? '');
 	let title = $state(seedAlert?.title ?? '');
+	let titleManuallyEdited = $state(Boolean(seedAlert?.title));
 	let message = $state(seedAlert?.message ?? '');
 	let notes = $state(seedAlert?.notes || '');
 	let tradeType = $state<TradeType>(seedAlert?.trade_type || 'shares');
@@ -132,27 +133,23 @@
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Auto-generate title based on alert type and ticker
-	$effect(() => {
-		if (!isEdit && ticker && alertType && !title) {
-			const actionWord =
-				alertType === 'ENTRY' ? 'Opening' : alertType === 'EXIT' ? 'Closing' : 'Update:';
-			const direction = action === 'BUY' ? 'Long' : 'Short';
-			title = `${ticker.toUpperCase()} ${alertType === 'UPDATE' ? 'Update' : `${actionWord} ${direction} Position`}`;
-		}
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
 	// FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
+
+	function maybeGenerateTitle() {
+		if (isEdit || titleManuallyEdited || !ticker || !alertType) return;
+
+		const actionWord =
+			alertType === 'ENTRY' ? 'Opening' : alertType === 'EXIT' ? 'Closing' : 'Update:';
+		const direction = action === 'BUY' ? 'Long' : 'Short';
+		title = `${ticker.toUpperCase()} ${alertType === 'UPDATE' ? 'Update' : `${actionWord} ${direction} Position`}`;
+	}
 
 	function resetForm() {
 		alertType = 'ENTRY';
 		ticker = '';
 		title = '';
+		titleManuallyEdited = false;
 		message = '';
 		notes = '';
 		tradeType = 'shares';
@@ -243,6 +240,8 @@
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
+		if (!isOpen) return;
+
 		if (e.key === 'Escape') {
 			handleClose();
 		}
@@ -272,7 +271,7 @@
 				class="modal-body"
 				onsubmit={(e) => {
 					e.preventDefault();
-					handleSubmit();
+					void handleSubmit();
 				}}
 			>
 				{#if errors.length > 0}
@@ -287,7 +286,14 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="alertType">Alert Type</label>
-						<select id="alertType" bind:value={alertType}>
+						<select
+							id="alertType"
+							value={alertType}
+							onchange={(event) => {
+								alertType = event.currentTarget.value as AlertType;
+								maybeGenerateTitle();
+							}}
+						>
 							<option value="ENTRY">ENTRY</option>
 							<option value="EXIT">EXIT</option>
 							<option value="UPDATE">UPDATE</option>
@@ -299,7 +305,11 @@
 						<input
 							type="text"
 							id="ticker"
-							bind:value={ticker}
+							value={ticker}
+							oninput={(event) => {
+								ticker = event.currentTarget.value;
+								maybeGenerateTitle();
+							}}
 							placeholder="AAPL"
 							class="uppercase"
 						/>
@@ -316,23 +326,30 @@
 				<!-- Title -->
 				<div class="form-group">
 					<label for="title">Title</label>
-					<input type="text" id="title" bind:value={title} placeholder="Alert title..." />
+					<input
+						type="text"
+						id="title"
+						value={title}
+						oninput={(event) => {
+							title = event.currentTarget.value;
+							titleManuallyEdited = true;
+						}}
+						placeholder="Alert title..."
+					/>
 				</div>
 
 				<!-- Trade Type Selection -->
 				<div class="trade-type-selector">
 					<button
 						type="button"
-						class="type-btn"
-						class:active={tradeType === 'shares'}
+						class={['type-btn', { active: tradeType === 'shares' }]}
 						onclick={() => (tradeType = 'shares')}
 					>
 						Shares
 					</button>
 					<button
 						type="button"
-						class="type-btn"
-						class:active={tradeType === 'options'}
+						class={['type-btn', { active: tradeType === 'options' }]}
 						onclick={() => (tradeType = 'options')}
 					>
 						Options
@@ -343,7 +360,14 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="action">Action</label>
-						<select id="action" bind:value={action}>
+						<select
+							id="action"
+							value={action}
+							onchange={(event) => {
+								action = event.currentTarget.value as TradeAction;
+								maybeGenerateTitle();
+							}}
+						>
 							<option value="BUY">BUY</option>
 							<option value="SELL">SELL</option>
 						</select>
@@ -427,7 +451,7 @@
 				{/if}
 
 				<!-- TOS String Preview -->
-				<div class="tos-preview" class:valid={tosString && tosValidationErrors.length === 0}>
+				<div class={['tos-preview', { valid: !!tosString && tosValidationErrors.length === 0 }]}>
 					<span class="preview-label">TOS String Preview</span>
 					<div class="tos-string">
 						{#if tosString}
@@ -501,7 +525,7 @@
 				<button
 					type="button"
 					class="btn btn-primary"
-					onclick={handleSubmit}
+					onclick={() => void handleSubmit()}
 					disabled={isSubmitting || tosValidationErrors.length > 0}
 				>
 					{#if isSubmitting}

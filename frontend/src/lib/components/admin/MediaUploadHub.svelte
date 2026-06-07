@@ -23,6 +23,7 @@
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
+	import type { Attachment } from 'svelte/attachments';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
@@ -93,7 +94,7 @@
 	let dragCounter = $state(0);
 	let uploadQueue = $state<UploadItem[]>([]);
 	let isUploading = $state(false);
-	let fileInput = $state<HTMLInputElement | null>(null);
+	let fileInput: HTMLInputElement | null = null;
 
 	// Animated progress
 	const totalProgress = tweened(0, { duration: 300, easing: cubicOut });
@@ -497,6 +498,16 @@
 		}
 	}
 
+	const attachFileInput: Attachment<HTMLInputElement> = (input) => {
+		fileInput = input;
+
+		return () => {
+			if (fileInput === input) {
+				fileInput = null;
+			}
+		};
+	};
+
 	// Derived values
 	const completedCount = $derived(uploadQueue.filter((u) => u.status === 'complete').length);
 	const failedCount = $derived(uploadQueue.filter((u) => u.status === 'error').length);
@@ -507,7 +518,7 @@
 	);
 </script>
 
-<div class="upload-hub" class:compact class:dragging={isDragging}>
+<div class={['upload-hub', { compact, dragging: isDragging }]}>
 	<!-- Header -->
 	<div class="hub-header">
 		<div class="header-left">
@@ -523,8 +534,7 @@
 
 	<!-- Drop Zone -->
 	<div
-		class="drop-zone"
-		class:active={isDragging}
+		class={['drop-zone', { active: isDragging }]}
 		role="button"
 		tabindex="0"
 		ondragenter={handleDragEnter}
@@ -535,12 +545,12 @@
 		onkeydown={(e) => e.key === 'Enter' && openFilePicker()}
 	>
 		<input
-			bind:this={fileInput}
 			type="file"
 			accept={getAcceptString()}
 			{multiple}
 			onchange={handleFileInput}
 			class="hidden"
+			{@attach attachFileInput}
 		/>
 
 		{#if isDragging}
@@ -579,7 +589,7 @@
 			<!-- Progress Bar -->
 			<div class="total-progress">
 				<div class="progress-bar">
-					<div class="progress-fill" style="width: {$totalProgress}%"></div>
+					<div class="progress-fill" style:width={`${$totalProgress}%`}></div>
 				</div>
 				<div class="progress-stats">
 					<span class="stat completed"><IconCheck size={14} /> {completedCount}</span>
@@ -597,12 +607,16 @@
 			<!-- Queue Items -->
 			<div class="queue-list">
 				{#each uploadQueue as item (item.id)}
-					{@const TypeIcon = getTypeIcon(item.type)}
-					{@const StatusIcon = getStatusIcon(item.status)}
+					{const TypeIcon = getTypeIcon(item.type)}
+					{const StatusIcon = getStatusIcon(item.status)}
 					<div
-						class="queue-item"
-						class:complete={item.status === 'complete'}
-						class:error={item.status === 'error'}
+						class={[
+							'queue-item',
+							{
+								complete: item.status === 'complete',
+								error: item.status === 'error'
+							}
+						]}
 						in:fly={{ y: 20, duration: 300 }}
 						out:fade={{ duration: 200 }}
 					>
@@ -622,7 +636,7 @@
 								<span class="item-size">{formatFileSize(item.file.size)}</span>
 								{#if item.status === 'uploading' || item.status === 'processing'}
 									<div class="item-progress-bar">
-										<div class="item-progress-fill" style="width: {item.progress}%"></div>
+										<div class="item-progress-fill" style:width={`${item.progress}%`}></div>
 									</div>
 								{:else if item.error}
 									<span class="item-error">{item.error}</span>
@@ -631,7 +645,7 @@
 						</div>
 
 						<!-- Status -->
-						<div class="item-status" style="color: {getStatusColor(item.status)}">
+						<div class="item-status" style:color={getStatusColor(item.status)}>
 							<StatusIcon
 								size={20}
 								class={item.status === 'uploading' || item.status === 'processing'

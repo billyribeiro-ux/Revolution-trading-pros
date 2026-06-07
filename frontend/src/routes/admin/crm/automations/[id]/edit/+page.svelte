@@ -335,32 +335,32 @@
 
 	function getActionColor(actionType: string): string {
 		const colorMap: Record<string, string> = {
-			send_email: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-			wait: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-			add_tag: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-			remove_tag: 'bg-red-500/20 text-red-400 border-red-500/30',
-			add_to_list: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-			remove_from_list: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-			add_to_sequence: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
-			update_contact: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-			http_request: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-			end_funnel: 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+			send_email: 'action-send-email',
+			wait: 'action-wait',
+			add_tag: 'action-add-tag',
+			remove_tag: 'action-remove-tag',
+			add_to_list: 'action-add-to-list',
+			remove_from_list: 'action-remove-from-list',
+			add_to_sequence: 'action-add-to-sequence',
+			update_contact: 'action-update-contact',
+			http_request: 'action-http-request',
+			end_funnel: 'action-end-funnel'
 		};
-		return colorMap[actionType] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+		return colorMap[actionType] || 'action-http-request';
 	}
 
 	function getIconColor(color: string): string {
 		const colorMap: Record<string, string> = {
-			blue: 'bg-blue-500/20 text-blue-400',
-			amber: 'bg-amber-500/20 text-amber-400',
-			emerald: 'bg-emerald-500/20 text-emerald-400',
-			red: 'bg-red-500/20 text-red-400',
-			purple: 'bg-purple-500/20 text-purple-400',
-			orange: 'bg-orange-500/20 text-orange-400',
-			indigo: 'bg-indigo-500/20 text-indigo-400',
-			cyan: 'bg-cyan-500/20 text-cyan-400',
-			slate: 'bg-slate-500/20 text-slate-400',
-			gray: 'bg-gray-500/20 text-gray-400'
+			blue: 'tone-blue',
+			amber: 'tone-amber',
+			emerald: 'tone-emerald',
+			red: 'tone-red',
+			purple: 'tone-purple',
+			orange: 'tone-orange',
+			indigo: 'tone-indigo',
+			cyan: 'tone-cyan',
+			slate: 'tone-slate',
+			gray: 'tone-gray'
 		};
 		return colorMap[color] || colorMap.gray;
 	}
@@ -374,9 +374,9 @@
 
 	function getStatusColor(status: FunnelStatus): string {
 		const colors: Record<FunnelStatus, string> = {
-			draft: 'bg-slate-500/20 text-slate-400',
-			active: 'bg-emerald-500/20 text-emerald-400',
-			paused: 'bg-amber-500/20 text-amber-400'
+			draft: 'status-draft',
+			active: 'status-active',
+			paused: 'status-paused'
 		};
 		return colors[status];
 	}
@@ -424,7 +424,7 @@
 				<div class="title-row">
 					<h1>Edit Workflow</h1>
 					<span class="funnel-title">{funnel.title}</span>
-					<span class="status-badge {getStatusColor(funnel.status)}">
+					<span class={['status-badge', getStatusColor(funnel.status)]}>
 						{funnel.status}
 					</span>
 				</div>
@@ -483,7 +483,7 @@
 			<!-- Trigger Card -->
 			<div class="workflow-card trigger-card">
 				<div class="card-header">
-					<div class="card-icon bg-emerald-500/20 text-emerald-400">
+					<div class={['card-icon', getIconColor('emerald')]}>
 						<IconBolt size={24} />
 					</div>
 					<div class="card-title">
@@ -509,7 +509,7 @@
 			<!-- Action Cards -->
 			{#each actions as action, index (action.id)}
 				{@const ActionIcon = getActionIcon(action.action_type)}
-				<div class="workflow-card action-card {getActionColor(action.action_type)}">
+				<div class={['workflow-card', 'action-card', getActionColor(action.action_type)]}>
 					<div class="card-drag">
 						<IconGripVertical size={16} />
 					</div>
@@ -607,7 +607,7 @@
 								class="action-type-card"
 								onclick={() => (actionForm.action_type = actionType.value as ActionType)}
 							>
-								<div class="action-type-icon {getIconColor(actionType.color)}">
+								<div class={['action-type-icon', getIconColor(actionType.color)]}>
 									<TypeIcon size={24} />
 								</div>
 								<div class="action-type-info">
@@ -622,7 +622,7 @@
 					<!-- Action Configuration -->
 					<div class="action-config">
 						<div class="selected-action-header">
-							<div class="selected-action-icon {getActionColor(actionForm.action_type)}">
+							<div class={['selected-action-icon', getActionColor(actionForm.action_type)]}>
 								<SelectedIcon size={24} />
 							</div>
 							<div class="selected-action-info">
@@ -874,6 +874,21 @@
 		text-transform: capitalize;
 	}
 
+	.status-badge.status-draft {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.status-badge.status-active {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-badge.status-paused {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
 	.header-actions {
 		display: flex;
 		gap: 0.75rem;
@@ -1014,6 +1029,76 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
+	}
+
+	.tone-blue,
+	.action-send-email {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.3);
+	}
+
+	.tone-amber,
+	.action-wait {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+		border-color: rgba(245, 158, 11, 0.3);
+	}
+
+	.tone-emerald,
+	.action-add-tag {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+		border-color: rgba(16, 185, 129, 0.3);
+	}
+
+	.tone-red,
+	.action-remove-tag {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+		border-color: rgba(239, 68, 68, 0.3);
+	}
+
+	.tone-purple,
+	.action-add-to-list {
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+		border-color: rgba(168, 85, 247, 0.3);
+	}
+
+	.tone-orange,
+	.action-remove-from-list {
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
+		border-color: rgba(249, 115, 22, 0.3);
+	}
+
+	.tone-indigo,
+	.action-add-to-sequence {
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+		border-color: rgba(99, 102, 241, 0.3);
+	}
+
+	.tone-cyan,
+	.action-update-contact {
+		background: rgba(6, 182, 212, 0.2);
+		color: #22d3ee;
+		border-color: rgba(6, 182, 212, 0.3);
+	}
+
+	.tone-slate,
+	.action-http-request {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+		border-color: rgba(100, 116, 139, 0.3);
+	}
+
+	.tone-gray,
+	.action-end-funnel {
+		background: rgba(107, 114, 128, 0.2);
+		color: #9ca3af;
+		border-color: rgba(107, 114, 128, 0.3);
 	}
 
 	.card-title {

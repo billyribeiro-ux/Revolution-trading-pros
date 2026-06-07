@@ -97,6 +97,18 @@
 		return err instanceof Error ? err.message : 'An error occurred';
 	}
 
+	function getChecklistItemClass(checked: boolean): string {
+		return checked ? 'checked' : '';
+	}
+
+	function getCalloutClass(type: unknown): string {
+		return `callout callout--${typeof type === 'string' && type ? type : 'info'}`;
+	}
+
+	function getSpacerHeight(height: unknown): string {
+		return `${typeof height === 'number' ? height : 24}px`;
+	}
+
 	function calculatePostReadingTime(currentPost: BlogPost): number {
 		// Extract text from content blocks
 		const text =
@@ -292,7 +304,7 @@
 								{:else if block.type === 'checklist'}
 									<ul class="checklist">
 										{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item, _ci (_ci)}
-											<li class:checked={item.checked}>
+											<li class={getChecklistItemClass(item.checked)}>
 												<input type="checkbox" checked={item.checked} disabled />
 												{@html sanitizeBlogContent(item.text)}
 											</li>
@@ -329,7 +341,7 @@
 										</div>
 									{/if}
 								{:else if block.type === 'callout'}
-									<aside class="callout callout--{(d['type'] as string) || 'info'}">
+									<aside class={getCalloutClass(d['type'])}>
 										{#if d['title']}<strong>{d['title']}</strong>{/if}
 										<div>
 											{@html sanitizeBlogContent(
@@ -343,7 +355,7 @@
 								{:else if block.type === 'separator' || block.type === 'divider'}
 									<hr />
 								{:else if block.type === 'spacer'}
-									<div style:height="{(d['height'] as number) || 24}px"></div>
+									<div style:height={getSpacerHeight(d['height'])}></div>
 								{:else if block.type === 'button'}
 									{#if d['url']}
 										<a class="block-button" href={d['url'] as string}>

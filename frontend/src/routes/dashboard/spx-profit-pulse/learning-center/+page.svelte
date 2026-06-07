@@ -56,6 +56,9 @@
 		{ id: '528', label: 'Methodology' },
 		{ id: '529', label: 'Trade Setups & Strategies' }
 	];
+	const fallbackBackgroundImage = 'https://cdn.simplertrading.com/2024/09/23132611/Jon-Generic.jpg';
+	const fallbackCardImage =
+		'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
@@ -122,6 +125,17 @@
 		}
 
 		return range;
+	}
+
+	function thumbnailBackground(video: VideoResponse) {
+		return `url(${video.thumbnail_url || fallbackBackgroundImage})`;
+	}
+
+	function paginationPageClass(item: number) {
+		return {
+			'facetwp-page': true,
+			active: item === currentPage
+		};
 	}
 </script>
 
@@ -229,12 +243,10 @@
 							<article class="article-card">
 								<figure
 									class="article-card__image"
-									style="background-image: url({video.thumbnail_url ||
-										'https://cdn.simplertrading.com/2024/09/23132611/Jon-Generic.jpg'});"
+									style:background-image={thumbnailBackground(video)}
 								>
 									<img
-										src={video.thumbnail_url ||
-											'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'}
+										src={video.thumbnail_url || fallbackCardImage}
 										alt={video.title}
 										width="325"
 										height="183"
@@ -278,7 +290,7 @@
 						{#if typeof item === 'number'}
 							<button
 								type="button"
-								class="facetwp-page {item === currentPage ? 'active' : ''}"
+								class={paginationPageClass(item)}
 								onclick={() => goToPage(item)}
 								data-page={item}
 							>

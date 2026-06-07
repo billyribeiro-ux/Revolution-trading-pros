@@ -22,7 +22,7 @@
 	let data = $derived(props.data);
 
 	// Accordion state management - Svelte 5 runes
-	let openAccordions = new SvelteSet<number>();
+	const openAccordions = new SvelteSet<number>();
 
 	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {
@@ -183,7 +183,7 @@
 			<!-- Accordion Sections -->
 			<div id="accordion_options" class="accordion accordion--large">
 				<!-- Accordion 1: Trading Plan -->
-				<div class="accordion__item" class:is-open={isOpen(0)}>
+				<div class={['accordion__item', { 'is-open': isOpen(0) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(0)}
@@ -252,7 +252,7 @@
 				</div>
 
 				<!-- Accordion 2: Charts, Brokers & Tools -->
-				<div class="accordion__item" class:is-open={isOpen(1)}>
+				<div class={['accordion__item', { 'is-open': isOpen(1) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(1)}
@@ -343,7 +343,7 @@
 				</div>
 
 				<!-- Accordion 3: Get to Know Our Trading Team -->
-				<div class="accordion__item" class:is-open={isOpen(2)}>
+				<div class={['accordion__item', { 'is-open': isOpen(2) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(2)}
@@ -407,7 +407,7 @@
 				</div>
 
 				<!-- Accordion 4: Trade Alerts -->
-				<div class="accordion__item" class:is-open={isOpen(3)}>
+				<div class={['accordion__item', { 'is-open': isOpen(3) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(3)}
@@ -543,7 +543,7 @@
 				</div>
 
 				<!-- Accordion 5: Explore the Live Trading Room -->
-				<div class="accordion__item" class:is-open={isOpen(4)}>
+				<div class={['accordion__item', { 'is-open': isOpen(4) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(4)}
@@ -601,7 +601,7 @@
 				</div>
 
 				<!-- Accordion 6: Additional Member Resources -->
-				<div class="accordion__item" class:is-open={isOpen(5)}>
+				<div class={['accordion__item', { 'is-open': isOpen(5) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(5)}

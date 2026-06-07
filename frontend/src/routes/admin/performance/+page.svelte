@@ -23,6 +23,9 @@
 		type OptimizationRecommendation
 	} from '$lib/api/bing-seo';
 
+	type VitalRatingColor = 'emerald' | 'yellow' | 'red' | 'slate';
+	type PriorityColor = 'red' | 'orange' | 'yellow' | 'slate';
+
 	// State
 	let loading = $state(true);
 	let dashboard = $state<PerformanceDashboard | null>(null);
@@ -34,10 +37,10 @@
 	// `$effect` for one-shot init. Matches the migration done in commit
 	// 34a0bd070 across the analytics tree.
 	onMount(() => {
-		if (browser) loadData();
+		if (browser) void loadData();
 	});
 
-	async function loadData() {
+	async function loadData(): Promise<void> {
 		loading = true;
 		try {
 			const [dashboardData, recommendationsData] = await Promise.all([
@@ -57,7 +60,7 @@
 		}
 	}
 
-	async function handleWarmCaches() {
+	async function handleWarmCaches(): Promise<void> {
 		warmingCaches = true;
 		try {
 			const result = await bingSeoApi.warmCaches();
@@ -72,7 +75,11 @@
 		}
 	}
 
-	function getVitalRating(rating: string | undefined) {
+	function getVitalRating(rating: string | undefined): {
+		color: VitalRatingColor;
+		icon: typeof IconCheck;
+		label: string;
+	} {
 		switch (rating) {
 			case 'good':
 				return { color: 'emerald', icon: IconCheck, label: 'Good' };
@@ -92,6 +99,10 @@
 	const clsRating = $derived(getVitalRating(coreWebVitals?.cls_rating));
 	const inpRating = $derived(getVitalRating(coreWebVitals?.inp_rating));
 
+	function getVitalRatingClasses(color: VitalRatingColor): string[] {
+		return ['vital-rating', `vital-rating--${color}`];
+	}
+
 	function formatMs(ms: number | undefined): string {
 		if (!ms) return '-';
 		if (ms < 1000) return `${ms.toFixed(0)}ms`;
@@ -103,7 +114,7 @@
 		return `${value.toFixed(1)}%`;
 	}
 
-	function getPriorityColor(priority: string) {
+	function getPriorityColor(priority: string): PriorityColor {
 		switch (priority) {
 			case 'critical':
 				return 'red';
@@ -114,6 +125,10 @@
 			default:
 				return 'slate';
 		}
+	}
+
+	function getRecommendationPriorityClasses(priority: string): string[] {
+		return ['rec-priority', `rec-priority--${getPriorityColor(priority)}`];
 	}
 </script>
 
@@ -144,7 +159,7 @@
 				</div>
 
 				<div class="header-actions">
-					<button class="btn-secondary" onclick={loadData}>
+					<button class="btn-secondary" onclick={() => void loadData()}>
 						<IconRefresh size={18} />
 						Refresh
 					</button>
@@ -189,7 +204,7 @@
 							<span class="vital-label">Largest Contentful Paint</span>
 						</div>
 						<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
-						<div class="vital-rating {lcpRating.color}">
+						<div class={getVitalRatingClasses(lcpRating.color)}>
 							<lcpRating.icon size={16} />
 							{lcpRating.label}
 						</div>
@@ -202,7 +217,7 @@
 							<span class="vital-label">First Input Delay</span>
 						</div>
 						<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
-						<div class="vital-rating {fidRating.color}">
+						<div class={getVitalRatingClasses(fidRating.color)}>
 							<fidRating.icon size={16} />
 							{fidRating.label}
 						</div>
@@ -215,7 +230,7 @@
 							<span class="vital-label">Cumulative Layout Shift</span>
 						</div>
 						<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
-						<div class="vital-rating {clsRating.color}">
+						<div class={getVitalRatingClasses(clsRating.color)}>
 							<clsRating.icon size={16} />
 							{clsRating.label}
 						</div>
@@ -228,7 +243,7 @@
 							<span class="vital-label">Interaction to Next Paint</span>
 						</div>
 						<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
-						<div class="vital-rating {inpRating.color}">
+						<div class={getVitalRatingClasses(inpRating.color)}>
 							<inpRating.icon size={16} />
 							{inpRating.label}
 						</div>
@@ -382,7 +397,7 @@
 					<div class="recommendations-list">
 						{#each recommendations as rec (rec.title)}
 							<div class="recommendation-card">
-								<div class="rec-priority {getPriorityColor(rec.priority)}">
+								<div class={getRecommendationPriorityClasses(rec.priority)}>
 									{rec.priority}
 								</div>
 								<div class="rec-content">
@@ -415,7 +430,7 @@
 </div>
 
 <style>
-	.performance-page {
+	.admin-performance {
 		padding: 2rem;
 		max-width: 1400px;
 		margin: 0 auto;
@@ -535,19 +550,22 @@
 		font-weight: 600;
 	}
 
-	.vital-rating.emerald {
+	.vital-rating--emerald {
 		background: rgba(16, 185, 129, 0.15);
 		color: #34d399;
 	}
-	.vital-rating.yellow {
+
+	.vital-rating--yellow {
 		background: rgba(251, 191, 36, 0.15);
 		color: #fbbf24;
 	}
-	.vital-rating.red {
+
+	.vital-rating--red {
 		background: rgba(239, 68, 68, 0.15);
 		color: #f87171;
 	}
-	.vital-rating.slate {
+
+	.vital-rating--slate {
 		background: rgba(148, 163, 184, 0.15);
 		color: #94a3b8;
 	}
@@ -699,19 +717,22 @@
 		height: fit-content;
 	}
 
-	.rec-priority.red {
+	.rec-priority--red {
 		background: rgba(239, 68, 68, 0.15);
 		color: #f87171;
 	}
-	.rec-priority.orange {
+
+	.rec-priority--orange {
 		background: rgba(249, 115, 22, 0.15);
 		color: #fb923c;
 	}
-	.rec-priority.yellow {
+
+	.rec-priority--yellow {
 		background: rgba(251, 191, 36, 0.15);
 		color: #fbbf24;
 	}
-	.rec-priority.slate {
+
+	.rec-priority--slate {
 		background: rgba(148, 163, 184, 0.15);
 		color: #94a3b8;
 	}

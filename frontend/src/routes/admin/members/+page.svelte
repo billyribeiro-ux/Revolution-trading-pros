@@ -496,8 +496,7 @@
 
 			<div class="toolbar-actions">
 				<button
-					class="filter-toggle"
-					class:active={showFilters}
+					class={['filter-toggle', { active: showFilters }]}
 					onclick={() => (showFilters = !showFilters)}
 					aria-expanded={showFilters}
 					aria-label="Toggle filters"
@@ -622,7 +621,7 @@
 					</thead>
 					<tbody>
 						{#each members as member (member.id)}
-							<tr class:selected={selectedMembers.has(member.id)}>
+							<tr class={{ selected: selectedMembers.has(member.id) }}>
 								<td class="checkbox-col">
 									<input
 										id="select-member-{member.id}"
@@ -645,7 +644,7 @@
 									</button>
 								</td>
 								<td>
-									<span class="status-badge {getStatusColor(member.status)}">
+									<span class={['status-badge', getStatusColor(member.status)]}>
 										{member.status_label}
 									</span>
 								</td>
@@ -654,9 +653,13 @@
 								</td>
 								<td>
 									<span
-										class="spending"
-										class:whale={member.total_spent >= 5000}
-										class:high={member.total_spent >= 1000 && member.total_spent < 5000}
+										class={[
+											'spending',
+											{
+												whale: member.total_spent >= 5000,
+												high: member.total_spent >= 1000 && member.total_spent < 5000
+											}
+										]}
 									>
 										{formatCurrency(member.total_spent)}
 									</span>

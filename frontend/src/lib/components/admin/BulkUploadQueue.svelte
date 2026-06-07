@@ -48,7 +48,7 @@
 	// TUS upload progress tracking
 	let uploadProgress = $state<Record<number, number>>({});
 
-	let fileInput = $state<HTMLInputElement | null>(null);
+	let fileInput: HTMLInputElement | null = null;
 	let pollInterval: ReturnType<typeof setInterval> | null = null;
 
 	function handleDragOver(e: DragEvent) {
@@ -73,6 +73,16 @@
 		const input = e.target as HTMLInputElement;
 		const selectedFiles = Array.from(input.files || []);
 		addFiles(selectedFiles);
+	}
+
+	function attachFileInput(input: HTMLInputElement): () => void {
+		fileInput = input;
+
+		return () => {
+			if (fileInput === input) {
+				fileInput = null;
+			}
+		};
 	}
 
 	function addFiles(newFiles: File[]) {
@@ -253,6 +263,18 @@
 		}
 	}
 
+	function batchCompletionPercent(status: BatchStatus): string {
+		return `${((status.completed + status.failed) / status.total_files) * 100}%`;
+	}
+
+	function uploadItemClass(status: string) {
+		return {
+			'upload-item': true,
+			completed: status === 'completed',
+			failed: status === 'failed'
+		};
+	}
+
 	// FIX P2-10: explicit unmount hook is clearer than
 	// `$effect(() => () => stopPolling())` and avoids the effect's
 	// dependency-tracking semantics for what is purely a teardown.
@@ -278,8 +300,7 @@
 	{#if !batchId}
 		<!-- File Selection Phase -->
 		<div
-			class="drop-zone"
-			class:dragging={isDragging}
+			class={{ 'drop-zone': true, dragging: isDragging }}
 			ondragover={handleDragOver}
 			ondragleave={handleDragLeave}
 			ondrop={handleDrop}
@@ -298,7 +319,7 @@
 			type="file"
 			accept="video/*"
 			multiple
-			bind:this={fileInput}
+			{@attach attachFileInput}
 			onchange={handleFileSelect}
 			style="display: none;"
 		/>
@@ -340,12 +361,7 @@
 			{#if batchStatus}
 				<div class="progress-summary">
 					<div class="progress-bar">
-						<div
-							class="progress-fill"
-							style="width: {((batchStatus.completed + batchStatus.failed) /
-								batchStatus.total_files) *
-								100}%"
-						></div>
+						<div class="progress-fill" style:width={batchCompletionPercent(batchStatus)}></div>
 					</div>
 					<div class="progress-stats">
 						<span class="stat completed">
@@ -373,12 +389,8 @@
 				<div class="upload-items">
 					{#each batchStatus.uploads as item (item.id)}
 						{@const StatusIcon = getStatusIcon(item.status)}
-						<div
-							class="upload-item"
-							class:completed={item.status === 'completed'}
-							class:failed={item.status === 'failed'}
-						>
-							<div class="item-icon" style="color: {getStatusColor(item.status)}">
+						<div class={uploadItemClass(item.status)}>
+							<div class="item-icon" style:color={getStatusColor(item.status)}>
 								<StatusIcon size={20} class={item.status === 'uploading' ? 'spinning' : ''} />
 							</div>
 							<div class="item-info">
@@ -387,7 +399,7 @@
 									<div class="item-progress-bar">
 										<div
 											class="item-progress-fill"
-											style="width: {uploadProgress[item.id] || item.progress_percent}%"
+											style:width={`${uploadProgress[item.id] || item.progress_percent}%`}
 										></div>
 									</div>
 								{:else if item.error_message}

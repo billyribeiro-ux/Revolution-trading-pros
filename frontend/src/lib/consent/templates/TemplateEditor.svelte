@@ -172,39 +172,34 @@
 	<!-- Tabs -->
 	<div class="editor-tabs">
 		<button
-			class="tab"
-			class:active={activeTab === 'layout'}
+			class={['tab', { active: activeTab === 'layout' }]}
 			onclick={() => (activeTab = 'layout')}
 		>
 			Layout
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'colors'}
+			class={['tab', { active: activeTab === 'colors' }]}
 			onclick={() => (activeTab = 'colors')}
 		>
 			Colors
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'typography'}
+			class={['tab', { active: activeTab === 'typography' }]}
 			onclick={() => (activeTab = 'typography')}
 		>
 			Typography
 		</button>
-		<button class="tab" class:active={activeTab === 'copy'} onclick={() => (activeTab = 'copy')}>
+		<button class={['tab', { active: activeTab === 'copy' }]} onclick={() => (activeTab = 'copy')}>
 			Text & Copy
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'buttons'}
+			class={['tab', { active: activeTab === 'buttons' }]}
 			onclick={() => (activeTab = 'buttons')}
 		>
 			Buttons
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'advanced'}
+			class={['tab', { active: activeTab === 'advanced' }]}
 			onclick={() => (activeTab = 'advanced')}
 		>
 			Advanced
@@ -348,7 +343,8 @@
 						{#each colorPresets as preset (preset.name)}
 							<button
 								class="preset-btn"
-								style="background: {preset.bg}; color: {preset.text}"
+								style:background={preset.bg}
+								style:color={preset.text}
 								onclick={() => applyColorPreset(preset)}
 							>
 								{preset.name}

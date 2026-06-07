@@ -121,6 +121,7 @@
 	const allLessons = $derived(computeAllLessons(courseData));
 
 	const hasModules = $derived(!!courseData?.modules && courseData.modules.length > 0);
+	const videosLayoutClass = $derived(['videos-layout', isMobile && 'videos-layout--mobile']);
 
 	onMount(() => {
 		mounted = true;
@@ -132,7 +133,7 @@
 		window.addEventListener('resize', handleResize, { passive: true });
 
 		if (!initialData) {
-			fetchCourseData();
+			void fetchCourseData();
 		}
 
 		return () => window.removeEventListener('resize', handleResize);
@@ -166,7 +167,7 @@
 	}
 
 	function toggleModule(moduleId: number) {
-		//  is deeply reactive — mutate in place; no clone/reassign needed.
+		// Set is deeply reactive; mutate in place without clone/reassign churn.
 		if (expandedModules.has(moduleId)) {
 			expandedModules.delete(moduleId);
 		} else {
@@ -184,6 +185,18 @@
 	function getLessonIndex(lesson: Lesson): number {
 		return allLessons.findIndex((l) => l.id === lesson.id) + 1;
 	}
+
+	function getChevronClass(moduleId: number): string {
+		return expandedModules.has(moduleId) ? 'chevron chevron--expanded' : 'chevron';
+	}
+
+	function getLessonItemClass(lesson: Lesson) {
+		return [
+			'lesson-item',
+			activeLesson?.id === lesson.id && 'lesson-item--active',
+			!!lesson.bunny_video_guid && 'lesson-item--has-video'
+		];
+	}
 </script>
 
 <div class="class-videos-wrapper">
@@ -194,7 +207,7 @@
 		{/if}
 	</div>
 
-	<div class="videos-container" style="max-height: {maxHeight}">
+	<div class="videos-container" style:max-height={maxHeight}>
 		{#if loading}
 			<div class="loading-state">
 				<div class="spinner"></div>
@@ -205,7 +218,7 @@
 				<span>⚠️ {error}</span>
 			</div>
 		{:else}
-			<div class="videos-layout" class:mobile={isMobile}>
+			<div class={videosLayoutClass}>
 				<!-- Video Player Section -->
 				<div class="video-player-section">
 					{#if activeLesson}
@@ -275,7 +288,7 @@
 										<Icon
 											name="IconChevronDown"
 											size={20}
-											class={`chevron${expandedModules.has(moduleData.module.id) ? ' expanded' : ''}`}
+											class={getChevronClass(moduleData.module.id)}
 										/>
 									</button>
 
@@ -283,9 +296,7 @@
 										<div class="module-lessons">
 											{#each moduleData.lessons || [] as lesson (lesson.id)}
 												<button
-													class="lesson-item"
-													class:active={activeLesson?.id === lesson.id}
-													class:has-video={!!lesson.bunny_video_guid}
+													class={getLessonItemClass(lesson)}
 													onclick={() => selectLesson(lesson)}
 												>
 													<span class="lesson-number">{getLessonIndex(lesson)}</span>
@@ -309,12 +320,7 @@
 							{/each}
 						{:else}
 							{#each allLessons as lesson, index (lesson.id)}
-								<button
-									class="lesson-item"
-									class:active={activeLesson?.id === lesson.id}
-									class:has-video={!!lesson.bunny_video_guid}
-									onclick={() => selectLesson(lesson)}
-								>
+								<button class={getLessonItemClass(lesson)} onclick={() => selectLesson(lesson)}>
 									<span class="lesson-number">{index + 1}</span>
 									<div class="lesson-info">
 										<span class="lesson-title">{lesson.title}</span>
@@ -376,7 +382,7 @@
 		min-height: 400px;
 	}
 
-	.videos-layout.mobile {
+	.videos-layout--mobile {
 		grid-template-columns: 1fr;
 	}
 
@@ -457,7 +463,7 @@
 		max-height: 600px;
 	}
 
-	.videos-layout.mobile .lesson-list-section {
+	.videos-layout--mobile .lesson-list-section {
 		border-left: none;
 		border-top: 1px solid #e0e0e0;
 		max-height: 300px;
@@ -526,7 +532,7 @@
 		transition: transform 0.2s ease;
 	}
 
-	:global(.chevron.expanded) {
+	:global(.chevron--expanded) {
 		transform: rotate(180deg);
 	}
 
@@ -553,13 +559,13 @@
 		background: #f0f0f0;
 	}
 
-	.lesson-item.active {
+	.lesson-item--active {
 		background: #e3f2fd;
 		border-left: 3px solid #1976d2;
 		padding-left: 21px;
 	}
 
-	.lesson-item:not(.has-video) {
+	.lesson-item:not(.lesson-item--has-video) {
 		opacity: 0.6;
 	}
 
@@ -577,7 +583,7 @@
 		flex-shrink: 0;
 	}
 
-	.lesson-item.active .lesson-number {
+	.lesson-item--active .lesson-number {
 		background: #1976d2;
 		color: #fff;
 	}
@@ -616,7 +622,7 @@
 		flex-shrink: 0;
 	}
 
-	.lesson-item.active :global(.play-icon) {
+	.lesson-item--active :global(.play-icon) {
 		color: #1976d2;
 	}
 
@@ -707,7 +713,7 @@
 		touch-action: manipulation;
 	}
 
-	.lesson-item.active {
+	.lesson-item--active {
 		padding-left: 17px;
 	}
 
@@ -762,7 +768,7 @@
 			gap: 11px;
 		}
 
-		.lesson-item.active {
+		.lesson-item--active {
 			padding-left: 19px;
 		}
 
@@ -826,7 +832,7 @@
 			background: #f0f0f0;
 		}
 
-		.lesson-item.active {
+		.lesson-item--active {
 			padding-left: 21px;
 		}
 

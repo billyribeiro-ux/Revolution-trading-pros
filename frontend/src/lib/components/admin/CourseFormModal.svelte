@@ -274,8 +274,7 @@
 			<nav class="section-tabs" aria-label="Form sections">
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'basic'}
+					class={['section-tab', activeSection === 'basic' && 'active']}
 					onclick={() => (activeSection = 'basic')}
 				>
 					<IconBook size={16} />
@@ -283,8 +282,7 @@
 				</button>
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'pricing'}
+					class={['section-tab', activeSection === 'pricing' && 'active']}
 					onclick={() => (activeSection = 'pricing')}
 				>
 					<IconCurrencyDollar size={16} />
@@ -292,8 +290,7 @@
 				</button>
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'instructor'}
+					class={['section-tab', activeSection === 'instructor' && 'active']}
 					onclick={() => (activeSection = 'instructor')}
 				>
 					<IconUser size={16} />
@@ -301,8 +298,7 @@
 				</button>
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'seo'}
+					class={['section-tab', activeSection === 'seo' && 'active']}
 					onclick={() => (activeSection = 'seo')}
 				>
 					<IconTag size={16} />
@@ -442,9 +438,8 @@
 									{#each badgeColors as color (color.value)}
 										<button
 											type="button"
-											class="color-option"
-											class:selected={cardBadgeColor === color.value}
-											style="--color: {color.value}"
+											class={['color-option', cardBadgeColor === color.value && 'selected']}
+											style:--color={color.value}
 											onclick={() => (cardBadgeColor = color.value)}
 											disabled={isLoading}
 											title={color.label}
@@ -455,7 +450,7 @@
 
 							<div class="badge-preview">
 								<span class="preview-label">Preview:</span>
-								<span class="preview-badge" style="background: {cardBadgeColor}">{cardBadge}</span>
+								<span class="preview-badge" style:background={cardBadgeColor}>{cardBadge}</span>
 							</div>
 						{/if}
 					</div>

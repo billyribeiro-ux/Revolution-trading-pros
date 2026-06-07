@@ -51,7 +51,8 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy } from 'svelte';
-	import { spring, tweened } from 'svelte/motion';
+	import { Spring, Tween } from 'svelte/motion';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { cubicOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import { sanitizeHtml } from '$lib/sanitize';
@@ -211,19 +212,13 @@
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
 	let _lastUpdateTime: number = 0;
-	let currentColor: string = $state('#6366f1');
 	let previousValues: Partial<TimeData> = {};
-	let milestonesReached: Set<number> = new Set();
-
-	// Sync timerColor prop to currentColor state
-	$effect(() => {
-		currentColor = timerColor;
-	});
+	let milestonesReached = new SvelteSet<number>();
 
 	// Animation values
-	const progressValue = tweened(0, { duration: 1000, easing: cubicOut });
-	const scaleValue = spring(1, { stiffness: 0.3, damping: 0.5 });
-	const pulseValue = spring(1, { stiffness: 0.5, damping: 0.3 });
+	const progressValue = new Tween(0, { duration: 1000, easing: cubicOut });
+	const scaleValue = new Spring(1, { stiffness: 0.3, damping: 0.5 });
+	const pulseValue = new Spring(1, { stiffness: 0.5, damping: 0.3 });
 
 	// Digit flip tracking
 	let digitFlips: Record<string, boolean> = $state({});
@@ -268,25 +263,29 @@
 				? sizeMap[size as keyof typeof sizeMap].padding
 				: sizeMap.medium.padding
 	);
-
-	$effect(() => {
-		if (timeData.isWarning && !timeData.isDanger) currentColor = warningColor;
-		else if (timeData.isDanger) currentColor = dangerColor;
-		else currentColor = timerColor;
-	});
+	let currentColor = $derived(
+		timeData.isDanger ? dangerColor : timeData.isWarning ? warningColor : timerColor
+	);
+	let rootClasses = $derived([
+		'countdown-timer',
+		`format-${format}`,
+		`size-${size}`,
+		{
+			compact: compactMode,
+			warning: timeData.isWarning,
+			danger: timeData.isDanger,
+			expired: timeData.isExpired,
+			animated,
+			'particle-effects': particleEffects,
+			'animation-slide': animationType === 'slide',
+			'animation-fade': animationType === 'fade',
+			'animation-flip': animationType === 'flip',
+			'animation-zoom': animationType === 'zoom',
+			'animation-none': animationType === 'none'
+		}
+	]);
 
 	let formattedTime = $derived(customFormatter ? customFormatter(timeData) : formatDefaultTime());
-
-	$effect(() => {
-		// Update progress
-		progressValue.set(timeData.progress, { duration: animationDuration });
-
-		// Trigger pulse animation on update
-		if (pulseOnUpdate && timeData.seconds !== previousValues.seconds) {
-			pulseValue.set(1.1);
-			setTimeout(() => pulseValue.set(1), 100);
-		}
-	});
 
 	// Lifecycle
 
@@ -381,6 +380,7 @@
 			isDanger: false,
 			isExpired: false
 		};
+		syncMotionState({ pulse: false });
 
 		_hasStarted = false;
 		isPaused = false;
@@ -484,6 +484,8 @@
 		// Check for digit changes (for flip animation)
 		checkDigitChanges();
 
+		syncMotionState();
+
 		// Check milestones
 		checkMilestones(distance);
 
@@ -510,6 +512,7 @@
 	}
 
 	function handleExpiration() {
+		previousValues = { ...timeData };
 		timeData = {
 			days: 0,
 			hours: 0,
@@ -522,6 +525,7 @@
 			isDanger: false,
 			isExpired: true
 		};
+		syncMotionState({ pulse: false });
 
 		stop();
 
@@ -565,6 +569,17 @@
 				}, animationDuration);
 			}
 		});
+	}
+
+	function syncMotionState(options: { pulse?: boolean } = {}) {
+		progressValue.set(timeData.progress, { duration: animationDuration });
+
+		if (options.pulse === false || !pulseOnUpdate || timeData.seconds === previousValues.seconds) {
+			return;
+		}
+
+		pulseValue.set(1.1);
+		setTimeout(() => pulseValue.set(1), 100);
 	}
 
 	// Helper Functions
@@ -714,33 +729,20 @@
 
 <!-- Main Container -->
 <div
-	class="countdown-timer format-{format} size-{size}"
-	class:compact={compactMode}
-	class:warning={timeData.isWarning}
-	class:danger={timeData.isDanger}
-	class:expired={timeData.isExpired}
-	class:animated
-	class:particle-effects={particleEffects}
-	class:animation-slide={animationType === 'slide'}
-	class:animation-fade={animationType === 'fade'}
-	class:animation-flip={animationType === 'flip'}
-	class:animation-zoom={animationType === 'zoom'}
-	class:animation-none={animationType === 'none'}
-	style="
-		--timer-color: {currentColor};
-		--warning-color: {warningColor};
-		--danger-color: {dangerColor};
-		--bg-color: {backgroundColor};
-		--text-color: {textColor};
-		--label-color: {labelColor};
-		--font-size: {currentSize};
-		--label-size: {currentLabelSize};
-		--padding: {currentPadding};
-		--gap: {gap};
-		--border-radius: {borderRadius};
-		--font-family: {fontFamily};
-		transform: scale({$scaleValue * $pulseValue});
-	"
+	class={rootClasses}
+	style:--timer-color={currentColor}
+	style:--warning-color={warningColor}
+	style:--danger-color={dangerColor}
+	style:--bg-color={backgroundColor}
+	style:--text-color={textColor}
+	style:--label-color={labelColor}
+	style:--font-size={currentSize}
+	style:--label-size={currentLabelSize}
+	style:--padding={currentPadding}
+	style:--gap={gap}
+	style:--border-radius={borderRadius}
+	style:--font-family={fontFamily}
+	style:transform={`scale(${scaleValue.current * pulseValue.current})`}
 	onmouseenter={handleMouseEnter}
 	onmouseleave={handleMouseLeave}
 	role="timer"
@@ -749,7 +751,7 @@
 	aria-atomic="true"
 >
 	{#if showProgressBar}
-		<div class="progress-bar" style="width: {timeData.progress}%"></div>
+		<div class="progress-bar" style:width={`${progressValue.current}%`}></div>
 	{/if}
 
 	{#if !timeData.isExpired}
@@ -757,7 +759,7 @@
 		{#if format === 'default'}
 			<div class="time-units">
 				{#if showDays && (timeData.days > 0 || !compactMode)}
-					<div class="time-unit" class:flip={digitFlips['days']}>
+					<div class={['time-unit', { flip: digitFlips['days'] }]}>
 						<div class="time-value">
 							{leadingZeros ? timeData.days.toString().padStart(2, '0') : timeData.days}
 						</div>
@@ -769,7 +771,7 @@
 
 				{#if showHours && (timeData.hours > 0 || !compactMode)}
 					{#if showSeparators && showDays}<span class="separator">:</span>{/if}
-					<div class="time-unit" class:flip={digitFlips['hours']}>
+					<div class={['time-unit', { flip: digitFlips['hours'] }]}>
 						<div class="time-value">
 							{leadingZeros ? timeData.hours.toString().padStart(2, '0') : timeData.hours}
 						</div>
@@ -781,7 +783,7 @@
 
 				{#if showMinutes && (timeData.minutes > 0 || !compactMode)}
 					{#if showSeparators && (showDays || showHours)}<span class="separator">:</span>{/if}
-					<div class="time-unit" class:flip={digitFlips['minutes']}>
+					<div class={['time-unit', { flip: digitFlips['minutes'] }]}>
 						<div class="time-value">
 							{leadingZeros ? timeData.minutes.toString().padStart(2, '0') : timeData.minutes}
 						</div>
@@ -795,7 +797,7 @@
 					{#if showSeparators && (showDays || showHours || showMinutes)}<span class="separator"
 							>:</span
 						>{/if}
-					<div class="time-unit" class:flip={digitFlips['seconds']}>
+					<div class={['time-unit', { flip: digitFlips['seconds'] }]}>
 						<div class="time-value">
 							{leadingZeros ? timeData.seconds.toString().padStart(2, '0') : timeData.seconds}
 						</div>
@@ -903,28 +905,28 @@
 			<div class="bar-timer">
 				{#if showDays}
 					<div class="bar-unit">
-						<div class="bar-fill" style="height: {(timeData.days / 30) * 100}%"></div>
+						<div class="bar-fill" style:height={`${(timeData.days / 30) * 100}%`}></div>
 						<div class="bar-value">{timeData.days}</div>
 						<div class="bar-label">Days</div>
 					</div>
 				{/if}
 				{#if showHours}
 					<div class="bar-unit">
-						<div class="bar-fill" style="height: {(timeData.hours / 24) * 100}%"></div>
+						<div class="bar-fill" style:height={`${(timeData.hours / 24) * 100}%`}></div>
 						<div class="bar-value">{timeData.hours}</div>
 						<div class="bar-label">Hours</div>
 					</div>
 				{/if}
 				{#if showMinutes}
 					<div class="bar-unit">
-						<div class="bar-fill" style="height: {(timeData.minutes / 60) * 100}%"></div>
+						<div class="bar-fill" style:height={`${(timeData.minutes / 60) * 100}%`}></div>
 						<div class="bar-value">{timeData.minutes}</div>
 						<div class="bar-label">Mins</div>
 					</div>
 				{/if}
 				{#if showSeconds}
 					<div class="bar-unit">
-						<div class="bar-fill" style="height: {(timeData.seconds / 60) * 100}%"></div>
+						<div class="bar-fill" style:height={`${(timeData.seconds / 60) * 100}%`}></div>
 						<div class="bar-value">{timeData.seconds}</div>
 						<div class="bar-label">Secs</div>
 					</div>

@@ -132,6 +132,14 @@
 		const nextSize = sizes[nextIndex];
 		if (nextSize) widgetStore.setWidgetSize(widget.id, nextSize);
 	}
+
+	function getCategoryColor(category: string): string {
+		return categoryColors[category] ?? categoryColors.system ?? '#8b5cf6';
+	}
+
+	function getCategoryBackground(category: string): string {
+		return `${getCategoryColor(category)}20`;
+	}
 </script>
 
 {#if isOpen}
@@ -165,24 +173,21 @@
 			<!-- Tabs -->
 			<div class="manager-tabs">
 				<button
-					class="tab"
-					class:active={activeTab === 'visible'}
+					class={{ tab: true, active: activeTab === 'visible' }}
 					onclick={() => (activeTab = 'visible')}
 				>
 					<IconEye size={16} />
 					Visible ({visibleWidgets.length})
 				</button>
 				<button
-					class="tab"
-					class:active={activeTab === 'hidden'}
+					class={{ tab: true, active: activeTab === 'hidden' }}
 					onclick={() => (activeTab = 'hidden')}
 				>
 					<IconEyeOff size={16} />
 					Hidden ({hiddenWidgets.length})
 				</button>
 				<button
-					class="tab"
-					class:active={activeTab === 'settings'}
+					class={{ tab: true, active: activeTab === 'settings' }}
 					onclick={() => (activeTab = 'settings')}
 				>
 					<IconSettings size={16} />
@@ -200,9 +205,11 @@
 						{#each visibleWidgets as widget, index (widget.id)}
 							{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 							<div
-								class="widget-item"
-								class:dragging={draggedWidget?.id === widget.id}
-								class:drag-over={dragOverIndex === index}
+								class={{
+									'widget-item': true,
+									dragging: draggedWidget?.id === widget.id,
+									'drag-over': dragOverIndex === index
+								}}
 								draggable="true"
 								ondragstart={() => handleDragStart(widget)}
 								ondragover={() => handleDragOver(index)}
@@ -215,9 +222,8 @@
 								</div>
 								<div
 									class="widget-icon"
-									style="background: {categoryColors[widget.category]}20; color: {categoryColors[
-										widget.category
-									]}"
+									style:background={getCategoryBackground(widget.category)}
+									style:color={getCategoryColor(widget.category)}
 								>
 									<WidgetIcon size={18} />
 								</div>
@@ -274,9 +280,8 @@
 								<div class="widget-item hidden-item">
 									<div
 										class="widget-icon"
-										style="background: {categoryColors[widget.category]}20; color: {categoryColors[
-											widget.category
-										]}"
+										style:background={getCategoryBackground(widget.category)}
+										style:color={getCategoryColor(widget.category)}
 									>
 										<WidgetIcon size={18} />
 									</div>
@@ -304,8 +309,7 @@
 							<div class="setting-label">Layout</div>
 							<div class="layout-options">
 								<button
-									class="layout-btn"
-									class:active={widgetLayout === 'grid'}
+									class={{ 'layout-btn': true, active: widgetLayout === 'grid' }}
 									onclick={() => widgetStore.setLayout('grid')}
 									aria-label="Grid layout"
 								>
@@ -313,8 +317,7 @@
 									Grid
 								</button>
 								<button
-									class="layout-btn"
-									class:active={widgetLayout === 'list'}
+									class={{ 'layout-btn': true, active: widgetLayout === 'list' }}
 									onclick={() => widgetStore.setLayout('list')}
 									aria-label="List layout"
 								>
@@ -330,8 +333,7 @@
 							<div class="toggle-row">
 								<span class="toggle-description"> Automatically refresh widget data </span>
 								<button
-									class="toggle-switch"
-									class:active={autoRefreshEnabled}
+									class={{ 'toggle-switch': true, active: autoRefreshEnabled }}
 									onclick={() => widgetStore.toggleAutoRefresh()}
 									aria-label="Toggle auto refresh"
 								>

@@ -163,14 +163,18 @@
 
 	// Available platforms list
 	const availablePlatforms = $derived.by(() => {
-		const platforms = new Set<string>();
+		const platforms: string[] = [];
+		const addPlatform = (platform: string) => {
+			if (!platforms.includes(platform)) platforms.push(platform);
+		};
+
 		for (const file of files) {
-			platforms.add(platformNames[file.platform.toLowerCase()] || file.platform);
+			addPlatform(platformNames[file.platform.toLowerCase()] || file.platform);
 		}
 		if (indicator?.platform) {
-			platforms.add(platformNames[indicator.platform.toLowerCase()] || indicator.platform);
+			addPlatform(platformNames[indicator.platform.toLowerCase()] || indicator.platform);
 		}
-		return Array.from(platforms);
+		return platforms;
 	});
 
 	// ICT 7: Fetch license key
@@ -247,7 +251,13 @@
 		);
 	}
 
-	onMount(fetchIndicator);
+	function platformSlug(platform: string): string {
+		return platform.toLowerCase().replace(/\s+/g, '');
+	}
+
+	onMount(() => {
+		void fetchIndicator();
+	});
 </script>
 
 <svelte:head>
@@ -304,18 +314,17 @@
 									<div class="video-container">
 										{#if video.embed_url}
 											<iframe
+												class="media-frame"
 												src={video.embed_url}
 												title={video.title}
-												style="aspect-ratio: 16/9; width: 100%; border: none;"
 												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 												allowfullscreen
 											></iframe>
 										{:else if video.play_url}
 											<video
+												class="media-frame"
 												controls
-												width="100%"
 												poster={video.thumbnail_url}
-												style="aspect-ratio: 16/9;"
 												title={video.title}
 											>
 												<source src={video.play_url} type="video/mp4" />
@@ -331,7 +340,7 @@
 
 					<!-- Download Sections by Platform - ICT 7: From real API -->
 					{#each downloadsByPlatform as platformDownload (platformDownload.platform)}
-						<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
+						<section class="st_box" data-platform={platformSlug(platformDownload.platform)}>
 							<div class="platform-header">
 								<!-- TODO(cls): platform logo aspect varies per-platform; height="60" is a rough average. Capture intrinsic dims when uploaded to standardize. -->
 								<img
@@ -659,6 +668,12 @@
 	.video-container video {
 		width: 100%;
 		display: block;
+	}
+
+	.media-frame {
+		aspect-ratio: 16 / 9;
+		width: 100%;
+		border: none;
 	}
 
 	.video-title {

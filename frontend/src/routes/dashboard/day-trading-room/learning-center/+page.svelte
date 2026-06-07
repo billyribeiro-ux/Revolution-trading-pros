@@ -494,7 +494,7 @@
 					<p>Try adjusting your filter or check back later for new content.</p>
 				</div>
 			{:else}
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				<div class="learning-grid">
 					{#each videos as video (video.id)}
 						<div>
 							<article class="article-card">
@@ -514,7 +514,7 @@
 
 								<div class="article-card__type">
 									{#each video.tag_details as tag (tag.name)}
-										<span class="label label--info" style="background-color: {tag.color}"
+										<span class="label label--info" style:background-color={tag.color}
 											>{tag.name}</span
 										>
 									{/each}
@@ -815,8 +815,23 @@
 		margin-top: 6px;
 	}
 
-	/* Grid Layout - Using Tailwind */
-	/* Grid classes in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 */
+	.learning-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	@media (min-width: 768px) {
+		.learning-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.learning-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
 
 	/* Article Card */
 	.article-card {

@@ -195,6 +195,41 @@
 		const text = e.clipboardData?.getData('text/plain') || '';
 		document.execCommand('insertText', false, text);
 	}
+
+	function checkItemClass(checked: boolean | undefined) {
+		return {
+			'list-block__check-item': true,
+			'list-block__check-item--checked': Boolean(checked)
+		};
+	}
+
+	function checkTextClass(text: string) {
+		return {
+			'list-block__check-text': true,
+			'list-block__check-text--placeholder': !text
+		};
+	}
+
+	function toggleButtonClass(type: 'bullet' | 'number') {
+		return {
+			'list-block__toggle-btn': true,
+			'list-block__toggle-btn--active': listType === type
+		};
+	}
+
+	function listClass() {
+		return {
+			'list-block__list': true,
+			'list-block__list--numbered': listType === 'number'
+		};
+	}
+
+	function itemTextClass(text: string) {
+		return {
+			'list-block__item-text': true,
+			'list-block__item-text--placeholder': !text
+		};
+	}
 </script>
 
 {#if isChecklist}
@@ -206,7 +241,7 @@
 				<div class="list-block__progress-bar">
 					<div
 						class="list-block__progress-fill"
-						style="width: {progressPercent}%"
+						style:width={`${progressPercent}%`}
 						role="progressbar"
 						aria-valuenow={progressPercent}
 						aria-valuemin={0}
@@ -222,7 +257,7 @@
 		<!-- Checklist Items -->
 		<div class="list-block__items">
 			{#each checklistItems as item, index (item.id)}
-				<label class="list-block__check-item" class:list-block__check-item--checked={item.checked}>
+				<label class={checkItemClass(item.checked)}>
 					<input
 						type="checkbox"
 						checked={item.checked}
@@ -238,8 +273,7 @@
 					</span>
 					<span
 						contenteditable={props.isEditing}
-						class="list-block__check-text"
-						class:list-block__check-text--placeholder={!item.text}
+						class={checkTextClass(item.text)}
 						oninput={(e) =>
 							updateCheckItemText(item.id, (e.target as HTMLElement).textContent || '')}
 						onkeydown={(e) => handleCheckKeyDown(e, item.id, index)}
@@ -291,8 +325,7 @@
 			<div class="list-block__toolbar">
 				<button
 					type="button"
-					class="list-block__toggle-btn"
-					class:list-block__toggle-btn--active={listType === 'bullet'}
+					class={toggleButtonClass('bullet')}
 					onclick={toggleListType}
 					aria-pressed={listType === 'bullet'}
 					aria-label="Toggle bullet list"
@@ -302,8 +335,7 @@
 				</button>
 				<button
 					type="button"
-					class="list-block__toggle-btn"
-					class:list-block__toggle-btn--active={listType === 'number'}
+					class={toggleButtonClass('number')}
 					onclick={toggleListType}
 					aria-pressed={listType === 'number'}
 					aria-label="Toggle numbered list"
@@ -315,17 +347,12 @@
 		{/if}
 
 		<!-- List Items -->
-		<svelte:element
-			this={ListTag}
-			class="list-block__list"
-			class:list-block__list--numbered={listType === 'number'}
-		>
+		<svelte:element this={ListTag} class={listClass()}>
 			{#each props.block.content.listItems || [''] as item, index (index)}
 				<li class="list-block__item">
 					<span
 						contenteditable={props.isEditing}
-						class="list-block__item-text"
-						class:list-block__item-text--placeholder={!item}
+						class={itemTextClass(item)}
 						oninput={(e) => updateListItem(index, (e.target as HTMLElement).textContent || '')}
 						onkeydown={(e) => handleListKeyDown(e, index)}
 						onpaste={handlePaste}

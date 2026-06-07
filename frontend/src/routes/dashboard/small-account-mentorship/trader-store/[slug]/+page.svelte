@@ -1,5 +1,5 @@
 <!--
-	URL: /dashboard/day-trading-room/trader-store/[slug]
+	URL: /dashboard/small-account-mentorship/trader-store/[slug]
 
 	Individual Trader Store Page - WordPress Pixel-Perfect Implementation
 	═══════════════════════════════════════════════════════════════════════════
@@ -296,36 +296,39 @@
 		{ label: 'Trader Store', path: '/trader-store' }
 	];
 
-	let store = $state<TraderStore | null>(null);
-	let loading = $state(true);
-	let currentSlug = $state('');
+	const dashboardBase = '/dashboard/small-account-mentorship';
+	const traderRoot = `${dashboardBase}/meet-the-traders`;
+	const storeRoot = `${dashboardBase}/trader-store`;
 
 	function getTraderProducts(traderName: string): Product[] {
 		return allProducts.filter((p) => p.traders.includes(traderName));
 	}
 
-	// Svelte 5: Use $effect for reactive slug changes
-	$effect(() => {
-		const slug = page.params.slug;
-		if (slug !== currentSlug) {
-			currentSlug = slug ?? '';
-			const trader = traderData[slug ?? ''];
-
-			if (trader) {
-				store = {
-					id: slug ?? '',
-					name: trader.name,
-					slug: slug ?? '',
-					title: trader.title,
-					image: trader.image,
-					quote: trader.quote,
-					products: getTraderProducts(trader.name)
-				};
-			} else {
-				store = null;
-			}
-			loading = false;
+	function getPillHref(slug: string, path: string): string {
+		if (path === '/trader-store') {
+			return `${storeRoot}/${slug}`;
 		}
+		if (path === '') {
+			return `${traderRoot}/${slug}`;
+		}
+		return `${traderRoot}/${slug}${path}`;
+	}
+
+	const currentSlug = $derived(page.params.slug ?? '');
+	const store = $derived.by<TraderStore | null>(() => {
+		const trader = traderData[currentSlug];
+		if (!trader) {
+			return null;
+		}
+		return {
+			id: currentSlug,
+			name: trader.name,
+			slug: currentSlug,
+			title: trader.title,
+			image: trader.image,
+			quote: trader.quote,
+			products: getTraderProducts(trader.name)
+		};
 	});
 </script>
 
@@ -345,14 +348,7 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			{#if loading}
-				<div class="loading-container">
-					<div class="loading">
-						<span class="loading-icon"></span>
-						<span class="loading-message">Loading...</span>
-					</div>
-				</div>
-			{:else if store}
+			{#if store}
 				<!-- Trader Header Section -->
 				<div class="trader-header trader-header--full-width trader-header--bg-color">
 					<div class="trader-header__wrap">
@@ -421,19 +417,8 @@
 													{#each traderPills as pill (pill.path)}
 														<div class="trader_pill">
 															<a
-																href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path ===
-																'/trader-store'
-																	? ''
-																	: pill.path}"
-																class:active={pill.path === '/trader-store'}
-																onclick={(e) => {
-																	e.preventDefault();
-																	if (pill.path === '') {
-																		window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
-																	} else if (pill.path !== '/trader-store') {
-																		window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}${pill.path}`;
-																	}
-																}}
+																href={getPillHref(store.slug, pill.path)}
+																class={{ active: pill.path === '/trader-store' }}
 															>
 																{pill.label}
 															</a>
@@ -470,7 +455,7 @@
 											<a
 												href={product.url}
 												class="card-image"
-												style="background-image: url({product.image});"
+												style:background-image={`url("${product.image}")`}
 											>
 												<img
 													src="https://placehold.it/540x256"
@@ -518,9 +503,7 @@
 				<div class="not-found">
 					<h1>Store Not Found</h1>
 					<p>The trader store you're looking for could not be found.</p>
-					<a href="/dashboard/day-trading-room/trader-store" class="btn btn-default">
-						← Back to All Stores
-					</a>
+					<a href={storeRoot} class="btn btn-default"> ← Back to All Stores </a>
 				</div>
 			{/if}
 		</section>
@@ -539,35 +522,6 @@
 
 	.dashboard__content-section {
 		padding: 0;
-	}
-
-	/* Loading */
-	.loading-container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 300px;
-	}
-
-	.loading {
-		text-align: center;
-		color: #666;
-	}
-
-	.loading-icon {
-		display: inline-block;
-		width: 40px;
-		height: 40px;
-		border: 3px solid #e6e6e6;
-		border-top-color: #143e59;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	/* Trader Header Section */

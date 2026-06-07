@@ -3,6 +3,8 @@
 	 * Register Page - Svelte 5 January 2026
 	 * @version 2.0.0
 	 */
+	import { onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { register } from '$lib/api/auth';
 	import {
 		IconUser,
@@ -17,7 +19,6 @@
 		IconEye,
 		IconEyeOff
 	} from '$lib/icons';
-	import { browser } from '$app/environment';
 
 	// Svelte 5 state runes
 	let name = $state('');
@@ -33,9 +34,9 @@
 	let successMessage = $state('');
 
 	// Element refs
-	let cardRef = $state<HTMLElement | null>(null);
-	let particlesRef = $state<HTMLElement | null>(null);
-	let formRef = $state<HTMLElement | null>(null);
+	let cardRef: HTMLElement | null = null;
+	let particlesRef: HTMLElement | null = null;
+	let formRef: HTMLElement | null = null;
 
 	// GSAP types (dynamically imported below; types-only here for SSR safety)
 	type GSAPLib = typeof import('gsap').gsap;
@@ -43,18 +44,18 @@
 	type GSAPTween = ReturnType<GSAPLib['to']>;
 
 	// Track GSAP animations for cleanup to prevent memory leaks
-	let mainTimeline = $state<GSAPTimeline | null>(null);
-	let sparkleTimeline = $state<GSAPTimeline | null>(null);
-	let particleAnimations = $state<GSAPTween[]>([]);
-	let gsapLib = $state<GSAPLib | null>(null);
+	let mainTimeline: GSAPTimeline | null = null;
+	let sparkleTimeline: GSAPTimeline | null = null;
+	let particleAnimations: GSAPTween[] = [];
+	let gsapLib: GSAPLib | null = null;
 
-	// Svelte 5 effect for initialization and cleanup
-	$effect(() => {
-		if (!browser) return;
-
+	onMount(() => {
+		let mounted = true;
 		// Dynamic GSAP import for SSR safety - use IIFE to handle async
 		(async () => {
 			const gsapModule = await import('gsap');
+			if (!mounted) return;
+
 			gsapLib = gsapModule.gsap || gsapModule.default;
 
 			// GSAP Timeline for entrance animations
@@ -112,8 +113,8 @@
 			});
 		})();
 
-		// Cleanup function returned from $effect
 		return () => {
+			mounted = false;
 			cleanup();
 		};
 	});
@@ -183,6 +184,27 @@
 			particleAnimations.push(anim);
 		});
 	}
+
+	const attachCard: Attachment<HTMLElement> = (node) => {
+		cardRef = node;
+		return () => {
+			if (cardRef === node) cardRef = null;
+		};
+	};
+
+	const attachParticles: Attachment<HTMLElement> = (node) => {
+		particlesRef = node;
+		return () => {
+			if (particlesRef === node) particlesRef = null;
+		};
+	};
+
+	const attachForm: Attachment<HTMLElement> = (node) => {
+		formRef = node;
+		return () => {
+			if (formRef === node) formRef = null;
+		};
+	};
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
@@ -255,14 +277,14 @@
 	<div class="radial-glow glow-3"></div>
 
 	<!-- Floating particles container — rendered declaratively, animated via GSAP after mount -->
-	<div bind:this={particlesRef} class="particles-container">
+	<div {@attach attachParticles} class="particles-container">
 		{#each particles as p, i (i)}
 			<div
 				class="emerald-particle"
-				style:width="{p.size}px"
-				style:height="{p.size}px"
-				style:left="{p.startX}%"
-				style:top="{p.startY}%"
+				style:width={`${p.size}px`}
+				style:height={`${p.size}px`}
+				style:left={`${p.startX}%`}
+				style:top={`${p.startY}%`}
 			></div>
 		{/each}
 	</div>
@@ -272,7 +294,7 @@
 
 	<!-- Register card -->
 	<div class="register-container">
-		<div bind:this={cardRef} class="register-card">
+		<div {@attach attachCard} class="register-card">
 			<!-- Glass overlay -->
 			<div class="glass-overlay"></div>
 
@@ -282,7 +304,7 @@
 			<!-- Content -->
 			<div
 				class="register-content"
-				bind:this={formRef}
+				{@attach attachForm}
 				style:display={registrationSuccess ? 'none' : 'block'}
 			>
 				<!-- Header -->
@@ -322,8 +344,7 @@
 								type="text"
 								bind:value={name}
 								required
-								class="enhanced-input"
-								class:error={errors.name}
+								class={['enhanced-input', errors.name && 'error']}
 								placeholder="John Doe"
 								autocomplete="name"
 							/>
@@ -347,8 +368,7 @@
 								type="email"
 								bind:value={email}
 								required
-								class="enhanced-input"
-								class:error={errors.email}
+								class={['enhanced-input', errors.email && 'error']}
 								placeholder="trader@example.com"
 								autocomplete="email"
 							/>
@@ -372,8 +392,7 @@
 								type={showPassword ? 'text' : 'password'}
 								bind:value={password}
 								required
-								class="enhanced-input has-toggle"
-								class:error={errors.password}
+								class={['enhanced-input has-toggle', errors.password && 'error']}
 								placeholder="••••••••"
 								autocomplete="new-password"
 							/>

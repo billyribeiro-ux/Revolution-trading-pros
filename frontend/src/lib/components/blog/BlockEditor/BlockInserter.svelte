@@ -251,8 +251,7 @@
 			transition:fade={{ duration: 150 }}
 		>
 			<div
-				class="inserter-modal"
-				class:positioned={position}
+				class={{ 'inserter-modal': true, positioned: !!position }}
 				style:left={position ? `${position.x}px` : 'auto'}
 				style:top={position ? `${position.y}px` : 'auto'}
 				onclick={(e: MouseEvent) => e.stopPropagation()}
@@ -298,8 +297,7 @@
 										{@const Icon = BLOCK_ICONS[type] || IconBox}
 										<button
 											type="button"
-											class="block-item"
-											class:has-presets={hasPresets(type)}
+											class={{ 'block-item': true, 'has-presets': hasPresets(type) }}
 											onclick={() => handleBlockClick(type)}
 											onmouseenter={() => (hoveredBlock = type)}
 											onmouseleave={() => (hoveredBlock = null)}
@@ -329,8 +327,10 @@
 								<div class="category-section">
 									<button
 										type="button"
-										class="category-header"
-										class:expanded={activeCategory === category.id}
+										class={{
+											'category-header': true,
+											expanded: activeCategory === category.id
+										}}
 										onclick={() =>
 											(activeCategory = activeCategory === category.id ? null : category.id)}
 									>
@@ -348,8 +348,7 @@
 												{@const Icon = BLOCK_ICONS[type] || IconBox}
 												<button
 													type="button"
-													class="block-item"
-													class:has-presets={hasPresets(type)}
+													class={{ 'block-item': true, 'has-presets': hasPresets(type) }}
 													onclick={() => handleBlockClick(type)}
 													onmouseenter={() => (hoveredBlock = type)}
 													onmouseleave={() => (hoveredBlock = null)}
@@ -412,8 +411,7 @@
 						{@const Icon = BLOCK_ICONS[type] || IconBox}
 						<button
 							type="button"
-							class="block-btn"
-							class:has-presets={hasPresets(type)}
+							class={{ 'block-btn': true, 'has-presets': hasPresets(type) }}
 							onclick={() => handleBlockClick(type)}
 							title={hasPresets(type)
 								? `${def.description} - Has presets available`

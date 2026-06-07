@@ -51,6 +51,13 @@
 		answer: string;
 	}
 
+	interface VisualBar {
+		id: number;
+		height: string;
+		delay: string;
+		opacity: number;
+	}
+
 	// --- DATA ---
 
 	const courses: Course[] = [
@@ -142,6 +149,13 @@
 				'Guaranteed. You get all future updates for version 2.0, 3.0, and beyond at no extra cost. Markets evolve, and so does our content.'
 		}
 	];
+
+	const trapVisualBars: VisualBar[] = Array.from({ length: 20 }, (_, i) => ({
+		id: i,
+		height: `${30 + ((i * 37) % 61)}%`,
+		delay: `${i * 0.1}s`,
+		opacity: 0.3 + ((i * 17) % 70) / 100
+	}));
 
 	// --- SVELTE 5 RUNES STATE ---
 
@@ -268,6 +282,12 @@
 		} else {
 			openFaqIndex = index;
 		}
+	}
+
+	function getFaqChevronClass(index: number): string {
+		return openFaqIndex === index
+			? 'faq-item__chevron faq-item__chevron--open'
+			: 'faq-item__chevron';
 	}
 
 	// --- ANIMATION EFFECTS ---
@@ -427,11 +447,12 @@
 								<div class="trap__visual-label">System: Active</div>
 							</div>
 							<div class="trap__visual-bars">
-								{#each Array(20) as _, i (i)}
+								{#each trapVisualBars as bar (bar.id)}
 									<div
 										class="trap__visual-bar"
-										style="height: {30 + Math.random() * 60}%; animation-delay: {i *
-											0.1}s; opacity: {0.3 + Math.random() * 0.7}"
+										style:height={bar.height}
+										style:animation-delay={bar.delay}
+										style:opacity={bar.opacity}
 									></div>
 								{/each}
 							</div>
@@ -458,7 +479,7 @@
 					{@const Icon = course.icon}
 					<div
 						{@attach spotlightCard}
-						class="spotlight-card courses-card courses-card--{course.variant}"
+						class={['spotlight-card', 'courses-card', `courses-card--${course.variant}`]}
 					>
 						<div class="courses-card__spotlight" aria-hidden="true"></div>
 
@@ -516,10 +537,7 @@
 							class="faq-item__trigger"
 						>
 							<span class="faq-item__question">{faq.question}</span>
-							<IconChevronDown
-								size={20}
-								class="faq-item__chevron {openFaqIndex === i ? 'faq-item__chevron--open' : ''}"
-							/>
+							<IconChevronDown size={20} class={getFaqChevronClass(i)} />
 						</button>
 						{#if openFaqIndex === i}
 							<div

@@ -80,9 +80,20 @@
 	let thumbnailUrl = $state('');
 	let videoDuration = $state(0);
 
-	// File input refs
-	let videoInput = $state<HTMLInputElement | null>(null);
-	let thumbnailInput = $state<HTMLInputElement | null>(null);
+	// File input refs are imperative DOM handles; they do not affect rendering.
+	let videoInput: HTMLInputElement | null = null;
+	let thumbnailInput: HTMLInputElement | null = null;
+
+	const videoDropClass = $derived([
+		'drop-zone',
+		isDragging && 'drop-zone--dragging',
+		videoFile !== null && 'drop-zone--has-file'
+	]);
+	const thumbnailDropClass = $derived([
+		'thumbnail-drop',
+		thumbnailFile !== null && 'thumbnail-drop--has-file'
+	]);
+	const uploadProgressWidth = $derived(`${uploadProgress}%`);
 
 	// Allowed file types
 	const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
@@ -183,6 +194,24 @@
 				handleThumbnailSelect(file);
 			}
 		}
+	}
+
+	function attachVideoInput(element: HTMLInputElement): () => void {
+		videoInput = element;
+		return () => {
+			if (videoInput === element) {
+				videoInput = null;
+			}
+		};
+	}
+
+	function attachThumbnailInput(element: HTMLInputElement): () => void {
+		thumbnailInput = element;
+		return () => {
+			if (thumbnailInput === element) {
+				thumbnailInput = null;
+			}
+		};
 	}
 
 	// Upload functions
@@ -340,9 +369,7 @@
 
 			<!-- Video Drop Zone -->
 			<div
-				class="drop-zone"
-				class:dragging={isDragging}
-				class:has-file={videoFile !== null}
+				class={videoDropClass}
 				role="button"
 				tabindex="0"
 				ondragover={handleDragOver}
@@ -377,19 +404,18 @@
 				{/if}
 			</div>
 			<input
-				bind:this={videoInput}
 				type="file"
 				accept="video/mp4,video/webm,video/quicktime"
 				hidden
 				onchange={(e: Event) => handleFileInputChange(e, 'video')}
+				{@attach attachVideoInput}
 			/>
 
 			<!-- Thumbnail Upload -->
 			<div class="thumbnail-section">
 				<h3>Thumbnail (Optional)</h3>
 				<div
-					class="thumbnail-drop"
-					class:has-file={thumbnailFile !== null}
+					class={thumbnailDropClass}
 					role="button"
 					tabindex="0"
 					onclick={() => thumbnailInput?.click()}
@@ -416,11 +442,11 @@
 					{/if}
 				</div>
 				<input
-					bind:this={thumbnailInput}
 					type="file"
 					accept="image/jpeg,image/png,image/webp"
 					hidden
 					onchange={(e: Event) => handleFileInputChange(e, 'thumbnail')}
+					{@attach attachThumbnailInput}
 				/>
 			</div>
 
@@ -431,7 +457,7 @@
 			{#if isUploading}
 				<div class="upload-progress">
 					<div class="progress-bar">
-						<div class="progress-fill" style="width: {uploadProgress}%"></div>
+						<div class="progress-fill" style:width={uploadProgressWidth}></div>
 					</div>
 					<span class="progress-text">Uploading... {uploadProgress}%</span>
 				</div>
@@ -585,12 +611,12 @@
 	}
 
 	.drop-zone:hover,
-	.drop-zone.dragging {
+	.drop-zone--dragging {
 		border-color: #3b82f6;
 		background: rgba(59, 130, 246, 0.1);
 	}
 
-	.drop-zone.has-file {
+	.drop-zone--has-file {
 		border-style: solid;
 		border-color: #22c55e;
 		background: rgba(34, 197, 94, 0.1);
@@ -696,7 +722,7 @@
 		border-color: #3b82f6;
 	}
 
-	.thumbnail-drop.has-file {
+	.thumbnail-drop--has-file {
 		border-style: solid;
 		border-color: #22c55e;
 	}

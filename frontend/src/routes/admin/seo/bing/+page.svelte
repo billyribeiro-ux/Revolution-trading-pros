@@ -308,7 +308,7 @@
 					<div class="submissions-list">
 						{#each recentSubmissions as submission (submission.id)}
 							<div class="submission-item">
-								<div class="submission-status" class:success={submission.success}>
+								<div class={['submission-status', { success: submission.success }]}>
 									{#if submission.success}
 										<IconCheck size={16} />
 									{:else}

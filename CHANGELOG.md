@@ -4,9 +4,9 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
-## [Unreleased] — 2026-06-06 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
+## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **517 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **385 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -53,6 +53,138 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - `0847a8eb1` Modernize dashboard sidebar bindings.
 - `41199e6ca` Modernize scheduling panel bindings.
 - `80df09e4c` Modernize CRM leads page bindings.
+- `0842c9246` Modernize member detail drawer bindings.
+- `8b4426860` Modernize courses page bindings.
+- `5b206ad7b` Modernize consent settings bindings.
+- `8bd9e9f6b` Modernize weekly hero bindings.
+- `2468a2977` Modernize admin members page bindings.
+- `2514262c4` Modernize email campaigns page bindings.
+- `0783ba210` Modernize automation edit page bindings.
+- `b7f44f88b` Modernize churned members page bindings.
+- `b36701519` Modernize image block bindings.
+- `94a7b4fee` Modernize day trading course page bindings.
+- `7ac82f449` Modernize revision history bindings.
+- `09b4acb94` Modernize subscription drawer bindings.
+- `f53890721` Modernize ETF resource page bindings.
+- `e2d09c9d7` Modernize dashboard page bindings.
+- `9ce0b653c` Modernize login form attachments.
+- `dfbc97d2f` Modernize blog create page bindings.
+- `2065a5c3d` Modernize CRM sequences page bindings.
+- `b765a465a` Modernize AI assistant bindings.
+- `ffaaef32e` Modernize admin toolbar bindings.
+- `f31b10b30` Modernize form field renderer bindings.
+- `1144f654b` Modernize countdown timer bindings.
+- `bbb70be8e` Modernize media analytics page bindings.
+- `a1e519fd4` Modernize admin analytics page bindings.
+- `81f1400e5` Modernize weekly video uploader bindings.
+- `80a0e90ea` Modernize image uploader bindings.
+- `8c3b94903` Modernize preset picker bindings.
+- `7e02c02f9` Modernize mentorship page accordion bindings.
+- `baf73647e` Modernize admin watchlist dynamic bindings.
+- `de5fd0261` Modernize checkout thank-you status binding.
+- `120236fe1` Modernize stock indexes FAQ binding.
+- `6fb86bdea` Modernize register page lifecycle bindings.
+- `9b4cae95e` Modernize course form modal bindings.
+- `adf81f179` Modernize webhook edit page bindings.
+- `3eab58bf6` Modernize admin courses page bindings.
+- `5ca370c9f` Modernize dashboard indicator detail bindings.
+- `46dde3b88` Modernize automation create page bindings.
+- `77d62a1b0` Modernize day trading start accordion bindings.
+- `370ebf85f` Modernize swing trading start accordion bindings.
+- `a018dded3` Modernize swing trading course reveal bindings.
+- `8aa315e88` Modernize CRM contact status binding.
+- `544da3d89` Modernize consent banner designer class bindings.
+- `bec3d83dd` Modernize image crop modal bindings.
+- `96b8acea7` Modernize segment detail drawer bindings.
+- `d655efd6c` Modernize virtual block list bindings.
+- `f63c74f36` Modernize Bing SEO status class.
+- `75e35ea39` Modernize member analytics chart bindings.
+- `8315a5fb7` Modernize subscription form modal bindings.
+- `15b87f343` Modernize admin SEO dashboard bindings.
+- `87e1f65b7` Modernize template editor tab bindings.
+- `34db914e1` Modernize small account start page bindings.
+- `f9cdf559c` Modernize day trading learning center styles.
+- `84bdc227c` Modernize admin member subscriptions bindings.
+- `d845ca368` Modernize trade entry manager bindings.
+- `fef2652e6` Modernize small account trader store detail page.
+- `f18c50868` Modernize day trading trader store detail page.
+- `1d0a50318` Modernize CRM webhooks page bindings.
+- `01c065831` Modernize author block bindings.
+- `41fefb1f1` Modernize media upload hub bindings.
+- `a5507f58d` Modernize account sessions bindings.
+- `37b3ff37f` Modernize chart block bindings.
+- `34368c15a` Modernize webhook creation bindings.
+- `64d634ee2` Modernize service members page bindings.
+- `40e946cf2` Modernize popup display bindings.
+- `a06452a04` Modernize small account learning center bindings.
+- `dba7c532c` Modernize trade alert modal bindings.
+- `7ca2e23ac` Modernize testimonial block bindings.
+- `1d8dfea27` Modernize popup renderer styling.
+- `2af7de18a` Modernize video analytics dashboard bindings.
+- `505cef061` Modernize CRM tags page bindings.
+- `86b2055d0` Modernize checklist block class bindings.
+- `751cffbae` Modernize blog article block styling.
+- `ca1666775` Modernize class videos bindings.
+- `3e7d9279b` Modernize daily videos page bindings.
+- `45a7af0c5` Modernize video uploader bindings.
+- `69ebbea74` Modernize multi-step form renderer bindings.
+- `0cdcf4141` Modernize duplicate detector bindings.
+- `ade2908e2` Modernize risk disclaimer block bindings.
+- `5954573fd` Modernize admin member detail bindings.
+- `2cf3e4eb5` Modernize consent banner bindings.
+- `e298a5ca0` Modernize behavior analytics bindings.
+- `595a7d0d9` Modernize abandoned carts bindings.
+- `681f1cae4` Modernize block error boundary classes.
+- `c5db04ef7` Modernize performance dashboard bindings.
+- `ac9ed96ed` Modernize media library selection bindings.
+- `23cc6d364` Modernize smart links bindings.
+- `dd2502e26` Modernize service connection status styles.
+- `6b4e8f310` Migrate form styler classes to scoped CSS.
+- `acbbe6dcf` Modernize consent dashboard category badges.
+- `03b6d6d4e` Modernize explosive swings dashboard bindings.
+- `2e4bd3293` Modernize SEO reports page bindings.
+- `f09e833b9` Modernize admin indicators filters and status classes.
+- `1d048060d` Modernize video sitemap dynamic styling.
+- `992ecc991` Modernize form AI assistant dynamic styling.
+- `b4578c7ec` Modernize cookie consent class composition.
+- `e45a9b79d` Modernize alerts page service card classes.
+- `4153f51a3` Modernize connection health panel bindings.
+- `778bab38a` Modernize dashboard layout class binding.
+- `97c26b3b6` Modernize pull quote block class bindings.
+- `ec305b20d` Modernize store locator card class binding.
+- `584d4954d` Modernize dashboard classes progress style.
+- `7301d5b12` Modernize form analytics dashboard bindings.
+- `24008f1dd` Modernize image SEO page bindings.
+- `a71205643` Modernize form import export class bindings.
+- `877c482bf` Modernize CRM campaigns status classes.
+- `01d18d69c` Modernize dashboard widget manager bindings.
+- `5200857dd` Modernize class downloads bindings.
+- `1104971b8` Modernize block inserter class bindings.
+- `5dfd8ba03` Modernize blog table of contents bindings.
+- `0584f3ac2` Modernize media preview bindings.
+- `dc1d8163a` Modernize video block bindings.
+- `12fab50be` Modernize explosive swings alert card bindings.
+- `c89e86f2e` Modernize close position modal bindings.
+- `fa20a16b0` Modernize CRM managers tab bindings.
+- `90cf550bb` Modernize CRM segments status binding.
+- `6a4f02161` Modernize quiz player bindings.
+- `a3dacaaa0` Modernize CRM tag detail styling.
+- `634afc9c1` Modernize trading room archive bindings.
+- `a86da3ac4` Modernize SPX learning center bindings.
+- `feb0e8655` Modernize list block bindings.
+- `d7d334b39` Modernize bulk edit modal bindings.
+- `371744a3b` Modernize audio block bindings.
+- `81d53f4df` Modernize consent preferences modal bindings.
+- `fa2144a0c` Modernize HTML block class bindings.
+- `408d7b1be` Modernize admin products bindings.
+- `4cd010f06` Modernize form collaborators bindings.
+- `7b40cfe94` Modernize bulk upload queue bindings.
+- `d66b4892b` Modernize explosive swings trades table bindings.
+- `b3d88942c` Modernize explosive swings video grid style binding.
+- `e1c33fc30` Modernize module form modal class binding.
+- `190c5251c` Modernize recurring campaigns status classes.
+- `722920c96` Modernize daily video page bindings.
+- `14bd7f6d1` Modernize repeater field class and style bindings.
 
 ### Validation standard for each completed slice
 
@@ -114,7 +246,7 @@ Branch: `claude/svelte-audit-optimization-gJmnH`. A multi-pass audit of every me
 
 **CLS-1 — Dashboard sidebar pop-in: measured 0.1215 → 0.0016 (~76×).** The dominant `/dashboard` shift was `DashboardSidebar`'s trading-room/mentorship/scanner nav populating from a client `onMount` fetch — the `<ul>` grew and shoved the footer up 656px. Fixed by pre-fetching the membership list in `dashboard/+layout.server.ts` so the sidebar renders on first paint. Self-review with a hostile mock (interleaved types + an `expiring` membership) then exposed two residual shifts (sidebar re-order; an expiring row disappearing after the client fetch) — fixed with a stable category-sort on the SSR list and aligning the client filter to `active||expiring`. Verified the prod auth path (the `/api` proxy reads `rtp_access_token` and sets `Authorization: Bearer`; SvelteKit's load `fetch` forwards the cookie). (commit `54022af` + correctness hardening)
 
-**CLS-2 — Marketing hero/sections: `/about` 0.4011 → 0.** Marketing content was gated behind `{#if isVisible}` / `{#if mounted}` with the boolean starting **false at SSR** and flipped true in `onMount`, so the server/first paint rendered the sections **empty** and the content popped in. Initialised the gate boolean **`true`** so content is present in the SSR HTML (reserves its space); the `in:` reveal transitions are opacity/transform (compositor-only, no layout shift) and still play on client navigation. Applied to `/about` (6 sections; dropped the redundant `onMount` flip) and 9 shared marketing section components (CTA, Testimonials, Courses, Indicators, AlertServices, TradingRooms, Mentorship, Why, LatestBlogs) — matching the team's own `MarketingFooter` fix. NB: this was **not** the hamburger menu (its scroll-lock is already shift-safe via `app.html` `scrollbar-gutter: stable`). A residual homepage *scroll* CLS (~0.25, absolute decorations/card images settling) is logged for follow-up. (commit `258632b`)
+**CLS-2 — Marketing hero/sections: `/about` 0.4011 → 0.** Marketing content was gated behind `{#if isVisible}` / `{#if mounted}` with the boolean starting **false at SSR** and flipped true in `onMount`, so the server/first paint rendered the sections **empty** and the content popped in. Initialised the gate boolean **`true`** so content is present in the SSR HTML (reserves its space); the `in:` reveal transitions are opacity/transform (compositor-only, no layout shift) and still play on client navigation. Applied to `/about` (6 sections; dropped the redundant `onMount` flip) and 9 shared marketing section components (CTA, Testimonials, Courses, Indicators, AlertServices, TradingRooms, Mentorship, Why, LatestBlogs) — matching the team's own `MarketingFooter` fix. NB: this was **not** the hamburger menu (its scroll-lock is already shift-safe via `app.html` `scrollbar-gutter: stable`). A residual homepage _scroll_ CLS (~0.25, absolute decorations/card images settling) is logged for follow-up. (commit `258632b`)
 
 **CLS-3 — Skeleton loaders that reserve layout footprint.** `/dashboard` home now renders a theme-matched skeleton in the membership-card grid (was header-only → 4 sections popping in). The shared `LoadingState` skeleton was promoted to `$lib/components/dashboard/` and applied to 5 explosive-swings sub-routes + `small-account-mentorship/favorites` + `classes` (bare spinners → grids matching the real layout). Admin top list pages (`users`, `members`, `products`) got `SkeletonLoader` table-row/card skeletons (dark-slate, matching the admin theme). (commits `9af9dd3`, `c8c8f54`, `59fe41e`, `ee06898`)
 
@@ -126,7 +258,7 @@ Branch: `claude/svelte-audit-optimization-gJmnH`. A multi-pass audit of every me
 
 **SV5-1 — Reactive collections use `SvelteSet`/`SvelteMap`.** Plain `Set`/`Map` held in `$state` are not proxied, so in-place `.add/.delete/.clear` were non-reactive (stale selection UI), often "fixed" with no-op `x = x` self-assignments. Converted every stateful collection across 25 member/admin files to `SvelteSet`/`SvelteMap` from `svelte/reactivity`. Mutate-only vars use bare `new SvelteSet()`; reassigned vars keep `$state` (documented — dropping it, as the autofixer naively suggests, would break reassignment reactivity). `useTrades.svelte.ts`'s `realTimePrices` reverted to plain `Map` in `$state` (reassign-only via the price-feed callback — `SvelteMap` was a false positive that also broke the type). (commits `4e3abc5`, `43171d2`, `ab57ac7`)
 
-**SV5-2 — Mount-once `$effect` → `onMount`.** Triaged every data-loading `$effect` one-by-one; migrated 14 genuinely mount-once loaders (coupons, courses, email/templates, media, orders, settings, subscriptions, seo/404s, seo/keywords, members/subscriptions, + the init effect in users/create & courses/create) to `onMount`, preserving teardowns. **Left reactive reload-on-filter/param effects as `$effect`** (products, blog, crm/* lists, etc.) — converting them would break reload. Documented the false positives (timer/subscription `$effect`s with teardown; `SvelteDate` for formatting). (commits `32e8ad4`, `763e1a2`)
+**SV5-2 — Mount-once `$effect` → `onMount`.** Triaged every data-loading `$effect` one-by-one; migrated 14 genuinely mount-once loaders (coupons, courses, email/templates, media, orders, settings, subscriptions, seo/404s, seo/keywords, members/subscriptions, + the init effect in users/create & courses/create) to `onMount`, preserving teardowns. **Left reactive reload-on-filter/param effects as `$effect`** (products, blog, crm/\* lists, etc.) — converting them would break reload. Documented the false positives (timer/subscription `$effect`s with teardown; `SvelteDate` for formatting). (commits `32e8ad4`, `763e1a2`)
 
 **SV5-3 — Literal `{{ name }}` placeholder rendered `[object Object]`.** Svelte parsed `placeholder="… {{ name }} …"` as a mustache wrapping the object `{ name }`. Wrapped in a string expression `{'{{ name }}'}` (matching `EmailModal.svelte`) in `admin/members/churned` + `past`.
 
@@ -136,37 +268,38 @@ Branch: `claude/svelte-audit-optimization-gJmnH`. A multi-pass audit of every me
 
 **RF-2 — June 2026 audit of every remote function + dead-refresh cleanup.** Audited all three `.remote.ts` files against the May/June 2026 API: the query/command definitions and their consumers already use the current pattern (`await query()`/`await command()` directly, no removed `.run()`, no changed `requested()`/`enhance()` signatures), so nothing is broken by the updates. Cleanup in `explosive-swings/commands.remote.ts`: removed the vestigial server-side `query.refresh()` calls. They had **no effect** — the consumer (`page.state.svelte.ts`) reads imperatively (`await query()` → local `$state`, never `query.current`) and explicitly re-fetches after every mutation, so server refresh was dead code; and `getAlerts({page:1,limit:10}).refresh()` targeted the **wrong instance** (the client paginates with `currentPage`, and kit keys queries by argument). Dropped the now-unused `./data.remote` import and documented the path to single-flight mutations (reactive consumer + `command().updates()` + `requested(fn,limit)`) as a follow-up. Verified: check 0/0, build green. (commit `2d3f813`)
 
-**RF-3 — Favorites converted to remote functions, end-to-end.** Evidence-driven candidate hunt across client `/api` fetches surfaced the two favorites pages (`explosive-swings/favorites`, `small-account-mentorship/favorites`) as the strongest fit: ~50 lines of duplicated `onMount` → `fetch('/api/favorites')` → `isLoading` waterfall + a `fetch DELETE` each. New `dashboard/favorites.remote.ts` exports a typed `getFavorites(roomSlug)` **query** and a `removeFavorite({id, roomSlug})` **command** (valibot-validated, `getRequestEvent().fetch` forwarding the auth cookie through the `/api` proxy — same path as before); the `Favorite` shape lives in `favorites.types.ts` because a `.remote.ts` may only export remote functions. Each route's new `+page.server.ts` does `await getFavorites(slug)` and hands the list to the page as `data.favorites` — the **proven membership-prefetch pattern** (RF-1), so the list is **server-rendered on first paint**. Both pages render `data.favorites` through an optimistic `SvelteSet`-of-removed-ids `$derived` filter (no prop-into-`$state` mirroring); removal calls the command and rolls back on failure. **Honest CLS note:** measured CLS on these routes was already `0.0016` *before* this change (the prior `LoadingState` skeleton was sized to mirror the card layout, so the skeleton→list swap was already shift-free) and remains `0.0016` after — so this is an **architecture/SSR/UX** win (no client fetch waterfall, no skeleton flash, type-safe, ~100 LOC of duplication removed), **not** a CLS reduction; no number is claimed that the probe doesn't support. **Hard evidence:** the raw SSR HTML (curl, no JS) went from **0** `favorite-card` nodes (an earlier `query.current` warm-load attempt — `.current` does not SSR while `compilerOptions.experimental.async` is off) to **3 cards + header present** with the load+data pattern; Playwright confirms 3 cards, optimistic remove (3→2, no rollback), CLS `0.0016` on both routes. The single-flight path (`{#await}` + `command().updates()`) is documented in-file as the migration once `experimental.async` is enabled. Probe extended: `mock-backend.mjs` now serves a delayed favorites payload and `measure-favorites.mjs` measures any favorites route.
+**RF-3 — Favorites converted to remote functions, end-to-end.** Evidence-driven candidate hunt across client `/api` fetches surfaced the two favorites pages (`explosive-swings/favorites`, `small-account-mentorship/favorites`) as the strongest fit: ~50 lines of duplicated `onMount` → `fetch('/api/favorites')` → `isLoading` waterfall + a `fetch DELETE` each. New `dashboard/favorites.remote.ts` exports a typed `getFavorites(roomSlug)` **query** and a `removeFavorite({id, roomSlug})` **command** (valibot-validated, `getRequestEvent().fetch` forwarding the auth cookie through the `/api` proxy — same path as before); the `Favorite` shape lives in `favorites.types.ts` because a `.remote.ts` may only export remote functions. Each route's new `+page.server.ts` does `await getFavorites(slug)` and hands the list to the page as `data.favorites` — the **proven membership-prefetch pattern** (RF-1), so the list is **server-rendered on first paint**. Both pages render `data.favorites` through an optimistic `SvelteSet`-of-removed-ids `$derived` filter (no prop-into-`$state` mirroring); removal calls the command and rolls back on failure. **Honest CLS note:** measured CLS on these routes was already `0.0016` _before_ this change (the prior `LoadingState` skeleton was sized to mirror the card layout, so the skeleton→list swap was already shift-free) and remains `0.0016` after — so this is an **architecture/SSR/UX** win (no client fetch waterfall, no skeleton flash, type-safe, ~100 LOC of duplication removed), **not** a CLS reduction; no number is claimed that the probe doesn't support. **Hard evidence:** the raw SSR HTML (curl, no JS) went from **0** `favorite-card` nodes (an earlier `query.current` warm-load attempt — `.current` does not SSR while `compilerOptions.experimental.async` is off) to **3 cards + header present** with the load+data pattern; Playwright confirms 3 cards, optimistic remove (3→2, no rollback), CLS `0.0016` on both routes. The single-flight path (`{#await}` + `command().updates()`) is documented in-file as the migration once `experimental.async` is enabled. Probe extended: `mock-backend.mjs` now serves a delayed favorites payload and `measure-favorites.mjs` measures any favorites route.
 
 ### Bugfix — dashboard sidebar crash (surfaced by the RF-3 probe)
 
-**BUG-1 — `each_key_duplicate` blanked every mentorship/day-trading-room dashboard route.** While measuring the favorites work, the probe caught a hard client crash (`https://svelte.dev/e/each_key_duplicate`) that tore down the **entire** `/dashboard/small-account-mentorship/*` and `/dashboard/day-trading-room/*` subtree — the favorites route was merely where it surfaced. Root cause (isolated with hard evidence — the crash reproduced on `…/small-account-mentorship` *home*, which has none of the favorites code, and never on `explosive-swings`): `DashboardSidebar`'s secondary-nav `{#each secondaryNavItems as item (item.href)}` keyed by `href`, but hover-submenu **parent** items use `href: '#'` as a non-navigable placeholder. Any room whose secondary nav has ≥2 such parents — "Meet the Traders" **and** "Trader Store", true for both mentorship and day-trading-room (defined in `dashboard/+layout.svelte`) — produced two `'#'` keys → duplicate-key crash. Explosive-swings has zero `#` items, which is exactly why it was unaffected. Fixed by keying the each on `item.text` (labels are unique within a room's nav and stable). Verified: crash gone on all three probed routes (favorites + mentorship home), 3 cards render. This is a real production bug, not a mock artifact — the nav config is real.
+**BUG-1 — `each_key_duplicate` blanked every mentorship/day-trading-room dashboard route.** While measuring the favorites work, the probe caught a hard client crash (`https://svelte.dev/e/each_key_duplicate`) that tore down the **entire** `/dashboard/small-account-mentorship/*` and `/dashboard/day-trading-room/*` subtree — the favorites route was merely where it surfaced. Root cause (isolated with hard evidence — the crash reproduced on `…/small-account-mentorship` _home_, which has none of the favorites code, and never on `explosive-swings`): `DashboardSidebar`'s secondary-nav `{#each secondaryNavItems as item (item.href)}` keyed by `href`, but hover-submenu **parent** items use `href: '#'` as a non-navigable placeholder. Any room whose secondary nav has ≥2 such parents — "Meet the Traders" **and** "Trader Store", true for both mentorship and day-trading-room (defined in `dashboard/+layout.svelte`) — produced two `'#'` keys → duplicate-key crash. Explosive-swings has zero `#` items, which is exactly why it was unaffected. Fixed by keying the each on `item.text` (labels are unique within a room's nav and stable). Verified: crash gone on all three probed routes (favorites + mentorship home), 3 cards render. This is a real production bug, not a mock artifact — the nav config is real.
 
 **SV5-4 — `DashboardSidebar` expanded-submenu state was a non-reactive `Set`.** `expandedSubmenus` (toggled on hover, read in the template via `class:is-expanded`, `aria-expanded`, and the `{#if expandedSubmenus.has(item.text)}` that mounts the submenu) was a plain `new Set()`, so `.add()/.delete()` never triggered a re-render — the hover-expand state (and its `aria-expanded`) couldn't update reactively. The file even had a dead `import {  } from 'svelte/reactivity'` betraying the original intent. Converted to `SvelteSet` (svelte-autofixer suggestion, confirmed real by tracing the template reads). Autofixer now returns `issues: 0, suggestions: 0` on the component.
 
 ### Runtime — P0: client-side remote queries were silently broken (missing `experimental.async`)
 
-**RUN-1 — `compilerOptions.experimental.async` enabled; fixes `experimental_async_required` repo-wide.** Hunting for the next remote-function conversion turned up a latent **P0 runtime bug**: the SvelteKit remote-functions docs require **both** `kit.experimental.remoteFunctions` *and* `compilerOptions.experimental.async`, but `svelte.config.js` had only the first. The consequence — invisible to `pnpm check` and `vite build`, which is why three prior remote-function passes (RF-1…RF-3) never caught it — is that any **client-side** remote-query resolution calls Svelte's `hydratable()`, which throws `https://svelte.dev/e/experimental_async_required` when async is off. **Hard evidence:** loading `/dashboard/explosive-swings` (which calls `getAlerts`/`getStats`/… from `onMount → initializeData()`) threw the error **29×** and its queries never resolved. Server-resolved queries (awaited in `load` and serialized — `memberships.remote.ts`, the favorites RF-3 `+page.server.ts`) were unaffected, which is why the dashboard *sidebar* worked while the *body* queries didn't. Enabling async fixes it: explosive-swings **29 → 0** errors and its data resolves; `pnpm check` stays **0 errors / 0 warnings** (4,865 files); the production `vite build` (Cloudflare/lightningcss) passes; a 9-route runtime smoke (home, about, pricing, dashboard, explosive-swings, favorites, admin, admin/orders, admin/members) is clean except `admin/members`, whose 2 `undefined.length`/`undefined.total_members` TypeErrors are a *mock-data* gap (the probe backend doesn't populate the members store) and are **config-independent** — present with async on or off. Reversible in one block (documented inline in `svelte.config.js`). This also unblocks the idiomatic June-2026 patterns (`{#await query()}`, reactive `$derived(await query(arg))`, `command().updates()` single-flight).
+**RUN-1 — `compilerOptions.experimental.async` enabled; fixes `experimental_async_required` repo-wide.** Hunting for the next remote-function conversion turned up a latent **P0 runtime bug**: the SvelteKit remote-functions docs require **both** `kit.experimental.remoteFunctions` _and_ `compilerOptions.experimental.async`, but `svelte.config.js` had only the first. The consequence — invisible to `pnpm check` and `vite build`, which is why three prior remote-function passes (RF-1…RF-3) never caught it — is that any **client-side** remote-query resolution calls Svelte's `hydratable()`, which throws `https://svelte.dev/e/experimental_async_required` when async is off. **Hard evidence:** loading `/dashboard/explosive-swings` (which calls `getAlerts`/`getStats`/… from `onMount → initializeData()`) threw the error **29×** and its queries never resolved. Server-resolved queries (awaited in `load` and serialized — `memberships.remote.ts`, the favorites RF-3 `+page.server.ts`) were unaffected, which is why the dashboard _sidebar_ worked while the _body_ queries didn't. Enabling async fixes it: explosive-swings **29 → 0** errors and its data resolves; `pnpm check` stays **0 errors / 0 warnings** (4,865 files); the production `vite build` (Cloudflare/lightningcss) passes; a 9-route runtime smoke (home, about, pricing, dashboard, explosive-swings, favorites, admin, admin/orders, admin/members) is clean except `admin/members`, whose 2 `undefined.length`/`undefined.total_members` TypeErrors are a _mock-data_ gap (the probe backend doesn't populate the members store) and are **config-independent** — present with async on or off. Reversible in one block (documented inline in `svelte.config.js`). This also unblocks the idiomatic June-2026 patterns (`{#await query()}`, reactive `$derived(await query(arg))`, `command().updates()` single-flight).
 
-**RF-4 — `admin/orders` data layer on typed remote queries.** With RUN-1 in place, converted the orders page off raw `fetch('/api/admin/orders…')` to typed, valibot-validated `query` functions in `admin/orders/orders.remote.ts` (`getOrders({ page, perPage, status, search })` + `getOrderDetail(id)`); shapes live in `orders.types.ts`. Consumed **imperatively** — `loadOrders()` awaits `getOrders(...)` and assigns to local `$state`; the detail awaits `getOrderDetail(...)` on modal open — because the reactive `$derived(getOrders(...)).current` form, while now *possible* under async, was deliberately avoided here to preserve the page's exact paginate/filter/refresh behaviour and "keep last data while loading" feel (matching the proven `explosive-swings` consumer). Net: end-to-end type safety + server-side arg validation replacing `any` JSON, same UX. CSV export stays a client `fetch` (it streams a `Blob`, not a devalue-serialized value). **Verified live** (probe backend with `MOCK_ROLE=super-admin` + an orders fixture): list renders 25 rows, Next paginates (`Page 1 of 3` → `Page 2 of 3`, first row `RTP-1001` → `RTP-1026`), the detail modal opens and loads, zero page errors. Harness: `mock-backend.mjs` gained an env-gated role (`MOCK_ROLE`, default `member`) and an admin-orders fixture so admin remote functions can be probed.
+**RF-4 — `admin/orders` data layer on typed remote queries.** With RUN-1 in place, converted the orders page off raw `fetch('/api/admin/orders…')` to typed, valibot-validated `query` functions in `admin/orders/orders.remote.ts` (`getOrders({ page, perPage, status, search })` + `getOrderDetail(id)`); shapes live in `orders.types.ts`. Consumed **imperatively** — `loadOrders()` awaits `getOrders(...)` and assigns to local `$state`; the detail awaits `getOrderDetail(...)` on modal open — because the reactive `$derived(getOrders(...)).current` form, while now _possible_ under async, was deliberately avoided here to preserve the page's exact paginate/filter/refresh behaviour and "keep last data while loading" feel (matching the proven `explosive-swings` consumer). Net: end-to-end type safety + server-side arg validation replacing `any` JSON, same UX. CSV export stays a client `fetch` (it streams a `Blob`, not a devalue-serialized value). **Verified live** (probe backend with `MOCK_ROLE=super-admin` + an orders fixture): list renders 25 rows, Next paginates (`Page 1 of 3` → `Page 2 of 3`, first row `RTP-1001` → `RTP-1026`), the detail modal opens and loads, zero page errors. Harness: `mock-backend.mjs` gained an env-gated role (`MOCK_ROLE`, default `member`) and an admin-orders fixture so admin remote functions can be probed.
 
 **RF-5 — `admin/members/analytics` on a single reactive remote query.** The first conversion to use the now-unblocked **idiomatic reactive** pattern. The page's six parallel `fetch('/api/admin/members/analytics/…')` calls + ~90 lines of `Promise.allSettled` result-processing collapse into one typed `query` — `analytics.remote.ts:getMemberAnalytics(range)` runs the six fetches server-side (each degrading independently to its empty default) and returns one combined `MemberAnalytics` payload (`analytics.types.ts`). The page consumes it reactively: `const q = $derived(getMemberAnalytics(dateRange))`, with same-named `$derived` views (`metrics`, `growthData`, `cohortData`, …) so **every chart's markup is unchanged**. Changing the date-range `<select>` (now a plain `bind:value`, the `onchange={loadAnalytics}` removed) re-runs the query automatically; Refresh/Retry call `q.refresh()`. Net: −~120 LOC, end-to-end types replacing six `any` JSON reads, server-side parallelism, and SSR-resolved first paint. **Verified live** (probe backend with a members-analytics fixture): 4 metric cards render with real data (`1,240` total members), the not-connected state correctly absent, **0** `experimental_async_required`; the query is server-resolved on first paint (no client request to the analytics proxy — it's inlined), and changing the range / clicking Refresh each fire one client remote-function request (20 → 21 → 22) while the cards keep rendering. Harness: `mock-backend.mjs` gained an env-gated members-analytics fixture (raw arrays/objects, matching the backend shape the page reads directly).
 
 **RF-6 — `admin/media/analytics` (bandwidth dashboard) on a reactive remote query.** Same reactive pattern as RF-5, applied to the bandwidth-savings dashboard: three parallel `fetch('/api/admin/media/analytics/…')` + `Promise.allSettled` processing → one `getMediaAnalytics(range)` query (`media-analytics.remote.ts`/`.types.ts`) returning `{ overview, bandwidth, formats, hasData }`; the page derives same-named views so the chart/SVG markup is untouched, and the time-range buttons just set `timeRange` (the `handleTimeRangeChange` + `onMount` loader deleted). The one wrinkle — three `tweened` headline numbers (`savingsPercent`/`totalSavings`/`co2Saved`) that were imperatively `.set()` after fetch — is now driven by a single `$effect` that syncs them off the derived `overview`; the svelte-autofixer's "function call in `$effect`" hint is a documented false-positive here (a time-interpolated motion store can't be a `$derived`), so the component stays at `issues: 0`. **Verified live** (media-analytics mock fixture): renders with real data (`savingsPercent 58`, charts present, not-connected absent), **0** `experimental_async_required`, and switching the range flips the active button (`30 Days` → `90 Days`) and fires exactly one `getMediaAnalytics(["90d"])` remote call. Harness gained a media-analytics fixture.
 
-**RF-7 — `admin/seo/404-monitor` on queries + commands with single-flight mutations.** The first conversion to exercise the **full June-2026 mutation idiom**. The page's raw `fetch` + manual `loadLogs()/loadStats()` re-fetch dance becomes `monitor.remote.ts`: two reactive queries (`getLogs(sort)` keyed by the sort `<select>`, `getStats()` no-arg) consumed via `.current`, plus two commands (`ignoreLog`, `bulkDeleteLogs`) that perform **server-driven single-flight refreshes** — after the mutation they call `getLogs(sort).refresh()` + `getStats().refresh()` so the updated table **and** stat cards ride back on the *same* response, no second round-trip and no manual re-fetch (`sort` is threaded through each command so the refresh hits the exact `getLogs(sort)` instance the client renders). The `$effect`-on-`sortBy` reload is gone (the reactive query replaces it); the redirect-created callback refreshes imperatively (`logsQuery.refresh()`), since that mutation belongs to a child modal. **Verified live** against a *stateful* 404-logs mock fixture: list renders 3 rows (stats total `3`); clicking **Ignore** flips a row's badge to "Ignored"; deleting a row shrinks the table **3 → 2** *and* updates the stat card **3 → 2** in lock-step — proving the command refreshed both queries in one flight — with **0** `experimental_async_required`. Harness: `mock-backend.mjs` gained a stateful 404-log store (bulk-delete removes ids, ignore flips status, stats computed live) + request-body reading.
+**RF-7 — `admin/seo/404-monitor` on queries + commands with single-flight mutations.** The first conversion to exercise the **full June-2026 mutation idiom**. The page's raw `fetch` + manual `loadLogs()/loadStats()` re-fetch dance becomes `monitor.remote.ts`: two reactive queries (`getLogs(sort)` keyed by the sort `<select>`, `getStats()` no-arg) consumed via `.current`, plus two commands (`ignoreLog`, `bulkDeleteLogs`) that perform **server-driven single-flight refreshes** — after the mutation they call `getLogs(sort).refresh()` + `getStats().refresh()` so the updated table **and** stat cards ride back on the _same_ response, no second round-trip and no manual re-fetch (`sort` is threaded through each command so the refresh hits the exact `getLogs(sort)` instance the client renders). The `$effect`-on-`sortBy` reload is gone (the reactive query replaces it); the redirect-created callback refreshes imperatively (`logsQuery.refresh()`), since that mutation belongs to a child modal. **Verified live** against a _stateful_ 404-logs mock fixture: list renders 3 rows (stats total `3`); clicking **Ignore** flips a row's badge to "Ignored"; deleting a row shrinks the table **3 → 2** _and_ updates the stat card **3 → 2** in lock-step — proving the command refreshed both queries in one flight — with **0** `experimental_async_required`. Harness: `mock-backend.mjs` gained a stateful 404-log store (bulk-delete removes ids, ignore flips status, stats computed live) + request-body reading.
 
 **RF-8 — `admin/seo/redirects` on queries + commands with single-flight mutations.** Same pattern as RF-7, applied to the redirect manager. `redirects.remote.ts`: two no-arg reactive queries (`getRedirects()`, `getRedirectStats()`) + three commands (`removeRedirect`, `toggleRedirectActive`, `bulkRemoveRedirects`) that single-flight refresh both queries after mutating (no `sort` to thread, since the queries are argument-less). The page keeps its handler names (`deleteRedirect`/`toggleRedirect`/`bulkDelete`) — only their bodies + the data source changed — so the table markup is untouched; the editor-saved callback refreshes imperatively (child modal). Notably the old optimistic local toggle (`redirect.is_active = !…; redirects = [...redirects]`) is replaced by the command + single-flight, removing a hand-maintained mutation path. **Verified live** (stateful redirects mock): 4 rows / `total 4` / `active 3`; toggling a redirect flips `active 3 → 2`; deleting one shrinks the table **4 → 3** and `total 4 → 3` in lock-step; **0** `experimental_async_required`. Harness gained a stateful redirects store (toggle/delete/bulk-delete).
 
 **RF-9 — `admin/seo/keywords` on queries + command with single-flight.** The smallest of the SEO CRUD set: `keywords.remote.ts` exports two no-arg queries (`getKeywords()`, `getKeywordStats()`) + one command (`removeKeyword`) that single-flight refreshes both after a delete; Refresh now calls `keywordsQuery.refresh()`/`statsQuery.refresh()`. The `onMount`+`browser` loaders are gone. **Verified live** (stateful keywords mock): deleting a keyword shrinks the table **3 → 2** and the `Total Keywords` stat **3 → 2** in lock-step; **0** `experimental_async_required`. Harness gained a stateful keywords store.
 
-**RF-10 — `admin/schedules` on a typed query + 6 commands (imperative consumer).** The heaviest non-billing CRUD page (8 handlers: load, create, update, delete, toggle, duplicate, bulk-delete, bulk-update). Converted **surgically, imperatively** (like `orders`): `schedules.remote.ts` exports `getSchedules(roomId)` + 6 commands (`postSchedule` backs create *and* duplicate; `putSchedule` backs edit *and* the active-toggle; `deleteScheduleById`; `bulkDeleteSchedules`; `bulkUpdateSchedules`) — each handler keeps its exact validation/`error`/`success`/modal flow, only the `fetch` body changed. Commands surface the backend's `{error|message}`. The commands deliberately do **not** single-flight-refresh (no reactive `.current` reader → it'd be dead code per RF-2); the page's `loadSchedules()` is the refresh path. **Two evidence-based fixes surfaced during verification:**
-  - *Caching bug (caught by hard evidence):* a delete's server mutation succeeded (mock store `1,2,3 → 2,3`) but the UI stayed at 3 rows — because remote queries are **cached by argument**, so the post-mutation `await getSchedules(sameRoomId)` returned the stale cached list. Fixed by re-reading via `getSchedules(roomId).refresh()` in `loadSchedules` (forces a fresh fetch). `orders` never hit this since its pagination changes the cache key.
-  - *Dead client redirect removed:* the old `loadSchedules` `401 → goto('/login')` is dropped — `admin/+layout.server.ts` + `hooks.server.ts` enforce admin auth server-side (the layout's own comment notes the client redirect was *bypassable* and was superseded), so it was redundant; `goto` import removed.
+**RF-10 — `admin/schedules` on a typed query + 6 commands (imperative consumer).** The heaviest non-billing CRUD page (8 handlers: load, create, update, delete, toggle, duplicate, bulk-delete, bulk-update). Converted **surgically, imperatively** (like `orders`): `schedules.remote.ts` exports `getSchedules(roomId)` + 6 commands (`postSchedule` backs create _and_ duplicate; `putSchedule` backs edit _and_ the active-toggle; `deleteScheduleById`; `bulkDeleteSchedules`; `bulkUpdateSchedules`) — each handler keeps its exact validation/`error`/`success`/modal flow, only the `fetch` body changed. Commands surface the backend's `{error|message}`. The commands deliberately do **not** single-flight-refresh (no reactive `.current` reader → it'd be dead code per RF-2); the page's `loadSchedules()` is the refresh path. **Two evidence-based fixes surfaced during verification:**
 
-  **Verified live** (stateful schedules mock, keyed by `room_id`): all 3 seed schedules render (**0** `experimental_async_required`); deleting one drops the grid **3 → 2 cards** *and* the store `1,2,3 → 2,3`; toggling the inactive schedule flips it active (`Activate` buttons **1 → 0**, `Deactivate` **2 → 3**, store all-active). Harness gained a stateful schedules store (full CRUD + bulk + method-aware routing).
+- _Caching bug (caught by hard evidence):_ a delete's server mutation succeeded (mock store `1,2,3 → 2,3`) but the UI stayed at 3 rows — because remote queries are **cached by argument**, so the post-mutation `await getSchedules(sameRoomId)` returned the stale cached list. Fixed by re-reading via `getSchedules(roomId).refresh()` in `loadSchedules` (forces a fresh fetch). `orders` never hit this since its pagination changes the cache key.
+- _Dead client redirect removed:_ the old `loadSchedules` `401 → goto('/login')` is dropped — `admin/+layout.server.ts` + `hooks.server.ts` enforce admin auth server-side (the layout's own comment notes the client redirect was _bypassable_ and was superseded), so it was redundant; `goto` import removed.
 
-**RF-11 — `admin/subscriptions/plans` on typed queries + commands (billing-sensitive, surgical).** The last and most delicate page — its mutations re-price Stripe products and migrate live subscribers. Converted **surgically/imperatively**: `plans.remote.ts` exports `getPlans()` + `getPriceHistory(id)` queries and `changePlanPrice` / `updatePlan` / `setPlanActive` commands. The commands are **thin forwarders** — all money normalization (`Math.round(price * 100)` → `price_cents`/`amount_cents`) and the grandfathering/migration-detail messaging stay in the component **verbatim**; only the `fetch` moved server-side. `changePlanPrice` **returns** the backend payload so the page keeps reporting `subscriptions_migrated`/`subscriptions_failed`. Same `.refresh()` cache fix as RF-10 in `loadPlans` (argument-less query → single cache key → would otherwise go stale after a mutation). **Verified live, including the billing path** (stateful plans mock): stats render (total 3 / active 2 / withStripe 2, **0** `experimental_async_required`); toggling the inactive plan flips `active 2 → 3`; a price change with `apply_to: next_renewal` posts the migration request, the success toast correctly reports **"5 existing subscriber(s) will switch at next renewal"** (i.e. the command's *return value* is consumed), the list price updates **$149 → $199**, and the store reflects `price: 199` — confirming the cents-normalization and the post-mutation refresh both work. Harness gained a stateful plans store (list / price-history / price-change-with-migration-counts / PUT).
+**Verified live** (stateful schedules mock, keyed by `room_id`): all 3 seed schedules render (**0** `experimental_async_required`); deleting one drops the grid **3 → 2 cards** _and_ the store `1,2,3 → 2,3`; toggling the inactive schedule flips it active (`Activate` buttons **1 → 0**, `Deactivate` **2 → 3**, store all-active). Harness gained a stateful schedules store (full CRUD + bulk + method-aware routing).
+
+**RF-11 — `admin/subscriptions/plans` on typed queries + commands (billing-sensitive, surgical).** The last and most delicate page — its mutations re-price Stripe products and migrate live subscribers. Converted **surgically/imperatively**: `plans.remote.ts` exports `getPlans()` + `getPriceHistory(id)` queries and `changePlanPrice` / `updatePlan` / `setPlanActive` commands. The commands are **thin forwarders** — all money normalization (`Math.round(price * 100)` → `price_cents`/`amount_cents`) and the grandfathering/migration-detail messaging stay in the component **verbatim**; only the `fetch` moved server-side. `changePlanPrice` **returns** the backend payload so the page keeps reporting `subscriptions_migrated`/`subscriptions_failed`. Same `.refresh()` cache fix as RF-10 in `loadPlans` (argument-less query → single cache key → would otherwise go stale after a mutation). **Verified live, including the billing path** (stateful plans mock): stats render (total 3 / active 2 / withStripe 2, **0** `experimental_async_required`); toggling the inactive plan flips `active 2 → 3`; a price change with `apply_to: next_renewal` posts the migration request, the success toast correctly reports **"5 existing subscriber(s) will switch at next renewal"** (i.e. the command's _return value_ is consumed), the list price updates **$149 → $199**, and the store reflects `price: 199` — confirming the cents-normalization and the post-mutation refresh both work. Harness gained a stateful plans store (list / price-history / price-change-with-migration-counts / PUT).
 
 ### Hygiene & tooling
 
@@ -289,22 +422,22 @@ COMPLETED 5217 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
 
 15 modified, 1 deleted, 4 created. Net: −240 lines.
 
-| Modified | Deleted | Created |
-|---|---|---|
-| api/src/config/mod.rs | api/src/services/rate_limit.rs | docs/audits/SECURITY_GAPS_2026-04-29.md |
-| api/src/main.rs | | api/migrations/065_backfill_coupon_usage.sql |
-| api/src/middleware/admin.rs | | api/migrations/066_drop_unused_oauth_tokens.sql |
-| api/src/middleware/auth.rs | | api/migrations/067_drop_unused_login_rate_limits.sql |
-| api/src/routes/admin.rs | | |
-| api/src/routes/auth.rs | | |
-| api/src/routes/checkout.rs | | |
-| api/src/routes/oauth.rs | | |
-| api/src/services/mod.rs | | |
-| frontend/src/hooks.server.ts | | |
-| frontend/src/lib/api/admin.ts | | |
-| frontend/src/lib/api/enterprise/admin-adapter.ts | | |
-| frontend/src/routes/auth/callback/+page.svelte | | |
-| frontend/svelte.config.js | | |
+| Modified                                         | Deleted                        | Created                                              |
+| ------------------------------------------------ | ------------------------------ | ---------------------------------------------------- |
+| api/src/config/mod.rs                            | api/src/services/rate_limit.rs | docs/audits/SECURITY_GAPS_2026-04-29.md              |
+| api/src/main.rs                                  |                                | api/migrations/065_backfill_coupon_usage.sql         |
+| api/src/middleware/admin.rs                      |                                | api/migrations/066_drop_unused_oauth_tokens.sql      |
+| api/src/middleware/auth.rs                       |                                | api/migrations/067_drop_unused_login_rate_limits.sql |
+| api/src/routes/admin.rs                          |                                |                                                      |
+| api/src/routes/auth.rs                           |                                |                                                      |
+| api/src/routes/checkout.rs                       |                                |                                                      |
+| api/src/routes/oauth.rs                          |                                |                                                      |
+| api/src/services/mod.rs                          |                                |                                                      |
+| frontend/src/hooks.server.ts                     |                                |                                                      |
+| frontend/src/lib/api/admin.ts                    |                                |                                                      |
+| frontend/src/lib/api/enterprise/admin-adapter.ts |                                |                                                      |
+| frontend/src/routes/auth/callback/+page.svelte   |                                |                                                      |
+| frontend/svelte.config.js                        |                                |                                                      |
 
 ---
 
@@ -316,12 +449,12 @@ A full second pass of the Svelte MCP autofixer plus targeted security and access
 
 Parallel autofixer audit across all four major folders. Found and fixed issues missed by round 1.
 
-| Folder | Files audited | Files fixed | Issues |
-|---|---|---|---|
-| `lib/components/` | 408 | 5 | 7 missing `{#each}` keys |
-| `lib/` (non-components) | 29 | 1 | 1 dead self-assignment removed |
-| `routes/admin/` | 162 | 24 | 28 missing `{#each}` keys |
-| `routes/` (non-admin) | 239 | 5 | 5 missing `{#each}` keys |
+| Folder                  | Files audited | Files fixed | Issues                         |
+| ----------------------- | ------------- | ----------- | ------------------------------ |
+| `lib/components/`       | 408           | 5           | 7 missing `{#each}` keys       |
+| `lib/` (non-components) | 29            | 1           | 1 dead self-assignment removed |
+| `routes/admin/`         | 162           | 24          | 28 missing `{#each}` keys      |
+| `routes/` (non-admin)   | 239           | 5           | 5 missing `{#each}` keys       |
 
 Confirmed absent across the entire codebase: legacy `on:event` directives, `export let` props, `createEventDispatcher`, `beforeUpdate`/`afterUpdate`, `<slot>`/`$$props`/`$$restProps`/`$$slots`, `<svelte:component>` deprecation, and `state(props.foo)` shadow-state anti-pattern.
 
@@ -357,20 +490,20 @@ Full Svelte autofixer + grep sweep on the `payments-fix-2026-04` branch. 98 miss
 
 Folders fixed:
 
-| Folder | Files | Instances |
-|---|---|---|
-| `lib/components/forms/` (+ `pro/`) | 10 | 27 |
-| `lib/components/auth/` | 3 | 4 |
-| `lib/components/blog/BlockEditor/` | 2 | 3 |
-| `lib/components/cms/blocks/` | 2 | 3 |
-| `lib/components/courses/` | 1 | 3 |
-| `lib/components/dashboard/` (+ `alerts/`) | 6 | 13 |
-| `lib/consent/components/` | 1 | 4 |
-| `lib/consent/templates/` | 1 | 6 |
-| `lib/seo/` | 1 | 2 |
-| `routes/my/subscriptions/` | 1 | 1 |
-| `routes/admin/seo/` | 14 | 32 |
-| **Total** | **42** | **98** |
+| Folder                                    | Files  | Instances |
+| ----------------------------------------- | ------ | --------- |
+| `lib/components/forms/` (+ `pro/`)        | 10     | 27        |
+| `lib/components/auth/`                    | 3      | 4         |
+| `lib/components/blog/BlockEditor/`        | 2      | 3         |
+| `lib/components/cms/blocks/`              | 2      | 3         |
+| `lib/components/courses/`                 | 1      | 3         |
+| `lib/components/dashboard/` (+ `alerts/`) | 6      | 13        |
+| `lib/consent/components/`                 | 1      | 4         |
+| `lib/consent/templates/`                  | 1      | 6         |
+| `lib/seo/`                                | 1      | 2         |
+| `routes/my/subscriptions/`                | 1      | 1         |
+| `routes/admin/seo/`                       | 14     | 32        |
+| **Total**                                 | **42** | **98**    |
 
 Final grep for unkeyed `{#each}` blocks: **zero results.**
 `pnpm check` after all changes: **0 errors / 0 warnings / 5217 files**.
@@ -430,13 +563,13 @@ Ran `svelte-autofixer` on all `.svelte` files under `frontend/src/routes/admin/`
 
 Ran `svelte-autofixer` on all `.svelte` files under `frontend/src/lib/` outside of `lib/components/` (already covered in pass (e)). Folders audited:
 
-| Folder | Files audited | Files fixed |
-|---|---|---|
-| `lib/consent/components/` + `lib/consent/templates/` | 8 | 2 (`ConsentPreferencesModal`, `BannerRenderer` — missing `{#each}` keys) |
-| `lib/icons/` | 24 | 0 |
-| `lib/monitoring/` | 1 | 0 |
-| `lib/options-calculator/components/` (all subdirs) | 48 | 1 (`StrategyBuilder` — missing `{#each}` key on breakevens loop) |
-| `lib/seo/` | 1 | 0 (autofixer flags `{@html}` JSON-LD as XSS warning — content is sanitized via `safeJsonLdSerialize`, accepted as safe) |
+| Folder                                               | Files audited | Files fixed                                                                                                             |
+| ---------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `lib/consent/components/` + `lib/consent/templates/` | 8             | 2 (`ConsentPreferencesModal`, `BannerRenderer` — missing `{#each}` keys)                                                |
+| `lib/icons/`                                         | 24            | 0                                                                                                                       |
+| `lib/monitoring/`                                    | 1             | 0                                                                                                                       |
+| `lib/options-calculator/components/` (all subdirs)   | 48            | 1 (`StrategyBuilder` — missing `{#each}` key on breakevens loop)                                                        |
+| `lib/seo/`                                           | 1             | 0 (autofixer flags `{@html}` JSON-LD as XSS warning — content is sanitized via `safeJsonLdSerialize`, accepted as safe) |
 
 `pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
 
@@ -448,19 +581,19 @@ Ran `svelte-autofixer` on all `.svelte` files under `frontend/src/lib/` outside 
 
 Ran `svelte-autofixer` (Svelte 5, official MCP) on every `.svelte` file under `frontend/src/lib/components/`. All issues were missing `{#each}` key expressions — Svelte requires keys for correct DOM diffing, stable component state, and working transitions. Folders audited and fixed:
 
-| Folder | Files audited | Files fixed |
-|---|---|---|
-| `lib/components/auth/` | 9 | 1 (`MobileBackground` — 2 `{#each}` keys) |
-| `lib/components/admin/` | 28 | 9 |
-| `lib/components/analytics/` | 16 | 8 |
-| `lib/components/blog/` + `blog/BlockEditor/` | 21 | 10 (26 keys) |
-| `lib/components/cart/` + `charts/` + `checkout/` + `classes/` | 7 | 1 |
-| `lib/components/cms/` (all subdirs) | 47 | 9 (15 keys) |
-| `lib/components/consent/` + `core/` + `courses/` + `crm/` + `dashboard/` | 29 | 9 |
-| `lib/components/dev/` + `forms/` + `icons/` + `indicators/` + `layout/` | ~50 | 16 |
-| `lib/components/media/` + `nav/` + `patterns/` + `popups/` + `resources/` | 31 | 15 |
-| `lib/components/sections/` + `seo/` + `ssr/` + `traders/` + `trading-room/` + `ui/` + `video/` + `workflow/` | ~120 | 31 |
-| **Total** | **~358** | **~109** |
+| Folder                                                                                                       | Files audited | Files fixed                               |
+| ------------------------------------------------------------------------------------------------------------ | ------------- | ----------------------------------------- |
+| `lib/components/auth/`                                                                                       | 9             | 1 (`MobileBackground` — 2 `{#each}` keys) |
+| `lib/components/admin/`                                                                                      | 28            | 9                                         |
+| `lib/components/analytics/`                                                                                  | 16            | 8                                         |
+| `lib/components/blog/` + `blog/BlockEditor/`                                                                 | 21            | 10 (26 keys)                              |
+| `lib/components/cart/` + `charts/` + `checkout/` + `classes/`                                                | 7             | 1                                         |
+| `lib/components/cms/` (all subdirs)                                                                          | 47            | 9 (15 keys)                               |
+| `lib/components/consent/` + `core/` + `courses/` + `crm/` + `dashboard/`                                     | 29            | 9                                         |
+| `lib/components/dev/` + `forms/` + `icons/` + `indicators/` + `layout/`                                      | ~50           | 16                                        |
+| `lib/components/media/` + `nav/` + `patterns/` + `popups/` + `resources/`                                    | 31            | 15                                        |
+| `lib/components/sections/` + `seo/` + `ssr/` + `traders/` + `trading-room/` + `ui/` + `video/` + `workflow/` | ~120          | 31                                        |
+| **Total**                                                                                                    | **~358**      | **~109**                                  |
 
 `pnpm check` after all changes: **0 errors / 0 warnings / 5215 files**.
 
@@ -672,14 +805,14 @@ End-to-end repair of the blog/CMS path: public renderer, admin write path, R2 me
 
 All passing as of 2026-04-25:
 
-| Gate | Result |
-|------|--------|
-| `pnpm check` | 8799 files / 0 errors / 0 warnings |
-| `pnpm test:unit` | 1442 passed / 32 skipped / 0 errors |
-| `playwright (chromium)` | 85 passed / 8 skipped (3 fixme + 5 API-gated) / 0 failed |
-| `cargo check` | clean |
-| `cargo test --no-run` | all 5 binaries compile |
-| `cargo test utils_test stripe_test` | 17 / 17 |
+| Gate                                | Result                                                   |
+| ----------------------------------- | -------------------------------------------------------- |
+| `pnpm check`                        | 8799 files / 0 errors / 0 warnings                       |
+| `pnpm test:unit`                    | 1442 passed / 32 skipped / 0 errors                      |
+| `playwright (chromium)`             | 85 passed / 8 skipped (3 fixme + 5 API-gated) / 0 failed |
+| `cargo check`                       | clean                                                    |
+| `cargo test --no-run`               | all 5 binaries compile                                   |
+| `cargo test utils_test stripe_test` | 17 / 17                                                  |
 
 ### Known broken (not regressed; documented)
 

@@ -256,27 +256,27 @@
 	}
 
 	// Close dropdown when clicking outside
-	$effect(() => {
-		if (isDropdownOpen && typeof window !== 'undefined') {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					closeDropdown();
-				}
-			};
-			const handleEscape = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') {
-					closeDropdown();
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			document.addEventListener('keydown', handleEscape);
-			return () => {
-				document.removeEventListener('click', handleClickOutside);
-				document.removeEventListener('keydown', handleEscape);
-			};
-		}
-		return undefined;
+	onMount(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (!isDropdownOpen) return;
+
+			const target = event.target as HTMLElement;
+			if (!target.closest('.dropdown')) {
+				closeDropdown();
+			}
+		};
+		const handleEscape = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				closeDropdown();
+			}
+		};
+
+		document.addEventListener('click', handleClickOutside);
+		document.addEventListener('keydown', handleEscape);
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+			document.removeEventListener('keydown', handleEscape);
+		};
 	});
 </script>
 
@@ -290,7 +290,7 @@
 	</div>
 	<div class="dashboard__header-right">
 		{#if tradingRooms.length > 0}
-			<div class="dropdown" class:is-open={isDropdownOpen}>
+			<div class={['dropdown', { 'is-open': isDropdownOpen }]}>
 				<button
 					class="btn btn-orange btn-tradingroom"
 					onclick={toggleDropdown}
@@ -309,7 +309,7 @@
 						{#each tradingRooms as room (room.href)}
 							<a
 								href={room.href}
-								class="dropdown-item dropdown-item--{room.variant}"
+								class={['dropdown-item', `dropdown-item--${room.variant}`]}
 								onclick={closeDropdown}
 								role="menuitem"
 							>
@@ -374,7 +374,7 @@
 			<div class="membership-cards">
 				{#each membershipCards as card (card.href)}
 					<div class="membership-card-col">
-						<article class="membership-card membership-card--{card.variant}">
+						<article class={['membership-card', `membership-card--${card.variant}`]}>
 							<a href={card.href} class="membership-card__header">
 								<span class="mem_icon">
 									<span class="membership-card__icon">
@@ -407,7 +407,7 @@
 			<div class="membership-cards">
 				{#each mentorshipCards as card (card.href)}
 					<div class="membership-card-col">
-						<article class="membership-card membership-card--{card.variant}">
+						<article class={['membership-card', `membership-card--${card.variant}`]}>
 							<a href={card.href} class="membership-card__header">
 								<span class="mem_icon">
 									<span class="membership-card__icon">
@@ -440,7 +440,7 @@
 			<div class="membership-cards">
 				{#each scannerCards as card (card.href)}
 					<div class="membership-card-col">
-						<article class="membership-card membership-card--{card.variant}">
+						<article class={['membership-card', `membership-card--${card.variant}`]}>
 							<a href={card.href} class="membership-card__header">
 								<span class="mem_icon">
 									<span class="membership-card__icon">
@@ -469,7 +469,7 @@
 		<div class="membership-cards">
 			{#each toolsCards as card (card.href)}
 				<div class="membership-card-col">
-					<article class="membership-card membership-card--{card.variant}">
+					<article class={['membership-card', `membership-card--${card.variant}`]}>
 						<a href={card.href} class="membership-card__header">
 							<span class="mem_icon">
 								<span class="membership-card__icon">

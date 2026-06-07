@@ -1,6 +1,6 @@
 # Tailwind-to-Scoped-CSS Migration TODO
 
-Last updated: 2026-06-06
+Last updated: 2026-06-07
 Branch: `codex/tailwind-to-page-css-migration`
 
 ## Source of Truth
@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 517 Svelte files remaining.
+- Broad dynamic class/style migration scan: 385 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -62,68 +62,270 @@ Current evidence:
 - [x] `0847a8eb1` Modernize dashboard sidebar bindings.
 - [x] `41199e6ca` Modernize scheduling panel bindings.
 - [x] `80df09e4c` Modernize CRM leads page bindings.
+- [x] `0842c9246` Modernize member detail drawer bindings.
+- [x] `8b4426860` Modernize courses page bindings.
+- [x] `5b206ad7b` Modernize consent settings bindings.
+- [x] `8bd9e9f6b` Modernize weekly hero bindings.
+- [x] `2468a2977` Modernize admin members page bindings.
+- [x] `2514262c4` Modernize email campaigns page bindings.
+- [x] `0783ba210` Modernize automation edit page bindings.
+- [x] `b7f44f88b` Modernize churned members page bindings.
+- [x] `b36701519` Modernize image block bindings.
+- [x] `94a7b4fee` Modernize day trading course page bindings.
+- [x] `7ac82f449` Modernize revision history bindings.
+- [x] `09b4acb94` Modernize subscription drawer bindings.
+- [x] `f53890721` Modernize ETF resource page bindings.
+- [x] `e2d09c9d7` Modernize dashboard page bindings.
+- [x] `9ce0b653c` Modernize login form attachments.
+- [x] `dfbc97d2f` Modernize blog create page bindings.
+- [x] `2065a5c3d` Modernize CRM sequences page bindings.
+- [x] `b765a465a` Modernize AI assistant bindings.
+- [x] `ffaaef32e` Modernize admin toolbar bindings.
+- [x] `f31b10b30` Modernize form field renderer bindings.
+- [x] `1144f654b` Modernize countdown timer bindings.
+- [x] `bbb70be8e` Modernize media analytics page bindings.
+- [x] `a1e519fd4` Modernize admin analytics page bindings.
+- [x] `81f1400e5` Modernize weekly video uploader bindings.
+- [x] `80a0e90ea` Modernize image uploader bindings.
+- [x] `8c3b94903` Modernize preset picker bindings.
+- [x] `7e02c02f9` Modernize mentorship page accordion bindings.
+- [x] `baf73647e` Modernize admin watchlist dynamic bindings.
+- [x] `de5fd0261` Modernize checkout thank-you status binding.
+- [x] `120236fe1` Modernize stock indexes FAQ binding.
+- [x] `6fb86bdea` Modernize register page lifecycle bindings.
+- [x] `9b4cae95e` Modernize course form modal bindings.
+- [x] `adf81f179` Modernize webhook edit page bindings.
+- [x] `3eab58bf6` Modernize admin courses page bindings.
+- [x] `5ca370c9f` Modernize dashboard indicator detail bindings.
+- [x] `46dde3b88` Modernize automation create page bindings.
+- [x] `77d62a1b0` Modernize day trading start accordion bindings.
+- [x] `370ebf85f` Modernize swing trading start accordion bindings.
+- [x] `a018dded3` Modernize swing trading course reveal bindings.
+- [x] `8aa315e88` Modernize CRM contact status binding.
+- [x] `544da3d89` Modernize consent banner designer class bindings.
+- [x] `bec3d83dd` Modernize image crop modal bindings.
+- [x] `96b8acea7` Modernize segment detail drawer bindings.
+- [x] `d655efd6c` Modernize virtual block list bindings.
+- [x] `f63c74f36` Modernize Bing SEO status class.
+- [x] `75e35ea39` Modernize member analytics chart bindings.
+- [x] `8315a5fb7` Modernize subscription form modal bindings.
+- [x] `15b87f343` Modernize admin SEO dashboard bindings.
+- [x] `87e1f65b7` Modernize template editor tab bindings.
+- [x] `34db914e1` Modernize small account start page bindings.
+- [x] `f9cdf559c` Modernize day trading learning center styles.
+- [x] `84bdc227c` Modernize admin member subscriptions bindings.
+- [x] `d845ca368` Modernize trade entry manager bindings.
+- [x] `fef2652e6` Modernize small account trader store detail page.
+- [x] `f18c50868` Modernize day trading trader store detail page.
+- [x] `1d0a50318` Modernize CRM webhooks page bindings.
+- [x] `01c065831` Modernize author block bindings.
+- [x] `41fefb1f1` Modernize media upload hub bindings.
+- [x] `a5507f58d` Modernize account sessions bindings.
+- [x] `37b3ff37f` Modernize chart block bindings.
+- [x] `34368c15a` Modernize webhook creation bindings.
+- [x] `64d634ee2` Modernize service members page bindings.
+- [x] `40e946cf2` Modernize popup display bindings.
+- [x] `a06452a04` Modernize small account learning center bindings.
+- [x] `dba7c532c` Modernize trade alert modal bindings.
+- [x] `7ca2e23ac` Modernize testimonial block bindings.
+- [x] `1d8dfea27` Modernize popup renderer styling.
+- [x] `2af7de18a` Modernize video analytics dashboard bindings.
+- [x] `505cef061` Modernize CRM tags page bindings.
+- [x] `86b2055d0` Modernize checklist block class bindings.
+- [x] `751cffbae` Modernize blog article block styling.
+- [x] `ca1666775` Modernize class videos bindings.
+- [x] `3e7d9279b` Modernize daily videos page bindings.
+- [x] `45a7af0c5` Modernize video uploader bindings.
+- [x] `69ebbea74` Modernize multi-step form renderer bindings.
+- [x] `0cdcf4141` Modernize duplicate detector bindings.
+- [x] `ade2908e2` Modernize risk disclaimer block bindings.
+- [x] `5954573fd` Modernize admin member detail bindings.
+- [x] `2cf3e4eb5` Modernize consent banner bindings.
+- [x] `e298a5ca0` Modernize behavior analytics bindings.
+- [x] `595a7d0d9` Modernize abandoned carts bindings.
+- [x] `681f1cae4` Modernize block error boundary classes.
+- [x] `c5db04ef7` Modernize performance dashboard bindings.
+- [x] `ac9ed96ed` Modernize media library selection bindings.
+- [x] `23cc6d364` Modernize smart links bindings.
+- [x] `dd2502e26` Modernize service connection status styles.
+- [x] `6b4e8f310` Migrate form styler classes to scoped CSS.
+- [x] `acbbe6dcf` Modernize consent dashboard category badges.
+- [x] `03b6d6d4e` Modernize explosive swings dashboard bindings.
+- [x] `2e4bd3293` Modernize SEO reports page bindings.
+- [x] `f09e833b9` Modernize admin indicators filters and status classes.
+- [x] `1d048060d` Modernize video sitemap dynamic styling.
+- [x] `992ecc991` Modernize form AI assistant dynamic styling.
+- [x] `b4578c7ec` Modernize cookie consent class composition.
+- [x] `e45a9b79d` Modernize alerts page service card classes.
+- [x] `4153f51a3` Modernize connection health panel bindings.
+- [x] `778bab38a` Modernize dashboard layout class binding.
+- [x] `97c26b3b6` Modernize pull quote block class bindings.
+- [x] `ec305b20d` Modernize store locator card class binding.
+- [x] `584d4954d` Modernize dashboard classes progress style.
+- [x] `7301d5b12` Modernize form analytics dashboard bindings.
+- [x] `24008f1dd` Modernize image SEO page bindings.
+- [x] `a71205643` Modernize form import export class bindings.
+- [x] `877c482bf` Modernize CRM campaigns status classes.
+- [x] `01d18d69c` Modernize dashboard widget manager bindings.
+- [x] `5200857dd` Modernize class downloads bindings.
+- [x] `1104971b8` Modernize block inserter class bindings.
+- [x] `5dfd8ba03` Modernize blog table of contents bindings.
+- [x] `0584f3ac2` Modernize media preview bindings.
+- [x] `dc1d8163a` Modernize video block bindings.
+- [x] `12fab50be` Modernize explosive swings alert card bindings.
+- [x] `c89e86f2e` Modernize close position modal bindings.
+- [x] `fa20a16b0` Modernize CRM managers tab bindings.
+- [x] `90cf550bb` Modernize CRM segments status binding.
+- [x] `6a4f02161` Modernize quiz player bindings.
+- [x] `a3dacaaa0` Modernize CRM tag detail styling.
+- [x] `634afc9c1` Modernize trading room archive bindings.
+- [x] `a86da3ac4` Modernize SPX learning center bindings.
+- [x] `feb0e8655` Modernize list block bindings.
+- [x] `d7d334b39` Modernize bulk edit modal bindings.
+- [x] `371744a3b` Modernize audio block bindings.
+- [x] `81d53f4df` Modernize consent preferences modal bindings.
+- [x] `fa2144a0c` Modernize HTML block class bindings.
+- [x] `408d7b1be` Modernize admin products bindings.
+- [x] `4cd010f06` Modernize form collaborators bindings.
+- [x] `7b40cfe94` Modernize bulk upload queue bindings.
 
 ## Current Priority Queue
 
 - [x] `frontend/src/lib/components/dashboard/DashboardSidebar.svelte`
 - [x] `frontend/src/lib/components/blog/BlockEditor/SchedulingPanel.svelte`
 - [x] `frontend/src/routes/admin/crm/leads/+page.svelte`
-- [ ] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
-- [ ] `frontend/src/routes/courses/+page.svelte`
-- [ ] `frontend/src/routes/admin/consent/settings/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/WeeklyHero.svelte`
-- [ ] `frontend/src/routes/admin/members/+page.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte`
-- [ ] `frontend/src/routes/admin/members/churned/+page.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/media/ImageBlock.svelte`
-- [ ] `frontend/src/routes/courses/day-trading-masterclass/+page.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/RevisionHistory.svelte`
-- [ ] `frontend/src/lib/components/admin/SubscriptionDetailDrawer.svelte`
-- [ ] `frontend/src/routes/resources/etf-stocks-list/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/+page.svelte`
-- [ ] `frontend/src/lib/components/auth/LoginForm.svelte`
-- [ ] `frontend/src/routes/admin/blog/create/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/sequences/+page.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/AIAssistant.svelte`
-- [ ] `frontend/src/lib/components/AdminToolbar.svelte`
-- [ ] `frontend/src/lib/components/forms/FormFieldRenderer.svelte`
-- [ ] `frontend/src/lib/components/CountdownTimer.svelte`
-- [ ] `frontend/src/routes/admin/media/analytics/+page.svelte`
-- [ ] `frontend/src/routes/admin/analytics/+page.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/components/WeeklyVideoUploader.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/ImageUploader.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/PresetPicker.svelte`
-- [ ] `frontend/src/routes/mentorship/+page.svelte`
-- [ ] `frontend/src/routes/admin/watchlist/+page.svelte`
-- [ ] `frontend/src/routes/checkout/thank-you/+page.svelte`
-- [ ] `frontend/src/routes/resources/stock-indexes-list/+page.svelte`
-- [ ] `frontend/src/routes/register/+page.svelte`
-- [ ] `frontend/src/lib/components/admin/CourseFormModal.svelte`
-- [ ] `frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte`
-- [ ] `frontend/src/routes/admin/courses/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/indicators/[id]/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/automations/new/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/day-trading-room/start-here/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/swing-trading-room/start-here/+page.svelte`
-- [ ] `frontend/src/routes/courses/swing-trading-pro/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/+page.svelte`
-- [ ] `frontend/src/lib/consent/components/ConsentBannerDesigner.svelte`
-- [ ] `frontend/src/lib/components/media/ImageCropModal.svelte`
-- [ ] `frontend/src/lib/components/admin/SegmentDetailDrawer.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/VirtualBlockList.svelte`
-- [ ] `frontend/src/routes/admin/seo/bing/+page.svelte`
-- [ ] `frontend/src/routes/admin/members/analytics/+page.svelte`
-- [ ] `frontend/src/lib/components/admin/SubscriptionFormModal.svelte`
-- [ ] `frontend/src/routes/admin/seo/+page.svelte`
-- [ ] `frontend/src/lib/consent/templates/TemplateEditor.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/start-here/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/day-trading-room/learning-center/+page.svelte`
-- [ ] `frontend/src/routes/admin/members/subscriptions/+page.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/components/TradeEntryManager.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/trader-store/[slug]/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/day-trading-room/trader-store/[slug]/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/webhooks/+page.svelte`
+- [x] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
+- [x] `frontend/src/routes/courses/+page.svelte`
+- [x] `frontend/src/routes/admin/consent/settings/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/WeeklyHero.svelte`
+- [x] `frontend/src/routes/admin/members/+page.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte`
+- [x] `frontend/src/routes/admin/members/churned/+page.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/media/ImageBlock.svelte`
+- [x] `frontend/src/routes/courses/day-trading-masterclass/+page.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/RevisionHistory.svelte`
+- [x] `frontend/src/lib/components/admin/SubscriptionDetailDrawer.svelte`
+- [x] `frontend/src/routes/resources/etf-stocks-list/+page.svelte`
+- [x] `frontend/src/routes/dashboard/+page.svelte`
+- [x] `frontend/src/lib/components/auth/LoginForm.svelte`
+- [x] `frontend/src/routes/admin/blog/create/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/sequences/+page.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/AIAssistant.svelte`
+- [x] `frontend/src/lib/components/AdminToolbar.svelte`
+- [x] `frontend/src/lib/components/forms/FormFieldRenderer.svelte`
+- [x] `frontend/src/lib/components/CountdownTimer.svelte`
+- [x] `frontend/src/routes/admin/media/analytics/+page.svelte`
+- [x] `frontend/src/routes/admin/analytics/+page.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/components/WeeklyVideoUploader.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/ImageUploader.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/PresetPicker.svelte`
+- [x] `frontend/src/routes/mentorship/+page.svelte`
+- [x] `frontend/src/routes/admin/watchlist/+page.svelte`
+- [x] `frontend/src/routes/checkout/thank-you/+page.svelte`
+- [x] `frontend/src/routes/resources/stock-indexes-list/+page.svelte`
+- [x] `frontend/src/routes/register/+page.svelte`
+- [x] `frontend/src/lib/components/admin/CourseFormModal.svelte`
+- [x] `frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte`
+- [x] `frontend/src/routes/admin/courses/+page.svelte`
+- [x] `frontend/src/routes/dashboard/indicators/[id]/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/automations/new/+page.svelte`
+- [x] `frontend/src/routes/dashboard/day-trading-room/start-here/+page.svelte`
+- [x] `frontend/src/routes/dashboard/swing-trading-room/start-here/+page.svelte`
+- [x] `frontend/src/routes/courses/swing-trading-pro/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/+page.svelte`
+- [x] `frontend/src/lib/consent/components/ConsentBannerDesigner.svelte`
+- [x] `frontend/src/lib/components/media/ImageCropModal.svelte`
+- [x] `frontend/src/lib/components/admin/SegmentDetailDrawer.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/VirtualBlockList.svelte`
+- [x] `frontend/src/routes/admin/seo/bing/+page.svelte`
+- [x] `frontend/src/routes/admin/members/analytics/+page.svelte`
+- [x] `frontend/src/lib/components/admin/SubscriptionFormModal.svelte`
+- [x] `frontend/src/routes/admin/seo/+page.svelte`
+- [x] `frontend/src/lib/consent/templates/TemplateEditor.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/start-here/+page.svelte`
+- [x] `frontend/src/routes/dashboard/day-trading-room/learning-center/+page.svelte`
+- [x] `frontend/src/routes/admin/members/subscriptions/+page.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/components/TradeEntryManager.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/trader-store/[slug]/+page.svelte`
+- [x] `frontend/src/routes/dashboard/day-trading-room/trader-store/[slug]/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/webhooks/+page.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/AuthorBlock.svelte`
+- [x] `frontend/src/lib/components/admin/MediaUploadHub.svelte`
+- [x] `frontend/src/routes/account/sessions/+page.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/trading/ChartBlock.svelte`
+- [x] `frontend/src/routes/admin/crm/webhooks/new/+page.svelte`
+- [x] `frontend/src/routes/admin/members/service/[id]/+page.svelte`
+- [x] `frontend/src/lib/components/PopupDisplay.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/learning-center/+page.svelte`
+- [x] `frontend/src/lib/components/dashboard/TradeAlertModal.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/TestimonialBlock.svelte`
+- [x] `frontend/src/lib/components/popups/PopupRenderer.svelte`
+- [x] `frontend/src/lib/components/admin/VideoAnalyticsDashboard.svelte`
+- [x] `frontend/src/routes/admin/crm/tags/+page.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/ChecklistBlock.svelte`
+- [x] `frontend/src/routes/blog/[slug]/+page.svelte`
+- [x] `frontend/src/lib/components/ClassVideos.svelte`
+- [x] `frontend/src/routes/dashboard/[room_slug]/daily-videos/+page.svelte`
+- [x] `frontend/src/lib/components/admin/VideoUploader.svelte`
+- [x] `frontend/src/lib/components/forms/MultiStepFormRenderer.svelte`
+- [x] `frontend/src/lib/components/media/DuplicateDetector.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/trading/RiskDisclaimerBlock.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/+page.svelte`
+- [x] `frontend/src/lib/components/consent/ConsentBanner.svelte`
+- [x] `frontend/src/routes/admin/behavior/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/abandoned-carts/+page.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/BlockErrorBoundary.svelte`
+- [x] `frontend/src/routes/admin/performance/+page.svelte`
+- [x] `frontend/src/routes/media/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/smart-links/+page.svelte`
+- [x] `frontend/src/lib/components/admin/ServiceConnectionStatus.svelte`
+- [x] `frontend/src/lib/components/forms/pro/FormStyler.svelte`
+- [x] `frontend/src/routes/admin/consent/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/reports/+page.svelte`
+- [x] `frontend/src/routes/admin/indicators/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/video-sitemap/+page.svelte`
+- [x] `frontend/src/lib/components/forms/FormAIAssistant.svelte`
+- [x] `frontend/src/lib/components/popups/CookieConsent.svelte`
+- [x] `frontend/src/routes/alerts/+page.svelte`
+- [x] `frontend/src/lib/components/ConnectionHealthPanel.svelte`
+- [x] `frontend/src/routes/dashboard/+layout.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/PullQuoteBlock.svelte`
+- [x] `frontend/src/routes/admin/seo/store-locator/+page.svelte`
+- [x] `frontend/src/routes/dashboard/classes/+page.svelte`
+- [x] `frontend/src/lib/components/forms/FormAnalyticsDashboard.svelte`
+- [x] `frontend/src/routes/admin/seo/image-seo/+page.svelte`
+- [x] `frontend/src/lib/components/forms/FormImportExport.svelte`
+- [x] `frontend/src/routes/admin/crm/campaigns/+page.svelte`
+- [x] `frontend/src/lib/components/DashboardWidgetManager.svelte`
+- [x] `frontend/src/lib/components/ClassDownloads.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/BlockInserter.svelte`
+- [x] `frontend/src/lib/components/blog/TableOfContents.svelte`
+- [x] `frontend/src/lib/components/media/MediaPreview.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/media/VideoBlock.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/AlertCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/ClosePositionModal.svelte`
+- [x] `frontend/src/routes/admin/crm/managers/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/segments/+page.svelte`
+- [x] `frontend/src/lib/components/courses/QuizPlayer.svelte`
+- [x] `frontend/src/routes/admin/crm/tags/[id]/+page.svelte`
+- [x] `frontend/src/lib/components/dashboard/TradingRoomArchive.svelte`
+- [x] `frontend/src/routes/dashboard/spx-profit-pulse/learning-center/+page.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/ListBlock.svelte`
+- [x] `frontend/src/lib/components/admin/BulkEditModal.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/media/AudioBlock.svelte`
+- [x] `frontend/src/lib/consent/components/ConsentPreferencesModal.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/HtmlBlock.svelte`
+- [x] `frontend/src/routes/admin/products/+page.svelte`
+- [x] `frontend/src/lib/components/forms/FormCollaborators.svelte`
+- [x] `frontend/src/lib/components/admin/BulkUploadQueue.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/trades/components/TradesTable.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/VideoGrid.svelte`
+- [x] `frontend/src/lib/components/admin/ModuleFormModal.svelte`
+- [x] `frontend/src/routes/admin/crm/recurring-campaigns/+page.svelte`
+- [x] `frontend/src/routes/daily/day-trading-room/[slug]/+page.svelte`
+- [x] `frontend/src/lib/components/forms/fields/RepeaterField.svelte`
 
 ## Per-File Completion Checklist
 

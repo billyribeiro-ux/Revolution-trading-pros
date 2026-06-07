@@ -152,6 +152,13 @@
 		return num.toLocaleString();
 	}
 
+	function segmentStatusClass(segment: DynamicSegment) {
+		return {
+			'segment-status': true,
+			active: segment.is_active
+		};
+	}
+
 	function formatDate(dateString: string | undefined): string {
 		if (!dateString) return 'Never';
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -307,7 +314,7 @@
 						</div>
 						<div class="segment-title-section">
 							<h3>{segment.title}</h3>
-							<span class="segment-status" class:active={segment.is_active}>
+							<span class={segmentStatusClass(segment)}>
 								{segment.is_active ? 'Active' : 'Inactive'}
 							</span>
 						</div>

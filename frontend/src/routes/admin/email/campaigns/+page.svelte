@@ -228,13 +228,13 @@
 	function getStatusColor(status: string): string {
 		switch (status) {
 			case 'sent':
-				return 'bg-emerald-500/20 text-emerald-400';
+				return 'status-sent';
 			case 'scheduled':
-				return 'bg-blue-500/20 text-blue-400';
+				return 'status-scheduled';
 			case 'sending':
-				return 'bg-yellow-500/20 text-yellow-400';
+				return 'status-sending';
 			default:
-				return 'bg-slate-500/20 text-slate-400';
+				return 'status-default';
 		}
 	}
 
@@ -416,7 +416,7 @@
 	<!-- Connection Check -->
 	{#if connectionLoading}
 		<SkeletonLoader variant="dashboard" />
-	{:else if !getIsEmailConnected}
+	{:else if !getIsEmailConnected()}
 		<ApiNotConnected
 			serviceName="Email Marketing"
 			description="Connect an email marketing service to create and manage email campaigns, track opens, clicks, and subscriber engagement."
@@ -486,18 +486,21 @@
 		<!-- Tabs -->
 		<div class="tabs-container">
 			<div class="tabs">
-				<button class:active={activeTab === 'all'} onclick={() => (activeTab = 'all')}>
+				<button class={{ active: activeTab === 'all' }} onclick={() => (activeTab = 'all')}>
 					All ({campaigns.length})
 				</button>
-				<button class:active={activeTab === 'scheduled'} onclick={() => (activeTab = 'scheduled')}>
+				<button
+					class={{ active: activeTab === 'scheduled' }}
+					onclick={() => (activeTab = 'scheduled')}
+				>
 					<IconClock size={16} />
 					Scheduled ({scheduledCount})
 				</button>
-				<button class:active={activeTab === 'sent'} onclick={() => (activeTab = 'sent')}>
+				<button class={{ active: activeTab === 'sent' }} onclick={() => (activeTab = 'sent')}>
 					<IconCheck size={16} />
 					Sent ({sentCount})
 				</button>
-				<button class:active={activeTab === 'drafts'} onclick={() => (activeTab = 'drafts')}>
+				<button class={{ active: activeTab === 'drafts' }} onclick={() => (activeTab = 'drafts')}>
 					<IconEdit size={16} />
 					Drafts ({draftCount})
 				</button>
@@ -518,7 +521,7 @@
 							</div>
 							<p class="campaign-subject">{campaign.subject || '(No subject)'}</p>
 						</div>
-						<span class="status-badge {getStatusColor(campaign.status)}">
+						<span class={['status-badge', getStatusColor(campaign.status)]}>
 							{campaign.status}
 						</span>
 					</div>
@@ -573,14 +576,14 @@
 							<div class="ab-test-results">
 								<span class="ab-label">A/B Test Results:</span>
 								<div class="ab-variants">
-									<div class="ab-variant" class:winner={campaign.ab_test_config.winner === 'a'}>
+									<div class={['ab-variant', { winner: campaign.ab_test_config.winner === 'a' }]}>
 										<span class="variant-label">A:</span>
 										<span class="variant-subject">{campaign.subject}</span>
 										<span class="variant-rate"
 											>{campaign.ab_test_config.variant_a?.open_rate || 0}%</span
 										>
 									</div>
-									<div class="ab-variant" class:winner={campaign.ab_test_config.winner === 'b'}>
+									<div class={['ab-variant', { winner: campaign.ab_test_config.winner === 'b' }]}>
 										<span class="variant-label">B:</span>
 										<span class="variant-subject">{campaign.ab_test_config.subject_b}</span>
 										<span class="variant-rate"
@@ -1031,6 +1034,26 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: capitalize;
+	}
+
+	.status-badge.status-sent {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.status-badge.status-scheduled {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.status-badge.status-sending {
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
+	}
+
+	.status-badge.status-default {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
 	}
 
 	.campaign-meta {

@@ -251,7 +251,7 @@
 	// LIFECYCLE
 
 	onMount(() => {
-		loadWebhook();
+		void loadWebhook();
 	});
 </script>
 
@@ -311,7 +311,7 @@
 						name="name"
 						bind:value={name}
 						placeholder="e.g., Slack Notifications, Zapier Integration"
-						class:error={fieldErrors.name}
+						class={{ error: fieldErrors.name }}
 					/>
 					{#if fieldErrors.name}
 						<span class="field-error">{fieldErrors.name}</span>
@@ -328,7 +328,7 @@
 						name="url"
 						bind:value={url}
 						placeholder="https://api.example.com/webhook"
-						class:error={fieldErrors.url}
+						class={{ error: fieldErrors.url }}
 					/>
 					{#if fieldErrors.url}
 						<span class="field-error">{fieldErrors.url}</span>
@@ -405,8 +405,7 @@
 						{#each Object.entries(availableEvents) as [event, label] (event)}
 							<button
 								type="button"
-								class="event-chip"
-								class:selected={selectedEvents.has(event as WebhookEvent)}
+								class={['event-chip', selectedEvents.has(event as WebhookEvent) && 'selected']}
 								onclick={() => toggleEvent(event as WebhookEvent)}
 							>
 								{#if selectedEvents.has(event as WebhookEvent)}
@@ -519,7 +518,7 @@
 {#if toasts.length > 0}
 	<div class="toast-container" role="region" aria-label="Notifications">
 		{#each toasts as toast (toast.id)}
-			<div class="toast toast-{toast.type}" role="alert">
+			<div class={['toast', `toast-${toast.type}`]} role="alert">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
 						<IconCheck size={18} />

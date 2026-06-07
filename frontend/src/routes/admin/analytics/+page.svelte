@@ -208,7 +208,7 @@
 			{/if}
 
 			<!-- Connection Status Badge -->
-			<div class="connection-status" class:connected={isConnected}>
+			<div class={['connection-status', { connected: isConnected }]}>
 				<IconPlugConnected size={16} />
 				<span>{isConnected ? 'Analytics Connected' : 'Not Connected'}</span>
 			</div>
@@ -218,8 +218,7 @@
 				<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
 					{#each tabs as tab (tab.id)}
 						<button
-							class="tab-btn"
-							class:active={activeTab === tab.id}
+							class={['tab-btn', { active: activeTab === tab.id }]}
 							onclick={() => (activeTab = tab.id)}
 						>
 							<span class="tab-icon">{tab.icon}</span>
@@ -263,7 +262,7 @@
 								<a
 									href="/admin/connections?connect={service.key}"
 									class="service-card"
-									style="--service-color: {service.color}"
+									style:--service-color={service.color}
 								>
 									<span class="service-icon">{service.icon}</span>
 									<span class="service-name">{service.name}</span>
@@ -295,8 +294,7 @@
 				<div class="dashboard-grid" in:fade={{ duration: 400 }}>
 					<!-- Overview Panel -->
 					<div
-						class="tab-panel"
-						class:active={activeTab === 'overview'}
+						class={['tab-panel', { active: activeTab === 'overview' }]}
 						inert={activeTab !== 'overview' ? true : undefined}
 					>
 						<div class="tab-content">
@@ -401,8 +399,7 @@
 
 					<!-- Funnels Panel -->
 					<div
-						class="tab-panel"
-						class:active={activeTab === 'funnels'}
+						class={['tab-panel', { active: activeTab === 'funnels' }]}
 						inert={activeTab !== 'funnels' ? true : undefined}
 					>
 						<div class="tab-content">
@@ -432,8 +429,7 @@
 
 					<!-- Cohorts Panel -->
 					<div
-						class="tab-panel"
-						class:active={activeTab === 'cohorts'}
+						class={['tab-panel', { active: activeTab === 'cohorts' }]}
 						inert={activeTab !== 'cohorts' ? true : undefined}
 					>
 						<div class="tab-content">
@@ -468,8 +464,7 @@
 
 					<!-- Attribution Panel -->
 					<div
-						class="tab-panel"
-						class:active={activeTab === 'attribution'}
+						class={['tab-panel', { active: activeTab === 'attribution' }]}
 						inert={activeTab !== 'attribution' ? true : undefined}
 					>
 						<div class="tab-content">

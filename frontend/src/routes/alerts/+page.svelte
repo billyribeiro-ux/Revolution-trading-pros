@@ -102,7 +102,12 @@
 			icon: '⚡',
 			href: '/alerts/spx-profit-pulse'
 		}
-	];
+	] as const;
+
+	const serviceCardClassByColor = {
+		emerald: 'service-card--emerald',
+		blue: 'service-card--blue'
+	} as const satisfies Record<(typeof alertServices)[number]['color'], string>;
 </script>
 
 <div class="alerts-page">
@@ -134,7 +139,10 @@
 
 		<div class="services-grid">
 			{#each alertServices as service, i (service.id)}
-				<article class="service-card service-card--{service.color}" data-gsap={{ delay: i * 150 }}>
+				<article
+					class={['service-card', serviceCardClassByColor[service.color]]}
+					data-gsap={{ delay: i * 150 }}
+				>
 					<div class="service-header">
 						<span class="service-icon">{service.icon}</span>
 						<div>

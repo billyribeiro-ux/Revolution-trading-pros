@@ -27,6 +27,29 @@
 	let showResetModal = $state(false);
 
 	// Types
+	type ScriptBlockingKey =
+		| 'block_google_analytics'
+		| 'block_google_tag_manager'
+		| 'block_facebook_pixel'
+		| 'block_tiktok_pixel'
+		| 'block_twitter_pixel'
+		| 'block_linkedin_pixel'
+		| 'block_pinterest_tag'
+		| 'block_reddit_pixel'
+		| 'block_hotjar'
+		| 'block_youtube_embeds'
+		| 'block_vimeo_embeds'
+		| 'block_google_maps';
+
+	type ScriptBlockingCategory = 'analytics' | 'marketing' | 'embedded_video';
+
+	interface ScriptBlockingOption {
+		key: ScriptBlockingKey;
+		label: string;
+		description: string;
+		category: ScriptBlockingCategory;
+	}
+
 	interface ConsentSettings {
 		// General
 		consent_enabled: boolean;
@@ -71,11 +94,6 @@
 		proof_consent_enabled: boolean;
 		proof_retention_days: number;
 		proof_auto_delete: boolean;
-
-		// Dynamic per-script block toggles bound via bind:checked (boolean) with
-		// runtime keys; index signature must stay loose for the binding.
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic bind:checked key map
-		[key: string]: any;
 	}
 
 	// State
@@ -131,7 +149,7 @@
 	];
 
 	// Script blocking options
-	const scriptBlockingOptions = [
+	const scriptBlockingOptions: ScriptBlockingOption[] = [
 		{
 			key: 'block_google_analytics',
 			label: 'Google Analytics',
@@ -320,7 +338,10 @@
 	<!-- Navigation Tabs -->
 	<nav class="tabs">
 		{#each tabs as tab (tab.id)}
-			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
+			<button
+				class={['tab', { active: activeTab === tab.id }]}
+				onclick={() => (activeTab = tab.id)}
+			>
 				<span class="tab-icon"
 					>{tab.icon === 'settings'
 						? '⚙️'
@@ -932,7 +953,7 @@
 
 	<!-- Notification -->
 	{#if notification}
-		<div class="notification" class:error={notificationType === 'error'}>
+		<div class={['notification', { error: notificationType === 'error' }]}>
 			{#if notificationType === 'success'}
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: circle-check (success notification) -->
 				<IconCircleCheck size={18} aria-hidden="true" />

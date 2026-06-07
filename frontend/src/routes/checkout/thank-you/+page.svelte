@@ -151,7 +151,7 @@
 			<h1 class="typ-header__title">Thank You for Your Order!</h1>
 			<p class="typ-header__subtitle">Order #{orderNumber} has been confirmed</p>
 			{#if orderDetail?.status}
-				<span class="typ-header__badge {getStatusClass(orderDetail.status)}">
+				<span class={['typ-header__badge', getStatusClass(orderDetail.status)]}>
 					{orderDetail.status.charAt(0).toUpperCase() + orderDetail.status.slice(1)}
 				</span>
 			{/if}

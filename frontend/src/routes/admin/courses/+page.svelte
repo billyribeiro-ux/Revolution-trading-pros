@@ -364,7 +364,7 @@
 			<div class="courses-grid">
 				{#each courses as course (course.id)}
 					<div class="course-card-wrapper">
-						<div class="card-status" class:published={course.is_published}>
+						<div class={['card-status', { published: course.is_published }]}>
 							<span class="status-dot"></span>
 							{course.status || (course.is_published ? 'Published' : 'Draft')}
 						</div>
@@ -624,6 +624,38 @@
 		overflow: hidden;
 	}
 
+	.admin-courses :global(*) {
+		box-sizing: border-box;
+	}
+
+	.admin-courses :global(svg) {
+		display: block;
+		max-width: 100%;
+	}
+
+	.admin-page-container {
+		position: relative;
+		z-index: 10;
+		max-width: 1400px;
+		margin: 1rem;
+		padding: 1.5rem;
+		background-color: var(--bg-elevated);
+		border: 1px solid var(--border-thin);
+		border-radius: var(--radius-2xl);
+		color: var(--text-primary);
+		color-scheme: dark;
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		line-height: var(--leading-normal);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+	}
+
+	.bg-effects {
+		display: none;
+	}
+
 	/* Centered Header */
 	.page-header {
 		text-align: center;
@@ -659,9 +691,19 @@
 		margin-bottom: 1rem;
 	}
 
-	/* Search Box - Uses global .search-box styles from admin-page-layout.css */
 	.search-box {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: var(--bg-surface);
+		border: 1px solid var(--border-default);
+		border-radius: 8px;
 		min-width: 280px;
+		max-width: 320px;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.search-box :global(svg) {
@@ -670,7 +712,23 @@
 	}
 
 	.search-box input {
+		flex: 1;
 		width: 100%;
+		min-width: 0;
+		border: none;
+		background: transparent;
+		color: var(--text-primary);
+		font-size: 0.875rem;
+		outline: none;
+	}
+
+	.search-box input::placeholder {
+		color: var(--text-tertiary);
+	}
+
+	.search-box:focus-within {
+		border-color: var(--primary-500);
+		box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.15);
 	}
 
 	/* Filter Select */
@@ -916,16 +974,64 @@
 		color: #64748b;
 	}
 
+	@media (min-width: 1440px) {
+		.admin-page-container {
+			margin: 1rem auto;
+		}
+	}
+
+	@media (max-width: 1023.98px) {
+		.admin-page-container {
+			padding: 1.5rem;
+		}
+	}
+
 	@media (max-width: 767.98px) {
+		.admin-page-container {
+			margin: 0.75rem;
+			padding: 1rem;
+		}
+
 		.actions-row {
 			flex-direction: column;
 			gap: 0.75rem;
 		}
+
+		.actions-row > * {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.page-header h1 {
+			font-size: 1.5rem;
+		}
+
+		.search-box {
+			min-width: 150px;
+			max-width: 100%;
+		}
+
 		.search-box input {
 			width: 100%;
 		}
+
 		.courses-grid {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 479.98px) {
+		.admin-page-container {
+			margin: 0;
+			border-radius: 0;
+		}
+
+		.page-header h1 {
+			font-size: 1.25rem;
+		}
+
+		.subtitle {
+			font-size: 0.8125rem;
 		}
 	}
 

@@ -11,6 +11,7 @@
 	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	// Props
 
@@ -29,7 +30,7 @@
 
 	let isUploading = $state(false);
 	let uploadError = $state<string | null>(null);
-	let fileInputRef = $state<HTMLInputElement | null>(null);
+	let fileInputRef: HTMLInputElement | null = null;
 	let urlInputValue = $state('');
 	let showUrlInput = $state(false);
 
@@ -70,7 +71,27 @@
 	function handlePaste(e: ClipboardEvent): void {
 		e.preventDefault();
 		const text = e.clipboardData?.getData('text/plain') || '';
-		document.execCommand('insertText', false, text.slice(0, 2000));
+		insertPlainText(e.currentTarget as HTMLElement, text.slice(0, 2000));
+	}
+
+	function insertPlainText(target: HTMLElement, text: string): void {
+		const selection = window.getSelection();
+		if (!selection?.rangeCount || !selection.anchorNode || !target.contains(selection.anchorNode)) {
+			target.textContent = `${target.textContent ?? ''}${text}`;
+		} else {
+			const range = selection.getRangeAt(0);
+			const textNode = document.createTextNode(text);
+			range.deleteContents();
+			range.insertNode(textNode);
+			range.setStartAfter(textNode);
+			range.collapse(true);
+			selection.removeAllRanges();
+			selection.addRange(range);
+		}
+
+		target.dispatchEvent(
+			new InputEvent('input', { bubbles: true, inputType: 'insertText', data: text })
+		);
 	}
 
 	// Photo Upload Handlers
@@ -182,12 +203,26 @@
 	function getSanitizedSocialUrl(url: string): string {
 		return sanitizeURL(url) || '#';
 	}
+
+	const attachFileInput: Attachment<HTMLInputElement> = (input) => {
+		fileInputRef = input;
+
+		return () => {
+			if (fileInputRef === input) {
+				fileInputRef = null;
+			}
+		};
+	};
 </script>
 
 <div
-	class="author-block"
-	class:author-block--selected={props.isSelected}
-	class:author-block--editing={props.isEditing}
+	class={[
+		'author-block',
+		{
+			'author-block--selected': props.isSelected,
+			'author-block--editing': props.isEditing
+		}
+	]}
 	role="article"
 	aria-label="About the author"
 >
@@ -209,9 +244,13 @@
 			</div>
 		{:else if props.isEditing}
 			<div
-				class="author-block__photo-placeholder"
-				class:author-block__photo-placeholder--uploading={isUploading}
-				class:author-block__photo-placeholder--error={!!uploadError}
+				class={[
+					'author-block__photo-placeholder',
+					{
+						'author-block__photo-placeholder--uploading': isUploading,
+						'author-block__photo-placeholder--error': !!uploadError
+					}
+				]}
 				ondrop={handleDrop}
 				ondragover={handleDragOver}
 				role="button"
@@ -228,13 +267,13 @@
 				{/if}
 			</div>
 			<input
-				bind:this={fileInputRef}
 				type="file"
 				accept="image/*"
 				onchange={handleFileSelect}
 				class="author-block__file-input"
 				aria-hidden="true"
 				tabindex="-1"
+				{@attach attachFileInput}
 			/>
 		{:else}
 			<div class="author-block__photo-placeholder author-block__photo-placeholder--empty">
@@ -314,8 +353,7 @@
 					<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 					<p
 						contenteditable="true"
-						class="author-block__title"
-						class:author-block__title--empty={!title}
+						class={['author-block__title', { 'author-block__title--empty': !title }]}
 						oninput={(e) =>
 							updateContent({ authorTitle: (e.target as HTMLElement).textContent || '' })}
 						onpaste={handlePaste}

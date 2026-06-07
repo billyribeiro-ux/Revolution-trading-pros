@@ -180,29 +180,23 @@
 		return new Date(dateString).toLocaleDateString();
 	}
 
+	function handleSearchInput(event: Event) {
+		searchQuery = (event.currentTarget as HTMLInputElement).value;
+		void loadTags();
+	}
+
+	function getColorSwatchClass(color: string): string {
+		return formData.color === color ? 'color-swatch color-swatch--selected' : 'color-swatch';
+	}
+
 	let filteredTags = $derived(
 		tags.filter((tag) => {
 			return !searchQuery || tag.title.toLowerCase().includes(searchQuery.toLowerCase());
 		})
 	);
 
-	let isInitialized = $state(false);
-
 	onMount(() => {
-		(async () => {
-			await loadTags();
-			isInitialized = true;
-		})();
-	});
-
-	// Audit P1 #6: re-fetch tags from the backend whenever the search query
-	// changes — previously `searchQuery` was only sent on the first mount
-	// fetch, so server-side search never re-fired for paginated results.
-	$effect(() => {
-		searchQuery;
-		if (isInitialized) {
-			loadTags();
-		}
+		void loadTags();
 	});
 </script>
 
@@ -266,7 +260,8 @@
 				id="search-tags"
 				name="search"
 				placeholder="Search tags..."
-				bind:value={searchQuery}
+				value={searchQuery}
+				oninput={handleSearchInput}
 			/>
 		</div>
 	</div>
@@ -297,7 +292,7 @@
 			{#each filteredTags as tag (tag.id)}
 				<div class="tag-card">
 					<div class="tag-header">
-						<div class="tag-color" style="background-color: {tag.color || '#E6B800'}"></div>
+						<div class="tag-color" style:background-color={tag.color || '#E6B800'}></div>
 						<div class="tag-info">
 							<h3 class="tag-title">{tag.title}</h3>
 							{#if tag.description}
@@ -386,14 +381,13 @@
 				<div class="form-group">
 					<span id="tag-color-label" class="group-label">Color</span>
 					<div class="color-picker" role="group" aria-labelledby="tag-color-label">
-						<div class="color-preview" style="background-color: {formData.color}"></div>
+						<div class="color-preview" style:background-color={formData.color}></div>
 						<div class="color-palette">
 							{#each colorPalette as color (color)}
 								<button
 									type="button"
-									class="color-swatch"
-									class:selected={formData.color === color}
-									style="background-color: {color}"
+									class={getColorSwatchClass(color)}
+									style:background-color={color}
 									onclick={() => (formData.color = color)}
 									disabled={isSaving}
 								>
@@ -915,7 +909,7 @@
 		transform: scale(1.1);
 	}
 
-	.color-swatch.selected {
+	.color-swatch--selected {
 		border-color: white;
 		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
 	}

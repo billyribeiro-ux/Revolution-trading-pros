@@ -284,7 +284,7 @@
 		{:else}
 			<div class="locations-list">
 				{#each locationList as location (location.id)}
-					<div class="location-card" class:inactive={!location.isActive}>
+					<div class={['location-card', !location.isActive && 'inactive']}>
 						{#if location.isPrimary}
 							<span class="primary-badge">Primary</span>
 						{/if}

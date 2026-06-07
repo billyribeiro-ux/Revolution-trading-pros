@@ -14,6 +14,8 @@
 
 	let openAccordion = $state<number | null>(0);
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
+	const accordionChevronClass = (idx: number) =>
+		openAccordion === idx ? 'accordion__chevron accordion__chevron--open' : 'accordion__chevron';
 
 	onMount(async () => {
 		if (!browser) return;
@@ -358,10 +360,7 @@
 								onclick={() => toggleAccordion(0)}
 							>
 								<span class="accordion__label">CONFIDENTIALITY &amp; DATA SOVEREIGNTY</span>
-								<IconChevronDown
-									size={16}
-									class="accordion__chevron {openAccordion === 0 ? 'accordion__chevron--open' : ''}"
-								/>
+								<IconChevronDown size={16} class={accordionChevronClass(0)} />
 							</button>
 							{#if openAccordion === 0}
 								<div transition:slide class="accordion__panel">
@@ -380,10 +379,7 @@
 								onclick={() => toggleAccordion(1)}
 							>
 								<span class="accordion__label">CONFLICT OF INTEREST</span>
-								<IconChevronDown
-									size={16}
-									class="accordion__chevron {openAccordion === 1 ? 'accordion__chevron--open' : ''}"
-								/>
+								<IconChevronDown size={16} class={accordionChevronClass(1)} />
 							</button>
 							{#if openAccordion === 1}
 								<div transition:slide class="accordion__panel">
@@ -402,10 +398,7 @@
 								onclick={() => toggleAccordion(2)}
 							>
 								<span class="accordion__label">LOGISTICS &amp; EXPENSING</span>
-								<IconChevronDown
-									size={16}
-									class="accordion__chevron {openAccordion === 2 ? 'accordion__chevron--open' : ''}"
-								/>
+								<IconChevronDown size={16} class={accordionChevronClass(2)} />
 							</button>
 							{#if openAccordion === 2}
 								<div transition:slide class="accordion__panel">

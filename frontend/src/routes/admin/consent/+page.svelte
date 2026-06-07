@@ -87,6 +87,15 @@
 		return `${(ms / 1000).toFixed(1)}s`;
 	}
 
+	function getCategoryBadgeClasses(category: string) {
+		const normalized = category.toLowerCase();
+		const variant = ['necessary', 'analytics', 'marketing', 'preferences'].includes(normalized)
+			? normalized
+			: 'unknown';
+
+		return ['category-badge', `category-badge--${variant}`];
+	}
+
 	// FIX-2026-04-26 (P2-5): basic PII redaction before audit-log entries land in the
 	// DOM. Catches obvious email + (US) phone shapes in the freeform `method` field
 	// and any future `meta`/`user_agent` fields. This is defense-in-depth — backend
@@ -373,7 +382,7 @@
 						{#if cookies.length > 0}
 							<section class="section">
 								<h2 class="category-header">
-									<span class="category-badge {category}">{category}</span>
+									<span class={getCategoryBadgeClasses(category)}>{category}</span>
 									({cookies.length} cookies)
 								</h2>
 								<div class="table-wrapper">
@@ -808,23 +817,23 @@
 		text-transform: capitalize;
 	}
 
-	.category-badge.necessary {
+	.category-badge--necessary {
 		background: rgba(34, 197, 94, 0.2);
 		color: #4ade80;
 	}
-	.category-badge.analytics {
+	.category-badge--analytics {
 		background: rgba(59, 130, 246, 0.2);
 		color: #60a5fa;
 	}
-	.category-badge.marketing {
+	.category-badge--marketing {
 		background: rgba(168, 85, 247, 0.2);
 		color: #c084fc;
 	}
-	.category-badge.preferences {
+	.category-badge--preferences {
 		background: rgba(245, 158, 11, 0.2);
 		color: #fbbf24;
 	}
-	.category-badge.unknown {
+	.category-badge--unknown {
 		background: rgba(148, 163, 184, 0.2);
 		color: #94a3b8;
 	}

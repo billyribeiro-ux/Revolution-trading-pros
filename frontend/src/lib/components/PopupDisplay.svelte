@@ -1,6 +1,7 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { browser } from '$app/environment';
 	import { popupsApi } from '$lib/api/popups';
 	import type { Popup } from '$lib/stores/popups.svelte';
@@ -30,7 +31,7 @@
 	let showTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	// Accessibility
-	let popupElement: HTMLElement | null = $state(null);
+	let popupElement: HTMLElement | null = null;
 	let previousFocusedElement: HTMLElement | null = $state(null);
 
 	// Button ripple effect state
@@ -38,16 +39,28 @@
 	let rippleX = $state(0);
 	let rippleY = $state(0);
 
-	onMount(async () => {
+	const attachPopupElement: Attachment<HTMLElement> = (element) => {
+		popupElement = element;
+
+		return () => {
+			if (popupElement === element) {
+				popupElement = null;
+			}
+		};
+	};
+
+	onMount(() => {
 		if (!browser) return;
 
-		await loadActivePopups();
+		window.addEventListener('keydown', handleKeydown);
+		void loadActivePopups();
 		setupTracking();
 	});
 
 	onDestroy(() => {
 		if (timeInterval) clearInterval(timeInterval);
 		if (showTimeout) clearTimeout(showTimeout);
+		if (browser) window.removeEventListener('keydown', handleKeydown);
 		removeEventListeners();
 		restoreFocus();
 	});
@@ -77,7 +90,7 @@
 		switch (popup.type) {
 			case 'timed':
 				const delay = rules.delay || 5000;
-				showTimeout = setTimeout(() => showPopup(popup), delay);
+				showTimeout = setTimeout(() => void showPopup(popup), delay);
 				break;
 
 			case 'exit_intent':
@@ -91,13 +104,13 @@
 			case 'click_trigger':
 				const selector = rules.selector || '[data-popup-trigger]';
 				document.querySelectorAll(selector).forEach((el) => {
-					el.addEventListener('click', () => showPopup(popup));
+					el.addEventListener('click', () => void showPopup(popup));
 				});
 				break;
 
 			default:
 				// Immediate display
-				setTimeout(() => showPopup(popup), 100);
+				setTimeout(() => void showPopup(popup), 100);
 		}
 	}
 
@@ -123,7 +136,7 @@
 		// Trigger when mouse leaves top of page
 		if (e.clientY <= 0) {
 			exitIntentTriggered = true;
-			showPopup(currentPopup);
+			void showPopup(currentPopup);
 			document.removeEventListener('mouseout', handleExitIntent);
 		}
 	}
@@ -137,7 +150,7 @@
 		updateScrollDepth();
 
 		if (scrollDepth >= targetDepth && !show) {
-			showPopup(currentPopup);
+			void showPopup(currentPopup);
 			window.removeEventListener('scroll', handleScroll);
 		}
 	}
@@ -236,7 +249,7 @@
 			}, 600);
 		}
 
-		handleConversion('cta_click');
+		void handleConversion('cta_click');
 
 		if (currentPopup?.cta_url) {
 			if (currentPopup.cta_new_tab) {
@@ -275,33 +288,33 @@
 		}
 	}
 
-	function getPositionClasses(position: string): string {
+	function getPositionClass(position: string): string {
 		switch (position) {
 			case 'top':
-				return 'items-start justify-center pt-4 sm:pt-8';
+				return 'position-top';
 			case 'bottom':
-				return 'items-end justify-center pb-4 sm:pb-8';
+				return 'position-bottom';
 			case 'corner':
-				return 'items-end justify-end p-4 sm:p-6';
+				return 'position-corner';
 			default:
-				return 'items-center justify-center';
+				return 'position-center';
 		}
 	}
 
 	function getSizeClass(size: string): string {
 		switch (size) {
 			case 'sm':
-				return 'max-w-xs sm:max-w-sm';
+				return 'popup-size-sm';
 			case 'md':
-				return 'max-w-sm sm:max-w-md';
+				return 'popup-size-md';
 			case 'lg':
-				return 'max-w-md sm:max-w-lg';
+				return 'popup-size-lg';
 			case 'xl':
-				return 'max-w-lg sm:max-w-xl';
+				return 'popup-size-xl';
 			case 'full':
-				return 'max-w-full m-2 sm:m-4';
+				return 'popup-size-full';
 			default:
-				return 'max-w-sm sm:max-w-md';
+				return 'popup-size-md';
 		}
 	}
 
@@ -326,76 +339,46 @@
 		}
 	}
 
-	function getButtonStyles(design: {
-		buttonColor?: string;
-		buttonTextColor?: string;
-		buttonBorderRadius?: string | number;
-		buttonShadow?: string;
-		buttonPadding?: string;
-	}): string {
-		const styles: string[] = [];
+	function getPixelStyle(value: string | number | undefined): string | undefined {
+		if (value === undefined || value === '') return undefined;
+		if (typeof value === 'number') return `${value}px`;
 
-		if (design?.buttonColor) {
-			styles.push(`background-color: ${design.buttonColor}`);
-		}
-
-		if (design?.buttonTextColor) {
-			styles.push(`color: ${design.buttonTextColor}`);
-		}
-
-		if (design?.buttonBorderRadius) {
-			styles.push(`border-radius: ${design.buttonBorderRadius}px`);
-		}
-
-		if (design?.buttonShadow) {
-			styles.push(`box-shadow: ${design.buttonShadow}`);
-		}
-
-		if (design?.buttonPadding) {
-			styles.push(`padding: ${design.buttonPadding}`);
-		}
-
-		return styles.join('; ');
+		const trimmedValue = value.trim();
+		return /^\d+(\.\d+)?$/.test(trimmedValue) ? `${trimmedValue}px` : trimmedValue;
 	}
-
-	// Reactive keyboard event listener
-	$effect(() => {
-		if (browser && show) {
-			window.addEventListener('keydown', handleKeydown);
-		} else if (browser) {
-			window.removeEventListener('keydown', handleKeydown);
-		}
-	});
 </script>
 
 {#if show && currentPopup}
 	<div
-		class="popup-overlay {getPositionClasses(currentPopup.position ?? 'center')}"
-		class:closing={isClosing}
+		class={[
+			'popup-overlay',
+			getPositionClass(currentPopup.position ?? 'center'),
+			{ closing: isClosing }
+		]}
 		onclick={handleOverlayClick}
 		onkeydown={handleKeydown}
 		role="presentation"
 		tabindex="-1"
 	>
 		<!-- Backdrop with smooth transition -->
-		<div class="popup-backdrop" class:closing={isClosing} aria-hidden="true"></div>
+		<div class={['popup-backdrop', { closing: isClosing }]} aria-hidden="true"></div>
 
 		<!-- Popup Container -->
 		<div
-			bind:this={popupElement}
+			{@attach attachPopupElement}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="popup-title"
 			aria-describedby="popup-content"
 			tabindex="-1"
-			class="popup-container {getSizeClass(currentPopup.size ?? 'medium')} {getAnimationClass(
-				currentPopup.animation ?? 'fade'
-			)}"
+			class={[
+				'popup-container',
+				getSizeClass(currentPopup.size ?? 'medium'),
+				getAnimationClass(currentPopup.animation ?? 'fade')
+			]}
 			onclick={(e: MouseEvent) => e.stopPropagation()}
 			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			style={currentPopup.design?.backgroundColor
-				? `background-color: ${currentPopup.design.backgroundColor}`
-				: ''}
+			style:background-color={currentPopup.design?.backgroundColor}
 		>
 			<!-- Close Button -->
 			{#if currentPopup.show_close_button}
@@ -412,23 +395,13 @@
 			<!-- Content -->
 			<div class="popup-content">
 				{#if currentPopup.title}
-					<h2
-						id="popup-title"
-						class="popup-title"
-						style={currentPopup.design?.titleColor
-							? `color: ${currentPopup.design.titleColor}`
-							: ''}
-					>
+					<h2 id="popup-title" class="popup-title" style:color={currentPopup.design?.titleColor}>
 						{currentPopup.title}
 					</h2>
 				{/if}
 
 				{#if currentPopup.content}
-					<div
-						id="popup-content"
-						class="popup-body"
-						style={currentPopup.design?.textColor ? `color: ${currentPopup.design.textColor}` : ''}
-					>
+					<div id="popup-content" class="popup-body" style:color={currentPopup.design?.textColor}>
 						{@html sanitizePopupContent(currentPopup.content)}
 					</div>
 				{/if}
@@ -437,7 +410,7 @@
 				{#if currentPopup.has_form && currentPopup.form_id}
 					<div class="popup-form">
 						<!-- Form will be loaded here -->
-						<p class="text-sm text-gray-500">Form integration coming soon...</p>
+						<p class="popup-form-placeholder">Form integration coming soon...</p>
 					</div>
 				{/if}
 
@@ -446,14 +419,19 @@
 					<button
 						onclick={handleCTAClick}
 						class="popup-cta-button"
-						style={getButtonStyles(currentPopup.design)}
+						style:background-color={currentPopup.design?.buttonColor}
+						style:color={currentPopup.design?.buttonTextColor}
+						style:border-radius={getPixelStyle(currentPopup.design?.buttonBorderRadius)}
+						style:box-shadow={currentPopup.design?.buttonShadow}
+						style:padding={currentPopup.design?.buttonPadding}
 						aria-label={currentPopup.cta_text}
 					>
 						<span class="popup-cta-text">{currentPopup.cta_text}</span>
 
 						<!-- Ripple effect -->
 						{#if rippleActive}
-							<span class="button-ripple" style="left: {rippleX}px; top: {rippleY}px;"></span>
+							<span class="button-ripple" style:left={`${rippleX}px`} style:top={`${rippleY}px`}
+							></span>
 						{/if}
 					</button>
 				{/if}
@@ -479,6 +457,29 @@
 		padding: 0;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
+	}
+
+	.popup-overlay.position-top {
+		align-items: flex-start;
+		justify-content: center;
+		padding: 1rem;
+	}
+
+	.popup-overlay.position-bottom {
+		align-items: flex-end;
+		justify-content: center;
+		padding: 1rem;
+	}
+
+	.popup-overlay.position-corner {
+		align-items: flex-end;
+		justify-content: flex-end;
+		padding: 1rem;
+	}
+
+	.popup-overlay.position-center {
+		align-items: center;
+		justify-content: center;
 	}
 
 	/* Backdrop */
@@ -515,6 +516,27 @@
 		/* Safe area insets */
 		padding-top: env(safe-area-inset-top, 0);
 		padding-bottom: env(safe-area-inset-bottom, 0);
+	}
+
+	.popup-container.popup-size-sm {
+		max-width: 24rem;
+	}
+
+	.popup-container.popup-size-md {
+		max-width: 28rem;
+	}
+
+	.popup-container.popup-size-lg {
+		max-width: 32rem;
+	}
+
+	.popup-container.popup-size-xl {
+		max-width: 36rem;
+	}
+
+	.popup-container.popup-size-full {
+		max-width: calc(100vw - 1rem);
+		margin: 0.5rem;
 	}
 
 	/* Swipe indicator for mobile */
@@ -611,6 +633,18 @@
 			padding: 1.5rem;
 		}
 
+		.popup-overlay.position-top {
+			padding-top: 2rem;
+		}
+
+		.popup-overlay.position-bottom {
+			padding-bottom: 2rem;
+		}
+
+		.popup-overlay.position-corner {
+			padding: 1.5rem;
+		}
+
 		.popup-container {
 			position: relative;
 			inset: auto;
@@ -618,6 +652,11 @@
 			border-radius: 1rem;
 			padding-top: 0;
 			padding-bottom: 0;
+		}
+
+		.popup-container.popup-size-full {
+			max-width: calc(100vw - 2rem);
+			margin: 1rem;
 		}
 
 		.popup-container::after {
@@ -677,6 +716,12 @@
 	/* Form */
 	.popup-form {
 		margin-bottom: 1.5rem;
+	}
+
+	.popup-form-placeholder {
+		color: #6b7280;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
 	}
 
 	/* CTA Button */

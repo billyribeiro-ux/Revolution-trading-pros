@@ -39,6 +39,9 @@
 	const revenueData = $derived(data?.revenue ?? []);
 	const churnReasons = $derived(data?.churn ?? []);
 	const segmentData = $derived(data?.segments ?? []);
+	const memberGrowthValues = $derived(growthData.map((item) => item.members));
+	const newMemberValues = $derived(growthData.map((item) => item.new));
+	const churnedMemberValues = $derived(growthData.map((item) => item.churned));
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {
@@ -53,17 +56,37 @@
 		return new Intl.NumberFormat('en-US').format(num);
 	}
 
-	function getRetentionColor(value: number): string {
-		if (value === 0) return 'bg-slate-800/50';
-		if (value >= 90) return 'bg-emerald-500/60';
-		if (value >= 80) return 'bg-emerald-500/40';
-		if (value >= 70) return 'bg-yellow-500/40';
-		if (value >= 60) return 'bg-orange-500/40';
-		return 'bg-red-500/40';
+	function getRetentionClass(value: number): string {
+		if (value === 0) return 'retention-empty';
+		if (value >= 90) return 'retention-excellent';
+		if (value >= 80) return 'retention-strong';
+		if (value >= 70) return 'retention-watch';
+		if (value >= 60) return 'retention-risk';
+		return 'retention-critical';
 	}
 
 	function getMaxValue(data: number[]): number {
-		return Math.max(...data);
+		return Math.max(0, ...data);
+	}
+
+	function getScaledSize(
+		value: number,
+		values: number[],
+		maxSize: number,
+		unit: '%' | 'px'
+	): string {
+		const maxValue = getMaxValue(values);
+		if (maxValue <= 0) return `0${unit}`;
+		return `${(value / maxValue) * maxSize}${unit}`;
+	}
+
+	function getTrendClass(value: number, positiveWhen: 'up' | 'down' = 'up') {
+		const positive = positiveWhen === 'up' ? value >= 0 : value <= 0;
+		return ['metric-trend', positive ? 'positive' : 'negative'];
+	}
+
+	function getChurnRateClass(churnRate: number) {
+		return ['churn-rate', churnRate <= 2 ? 'low' : churnRate <= 5 ? 'medium' : 'high'];
 	}
 </script>
 
@@ -161,7 +184,7 @@
 					<div class="metric-icon purple">
 						<IconUsers size={24} />
 					</div>
-					<div class="metric-trend {(metrics.memberGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
+					<div class={getTrendClass(metrics.memberGrowth ?? 0)}>
 						{#if (metrics.memberGrowth ?? 0) >= 0}
 							<IconTrendingUp size={16} />
 						{:else}
@@ -179,7 +202,7 @@
 					<div class="metric-icon emerald">
 						<IconCurrencyDollar size={24} />
 					</div>
-					<div class="metric-trend {(metrics.mrrGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
+					<div class={getTrendClass(metrics.mrrGrowth ?? 0)}>
 						{#if (metrics.mrrGrowth ?? 0) >= 0}
 							<IconTrendingUp size={16} />
 						{:else}
@@ -194,10 +217,10 @@
 
 			<div class="metric-card">
 				<div class="metric-header">
-					<div class="metric-icon {(metrics.churnChange ?? 0) <= 0 ? 'emerald' : 'red'}">
+					<div class={['metric-icon', (metrics.churnChange ?? 0) <= 0 ? 'emerald' : 'red']}>
 						<IconChartLine size={24} />
 					</div>
-					<div class="metric-trend {(metrics.churnChange ?? 0) <= 0 ? 'positive' : 'negative'}">
+					<div class={getTrendClass(metrics.churnChange ?? 0, 'down')}>
 						{#if (metrics.churnChange ?? 0) <= 0}
 							<IconTrendingDown size={16} />
 						{:else}
@@ -215,7 +238,7 @@
 					<div class="metric-icon blue">
 						<IconChartLine size={24} />
 					</div>
-					<div class="metric-trend {(metrics.ltvGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
+					<div class={getTrendClass(metrics.ltvGrowth ?? 0)}>
 						{#if (metrics.ltvGrowth ?? 0) >= 0}
 							<IconTrendingUp size={16} />
 						{:else}
@@ -248,19 +271,17 @@
 								<div class="bar-container">
 									<div
 										class="bar bar-members"
-										style="height: {(data.members / getMaxValue(growthData.map((d) => d.members))) *
-											100}%"
+										style:height={getScaledSize(data.members, memberGrowthValues, 100, '%')}
 									></div>
 								</div>
 								<div class="bar-mini-group">
 									<div
 										class="bar bar-new"
-										style="height: {(data.new / getMaxValue(growthData.map((d) => d.new))) * 60}px"
+										style:height={getScaledSize(data.new, newMemberValues, 60, 'px')}
 									></div>
 									<div
 										class="bar bar-churned"
-										style="height: {(data.churned / getMaxValue(growthData.map((d) => d.churned))) *
-											60}px"
+										style:height={getScaledSize(data.churned, churnedMemberValues, 60, 'px')}
 									></div>
 								</div>
 								<span class="bar-label">{data.month}</span>
@@ -374,12 +395,12 @@
 							{#each cohortData as row (row.cohort)}
 								<tr>
 									<td class="cohort-name">{row.cohort}</td>
-									<td class={getRetentionColor(row.m0)}>{row.m0}%</td>
-									<td class={getRetentionColor(row.m1)}>{row.m1 || '-'}%</td>
-									<td class={getRetentionColor(row.m2)}>{row.m2 || '-'}%</td>
-									<td class={getRetentionColor(row.m3)}>{row.m3 || '-'}%</td>
-									<td class={getRetentionColor(row.m4)}>{row.m4 || '-'}%</td>
-									<td class={getRetentionColor(row.m5)}>{row.m5 || '-'}%</td>
+									<td class={getRetentionClass(row.m0)}>{row.m0}%</td>
+									<td class={getRetentionClass(row.m1)}>{row.m1 || '-'}%</td>
+									<td class={getRetentionClass(row.m2)}>{row.m2 || '-'}%</td>
+									<td class={getRetentionClass(row.m3)}>{row.m3 || '-'}%</td>
+									<td class={getRetentionClass(row.m4)}>{row.m4 || '-'}%</td>
+									<td class={getRetentionClass(row.m5)}>{row.m5 || '-'}%</td>
 								</tr>
 							{/each}
 						</tbody>
@@ -404,7 +425,7 @@
 									<span class="reason-count">{reason.count} members</span>
 								</div>
 								<div class="reason-bar-container">
-									<div class="reason-bar" style="width: {reason.percentage}%"></div>
+									<div class="reason-bar" style:width={`${reason.percentage}%`}></div>
 								</div>
 								<span class="reason-percentage">{reason.percentage}%</span>
 							</div>
@@ -435,13 +456,7 @@
 										<td class="segment-name">{segment.segment}</td>
 										<td>{formatNumber(segment.count)}</td>
 										<td class="revenue">{formatCurrency(segment.revenue)}</td>
-										<td
-											class="churn-rate {segment.churnRate <= 2
-												? 'low'
-												: segment.churnRate <= 5
-													? 'medium'
-													: 'high'}"
-										>
+										<td class={getChurnRateClass(segment.churnRate)}>
 											{segment.churnRate}%
 										</td>
 									</tr>
@@ -988,6 +1003,30 @@
 		text-align: left;
 		font-weight: 500;
 		color: var(--primary-400);
+	}
+
+	.retention-empty {
+		background: rgba(30, 41, 59, 0.5);
+	}
+
+	.retention-excellent {
+		background: rgba(16, 185, 129, 0.6);
+	}
+
+	.retention-strong {
+		background: rgba(16, 185, 129, 0.4);
+	}
+
+	.retention-watch {
+		background: rgba(234, 179, 8, 0.4);
+	}
+
+	.retention-risk {
+		background: rgba(249, 115, 22, 0.4);
+	}
+
+	.retention-critical {
+		background: rgba(239, 68, 68, 0.4);
 	}
 
 	/* Bottom Grid */

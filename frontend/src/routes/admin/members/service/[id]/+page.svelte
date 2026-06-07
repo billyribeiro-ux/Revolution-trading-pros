@@ -43,10 +43,14 @@
 	let emailSubject = $state('');
 	let emailBody = $state('');
 
-	onMount(async () => {
+	onMount(() => {
+		void loadInitialData();
+	});
+
+	async function loadInitialData() {
 		await serviceMembersStore.loadServiceMembers(serviceId);
 		await emailStore.loadTemplates();
-	});
+	}
 
 	async function handleSearch() {
 		await serviceMembersStore.loadServiceMembers(serviceId, {
@@ -101,16 +105,20 @@
 		emailBody = template.body || '';
 	}
 
-	function getStatusColor(status: string): string {
+	function getStatusClass(status: string): string {
 		switch (status) {
 			case 'active':
-				return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+				return 'status-active';
 			case 'trial':
-				return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+				return 'status-trial';
 			case 'churned':
-				return 'bg-red-500/20 text-red-400 border-red-500/30';
+				return 'status-churned';
+			case 'cancelled':
+				return 'status-cancelled';
+			case 'expired':
+				return 'status-expired';
 			default:
-				return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+				return 'status-default';
 		}
 	}
 
@@ -146,7 +154,7 @@
 <div class="service-members-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" onclick={() => goto('/admin/members')}>
+		<button class="back-btn" onclick={() => void goto('/admin/members')}>
 			<IconArrowLeft size={20} />
 			Back to Members
 		</button>
@@ -211,13 +219,15 @@
 				type="text"
 				placeholder="Search members..."
 				bind:value={searchQuery}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
+				onkeydown={(e: KeyboardEvent) => {
+					if (e.key === 'Enter') void handleSearch();
+				}}
 			/>
 		</div>
 
 		<div class="filter-group">
 			<IconFilter size={16} />
-			<select bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
+			<select bind:value={statusFilter} onchange={() => void handleStatusFilter(statusFilter)}>
 				<option value="">All Status</option>
 				<option value="active">Active</option>
 				<option value="trial">Trial</option>
@@ -263,7 +273,7 @@
 				</thead>
 				<tbody>
 					{#each members as member (member.id)}
-						<tr class:selected={selectedMembers.has(member.id)}>
+						<tr class={{ selected: selectedMembers.has(member.id) }}>
 							<td class="checkbox-col">
 								<input
 									id="page-checkbox"
@@ -285,7 +295,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="status-badge {getStatusColor(member.status)}">
+								<span class={['status-badge', getStatusClass(member.status)]}>
 									{member.status_label}
 								</span>
 							</td>
@@ -303,7 +313,7 @@
 									<button
 										class="action-btn"
 										title="View Details"
-										onclick={() => goto(`/admin/members/${member.id}`)}
+										onclick={() => void goto(`/admin/members/${member.id}`)}
 									>
 										<IconExternalLink size={16} />
 									</button>
@@ -339,7 +349,7 @@
 							class="page-btn"
 							disabled={pagination.current_page === 1}
 							onclick={() =>
-								serviceMembersStore.loadServiceMembers(serviceId, {
+								void serviceMembersStore.loadServiceMembers(serviceId, {
 									page: pagination.current_page - 1
 								})}
 						>
@@ -352,7 +362,7 @@
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
 							onclick={() =>
-								serviceMembersStore.loadServiceMembers(serviceId, {
+								void serviceMembersStore.loadServiceMembers(serviceId, {
 									page: pagination.current_page + 1
 								})}
 						>
@@ -419,7 +429,7 @@
 				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
 				<button
 					class="btn-primary"
-					onclick={handleBulkEmail}
+					onclick={() => void handleBulkEmail()}
 					disabled={!emailSubject || !emailBody}
 				>
 					<IconSend size={18} />
@@ -723,6 +733,32 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		border: 1px solid;
+	}
+
+	.status-badge.status-active {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+		border-color: rgba(16, 185, 129, 0.3);
+	}
+
+	.status-badge.status-trial {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+		border-color: rgba(59, 130, 246, 0.3);
+	}
+
+	.status-badge.status-churned,
+	.status-badge.status-cancelled,
+	.status-badge.status-expired {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+		border-color: rgba(239, 68, 68, 0.3);
+	}
+
+	.status-badge.status-default {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+		border-color: rgba(100, 116, 139, 0.3);
 	}
 
 	.plan-name {

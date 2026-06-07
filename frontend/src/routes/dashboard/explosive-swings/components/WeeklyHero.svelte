@@ -67,6 +67,9 @@
 	const watchFullUrl = $derived(fullVideoUrl || `/dashboard/${roomSlug}/video/weekly`);
 	// Safe embed URL for iframe (computed from embedUrl)
 	const safeEmbedUrl = $derived.by(() => getEmbedUrl(embedUrl));
+	const thumbnailBackgroundImage = $derived.by(() =>
+		getBackgroundImageValue(weeklyContent.thumbnail)
+	);
 
 	// Component state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
@@ -123,6 +126,23 @@
 		}
 	}
 
+	function getBackgroundImageValue(url: string): string {
+		if (!url) return '';
+
+		const escapedUrl = url.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+		return `url("${escapedUrl}")`;
+	}
+
+	function getBiasClass(bias: string): string {
+		const modifier = bias
+			.toLowerCase()
+			.trim()
+			.replaceAll(/[^a-z0-9_-]+/g, '-')
+			.replaceAll(/^-+|-+$/g, '');
+
+		return modifier ? `bias--${modifier}` : 'bias--neutral';
+	}
+
 	function toggleTradeNotes(ticker: string) {
 		if (expandedTradeNotes.has(ticker)) {
 			expandedTradeNotes.delete(ticker);
@@ -134,7 +154,7 @@
 
 <svelte:window onkeydown={handleVideoKeydown} />
 
-<section class="hero" class:collapsed={isCollapsed}>
+<section class={['hero', { collapsed: isCollapsed }]}>
 	<!-- Collapse Toggle Header -->
 	<button class="hero-collapse-toggle" onclick={toggleCollapse} type="button">
 		<div class="hero-header-compact">
@@ -153,8 +173,7 @@
 		<div class="collapse-indicator">
 			<span>{isCollapsed ? 'Expand' : 'Collapse'}</span>
 			<svg
-				class="collapse-chevron"
-				class:rotated={!isCollapsed}
+				class={['collapse-chevron', { rotated: !isCollapsed }]}
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -172,8 +191,7 @@
 		<!-- Tab Navigation -->
 		<nav class="hero-tabs-bar" aria-label="Hero content tabs">
 			<button
-				class="hero-tab"
-				class:active={heroTab === 'video'}
+				class={['hero-tab', { active: heroTab === 'video' }]}
 				onclick={() => (heroTab = 'video')}
 				type="button"
 				aria-pressed={heroTab === 'video'}
@@ -184,8 +202,7 @@
 				Video Breakdown
 			</button>
 			<button
-				class="hero-tab"
-				class:active={heroTab === 'entries'}
+				class={['hero-tab', { active: heroTab === 'entries' }]}
 				onclick={() => (heroTab = 'entries')}
 				type="button"
 				aria-pressed={heroTab === 'entries'}
@@ -212,18 +229,19 @@
 				<!-- ════════════════════════════════════════════════════════════════
 				     VIDEO TAB - Player with Info Panel
 				     ════════════════════════════════════════════════════════════════ -->
-				<div class="video-section" class:video-expanded={isVideoExpanded}>
+				<div class={['video-section', { 'video-expanded': isVideoExpanded }]}>
 					<!-- Blur backdrop when video is playing -->
 					{#if isVideoPlaying}
-						<div class="video-backdrop" class:expanded={isVideoExpanded}></div>
+						<div class={['video-backdrop', { expanded: isVideoExpanded }]}></div>
 					{/if}
 
-					<div class="video-layout" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
+					<div class={['video-layout', { playing: isVideoPlaying, expanded: isVideoExpanded }]}>
 						<!-- Video Player Container -->
 						<div
-							class="video-player-container"
-							class:playing={isVideoPlaying}
-							class:expanded={isVideoExpanded}
+							class={[
+								'video-player-container',
+								{ playing: isVideoPlaying, expanded: isVideoExpanded }
+							]}
 						>
 							{#if isVideoPlaying}
 								<!-- Active Video Player with iframe -->
@@ -302,10 +320,7 @@
 								</div>
 							{:else}
 								<!-- Thumbnail State with Play Button -->
-								<div
-									class="video-thumbnail"
-									style="background-image: url('{weeklyContent.thumbnail}')"
-								>
+								<div class="video-thumbnail" style:background-image={thumbnailBackgroundImage}>
 									<button
 										class="play-btn"
 										onclick={playVideo}
@@ -409,7 +424,7 @@
 							</thead>
 							<tbody>
 								{#each tradePlan as trade (trade.ticker)}
-									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
+									<tr class={{ 'has-notes-open': expandedTradeNotes.has(trade.ticker) }}>
 										<td class="ticker-cell">
 											<strong>{trade.ticker}</strong>
 											{#if isAdmin && onEditEntry}
@@ -433,7 +448,7 @@
 											{/if}
 										</td>
 										<td>
-											<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
+											<span class={['bias', getBiasClass(trade.bias)]}>{trade.bias}</span>
 										</td>
 										<td class="entry-cell">{trade.entry}</td>
 										<td class="target-cell">{trade.target1}</td>
@@ -445,8 +460,10 @@
 										<td class="exp-cell">{trade.optionsExp}</td>
 										<td class="notes-toggle-cell">
 											<button
-												class="table-notes-btn"
-												class:expanded={expandedTradeNotes.has(trade.ticker)}
+												class={[
+													'table-notes-btn',
+													{ expanded: expandedTradeNotes.has(trade.ticker) }
+												]}
 												onclick={() => toggleTradeNotes(trade.ticker)}
 												aria-label="Toggle notes for {trade.ticker}"
 											>

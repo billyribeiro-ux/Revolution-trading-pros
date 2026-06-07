@@ -50,10 +50,10 @@
 	onMount(() => {
 		if (!browser) return;
 		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-			goto('/login?redirect=/account/sessions', { replaceState: true });
+			void goto('/login?redirect=/account/sessions', { replaceState: true });
 			return;
 		}
-		loadSessions();
+		void loadSessions();
 	});
 
 	async function loadSessions() {
@@ -294,10 +294,10 @@
 					</div>
 				{:else}
 					{#each sessions as session (session.session_id)}
-						<div class="session-card" class:session-card--current={session.is_current}>
+						<div class={['session-card', { 'session-card--current': session.is_current }]}>
 							<div class="session-card__row">
 								<!-- Device Icon -->
-								<div class="session-device" class:session-device--current={session.is_current}>
+								<div class={['session-device', { 'session-device--current': session.is_current }]}>
 									<svg
 										aria-hidden="true"
 										class="session-device__icon"
@@ -347,8 +347,7 @@
 								<!-- Actions -->
 								<div>
 									<button
-										class="session-revoke"
-										class:session-revoke--current={session.is_current}
+										class={['session-revoke', { 'session-revoke--current': session.is_current }]}
 										onclick={() => handleRevokeSession(session.session_id)}
 										disabled={revoking === session.session_id}
 									>

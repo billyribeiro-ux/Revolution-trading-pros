@@ -63,18 +63,11 @@
 		onSettingsChange?: (settings: StyleSettings) => void;
 	}
 
-	let props: Props = $props();
+	let { settings = {}, previewMode = false, onSettingsChange }: Props = $props();
 
 	import Icon from '$lib/components/Icon.svelte';
-	const previewMode = $derived(props.previewMode ?? false);
 
-	let currentSettings = $state<StyleSettings>({});
 	let activeTab = $state<'container' | 'inputs' | 'buttons' | 'typography'>('container');
-
-	// Sync currentSettings with settings prop
-	$effect(() => {
-		if (props.settings !== undefined) currentSettings = { ...props.settings };
-	});
 
 	const shadowOptions = {
 		none: 'none',
@@ -97,101 +90,88 @@
 	];
 
 	function updateSetting<K extends keyof StyleSettings>(key: K, value: StyleSettings[K]) {
-		currentSettings = { ...currentSettings, [key]: value };
-		if (props.onSettingsChange) {
-			props.onSettingsChange(currentSettings);
-		}
+		settings = { ...settings, [key]: value };
+		onSettingsChange?.(settings);
 	}
 
 	function generateCssVariables(): string {
 		const vars: string[] = [];
 
 		// Container
-		if (currentSettings.containerBg)
-			vars.push(`--form-container-bg: ${currentSettings.containerBg}`);
-		if (currentSettings.containerPadding)
-			vars.push(`--form-container-padding: ${currentSettings.containerPadding}`);
-		if (currentSettings.containerBorderRadius)
-			vars.push(`--form-container-radius: ${currentSettings.containerBorderRadius}`);
-		if (currentSettings.containerBorderColor)
-			vars.push(`--form-container-border-color: ${currentSettings.containerBorderColor}`);
-		if (currentSettings.containerBorderWidth)
-			vars.push(`--form-container-border-width: ${currentSettings.containerBorderWidth}`);
-		if (currentSettings.containerShadow)
-			vars.push(`--form-container-shadow: ${shadowOptions[currentSettings.containerShadow]}`);
+		if (settings.containerBg) vars.push(`--form-container-bg: ${settings.containerBg}`);
+		if (settings.containerPadding)
+			vars.push(`--form-container-padding: ${settings.containerPadding}`);
+		if (settings.containerBorderRadius)
+			vars.push(`--form-container-radius: ${settings.containerBorderRadius}`);
+		if (settings.containerBorderColor)
+			vars.push(`--form-container-border-color: ${settings.containerBorderColor}`);
+		if (settings.containerBorderWidth)
+			vars.push(`--form-container-border-width: ${settings.containerBorderWidth}`);
+		if (settings.containerShadow)
+			vars.push(`--form-container-shadow: ${shadowOptions[settings.containerShadow]}`);
 
 		// Labels
-		if (currentSettings.labelColor) vars.push(`--form-label-color: ${currentSettings.labelColor}`);
-		if (currentSettings.labelFontSize)
-			vars.push(`--form-label-font-size: ${currentSettings.labelFontSize}`);
-		if (currentSettings.labelFontWeight)
-			vars.push(`--form-label-font-weight: ${currentSettings.labelFontWeight}`);
-		if (currentSettings.labelSpacing)
-			vars.push(`--form-label-spacing: ${currentSettings.labelSpacing}`);
+		if (settings.labelColor) vars.push(`--form-label-color: ${settings.labelColor}`);
+		if (settings.labelFontSize) vars.push(`--form-label-font-size: ${settings.labelFontSize}`);
+		if (settings.labelFontWeight)
+			vars.push(`--form-label-font-weight: ${settings.labelFontWeight}`);
+		if (settings.labelSpacing) vars.push(`--form-label-spacing: ${settings.labelSpacing}`);
 
 		// Inputs
-		if (currentSettings.inputBg) vars.push(`--form-input-bg: ${currentSettings.inputBg}`);
-		if (currentSettings.inputTextColor)
-			vars.push(`--form-input-color: ${currentSettings.inputTextColor}`);
-		if (currentSettings.inputBorderColor)
-			vars.push(`--form-input-border-color: ${currentSettings.inputBorderColor}`);
-		if (currentSettings.inputBorderRadius)
-			vars.push(`--form-input-radius: ${currentSettings.inputBorderRadius}`);
-		if (currentSettings.inputFocusBorderColor)
-			vars.push(`--form-input-focus-color: ${currentSettings.inputFocusBorderColor}`);
-		if (currentSettings.inputPlaceholderColor)
-			vars.push(`--form-input-placeholder-color: ${currentSettings.inputPlaceholderColor}`);
-		if (currentSettings.inputPadding)
-			vars.push(`--form-input-padding: ${currentSettings.inputPadding}`);
-		if (currentSettings.inputFontSize)
-			vars.push(`--form-input-font-size: ${currentSettings.inputFontSize}`);
+		if (settings.inputBg) vars.push(`--form-input-bg: ${settings.inputBg}`);
+		if (settings.inputTextColor) vars.push(`--form-input-color: ${settings.inputTextColor}`);
+		if (settings.inputBorderColor)
+			vars.push(`--form-input-border-color: ${settings.inputBorderColor}`);
+		if (settings.inputBorderRadius) vars.push(`--form-input-radius: ${settings.inputBorderRadius}`);
+		if (settings.inputFocusBorderColor)
+			vars.push(`--form-input-focus-color: ${settings.inputFocusBorderColor}`);
+		if (settings.inputPlaceholderColor)
+			vars.push(`--form-input-placeholder-color: ${settings.inputPlaceholderColor}`);
+		if (settings.inputPadding) vars.push(`--form-input-padding: ${settings.inputPadding}`);
+		if (settings.inputFontSize) vars.push(`--form-input-font-size: ${settings.inputFontSize}`);
 
 		// Buttons
-		if (currentSettings.buttonBg) vars.push(`--form-button-bg: ${currentSettings.buttonBg}`);
-		if (currentSettings.buttonTextColor)
-			vars.push(`--form-button-color: ${currentSettings.buttonTextColor}`);
-		if (currentSettings.buttonHoverBg)
-			vars.push(`--form-button-hover-bg: ${currentSettings.buttonHoverBg}`);
-		if (currentSettings.buttonBorderRadius)
-			vars.push(`--form-button-radius: ${currentSettings.buttonBorderRadius}`);
-		if (currentSettings.buttonPadding)
-			vars.push(`--form-button-padding: ${currentSettings.buttonPadding}`);
-		if (currentSettings.buttonFontSize)
-			vars.push(`--form-button-font-size: ${currentSettings.buttonFontSize}`);
-		if (currentSettings.buttonFontWeight)
-			vars.push(`--form-button-font-weight: ${currentSettings.buttonFontWeight}`);
+		if (settings.buttonBg) vars.push(`--form-button-bg: ${settings.buttonBg}`);
+		if (settings.buttonTextColor) vars.push(`--form-button-color: ${settings.buttonTextColor}`);
+		if (settings.buttonHoverBg) vars.push(`--form-button-hover-bg: ${settings.buttonHoverBg}`);
+		if (settings.buttonBorderRadius)
+			vars.push(`--form-button-radius: ${settings.buttonBorderRadius}`);
+		if (settings.buttonPadding) vars.push(`--form-button-padding: ${settings.buttonPadding}`);
+		if (settings.buttonFontSize) vars.push(`--form-button-font-size: ${settings.buttonFontSize}`);
+		if (settings.buttonFontWeight)
+			vars.push(`--form-button-font-weight: ${settings.buttonFontWeight}`);
 
 		// Error/Success
-		if (currentSettings.errorColor) vars.push(`--form-error-color: ${currentSettings.errorColor}`);
-		if (currentSettings.errorBgColor) vars.push(`--form-error-bg: ${currentSettings.errorBgColor}`);
-		if (currentSettings.successColor)
-			vars.push(`--form-success-color: ${currentSettings.successColor}`);
-		if (currentSettings.successBgColor)
-			vars.push(`--form-success-bg: ${currentSettings.successBgColor}`);
+		if (settings.errorColor) vars.push(`--form-error-color: ${settings.errorColor}`);
+		if (settings.errorBgColor) vars.push(`--form-error-bg: ${settings.errorBgColor}`);
+		if (settings.successColor) vars.push(`--form-success-color: ${settings.successColor}`);
+		if (settings.successBgColor) vars.push(`--form-success-bg: ${settings.successBgColor}`);
 
 		// Typography
-		if (currentSettings.fontFamily) vars.push(`--form-font-family: ${currentSettings.fontFamily}`);
+		if (settings.fontFamily) vars.push(`--form-font-family: ${settings.fontFamily}`);
 
 		// Spacing
-		if (currentSettings.fieldGap) vars.push(`--form-field-gap: ${currentSettings.fieldGap}`);
-		if (currentSettings.sectionGap) vars.push(`--form-section-gap: ${currentSettings.sectionGap}`);
+		if (settings.fieldGap) vars.push(`--form-field-gap: ${settings.fieldGap}`);
+		if (settings.sectionGap) vars.push(`--form-section-gap: ${settings.sectionGap}`);
 
 		return vars.join('; ');
 	}
 
 	function resetToDefaults() {
-		currentSettings = {};
-		if (props.onSettingsChange) {
-			props.onSettingsChange(currentSettings);
-		}
+		settings = {};
+		onSettingsChange?.(settings);
 	}
 
 	function exportSettings(): string {
-		return JSON.stringify(currentSettings, null, 2);
+		return JSON.stringify(settings, null, 2);
 	}
 
 	function copyToClipboard() {
 		navigator.clipboard.writeText(generateCssVariables());
+	}
+
+	function getTabClasses(tab: typeof activeTab) {
+		return ['tab', activeTab === tab && 'active'];
 	}
 
 	const cssOutput = $derived(generateCssVariables());
@@ -211,32 +191,20 @@
 	<div class="styler-tabs">
 		<button
 			type="button"
-			class="tab"
-			class:active={activeTab === 'container'}
+			class={getTabClasses('container')}
 			onclick={() => (activeTab = 'container')}
 		>
 			Container
 		</button>
-		<button
-			type="button"
-			class="tab"
-			class:active={activeTab === 'inputs'}
-			onclick={() => (activeTab = 'inputs')}
-		>
+		<button type="button" class={getTabClasses('inputs')} onclick={() => (activeTab = 'inputs')}>
 			Inputs
 		</button>
-		<button
-			type="button"
-			class="tab"
-			class:active={activeTab === 'buttons'}
-			onclick={() => (activeTab = 'buttons')}
-		>
+		<button type="button" class={getTabClasses('buttons')} onclick={() => (activeTab = 'buttons')}>
 			Buttons
 		</button>
 		<button
 			type="button"
-			class="tab"
-			class:active={activeTab === 'typography'}
+			class={getTabClasses('typography')}
 			onclick={() => (activeTab = 'typography')}
 		>
 			Typography
@@ -251,7 +219,7 @@
 					<input
 						id="container-bg"
 						type="color"
-						value={currentSettings.containerBg || '#ffffff'}
+						value={settings.containerBg || '#ffffff'}
 						oninput={(e: Event) =>
 							updateSetting('containerBg', (e.target as HTMLInputElement).value)}
 					/>
@@ -261,7 +229,7 @@
 					<input
 						id="container-padding"
 						type="text"
-						value={currentSettings.containerPadding || '1.5rem'}
+						value={settings.containerPadding || '1.5rem'}
 						oninput={(e: Event) =>
 							updateSetting('containerPadding', (e.target as HTMLInputElement).value)}
 						placeholder="1.5rem"
@@ -272,7 +240,7 @@
 					<input
 						id="container-border-radius"
 						type="text"
-						value={currentSettings.containerBorderRadius || '0.5rem'}
+						value={settings.containerBorderRadius || '0.5rem'}
 						oninput={(e: Event) =>
 							updateSetting('containerBorderRadius', (e.target as HTMLInputElement).value)}
 						placeholder="0.5rem"
@@ -283,7 +251,7 @@
 					<input
 						id="container-border-color"
 						type="color"
-						value={currentSettings.containerBorderColor || '#e5e7eb'}
+						value={settings.containerBorderColor || '#e5e7eb'}
 						oninput={(e: Event) =>
 							updateSetting('containerBorderColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -293,7 +261,7 @@
 					<input
 						id="container-border-width"
 						type="text"
-						value={currentSettings.containerBorderWidth || '1px'}
+						value={settings.containerBorderWidth || '1px'}
 						oninput={(e: Event) =>
 							updateSetting('containerBorderWidth', (e.target as HTMLInputElement).value)}
 						placeholder="1px"
@@ -303,7 +271,7 @@
 					<label for="container-shadow">Shadow</label>
 					<select
 						id="container-shadow"
-						value={currentSettings.containerShadow || 'none'}
+						value={settings.containerShadow || 'none'}
 						onchange={(e: Event) =>
 							updateSetting(
 								'containerShadow',
@@ -325,7 +293,7 @@
 					<input
 						id="input-bg"
 						type="color"
-						value={currentSettings.inputBg || '#ffffff'}
+						value={settings.inputBg || '#ffffff'}
 						oninput={(e: Event) => updateSetting('inputBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
@@ -334,7 +302,7 @@
 					<input
 						id="input-text-color"
 						type="color"
-						value={currentSettings.inputTextColor || '#374151'}
+						value={settings.inputTextColor || '#374151'}
 						oninput={(e: Event) =>
 							updateSetting('inputTextColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -344,7 +312,7 @@
 					<input
 						id="input-border-color"
 						type="color"
-						value={currentSettings.inputBorderColor || '#d1d5db'}
+						value={settings.inputBorderColor || '#d1d5db'}
 						oninput={(e: Event) =>
 							updateSetting('inputBorderColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -354,7 +322,7 @@
 					<input
 						id="input-focus-border-color"
 						type="color"
-						value={currentSettings.inputFocusBorderColor || '#3b82f6'}
+						value={settings.inputFocusBorderColor || '#3b82f6'}
 						oninput={(e: Event) =>
 							updateSetting('inputFocusBorderColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -364,7 +332,7 @@
 					<input
 						id="input-placeholder-color"
 						type="color"
-						value={currentSettings.inputPlaceholderColor || '#9ca3af'}
+						value={settings.inputPlaceholderColor || '#9ca3af'}
 						oninput={(e: Event) =>
 							updateSetting('inputPlaceholderColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -374,7 +342,7 @@
 					<input
 						id="input-border-radius"
 						type="text"
-						value={currentSettings.inputBorderRadius || '0.375rem'}
+						value={settings.inputBorderRadius || '0.375rem'}
 						oninput={(e: Event) =>
 							updateSetting('inputBorderRadius', (e.target as HTMLInputElement).value)}
 						placeholder="0.375rem"
@@ -385,7 +353,7 @@
 					<input
 						id="input-padding"
 						type="text"
-						value={currentSettings.inputPadding || '0.625rem 0.75rem'}
+						value={settings.inputPadding || '0.625rem 0.75rem'}
 						oninput={(e: Event) =>
 							updateSetting('inputPadding', (e.target as HTMLInputElement).value)}
 						placeholder="0.625rem 0.75rem"
@@ -396,7 +364,7 @@
 					<input
 						id="input-font-size"
 						type="text"
-						value={currentSettings.inputFontSize || '0.9375rem'}
+						value={settings.inputFontSize || '0.9375rem'}
 						oninput={(e: Event) =>
 							updateSetting('inputFontSize', (e.target as HTMLInputElement).value)}
 						placeholder="0.9375rem"
@@ -407,7 +375,7 @@
 					<input
 						id="label-color"
 						type="color"
-						value={currentSettings.labelColor || '#374151'}
+						value={settings.labelColor || '#374151'}
 						oninput={(e: Event) =>
 							updateSetting('labelColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -417,7 +385,7 @@
 					<input
 						id="label-font-size"
 						type="text"
-						value={currentSettings.labelFontSize || '0.875rem'}
+						value={settings.labelFontSize || '0.875rem'}
 						oninput={(e: Event) =>
 							updateSetting('labelFontSize', (e.target as HTMLInputElement).value)}
 						placeholder="0.875rem"
@@ -431,7 +399,7 @@
 					<input
 						id="button-bg"
 						type="color"
-						value={currentSettings.buttonBg || '#3b82f6'}
+						value={settings.buttonBg || '#3b82f6'}
 						oninput={(e: Event) => updateSetting('buttonBg', (e.target as HTMLInputElement).value)}
 					/>
 				</div>
@@ -440,7 +408,7 @@
 					<input
 						id="button-text-color"
 						type="color"
-						value={currentSettings.buttonTextColor || '#ffffff'}
+						value={settings.buttonTextColor || '#ffffff'}
 						oninput={(e: Event) =>
 							updateSetting('buttonTextColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -450,7 +418,7 @@
 					<input
 						id="button-hover-bg"
 						type="color"
-						value={currentSettings.buttonHoverBg || '#2563eb'}
+						value={settings.buttonHoverBg || '#2563eb'}
 						oninput={(e: Event) =>
 							updateSetting('buttonHoverBg', (e.target as HTMLInputElement).value)}
 					/>
@@ -460,7 +428,7 @@
 					<input
 						id="button-border-radius"
 						type="text"
-						value={currentSettings.buttonBorderRadius || '0.5rem'}
+						value={settings.buttonBorderRadius || '0.5rem'}
 						oninput={(e: Event) =>
 							updateSetting('buttonBorderRadius', (e.target as HTMLInputElement).value)}
 						placeholder="0.5rem"
@@ -471,7 +439,7 @@
 					<input
 						id="button-padding"
 						type="text"
-						value={currentSettings.buttonPadding || '0.75rem 1.5rem'}
+						value={settings.buttonPadding || '0.75rem 1.5rem'}
 						oninput={(e: Event) =>
 							updateSetting('buttonPadding', (e.target as HTMLInputElement).value)}
 						placeholder="0.75rem 1.5rem"
@@ -482,7 +450,7 @@
 					<input
 						id="button-font-size"
 						type="text"
-						value={currentSettings.buttonFontSize || '1rem'}
+						value={settings.buttonFontSize || '1rem'}
 						oninput={(e: Event) =>
 							updateSetting('buttonFontSize', (e.target as HTMLInputElement).value)}
 						placeholder="1rem"
@@ -492,7 +460,7 @@
 					<label for="button-font-weight">Font Weight</label>
 					<select
 						id="button-font-weight"
-						value={currentSettings.buttonFontWeight || '600'}
+						value={settings.buttonFontWeight || '600'}
 						onchange={(e: Event) =>
 							updateSetting('buttonFontWeight', (e.target as HTMLSelectElement).value)}
 					>
@@ -506,7 +474,7 @@
 					<label for="button-width">Width</label>
 					<select
 						id="button-width"
-						value={currentSettings.buttonWidth || 'auto'}
+						value={settings.buttonWidth || 'auto'}
 						onchange={(e: Event) =>
 							updateSetting(
 								'buttonWidth',
@@ -524,7 +492,7 @@
 					<label for="font-family">Font Family</label>
 					<select
 						id="font-family"
-						value={currentSettings.fontFamily || 'inherit'}
+						value={settings.fontFamily || 'inherit'}
 						onchange={(e: Event) =>
 							updateSetting('fontFamily', (e.target as HTMLSelectElement).value)}
 					>
@@ -538,7 +506,7 @@
 					<input
 						id="error-color"
 						type="color"
-						value={currentSettings.errorColor || '#dc2626'}
+						value={settings.errorColor || '#dc2626'}
 						oninput={(e: Event) =>
 							updateSetting('errorColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -548,7 +516,7 @@
 					<input
 						id="error-bg-color"
 						type="color"
-						value={currentSettings.errorBgColor || '#fef2f2'}
+						value={settings.errorBgColor || '#fef2f2'}
 						oninput={(e: Event) =>
 							updateSetting('errorBgColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -558,7 +526,7 @@
 					<input
 						id="success-color"
 						type="color"
-						value={currentSettings.successColor || '#166534'}
+						value={settings.successColor || '#166534'}
 						oninput={(e: Event) =>
 							updateSetting('successColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -568,7 +536,7 @@
 					<input
 						id="success-bg-color"
 						type="color"
-						value={currentSettings.successBgColor || '#dcfce7'}
+						value={settings.successBgColor || '#dcfce7'}
 						oninput={(e: Event) =>
 							updateSetting('successBgColor', (e.target as HTMLInputElement).value)}
 					/>
@@ -578,7 +546,7 @@
 					<input
 						id="field-gap"
 						type="text"
-						value={currentSettings.fieldGap || '1rem'}
+						value={settings.fieldGap || '1rem'}
 						oninput={(e: Event) => updateSetting('fieldGap', (e.target as HTMLInputElement).value)}
 						placeholder="1rem"
 					/>
@@ -588,7 +556,7 @@
 					<input
 						id="section-gap"
 						type="text"
-						value={currentSettings.sectionGap || '2rem'}
+						value={settings.sectionGap || '2rem'}
 						oninput={(e: Event) =>
 							updateSetting('sectionGap', (e.target as HTMLInputElement).value)}
 						placeholder="2rem"

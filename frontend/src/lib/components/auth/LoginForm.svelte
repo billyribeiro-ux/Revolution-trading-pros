@@ -35,6 +35,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { fade, slide } from 'svelte/transition';
+	import { fromAction, type Attachment } from 'svelte/attachments';
 
 	// GSAP loaded dynamically to prevent SSR blocking. The `gsap` package ships
 	// a global `gsap` namespace via its types (see node_modules/gsap/types/),
@@ -80,6 +81,30 @@
 	let formRef = $state<HTMLFormElement | null>(null);
 	let cardRef = $state<HTMLElement | null>(null);
 	let emailInputRef = $state<HTMLInputElement | null>(null);
+
+	const attachFormRef: Attachment<HTMLFormElement> = (node) => {
+		formRef = node;
+
+		return () => {
+			formRef = null;
+		};
+	};
+
+	const attachCardRef: Attachment<HTMLElement> = (node) => {
+		cardRef = node;
+
+		return () => {
+			cardRef = null;
+		};
+	};
+
+	const attachEmailInputRef: Attachment<HTMLInputElement> = (node) => {
+		emailInputRef = node;
+
+		return () => {
+			emailInputRef = null;
+		};
+	};
 
 	// --- Validation ---
 	function validateEmail(value: string): string | null {
@@ -242,6 +267,8 @@
 			}
 		};
 	}
+
+	const focusAnimationAttachment = fromAction(focusAnimation);
 
 	// --- Lifecycle ---
 	onMount(() => {
@@ -528,7 +555,7 @@
 	}
 </script>
 
-<div class="login-card" bind:this={cardRef}>
+<div class="login-card" {@attach attachCardRef}>
 	<!-- Glass Effect -->
 	<div class="card-glass" aria-hidden="true"></div>
 	<div class="card-glow" aria-hidden="true"></div>
@@ -586,22 +613,22 @@
 			{/if}
 
 			<!-- Form -->
-			<form bind:this={formRef} class="login-form" novalidate>
+			<form {@attach attachFormRef} class="login-form" novalidate>
 				<!-- Email Field -->
 				<div class="form-field">
 					<label for="email" class="field-label">Email Address</label>
-					<div class="input-wrapper" class:error={errors['email']}>
+					<div class={['input-wrapper', { error: errors['email'] }]}>
 						<div class="input-icon">
 							<IconMail size={20} />
 						</div>
 						<input
-							bind:this={emailInputRef}
+							{@attach attachEmailInputRef}
 							id="email"
 							name="email"
 							type="email"
 							bind:value={email}
 							onblur={() => handleBlur('email')}
-							use:focusAnimation
+							{@attach focusAnimationAttachment}
 							required
 							class="form-input"
 							placeholder="trader@example.com"
@@ -621,7 +648,7 @@
 				<!-- Password Field -->
 				<div class="form-field">
 					<label for="password" class="field-label">Password</label>
-					<div class="input-wrapper" class:error={errors['password']}>
+					<div class={['input-wrapper', { error: errors['password'] }]}>
 						<div class="input-icon">
 							<IconLock size={20} />
 						</div>
@@ -631,7 +658,7 @@
 							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							onblur={() => handleBlur('password')}
-							use:focusAnimation
+							{@attach focusAnimationAttachment}
 							required
 							class="form-input has-toggle"
 							placeholder="Enter your password"
@@ -683,9 +710,7 @@
 				<div class="form-actions">
 					<button
 						type="button"
-						class="submit-btn"
-						class:loading={isLoading}
-						class:success={isSuccess}
+						class={['submit-btn', { loading: isLoading, success: isSuccess }]}
 						disabled={isLoading || isSuccess}
 						onclick={handleSubmit}
 					>

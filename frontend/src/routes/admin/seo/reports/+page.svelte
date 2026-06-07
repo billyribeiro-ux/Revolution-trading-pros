@@ -208,6 +208,10 @@
 		}
 	}
 
+	function getTemplateCardClasses(template: ReportTemplate) {
+		return ['template-card', !template.isActive && 'inactive'];
+	}
+
 	const frequencyOptions = [
 		{ value: 'daily', label: 'Daily' },
 		{ value: 'weekly', label: 'Weekly' },
@@ -276,7 +280,7 @@
 		{:else}
 			<div class="templates-list">
 				{#each templates as template (template.id)}
-					<div class="template-card" class:inactive={!template.isActive}>
+					<div class={getTemplateCardClasses(template)}>
 						<div class="template-header">
 							<h3>{template.name}</h3>
 							<div class="template-status">
@@ -359,7 +363,7 @@
 							<span class="report-date">{new Date(report.generatedAt).toLocaleDateString()}</span>
 						</div>
 						<div class="report-meta">
-							<span class="report-status" style="color: {getStatusColor(report.status)}">
+							<span class="report-status" style:color={getStatusColor(report.status)}>
 								{report.status}
 							</span>
 							<span class="report-recipients">{report.recipients} recipients</span>

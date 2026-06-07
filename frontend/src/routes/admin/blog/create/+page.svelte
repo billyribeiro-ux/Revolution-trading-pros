@@ -131,14 +131,33 @@
 		scheduleSlugUniquenessCheck();
 	}
 
-	function generateSlug() {
-		if (!post.slug && post.title) {
-			post.slug = post.title
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-+|-+$/g, '');
+	function slugifyTitle(title: string): string {
+		return title
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '');
+	}
+
+	function handleTitleInput(title: string) {
+		if (!slugEdited) {
+			post.slug = slugifyTitle(title);
 			scheduleSlugUniquenessCheck();
 		}
+	}
+
+	function generateSlug() {
+		if (!post.slug && post.title) {
+			post.slug = slugifyTitle(post.title);
+			scheduleSlugUniquenessCheck();
+		}
+	}
+
+	function codeLanguageClass(language: unknown): string {
+		const token = String(language || 'text')
+			.toLowerCase()
+			.replace(/[^a-z0-9_-]/g, '');
+
+		return `language-${token || 'text'}`;
 	}
 
 	function scheduleSlugUniquenessCheck() {
@@ -210,7 +229,11 @@
 					case 'image':
 						return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
 					case 'code':
-						return `<pre><code class="language-${content.language || 'text'}">${content.code || ''}</code></pre>`;
+						return (
+							'<pre><code class="' +
+							codeLanguageClass(content.language) +
+							`">${content.code || ''}</code></pre>`
+						);
 					case 'separator':
 						return '<hr />';
 					case 'html':
@@ -354,15 +377,6 @@
 		post.featured_image_description = '';
 		post.featured_media_id = null;
 	}
-
-	// FIX-2026-04-26 (P0-4): only auto-generate slug if user hasn't manually
-	// edited the slug field; previous code would clobber a deliberate slug on
-	// every title keystroke if the user ever cleared the slug field.
-	$effect(() => {
-		if (post.title && !slugEdited) {
-			generateSlug();
-		}
-	});
 </script>
 
 <svelte:head>
@@ -402,6 +416,7 @@
 					name="title"
 					type="text"
 					bind:value={post.title}
+					oninput={(event) => handleTitleInput(event.currentTarget.value)}
 					placeholder="Post Title"
 					class="title-input"
 					autocomplete="off"
@@ -447,7 +462,7 @@
 			</div>
 
 			<!-- Advanced Block Editor -->
-			<div class="form-group editor-container" class:fullscreen={isFullscreen}>
+			<div class={['form-group', 'editor-container', { fullscreen: isFullscreen }]}>
 				<div class="editor-toolbar">
 					<h3 class="editor-label">Content</h3>
 					<div class="editor-actions">
@@ -600,7 +615,7 @@
 						></textarea>
 					</div>
 				{:else}
-					<label class="upload-box" class:disabled={uploadingImage}>
+					<label class={['upload-box', { disabled: uploadingImage }]}>
 						<input
 							id="featured-image-upload"
 							name="featured_image"
@@ -629,8 +644,7 @@
 					{#each predefinedCategories as category (category.id)}
 						<button
 							type="button"
-							class="category-btn"
-							class:selected={isCategorySelected(category.id)}
+							class={['category-btn', { selected: isCategorySelected(category.id) }]}
 							style:--tag-color={category.color}
 							onclick={() => toggleCategorySelection(category.id)}
 						>
@@ -672,7 +686,7 @@
 					{#each post.tags as tagId (tagId)}
 						{@const tag = availableTags.find((t) => t.id === tagId)}
 						{#if tag}
-							<span class="tag-badge" style="background: {tag.color}20; color: {tag.color}">
+							<span class="tag-badge" style:--tag-color={tag.color ?? '#64748b'}>
 								{tag.name}
 								<button
 									type="button"
@@ -715,7 +729,9 @@
 										}
 									}}
 								/>
-								<span style="color: {tag.color}">{tag.name}</span>
+								<span class="tag-option-name" style:--tag-color={tag.color ?? '#64748b'}>
+									{tag.name}
+								</span>
 							</label>
 						{/if}
 					{/each}
@@ -1149,6 +1165,8 @@
 		border-radius: 4px;
 		font-size: 0.85rem;
 		font-weight: 500;
+		background: color-mix(in srgb, var(--tag-color, #64748b) 12.5%, transparent);
+		color: var(--tag-color, #64748b);
 	}
 
 	.tag-badge button {
@@ -1158,6 +1176,11 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		color: inherit;
+	}
+
+	.tag-option-name {
+		color: var(--tag-color, #64748b);
 	}
 
 	.tag-input-group {

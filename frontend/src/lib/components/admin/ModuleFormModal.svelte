@@ -152,6 +152,13 @@
 			onClose();
 		}
 	}
+
+	function statusButtonClass(active: boolean) {
+		return {
+			'status-btn': true,
+			active
+		};
+	}
 </script>
 
 {#if isOpen}
@@ -243,8 +250,7 @@
 						<div class="status-toggle" role="group" aria-label="Module status">
 							<button
 								type="button"
-								class="status-btn"
-								class:active={isPublished}
+								class={statusButtonClass(isPublished)}
 								onclick={() => (isPublished = true)}
 								disabled={isLoading}
 							>
@@ -252,8 +258,7 @@
 							</button>
 							<button
 								type="button"
-								class="status-btn"
-								class:active={!isPublished}
+								class={statusButtonClass(!isPublished)}
 								onclick={() => (isPublished = false)}
 								disabled={isLoading}
 							>

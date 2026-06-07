@@ -281,11 +281,7 @@
 				</div>
 				<div class="active-users">
 					{#each activeUsers as user (user.user_id)}
-						<div
-							class="user-avatar"
-							style="background-color: {user.avatar_color}"
-							title={user.name}
-						>
+						<div class="user-avatar" style:background-color={user.avatar_color} title={user.name}>
 							{user.name.charAt(0).toUpperCase()}
 						</div>
 					{/each}
@@ -300,9 +296,8 @@
 				{#each collaborators as collab (collab.id)}
 					<div class="collaborator-item">
 						<div
-							class="collab-avatar"
-							class:online={isOnline(collab.id)}
-							style="background-color: {getAvatarColor(collab.id)}"
+							class={{ 'collab-avatar': true, online: isOnline(collab.id) }}
+							style:background-color={getAvatarColor(collab.id)}
 						>
 							{(collab.name || '?').charAt(0).toUpperCase()}
 						</div>

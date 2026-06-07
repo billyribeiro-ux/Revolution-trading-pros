@@ -125,7 +125,7 @@
 	/**
 	 * Handle error caught by svelte:boundary
 	 */
-	function handleError(e: unknown) {
+	function handleError(e: unknown): void {
 		const err = e instanceof Error ? e : new Error(String(e));
 		error = err;
 		hasError = true;
@@ -148,7 +148,7 @@
 	/**
 	 * Retry rendering the block
 	 */
-	async function handleRetry() {
+	async function handleRetry(): Promise<void> {
 		if (maxRetriesExceeded) return;
 
 		isRecovering = true;
@@ -176,7 +176,7 @@
 	/**
 	 * Reset block to default state
 	 */
-	async function handleReset() {
+	async function handleReset(): Promise<void> {
 		isRecovering = true;
 
 		// Brief delay for visual feedback
@@ -210,7 +210,7 @@
 	/**
 	 * Delete the block
 	 */
-	function handleDelete() {
+	function handleDelete(): void {
 		if (!showDeleteConfirm) {
 			showDeleteConfirm = true;
 			return;
@@ -226,18 +226,42 @@
 	/**
 	 * Cancel delete confirmation
 	 */
-	function cancelDelete() {
+	function cancelDelete(): void {
 		showDeleteConfirm = false;
 	}
 
 	// Keyboard Handling
 
-	function handleKeydown(e: KeyboardEvent) {
+	function handleKeydown(e: KeyboardEvent): void {
 		if (e.key === 'Escape' && showDeleteConfirm) {
 			e.preventDefault();
 			cancelDelete();
 		}
 	}
+
+	function getBoundaryClasses(): Array<string | false> {
+		return [
+			'block-error-boundary',
+			isNested && 'block-error-boundary--nested',
+			errorSeverity === ErrorSeverity.CRITICAL && 'block-error-boundary--severity-critical',
+			errorSeverity === ErrorSeverity.HIGH && 'block-error-boundary--severity-high',
+			errorSeverity === ErrorSeverity.MEDIUM && 'block-error-boundary--severity-medium',
+			errorSeverity === ErrorSeverity.LOW && 'block-error-boundary--severity-low'
+		];
+	}
+
+	function getSeverityBadgeClasses(): Array<string | false> {
+		return [
+			'detail-value',
+			'severity-badge',
+			errorSeverity === ErrorSeverity.CRITICAL && 'severity-badge--critical'
+		];
+	}
+
+	const errorActionsClasses = $derived([
+		'error-actions',
+		showDeleteConfirm && 'error-actions--confirm-mode'
+	]);
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -255,12 +279,7 @@
 		{:else}
 			{#key animationKey}
 				<div
-					class="block-error-boundary"
-					class:nested={isNested}
-					class:severity-critical={errorSeverity === ErrorSeverity.CRITICAL}
-					class:severity-high={errorSeverity === ErrorSeverity.HIGH}
-					class:severity-medium={errorSeverity === ErrorSeverity.MEDIUM}
-					class:severity-low={errorSeverity === ErrorSeverity.LOW}
+					class={getBoundaryClasses()}
 					in:fly={{ y: 10, duration: 300, easing: cubicOut }}
 					role="alert"
 					aria-live="polite"
@@ -289,10 +308,7 @@
 								</div>
 								<div class="detail-row">
 									<span class="detail-label">Severity:</span>
-									<code
-										class="detail-value severity-badge"
-										class:critical={errorSeverity === ErrorSeverity.CRITICAL}
-									>
+									<code class={getSeverityBadgeClasses()}>
 										{errorSeverity}
 									</code>
 								</div>
@@ -325,7 +341,7 @@
 					{/if}
 
 					<!-- Action Buttons -->
-					<div class="error-actions" class:confirm-mode={showDeleteConfirm}>
+					<div class={errorActionsClasses}>
 						{#if showDeleteConfirm}
 							<div class="confirm-dialog" transition:fly={{ y: -10, duration: 200 }}>
 								<span class="confirm-text">Delete this block?</span>
@@ -417,28 +433,28 @@
 		overflow: hidden;
 	}
 
-	.block-error-boundary.nested {
+	.block-error-boundary--nested {
 		padding: 1rem;
 		border-radius: 6px;
 	}
 
 	/* Severity-based styling */
-	.block-error-boundary.severity-critical {
+	.block-error-boundary--severity-critical {
 		border-left-color: #dc2626;
 		background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
 	}
 
-	.block-error-boundary.severity-high {
+	.block-error-boundary--severity-high {
 		border-left-color: #ef4444;
 	}
 
-	.block-error-boundary.severity-medium {
+	.block-error-boundary--severity-medium {
 		border-left-color: #f97316;
 		background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
 		border-color: #fed7aa;
 	}
 
-	.block-error-boundary.severity-low {
+	.block-error-boundary--severity-low {
 		border-left-color: #eab308;
 		background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
 		border-color: #fde68a;
@@ -464,12 +480,12 @@
 		flex-shrink: 0;
 	}
 
-	.severity-medium .error-icon {
+	.block-error-boundary--severity-medium .error-icon {
 		background: #fef3c7;
 		color: #d97706;
 	}
 
-	.severity-low .error-icon {
+	.block-error-boundary--severity-low .error-icon {
 		background: #fef9c3;
 		color: #ca8a04;
 	}
@@ -486,11 +502,11 @@
 		color: #991b1b;
 	}
 
-	.severity-medium .error-title {
+	.block-error-boundary--severity-medium .error-title {
 		color: #92400e;
 	}
 
-	.severity-low .error-title {
+	.block-error-boundary--severity-low .error-title {
 		color: #854d0e;
 	}
 
@@ -501,11 +517,11 @@
 		line-height: 1.5;
 	}
 
-	.severity-medium .error-message {
+	.block-error-boundary--severity-medium .error-message {
 		color: #78350f;
 	}
 
-	.severity-low .error-message {
+	.block-error-boundary--severity-low .error-message {
 		color: #713f12;
 	}
 
@@ -569,7 +585,7 @@
 		color: #1f2937;
 	}
 
-	.severity-badge.critical {
+	.severity-badge--critical {
 		background: #fee2e2;
 		color: #dc2626;
 	}
@@ -599,7 +615,7 @@
 		gap: 0.5rem;
 	}
 
-	.error-actions.confirm-mode {
+	.error-actions--confirm-mode {
 		justify-content: center;
 	}
 
@@ -764,12 +780,12 @@
 			border-color: #991b1b;
 		}
 
-		.block-error-boundary.severity-medium {
+		.block-error-boundary--severity-medium {
 			background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
 			border-color: #92400e;
 		}
 
-		.block-error-boundary.severity-low {
+		.block-error-boundary--severity-low {
 			background: linear-gradient(135deg, #422006 0%, #713f12 100%);
 			border-color: #854d0e;
 		}

@@ -37,6 +37,8 @@
 	} from './_components/helpers';
 	import { formatDateTime, getTimelineIcon } from './_components/helpers';
 
+	type MemberTab = 'overview' | 'subscriptions' | 'orders' | 'emails' | 'notes';
+
 	let memberId = $derived(Number(page.params.id));
 
 	// State
@@ -66,7 +68,7 @@
 	let availableTags = ['VIP', 'High Value', 'At Risk', 'New', 'Engaged', 'Support Priority'];
 
 	// Active tab
-	let activeTab = $state<'overview' | 'subscriptions' | 'orders' | 'emails' | 'notes'>('overview');
+	let activeTab = $state<MemberTab>('overview');
 
 	// Membership management modals
 	let showExtendModal = $state(false);
@@ -86,8 +88,8 @@
 	// Email history
 	let emailHistory = $state<EmailHistoryItem[]>([]);
 
-	onMount(async () => {
-		await loadMember();
+	onMount(() => {
+		void loadMember();
 	});
 
 	async function loadMember() {
@@ -270,16 +272,18 @@
 		extending = true;
 		try {
 			// Calculate new expiration date
-			const currentExpiry = selectedSubscription.next_payment
+			const currentExpiryBase = selectedSubscription.next_payment
 				? new Date(selectedSubscription.next_payment)
 				: new Date();
-			currentExpiry.setDate(currentExpiry.getDate() + extendDays);
+			const extendedExpiry = new Date(
+				currentExpiryBase.getTime() + extendDays * 24 * 60 * 60 * 1000
+			);
 
 			const response = await fetch(`/api/admin/user-memberships/${selectedSubscription.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					expires_at: currentExpiry.toISOString()
+					expires_at: extendedExpiry.toISOString()
 				})
 			});
 
@@ -363,6 +367,10 @@
 			toastStore.error('Failed to revoke membership');
 		}
 	}
+
+	function getTabButtonClass(tab: MemberTab) {
+		return ['tab-button', activeTab === tab && 'tab-button--active'];
+	}
 </script>
 
 <svelte:head>
@@ -411,26 +419,26 @@
 		<!-- Tabs -->
 		<div class="tabs-container">
 			<div class="tabs">
-				<button class:active={activeTab === 'overview'} onclick={() => (activeTab = 'overview')}>
+				<button class={getTabButtonClass('overview')} onclick={() => (activeTab = 'overview')}>
 					<IconActivity size={18} />
 					Overview
 				</button>
 				<button
-					class:active={activeTab === 'subscriptions'}
+					class={getTabButtonClass('subscriptions')}
 					onclick={() => (activeTab = 'subscriptions')}
 				>
 					<IconCreditCard size={18} />
 					Subscriptions
 				</button>
-				<button class:active={activeTab === 'orders'} onclick={() => (activeTab = 'orders')}>
+				<button class={getTabButtonClass('orders')} onclick={() => (activeTab = 'orders')}>
 					<IconReceipt size={18} />
 					Orders
 				</button>
-				<button class:active={activeTab === 'emails'} onclick={() => (activeTab = 'emails')}>
+				<button class={getTabButtonClass('emails')} onclick={() => (activeTab = 'emails')}>
 					<IconMail size={18} />
 					Emails
 				</button>
-				<button class:active={activeTab === 'notes'} onclick={() => (activeTab = 'notes')}>
+				<button class={getTabButtonClass('notes')} onclick={() => (activeTab = 'notes')}>
 					<IconFileText size={18} />
 					Notes
 				</button>
@@ -718,7 +726,7 @@
 		color: var(--primary-400);
 	}
 
-	.tabs button.active {
+	.tabs button.tab-button--active {
 		color: var(--primary-400);
 		border-bottom-color: var(--primary-500);
 	}

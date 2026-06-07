@@ -178,6 +178,10 @@
 		selectedStatus = '';
 	}
 
+	function roomTagBackground(color: string): string {
+		return `${color}20`;
+	}
+
 	function resetCreateForm() {
 		newItem = {
 			title: '',
@@ -386,8 +390,8 @@
 												{#each getRoomsByIds(item.rooms).slice(0, 2) as room (room.id)}
 													<span
 														class="room-tag"
-														style="background-color: {room.color}20; color: {room.color}"
-														>{room.shortName}</span
+														style:background-color={roomTagBackground(room.color)}
+														style:color={room.color}>{room.shortName}</span
 													>
 												{/each}
 												{#if item.rooms.length > 2}
@@ -398,7 +402,7 @@
 									</div>
 								</td>
 								<td class="col-status">
-									<span class="status-badge status-{item.status}">
+									<span class={['status-badge', `status-${item.status}`]}>
 										{item.status}
 									</span>
 								</td>
