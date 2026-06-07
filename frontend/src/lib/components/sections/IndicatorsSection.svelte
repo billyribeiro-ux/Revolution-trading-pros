@@ -600,17 +600,20 @@
 						{@const IconComponent = indicator.icon}
 						<a
 							href={indicator.href}
-							class="indicator-card group block relative p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-800/30 transition-all duration-300 active:scale-[0.98] {activeIndicator ===
-							i
-								? 'ring-2 ring-blue-500/30 bg-zinc-800/40'
-								: ''}"
+							class={[
+								'indicator-card group block relative p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-800/30 transition-all duration-300 active:scale-[0.98]',
+								activeIndicator === i && 'ring-2 ring-blue-500/30 bg-zinc-800/40'
+							]}
 							onmouseenter={() => (activeIndicator = i)}
 							ontouchstart={() => (activeIndicator = i)}
 						>
 							<div class="flex items-start gap-3 sm:gap-4">
 								<!-- Icon -->
 								<div
-									class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br {indicator.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300"
+									class={[
+										'shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300',
+										indicator.gradient
+									]}
 								>
 									<IconComponent class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
 								</div>
