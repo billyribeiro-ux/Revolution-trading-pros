@@ -227,6 +227,15 @@
 		return v === true;
 	}
 
+	function repeaterRowClass(row: RepeaterRow, index: number) {
+		return {
+			'repeater-row': true,
+			collapsed: row.collapsed,
+			dragging: draggedIndex === index,
+			'drag-over': dragOverIndex === index && draggedIndex !== index
+		};
+	}
+
 	// Check if can add more
 	let canAdd = $derived(rows.length < maxItems);
 	let canRemove = $derived(rows.length > minItems);
@@ -255,10 +264,7 @@
 	<div class="repeater-rows">
 		{#each rows as row, index (row.id)}
 			<div
-				class="repeater-row"
-				class:collapsed={row.collapsed}
-				class:dragging={draggedIndex === index}
-				class:drag-over={dragOverIndex === index && draggedIndex !== index}
+				class={repeaterRowClass(row, index)}
 				draggable="true"
 				ondragstart={() => handleDragStart(index)}
 				ondragover={(e: DragEvent) => handleDragOver(e, index)}
@@ -300,7 +306,7 @@
 						{#each subFields as subField (subField.name)}
 							{#if subField.name}
 								{@const subFieldName = subField.name}
-								<div class="sub-field" style="width: {subField.width ?? 100}%">
+								<div class="sub-field" style:width={`${subField.width ?? 100}%`}>
 									<label class="sub-field-label" for="{props.field.name}_{row.id}_{subField.name}">
 										{subField.label}
 										{#if subField.required}
