@@ -45,6 +45,11 @@
 	const rating = $derived(props.block.content.testimonialRating || 5);
 	const showPhoto = $derived(props.block.settings?.showPhoto !== false);
 	const sanitizedPhotoURL = $derived(authorPhoto ? sanitizeURL(authorPhoto) : '');
+	const ratingClass = $derived(
+		props.isEditing
+			? 'testimonial-block__rating testimonial-block__rating--editable'
+			: 'testimonial-block__rating'
+	);
 
 	// Constants
 
@@ -205,9 +210,25 @@
 		fileInputRef?.click();
 	}
 
+	function attachFileInput(element: HTMLInputElement): () => void {
+		fileInputRef = element;
+
+		return () => {
+			if (fileInputRef === element) {
+				fileInputRef = null;
+			}
+		};
+	}
+
 	function handleShowPhotoChange(e: Event): void {
 		const target = e.target as HTMLInputElement;
 		updateSettings({ showPhoto: target.checked });
+	}
+
+	function getStarClass(isFilled: boolean): string {
+		return isFilled
+			? 'testimonial-block__star testimonial-block__star--filled'
+			: 'testimonial-block__star';
 	}
 </script>
 
@@ -218,20 +239,14 @@
 	</div>
 
 	<!-- Star Rating -->
-	<div
-		class="testimonial-block__rating"
-		class:testimonial-block__rating--editable={props.isEditing}
-		role="group"
-		aria-label="Rating: {rating} out of {MAX_RATING} stars"
-	>
+	<div class={ratingClass} role="group" aria-label="Rating: {rating} out of {MAX_RATING} stars">
 		{#each Array(MAX_RATING) as _, index (index)}
 			{@const starValue = index + 1}
 			{@const isFilled = starValue <= (hoverRating || rating)}
 			{#if props.isEditing}
 				<button
 					type="button"
-					class="testimonial-block__star"
-					class:testimonial-block__star--filled={isFilled}
+					class={getStarClass(isFilled)}
 					onclick={() => handleStarClick(starValue)}
 					onmouseenter={() => handleStarHover(starValue)}
 					onmouseleave={handleStarLeave}
@@ -242,11 +257,7 @@
 					<IconStar size={20} />
 				</button>
 			{:else}
-				<span
-					class="testimonial-block__star"
-					class:testimonial-block__star--filled={isFilled}
-					aria-hidden="true"
-				>
+				<span class={getStarClass(isFilled)} aria-hidden="true">
 					<IconStar size={20} />
 				</span>
 			{/if}
@@ -411,13 +422,13 @@
 
 				<!-- Hidden file input -->
 				<input
-					bind:this={fileInputRef}
 					type="file"
 					accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
 					onchange={handleFileSelect}
 					class="testimonial-block__file-input"
 					aria-hidden="true"
 					tabindex="-1"
+					{@attach attachFileInput}
 				/>
 			</div>
 		{/if}
