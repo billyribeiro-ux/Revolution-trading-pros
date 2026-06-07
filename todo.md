@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 464 Svelte files remaining.
+- Broad dynamic class/style migration scan: 463 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -115,6 +115,7 @@ Current evidence:
 - [x] `f9cdf559c` Modernize day trading learning center styles.
 - [x] `84bdc227c` Modernize admin member subscriptions bindings.
 - [x] `d845ca368` Modernize trade entry manager bindings.
+- [x] `fef2652e6` Modernize small account trader store detail page.
 
 ## Current Priority Queue
 
@@ -174,7 +175,7 @@ Current evidence:
 - [x] `frontend/src/routes/dashboard/day-trading-room/learning-center/+page.svelte`
 - [x] `frontend/src/routes/admin/members/subscriptions/+page.svelte`
 - [x] `frontend/src/routes/admin/trading-rooms/[slug]/components/TradeEntryManager.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/trader-store/[slug]/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/trader-store/[slug]/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/day-trading-room/trader-store/[slug]/+page.svelte`
 - [ ] `frontend/src/routes/admin/crm/webhooks/+page.svelte`
 
