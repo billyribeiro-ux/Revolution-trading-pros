@@ -19,10 +19,21 @@
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 
+	type PeriodOption = {
+		label: string;
+		value: '24h' | '7d' | '30d';
+	};
+
+	const periodOptions: PeriodOption[] = [
+		{ label: '24H', value: '24h' },
+		{ label: '7D', value: '7d' },
+		{ label: '30D', value: '30d' }
+	];
+
 	let isLoading = $state(true);
 	let connectionLoading = $state(true);
 	let error = $state('');
-	let selectedPeriod = $state('7d');
+	let selectedPeriod: PeriodOption['value'] = $state('7d');
 
 	// Behavior metrics
 	let metrics = $state({
@@ -43,7 +54,7 @@
 	// (which prepends the hardcoded backend URL and bypasses the cookie-based
 	// auth attached by `+server.ts`). The proxy stub at
 	// `/api/admin/analytics/behavior/+server.ts` handles auth + URL injection.
-	async function loadData() {
+	async function loadData(): Promise<void> {
 		isLoading = true;
 		error = '';
 
@@ -78,9 +89,16 @@
 		}
 	}
 
-	function changePeriod(period: string) {
+	function changePeriod(period: PeriodOption['value']): void {
 		selectedPeriod = period;
-		loadData();
+		void loadData();
+	}
+
+	function getPeriodButtonClasses(period: PeriodOption['value']): Array<string | false> {
+		return [
+			'period-selector__button',
+			selectedPeriod === period && 'period-selector__button--active'
+		];
 	}
 
 	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
@@ -90,24 +108,26 @@
 	onMount(() => {
 		if (!browser) return;
 
-		(async () => {
-			try {
-				await connections.load();
-			} catch (e) {
-				if (import.meta.env.DEV) {
-					console.error('[Behavior] Failed to load connection status:', e);
-				}
-			} finally {
-				connectionLoading = false;
-			}
-
-			if (getIsBehaviorConnected()) {
-				await loadData();
-			} else {
-				isLoading = false;
-			}
-		})();
+		void initializeBehaviorPage();
 	});
+
+	async function initializeBehaviorPage(): Promise<void> {
+		try {
+			await connections.load();
+		} catch (e) {
+			if (import.meta.env.DEV) {
+				console.error('[Behavior] Failed to load connection status:', e);
+			}
+		} finally {
+			connectionLoading = false;
+		}
+
+		if (getIsBehaviorConnected()) {
+			await loadData();
+		} else {
+			isLoading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -130,15 +150,14 @@
 			{#if isBehaviorConnected}
 				<div class="header-actions">
 					<div class="period-selector">
-						<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}
-							>24H</button
-						>
-						<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}
-							>7D</button
-						>
-						<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}
-							>30D</button
-						>
+						{#each periodOptions as option (option.value)}
+							<button
+								class={getPeriodButtonClasses(option.value)}
+								onclick={() => changePeriod(option.value)}
+							>
+								{option.label}
+							</button>
+						{/each}
 					</div>
 					<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
 						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
@@ -293,7 +312,7 @@
 											<span class="scroll-views">{scroll.views} views</span>
 										</div>
 										<div class="scroll-bar-wrap">
-											<div class="scroll-bar" style="width: {scroll.avgDepth}%"></div>
+											<div class="scroll-bar" style:width={`${scroll.avgDepth}%`}></div>
 										</div>
 										<span class="scroll-depth">{scroll.avgDepth}%</span>
 									</div>
@@ -463,7 +482,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 	}
 
-	.period-selector button {
+	.period-selector__button {
 		padding: 0.5rem 1rem;
 		background: transparent;
 		border: none;
@@ -475,11 +494,11 @@
 		transition: all 0.2s;
 	}
 
-	.period-selector button:hover {
+	.period-selector__button:hover {
 		color: #e2e8f0;
 	}
 
-	.period-selector button.active {
+	.period-selector__button--active {
 		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		color: white;
 	}
