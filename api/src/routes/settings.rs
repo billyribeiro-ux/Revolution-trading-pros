@@ -140,10 +140,15 @@ pub struct SettingsQuery {
 
 /// Mask sensitive values (show only last 4 chars for API keys)
 fn mask_sensitive_value(value: &str) -> String {
-    if value.len() <= 8 {
-        "*".repeat(value.len())
+    // RUST_DEEP_AUDIT_2026-06-07 (P2-4): operate on chars, not bytes. The byte
+    // slice `&value[len-4..]` panics when the last 4 bytes fall inside a
+    // multibyte UTF-8 char (e.g. a stored value ending in a non-ASCII char).
+    let chars: Vec<char> = value.chars().collect();
+    if chars.len() <= 8 {
+        "*".repeat(chars.len())
     } else {
-        format!("{}...{}", "*".repeat(8), &value[value.len() - 4..])
+        let last4: String = chars[chars.len() - 4..].iter().collect();
+        format!("{}...{}", "*".repeat(8), last4)
     }
 }
 
