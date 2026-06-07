@@ -198,16 +198,20 @@
 	<!-- Tabs -->
 	<div class="tabs">
 		<button
-			class="tab"
-			class:active={activeTab === 'import'}
+			class={{
+				tab: true,
+				active: activeTab === 'import'
+			}}
 			onclick={() => (activeTab = 'import')}
 		>
 			<IconUpload size={18} />
 			Import
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'export'}
+			class={{
+				tab: true,
+				active: activeTab === 'export'
+			}}
 			onclick={() => (activeTab = 'export')}
 		>
 			<IconDownload size={18} />
@@ -262,7 +266,7 @@
 										<span class="file-name">{job.file_name}</span>
 									</td>
 									<td>
-										<span class="status-badge {getStatusColor(job.status)}">
+										<span class={['status-badge', getStatusColor(job.status)]}>
 											<StatusIcon size={14} />
 											{job.status}
 										</span>
@@ -332,7 +336,7 @@
 										<span>{job.total_records.toLocaleString()}</span>
 									</td>
 									<td>
-										<span class="status-badge {getStatusColor(job.status)}">
+										<span class={['status-badge', getStatusColor(job.status)]}>
 											<ExportStatusIcon size={14} />
 											{job.status}
 										</span>
