@@ -128,7 +128,7 @@ pub(super) fn resource_to_response(resource: RoomResource) -> ResourceResponse {
         section: resource.section.clone(),
         created_at: resource.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
         // ICT 7 NEW: Access control
-        access_level: access_level.clone(),
+        access_level,
         requires_premium,
         // ICT 7 NEW: Versioning
         version: resource.version.unwrap_or(1),

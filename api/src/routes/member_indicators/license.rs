@@ -23,7 +23,7 @@ use crate::AppState;
 
 /// ICT 7: Generate a license key for an indicator
 fn generate_license_key(user_id: i64, indicator_id: i64) -> String {
-    let secret = std::env::var("MEMBER_LICENSE_SECRET").unwrap_or_else(|_| "".to_string());
+    let secret = std::env::var("MEMBER_LICENSE_SECRET").unwrap_or_default();
     let timestamp = chrono::Utc::now().timestamp();
     let input = format!("{user_id}-{indicator_id}-{timestamp}-{secret}");
     let mut hasher = Sha256::new();

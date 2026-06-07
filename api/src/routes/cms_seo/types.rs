@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 
 /// SEO issue severity level
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum SeoIssueSeverity {
     Error,
@@ -22,7 +22,7 @@ pub enum SeoIssueSeverity {
 }
 
 /// SEO issue category
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum SeoIssueCategory {
     Title,

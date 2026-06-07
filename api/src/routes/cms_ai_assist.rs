@@ -50,7 +50,7 @@ const CLAUDE_API_URL: &str = "https://api.anthropic.com/v1/messages";
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /// AI actions supported by the CMS
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum AiAction {
     /// Improve overall writing quality
@@ -93,7 +93,7 @@ impl std::fmt::Display for AiAction {
 }
 
 /// Tone options for change_tone action
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum ToneOption {
     Professional,

@@ -93,7 +93,7 @@ pub(super) async fn generate_download_url(
     })?;
 
     // Generate secure download token (WordPress-compatible hash)
-    let secret = std::env::var("MEMBER_INDICATOR_SECRET").unwrap_or_else(|_| "".to_string());
+    let secret = std::env::var("MEMBER_INDICATOR_SECRET").unwrap_or_default();
     let expires_at = Utc::now() + Duration::hours(24);
     let expiry_timestamp = expires_at.timestamp();
 

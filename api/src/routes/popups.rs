@@ -230,7 +230,7 @@ async fn get_active_popups(
                 close_button: popup.show_close_button,
                 close_on_overlay_click_compat: popup.close_on_overlay_click,
                 display_rules_compat: DisplayRulesCompat {
-                    frequency: frequency_rules.frequency.clone(),
+                    frequency: frequency_rules.frequency,
                     delay_seconds: trigger_rules.delay.unwrap_or(0) / 1000,
                     show_on_scroll: trigger_rules.scroll_depth.is_some(),
                     scroll_percentage: trigger_rules.scroll_depth.unwrap_or(50),
