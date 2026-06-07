@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 431 Svelte files remaining.
+- Broad dynamic class/style migration scan: 430 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -148,6 +148,7 @@ Current evidence:
 - [x] `ac9ed96ed` Modernize media library selection bindings.
 - [x] `23cc6d364` Modernize smart links bindings.
 - [x] `dd2502e26` Modernize service connection status styles.
+- [x] `6b4e8f310` Migrate form styler classes to scoped CSS.
 
 ## Current Priority Queue
 
@@ -240,6 +241,7 @@ Current evidence:
 - [x] `frontend/src/routes/media/+page.svelte`
 - [x] `frontend/src/routes/admin/crm/smart-links/+page.svelte`
 - [x] `frontend/src/lib/components/admin/ServiceConnectionStatus.svelte`
+- [x] `frontend/src/lib/components/forms/pro/FormStyler.svelte`
 
 ## Per-File Completion Checklist
 
