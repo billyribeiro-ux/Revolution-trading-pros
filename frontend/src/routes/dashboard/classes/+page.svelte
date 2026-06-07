@@ -230,7 +230,7 @@
 															<div class="progress-bar">
 																<div
 																	class="progress-fill"
-																	style="width: {enrollment.progress_percent}%"
+																	style:width={`${enrollment.progress_percent}%`}
 																></div>
 															</div>
 															<span class="progress-text"
