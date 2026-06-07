@@ -42,7 +42,7 @@
 
 	let {
 		position = 'bottom',
-		showPreferences = false,
+		showPreferences: isPreferencesOpen = false,
 		companyName = 'Revolution Trading Pros',
 		privacyPolicyUrl = '/privacy',
 		cookiePolicyUrl = '/cookies',
@@ -60,13 +60,7 @@
 
 	// State
 	let isVisible = $state(false);
-	let isPreferencesOpen = $state(false);
 	let isExiting = $state(false);
-
-	// Sync isPreferencesOpen from prop when it changes
-	$effect(() => {
-		isPreferencesOpen = showPreferences;
-	});
 	let preferences = $state<CookiePreferences>({
 		necessary: true,
 		analytics: false,
@@ -118,8 +112,7 @@
 	function setConsentCookie(prefs: CookiePreferences): void {
 		if (!browser) return;
 
-		const expires = new Date();
-		expires.setTime(expires.getTime() + COOKIE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+		const expires = new Date(Date.now() + COOKIE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
 
 		document.cookie = `${COOKIE_CONSENT_NAME}=${encodeURIComponent(JSON.stringify(prefs))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
 	}
@@ -267,16 +260,14 @@
 				return 'cookie-position-bottom';
 		}
 	}
+
+	function getConsentClasses(): Array<string | false> {
+		return ['cookie-consent', getPositionClass(), isExiting && 'exiting'];
+	}
 </script>
 
 {#if isVisible}
-	<div
-		class="cookie-consent {getPositionClass()}"
-		class:exiting={isExiting}
-		role="dialog"
-		aria-modal="false"
-		aria-label="Cookie consent"
-	>
+	<div class={getConsentClasses()} role="dialog" aria-modal="false" aria-label="Cookie consent">
 		<div class="cookie-content">
 			<!-- Header -->
 			<div class="cookie-header">
