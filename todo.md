@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 471 Svelte files remaining.
+- Broad dynamic class/style migration scan: 470 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -108,6 +108,7 @@ Current evidence:
 - [x] `d655efd6c` Modernize virtual block list bindings.
 - [x] `f63c74f36` Modernize Bing SEO status class.
 - [x] `75e35ea39` Modernize member analytics chart bindings.
+- [x] `8315a5fb7` Modernize subscription form modal bindings.
 
 ## Current Priority Queue
 
@@ -160,7 +161,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/blog/BlockEditor/VirtualBlockList.svelte`
 - [x] `frontend/src/routes/admin/seo/bing/+page.svelte`
 - [x] `frontend/src/routes/admin/members/analytics/+page.svelte`
-- [ ] `frontend/src/lib/components/admin/SubscriptionFormModal.svelte`
+- [x] `frontend/src/lib/components/admin/SubscriptionFormModal.svelte`
 - [ ] `frontend/src/routes/admin/seo/+page.svelte`
 - [ ] `frontend/src/lib/consent/templates/TemplateEditor.svelte`
 - [ ] `frontend/src/routes/dashboard/small-account-mentorship/start-here/+page.svelte`
