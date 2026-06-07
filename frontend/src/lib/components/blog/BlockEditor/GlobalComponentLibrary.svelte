@@ -509,24 +509,17 @@
 		});
 	}
 
-	// Effects
-
-	$effect(() => {
-		if (isOpen) {
-			loadComponents();
-		}
-	});
-
-	$effect(() => {
-		// Reload when filters change
-		if (isOpen) {
-			loadComponents();
-		}
-	});
+	function handleLibraryIntro(): void {
+		void loadComponents();
+	}
 </script>
 
 {#if isOpen}
-	<div class="global-component-library" transition:fade={{ duration: 150 }}>
+	<div
+		class="global-component-library"
+		transition:fade={{ duration: 150 }}
+		onintrostart={handleLibraryIntro}
+	>
 		<div
 			class="library-backdrop"
 			onclick={onclose}
@@ -575,14 +568,13 @@
 					<div class="categories-list">
 						<button
 							type="button"
-							class="category-item"
-							class:active={selectedCategory === null}
+							class={['category-item', { active: selectedCategory === null }]}
 							onclick={() => {
 								selectedCategory = null;
 								loadComponents();
 							}}
 						>
-							<span class="category-icon" style="background-color: #94a3b8">
+							<span class="category-icon category-icon--all">
 								<IconFilter size={16} />
 							</span>
 							<span class="category-label">All Components</span>
@@ -594,14 +586,13 @@
 							{@const Icon = config.icon}
 							<button
 								type="button"
-								class="category-item"
-								class:active={selectedCategory === key}
+								class={['category-item', { active: selectedCategory === key }]}
 								onclick={() => {
 									selectedCategory = key;
 									loadComponents();
 								}}
 							>
-								<span class="category-icon" style="background-color: {config.color}">
+								<span class="category-icon" style:background-color={config.color}>
 									<Icon size={16} />
 								</span>
 								<span class="category-label">{config.label}</span>
@@ -651,8 +642,7 @@
 								{@const config = categoryConfig[component.category]}
 								{@const Icon = config.icon}
 								<div
-									class="component-card"
-									class:selected={selectedComponent?.id === component.id}
+									class={['component-card', { selected: selectedComponent?.id === component.id }]}
 									onclick={() => selectComponent(component)}
 									onkeydown={(e) =>
 										(e.key === 'Enter' || e.key === ' ') && selectComponent(component)}
@@ -669,7 +659,10 @@
 												loading="lazy"
 											/>
 										{:else}
-											<div class="thumbnail-placeholder" style="background-color: {config.color}20">
+											<div
+												class="thumbnail-placeholder"
+												style:background-color={`${config.color}20`}
+											>
 												<Icon size={32} />
 											</div>
 										{/if}
@@ -679,7 +672,7 @@
 									</div>
 
 									<div class="card-body">
-										<div class="card-category" style="color: {config.color}">
+										<div class="card-category" style:color={config.color}>
 											<Icon size={14} />
 											{config.label}
 										</div>
@@ -746,8 +739,7 @@
 							<div class="detail-actions">
 								<button
 									type="button"
-									class="detail-btn"
-									class:active={showVersionHistory}
+									class={['detail-btn', { active: showVersionHistory }]}
 									onclick={toggleVersionHistory}
 									title="Version History"
 								>
@@ -755,8 +747,7 @@
 								</button>
 								<button
 									type="button"
-									class="detail-btn"
-									class:active={showUsagePanel}
+									class={['detail-btn', { active: showUsagePanel }]}
 									onclick={toggleUsagePanel}
 									title="Usage ({selectedComponent.usage_count})"
 								>
@@ -790,8 +781,10 @@
 										<div class="versions-list">
 											{#each versions as version (version.id)}
 												<div
-													class="version-item"
-													class:current={version.version === selectedComponent.version}
+													class={[
+														'version-item',
+														{ current: version.version === selectedComponent.version }
+													]}
 												>
 													<div class="version-info">
 														<span class="version-number">v{version.version}</span>
@@ -1199,6 +1192,10 @@
 		height: 28px;
 		border-radius: 6px;
 		color: white;
+	}
+
+	.category-icon--all {
+		background-color: #94a3b8;
 	}
 
 	.category-label {

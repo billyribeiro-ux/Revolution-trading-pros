@@ -107,9 +107,6 @@
 
 	let imageCounter = $derived(isLightboxOpen ? `${currentIndex + 1} / ${images.length}` : '');
 
-	// Grid style computed from columns and gap
-	let gridStyle = $derived(`--gallery-columns: ${columns}; --gallery-gap: ${gap};`);
-
 	// Content Update Helpers
 
 	function updateContent(updates: Partial<BlockContent>): void {
@@ -310,22 +307,6 @@
 		}
 	}
 
-	// Effects
-
-	$effect(() => {
-		if (isLightboxOpen) {
-			if (typeof window !== 'undefined') {
-				window.addEventListener('keydown', handleKeyDown);
-			}
-		}
-
-		return () => {
-			if (typeof window !== 'undefined') {
-				window.removeEventListener('keydown', handleKeyDown);
-			}
-		};
-	});
-
 	// Event Handlers
 
 	function handleImageClick(index: number): void {
@@ -373,25 +354,40 @@
      Template
      ============================================================================ -->
 
+<svelte:window onkeydown={handleKeyDown} />
+
 <div
-	class="gallery-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
-	class:layout-grid={layout === 'grid'}
-	class:layout-masonry={layout === 'masonry'}
-	class:layout-carousel={layout === 'carousel'}
+	class={[
+		'gallery-block',
+		{
+			editing: props.isEditing,
+			selected: props.isSelected,
+			'layout-grid': layout === 'grid',
+			'layout-masonry': layout === 'masonry',
+			'layout-carousel': layout === 'carousel'
+		}
+	]}
 	role="group"
 	aria-label="Image gallery"
 >
 	{#if images.length > 0}
 		<!-- Grid and Masonry Layout -->
 		{#if layout === 'grid' || layout === 'masonry'}
-			<div class="gallery-grid" class:masonry={layout === 'masonry'} role="list" style={gridStyle}>
+			<div
+				class={['gallery-grid', { masonry: layout === 'masonry' }]}
+				role="list"
+				style:--gallery-columns={columns}
+				style:--gallery-gap={gap}
+			>
 				{#each images as image, index (image.id)}
 					<div
-						class="gallery-item"
-						class:dragging={draggedIndex === index}
-						class:drag-over={dragOverIndex === index}
+						class={[
+							'gallery-item',
+							{
+								dragging: draggedIndex === index,
+								'drag-over': dragOverIndex === index
+							}
+						]}
 						role="listitem"
 						draggable={props.isEditing}
 						ondragstart={(e) => handleDragStart(e, index)}
@@ -525,8 +521,7 @@
 						{#each images as _, dotIndex (dotIndex)}
 							<button
 								type="button"
-								class="carousel-dot"
-								class:active={dotIndex === carouselIndex}
+								class={['carousel-dot', { active: dotIndex === carouselIndex }]}
 								onclick={() => (carouselIndex = dotIndex)}
 								aria-label="Go to image {dotIndex + 1}"
 							></button>

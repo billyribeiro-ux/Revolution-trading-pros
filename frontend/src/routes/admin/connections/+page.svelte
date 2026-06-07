@@ -443,7 +443,8 @@
 									<div class="connected-service-info">
 										<div
 											class="service-icon"
-											style="background: {service.color}15; color: {service.color};"
+											style:background={`${service.color}15`}
+											style:color={service.color}
 										>
 											{getServiceIcon(service)}
 										</div>
@@ -546,7 +547,8 @@
 								<div class="service-card-content">
 									<div
 										class="service-icon"
-										style="background: {service.color}15; color: {service.color};"
+										style:background={`${service.color}15`}
+										style:color={service.color}
 									>
 										{getServiceIcon(service)}
 									</div>
@@ -576,7 +578,8 @@
 							>
 								<div
 									class="service-icon-small"
-									style="background: {service.color}15; color: {service.color};"
+									style:background={`${service.color}15`}
+									style:color={service.color}
 								>
 									{getServiceIcon(service)}
 								</div>
@@ -638,7 +641,8 @@
 				<div class="modal-title-row">
 					<div
 						class="modal-service-icon"
-						style="background: {selectedService.color}15; color: {selectedService.color};"
+						style:background={`${selectedService.color}15`}
+						style:color={selectedService.color}
 					>
 						{getServiceIcon(selectedService)}
 					</div>

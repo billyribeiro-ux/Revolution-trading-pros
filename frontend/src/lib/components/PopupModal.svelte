@@ -58,10 +58,13 @@
 	import { popupStore, activePopup, type Popup, type PopupButton } from '$lib/stores/popups.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
+	import type { Attachment } from 'svelte/attachments';
 	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
+
+	type PopupFormValue = string | number | boolean | null | undefined;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
@@ -71,8 +74,7 @@
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitError = $state('');
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic form-field map bound via bind:value/bind:checked to heterogeneous inputs (string + boolean); no single concrete type fits both
-	let formData = $state<Record<string, any>>({});
+	let formData = $state<Record<string, PopupFormValue>>({});
 	let formErrors = $state<Record<string, string>>({});
 	let modalElement = $state<HTMLDivElement>();
 	let previousFocus: HTMLElement | null = null;
@@ -89,7 +91,6 @@
 	let scrollListener: (() => void) | null = null;
 	let exitIntentListener: ((e: MouseEvent) => void) | null = null;
 	let resizeListener: (() => void) | null = null;
-	let keydownListener: ((e: KeyboardEvent) => void) | null = null;
 	let visibilityListener: (() => void) | null = null;
 	let idleTimer: number | null = null;
 
@@ -122,15 +123,11 @@
 	// NOTE: updateDeviceType is called in onMount and resize handler, not reactively
 	// ENTERPRISE FIX: Only handle triggers if popup is active AND valid
 	$effect(() => {
-		if (browser && currentPopup && currentPopup.isActive && !isVisible) {
-			handlePopupTriggers(currentPopup);
-		}
-	});
+		const popup = currentPopup;
+		if (!browser || !popup || !popup.isActive || isVisible) return;
+		if (!popupStore.canShow(popup) || !isTargeted(popup)) return;
 
-	$effect(() => {
-		if (isVisible) {
-			startEngagementTracking();
-		}
+		applyTriggerRules(popup);
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -169,6 +166,14 @@
 	onDestroy(() => {
 		cleanup();
 	});
+
+	const captureModalElement: Attachment<HTMLDivElement> = (node) => {
+		modalElement = node;
+
+		return () => {
+			if (modalElement === node) modalElement = undefined;
+		};
+	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Initialization Functions
@@ -250,21 +255,6 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Trigger Handlers
 	// ═══════════════════════════════════════════════════════════════════════════
-
-	async function handlePopupTriggers(popup: Popup) {
-		// Check if popup can be shown
-		if (!popupStore.canShow(popup)) {
-			return;
-		}
-
-		// Check targeting rules
-		if (!isTargeted(popup)) {
-			return;
-		}
-
-		// Apply trigger rules
-		applyTriggerRules(popup);
-	}
 
 	function isTargeted(popup: Popup): boolean {
 		// Page targeting
@@ -400,6 +390,7 @@
 		// Set visibility
 		isVisible = true;
 		impressionTime = Date.now();
+		startEngagementTracking();
 
 		// Record impression
 		popupStore.recordImpression(currentPopup.id, {
@@ -545,19 +536,19 @@
 			// Type-specific validation
 			switch (field.type) {
 				case 'email':
-					if (value && !isValidEmail(value)) {
+					if (typeof value === 'string' && value && !isValidEmail(value)) {
 						errors[field.name] = 'Please enter a valid email';
 						isValid = false;
 					}
 					break;
 				case 'tel':
-					if (value && !isValidPhone(value)) {
+					if (typeof value === 'string' && value && !isValidPhone(value)) {
 						errors[field.name] = 'Please enter a valid phone number';
 						isValid = false;
 					}
 					break;
 				case 'url':
-					if (value && !isValidUrl(value)) {
+					if (typeof value === 'string' && value && !isValidUrl(value)) {
 						errors[field.name] = 'Please enter a valid URL';
 						isValid = false;
 					}
@@ -751,6 +742,10 @@
 		_mousePosition = { x: e.clientX, y: e.clientY };
 	}
 
+	function cssBackgroundImage(url: string): string {
+		return `url("${url.replace(/["\\\n\r\f]/g, '\\$&')}")`;
+	}
+
 	function getTriggerType(): string {
 		const rules = currentPopup?.displayRules;
 		if (!rules) return 'unknown';
@@ -880,10 +875,6 @@
 			window.removeEventListener('resize', resizeListener);
 		}
 
-		if (keydownListener) {
-			document.removeEventListener('keydown', keydownListener);
-		}
-
 		if (visibilityListener) {
 			document.removeEventListener('visibilitychange', visibilityListener);
 		}
@@ -986,23 +977,16 @@
 			}
 		}
 	}
-
-	// Setup keyboard listener
-	$effect(() => {
-		if (browser && isVisible) {
-			keydownListener = handleKeydown;
-			document.addEventListener('keydown', keydownListener);
-		} else if (keydownListener) {
-			document.removeEventListener('keydown', keydownListener);
-		}
-	});
 </script>
+
+<svelte:document onkeydown={handleKeydown} />
 
 {#if currentPopup && isVisible}
 	<!-- Overlay -->
 	<div
 		class="popup-overlay"
-		style="background-color: {currentPopup.overlayColor}; opacity: {$overlayOpacity};"
+		style:background-color={currentPopup.overlayColor}
+		style:opacity={$overlayOpacity}
 		role="button"
 		tabindex="0"
 		aria-label="Close popup"
@@ -1014,40 +998,39 @@
 
 	<!-- Popup Modal -->
 	<div
-		bind:this={modalElement}
-		class="popup-container {deviceType}"
-		class:shake={$shakeAnimation > 0}
-		style="transform: translate(-50%, -50%) scale({$modalScale}) translateX({$contentOffset.x}px) translateY({$contentOffset.y}px);"
+		{@attach captureModalElement}
+		class={['popup-container', deviceType, { shake: $shakeAnimation > 0 }]}
+		style:transform={`translate(-50%, -50%) scale(${$modalScale}) translateX(${$contentOffset.x}px) translateY(${$contentOffset.y}px)`}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="popup-title"
 		aria-describedby="popup-content"
 	>
 		<div
-			class="popup-content {currentPopup.design.theme || 'default'}"
-			style="
-				width: {currentPopup.design.width};
-				max-width: {currentPopup.design.maxWidth};
-				height: {currentPopup.design.height};
-				padding: {currentPopup.design.padding};
-				color: {currentPopup.design.textColor};
-				border-radius: {currentPopup.design.borderRadius};
-				border: {currentPopup.design.borderWidth} {currentPopup.design.borderStyle} {currentPopup.design
-				.borderColor};
-				backdrop-filter: blur({currentPopup.design.backdropBlur});
-				box-shadow: {currentPopup.design.boxShadow};
-				{currentPopup.design.backgroundGradient
-				? `background: ${currentPopup.design.backgroundGradient};`
-				: `background-color: ${currentPopup.design.backgroundColor};`}
-				{currentPopup.design.backgroundImage
-				? `background-image: url(${currentPopup.design.backgroundImage}); background-size: cover; background-position: center;`
-				: ''}
-				{currentPopup.design.customCss || ''}
-			"
+			class={['popup-content', currentPopup.design.theme || 'default']}
+			style={currentPopup.design.customCss || undefined}
+			style:width={currentPopup.design.width}
+			style:max-width={currentPopup.design.maxWidth}
+			style:height={currentPopup.design.height}
+			style:padding={currentPopup.design.padding}
+			style:color={currentPopup.design.textColor}
+			style:border-radius={currentPopup.design.borderRadius}
+			style:border={`${currentPopup.design.borderWidth} ${currentPopup.design.borderStyle} ${currentPopup.design.borderColor}`}
+			style:backdrop-filter={`blur(${currentPopup.design.backdropBlur})`}
+			style:box-shadow={currentPopup.design.boxShadow}
+			style:background={currentPopup.design.backgroundGradient || undefined}
+			style:background-color={currentPopup.design.backgroundGradient
+				? undefined
+				: currentPopup.design.backgroundColor}
+			style:background-image={currentPopup.design.backgroundImage
+				? cssBackgroundImage(currentPopup.design.backgroundImage)
+				: undefined}
+			style:background-size={currentPopup.design.backgroundImage ? 'cover' : undefined}
+			style:background-position={currentPopup.design.backgroundImage ? 'center' : undefined}
 		>
 			<!-- Progress Bar -->
 			{#if progressPercentage > 0 && currentPopup.formFields}
-				<div class="progress-bar" style="width: {progressPercentage}%;"></div>
+				<div class="progress-bar" style:width={`${progressPercentage}%`}></div>
 			{/if}
 
 			<!-- Close Button -->
@@ -1138,8 +1121,7 @@
 										placeholder={field.placeholder}
 										required={field.required}
 										bind:value={formData[field.name]}
-										class="form-input"
-										class:error={formErrors[field.name]}
+										class={['form-input', { error: formErrors[field.name] }]}
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 										aria-describedby={formErrors[field.name] ? `${field.name}-error` : undefined}
 									></textarea>
@@ -1149,8 +1131,7 @@
 										name={field.name}
 										required={field.required}
 										bind:value={formData[field.name]}
-										class="form-input"
-										class:error={formErrors[field.name]}
+										class={['form-input', { error: formErrors[field.name] }]}
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 									>
 										<option value="">{field.placeholder}</option>
@@ -1170,7 +1151,10 @@
 											type="checkbox"
 											id={field.name}
 											name={field.name}
-											bind:checked={formData[field.name]}
+											checked={Boolean(formData[field.name])}
+											onchange={(event) => {
+												formData[field.name] = event.currentTarget.checked;
+											}}
 											required={field.required}
 											class="form-checkbox"
 										/>
@@ -1184,8 +1168,7 @@
 										placeholder={field.placeholder}
 										required={field.required}
 										bind:value={formData[field.name]}
-										class="form-input"
-										class:error={formErrors[field.name]}
+										class={['form-input', { error: formErrors[field.name] }]}
 										aria-label={field.label || field.placeholder || field.name}
 										aria-invalid={formErrors[field.name] ? 'true' : 'false'}
 										aria-describedby={formErrors[field.name] ? `${field.name}-error` : undefined}
@@ -1214,7 +1197,7 @@
 					<div class="popup-buttons">
 						{#each currentPopup.buttons as button (button.text)}
 							<button
-								class="popup-btn {button.style} {button.customClass || ''}"
+								class={['popup-btn', button.style, button.customClass]}
 								onclick={() => handleButtonClick(button)}
 								disabled={button.action === 'submit' && (!formValid || isSubmitting)}
 								aria-busy={button.action === 'submit' && isSubmitting}

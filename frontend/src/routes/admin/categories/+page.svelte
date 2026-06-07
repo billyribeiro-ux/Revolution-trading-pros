@@ -114,16 +114,18 @@
 	// FIX-2026-04-26 (P0-4): track manual slug edits so the auto-generator
 	// stops clobbering user-typed slugs.
 	let categorySlugEdited = $state(false);
+	function handleCategoryNameInput(event: Event) {
+		const name = (event.currentTarget as HTMLInputElement).value;
+		categoryForm.name = name;
+
+		if (!editingCategory && !categorySlugEdited) {
+			categoryForm.slug = generateSlug(name);
+		}
+	}
+
 	function handleCategorySlugInput() {
 		categorySlugEdited = true;
 	}
-
-	// Auto-generate slug when name changes for new categories
-	$effect(() => {
-		if (categoryForm.name && !editingCategory && !categorySlugEdited) {
-			categoryForm.slug = generateSlug(categoryForm.name);
-		}
-	});
 
 	// FIX-2026-04-26 (P3-13) completed (audit 2026-05-16): previously a
 	let stats = $derived({
@@ -448,7 +450,7 @@
 
 <!-- Toast Notification -->
 {#if showToast}
-	<div class="toast toast-{toastType}" transition:fade>
+	<div class={['toast', `toast-${toastType}`]} transition:fade>
 		{#if toastType === 'success'}
 			<IconCheck size={20} />
 		{:else}
@@ -631,8 +633,12 @@
 						<tbody>
 							{#each filteredCategories as category (category.id)}
 								<tr
-									class:selected={selectedIds.has(category.id)}
-									class:child-row={category.parent_id}
+									class={[
+										{
+											selected: selectedIds.has(category.id),
+											'child-row': category.parent_id
+										}
+									]}
 								>
 									<td>
 										<input
@@ -653,7 +659,7 @@
 													<IconChevronRight size={14} />
 												</span>
 											{/if}
-											<div class="category-color" style="background: {category.color}"></div>
+											<div class="category-color" style:background={category.color}></div>
 											<div class="category-info">
 												<span class="category-name">{category.name}</span>
 												{#if category.description}
@@ -770,7 +776,8 @@
 							id="cat-name"
 							name="cat-name"
 							type="text"
-							bind:value={categoryForm.name}
+							value={categoryForm.name}
+							oninput={handleCategoryNameInput}
 							placeholder="Category name"
 							required
 						/>

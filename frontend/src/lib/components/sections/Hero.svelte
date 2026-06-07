@@ -783,8 +783,7 @@
 <section
 	{@attach captureHeroSection}
 	id="hero"
-	class="hero-section"
-	class:hero-animating={isAnimating}
+	class={['hero-section', { 'hero-animating': isAnimating }]}
 >
 	<!-- Ambient Background Layers -->
 	<div class="hero-ambient" aria-hidden="true">
@@ -792,7 +791,7 @@
 		<div class="ambient-grid"></div>
 		<div
 			class="ambient-glow"
-			style="--accent-color: {SLIDES[currentSlide]?.accentColor ?? '#00d4ff'}"
+			style:--accent-color={SLIDES[currentSlide]?.accentColor ?? '#00d4ff'}
 		></div>
 	</div>
 
@@ -808,9 +807,13 @@
 			{#each SLIDES as slide, i (i)}
 				<article
 					data-slide={i}
-					class="slide"
-					class:slide--hidden={i !== currentSlide}
-					class:slide--active={i === currentSlide}
+					class={[
+						'slide',
+						{
+							'slide--hidden': i !== currentSlide,
+							'slide--active': i === currentSlide
+						}
+					]}
 					aria-hidden={i !== currentSlide}
 				>
 					<h1 class="slide__title">{slide.title}</h1>
@@ -834,15 +837,14 @@
 			{#each SLIDES as _, i (i)}
 				<button
 					type="button"
-					class="slide-dot"
-					class:slide-dot--active={i === currentSlide}
+					class={['slide-dot', { 'slide-dot--active': i === currentSlide }]}
 					aria-label="Go to slide {i + 1}"
 					aria-current={i === currentSlide ? 'true' : 'false'}
 					onclick={() => goToSlide(i)}
 				>
 					<span
 						class="slide-dot__fill"
-						style="--progress: {i === currentSlide ? slideProgress : 0}%"
+						style:--progress={`${i === currentSlide ? slideProgress : 0}%`}
 					></span>
 				</button>
 			{/each}

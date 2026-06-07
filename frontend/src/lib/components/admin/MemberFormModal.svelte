@@ -413,8 +413,7 @@
 						{#each sections as section (section.id)}
 							<button
 								type="button"
-								class="section-tab"
-								class:active={activeSection === section.id}
+								class={['section-tab', { active: activeSection === section.id }]}
 								onclick={() => (activeSection = section.id)}
 							>
 								<span class="tab-icon">{section.icon}</span>
@@ -504,8 +503,8 @@
 										<div class="status-indicator">
 											<span
 												class="status-dot"
-												style="background: {accountStatuses.find((s) => s.value === accountStatus)
-													?.color}"
+												style:background={accountStatuses.find((s) => s.value === accountStatus)
+													?.color}
 											></span>
 											<span class="status-text"
 												>{accountStatuses.find((s) => s.value === accountStatus)?.label}</span
@@ -672,13 +671,12 @@
 											{#each subscriptionTiers as tier (tier.value)}
 												<button
 													type="button"
-													class="tier-option"
-													class:selected={subscriptionTier === tier.value}
-													style="--tier-color: {tier.color}"
+													class={['tier-option', { selected: subscriptionTier === tier.value }]}
+													style:--tier-color={tier.color}
 													onclick={() => (subscriptionTier = tier.value)}
 													disabled={isLoading}
 												>
-													<span class="tier-badge" style="background: {tier.color}"></span>
+													<span class="tier-badge" style:background={tier.color}></span>
 													<span class="tier-name">{tier.label}</span>
 												</button>
 											{/each}

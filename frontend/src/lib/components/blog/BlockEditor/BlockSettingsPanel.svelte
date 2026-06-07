@@ -355,19 +355,20 @@
 <div class="settings-panel">
 	<!-- Tab Navigation -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'style'} onclick={() => (activeTab = 'style')}>
+		<button
+			class={['tab', { active: activeTab === 'style' }]}
+			onclick={() => (activeTab = 'style')}
+		>
 			Style
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'advanced'}
+			class={['tab', { active: activeTab === 'advanced' }]}
 			onclick={() => (activeTab = 'advanced')}
 		>
 			Advanced
 		</button>
 		<button
-			class="tab"
-			class:active={activeTab === 'responsive'}
+			class={['tab', { active: activeTab === 'responsive' }]}
 			onclick={() => (activeTab = 'responsive')}
 		>
 			Responsive
@@ -379,14 +380,13 @@
 			<!-- Heading Level Selector (for heading blocks) -->
 			{#if block.type === 'heading'}
 				<div class="section heading-level-section">
-					<div class="section-content" style="padding: 0.75rem 1rem;">
+					<div class="section-content section-content--heading-level">
 						<span class="field-label">Heading Level</span>
 						<div class="heading-level-buttons">
 							{#each [1, 2, 3, 4, 5, 6] as lvl (lvl)}
 								<button
 									type="button"
-									class="level-btn"
-									class:active={block.settings.level === lvl}
+									class={['level-btn', { active: block.settings.level === lvl }]}
 									onclick={() => updateSetting('level', lvl)}
 								>
 									H{lvl}
@@ -401,7 +401,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('typography')}>
 					<span>Typography</span>
-					<span class="chevron" class:expanded={expandedSections.has('typography')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('typography') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('typography')}
 					<div class="section-content">
@@ -498,8 +498,7 @@
 							<div class="button-group" role="group" aria-label="Text alignment">
 								{#each textAlignments as align (align.value ?? align)}
 									<button
-										class="icon-btn"
-										class:active={block.settings.textAlign === align.value}
+										class={['icon-btn', { active: block.settings.textAlign === align.value }]}
 										onclick={() => updateSetting('textAlign', align.value)}
 										title={align.label}
 									>
@@ -513,30 +512,31 @@
 							<span class="field-label">Text Transform</span>
 							<div class="button-group" role="group" aria-label="Text transform">
 								<button
-									class="text-btn"
-									class:active={!block.settings.textTransform ||
-										block.settings.textTransform === 'none'}
+									class={[
+										'text-btn',
+										{
+											active:
+												!block.settings.textTransform || block.settings.textTransform === 'none'
+										}
+									]}
 									onclick={() => updateSetting('textTransform', 'none')}
 								>
 									Aa
 								</button>
 								<button
-									class="text-btn"
-									class:active={block.settings.textTransform === 'uppercase'}
+									class={['text-btn', { active: block.settings.textTransform === 'uppercase' }]}
 									onclick={() => updateSetting('textTransform', 'uppercase')}
 								>
 									AA
 								</button>
 								<button
-									class="text-btn"
-									class:active={block.settings.textTransform === 'lowercase'}
+									class={['text-btn', { active: block.settings.textTransform === 'lowercase' }]}
 									onclick={() => updateSetting('textTransform', 'lowercase')}
 								>
 									aa
 								</button>
 								<button
-									class="text-btn"
-									class:active={block.settings.textTransform === 'capitalize'}
+									class={['text-btn', { active: block.settings.textTransform === 'capitalize' }]}
 									onclick={() => updateSetting('textTransform', 'capitalize')}
 								>
 									Aa
@@ -551,7 +551,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('colors')}>
 					<span>Colors</span>
-					<span class="chevron" class:expanded={expandedSections.has('colors')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('colors') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('colors')}
 					<div class="section-content">
@@ -562,7 +562,7 @@
 									<button
 										type="button"
 										class="color-swatch"
-										style="background-color: {block.settings.textColor || '#000000'}"
+										style:background-color={block.settings.textColor || '#000000'}
 										onclick={() => (showColorPicker = showColorPicker === 'text' ? null : 'text')}
 										aria-label="Pick text color"
 									></button>
@@ -580,7 +580,7 @@
 										<button
 											type="button"
 											class="preset-color"
-											style="background-color: {color}"
+											style:background-color={color}
 											onclick={() => {
 												updateSetting('textColor', color);
 												showColorPicker = null;
@@ -599,7 +599,7 @@
 									<button
 										type="button"
 										class="color-swatch"
-										style="background-color: {block.settings.backgroundColor || 'transparent'}"
+										style:background-color={block.settings.backgroundColor || 'transparent'}
 										onclick={() => (showColorPicker = showColorPicker === 'bg' ? null : 'bg')}
 										aria-label="Pick background color"
 									></button>
@@ -617,7 +617,7 @@
 										<button
 											type="button"
 											class="preset-color"
-											style="background-color: {color}"
+											style:background-color={color}
 											onclick={() => {
 												updateSetting('backgroundColor', color);
 												showColorPicker = null;
@@ -652,7 +652,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('spacing')}>
 					<span>Spacing</span>
-					<span class="chevron" class:expanded={expandedSections.has('spacing')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('spacing') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('spacing')}
 					<div class="section-content">
@@ -797,7 +797,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('border')}>
 					<span>Border</span>
-					<span class="chevron" class:expanded={expandedSections.has('border')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('border') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('border')}
 					<div class="section-content">
@@ -844,7 +844,7 @@
 									<button
 										type="button"
 										class="color-swatch"
-										style="background-color: {block.settings.borderColor || '#CCCCCC'}"
+										style:background-color={block.settings.borderColor || '#CCCCCC'}
 										onclick={() =>
 											(showColorPicker = showColorPicker === 'border' ? null : 'border')}
 										aria-label="Pick border color"
@@ -863,7 +863,7 @@
 										<button
 											type="button"
 											class="preset-color"
-											style="background-color: {color}"
+											style:background-color={color}
 											onclick={() => {
 												updateSetting('borderColor', color);
 												showColorPicker = null;
@@ -915,7 +915,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('animation')}>
 					<span>Animation</span>
-					<span class="chevron" class:expanded={expandedSections.has('animation')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('animation') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('animation')}
 					<div class="section-content">
@@ -984,7 +984,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('transform')}>
 					<span>Transform</span>
-					<span class="chevron" class:expanded={expandedSections.has('transform')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('transform') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('transform')}
 					<div class="section-content">
@@ -1103,7 +1103,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('effects')}>
 					<span>Effects</span>
-					<span class="chevron" class:expanded={expandedSections.has('effects')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('effects') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('effects')}
 					<div class="section-content">
@@ -1231,7 +1231,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('customCss')}>
 					<span>Custom CSS</span>
-					<span class="chevron" class:expanded={expandedSections.has('customCss')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('customCss') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('customCss')}
 					<div class="section-content">
@@ -1283,7 +1283,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('datasource')}>
 					<span>Datasource Options</span>
-					<span class="chevron" class:expanded={expandedSections.has('datasource')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('datasource') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('datasource')}
 					<div class="section-content">
@@ -1415,7 +1415,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('visibility')}>
 					<span>Visibility</span>
-					<span class="chevron" class:expanded={expandedSections.has('visibility')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('visibility') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('visibility')}
 					<div class="section-content">
@@ -1459,7 +1459,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('responsive')}>
 					<span>Responsive Overrides</span>
-					<span class="chevron" class:expanded={expandedSections.has('responsive')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('responsive') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('responsive')}
 					<div class="section-content">
@@ -1540,7 +1540,7 @@
 			<div class="section">
 				<button class="section-header" onclick={() => toggleSection('zindex')}>
 					<span>Position & Z-Index</span>
-					<span class="chevron" class:expanded={expandedSections.has('zindex')}>▼</span>
+					<span class={['chevron', { expanded: expandedSections.has('zindex') }]}>▼</span>
 				</button>
 				{#if expandedSections.has('zindex')}
 					<div class="section-content">
@@ -1720,6 +1720,9 @@
 	.section-content {
 		padding: 1rem;
 		border-top: 1px solid var(--border-color, #e5e7eb);
+	}
+	.section-content--heading-level {
+		padding: 0.75rem 1rem;
 	}
 
 	.field {

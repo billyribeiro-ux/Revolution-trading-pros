@@ -339,7 +339,7 @@
 				<div class="pillars">
 					{#each pillars as pillar, _i (pillar.title)}
 						{@const PillarIcon = pillar.icon}
-						<div data-gsap class="pillar pillar--{pillar.variant}">
+						<div data-gsap class={['pillar', `pillar--${pillar.variant}`]}>
 							<div class="pillar__shadow" aria-hidden="true"></div>
 							<div class="pillar__card">
 								<div class="pillar__icon">

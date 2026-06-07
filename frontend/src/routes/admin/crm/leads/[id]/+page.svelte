@@ -289,24 +289,24 @@
 		}).format(amount);
 	}
 
-	function getStatusColor(status: string): string {
-		const colors: Record<string, string> = {
-			new: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-			contacted: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-			qualified: 'bg-violet-500/15 text-violet-400 border-violet-500/30',
-			proposal: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-			negotiation: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-			won: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-			lost: 'bg-red-500/15 text-red-400 border-red-500/30'
+	function getStatusClass(status: string): string {
+		const classes: Record<string, string> = {
+			new: 'status-new',
+			contacted: 'status-contacted',
+			qualified: 'status-qualified',
+			proposal: 'status-proposal',
+			negotiation: 'status-negotiation',
+			won: 'status-won',
+			lost: 'status-lost'
 		};
-		return colors[status] || colors.new;
+		return classes[status] || classes.new;
 	}
 
-	function getScoreColor(score: number): string {
-		if (score >= 80) return 'text-emerald-400';
-		if (score >= 60) return 'text-amber-400';
-		if (score >= 40) return 'text-orange-400';
-		return 'text-red-400';
+	function getScoreClass(score: number): string {
+		if (score >= 80) return 'score-strong';
+		if (score >= 60) return 'score-good';
+		if (score >= 40) return 'score-watch';
+		return 'score-risk';
 	}
 
 	function _getTimelineIcon(type: string): string {
@@ -385,7 +385,7 @@
 					{/if}
 					<div class="status-badges">
 						<select
-							class="status-select {getStatusColor(lead.status)}"
+							class={['status-select', getStatusClass(lead.status)]}
 							value={lead.status}
 							onchange={(e) => updateStatus((e.target as HTMLSelectElement).value)}
 						>
@@ -427,7 +427,7 @@
 					<IconTarget size={24} />
 					<span>Lead Score</span>
 				</div>
-				<div class="score-value {getScoreColor(lead.lead_score)}">
+				<div class={['score-value', getScoreClass(lead.lead_score)]}>
 					{lead.lead_score}
 				</div>
 				<div class="score-bar">
@@ -439,7 +439,7 @@
 					<IconChartBar size={20} />
 					<span>Fit Score</span>
 				</div>
-				<div class="score-value {getScoreColor(lead.fit_score || 0)}">
+				<div class={['score-value', getScoreClass(lead.fit_score || 0)]}>
 					{lead.fit_score || 0}
 				</div>
 			</div>
@@ -448,7 +448,7 @@
 					<IconActivity size={20} />
 					<span>Engagement</span>
 				</div>
-				<div class="score-value {getScoreColor(lead.engagement_score || 0)}">
+				<div class={['score-value', getScoreClass(lead.engagement_score || 0)]}>
 					{lead.engagement_score || 0}
 				</div>
 			</div>
@@ -457,7 +457,7 @@
 					<IconTrendingUp size={20} />
 					<span>Behavior</span>
 				</div>
-				<div class="score-value {getScoreColor(lead.behavior_score || 0)}">
+				<div class={['score-value', getScoreClass(lead.behavior_score || 0)]}>
 					{lead.behavior_score || 0}
 				</div>
 			</div>
@@ -675,7 +675,7 @@
 						<div class="timeline">
 							{#each timeline as event (event.id)}
 								<div class="timeline-item">
-									<div class="timeline-dot {event.type}"></div>
+									<div class={['timeline-dot', `timeline-dot--${event.type}`]}></div>
 									<div class="timeline-content">
 										<div class="timeline-header">
 											<span class="timeline-title">{event.title}</span>
@@ -884,7 +884,7 @@
 
 <!-- Toast Notification -->
 {#if toastMessage}
-	<div class="toast toast-{toastMessage.type}" role="alert">
+	<div class={['toast', `toast-${toastMessage.type}`]} role="alert">
 		{#if toastMessage.type === 'success'}
 			<IconCheck size={18} />
 		{:else}
@@ -1046,6 +1046,48 @@
 		outline: none;
 	}
 
+	.status-select.status-new {
+		background: rgba(59, 130, 246, 0.15);
+		border-color: rgba(59, 130, 246, 0.3);
+		color: #60a5fa;
+	}
+
+	.status-select.status-contacted {
+		background: rgba(6, 182, 212, 0.15);
+		border-color: rgba(6, 182, 212, 0.3);
+		color: #22d3ee;
+	}
+
+	.status-select.status-qualified {
+		background: rgba(139, 92, 246, 0.15);
+		border-color: rgba(139, 92, 246, 0.3);
+		color: #a78bfa;
+	}
+
+	.status-select.status-proposal {
+		background: rgba(245, 158, 11, 0.15);
+		border-color: rgba(245, 158, 11, 0.3);
+		color: #fbbf24;
+	}
+
+	.status-select.status-negotiation {
+		background: rgba(249, 115, 22, 0.15);
+		border-color: rgba(249, 115, 22, 0.3);
+		color: #fb923c;
+	}
+
+	.status-select.status-won {
+		background: rgba(16, 185, 129, 0.15);
+		border-color: rgba(16, 185, 129, 0.3);
+		color: #34d399;
+	}
+
+	.status-select.status-lost {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #f87171;
+	}
+
 	.source-badge {
 		padding: 6px 12px;
 		background: rgba(100, 116, 139, 0.15);
@@ -1173,6 +1215,22 @@
 
 	.score-value.green {
 		color: #4ade80;
+	}
+
+	.score-value.score-strong {
+		color: #34d399;
+	}
+
+	.score-value.score-good {
+		color: #fbbf24;
+	}
+
+	.score-value.score-watch {
+		color: #fb923c;
+	}
+
+	.score-value.score-risk {
+		color: #f87171;
 	}
 
 	.score-bar {
@@ -1470,20 +1528,28 @@
 		margin-top: 4px;
 	}
 
-	.timeline-dot.email {
+	.timeline-dot--email {
 		background: var(--primary-500);
 	}
 
-	.timeline-dot.call {
+	.timeline-dot--call {
 		background: #22d3ee;
 	}
 
-	.timeline-dot.meeting {
+	.timeline-dot--meeting {
 		background: #fbbf24;
 	}
 
-	.timeline-dot.note {
+	.timeline-dot--note {
 		background: #4ade80;
+	}
+
+	.timeline-dot--status_change {
+		background: #a78bfa;
+	}
+
+	.timeline-dot--created {
+		background: #94a3b8;
 	}
 
 	.timeline-content {
