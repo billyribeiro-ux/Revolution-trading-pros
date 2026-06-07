@@ -1,11 +1,11 @@
 <!--
-	URL: /dashboard/day-trading-room/learning-center
+	URL: /dashboard/small-account-mentorship/learning-center
 
 	Learning Center Page
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation
 
-	Educational resources and training materials for Day Trading Room members.
+	Educational resources and training materials for Small Account Mentorship members.
 	Fetches data with server-side rendering.
 
 	@version 4.0.0
@@ -30,6 +30,44 @@
 		dataUnavailable?: boolean;
 		reason?: string;
 	}
+
+	const fallbackThumbnailUrl =
+		'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
+
+	const categoryFilters = [
+		{ id: '529', label: 'Trade Setups & Strategies' },
+		{ id: '528', label: 'Methodology' },
+		{ id: '329', label: 'Member Webinar' },
+		{ id: '2932', label: 'Trade & Money Management/Trading Plan' },
+		{ id: '531', label: 'Indicators' },
+		{ id: '3260', label: 'Options' },
+		{ id: '469', label: 'foundation' },
+		{ id: '527', label: 'Fundamentals' },
+		{ id: '522', label: 'Simpler Tech' },
+		{ id: '2929', label: 'Charting/Indicators/Tools' },
+		{ id: '530', label: 'Charting' },
+		{ id: '3515', label: 'Drama Free Daytrades' },
+		{ id: '3516', label: 'Quick Hits Daytrades' },
+		{ id: '537', label: 'Psychology' },
+		{ id: '775', label: 'Trading Platform' },
+		{ id: '3055', label: 'Calls' },
+		{ id: '447', label: 'ThinkorSwim' },
+		{ id: '446', label: 'TradeStation' },
+		{ id: '776', label: 'Charting Software' },
+		{ id: '772', label: 'Trading Computer' },
+		{ id: '3057', label: 'Calls Puts Credit Spreads' },
+		{ id: '3056', label: 'Puts' },
+		{ id: '3514', label: 'Profit Recycling' },
+		{ id: '791', label: 'Trade Strategies' },
+		{ id: '774', label: 'Website Support' },
+		{ id: '2927', label: 'Options Strategies (Level 2 & 3)' },
+		{ id: '457', label: 'Crypto' },
+		{ id: '2931', label: 'Fibonacci & Options Trading' },
+		{ id: '2928', label: 'Pricing/Volatility' },
+		{ id: '459', label: 'Crypto Indicators & Trading' },
+		{ id: '771', label: 'Browser Support' },
+		{ id: '2930', label: 'Earnings & Options Expiration' }
+	];
 
 	// Server-side data
 	let props: { data: PageData } = $props();
@@ -58,7 +96,7 @@
 			url.searchParams.set('category', categoryId);
 		}
 		url.searchParams.delete('page'); // Reset to page 1
-		goto(url.toString(), { replaceState: true });
+		void goto(url.toString(), { replaceState: true });
 	}
 
 	// Navigate to page
@@ -70,7 +108,7 @@
 			} else {
 				url.searchParams.set('page', pageNum.toString());
 			}
-			goto(url.toString(), { replaceState: true });
+			void goto(url.toString(), { replaceState: true });
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
@@ -161,294 +199,18 @@
 					</svg>
 				</label>
 			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="529"
-					value="529"
-					name="categoryfilter"
-					onchange={() => filterResources('529')}
-				/><label for="529">Trade Setups &amp; Strategies</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="528"
-					value="528"
-					name="categoryfilter"
-					onchange={() => filterResources('528')}
-				/><label for="528">Methodology</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="329"
-					value="329"
-					name="categoryfilter"
-					onchange={() => filterResources('329')}
-				/><label for="329">Member Webinar</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="2932"
-					value="2932"
-					name="categoryfilter"
-					onchange={() => filterResources('2932')}
-				/><label for="2932">Trade &amp; Money Management/Trading Plan</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="531"
-					value="531"
-					name="categoryfilter"
-					onchange={() => filterResources('531')}
-				/><label for="531">Indicators</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3260"
-					value="3260"
-					name="categoryfilter"
-					onchange={() => filterResources('3260')}
-				/><label for="3260">Options</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="469"
-					value="469"
-					name="categoryfilter"
-					onchange={() => filterResources('469')}
-				/><label for="469">foundation</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="527"
-					value="527"
-					name="categoryfilter"
-					onchange={() => filterResources('527')}
-				/><label for="527">Fundamentals</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="522"
-					value="522"
-					name="categoryfilter"
-					onchange={() => filterResources('522')}
-				/><label for="522">Simpler Tech</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="2929"
-					value="2929"
-					name="categoryfilter"
-					onchange={() => filterResources('2929')}
-				/><label for="2929">Charting/Indicators/Tools</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="530"
-					value="530"
-					name="categoryfilter"
-					onchange={() => filterResources('530')}
-				/><label for="530">Charting</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3515"
-					value="3515"
-					name="categoryfilter"
-					onchange={() => filterResources('3515')}
-				/><label for="3515">Drama Free Daytrades</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3516"
-					value="3516"
-					name="categoryfilter"
-					onchange={() => filterResources('3516')}
-				/><label for="3516">Quick Hits Daytrades</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="537"
-					value="537"
-					name="categoryfilter"
-					onchange={() => filterResources('537')}
-				/><label for="537">Psychology</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="775"
-					value="775"
-					name="categoryfilter"
-					onchange={() => filterResources('775')}
-				/><label for="775">Trading Platform</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3055"
-					value="3055"
-					name="categoryfilter"
-					onchange={() => filterResources('3055')}
-				/><label for="3055">Calls</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="447"
-					value="447"
-					name="categoryfilter"
-					onchange={() => filterResources('447')}
-				/><label for="447">ThinkorSwim</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="446"
-					value="446"
-					name="categoryfilter"
-					onchange={() => filterResources('446')}
-				/><label for="446">TradeStation</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="776"
-					value="776"
-					name="categoryfilter"
-					onchange={() => filterResources('776')}
-				/><label for="776">Charting Software</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="772"
-					value="772"
-					name="categoryfilter"
-					onchange={() => filterResources('772')}
-				/><label for="772">Trading Computer</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3057"
-					value="3057"
-					name="categoryfilter"
-					onchange={() => filterResources('3057')}
-				/><label for="3057">Calls Puts Credit Spreads</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3056"
-					value="3056"
-					name="categoryfilter"
-					onchange={() => filterResources('3056')}
-				/><label for="3056">Puts</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="3514"
-					value="3514"
-					name="categoryfilter"
-					onchange={() => filterResources('3514')}
-				/><label for="3514">Profit Recycling</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="791"
-					value="791"
-					name="categoryfilter"
-					onchange={() => filterResources('791')}
-				/><label for="791">Trade Strategies</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="774"
-					value="774"
-					name="categoryfilter"
-					onchange={() => filterResources('774')}
-				/><label for="774">Website Support</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="2927"
-					value="2927"
-					name="categoryfilter"
-					onchange={() => filterResources('2927')}
-				/><label for="2927">Options Strategies (Level 2 &amp; 3)</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="457"
-					value="457"
-					name="categoryfilter"
-					onchange={() => filterResources('457')}
-				/><label for="457">Crypto</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="2931"
-					value="2931"
-					name="categoryfilter"
-					onchange={() => filterResources('2931')}
-				/><label for="2931">Fibonacci &amp; Options Trading</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="2928"
-					value="2928"
-					name="categoryfilter"
-					onchange={() => filterResources('2928')}
-				/><label for="2928">Pricing/Volatility</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="459"
-					value="459"
-					name="categoryfilter"
-					onchange={() => filterResources('459')}
-				/><label for="459">Crypto Indicators &amp; Trading</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="771"
-					value="771"
-					name="categoryfilter"
-					onchange={() => filterResources('771')}
-				/><label for="771">Browser Support</label>
-			</div>
-			<div class="filter_btn">
-				<input
-					type="radio"
-					id="2930"
-					value="2930"
-					name="categoryfilter"
-					onchange={() => filterResources('2930')}
-				/><label for="2930">Earnings &amp; Options Expiration</label>
-			</div>
+			{#each categoryFilters as category (category.id)}
+				<div class="filter_btn">
+					<input
+						type="radio"
+						id={category.id}
+						value={category.id}
+						name="categoryfilter"
+						checked={activeFilter === category.id}
+						onchange={() => filterResources(category.id)}
+					/><label for={category.id}>{category.label}</label>
+				</div>
+			{/each}
 			<input type="hidden" name="page_id" value="402087" />
 			<input
 				type="hidden"
@@ -494,17 +256,16 @@
 					<p>Try adjusting your filter or check back later for new content.</p>
 				</div>
 			{:else}
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				<div class="learning-grid">
 					{#each videos as video (video.id)}
 						<div>
 							<article class="article-card">
 								<figure
 									class="article-card__image"
-									style="background-image: url({video.thumbnail_url ||
-										'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'});"
+									style:background-image={`url(${video.thumbnail_url || fallbackThumbnailUrl})`}
 								>
 									<img
-										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
+										src={fallbackThumbnailUrl}
 										alt={video.title}
 										loading="lazy"
 										width="325"
@@ -514,9 +275,9 @@
 
 								<div class="article-card__type">
 									{#each video.tag_details as tag (tag.name)}
-										<span class="label label--info" style="background-color: {tag.color}"
-											>{tag.name}</span
-										>
+										<span class="label label--info" style:background-color={tag.color}>
+											{tag.name}
+										</span>
 									{/each}
 								</div>
 
@@ -755,8 +516,23 @@
 		margin-top: 6px;
 	}
 
-	/* Grid Layout - Using Tailwind */
-	/* Grid classes in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 */
+	.learning-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	@media (min-width: 768px) {
+		.learning-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.learning-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
 
 	/* Article Card */
 	.article-card {
