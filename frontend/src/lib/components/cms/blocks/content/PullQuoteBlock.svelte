@@ -24,6 +24,9 @@
 		accentColor?: string;
 	}
 
+	type QuoteAlignment = NonNullable<PullQuoteContent['alignment']>;
+	type QuoteBorderStyle = NonNullable<PullQuoteContent['borderStyle']>;
+
 	interface Props {
 		block: Block;
 		blockId: BlockId;
@@ -66,6 +69,18 @@
 		'#1f2937', // Dark gray
 		'#059669' // Emerald
 	];
+
+	const alignmentClasses = {
+		left: 'align-left',
+		center: 'align-center',
+		right: 'align-right'
+	} as const satisfies Record<QuoteAlignment, string>;
+
+	const borderStyleClasses = {
+		'left-bar': 'border-left-bar',
+		'top-bottom': 'border-top-bottom',
+		none: 'border-none'
+	} as const satisfies Record<QuoteBorderStyle, string>;
 
 	// Content Update Handlers
 
@@ -174,18 +189,16 @@
 			showColorPicker = false;
 		}
 	}
+
+	function getPullQuoteClasses(): string[] {
+		return ['pullquote-block', alignmentClasses[alignment], borderStyleClasses[borderStyle]];
+	}
 </script>
 
 <svelte:window onclick={handleClickOutside} />
 
 <figure
-	class="pullquote-block"
-	class:align-left={alignment === 'left'}
-	class:align-center={alignment === 'center'}
-	class:align-right={alignment === 'right'}
-	class:border-left-bar={borderStyle === 'left-bar'}
-	class:border-top-bottom={borderStyle === 'top-bottom'}
-	class:border-none={borderStyle === 'none'}
+	class={getPullQuoteClasses()}
 	aria-labelledby={captionId}
 	style:--accent-color={accentColor}
 >
@@ -198,8 +211,7 @@
 	<blockquote
 		id={quoteId}
 		contenteditable={props.isEditing}
-		class="pullquote-text editable-content"
-		class:placeholder={!quoteText}
+		class={['pullquote-text editable-content', !quoteText && 'placeholder']}
 		oninput={handleQuoteInput}
 		onpaste={handlePaste}
 		onkeydown={(e) => handleKeyDown(e, 'quote')}
@@ -223,8 +235,7 @@
 				<span class="em-dash" aria-hidden="true">—</span>
 				<cite
 					contenteditable={props.isEditing}
-					class="pullquote-attribution editable-content"
-					class:placeholder={!attribution}
+					class={['pullquote-attribution editable-content', !attribution && 'placeholder']}
 					oninput={handleAttributionInput}
 					onpaste={handlePaste}
 					onkeydown={(e) => handleKeyDown(e, 'attribution')}
@@ -240,8 +251,7 @@
 					<span class="source-separator" aria-hidden="true">,</span>
 					<span
 						contenteditable={props.isEditing}
-						class="pullquote-source editable-content"
-						class:placeholder={!source}
+						class={['pullquote-source editable-content', !source && 'placeholder']}
 						oninput={handleSourceInput}
 						onpaste={handlePaste}
 						onkeydown={(e) => handleKeyDown(e, 'source')}
@@ -267,8 +277,7 @@
 			<span class="control-label">Align:</span>
 			<button
 				type="button"
-				class="control-btn"
-				class:active={alignment === 'left'}
+				class={['control-btn', alignment === 'left' && 'active']}
 				onclick={() => setAlignment('left')}
 				aria-pressed={alignment === 'left'}
 				title="Align left"
@@ -277,8 +286,7 @@
 			</button>
 			<button
 				type="button"
-				class="control-btn"
-				class:active={alignment === 'center'}
+				class={['control-btn', alignment === 'center' && 'active']}
 				onclick={() => setAlignment('center')}
 				aria-pressed={alignment === 'center'}
 				title="Align center"
@@ -287,8 +295,7 @@
 			</button>
 			<button
 				type="button"
-				class="control-btn"
-				class:active={alignment === 'right'}
+				class={['control-btn', alignment === 'right' && 'active']}
 				onclick={() => setAlignment('right')}
 				aria-pressed={alignment === 'right'}
 				title="Align right"
@@ -302,8 +309,7 @@
 			<span class="control-label">Border:</span>
 			<button
 				type="button"
-				class="control-btn"
-				class:active={borderStyle === 'left-bar'}
+				class={['control-btn', borderStyle === 'left-bar' && 'active']}
 				onclick={() => setBorderStyle('left-bar')}
 				aria-pressed={borderStyle === 'left-bar'}
 				title="Left bar border"
@@ -312,8 +318,7 @@
 			</button>
 			<button
 				type="button"
-				class="control-btn"
-				class:active={borderStyle === 'top-bottom'}
+				class={['control-btn', borderStyle === 'top-bottom' && 'active']}
 				onclick={() => setBorderStyle('top-bottom')}
 				aria-pressed={borderStyle === 'top-bottom'}
 				title="Top and bottom borders"
@@ -322,8 +327,7 @@
 			</button>
 			<button
 				type="button"
-				class="control-btn"
-				class:active={borderStyle === 'none'}
+				class={['control-btn', borderStyle === 'none' && 'active']}
 				onclick={() => setBorderStyle('none')}
 				aria-pressed={borderStyle === 'none'}
 				title="No border"
@@ -353,8 +357,7 @@
 						{#each presetColors as color (color)}
 							<button
 								type="button"
-								class="preset-color"
-								class:selected={accentColor === color}
+								class={['preset-color', accentColor === color && 'selected']}
 								style:background-color={color}
 								onclick={() => setAccentColor(color)}
 								aria-pressed={accentColor === color}
