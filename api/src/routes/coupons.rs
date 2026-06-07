@@ -289,7 +289,13 @@ async fn get_user_coupons(
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(|e| {
+        tracing::error!(target: "coupons", user_id = user.id, error = %e, "DB error loading user coupons");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to load coupons"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "coupons": coupons,

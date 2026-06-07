@@ -606,7 +606,10 @@ impl Config {
         for (name, value) in [
             ("MEMBER_INDICATOR_SECRET", &self.member_indicator_secret),
             ("MEMBER_LICENSE_SECRET", &self.member_license_secret),
-            ("CREDENTIALS_ENCRYPTION_KEY", &self.credentials_encryption_key),
+            (
+                "CREDENTIALS_ENCRYPTION_KEY",
+                &self.credentials_encryption_key,
+            ),
         ] {
             if value.len() < 32 || value.to_ascii_lowercase().contains("placeholder") {
                 panic!(
