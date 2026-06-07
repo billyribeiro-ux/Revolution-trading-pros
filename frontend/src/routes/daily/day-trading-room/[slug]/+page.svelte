@@ -37,11 +37,18 @@
 	let previousVideo = $state<DailyVideo | null>(null);
 	let nextVideo = $state<DailyVideo | null>(null);
 	let loading = $state(true);
-	let videoElement = $state<HTMLVideoElement | undefined>(undefined);
 
 	// Video ended redirect handler
 	function handleVideoEnded() {
 		window.location.href = 'https://lp.simplertrading.com/shortcut';
+	}
+
+	function currentBreadcrumbItemClass(videoId: number) {
+		return ['item-current', `item-${videoId}`];
+	}
+
+	function currentBreadcrumbClass(videoId: number) {
+		return ['breadcrumb-current', `breadcrumb-${videoId}`];
 	}
 
 	// Sample data - matches WordPress structure
@@ -154,8 +161,8 @@
 				<li class="separator">/</li>
 				<li class="item-cat"></li>
 				<li class="separator">/</li>
-				<li class="item-current item-{currentVideo.id}">
-					<strong class="breadcrumb-current breadcrumb-{currentVideo.id}" title={currentVideo.title}
+				<li class={currentBreadcrumbItemClass(currentVideo.id)}>
+					<strong class={currentBreadcrumbClass(currentVideo.id)} title={currentVideo.title}
 						>{currentVideo.title}</strong
 					>
 				</li>
@@ -193,7 +200,6 @@
 					<div class="video-container current">
 						<video
 							id="dv-player"
-							bind:this={videoElement}
 							controls
 							width="100%"
 							poster={currentVideo.thumbnail}
@@ -225,7 +231,7 @@
 								<a
 									href="/daily/day-trading-room/{video.slug}"
 									class="card-image"
-									style="background-image: url({video.thumbnail});"
+									style:background-image={`url(${video.thumbnail})`}
 								>
 									<img
 										src="https://placehold.it/325x183"
