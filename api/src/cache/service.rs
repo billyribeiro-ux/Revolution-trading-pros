@@ -622,36 +622,52 @@ impl CacheService {
     }
 }
 
-/// Simple glob pattern matcher for L1 cache invalidation
+/// Glob pattern matcher for L1 cache invalidation.
+///
+/// RUST_DEEP_AUDIT_2026-06-07 (P2-1): the previous version only honored the
+/// FIRST `*`, so multi-wildcard patterns (e.g. `es:v1:alert*:{room}:*`, which
+/// every invalidation pattern in `keys.rs` uses) silently matched nothing —
+/// L1 kept serving stale entries until TTL. This handles any number of `*`
+/// wildcards (the only metacharacter the cache keys use).
 struct PatternMatcher {
-    prefix: String,
-    suffix: String,
+    /// Literal segments between `*` wildcards. With no `*`, this is the whole
+    /// pattern as a single element (exact match).
+    parts: Vec<String>,
     has_wildcard: bool,
 }
 
 impl PatternMatcher {
     fn new(pattern: &str) -> Self {
-        if let Some(pos) = pattern.find('*') {
-            Self {
-                prefix: pattern[..pos].to_string(),
-                suffix: pattern[pos + 1..].to_string(),
-                has_wildcard: true,
-            }
-        } else {
-            Self {
-                prefix: pattern.to_string(),
-                suffix: String::new(),
-                has_wildcard: false,
-            }
+        Self {
+            parts: pattern.split('*').map(str::to_string).collect(),
+            has_wildcard: pattern.contains('*'),
         }
     }
 
     fn matches(&self, key: &str) -> bool {
-        if self.has_wildcard {
-            key.starts_with(&self.prefix) && (self.suffix.is_empty() || key.ends_with(&self.suffix))
-        } else {
-            key == self.prefix
+        if !self.has_wildcard {
+            return key == self.parts[0];
         }
+
+        let last = self.parts.len() - 1;
+
+        // Anchor the leading literal (empty if the pattern starts with `*`).
+        let mut rest = match key.strip_prefix(self.parts[0].as_str()) {
+            Some(r) => r,
+            None => return false,
+        };
+
+        // Middle literals must occur in order; consume left-to-right so they
+        // cannot overlap each other or the anchors.
+        for part in &self.parts[1..last] {
+            match rest.find(part.as_str()) {
+                Some(pos) => rest = &rest[pos + part.len()..],
+                None => return false,
+            }
+        }
+
+        // Anchor the trailing literal on what's left (empty if pattern ends `*`).
+        rest.len() >= self.parts[last].len() && rest.ends_with(self.parts[last].as_str())
     }
 }
 
@@ -674,6 +690,31 @@ mod tests {
         assert!(matcher.matches("es:v1:alerts:test:p1"));
         assert!(matcher.matches("es:v1:alerts:another"));
         assert!(!matcher.matches("es:v1:trades:test"));
+    }
+
+    #[test]
+    fn test_pattern_matcher_multi_wildcard() {
+        // P2-1 regression: multiple '*' wildcards must actually match.
+        let m = PatternMatcher::new("es:v1:alert*:room7:*");
+        assert!(m.matches("es:v1:alerts:room7:p1"));
+        assert!(m.matches("es:v1:alert:room7:"));
+        assert!(!m.matches("es:v1:alerts:room8:p1")); // wrong room
+        assert!(!m.matches("es:v1:trade:room7:p1")); // wrong prefix
+
+        let m2 = PatternMatcher::new("es:v1:*video*:room7*");
+        assert!(m2.matches("es:v1:weekly_video_list:room7:p1"));
+        assert!(!m2.matches("es:v1:weekly_list:room7")); // no "video" segment
+
+        // Exact (no wildcard) still works.
+        let exact = PatternMatcher::new("es:v1:alerts:room7");
+        assert!(exact.matches("es:v1:alerts:room7"));
+        assert!(!exact.matches("es:v1:alerts:room7:p1"));
+
+        // Overlap guard: "a*a" must need at least two chars.
+        let overlap = PatternMatcher::new("a*a");
+        assert!(overlap.matches("aa"));
+        assert!(overlap.matches("aba"));
+        assert!(!overlap.matches("a"));
     }
 
     #[test]
