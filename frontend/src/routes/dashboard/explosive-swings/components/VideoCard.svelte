@@ -34,9 +34,13 @@
 
 <a
 	href={video.videoUrl}
-	class="video-card"
-	class:featured={variant === 'featured'}
-	class:compact={variant === 'compact'}
+	class={[
+		'video-card',
+		{
+			featured: variant === 'featured',
+			compact: variant === 'compact'
+		}
+	]}
 	aria-label="Watch {video.title}"
 >
 	<div class="thumbnail-wrapper">
@@ -64,7 +68,7 @@
 
 		<!-- Ticker + Type Badge -->
 		{#if video.ticker || video.type}
-			<div class="ticker-badge {typeClass}">
+			<div class={['ticker-badge', typeClass]}>
 				{#if video.ticker}
 					<span class="badge-ticker">{video.ticker}</span>
 				{/if}
