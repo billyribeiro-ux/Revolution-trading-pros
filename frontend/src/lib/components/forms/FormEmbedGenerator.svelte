@@ -12,6 +12,7 @@
 	 *
 	 */
 
+	import { onMount } from 'svelte';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
@@ -22,24 +23,38 @@
 
 	let props: Props = $props();
 
-	// Embed types
 	const embedTypes = [
 		{ value: 'iframe', label: 'Standard Embed (iframe)', icon: '📋' },
 		{ value: 'javascript', label: 'JavaScript Widget', icon: '⚡' },
 		{ value: 'popup', label: 'Popup/Modal', icon: '💬' },
 		{ value: 'inline', label: 'Inline Injection', icon: '📥' }
-	];
+	] as const;
+
+	type EmbedType = (typeof embedTypes)[number]['value'];
+
+	interface EmbedOptions {
+		width: string;
+		height: string;
+		responsive: boolean;
+		border: boolean;
+		shadow: boolean;
+		rounded: boolean;
+		theme: string;
+		buttonText: string;
+		buttonClass: string;
+	}
 
 	// State
-	let selectedType = $state('iframe');
+	let selectedType = $state<EmbedType>('iframe');
 	let embedCode = $state('');
 	let shareUrl = $state('');
 	let qrCodeUrl = $state('');
 	let copied = $state(false);
 	let loading = $state(false);
+	let embedRequestId = 0;
 
 	// Options
-	let options = $state({
+	let options = $state<EmbedOptions>({
 		width: '100%',
 		height: '600',
 		responsive: true,
@@ -58,8 +73,24 @@
 		campaign: ''
 	});
 
+	function updateOption<Key extends keyof EmbedOptions>(key: Key, value: EmbedOptions[Key]) {
+		options[key] = value;
+		void generateEmbed(selectedType, { ...options, [key]: value });
+	}
+
+	function selectEmbedType(type: EmbedType) {
+		if (selectedType === type) return;
+
+		selectedType = type;
+		void generateEmbed(type);
+	}
+
 	// Generate embed code
-	async function generateEmbed() {
+	async function generateEmbed(
+		type: EmbedType = selectedType,
+		embedOptions: EmbedOptions = options
+	) {
+		const requestId = ++embedRequestId;
 		loading = true;
 		try {
 			const token = getAuthToken();
@@ -70,23 +101,28 @@
 					Authorization: `Bearer ${token}`
 				},
 				body: JSON.stringify({
-					type: selectedType,
+					type,
 					options: {
-						...options,
-						button_text: options.buttonText,
-						button_class: options.buttonClass
+						...embedOptions,
+						button_text: embedOptions.buttonText,
+						button_class: embedOptions.buttonClass
 					}
 				})
 			});
 
 			if (response.ok) {
 				const data = await response.json();
-				embedCode = data.code;
+				if (requestId === embedRequestId) {
+					embedCode = data.code;
+				}
 			}
 		} catch (error) {
 			console.error('Failed to generate embed:', error);
+		} finally {
+			if (requestId === embedRequestId) {
+				loading = false;
+			}
 		}
-		loading = false;
 	}
 
 	// Generate shareable link
@@ -127,17 +163,9 @@
 		}
 	}
 
-	// Initialize
-	$effect(() => {
-		generateEmbed();
-		generateShareLink();
-	});
-
-	// Regenerate on type change
-	$effect(() => {
-		if (selectedType) {
-			generateEmbed();
-		}
+	onMount(() => {
+		void generateEmbed();
+		void generateShareLink();
 	});
 </script>
 
@@ -154,9 +182,8 @@
 			<div class="embed-types">
 				{#each embedTypes as type (type.value)}
 					<button
-						class="type-option"
-						class:selected={selectedType === type.value}
-						onclick={() => (selectedType = type.value)}
+						class={{ 'type-option': true, selected: selectedType === type.value }}
+						onclick={() => selectEmbedType(type.value)}
 					>
 						<span class="type-icon">{type.icon}</span>
 						<span class="type-label">{type.label}</span>
@@ -172,11 +199,21 @@
 				{#if selectedType === 'iframe'}
 					<div class="option">
 						<label for="embed-width">Width</label>
-						<input id="embed-width" type="text" bind:value={options.width} placeholder="100%" />
+						<input
+							id="embed-width"
+							type="text"
+							bind:value={() => options.width, (value) => updateOption('width', value)}
+							placeholder="100%"
+						/>
 					</div>
 					<div class="option">
 						<label for="embed-height">Height</label>
-						<input id="embed-height" type="text" bind:value={options.height} placeholder="600" />
+						<input
+							id="embed-height"
+							type="text"
+							bind:value={() => options.height, (value) => updateOption('height', value)}
+							placeholder="600"
+						/>
 					</div>
 				{/if}
 
@@ -186,7 +223,7 @@
 						<input
 							id="button-text"
 							type="text"
-							bind:value={options.buttonText}
+							bind:value={() => options.buttonText, (value) => updateOption('buttonText', value)}
 							placeholder="Open Form"
 						/>
 					</div>
@@ -194,28 +231,42 @@
 
 				<div class="option checkbox-option">
 					<label>
-						<input type="checkbox" bind:checked={options.responsive} />
+						<input
+							type="checkbox"
+							bind:checked={
+								() => options.responsive, (checked) => updateOption('responsive', checked)
+							}
+						/>
 						Responsive
 					</label>
 				</div>
 
 				<div class="option checkbox-option">
 					<label>
-						<input type="checkbox" bind:checked={options.shadow} />
+						<input
+							type="checkbox"
+							bind:checked={() => options.shadow, (checked) => updateOption('shadow', checked)}
+						/>
 						Shadow
 					</label>
 				</div>
 
 				<div class="option checkbox-option">
 					<label>
-						<input type="checkbox" bind:checked={options.rounded} />
+						<input
+							type="checkbox"
+							bind:checked={() => options.rounded, (checked) => updateOption('rounded', checked)}
+						/>
 						Rounded Corners
 					</label>
 				</div>
 
 				<div class="option">
 					<label for="embed-theme">Theme</label>
-					<select id="embed-theme" bind:value={options.theme}>
+					<select
+						id="embed-theme"
+						bind:value={() => options.theme, (value) => updateOption('theme', value)}
+					>
 						<option value="light">Light</option>
 						<option value="dark">Dark</option>
 						<option value="auto">Auto</option>
@@ -223,7 +274,7 @@
 				</div>
 			</div>
 
-			<button class="btn-regenerate" onclick={generateEmbed} disabled={loading}>
+			<button class="btn-regenerate" onclick={() => generateEmbed()} disabled={loading}>
 				{loading ? 'Generating...' : 'Regenerate Code'}
 			</button>
 		</div>
