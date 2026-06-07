@@ -58,6 +58,8 @@
 	// Search state
 	let searchQuery = $state('');
 
+	const dropdownClass = $derived(['dropdown', isDropdownOpen && 'dropdown--open']);
+
 	function toggleDropdown(event: Event): void {
 		event.stopPropagation();
 		isDropdownOpen = !isDropdownOpen;
@@ -67,33 +69,26 @@
 		isDropdownOpen = false;
 	}
 
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (isDropdownOpen && typeof window !== 'undefined') {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					closeDropdown();
-				}
-			};
-			const handleEscape = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') {
-					closeDropdown();
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			document.addEventListener('keydown', handleEscape);
-			return () => {
-				document.removeEventListener('click', handleClickOutside);
-				document.removeEventListener('keydown', handleEscape);
-			};
+	function handleDocumentClick(event: MouseEvent): void {
+		const target = event.target as HTMLElement;
+		if (isDropdownOpen && !target.closest('.dropdown')) {
+			isDropdownOpen = false;
 		}
-		return undefined;
-	});
+	}
+
+	function handleDocumentKeydown(event: KeyboardEvent): void {
+		if (isDropdownOpen && event.key === 'Escape') {
+			isDropdownOpen = false;
+		}
+	}
 
 	function handleSearch(event: Event) {
 		const target = event.target as HTMLInputElement;
 		searchQuery = target.value;
+	}
+
+	function getThumbnailBackground(thumbnail?: string | null): string | undefined {
+		return thumbnail ? `url("${thumbnail}")` : undefined;
 	}
 
 	function _submitSearch() {
@@ -160,13 +155,15 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<svelte:document onclick={handleDocumentClick} onkeydown={handleDocumentKeydown} />
+
 <!-- Dashboard Header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">{roomName} Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<div class="dropdown" class:is-open={isDropdownOpen}>
+		<div class={dropdownClass}>
 			<button
 				class="btn btn-orange btn-tradingroom"
 				onclick={toggleDropdown}
@@ -260,7 +257,7 @@
 								<a
 									href="/dashboard/{roomSlug}/video/{video.slug}"
 									class="card-image"
-									style="background-image: url({video.thumbnail});"
+									style:background-image={getThumbnailBackground(video.thumbnail)}
 								>
 									<img
 										class="default-background"
@@ -418,7 +415,7 @@
 		align-items: center;
 	}
 
-	.dropdown.is-open .dropdown-arrow {
+	.dropdown--open .dropdown-arrow {
 		transform: rotate(180deg);
 	}
 
@@ -452,7 +449,7 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dropdown:not(.is-open) .dropdown-menu {
+	.dropdown:not(.dropdown--open) .dropdown-menu {
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(-5px);
