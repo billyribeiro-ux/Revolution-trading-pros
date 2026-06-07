@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import {
 		IconTag,
@@ -40,6 +41,7 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let perPage = $state(20);
+	let loadedTagId = '';
 
 	// Remove tag confirmation modal state
 	let showRemoveTagModal = $state(false);
@@ -144,10 +146,11 @@
 		return colors[status] || '#64748b';
 	}
 
-	// Load tag when tagId changes (handles both initial mount and navigation)
-	$effect(() => {
-		if (tagId) {
-			loadTag();
+	// Load tag on initial mount and when SvelteKit reuses this page for another tag id.
+	afterNavigate(() => {
+		if (tagId && tagId !== loadedTagId) {
+			loadedTagId = tagId;
+			void loadTag();
 		}
 	});
 </script>
@@ -166,7 +169,7 @@
 			</a>
 			{#if tag}
 				<div class="tag-header-info">
-					<div class="tag-badge" style="background-color: {tag.color || '#6366f1'}">
+					<div class="tag-badge" style:background-color={tag.color || '#6366f1'}>
 						<IconTag size={20} />
 					</div>
 					<div>
@@ -276,9 +279,8 @@
 									<td>
 										<span
 											class="status-badge"
-											style="background-color: {getStatusColor(
-												contact.status
-											)}20; color: {getStatusColor(contact.status)}"
+											style:background-color={`${getStatusColor(contact.status)}20`}
+											style:color={getStatusColor(contact.status)}
 										>
 											{contact.status}
 										</span>
