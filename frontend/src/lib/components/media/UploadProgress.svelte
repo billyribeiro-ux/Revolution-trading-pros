@@ -12,6 +12,7 @@
   @version 2.0.0
 -->
 <script lang="ts">
+	import type { Attachment } from 'svelte/attachments';
 	import { fade, slide } from 'svelte/transition';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -76,12 +77,16 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 	}
 
-	// Get file thumbnail
-	function getFileThumbnail(file: File): string {
-		if (file.type.startsWith('image/')) {
-			return URL.createObjectURL(file);
-		}
-		return '';
+	// Attach local preview URLs to the image lifecycle so browser object URLs are revoked.
+	function localPreview(file: File): Attachment<HTMLImageElement> {
+		return (image) => {
+			const url = URL.createObjectURL(file);
+			image.src = url;
+
+			return () => {
+				URL.revokeObjectURL(url);
+			};
+		};
 	}
 
 	// Get status class
@@ -176,7 +181,7 @@
 				aria-valuemax={100}
 				aria-label="Overall upload progress: {totalProgress}%"
 			>
-				<div class="upload-progress__total-fill" style="width: {totalProgress}%"></div>
+				<div class="upload-progress__total-fill" style:width={`${totalProgress}%`}></div>
 			</div>
 		{/if}
 
@@ -196,7 +201,7 @@
 							/>
 						{:else if upload.file.type.startsWith('image/')}
 							<img
-								src={getFileThumbnail(upload.file)}
+								{@attach localPreview(upload.file)}
 								alt="Preview of {upload.file.name}"
 								class="upload-progress__thumbnail-image"
 								width="48"
@@ -226,7 +231,7 @@
 										'upload-progress__file-fill',
 										upload.status === 'processing' && 'upload-progress__file-fill--processing'
 									]}
-									style="width: {upload.progress}%"
+									style:width={`${upload.progress}%`}
 								></div>
 							</div>
 						{/if}
