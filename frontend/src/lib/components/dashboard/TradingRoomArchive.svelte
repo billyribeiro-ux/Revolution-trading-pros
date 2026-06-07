@@ -93,16 +93,11 @@
 		sessions: ArchiveSession[];
 	}
 
-	// Local search state - synced with prop via $effect
-	let searchQuery = $state('');
+	// Local search state starts from the URL prop and can be overridden by input binding.
+	let searchQuery = $derived(search || '');
 	let currentPage = $derived(meta?.current_page || 1);
 	let totalPages = $derived(meta?.last_page || 1);
 	let totalItems = $derived(meta?.total || 0);
-
-	// Sync searchQuery with search prop when it changes
-	$effect(() => {
-		searchQuery = search || '';
-	});
 
 	// Format date to slug (MMDDYYYY)
 	function dateToSlug(dateStr: string): string {
@@ -147,19 +142,19 @@
 	// Group sessions by date
 	let groupedSessions = $derived.by(() => {
 		const groups: DateGroup[] = [];
-		const dateMap = new Map<string, ArchiveSession[]>();
+		const dateMap: Record<string, ArchiveSession[]> = {};
 
 		filteredSessions.forEach((session) => {
-			const existing = dateMap.get(session.date);
+			const existing = dateMap[session.date];
 			if (existing) {
 				existing.push(session);
 			} else {
-				dateMap.set(session.date, [session]);
+				dateMap[session.date] = [session];
 			}
 		});
 
 		// Sort dates descending
-		const sortedDates = Array.from(dateMap.keys()).sort(
+		const sortedDates = Object.keys(dateMap).sort(
 			(a, b) => new Date(b).getTime() - new Date(a).getTime()
 		);
 
@@ -167,7 +162,7 @@
 			groups.push({
 				date,
 				displayDate: formatDate(date),
-				sessions: dateMap.get(date) || []
+				sessions: dateMap[date] || []
 			});
 		});
 
@@ -255,6 +250,13 @@
 
 		return pages;
 	}
+
+	function pageNumberClass(page: number) {
+		return {
+			'page-number': true,
+			current: page === currentPage
+		};
+	}
 </script>
 
 <div class="dashboard__content">
@@ -303,7 +305,7 @@
 			<div id="products-list">
 				{#each paginatedGroups as group (group.date)}
 					<p class="date-heading"><strong>{group.displayDate}</strong></p>
-					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+					<div class="archive-grid">
 						{#each group.sessions as session (session.id)}
 							<article class="archive-card">
 								<div class="card-body">
@@ -335,11 +337,7 @@
 						{#each getPageNumbers() as page, i (i)}
 							{#if typeof page === 'number'}
 								<li>
-									<button
-										class="page-number"
-										class:current={page === currentPage}
-										onclick={() => goToPage(page)}
-									>
+									<button class={pageNumberClass(page)} onclick={() => goToPage(page)}>
 										{page}
 									</button>
 								</li>
@@ -747,8 +745,32 @@
 		margin-bottom: 20px;
 	}
 
-	#products-list > :global(.grid) {
+	.archive-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	#products-list > .archive-grid {
 		margin-bottom: 24px;
+	}
+
+	@media (min-width: 640px) {
+		.archive-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 768px) {
+		.archive-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.archive-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
 	}
 
 	/* High contrast / reduced motion preferences */
