@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **385 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **338 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -178,6 +178,12 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - `fa2144a0c` Modernize HTML block class bindings.
 - `408d7b1be` Modernize admin products bindings.
 - `4cd010f06` Modernize form collaborators bindings.
+- `0992feea6` Modernize consent template tab binding.
+- `654e1f5f2` Modernize form embed generator bindings.
+- `5f79bfcd7` Modernize Bunny video player bindings.
+- `1f1781a43` Modernize reset password bindings.
+- `0eb58d4d1` Modernize optimized video card bindings.
+- `09a7b9ba6` Modernize consent banner renderer bindings.
 - `7b40cfe94` Modernize bulk upload queue bindings.
 - `d66b4892b` Modernize explosive swings trades table bindings.
 - `b3d88942c` Modernize explosive swings video grid style binding.
@@ -185,6 +191,47 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - `190c5251c` Modernize recurring campaigns status classes.
 - `722920c96` Modernize daily video page bindings.
 - `14bd7f6d1` Modernize repeater field class and style bindings.
+- `fcc76996d` Modernize RSI page visibility class bindings.
+- `59c99e29d` Modernize explosive swings start accordion bindings.
+- `bd02c5824` Modernize explosive swings alerts class bindings.
+- `47c38925f` Modernize explosive swings performance summary style bindings.
+- `0f9fbc283` Modernize courses section dynamic styling.
+- `c02f2dee2` Modernize watchlist page class bindings.
+- `2ad0b8417` Modernize campaign report refresh bindings.
+- `efe552014` Modernize risk management hero reveal binding.
+- `7e87f3024` Modernize submissions list selection bindings.
+- `3259c1f23` Modernize Authorize.net payment bindings.
+- `59008886a` Modernize options trading hero binding.
+- `cc0838ccf` Modernize course reviews bindings.
+- `46f4fb354` Modernize admin sidebar class bindings.
+- `476e179f5` Modernize SEO meta editor tab binding.
+- `6c28dd8c8` Modernize dashboard video detail bindings.
+- `24169a88a` Modernize room chat bindings.
+- `8d3f63440` Modernize CRM settings tab binding.
+- `da68ddbfe` Modernize address autocomplete bindings.
+- `c8a491b63` Modernize command palette bindings.
+- `39f892dec` Modernize account order detail bindings.
+- `6c7291276` Modernize CRM lists filter bindings.
+- `0faa6f1d8` Modernize indicators section class composition.
+- `0f9e42fc1` Modernize explosive swings archive year filter.
+- `0fcfd62d9` Modernize repeater field bindings.
+- `09bfba573` Modernize related posts block class composition.
+- `6660ed488` Modernize performance overlay bindings.
+- `8d6ace7b5` Modernize SEO keywords dynamic bindings.
+- `272650cfe` Modernize CRM import export class bindings.
+- `e85e83760` Modernize high octane scanner interval bindings.
+- `cf06d5df4` Modernize video chapters editor class binding.
+- `63a136a0b` Modernize swing trading video thumbnail binding.
+- `7a3d1c2e0` Harden blog edit code block serialization.
+- `494e3cfab` Modernize explosive swings resource link bindings.
+- `1cba44b42` Modernize email settings alert classes.
+- `484152628` Modernize options chain dynamic styles.
+- `797b5baf7` Modernize explosive swings export menu bindings.
+- `8b55dfc52` Modernize resource viewer dynamic bindings.
+- `225cec8b9` Modernize trading hero background bindings.
+- `2bc36241d` Modernize video transcript bindings.
+- `32e76067f` Modernize explosive swings video card bindings.
+- `67835bd7a` Modernize upload progress dynamic styles.
 
 ### Validation standard for each completed slice
 

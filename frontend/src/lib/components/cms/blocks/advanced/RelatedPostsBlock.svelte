@@ -142,8 +142,10 @@
 			<div class="layout-toggle">
 				<button
 					type="button"
-					class="toggle-btn"
-					class:active={layout === 'grid'}
+					class={{
+						'toggle-btn': true,
+						active: layout === 'grid'
+					}}
 					aria-label="Grid layout"
 					onclick={() => updateContent({ relatedPostsLayout: 'grid' })}
 				>
@@ -151,8 +153,10 @@
 				</button>
 				<button
 					type="button"
-					class="toggle-btn"
-					class:active={layout === 'list'}
+					class={{
+						'toggle-btn': true,
+						active: layout === 'list'
+					}}
 					aria-label="List layout"
 					onclick={() => updateContent({ relatedPostsLayout: 'list' })}
 				>
@@ -164,10 +168,13 @@
 
 	<!-- Posts Grid/List -->
 	<div
-		class="related-posts-container layout-{layout}"
-		class:cols-2={postCount === 2}
-		class:cols-3={postCount === 3}
-		class:cols-4={postCount === 4}
+		class={{
+			'related-posts-container': true,
+			[`layout-${layout}`]: true,
+			'cols-2': postCount === 2,
+			'cols-3': postCount === 3,
+			'cols-4': postCount === 4
+		}}
 		role="list"
 		aria-label="Related posts list"
 	>

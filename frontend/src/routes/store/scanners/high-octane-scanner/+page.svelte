@@ -143,15 +143,19 @@
 					<div class="pricing-section">
 						<div class="interval-toggle">
 							<button
-								class="interval-btn"
-								class:active={selectedInterval === 'monthly'}
+								class={{
+									'interval-btn': true,
+									active: selectedInterval === 'monthly'
+								}}
 								onclick={() => (selectedInterval = 'monthly')}
 							>
 								Monthly
 							</button>
 							<button
-								class="interval-btn"
-								class:active={selectedInterval === 'yearly'}
+								class={{
+									'interval-btn': true,
+									active: selectedInterval === 'yearly'
+								}}
 								onclick={() => (selectedInterval = 'yearly')}
 							>
 								Yearly

@@ -18,6 +18,7 @@
 	 */
 
 	import { fly } from 'svelte/transition';
+	import type { Attachment } from 'svelte/attachments';
 	import {
 		downloadAlertsCsv,
 		downloadTradesCsv,
@@ -65,10 +66,7 @@
 	let exportType = $state<'alerts' | 'trades' | 'report' | null>(null);
 	let buttonRef: HTMLButtonElement | undefined = $state();
 
-	// Filter state - initialized empty, synced via $effect below
-	let alertFilters = $state<AlertExportFilters>({});
-	let tradeFilters = $state<TradeExportFilters>({});
-	let reportRange = $state<ReportDateRange>({});
+	let presetRange = $state<ReportDateRange | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
@@ -90,6 +88,17 @@
 		}[size]
 	);
 
+	const activeRange = $derived(
+		presetRange ?? {
+			startDate: dateRange?.start,
+			endDate: dateRange?.end
+		}
+	);
+
+	const alertFilters = $derived<AlertExportFilters>({ ...activeRange });
+	const tradeFilters = $derived<TradeExportFilters>({ ...activeRange });
+	const reportRange = $derived<ReportDateRange>({ ...activeRange });
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -102,6 +111,18 @@
 
 	function close() {
 		isOpen = false;
+	}
+
+	function attachButtonRef(): Attachment<HTMLButtonElement> {
+		return (node) => {
+			buttonRef = node;
+
+			return () => {
+				if (buttonRef === node) {
+					buttonRef = undefined;
+				}
+			};
+		};
 	}
 
 	function handleClickOutside(event: MouseEvent) {
@@ -169,33 +190,18 @@
 				break;
 		}
 
-		alertFilters = { ...alertFilters, startDate, endDate };
-		tradeFilters = { ...tradeFilters, startDate, endDate };
-		reportRange = { startDate, endDate };
+		presetRange = { startDate, endDate };
 	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// EFFECTS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Sync date range prop with internal state (runs on mount and when dateRange changes)
-	$effect(() => {
-		const start = dateRange?.start;
-		const end = dateRange?.end;
-		alertFilters = { ...alertFilters, startDate: start, endDate: end };
-		tradeFilters = { ...tradeFilters, startDate: start, endDate: end };
-		reportRange = { startDate: start, endDate: end };
-	});
 </script>
 
 <svelte:window onclick={handleClickOutside} />
 
-<div class="export-menu" class:is-open={isOpen}>
+<div class={{ 'export-menu': true, 'is-open': isOpen }}>
 	<!-- Trigger Button -->
 	<button
-		bind:this={buttonRef}
+		{@attach attachButtonRef()}
 		onclick={toggle}
-		class="export-trigger {sizeClasses}"
+		class={['export-trigger', sizeClasses]}
 		disabled={disabled || isExporting}
 		aria-expanded={isOpen}
 		aria-haspopup="menu"
@@ -232,8 +238,7 @@
 		{/if}
 		<span>Export</span>
 		<svg
-			class="chevron"
-			class:rotate={isOpen}
+			class={{ chevron: true, rotate: isOpen }}
 			width="12"
 			height="12"
 			viewBox="0 0 24 24"

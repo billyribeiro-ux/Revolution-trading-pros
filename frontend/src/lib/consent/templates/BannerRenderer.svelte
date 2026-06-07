@@ -9,8 +9,9 @@
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 * @component
 	 */
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { consentStore, openPreferencesModal } from '../store.svelte';
 	import { activeTemplate, isPreviewMode } from './store';
 	import { t } from '../i18n';
@@ -32,6 +33,7 @@
 	let isMobile = $state(false);
 	let isTablet = $state(false);
 	let drawerOpen = $state(false);
+	const pendingTimeouts = new SvelteSet<ReturnType<typeof setTimeout>>();
 
 	// Svelte 5: Derived values using $derived() rune
 	// ICT9+ Hydration-Safe: Only show after mount to prevent SSR/client mismatch
@@ -61,6 +63,13 @@
 		return () => {
 			window.removeEventListener('resize', updateDeviceType);
 		};
+	});
+
+	onDestroy(() => {
+		for (const timeout of pendingTimeouts) {
+			clearTimeout(timeout);
+		}
+		pendingTimeouts.clear();
 	});
 
 	// Get effective position based on device
@@ -154,8 +163,8 @@
 	}
 
 	// Get animation styles
-	function getAnimationStyles(template: BannerTemplate): string {
-		return `
+	function getBannerStyles(template: BannerTemplate): string {
+		return `${getContainerStyles(template)};
 			--animation-type: ${template.animation};
 			--animation-duration: ${template.animationDuration}ms;
 		`;
@@ -244,10 +253,19 @@
 	}
 
 	// Event handlers
+	function scheduleConsentAction(callback: () => void, delay: number) {
+		const timeout = setTimeout(() => {
+			pendingTimeouts.delete(timeout);
+			callback();
+		}, delay);
+
+		pendingTimeouts.add(timeout);
+	}
+
 	function handleAcceptAll() {
 		closing = true;
 		recordDecision('accept_all');
-		setTimeout(() => {
+		scheduleConsentAction(() => {
 			consentStore.acceptAll('banner');
 		}, template.animationDuration);
 	}
@@ -255,7 +273,7 @@
 	function handleRejectAll() {
 		closing = true;
 		recordDecision('reject_all');
-		setTimeout(() => {
+		scheduleConsentAction(() => {
 			consentStore.rejectAll('banner');
 		}, template.animationDuration);
 	}
@@ -267,7 +285,7 @@
 
 	function handleClose() {
 		closing = true;
-		setTimeout(() => {
+		scheduleConsentAction(() => {
 			visible = false;
 		}, template.animationDuration);
 	}
@@ -278,7 +296,7 @@
 	{#if getEffectivePosition(template) === 'center' || getEffectivePosition(template) === 'fullscreen'}
 		<div
 			class="consent-backdrop"
-			style="background: {template.colors.backdrop || 'rgba(0,0,0,0.5)'}"
+			style:background={template.colors.backdrop || 'rgba(0,0,0,0.5)'}
 			onclick={template.showCloseButton ? handleClose : undefined}
 			role="presentation"
 		></div>
@@ -286,7 +304,7 @@
 
 	<div
 		class={getPositionClasses(template)}
-		style="{getContainerStyles(template)}; {getAnimationStyles(template)}"
+		style={getBannerStyles(template)}
 		role="dialog"
 		aria-label="Cookie consent"
 		aria-modal={getEffectivePosition(template) === 'center' ||
@@ -311,13 +329,15 @@
 
 		<!-- Content wrapper -->
 		<div
-			class="content-wrapper"
-			class:has-icon={template.showIcon}
-			class:stack-buttons={isMobile && template.mobile.stackButtons}
+			class={{
+				'content-wrapper': true,
+				'has-icon': template.showIcon,
+				'stack-buttons': isMobile && template.mobile.stackButtons
+			}}
 		>
 			<!-- Icon -->
 			{#if template.showIcon}
-				<div class="icon" style="color: {template.colors.accent}">
+				<div class="icon" style:color={template.colors.accent}>
 					{@html sanitizeHtml(getIcon(template))}
 				</div>
 			{/if}
@@ -327,21 +347,22 @@
 				{#if template.copy.title}
 					<h2
 						class="title"
-						style="font-size: {template.typography.titleSize}; font-weight: {template.typography
-							.titleWeight}"
+						style:font-size={template.typography.titleSize}
+						style:font-weight={template.typography.titleWeight}
 					>
 						{template.copy.title}
 					</h2>
 				{/if}
 				<p
 					class="description"
-					style="font-size: {template.typography.descriptionSize}; color: {template.colors
-						.textMuted}; line-height: {template.typography.lineHeight}"
+					style:font-size={template.typography.descriptionSize}
+					style:color={template.colors.textMuted}
+					style:line-height={template.typography.lineHeight}
 				>
 					{template.copy.description}
 				</p>
 				{#if template.showPrivacyLink}
-					<div class="links" style="color: {template.colors.accent}">
+					<div class="links" style:color={template.colors.accent}>
 						<a href="/cookie-policy">{template.copy.cookiePolicy || 'Cookie Policy'}</a>
 					</div>
 				{/if}
@@ -349,13 +370,19 @@
 
 			<!-- Buttons -->
 			<div
-				class="buttons"
-				class:stack={isMobile && template.mobile.stackButtons}
-				class:full-width={isMobile && template.mobile.fullWidthButtons}
-				style="gap: {template.spacing.gap}"
+				class={{
+					buttons: true,
+					stack: isMobile && template.mobile.stackButtons,
+					'full-width': isMobile && template.mobile.fullWidthButtons
+				}}
+				style:gap={template.spacing.gap}
 			>
 				{#each getButtons(template) as button (button.type)}
-					<button class="btn btn-{button.type}" style={button.style} onclick={button.onClick}>
+					<button
+						class={['btn', `btn-${button.type}`]}
+						style={button.style}
+						onclick={button.onClick}
+					>
 						{button.text}
 					</button>
 				{/each}

@@ -29,10 +29,17 @@
 
 		return () => heroObserver.disconnect();
 	});
+
+	function heroSectionClass() {
+		return {
+			'hero-section': true,
+			visible: heroVisible
+		};
+	}
 </script>
 
 <div class="course-page">
-	<section class="hero-section" class:visible={heroVisible}>
+	<section class={heroSectionClass()}>
 		<div class="hero-background">
 			<div class="glow-orb glow-orb-1"></div>
 		</div>

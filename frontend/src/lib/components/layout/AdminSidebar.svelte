@@ -190,7 +190,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<aside class="admin-sidebar" class:open={props.isOpen}>
+<aside class={{ 'admin-sidebar': true, open: props.isOpen }}>
 	<!-- Header -->
 	<div class="sidebar-header">
 		<a href="/admin" class="sidebar-logo">
@@ -212,8 +212,7 @@
 				{@const active = item.href === bestActiveHref}
 				<a
 					href={item.href}
-					class="nav-item"
-					class:active
+					class={{ 'nav-item': true, active }}
 					aria-current={active ? 'page' : undefined}
 					data-tooltip={item.label}
 					onclick={closeSidebar}

@@ -89,7 +89,7 @@
 					<p>
 						Order <mark class="order-number">#{order.number}</mark> was placed on
 						<mark class="order-date">{formatDate(order.date)}</mark> and is currently
-						<mark class="order-status {getStatusClass(order.status)}">{order.status}</mark>.
+						<mark class={['order-status', getStatusClass(order.status)]}>{order.status}</mark>.
 					</p>
 
 					<section class="woocommerce-order-details">
@@ -108,11 +108,11 @@
 							<tbody>
 								{#each order.items as item (item.id)}
 									<tr class="woocommerce-table__line-item order_item">
-										<td class="woocommerce-table__product-name product-name">
+										<td class="woocommerce-table__product-name product-name" data-title="Product">
 											{item.name}
 											<strong class="product-quantity">&times;&nbsp;{item.quantity}</strong>
 										</td>
-										<td class="woocommerce-table__product-total product-total">
+										<td class="woocommerce-table__product-total product-total" data-title="Total">
 											<span class="woocommerce-Price-amount amount">
 												<bdi
 													><span class="woocommerce-Price-currencySymbol">$</span>{item.total}</bdi
@@ -205,7 +205,11 @@
 								<tbody>
 									{#each order.subscriptions as subscription (subscription.id)}
 										<tr
-											class="order woocommerce-orders-table__row woocommerce-orders-table__row--status-{subscription.status.toLowerCase()}"
+											class={[
+												'order',
+												'woocommerce-orders-table__row',
+												`woocommerce-orders-table__row--status-${subscription.status.toLowerCase()}`
+											]}
 										>
 											<td
 												class="subscription-id order-number woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-id woocommerce-orders-table__cell-order-number"

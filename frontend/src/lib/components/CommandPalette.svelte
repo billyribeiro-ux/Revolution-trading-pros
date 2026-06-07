@@ -52,7 +52,6 @@
 
 	let searchQuery = $state('');
 	let selectedIndex = $state(0);
-	let inputRef = $state<HTMLInputElement | null>(null);
 
 	// Navigation items
 	const navigationItems = [
@@ -332,11 +331,9 @@
 		}
 	}
 
-	$effect(() => {
-		if (isOpen && inputRef) {
-			setTimeout(() => inputRef?.focus(), 50);
-		}
-	});
+	function focusSearchInput(element: HTMLInputElement): void {
+		element.focus();
+	}
 
 	// Initialize global keyboard shortcut
 	// FIX-2026-04-26: comment-out, verify, delete in follow-up.
@@ -377,7 +374,7 @@
 				</div>
 				<label for="command-palette-search" class="sr-only">Search commands</label>
 				<input
-					bind:this={inputRef}
+					{@attach focusSearchInput}
 					type="text"
 					id="command-palette-search"
 					name="command-palette-search"
@@ -407,8 +404,7 @@
 								{@const globalIndex = flatResults.indexOf(item)}
 								{@const Icon = item.icon}
 								<button
-									class="result-item"
-									class:selected={selectedIndex === globalIndex}
+									class={{ 'result-item': true, selected: selectedIndex === globalIndex }}
 									onclick={() => selectItem(item)}
 									onmouseenter={() => (selectedIndex = globalIndex)}
 								>

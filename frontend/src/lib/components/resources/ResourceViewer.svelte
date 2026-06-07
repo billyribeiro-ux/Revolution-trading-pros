@@ -14,6 +14,7 @@
 	import type { RoomResource } from '$lib/api/room-resources';
 	import { trackDownload } from '$lib/api/room-resources';
 	import Icon from '$lib/components/Icon.svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	interface Props {
 		resource: RoomResource;
@@ -45,30 +46,6 @@
 	let isPdf = $derived(resource.resource_type === 'pdf');
 	let isImage = $derived(resource.resource_type === 'image');
 	let isPremium = $derived(resource.access_level !== 'free');
-
-	// Load version history if requested
-	async function loadVersionHistory() {
-		if (!showVersionHistory || versions.length > 0) return;
-
-		loadingVersions = true;
-		try {
-			const response = await fetch(`/api/room-resources/${resource.id}/versions`);
-			const data = await response.json();
-			if (data.success) {
-				versions = data.data;
-			}
-		} catch (e) {
-			console.error('Failed to load version history:', e);
-		} finally {
-			loadingVersions = false;
-		}
-	}
-
-	$effect(() => {
-		if (open && showVersionHistory) {
-			loadVersionHistory();
-		}
-	});
 
 	// Handle download
 	async function handleDownload() {
@@ -108,6 +85,7 @@
 
 	// Handle keyboard events
 	function handleKeydown(event: KeyboardEvent) {
+		if (!open) return;
 		if (event.key === 'Escape') {
 			handleClose();
 		}
@@ -127,41 +105,69 @@
 		imagePosition = { x: 0, y: 0 };
 	}
 
-	// Svelte action for image pan/zoom - official Svelte 5 pattern per docs
-	function panZoomAction(node: HTMLElement) {
-		function onMouseDown(event: MouseEvent) {
-			if (imageZoom > 1) {
-				dragging = true;
-				startPos = { x: event.clientX - imagePosition.x, y: event.clientY - imagePosition.y };
-				event.preventDefault();
+	function panZoomAttachment(): Attachment<HTMLElement> {
+		return (node) => {
+			function onMouseDown(event: MouseEvent) {
+				if (imageZoom > 1) {
+					dragging = true;
+					startPos = { x: event.clientX - imagePosition.x, y: event.clientY - imagePosition.y };
+					event.preventDefault();
+				}
 			}
-		}
 
-		function onMouseMove(event: MouseEvent) {
-			if (dragging) {
-				imagePosition = {
-					x: event.clientX - startPos.x,
-					y: event.clientY - startPos.y
-				};
+			function onMouseMove(event: MouseEvent) {
+				if (dragging) {
+					imagePosition = {
+						x: event.clientX - startPos.x,
+						y: event.clientY - startPos.y
+					};
+				}
 			}
-		}
 
-		function onMouseUp() {
-			dragging = false;
-		}
+			function onMouseUp() {
+				dragging = false;
+			}
 
-		node.addEventListener('mousedown', onMouseDown);
-		node.addEventListener('mousemove', onMouseMove);
-		node.addEventListener('mouseup', onMouseUp);
-		node.addEventListener('mouseleave', onMouseUp);
+			node.addEventListener('mousedown', onMouseDown);
+			node.addEventListener('mousemove', onMouseMove);
+			node.addEventListener('mouseup', onMouseUp);
+			node.addEventListener('mouseleave', onMouseUp);
 
-		return {
-			destroy() {
+			return () => {
 				node.removeEventListener('mousedown', onMouseDown);
 				node.removeEventListener('mousemove', onMouseMove);
 				node.removeEventListener('mouseup', onMouseUp);
 				node.removeEventListener('mouseleave', onMouseUp);
-			}
+			};
+		};
+	}
+
+	function loadVersionsAttachment(): Attachment<HTMLElement> {
+		return () => {
+			if (!showVersionHistory || versions.length > 0) return;
+
+			let cancelled = false;
+			loadingVersions = true;
+
+			void (async () => {
+				try {
+					const response = await fetch(`/api/room-resources/${resource.id}/versions`);
+					const data = await response.json();
+					if (!cancelled && data.success) {
+						versions = data.data;
+					}
+				} catch (e) {
+					console.error('Failed to load version history:', e);
+				} finally {
+					if (!cancelled) {
+						loadingVersions = false;
+					}
+				}
+			})();
+
+			return () => {
+				cancelled = true;
+			};
 		};
 	}
 
@@ -169,16 +175,9 @@
 	function selectVersion(version: RoomResource) {
 		onVersionSelect?.(version);
 	}
-
-	// Lifecycle - keyboard event handling
-	$effect(() => {
-		if (!open) return;
-		document.addEventListener('keydown', handleKeydown);
-		return () => {
-			document.removeEventListener('keydown', handleKeydown);
-		};
-	});
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 {#if open}
 	<!--
@@ -196,6 +195,7 @@
 
 	<!-- Modal -->
 	<div
+		{@attach loadVersionsAttachment()}
 		class="fixed inset-4 z-50 flex flex-col overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900 lg:inset-8"
 	>
 		<!-- Header -->
@@ -239,9 +239,12 @@
 			<div class="flex items-center gap-2">
 				<!-- Access level badge -->
 				<span
-					class="rounded-md px-2 py-1 text-xs font-medium {isPremium
-						? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-						: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'}"
+					class={[
+						'rounded-md px-2 py-1 text-xs font-medium',
+						isPremium
+							? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
+							: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
+					]}
 				>
 					{isPremium ? 'Premium' : 'Free'}
 				</span>
@@ -295,7 +298,7 @@
 					<!-- PDF viewer -->
 					<div class="h-full w-full p-4">
 						<iframe
-							src="{resource.file_url}#view=FitH"
+							src={`${resource.file_url}#view=FitH`}
 							class="h-full w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700"
 							title={resource.title}
 						></iframe>
@@ -306,19 +309,15 @@
 						class="relative flex h-full w-full items-center justify-center overflow-hidden p-4"
 						role="group"
 						aria-label="Image viewer with zoom controls"
-						use:panZoomAction
+						{@attach panZoomAttachment()}
 					>
 						<!-- TODO(cls): fullscreen image viewer; intrinsic dims of arbitrary user uploads unknown -->
 						<img
 							src={resource.file_url}
 							alt={resource.title}
 							class="max-h-full max-w-full object-contain transition-transform duration-200"
-							style="transform: scale({imageZoom}) translate({imagePosition.x /
-								imageZoom}px, {imagePosition.y / imageZoom}px); cursor: {imageZoom > 1
-								? dragging
-									? 'grabbing'
-									: 'grab'
-								: 'default'}"
+							style:transform={`scale(${imageZoom}) translate(${imagePosition.x / imageZoom}px, ${imagePosition.y / imageZoom}px)`}
+							style:cursor={imageZoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'default'}
 							draggable="false"
 							loading="lazy"
 						/>
@@ -456,10 +455,12 @@
 							<div class="space-y-2">
 								{#each versions as version (version.id)}
 									<button
-										class="w-full rounded-lg border p-3 text-left transition-colors {version.id ===
-										resource.id
-											? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-											: 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'}"
+										class={[
+											'w-full rounded-lg border p-3 text-left transition-colors',
+											version.id === resource.id
+												? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
+												: 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'
+										]}
 										onclick={() => selectVersion(version)}
 									>
 										<div class="flex items-center justify-between">

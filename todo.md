@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 385 Svelte files remaining.
+- Broad dynamic class/style migration scan: 338 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -326,6 +326,53 @@ Current evidence:
 - [x] `frontend/src/routes/admin/crm/recurring-campaigns/+page.svelte`
 - [x] `frontend/src/routes/daily/day-trading-room/[slug]/+page.svelte`
 - [x] `frontend/src/lib/components/forms/fields/RepeaterField.svelte`
+- [x] `frontend/src/routes/indicators/rsi/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/start-here/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/alerts/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/PerformanceSummary.svelte`
+- [x] `frontend/src/lib/components/sections/CoursesSection.svelte`
+- [x] `frontend/src/routes/watchlist/[slug]/+page.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/+page.svelte`
+- [x] `frontend/src/routes/courses/risk-management/+page.svelte`
+- [x] `frontend/src/lib/components/forms/SubmissionsList.svelte`
+- [x] `frontend/src/lib/components/forms/pro/AuthorizeNetPayment.svelte`
+- [x] `frontend/src/routes/courses/options-trading/+page.svelte`
+- [x] `frontend/src/lib/components/courses/CourseReviews.svelte`
+- [x] `frontend/src/lib/components/layout/AdminSidebar.svelte`
+- [x] `frontend/src/lib/components/seo/SeoMetaEditor.svelte`
+- [x] `frontend/src/routes/dashboard/[room_slug]/video/[slug]/+page.svelte`
+- [x] `frontend/src/lib/components/trading-room/RoomChat.svelte`
+- [x] `frontend/src/routes/admin/crm/settings/+page.svelte`
+- [x] `frontend/src/lib/components/forms/fields/AddressAutocomplete.svelte`
+- [x] `frontend/src/lib/components/CommandPalette.svelte`
+- [x] `frontend/src/routes/dashboard/account/view-order/[id]/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/lists/+page.svelte`
+- [x] `frontend/src/lib/components/sections/IndicatorsSection.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/archive/+page.svelte`
+- [x] `frontend/src/routes/admin/consent/templates/+page.svelte`
+- [x] `frontend/src/lib/components/forms/FormEmbedGenerator.svelte`
+- [x] `frontend/src/lib/components/video/BunnyVideoPlayer.svelte`
+- [x] `frontend/src/routes/reset-password/+page.svelte`
+- [x] `frontend/src/lib/components/video/VideoCardOptimized.svelte`
+- [x] `frontend/src/lib/consent/templates/BannerRenderer.svelte`
+- [x] `frontend/src/lib/components/forms/RepeaterField.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/RelatedPostsBlock.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/PerformanceOverlay.svelte`
+- [x] `frontend/src/routes/admin/seo/keywords/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/import-export/+page.svelte`
+- [x] `frontend/src/routes/store/scanners/high-octane-scanner/+page.svelte`
+- [x] `frontend/src/lib/components/admin/VideoChaptersEditor.svelte`
+- [x] `frontend/src/routes/dashboard/swing-trading-room/video/[slug]/+page.svelte`
+- [x] `frontend/src/routes/admin/blog/edit/[id]/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/ResourceLinks.svelte`
+- [x] `frontend/src/routes/admin/email/settings/+page.svelte`
+- [x] `frontend/src/lib/options-calculator/components/OptionsChainViewer.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/ExportMenu.svelte`
+- [x] `frontend/src/lib/components/resources/ResourceViewer.svelte`
+- [x] `frontend/src/lib/components/auth/TradingHeroBackground.svelte`
+- [x] `frontend/src/lib/components/video/VideoTranscript.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/VideoCard.svelte`
+- [x] `frontend/src/lib/components/media/UploadProgress.svelte`
 
 ## Per-File Completion Checklist
 

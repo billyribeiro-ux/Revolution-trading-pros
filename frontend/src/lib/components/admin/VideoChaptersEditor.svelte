@@ -239,7 +239,12 @@
 		<!-- Existing Chapters -->
 		<div class="chapters-list">
 			{#each chapters as chapter (chapter.id)}
-				<div class="chapter-item" class:editing={editingId === chapter.id}>
+				<div
+					class={{
+						'chapter-item': true,
+						editing: editingId === chapter.id
+					}}
+				>
 					{#if editingId === chapter.id}
 						<div class="chapter-edit-form">
 							<input

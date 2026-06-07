@@ -21,7 +21,7 @@
 
 	import type { PageData } from './$types';
 	import { fade, fly } from 'svelte/transition';
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import { IconArrowLeft, IconRefresh, IconAlertTriangle, IconChartBar } from '$lib/icons';
@@ -204,11 +204,10 @@
 		return d.desktop + d.mobile + d.tablet + d.unknown || 1;
 	});
 
-	// Lifecycle - Svelte 5 $effect
-
-	$effect(() => {
+	// Lifecycle
+	afterNavigate(() => {
 		if (campaignId) {
-			loadReport();
+			void loadReport();
 		}
 	});
 
@@ -357,6 +356,12 @@
 			.map((char) => 127397 + char.charCodeAt(0));
 		return String.fromCodePoint(...codePoints);
 	}
+
+	function refreshIconClass() {
+		return {
+			spinning: loading
+		};
+	}
 </script>
 
 <svelte:head>
@@ -385,7 +390,7 @@
 			{#if report}
 				<div class="header-actions">
 					<button class="btn-secondary" onclick={loadReport} disabled={loading}>
-						<span class:spinning={loading}>
+						<span class={refreshIconClass()}>
 							<IconRefresh size={18} />
 						</span>
 						Refresh

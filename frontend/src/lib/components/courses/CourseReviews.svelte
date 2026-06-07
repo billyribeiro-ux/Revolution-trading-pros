@@ -5,6 +5,7 @@
 	 * Display and submit course reviews with rating distribution
 	 */
 
+	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
 	import Icon from '$lib/components/Icon.svelte';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
@@ -144,8 +145,8 @@
 		});
 	};
 
-	$effect(() => {
-		loadReviews();
+	onMount(() => {
+		void loadReviews();
 	});
 </script>
 
@@ -176,8 +177,7 @@
 					{#each [1, 2, 3, 4, 5] as star (star)}
 						<button
 							type="button"
-							class="star-btn"
-							class:active={star <= rating}
+							class={{ 'star-btn': true, active: star <= rating }}
 							onclick={() => (rating = star)}
 							aria-label="Rate {star} stars"
 						>
@@ -251,7 +251,7 @@
 					<div class="distribution-row">
 						<span class="star-label">{starNum} star</span>
 						<div class="bar-container">
-							<div class="bar-fill" style="width: {percent}%"></div>
+							<div class="bar-fill" style:width={`${percent}%`}></div>
 						</div>
 						<span class="count">{count}</span>
 					</div>

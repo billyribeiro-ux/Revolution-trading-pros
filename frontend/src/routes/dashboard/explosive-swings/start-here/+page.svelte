@@ -25,6 +25,13 @@
 	function isOpen(index: number): boolean {
 		return openAccordions.has(index);
 	}
+
+	function accordionItemClass(index: number) {
+		return {
+			accordion__item: true,
+			'is-open': isOpen(index)
+		};
+	}
 </script>
 
 <svelte:head>
@@ -146,7 +153,7 @@
 			<!-- Accordion Sections -->
 			<div id="accordion_options" class="accordion accordion--large">
 				<!-- Accordion 1: What is Explosive Swings -->
-				<div class="accordion__item" class:is-open={isOpen(0)}>
+				<div class={accordionItemClass(0)}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(0)}
@@ -193,7 +200,7 @@
 				</div>
 
 				<!-- Accordion 2: Setting Up Alerts -->
-				<div class="accordion__item" class:is-open={isOpen(1)}>
+				<div class={accordionItemClass(1)}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(1)}
@@ -245,7 +252,7 @@
 				</div>
 
 				<!-- Accordion 3: Understanding Swing Trading -->
-				<div class="accordion__item" class:is-open={isOpen(2)}>
+				<div class={accordionItemClass(2)}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(2)}
@@ -309,7 +316,7 @@
 				</div>
 
 				<!-- Accordion 4: Broker Requirements -->
-				<div class="accordion__item" class:is-open={isOpen(3)}>
+				<div class={accordionItemClass(3)}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(3)}
@@ -384,7 +391,7 @@
 				</div>
 
 				<!-- Accordion 5: Additional Resources -->
-				<div class="accordion__item" class:is-open={isOpen(4)}>
+				<div class={accordionItemClass(4)}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(4)}

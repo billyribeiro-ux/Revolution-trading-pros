@@ -219,14 +219,25 @@
 	{/if}
 
 	{#if message}
-		<div class="alert alert-{messageType}">
+		<div
+			class={{
+				alert: true,
+				'alert-success': messageType === 'success',
+				'alert-error': messageType === 'error'
+			}}
+		>
 			{message}
 		</div>
 	{/if}
 
 	<div class="settings-card">
 		<h2 class="card-title">SMTP Configuration</h2>
-		<form onsubmit={saveSettings}>
+		<form
+			onsubmit={(event) => {
+				event.preventDefault();
+				void saveSettings();
+			}}
+		>
 			<div class="form-grid">
 				<!-- Host -->
 				<div class="form-group">
@@ -330,7 +341,7 @@
 	   Page Layout - Matching Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	.page {
+	.admin-email-settings {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -522,7 +533,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	@media (max-width: 639.98px) {
-		.page {
+		.admin-email-settings {
 			padding: 1rem;
 		}
 

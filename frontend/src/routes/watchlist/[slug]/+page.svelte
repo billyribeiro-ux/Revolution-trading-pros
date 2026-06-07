@@ -75,10 +75,16 @@
 
 	// State
 	let activeTab = $state<'rundown' | 'watchlist'>('rundown');
-	let selectedDateIndex = $state(0);
 
 	// Get current slug from URL
 	const slug = $derived(page.params.slug);
+	let selectedDateSelection = $state<{ slug: string | null; index: number }>({
+		slug: null,
+		index: 0
+	});
+	const selectedDateIndex = $derived(
+		selectedDateSelection.slug === slug ? selectedDateSelection.index : 0
+	);
 
 	// Index of current entry in the array; -1 when not found
 	const currentIndex = $derived.by(() => {
@@ -99,16 +105,6 @@
 			: null
 	);
 
-	// Reset date index when slug changes (state update on input change is the
-	// only legitimate $effect pattern here — there's no derived equivalent).
-	let lastSlug = $state<string | null>(null);
-	$effect(() => {
-		if (slug !== lastSlug) {
-			lastSlug = slug;
-			selectedDateIndex = 0;
-		}
-	});
-
 	// Spreadsheet URL — fully derived from currentEntry + selectedDateIndex
 	const currentSpreadsheetUrl = $derived.by(() => {
 		if (!currentEntry) return '';
@@ -128,7 +124,7 @@
 			console.warn('Invalid date index:', index);
 			return;
 		}
-		selectedDateIndex = index;
+		selectedDateSelection = { slug, index };
 	}
 
 	function nextDate() {
@@ -144,6 +140,27 @@
 		if (selectedDateIndex > 0) {
 			selectDate(selectedDateIndex - 1);
 		}
+	}
+
+	function tabButtonClass(tab: 'rundown' | 'watchlist') {
+		return {
+			tablinks: true,
+			active: activeTab === tab
+		};
+	}
+
+	function tabContentClass(tab: 'rundown' | 'watchlist') {
+		return {
+			tabcontent: true,
+			active: activeTab === tab
+		};
+	}
+
+	function switcherDateClass(index: number) {
+		return {
+			switcherItemActive: selectedDateIndex === index,
+			switcherItem: selectedDateIndex !== index
+		};
 	}
 </script>
 
@@ -209,8 +226,7 @@
 					<button
 						id="tab-link-1"
 						data-tab="tab-1"
-						class="tablinks"
-						class:active={activeTab === 'rundown'}
+						class={tabButtonClass('rundown')}
 						onclick={() => setTab('rundown')}
 					>
 						Rundown
@@ -218,8 +234,7 @@
 					<button
 						id="tab-link-2"
 						data-tab="tab-2"
-						class="tablinks"
-						class:active={activeTab === 'watchlist'}
+						class={tabButtonClass('watchlist')}
 						onclick={() => setTab('watchlist')}
 					>
 						Watchlist
@@ -227,7 +242,7 @@
 				</div>
 
 				<!-- Rundown Tab Content -->
-				<div id="tab-1" class="tabcontent" class:active={activeTab === 'rundown'}>
+				<div id="tab-1" class={tabContentClass('rundown')}>
 					{#if currentEntry}
 						<div class="ww-content-block">
 							<div class="current-vid">
@@ -251,7 +266,7 @@
 				</div>
 
 				<!-- Watchlist Tab Content -->
-				<div id="tab-2" class="tabcontent" class:active={activeTab === 'watchlist'}>
+				<div id="tab-2" class={tabContentClass('watchlist')}>
 					{#if currentSpreadsheetUrl}
 						<div id="ww-spreadsheet" class="ww-spreadsheet">
 							<iframe
@@ -269,11 +284,7 @@
 									<tbody>
 										<tr>
 											{#each currentEntry.watchlistDates as dateOption, index (dateOption.date)}
-												<td
-													class:switcherItemActive={selectedDateIndex === index}
-													class:switcherItem={selectedDateIndex !== index}
-													onclick={() => selectDate(index)}
-												>
+												<td class={switcherDateClass(index)} onclick={() => selectDate(index)}>
 													{dateOption.date}
 												</td>
 											{/each}

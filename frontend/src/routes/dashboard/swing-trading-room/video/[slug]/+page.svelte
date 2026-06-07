@@ -147,7 +147,7 @@
 							<a
 								href="/dashboard/swing-trading-room/video/{relatedVideo.slug}"
 								class="card-image"
-								style="background-image: url({relatedVideo.thumbnail});"
+								style:background-image={`url(${relatedVideo.thumbnail})`}
 							>
 								<img
 									src="https://placehold.it/325x183"

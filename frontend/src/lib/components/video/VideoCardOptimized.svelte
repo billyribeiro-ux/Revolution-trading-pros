@@ -16,7 +16,7 @@
  */
 -->
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
 	import { videoPreloader, type VideoPreloadInfo } from '$lib/utils/videoPreloader';
@@ -82,11 +82,10 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	let cardElement: HTMLElement;
+	let cardElement: HTMLElement | null = null;
 	let thumbnailLoaded = $state(false);
 	let isHovering = $state(false);
 	let blurhashDataUrl = $state<string | null>(null);
-	let observer: IntersectionObserver | null = null;
 	let isInViewport = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -127,41 +126,42 @@
 		const hash = video.blurhash || DEFAULT_BLURHASHES.video;
 		blurhashDataUrl = decodeBlurhash(hash, { width: 32, height: 18 });
 
-		// Setup intersection observer for viewport detection
-		setupIntersectionObserver();
-
-		// Register for video preloading if enabled
-		if (enablePreload && cardElement) {
-			videoPreloader.observe(cardElement);
-		}
-	});
-
-	onDestroy(() => {
-		observer?.disconnect();
-		if (cardElement) {
-			videoPreloader.unobserve(cardElement);
-		}
+		return () => {
+			cardElement = null;
+		};
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// METHODS
 	// ═══════════════════════════════════════════════════════════════════════
 
-	function setupIntersectionObserver() {
-		if (typeof IntersectionObserver === 'undefined') return;
+	function attachVideoCard(element: HTMLElement) {
+		cardElement = element;
+		let observer: IntersectionObserver | null = null;
 
-		observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					isInViewport = entry.isIntersecting;
-				});
-			},
-			{ rootMargin: '100px', threshold: 0 }
-		);
-
-		if (cardElement) {
-			observer.observe(cardElement);
+		if (typeof IntersectionObserver !== 'undefined') {
+			observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						isInViewport = entry.isIntersecting;
+					});
+				},
+				{ rootMargin: '100px', threshold: 0 }
+			);
+			observer.observe(element);
 		}
+
+		if (enablePreload) {
+			videoPreloader.observe(element);
+		}
+
+		return () => {
+			observer?.disconnect();
+			videoPreloader.unobserve(element);
+			if (cardElement === element) {
+				cardElement = null;
+			}
+		};
 	}
 
 	function handleMouseEnter() {
@@ -197,9 +197,8 @@
 </script>
 
 <article
-	bind:this={cardElement}
-	class="video-card"
-	class:is-hovering={isHovering}
+	{@attach attachVideoCard}
+	class={{ 'video-card': true, 'is-hovering': isHovering }}
 	data-video-id={video.bunny_video_guid || video.id}
 	data-library-id={video.bunny_library_id}
 	data-thumbnail-url={thumbnailUrl}
@@ -213,7 +212,7 @@
 			{#if blurhashDataUrl && !thumbnailLoaded}
 				<div
 					class="video-card__blurhash"
-					style="background-image: url({blurhashDataUrl})"
+					style:background-image={`url(${blurhashDataUrl})`}
 					aria-hidden="true"
 				></div>
 			{/if}
@@ -227,8 +226,7 @@
 				fetchpriority={loadingPriority}
 				width="1280"
 				height="720"
-				class="video-card__image"
-				class:is-loaded={thumbnailLoaded}
+				class={{ 'video-card__image': true, 'is-loaded': thumbnailLoaded }}
 				onload={handleThumbnailLoad}
 			/>
 
@@ -250,7 +248,7 @@
 		{#if video.tag_details && video.tag_details.length > 0}
 			<div class="video-card__tags">
 				{#each video.tag_details.slice(0, 3) as tag (tag.slug)}
-					<span class="video-card__tag" style="background-color: {tag.color}">{tag.name}</span>
+					<span class="video-card__tag" style:background-color={tag.color}>{tag.name}</span>
 				{/each}
 			</div>
 		{/if}

@@ -160,8 +160,7 @@
 					</a>
 				{:else}
 					<button
-						class="tab"
-						class:active={activeTab === tab.id}
+						class={{ tab: true, active: activeTab === tab.id }}
 						onclick={() => (activeTab = tab.id)}
 					>
 						<TabIcon size={18} />

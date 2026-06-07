@@ -32,7 +32,7 @@
 </script>
 
 <div class="course-page">
-	<section class="hero-section" class:visible={heroVisible}>
+	<section class={{ 'hero-section': true, visible: heroVisible }}>
 		<div class="hero-background">
 			<div class="glow-orb glow-orb-1"></div>
 		</div>

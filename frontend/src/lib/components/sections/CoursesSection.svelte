@@ -41,7 +41,8 @@
 			originalPrice: '$997',
 			icon: IconChartCandle,
 			gradient: 'from-blue-600 via-blue-500 to-cyan-500',
-			bgGradient: 'from-blue-950/50 to-cyan-950/30',
+			backgroundGradient:
+				'linear-gradient(to bottom right, rgba(23, 37, 84, 0.5), rgba(8, 51, 68, 0.3))',
 			href: '/courses/day-trading-masterclass',
 			badge: 'Best Seller',
 			badgeColor: 'bg-amber-500',
@@ -63,7 +64,8 @@
 			originalPrice: '$797',
 			icon: IconChartLine,
 			gradient: 'from-emerald-600 via-emerald-500 to-teal-500',
-			bgGradient: 'from-emerald-950/50 to-teal-950/30',
+			backgroundGradient:
+				'linear-gradient(to bottom right, rgba(2, 44, 34, 0.5), rgba(4, 47, 46, 0.3))',
 			href: '/courses/swing-trading-pro',
 			badge: 'Popular',
 			badgeColor: 'bg-emerald-500',
@@ -85,7 +87,8 @@
 			originalPrice: '$1,197',
 			icon: IconBrain,
 			gradient: 'from-violet-600 via-purple-500 to-fuchsia-500',
-			bgGradient: 'from-violet-950/50 to-fuchsia-950/30',
+			backgroundGradient:
+				'linear-gradient(to bottom right, rgba(46, 16, 101, 0.5), rgba(74, 4, 78, 0.3))',
 			href: '/courses/options-trading',
 			badge: 'Advanced',
 			badgeColor: 'bg-violet-500',
@@ -108,7 +111,8 @@
 			originalPrice: '$497',
 			icon: IconShield,
 			gradient: 'from-amber-600 via-orange-500 to-red-500',
-			bgGradient: 'from-amber-950/50 to-red-950/30',
+			backgroundGradient:
+				'linear-gradient(to bottom right, rgba(69, 26, 3, 0.5), rgba(69, 10, 10, 0.3))',
 			href: '/courses/risk-management',
 			badge: 'Essential',
 			badgeColor: 'bg-red-500',
@@ -377,7 +381,8 @@
 		<div
 			{@attach captureCards}
 			class="courses-grid grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
-			style="--mouse-x: {mouseX}px; --mouse-y: {mouseY}px;"
+			style:--mouse-x={`${mouseX}px`}
+			style:--mouse-y={`${mouseY}px`}
 		>
 			<div
 				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
@@ -391,11 +396,13 @@
 				>
 					<div
 						class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"
-						style="background: {course.imagePattern}; filter: blur(40px);"
+						style:background={course.imagePattern}
+						style:filter="blur(40px)"
 					></div>
 
 					<div
-						class="absolute inset-0 bg-linear-to-br {course.bgGradient} opacity-50 group-hover:opacity-60 transition-opacity duration-500"
+						class="absolute inset-0 opacity-50 group-hover:opacity-60 transition-opacity duration-500"
+						style:background={course.backgroundGradient}
 					></div>
 
 					<div class="relative p-6 sm:p-8 lg:p-10 h-full flex flex-col">

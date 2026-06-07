@@ -13,7 +13,7 @@
 		IconEye,
 		IconEyeOff
 	} from '$lib/icons';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	// Svelte 5 state runes
@@ -28,6 +28,7 @@
 	let successMessage = $state('');
 	let isLoading = $state(false);
 	let isVisible = $state(false);
+	let redirectTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Svelte 5 effect for initialization
 	onMount(() => {
@@ -38,6 +39,12 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		token = urlParams.get('token') || '';
 		email = urlParams.get('email') || '';
+	});
+
+	onDestroy(() => {
+		if (redirectTimeout) {
+			clearTimeout(redirectTimeout);
+		}
 	});
 
 	async function handleSubmit(e: Event) {
@@ -52,8 +59,11 @@
 			successMessage = message;
 
 			// Redirect to login after 2 seconds
-			setTimeout(() => {
-				goto('/login');
+			if (redirectTimeout) {
+				clearTimeout(redirectTimeout);
+			}
+			redirectTimeout = setTimeout(() => {
+				void goto('/login');
 			}, 2000);
 		} catch (error) {
 			if (error && typeof error === 'object' && 'errors' in error) {
@@ -78,7 +88,12 @@
 	<div class="reset-password-orb reset-password-orb--secondary"></div>
 
 	<!-- Reset password card -->
-	<div class="reset-password-card" class:reset-password-card--visible={isVisible}>
+	<div
+		class={{
+			'reset-password-card': true,
+			'reset-password-card--visible': isVisible
+		}}
+	>
 		<!-- Glow effect -->
 		<div class="reset-password-glow"></div>
 
@@ -142,8 +157,10 @@
 							required
 							minlength="12"
 							autocomplete="new-password"
-							class="reset-input"
-							class:reset-input--error={errors.password}
+							class={{
+								'reset-input': true,
+								'reset-input--error': Boolean(errors.password?.length)
+							}}
 							placeholder="••••••••"
 						/>
 						<button

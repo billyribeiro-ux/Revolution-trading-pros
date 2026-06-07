@@ -58,9 +58,11 @@
 </script>
 
 <div
-	class="resource-links"
-	class:compact={variant === 'compact'}
-	class:card-style={variant === 'card'}
+	class={{
+		'resource-links': true,
+		compact: variant === 'compact',
+		'card-style': variant === 'card'
+	}}
 	role="navigation"
 	aria-labelledby="resources-heading"
 >
@@ -87,7 +89,7 @@
 				class="resource-link"
 				target={resource.external ? '_blank' : undefined}
 				rel={resource.external ? 'noopener noreferrer' : undefined}
-				style="animation-delay: {index * 0.05}s"
+				style:animation-delay={`${index * 0.05}s`}
 			>
 				<span class="link-icon-wrapper" aria-hidden="true">
 					{#if resource.icon === 'video'}
