@@ -159,7 +159,7 @@
 							</td>
 							<td>
 								{#if keyword.current_rank}
-									<span class="rank-badge {getRankClass(keyword.current_rank)}">
+									<span class={['rank-badge', getRankClass(keyword.current_rank)]}>
 										#{keyword.current_rank}
 									</span>
 								{:else}
@@ -169,7 +169,7 @@
 							<td>
 								{#if keyword.rank_change != null && keyword.rank_change !== 0}
 									{@const TrendIcon = getTrendIcon(keyword.rank_change)}
-									<div class="trend {getTrendClass(keyword.rank_change)}">
+									<div class={['trend', getTrendClass(keyword.rank_change)]}>
 										<TrendIcon size={16} />
 										{Math.abs(keyword.rank_change)}
 									</div>
@@ -181,7 +181,10 @@
 							<td>
 								{#if keyword.competition != null}
 									<div class="competition-bar">
-										<div class="competition-fill" style="width: {keyword.competition * 100}%"></div>
+										<div
+											class="competition-fill"
+											style:width={`${keyword.competition * 100}%`}
+										></div>
 										<span class="competition-value">{Math.round(keyword.competition * 100)}%</span>
 									</div>
 								{:else}
