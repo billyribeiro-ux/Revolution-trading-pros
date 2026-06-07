@@ -14,7 +14,7 @@
 	 *
 	 * @since January 2026
 	 */
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { fly, scale } from 'svelte/transition';
 	import { getMediaAnalytics } from './media-analytics.remote';
@@ -38,6 +38,8 @@
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
 	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 
+	const timeRangeOptions: TimeRange[] = ['7d', '30d', '90d', '1y'];
+
 	let timeRange = $state<TimeRange>('30d');
 
 	// One reactive query drives the whole dashboard: changing `timeRange`
@@ -59,20 +61,15 @@
 	);
 
 	// Animated values
-	const savingsPercent = tweened(0, { duration: 1500, easing: cubicOut });
-	const totalSavings = tweened(0, { duration: 1500, easing: cubicOut });
-	const co2Saved = tweened(0, { duration: 1500, easing: cubicOut });
-
-	// Drive the tweened headline numbers off the (derived) overview. This is a
-	// genuine side-effect — syncing imperative motion stores to reactive data —
-	// not state mirroring, so `$effect` is the right tool.
-	$effect(() => {
-		if (overview) {
-			savingsPercent.set(overview.savingsPercent);
-			totalSavings.set(overview.totalSavings);
-			co2Saved.set(overview.co2Saved);
-		}
+	const savingsPercent = Tween.of(() => overview?.savingsPercent ?? 0, {
+		duration: 1500,
+		easing: cubicOut
 	});
+	const totalSavings = Tween.of(() => overview?.totalSavings ?? 0, {
+		duration: 1500,
+		easing: cubicOut
+	});
+	const co2Saved = Tween.of(() => overview?.co2Saved ?? 0, { duration: 1500, easing: cubicOut });
 
 	// Helpers
 
@@ -91,18 +88,36 @@
 		return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 	}
 
+	function formatTimeRange(range: TimeRange): string {
+		const labels: Record<TimeRange, string> = {
+			'7d': '7 Days',
+			'30d': '30 Days',
+			'90d': '90 Days',
+			'1y': '1 Year'
+		};
+
+		return labels[range];
+	}
+
+	function getChartPoint(
+		data: BandwidthData[],
+		key: 'original' | 'optimized' | 'savings',
+		index: number,
+		maxValue: number
+	): string {
+		const width = 100;
+		const height = 100;
+		const x = data.length <= 1 ? 0 : (index / (data.length - 1)) * width;
+		const y = maxValue > 0 ? height - (data[index][key] / maxValue) * height : height;
+
+		return `${x},${y}`;
+	}
+
 	function getChartPath(data: BandwidthData[], key: 'original' | 'optimized' | 'savings'): string {
 		if (data.length === 0) return '';
 
 		const maxValue = Math.max(...data.map((d) => d.original));
-		const width = 100;
-		const height = 100;
-
-		const points = data.map((d, i) => {
-			const x = (i / (data.length - 1)) * width;
-			const y = height - (d[key] / maxValue) * height;
-			return `${x},${y}`;
-		});
+		const points = data.map((_, i) => getChartPoint(data, key, i, maxValue));
 
 		return `M${points.join(' L')}`;
 	}
@@ -113,14 +128,13 @@
 		const maxValue = Math.max(...data.map((d) => d.original));
 		const width = 100;
 		const height = 100;
-
-		const points = data.map((d, i) => {
-			const x = (i / (data.length - 1)) * width;
-			const y = height - (d[key] / maxValue) * height;
-			return `${x},${y}`;
-		});
+		const points = data.map((_, i) => getChartPoint(data, key, i, maxValue));
 
 		return `M0,${height} L${points.join(' L')} L${width},${height} Z`;
+	}
+
+	function clampPercentage(value: number): number {
+		return Math.max(0, Math.min(100, value));
 	}
 
 	const maxBandwidth = $derived(
@@ -149,18 +163,12 @@
 		<div class="header-right">
 			<!-- Time Range Selector -->
 			<div class="time-selector">
-				{#each ['7d', '30d', '90d', '1y'] as range (range)}
+				{#each timeRangeOptions as range (range)}
 					<button
-						class:active={timeRange === range}
-						onclick={() => (timeRange = range as TimeRange)}
+						class={['range-button', { active: timeRange === range }]}
+						onclick={() => (timeRange = range)}
 					>
-						{range === '7d'
-							? '7 Days'
-							: range === '30d'
-								? '30 Days'
-								: range === '90d'
-									? '90 Days'
-									: '1 Year'}
+						{formatTimeRange(range)}
 					</button>
 				{/each}
 			</div>
@@ -223,12 +231,12 @@
 					<IconBolt size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
-					<div class="hero-value">{formatBytes($totalSavings)}</div>
+					<div class="hero-value">{formatBytes(totalSavings.current)}</div>
 					<div class="hero-label">Total Bandwidth Saved</div>
 					<div class="hero-change positive">
 						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: arrow-up (change) -->
 						<IconArrowUp size={16} aria-hidden="true" />
-						{$savingsPercent.toFixed(1)}% compression
+						{savingsPercent.current.toFixed(1)}% compression
 					</div>
 				</div>
 				<div class="hero-ring">
@@ -249,12 +257,12 @@
 							fill="none"
 							stroke="currentColor"
 							stroke-width="8"
-							stroke-dasharray={`${$savingsPercent * 2.83} 283`}
+							stroke-dasharray={`${savingsPercent.current * 2.83} 283`}
 							stroke-linecap="round"
 							transform="rotate(-90 50 50)"
 						/>
 					</svg>
-					<span>{Math.round($savingsPercent)}%</span>
+					<span>{Math.round(savingsPercent.current)}%</span>
 				</div>
 			</div>
 
@@ -276,7 +284,7 @@
 					<IconLeaf size={32} aria-hidden="true" />
 				</div>
 				<div class="hero-content">
-					<div class="hero-value">{$co2Saved.toFixed(1)} kg</div>
+					<div class="hero-value">{co2Saved.current.toFixed(1)} kg</div>
 					<div class="hero-label">CO2 Emissions Saved</div>
 					<div class="hero-detail">
 						equivalent to planting {Math.round(overview.co2Saved * 0.8)} trees
@@ -468,10 +476,10 @@
 						</div>
 
 						<div class="format-bar">
-							<div class="bar-original" style="width: 100%">
+							<div class="bar-original">
 								<span class="bar-label">{formatBytes(stat.originalSize)}</span>
 							</div>
-							<div class="bar-optimized" style="width: {100 - stat.savings}%">
+							<div class="bar-optimized" style:width={`${clampPercentage(100 - stat.savings)}%`}>
 								<span class="bar-label">{formatBytes(stat.optimizedSize)}</span>
 							</div>
 						</div>
