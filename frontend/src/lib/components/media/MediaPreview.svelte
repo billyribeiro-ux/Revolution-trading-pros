@@ -31,24 +31,60 @@
 	let activeTab: 'preview' | 'variants' | 'metadata' = $state('preview');
 	let selectedVariant: MediaVariant | null = $state(null);
 	let isEditing = $state(false);
-	let editData = $state({
-		alt_text: '',
-		title: '',
-		caption: ''
-	});
+	type EditData = Pick<MediaItem, 'alt_text' | 'title' | 'caption'>;
+	let editOverrides: Record<string, Partial<EditData>> = $state({});
 
 	// Confirmation modal state (replaces native confirm())
 	let showDeleteFileModal = $state(false);
 
-	$effect(() => {
-		if (item) {
-			editData = {
-				alt_text: item.alt_text || '',
-				title: item.title || '',
-				caption: item.caption || ''
+	function tabClass(tab: typeof activeTab) {
+		return {
+			'tab-btn': true,
+			active: activeTab === tab
+		};
+	}
+
+	const statusBadgeClass = $derived({
+		'status-badge': true,
+		optimized: Boolean(item?.is_optimized),
+		pending: !item?.is_optimized
+	});
+
+	function variantCardClass(variant: MediaVariant) {
+		return {
+			'variant-card': true,
+			selected: selectedVariant === variant
+		};
+	}
+
+	const editData = $derived.by<EditData>(() => {
+		if (!item) {
+			return {
+				alt_text: '',
+				title: '',
+				caption: ''
 			};
 		}
+
+		const overrides = editOverrides[item.id] ?? {};
+		return {
+			alt_text: overrides.alt_text ?? item.alt_text ?? '',
+			title: overrides.title ?? item.title ?? '',
+			caption: overrides.caption ?? item.caption ?? ''
+		};
 	});
+
+	function updateEditData(field: keyof EditData, value: string) {
+		if (!item) return;
+
+		editOverrides = {
+			...editOverrides,
+			[item.id]: {
+				...(editOverrides[item.id] ?? {}),
+				[field]: value
+			}
+		};
+	}
 
 	function handleClose() {
 		isOpen = false;
@@ -125,30 +161,19 @@
 
 			<!-- Tabs -->
 			<div class="preview-tabs">
-				<button
-					type="button"
-					class="tab-btn"
-					class:active={activeTab === 'preview'}
-					onclick={() => (activeTab = 'preview')}
-				>
+				<button type="button" class={tabClass('preview')} onclick={() => (activeTab = 'preview')}>
 					Preview
 				</button>
 				{#if item.variants && item.variants.length > 0}
 					<button
 						type="button"
-						class="tab-btn"
-						class:active={activeTab === 'variants'}
+						class={tabClass('variants')}
 						onclick={() => (activeTab = 'variants')}
 					>
 						Variants ({item.variants.length})
 					</button>
 				{/if}
-				<button
-					type="button"
-					class="tab-btn"
-					class:active={activeTab === 'metadata'}
-					onclick={() => (activeTab = 'metadata')}
-				>
+				<button type="button" class={tabClass('metadata')} onclick={() => (activeTab = 'metadata')}>
 					Metadata
 				</button>
 			</div>
@@ -185,11 +210,7 @@
 							<div class="info-section">
 								<h3>Status</h3>
 								<div class="status-row">
-									<span
-										class="status-badge"
-										class:optimized={item.is_optimized}
-										class:pending={!item.is_optimized}
-									>
+									<span class={statusBadgeClass}>
 										{item.is_optimized ? 'Optimized' : 'Not Optimized'}
 									</span>
 									{#if !item.is_optimized && item.file_type === 'image'}
@@ -238,17 +259,26 @@
 											<span>Alt Text</span>
 											<input
 												type="text"
-												bind:value={editData.alt_text}
+												value={editData.alt_text}
+												oninput={(event) => updateEditData('alt_text', event.currentTarget.value)}
 												placeholder="Describe the image..."
 											/>
 										</label>
 										<label>
 											<span>Title</span>
-											<input type="text" bind:value={editData.title} />
+											<input
+												type="text"
+												value={editData.title}
+												oninput={(event) => updateEditData('title', event.currentTarget.value)}
+											/>
 										</label>
 										<label>
 											<span>Caption</span>
-											<textarea bind:value={editData.caption} rows="2"></textarea>
+											<textarea
+												value={editData.caption}
+												rows="2"
+												oninput={(event) => updateEditData('caption', event.currentTarget.value)}
+											></textarea>
 										</label>
 										<div class="edit-actions">
 											<button
@@ -294,8 +324,7 @@
 					<div class="variants-grid">
 						{#each item.variants || [] as variant (variant.url)}
 							<div
-								class="variant-card"
-								class:selected={selectedVariant === variant}
+								class={variantCardClass(variant)}
 								onclick={() => {
 									selectedVariant = selectedVariant === variant ? null : variant;
 									activeTab = 'preview';
