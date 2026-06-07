@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 520 Svelte files remaining.
+- Broad dynamic class/style migration scan: 519 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -59,10 +59,11 @@ Current evidence:
 - [x] `25082f7ce` Modernize mission page pillar classes.
 - [x] `0c354db3e` Modernize video upload modal reactivity.
 - [x] `325ab08c7` Modernize SEO analyzer bindings.
+- [x] `0847a8eb1` Modernize dashboard sidebar bindings.
 
 ## Current Priority Queue
 
-- [ ] `frontend/src/lib/components/dashboard/DashboardSidebar.svelte`
+- [x] `frontend/src/lib/components/dashboard/DashboardSidebar.svelte`
 - [ ] `frontend/src/lib/components/blog/BlockEditor/SchedulingPanel.svelte`
 - [ ] `frontend/src/routes/admin/crm/leads/+page.svelte`
 - [ ] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
