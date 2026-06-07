@@ -18,7 +18,7 @@
 	 * />
 	 */
 
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
 	interface Download {
@@ -65,11 +65,9 @@
 	};
 
 	// Initialize component and set up resize listener
-	$effect(() => {
+	onMount(() => {
 		// Fetch downloads on mount
-		fetchDownloads();
-
-		if (!browser) return;
+		void fetchDownloads();
 
 		viewportWidth = window.innerWidth;
 		const handleResize = () => {
@@ -194,7 +192,7 @@
 		<h2>{title}</h2>
 	</div>
 
-	<div class="downloads-container" style="max-height: {maxHeight}">
+	<div class="downloads-container" style:max-height={maxHeight}>
 		{#if loading}
 			<div class="loading-state" role="status" aria-live="polite">
 				<div class="spinner" aria-hidden="true"></div>
@@ -260,7 +258,7 @@
 						</tr>
 					{:else}
 						{#each sortedDownloads as dl, index (dl.id)}
-							<tr class:alt={index % 2 === 1}>
+							<tr class={{ alt: index % 2 === 1 }}>
 								<td class="col-name">
 									<span class="file-icon">{getFileIcon(dl.file_type)}</span>
 									<div class="file-info">
