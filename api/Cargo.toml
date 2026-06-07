@@ -40,6 +40,7 @@ base64 = "0.22"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5"   # ICT 7: TOTP secret encoding
 argon2 = "0.5"
 bcrypt = "0.19"  # Laravel bcrypt compatibility
+aes-gcm = "0.10" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
 rand = "0.10.1"
 hmac = "0.12"
 sha1 = "0.10"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)

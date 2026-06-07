@@ -176,7 +176,12 @@ impl CredentialResolver {
                 let credentials = db
                     .credentials_encrypted
                     .as_deref()
-                    .map(decrypt_credentials)
+                    .map(|e| {
+                        crate::utils::crypto::decrypt_map(
+                            &self.config.credentials_encryption_key,
+                            e,
+                        )
+                    })
                     .unwrap_or_default();
 
                 tracing::debug!(
@@ -250,16 +255,6 @@ impl CredentialResolver {
     }
 }
 
-/// Decrypt the base64-wrapped JSON map written by connections.rs.
-/// Mirrors `decrypt_credentials` there; kept private so callers can't
-/// accidentally pass arbitrary strings.
-fn decrypt_credentials(encrypted: &str) -> HashMap<String, String> {
-    match STANDARD.decode(encrypted) {
-        Ok(bytes) => serde_json::from_slice(&bytes).unwrap_or_default(),
-        Err(_) => HashMap::new(),
-    }
-}
-
 fn cache_key(service: &str, environment: &str) -> String {
     format!("{service}|{environment}")
 }
@@ -316,6 +311,7 @@ mod tests {
             apple_private_key: None,
             member_indicator_secret: String::new(),
             member_license_secret: String::new(),
+            credentials_encryption_key: "test-credentials-encryption-key".into(),
         }
     }
 
@@ -358,7 +354,8 @@ mod tests {
         let json = serde_json::to_string(&map).unwrap();
         let encoded = STANDARD.encode(json.as_bytes());
 
-        let decoded = decrypt_credentials(&encoded);
+        // Legacy base64 rows must still decrypt (the key is ignored on this path).
+        let decoded = crate::utils::crypto::decrypt_map("any-key", &encoded);
         assert_eq!(
             decoded.get("secret_key").map(String::as_str),
             Some("sk_test_round")

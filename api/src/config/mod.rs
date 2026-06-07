@@ -238,6 +238,10 @@ pub struct Config {
     // Now read at boot (fail-closed in production) and validated below.
     pub member_indicator_secret: String,
     pub member_license_secret: String,
+
+    // RUST_DEEP_AUDIT_2026-06-07 (P1-4): key for AES-256-GCM encryption of
+    // third-party service credentials at rest (was base64 ≈ plaintext).
+    pub credentials_encryption_key: String,
 }
 
 impl std::fmt::Debug for Config {
@@ -306,6 +310,7 @@ impl std::fmt::Debug for Config {
             // Sensitive: member-content signing secrets
             .field("member_indicator_secret", &"[REDACTED]")
             .field("member_license_secret", &"[REDACTED]")
+            .field("credentials_encryption_key", &"[REDACTED]")
             .finish()
     }
 }
@@ -488,6 +493,11 @@ impl Config {
                 is_dev,
                 "dev-member-license-secret-placeholder-not-for-production",
             )?,
+            credentials_encryption_key: required_or_dev(
+                "CREDENTIALS_ENCRYPTION_KEY",
+                is_dev,
+                "dev-credentials-encryption-key-placeholder-not-for-production",
+            )?,
         })
     }
 
@@ -596,6 +606,7 @@ impl Config {
         for (name, value) in [
             ("MEMBER_INDICATOR_SECRET", &self.member_indicator_secret),
             ("MEMBER_LICENSE_SECRET", &self.member_license_secret),
+            ("CREDENTIALS_ENCRYPTION_KEY", &self.credentials_encryption_key),
         ] {
             if value.len() < 32 || value.to_ascii_lowercase().contains("placeholder") {
                 panic!(
@@ -784,6 +795,7 @@ mod tests {
             apple_private_key: None,
             member_indicator_secret: format!("member-indicator-{body}"),
             member_license_secret: format!("member-license-{body}"),
+            credentials_encryption_key: format!("creds-key-{body}"),
         }
     }
 
