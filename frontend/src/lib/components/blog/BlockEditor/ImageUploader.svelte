@@ -532,7 +532,7 @@
 	}
 </script>
 
-<div class="image-uploader" class:compact class:dragging={isDragging}>
+<div class={['image-uploader', { compact, dragging: isDragging }]}>
 	<!-- Library & Recent Actions -->
 	{#if (showLibrary || showRecent) && !compact}
 		<div class="library-actions" transition:fade={{ duration: 150 }}>
@@ -545,8 +545,7 @@
 			{#if showRecent && recentAssets.length > 0}
 				<button
 					type="button"
-					class="recent-btn"
-					class:active={showRecentPanel}
+					class={['recent-btn', { active: showRecentPanel }]}
 					onclick={() => (showRecentPanel = !showRecentPanel)}
 				>
 					<Icon name="IconClock" size={16} />
@@ -586,9 +585,7 @@
 
 	<!-- Drop Zone -->
 	<div
-		class="drop-zone"
-		class:active={isDragging}
-		class:has-items={uploadQueue.length > 0}
+		class={['drop-zone', { active: isDragging, 'has-items': uploadQueue.length > 0 }]}
 		role="button"
 		tabindex="0"
 		ondragenter={handleDragEnter}
@@ -640,11 +637,15 @@
 		<div class="upload-queue" transition:fade={{ duration: 200 }}>
 			{#each uploadQueue as item (item.id)}
 				<div
-					class="queue-item"
-					class:processing={item.status === 'processing'}
-					class:uploading={item.status === 'uploading'}
-					class:complete={item.status === 'complete'}
-					class:error={item.status === 'error'}
+					class={[
+						'queue-item',
+						{
+							processing: item.status === 'processing',
+							uploading: item.status === 'uploading',
+							complete: item.status === 'complete',
+							error: item.status === 'error'
+						}
+					]}
 					transition:fly={{ y: 20, duration: 300, easing: cubicOut }}
 				>
 					<!-- Preview -->
@@ -689,9 +690,8 @@
 							<div class="progress-container">
 								<div class="progress-bar">
 									<div
-										class="progress-fill"
-										class:indeterminate={item.status === 'processing'}
-										style="width: {item.status === 'processing' ? '100%' : `${item.progress}%`}"
+										class={['progress-fill', { indeterminate: item.status === 'processing' }]}
+										style:width={item.status === 'processing' ? '100%' : `${item.progress}%`}
 									></div>
 								</div>
 								<span class="progress-text">
