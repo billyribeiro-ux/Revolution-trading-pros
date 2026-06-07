@@ -15,6 +15,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 	import {
 		IconRobot,
@@ -129,6 +130,7 @@
 	let retryCount = $state(0);
 	const MAX_RETRIES = 3;
 	const BASE_RETRY_DELAY = 1000; // 1 second
+	let rateLimitResetTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// ==========================================================================
 	// Derived values
@@ -211,30 +213,33 @@
 	];
 
 	// ==========================================================================
-	// Rate limit timer effect
-	// ==========================================================================
-
-	$effect(() => {
-		if (!rateLimit.isLimited || !rateLimit.resetTime) return;
-
-		const checkRateLimit = () => {
-			const now = new Date();
-			if (rateLimit.resetTime && now >= rateLimit.resetTime) {
-				rateLimit = {
-					remaining: 10,
-					resetTime: null,
-					isLimited: false
-				};
-			}
-		};
-
-		const interval = setInterval(checkRateLimit, 1000);
-		return () => clearInterval(interval);
-	});
-
-	// ==========================================================================
 	// API Helpers
 	// ==========================================================================
+
+	function clearRateLimitResetTimer(): void {
+		if (rateLimitResetTimer) {
+			clearTimeout(rateLimitResetTimer);
+			rateLimitResetTimer = null;
+		}
+	}
+
+	function scheduleRateLimitReset(resetTime: Date | null): void {
+		clearRateLimitResetTimer();
+
+		if (!resetTime) return;
+
+		const delayMs = Math.max(0, resetTime.getTime() - Date.now());
+		rateLimitResetTimer = setTimeout(() => {
+			rateLimit = {
+				remaining: 10,
+				resetTime: null,
+				isLimited: false
+			};
+			rateLimitResetTimer = null;
+		}, delayMs);
+	}
+
+	onDestroy(clearRateLimitResetTimer);
 
 	function buildRequestBody(): AIAssistRequest {
 		const options: AIAssistRequest['options'] = {};
@@ -327,6 +332,8 @@
 				isLimited: true
 			};
 		}
+
+		scheduleRateLimitReset(rateLimit.isLimited ? rateLimit.resetTime : null);
 	}
 
 	// ==========================================================================
@@ -624,7 +631,7 @@
 			<span>Powered by advanced AI</span>
 		</div>
 		{#if rateLimit.remaining < 10}
-			<div class="rate-limit-badge" class:warning={rateLimit.remaining <= 3}>
+			<div class={['rate-limit-badge', { warning: rateLimit.remaining <= 3 }]}>
 				<IconClock size={14} />
 				{rateLimit.remaining} left
 			</div>
@@ -663,8 +670,7 @@
 	<div class="ai-tabs">
 		<button
 			type="button"
-			class="ai-tab"
-			class:active={activeTab === 'generate'}
+			class={['ai-tab', { active: activeTab === 'generate' }]}
 			onclick={() => (activeTab = 'generate')}
 			disabled={isGenerating}
 		>
@@ -673,8 +679,7 @@
 		</button>
 		<button
 			type="button"
-			class="ai-tab"
-			class:active={activeTab === 'improve'}
+			class={['ai-tab', { active: activeTab === 'improve' }]}
 			onclick={() => (activeTab = 'improve')}
 			disabled={isGenerating}
 		>
@@ -683,8 +688,7 @@
 		</button>
 		<button
 			type="button"
-			class="ai-tab"
-			class:active={activeTab === 'translate'}
+			class={['ai-tab', { active: activeTab === 'translate' }]}
 			onclick={() => (activeTab = 'translate')}
 			disabled={isGenerating}
 		>
@@ -693,8 +697,7 @@
 		</button>
 		<button
 			type="button"
-			class="ai-tab"
-			class:active={activeTab === 'summarize'}
+			class={['ai-tab', { active: activeTab === 'summarize' }]}
 			onclick={() => (activeTab = 'summarize')}
 			disabled={isGenerating}
 		>
