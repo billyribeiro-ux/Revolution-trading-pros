@@ -36,7 +36,6 @@
 
 	// Local State
 
-	let audioElement: HTMLAudioElement | null = $state(null);
 	let urlInputValue = $state('');
 
 	// Media Controls Hook
@@ -53,12 +52,13 @@
 		// `onEnded?.()`, so omitting it is behavior-identical.
 	});
 
-	// Sync audio element with controls hook when it changes
-	$effect(() => {
-		if (audioElement) {
-			controls.setMediaElement(audioElement);
-		}
-	});
+	function attachAudioElement(element: HTMLAudioElement): () => void {
+		controls.setMediaElement(element);
+
+		return () => {
+			controls.setMediaElement(null);
+		};
+	}
 
 	// Time Formatting
 
@@ -172,7 +172,7 @@
 	{#if hasAudio && sanitizedURL}
 		<!-- Audio Element (hidden, bound to local variable) -->
 		<audio
-			bind:this={audioElement}
+			{@attach attachAudioElement}
 			src={sanitizedURL}
 			ontimeupdate={controls.handleTimeUpdate}
 			onended={controls.handleEnded}
@@ -219,7 +219,7 @@
 				aria-valuetext="{formatTime(controls.currentTime)} of {formatTime(controls.duration)}"
 				tabindex="0"
 			>
-				<div class="audio-progress-bar" style="width: {controls.progress}%"></div>
+				<div class="audio-progress-bar" style:width={`${controls.progress}%`}></div>
 			</div>
 
 			<!-- Time Display -->
@@ -265,8 +265,11 @@
 		{#if props.block.content.mediaCaption || props.isEditing}
 			<p
 				contenteditable={props.isEditing}
-				class="audio-caption editable-content"
-				class:placeholder={!props.block.content.mediaCaption}
+				class={{
+					'audio-caption': true,
+					'editable-content': true,
+					placeholder: !props.block.content.mediaCaption
+				}}
 				oninput={handleCaptionInput}
 				onpaste={handlePaste}
 				data-placeholder="Add a caption..."
