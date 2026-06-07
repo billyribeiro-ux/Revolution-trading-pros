@@ -59,6 +59,16 @@
 	const listId = $derived(`checklist-${props.blockId}`);
 	const titleId = $derived(`checklist-title-${props.blockId}`);
 	const progressId = $derived(`checklist-progress-${props.blockId}`);
+	const blockClass = $derived([
+		'checklist-block',
+		showProgress && totalItems > 0 && 'checklist-block--has-progress'
+	]);
+	const titleClass = $derived(['checklist-title editable-content', !title && 'placeholder']);
+	const progressFillClass = $derived([
+		'progress-fill',
+		progressPercent === 100 && 'progress-fill--complete'
+	]);
+	const progressWidth = $derived(`${progressPercent}%`);
 
 	// Track which item is being focused for keyboard navigation
 	let focusedItemIndex = $state<number | null>(null);
@@ -283,22 +293,33 @@
 	function handleItemBlur(): void {
 		focusedItemIndex = null;
 	}
+
+	function getItemClass(item: ChecklistItem, index: number) {
+		return [
+			'checklist-item',
+			item.checked && 'checklist-item--checked',
+			strikethrough && item.checked && 'checklist-item--strikethrough',
+			focusedItemIndex === index && 'checklist-item--focused'
+		];
+	}
+
+	function getCheckboxClass(item: ChecklistItem) {
+		return ['checkbox', item.checked && 'checkbox--checked'];
+	}
+
+	function getItemTextClass(item: ChecklistItem) {
+		return ['item-text editable-content', !item.text && 'placeholder'];
+	}
 </script>
 
-<div
-	class="checklist-block"
-	class:has-progress={showProgress && totalItems > 0}
-	role="region"
-	aria-labelledby={title ? titleId : undefined}
->
+<div class={blockClass} role="region" aria-labelledby={title ? titleId : undefined}>
 	<!-- Optional Title -->
 	{#if title || props.isEditing}
 		<div class="checklist-header">
 			<h4
 				id={titleId}
 				contenteditable={props.isEditing}
-				class="checklist-title editable-content"
-				class:placeholder={!title}
+				class={titleClass}
 				oninput={handleTitleInput}
 				onpaste={handlePaste}
 				data-placeholder="Checklist title (optional)"
@@ -328,11 +349,7 @@
 				aria-valuemax={100}
 				aria-label="Checklist completion progress"
 			>
-				<div
-					class="progress-fill"
-					class:complete={progressPercent === 100}
-					style:width="{progressPercent}%"
-				></div>
+				<div class={progressFillClass} style:width={progressWidth}></div>
 			</div>
 		</div>
 	{/if}
@@ -345,18 +362,11 @@
 		aria-describedby={showProgress ? progressId : undefined}
 	>
 		{#each items as item, index (item.id)}
-			<li
-				class="checklist-item"
-				class:checked={item.checked}
-				class:strikethrough={strikethrough && item.checked}
-				class:focused={focusedItemIndex === index}
-				role="listitem"
-			>
+			<li class={getItemClass(item, index)} role="listitem">
 				<!-- Custom Checkbox -->
 				<button
 					type="button"
-					class="checkbox"
-					class:checked={item.checked}
+					class={getCheckboxClass(item)}
 					onclick={() => toggleItem(item.id)}
 					onkeydown={(e) => handleCheckboxKeyDown(e, item.id)}
 					disabled={!props.isEditing}
@@ -373,8 +383,7 @@
 				<!-- Item Text -->
 				<span
 					contenteditable={props.isEditing}
-					class="item-text editable-content"
-					class:placeholder={!item.text}
+					class={getItemTextClass(item)}
 					oninput={(e) => handleItemInput(e, item.id)}
 					onpaste={handlePaste}
 					onkeydown={(e) => handleItemKeyDown(e, item.id, index)}
@@ -539,7 +548,7 @@
 		transition: width 0.3s ease;
 	}
 
-	.progress-fill.complete {
+	.progress-fill--complete {
 		background: linear-gradient(90deg, #10b981, #34d399);
 	}
 
@@ -569,7 +578,7 @@
 		background: #f8fafc;
 	}
 
-	.checklist-item.focused {
+	.checklist-item--focused {
 		background: #eff6ff;
 		outline: 2px solid #3b82f6;
 		outline-offset: -2px;
@@ -606,7 +615,7 @@
 		outline-offset: 2px;
 	}
 
-	.checkbox.checked {
+	.checkbox--checked {
 		background: #3b82f6;
 		border-color: #3b82f6;
 		color: white;
@@ -635,12 +644,12 @@
 		color: #9ca3af;
 	}
 
-	.checklist-item.strikethrough .item-text {
+	.checklist-item--strikethrough .item-text {
 		text-decoration: line-through;
 		color: #9ca3af;
 	}
 
-	.checklist-item.checked:not(.strikethrough) .item-text {
+	.checklist-item--checked:not(.checklist-item--strikethrough) .item-text {
 		color: #6b7280;
 	}
 
@@ -666,7 +675,7 @@
 	}
 
 	.checklist-item:hover .remove-btn,
-	.checklist-item.focused .remove-btn {
+	.checklist-item--focused .remove-btn {
 		opacity: 1;
 	}
 
@@ -837,7 +846,7 @@
 		background: rgba(30, 41, 59, 0.5);
 	}
 
-	:global(.dark) .checklist-item.focused {
+	:global(.dark) .checklist-item--focused {
 		background: rgba(59, 130, 246, 0.15);
 	}
 
@@ -851,7 +860,7 @@
 		background: rgba(59, 130, 246, 0.15);
 	}
 
-	:global(.dark) .checkbox.checked {
+	:global(.dark) .checkbox--checked {
 		background: #3b82f6;
 		border-color: #3b82f6;
 	}
@@ -864,11 +873,11 @@
 		color: #64748b;
 	}
 
-	:global(.dark) .checklist-item.strikethrough .item-text {
+	:global(.dark) .checklist-item--strikethrough .item-text {
 		color: #64748b;
 	}
 
-	:global(.dark) .checklist-item.checked:not(.strikethrough) .item-text {
+	:global(.dark) .checklist-item--checked:not(.checklist-item--strikethrough) .item-text {
 		color: #94a3b8;
 	}
 
