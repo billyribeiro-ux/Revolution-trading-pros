@@ -40,6 +40,7 @@
 
 	// Configuration from field attributes
 	const allowManual = $derived(props.field.attributes?.['allow_manual'] ?? true);
+	const suggestionsListId = $derived(`${props.field.name}-suggestions`);
 
 	// State
 	let searchInput = $state('');
@@ -239,6 +240,10 @@
 		}
 	}
 
+	function getSuggestionId(index: number): string {
+		return `${props.field.name}-suggestion-${index}`;
+	}
+
 	// Update manual field
 	function updateField(fieldName: keyof AddressComponents, value: string) {
 		address = { ...address, [fieldName]: value };
@@ -291,15 +296,20 @@
 		<div class="address-autocomplete">
 			<div class="search-wrapper">
 				<input
+					id={props.field.name}
 					type="text"
 					value={searchInput}
 					oninput={handleInput}
 					onkeydown={handleKeydown}
 					onfocus={() => (showSuggestions = suggestions.length > 0)}
 					placeholder={props.field.placeholder || 'Start typing an address...'}
-					class="search-input"
-					class:has-error={props.error && props.error.length > 0}
+					class={{ 'search-input': true, 'has-error': Boolean(props.error?.length) }}
 					autocomplete="off"
+					role="combobox"
+					aria-autocomplete="list"
+					aria-controls={suggestionsListId}
+					aria-expanded={showSuggestions}
+					aria-activedescendant={selectedIndex >= 0 ? getSuggestionId(selectedIndex) : undefined}
 				/>
 				{#if isLoading}
 					<div class="search-spinner"></div>
@@ -307,11 +317,11 @@
 			</div>
 
 			{#if showSuggestions && suggestions.length > 0}
-				<ul class="suggestions-list">
+				<ul id={suggestionsListId} class="suggestions-list" role="listbox">
 					{#each suggestions as suggestion, index (suggestion.place_id)}
 						<li
-							class="suggestion-item"
-							class:selected={index === selectedIndex}
+							id={getSuggestionId(index)}
+							class={{ 'suggestion-item': true, selected: index === selectedIndex }}
 							onclick={() => selectSuggestion(suggestion)}
 							onmouseenter={() => (selectedIndex = index)}
 							onkeydown={(e: KeyboardEvent) => {
@@ -346,6 +356,7 @@
 				<div class="field-col full">
 					<label class="sub-label" for={props.field.name + '_address_line1'}>Address Line 1</label>
 					<input
+						id={props.field.name + '_address_line1'}
 						type="text"
 						value={address.address_line1}
 						oninput={(e: Event) =>
@@ -361,6 +372,7 @@
 				<div class="field-col full">
 					<label class="sub-label" for={props.field.name + '_address_line2'}>Address Line 2</label>
 					<input
+						id={props.field.name + '_address_line2'}
 						type="text"
 						value={address.address_line2}
 						oninput={(e: Event) =>
@@ -376,6 +388,7 @@
 				<div class="field-col half">
 					<label class="sub-label" for={props.field.name + '_city'}>City</label>
 					<input
+						id={props.field.name + '_city'}
 						type="text"
 						value={address.city}
 						oninput={(e: Event) => updateField('city', (e.currentTarget as HTMLInputElement).value)}
@@ -387,6 +400,7 @@
 				<div class="field-col quarter">
 					<label class="sub-label" for={props.field.name + '_state'}>State/Province</label>
 					<input
+						id={props.field.name + '_state'}
 						type="text"
 						value={address.state}
 						oninput={(e: Event) =>
@@ -399,6 +413,7 @@
 				<div class="field-col quarter">
 					<label class="sub-label" for={props.field.name + '_postal_code'}>ZIP/Postal Code</label>
 					<input
+						id={props.field.name + '_postal_code'}
 						type="text"
 						value={address.postal_code}
 						oninput={(e: Event) =>
@@ -414,6 +429,7 @@
 				<div class="field-col full">
 					<label class="sub-label" for={props.field.name + '_country'}>Country</label>
 					<input
+						id={props.field.name + '_country'}
 						type="text"
 						value={address.country}
 						oninput={(e: Event) =>
