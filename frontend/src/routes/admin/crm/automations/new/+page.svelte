@@ -275,21 +275,21 @@
 		return triggerTypes.find((t) => t.value === type);
 	}
 
-	function getIconColor(color: string): string {
+	function getIconToneClass(color: string): string {
 		const colorMap: Record<string, string> = {
-			blue: 'bg-blue-500/20 text-blue-400',
-			green: 'bg-emerald-500/20 text-emerald-400',
-			red: 'bg-red-500/20 text-red-400',
-			purple: 'bg-purple-500/20 text-purple-400',
-			orange: 'bg-orange-500/20 text-orange-400',
-			indigo: 'bg-indigo-500/20 text-indigo-400',
-			amber: 'bg-amber-500/20 text-amber-400',
-			cyan: 'bg-cyan-500/20 text-cyan-400',
-			slate: 'bg-slate-500/20 text-slate-400',
-			pink: 'bg-pink-500/20 text-pink-400',
-			teal: 'bg-teal-500/20 text-teal-400',
-			violet: 'bg-violet-500/20 text-violet-400',
-			gray: 'bg-gray-500/20 text-gray-400'
+			blue: 'tone-blue',
+			green: 'tone-green',
+			red: 'tone-red',
+			purple: 'tone-purple',
+			orange: 'tone-orange',
+			indigo: 'tone-indigo',
+			amber: 'tone-amber',
+			cyan: 'tone-cyan',
+			slate: 'tone-slate',
+			pink: 'tone-pink',
+			teal: 'tone-teal',
+			violet: 'tone-violet',
+			gray: 'tone-gray'
 		};
 		return colorMap[color] || colorMap.gray;
 	}
@@ -319,7 +319,7 @@
 	// Audit P2 #10: was a bare `$effect(() => loadDependencies())`. Migrated
 	// to `onMount` to keep one-shot init off the reactive graph.
 	onMount(() => {
-		loadDependencies();
+		void loadDependencies();
 	});
 </script>
 
@@ -345,9 +345,13 @@
 	<div class="progress-steps">
 		{#each steps as step (step.number)}
 			<button
-				class="step"
-				class:active={currentStep === step.number}
-				class:completed={currentStep > step.number}
+				class={[
+					'step',
+					{
+						active: currentStep === step.number,
+						completed: currentStep > step.number
+					}
+				]}
 				onclick={() => goToStep(step.number)}
 				disabled={step.number > currentStep}
 			>
@@ -401,7 +405,7 @@
 						type="text"
 						placeholder="e.g., Welcome New Subscribers"
 						bind:value={formData.title}
-						class:error={error && !formData.title.trim()}
+						class={{ error: error && !formData.title.trim() }}
 					/>
 				</div>
 
@@ -427,11 +431,10 @@
 					{#each triggerTypes as trigger (trigger.value)}
 						{@const TriggerIcon = trigger.icon}
 						<button
-							class="trigger-card"
-							class:selected={formData.trigger_type === trigger.value}
+							class={['trigger-card', { selected: formData.trigger_type === trigger.value }]}
 							onclick={() => selectTrigger(trigger.value as TriggerType)}
 						>
-							<div class="trigger-icon {getIconColor(trigger.color)}">
+							<div class={['trigger-icon', getIconToneClass(trigger.color)]}>
 								<TriggerIcon size={24} />
 							</div>
 							<div class="trigger-info">
@@ -934,6 +937,71 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
+	}
+
+	.trigger-icon.tone-blue {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.trigger-icon.tone-green {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+	}
+
+	.trigger-icon.tone-red {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+	}
+
+	.trigger-icon.tone-purple {
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+	}
+
+	.trigger-icon.tone-orange {
+		background: rgba(249, 115, 22, 0.2);
+		color: #fb923c;
+	}
+
+	.trigger-icon.tone-indigo {
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+	}
+
+	.trigger-icon.tone-amber {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+
+	.trigger-icon.tone-cyan {
+		background: rgba(6, 182, 212, 0.2);
+		color: #22d3ee;
+	}
+
+	.trigger-icon.tone-slate {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.trigger-icon.tone-pink {
+		background: rgba(236, 72, 153, 0.2);
+		color: #f472b6;
+	}
+
+	.trigger-icon.tone-teal {
+		background: rgba(20, 184, 166, 0.2);
+		color: #2dd4bf;
+	}
+
+	.trigger-icon.tone-violet {
+		background: rgba(139, 92, 246, 0.2);
+		color: #a78bfa;
+	}
+
+	.trigger-icon.tone-gray {
+		background: rgba(107, 114, 128, 0.2);
+		color: #9ca3af;
 	}
 
 	.trigger-info {
