@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 515 Svelte files remaining.
+- Broad dynamic class/style migration scan: 514 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -64,6 +64,7 @@ Current evidence:
 - [x] `80df09e4c` Modernize CRM leads page bindings.
 - [x] `0842c9246` Modernize member detail drawer bindings.
 - [x] `8b4426860` Modernize courses page bindings.
+- [x] `5b206ad7b` Modernize consent settings bindings.
 
 ## Current Priority Queue
 
@@ -72,7 +73,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/crm/leads/+page.svelte`
 - [x] `frontend/src/lib/components/admin/MemberDetailDrawer.svelte`
 - [x] `frontend/src/routes/courses/+page.svelte`
-- [ ] `frontend/src/routes/admin/consent/settings/+page.svelte`
+- [x] `frontend/src/routes/admin/consent/settings/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/explosive-swings/components/WeeklyHero.svelte`
 - [ ] `frontend/src/routes/admin/members/+page.svelte`
 - [ ] `frontend/src/routes/admin/email/campaigns/+page.svelte`
