@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 477 Svelte files remaining.
+- Broad dynamic class/style migration scan: 476 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -102,6 +102,7 @@ Current evidence:
 - [x] `370ebf85f` Modernize swing trading start accordion bindings.
 - [x] `a018dded3` Modernize swing trading course reveal bindings.
 - [x] `8aa315e88` Modernize CRM contact status binding.
+- [x] `544da3d89` Modernize consent banner designer class bindings.
 
 ## Current Priority Queue
 
@@ -148,7 +149,7 @@ Current evidence:
 - [x] `frontend/src/routes/dashboard/swing-trading-room/start-here/+page.svelte`
 - [x] `frontend/src/routes/courses/swing-trading-pro/+page.svelte`
 - [x] `frontend/src/routes/admin/crm/+page.svelte`
-- [ ] `frontend/src/lib/consent/components/ConsentBannerDesigner.svelte`
+- [x] `frontend/src/lib/consent/components/ConsentBannerDesigner.svelte`
 - [ ] `frontend/src/lib/components/media/ImageCropModal.svelte`
 - [ ] `frontend/src/lib/components/admin/SegmentDetailDrawer.svelte`
 - [ ] `frontend/src/lib/components/blog/BlockEditor/VirtualBlockList.svelte`
