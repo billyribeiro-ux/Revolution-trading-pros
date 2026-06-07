@@ -233,22 +233,25 @@
 	<!-- Toolbar -->
 	<div class="designer-toolbar">
 		<div class="toolbar-tabs">
-			<button class:active={activeTab === 'layout'} onclick={() => (activeTab = 'layout')}>
+			<button class={{ active: activeTab === 'layout' }} onclick={() => (activeTab = 'layout')}>
 				Layout
 			</button>
-			<button class:active={activeTab === 'colors'} onclick={() => (activeTab = 'colors')}>
+			<button class={{ active: activeTab === 'colors' }} onclick={() => (activeTab = 'colors')}>
 				Colors
 			</button>
-			<button class:active={activeTab === 'typography'} onclick={() => (activeTab = 'typography')}>
+			<button
+				class={{ active: activeTab === 'typography' }}
+				onclick={() => (activeTab = 'typography')}
+			>
 				Typography
 			</button>
-			<button class:active={activeTab === 'spacing'} onclick={() => (activeTab = 'spacing')}>
+			<button class={{ active: activeTab === 'spacing' }} onclick={() => (activeTab = 'spacing')}>
 				Spacing
 			</button>
-			<button class:active={activeTab === 'content'} onclick={() => (activeTab = 'content')}>
+			<button class={{ active: activeTab === 'content' }} onclick={() => (activeTab = 'content')}>
 				Content
 			</button>
-			<button class:active={activeTab === 'behavior'} onclick={() => (activeTab = 'behavior')}>
+			<button class={{ active: activeTab === 'behavior' }} onclick={() => (activeTab = 'behavior')}>
 				Behavior
 			</button>
 		</div>
@@ -268,22 +271,22 @@
 				<div class="control-group">
 					<div class="control-label">Banner Type</div>
 					<div class="layout-options">
-						<label class="layout-option" class:selected={config.layout_type === 'bar'}>
+						<label class={['layout-option', { selected: config.layout_type === 'bar' }]}>
 							<input type="radio" bind:group={config.layout_type} value="bar" />
 							<div class="layout-icon bar"></div>
 							<span>Bar</span>
 						</label>
-						<label class="layout-option" class:selected={config.layout_type === 'popup'}>
+						<label class={['layout-option', { selected: config.layout_type === 'popup' }]}>
 							<input type="radio" bind:group={config.layout_type} value="popup" />
 							<div class="layout-icon popup"></div>
 							<span>Popup</span>
 						</label>
-						<label class="layout-option" class:selected={config.layout_type === 'floating'}>
+						<label class={['layout-option', { selected: config.layout_type === 'floating' }]}>
 							<input type="radio" bind:group={config.layout_type} value="floating" />
 							<div class="layout-icon floating"></div>
 							<span>Floating</span>
 						</label>
-						<label class="layout-option" class:selected={config.layout_type === 'drawer'}>
+						<label class={['layout-option', { selected: config.layout_type === 'drawer' }]}>
 							<input type="radio" bind:group={config.layout_type} value="drawer" />
 							<div class="layout-icon drawer"></div>
 							<span>Drawer</span>
@@ -747,13 +750,17 @@
 			</div>
 			<div class="preview-container">
 				<div
-					class="banner-preview"
-					class:bar={config.layout_type === 'bar'}
-					class:popup={config.layout_type === 'popup'}
-					class:floating={config.layout_type === 'floating'}
-					class:top={config.position === 'top'}
-					class:bottom={config.position === 'bottom'}
-					class:center={config.position === 'center'}
+					class={[
+						'banner-preview',
+						{
+							bar: config.layout_type === 'bar',
+							popup: config.layout_type === 'popup',
+							floating: config.layout_type === 'floating',
+							top: config.position === 'top',
+							bottom: config.position === 'bottom',
+							center: config.position === 'center'
+						}
+					]}
 					style={getCssVars()}
 				>
 					<div class="preview-banner">
