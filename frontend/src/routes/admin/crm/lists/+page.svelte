@@ -43,14 +43,14 @@
 		totalContacts: 0
 	});
 
-	async function loadLists() {
+	async function loadLists(nextSearchQuery = searchQuery, nextFilterPublic = filterPublic) {
 		isLoading = true;
 		error = '';
 
 		try {
 			const response = await crmAPI.getContactLists({
-				search: searchQuery || undefined,
-				is_public: filterPublic !== 'all' ? filterPublic : undefined
+				search: nextSearchQuery || undefined,
+				is_public: nextFilterPublic !== 'all' ? nextFilterPublic : undefined
 			});
 			lists = response.data || [];
 
@@ -65,6 +65,18 @@
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	function handleSearchInput(event: Event) {
+		const nextSearchQuery = (event.currentTarget as HTMLInputElement).value;
+		searchQuery = nextSearchQuery;
+		void loadLists(nextSearchQuery, filterPublic);
+	}
+
+	function handlePublicFilterChange(event: Event) {
+		const value = (event.currentTarget as HTMLSelectElement).value;
+		filterPublic = value === 'true' ? true : value === 'false' ? false : 'all';
+		void loadLists(searchQuery, filterPublic);
 	}
 
 	function deleteList(id: string) {
@@ -103,28 +115,8 @@
 		})
 	);
 
-	let isInitialized = $state(false);
-
 	onMount(() => {
-		(async () => {
-			await loadLists();
-			isInitialized = true;
-		})();
-	});
-
-	// Audit P1 #6: previously `searchQuery` and `filterPublic` were passed to
-	// the backend on the initial fetch only — switching public/private (or
-	// changing the search) never re-fired against the server, so anything
-	// outside the page-1 result set was invisible. Now we explicitly track
-	// both filters and re-run `loadLists()` on change.
-	$effect(() => {
-		// Reactive reads:
-		searchQuery;
-		filterPublic;
-
-		if (isInitialized) {
-			loadLists();
-		}
+		void loadLists();
 	});
 </script>
 
@@ -199,13 +191,14 @@
 				id="search-lists"
 				name="search"
 				placeholder="Search lists..."
-				bind:value={searchQuery}
+				value={searchQuery}
+				oninput={handleSearchInput}
 			/>
 		</div>
-		<select class="filter-select" bind:value={filterPublic}>
+		<select class="filter-select" value={String(filterPublic)} onchange={handlePublicFilterChange}>
 			<option value="all">All Lists</option>
-			<option value={true}>Public</option>
-			<option value={false}>Private</option>
+			<option value="true">Public</option>
+			<option value="false">Private</option>
 		</select>
 	</div>
 
@@ -259,7 +252,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="visibility-badge {list.is_public ? 'public' : 'private'}">
+								<span class={['visibility-badge', list.is_public ? 'public' : 'private']}>
 									{#if list.is_public}
 										<IconWorld size={14} />
 										Public
