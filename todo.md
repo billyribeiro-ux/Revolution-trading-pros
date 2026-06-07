@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 411 Svelte files remaining.
+- Broad dynamic class/style migration scan: 410 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -168,6 +168,7 @@ Current evidence:
 - [x] `877c482bf` Modernize CRM campaigns status classes.
 - [x] `01d18d69c` Modernize dashboard widget manager bindings.
 - [x] `5200857dd` Modernize class downloads bindings.
+- [x] `1104971b8` Modernize block inserter class bindings.
 
 ## Current Priority Queue
 
@@ -280,6 +281,7 @@ Current evidence:
 - [x] `frontend/src/routes/admin/crm/campaigns/+page.svelte`
 - [x] `frontend/src/lib/components/DashboardWidgetManager.svelte`
 - [x] `frontend/src/lib/components/ClassDownloads.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/BlockInserter.svelte`
 
 ## Per-File Completion Checklist
 
