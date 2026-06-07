@@ -172,9 +172,15 @@
 					<button
 						onclick={() => loadChain(exp)}
 						class="text-[10px] px-2 py-1 rounded-lg whitespace-nowrap transition-colors cursor-pointer"
-						style={selectedExpiration === exp
-							? 'background: var(--calc-accent-glow); color: var(--calc-accent); border: 1px solid var(--calc-accent);'
-							: 'background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
+						style:background={selectedExpiration === exp
+							? 'var(--calc-accent-glow)'
+							: 'var(--calc-surface)'}
+						style:color={selectedExpiration === exp
+							? 'var(--calc-accent)'
+							: 'var(--calc-text-muted)'}
+						style:border={selectedExpiration === exp
+							? '1px solid var(--calc-accent)'
+							: '1px solid var(--calc-border)'}
 					>
 						{new Date(exp + 'T12:00:00').toLocaleDateString('en-US', {
 							month: 'short',
@@ -272,9 +278,8 @@
 						{@const putBg = put ? mispricingColor(put) : ''}
 						<tr
 							class="transition-colors"
-							style="border-top: 1px solid var(--calc-border); {isATM
-								? 'background: var(--calc-accent-glow);'
-								: ''}"
+							style:border-top="1px solid var(--calc-border)"
+							style:background={isATM ? 'var(--calc-accent-glow)' : undefined}
 						>
 							<!-- Call side -->
 							{#if call}
@@ -282,9 +287,8 @@
 									class="text-right px-2 py-1 cursor-pointer"
 									role="button"
 									tabindex={0}
-									style="background: {callBg}; {call.inTheMoney
-										? 'color: var(--calc-call);'
-										: 'color: var(--calc-text-secondary);'}"
+									style:background={callBg || undefined}
+									style:color={call.inTheMoney ? 'var(--calc-call)' : 'var(--calc-text-secondary)'}
 									onclick={() => handleSelectContract(call)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -297,9 +301,8 @@
 									class="text-right px-2 py-1 cursor-pointer"
 									role="button"
 									tabindex={0}
-									style="background: {callBg}; {call.inTheMoney
-										? 'color: var(--calc-call);'
-										: 'color: var(--calc-text-secondary);'}"
+									style:background={callBg || undefined}
+									style:color={call.inTheMoney ? 'var(--calc-call)' : 'var(--calc-text-secondary)'}
 									onclick={() => handleSelectContract(call)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -312,7 +315,8 @@
 									class="text-right px-2 py-1 cursor-pointer"
 									role="button"
 									tabindex={0}
-									style="background: {callBg}; color: var(--calc-text);"
+									style:background={callBg || undefined}
+									style:color="var(--calc-text)"
 									onclick={() => handleSelectContract(call)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -335,9 +339,9 @@
 									{#if mispricingBadge(call)}
 										<span
 											class="ml-0.5 text-[8px]"
-											style="color: {detectMispricing(call)?.direction === 'underpriced'
+											style:color={detectMispricing(call)?.direction === 'underpriced'
 												? 'var(--calc-call)'
-												: 'var(--calc-put)'};"
+												: 'var(--calc-put)'}
 										>
 											{mispricingBadge(call)}
 										</span>
@@ -350,7 +354,7 @@
 							<!-- Strike -->
 							<td
 								class="text-center px-3 py-1 font-bold"
-								style="color: {isATM ? 'var(--calc-accent)' : 'var(--calc-text)'};"
+								style:color={isATM ? 'var(--calc-accent)' : 'var(--calc-text)'}
 							>
 								{strike.toFixed(strike % 1 === 0 ? 0 : 2)}
 							</td>
@@ -361,9 +365,9 @@
 									class="text-right px-2 py-1 border-l cursor-pointer"
 									role="button"
 									tabindex={0}
-									style="background: {putBg}; border-color: var(--calc-border); {put.inTheMoney
-										? 'color: var(--calc-put);'
-										: 'color: var(--calc-text-secondary);'}"
+									style:background={putBg || undefined}
+									style:border-color="var(--calc-border)"
+									style:color={put.inTheMoney ? 'var(--calc-put)' : 'var(--calc-text-secondary)'}
 									onclick={() => handleSelectContract(put)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -376,9 +380,8 @@
 									class="text-right px-2 py-1 cursor-pointer"
 									role="button"
 									tabindex={0}
-									style="background: {putBg}; {put.inTheMoney
-										? 'color: var(--calc-put);'
-										: 'color: var(--calc-text-secondary);'}"
+									style:background={putBg || undefined}
+									style:color={put.inTheMoney ? 'var(--calc-put)' : 'var(--calc-text-secondary)'}
 									onclick={() => handleSelectContract(put)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -391,7 +394,8 @@
 									class="text-right px-2 py-1 cursor-pointer"
 									role="button"
 									tabindex={0}
-									style="background: {putBg}; color: var(--calc-text);"
+									style:background={putBg || undefined}
+									style:color="var(--calc-text)"
 									onclick={() => handleSelectContract(put)}
 									onkeydown={(e) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -411,9 +415,9 @@
 									{#if mispricingBadge(put)}
 										<span
 											class="ml-0.5 text-[8px]"
-											style="color: {detectMispricing(put)?.direction === 'underpriced'
+											style:color={detectMispricing(put)?.direction === 'underpriced'
 												? 'var(--calc-call)'
-												: 'var(--calc-put)'};"
+												: 'var(--calc-put)'}
 										>
 											{mispricingBadge(put)}
 										</span>
