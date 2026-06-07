@@ -70,18 +70,9 @@
 	let cancelImmediate = $state(false);
 	let isProcessingAction = $state(false);
 
-	// Load payment history when switching to history tab
-	$effect(() => {
-		if (isOpen && subscription && activeTab === 'history') {
-			loadPaymentHistory();
-		}
-	});
-
 	$effect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
-			activeTab = 'billing';
-			error = '';
 		} else {
 			document.body.style.overflow = '';
 		}
@@ -121,7 +112,7 @@
 			showPauseModal = false;
 			actionReason = '';
 			onRefresh?.();
-			onClose();
+			closeDrawer();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to pause subscription';
 		} finally {
@@ -136,7 +127,7 @@
 		try {
 			await resumeSubscription(subscription.id);
 			onRefresh?.();
-			onClose();
+			closeDrawer();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to resume subscription';
 		} finally {
@@ -154,7 +145,7 @@
 			actionReason = '';
 			cancelImmediate = false;
 			onRefresh?.();
-			onClose();
+			closeDrawer();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to cancel subscription';
 		} finally {
@@ -170,7 +161,7 @@
 			await reactivateSubscription(subscription.id);
 			showReactivateModal = false;
 			onRefresh?.();
-			onClose();
+			closeDrawer();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to reactivate subscription';
 		} finally {
@@ -261,9 +252,22 @@
 		}
 	}
 
+	function selectTab(tab: typeof activeTab): void {
+		activeTab = tab;
+		if (tab === 'history') {
+			void loadPaymentHistory();
+		}
+	}
+
+	function closeDrawer(): void {
+		activeTab = 'billing';
+		error = '';
+		onClose();
+	}
+
 	function handleBackdropClick(e: MouseEvent | KeyboardEvent) {
 		if (e.target === e.currentTarget) {
-			onClose();
+			closeDrawer();
 		}
 	}
 </script>
@@ -278,7 +282,7 @@
 			if (e.key === 'Escape') handleBackdropClick(e);
 		}}
 	>
-		<aside class="drawer" class:open={isOpen}>
+		<aside class={['drawer', { open: isOpen }]}>
 			<!-- Header -->
 			<header class="drawer-header">
 				<div class="subscription-icon">
@@ -288,13 +292,13 @@
 					<h2 class="subscription-name">{subscription.productName}</h2>
 					<p class="subscription-id">ID: {subscription.id.slice(0, 12)}...</p>
 					<div class="subscription-badges">
-						<span class="status-badge" style="--badge-color: {getStatusColor(subscription.status)}">
+						<span class="status-badge" style:--badge-color={getStatusColor(subscription.status)}>
 							{subscription.status}
 						</span>
 						<span class="interval-badge">{getIntervalLabel(subscription.interval)}</span>
 					</div>
 				</div>
-				<button type="button" class="btn-close" onclick={onClose} aria-label="Close">
+				<button type="button" class="btn-close" onclick={closeDrawer} aria-label="Close">
 					<IconX size={24} />
 				</button>
 			</header>
@@ -380,27 +384,24 @@
 			<nav class="drawer-tabs" aria-label="Detail tabs">
 				<button
 					type="button"
-					class="tab"
-					class:active={activeTab === 'billing'}
-					onclick={() => (activeTab = 'billing')}
+					class={['tab', { active: activeTab === 'billing' }]}
+					onclick={() => selectTab('billing')}
 				>
 					<IconCurrencyDollar size={16} />
 					Billing
 				</button>
 				<button
 					type="button"
-					class="tab"
-					class:active={activeTab === 'usage'}
-					onclick={() => (activeTab = 'usage')}
+					class={['tab', { active: activeTab === 'usage' }]}
+					onclick={() => selectTab('usage')}
 				>
 					<IconChartBar size={16} />
 					Usage
 				</button>
 				<button
 					type="button"
-					class="tab"
-					class:active={activeTab === 'history'}
-					onclick={() => (activeTab = 'history')}
+					class={['tab', { active: activeTab === 'history' }]}
+					onclick={() => selectTab('history')}
 				>
 					<IconReceipt size={16} />
 					History
@@ -566,7 +567,7 @@
 							<div class="activity-summary">
 								<div class="activity-item">
 									<span class="activity-label">Auto-Renew</span>
-									<span class="activity-value" class:enabled={subscription.autoRenew}>
+									<span class={['activity-value', { enabled: subscription.autoRenew }]}>
 										{subscription.autoRenew ? 'Enabled' : 'Disabled'}
 									</span>
 								</div>
@@ -623,7 +624,7 @@
 											<span class="payment-amount">{formatCurrency(payment.amount)}</span>
 											<span
 												class="payment-status"
-												style="--status-color: {getPaymentStatusColor(payment.status)}"
+												style:--status-color={getPaymentStatusColor(payment.status)}
 											>
 												{payment.status}
 											</span>
