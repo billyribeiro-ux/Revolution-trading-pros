@@ -10,7 +10,7 @@
 	- Event badges display
 	- Toast notifications for all actions
 	- Status filter (all/active/inactive)
-	- Full Svelte 5 $state/$derived/$effect reactivity
+	- Full Svelte 5 rune-based reactivity
 	- WCAG 2.1 AA accessibility compliance
 -->
 
@@ -182,10 +182,14 @@
 		return num.toLocaleString();
 	}
 
+	function getWebhookEvents(webhook: Webhook): Webhook['events'] {
+		return Array.isArray(webhook.events) ? webhook.events : [];
+	}
+
 	// LIFECYCLE
 
 	onMount(() => {
-		loadWebhooks();
+		void loadWebhooks();
 	});
 </script>
 
@@ -278,23 +282,20 @@
 		</div>
 		<div class="status-filter">
 			<button
-				class="filter-btn"
-				class:active={statusFilter === 'all'}
+				class={['filter-btn', { active: statusFilter === 'all' }]}
 				onclick={() => (statusFilter = 'all')}
 			>
 				All ({stats.total})
 			</button>
 			<button
-				class="filter-btn"
-				class:active={statusFilter === 'active'}
+				class={['filter-btn', { active: statusFilter === 'active' }]}
 				onclick={() => (statusFilter = 'active')}
 			>
 				<IconCheck size={14} />
 				Active ({stats.active})
 			</button>
 			<button
-				class="filter-btn"
-				class:active={statusFilter === 'inactive'}
+				class={['filter-btn', { active: statusFilter === 'inactive' }]}
 				onclick={() => (statusFilter = 'inactive')}
 			>
 				<IconX size={14} />
@@ -330,8 +331,7 @@
 				<article class="webhook-card" role="listitem">
 					<div class="webhook-header">
 						<button
-							class="webhook-toggle"
-							class:active={webhook.is_active}
+							class={['webhook-toggle', { active: webhook.is_active }]}
 							onclick={() => toggleWebhookStatus(webhook)}
 							disabled={togglingWebhook === webhook.id}
 							aria-label={webhook.is_active
@@ -354,13 +354,14 @@
 						</div>
 					</div>
 					<div class="webhook-events">
+						{const webhookEvents = getWebhookEvents(webhook)}
 						<span class="events-label">Events:</span>
 						<div class="events-list">
-							{#each (webhook.events || []).slice(0, 3) as event (event)}
+							{#each webhookEvents.slice(0, 3) as event (event)}
 								<span class="event-badge">{event.replace(/_/g, ' ')}</span>
 							{/each}
-							{#if webhook.events.length > 3}
-								<span class="event-more">+{webhook.events.length - 3} more</span>
+							{#if webhookEvents.length > 3}
+								<span class="event-more">+{webhookEvents.length - 3} more</span>
 							{/if}
 						</div>
 					</div>
@@ -430,7 +431,7 @@
 {#if toasts.length > 0}
 	<div class="toast-container" role="region" aria-label="Notifications">
 		{#each toasts as toast (toast.id)}
-			<div class="toast toast-{toast.type}" role="alert" aria-live="polite">
+			<div class={['toast', `toast-${toast.type}`]} role="alert" aria-live="polite">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
 						<IconCheck size={18} />
