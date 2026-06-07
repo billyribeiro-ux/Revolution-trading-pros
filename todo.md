@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 428 Svelte files remaining.
+- Broad dynamic class/style migration scan: 427 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -151,6 +151,7 @@ Current evidence:
 - [x] `6b4e8f310` Migrate form styler classes to scoped CSS.
 - [x] `acbbe6dcf` Modernize consent dashboard category badges.
 - [x] `03b6d6d4e` Modernize explosive swings dashboard bindings.
+- [x] `2e4bd3293` Modernize SEO reports page bindings.
 
 ## Current Priority Queue
 
@@ -246,6 +247,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/forms/pro/FormStyler.svelte`
 - [x] `frontend/src/routes/admin/consent/+page.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/reports/+page.svelte`
 
 ## Per-File Completion Checklist
 
