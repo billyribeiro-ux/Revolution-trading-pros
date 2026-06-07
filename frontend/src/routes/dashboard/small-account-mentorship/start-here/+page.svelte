@@ -1,7 +1,7 @@
 <!--
-	URL: /dashboard/day-trading-room/start-here
+	URL: /dashboard/small-account-mentorship/start-here
 
-	Getting Started with Day Trading Room - Pixel Perfect Match
+	Getting Started with Small Account Mentorship - Pixel Perfect Match
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation
 	Based on NewStartHere reference - Svelte 5
@@ -21,10 +21,8 @@
 	let props: Props = $props();
 	let data = $derived(props.data);
 
-	// Accordion state management - Svelte 5 runes
-	let openAccordions = new SvelteSet<number>();
+	const openAccordions = new SvelteSet<number>();
 
-	// Toggle accordion with Set reassignment for reactivity
 	function toggleAccordion(index: number): void {
 		if (openAccordions.has(index)) {
 			openAccordions.delete(index);
@@ -33,7 +31,6 @@
 		}
 	}
 
-	// Check if accordion is open
 	function isOpen(index: number): boolean {
 		return openAccordions.has(index);
 	}
@@ -65,10 +62,10 @@
 </script>
 
 <svelte:head>
-	<title>Getting Started with Day Trading Room | Revolution Trading Pros</title>
+	<title>Getting Started with Small Account Mentorship | Revolution Trading Pros</title>
 	<meta
 		name="description"
-		content="Welcome to your Revolution Trading Pros Day Trading Room Membership. Get started on the right path with our comprehensive getting started checklist."
+		content="Welcome to your Revolution Trading Pros Small Account Mentorship membership. Get started on the right path with our comprehensive getting started checklist."
 	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
@@ -79,7 +76,7 @@
 			<!-- Welcome Heading -->
 			<h2 class="page-heading">
 				<span class="page-heading__text"
-					>Welcome to your Revolution Trading Pros Day Trading Room Membership</span
+					>Welcome to your Revolution Trading Pros Small Account Mentorship membership</span
 				>
 			</h2>
 
@@ -177,13 +174,13 @@
 						</g>
 					</g>
 				</svg>
-				below to learn more about the features included in your Day Trading Room Membership:
+				below to learn more about the features included in your Small Account Mentorship membership:
 			</div>
 
 			<!-- Accordion Sections -->
 			<div id="accordion_options" class="accordion accordion--large">
 				<!-- Accordion 1: Trading Plan -->
-				<div class="accordion__item" class:is-open={isOpen(0)}>
+				<div class={['accordion__item', { 'is-open': isOpen(0) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(0)}
@@ -252,7 +249,7 @@
 				</div>
 
 				<!-- Accordion 2: Charts, Brokers & Tools -->
-				<div class="accordion__item" class:is-open={isOpen(1)}>
+				<div class={['accordion__item', { 'is-open': isOpen(1) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(1)}
@@ -343,7 +340,7 @@
 				</div>
 
 				<!-- Accordion 3: Get to Know Our Trading Team -->
-				<div class="accordion__item" class:is-open={isOpen(2)}>
+				<div class={['accordion__item', { 'is-open': isOpen(2) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(2)}
@@ -407,7 +404,7 @@
 				</div>
 
 				<!-- Accordion 4: Trade Alerts -->
-				<div class="accordion__item" class:is-open={isOpen(3)}>
+				<div class={['accordion__item', { 'is-open': isOpen(3) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(3)}
@@ -543,7 +540,7 @@
 				</div>
 
 				<!-- Accordion 5: Explore the Live Trading Room -->
-				<div class="accordion__item" class:is-open={isOpen(4)}>
+				<div class={['accordion__item', { 'is-open': isOpen(4) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(4)}
@@ -570,7 +567,7 @@
 						<div class="accordion__content">
 							<p>
 								Check out the schedule for each day/week which is posted just below the login to the
-								room on your Day Trading Room Member Dashboard:
+								room on your Small Account Mentorship Member Dashboard:
 							</p>
 							<p>
 								<!-- TODO(cls): width/height needed — schedule screenshot intrinsic dims unknown (CDN-hosted PNG, not in repo). Inspect the asset and set dims. -->
@@ -592,7 +589,7 @@
 								And, if you aren't able to be in the room throughout the day or happen to miss a
 								session that you really wanted to see, we've got you covered. You can find a
 								complete recording of the trading room each day in our <a
-									href="/dashboard/day-trading-room/trading-room-archive"
+									href="/dashboard/small-account-mentorship/trading-room-archive"
 									>Trading Room Archive section HERE</a
 								>.
 							</p>
@@ -601,7 +598,7 @@
 				</div>
 
 				<!-- Accordion 6: Additional Member Resources -->
-				<div class="accordion__item" class:is-open={isOpen(5)}>
+				<div class={['accordion__item', { 'is-open': isOpen(5) }]}>
 					<button
 						class="accordion__button"
 						onclick={() => toggleAccordion(5)}
