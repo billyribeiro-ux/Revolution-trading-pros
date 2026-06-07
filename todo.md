@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 494 Svelte files remaining.
+- Broad dynamic class/style migration scan: 493 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Slices
@@ -85,6 +85,7 @@ Current evidence:
 - [x] `1144f654b` Modernize countdown timer bindings.
 - [x] `bbb70be8e` Modernize media analytics page bindings.
 - [x] `a1e519fd4` Modernize admin analytics page bindings.
+- [x] `81f1400e5` Modernize weekly video uploader bindings.
 
 ## Current Priority Queue
 
@@ -114,7 +115,7 @@ Current evidence:
 - [x] `frontend/src/lib/components/CountdownTimer.svelte`
 - [x] `frontend/src/routes/admin/media/analytics/+page.svelte`
 - [x] `frontend/src/routes/admin/analytics/+page.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/components/WeeklyVideoUploader.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/components/WeeklyVideoUploader.svelte`
 - [ ] `frontend/src/lib/components/blog/BlockEditor/ImageUploader.svelte`
 - [ ] `frontend/src/lib/components/blog/BlockEditor/PresetPicker.svelte`
 - [ ] `frontend/src/routes/mentorship/+page.svelte`
