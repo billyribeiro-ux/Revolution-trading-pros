@@ -141,9 +141,7 @@
 				};
 
 				if (trialDays > 0) {
-					const trialEnd = new Date();
-					trialEnd.setDate(trialEnd.getDate() + trialDays);
-					data.trialEndDate = trialEnd.toISOString();
+					data.trialEndDate = new Date(Date.now() + trialDays * 86400000).toISOString();
 					data.isTrialing = true;
 				}
 
@@ -255,8 +253,7 @@
 			<nav class="section-tabs" aria-label="Form sections">
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'details'}
+					class={['section-tab', { active: activeSection === 'details' }]}
 					onclick={() => (activeSection = 'details')}
 				>
 					<IconCreditCard size={16} />
@@ -264,8 +261,7 @@
 				</button>
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'billing'}
+					class={['section-tab', { active: activeSection === 'billing' }]}
 					onclick={() => (activeSection = 'billing')}
 				>
 					<IconCurrencyDollar size={16} />
@@ -273,8 +269,7 @@
 				</button>
 				<button
 					type="button"
-					class="section-tab"
-					class:active={activeSection === 'options'}
+					class={['section-tab', { active: activeSection === 'options' }]}
 					onclick={() => (activeSection = 'options')}
 				>
 					<IconCalendar size={16} />
@@ -375,7 +370,7 @@
 							<span id="interval-label" class="form-label">Billing Interval</span>
 							<div class="interval-options">
 								{#each intervals as int (int.value)}
-									<label class="interval-option" class:selected={interval === int.value}>
+									<label class={['interval-option', { selected: interval === int.value }]}>
 										<input
 											type="radio"
 											name="interval"
@@ -409,7 +404,9 @@
 							<div class="form-group" role="radiogroup" aria-labelledby="payment-type-label">
 								<span id="payment-type-label" class="form-label">Payment Method Type</span>
 								<div class="payment-type-options">
-									<label class="payment-type-option" class:selected={paymentMethodType === 'card'}>
+									<label
+										class={['payment-type-option', { selected: paymentMethodType === 'card' }]}
+									>
 										<input
 											type="radio"
 											name="paymentType"
@@ -421,8 +418,7 @@
 										<span>Card</span>
 									</label>
 									<label
-										class="payment-type-option"
-										class:selected={paymentMethodType === 'paypal'}
+										class={['payment-type-option', { selected: paymentMethodType === 'paypal' }]}
 									>
 										<input
 											type="radio"
@@ -433,7 +429,9 @@
 										/>
 										<span>PayPal</span>
 									</label>
-									<label class="payment-type-option" class:selected={paymentMethodType === 'bank'}>
+									<label
+										class={['payment-type-option', { selected: paymentMethodType === 'bank' }]}
+									>
 										<input
 											type="radio"
 											name="paymentType"
