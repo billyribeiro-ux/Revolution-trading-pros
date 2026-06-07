@@ -121,6 +121,12 @@
 		return '#ef4444';
 	}
 
+	function getErrorRateColor(errorRate: number) {
+		if (errorRate > 1) return '#ef4444';
+		if (errorRate > 0.5) return '#f59e0b';
+		return '#10b981';
+	}
+
 	async function refreshConnection(service: string) {
 		refreshingService = service;
 		try {
@@ -172,12 +178,7 @@
 			<!-- Header -->
 			<div class="panel-header">
 				<div class="header-left">
-					<div
-						class="header-icon"
-						class:healthy={overallHealth === 'healthy'}
-						class:partial={overallHealth === 'partial'}
-						class:unhealthy={overallHealth === 'unhealthy'}
-					>
+					<div class={['header-icon', overallHealth]}>
 						<IconPlugConnected size={20} />
 					</div>
 					<div class="header-info">
@@ -203,12 +204,7 @@
 			</div>
 
 			<!-- Overall Status Bar -->
-			<div
-				class="status-bar"
-				class:healthy={overallHealth === 'healthy'}
-				class:partial={overallHealth === 'partial'}
-				class:unhealthy={overallHealth === 'unhealthy'}
-			>
+			<div class={['status-bar', overallHealth]}>
 				<div class="status-indicator">
 					{#if overallHealth === 'healthy'}
 						<IconCheck size={18} />
@@ -227,16 +223,14 @@
 			<!-- Tabs -->
 			<div class="panel-tabs">
 				<button
-					class="tab"
-					class:active={activeTab === 'overview'}
+					class={['tab', activeTab === 'overview' && 'active']}
 					onclick={() => (activeTab = 'overview')}
 				>
 					<IconPlugConnected size={16} />
 					Overview
 				</button>
 				<button
-					class="tab"
-					class:active={activeTab === 'details'}
+					class={['tab', activeTab === 'details' && 'active']}
 					onclick={() => (activeTab = 'details')}
 				>
 					<IconChartLine size={16} />
@@ -256,11 +250,13 @@
 							}}
 							{@const StatusIcon = getStatusIcon(status)}
 							<div
-								class="service-card"
-								class:connected={status === 'connected'}
-								class:error={status === 'error'}
+								class={[
+									'service-card',
+									status === 'connected' && 'connected',
+									status === 'error' && 'error'
+								]}
 							>
-								<div class="service-status" style="color: {getStatusColor(status)}">
+								<div class="service-status" style:color={getStatusColor(status)}>
 									<StatusIcon size={20} class={status === 'connecting' ? 'spinning' : ''} />
 								</div>
 								<div class="service-info">
@@ -268,9 +264,8 @@
 										<span class="service-name">{serviceLabels[service]}</span>
 										<span
 											class="status-badge"
-											style="background: {getStatusColor(status)}20; color: {getStatusColor(
-												status
-											)}"
+											style:background={`${getStatusColor(status)}20`}
+											style:color={getStatusColor(status)}
 										>
 											{getStatusLabel(status)}
 										</span>
@@ -319,57 +314,47 @@
 							<div class="metrics-card">
 								<div class="metrics-header">
 									<span class="service-name">{serviceLabels[service]}</span>
-									<span class="status-dot" style="background: {getStatusColor(status)}"></span>
+									<span class="status-dot" style:background={getStatusColor(status)}></span>
 								</div>
 								<div class="metrics-grid">
 									<div class="metric-item">
 										<span class="metric-label">Response Time</span>
 										<span
 											class="metric-value"
-											style="color: {getResponseTimeColor(metrics.responseTime)}"
+											style:color={getResponseTimeColor(metrics.responseTime)}
 										>
 											{metrics.responseTime}ms
 										</span>
 										<div class="metric-bar">
 											<div
 												class="metric-bar-fill"
-												style="width: {Math.min(
-													metrics.responseTime / 5,
-													100
-												)}%; background: {getResponseTimeColor(metrics.responseTime)}"
+												style:width={`${Math.min(metrics.responseTime / 5, 100)}%`}
+												style:background={getResponseTimeColor(metrics.responseTime)}
 											></div>
 										</div>
 									</div>
 									<div class="metric-item">
 										<span class="metric-label">Uptime</span>
-										<span class="metric-value" style="color: {getUptimeColor(metrics.uptime)}">
+										<span class="metric-value" style:color={getUptimeColor(metrics.uptime)}>
 											{metrics.uptime}%
 										</span>
 										<div class="metric-bar">
 											<div
 												class="metric-bar-fill"
-												style="width: {metrics.uptime}%; background: {getUptimeColor(
-													metrics.uptime
-												)}"
+												style:width={`${metrics.uptime}%`}
+												style:background={getUptimeColor(metrics.uptime)}
 											></div>
 										</div>
 									</div>
 									<div class="metric-item">
 										<span class="metric-label">Error Rate</span>
-										<span
-											class="metric-value"
-											style="color: {metrics.errorRate > 1
-												? '#ef4444'
-												: metrics.errorRate > 0.5
-													? '#f59e0b'
-													: '#10b981'}"
-										>
+										<span class="metric-value" style:color={getErrorRateColor(metrics.errorRate)}>
 											{metrics.errorRate}%
 										</span>
 										<div class="metric-bar">
 											<div
 												class="metric-bar-fill error"
-												style="width: {Math.min(metrics.errorRate * 10, 100)}%"
+												style:width={`${Math.min(metrics.errorRate * 10, 100)}%`}
 											></div>
 										</div>
 									</div>
