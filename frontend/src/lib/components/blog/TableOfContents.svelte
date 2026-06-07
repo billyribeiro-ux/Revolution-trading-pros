@@ -5,7 +5,7 @@
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived, $effect)
 	 */
 	import { browser } from '$app/environment';
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
 
 	interface ContentBlock {
@@ -65,9 +65,6 @@
 		number?: string;
 	}
 
-	// Svelte 5: Reactive state using $state() rune
-	let tocItems: TocItem[] = $state([]);
-	let flatItems: TocItem[] = $state([]);
 	// Initialize from prop once at mount; user interactions override thereafter.
 	// `untrack` makes the init-once intent explicit and replaces the prior
 	// // svelte-ignore state_referenced_locally directive.
@@ -78,6 +75,26 @@
 	let contentElement: HTMLElement | null = $state(null);
 	let observer: IntersectionObserver | null = null;
 	let scrollListener: (() => void) | null = null;
+
+	const containerClass = $derived({
+		'toc-container': true,
+		'toc-inline': position === 'inline',
+		'toc-sidebar': position === 'sidebar',
+		'toc-floating': position === 'floating',
+		'toc-sticky': sticky && position !== 'floating',
+		'toc-minimized': isFloatingMinimized
+	});
+
+	const chevronClass = $derived(isExpanded ? 'toc-chevron rotated' : 'toc-chevron');
+
+	function tocItemClass(isActive: boolean, variant?: 'child' | 'grandchild') {
+		return {
+			'toc-item': true,
+			'toc-item-child': variant === 'child',
+			'toc-item-grandchild': variant === 'grandchild',
+			active: isActive
+		};
+	}
 
 	// Extract text from potentially HTML content
 	function stripHtml(html: string): string {
@@ -292,23 +309,21 @@
 		isFloatingMinimized = !isFloatingMinimized;
 	}
 
+	const extractedHeadings = $derived(extractHeadings());
+	const tocItems = $derived(extractedHeadings.nested);
+	const flatItems = $derived(extractedHeadings.flat);
+
 	// Svelte 5: Derived value for shouldShow
 	let shouldShow = $derived(flatItems.length >= minHeadings);
 
-	// Svelte 5: Effect for extracting headings when contentBlocks change.
-	// Single batch of writes per content change — no per-heading mutations of $state.
-	$effect(() => {
-		const { nested, flat } = extractHeadings();
-		flatItems = flat;
-		tocItems = nested;
-	});
-
-	// Svelte 5: Effect for initialization and cleanup
-	$effect(() => {
-		if (!shouldShow || !browser) return;
+	onMount(() => {
+		if (!browser) return;
+		let initTimeout: ReturnType<typeof setTimeout> | null = null;
 
 		// Small delay to ensure DOM is ready
-		const initTimeout = setTimeout(() => {
+		initTimeout = setTimeout(() => {
+			if (!shouldShow) return;
+
 			injectHeadingIds();
 			setupObserver();
 			setupScrollListener();
@@ -320,9 +335,10 @@
 			}
 		}, 100);
 
-		// Svelte 5: Cleanup function returned from $effect
 		return () => {
-			clearTimeout(initTimeout);
+			if (initTimeout) {
+				clearTimeout(initTimeout);
+			}
 			observer?.disconnect();
 			if (scrollListener) {
 				window.removeEventListener('scroll', scrollListener);
@@ -332,19 +348,11 @@
 </script>
 
 {#if shouldShow}
-	<nav
-		class="toc-container"
-		class:toc-inline={position === 'inline'}
-		class:toc-sidebar={position === 'sidebar'}
-		class:toc-floating={position === 'floating'}
-		class:toc-sticky={sticky && position !== 'floating'}
-		class:toc-minimized={isFloatingMinimized}
-		aria-label="Table of contents"
-	>
+	<nav class={containerClass} aria-label="Table of contents">
 		<!-- Progress bar -->
 		{#if showProgress}
 			<div class="toc-progress-bar">
-				<div class="toc-progress-fill" style="width: {readingProgress}%"></div>
+				<div class="toc-progress-fill" style:width={`${readingProgress}%`}></div>
 			</div>
 		{/if}
 
@@ -360,11 +368,7 @@
 				<span class="toc-title">{title}</span>
 				<span class="toc-count">{flatItems.length} sections</span>
 				{#if collapsible}
-					<Icon
-						name="IconChevronDown"
-						size={18}
-						class="toc-chevron{isExpanded ? ' rotated' : ''}"
-					/>
+					<Icon name="IconChevronDown" size={18} class={chevronClass} />
 				{/if}
 			</button>
 
@@ -384,7 +388,7 @@
 			<div id="toc-list" class="toc-content">
 				<ul class="toc-list" role="list">
 					{#each tocItems as item (item.id)}
-						<li class="toc-item" class:active={activeId === item.id}>
+						<li class={tocItemClass(activeId === item.id)}>
 							<button
 								class="toc-link"
 								onclick={() => scrollToHeading(item.id)}
@@ -399,7 +403,7 @@
 							{#if item.children.length > 0}
 								<ul class="toc-sublist" role="list">
 									{#each item.children as child (child.id)}
-										<li class="toc-item toc-item-child" class:active={activeId === child.id}>
+										<li class={tocItemClass(activeId === child.id, 'child')}>
 											<button
 												class="toc-link"
 												onclick={() => scrollToHeading(child.id)}
@@ -414,10 +418,7 @@
 											{#if child.children.length > 0}
 												<ul class="toc-sublist toc-sublist-deep" role="list">
 													{#each child.children as grandchild (grandchild.id)}
-														<li
-															class="toc-item toc-item-grandchild"
-															class:active={activeId === grandchild.id}
-														>
+														<li class={tocItemClass(activeId === grandchild.id, 'grandchild')}>
 															<button
 																class="toc-link"
 																onclick={() => scrollToHeading(grandchild.id)}
@@ -503,7 +504,7 @@
 
 	.toc-floating.toc-minimized {
 		width: auto;
-		max-height: auto;
+		max-height: none;
 	}
 
 	/* Progress bar */
