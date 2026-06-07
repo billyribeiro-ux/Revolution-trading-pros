@@ -190,7 +190,6 @@
 	const showFeatures = $derived(props.showFeatures ?? true);
 	const color = $derived(props.color);
 	const icon = $derived(props.icon);
-	const onConnected = $derived(props.onConnected);
 
 	// Derive configuration from feature or custom props
 	let config = $derived.by(() => {
@@ -236,23 +235,16 @@
 	});
 
 	// Navigate to connections page with pre-selected service
-	function handleConnect() {
+	function handleConnect(): void {
 		const targetService = serviceKey || config.primaryService;
 		if (targetService) {
-			goto(`/admin/connections?connect=${targetService}`);
+			void goto(`/admin/connections?connect=${targetService}`);
 		} else if (feature) {
-			goto(`/admin/connections?category=${feature}`);
+			void goto(`/admin/connections?category=${feature}`);
 		} else {
-			goto('/admin/connections');
+			void goto('/admin/connections');
 		}
 	}
-
-	// Notify parent when connected
-	$effect(() => {
-		if (isConnected && onConnected) {
-			onConnected();
-		}
-	});
 </script>
 
 <!-- Only render if NOT connected -->
@@ -266,17 +258,17 @@
 			aria-live="polite"
 		>
 			<!-- Gradient Background Glow -->
-			<div class="card-glow" style="--glow-color: {config.color}"></div>
+			<div class="card-glow" style:--glow-color={config.color}></div>
 
 			<!-- Decorative Elements -->
-			<div class="decorative-orb orb-1" style="--orb-color: {config.color}"></div>
-			<div class="decorative-orb orb-2" style="--orb-color: {config.color}"></div>
+			<div class="decorative-orb orb-1" style:--orb-color={config.color}></div>
+			<div class="decorative-orb orb-2" style:--orb-color={config.color}></div>
 
 			<!-- Content -->
 			<div class="card-content">
 				<!-- Icon & Status -->
 				<div class="icon-section">
-					<div class="icon-container" style="--icon-color: {config.color}">
+					<div class="icon-container" style:--icon-color={config.color}>
 						<span class="service-icon">{config.icon}</span>
 						<div class="status-indicator">
 							<Icon name="IconPlugConnectedX" size={18} class="disconnect-icon" />
@@ -301,7 +293,7 @@
 						<ul class="features-list">
 							{#each config.features as featureItem, i (i)}
 								<li in:fly={{ x: -10, duration: 200, delay: 150 + i * 50 }}>
-									<span class="check-icon" style="color: {config.color}">✓</span>
+									<span class="check-icon" style:color={config.color}>✓</span>
 									{featureItem}
 								</li>
 							{/each}
@@ -310,7 +302,7 @@
 				{/if}
 
 				<!-- Connect Button -->
-				<button class="connect-button" onclick={handleConnect} style="--btn-color: {config.color}">
+				<button class="connect-button" onclick={handleConnect} style:--btn-color={config.color}>
 					<Icon name="IconClock" size={20} class="btn-icon" />
 					<span>Connect {config.name}</span>
 					<Icon name="IconArrowRight" size={20} class="arrow-icon" />
@@ -330,16 +322,16 @@
 			in:fly={{ y: -20, duration: 400, easing: cubicOut }}
 			role="alert"
 		>
-			<div class="banner-glow" style="--glow-color: {config.color}"></div>
+			<div class="banner-glow" style:--glow-color={config.color}></div>
 			<div class="banner-content">
-				<div class="banner-icon" style="--icon-color: {config.color}">
+				<div class="banner-icon" style:--icon-color={config.color}>
 					<span>{config.icon}</span>
 				</div>
 				<div class="banner-text">
 					<h4>{config.name} Not Connected</h4>
 					<p>{config.description}</p>
 				</div>
-				<button class="banner-button" onclick={handleConnect} style="--btn-color: {config.color}">
+				<button class="banner-button" onclick={handleConnect} style:--btn-color={config.color}>
 					<span>Connect Now</span>
 					<Icon name="IconArrowRight" size={16} />
 				</button>
@@ -348,7 +340,7 @@
 	{:else if variant === 'inline'}
 		<!-- Inline Variant - For within content -->
 		<div class="service-status-inline" in:fade={{ duration: 300 }} role="alert">
-			<div class="inline-icon" style="color: {config.color}">
+			<div class="inline-icon" style:color={config.color}>
 				<Icon name="IconAlertCircle" size={20} />
 			</div>
 			<span class="inline-message">{config.name} not connected</span>
@@ -374,7 +366,7 @@
 			class="service-status-minimal"
 			onclick={handleConnect}
 			in:fade={{ duration: 200 }}
-			style="--btn-color: {config.color}"
+			style:--btn-color={config.color}
 		>
 			<Icon name="IconPlugConnectedX" size={16} class="plug-icon" />
 			<span>Connect {config.name}</span>
