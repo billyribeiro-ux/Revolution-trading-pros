@@ -59,18 +59,18 @@
 		<div class="themes-grid">
 			{#each themes as theme (theme.id)}
 				<button
-					class="theme-card"
-					class:active={selectedTheme.id === theme.id && !isCustomizing}
+					class={['theme-card', { active: selectedTheme.id === theme.id && !isCustomizing }]}
 					onclick={() => selectTheme(theme)}
 				>
 					<div
 						class="theme-preview"
-						style="background: {theme.colors.background}; border-color: {theme.colors.border}"
+						style:background={theme.colors.background}
+						style:border-color={theme.colors.border}
 					>
-						<div class="preview-header" style="background: {theme.colors.primary}"></div>
-						<div class="preview-text" style="background: {theme.colors.text}20"></div>
-						<div class="preview-text" style="background: {theme.colors.text}20"></div>
-						<div class="preview-button" style="background: {theme.colors.primary}"></div>
+						<div class="preview-header" style:background={theme.colors.primary}></div>
+						<div class="preview-text" style:background={`${theme.colors.text}20`}></div>
+						<div class="preview-text" style:background={`${theme.colors.text}20`}></div>
+						<div class="preview-button" style:background={theme.colors.primary}></div>
 					</div>
 					<div class="theme-name">{theme.name}</div>
 				</button>
@@ -250,15 +250,16 @@
 
 	<div class="theme-preview-section">
 		<h4>Preview</h4>
-		<div class="live-preview" style="background: {selectedTheme.colors.background}">
+		<div class="live-preview" style:background={selectedTheme.colors.background}>
 			<div class="preview-form-container">
-				<h3 style="color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.heading}">
+				<h3 style:color={selectedTheme.colors.text} style:font-family={selectedTheme.fonts.heading}>
 					Sample Form
 				</h3>
 				<div class="preview-field-wrapper">
 					<label
 						for="preview-name"
-						style="color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
+						style:color={selectedTheme.colors.text}
+						style:font-family={selectedTheme.fonts.body}
 					>
 						Your Name
 					</label>
@@ -266,14 +267,16 @@
 						id="preview-name"
 						type="text"
 						placeholder="Enter your name"
-						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors
-							.text}; font-family: {selectedTheme.fonts.body}"
+						style:border-color={selectedTheme.colors.border}
+						style:color={selectedTheme.colors.text}
+						style:font-family={selectedTheme.fonts.body}
 					/>
 				</div>
 				<div class="preview-field-wrapper">
 					<label
 						for="preview-email"
-						style="color: {selectedTheme.colors.text}; font-family: {selectedTheme.fonts.body}"
+						style:color={selectedTheme.colors.text}
+						style:font-family={selectedTheme.fonts.body}
 					>
 						Email Address
 					</label>
@@ -281,14 +284,15 @@
 						id="preview-email"
 						type="email"
 						placeholder="you@example.com"
-						style="border-color: {selectedTheme.colors.border}; color: {selectedTheme.colors
-							.text}; font-family: {selectedTheme.fonts.body}"
+						style:border-color={selectedTheme.colors.border}
+						style:color={selectedTheme.colors.text}
+						style:font-family={selectedTheme.fonts.body}
 					/>
 				</div>
 				<button
 					class="preview-submit"
-					style="background: {selectedTheme.colors.primary}; font-family: {selectedTheme.fonts
-						.body}"
+					style:background={selectedTheme.colors.primary}
+					style:font-family={selectedTheme.fonts.body}
 				>
 					Submit
 				</button>

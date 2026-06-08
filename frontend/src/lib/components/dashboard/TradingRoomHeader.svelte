@@ -76,30 +76,23 @@
 		isDropdownOpen = false;
 	}
 
-	// Close dropdown when clicking outside
-	$effect(() => {
-		if (isDropdownOpen && typeof window !== 'undefined') {
-			const handleClickOutside = (e: MouseEvent) => {
-				const target = e.target as HTMLElement;
-				if (!target.closest('.dropdown')) {
-					closeDropdown();
-				}
-			};
-			const handleEscape = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') {
-					closeDropdown();
-				}
-			};
-			document.addEventListener('click', handleClickOutside);
-			document.addEventListener('keydown', handleEscape);
-			return () => {
-				document.removeEventListener('click', handleClickOutside);
-				document.removeEventListener('keydown', handleEscape);
-			};
+	function handleDocumentClick(event: MouseEvent): void {
+		if (!isDropdownOpen) return;
+
+		const target = event.target;
+		if (target instanceof HTMLElement && !target.closest('.dropdown')) {
+			closeDropdown();
 		}
-		return undefined;
-	});
+	}
+
+	function handleDocumentKeydown(event: KeyboardEvent): void {
+		if (event.key === 'Escape') {
+			closeDropdown();
+		}
+	}
 </script>
+
+<svelte:document onclick={handleDocumentClick} onkeydown={handleDocumentKeydown} />
 
 <!-- Dashboard Header - Matching Member Dashboard -->
 <header class="dashboard__header">
@@ -109,7 +102,7 @@
 	</div>
 	{#if showTradingRoomControls}
 		<div class="dashboard__header-right">
-			<div class="dropdown" class:is-open={isDropdownOpen}>
+			<div class={['dropdown', { 'is-open': isDropdownOpen }]}>
 				<button
 					class="btn btn-orange btn-tradingroom"
 					onclick={toggleDropdown}

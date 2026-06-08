@@ -152,6 +152,13 @@
 	}
 
 	let readRate = $derived(pct(stats?.read_count, stats?.total_submissions));
+
+	function trendBarHeight(dayCount: number): string {
+		if (dayCount <= 0) return '5%';
+
+		const maxCount = Math.max(...submissionTrend.map((d) => d.count));
+		return `${Math.max((dayCount / maxCount) * 100, 10)}%`;
+	}
 </script>
 
 <div class="analytics-container">
@@ -205,7 +212,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill unread"
-							style="width: {pct(stats?.unread_count, stats?.total_submissions)}%"
+							style:width={`${pct(stats?.unread_count, stats?.total_submissions)}%`}
 						></div>
 					</div>
 				</div>
@@ -218,7 +225,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill read"
-							style="width: {pct(stats?.read_count, stats?.total_submissions)}%"
+							style:width={`${pct(stats?.read_count, stats?.total_submissions)}%`}
 						></div>
 					</div>
 				</div>
@@ -231,7 +238,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill starred"
-							style="width: {pct(stats?.starred_count, stats?.total_submissions)}%"
+							style:width={`${pct(stats?.starred_count, stats?.total_submissions)}%`}
 						></div>
 					</div>
 				</div>
@@ -244,7 +251,7 @@
 					<div class="bar-track">
 						<div
 							class="bar-fill archived"
-							style="width: {pct(stats?.archived_count, stats?.total_submissions)}%"
+							style:width={`${pct(stats?.archived_count, stats?.total_submissions)}%`}
 						></div>
 					</div>
 				</div>
@@ -260,12 +267,7 @@
 						<div class="trend-bar">
 							<div
 								class="bar"
-								style="height: {day.count > 0
-									? Math.max(
-											(day.count / Math.max(...submissionTrend.map((d) => d.count))) * 100,
-											10
-										)
-									: 5}%"
+								style:height={trendBarHeight(day.count)}
 								title="{day.count} submissions"
 							></div>
 							<div class="bar-label">{new Date(day.date).getDate()}</div>
@@ -289,7 +291,7 @@
 						<div class="completion-row">
 							<div class="field-name">{field.label}</div>
 							<div class="completion-bar">
-								<div class="completion-fill" style="width: {field.completionRate}%"></div>
+								<div class="completion-fill" style:width={`${field.completionRate}%`}></div>
 								<div class="completion-percentage">{field.completionRate.toFixed(0)}%</div>
 							</div>
 						</div>
@@ -304,7 +306,7 @@
 				<div class="performance-label">Read Rate</div>
 				<div class="performance-value">{readRate.toFixed(1)}%</div>
 				<div class="performance-chart">
-					<div class="circle-progress" style="--progress: {readRate}"></div>
+					<div class="circle-progress" style:--progress={readRate}></div>
 				</div>
 			</div>
 
