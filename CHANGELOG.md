@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **325 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **322 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -18,6 +18,9 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed `BunnyVideoUploader.svelte`: converted upload/dropzone class directives and dynamic progress width to Svelte 5 class/style composition, then replaced `bind:this` file input control with `$props.id()` plus `bind:files`.
 - Completed `FormReport.svelte`: converted variant/tab classes and chart-bar styles to Svelte 5 class/style composition, and replaced the state-mutating report load effect with a derived promise rendered by `{#await}`.
 - Completed `admin/popups/+page.svelte`: converted tab/status active classes to Svelte 5 class composition and moved tab counts to derived values instead of inline filters.
+- Completed `CtaBlock.svelte`: converted interpolated CTA wrapper classes and generated style strings to Svelte 5 class arrays plus a `style:background-color` directive.
+- Completed `MediaAnalytics.svelte`: converted compact/progress/storage styling to Svelte 5 class/style directives, derived repeated rates/storage type data, and made the mount loader a synchronous `onMount` callback.
+- Completed `AdminApprovalStatus.svelte`: converted error/status/history styling to Svelte 5 class/style directives and replaced the static approval-note textarea ID with `$props.id()`.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.
