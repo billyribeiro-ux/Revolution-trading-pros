@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 329 Svelte files remaining.
+- Broad dynamic class/style migration scan: 328 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -23,6 +23,7 @@ Current evidence:
 - [x] 2026-06-08: Completed `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`; replaced legacy `class:active` sort bindings with Svelte 5 class composition and moved one-shot downloads loading to `onMount` with abort cleanup.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/InventoryField.svelte`; replaced legacy class directives/interpolated classes, moved selection state to a bindable value array, and used a derived `SvelteMap` for reactive lookup totals.
 - [x] 2026-06-08: Completed `frontend/src/routes/indicators/macd/+page.svelte`; replaced hero visibility `class:` directive with Svelte 5 class composition and moved the bearish signal icon rotation into scoped CSS.
+- [x] 2026-06-08: Completed `frontend/src/routes/admin/seo/redirects/+page.svelte`; replaced filter/status class directives and dynamic redirect type badge classes with Svelte 5 class composition, and moved static table column widths into scoped CSS.
 
 ## Remaining Files
 
@@ -301,7 +302,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/routes/admin/seo/analytics/+page.svelte`
 - [ ] `frontend/src/routes/admin/seo/meta/+page.svelte`
 - [ ] `frontend/src/routes/admin/seo/news-sitemap/+page.svelte`
-- [ ] `frontend/src/routes/admin/seo/redirects/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/redirects/+page.svelte`
 - [ ] `frontend/src/routes/admin/seo/schema/+page.svelte`
 - [ ] `frontend/src/routes/admin/trading-rooms/+page.svelte`
 - [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/CloseTradeModal.svelte`

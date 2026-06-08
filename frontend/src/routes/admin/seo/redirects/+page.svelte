@@ -124,6 +124,18 @@
 			return matchesSearch && matchesFilter;
 		})
 	);
+
+	function getFilterTabClass(type: string) {
+		return ['filter-tab', activeFilter === type && 'active'];
+	}
+
+	function getRedirectTypeBadgeClass(type: Redirect['redirect_type']) {
+		return ['type-badge', `type-${type}`];
+	}
+
+	function getStatusToggleClass(isActive: boolean | undefined) {
+		return ['status-toggle', Boolean(isActive) && 'active'];
+	}
 </script>
 
 <svelte:head>
@@ -179,11 +191,7 @@
 		<div class="filter-tabs">
 			{#each filterTypes as type (type)}
 				{@const label = type === 'all' ? 'All' : type}
-				<button
-					class="filter-tab"
-					class:active={activeFilter === type}
-					onclick={() => (activeFilter = type)}
-				>
+				<button type="button" class={getFilterTabClass(type)} onclick={() => (activeFilter = type)}>
 					{label}
 				</button>
 			{/each}
@@ -213,7 +221,7 @@
 			<table>
 				<thead>
 					<tr>
-						<th style="width: 40px"
+						<th class="select-column"
 							><input id="select-all-redirects" name="select-all" type="checkbox" /></th
 						>
 						<th>Source URL</th>
@@ -221,7 +229,7 @@
 						<th>Type</th>
 						<th>Hits</th>
 						<th>Status</th>
-						<th style="width: 120px">Actions</th>
+						<th class="actions-column">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -246,15 +254,15 @@
 							</td>
 							<td class="destination-url">{redirect.destination_url}</td>
 							<td>
-								<span class="type-badge type-{redirect.redirect_type}">
+								<span class={getRedirectTypeBadgeClass(redirect.redirect_type)}>
 									{redirect.redirect_type}
 								</span>
 							</td>
 							<td>{redirect.hits?.toLocaleString() || 0}</td>
 							<td>
 								<button
-									class="status-toggle"
-									class:active={redirect.is_active}
+									type="button"
+									class={getStatusToggleClass(redirect.is_active)}
 									onclick={() => toggleRedirect(redirect)}
 								>
 									{#if redirect.is_active}
@@ -470,6 +478,14 @@
 		font-weight: 600;
 		color: #1a1a1a;
 		font-size: 0.9rem;
+	}
+
+	.select-column {
+		width: 40px;
+	}
+
+	.actions-column {
+		width: 120px;
 	}
 
 	td {
