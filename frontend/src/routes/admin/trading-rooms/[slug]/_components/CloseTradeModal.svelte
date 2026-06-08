@@ -72,9 +72,13 @@
 					<div class="trade-summary-row">
 						<span class="label">Direction:</span>
 						<span
-							class="value direction-badge"
-							class:long={closingTrade.direction === 'long'}
-							class:short={closingTrade.direction === 'short'}
+							class={[
+								'value direction-badge',
+								{
+									long: closingTrade.direction === 'long',
+									short: closingTrade.direction === 'short'
+								}
+							]}
 						>
 							{closingTrade.direction.toUpperCase()}
 						</span>

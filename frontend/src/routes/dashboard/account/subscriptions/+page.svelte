@@ -83,7 +83,7 @@
 									<small>Started: {formatDate(subscription.startDate)}</small>
 								</td>
 								<td class="subscription-status" data-title="Status">
-									<span class="subscription-status-badge {getStatusClass(subscription.status)}">
+									<span class={['subscription-status-badge', getStatusClass(subscription.status)]}>
 										{subscription.status}
 									</span>
 								</td>

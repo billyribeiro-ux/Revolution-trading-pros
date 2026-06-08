@@ -34,22 +34,23 @@
 
 <nav class="tabs">
 	<button
-		class="tab"
-		class:active={activeTab === 'trade-plan'}
+		class={['tab', { active: activeTab === 'trade-plan' }]}
 		onclick={() => (activeTab = 'trade-plan')}
 	>
 		<IconTable size={20} />
 		<span>Trade Plan</span>
 		<span class="badge">{tradePlanCount}</span>
 	</button>
-	<button class="tab" class:active={activeTab === 'alerts'} onclick={() => (activeTab = 'alerts')}>
+	<button
+		class={['tab', { active: activeTab === 'alerts' }]}
+		onclick={() => (activeTab = 'alerts')}
+	>
 		<IconBell size={20} />
 		<span>Alerts</span>
 		<span class="badge">{alertsCount}</span>
 	</button>
 	<button
-		class="tab"
-		class:active={activeTab === 'weekly-video'}
+		class={['tab', { active: activeTab === 'weekly-video' }]}
 		onclick={() => (activeTab = 'weekly-video')}
 	>
 		<IconVideo size={20} />
@@ -58,7 +59,10 @@
 			<span class="badge active">1</span>
 		{/if}
 	</button>
-	<button class="tab" class:active={activeTab === 'trades'} onclick={() => (activeTab = 'trades')}>
+	<button
+		class={['tab', { active: activeTab === 'trades' }]}
+		onclick={() => (activeTab = 'trades')}
+	>
 		<IconChartLine size={20} />
 		<span>Trade Tracker</span>
 		{#if activeTradesCount > 0}
@@ -68,8 +72,7 @@
 		{/if}
 	</button>
 	<button
-		class="tab"
-		class:active={activeTab === 'video-library'}
+		class={['tab', { active: activeTab === 'video-library' }]}
 		onclick={() => (activeTab = 'video-library')}
 	>
 		<IconPlayerPlay size={20} />

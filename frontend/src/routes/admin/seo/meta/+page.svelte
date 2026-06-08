@@ -66,8 +66,7 @@
 				{:else}
 					{#each filteredEntities as entity (entity.id)}
 						<button
-							class="entity-item"
-							class:active={selectedEntity?.id === entity.id}
+							class={['entity-item', { active: selectedEntity?.id === entity.id }]}
 							onclick={() => (selectedEntity = entity)}
 						>
 							<div class="entity-info">
@@ -76,10 +75,14 @@
 							</div>
 							{#if entity.seo_score}
 								<div
-									class="score-badge"
-									class:good={entity.seo_score >= 70}
-									class:warning={entity.seo_score >= 40 && entity.seo_score < 70}
-									class:poor={entity.seo_score < 40}
+									class={[
+										'score-badge',
+										{
+											good: entity.seo_score >= 70,
+											warning: entity.seo_score >= 40 && entity.seo_score < 70,
+											poor: entity.seo_score < 40
+										}
+									]}
 								>
 									{entity.seo_score}
 								</div>

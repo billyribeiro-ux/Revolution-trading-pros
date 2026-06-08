@@ -63,8 +63,7 @@
 			<div class="period-selector" role="group" aria-label="Time period selection">
 				{#each periods as period (period.value)}
 					<button
-						class="period-btn"
-						class:active={analytics.selectedPeriod === period.value}
+						class={['period-btn', { active: analytics.selectedPeriod === period.value }]}
 						onclick={() => analytics.setPeriod(period.value)}
 						aria-pressed={analytics.selectedPeriod === period.value}
 					>
