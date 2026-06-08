@@ -24,6 +24,8 @@
 	let showDeleteModal = $state(false);
 	let pendingDeleteId = $state<string | null>(null);
 	let deleting = $state(false);
+	const activePopupCount = $derived(popups.filter((popup) => popup.isActive).length);
+	const inactivePopupCount = $derived(popups.length - activePopupCount);
 
 	// FIX-2026-04-26 (07-marketing P2-9): replaced $effect + browser guard with
 	// onMount — correct pattern for one-shot side effects that assign state.
@@ -102,6 +104,14 @@
 		return ((popup.conversions / popup.impressions) * 100).toFixed(1) + '%';
 	}
 
+	function getTabClass(tab: typeof selectedTab) {
+		return ['tab', selectedTab === tab && 'active'];
+	}
+
+	function getStatusBadgeClass(popup: Popup) {
+		return ['status-badge', popup.isActive && 'active'];
+	}
+
 	let filteredPopups = $derived(
 		popups.filter((popup) => {
 			if (selectedTab === 'active') return popup.isActive;
@@ -135,8 +145,7 @@
 		<!-- Tabs -->
 		<div class="tabs">
 			<button
-				class="tab"
-				class:active={selectedTab === 'all'}
+				class={getTabClass('all')}
 				onclick={() => (selectedTab = 'all')}
 				role="tab"
 				aria-selected={selectedTab === 'all'}
@@ -144,22 +153,20 @@
 				All Popups ({popups.length})
 			</button>
 			<button
-				class="tab"
-				class:active={selectedTab === 'active'}
+				class={getTabClass('active')}
 				onclick={() => (selectedTab = 'active')}
 				role="tab"
 				aria-selected={selectedTab === 'active'}
 			>
-				Active ({popups.filter((p) => p.isActive).length})
+				Active ({activePopupCount})
 			</button>
 			<button
-				class="tab"
-				class:active={selectedTab === 'inactive'}
+				class={getTabClass('inactive')}
 				onclick={() => (selectedTab = 'inactive')}
 				role="tab"
 				aria-selected={selectedTab === 'inactive'}
 			>
-				Inactive ({popups.filter((p) => !p.isActive).length})
+				Inactive ({inactivePopupCount})
 			</button>
 		</div>
 
@@ -185,7 +192,7 @@
 					<div class="popup-card">
 						<!-- Status Badge -->
 						<div class="card-header">
-							<div class="status-badge" class:active={popup.isActive}>
+							<div class={getStatusBadgeClass(popup)}>
 								{popup.isActive ? 'Active' : 'Inactive'}
 							</div>
 							<button
