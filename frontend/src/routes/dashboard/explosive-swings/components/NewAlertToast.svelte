@@ -5,6 +5,7 @@
 	 * @description Displays a toast notification when new trading alerts arrive
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
+	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import type { RoomAlert } from '$lib/types/trading';
 
@@ -27,13 +28,19 @@
 
 	let visible = $state(true);
 
-	$effect(() => {
-		const timer = setTimeout(() => {
+	onMount(() => {
+		let dismissTimer: ReturnType<typeof setTimeout> | undefined;
+		const hideTimer = setTimeout(() => {
 			visible = false;
-			setTimeout(onDismiss, 300);
+			dismissTimer = setTimeout(onDismiss, 300);
 		}, duration);
 
-		return () => clearTimeout(timer);
+		return () => {
+			clearTimeout(hideTimer);
+			if (dismissTimer) {
+				clearTimeout(dismissTimer);
+			}
+		};
 	});
 
 	const alertTypeConfig = $derived.by(() => {
@@ -66,7 +73,7 @@
 	<div
 		transition:fly={{ y: -20, duration: 300 }}
 		class="toast"
-		style="--toast-border-color: {alertTypeConfig.borderColor}"
+		style:--toast-border-color={alertTypeConfig.borderColor}
 		role="alert"
 		aria-live="polite"
 	>

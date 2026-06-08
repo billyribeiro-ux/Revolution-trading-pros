@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 41 Svelte files remaining.
+- Broad dynamic class/style migration scan: 17 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -82,6 +82,8 @@ Current evidence:
 - [x] 2026-06-08: Completed admin trading-room batch: trading rooms `+page.svelte`, `CloseTradeModal.svelte`, `PageHeader.svelte`, `TabNavigation.svelte`, and `WeeklyVideoPanel.svelte`; replaced tracked room/thumbnail style strings, direction/tab class directives, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
 - [x] 2026-06-08: Completed public/account/day-trading route batch: `behavior/+page.svelte`, `classes/tax-loss-harvest-c/+page.svelte`, account coupons/payment-methods/subscriptions pages, daily videos, trader store, trading strategies, and day-trading video detail pages; replaced tracked active/default/expired/featured/status class bindings and dynamic width/background/category/difficulty styles with Svelte 5 class arrays and `style:` directives.
 - [x] 2026-06-08: Completed explosive swings analytics period batch: analytics `+page.svelte` and `DateRangePicker.svelte`; replaced tracked period active class directives with Svelte 5 class arrays.
+- [x] 2026-06-08: Completed explosive swings analytics chart/table batch: `DrawdownChart.svelte`, `EquityCurveChart.svelte`, `MetricCard.svelte`, `MonthlyReturnsChart.svelte`, `SetupBreakdown.svelte`, `StreakIndicator.svelte`, `TickerHeatmap.svelte`, and `TickerPerformanceTable.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, migrated legacy declaration tags, and replaced chart container `bind:this` resize wiring with attachments.
+- [x] 2026-06-08: Completed remaining explosive swings batch: core components, search cards/filters, trades skeleton/stats, favorites, and watchlist pages; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, moved modal body-lock/focus lifecycle to an attachment, and moved alert toast timers from `$effect` to `onMount` cleanup.
 
 ## Remaining Files
 
@@ -378,30 +380,30 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/dashboard/day-trading-room/video/[slug]/+page.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/analytics/+page.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/DateRangePicker.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/DrawdownChart.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/EquityCurveChart.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/MetricCard.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/MonthlyReturnsChart.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/SetupBreakdown.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/StreakIndicator.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/TickerHeatmap.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/analytics/components/TickerPerformanceTable.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/ActivePositionCard.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/AlertsFeed.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/ApiErrorDisplay.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/LatestUpdatesCard.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/NewAlertPulse.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/NewAlertToast.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/TickerPill.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/components/VideoModal.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/favorites/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/search/components/AlertResultCard.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/search/components/SearchFilters.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/search/components/TradePlanResultCard.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/search/components/TradeResultCard.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/trades/components/StatsGrid.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/trades/components/TableSkeleton.svelte`
-- [ ] `frontend/src/routes/dashboard/explosive-swings/watchlist/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/DrawdownChart.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/EquityCurveChart.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/MetricCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/MonthlyReturnsChart.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/SetupBreakdown.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/StreakIndicator.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/TickerHeatmap.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/analytics/components/TickerPerformanceTable.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/ActivePositionCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/AlertsFeed.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/ApiErrorDisplay.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/LatestUpdatesCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/NewAlertPulse.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/NewAlertToast.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/TickerPill.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/components/VideoModal.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/favorites/+page.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/search/components/AlertResultCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/search/components/SearchFilters.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/search/components/TradePlanResultCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/search/components/TradeResultCard.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/trades/components/StatsGrid.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/trades/components/TableSkeleton.svelte`
+- [x] `frontend/src/routes/dashboard/explosive-swings/watchlist/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/small-account-mentorship/daily-videos/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/small-account-mentorship/favorites/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/small-account-mentorship/meet-the-traders/[slug]/trader-store/+page.svelte`

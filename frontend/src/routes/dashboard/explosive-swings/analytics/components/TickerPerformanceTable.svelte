@@ -92,10 +92,9 @@
 					<tr>
 						{#each columns as col (col.key)}
 							<th
-								class="sortable"
-								class:sorted={sortKey === col.key}
+								class={['sortable', { sorted: sortKey === col.key }]}
 								onclick={() => handleSort(col.key)}
-								style="text-align: {col.align}"
+								style:text-align={col.align}
 							>
 								<span class="th-content">
 									{col.label}
@@ -113,30 +112,36 @@
 				</thead>
 				<tbody>
 					{#each sortedData as ticker, index (ticker.ticker)}
-						<tr class:even={index % 2 === 0}>
+						<tr class={{ even: index % 2 === 0 }}>
 							<td class="ticker-cell">
 								<span class="ticker-rank">{index + 1}</span>
 								<span class="ticker-symbol">{ticker.ticker}</span>
 							</td>
 							<td class="numeric-cell">{ticker.total_trades}</td>
 							<td
-								class="numeric-cell"
-								class:profit={ticker.win_rate >= 50}
-								class:loss={ticker.win_rate < 50}
+								class={[
+									'numeric-cell',
+									{ profit: ticker.win_rate >= 50, loss: ticker.win_rate < 50 }
+								]}
 							>
 								{ticker.win_rate.toFixed(1)}%
 							</td>
 							<td
-								class="numeric-cell pnl"
-								class:profit={ticker.total_pnl_percent >= 0}
-								class:loss={ticker.total_pnl_percent < 0}
+								class={[
+									'numeric-cell pnl',
+									{
+										profit: ticker.total_pnl_percent >= 0,
+										loss: ticker.total_pnl_percent < 0
+									}
+								]}
 							>
 								{formatPercent(ticker.total_pnl_percent)}
 							</td>
 							<td
-								class="numeric-cell"
-								class:profit={ticker.avg_pnl_percent >= 0}
-								class:loss={ticker.avg_pnl_percent < 0}
+								class={[
+									'numeric-cell',
+									{ profit: ticker.avg_pnl_percent >= 0, loss: ticker.avg_pnl_percent < 0 }
+								]}
 							>
 								{formatPercent(ticker.avg_pnl_percent)}
 							</td>

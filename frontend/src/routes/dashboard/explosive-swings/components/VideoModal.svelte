@@ -8,6 +8,7 @@
 	 * @version 1.0.0
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
+	import type { Attachment } from 'svelte/attachments';
 	import type { Video } from '../types';
 
 	// Bunny.net URL validation
@@ -29,27 +30,15 @@
 
 	const { video, isOpen, onClose }: Props = $props();
 
-	// Modal ref for focus management
-	let modalRef = $state<HTMLDivElement | null>(null);
-
-	// Body scroll lock
-	$effect(() => {
-		if (!isOpen) return;
-
+	const lockBodyAndFocus: Attachment<HTMLDivElement> = (node) => {
 		const previousOverflow = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
+		node.focus();
 
 		return () => {
 			document.body.style.overflow = previousOverflow;
 		};
-	});
-
-	// Focus modal when opened
-	$effect(() => {
-		if (isOpen && modalRef) {
-			modalRef.focus();
-		}
-	});
+	};
 
 	function handleBackdropClick(e: MouseEvent) {
 		if (e.target === e.currentTarget) {
@@ -73,7 +62,7 @@
 
 {#if isOpen && video}
 	<div
-		bind:this={modalRef}
+		{@attach lockBodyAndFocus}
 		class="modal-backdrop"
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}
@@ -122,7 +111,7 @@
 						<span class="ticker-badge">{video.ticker}</span>
 					{/if}
 					{#if video.type}
-						<span class="type-badge type-{video.type.toLowerCase()}">{video.type}</span>
+						<span class={['type-badge', `type-${video.type.toLowerCase()}`]}>{video.type}</span>
 					{/if}
 				</div>
 				<h2 id="video-modal-title" class="video-title">{video.title}</h2>

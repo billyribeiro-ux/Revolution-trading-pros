@@ -45,10 +45,10 @@
 	const relevancePercent = $derived(Math.round(plan.relevance_score * 100));
 </script>
 
-<article class="plan-card" class:inactive={!plan.is_active}>
+<article class={['plan-card', { inactive: !plan.is_active }]}>
 	<div class="card-header">
 		<span class="ticker-badge">{plan.ticker}</span>
-		<span class="bias-badge {biasStyle.bg}">{plan.bias.toUpperCase()}</span>
+		<span class={['bias-badge', biasStyle.bg]}>{plan.bias.toUpperCase()}</span>
 		{#if !plan.is_active}
 			<span class="inactive-badge">INACTIVE</span>
 		{/if}

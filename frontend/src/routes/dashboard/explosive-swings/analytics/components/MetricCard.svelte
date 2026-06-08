@@ -45,7 +45,7 @@
 	);
 </script>
 
-<div class="metric-card variant-{variant} size-{size}" class:loading={isLoading}>
+<div class={['metric-card', `variant-${variant}`, `size-${size}`, { loading: isLoading }]}>
 	{#if isLoading}
 		<div class="skeleton-title"></div>
 		<div class="skeleton-value"></div>
@@ -68,7 +68,7 @@
 					<span class="subtitle">{subtitle}</span>
 				{/if}
 				{#if formattedChange}
-					<span class="change {changeColor}">
+					<span class={['change', changeColor]}>
 						{formattedChange}
 						{#if changeLabel}
 							<span class="change-label">{changeLabel}</span>

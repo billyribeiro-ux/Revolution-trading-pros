@@ -132,15 +132,14 @@
 			<div class="legend-section">
 				{#each pieData as setup (setup.setup)}
 					<div
-						class="legend-item"
-						class:hovered={hoveredSetup === setup.setup}
+						class={['legend-item', { hovered: hoveredSetup === setup.setup }]}
 						role="button"
 						tabindex="0"
 						aria-label="{setup.setup} trading setup details"
 						onmouseenter={() => (hoveredSetup = setup.setup)}
 						onmouseleave={() => (hoveredSetup = null)}
 					>
-						<div class="legend-color" style="background-color: {setup.color}"></div>
+						<div class="legend-color" style:background-color={setup.color}></div>
 						<div class="legend-content">
 							<div class="legend-header">
 								<span class="setup-name">{setup.setup}</span>
@@ -149,18 +148,10 @@
 								>
 							</div>
 							<div class="setup-stats">
-								<span
-									class="stat"
-									class:profit={setup.win_rate >= 50}
-									class:loss={setup.win_rate < 50}
-								>
+								<span class={['stat', { profit: setup.win_rate >= 50, loss: setup.win_rate < 50 }]}>
 									{setup.win_rate.toFixed(0)}% WR
 								</span>
-								<span
-									class="stat"
-									class:profit={setup.total_pnl >= 0}
-									class:loss={setup.total_pnl < 0}
-								>
+								<span class={['stat', { profit: setup.total_pnl >= 0, loss: setup.total_pnl < 0 }]}>
 									P&L: ${setup.total_pnl.toFixed(2)}
 								</span>
 								<span class="stat">PF: {formatRatio(setup.profit_factor)}</span>

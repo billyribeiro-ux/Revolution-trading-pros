@@ -53,22 +53,18 @@
 	const relevancePercent = $derived(Math.round(trade.relevance_score * 100));
 </script>
 
-<article
-	class="trade-card"
-	class:win={isWin && !isOpen}
-	class:loss={!isWin && !isOpen}
-	class:open={isOpen}
->
+<article class={['trade-card', { win: isWin && !isOpen, loss: !isWin && !isOpen, open: isOpen }]}>
 	<div class="card-header">
 		<span class="ticker-badge">{trade.ticker}</span>
 		<span
-			class="direction-badge"
-			class:long={trade.direction === 'long'}
-			class:short={trade.direction === 'short'}
+			class={[
+				'direction-badge',
+				{ long: trade.direction === 'long', short: trade.direction === 'short' }
+			]}
 		>
 			{trade.direction.toUpperCase()}
 		</span>
-		<span class="status-badge" class:open={isOpen} class:closed={!isOpen}>
+		<span class={['status-badge', { open: isOpen, closed: !isOpen }]}>
 			{trade.status.toUpperCase()}
 		</span>
 		<span class="date">{formatDate(trade.entry_date)}</span>
@@ -98,7 +94,7 @@
 		{#if trade.pnl_percent !== null}
 			<div class="detail-row">
 				<span class="detail-label">P/L</span>
-				<span class="detail-value pnl" class:positive={isWin} class:negative={!isWin}>
+				<span class={['detail-value', 'pnl', { positive: isWin, negative: !isWin }]}>
 					{formatPercent(trade.pnl_percent)}
 				</span>
 			</div>
@@ -107,7 +103,7 @@
 		{#if trade.result}
 			<div class="detail-row">
 				<span class="detail-label">Result</span>
-				<span class="result-badge" class:win={isWin} class:loss={!isWin}>
+				<span class={['result-badge', { win: isWin, loss: !isWin }]}>
 					{trade.result}
 				</span>
 			</div>

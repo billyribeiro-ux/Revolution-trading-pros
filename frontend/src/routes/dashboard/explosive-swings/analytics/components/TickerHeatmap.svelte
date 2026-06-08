@@ -54,8 +54,7 @@
 		<h3 class="section-title">Performance by Ticker</h3>
 		<div class="tab-group" role="tablist">
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'all'}
+				class={['tab-btn', { active: activeTab === 'all' }]}
 				onclick={() => (activeTab = 'all')}
 				role="tab"
 				aria-selected={activeTab === 'all'}
@@ -63,8 +62,7 @@
 				All ({data.length})
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'top'}
+				class={['tab-btn', { active: activeTab === 'top' }]}
 				onclick={() => (activeTab = 'top')}
 				role="tab"
 				aria-selected={activeTab === 'top'}
@@ -72,8 +70,7 @@
 				Top 5
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'worst'}
+				class={['tab-btn', { active: activeTab === 'worst' }]}
 				onclick={() => (activeTab = 'worst')}
 				role="tab"
 				aria-selected={activeTab === 'worst'}
@@ -100,10 +97,10 @@
 				{#each sortedData as ticker (ticker.ticker)}
 					<div
 						class="heatmap-cell"
-						style="background-color: {getBackgroundColor(ticker.total_pnl_percent)}"
+						style:background-color={getBackgroundColor(ticker.total_pnl_percent)}
 					>
 						<div class="cell-ticker">{ticker.ticker}</div>
-						<div class="cell-pnl" style="color: {getHeatmapColor(ticker.total_pnl_percent)}">
+						<div class="cell-pnl" style:color={getHeatmapColor(ticker.total_pnl_percent)}>
 							{formatPercent(ticker.total_pnl_percent)}
 						</div>
 						<div class="cell-stats">

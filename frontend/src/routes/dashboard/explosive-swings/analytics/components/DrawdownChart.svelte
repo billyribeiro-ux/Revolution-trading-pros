@@ -5,7 +5,7 @@
 	 * @description Displays drawdown over time as an area chart
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import type { EquityPoint } from '../analytics.state.svelte';
 
 	interface Props {
@@ -15,9 +15,7 @@
 
 	const { data, isLoading = false }: Props = $props();
 
-	// DOM reference for responsive width measurement. Declaring with $state()
-	// keeps bind:this reactive (removes the prior svelte-ignore non_reactive_update).
-	let containerEl: HTMLDivElement | undefined = $state();
+	let containerEl: HTMLDivElement | undefined;
 	let width = $state(400);
 	let hoveredIndex: number | null = $state(null);
 	let tooltipX = $state(0);
@@ -129,14 +127,18 @@
 		hoveredIndex = null;
 	}
 
-	onMount(() => {
+	const trackContainer: Attachment<HTMLDivElement> = (node) => {
+		containerEl = node;
 		handleResize();
 		window.addEventListener('resize', handleResize);
-	});
 
-	onDestroy(() => {
-		window.removeEventListener('resize', handleResize);
-	});
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			if (containerEl === node) {
+				containerEl = undefined;
+			}
+		};
+	};
 </script>
 
 <div class="drawdown-chart" role="region" aria-label="Drawdown chart">
@@ -157,7 +159,7 @@
 		</div>
 	{:else}
 		<div
-			bind:this={containerEl}
+			{@attach trackContainer}
 			class="chart-container"
 			onmousemove={handleMouseMove}
 			onmouseleave={handleMouseLeave}
@@ -247,8 +249,8 @@
 
 			<!-- Tooltip -->
 			{#if hoveredIndex !== null}
-				{@const point = data[hoveredIndex]}
-				<div class="tooltip" style="left: {tooltipX}px; top: {tooltipY + 15}px">
+				{const point = data[hoveredIndex]}
+				<div class="tooltip" style:left={`${tooltipX}px`} style:top={`${tooltipY + 15}px`}>
 					<div class="tooltip-value">{formatPercent(point.drawdown_percent)}</div>
 					<div class="tooltip-date">{formatDate(point.date)}</div>
 				</div>
@@ -269,7 +271,7 @@
 			{/if}
 			<div class="summary-stat">
 				<span class="stat-label">Current DD</span>
-				<span class="stat-value" class:loss={data[data.length - 1]?.drawdown_percent < 0}>
+				<span class={['stat-value', { loss: data[data.length - 1]?.drawdown_percent < 0 }]}>
 					{formatPercent(data[data.length - 1]?.drawdown_percent ?? 0)}
 				</span>
 			</div>

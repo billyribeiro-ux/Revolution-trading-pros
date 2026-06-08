@@ -80,8 +80,7 @@
 	<div class="filter-tabs" role="tablist" aria-label="Filter alerts by type">
 		{#each filterOptions as option (option.value)}
 			<button
-				class="filter-tab"
-				class:active={activeFilter === option.value}
+				class={['filter-tab', { active: activeFilter === option.value }]}
 				role="tab"
 				aria-selected={activeFilter === option.value}
 				onclick={() => setFilter(option.value)}

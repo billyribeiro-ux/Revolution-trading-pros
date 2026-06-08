@@ -20,9 +20,7 @@
 </script>
 
 <div
-	class="pill"
-	class:win={isWinner}
-	class:loss={!isWinner}
+	class={['pill', { win: isWinner, loss: !isWinner }]}
 	role="listitem"
 	aria-label="{trade.ticker}: {formatPercent(trade.percentageGain)}"
 >

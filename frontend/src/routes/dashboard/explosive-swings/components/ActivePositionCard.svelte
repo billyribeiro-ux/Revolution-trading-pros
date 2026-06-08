@@ -75,7 +75,7 @@
 
 <svelte:window onclick={handleClickOutside} />
 
-<div class="card {statusClass}">
+<div class={['card', statusClass]}>
 	<!-- Updated Badge -->
 	{#if position.wasUpdated}
 		<span class="updated-badge">UPDATED</span>
@@ -86,9 +86,7 @@
 		<span class="ticker">{position.ticker}</span>
 		<span class="status">{position.status}</span>
 		<span
-			class="pnl"
-			class:profit={isProfit}
-			class:loss={!isProfit && position.unrealizedPercent !== null}
+			class={['pnl', { profit: isProfit, loss: !isProfit && position.unrealizedPercent !== null }]}
 		>
 			{position.unrealizedPercent !== null ? formatPercent(position.unrealizedPercent) : '—'}
 		</span>
@@ -114,9 +112,8 @@
 		<div class="row-progress">
 			<div class="bar">
 				<div
-					class="fill"
-					class:profit={isProfit}
-					style="width:{Math.min(100, position.progressToTarget1)}%"
+					class={['fill', { profit: isProfit }]}
+					style:width={`${Math.min(100, position.progressToTarget1)}%`}
 				></div>
 			</div>
 			<span class="pct">{position.progressToTarget1.toFixed(0)}%</span>

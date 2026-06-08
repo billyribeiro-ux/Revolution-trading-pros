@@ -5,7 +5,7 @@
 	 * @description Displays monthly trading returns as a bar chart
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import type { MonthlyPerformance } from '../analytics.state.svelte';
 
 	interface Props {
@@ -15,9 +15,7 @@
 
 	const { data, isLoading = false }: Props = $props();
 
-	// DOM reference for responsive width measurement. Declaring with $state()
-	// keeps bind:this reactive (removes the prior svelte-ignore non_reactive_update).
-	let containerEl: HTMLDivElement | undefined = $state();
+	let containerEl: HTMLDivElement | undefined;
 	let width = $state(400);
 	let hoveredIndex: number | null = $state(null);
 
@@ -78,14 +76,18 @@
 		}
 	}
 
-	onMount(() => {
+	const trackContainer: Attachment<HTMLDivElement> = (node) => {
+		containerEl = node;
 		handleResize();
 		window.addEventListener('resize', handleResize);
-	});
 
-	onDestroy(() => {
-		window.removeEventListener('resize', handleResize);
-	});
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			if (containerEl === node) {
+				containerEl = undefined;
+			}
+		};
+	};
 </script>
 
 <div class="monthly-returns-chart" role="region" aria-label="Monthly returns chart">
@@ -104,11 +106,11 @@
 			<p>No monthly data available</p>
 		</div>
 	{:else}
-		<div bind:this={containerEl} class="chart-container">
+		<div {@attach trackContainer} class="chart-container">
 			<svg aria-hidden="true" {width} {height} class="chart-svg">
 				<!-- Grid lines -->
 				{#each [-1, -0.5, 0, 0.5, 1] as tick (tick)}
-					{@const y = padding.top + chartHeight / 2 - (tick * chartHeight) / 2}
+					{const y = padding.top + chartHeight / 2 - (tick * chartHeight) / 2}
 					<line
 						x1={padding.left}
 						y1={y}
@@ -130,9 +132,9 @@
 
 				<!-- Bars -->
 				{#each data as month, index (`${month.year}-${month.month}`)}
-					{@const barHeight = Math.abs(month.pnl_percent / maxAbsValue) * (chartHeight / 2)}
-					{@const barY = month.pnl_percent >= 0 ? scaleY(month.pnl_percent) : zeroY}
-					{@const x = scaleX(index) - barWidth / 2}
+					{const barHeight = Math.abs(month.pnl_percent / maxAbsValue) * (chartHeight / 2)}
+					{const barY = month.pnl_percent >= 0 ? scaleY(month.pnl_percent) : zeroY}
+					{const x = scaleX(index) - barWidth / 2}
 
 					<rect
 						{x}
@@ -141,8 +143,7 @@
 						height={barHeight}
 						fill={getBarColor(month.pnl_percent)}
 						rx="4"
-						class="bar"
-						class:hovered={hoveredIndex === index}
+						class={['bar', { hovered: hoveredIndex === index }]}
 						role="img"
 						aria-label="{month.month}: {formatPercent(month.pnl_percent)} ({month.pnl_percent >= 0
 							? 'profit'
@@ -163,17 +164,21 @@
 
 			<!-- Tooltip -->
 			{#if hoveredIndex !== null}
-				{@const month = data[hoveredIndex]}
+				{const month = data[hoveredIndex]}
 				<div
 					class="tooltip"
-					style="left: {scaleX(hoveredIndex)}px; top: {scaleY(Math.max(month.pnl_percent, 0)) -
-						60}px"
+					style:left={`${scaleX(hoveredIndex)}px`}
+					style:top={`${scaleY(Math.max(month.pnl_percent, 0)) - 60}px`}
 				>
 					<div class="tooltip-month">{formatFullMonth(month.month_name, month.year)}</div>
 					<div
-						class="tooltip-value"
-						class:profit={month.pnl_percent >= 0}
-						class:loss={month.pnl_percent < 0}
+						class={[
+							'tooltip-value',
+							{
+								profit: month.pnl_percent >= 0,
+								loss: month.pnl_percent < 0
+							}
+						]}
 					>
 						{formatPercent(month.pnl_percent)}
 					</div>
@@ -186,9 +191,9 @@
 
 		<!-- Summary Stats -->
 		{#if data.length > 0}
-			{@const positiveMonths = data.filter((m) => m.pnl_percent > 0).length}
-			{@const negativeMonths = data.filter((m) => m.pnl_percent < 0).length}
-			{@const avgReturn = data.reduce((acc, m) => acc + m.pnl_percent, 0) / data.length}
+			{const positiveMonths = data.filter((m) => m.pnl_percent > 0).length}
+			{const negativeMonths = data.filter((m) => m.pnl_percent < 0).length}
+			{const avgReturn = data.reduce((acc, m) => acc + m.pnl_percent, 0) / data.length}
 
 			<div class="summary-row">
 				<div class="summary-stat">
@@ -201,7 +206,7 @@
 				</div>
 				<div class="summary-stat">
 					<span class="stat-label">Avg Monthly</span>
-					<span class="stat-value" class:profit={avgReturn >= 0} class:loss={avgReturn < 0}>
+					<span class={['stat-value', { profit: avgReturn >= 0, loss: avgReturn < 0 }]}>
 						{formatPercent(avgReturn)}
 					</span>
 				</div>

@@ -123,7 +123,7 @@
 						</div>
 					</div>
 
-					<div class="bias-badge bias--{stock.bias.toLowerCase()}">
+					<div class={['bias-badge', `bias--${stock.bias.toLowerCase()}`]}>
 						{stock.bias}
 					</div>
 
@@ -166,7 +166,7 @@
 						</div>
 					{/if}
 
-					<div class="status-badge status--{stock.is_active ? 'active' : 'inactive'}">
+					<div class={['status-badge', `status--${stock.is_active ? 'active' : 'inactive'}`]}>
 						{stock.is_active ? 'ACTIVE' : 'INACTIVE'}
 					</div>
 
