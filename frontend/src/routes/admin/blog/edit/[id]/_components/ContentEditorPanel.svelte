@@ -27,7 +27,7 @@
 	}: Props = $props();
 </script>
 
-<div class="form-group editor-container" class:fullscreen={isFullscreen}>
+<div class={{ 'form-group': true, 'editor-container': true, fullscreen: isFullscreen }}>
 	<div class="editor-toolbar">
 		<h3 class="editor-label">Content</h3>
 		<div class="editor-actions">

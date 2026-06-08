@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 134 Svelte files remaining.
+- Broad dynamic class/style migration scan: 126 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -64,6 +64,7 @@ Current evidence:
 - [x] 2026-06-08: Completed options export/growth/saved/UI batch: `ExportPNG.svelte`, `WatermarkOverlay.svelte`, `ConfigCard.svelte`, `SaveConfigModal.svelte`, `AnimatedNumber.svelte`, and `AnimatedSlider.svelte`; replaced tracked dynamic style/class bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and style directives, moved export/save modal reset animations to attachments, and replaced effect-driven focus/number display with attachments and derived values.
 - [x] 2026-06-08: Completed options UI controls batch: `ConfirmDialog.svelte`, `GlassCard.svelte`, `InfoTooltip.svelte`, `MetricCard.svelte`, `SkeletonLoader.svelte`, `StrategyLegRow.svelte`, and `Toast.svelte`; replaced tracked dynamic class/style bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and style directives, migrated dialog/card/row/toast animation refs from effects/actions to attachments, and moved toast auto-dismiss timers onto per-toast attachments.
 - [x] 2026-06-08: Completed workbench/layout/error batch: workbench `+page.svelte`, `ComponentTree.svelte`, `SnippetEditor.svelte`, root `+layout.svelte`, and admin `+error.svelte`; replaced tracked class/style bindings with Svelte 5 class objects and style directives, moved workbench URL initialization to `onMount`, and moved admin error logging out of `$effect`.
+- [x] 2026-06-08: Completed admin blog taxonomy/edit batch: `NotificationsList.svelte`, category/tag `CategorySection.svelte`, `TagSection.svelte`, `ToastNotification.svelte`, and edit panels `CategoriesPanel.svelte`, `ContentEditorPanel.svelte`, `FeaturedImagePanel.svelte`, and `TagsPanel.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and style directives.
 
 ## Remaining Files
 
@@ -265,14 +266,14 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/(dev)/workbench/SnippetEditor.svelte`
 - [x] `frontend/src/routes/+layout.svelte`
 - [x] `frontend/src/routes/admin/+error.svelte`
-- [ ] `frontend/src/routes/admin/blog/_components/NotificationsList.svelte`
-- [ ] `frontend/src/routes/admin/blog/categories/_components/CategorySection.svelte`
-- [ ] `frontend/src/routes/admin/blog/categories/_components/TagSection.svelte`
-- [ ] `frontend/src/routes/admin/blog/categories/_components/ToastNotification.svelte`
-- [ ] `frontend/src/routes/admin/blog/edit/[id]/_components/CategoriesPanel.svelte`
-- [ ] `frontend/src/routes/admin/blog/edit/[id]/_components/ContentEditorPanel.svelte`
-- [ ] `frontend/src/routes/admin/blog/edit/[id]/_components/FeaturedImagePanel.svelte`
-- [ ] `frontend/src/routes/admin/blog/edit/[id]/_components/TagsPanel.svelte`
+- [x] `frontend/src/routes/admin/blog/_components/NotificationsList.svelte`
+- [x] `frontend/src/routes/admin/blog/categories/_components/CategorySection.svelte`
+- [x] `frontend/src/routes/admin/blog/categories/_components/TagSection.svelte`
+- [x] `frontend/src/routes/admin/blog/categories/_components/ToastNotification.svelte`
+- [x] `frontend/src/routes/admin/blog/edit/[id]/_components/CategoriesPanel.svelte`
+- [x] `frontend/src/routes/admin/blog/edit/[id]/_components/ContentEditorPanel.svelte`
+- [x] `frontend/src/routes/admin/blog/edit/[id]/_components/FeaturedImagePanel.svelte`
+- [x] `frontend/src/routes/admin/blog/edit/[id]/_components/TagsPanel.svelte`
 - [ ] `frontend/src/routes/admin/contacts/+page.svelte`
 - [ ] `frontend/src/routes/admin/coupons/_components/CouponCard.svelte`
 - [ ] `frontend/src/routes/admin/coupons/_components/CouponsFiltersBar.svelte`
