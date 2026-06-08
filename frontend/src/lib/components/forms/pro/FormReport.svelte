@@ -52,40 +52,46 @@
 
 	import Icon from '$lib/components/Icon.svelte';
 
-	let reportData = $state<ReportData | null>(null);
-	let isLoading = $state(true);
-	let error = $state<string | null>(null);
+	let actionError = $state<string | null>(null);
 	let isExporting = $state(false);
 	let activeFieldIndex = $state(0);
+	let reportReloadNonce = $state(0);
+	const reportPromise = $derived(
+		fetchReport(formId, dateRange?.start, dateRange?.end, reportReloadNonce)
+	);
 
-	async function loadReport() {
-		isLoading = true;
-		error = null;
+	function reloadReport() {
+		actionError = null;
+		reportReloadNonce += 1;
+	}
 
-		try {
-			const params = new URLSearchParams();
-			if (dateRange?.start) params.append('start_date', dateRange.start);
-			if (dateRange?.end) params.append('end_date', dateRange.end);
+	async function fetchReport(
+		currentFormId: number,
+		startDate: string | undefined,
+		endDate: string | undefined,
+		reloadNonce: number
+	): Promise<ReportData> {
+		reloadNonce;
 
-			const response = await fetch(`/api/forms/${formId}/report?${params.toString()}`);
+		const params = new URLSearchParams();
+		if (startDate) params.append('start_date', startDate);
+		if (endDate) params.append('end_date', endDate);
 
-			if (!response.ok) {
-				throw new Error('Failed to load report');
-			}
+		const response = await fetch(`/api/forms/${currentFormId}/report?${params.toString()}`);
 
-			const result = await response.json();
-			reportData = result.data;
-		} catch {
-			error = 'Failed to load report. Please try again.';
-		} finally {
-			isLoading = false;
+		if (!response.ok) {
+			throw new Error('Failed to load report');
 		}
+
+		const result = await response.json();
+		return result.data;
 	}
 
 	async function exportPdf() {
 		if (isExporting) return;
 
 		isExporting = true;
+		actionError = null;
 
 		try {
 			const params = new URLSearchParams();
@@ -108,7 +114,7 @@
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
 		} catch {
-			error = 'Failed to export report. Please try again.';
+			actionError = 'Failed to export report. Please try again.';
 		} finally {
 			isExporting = false;
 		}
@@ -122,168 +128,173 @@
 		const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 		return colors[index % colors.length];
 	}
-
-	$effect(() => {
-		loadReport();
-	});
 </script>
 
 <div
-	class="form-report"
-	class:variant-summary={variant === 'summary'}
-	class:variant-compact={variant === 'compact'}
+	class={[
+		'form-report',
+		variant === 'summary' && 'variant-summary',
+		variant === 'compact' && 'variant-compact'
+	]}
 >
-	{#if isLoading}
+	{#await reportPromise}
 		<div class="loading-state">
 			<span class="spinner"></span>
 			<span>Loading report...</span>
 		</div>
-	{:else if error}
+	{:then reportData}
+		{#if actionError}
+			<div class="error-state">
+				<Icon name="IconAlertCircle" size={20} />
+				<span>{actionError}</span>
+				<button type="button" class="retry-btn" onclick={reloadReport}>Try Again</button>
+			</div>
+		{:else if reportData}
+			<div class="report-header">
+				<div class="report-title">
+					<h2>{reportData.form_title}</h2>
+					<p class="date-range">
+						{reportData.date_range.start} - {reportData.date_range.end}
+					</p>
+				</div>
+				{#if allowExport}
+					<button type="button" class="export-btn" onclick={exportPdf} disabled={isExporting}>
+						{#if isExporting}
+							<span class="spinner small"></span>
+							Exporting...
+						{:else}
+							<Icon name="IconDownload" size={16} />
+							Export PDF
+						{/if}
+					</button>
+				{/if}
+			</div>
+
+			<!-- Summary Stats -->
+			<div class="stats-grid">
+				<div class="stat-card">
+					<div class="stat-icon submissions">
+						<Icon name="IconFileText" size={24} />
+					</div>
+					<div class="stat-content">
+						<div class="stat-value">{reportData.total_submissions.toLocaleString()}</div>
+						<div class="stat-label">Total Submissions</div>
+					</div>
+				</div>
+
+				{#if reportData.conversion_rate !== undefined}
+					<div class="stat-card">
+						<div class="stat-icon conversion">
+							<Icon name="IconTrendingUp" size={24} />
+						</div>
+						<div class="stat-content">
+							<div class="stat-value">{reportData.conversion_rate.toFixed(1)}%</div>
+							<div class="stat-label">Conversion Rate</div>
+						</div>
+					</div>
+				{/if}
+
+				{#if reportData.avg_completion_time}
+					<div class="stat-card">
+						<div class="stat-icon time">
+							<Icon name="IconClock" size={24} />
+						</div>
+						<div class="stat-content">
+							<div class="stat-value">{reportData.avg_completion_time}</div>
+							<div class="stat-label">Avg. Completion Time</div>
+						</div>
+					</div>
+				{/if}
+
+				<div class="stat-card">
+					<div class="stat-icon fields">
+						<Icon name="IconLayoutGrid" size={24} />
+					</div>
+					<div class="stat-content">
+						<div class="stat-value">{reportData.field_reports.length}</div>
+						<div class="stat-label">Fields Analyzed</div>
+					</div>
+				</div>
+			</div>
+
+			{#if variant !== 'compact'}
+				<!-- Field Reports -->
+				{#if showCharts && reportData.field_reports.length > 0}
+					<div class="field-reports">
+						<h3>Field Analysis</h3>
+
+						<div class="field-tabs">
+							{#each reportData.field_reports as field, index (field.field_name)}
+								<button
+									type="button"
+									class={['field-tab', activeFieldIndex === index && 'active']}
+									onclick={() => (activeFieldIndex = index)}
+								>
+									{field.field_label}
+								</button>
+							{/each}
+						</div>
+
+						{#if reportData.field_reports[activeFieldIndex]}
+							{@const field = reportData.field_reports[activeFieldIndex]}
+							<div class="field-report-card">
+								<div class="field-header">
+									<h4>{field.field_label}</h4>
+									<span class="response-count">{field.responses} responses</span>
+								</div>
+
+								<div class="field-chart">
+									{#each field.data.slice(0, 10) as item, itemIndex (item.value)}
+										<div class="chart-row">
+											<div class="chart-label" title={item.value}>
+												{item.value || '(Empty)'}
+											</div>
+											<div class="chart-bar-container">
+												<div
+													class="chart-bar"
+													style:width={getBarWidth(item.percentage)}
+													style:background-color={getBarColor(itemIndex)}
+												></div>
+												<span class="chart-value">{item.count} ({item.percentage.toFixed(1)}%)</span
+												>
+											</div>
+										</div>
+									{/each}
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
+				<!-- Top Sources -->
+				{#if reportData.top_sources && reportData.top_sources.length > 0}
+					<div class="top-sources">
+						<h3>Top Traffic Sources</h3>
+						<div class="sources-list">
+							{#each reportData.top_sources as source, index (source.source)}
+								<div class="source-item">
+									<span class="source-rank">#{index + 1}</span>
+									<span class="source-name">{source.source}</span>
+									<span class="source-count">{source.count}</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			{/if}
+		{:else}
+			<div class="empty-state">
+				<Icon name="IconFile" size={48} />
+				<p>No report data available</p>
+			</div>
+		{/if}
+	{:catch}
 		<div class="error-state">
 			<Icon name="IconAlertCircle" size={20} />
-			<span>{error}</span>
-			<button type="button" class="retry-btn" onclick={loadReport}>Try Again</button>
+			<span>Failed to load report. Please try again.</span>
+			<button type="button" class="retry-btn" onclick={reloadReport}>Try Again</button>
 		</div>
-	{:else if reportData}
-		<div class="report-header">
-			<div class="report-title">
-				<h2>{reportData.form_title}</h2>
-				<p class="date-range">
-					{reportData.date_range.start} - {reportData.date_range.end}
-				</p>
-			</div>
-			{#if allowExport}
-				<button type="button" class="export-btn" onclick={exportPdf} disabled={isExporting}>
-					{#if isExporting}
-						<span class="spinner small"></span>
-						Exporting...
-					{:else}
-						<Icon name="IconDownload" size={16} />
-						Export PDF
-					{/if}
-				</button>
-			{/if}
-		</div>
-
-		<!-- Summary Stats -->
-		<div class="stats-grid">
-			<div class="stat-card">
-				<div class="stat-icon submissions">
-					<Icon name="IconFileText" size={24} />
-				</div>
-				<div class="stat-content">
-					<div class="stat-value">{reportData.total_submissions.toLocaleString()}</div>
-					<div class="stat-label">Total Submissions</div>
-				</div>
-			</div>
-
-			{#if reportData.conversion_rate !== undefined}
-				<div class="stat-card">
-					<div class="stat-icon conversion">
-						<Icon name="IconTrendingUp" size={24} />
-					</div>
-					<div class="stat-content">
-						<div class="stat-value">{reportData.conversion_rate.toFixed(1)}%</div>
-						<div class="stat-label">Conversion Rate</div>
-					</div>
-				</div>
-			{/if}
-
-			{#if reportData.avg_completion_time}
-				<div class="stat-card">
-					<div class="stat-icon time">
-						<Icon name="IconClock" size={24} />
-					</div>
-					<div class="stat-content">
-						<div class="stat-value">{reportData.avg_completion_time}</div>
-						<div class="stat-label">Avg. Completion Time</div>
-					</div>
-				</div>
-			{/if}
-
-			<div class="stat-card">
-				<div class="stat-icon fields">
-					<Icon name="IconLayoutGrid" size={24} />
-				</div>
-				<div class="stat-content">
-					<div class="stat-value">{reportData.field_reports.length}</div>
-					<div class="stat-label">Fields Analyzed</div>
-				</div>
-			</div>
-		</div>
-
-		{#if variant !== 'compact'}
-			<!-- Field Reports -->
-			{#if showCharts && reportData.field_reports.length > 0}
-				<div class="field-reports">
-					<h3>Field Analysis</h3>
-
-					<div class="field-tabs">
-						{#each reportData.field_reports as field, index (field.field_name)}
-							<button
-								type="button"
-								class="field-tab"
-								class:active={activeFieldIndex === index}
-								onclick={() => (activeFieldIndex = index)}
-							>
-								{field.field_label}
-							</button>
-						{/each}
-					</div>
-
-					{#if reportData.field_reports[activeFieldIndex]}
-						{@const field = reportData.field_reports[activeFieldIndex]}
-						<div class="field-report-card">
-							<div class="field-header">
-								<h4>{field.field_label}</h4>
-								<span class="response-count">{field.responses} responses</span>
-							</div>
-
-							<div class="field-chart">
-								{#each field.data.slice(0, 10) as item, itemIndex (item.value)}
-									<div class="chart-row">
-										<div class="chart-label" title={item.value}>
-											{item.value || '(Empty)'}
-										</div>
-										<div class="chart-bar-container">
-											<div
-												class="chart-bar"
-												style="width: {getBarWidth(
-													item.percentage
-												)}; background-color: {getBarColor(itemIndex)}"
-											></div>
-											<span class="chart-value">{item.count} ({item.percentage.toFixed(1)}%)</span>
-										</div>
-									</div>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				</div>
-			{/if}
-
-			<!-- Top Sources -->
-			{#if reportData.top_sources && reportData.top_sources.length > 0}
-				<div class="top-sources">
-					<h3>Top Traffic Sources</h3>
-					<div class="sources-list">
-						{#each reportData.top_sources as source, index (source.source)}
-							<div class="source-item">
-								<span class="source-rank">#{index + 1}</span>
-								<span class="source-name">{source.source}</span>
-								<span class="source-count">{source.count}</span>
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if}
-		{/if}
-	{:else}
-		<div class="empty-state">
-			<Icon name="IconFile" size={48} />
-			<p>No report data available</p>
-		</div>
-	{/if}
+	{/await}
 </div>
 
 <style>

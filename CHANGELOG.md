@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **327 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **326 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -16,6 +16,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed `indicators/macd/+page.svelte`: converted hero reveal class binding to Svelte 5 class composition and moved static icon rotation from markup into scoped page CSS.
 - Completed `admin/seo/redirects/+page.svelte`: converted filter/status/type badge class bindings to Svelte 5 class composition and moved static table column widths into scoped page CSS.
 - Completed `BunnyVideoUploader.svelte`: converted upload/dropzone class directives and dynamic progress width to Svelte 5 class/style composition, then replaced `bind:this` file input control with `$props.id()` plus `bind:files`.
+- Completed `FormReport.svelte`: converted variant/tab classes and chart-bar styles to Svelte 5 class/style composition, and replaced the state-mutating report load effect with a derived promise rendered by `{#await}`.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.
