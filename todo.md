@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 57 Svelte files remaining.
+- Broad dynamic class/style migration scan: 52 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -79,6 +79,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin products edit/create batch: edit and create `ProductBasicFields.svelte`, `ProductPreviewCard.svelte`, `ProductPricingFields.svelte`, and `ProductTypeSelector.svelte`; replaced tracked form error/active/selected class directives, preview badge background strings, CSS custom property strings, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
 - [x] 2026-06-08: Completed admin resources/schedules batch: resources `BulkOperationsModal.svelte`/`RoomTabs.svelte` and schedules `RoomSelector.svelte`/`ScheduleEventCard.svelte`; replaced tracked active/danger/state class directives, room color styles, room-type class interpolation, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
 - [x] 2026-06-08: Completed admin SEO batch: `404-monitor/+page.svelte`, `analytics/+page.svelte`, `meta/+page.svelte`, `news-sitemap/+page.svelte`, and `schema/+page.svelte`; replaced tracked hit/trend/entity/score/status/type class directives and interpolations plus legacy declaration tags with Svelte 5 class arrays/objects and declaration tags.
+- [x] 2026-06-08: Completed admin trading-room batch: trading rooms `+page.svelte`, `CloseTradeModal.svelte`, `PageHeader.svelte`, `TabNavigation.svelte`, and `WeeklyVideoPanel.svelte`; replaced tracked room/thumbnail style strings, direction/tab class directives, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
 
 ## Remaining Files
 
@@ -359,11 +360,11 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/seo/news-sitemap/+page.svelte`
 - [x] `frontend/src/routes/admin/seo/redirects/+page.svelte`
 - [x] `frontend/src/routes/admin/seo/schema/+page.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/+page.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/CloseTradeModal.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/PageHeader.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/TabNavigation.svelte`
-- [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/WeeklyVideoPanel.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/+page.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/_components/CloseTradeModal.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/_components/PageHeader.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/_components/TabNavigation.svelte`
+- [x] `frontend/src/routes/admin/trading-rooms/[slug]/_components/WeeklyVideoPanel.svelte`
 - [ ] `frontend/src/routes/behavior/+page.svelte`
 - [ ] `frontend/src/routes/classes/tax-loss-harvest-c/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/account/coupons/+page.svelte`

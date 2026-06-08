@@ -28,7 +28,7 @@
 	</a>
 	<div class="header-row">
 		<div class="header-content">
-			<div class="room-badge" style="background: {room?.color || '#143E59'}">
+			<div class="room-badge" style:background={room?.color || '#143E59'}>
 				{room?.icon || '📊'}
 			</div>
 			<div>

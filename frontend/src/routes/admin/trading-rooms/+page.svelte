@@ -85,13 +85,13 @@
 		<!-- Room Cards Grid -->
 		<div class="rooms-grid">
 			{#each managedRooms as room (room.slug)}
-				{@const RoomIcon = getIconForRoom(room.slug)}
+				{const RoomIcon = getIconForRoom(room.slug)}
 				<button
 					class="room-card"
 					onclick={() => navigateToRoom(room)}
-					style="--room-color: {room.color}"
+					style:--room-color={room.color}
 				>
-					<div class="room-icon" style="background: {room.color}">
+					<div class="room-icon" style:background={room.color}>
 						<RoomIcon size={32} />
 					</div>
 					<div class="room-info">

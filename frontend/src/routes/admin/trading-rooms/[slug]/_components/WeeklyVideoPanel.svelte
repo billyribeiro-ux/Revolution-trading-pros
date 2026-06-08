@@ -30,7 +30,7 @@
 				{#if currentVideo.thumbnail_url}
 					<div
 						class="video-thumbnail"
-						style="background-image: url('{currentVideo.thumbnail_url}')"
+						style:background-image={`url('${currentVideo.thumbnail_url}')`}
 					>
 						{#if currentVideo.duration}
 							<span class="duration">{currentVideo.duration}</span>
