@@ -91,7 +91,7 @@
 							</div>
 						</td>
 						<td>
-							<span class="status-badge {getStatusColor(order.status)}">
+							<span class={['status-badge', getStatusColor(order.status)]}>
 								{order.status.replace('_', ' ')}
 							</span>
 						</td>

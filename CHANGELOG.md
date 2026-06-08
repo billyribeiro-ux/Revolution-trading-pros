@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **77 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **74 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -66,6 +66,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed admin indicators detail batch (`IndicatorFilesTab.svelte`, `IndicatorHeader.svelte`, `IndicatorTabs.svelte`, and `IndicatorVideosTab.svelte`): converted tracked active/published/draft class directives to Svelte 5 class arrays/objects.
 - Completed admin media utility batch (`ContextMenu.svelte`, `PageHeader.svelte`, `StatsPanel.svelte`, `ToastContainer.svelte`, and `UploadQueue.svelte`): converted tracked menu position styles, view/status/toast class directives/interpolations, and progress width strings to Svelte 5 class arrays and `style:` directives.
 - Completed admin members detail/list batch (member detail `EmailsTab.svelte`, `ExtendMembershipModal.svelte`, `MemberHeader.svelte`, `MemberStatsGrid.svelte`, `TagModal.svelte`, plus list `ImportModal.svelte` and `StatsGrid.svelte`): converted tracked status/icon/label interpolated classes, selected/has-file directives, and sparkline height strings to Svelte 5 class arrays and `style:` directives.
+- Completed admin orders batch (`OrderDetailModal.svelte`, `OrdersTable.svelte`, and `OrdersToolbar.svelte`): converted tracked status badge class interpolation and filter active directive to Svelte 5 class arrays.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.

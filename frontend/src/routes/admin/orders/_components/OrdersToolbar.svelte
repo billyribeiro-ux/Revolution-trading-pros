@@ -23,7 +23,7 @@
 	</div>
 
 	<div class="toolbar-actions">
-		<button class="filter-toggle" class:active={showFilters} onclick={ontoggleFilters}>
+		<button class={['filter-toggle', { active: showFilters }]} onclick={ontoggleFilters}>
 			<IconFilter size={18} />
 			Filters
 		</button>
