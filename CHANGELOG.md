@@ -318,6 +318,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Updated backend crate pins and `Cargo.lock` to current crates.io releases, then migrated the affected API changes (`hmac::KeyInit`, `sha2` digest formatting via `hex`) so `cargo check` and clippy stay green.
 - Updated local/runtime service images to **Postgres 18.4 Alpine**, **Redis 8.8.0 Alpine**, and **Meilisearch v1.46.0**, and aligned the API Docker builder image with **Rust 1.96**.
 - Added a pnpm peer override documenting that `vite-plugin-devtools-json@1.0.0` is the latest release and works with Vite 8 despite its stale peer range.
+- Follow-up after rebasing `main`: fixed reintroduced member-indicator HMAC constructors for `hmac` 0.13 by importing `KeyInit` and calling `Hmac::<Sha256>::new_from_slice(...)`.
 - Validation: `pnpm -r outdated --format json` returned `{}`, `pnpm peers check` passed, crates.io manifest audit returned `[]`, `SQLX_OFFLINE=true cargo check`, `SQLX_OFFLINE=true cargo clippy --all-targets -D warnings`, `pnpm --dir frontend check`, `lint`, `build`, `format:check`, `docker compose config`, and `git diff --check` passed.
 
 ## [Unreleased] — 2026-06-02 — Dependency upgrade: full toolchain + package refresh to latest (Node LTS pinned), breaking-change migrations, zod→valibot consolidation
