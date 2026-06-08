@@ -108,7 +108,7 @@
 								<a
 									href={getVideoUrl(video)}
 									class="card-image"
-									style="background-image: url({video.thumbnail});"
+									style:background-image={`url(${video.thumbnail})`}
 								>
 									<img class="default-background" width="325" height="183" alt={video.title} />
 								</a>

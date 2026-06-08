@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **52 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **43 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -71,6 +71,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed admin resources/schedules batch (resources `BulkOperationsModal.svelte`/`RoomTabs.svelte` and schedules `RoomSelector.svelte`/`ScheduleEventCard.svelte`): converted tracked active/danger/state class directives, room color styles, room-type class interpolation, and legacy declaration tags to Svelte 5 class arrays, `style:` directives, and declaration tags.
 - Completed admin SEO batch (`404-monitor/+page.svelte`, `analytics/+page.svelte`, `meta/+page.svelte`, `news-sitemap/+page.svelte`, and `schema/+page.svelte`): converted tracked hit/trend/entity/score/status/type class directives and interpolations plus legacy declaration tags to Svelte 5 class arrays/objects and declaration tags.
 - Completed admin trading-room batch (trading rooms `+page.svelte`, `CloseTradeModal.svelte`, `PageHeader.svelte`, `TabNavigation.svelte`, and `WeeklyVideoPanel.svelte`): converted tracked room/thumbnail style strings, direction/tab class directives, and legacy declaration tags to Svelte 5 class arrays, `style:` directives, and declaration tags.
+- Completed public/account/day-trading route batch (`behavior/+page.svelte`, `classes/tax-loss-harvest-c/+page.svelte`, account coupons/payment-methods/subscriptions pages, daily videos, trader store, trading strategies, and day-trading video detail pages): converted tracked active/default/expired/featured/status class bindings and dynamic width/background/category/difficulty styles to Svelte 5 class arrays and `style:` directives.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.

@@ -62,29 +62,25 @@
 
 			<div class="period-selector">
 				<button
-					class="period-btn"
-					class:active={selectedPeriod === '24h'}
+					class={['period-btn', { active: selectedPeriod === '24h' }]}
 					onclick={() => handlePeriodChange('24h')}
 				>
 					24h
 				</button>
 				<button
-					class="period-btn"
-					class:active={selectedPeriod === '7d'}
+					class={['period-btn', { active: selectedPeriod === '7d' }]}
 					onclick={() => handlePeriodChange('7d')}
 				>
 					7d
 				</button>
 				<button
-					class="period-btn"
-					class:active={selectedPeriod === '30d'}
+					class={['period-btn', { active: selectedPeriod === '30d' }]}
 					onclick={() => handlePeriodChange('30d')}
 				>
 					30d
 				</button>
 				<button
-					class="period-btn"
-					class:active={selectedPeriod === '90d'}
+					class={['period-btn', { active: selectedPeriod === '90d' }]}
 					onclick={() => handlePeriodChange('90d')}
 				>
 					90d
@@ -174,7 +170,7 @@
 							<div class="friction-bar">
 								<div
 									class="friction-fill"
-									style="width: {Math.min((item.friction_count / 10) * 100, 100)}%"
+									style:width={`${Math.min((item.friction_count / 10) * 100, 100)}%`}
 								></div>
 							</div>
 						</div>

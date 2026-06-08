@@ -162,7 +162,7 @@
 					</thead>
 					<tbody>
 						{#each paymentMethods as method (method.id)}
-							<tr class:default-payment-method={method.isDefault}>
+							<tr class={{ 'default-payment-method': method.isDefault }}>
 								<td
 									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--method payment-method-method"
 									data-title="Method"

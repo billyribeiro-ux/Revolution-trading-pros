@@ -85,7 +85,7 @@
 			{:else}
 				<div class="coupons-grid">
 					{#each coupons as coupon (coupon.id)}
-						<div class="coupon-card" class:expired={isExpired(coupon)}>
+						<div class={['coupon-card', { expired: isExpired(coupon) }]}>
 							<div class="coupon-header">
 								<div class="coupon-code">
 									<span class="code-label">Code:</span>
@@ -133,8 +133,10 @@
 							<div class="coupon-footer">
 								{#if isAvailable(coupon)}
 									<button
-										class="btn btn-primary btn-sm"
-										class:btn-success={copiedCode === coupon.code}
+										class={[
+											'btn btn-primary btn-sm',
+											{ 'btn-success': copiedCode === coupon.code }
+										]}
 										onclick={() => copyCouponCode(coupon.code)}
 									>
 										{#if copiedCode === coupon.code}

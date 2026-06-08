@@ -77,7 +77,7 @@
 			<div class="section-inner">
 				<div class="class-content-block cpost-content-block">
 					{#each videos as video, index (video.url)}
-						<div class="current-vid" class:first-video={index === 0}>
+						<div class={['current-vid', { 'first-video': index === 0 }]}>
 							{#if index === 0}
 								<h2 class="class-player-header">{video.title}</h2>
 								<h3 class="current-title">{video.subtitle}</h3>
