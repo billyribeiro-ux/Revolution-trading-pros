@@ -166,22 +166,19 @@
 			<div class="filters-container">
 				<div class="filter-buttons">
 					<button
-						class="filter-btn"
-						class:active={selectedFilter === 'all'}
+						class={['filter-btn', { active: selectedFilter === 'all' }]}
 						onclick={() => (selectedFilter = 'all')}
 					>
 						All Alerts
 					</button>
 					<button
-						class="filter-btn"
-						class:active={selectedFilter === 'trades'}
+						class={['filter-btn', { active: selectedFilter === 'trades' }]}
 						onclick={() => (selectedFilter = 'trades')}
 					>
 						Trade Alerts
 					</button>
 					<button
-						class="filter-btn"
-						class:active={selectedFilter === 'updates'}
+						class={['filter-btn', { active: selectedFilter === 'updates' }]}
 						onclick={() => (selectedFilter = 'updates')}
 					>
 						Market Updates
@@ -213,7 +210,7 @@
 					<article class="alert-card">
 						<div class="alert-header">
 							<span class="alert-type">{alert.type}</span>
-							<span class="alert-status {getStatusClass(alert.status)}">{alert.status}</span>
+							<span class={['alert-status', getStatusClass(alert.status)]}>{alert.status}</span>
 						</div>
 						<h3 class="alert-title">
 							<a href={alert.href}>{alert.title}</a>
@@ -221,7 +218,7 @@
 						<p class="alert-date">{alert.date}</p>
 						<p class="alert-excerpt">{alert.excerpt}</p>
 						{#if alert.profitLoss}
-							<div class="alert-profit-loss {getProfitLossClass(alert.profitLoss)}">
+							<div class={['alert-profit-loss', getProfitLossClass(alert.profitLoss)]}>
 								{alert.profitLoss}
 							</div>
 						{/if}

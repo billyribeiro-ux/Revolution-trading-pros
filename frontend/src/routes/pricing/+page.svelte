@@ -108,7 +108,7 @@
 	<section class="plans-section">
 		<div class="plans-grid">
 			{#each plans as plan (plan.name)}
-				<div class="plan-card" class:plan-card--highlighted={plan.highlighted}>
+				<div class={['plan-card', { 'plan-card--highlighted': plan.highlighted }]}>
 					{#if plan.highlighted}
 						<div class="plan-card__badge">★ Most Popular</div>
 					{/if}
@@ -131,8 +131,7 @@
 					</ul>
 					<a
 						href={plan.href}
-						class="plan-card__cta"
-						class:plan-card__cta--primary={plan.highlighted}
+						class={['plan-card__cta', { 'plan-card__cta--primary': plan.highlighted }]}
 					>
 						{plan.cta}
 						<IconArrowRight size={16} />

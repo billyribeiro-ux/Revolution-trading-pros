@@ -72,13 +72,13 @@
 	</div>
 
 	<div class="filters">
-		<button class:active={filter === 'all'} onclick={() => (filter = 'all')}>
+		<button class={{ active: filter === 'all' }} onclick={() => (filter = 'all')}>
 			All ({workflows.length})
 		</button>
-		<button class:active={filter === 'active'} onclick={() => (filter = 'active')}>
+		<button class={{ active: filter === 'active' }} onclick={() => (filter = 'active')}>
 			Active ({workflows.filter((w) => w.status === 'active').length})
 		</button>
-		<button class:active={filter === 'paused'} onclick={() => (filter = 'paused')}>
+		<button class={{ active: filter === 'paused' }} onclick={() => (filter = 'paused')}>
 			Paused ({workflows.filter((w) => w.status === 'paused').length})
 		</button>
 	</div>
@@ -115,7 +115,7 @@
 				<div class="workflow-card">
 					<div class="card-header">
 						<h3>{workflow.name}</h3>
-						<span class="status-badge" class:active={workflow.status === 'active'}>
+						<span class={['status-badge', { active: workflow.status === 'active' }]}>
 							{workflow.status}
 						</span>
 					</div>
@@ -142,8 +142,7 @@
 					<div class="card-actions">
 						<button class="btn-secondary" onclick={() => editWorkflow(workflow.id)}> Edit </button>
 						<button
-							class="btn-toggle"
-							class:active={workflow.status === 'active'}
+							class={['btn-toggle', { active: workflow.status === 'active' }]}
 							onclick={() => toggleStatus(workflow)}
 						>
 							{workflow.status === 'active' ? 'Pause' : 'Activate'}

@@ -161,13 +161,19 @@
 					<div class="space-y-4">
 						<div class="flex justify-between items-center border-b border-white/5 pb-2">
 							<span class="text-slate-400 text-sm">Risk Classification</span>
-							<span class="font-bold font-mono {riskColor}">{riskOfRuin}</span>
+							<span class={['font-bold', 'font-mono', riskColor]}>{riskOfRuin}</span>
 						</div>
 						<div class="flex justify-between items-center border-b border-white/5 pb-2">
 							<span class="text-slate-400 text-sm">Institutional Viability</span>
-							<span class="font-bold font-mono {simRisk <= 2 ? 'text-emerald-400' : 'text-red-500'}"
-								>{simRisk <= 2 ? 'PASS' : 'FAIL'}</span
+							<span
+								class={[
+									'font-bold',
+									'font-mono',
+									simRisk <= 2 ? 'text-emerald-400' : 'text-red-500'
+								]}
 							>
+								{simRisk <= 2 ? 'PASS' : 'FAIL'}
+							</span>
 						</div>
 						<p class="text-xs text-slate-500 leading-relaxed mt-2">
 							{#if simRisk > 2}

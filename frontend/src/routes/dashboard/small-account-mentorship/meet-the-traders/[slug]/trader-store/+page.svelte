@@ -93,15 +93,15 @@
 	<!-- Products Grid -->
 	<div class="products-grid">
 		{#each products as product (product.id)}
-			<article class="product-card" class:featured={product.featured}>
+			<article class={['product-card', { featured: product.featured }]}>
 				{#if product.featured}
 					<span class="featured-badge">Featured</span>
 				{/if}
 				<figure class="card-media">
-					<div class="card-image" style="background-image: url({product.image});">
+					<div class="card-image" style:background-image={`url(${product.image})`}>
 						<span
 							class="category-badge"
-							style="background-color: {getCategoryColor(product.category)}"
+							style:background-color={getCategoryColor(product.category)}
 						>
 							{product.category}
 						</span>
