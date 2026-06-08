@@ -46,6 +46,8 @@
 	let selectedStatus = $state<ApprovalStatus | null>(null);
 	let noteText = $state('');
 	let updateError = $state('');
+	const componentId = $props.id();
+	const approvalNoteId = `${componentId}-approval-note`;
 
 	const statusConfig: Record<
 		ApprovalStatus,
@@ -126,13 +128,15 @@
 	}
 
 	const config = $derived(statusConfig[currentStatus]);
+	const hasError = $derived(Boolean(error || updateError));
 </script>
 
-<div class="admin-approval-status" class:has-error={error || updateError}>
+<div class={['admin-approval-status', hasError && 'has-error']}>
 	<div class="status-card">
 		<div
 			class="current-status"
-			style="--status-color: {config.color}; --status-bg: {config.bgColor}"
+			style:--status-color={config.color}
+			style:--status-bg={config.bgColor}
 		>
 			<div class="status-icon">
 				{#if config.icon === 'clock'}
@@ -157,9 +161,9 @@
 			<div class="admin-actions">
 				{#if showNoteInput}
 					<div class="note-input-section">
-						<label for="approval_note">Add a note (optional):</label>
+						<label for={approvalNoteId}>Add a note (optional):</label>
 						<textarea
-							id="approval_note"
+							id={approvalNoteId}
 							bind:value={noteText}
 							placeholder="Enter reason or instructions..."
 							rows="3"
@@ -241,10 +245,10 @@
 				{#each logs as log (log.id)}
 					{@const logConfig = statusConfig[log.status]}
 					<div class="history-item">
-						<div class="timeline-dot" style="background-color: {logConfig.color}"></div>
+						<div class="timeline-dot" style:background-color={logConfig.color}></div>
 						<div class="history-content">
 							<div class="history-header">
-								<span class="history-status" style="color: {logConfig.color}">
+								<span class="history-status" style:color={logConfig.color}>
 									{logConfig.label}
 								</span>
 								<span class="history-date">{formatDate(log.created_at)}</span>
