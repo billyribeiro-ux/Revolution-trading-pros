@@ -14,12 +14,13 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 332 Svelte files remaining.
+- Broad dynamic class/style migration scan: 331 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
 
 - [x] 2026-06-08: Fixed pasted Vitest failures in `ChecklistBlock.test.ts`, `RiskDisclaimerBlock.test.ts`, and explosive swings `AlertCard.test.ts` by updating stale Tailwind-era class assertions to the current scoped semantic classes.
+- [x] 2026-06-08: Completed `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`; replaced legacy `class:active` sort bindings with Svelte 5 class composition and moved one-shot downloads loading to `onMount` with abort cleanup.
 
 ## Remaining Files
 
@@ -57,7 +58,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/lib/components/cart/AddToCartButton.svelte`
 - [ ] `frontend/src/lib/components/charts/EnterpriseChart.svelte`
 - [ ] `frontend/src/lib/components/checkout/PricingSelector.svelte`
-- [ ] `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`
+- [x] `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`
 - [ ] `frontend/src/lib/components/cms/blocks/advanced/ButtonBlock.svelte`
 - [ ] `frontend/src/lib/components/cms/blocks/advanced/CalloutBlock.svelte`
 - [ ] `frontend/src/lib/components/cms/blocks/advanced/CtaBlock.svelte`
