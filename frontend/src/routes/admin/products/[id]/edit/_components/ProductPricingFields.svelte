@@ -20,7 +20,7 @@
 </script>
 
 <div class="form-row">
-	<div class="form-group" class:has-error={getFieldError('price')}>
+	<div class={['form-group', { 'has-error': getFieldError('price') }]}>
 		<label for="price">Price (USD) *</label>
 		<div class="price-input">
 			<span class="currency">$</span>

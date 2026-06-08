@@ -17,7 +17,7 @@
 </script>
 
 <!-- Name -->
-<div class="form-group" class:has-error={getFieldError('name')}>
+<div class={['form-group', { 'has-error': getFieldError('name') }]}>
 	<label for="name">Product Name *</label>
 	<input
 		id="name"
@@ -33,7 +33,7 @@
 </div>
 
 <!-- Slug -->
-<div class="form-group" class:has-error={getFieldError('slug')}>
+<div class={['form-group', { 'has-error': getFieldError('slug') }]}>
 	<label for="slug">URL Slug *</label>
 	<div class="slug-input">
 		<span class="slug-prefix">/products/</span>
