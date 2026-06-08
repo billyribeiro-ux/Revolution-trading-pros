@@ -75,8 +75,7 @@
 							<td>{file.download_count || 0}</td>
 							<td>
 								<button
-									class="file-status"
-									class:active={file.is_active}
+									class={['file-status', { active: file.is_active }]}
 									onclick={() => onToggleStatus(file.id)}
 								>
 									{file.is_active ? 'Active' : 'Inactive'}
