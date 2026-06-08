@@ -15,7 +15,7 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use serde_json::json;
 use sha2::Sha256;
 
@@ -30,7 +30,7 @@ use crate::AppState;
 /// with a possibly-empty secret, making the shareable key derivable offline.
 fn generate_license_key(secret: &str, user_id: i64, indicator_id: i64) -> String {
     let timestamp = chrono::Utc::now().timestamp();
-    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(secret.as_bytes())
+    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
         .expect("HMAC-SHA256 accepts a key of any length");
     mac.update(format!("{user_id}-{indicator_id}-{timestamp}").as_bytes());
     let hash = hex::encode(mac.finalize().into_bytes());

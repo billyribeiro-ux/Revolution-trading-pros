@@ -17,7 +17,7 @@ use axum::{
     Json,
 };
 use chrono::{Duration, Utc};
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use serde_json::json;
 use sha2::Sha256;
 
@@ -283,7 +283,7 @@ pub(super) async fn download_file(
 /// keyed by `MEMBER_INDICATOR_SECRET`. Deterministic (so re-minting the same
 /// link dedupes via `ON CONFLICT`) but unforgeable without the secret.
 fn sign_download_token(secret: &str, user_id: i64, file_id: i32, expiry: i64) -> String {
-    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(secret.as_bytes())
+    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
         .expect("HMAC-SHA256 accepts a key of any length");
     mac.update(format!("{user_id}:{file_id}:{expiry}").as_bytes());
     hex::encode(mac.finalize().into_bytes())
