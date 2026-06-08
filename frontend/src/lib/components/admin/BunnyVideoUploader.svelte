@@ -36,17 +36,21 @@
 	const onError = $derived(props.onError);
 	const libraryId = $derived(props.libraryId ?? 585929); // Default Bunny library ID (revolution-trading-courses)
 	const apiBase = $derived(props.apiBase ?? '/api/admin/bunny');
+	const componentId = $props.id();
+	const fileInputId = `${componentId}-video-file`;
 
 	// State
 	let isDragging = $state(false);
 	let videoFile = $state<File | null>(null);
+	let selectedFiles = $state<FileList>();
 	let uploadProgress = $state(0);
 	let isUploading = $state(false);
 	let error = $state<string | null>(null);
 	let uploadStatus = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete'>('idle');
-
-	// File input ref
-	let fileInput = $state<HTMLInputElement | null>(null);
+	const isProgressIndeterminate = $derived(
+		uploadStatus === 'preparing' || uploadStatus === 'processing'
+	);
+	const progressWidth = $derived(uploadStatus === 'uploading' ? `${uploadProgress}%` : '100%');
 
 	// Allowed file types and limits
 	const allowedTypes = [
@@ -104,6 +108,10 @@
 		if (file) {
 			handleFileSelect(file);
 		}
+	}
+
+	function openFilePicker() {
+		document.getElementById(fileInputId)?.click();
 	}
 
 	async function startUpload() {
@@ -224,12 +232,10 @@
 
 	function clearFile() {
 		videoFile = null;
+		selectedFiles = new DataTransfer().files;
 		uploadProgress = 0;
 		uploadStatus = 'idle';
 		error = null;
-		if (fileInput) {
-			fileInput.value = '';
-		}
 	}
 
 	function formatFileSize(bytes: number): string {
@@ -285,9 +291,8 @@
 				<div class="upload-progress">
 					<div class="progress-bar">
 						<div
-							class="progress-fill"
-							class:indeterminate={uploadStatus === 'preparing' || uploadStatus === 'processing'}
-							style="width: {uploadStatus === 'uploading' ? uploadProgress : 100}%"
+							class={['progress-fill', isProgressIndeterminate && 'indeterminate']}
+							style:width={progressWidth}
 						></div>
 					</div>
 					<span class="progress-text">{getStatusText()}</span>
@@ -301,15 +306,14 @@
 		</div>
 	{:else}
 		<div
-			class="drop-zone"
-			class:dragging={isDragging}
+			class={['drop-zone', isDragging && 'dragging']}
 			role="button"
 			tabindex="0"
 			ondragover={handleDragOver}
 			ondragleave={handleDragLeave}
 			ondrop={handleDrop}
-			onclick={() => fileInput?.click()}
-			onkeydown={(e) => e.key === 'Enter' && fileInput?.click()}
+			onclick={openFilePicker}
+			onkeydown={(e) => e.key === 'Enter' && openFilePicker()}
 		>
 			<div class="drop-zone-content">
 				<div class="upload-icon">
@@ -321,7 +325,8 @@
 			</div>
 		</div>
 		<input
-			bind:this={fileInput}
+			id={fileInputId}
+			bind:files={selectedFiles}
 			type="file"
 			accept="video/mp4,video/webm,video/quicktime,video/x-msvideo,video/x-matroska"
 			hidden
