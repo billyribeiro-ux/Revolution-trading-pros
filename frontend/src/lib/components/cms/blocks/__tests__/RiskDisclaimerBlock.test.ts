@@ -97,7 +97,7 @@ describe('RiskDisclaimerBlock - Warning Style', () => {
 		});
 
 		const disclaimerBlock = container.querySelector('.risk-disclaimer-block');
-		expect(disclaimerBlock).toHaveClass('style-warning');
+		expect(disclaimerBlock).toHaveClass('risk-disclaimer-block--warning');
 	});
 
 	it('should render warning icon for warning style', () => {
@@ -160,7 +160,7 @@ describe('RiskDisclaimerBlock - Danger Style', () => {
 		});
 
 		const disclaimerBlock = container.querySelector('.risk-disclaimer-block');
-		expect(disclaimerBlock).toHaveClass('style-danger');
+		expect(disclaimerBlock).toHaveClass('risk-disclaimer-block--danger');
 	});
 
 	it('should use role="alert" for danger style', () => {
@@ -223,7 +223,7 @@ describe('RiskDisclaimerBlock - Info Style', () => {
 		});
 
 		const disclaimerBlock = container.querySelector('.risk-disclaimer-block');
-		expect(disclaimerBlock).toHaveClass('style-info');
+		expect(disclaimerBlock).toHaveClass('risk-disclaimer-block--info');
 	});
 
 	it('should use role="note" for info style', () => {

@@ -113,7 +113,7 @@ describe('AlertCard - Alert Types', () => {
 			const { container } = render(AlertCard, { props: { alert } });
 
 			const article = container.querySelector('article');
-			expect(article?.classList.toString()).toContain('border-l-teal');
+			expect(article).toHaveClass('alert-card--entry');
 		});
 
 		it('should show price info when entry/target/stop prices provided', () => {
@@ -152,7 +152,7 @@ describe('AlertCard - Alert Types', () => {
 			const { container } = render(AlertCard, { props: { alert } });
 
 			const article = container.querySelector('article');
-			expect(article?.classList.toString()).toContain('border-l-amber');
+			expect(article).toHaveClass('alert-card--update');
 		});
 	});
 
@@ -175,7 +175,7 @@ describe('AlertCard - Alert Types', () => {
 			expect(screen.getByText('Profit')).toBeInTheDocument();
 
 			const article = container.querySelector('article');
-			expect(article?.classList.toString()).toContain('border-l-emerald');
+			expect(article).toHaveClass('alert-card--exit-win');
 		});
 
 		it('should show negative result with red styling', () => {
@@ -189,7 +189,7 @@ describe('AlertCard - Alert Types', () => {
 			expect(screen.getByText('Loss')).toBeInTheDocument();
 
 			const article = container.querySelector('article');
-			expect(article?.classList.toString()).toContain('border-l-red');
+			expect(article).toHaveClass('alert-card--exit-loss');
 		});
 
 		it('should handle zero percent result as profit', () => {

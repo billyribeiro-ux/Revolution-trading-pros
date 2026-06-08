@@ -686,7 +686,7 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 			}
 		});
 
-		const checkedItem = container.querySelector('.checklist-item.strikethrough');
+		const checkedItem = container.querySelector('.checklist-item.checklist-item--strikethrough');
 		expect(checkedItem).toBeInTheDocument();
 	});
 
@@ -707,7 +707,9 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 			}
 		});
 
-		const strikethroughItem = container.querySelector('.checklist-item.strikethrough');
+		const strikethroughItem = container.querySelector(
+			'.checklist-item.checklist-item--strikethrough'
+		);
 		expect(strikethroughItem).not.toBeInTheDocument();
 	});
 
@@ -727,7 +729,7 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 			}
 		});
 
-		const checkedItem = container.querySelector('.checklist-item.checked');
+		const checkedItem = container.querySelector('.checklist-item.checklist-item--checked');
 		expect(checkedItem).toBeInTheDocument();
 	});
 
@@ -748,7 +750,9 @@ describe('ChecklistBlock - Strikethrough Styling', () => {
 			}
 		});
 
-		const strikethroughItem = container.querySelector('.checklist-item.strikethrough');
+		const strikethroughItem = container.querySelector(
+			'.checklist-item.checklist-item--strikethrough'
+		);
 		expect(strikethroughItem).not.toBeInTheDocument();
 	});
 });

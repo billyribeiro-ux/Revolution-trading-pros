@@ -10,6 +10,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 
 ### Completed migration slices
 
+- Resolved pasted Vitest failures by aligning CMS checklist, risk disclaimer, and explosive swings alert-card tests with the scoped semantic class contracts introduced during the Tailwind-to-CSS migration.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.
