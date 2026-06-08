@@ -50,7 +50,7 @@
 			<div class="device-bar-wrap">
 				<div
 					class="device-bar desktop"
-					style="width: {(deviceBreakdown.desktop / totalDevices) * 100}%"
+					style:width={`${(deviceBreakdown.desktop / totalDevices) * 100}%`}
 				></div>
 			</div>
 			<span class="device-percent"
@@ -65,7 +65,7 @@
 			<div class="device-bar-wrap">
 				<div
 					class="device-bar mobile"
-					style="width: {(deviceBreakdown.mobile / totalDevices) * 100}%"
+					style:width={`${(deviceBreakdown.mobile / totalDevices) * 100}%`}
 				></div>
 			</div>
 			<span class="device-percent"
@@ -80,7 +80,7 @@
 			<div class="device-bar-wrap">
 				<div
 					class="device-bar tablet"
-					style="width: {(deviceBreakdown.tablet / totalDevices) * 100}%"
+					style:width={`${(deviceBreakdown.tablet / totalDevices) * 100}%`}
 				></div>
 			</div>
 			<span class="device-percent"
@@ -96,7 +96,7 @@
 				<div class="client-row">
 					<span class="client-name">{client.client}</span>
 					<div class="client-bar-wrap">
-						<div class="client-bar" style="width: {client.percentage}%"></div>
+						<div class="client-bar" style:width={`${client.percentage}%`}></div>
 					</div>
 					<span class="client-percent">{client.percentage.toFixed(1)}%</span>
 				</div>

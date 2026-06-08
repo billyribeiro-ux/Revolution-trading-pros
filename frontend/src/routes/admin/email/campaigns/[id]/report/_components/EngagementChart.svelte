@@ -36,13 +36,13 @@
 		</div>
 		<div class="chart-toggle">
 			<button
-				class:active={activeChartView === 'opens'}
+				class={{ active: activeChartView === 'opens' }}
 				onclick={() => (activeChartView = 'opens')}
 			>
 				Opens
 			</button>
 			<button
-				class:active={activeChartView === 'clicks'}
+				class={{ active: activeChartView === 'clicks' }}
 				onclick={() => (activeChartView = 'clicks')}
 			>
 				Clicks
@@ -53,10 +53,10 @@
 	<div class="chart-container">
 		<div class="bar-chart">
 			{#each engagementOverTime.slice(0, 24) as item, i (item.hour)}
-				{@const value = activeChartView === 'opens' ? item.opens : item.clicks}
-				{@const height = (value / maxEngagement) * 100}
-				<div class="bar-wrapper" title="{formatHour(item.hour)}: {value} {activeChartView}">
-					<div class="bar {activeChartView}" style="height: {Math.max(height, 2)}%"></div>
+				{const value = activeChartView === 'opens' ? item.opens : item.clicks}
+				{const height = (value / maxEngagement) * 100}
+				<div class="bar-wrapper" title={`${formatHour(item.hour)}: ${value} ${activeChartView}`}>
+					<div class={['bar', activeChartView]} style:height={`${Math.max(height, 2)}%`}></div>
 					{#if i % 4 === 0}
 						<span class="bar-label">{formatHour(item.hour)}</span>
 					{/if}

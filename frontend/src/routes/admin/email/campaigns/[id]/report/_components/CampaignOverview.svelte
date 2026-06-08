@@ -29,7 +29,7 @@
 		<div class="campaign-info">
 			<div class="campaign-status-row">
 				<h2>{overview.name}</h2>
-				<span class="status-badge {getStatusColor(overview.status)}">
+				<span class={['status-badge', getStatusColor(overview.status)]}>
 					{overview.status}
 				</span>
 			</div>

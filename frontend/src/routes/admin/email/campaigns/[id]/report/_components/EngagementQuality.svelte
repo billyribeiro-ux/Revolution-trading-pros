@@ -34,7 +34,7 @@
 			<span class="ctor-label">Click-to-Open Rate</span>
 			<span class="ctor-value">{clickToOpenRate.toFixed(1)}%</span>
 			<div class="ctor-bar">
-				<div class="ctor-bar-fill" style="width: {Math.min(clickToOpenRate, 100)}%"></div>
+				<div class="ctor-bar-fill" style:width={`${Math.min(clickToOpenRate, 100)}%`}></div>
 			</div>
 			<span class="ctor-desc">Industry avg: 10-15%</span>
 		</div>

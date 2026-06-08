@@ -49,7 +49,7 @@
 	</div>
 
 	<div class="ab-variants">
-		<div class="ab-variant" class:winner={results.winner === 'a'}>
+		<div class={['ab-variant', { winner: results.winner === 'a' }]}>
 			<div class="variant-header">
 				<span class="variant-label">A</span>
 				<span class="variant-subject">{results.variant_a.subject}</span>
@@ -70,7 +70,7 @@
 			</div>
 		</div>
 
-		<div class="ab-variant" class:winner={results.winner === 'b'}>
+		<div class={['ab-variant', { winner: results.winner === 'b' }]}>
 			<div class="variant-header">
 				<span class="variant-label">B</span>
 				<span class="variant-subject">{results.variant_b.subject}</span>
