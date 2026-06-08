@@ -144,7 +144,7 @@
 
 	<div class="metrics-grid">
 		{#each metrics as metric (metric.label)}
-			<div class="metric-card" class:loading={isLoading}>
+			<div class={['metric-card', { loading: isLoading }]}>
 				{#if isLoading}
 					<div class="skeleton">
 						<div class="skel-icon"></div>
@@ -152,7 +152,7 @@
 						<div class="skel-label"></div>
 					</div>
 				{:else}
-					<div class="metric-icon {metric.color}">
+					<div class={['metric-icon', metric.color]}>
 						{#if metric.icon === 'target'}
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -297,7 +297,7 @@
 						{/if}
 					</div>
 
-					<div class="metric-value {metric.color}">{metric.value}</div>
+					<div class={['metric-value', metric.color]}>{metric.value}</div>
 					<div class="metric-label">{metric.label}</div>
 					<div class="metric-subtext">{metric.subtext}</div>
 				{/if}
@@ -309,7 +309,7 @@
 	{#if streakAnalysis || alertEffectiveness}
 		<div class="additional-metrics">
 			{#if streakAnalysis}
-				<div class="streak-card {streakColor}">
+				<div class={['streak-card', streakColor]}>
 					<span class="streak-label">Current Streak</span>
 					<span class="streak-value">{streakDisplay}</span>
 					<span class="streak-subtext"
