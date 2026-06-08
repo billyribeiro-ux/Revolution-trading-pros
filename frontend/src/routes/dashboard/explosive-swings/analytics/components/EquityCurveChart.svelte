@@ -5,7 +5,7 @@
 	 * @description Displays cumulative P&L over time as a line chart using D3
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA | Svelte 5
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import type { EquityPoint } from '../analytics.state.svelte';
 
 	interface Props {
@@ -15,9 +15,7 @@
 
 	const { data, isLoading = false }: Props = $props();
 
-	// DOM reference for responsive width measurement. Declaring with $state()
-	// keeps bind:this reactive (removes the prior svelte-ignore non_reactive_update).
-	let containerEl: HTMLDivElement | undefined = $state();
+	let containerEl: HTMLDivElement | undefined;
 	let width = $state(600);
 	let hoveredIndex: number | null = $state(null);
 	let tooltipX = $state(0);
@@ -125,14 +123,18 @@
 		hoveredIndex = null;
 	}
 
-	onMount(() => {
+	const trackContainer: Attachment<HTMLDivElement> = (node) => {
+		containerEl = node;
 		handleResize();
 		window.addEventListener('resize', handleResize);
-	});
 
-	onDestroy(() => {
-		window.removeEventListener('resize', handleResize);
-	});
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			if (containerEl === node) {
+				containerEl = undefined;
+			}
+		};
+	};
 </script>
 
 <div class="equity-curve-chart" role="region" aria-label="Equity curve chart">
@@ -140,9 +142,13 @@
 		<h3 class="chart-title">Equity Curve</h3>
 		{#if data.length > 0}
 			<span
-				class="chart-value"
-				class:profit={data[data.length - 1]?.equity_percent >= 0}
-				class:loss={data[data.length - 1]?.equity_percent < 0}
+				class={[
+					'chart-value',
+					{
+						profit: data[data.length - 1]?.equity_percent >= 0,
+						loss: data[data.length - 1]?.equity_percent < 0
+					}
+				]}
 			>
 				{formatValue(data[data.length - 1]?.equity_percent ?? 0)}
 			</span>
@@ -159,7 +165,7 @@
 		</div>
 	{:else}
 		<div
-			bind:this={containerEl}
+			{@attach trackContainer}
 			class="chart-container"
 			onmousemove={handleMouseMove}
 			onmouseleave={handleMouseLeave}
@@ -211,7 +217,7 @@
 
 				<!-- X-axis labels -->
 				{#each xLabels as item (item.date)}
-					{@const index = data.indexOf(item)}
+					{const index = data.indexOf(item)}
 					<text x={scaleX(index)} y={height - 8} text-anchor="middle" class="axis-label">
 						{formatDate(item.date)}
 					</text>
@@ -259,12 +265,16 @@
 
 			<!-- Tooltip -->
 			{#if hoveredIndex !== null}
-				{@const point = data[hoveredIndex]}
-				<div class="tooltip" style="left: {tooltipX}px; top: {tooltipY - 60}px">
+				{const point = data[hoveredIndex]}
+				<div class="tooltip" style:left={`${tooltipX}px`} style:top={`${tooltipY - 60}px`}>
 					<div
-						class="tooltip-value"
-						class:profit={point.equity_percent >= 0}
-						class:loss={point.equity_percent < 0}
+						class={[
+							'tooltip-value',
+							{
+								profit: point.equity_percent >= 0,
+								loss: point.equity_percent < 0
+							}
+						]}
 					>
 						{formatValue(point.equity_percent)}
 					</div>

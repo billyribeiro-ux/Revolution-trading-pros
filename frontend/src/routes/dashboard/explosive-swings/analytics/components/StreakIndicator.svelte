@@ -50,7 +50,7 @@
 		</div>
 	{:else}
 		<!-- Current Streak Display -->
-		<div class="current-streak {streakColor}">
+		<div class={['current-streak', streakColor]}>
 			<div class="streak-icon">
 				{#if streakIcon === 'fire'}
 					<svg
@@ -171,7 +171,7 @@
 		{#if streak.current_streak > 0}
 			<div class="streak-visual">
 				{#each Array(Math.min(streak.current_streak, 10)) as _, i (i)}
-					<div class="streak-dot {streakColor}" style="animation-delay: {i * 0.05}s"></div>
+					<div class={['streak-dot', streakColor]} style:animation-delay={`${i * 0.05}s`}></div>
 				{/each}
 				{#if streak.current_streak > 10}
 					<span class="streak-more">+{streak.current_streak - 10}</span>
