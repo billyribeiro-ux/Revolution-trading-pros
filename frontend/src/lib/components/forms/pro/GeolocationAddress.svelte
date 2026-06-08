@@ -6,6 +6,9 @@
 	 * Location latitude and longitude are now available for submission.
 	 */
 
+	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface AddressValue {
 		address_line_1: string;
 		address_line_2: string;
@@ -51,29 +54,15 @@
 		onchange
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
-	let addressValue = $state<AddressValue>({
-		address_line_1: '',
-		address_line_2: '',
-		city: '',
-		state: '',
-		zip: '',
-		country: ''
-	});
+	let addressValue = $derived({ ...value });
 	let isDetecting = $state(false);
 	let geolocationError = $state('');
 	let geolocationSupported = $state(typeof navigator !== 'undefined' && 'geolocation' in navigator);
 
-	// Sync addressValue with value prop
-	$effect(() => {
-		if (value !== undefined) addressValue = { ...value };
-	});
-
 	// Auto-detect location on mount if enabled
-	$effect(() => {
+	onMount(() => {
 		if (autoDetect && geolocationSupported && !addressValue.latitude) {
-			detectLocation();
+			void detectLocation();
 		}
 	});
 
@@ -177,7 +166,7 @@
 	}
 </script>
 
-<fieldset class="geolocation-address" class:disabled class:has-error={error}>
+<fieldset class={['geolocation-address', { disabled, 'has-error': error }]}>
 	<legend class="address-label">
 		{label}
 		{#if required}

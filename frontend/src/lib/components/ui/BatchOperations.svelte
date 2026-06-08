@@ -55,7 +55,7 @@
 			{#each actions as action (action.id)}
 				<button
 					type="button"
-					class="action-btn variant-{action.variant ?? 'default'}"
+					class={['action-btn', `variant-${action.variant ?? 'default'}`]}
 					disabled={action.disabled}
 					onclick={() => onAction?.(action.id)}
 				>

@@ -29,16 +29,7 @@
 
 	let isEditing = $state(false);
 	let editValue = $state('');
-	// Programmatic focus replaces deprecated `autofocus` (a11y anti-pattern).
-	// $effect fires on isEditing → true, focusing+selecting the input once
-	// it renders.
-	let editInput = $state<HTMLInputElement | null>(null);
-	$effect(() => {
-		if (isEditing) {
-			editInput?.focus();
-			editInput?.select();
-		}
-	});
+	let editInput: HTMLInputElement | null = null;
 
 	let displayValue = $derived.by(() => {
 		const v = value * displayMultiplier;
@@ -46,6 +37,9 @@
 	});
 
 	let fillPercent = $derived(((value - min) / (max - min)) * 100);
+	let sliderBackground = $derived(
+		`linear-gradient(to right, var(--calc-accent) 0%, var(--calc-accent) ${fillPercent}%, var(--calc-border) ${fillPercent}%, var(--calc-border) 100%)`
+	);
 
 	function handleSliderInput(e: Event) {
 		const target = e.currentTarget as HTMLInputElement;
@@ -81,9 +75,21 @@
 		const prev = Math.max(min, value - step);
 		onchange(prev);
 	}
+
+	function focusEditInput(element: HTMLInputElement) {
+		editInput = element;
+		element.focus();
+		element.select();
+
+		return () => {
+			if (editInput === element) {
+				editInput = null;
+			}
+		};
+	}
 </script>
 
-<div class="flex flex-col gap-1.5 {className}">
+<div class={['flex flex-col gap-1.5', className]}>
 	<!-- Label row -->
 	<div class="flex items-center justify-between">
 		<span
@@ -112,7 +118,7 @@
 
 			{#if isEditing}
 				<input
-					bind:this={editInput}
+					{@attach focusEditInput}
 					type="text"
 					bind:value={editValue}
 					onblur={commitEdit}
@@ -150,7 +156,7 @@
 			{value}
 			oninput={handleSliderInput}
 			class="calc-slider w-full"
-			style="background: linear-gradient(to right, var(--calc-accent) 0%, var(--calc-accent) {fillPercent}%, var(--calc-border) {fillPercent}%, var(--calc-border) 100%);"
+			style:background={sliderBackground}
 			aria-label={label}
 		/>
 	</div>

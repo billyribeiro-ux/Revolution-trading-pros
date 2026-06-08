@@ -11,6 +11,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { IconLink, IconCheck } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { browser } from '$app/environment';
@@ -53,6 +54,7 @@
 	let enabledPlatforms = $derived(
 		props.block.content.sharePlatforms || ['twitter', 'facebook', 'linkedin', 'email']
 	);
+	let copyResetTimer: ReturnType<typeof setTimeout> | undefined;
 
 	// =========================================================================
 	// Helper Functions
@@ -139,7 +141,10 @@
 			await navigator.clipboard.writeText(getShareUrl());
 			stateManager.setLinkCopied(props.blockId, true);
 
-			setTimeout(() => {
+			if (copyResetTimer) {
+				clearTimeout(copyResetTimer);
+			}
+			copyResetTimer = setTimeout(() => {
 				stateManager.setLinkCopied(props.blockId, false);
 			}, 2000);
 		} catch (err) {
@@ -157,11 +162,16 @@
 		}
 		updateContent({ sharePlatforms: current });
 	}
+
+	onDestroy(() => {
+		if (copyResetTimer) {
+			clearTimeout(copyResetTimer);
+		}
+	});
 </script>
 
 <div
-	class="social-share-block"
-	class:disabled={props.isEditing}
+	class={['social-share-block', { disabled: props.isEditing }]}
 	role="region"
 	aria-label="Share this content"
 >
@@ -173,7 +183,8 @@
 				<button
 					type="button"
 					class="share-btn"
-					style="--btn-color: {platform.color}; --btn-hover-color: {platform.hoverColor};"
+					style:--btn-color={platform.color}
+					style:--btn-hover-color={platform.hoverColor}
 					onclick={() => openSharePopup(platform)}
 					disabled={props.isEditing}
 					aria-label="Share on {platform.name}"
@@ -185,8 +196,7 @@
 
 		<button
 			type="button"
-			class="share-btn copy-btn"
-			class:copied={linkCopied}
+			class={['share-btn', 'copy-btn', { copied: linkCopied }]}
 			onclick={copyLink}
 			disabled={props.isEditing}
 			aria-label={linkCopied ? 'Copied!' : 'Copy link'}

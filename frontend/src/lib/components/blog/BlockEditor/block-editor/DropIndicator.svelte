@@ -12,7 +12,7 @@
 	let { y }: Props = $props();
 </script>
 
-<div class="drop-indicator" style="top: {y}px;" transition:fade={{ duration: 100 }}>
+<div class="drop-indicator" style:top={`${y}px`} transition:fade={{ duration: 100 }}>
 	<div class="drop-indicator-line"></div>
 	<div class="drop-indicator-dot drop-indicator-dot-left"></div>
 	<div class="drop-indicator-dot drop-indicator-dot-right"></div>

@@ -12,6 +12,7 @@
 	import type { RecentlyAccessed } from '$lib/api/room-resources';
 	import { getRecentlyAccessed } from '$lib/api/room-resources';
 	import Icon from '$lib/components/Icon.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		limit?: number;
@@ -29,17 +30,18 @@
 		onSelect
 	}: Props = $props();
 
-	let items = $state<RecentlyAccessed[]>([]);
-	let loading = $state(true);
+	let items = $derived<RecentlyAccessed[]>(initialData ?? []);
+	let loading = $derived<boolean>(!initialData);
 	let error = $state('');
 
-	$effect(() => {
+	onMount(() => {
 		if (initialData) {
 			items = initialData;
 			loading = false;
-		} else {
-			loadRecentlyAccessed();
+			return;
 		}
+
+		void loadRecentlyAccessed();
 	});
 
 	async function loadRecentlyAccessed() {
@@ -94,7 +96,7 @@
 	{#if loading}
 		<div class="flex gap-4 overflow-x-auto pb-2">
 			{#each Array(4) as _, i (i)}
-				<div class="w-40 flex-shrink-0 animate-pulse {compact ? '' : 'w-48'}">
+				<div class={['w-40 flex-shrink-0 animate-pulse', !compact && 'w-48']}>
 					<div class="aspect-video rounded-lg bg-gray-200 dark:bg-gray-700"></div>
 					<div class="mt-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
 					<div class="mt-1 h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
@@ -127,9 +129,10 @@
 		>
 			{#each items as item (item.id)}
 				<button
-					class="group w-40 flex-shrink-0 text-left transition-transform hover:scale-[1.02] {compact
-						? ''
-						: 'w-48'}"
+					class={[
+						'group w-40 flex-shrink-0 text-left transition-transform hover:scale-[1.02]',
+						!compact && 'w-48'
+					]}
 					onclick={() => handleItemClick(item)}
 				>
 					<!-- Thumbnail -->

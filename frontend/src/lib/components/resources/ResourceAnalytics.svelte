@@ -12,6 +12,7 @@
 	import type { ResourceAnalytics } from '$lib/api/room-resources';
 	import { getResourceAnalytics } from '$lib/api/room-resources';
 	import Icon from '$lib/components/Icon.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		roomId?: number;
@@ -20,17 +21,18 @@
 
 	let { roomId = undefined, initialData = undefined }: Props = $props();
 
-	let analytics: ResourceAnalytics | null = $state(null);
-	let loading = $state(true);
+	let analytics = $derived<ResourceAnalytics | null>(initialData ?? null);
+	let loading = $derived<boolean>(!initialData);
 	let error = $state('');
 
-	$effect(() => {
+	onMount(() => {
 		if (initialData) {
 			analytics = initialData;
 			loading = false;
-		} else {
-			loadAnalytics();
+			return;
 		}
+
+		void loadAnalytics();
 	});
 
 	async function loadAnalytics() {
@@ -180,7 +182,7 @@
 				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Resources by Type</h3>
 				<div class="space-y-3">
 					{#each analytics.by_type as item (item.resource_type)}
-						{@const percentage =
+						{const percentage =
 							analytics.total_resources > 0 ? (item.count / analytics.total_resources) * 100 : 0}
 						<div>
 							<div class="flex items-center justify-between text-sm">
@@ -205,7 +207,7 @@
 							<div
 								class="mt-1 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
 							>
-								<div class="h-full rounded-full bg-blue-500" style="width: {percentage}%"></div>
+								<div class="h-full rounded-full bg-blue-500" style:width={`${percentage}%`}></div>
 							</div>
 							<div class="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
 								<span>{item.total_views} views</span>
@@ -225,12 +227,14 @@
 				</h3>
 				<div class="space-y-3">
 					{#each analytics.by_access_level as item (item.access_level)}
-						{@const percentage =
+						{const percentage =
 							analytics.total_resources > 0 ? (item.count / analytics.total_resources) * 100 : 0}
 						<div>
 							<div class="flex items-center justify-between text-sm">
 								<div class="flex items-center gap-2">
-									<div class="h-3 w-3 rounded-full {getAccessLevelColor(item.access_level)}"></div>
+									<div
+										class={['h-3 w-3 rounded-full', getAccessLevelColor(item.access_level)]}
+									></div>
 									<span class="capitalize text-gray-700 dark:text-gray-300"
 										>{item.access_level}</span
 									>
@@ -241,8 +245,8 @@
 								class="mt-1 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
 							>
 								<div
-									class="h-full rounded-full {getAccessLevelColor(item.access_level)}"
-									style="width: {percentage}%"
+									class={['h-full rounded-full', getAccessLevelColor(item.access_level)]}
+									style:width={`${percentage}%`}
 								></div>
 							</div>
 						</div>

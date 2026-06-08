@@ -11,6 +11,7 @@
 <script lang="ts">
 	import { addFavorite, removeFavorite, checkFavorite } from '$lib/api/room-resources';
 	import Icon from '$lib/components/Icon.svelte';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		resourceId: number;
@@ -28,23 +29,18 @@
 		onChange
 	}: Props = $props();
 
-	let isFavorited = $state(false);
-	let loading = $state(true);
+	let isFavorited = $derived<boolean>(initialFavorited ?? false);
+	let loading = $derived<boolean>(initialFavorited === undefined);
+	let updating = $state(false);
 
-	// Sync with prop when provided
-	$effect(() => {
+	onMount(() => {
 		if (initialFavorited !== undefined) {
 			isFavorited = initialFavorited;
 			loading = false;
+			return;
 		}
-	});
-	let updating = $state(false);
 
-	// Check initial state if not provided
-	$effect(() => {
-		if (initialFavorited === undefined && typeof window !== 'undefined') {
-			loadFavoriteState();
-		}
+		void loadFavoriteState();
 	});
 
 	async function loadFavoriteState() {
@@ -101,22 +97,27 @@
 			lg: 'h-6 w-6'
 		}[size]
 	);
+
+	let loaderIconClass = $derived(`animate-spin ${iconSize}`);
+	let favoritedIconClass = $derived(`${iconSize} fill-current`);
 </script>
 
 <button
 	type="button"
-	class="favorite-button inline-flex items-center gap-1.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-not-allowed disabled:opacity-50 {sizeClasses} {isFavorited
-		? 'text-amber-500 hover:text-amber-600'
-		: 'text-gray-400 hover:text-amber-500'}"
+	class={[
+		'favorite-button inline-flex items-center gap-1.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:cursor-not-allowed disabled:opacity-50',
+		sizeClasses,
+		isFavorited ? 'text-amber-500 hover:text-amber-600' : 'text-gray-400 hover:text-amber-500'
+	]}
 	onclick={toggleFavorite}
 	disabled={loading || updating}
 	aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
 	aria-pressed={isFavorited}
 >
 	{#if loading || updating}
-		<Icon name="IconLoader2" class="animate-spin {iconSize}" />
+		<Icon name="IconLoader2" class={loaderIconClass} />
 	{:else if isFavorited}
-		<Icon name="IconHeart" class="{iconSize} fill-current" />
+		<Icon name="IconHeart" class={favoritedIconClass} />
 	{:else}
 		<Icon name="IconHeart" class={iconSize} />
 	{/if}

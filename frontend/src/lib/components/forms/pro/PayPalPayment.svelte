@@ -10,6 +10,9 @@
 	 * - Subscriptions
 	 */
 
+	import type { Attachment } from 'svelte/attachments';
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface Props {
 		clientId: string;
 		amount: number;
@@ -51,20 +54,25 @@
 		onerror
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
 	let loading = $state(true);
 	let buttonsRendered = $state(false);
 	let paypalError = $state('');
-	let buttonContainerRef: HTMLDivElement;
+	let buttonContainerRef: HTMLDivElement | undefined;
 
-	$effect(() => {
-		if (typeof window !== 'undefined' && buttonContainerRef && !buttonsRendered) {
-			loadPayPal();
-		}
-	});
+	const buttonContainerAttachment: Attachment<HTMLDivElement> = (element) => {
+		buttonContainerRef = element;
+		void loadPayPal();
+
+		return () => {
+			if (buttonContainerRef === element) {
+				buttonContainerRef = undefined;
+			}
+		};
+	};
 
 	async function loadPayPal() {
+		if (buttonsRendered) return;
+
 		try {
 			// Construct funding sources
 			let fundingSources = 'paypal';
@@ -85,12 +93,9 @@
 
 			loading = false;
 
-			// Render PayPal buttons
-			setTimeout(() => {
-				if (buttonContainerRef && window.paypal) {
-					renderButtons();
-				}
-			}, 100);
+			if (buttonContainerRef && window.paypal) {
+				renderButtons();
+			}
 		} catch (_err) {
 			loading = false;
 			paypalError = 'Failed to load PayPal';
@@ -99,7 +104,8 @@
 	}
 
 	function renderButtons() {
-		if (buttonsRendered || !window.paypal?.Buttons) return;
+		const container = buttonContainerRef;
+		if (buttonsRendered || !container || !window.paypal?.Buttons) return;
 
 		window.paypal
 			.Buttons({
@@ -152,7 +158,7 @@
 					paypalError = 'Payment was cancelled';
 				}
 			})
-			.render(buttonContainerRef);
+			.render(container);
 
 		buttonsRendered = true;
 	}
@@ -165,7 +171,7 @@
 	}
 </script>
 
-<div class="paypal-payment" class:disabled class:has-error={error || paypalError}>
+<div class={['paypal-payment', { disabled, 'has-error': error || paypalError }]}>
 	{#if label}
 		<label class="field-label" for="paypal-buttons-container">{label}</label>
 	{/if}
@@ -189,9 +195,8 @@
 
 	<div
 		id="paypal-buttons-container"
-		bind:this={buttonContainerRef}
-		class="paypal-buttons"
-		class:hidden={loading}
+		class={['paypal-buttons', { hidden: loading }]}
+		{@attach buttonContainerAttachment}
 	></div>
 
 	{#if paypalError}

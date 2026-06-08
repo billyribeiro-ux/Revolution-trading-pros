@@ -7,9 +7,11 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import type { ComponentType } from 'svelte';
+	import type { Component } from 'svelte';
 	import EnterpriseStatCard from './EnterpriseStatCard.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
+
+	type IconComponent = Component<{ size?: number; class?: string }>;
 
 	interface StatItem {
 		id: string;
@@ -21,7 +23,7 @@
 		suffix?: string;
 		trend?: number | null;
 		trendLabel?: string;
-		icon?: ComponentType;
+		icon?: IconComponent;
 		color?: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red';
 		sparklineData?: number[];
 		target?: number | null;
@@ -54,7 +56,7 @@
 	);
 </script>
 
-<div class="grid {gridCols} gap-6">
+<div class={['grid gap-6', gridCols]}>
 	{#if loading}
 		{#each Array(columns) as _, i (i)}
 			<SkeletonLoader variant="stat" />

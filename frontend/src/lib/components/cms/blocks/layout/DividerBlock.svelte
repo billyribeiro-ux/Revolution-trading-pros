@@ -98,7 +98,7 @@
 	}
 </script>
 
-<div class="divider-block" class:editing={props.isEditing} class:selected={props.isSelected}>
+<div class={['divider-block', { editing: props.isEditing, selected: props.isSelected }]}>
 	{#if props.isEditing && props.isSelected}
 		<div class="divider-toolbar" role="toolbar" aria-label="Divider settings">
 			<div class="toolbar-row">
@@ -108,8 +108,7 @@
 						{#each STYLE_OPTIONS as option (option.value)}
 							<button
 								type="button"
-								class="style-btn"
-								class:active={dividerStyle === option.value}
+								class={['style-btn', { active: dividerStyle === option.value }]}
 								onclick={() => setStyle(option.value)}
 								aria-pressed={dividerStyle === option.value}
 								title="{option.label} line"
@@ -126,8 +125,7 @@
 						{#each WIDTH_OPTIONS as option (option.value)}
 							<button
 								type="button"
-								class="width-btn"
-								class:active={dividerWidth === option.value}
+								class={['width-btn', { active: dividerWidth === option.value }]}
 								onclick={() => setWidth(option.value)}
 								aria-pressed={dividerWidth === option.value}
 							>
@@ -173,8 +171,7 @@
 						{#each ['small', 'medium', 'large'] as size (size)}
 							<button
 								type="button"
-								class="spacing-btn"
-								class:active={spacing === size}
+								class={['spacing-btn', { active: spacing === size }]}
 								onclick={() => setSpacing(size as SpacingSize)}
 								aria-pressed={spacing === size}
 							>

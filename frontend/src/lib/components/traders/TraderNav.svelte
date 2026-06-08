@@ -22,7 +22,7 @@
 		<div class="trader_pill">
 			<a
 				href="/dashboard/day-trading-room/meet-the-traders/{traderSlug}{pill.path}"
-				class:active={currentPath === pill.path}
+				class={{ active: currentPath === pill.path }}
 			>
 				{pill.label}
 			</a>

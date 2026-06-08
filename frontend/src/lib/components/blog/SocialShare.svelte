@@ -7,6 +7,7 @@
 	 * Updated: CSS layers, oklch colors, container queries, modern patterns
 	 */
 
+	import { onDestroy } from 'svelte';
 	interface Props {
 		/** URL to share (defaults to current page) */
 		url?: string;
@@ -62,6 +63,7 @@
 	});
 
 	let copied = $state(false);
+	let copyResetTimer: ReturnType<typeof setTimeout> | undefined;
 
 	function handleShare(platform: string, shareUrl: string) {
 		// Track the share
@@ -90,9 +92,6 @@
 		try {
 			await navigator.clipboard.writeText(url);
 			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
 		} catch {
 			// Fallback for older browsers
 			const textarea = document.createElement('textarea');
@@ -102,10 +101,14 @@
 			document.execCommand('copy');
 			document.body.removeChild(textarea);
 			copied = true;
-			setTimeout(() => {
-				copied = false;
-			}, 2000);
 		}
+
+		if (copyResetTimer) {
+			clearTimeout(copyResetTimer);
+		}
+		copyResetTimer = setTimeout(() => {
+			copied = false;
+		}, 2000);
 	}
 
 	function trackShare(platform: string) {
@@ -132,9 +135,15 @@
 	let sizeClass = $derived(
 		size === 'small' ? 'size-small' : size === 'large' ? 'size-large' : 'size-medium'
 	);
+
+	onDestroy(() => {
+		if (copyResetTimer) {
+			clearTimeout(copyResetTimer);
+		}
+	});
 </script>
 
-<div class="social-share {layout} {sizeClass}">
+<div class={['social-share', layout, sizeClass]}>
 	<span class="share-label">Share:</span>
 
 	<div class="share-buttons">
@@ -194,8 +203,7 @@
 
 		<!-- Copy Link -->
 		<button
-			class="share-btn copy"
-			class:copied
+			class={['share-btn', 'copy', { copied }]}
 			onclick={() => handleShare('copy', shareUrls.copy)}
 			aria-label={copied ? 'Copied!' : 'Copy link'}
 			title={copied ? 'Copied!' : 'Copy link'}

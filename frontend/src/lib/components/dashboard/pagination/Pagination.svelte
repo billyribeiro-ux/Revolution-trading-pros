@@ -116,8 +116,7 @@
 					<span class="pagination-ellipsis" aria-hidden="true">…</span>
 				{:else}
 					<button
-						class="pagination-btn pagination-page"
-						class:active={currentPage === page}
+						class={['pagination-btn pagination-page', { active: currentPage === page }]}
 						onclick={() => goToPage(page)}
 						onkeydown={(e) => handleKeyDown(e, page)}
 						aria-label="Go to page {page}"

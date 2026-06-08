@@ -48,11 +48,10 @@
 			{#each Array(11) as _, i (i)}
 				<button
 					type="button"
-					class="score-btn"
-					class:selected={props.value === i}
-					style={props.value === i
-						? `background-color: ${getScoreColor(i)}; color: white; border-color: ${getScoreColor(i)};`
-						: ''}
+					class={['score-btn', { selected: props.value === i }]}
+					style:background-color={props.value === i ? getScoreColor(i) : undefined}
+					style:color={props.value === i ? 'white' : undefined}
+					style:border-color={props.value === i ? getScoreColor(i) : undefined}
 					onclick={() => props.onchange?.(i)}
 					aria-label={`Score ${i}`}
 				>
@@ -67,7 +66,7 @@
 	</div>
 
 	{#if props.value !== null}
-		<div class="score-feedback" style={`color: ${getScoreColor(props.value ?? 0)}`}>
+		<div class="score-feedback" style:color={getScoreColor(props.value ?? 0)}>
 			<span class="score-category">{getScoreCategory(props.value ?? 0)}</span>
 			<span class="score-value">Score: {props.value}/10</span>
 		</div>

@@ -42,9 +42,7 @@
 </script>
 
 <div
-	class="price-alert-block"
-	class:bullish={isBullish}
-	class:bearish={!isBullish}
+	class={['price-alert-block', { bullish: isBullish, bearish: !isBullish }]}
 	role="article"
 	aria-label="Price alert for {symbol}"
 >

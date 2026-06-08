@@ -6,7 +6,7 @@
 	 * @version 1.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import { browser } from '$app/environment';
 
 	type ChartType = 'line' | 'area' | 'bar' | 'candlestick' | 'pie' | 'donut';
@@ -43,38 +43,31 @@
 	let loading = $derived(props.loading ?? false);
 	let className = $derived(props.className ?? '');
 
-	let containerRef = $state<HTMLDivElement | null>(null);
+	let containerRef: HTMLDivElement | null = null;
 	let chartInstance = $state<unknown>(null);
 
-	onMount(() => {
-		if (browser && containerRef) {
+	const chartContainer: Attachment<HTMLDivElement> = (element) => {
+		containerRef = element;
+		if (browser) {
 			initChart();
 		}
-	});
 
-	onDestroy(() => {
-		if (chartInstance) {
+		return () => {
+			containerRef = null;
 			// Cleanup chart instance
 			chartInstance = null;
-		}
-	});
+		};
+	};
 
 	function initChart() {
 		// Placeholder for chart initialization
 		// In production, integrate with lightweight-charts, ApexCharts, or Chart.js
 		console.info('[EnterpriseChart] Chart initialized with type:', type);
 	}
-
-	$effect(() => {
-		if (browser && chartInstance && series) {
-			// Update chart data
-			console.info('[EnterpriseChart] Data updated');
-		}
-	});
 </script>
 
 <div
-	class="enterprise-chart {className}"
+	class={['enterprise-chart', className]}
 	style:height={typeof height === 'number' ? `${height}px` : height}
 	style:width={typeof width === 'number' ? `${width}px` : width}
 >
@@ -88,7 +81,7 @@
 			<span>Loading chart...</span>
 		</div>
 	{:else}
-		<div bind:this={containerRef} class="chart-container">
+		<div class="chart-container" {@attach chartContainer}>
 			<!-- Chart renders here -->
 			<div class="chart-placeholder">
 				<span class="placeholder-icon">📊</span>

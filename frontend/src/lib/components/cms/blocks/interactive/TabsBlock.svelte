@@ -6,6 +6,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { IconPlus, IconX } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
@@ -38,6 +39,7 @@
 	// Track previous active tab for animation
 	let previousActiveTab = $state<string | null>(null);
 	let isTransitioning = $state(false);
+	let transitionTimer: ReturnType<typeof setTimeout> | undefined;
 
 	function updateContent(updates: Partial<BlockContent>): void {
 		props.onUpdate({ content: { ...props.block.content, ...updates } });
@@ -49,9 +51,13 @@
 			isTransitioning = true;
 			stateManager.setActiveTab(props.blockId, tabId);
 			// Reset transition state after animation completes
-			setTimeout(() => {
+			if (transitionTimer) {
+				clearTimeout(transitionTimer);
+			}
+			transitionTimer = setTimeout(() => {
 				isTransitioning = false;
 				previousActiveTab = null;
+				transitionTimer = undefined;
 			}, 200);
 		}
 	}
@@ -119,11 +125,16 @@
 		const text = e.clipboardData?.getData('text/plain') || '';
 		document.execCommand('insertText', false, text);
 	}
+
+	onDestroy(() => {
+		if (transitionTimer) {
+			clearTimeout(transitionTimer);
+		}
+	});
 </script>
 
 <div
-	class="tabs-block"
-	class:vertical={orientation === 'vertical'}
+	class={['tabs-block', { vertical: orientation === 'vertical' }]}
 	role="region"
 	aria-label="Tabbed content"
 >
@@ -133,8 +144,7 @@
 				<button
 					type="button"
 					id="tab-btn-{props.blockId}-{tab.id}"
-					class="tab-button"
-					class:active={activeTab === tab.id}
+					class={['tab-button', { active: activeTab === tab.id }]}
 					role="tab"
 					aria-selected={activeTab === tab.id}
 					aria-controls="tab-panel-{props.blockId}-{tab.id}"
@@ -188,10 +198,14 @@
 		{#each tabs as tab, index (tab.id)}
 			<div
 				id="tab-panel-{props.blockId}-{tab.id}"
-				class="tab-panel"
-				class:active={activeTab === tab.id}
-				class:fade-in={activeTab === tab.id && isTransitioning}
-				class:fade-out={previousActiveTab === tab.id && isTransitioning}
+				class={[
+					'tab-panel',
+					{
+						active: activeTab === tab.id,
+						'fade-in': activeTab === tab.id && isTransitioning,
+						'fade-out': previousActiveTab === tab.id && isTransitioning
+					}
+				]}
 				role="tabpanel"
 				aria-labelledby="tab-btn-{props.blockId}-{tab.id}"
 				hidden={activeTab !== tab.id && previousActiveTab !== tab.id}
@@ -200,8 +214,7 @@
 				{#if props.isEditing}
 					<div
 						contenteditable="true"
-						class="tab-content editable-content"
-						class:placeholder={!tab.content}
+						class={['tab-content', 'editable-content', { placeholder: !tab.content }]}
 						role="textbox"
 						aria-label="Tab content"
 						data-placeholder="Add content for this tab..."

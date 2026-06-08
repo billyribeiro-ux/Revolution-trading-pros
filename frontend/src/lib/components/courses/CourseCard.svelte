@@ -113,7 +113,7 @@
 {:else}
 	<a
 		href={linkHref}
-		class="card {variant}"
+		class={['card', variant]}
 		onclick={(e) => {
 			if (props.onclick) {
 				e.preventDefault();
@@ -124,14 +124,16 @@
 		<div class="image-wrap">
 			<img src={imageUrl} alt={props.course.title} loading="lazy" width="400" height="225" />
 			{#if props.course.card_badge}
-				<span class="badge" style="background-color: {props.course.card_badge_color || '#10b981'}"
+				<span class="badge" style:background-color={props.course.card_badge_color || '#10b981'}
 					>{props.course.card_badge}</span
 				>
 			{/if}
 		</div>
 		<div class="content">
 			{#if props.course.level}
-				<span class="level level--{props.course.level?.toLowerCase()}">{props.course.level}</span>
+				<span class={['level', `level--${props.course.level?.toLowerCase()}`]}>
+					{props.course.level}
+				</span>
 			{/if}
 			<h3 class="title">{props.course.title}</h3>
 			{#if props.course.card_description}
@@ -160,7 +162,7 @@
 				<span class="price">{formatPrice(props.course.price_cents, props.course.is_free)}</span>
 			</div>
 			{#if showProgress}
-				<div class="progress"><div class="bar" style="width: {progress}%"></div></div>
+				<div class="progress"><div class="bar" style:width="{progress}%"></div></div>
 			{/if}
 		</div>
 	</a>

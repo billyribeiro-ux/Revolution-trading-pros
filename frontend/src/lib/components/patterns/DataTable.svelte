@@ -69,7 +69,7 @@
 				{#each props.columns as column (column.key)}
 					<th
 						style:width={column.width}
-						class:sortable={column.sortable}
+						class={{ sortable: column.sortable }}
 						onclick={() => column.sortable && handleSort(column.key)}
 						onkeydown={(e) => e.key === 'Enter' && column.sortable && handleSort(column.key)}
 						tabindex={column.sortable ? 0 : -1}
@@ -93,7 +93,7 @@
 			{:else}
 				{#each sortedData as row, rowIdx (rowIdx)}
 					<tr
-						class:clickable={!!props.onRowClick}
+						class={{ clickable: !!props.onRowClick }}
 						onclick={() => handleRowClick(row)}
 						onkeydown={(e) => e.key === 'Enter' && handleRowClick(row)}
 						tabindex={props.onRowClick ? 0 : -1}

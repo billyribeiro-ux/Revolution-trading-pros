@@ -159,7 +159,7 @@
 			class="grid md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden shadow-2xl shadow-black/50"
 		>
 			{#each products as item, i (item.id)}
-				{@const IconComponent = item.icon}
+				{const IconComponent = item.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 100 }}
@@ -285,7 +285,7 @@
 									{#each Array(8) as _, k (k)}
 										<div
 											class="w-8 bg-indigo-500/20 border-t border-indigo-400/30 transition-all duration-700 ease-out group-hover:h-[calc(20%+var(--h))] h-0"
-											style="--h: {k * 10}%"
+											style:--h={`${k * 10}%`}
 										></div>
 									{/each}
 								</div>
@@ -317,11 +317,14 @@
 							</h3>
 
 							<div
-								class="flex items-center gap-2 mb-6 text-xs font-mono {item.accent === 'blue'
-									? 'text-blue-400/80'
-									: item.accent === 'emerald'
-										? 'text-emerald-400/80'
-										: 'text-indigo-400/80'}"
+								class={[
+									'flex items-center gap-2 mb-6 text-xs font-mono',
+									item.accent === 'blue'
+										? 'text-blue-400/80'
+										: item.accent === 'emerald'
+											? 'text-emerald-400/80'
+											: 'text-indigo-400/80'
+								]}
 							>
 								<IconTerminal size={12} />
 								<span>{item.metric}</span>
@@ -344,12 +347,14 @@
 						</div>
 
 						<div
-							class="relative z-20 mt-auto pt-6 border-t border-zinc-900 transition-colors duration-300 bg-zinc-950/20 backdrop-blur-sm {item.accent ===
-							'blue'
-								? 'group-hover:border-blue-500/30'
-								: item.accent === 'emerald'
-									? 'group-hover:border-emerald-500/30'
-									: 'group-hover:border-indigo-500/30'}"
+							class={[
+								'relative z-20 mt-auto pt-6 border-t border-zinc-900 transition-colors duration-300 bg-zinc-950/20 backdrop-blur-sm',
+								item.accent === 'blue'
+									? 'group-hover:border-blue-500/30'
+									: item.accent === 'emerald'
+										? 'group-hover:border-emerald-500/30'
+										: 'group-hover:border-indigo-500/30'
+							]}
 						>
 							<a
 								href={item.href}
@@ -359,12 +364,14 @@
 									>{item.cta}</span
 								>
 								<div
-									class="p-1.5 rounded bg-zinc-900 group-hover:text-white transition-colors duration-300 {item.accent ===
-									'blue'
-										? 'group-hover:bg-blue-500'
-										: item.accent === 'emerald'
-											? 'group-hover:bg-emerald-500'
-											: 'group-hover:bg-indigo-500'}"
+									class={[
+										'p-1.5 rounded bg-zinc-900 group-hover:text-white transition-colors duration-300',
+										item.accent === 'blue'
+											? 'group-hover:bg-blue-500'
+											: item.accent === 'emerald'
+												? 'group-hover:bg-emerald-500'
+												: 'group-hover:bg-indigo-500'
+									]}
 								>
 									<IconArrowUpRight size={16} />
 								</div>

@@ -40,13 +40,16 @@
 	let onexport = $derived(props.onexport);
 
 	let isOpen = $state(false);
-	let buttonRef: HTMLButtonElement;
+	let containerRef: HTMLDivElement | null = null;
 
 	const sizeClasses = {
 		sm: 'px-2.5 py-1.5 text-xs',
 		md: 'px-4 py-2 text-sm',
 		lg: 'px-5 py-2.5 text-base'
 	};
+	let chevronClass = $derived(
+		['transition-transform duration-200', isOpen && 'rotate-180'].filter(Boolean).join(' ')
+	);
 
 	function toggle() {
 		if (!disabled && data.length > 0) {
@@ -85,22 +88,31 @@
 	}
 
 	function handleClickOutside(event: MouseEvent) {
-		if (isOpen && buttonRef && !buttonRef.contains(event.target as Node)) {
+		if (isOpen && containerRef && !containerRef.contains(event.target as Node)) {
 			close();
 		}
+	}
+
+	function trackContainer(element: HTMLDivElement) {
+		containerRef = element;
+
+		return () => {
+			if (containerRef === element) {
+				containerRef = null;
+			}
+		};
 	}
 </script>
 
 <svelte:window onclick={handleClickOutside} />
 
-<div class="relative inline-block">
+<div class="relative inline-block" {@attach trackContainer}>
 	<button
-		bind:this={buttonRef}
 		onclick={toggle}
-		class="flex items-center gap-2 {sizeClasses[size]} font-medium rounded-lg
-			bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50
-			text-slate-300 hover:text-white transition-all duration-200
-			disabled:opacity-50 disabled:cursor-not-allowed"
+		class={[
+			'flex items-center gap-2 font-medium rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed',
+			sizeClasses[size]
+		]}
 		disabled={disabled || data.length === 0}
 	>
 		<IconDownload size={size === 'sm' ? 14 : size === 'md' ? 16 : 18} />
@@ -108,11 +120,7 @@
 		{#if data.length > 0}
 			<span class="text-slate-500">({data.length})</span>
 		{/if}
-		<Icon
-			name="IconChevronDown"
-			size={16}
-			class="transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"
-		/>
+		<Icon name="IconChevronDown" size={16} class={chevronClass} />
 	</button>
 
 	{#if isOpen}

@@ -84,7 +84,7 @@
 </script>
 
 <div
-	class="buttons-block layout-{layout} align-{alignment}"
+	class={['buttons-block', `layout-${layout}`, `align-${alignment}`]}
 	role="group"
 	aria-label="Action buttons"
 >
@@ -94,7 +94,7 @@
 				{#if props.isEditing}
 					<span
 						contenteditable="true"
-						class="btn btn-{button.style} editable-btn"
+						class={['btn', `btn-${button.style}`, 'editable-btn']}
 						role="textbox"
 						oninput={(e) =>
 							updateButton(index, { text: (e.target as HTMLElement).textContent || '' })}
@@ -113,7 +113,7 @@
 				{:else}
 					<a
 						href={sanitizeURL(button.url) || '#'}
-						class="btn btn-{button.style}"
+						class={['btn', `btn-${button.style}`]}
 						target={button.newTab ? '_blank' : undefined}
 						rel={button.newTab ? 'noopener noreferrer' : undefined}
 					>

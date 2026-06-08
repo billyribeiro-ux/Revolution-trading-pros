@@ -183,9 +183,7 @@
 </script>
 
 <div
-	class={['dropzone', className]}
-	class:dropzone-active={isDragOver}
-	class:dropzone-disabled={disabled}
+	class={['dropzone', className, { 'dropzone-active': isDragOver, 'dropzone-disabled': disabled }]}
 	role="button"
 	tabindex={disabled ? -1 : 0}
 	onclick={openFileDialog}

@@ -22,7 +22,8 @@
 	 * @see https://fluentforms.com/wordpress-form-shortcode/
 	 */
 
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import {
 		previewForm,
 		getFormById,
@@ -109,10 +110,15 @@
 	let isSubmitting = $state(false);
 	let submitted = $state(false);
 	let submitMessage = $state('');
-	let visibleFields: Set<number> = $state(new Set());
+	const visibleFields = new SvelteSet<number>();
+	let redirectTimeout: ReturnType<typeof setTimeout> | undefined;
 
-	onMount(async () => {
-		await loadForm();
+	onMount(() => {
+		void loadForm();
+	});
+
+	onDestroy(() => {
+		clearTimeout(redirectTimeout);
 	});
 
 	async function loadForm() {
@@ -197,13 +203,13 @@
 
 	function updateVisibleFields() {
 		if (!formInstance?.fields) return;
-		const newVisible = new Set<number>();
+
+		visibleFields.clear();
 		formInstance.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
-				newVisible.add(field.id);
+				visibleFields.add(field.id);
 			}
 		});
-		visibleFields = newVisible;
 	}
 
 	function handleFieldChange(fieldName: string, value: FieldValue) {
@@ -259,7 +265,8 @@
 				// Redirect if specified
 				const redirect = redirectUrl || result.redirect_url;
 				if (redirect) {
-					setTimeout(() => {
+					clearTimeout(redirectTimeout);
+					redirectTimeout = setTimeout(() => {
 						window.location.href = redirect;
 					}, 1500);
 				}
@@ -284,7 +291,7 @@
 </script>
 
 <div
-	class="form-embed form-embed--{theme} form-embed--{type} {combinedClasses}"
+	class={['form-embed', `form-embed--${theme}`, `form-embed--${type}`, combinedClasses]}
 	data-form-id={formId}
 	data-form-slug={formInstance?.slug || formSlug}
 >
@@ -325,7 +332,7 @@
 			{#if formInstance.fields}
 				{#each formInstance.fields.sort((a, b) => a.order - b.order) as field (field.id)}
 					{#if field.id && visibleFields.has(field.id)}
-						<div class="field-wrapper" style="--field-width: {field.width || 100}%">
+						<div class="field-wrapper" style:--field-width={`${field.width || 100}%`}>
 							<FormFieldRenderer
 								{field}
 								value={formData[field.name]}

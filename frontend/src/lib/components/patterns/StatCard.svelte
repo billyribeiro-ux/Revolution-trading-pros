@@ -39,8 +39,8 @@
 
 <div class="stat-card">
 	{#if props.icon}
-		{@const IconComponent = props.icon}
-		<div class="stat-icon {iconColors[iconColor]}">
+		{const IconComponent = props.icon}
+		<div class={['stat-icon', iconColors[iconColor]]}>
 			<IconComponent size={24} />
 		</div>
 	{/if}
@@ -56,7 +56,7 @@
 			{#if trend !== null || props.subtitle}
 				<div class="stat-footer">
 					{#if trend !== null}
-						<span class="trend trend-{trendDirection}">
+						<span class={['trend', `trend-${trendDirection}`]}>
 							{#if trendDirection === 'up'}
 								<IconTrendingUp size={14} />
 							{:else if trendDirection === 'down'}

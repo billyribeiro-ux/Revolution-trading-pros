@@ -98,9 +98,7 @@
 </script>
 
 <div
-	class="columns-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
+	class={['columns-block', { editing: props.isEditing, selected: props.isSelected }]}
 	role="group"
 	aria-label="Column layout with {columns.length} columns"
 	style:--columns-template={gridTemplate}
@@ -115,8 +113,7 @@
 						{#if preset !== 'custom'}
 							<button
 								type="button"
-								class="preset-btn"
-								class:active={columnLayout === preset}
+								class={['preset-btn', { active: columnLayout === preset }]}
 								onclick={() => setPreset(preset as ColumnPreset)}
 								title="Set layout to {preset}"
 								aria-pressed={columnLayout === preset}
@@ -162,8 +159,7 @@
 	<div class="columns-container">
 		{#each columns as column (column.index)}
 			<div
-				class="column"
-				class:empty={!column.content}
+				class={['column', { empty: !column.content }]}
 				role="region"
 				aria-label="Column {column.index + 1}"
 			>

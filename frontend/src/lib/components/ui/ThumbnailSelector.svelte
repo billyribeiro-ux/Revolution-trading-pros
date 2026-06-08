@@ -31,8 +31,7 @@
 			{#each thumbnails as thumb, i (i)}
 				<button
 					type="button"
-					class="thumbnail-option"
-					class:selected={selected === i}
+					class={{ 'thumbnail-option': true, selected: selected === i }}
 					onclick={() => onselect(i)}
 					aria-label="Select thumbnail {i + 1}"
 					aria-pressed={selected === i}

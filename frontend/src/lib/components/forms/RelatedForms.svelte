@@ -39,33 +39,39 @@
 	let activeTab = $state<'related' | 'trending'>('related');
 
 	// Fetch related forms
-	async function fetchRelatedForms() {
+	async function fetchRelatedForms(signal?: AbortSignal) {
 		try {
 			const token = getAuthToken();
 			const response = await fetch(`/api/forms/${props.formId}/related?limit=${props.limit ?? 5}`, {
-				headers: { Authorization: `Bearer ${token}` }
+				headers: { Authorization: `Bearer ${token}` },
+				signal
 			});
 
 			if (response.ok) {
 				relatedForms = await response.json();
 			}
 		} catch (error) {
+			if (error instanceof DOMException && error.name === 'AbortError') return;
+
 			console.error('Failed to fetch related forms:', error);
 		}
 	}
 
 	// Fetch trending forms
-	async function fetchTrendingForms() {
+	async function fetchTrendingForms(signal?: AbortSignal) {
 		try {
 			const token = getAuthToken();
 			const response = await fetch(`/api/forms/trending?limit=${props.limit ?? 5}`, {
-				headers: { Authorization: `Bearer ${token}` }
+				headers: { Authorization: `Bearer ${token}` },
+				signal
 			});
 
 			if (response.ok) {
 				trendingForms = await response.json();
 			}
 		} catch (error) {
+			if (error instanceof DOMException && error.name === 'AbortError') return;
+
 			console.error('Failed to fetch trending forms:', error);
 		}
 	}
@@ -99,13 +105,20 @@
 	}
 
 	// Initial load
-	onMount(async () => {
+	onMount(() => {
+		const controller = new AbortController();
+
 		loading = true;
-		await Promise.all([
-			fetchRelatedForms(),
-			props.showTrending ? fetchTrendingForms() : Promise.resolve()
-		]);
-		loading = false;
+		void Promise.all([
+			fetchRelatedForms(controller.signal),
+			props.showTrending ? fetchTrendingForms(controller.signal) : Promise.resolve()
+		]).finally(() => {
+			if (!controller.signal.aborted) {
+				loading = false;
+			}
+		});
+
+		return () => controller.abort();
 	});
 </script>
 
@@ -117,15 +130,13 @@
 	{#if props.showTrending}
 		<div class="tabs">
 			<button
-				class="tab"
-				class:active={activeTab === 'related'}
+				class={['tab', { active: activeTab === 'related' }]}
 				onclick={() => (activeTab = 'related')}
 			>
 				Related
 			</button>
 			<button
-				class="tab"
-				class:active={activeTab === 'trending'}
+				class={['tab', { active: activeTab === 'trending' }]}
 				onclick={() => (activeTab = 'trending')}
 			>
 				Trending
@@ -147,7 +158,7 @@
 							<div class="form-header">
 								<span
 									class="relation-badge"
-									style="background-color: {getRelationColor(form.relation_type)}"
+									style:background-color={getRelationColor(form.relation_type)}
 								>
 									{getRelationBadge(form.relation_type)}
 								</span>

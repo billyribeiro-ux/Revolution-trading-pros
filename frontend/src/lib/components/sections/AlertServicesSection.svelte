@@ -158,10 +158,11 @@
 
 		<div
 			class="group/grid grid md:grid-cols-2 gap-8 max-w-5xl mx-auto"
-			style="--x: {mouse.x}px; --y: {mouse.y}px;"
+			style:--x={`${mouse.x}px`}
+			style:--y={`${mouse.y}px`}
 		>
 			{#each signals as item, i (item.id)}
-				{@const IconComponent = item.icon}
+				{const IconComponent = item.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}
@@ -275,9 +276,10 @@
 							<div class="flex justify-between items-start mb-6">
 								<div class="flex items-center gap-3">
 									<div
-										class="p-2 rounded bg-zinc-900 border border-zinc-800 {item.accent === 'amber'
-											? 'text-amber-500'
-											: 'text-orange-500'}"
+										class={[
+											'p-2 rounded bg-zinc-900 border border-zinc-800',
+											item.accent === 'amber' ? 'text-amber-500' : 'text-orange-500'
+										]}
 									>
 										<IconComponent size={20} />
 									</div>
@@ -285,15 +287,16 @@
 										<h3 class="text-xl font-medium text-white">{item.title}</h3>
 										<div class="flex items-center gap-2 mt-1">
 											<span
-												class="w-1.5 h-1.5 rounded-full animate-pulse {item.accent === 'amber'
-													? 'bg-amber-500'
-													: 'bg-orange-500'}"
+												class={[
+													'w-1.5 h-1.5 rounded-full animate-pulse',
+													item.accent === 'amber' ? 'bg-amber-500' : 'bg-orange-500'
+												]}
 											></span>
 											<span
-												class="text-[10px] font-mono uppercase tracking-wider {item.accent ===
-												'amber'
-													? 'text-amber-500/80'
-													: 'text-orange-500/80'}">{item.badge}</span
+												class={[
+													'text-[10px] font-mono uppercase tracking-wider',
+													item.accent === 'amber' ? 'text-amber-500/80' : 'text-orange-500/80'
+												]}>{item.badge}</span
 											>
 										</div>
 									</div>
@@ -325,10 +328,12 @@
 
 							<a
 								href={item.href}
-								class="group/btn relative w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-md text-sm font-medium text-zinc-300 transition-all duration-300 hover:text-white {item.accent ===
-								'amber'
-									? 'hover:border-amber-500/50 hover:bg-amber-500/10'
-									: 'hover:border-orange-500/50 hover:bg-orange-500/10'}"
+								class={[
+									'group/btn relative w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-md text-sm font-medium text-zinc-300 transition-all duration-300 hover:text-white',
+									item.accent === 'amber'
+										? 'hover:border-amber-500/50 hover:bg-amber-500/10'
+										: 'hover:border-orange-500/50 hover:bg-orange-500/10'
+								]}
 							>
 								<span class="flex items-center gap-2">
 									<IconAntenna

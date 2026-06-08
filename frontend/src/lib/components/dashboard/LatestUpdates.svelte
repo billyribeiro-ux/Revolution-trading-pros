@@ -11,7 +11,7 @@
 	@svelte5 Fully compliant with Nov/Dec 2025 best practices
 -->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	/**
 	 * Article/Update item structure
@@ -64,24 +64,30 @@
 			: items.slice(0, maxItems)
 	);
 
-	// Svelte 5 $effect - fetch from API if endpoint provided
-	$effect(() => {
-		if (browser && apiEndpoint && roomSlug) {
-			isLoading = true;
-			error = null;
+	// Fetch from API if endpoint provided
+	onMount(() => {
+		if (!apiEndpoint || !roomSlug) return;
 
-			fetch(apiEndpoint)
-				.then((res) => (res.ok ? res.json() : Promise.reject('Failed to fetch')))
-				.then((data) => {
-					dynamicItems = data.data || data.items || [];
-					isLoading = false;
-				})
-				.catch((err) => {
-					console.error('LatestUpdates fetch error:', err);
-					error = 'Failed to load updates';
-					isLoading = false;
-				});
-		}
+		const controller = new AbortController();
+
+		isLoading = true;
+		error = null;
+
+		void fetch(apiEndpoint, { signal: controller.signal })
+			.then((res) => (res.ok ? res.json() : Promise.reject('Failed to fetch')))
+			.then((data) => {
+				dynamicItems = data.data || data.items || [];
+				isLoading = false;
+			})
+			.catch((err) => {
+				if (err instanceof DOMException && err.name === 'AbortError') return;
+
+				console.error('LatestUpdates fetch error:', err);
+				error = 'Failed to load updates';
+				isLoading = false;
+			});
+
+		return () => controller.abort();
 	});
 </script>
 
@@ -105,7 +111,7 @@
 			{#each displayItems as item (item.id)}
 				<div class="updates-grid__item">
 					<article class="article-card">
-						<figure class="article-card__image" style="background-image: url({item.image});">
+						<figure class="article-card__image" style:background-image={`url(${item.image})`}>
 							<img src={item.image} alt={item.title} loading="lazy" width="400" height="225" />
 						</figure>
 

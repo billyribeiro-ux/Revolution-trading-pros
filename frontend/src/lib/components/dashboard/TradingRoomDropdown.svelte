@@ -6,7 +6,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	interface TradingRoom {
 		name: string;
@@ -51,43 +51,34 @@
 		isOpen = !isOpen;
 	}
 
-	// Close dropdown when clicking outside
-	function handleClickOutside(event: MouseEvent) {
-		const target = event.target as HTMLElement;
-		const dropdown = document.querySelector('.dropdown');
-
-		if (dropdown && !dropdown.contains(target)) {
-			isOpen = false;
-		}
-	}
-
-	// Add click outside listener on mount
-	onMount(() => {
+	const closeOnOutsideClick: Attachment<HTMLElement> = (dropdown) => {
 		const handleClick = (event: MouseEvent) => {
-			if (isOpen) {
-				handleClickOutside(event);
+			if (isOpen && event.target instanceof Node && !dropdown.contains(event.target)) {
+				isOpen = false;
 			}
 		};
 
 		document.addEventListener('click', handleClick);
 
-		return () => {
-			document.removeEventListener('click', handleClick);
-		};
-	});
+		return () => document.removeEventListener('click', handleClick);
+	};
 </script>
 
-<div class="dropdown display-inline-block">
+<div class="dropdown display-inline-block" {@attach closeOnOutsideClick}>
 	<button
 		type="button"
-		class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
-		class:active={isOpen}
+		class={[
+			'btn btn-xs btn-orange btn-tradingroom dropdown-toggle',
+			{
+				active: isOpen
+			}
+		]}
 		onclick={toggleDropdown}
 		aria-expanded={isOpen}
 		aria-haspopup="true"
 	>
 		<strong>Enter a Trading Room</strong>
-		<span class="dropdown-chevron" class:open={isOpen}>
+		<span class={['dropdown-chevron', { open: isOpen }]}>
 			<svg viewBox="0 0 330 512" aria-hidden="true" role="img" width="1em" height="1em">
 				<path
 					d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z"
@@ -103,7 +94,7 @@
 				{#each tradingRooms as room (room.name)}
 					<li>
 						<a href={room.url} target="_blank" rel="nofollow">
-							<span class="{room.icon} icon icon--md"></span>
+							<span class={[room.icon, 'icon icon--md']}></span>
 							{room.name}
 						</a>
 					</li>

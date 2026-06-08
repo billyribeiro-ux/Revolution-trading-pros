@@ -37,6 +37,8 @@
 	}
 
 	import Icon from '$lib/components/Icon.svelte';
+	import { onMount } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	let {
 		name,
@@ -59,41 +61,35 @@
 		oncreate
 	}: Props = $props();
 
-	let selectedIds = $state<string[]>([]);
+	let selectedIds = $derived<string[]>(
+		Array.isArray(value) ? value.map(String) : value ? [String(value)] : []
+	);
 	let searchQuery = $state('');
 	let showDropdown = $state(false);
 	let loading = $state(false);
-	let fetchedTerms = $state<TaxonomyTerm[]>([]);
+	let fetchedTerms = $derived<TaxonomyTerm[]>(terms.length > 0 ? terms : []);
 	let newTermName = $state('');
 	let creating = $state(false);
 
-	// Sync selectedIds with value prop changes
-	$effect(() => {
-		selectedIds = Array.isArray(value) ? value.map(String) : value ? [String(value)] : [];
+	onMount(() => {
+		if (!fetchEndpoint || fetchedTerms.length > 0) return;
+
+		const controller = new AbortController();
+		void fetchTerms(controller.signal);
+
+		return () => controller.abort();
 	});
 
-	// Sync fetchedTerms with terms prop changes
-	$effect(() => {
-		if (terms.length > 0) {
-			fetchedTerms = terms;
-		}
-	});
-
-	$effect(() => {
-		if (fetchEndpoint && fetchedTerms.length === 0) {
-			fetchTerms();
-		}
-	});
-
-	async function fetchTerms() {
+	async function fetchTerms(signal?: AbortSignal) {
 		if (!fetchEndpoint) return;
 
 		loading = true;
 		try {
-			const response = await fetch(`${fetchEndpoint}?taxonomy=${taxonomy}`);
+			const response = await fetch(`${fetchEndpoint}?taxonomy=${taxonomy}`, { signal });
 			const data = await response.json();
 			fetchedTerms = data.terms || [];
-		} catch {
+		} catch (err) {
+			if (err instanceof DOMException && err.name === 'AbortError') return;
 			// Failed to fetch terms
 		} finally {
 			loading = false;
@@ -103,7 +99,7 @@
 	function buildTree(terms: TaxonomyTerm[]): TaxonomyTerm[] {
 		if (!hierarchical) return terms;
 
-		const map = new Map<string | number, TaxonomyTerm>();
+		const map = new SvelteMap<string | number, TaxonomyTerm>();
 		const roots: TaxonomyTerm[] = [];
 
 		terms.forEach((term) => {
@@ -189,7 +185,7 @@
 	}
 </script>
 
-<div class="taxonomy-field" class:disabled class:has-error={error}>
+<div class={['taxonomy-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<label for={multiple ? `${name}-search` : name} class="field-label">
 			{label}
@@ -318,7 +314,7 @@
 </div>
 
 {#snippet termCheckbox(term: TaxonomyTerm, depth: number)}
-	<label class="term-option" style="padding-left: {depth * 1.25}rem">
+	<label class="term-option" style:padding-left={`${depth * 1.25}rem`}>
 		<input
 			type="checkbox"
 			checked={selectedIds.includes(String(term.id))}

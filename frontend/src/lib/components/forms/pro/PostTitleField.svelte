@@ -31,13 +31,8 @@
 		onchange
 	}: Props = $props();
 
-	let inputValue = $state('');
+	let inputValue = $derived<string>(value);
 	let charCount = $derived(inputValue.length);
-
-	// Sync inputValue with value prop changes
-	$effect(() => {
-		inputValue = value;
-	});
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -46,7 +41,7 @@
 	}
 </script>
 
-<div class="post-title-field" class:disabled class:has-error={error}>
+<div class={['post-title-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<label for={name} class="field-label">
 			{label}
@@ -69,7 +64,7 @@
 	/>
 
 	{#if maxLength}
-		<div class="char-counter" class:near-limit={charCount > maxLength * 0.8}>
+		<div class={['char-counter', { 'near-limit': charCount > maxLength * 0.8 }]}>
 			{charCount}/{maxLength}
 		</div>
 	{/if}

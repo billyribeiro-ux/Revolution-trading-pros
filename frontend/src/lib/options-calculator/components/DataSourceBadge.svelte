@@ -50,7 +50,7 @@
 		class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg transition-colors cursor-pointer"
 		style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 	>
-		<span class="w-1.5 h-1.5 rounded-full" style="background: {dotColor};"></span>
+		<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor}></span>
 		{#if isLive}
 			<IconWifi size={10} />
 		{:else if source === 'mock'}
@@ -79,8 +79,8 @@
 
 			<div class="flex items-center justify-between">
 				<span class="text-[10px]" style="color: var(--calc-text-muted);">Status:</span>
-				<span class="flex items-center gap-1 text-[10px]" style="color: {dotColor};">
-					<span class="w-1.5 h-1.5 rounded-full" style="background: {dotColor};"></span>
+				<span class="flex items-center gap-1 text-[10px]" style:color={dotColor}>
+					<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor}></span>
 					{marketData.lastError
 						? 'Error'
 						: isLive

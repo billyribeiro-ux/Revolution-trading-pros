@@ -51,9 +51,7 @@
 </script>
 
 <div
-	class="trade-idea-block"
-	class:long={isLong}
-	class:short={!isLong}
+	class={['trade-idea-block', { long: isLong, short: !isLong }]}
 	role="article"
 	aria-label="Trade idea for {symbol}"
 >
@@ -163,7 +161,7 @@
 					/>
 				{/if}
 				<div class="confidence-bar">
-					<div class="confidence-fill" style="width: {confidence}%"></div>
+					<div class="confidence-fill" style:width="{confidence}%"></div>
 				</div>
 				<span class="confidence-value">{confidence}%</span>
 			</div>

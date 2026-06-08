@@ -6,6 +6,7 @@
 	 * Reusable dropdown menu for table row actions.
 	 * Supports icons, dividers, and danger actions.
 	 */
+	import type { Attachment } from 'svelte/attachments';
 	import { IconDotsVertical, type IconComponent } from '$lib/icons';
 
 	interface Action {
@@ -33,8 +34,28 @@
 	const size = $derived(props.size ?? 'md');
 
 	let isOpen = $state(false);
-	let triggerRef = $state<HTMLButtonElement | null>(null);
-	let menuRef = $state<HTMLDivElement | null>(null);
+	let triggerRef: HTMLButtonElement | null = null;
+	let menuRef: HTMLDivElement | null = null;
+
+	const trackTrigger: Attachment<HTMLButtonElement> = (element) => {
+		triggerRef = element;
+
+		return () => {
+			if (triggerRef === element) {
+				triggerRef = null;
+			}
+		};
+	};
+
+	const trackMenu: Attachment<HTMLDivElement> = (element) => {
+		menuRef = element;
+
+		return () => {
+			if (menuRef === element) {
+				menuRef = null;
+			}
+		};
+	};
 
 	function toggle(e: MouseEvent) {
 		e.stopPropagation();
@@ -64,24 +85,15 @@
 			isOpen = false;
 		}
 	}
-
-	$effect(() => {
-		if (isOpen) {
-			document.addEventListener('click', handleClickOutside);
-			document.addEventListener('keydown', handleKeydown);
-		}
-		return () => {
-			document.removeEventListener('click', handleClickOutside);
-			document.removeEventListener('keydown', handleKeydown);
-		};
-	});
 </script>
 
-<div class="actions-dropdown" class:size-sm={size === 'sm'}>
+<svelte:document onclick={handleClickOutside} onkeydown={handleKeydown} />
+
+<div class={['actions-dropdown', { 'size-sm': size === 'sm' }]}>
 	<button
 		type="button"
 		class="trigger-btn"
-		bind:this={triggerRef}
+		{@attach trackTrigger}
 		onclick={toggle}
 		aria-haspopup="true"
 		aria-expanded={isOpen}
@@ -91,10 +103,14 @@
 
 	{#if isOpen}
 		<div
-			class="dropdown-menu"
-			class:position-left={position === 'left'}
-			class:position-right={position === 'right'}
-			bind:this={menuRef}
+			class={[
+				'dropdown-menu',
+				{
+					'position-left': position === 'left',
+					'position-right': position === 'right'
+				}
+			]}
+			{@attach trackMenu}
 			role="menu"
 		>
 			{#each actions as action (action.id)}
@@ -103,17 +119,21 @@
 				{/if}
 				<button
 					type="button"
-					class="menu-item"
-					class:danger={action.variant === 'danger'}
-					class:warning={action.variant === 'warning'}
-					class:success={action.variant === 'success'}
-					class:disabled={action.disabled}
+					class={[
+						'menu-item',
+						{
+							danger: action.variant === 'danger',
+							warning: action.variant === 'warning',
+							success: action.variant === 'success',
+							disabled: action.disabled
+						}
+					]}
 					role="menuitem"
 					onclick={() => handleAction(action.id, action.disabled)}
 					disabled={action.disabled}
 				>
 					{#if action.icon}
-						{@const Icon = action.icon}
+						{const Icon = action.icon}
 						<Icon size={16} />
 					{/if}
 					<span>{action.label}</span>

@@ -7,6 +7,7 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { IconMail, IconLoader2, IconCheck, IconAlertCircle } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { isValidEmail } from '$lib/utils/sanitization';
@@ -38,8 +39,7 @@
 	// Local state for input binding
 	let emailInput = $state('');
 
-	// Sync email input with state manager on mount
-	$effect(() => {
+	onMount(() => {
 		emailInput = newsletterState.email;
 	});
 
@@ -129,8 +129,7 @@
 </script>
 
 <div
-	class="newsletter-block"
-	class:is-editing={props.isEditing}
+	class={['newsletter-block', { 'is-editing': props.isEditing }]}
 	role="region"
 	aria-label="Newsletter signup"
 >

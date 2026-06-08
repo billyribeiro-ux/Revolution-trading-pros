@@ -84,19 +84,15 @@
 <svelte:window onmousemove={handleMouseMove} onmouseup={handleMouseUp} />
 
 <div
-	class="workflow-node"
-	class:selected
-	class:dragging={isDragging}
-	style="
-    left: {node.position_x}px;
-    top: {node.position_y}px;
-    border-color: {nodeColor};
-  "
+	class={{ 'workflow-node': true, selected, dragging: isDragging }}
+	style:left={`${node.position_x}px`}
+	style:top={`${node.position_y}px`}
+	style:border-color={nodeColor}
 	onmousedown={handleMouseDown}
 	role="button"
 	tabindex="0"
 >
-	<div class="node-header" style="background: {nodeColor};">
+	<div class="node-header" style:background={nodeColor}>
 		<span class="node-icon">{getNodeIcon(node.node_type)}</span>
 		<span class="node-type">{node.node_type}</span>
 	</div>

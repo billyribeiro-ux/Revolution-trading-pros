@@ -56,9 +56,8 @@
 			aria-label="Upload progress"
 		>
 			<div
-				class="progress-fill"
-				class:indeterminate={isIndeterminate}
-				style="width: {displayProgress}%"
+				class={{ 'progress-fill': true, indeterminate: isIndeterminate }}
+				style:width={`${displayProgress}%`}
 			></div>
 		</div>
 		{#if finalStatusText}

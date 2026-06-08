@@ -282,7 +282,7 @@
 {#if !isValidIcon}
 	<!-- Development warning for unknown icons -->
 	<span
-		class="rtp-icon rtp-icon--unknown {className}"
+		class={['rtp-icon', 'rtp-icon--unknown', className]}
 		title="Unknown icon: {name}"
 		role="img"
 		aria-label={ariaLabel ?? `Unknown icon: ${name}`}
@@ -291,7 +291,7 @@
 	</span>
 {:else}
 	<span
-		class="rtp-icon rtp-icon--{name} {className}"
+		class={['rtp-icon', `rtp-icon--${name}`, className]}
 		role="img"
 		aria-label={ariaLabel ?? name}
 		aria-hidden={!ariaLabel}

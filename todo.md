@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 322 Svelte files remaining.
+- Broad dynamic class/style migration scan: 146 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -30,195 +30,227 @@ Current evidence:
 - [x] 2026-06-08: Completed `frontend/src/lib/components/cms/blocks/advanced/CtaBlock.svelte`; replaced interpolated CTA wrapper classes and dynamic style strings with Svelte 5 class arrays plus `style:background-color`.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/media/MediaAnalytics.svelte`; replaced compact class directives and progress/storage style strings with Svelte 5 class/style composition, moved rate/storage calculations to derived values, and made the one-shot mount loader synchronous.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/AdminApprovalStatus.svelte`; replaced error/status/history style bindings with Svelte 5 class/style directives and replaced the static approval note ID with `$props.id()`.
+- [x] 2026-06-08: Completed shared components batch: `ApiNotConnected.svelte`, `BatchOperations.svelte`, `ExportButton.svelte`, `NotificationCenter.svelte`, `RateLimitIndicator.svelte`, `SkeletonLoader.svelte`, `Toast.svelte`, and `admin/ActionsDropdown.svelte`; replaced tracked dynamic class/style bindings with Svelte 5 class/style composition, migrated legacy `{@const}` tags to declaration tags, removed SSR-unstable skeleton random heights, and replaced dropdown document listener/bind:this plumbing with documented Svelte elements and attachments.
+- [x] 2026-06-08: Completed admin utility batch: `ConfirmationModal.svelte`, `RoomSelector.svelte`, `ScheduledPublishing.svelte`, `StatCard.svelte`, and `TabPanel.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, migrated the room selector declaration tag, added stable `$props.id()` form/dialog IDs, removed modal `bind:this` focus wiring with an attachment, and avoided mutable `Date#setDate` scheduling helpers.
+- [x] 2026-06-08: Completed analytics/auth batch: `AIInsightsPanel.svelte`, `RetentionCurve.svelte`, `RevenueBreakdown.svelte`, `MobileBackground.svelte`, `TestimonialCarousel.svelte`, and `TypedHeadline.svelte`; replaced tracked class/style bindings and legacy declaration tags, moved chart/dynamic styles to `style:` directives, made mobile background animation data deterministic for hydration safety, and replaced typed headline `bind:this` with an attachment.
+- [x] 2026-06-08: Completed block editor utility batch: asset manager `DamTabs.svelte`, `DropZone.svelte`, `FoldersSidebar.svelte`, and block editor `BlockLayersPanel.svelte`, `DevicePreviewToggle.svelte`, `DropIndicator.svelte`, `ViewModeToggle.svelte`; replaced remaining legacy class directives and interpolated drop-indicator positioning with Svelte 5 class/style directives.
+- [x] 2026-06-08: Completed mixed UI batch: `FloatingTocWidget.svelte`, `SocialShare.svelte`, `AddToCartButton.svelte`, `EnterpriseChart.svelte`, and `PricingSelector.svelte`; replaced tracked class/style bindings and pricing declaration tags, added copy timeout cleanup, replaced chart container `bind:this` with an attachment, and removed a placeholder chart update effect flagged by the Svelte MCP autofixer.
+- [x] 2026-06-08: Completed CMS advanced/AI batch: `ButtonBlock.svelte`, `CalloutBlock.svelte`, `NewsletterBlock.svelte`, `SocialShareBlock.svelte`, advanced `SpacerBlock.svelte`, `AISummaryBlock.svelte`, and `AITranslationBlock.svelte`; replaced tracked class/style bindings with Svelte 5 class/style directives, replaced newsletter mount sync `$effect` with `onMount`, and added copy timer cleanup in social share/translation blocks.
+- [x] 2026-06-08: Completed CMS content/interactive batch: `CodeBlock.svelte`, `HeadingBlock.svelte`, `ParagraphBlock.svelte`, `QuoteBlock.svelte`, `AccordionBlock.svelte`, `ButtonsBlock.svelte`, and `TabsBlock.svelte`; replaced tracked class/style bindings and accordion declaration tags, converted inline text styles to `style:` directives, cleaned up code/tab timers, and migrated accordion editable refs from a legacy action to Svelte 5 attachments plus `SvelteMap`.
+- [x] 2026-06-08: Completed CMS interactive/layout batch: `TocBlock.svelte`, `ToggleBlock.svelte`, `ColumnsBlock.svelte`, `DividerBlock.svelte`, `GroupBlock.svelte`, and layout `SpacerBlock.svelte`; replaced tracked legacy class directives/interpolated classes with Svelte 5 class arrays/objects, migrated TOC visible-heading tracking to `SvelteMap`, and added SSR-safe spacer drag listener cleanup.
+- [x] 2026-06-08: Completed CMS trading/core/courses batch: `PriceAlertBlock.svelte`, `TickerBlock.svelte`, `TradingIdeaBlock.svelte`, `ApiErrorDisplay.svelte`, `CourseCard.svelte`, and courses `VideoUploader.svelte`; replaced tracked class directives, interpolated class strings, dynamic style strings, and legacy declaration tags with Svelte 5 class/style directives and declaration tags, and made the video uploader mount import synchronous-cleanup safe.
+- [x] 2026-06-08: Completed dashboard navigation/updates batch: `Breadcrumbs.svelte`, `DashboardBreadcrumbs.svelte`, `FavoriteButton.svelte`, `FeaturedCards.svelte`, and `LatestUpdates.svelte`; replaced tracked dynamic class/style bindings with Svelte 5 class arrays and `style:` directives, moved favorite status loading to `onMount`, and replaced the updates fetch `$effect` with an abortable `onMount`.
+- [x] 2026-06-08: Completed dashboard media/sidebar batch: `LoadingState.svelte`, `RightSidebar.svelte`, `TradingRoomDropdown.svelte`, `VideoCard.svelte`, `WatchHistory.svelte`, and `WeeklyWatchlist.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, migrated dropdown outside-click handling to an attachment, and made watch history fetching abortable from a synchronous `onMount`.
+- [x] 2026-06-08: Completed dashboard alerts/forms embed batch: `AlertCard.svelte`, `AlertFilters.svelte`, dashboard pagination `Pagination.svelte`, dashboard video `VideoCard.svelte`, and `EmbedCodeGenerator.svelte`; replaced tracked dynamic class/style bindings with Svelte 5 class arrays and `style:` directives, and added embed copy timeout cleanup.
+- [x] 2026-06-08: Completed forms rendering/templates batch: `FormEmbed.svelte`, `FormList.svelte`, `FormRenderer.svelte`, `FormTemplateSelector.svelte`, `QuizField.svelte`, and `RelatedForms.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, made form visibility sets use `SvelteSet`, cleaned up form redirect timers, made related-form fetching abortable, and made quiz option randomization deterministic for hydration safety.
+- [x] 2026-06-08: Completed pro forms calculated/selection batch: `CalculatedField.svelte`, `AccordionTabField.svelte`, `ChainedSelectField.svelte`, `ColorPickerField.svelte`, and `CouponField.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and `style:` directives, replaced sync effects with writable derived state where appropriate, and made calculated field output derived from pure calculation state.
+- [x] 2026-06-08: Completed pro forms dynamic/upload batch: `DoubleOptIn.svelte`, `DynamicField.svelte`, `EnhancedCheckbox.svelte`, `FeaturedImageField.svelte`, and `FileUploadField.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, replaced prop-sync effects with writable derived state, made dynamic option fetching abortable, moved double-opt-in countdown to a `SvelteDate`-based derived timer, and migrated file input refs to attachments.
+- [x] 2026-06-08: Completed pro forms steps/privacy/location/Mollie/NPS batch: `FormStepField.svelte`, `GDPRField.svelte`, `GeolocationAddress.svelte`, `MolliePayment.svelte`, and `NPSField.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, migrated step tracking to `SvelteSet`, and replaced geolocation prop-sync effects with writable derived state plus `onMount` auto-detection.
+- [x] 2026-06-08: Completed pro forms payment batch: `PaddlePayment.svelte`, `PayPalPayment.svelte`, `PaymentField.svelte`, and `PaystackPayment.svelte`; replaced tracked class bindings with Svelte 5 class arrays, moved Paddle SDK setup into synchronous `onMount`, and migrated PayPal button container lifecycle from `bind:this`/effect wiring to an attachment.
+- [x] 2026-06-08: Completed pro forms publishing/Razorpay batch: `PhoneIntlField.svelte`, `PostContentField.svelte`, `PostExcerptField.svelte`, `PostTitleField.svelte`, and `RazorPayPayment.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, replaced prop-sync effects with writable derived state, moved rich-text editor DOM wiring to an attachment, and used top-level Svelte document event handling for the phone country picker.
+- [x] 2026-06-08: Completed pro forms controls/Square batch: `RepeaterField.svelte`, `SignatureField.svelte`, `SquarePayment.svelte`, `TaxonomyField.svelte`, and `ToggleField.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, replaced sync effects with writable derived state or `onMount`, migrated canvas/Square DOM wiring to attachments, and used `SvelteMap` for taxonomy tree construction.
+- [x] 2026-06-08: Completed icon/downloads/layout/dropzone batch: `RtpIcon.svelte`, `PlatformDownloads.svelte`, `AppSidebar.svelte`, `MarketingShell.svelte`, and media `DropZone.svelte`; replaced tracked interpolated classes and class directives with Svelte 5 class arrays/objects while preserving component APIs.
+- [x] 2026-06-08: Completed media grid/upload/preview batch: `FolderTree.svelte`, `ImageComparisonSlider.svelte`, `MediaGrid.svelte`, `MediaUpload.svelte`, `ResponsivePreview.svelte`, and `UploadDropzone.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and `style:` directives, moved comparison/file input refs to attachments, and used `SvelteMap` for upload progress.
+- [x] 2026-06-08: Completed patterns/resources initial batch: `DataTable.svelte`, `EmptyState.svelte`, `StatCard.svelte`, resources `FavoriteButton.svelte`, and `RecentlyAccessed.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and `style:` directives, and moved resource initial loading from `$effect` to `onMount` with writable derived state.
+- [x] 2026-06-08: Completed resources analytics/card/grid/list batch: `ResourceAnalytics.svelte`, `ResourceCard.svelte`, `ResourceGrid.svelte`, and `StockListViewer.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and `style:` directives, and moved resource analytics/grid initial loading from `$effect` to `onMount` with writable derived state plus search timeout cleanup.
+- [x] 2026-06-08: Completed marketing sections batch: `AlertServicesSection.svelte`, `LatestBlogsSection.svelte`, `MentorshipSection.svelte`, `SocialMediaSection.svelte`, `TradingRoomsSection.svelte`, and `WhySection.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and `style:` directives for mouse-position custom properties, accent classes, and dynamic backgrounds.
+- [x] 2026-06-08: Completed SEO/trader/live badge batch: `SeoAnalyzer.svelte`, `TraderNav.svelte`, and `LiveStreamBadge.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and `style:` directives, made SEO analysis refresh event-safe, and prevented live badge reconnect timers after teardown.
+- [x] 2026-06-08: Completed UI primitives/widgets batch: `Badge.svelte`, `BatchOperations.svelte`, `BlurHashImage.svelte`, `Button.svelte`, and `DashboardWidgetManager.svelte`; replaced tracked interpolated classes and class directives with Svelte 5 class arrays/objects, moved dynamic image container sizing to style directives, and migrated cached image detection from `bind:this`/`$effect` to an attachment.
+- [x] 2026-06-08: Completed UI date/stats/export/dropzone batch: `DatePicker.svelte`, `EnterpriseStatCard.svelte`, `EnterpriseStatsGrid.svelte`, `ExportButton.svelte`, and `FileDropZone.svelte`; replaced tracked class directives/interpolated classes with Svelte 5 class arrays/objects and declaration tags, moved progress/transition styles to `style:` directives, replaced DOM refs/effects with attachments, and switched stat icon typing to Svelte 5 `Component`.
+- [x] 2026-06-08: Completed remaining UI overlay/loading batch: `Modal.svelte`, `NotificationPanel.svelte`, `SkeletonLoader.svelte`, `ThumbnailSelector.svelte`, `Toast.svelte`, `Tooltip.svelte`, and `UploadProgress.svelte`; replaced tracked dynamic class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and style directives, moved modal/tooltip/notification DOM lifecycles to attachments or Svelte document events, and made modal/tooltip IDs stable with `$props.id()`.
+- [x] 2026-06-08: Completed video/workflow/consent batch: `RelatedVideos.svelte`, `WorkflowAnalytics.svelte`, `WorkflowNode.svelte`, `ConsentBanner.svelte`, `ConsentSettingsButton.svelte`, and `TemplatePreviewCard.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and style directives, converted related-video loading to a derived promise/await block, moved workflow reloads to explicit range handlers, and replaced consent settings effects with store subscriptions plus timer cleanup.
+- [x] 2026-06-08: Completed monitoring/options initial batch: `performance-dashboard.svelte`, `DataSourceBadge.svelte`, `LiveDataToggle.svelte`, `ResultsBar.svelte`, `ScenarioEngine.svelte`, and `StrategyPresets.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and style directives, migrated calculator DOM animation refs from `bind:this`/`$effect` to attachments, and kept calculator CSS variable styling intact.
+- [x] 2026-06-08: Completed options charts/export controls batch: `TickerSearch.svelte`, `TimeMachine.svelte`, `VisualizationTabs.svelte`, charts `Surface3D.svelte`, and export `ExportMenu.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 style directives and declaration tags, migrated dropdown/menu animation refs from `bind:this`/`$effect` to attachments, and moved time-machine playback cleanup to `onDestroy`.
+- [x] 2026-06-08: Completed options export/growth/saved/UI batch: `ExportPNG.svelte`, `WatermarkOverlay.svelte`, `ConfigCard.svelte`, `SaveConfigModal.svelte`, `AnimatedNumber.svelte`, and `AnimatedSlider.svelte`; replaced tracked dynamic style/class bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and style directives, moved export/save modal reset animations to attachments, and replaced effect-driven focus/number display with attachments and derived values.
 
 ## Remaining Files
 
 Generated from the source-of-truth scan on 2026-06-08. Check these off only after the one-file completion loop passes MCP, targeted scan, full gates, commit, and push.
 
-- [ ] `frontend/src/lib/components/ApiNotConnected.svelte`
-- [ ] `frontend/src/lib/components/BatchOperations.svelte`
-- [ ] `frontend/src/lib/components/ExportButton.svelte`
-- [ ] `frontend/src/lib/components/NotificationCenter.svelte`
-- [ ] `frontend/src/lib/components/RateLimitIndicator.svelte`
-- [ ] `frontend/src/lib/components/SkeletonLoader.svelte`
-- [ ] `frontend/src/lib/components/Toast.svelte`
-- [ ] `frontend/src/lib/components/admin/ActionsDropdown.svelte`
+- [x] `frontend/src/lib/components/ApiNotConnected.svelte`
+- [x] `frontend/src/lib/components/BatchOperations.svelte`
+- [x] `frontend/src/lib/components/ExportButton.svelte`
+- [x] `frontend/src/lib/components/NotificationCenter.svelte`
+- [x] `frontend/src/lib/components/RateLimitIndicator.svelte`
+- [x] `frontend/src/lib/components/SkeletonLoader.svelte`
+- [x] `frontend/src/lib/components/Toast.svelte`
+- [x] `frontend/src/lib/components/admin/ActionsDropdown.svelte`
 - [x] `frontend/src/lib/components/admin/BunnyVideoUploader.svelte`
-- [ ] `frontend/src/lib/components/admin/ConfirmationModal.svelte`
-- [ ] `frontend/src/lib/components/admin/RoomSelector.svelte`
-- [ ] `frontend/src/lib/components/admin/ScheduledPublishing.svelte`
-- [ ] `frontend/src/lib/components/admin/StatCard.svelte`
-- [ ] `frontend/src/lib/components/admin/TabPanel.svelte`
-- [ ] `frontend/src/lib/components/analytics/AIInsightsPanel.svelte`
-- [ ] `frontend/src/lib/components/analytics/RetentionCurve.svelte`
-- [ ] `frontend/src/lib/components/analytics/RevenueBreakdown.svelte`
-- [ ] `frontend/src/lib/components/auth/MobileBackground.svelte`
-- [ ] `frontend/src/lib/components/auth/TestimonialCarousel.svelte`
-- [ ] `frontend/src/lib/components/auth/TypedHeadline.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/asset-manager/DamTabs.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/asset-manager/DropZone.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/asset-manager/FoldersSidebar.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/block-editor/BlockLayersPanel.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/block-editor/DevicePreviewToggle.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/block-editor/DropIndicator.svelte`
-- [ ] `frontend/src/lib/components/blog/BlockEditor/block-editor/ViewModeToggle.svelte`
-- [ ] `frontend/src/lib/components/blog/FloatingTocWidget.svelte`
-- [ ] `frontend/src/lib/components/blog/SocialShare.svelte`
-- [ ] `frontend/src/lib/components/cart/AddToCartButton.svelte`
-- [ ] `frontend/src/lib/components/charts/EnterpriseChart.svelte`
-- [ ] `frontend/src/lib/components/checkout/PricingSelector.svelte`
+- [x] `frontend/src/lib/components/admin/ConfirmationModal.svelte`
+- [x] `frontend/src/lib/components/admin/RoomSelector.svelte`
+- [x] `frontend/src/lib/components/admin/ScheduledPublishing.svelte`
+- [x] `frontend/src/lib/components/admin/StatCard.svelte`
+- [x] `frontend/src/lib/components/admin/TabPanel.svelte`
+- [x] `frontend/src/lib/components/analytics/AIInsightsPanel.svelte`
+- [x] `frontend/src/lib/components/analytics/RetentionCurve.svelte`
+- [x] `frontend/src/lib/components/analytics/RevenueBreakdown.svelte`
+- [x] `frontend/src/lib/components/auth/MobileBackground.svelte`
+- [x] `frontend/src/lib/components/auth/TestimonialCarousel.svelte`
+- [x] `frontend/src/lib/components/auth/TypedHeadline.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/asset-manager/DamTabs.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/asset-manager/DropZone.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/asset-manager/FoldersSidebar.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/block-editor/BlockLayersPanel.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/block-editor/DevicePreviewToggle.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/block-editor/DropIndicator.svelte`
+- [x] `frontend/src/lib/components/blog/BlockEditor/block-editor/ViewModeToggle.svelte`
+- [x] `frontend/src/lib/components/blog/FloatingTocWidget.svelte`
+- [x] `frontend/src/lib/components/blog/SocialShare.svelte`
+- [x] `frontend/src/lib/components/cart/AddToCartButton.svelte`
+- [x] `frontend/src/lib/components/charts/EnterpriseChart.svelte`
+- [x] `frontend/src/lib/components/checkout/PricingSelector.svelte`
 - [x] `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/advanced/ButtonBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/advanced/CalloutBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/ButtonBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/CalloutBlock.svelte`
 - [x] `frontend/src/lib/components/cms/blocks/advanced/CtaBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/advanced/NewsletterBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/advanced/SocialShareBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/advanced/SpacerBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/ai/AISummaryBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/ai/AITranslationBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/content/CodeBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/content/HeadingBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/content/ParagraphBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/content/QuoteBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/interactive/AccordionBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/interactive/ButtonsBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/interactive/TabsBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/interactive/TocBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/interactive/ToggleBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/layout/ColumnsBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/layout/DividerBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/layout/GroupBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/layout/SpacerBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/trading/PriceAlertBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/trading/TickerBlock.svelte`
-- [ ] `frontend/src/lib/components/cms/blocks/trading/TradingIdeaBlock.svelte`
-- [ ] `frontend/src/lib/components/core/ApiErrorDisplay.svelte`
-- [ ] `frontend/src/lib/components/courses/CourseCard.svelte`
-- [ ] `frontend/src/lib/components/courses/VideoUploader.svelte`
-- [ ] `frontend/src/lib/components/dashboard/Breadcrumbs.svelte`
-- [ ] `frontend/src/lib/components/dashboard/DashboardBreadcrumbs.svelte`
-- [ ] `frontend/src/lib/components/dashboard/FavoriteButton.svelte`
-- [ ] `frontend/src/lib/components/dashboard/FeaturedCards.svelte`
-- [ ] `frontend/src/lib/components/dashboard/LatestUpdates.svelte`
-- [ ] `frontend/src/lib/components/dashboard/LoadingState.svelte`
-- [ ] `frontend/src/lib/components/dashboard/RightSidebar.svelte`
-- [ ] `frontend/src/lib/components/dashboard/TradingRoomDropdown.svelte`
-- [ ] `frontend/src/lib/components/dashboard/VideoCard.svelte`
-- [ ] `frontend/src/lib/components/dashboard/WatchHistory.svelte`
-- [ ] `frontend/src/lib/components/dashboard/WeeklyWatchlist.svelte`
-- [ ] `frontend/src/lib/components/dashboard/alerts/AlertCard.svelte`
-- [ ] `frontend/src/lib/components/dashboard/alerts/AlertFilters.svelte`
-- [ ] `frontend/src/lib/components/dashboard/pagination/Pagination.svelte`
-- [ ] `frontend/src/lib/components/dashboard/video/VideoCard.svelte`
-- [ ] `frontend/src/lib/components/forms/EmbedCodeGenerator.svelte`
-- [ ] `frontend/src/lib/components/forms/FormEmbed.svelte`
-- [ ] `frontend/src/lib/components/forms/FormList.svelte`
-- [ ] `frontend/src/lib/components/forms/FormRenderer.svelte`
-- [ ] `frontend/src/lib/components/forms/FormTemplateSelector.svelte`
-- [ ] `frontend/src/lib/components/forms/QuizField.svelte`
-- [ ] `frontend/src/lib/components/forms/RelatedForms.svelte`
-- [ ] `frontend/src/lib/components/forms/fields/CalculatedField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/AccordionTabField.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/NewsletterBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/SocialShareBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/advanced/SpacerBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/ai/AISummaryBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/ai/AITranslationBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/CodeBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/HeadingBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/ParagraphBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/content/QuoteBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/interactive/AccordionBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/interactive/ButtonsBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/interactive/TabsBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/interactive/TocBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/interactive/ToggleBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/layout/ColumnsBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/layout/DividerBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/layout/GroupBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/layout/SpacerBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/trading/PriceAlertBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/trading/TickerBlock.svelte`
+- [x] `frontend/src/lib/components/cms/blocks/trading/TradingIdeaBlock.svelte`
+- [x] `frontend/src/lib/components/core/ApiErrorDisplay.svelte`
+- [x] `frontend/src/lib/components/courses/CourseCard.svelte`
+- [x] `frontend/src/lib/components/courses/VideoUploader.svelte`
+- [x] `frontend/src/lib/components/dashboard/Breadcrumbs.svelte`
+- [x] `frontend/src/lib/components/dashboard/DashboardBreadcrumbs.svelte`
+- [x] `frontend/src/lib/components/dashboard/FavoriteButton.svelte`
+- [x] `frontend/src/lib/components/dashboard/FeaturedCards.svelte`
+- [x] `frontend/src/lib/components/dashboard/LatestUpdates.svelte`
+- [x] `frontend/src/lib/components/dashboard/LoadingState.svelte`
+- [x] `frontend/src/lib/components/dashboard/RightSidebar.svelte`
+- [x] `frontend/src/lib/components/dashboard/TradingRoomDropdown.svelte`
+- [x] `frontend/src/lib/components/dashboard/VideoCard.svelte`
+- [x] `frontend/src/lib/components/dashboard/WatchHistory.svelte`
+- [x] `frontend/src/lib/components/dashboard/WeeklyWatchlist.svelte`
+- [x] `frontend/src/lib/components/dashboard/alerts/AlertCard.svelte`
+- [x] `frontend/src/lib/components/dashboard/alerts/AlertFilters.svelte`
+- [x] `frontend/src/lib/components/dashboard/pagination/Pagination.svelte`
+- [x] `frontend/src/lib/components/dashboard/video/VideoCard.svelte`
+- [x] `frontend/src/lib/components/forms/EmbedCodeGenerator.svelte`
+- [x] `frontend/src/lib/components/forms/FormEmbed.svelte`
+- [x] `frontend/src/lib/components/forms/FormList.svelte`
+- [x] `frontend/src/lib/components/forms/FormRenderer.svelte`
+- [x] `frontend/src/lib/components/forms/FormTemplateSelector.svelte`
+- [x] `frontend/src/lib/components/forms/QuizField.svelte`
+- [x] `frontend/src/lib/components/forms/RelatedForms.svelte`
+- [x] `frontend/src/lib/components/forms/fields/CalculatedField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/AccordionTabField.svelte`
 - [x] `frontend/src/lib/components/forms/pro/AdminApprovalStatus.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/ChainedSelectField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/ColorPickerField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/CouponField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/DoubleOptIn.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/DynamicField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/EnhancedCheckbox.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/FeaturedImageField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/FileUploadField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/ChainedSelectField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/ColorPickerField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/CouponField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/DoubleOptIn.svelte`
+- [x] `frontend/src/lib/components/forms/pro/DynamicField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/EnhancedCheckbox.svelte`
+- [x] `frontend/src/lib/components/forms/pro/FeaturedImageField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/FileUploadField.svelte`
 - [x] `frontend/src/lib/components/forms/pro/FormReport.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/FormStepField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/GDPRField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/GeolocationAddress.svelte`
+- [x] `frontend/src/lib/components/forms/pro/FormStepField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/GDPRField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/GeolocationAddress.svelte`
 - [x] `frontend/src/lib/components/forms/pro/InventoryField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/MolliePayment.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/NPSField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PaddlePayment.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PayPalPayment.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PaymentField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PaystackPayment.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PhoneIntlField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PostContentField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PostExcerptField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/PostTitleField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/RazorPayPayment.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/RepeaterField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/SignatureField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/SquarePayment.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/TaxonomyField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/ToggleField.svelte`
-- [ ] `frontend/src/lib/components/icons/RtpIcon.svelte`
-- [ ] `frontend/src/lib/components/indicators/PlatformDownloads.svelte`
-- [ ] `frontend/src/lib/components/layout/AppSidebar.svelte`
-- [ ] `frontend/src/lib/components/layout/MarketingShell.svelte`
-- [ ] `frontend/src/lib/components/media/DropZone.svelte`
-- [ ] `frontend/src/lib/components/media/FolderTree.svelte`
-- [ ] `frontend/src/lib/components/media/ImageComparisonSlider.svelte`
+- [x] `frontend/src/lib/components/forms/pro/MolliePayment.svelte`
+- [x] `frontend/src/lib/components/forms/pro/NPSField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PaddlePayment.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PayPalPayment.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PaymentField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PaystackPayment.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PhoneIntlField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PostContentField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PostExcerptField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/PostTitleField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/RazorPayPayment.svelte`
+- [x] `frontend/src/lib/components/forms/pro/RepeaterField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/SignatureField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/SquarePayment.svelte`
+- [x] `frontend/src/lib/components/forms/pro/TaxonomyField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/ToggleField.svelte`
+- [x] `frontend/src/lib/components/icons/RtpIcon.svelte`
+- [x] `frontend/src/lib/components/indicators/PlatformDownloads.svelte`
+- [x] `frontend/src/lib/components/layout/AppSidebar.svelte`
+- [x] `frontend/src/lib/components/layout/MarketingShell.svelte`
+- [x] `frontend/src/lib/components/media/DropZone.svelte`
+- [x] `frontend/src/lib/components/media/FolderTree.svelte`
+- [x] `frontend/src/lib/components/media/ImageComparisonSlider.svelte`
 - [x] `frontend/src/lib/components/media/MediaAnalytics.svelte`
-- [ ] `frontend/src/lib/components/media/MediaGrid.svelte`
-- [ ] `frontend/src/lib/components/media/MediaUpload.svelte`
-- [ ] `frontend/src/lib/components/media/ResponsivePreview.svelte`
-- [ ] `frontend/src/lib/components/media/UploadDropzone.svelte`
-- [ ] `frontend/src/lib/components/patterns/DataTable.svelte`
-- [ ] `frontend/src/lib/components/patterns/EmptyState.svelte`
-- [ ] `frontend/src/lib/components/patterns/StatCard.svelte`
-- [ ] `frontend/src/lib/components/resources/FavoriteButton.svelte`
-- [ ] `frontend/src/lib/components/resources/RecentlyAccessed.svelte`
-- [ ] `frontend/src/lib/components/resources/ResourceAnalytics.svelte`
-- [ ] `frontend/src/lib/components/resources/ResourceCard.svelte`
-- [ ] `frontend/src/lib/components/resources/ResourceGrid.svelte`
-- [ ] `frontend/src/lib/components/resources/StockListViewer.svelte`
-- [ ] `frontend/src/lib/components/sections/AlertServicesSection.svelte`
-- [ ] `frontend/src/lib/components/sections/LatestBlogsSection.svelte`
-- [ ] `frontend/src/lib/components/sections/MentorshipSection.svelte`
-- [ ] `frontend/src/lib/components/sections/SocialMediaSection.svelte`
-- [ ] `frontend/src/lib/components/sections/TradingRoomsSection.svelte`
-- [ ] `frontend/src/lib/components/sections/WhySection.svelte`
-- [ ] `frontend/src/lib/components/seo/SeoAnalyzer.svelte`
-- [ ] `frontend/src/lib/components/traders/TraderNav.svelte`
-- [ ] `frontend/src/lib/components/trading-room/LiveStreamBadge.svelte`
-- [ ] `frontend/src/lib/components/ui/Badge.svelte`
-- [ ] `frontend/src/lib/components/ui/BatchOperations.svelte`
-- [ ] `frontend/src/lib/components/ui/BlurHashImage.svelte`
-- [ ] `frontend/src/lib/components/ui/Button.svelte`
-- [ ] `frontend/src/lib/components/ui/DashboardWidgetManager.svelte`
-- [ ] `frontend/src/lib/components/ui/DatePicker.svelte`
-- [ ] `frontend/src/lib/components/ui/EnterpriseStatCard.svelte`
-- [ ] `frontend/src/lib/components/ui/EnterpriseStatsGrid.svelte`
-- [ ] `frontend/src/lib/components/ui/ExportButton.svelte`
-- [ ] `frontend/src/lib/components/ui/FileDropZone.svelte`
-- [ ] `frontend/src/lib/components/ui/Modal.svelte`
-- [ ] `frontend/src/lib/components/ui/NotificationPanel.svelte`
-- [ ] `frontend/src/lib/components/ui/SkeletonLoader.svelte`
-- [ ] `frontend/src/lib/components/ui/ThumbnailSelector.svelte`
-- [ ] `frontend/src/lib/components/ui/Toast.svelte`
-- [ ] `frontend/src/lib/components/ui/Tooltip.svelte`
-- [ ] `frontend/src/lib/components/ui/UploadProgress.svelte`
-- [ ] `frontend/src/lib/components/video/RelatedVideos.svelte`
-- [ ] `frontend/src/lib/components/workflow/WorkflowAnalytics.svelte`
-- [ ] `frontend/src/lib/components/workflow/WorkflowNode.svelte`
-- [ ] `frontend/src/lib/consent/components/ConsentBanner.svelte`
-- [ ] `frontend/src/lib/consent/components/ConsentSettingsButton.svelte`
-- [ ] `frontend/src/lib/consent/templates/TemplatePreviewCard.svelte`
-- [ ] `frontend/src/lib/monitoring/performance-dashboard.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/DataSourceBadge.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/LiveDataToggle.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/ResultsBar.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/ScenarioEngine.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/StrategyPresets.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/TickerSearch.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/TimeMachine.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/VisualizationTabs.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/charts/Surface3D.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/export/ExportMenu.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/export/ExportPNG.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/growth/WatermarkOverlay.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/saved/ConfigCard.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/saved/SaveConfigModal.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/ui/AnimatedNumber.svelte`
-- [ ] `frontend/src/lib/options-calculator/components/ui/AnimatedSlider.svelte`
+- [x] `frontend/src/lib/components/media/MediaGrid.svelte`
+- [x] `frontend/src/lib/components/media/MediaUpload.svelte`
+- [x] `frontend/src/lib/components/media/ResponsivePreview.svelte`
+- [x] `frontend/src/lib/components/media/UploadDropzone.svelte`
+- [x] `frontend/src/lib/components/patterns/DataTable.svelte`
+- [x] `frontend/src/lib/components/patterns/EmptyState.svelte`
+- [x] `frontend/src/lib/components/patterns/StatCard.svelte`
+- [x] `frontend/src/lib/components/resources/FavoriteButton.svelte`
+- [x] `frontend/src/lib/components/resources/RecentlyAccessed.svelte`
+- [x] `frontend/src/lib/components/resources/ResourceAnalytics.svelte`
+- [x] `frontend/src/lib/components/resources/ResourceCard.svelte`
+- [x] `frontend/src/lib/components/resources/ResourceGrid.svelte`
+- [x] `frontend/src/lib/components/resources/StockListViewer.svelte`
+- [x] `frontend/src/lib/components/sections/AlertServicesSection.svelte`
+- [x] `frontend/src/lib/components/sections/LatestBlogsSection.svelte`
+- [x] `frontend/src/lib/components/sections/MentorshipSection.svelte`
+- [x] `frontend/src/lib/components/sections/SocialMediaSection.svelte`
+- [x] `frontend/src/lib/components/sections/TradingRoomsSection.svelte`
+- [x] `frontend/src/lib/components/sections/WhySection.svelte`
+- [x] `frontend/src/lib/components/seo/SeoAnalyzer.svelte`
+- [x] `frontend/src/lib/components/traders/TraderNav.svelte`
+- [x] `frontend/src/lib/components/trading-room/LiveStreamBadge.svelte`
+- [x] `frontend/src/lib/components/ui/Badge.svelte`
+- [x] `frontend/src/lib/components/ui/BatchOperations.svelte`
+- [x] `frontend/src/lib/components/ui/BlurHashImage.svelte`
+- [x] `frontend/src/lib/components/ui/Button.svelte`
+- [x] `frontend/src/lib/components/ui/DashboardWidgetManager.svelte`
+- [x] `frontend/src/lib/components/ui/DatePicker.svelte`
+- [x] `frontend/src/lib/components/ui/EnterpriseStatCard.svelte`
+- [x] `frontend/src/lib/components/ui/EnterpriseStatsGrid.svelte`
+- [x] `frontend/src/lib/components/ui/ExportButton.svelte`
+- [x] `frontend/src/lib/components/ui/FileDropZone.svelte`
+- [x] `frontend/src/lib/components/ui/Modal.svelte`
+- [x] `frontend/src/lib/components/ui/NotificationPanel.svelte`
+- [x] `frontend/src/lib/components/ui/SkeletonLoader.svelte`
+- [x] `frontend/src/lib/components/ui/ThumbnailSelector.svelte`
+- [x] `frontend/src/lib/components/ui/Toast.svelte`
+- [x] `frontend/src/lib/components/ui/Tooltip.svelte`
+- [x] `frontend/src/lib/components/ui/UploadProgress.svelte`
+- [x] `frontend/src/lib/components/video/RelatedVideos.svelte`
+- [x] `frontend/src/lib/components/workflow/WorkflowAnalytics.svelte`
+- [x] `frontend/src/lib/components/workflow/WorkflowNode.svelte`
+- [x] `frontend/src/lib/consent/components/ConsentBanner.svelte`
+- [x] `frontend/src/lib/consent/components/ConsentSettingsButton.svelte`
+- [x] `frontend/src/lib/consent/templates/TemplatePreviewCard.svelte`
+- [x] `frontend/src/lib/monitoring/performance-dashboard.svelte`
+- [x] `frontend/src/lib/options-calculator/components/DataSourceBadge.svelte`
+- [x] `frontend/src/lib/options-calculator/components/LiveDataToggle.svelte`
+- [x] `frontend/src/lib/options-calculator/components/ResultsBar.svelte`
+- [x] `frontend/src/lib/options-calculator/components/ScenarioEngine.svelte`
+- [x] `frontend/src/lib/options-calculator/components/StrategyPresets.svelte`
+- [x] `frontend/src/lib/options-calculator/components/TickerSearch.svelte`
+- [x] `frontend/src/lib/options-calculator/components/TimeMachine.svelte`
+- [x] `frontend/src/lib/options-calculator/components/VisualizationTabs.svelte`
+- [x] `frontend/src/lib/options-calculator/components/charts/Surface3D.svelte`
+- [x] `frontend/src/lib/options-calculator/components/export/ExportMenu.svelte`
+- [x] `frontend/src/lib/options-calculator/components/export/ExportPNG.svelte`
+- [x] `frontend/src/lib/options-calculator/components/growth/WatermarkOverlay.svelte`
+- [x] `frontend/src/lib/options-calculator/components/saved/ConfigCard.svelte`
+- [x] `frontend/src/lib/options-calculator/components/saved/SaveConfigModal.svelte`
+- [x] `frontend/src/lib/options-calculator/components/ui/AnimatedNumber.svelte`
+- [x] `frontend/src/lib/options-calculator/components/ui/AnimatedSlider.svelte`
 - [ ] `frontend/src/lib/options-calculator/components/ui/ConfirmDialog.svelte`
 - [ ] `frontend/src/lib/options-calculator/components/ui/GlassCard.svelte`
 - [ ] `frontend/src/lib/options-calculator/components/ui/InfoTooltip.svelte`

@@ -38,15 +38,19 @@
 	let layout = $derived(props.layout ?? '3x1');
 </script>
 
-<section class="dashboard__content-section-member {className}">
-	<div class="row featured_cards" class:layout-2x1={layout === '2x1'}>
+<section class={['dashboard__content-section-member', className]}>
+	<div class={['row featured_cards', { 'layout-2x1': layout === '2x1' }]}>
 		{#each cards as card, index (card.id)}
 			<div
-				class="text-center"
-				class:col-md-6={layout === '3x1' || (layout === '2x1' && index < 2)}
-				class:col-lg-4={layout === '3x1'}
-				class:col-lg-6={layout === '2x1' && index < 2}
-				class:col-centered={layout === '2x1' && index === 2}
+				class={[
+					'text-center',
+					{
+						'col-md-6': layout === '3x1' || (layout === '2x1' && index < 2),
+						'col-lg-4': layout === '3x1',
+						'col-lg-6': layout === '2x1' && index < 2,
+						'col-centered': layout === '2x1' && index === 2
+					}
+				]}
 			>
 				<div class={card.cardClass}>
 					<h2 class={card.titleClass}>{card.title}</h2>

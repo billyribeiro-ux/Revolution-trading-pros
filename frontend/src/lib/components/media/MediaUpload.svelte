@@ -7,6 +7,8 @@
 	 */
 	import { mediaApi, type MediaItem, type UploadOptions } from '$lib/api/media';
 	import Icon from '$lib/components/Icon.svelte';
+	import type { Attachment } from 'svelte/attachments';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		collection?: string;
@@ -37,15 +39,25 @@
 	// State
 	let isDragging = $state(false);
 	let isUploading = $state(false);
-	let uploadProgress: Map<string, number> = $state(new Map());
+	const uploadProgress = new SvelteMap<string, number>();
 	let uploadQueue: File[] = $state([]);
-	let fileInput: HTMLInputElement;
+	let fileInput: HTMLInputElement | undefined;
 
 	let totalProgress = $derived(
 		uploadQueue.length > 0
 			? Array.from(uploadProgress.values()).reduce((sum, p) => sum + p, 0) / uploadQueue.length
 			: 0
 	);
+
+	const fileInputAttachment: Attachment<HTMLInputElement> = (element) => {
+		fileInput = element;
+
+		return () => {
+			if (fileInput === element) {
+				fileInput = undefined;
+			}
+		};
+	};
 
 	function handleDragEnter(e: DragEvent) {
 		e.preventDefault();
@@ -111,7 +123,10 @@
 	async function uploadFiles(files: File[]) {
 		isUploading = true;
 		uploadQueue = files;
-		uploadProgress = new Map(files.map((f) => [f.name, 0]));
+		uploadProgress.clear();
+		for (const file of files) {
+			uploadProgress.set(file.name, 0);
+		}
 
 		const uploaded: MediaItem[] = [];
 		const failed: { file: File; error: string }[] = [];
@@ -126,12 +141,10 @@
 
 				// Simulate progress (real progress would need XHR)
 				uploadProgress.set(file.name, 30);
-				uploadProgress = uploadProgress;
 
 				const result = await mediaApi.upload(file, options);
 
 				uploadProgress.set(file.name, 100);
-				uploadProgress = uploadProgress;
 
 				uploaded.push(result.data);
 				onupload?.(result.data);
@@ -141,14 +154,13 @@
 				failed.push({ file, error: message });
 				onerror?.({ file, error: message });
 				uploadProgress.set(file.name, -1);
-				uploadProgress = uploadProgress;
 			}
 		}
 
 		oncomplete?.({ uploaded, failed });
 		isUploading = false;
 		uploadQueue = [];
-		uploadProgress = new Map();
+		uploadProgress.clear();
 	}
 
 	function openFilePicker() {
@@ -166,18 +178,16 @@
 	<!-- Hidden file input -->
 	<input
 		type="file"
-		bind:this={fileInput}
 		onchange={handleFileSelect}
 		{accept}
 		{multiple}
 		class="hidden"
+		{@attach fileInputAttachment}
 	/>
 
 	<!-- Drop zone -->
 	<div
-		class="drop-zone"
-		class:dragging={isDragging}
-		class:uploading={isUploading}
+		class={['drop-zone', { dragging: isDragging, uploading: isUploading }]}
 		role="button"
 		tabindex="0"
 		onclick={openFilePicker}
@@ -200,14 +210,14 @@
 					>
 				</div>
 				<div class="progress-bar">
-					<div class="progress-fill" style="width: {totalProgress}%"></div>
+					<div class="progress-fill" style:width={`${totalProgress}%`}></div>
 				</div>
 
 				<!-- File list -->
 				<div class="file-list">
 					{#each uploadQueue as file (file.name)}
-						{@const progress = uploadProgress.get(file.name) || 0}
-						<div class="file-item" class:error={progress < 0}>
+						{const progress = uploadProgress.get(file.name) || 0}
+						<div class={['file-item', { error: progress < 0 }]}>
 							<span class="file-name">{file.name}</span>
 							<span class="file-size">{formatBytes(file.size)}</span>
 							{#if progress >= 0}

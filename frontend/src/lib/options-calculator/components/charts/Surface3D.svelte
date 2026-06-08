@@ -266,7 +266,7 @@
 			</div>
 		{/if}
 		{#key surfaceKey}
-			<canvas {@attach initCanvas} style="width: {width}px; height: {height}px;"></canvas>
+			<canvas {@attach initCanvas} style:width={`${width}px`} style:height={`${height}px`}></canvas>
 		{/key}
 	</div>
 

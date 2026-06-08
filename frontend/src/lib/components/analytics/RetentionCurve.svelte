@@ -24,7 +24,10 @@
 	const padding = { top: 20, right: 20, bottom: 40, left: 50 };
 	let chartWidth = $derived(width - padding.left - padding.right);
 	let chartHeight = $derived(height - padding.top - padding.bottom);
-	let maxDay = $derived(Math.max(...cohorts.flatMap((c) => c.data.map((d) => d.day))));
+	let maxDay = $derived.by(() => {
+		const days = cohorts.flatMap((c) => c.data.map((d) => d.day));
+		return days.length > 0 ? Math.max(...days) : 1;
+	});
 
 	// Scale functions - computed from reactive values
 	function getXScale(day: number, maxDay: number, chartWidth: number): number {
@@ -75,7 +78,7 @@
 		<div class="curve-legend">
 			{#each cohorts as cohort (cohort.name ?? cohort)}
 				<div class="legend-item">
-					<div class="legend-color" style="background-color: {cohort.color}"></div>
+					<div class="legend-color" style:background-color={cohort.color}></div>
 					<span class="legend-label">{cohort.name}</span>
 				</div>
 			{/each}
@@ -149,10 +152,10 @@
 	<!-- Insights -->
 	<div class="curve-insights">
 		{#each cohorts as cohort (cohort.name ?? cohort)}
-			{@const day30 = cohort.data.find((d) => d.day === 30)}
-			{@const day90 = cohort.data.find((d) => d.day === 90)}
+			{const day30 = cohort.data.find((d) => d.day === 30)}
+			{const day90 = cohort.data.find((d) => d.day === 90)}
 			<div class="insight-item">
-				<div class="insight-cohort" style="border-left-color: {cohort.color}">
+				<div class="insight-cohort" style:border-left-color={cohort.color}>
 					{cohort.name}
 				</div>
 				<div class="insight-metrics">

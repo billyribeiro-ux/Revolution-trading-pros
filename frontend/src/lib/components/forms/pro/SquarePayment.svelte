@@ -45,6 +45,7 @@
 		GooglePay,
 		PaymentRequest
 	} from '@square/web-payments-sdk-types';
+	import type { Attachment } from 'svelte/attachments';
 
 	let {
 		applicationId,
@@ -67,21 +68,48 @@
 	let loading = $state(true);
 	let processing = $state(false);
 	let cardError = $state('');
-	let cardContainerRef = $state<HTMLDivElement>();
-	let googlePayContainerRef = $state<HTMLDivElement>();
+	let cardContainerRef: HTMLDivElement | undefined;
+	let googlePayContainerRef: HTMLDivElement | undefined;
 	let applePayAvailable = $state(false);
 	let googlePayAvailable = $state(false);
+	let squareLoadPromise: Promise<void> | undefined;
 
-	$effect(() => {
-		if (typeof window !== 'undefined' && cardContainerRef) {
-			loadSquare();
-		}
+	const cardContainerAttachment: Attachment<HTMLDivElement> = (element) => {
+		cardContainerRef = element;
+		void ensureSquareLoaded();
+
 		return () => {
+			if (cardContainerRef === element) {
+				cardContainerRef = undefined;
+			}
 			void card?.destroy();
 			void applePay?.destroy();
 			void googlePay?.destroy();
+			card = null;
+			applePay = null;
+			googlePay = null;
 		};
-	});
+	};
+
+	const googlePayContainerAttachment: Attachment<HTMLDivElement> = (element) => {
+		googlePayContainerRef = element;
+		void ensureSquareLoaded();
+
+		return () => {
+			if (googlePayContainerRef === element) {
+				googlePayContainerRef = undefined;
+			}
+		};
+	};
+
+	function ensureSquareLoaded() {
+		if (!cardContainerRef) return undefined;
+
+		if (!squareLoadPromise) {
+			squareLoadPromise = loadSquare();
+		}
+		return squareLoadPromise;
+	}
 
 	// Digital wallets (Apple Pay / Google Pay) require a PaymentRequest. `amount`
 	// is a decimal string in major units (e.g. "10.00"), not cents.
@@ -94,6 +122,8 @@
 	}
 
 	async function loadSquare() {
+		if (!cardContainerRef) return;
+
 		try {
 			// Load Square Web Payments SDK
 			if (!window.Square) {
@@ -116,7 +146,7 @@
 			// Initialize Card
 			const cardInstance = await pay.card();
 			card = cardInstance;
-			if (cardContainerRef) await cardInstance.attach(cardContainerRef);
+			await cardInstance.attach(cardContainerRef);
 
 			// Apple Pay: built from a PaymentRequest. `ApplePay` has no `attach()`
 			// — we render our own button and call `tokenize()` on click.
@@ -212,7 +242,7 @@
 	}
 </script>
 
-<div class="square-payment" class:disabled class:has-error={error || cardError}>
+<div class={['square-payment', { disabled, 'has-error': error || cardError }]}>
 	{#if label}
 		<label class="field-label" for="square-card-container">{label}</label>
 	{/if}
@@ -228,8 +258,10 @@
 			<Icon name="IconLoader2" size={20} class="spinner" />
 			<span>Loading payment form...</span>
 		</div>
-	{:else}
-		{#if applePayAvailable || googlePayAvailable}
+	{/if}
+
+	<div class={['payment-form', { loading }]}>
+		{#if enableApplePay || enableGooglePay}
 			<div class="digital-wallets">
 				{#if applePayAvailable}
 					<button
@@ -240,12 +272,11 @@
 						onclick={() => applePay && payWithWallet(applePay, 'Apple Pay')}
 					></button>
 				{/if}
-				{#if googlePayAvailable}
+				{#if enableGooglePay}
 					<!-- GooglePay.attach() renders the wallet button into this element;
 					     clicking it triggers tokenize() (Square Web Payments SDK). -->
 					<div
-						bind:this={googlePayContainerRef}
-						class="wallet-button"
+						class={['wallet-button', { hidden: !googlePayAvailable }]}
 						role="button"
 						tabindex="0"
 						aria-label="Pay with Google Pay"
@@ -256,15 +287,18 @@
 								if (googlePay) payWithWallet(googlePay, 'Google Pay');
 							}
 						}}
+						{@attach googlePayContainerAttachment}
 					></div>
 				{/if}
 			</div>
+		{/if}
+		{#if applePayAvailable || googlePayAvailable}
 			<div class="divider">
 				<span>Or pay with card</span>
 			</div>
 		{/if}
 
-		<div id="square-card-container" bind:this={cardContainerRef} class="card-container"></div>
+		<div id="square-card-container" class="card-container" {@attach cardContainerAttachment}></div>
 
 		{#if cardError}
 			<p class="card-error">{cardError}</p>
@@ -288,7 +322,7 @@
 			<Icon name="IconLock" size={14} />
 			<span>Secured by Square</span>
 		</div>
-	{/if}
+	</div>
 
 	{#if error}
 		<p class="error-text">{error}</p>
@@ -352,6 +386,10 @@
 	.wallet-button {
 		min-height: 48px;
 		cursor: pointer;
+	}
+
+	.wallet-button.hidden {
+		display: none;
 	}
 
 	.apple-pay-button {

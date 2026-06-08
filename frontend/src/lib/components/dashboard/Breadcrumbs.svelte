@@ -67,6 +67,8 @@
 	});
 
 	const breadcrumbJsonLd = $derived(JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c'));
+
+	const routeClass = $derived(page.route?.id?.replace(/\//g, '-') ?? 'page');
 </script>
 
 <!-- JSON-LD Schema Markup -->
@@ -88,12 +90,8 @@
 				</li>
 			{:else}
 				<!-- Current page (no link) -->
-				<li class="item-current item-{page.route?.id?.replace(/\//g, '-') ?? 'page'}">
-					<strong
-						class="breadcrumb-current breadcrumb-{page.route?.id?.replace(/\//g, '-') ?? 'page'}"
-					>
-						{item.name}
-					</strong>
+				<li class={['item-current', `item-${routeClass}`]}>
+					<strong class={['breadcrumb-current', `breadcrumb-${routeClass}`]}>{item.name}</strong>
 				</li>
 			{/if}
 		{/each}

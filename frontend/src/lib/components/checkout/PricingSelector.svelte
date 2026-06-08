@@ -65,16 +65,20 @@
 		<p>No pricing plans available</p>
 	</div>
 {:else}
-	<div class="pricing-selector" class:compact>
+	<div class={['pricing-selector', { compact }]}>
 		{#each sortedPlans as plan (plan.id)}
-			{@const isSelected = selectedPlanId === plan.id}
-			{@const monthlyEquiv = getMonthlyEquivalent(plan)}
+			{const isSelected = selectedPlanId === plan.id}
+			{const monthlyEquiv = getMonthlyEquivalent(plan)}
 
 			<button
 				type="button"
-				class="pricing-option"
-				class:selected={isSelected}
-				class:popular={plan.is_popular}
+				class={[
+					'pricing-option',
+					{
+						selected: isSelected,
+						popular: plan.is_popular
+					}
+				]}
 				onclick={() => handleSelect(plan)}
 			>
 				{#if plan.is_popular}

@@ -16,7 +16,7 @@
 	const { isDragging, acceptTypes, onFileInput }: Props = $props();
 </script>
 
-<div class="drop-zone" class:dragging={isDragging} role="region" aria-label="Upload drop zone">
+<div class={['drop-zone', { dragging: isDragging }]} role="region" aria-label="Upload drop zone">
 	<Icon name="IconUpload" size={48} stroke={1.5} />
 	<h4>Drag and drop files here</h4>
 	<p>or</p>

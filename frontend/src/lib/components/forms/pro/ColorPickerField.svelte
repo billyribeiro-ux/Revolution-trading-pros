@@ -45,12 +45,8 @@
 		onchange
 	}: Props = $props();
 
-	let colorValue = $state('#3b82f6');
-
-	// Sync with prop value changes
-	$effect(() => {
-		colorValue = value;
-	});
+	// Writable $derived keeps local edits while still resetting from prop updates.
+	let colorValue = $derived(value);
 
 	function handleColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -120,7 +116,7 @@
 	}
 </script>
 
-<div class="color-picker-field" class:disabled class:has-error={error}>
+<div class={['color-picker-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<label for={name} class="field-label">
 			{label}
@@ -131,7 +127,7 @@
 	{/if}
 
 	<div class="picker-container">
-		<div class="color-preview" style="background-color: {colorValue}">
+		<div class="color-preview" style:background-color={colorValue}>
 			<input
 				type="color"
 				id={name}
@@ -160,9 +156,8 @@
 			{#each presets as preset (preset)}
 				<button
 					type="button"
-					class="preset-btn"
-					class:active={colorValue.toLowerCase() === preset.toLowerCase()}
-					style="background-color: {preset}"
+					class={['preset-btn', { active: colorValue.toLowerCase() === preset.toLowerCase() }]}
+					style:background-color={preset}
 					onclick={() => selectPreset(preset)}
 					{disabled}
 					title={preset}

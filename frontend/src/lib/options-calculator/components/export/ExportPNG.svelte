@@ -19,7 +19,7 @@
 
 	let { calc, captureElement = null }: Props = $props();
 
-	let modalEl: HTMLDivElement | undefined = $state();
+	let modalEl: HTMLDivElement | undefined;
 	let isCapturing = $state(false);
 	let capturedBlob = $state<Blob | null>(null);
 
@@ -28,23 +28,6 @@
 	let showLogo = $state(true);
 	let showInfoBar = $state(true);
 	let showFrame = $state(true);
-
-	$effect(() => {
-		if (calc.showExportPNG && modalEl) {
-			capturedBlob = null;
-			isCapturing = false;
-			zone = 'results-chart';
-			aspectRatio = 'auto';
-			showLogo = true;
-			showInfoBar = true;
-			showFrame = true;
-			gsap.fromTo(
-				modalEl,
-				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
-			);
-		}
-	});
 
 	interface ZoneOption {
 		id: CaptureZone;
@@ -133,6 +116,28 @@
 		capturedBlob = null;
 		calc.showExportPNG = false;
 	}
+
+	function setupModal(element: HTMLDivElement) {
+		modalEl = element;
+		capturedBlob = null;
+		isCapturing = false;
+		zone = 'results-chart';
+		aspectRatio = 'auto';
+		showLogo = true;
+		showInfoBar = true;
+		showFrame = true;
+		gsap.fromTo(
+			element,
+			{ scale: 0.92, opacity: 0 },
+			{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
+		);
+
+		return () => {
+			if (modalEl === element) {
+				modalEl = undefined;
+			}
+		};
+	}
 </script>
 
 {#if calc.showExportPNG}
@@ -153,7 +158,7 @@
 
 		<!-- Modal -->
 		<div
-			bind:this={modalEl}
+			{@attach setupModal}
 			class="relative z-10 w-full max-w-lg rounded-2xl p-5 flex flex-col gap-4"
 			style="
 				background: var(--calc-surface);
@@ -191,7 +196,7 @@
 					>
 					<div class="grid grid-cols-4 gap-1.5">
 						{#each ZONES as z (z.id)}
-							{@const Icon = z.icon}
+							{const Icon = z.icon}
 							<button
 								onclick={() => (zone = z.id)}
 								class="flex flex-col items-center gap-1 py-2.5 rounded-lg text-[10px] font-medium cursor-pointer transition-all duration-150"
@@ -261,7 +266,9 @@
 					onclick={handleCapture}
 					disabled={isCapturing}
 					class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-200"
-					style="background: var(--calc-accent); color: white; opacity: {isCapturing ? 0.6 : 1};"
+					style:background="var(--calc-accent)"
+					style:color="white"
+					style:opacity={isCapturing ? 0.6 : 1}
 				>
 					{#if isCapturing}
 						<div

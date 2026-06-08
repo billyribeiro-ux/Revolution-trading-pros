@@ -36,13 +36,13 @@
 			<p class="stat-title">{title}</p>
 			<p class="stat-value">{value}</p>
 			{#if trend}
-				<p class="stat-trend" class:up={trendUp} class:down={!trendUp}>
+				<p class={['stat-trend', { up: trendUp, down: !trendUp }]}>
 					<span class="trend-arrow">{trendUp ? '↑' : '↓'}</span>
 					{trend}
 				</p>
 			{/if}
 		</div>
-		<div class="stat-icon {color}">
+		<div class={['stat-icon', color]}>
 			<Icon size={24} />
 		</div>
 	</div>

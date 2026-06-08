@@ -144,10 +144,9 @@
 			</div>
 		{:else}
 			{#each items as item (item.id)}
-				{@const isSelected = selectedIds.includes(item.id)}
+				{const isSelected = selectedIds.includes(item.id)}
 				<div
-					class="grid-item"
-					class:selected={isSelected}
+					class={['grid-item', { selected: isSelected }]}
 					role="button"
 					tabindex="0"
 					onclick={(e: MouseEvent) => handleItemClick(item, e)}
@@ -196,7 +195,7 @@
 						{#if showStatus && item.file_type === 'image'}
 							<div
 								class="status-badge"
-								style="background: {getStatusColor(item.processing_status || 'pending')}"
+								style:background={getStatusColor(item.processing_status || 'pending')}
 							>
 								{#if item.is_optimized}
 									<Icon name="IconCheck" size={12} />

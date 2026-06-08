@@ -64,7 +64,7 @@
 <article class="article-card">
 	<figure
 		class="article-card__image"
-		style="background-image: url({video.thumbnail_url || defaultThumbnail});"
+		style:background-image={`url(${video.thumbnail_url || defaultThumbnail})`}
 	>
 		<img src={defaultThumbnail} alt={video.title} loading="lazy" width="320" height="180" />
 		{#if showDuration && video.formatted_duration}
@@ -74,7 +74,7 @@
 
 	<div class="article-card__type">
 		{#each video.tag_details || [] as tag (tag.name)}
-			<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
+			<span class="label label--info" style:background-color={tag.color}>{tag.name}</span>
 		{/each}
 	</div>
 

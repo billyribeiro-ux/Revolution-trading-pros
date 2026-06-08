@@ -48,7 +48,7 @@
 		</span>
 	{/if}
 
-	<div class="consent-wrapper" class:has-error={props.error && props.error.length > 0}>
+	<div class={['consent-wrapper', { 'has-error': props.error && props.error.length > 0 }]}>
 		<label class="consent-label">
 			<input
 				type="checkbox"

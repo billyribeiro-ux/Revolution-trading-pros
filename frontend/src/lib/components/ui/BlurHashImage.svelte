@@ -85,57 +85,49 @@
 		return '(max-width: 639.98px) 100vw, (max-width: 1023.98px) 75vw, 50vw';
 	}
 
-	// State using Svelte 5 runes
 	let isLoaded = $state(false);
 	let hasError = $state(false);
-	let imgElement = $state<HTMLImageElement | null>(null);
+	let containerWidth = $derived(typeof width === 'number' ? `${width}px` : width);
+	let containerHeight = $derived(typeof height === 'number' ? `${height}px` : height);
 
-	// Generate a simple gradient placeholder if no blurhash
-	let placeholderStyle = $derived.by(() => {
-		if (blurhash) {
-			// If blurhash is provided, use it as a data URL
-			// The blurhash should be pre-converted to a data URL on the server
-			return `background-image: url(${blurhash}); background-size: cover; background-position: center;`;
-		}
-		// Fallback gradient placeholder
-		return 'background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);';
-	});
+	let placeholderImage = $derived(blurhash ? `url(${blurhash})` : undefined);
+	let placeholderBackground = $derived(
+		blurhash ? undefined : 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)'
+	);
 
-	// Handle image load
 	function handleLoad() {
 		isLoaded = true;
 	}
 
-	// Handle image error
 	function handleError() {
 		hasError = true;
 	}
 
-	// Preload image when component mounts
-	$effect(() => {
-		if (imgElement && src) {
-			// Check if image is already cached
-			if (imgElement.complete && imgElement.naturalHeight !== 0) {
-				isLoaded = true;
-			}
+	function trackCachedImage(element: HTMLImageElement) {
+		if (element.complete && element.naturalHeight !== 0) {
+			isLoaded = true;
 		}
-	});
+	}
 </script>
 
 <div
-	class="blurhash-container {className}"
-	style="width: {typeof width === 'number' ? `${width}px` : width}; height: {typeof height ===
-	'number'
-		? `${height}px`
-		: height};"
+	class={['blurhash-container', className]}
+	style:width={containerWidth}
+	style:height={containerHeight}
 >
 	<!-- Placeholder layer -->
-	<div class="placeholder" class:hidden={isLoaded} style={placeholderStyle}></div>
+	<div
+		class={{ placeholder: true, hidden: isLoaded }}
+		style:background={placeholderBackground}
+		style:background-image={placeholderImage}
+		style:background-size={blurhash ? 'cover' : undefined}
+		style:background-position={blurhash ? 'center' : undefined}
+	></div>
 
 	<!-- Actual image -->
 	{#if !hasError}
 		<img
-			bind:this={imgElement}
+			{@attach trackCachedImage}
 			{src}
 			{alt}
 			{loading}
@@ -144,8 +136,7 @@
 			height={typeof height === 'number' ? height : undefined}
 			sizes={generateSizes() || sizes}
 			srcset={generateSrcset(src, breakpoints) || srcset}
-			class="image"
-			class:loaded={isLoaded}
+			class={{ image: true, loaded: isLoaded }}
 			onload={handleLoad}
 			onerror={handleError}
 		/>

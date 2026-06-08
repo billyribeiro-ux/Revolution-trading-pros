@@ -25,6 +25,6 @@
 	};
 </script>
 
-<span class="inline-flex items-center rounded-full font-medium {variants[variant]} {sizes[size]}">
+<span class={['inline-flex items-center rounded-full font-medium', variants[variant], sizes[size]]}>
 	{@render props.children?.()}
 </span>

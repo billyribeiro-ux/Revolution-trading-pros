@@ -61,18 +61,6 @@
 	// Use custom anchor from settings if provided, otherwise use auto-generated
 	const anchor = $derived(props.block.settings.anchor || anchorSlug);
 
-	// Build inline styles for custom settings
-	const inlineStyles = $derived.by(() => {
-		const styles: string[] = [];
-		if (textAlign !== 'left') {
-			styles.push(`text-align: ${textAlign}`);
-		}
-		if (textColor) {
-			styles.push(`color: ${textColor}`);
-		}
-		return styles.length > 0 ? styles.join('; ') : undefined;
-	});
-
 	/**
 	 * Update block content with partial updates
 	 */
@@ -127,8 +115,10 @@
 			{#each headingLevels as lvl (lvl)}
 				<button
 					type="button"
-					class="heading-block__level-btn"
-					class:heading-block__level-btn--active={level === lvl}
+					class={[
+						'heading-block__level-btn',
+						{ 'heading-block__level-btn--active': level === lvl }
+					]}
 					onclick={() => setLevel(lvl)}
 					title="Heading {lvl}"
 					aria-label="Heading level {lvl}"
@@ -144,11 +134,17 @@
 	<svelte:element
 		this={`h${level}`}
 		contenteditable={props.isEditing}
-		class="heading-block__content heading-block__content--level-{level}"
-		class:heading-block__content--editing={props.isEditing}
-		class:heading-block__content--selected={props.isSelected}
-		class:heading-block__content--placeholder={!props.block.content.text}
-		style={inlineStyles}
+		class={[
+			'heading-block__content',
+			`heading-block__content--level-${level}`,
+			{
+				'heading-block__content--editing': props.isEditing,
+				'heading-block__content--selected': props.isSelected,
+				'heading-block__content--placeholder': !props.block.content.text
+			}
+		]}
+		style:text-align={textAlign !== 'left' ? textAlign : undefined}
+		style:color={textColor || undefined}
 		oninput={handleTextInput}
 		onpaste={handlePaste}
 		onkeydown={handleKeydown}

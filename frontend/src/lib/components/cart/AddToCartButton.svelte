@@ -49,9 +49,15 @@
 
 <button
 	type="button"
-	class="add-to-cart-btn variant-{variant} size-{size}"
-	class:full-width={fullWidth}
-	class:loading={loading || isAdding}
+	class={[
+		'add-to-cart-btn',
+		`variant-${variant}`,
+		`size-${size}`,
+		{
+			'full-width': fullWidth,
+			loading: loading || isAdding
+		}
+	]}
 	{disabled}
 	onclick={handleClick}
 	aria-label="Add {productName} to cart"

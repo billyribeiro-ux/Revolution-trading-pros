@@ -208,7 +208,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="badge {getStatusBadgeClass(form.status)}">
+								<span class={['badge', getStatusBadgeClass(form.status)]}>
 									{form.status}
 								</span>
 							</td>

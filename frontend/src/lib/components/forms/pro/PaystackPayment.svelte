@@ -137,7 +137,7 @@
 	}
 </script>
 
-<div class="paystack-payment" class:disabled class:has-error={error || paymentError}>
+<div class={['paystack-payment', { disabled, 'has-error': error || paymentError }]}>
 	{#if testMode}
 		<div class="test-mode-banner">
 			<span>⚠️ Paystack Test Mode</span>

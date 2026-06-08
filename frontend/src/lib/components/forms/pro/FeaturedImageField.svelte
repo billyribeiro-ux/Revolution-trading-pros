@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { Attachment } from 'svelte/attachments';
+
 	/**
 	 * FeaturedImageField Component (FluentForms Pro)
 	 *
@@ -37,17 +39,22 @@
 
 	import Icon from '$lib/components/Icon.svelte';
 
-	let imageUrl = $state('');
+	let imageUrl = $derived(value);
 	let imageId = $state('');
 	let isDragging = $state(false);
 	let uploading = $state(false);
 	let uploadError = $state('');
-	let fileInput: HTMLInputElement;
+	let fileInput: HTMLInputElement | undefined;
 
-	// Sync imageUrl with value prop
-	$effect(() => {
-		if (value !== undefined) imageUrl = value;
-	});
+	const fileInputAttachment: Attachment<HTMLInputElement> = (input) => {
+		fileInput = input;
+
+		return () => {
+			if (fileInput === input) {
+				fileInput = undefined;
+			}
+		};
+	};
 
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';
@@ -146,7 +153,7 @@
 	);
 </script>
 
-<div class="featured-image-field" class:disabled class:has-error={error || uploadError}>
+<div class={['featured-image-field', { disabled, 'has-error': error || uploadError }]}>
 	{#if label}
 		<label for="featured-image-{name}" class="field-label">
 			{label}
@@ -157,7 +164,7 @@
 	{/if}
 
 	{#if imageUrl}
-		<div class="image-preview {aspectRatioClass}">
+		<div class={['image-preview', aspectRatioClass]}>
 			<img src={imageUrl} alt="Featured preview" width="640" height="360" loading="lazy" />
 			<div class="preview-overlay">
 				<button type="button" class="change-btn" onclick={openFilePicker} {disabled}>
@@ -168,9 +175,7 @@
 		</div>
 	{:else}
 		<div
-			class="dropzone {aspectRatioClass}"
-			class:dragging={isDragging}
-			class:uploading
+			class={['dropzone', aspectRatioClass, { dragging: isDragging, uploading }]}
 			ondrop={handleDrop}
 			ondragover={handleDragOver}
 			ondragleave={handleDragLeave}
@@ -200,12 +205,12 @@
 
 	<input
 		id="featured-image-{name}"
-		bind:this={fileInput}
 		type="file"
 		accept={acceptedTypes.join(',')}
 		onchange={handleInputChange}
 		{disabled}
 		class="file-input"
+		{@attach fileInputAttachment}
 	/>
 
 	{#if uploadError}

@@ -96,8 +96,7 @@
 <div class="upload-container">
 	<!-- Dropzone -->
 	<div
-		class="dropzone"
-		class:dragging={isDragging}
+		class={['dropzone', { dragging: isDragging }]}
 		ondragover={handleDragOver}
 		ondragleave={handleDragLeave}
 		ondrop={handleDrop}
@@ -146,7 +145,7 @@
 					<div class="upload-item-progress">
 						{#if upload.status === 'uploading' || upload.status === 'processing'}
 							<div class="progress-bar">
-								<div class="progress-fill" style="width: {upload.progress}%"></div>
+								<div class="progress-fill" style:width={`${upload.progress}%`}></div>
 							</div>
 							<span class="progress-text">{Math.round(upload.progress)}%</span>
 						{:else if upload.status === 'complete'}

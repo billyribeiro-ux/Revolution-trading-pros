@@ -39,10 +39,11 @@
 	let delay = $derived(props.delay ?? 200);
 	let disabled = $derived(props.disabled ?? false);
 	let className = $derived(props.class ?? '');
+	const tooltipId = $props.id();
 
 	let isVisible = $state(false);
 	let timeoutId: ReturnType<typeof setTimeout> | null = null;
-	let triggerElement = $state<HTMLElement | null>(null);
+	let triggerElement: HTMLElement | null = null;
 	let tooltipElement: HTMLDivElement | null = null;
 
 	// Cleanup tooltip on destroy
@@ -61,9 +62,13 @@
 
 		// Create tooltip element
 		tooltipElement = document.createElement('div');
+		tooltipElement.id = tooltipId;
 		tooltipElement.className = 'tooltip-portal';
 		tooltipElement.setAttribute('role', 'tooltip');
-		tooltipElement.innerHTML = `<div class="tooltip-portal__content">${text}</div>`;
+		const contentElement = document.createElement('div');
+		contentElement.className = 'tooltip-portal__content';
+		contentElement.textContent = text;
+		tooltipElement.appendChild(contentElement);
 
 		// Get trigger position
 		const triggerRect = triggerElement.getBoundingClientRect();
@@ -174,18 +179,28 @@
 		}
 		isVisible = false;
 	}
+
+	function trackTrigger(element: HTMLElement) {
+		triggerElement = element;
+
+		return () => {
+			if (triggerElement === element) {
+				triggerElement = null;
+			}
+		};
+	}
 </script>
 
 <div
-	bind:this={triggerElement}
-	class="tooltip-trigger {className}"
+	{@attach trackTrigger}
+	class={['tooltip-trigger', className]}
 	role="button"
 	tabindex="0"
 	onmouseenter={showTooltip}
 	onmouseleave={hideTooltip}
 	onfocus={showTooltip}
 	onblur={hideTooltip}
-	aria-describedby={isVisible ? 'tooltip-content' : undefined}
+	aria-describedby={isVisible ? tooltipId : undefined}
 >
 	{#if props.children}
 		{@render props.children()}

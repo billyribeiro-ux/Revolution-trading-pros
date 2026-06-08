@@ -38,7 +38,7 @@
 {#if variant === 'compact'}
 	<!-- Compact variant for sidebar -->
 	<a href={video.href} class="video-card-compact">
-		<div class="compact-thumb" style="background-image: url('{video.image}')">
+		<div class="compact-thumb" style:background-image={`url(${video.image})`}>
 			<div class="compact-play-icon">
 				<Icon name="IconPlayerPlay" size={20} />
 			</div>
@@ -49,7 +49,7 @@
 {:else}
 	<!-- Default full card variant -->
 	<a href={video.href} class="video-card">
-		<div class="video-thumbnail" style="background-image: url('{video.image}')">
+		<div class="video-thumbnail" style:background-image={`url(${video.image})`}>
 			<div class="play-overlay">
 				<Icon name="IconPlayerPlay" size={48} />
 			</div>

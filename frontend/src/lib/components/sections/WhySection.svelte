@@ -147,9 +147,13 @@
 		</div>
 
 		<!-- 3-Column Grid -->
-		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
+		<div
+			class="group/grid grid md:grid-cols-3 gap-8"
+			style:--x={`${mouse.x}px`}
+			style:--y={`${mouse.y}px`}
+		>
 			{#each features as feature, i (feature.title)}
-				{@const IconComponent = feature.icon}
+				{const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}
@@ -163,12 +167,14 @@
 
 						<!-- Technical SVG Backgrounds -->
 						<div
-							class="absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none {feature.accent ===
-							'cyan'
-								? 'text-cyan-500'
-								: feature.accent === 'emerald'
-									? 'text-emerald-500'
-									: 'text-indigo-500'}"
+							class={[
+								'absolute top-0 right-0 w-32 h-32 opacity-[0.03] group-hover/card:opacity-10 transition-opacity duration-500 pointer-events-none',
+								feature.accent === 'cyan'
+									? 'text-cyan-500'
+									: feature.accent === 'emerald'
+										? 'text-emerald-500'
+										: 'text-indigo-500'
+							]}
 						>
 							{#if feature.type === 'grid'}
 								<svg
@@ -213,23 +219,27 @@
 						<!-- Icon Container -->
 						<div class="relative z-10 mb-8 inline-block">
 							<div
-								class="p-3 bg-zinc-900 border border-zinc-800 rounded-lg group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1 {feature.accent ===
-								'cyan'
-									? 'text-cyan-500 group-hover/card:border-cyan-500/30'
-									: feature.accent === 'emerald'
-										? 'text-emerald-500 group-hover/card:border-emerald-500/30'
-										: 'text-indigo-500 group-hover/card:border-indigo-500/30'}"
+								class={[
+									'p-3 bg-zinc-900 border border-zinc-800 rounded-lg group-hover/card:shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover/card:-translate-y-1',
+									feature.accent === 'cyan'
+										? 'text-cyan-500 group-hover/card:border-cyan-500/30'
+										: feature.accent === 'emerald'
+											? 'text-emerald-500 group-hover/card:border-emerald-500/30'
+											: 'text-indigo-500 group-hover/card:border-indigo-500/30'
+								]}
 							>
 								<IconComponent size={28} stroke={1.5} />
 							</div>
 							<!-- Connecting Line -->
 							<div
-								class="absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 transition-colors {feature.accent ===
-								'cyan'
-									? 'group-hover/card:bg-cyan-500/50'
-									: feature.accent === 'emerald'
-										? 'group-hover/card:bg-emerald-500/50'
-										: 'group-hover/card:bg-indigo-500/50'}"
+								class={[
+									'absolute left-1/2 bottom-0 w-px h-8 bg-zinc-800 translate-y-full -translate-x-1/2 -z-10 transition-colors',
+									feature.accent === 'cyan'
+										? 'group-hover/card:bg-cyan-500/50'
+										: feature.accent === 'emerald'
+											? 'group-hover/card:bg-emerald-500/50'
+											: 'group-hover/card:bg-indigo-500/50'
+								]}
 							></div>
 						</div>
 
@@ -244,12 +254,14 @@
 							</div>
 
 							<h3
-								class="text-xl font-medium text-white mb-4 transition-colors {feature.accent ===
-								'cyan'
-									? 'group-hover/card:text-cyan-400'
-									: feature.accent === 'emerald'
-										? 'group-hover/card:text-emerald-400'
-										: 'group-hover/card:text-indigo-400'}"
+								class={[
+									'text-xl font-medium text-white mb-4 transition-colors',
+									feature.accent === 'cyan'
+										? 'group-hover/card:text-cyan-400'
+										: feature.accent === 'emerald'
+											? 'group-hover/card:text-emerald-400'
+											: 'group-hover/card:text-indigo-400'
+								]}
 							>
 								{feature.title}
 							</h3>

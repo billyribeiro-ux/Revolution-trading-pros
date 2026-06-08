@@ -14,7 +14,8 @@
 
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import type { Action } from 'svelte/action';
+	import type { Attachment } from 'svelte/attachments';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { browser } from '$app/environment';
 	import { IconChevronDown, IconPlus, IconMinus, IconX } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
@@ -52,13 +53,7 @@
 	};
 	const items = $derived<AccordionItem[]>(block.content.accordionItems ?? [DEFAULT_ITEM]);
 
-	let editableRefs = $state<Map<string, HTMLElement>>(new Map());
-
-	$effect(() => {
-		return () => {
-			editableRefs.clear();
-		};
-	});
+	const editableRefs = new SvelteMap<string, HTMLElement>();
 
 	function safeExecute<T>(fn: () => T, fallback: T): T {
 		try {
@@ -147,22 +142,23 @@
 		updateItem(index, field, target.textContent ?? '');
 	}
 
-	const editableAction: Action<HTMLElement, string> = (el, key) => {
-		if (key) editableRefs.set(key, el);
-		return {
-			destroy() {
+	function editableAttachment(key: string): Attachment<HTMLElement> {
+		return (el) => {
+			if (key) editableRefs.set(key, el);
+
+			return () => {
 				if (key) editableRefs.delete(key);
-			}
+			};
 		};
-	};
+	}
 </script>
 
 <div class="accordion-block" role="region" aria-label="Accordion">
 	{#each items as item, index (item.id)}
-		{@const isOpen = openItems.has(item.id)}
-		{@const titleKey = `title-${item.id}`}
-		{@const contentKey = `content-${item.id}`}
-		<div class="accordion-item" class:open={isOpen}>
+		{const isOpen = openItems.has(item.id)}
+		{const titleKey = `title-${item.id}`}
+		{const contentKey = `content-${item.id}`}
+		<div class={['accordion-item', { open: isOpen }]}>
 			<div class="accordion-header-wrapper">
 				<button
 					type="button"
@@ -175,7 +171,7 @@
 				>
 					{#if isEditing && browser}
 						<span
-							use:editableAction={titleKey}
+							{@attach editableAttachment(titleKey)}
 							contenteditable="true"
 							class="accordion-title editable-content"
 							role="textbox"
@@ -191,8 +187,7 @@
 					{/if}
 
 					<span
-						class="accordion-icon"
-						class:rotated={isOpen && iconStyle === 'chevron'}
+						class={['accordion-icon', { rotated: isOpen && iconStyle === 'chevron' }]}
 						aria-hidden="true"
 					>
 						{#if iconStyle === 'plusminus'}
@@ -228,7 +223,7 @@
 			>
 				{#if isEditing && browser}
 					<div
-						use:editableAction={contentKey}
+						{@attach editableAttachment(contentKey)}
 						contenteditable="true"
 						class="accordion-content editable-content"
 						role="textbox"

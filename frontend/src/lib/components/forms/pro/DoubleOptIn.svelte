@@ -7,6 +7,10 @@
 	 * GDPR compliant email subscription management.
 	 */
 
+	import { onMount } from 'svelte';
+	import { SvelteDate } from 'svelte/reactivity';
+	import Icon from '$lib/components/Icon.svelte';
+
 	type OptInStatus = 'pending' | 'sent' | 'confirmed' | 'expired' | 'failed';
 
 	interface OptInData {
@@ -46,23 +50,17 @@
 		error = ''
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
 	let isResending = $state(false);
-	let resendTimer = $state(0);
+	let resendDeadline = $state(0);
 	let localError = $state('');
+	const now = new SvelteDate();
 
-	// Countdown timer for resend cooldown
-	$effect(() => {
-		let interval: ReturnType<typeof setInterval>;
-		if (resendTimer > 0) {
-			interval = setInterval(() => {
-				resendTimer = Math.max(0, resendTimer - 1);
-			}, 1000);
-		}
-		return () => {
-			if (interval) clearInterval(interval);
-		};
+	onMount(() => {
+		const interval = setInterval(() => {
+			now.setTime(Date.now());
+		}, 1000);
+
+		return () => clearInterval(interval);
 	});
 
 	const statusConfig: Record<
@@ -145,7 +143,7 @@
 
 		try {
 			await onResend();
-			resendTimer = resendCooldown;
+			resendDeadline = Date.now() + resendCooldown * 1000;
 		} catch (err) {
 			localError = err instanceof Error ? err.message : 'Failed to resend verification email';
 		} finally {
@@ -154,14 +152,15 @@
 	}
 
 	const config = $derived(statusConfig[data.status]);
+	const resendTimer = $derived(Math.max(0, Math.ceil((resendDeadline - now.getTime()) / 1000)));
 	const canResend = $derived(
 		allowResend && ['sent', 'expired', 'failed'].includes(data.status) && resendTimer === 0
 	);
 </script>
 
-<div class="double-opt-in" class:has-error={error || localError}>
+<div class={['double-opt-in', { 'has-error': error || localError }]}>
 	{#if showStatus}
-		<div class="status-card" style="--status-color: {config.color}; --status-bg: {config.bgColor}">
+		<div class="status-card" style:--status-color={config.color} style:--status-bg={config.bgColor}>
 			<div class="status-icon">
 				{#if data.status === 'pending'}
 					<Icon name="IconClock" size={24} />

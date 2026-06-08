@@ -17,6 +17,8 @@
 				? 'var(--calc-put)'
 				: 'var(--calc-accent)'
 	);
+	let callBorder = $derived(calc.optionType === 'call' ? 'var(--calc-call)' : 'transparent');
+	let putBorder = $derived(calc.optionType === 'put' ? 'var(--calc-put)' : 'transparent');
 </script>
 
 <div class="flex flex-col gap-4">
@@ -25,9 +27,8 @@
 		<!-- Call Price -->
 		<div
 			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
-			style="background: var(--calc-call-bg); border: 1px solid {calc.optionType === 'call'
-				? 'var(--calc-call)'
-				: 'transparent'};"
+			style:background="var(--calc-call-bg)"
+			style:border={`1px solid ${callBorder}`}
 		>
 			<span
 				class="text-[10px] font-medium uppercase tracking-wider"
@@ -47,9 +48,8 @@
 		<!-- Put Price -->
 		<div
 			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
-			style="background: var(--calc-put-bg); border: 1px solid {calc.optionType === 'put'
-				? 'var(--calc-put)'
-				: 'transparent'};"
+			style:background="var(--calc-put-bg)"
+			style:border={`1px solid ${putBorder}`}
 		>
 			<span
 				class="text-[10px] font-medium uppercase tracking-wider"
@@ -72,7 +72,9 @@
 		<!-- Moneyness Badge -->
 		<span
 			class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
-			style="background: {moneynessColor}22; color: {moneynessColor}; border: 1px solid {moneynessColor}44;"
+			style:background={`${moneynessColor}22`}
+			style:color={moneynessColor}
+			style:border={`1px solid ${moneynessColor}44`}
 		>
 			{calc.currentMoneyness}
 		</span>

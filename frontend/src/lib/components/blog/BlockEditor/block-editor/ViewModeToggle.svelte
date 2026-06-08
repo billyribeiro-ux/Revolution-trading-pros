@@ -18,8 +18,7 @@
 <div class="view-toggle" role="group" aria-label="View mode">
 	<button
 		type="button"
-		class="view-btn"
-		class:active={mode === 'edit'}
+		class={['view-btn', { active: mode === 'edit' }]}
 		onclick={() => onChange('edit')}
 		aria-label="Edit mode"
 		aria-pressed={mode === 'edit'}
@@ -29,8 +28,7 @@
 	</button>
 	<button
 		type="button"
-		class="view-btn"
-		class:active={mode === 'preview'}
+		class={['view-btn', { active: mode === 'preview' }]}
 		onclick={() => onChange('preview')}
 		aria-label="Preview mode"
 		aria-pressed={mode === 'preview'}

@@ -33,13 +33,8 @@
 		onchange
 	}: Props = $props();
 
-	let excerpt = $state('');
+	let excerpt = $derived<string>(value);
 	const charCount = $derived(excerpt.length);
-
-	// Sync excerpt with value prop changes
-	$effect(() => {
-		excerpt = value;
-	});
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLTextAreaElement;
@@ -48,7 +43,7 @@
 	}
 </script>
 
-<div class="post-excerpt-field" class:disabled class:has-error={error}>
+<div class={['post-excerpt-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<label for={name} class="field-label">
 			{label}
@@ -71,7 +66,7 @@
 	></textarea>
 
 	{#if maxLength}
-		<div class="char-counter" class:near-limit={charCount > maxLength * 0.8}>
+		<div class={['char-counter', { 'near-limit': charCount > maxLength * 0.8 }]}>
 			{charCount}/{maxLength}
 		</div>
 	{/if}

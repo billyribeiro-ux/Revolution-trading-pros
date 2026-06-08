@@ -50,6 +50,8 @@
 	let viewerCount = $state(0);
 	let isLoading = $state(true);
 	let ws: WebSocket | null = null;
+	let reconnectTimeout: ReturnType<typeof setTimeout> | undefined;
+	let destroyed = false;
 
 	// ===============================================================================
 	// WEBSOCKET CONNECTION
@@ -93,8 +95,9 @@
 			};
 
 			ws.onclose = () => {
+				if (destroyed) return;
 				// Attempt to reconnect after 5 seconds
-				setTimeout(connectWebSocket, 5000);
+				reconnectTimeout = setTimeout(connectWebSocket, 5000);
 			};
 
 			ws.onerror = (err) => {
@@ -143,8 +146,9 @@
 	// ===============================================================================
 
 	onMount(() => {
+		destroyed = false;
 		// First check schedule, then connect WebSocket for real-time updates
-		checkSchedule();
+		void checkSchedule();
 
 		// Only connect WebSocket if we want real-time viewer count
 		if (showViewerCount) {
@@ -152,7 +156,9 @@
 		}
 
 		// Refresh schedule check every minute
-		const scheduleInterval = setInterval(checkSchedule, 60 * 1000);
+		const scheduleInterval = setInterval(() => {
+			void checkSchedule();
+		}, 60 * 1000);
 
 		return () => {
 			clearInterval(scheduleInterval);
@@ -160,6 +166,10 @@
 	});
 
 	onDestroy(() => {
+		destroyed = true;
+		if (reconnectTimeout) {
+			clearTimeout(reconnectTimeout);
+		}
 		if (ws) {
 			ws.close();
 			ws = null;
@@ -170,17 +180,17 @@
 {#if isLoading}
 	<!-- Loading state - show nothing or skeleton -->
 	{#if variant !== 'minimal'}
-		<div class="live-badge live-badge--loading {className}" data-variant={variant}>
+		<div class={['live-badge live-badge--loading', className]} data-variant={variant}>
 			<span class="badge-skeleton"></span>
 		</div>
 	{/if}
 {:else if isLive}
 	{#if variant === 'minimal'}
-		<span class="live-indicator {className}" title="{roomName || 'Room'} is LIVE">
+		<span class={['live-indicator', className]} title="{roomName || 'Room'} is LIVE">
 			<span class="pulse-dot"></span>
 		</span>
 	{:else if variant === 'compact'}
-		<div class="live-badge live-badge--compact live-badge--live {className}">
+		<div class={['live-badge live-badge--compact live-badge--live', className]}>
 			<span class="pulse-dot"></span>
 			<span class="badge-text">LIVE</span>
 			{#if showViewerCount && viewerCount > 0}
@@ -188,7 +198,7 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="live-badge live-badge--live {className}">
+		<div class={['live-badge live-badge--live', className]}>
 			<div class="badge-content">
 				<span class="pulse-dot"></span>
 				<span class="badge-text">LIVE NOW</span>
@@ -209,7 +219,7 @@
 	{/if}
 {:else if variant !== 'minimal'}
 	<!-- Offline state - only show for non-minimal variants -->
-	<div class="live-badge live-badge--offline {className}" data-variant={variant}>
+	<div class={['live-badge live-badge--offline', className]} data-variant={variant}>
 		<span class="badge-text">Offline</span>
 	</div>
 {/if}

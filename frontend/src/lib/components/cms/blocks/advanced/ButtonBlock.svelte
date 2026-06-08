@@ -75,8 +75,7 @@
 </script>
 
 <div
-	class="button-block"
-	class:full-width={fullWidth}
+	class={['button-block', { 'full-width': fullWidth }]}
 	role="navigation"
 	aria-label="Call to action"
 >
@@ -84,8 +83,7 @@
 		<!-- Edit Mode: Inline Editing with contenteditable span -->
 		<a
 			href={sanitizedUrl}
-			class="btn btn-{buttonStyle} btn-{buttonSize}"
-			class:full-width={fullWidth}
+			class={['btn', `btn-${buttonStyle}`, `btn-${buttonSize}`, { 'full-width': fullWidth }]}
 			onclick={handleClick}
 			role="button"
 		>
@@ -100,8 +98,7 @@
 		<!-- View Mode: Actual Link -->
 		<a
 			href={sanitizedUrl}
-			class="btn btn-{buttonStyle} btn-{buttonSize}"
-			class:full-width={fullWidth}
+			class={['btn', `btn-${buttonStyle}`, `btn-${buttonSize}`, { 'full-width': fullWidth }]}
 		>
 			<span class="btn-text">{buttonText}</span>
 		</a>

@@ -24,15 +24,14 @@
 </script>
 
 <div
-	class="loading-state"
-	class:grid={columns > 1}
-	style="--columns: {columns}"
+	class={['loading-state', { grid: columns > 1 }]}
+	style:--columns={columns}
 	role="status"
 	aria-label="Loading content"
 	aria-busy="true"
 >
 	{#each Array(count) as _, i (i)}
-		<div class="skeleton-wrapper" style="animation-delay: {i * 0.1}s">
+		<div class="skeleton-wrapper" style:animation-delay={`${i * 0.1}s`}>
 			{#if variant === 'stats'}
 				<!-- Stats Card Skeleton -->
 				<div class="skeleton-stats">

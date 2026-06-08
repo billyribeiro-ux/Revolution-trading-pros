@@ -187,9 +187,7 @@
 
 <div class="export-container">
 	<button
-		class="export-btn"
-		class:disabled
-		class:open={isOpen}
+		class={['export-btn', { disabled, open: isOpen }]}
 		onclick={(e: MouseEvent) => {
 			e.stopPropagation();
 			toggleDropdown();
@@ -204,7 +202,7 @@
 			<IconDownload size={18} />
 		{/if}
 		<span>{label}</span>
-		<span class="chevron" class:rotated={isOpen}>
+		<span class={['chevron', { rotated: isOpen }]}>
 			<IconChevronDown size={16} />
 		</span>
 	</button>
@@ -220,10 +218,9 @@
 			tabindex="-1"
 		>
 			{#each formats as format (format)}
-				{@const FormatIcon = getFormatIcon(format)}
+				{const FormatIcon = getFormatIcon(format)}
 				<button
-					class="dropdown-item"
-					class:success={exportedFormat === format}
+					class={['dropdown-item', { success: exportedFormat === format }]}
 					onclick={() => exportData(format)}
 					disabled={isExporting}
 					role="menuitem"

@@ -8,6 +8,9 @@
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 
+	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface Props {
 		roomSlug: string;
 		itemType: 'alert' | 'video' | 'trade_plan' | 'resource';
@@ -100,13 +103,11 @@
 	}
 
 	// Check status on mount - only if itemId is valid
-	$effect(() => {
+	onMount(() => {
 		if (itemId && typeof itemId === 'number' && !isNaN(itemId)) {
-			checkFavoriteStatus();
+			void checkFavoriteStatus();
 		}
 	});
-
-	import Icon from '$lib/components/Icon.svelte';
 
 	const sizeClasses = {
 		sm: 'w-5 h-5',
@@ -116,11 +117,15 @@
 </script>
 
 <button
-	class="favorite-btn"
-	class:favorited={isFavorited}
-	class:loading={isLoading}
-	class:size-sm={size === 'sm'}
-	class:size-lg={size === 'lg'}
+	class={[
+		'favorite-btn',
+		{
+			favorited: isFavorited,
+			loading: isLoading,
+			'size-sm': size === 'sm',
+			'size-lg': size === 'lg'
+		}
+	]}
 	onclick={toggleFavorite}
 	title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
 	aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}

@@ -6,6 +6,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { IconLanguage, IconArrowsLeftRight, IconCopy, IconCheck, IconLoader2 } from '$lib/icons';
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import type { Block, BlockContent } from '../types';
@@ -24,6 +25,7 @@
 
 	let aiState = $derived(stateManager.getAITranslationState(props.blockId));
 	let copied = $state(false);
+	let copyResetTimer: ReturnType<typeof setTimeout> | undefined;
 
 	let sourceText = $derived(props.block.content.translationSource || '');
 	let sourceLang = $derived(props.block.content.translationSourceLang || 'en');
@@ -90,16 +92,25 @@
 		if (translatedText) {
 			await navigator.clipboard.writeText(translatedText);
 			copied = true;
-			setTimeout(() => {
+
+			if (copyResetTimer) {
+				clearTimeout(copyResetTimer);
+			}
+			copyResetTimer = setTimeout(() => {
 				copied = false;
 			}, 2000);
 		}
 	}
+
+	onDestroy(() => {
+		if (copyResetTimer) {
+			clearTimeout(copyResetTimer);
+		}
+	});
 </script>
 
 <div
-	class="translation-block"
-	class:side-by-side={viewMode === 'side-by-side'}
+	class={['translation-block', { 'side-by-side': viewMode === 'side-by-side' }]}
 	role="region"
 	aria-label="Translation"
 >

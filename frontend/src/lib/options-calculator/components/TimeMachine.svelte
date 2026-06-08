@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
 	import { formatCurrency } from '../utils/formatters.js';
@@ -12,7 +13,7 @@
 
 	let isPlaying = $state(false);
 	let speed = $state(1);
-	let intervalId: ReturnType<typeof setInterval> | null = $state(null);
+	let intervalId: ReturnType<typeof setInterval> | null = null;
 
 	const SPEEDS = [1, 2, 5, 10];
 
@@ -77,10 +78,8 @@
 			}));
 	});
 
-	$effect(() => {
-		return () => {
-			if (intervalId !== null) clearInterval(intervalId);
-		};
+	onDestroy(() => {
+		stopPlayback();
 	});
 </script>
 
@@ -163,7 +162,8 @@
 			<!-- Filled track -->
 			<div
 				class="absolute top-0 left-0 h-full rounded-full transition-all"
-				style="width: {sliderPercent}%; background: linear-gradient(90deg, var(--calc-accent), var(--calc-warning));"
+				style:width={`${sliderPercent}%`}
+				style:background="linear-gradient(90deg, var(--calc-accent), var(--calc-warning))"
 			></div>
 		</div>
 
@@ -171,7 +171,8 @@
 		{#each markers as marker (marker.dte)}
 			<div
 				class="absolute top-0 flex flex-col items-center"
-				style="left: {marker.position}%; transform: translateX(-50%);"
+				style:left={`${marker.position}%`}
+				style:transform="translateX(-50%)"
 			>
 				<span
 					class="text-[7px] font-medium"
@@ -197,7 +198,10 @@
 		<!-- Custom thumb -->
 		<div
 			class="absolute top-1.5 w-4 h-4 rounded-full pointer-events-none"
-			style="left: calc({sliderPercent}% - 8px); background: var(--calc-accent); box-shadow: 0 0 8px var(--calc-accent-glow); border: 2px solid var(--calc-bg);"
+			style:left={`calc(${sliderPercent}% - 8px)`}
+			style:background="var(--calc-accent)"
+			style:box-shadow="0 0 8px var(--calc-accent-glow)"
+			style:border="2px solid var(--calc-bg)"
 		></div>
 	</div>
 

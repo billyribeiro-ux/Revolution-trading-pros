@@ -13,19 +13,16 @@
 	let isLoading = $state(true);
 	let timeRange: '7d' | '30d' | '90d' = $state('30d');
 
-	async function loadAnalytics() {
+	async function loadAnalytics(range: '7d' | '30d' | '90d' = timeRange) {
 		isLoading = true;
 		try {
 			const token = localStorage.getItem('access_token');
-			const response = await fetch(
-				`/api/admin/workflows/${workflowId}/analytics?range=${timeRange}`,
-				{
-					headers: {
-						Authorization: token ? `Bearer ${token}` : '',
-						Accept: 'application/json'
-					}
+			const response = await fetch(`/api/admin/workflows/${workflowId}/analytics?range=${range}`, {
+				headers: {
+					Authorization: token ? `Bearer ${token}` : '',
+					Accept: 'application/json'
 				}
-			);
+			});
 
 			if (response.ok) {
 				const data = await response.json();
@@ -36,7 +33,7 @@
 					failed_runs: data.failed_runs || 0,
 					success_rate: data.success_rate || 0,
 					avg_duration_ms: data.avg_duration_ms || 0,
-					runs_by_day: data.runs_by_day || generateEmptyData(),
+					runs_by_day: data.runs_by_day || generateEmptyData(range),
 					failure_reasons: data.failure_reasons || []
 				};
 			} else {
@@ -54,12 +51,13 @@
 	/**
 	 * Generate empty data array for the time range
 	 */
-	function generateEmptyData() {
+	function generateEmptyData(range: '7d' | '30d' | '90d' = timeRange) {
 		const data = [];
-		const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+		const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+		const now = Date.now();
+		const dayMs = 24 * 60 * 60 * 1000;
 		for (let i = days; i >= 0; i--) {
-			const date = new Date();
-			date.setDate(date.getDate() - i);
+			const date = new Date(now - i * dayMs);
 			data.push({
 				date: date.toISOString().split('T')[0],
 				count: 0
@@ -89,14 +87,14 @@
 		return `${(ms / 1000).toFixed(1)}s`;
 	}
 
-	onMount(() => {
-		loadAnalytics();
-	});
+	function selectTimeRange(range: '7d' | '30d' | '90d') {
+		if (timeRange === range) return;
+		timeRange = range;
+		void loadAnalytics(range);
+	}
 
-	$effect(() => {
-		if (timeRange) {
-			loadAnalytics();
-		}
+	onMount(() => {
+		void loadAnalytics();
 	});
 </script>
 
@@ -104,10 +102,14 @@
 	<div class="analytics-header">
 		<h2>Workflow Analytics</h2>
 		<div class="time-range-selector">
-			<button class:active={timeRange === '7d'} onclick={() => (timeRange = '7d')}>7 Days</button>
-			<button class:active={timeRange === '30d'} onclick={() => (timeRange = '30d')}>30 Days</button
+			<button class={{ active: timeRange === '7d' }} onclick={() => selectTimeRange('7d')}
+				>7 Days</button
 			>
-			<button class:active={timeRange === '90d'} onclick={() => (timeRange = '90d')}>90 Days</button
+			<button class={{ active: timeRange === '30d' }} onclick={() => selectTimeRange('30d')}
+				>30 Days</button
+			>
+			<button class={{ active: timeRange === '90d' }} onclick={() => selectTimeRange('90d')}
+				>90 Days</button
 			>
 		</div>
 	</div>
@@ -118,7 +120,7 @@
 			<p>Loading analytics...</p>
 		</div>
 	{:else if analytics}
-		{@const successPercent = (analytics.successful_runs / analytics.total_runs) * 100}
+		{const successPercent = (analytics.successful_runs / Math.max(analytics.total_runs, 1)) * 100}
 		<div class="metrics-grid">
 			<div class="metric-card">
 				<div class="metric-icon" style="background: #dbeafe; color: #1e40af;">
@@ -166,9 +168,9 @@
 				<h3>Execution Trend</h3>
 				<div class="line-chart">
 					{#each analytics.runs_by_day as day (day.date)}
-						{@const maxCount = Math.max(...analytics.runs_by_day.map((d) => d.count))}
-						{@const height = (day.count / maxCount) * 100}
-						<div class="chart-bar" style="height: {height}%;" title="{day.date}: {day.count} runs">
+						{const maxCount = Math.max(1, ...analytics.runs_by_day.map((d) => d.count))}
+						{const height = (day.count / maxCount) * 100}
+						<div class="chart-bar" style:height={`${height}%`} title="{day.date}: {day.count} runs">
 							<span class="bar-value">{day.count}</span>
 						</div>
 					{/each}
@@ -183,14 +185,14 @@
 				<h3>Top Failure Reasons</h3>
 				<div class="failure-list">
 					{#each analytics.failure_reasons as failure (failure.reason)}
-						{@const percentage = (failure.count / analytics.failed_runs) * 100}
+						{const percentage = (failure.count / Math.max(analytics.failed_runs, 1)) * 100}
 						<div class="failure-item">
 							<div class="failure-info">
 								<span class="failure-reason">{failure.reason}</span>
 								<span class="failure-count">{failure.count} ({percentage.toFixed(1)}%)</span>
 							</div>
 							<div class="failure-bar">
-								<div class="failure-bar-fill" style="width: {percentage}%"></div>
+								<div class="failure-bar-fill" style:width={`${percentage}%`}></div>
 							</div>
 						</div>
 					{/each}

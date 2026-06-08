@@ -48,6 +48,14 @@
 		readability?: ReadabilityView;
 	}
 
+	interface AnalyzePayload {
+		content: string;
+		title: string;
+		description: string;
+		focusKeyword: string;
+		additionalKeywords: string[];
+	}
+
 	interface Props {
 		content?: string;
 		title?: string;
@@ -68,24 +76,16 @@
 	let readability: ReadabilityView | null = $state(null);
 	let loading = $state(false);
 
-	$effect(() => {
-		if (content || title || description || focusKeyword) {
-			analyzeDebounced();
-		}
+	let currentPayload = $derived({
+		content,
+		title,
+		description,
+		focusKeyword,
+		additionalKeywords
 	});
 
-	// `setTimeout` in the browser returns `number`; `clearTimeout(undefined)`
-	// is a documented no-op so this is safe before the first scheduled call.
-	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
-	function analyzeDebounced() {
-		clearTimeout(debounceTimer);
-		debounceTimer = setTimeout(() => {
-			analyze();
-		}, 1000);
-	}
-
-	async function analyze() {
-		if (!content && !title && !description) return;
+	async function analyze(payload: AnalyzePayload = currentPayload) {
+		if (!payload.content && !payload.title && !payload.description) return;
 
 		loading = true;
 		try {
@@ -93,11 +93,11 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					content,
-					title,
-					description,
-					focus_keyword: focusKeyword,
-					additional_keywords: additionalKeywords
+					content: payload.content,
+					title: payload.title,
+					description: payload.description,
+					focus_keyword: payload.focusKeyword,
+					additional_keywords: payload.additionalKeywords
 				})
 			});
 
@@ -136,7 +136,7 @@
 	}
 
 	onMount(() => {
-		analyze();
+		void analyze();
 	});
 </script>
 
@@ -145,7 +145,7 @@
 		<div class="scores">
 			{#if analysis}
 				<div class="score-card">
-					<div class="score-circle" style="--progress: {analysis.score}">
+					<div class="score-circle" style:--progress={analysis.score}>
 						<span class="score-value">{analysis.score}</span>
 					</div>
 					<div class="score-label">SEO Score</div>
@@ -154,7 +154,7 @@
 
 			{#if readability}
 				<div class="score-card">
-					<div class="score-circle" style="--progress: {readability.score}">
+					<div class="score-circle" style:--progress={readability.score}>
 						<span class="score-value">{readability.score}</span>
 					</div>
 					<div class="score-label">Readability</div>
@@ -163,7 +163,7 @@
 			{/if}
 		</div>
 
-		<button class="refresh-btn" onclick={analyze} disabled={loading}>
+		<button class="refresh-btn" onclick={() => void analyze()} disabled={loading}>
 			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
 			{loading ? 'Analyzing...' : 'Refresh'}
 		</button>
@@ -190,8 +190,8 @@
 
 			<div class="results-list">
 				{#each analysis.results as result (result.test)}
-					{@const StatusIcon = getStatusIcon(result.status)}
-					<div class="result-item {getStatusColor(result.status)}">
+					{const StatusIcon = getStatusIcon(result.status)}
+					<div class={['result-item', getStatusColor(result.status)]}>
 						<div class="result-icon">
 							<StatusIcon size={20} />
 						</div>

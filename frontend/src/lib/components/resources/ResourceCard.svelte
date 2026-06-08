@@ -90,8 +90,10 @@
 -->
 <!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 <article
-	class="resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer"
-	class:compact
+	class={[
+		'resource-card group relative overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:border-blue-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-600 cursor-pointer',
+		{ compact }
+	]}
 	role="button"
 	tabindex="0"
 	onclick={handleCardClick}
@@ -146,9 +148,10 @@
 		<!-- Access level badge -->
 		{#if showAccessLevel}
 			<span
-				class="absolute right-2 top-2 rounded-md px-2 py-1 text-xs font-medium {getAccessLevelColor(
-					resource.access_level ?? 'premium'
-				)}"
+				class={[
+					'absolute right-2 top-2 rounded-md px-2 py-1 text-xs font-medium',
+					getAccessLevelColor(resource.access_level ?? 'premium')
+				]}
 			>
 				{resource.access_level === 'free' ? 'Free' : 'Premium'}
 			</span>

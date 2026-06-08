@@ -48,7 +48,7 @@
 </script>
 
 {#if isVisible}
-	<div class="floating-toc-widget" class:open={isOpen}>
+	<div class={['floating-toc-widget', { open: isOpen }]}>
 		<!-- Toggle Button -->
 		<button class="floating-toc-toggle" onclick={toggleOpen} aria-label="Toggle table of contents">
 			{#if isOpen}

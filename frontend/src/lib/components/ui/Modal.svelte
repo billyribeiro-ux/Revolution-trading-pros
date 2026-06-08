@@ -14,8 +14,6 @@
 	 */
 	import type { Snippet } from 'svelte';
 	import { IconX } from '$lib/icons';
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 
 	interface Props {
 		open?: boolean;
@@ -42,7 +40,7 @@
 	}: Props = $props();
 
 	// Generate unique ID for ARIA attributes
-	const modalId = `modal-${Math.random().toString(36).substring(2, 9)}`;
+	const modalId = $props.id();
 	const titleId = `${modalId}-title`;
 	const descId = `${modalId}-desc`;
 
@@ -55,8 +53,7 @@
 	};
 
 	// Store the element that triggered the modal
-	let modalElement: HTMLDivElement | null = $state(null);
-	let previouslyFocused: Element | null = $state(null);
+	let modalElement: HTMLDivElement | null = null;
 
 	// Focusable elements selector
 	const FOCUSABLE_SELECTOR =
@@ -65,11 +62,6 @@
 	function close() {
 		open = false;
 		onclose?.();
-
-		// Return focus to trigger element
-		if (browser && previouslyFocused && previouslyFocused instanceof HTMLElement) {
-			previouslyFocused.focus();
-		}
 	}
 
 	function handleBackdropClick(e: MouseEvent) {
@@ -113,50 +105,41 @@
 		}
 	}
 
-	// Handle focus when modal opens
-	$effect(() => {
-		if (open && browser) {
-			// Store currently focused element to return focus later
-			previouslyFocused = document.activeElement;
+	function setupModal(element: HTMLDivElement) {
+		modalElement = element;
+		const previouslyFocused = document.activeElement;
 
-			// Prevent body scroll
-			document.body.style.overflow = 'hidden';
+		document.body.style.overflow = 'hidden';
 
-			// Focus management - wait for DOM update
-			requestAnimationFrame(() => {
-				if (modalElement) {
-					// Try initial focus selector first
-					if (initialFocusSelector) {
-						const initialElement = modalElement.querySelector(initialFocusSelector) as HTMLElement;
-						if (initialElement) {
-							initialElement.focus();
-							return;
-						}
-					}
+		requestAnimationFrame(() => {
+			if (modalElement !== element) return;
 
-					// Otherwise focus first focusable element, or the modal itself
-					const focusableElements = modalElement.querySelectorAll(FOCUSABLE_SELECTOR);
-					if (focusableElements.length > 0) {
-						(focusableElements[0] as HTMLElement).focus();
-					} else {
-						modalElement.focus();
-					}
+			if (initialFocusSelector) {
+				const initialElement = element.querySelector(initialFocusSelector) as HTMLElement;
+				if (initialElement) {
+					initialElement.focus();
+					return;
 				}
-			});
-		} else if (!open && browser) {
-			// Restore body scroll
-			document.body.style.overflow = '';
-		}
-	});
+			}
 
-	// Cleanup on unmount
-	onMount(() => {
+			const focusableElements = element.querySelectorAll(FOCUSABLE_SELECTOR);
+			if (focusableElements.length > 0) {
+				(focusableElements[0] as HTMLElement).focus();
+			} else {
+				element.focus();
+			}
+		});
+
 		return () => {
-			if (browser) {
-				document.body.style.overflow = '';
+			document.body.style.overflow = '';
+			if (modalElement === element) {
+				modalElement = null;
+			}
+			if (previouslyFocused instanceof HTMLElement) {
+				previouslyFocused.focus();
 			}
 		};
-	});
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -172,8 +155,8 @@
 
 		<!-- Modal Panel -->
 		<div
-			bind:this={modalElement}
-			class="modal-panel-2026 {sizes[size]}"
+			{@attach setupModal}
+			class={['modal-panel-2026', sizes[size]]}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby={title ? titleId : undefined}

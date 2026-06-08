@@ -47,14 +47,9 @@
 
 	import Icon from '$lib/components/Icon.svelte';
 
-	let selectedValues = $state<string[]>([]);
+	let selectedValues = $derived([...value]);
 	let otherChecked = $state(false);
 	let otherText = $state('');
-
-	// Sync with prop value changes
-	$effect(() => {
-		selectedValues = value;
-	});
 
 	function handleCheckboxChange(optionValue: string, checked: boolean) {
 		if (disabled) return;
@@ -106,17 +101,20 @@
 	}
 </script>
 
-<div class="enhanced-checkbox" class:disabled class:has-error={error}>
+<div class={['enhanced-checkbox', { disabled, 'has-error': error }]}>
 	<div
-		class="options-container"
-		class:layout-horizontal={layout === 'horizontal'}
-		class:layout-grid={layout === 'grid'}
-		style={layout === 'grid' ? `--columns: ${columns}` : ''}
+		class={[
+			'options-container',
+			{ 'layout-horizontal': layout === 'horizontal', 'layout-grid': layout === 'grid' }
+		]}
+		style:--columns={layout === 'grid' ? columns : undefined}
 	>
 		{#each options as option (option.value)}
 			<label
-				class="checkbox-option"
-				class:disabled={disabled || (isAtMaxLimit() && !selectedValues.includes(option.value))}
+				class={[
+					'checkbox-option',
+					{ disabled: disabled || (isAtMaxLimit() && !selectedValues.includes(option.value)) }
+				]}
 			>
 				<input
 					type="checkbox"
@@ -136,8 +134,10 @@
 
 		{#if showOther}
 			<label
-				class="checkbox-option other-option"
-				class:disabled={disabled || (isAtMaxLimit() && !otherChecked)}
+				class={[
+					'checkbox-option other-option',
+					{ disabled: disabled || (isAtMaxLimit() && !otherChecked) }
+				]}
 			>
 				<input
 					type="checkbox"

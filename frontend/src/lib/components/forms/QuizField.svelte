@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
+	import Icon from '$lib/components/Icon.svelte';
+
 	/**
 	 * QuizField - Interactive Quiz/Scoring Form Field
 	 *
@@ -53,33 +56,34 @@
 		onchange
 	}: Props = $props();
 
+	function selectedFromValue(value: string | string[] | undefined): SvelteSet<string> {
+		if (Array.isArray(value)) return new SvelteSet(value);
+		if (value) return new SvelteSet([value]);
+		return new SvelteSet();
+	}
+
 	// State
-	let selectedOptions: Set<string> = $state(new Set());
+	let selectedOptions = $state(selectedFromValue(value));
 	let answered = $state(false);
 	let currentScore = $state(0);
 	let feedbackMessage = $state('');
 	let isCorrect = $state<boolean | null>(null);
 
-	// Randomize options if needed
-	let options = $state<QuizOption[]>([]);
+	function stableOptionKey(option: QuizOption): number {
+		const source = `${option.id}:${option.text}`;
+		let hash = 0;
 
-	$effect(() => {
-		if (randomizeOptions) {
-			options = [...initialOptions].sort(() => Math.random() - 0.5);
-		} else {
-			options = initialOptions;
+		for (let index = 0; index < source.length; index += 1) {
+			hash = (hash * 31 + source.charCodeAt(index)) >>> 0;
 		}
-	});
 
-	// Initialize from value
-	$effect(() => {
-		if (value) {
-			if (Array.isArray(value)) {
-				selectedOptions = new Set(value);
-			} else {
-				selectedOptions = new Set([value]);
-			}
-		}
+		return hash;
+	}
+
+	// Randomize options deterministically so SSR and hydration render the same order.
+	let options = $derived.by(() => {
+		if (!randomizeOptions) return initialOptions;
+		return [...initialOptions].sort((a, b) => stableOptionKey(a) - stableOptionKey(b));
 	});
 
 	// Calculate score
@@ -179,13 +183,11 @@
 		return classes.join(' ');
 	}
 
-	import Icon from '$lib/components/Icon.svelte';
-
 	// Derived
 	let inputType = $derived(questionType === 'multiple' ? 'checkbox' : 'radio');
 </script>
 
-<div class="quiz-field" class:quiz-field--error={error && error.length > 0}>
+<div class={['quiz-field', { 'quiz-field--error': error && error.length > 0 }]}>
 	<div class="quiz-field__header">
 		<label for={id} class="quiz-field__label">
 			{label}
@@ -204,7 +206,7 @@
 		<p class="quiz-field__description">{description}</p>
 	{/if}
 
-	<div class="quiz-options" class:quiz-options--images={imageOptions}>
+	<div class={['quiz-options', { 'quiz-options--images': imageOptions }]}>
 		{#each options as option (option.id)}
 			<button
 				type="button"
@@ -242,13 +244,13 @@
 	</div>
 
 	{#if showFeedback && answered && feedbackMessage}
-		<div class="quiz-field__feedback" class:quiz-field__feedback--correct={isCorrect}>
+		<div class={['quiz-field__feedback', { 'quiz-field__feedback--correct': isCorrect === true }]}>
 			{feedbackMessage}
 		</div>
 	{/if}
 
 	{#if showFeedback && answered}
-		<div class="quiz-field__result" class:quiz-field__result--correct={isCorrect}>
+		<div class={['quiz-field__result', { 'quiz-field__result--correct': isCorrect === true }]}>
 			{#if isCorrect}
 				<span class="quiz-field__result-icon">✓</span>
 				Correct!

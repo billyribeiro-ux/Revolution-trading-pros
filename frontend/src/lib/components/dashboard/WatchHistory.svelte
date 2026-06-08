@@ -16,7 +16,6 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import Icon from '$lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -68,29 +67,40 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		if (!browser || !userId) return;
-		await fetchHistory();
+	onMount(() => {
+		if (!userId) return;
+
+		const controller = new AbortController();
+
+		void fetchHistory(controller.signal);
+
+		return () => controller.abort();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// METHODS
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async function fetchHistory() {
+	async function fetchHistory(signal?: AbortSignal) {
 		try {
 			isLoading = true;
-			const response = await fetch(`/api/videos/history?user_id=${userId}&limit=${limit}`);
+			const response = await fetch(`/api/videos/history?user_id=${userId}&limit=${limit}`, {
+				signal
+			});
 			const data = await response.json();
 
 			if (data.success && Array.isArray(data.data)) {
 				history = data.data.filter((item: WatchHistoryItem) => !item.completed);
 			}
 		} catch (e) {
+			if (e instanceof DOMException && e.name === 'AbortError') return;
+
 			_error = 'Failed to load watch history';
 			console.error('Watch history fetch error:', e);
 		} finally {
-			isLoading = false;
+			if (!signal?.aborted) {
+				isLoading = false;
+			}
 		}
 	}
 
@@ -127,7 +137,7 @@
 </script>
 
 {#if !isLoading && history.length > 0}
-	<section class="watch-history {className}">
+	<section class={['watch-history', className]}>
 		<div class="watch-history__header">
 			<h2 class="watch-history__title">{title}</h2>
 			{#if showViewAll}
@@ -156,10 +166,7 @@
 
 						<!-- Progress overlay -->
 						<div class="watch-card__progress-bar">
-							<div
-								class="watch-card__progress-fill"
-								style="width: {item.completion_percent}%"
-							></div>
+							<div class="watch-card__progress-fill" style:width="{item.completion_percent}%"></div>
 						</div>
 
 						<!-- Resume button overlay -->
@@ -191,7 +198,7 @@
 		</div>
 	</section>
 {:else if isLoading}
-	<section class="watch-history {className}">
+	<section class={['watch-history', className]}>
 		<div class="watch-history__header">
 			<h2 class="watch-history__title">{title}</h2>
 		</div>

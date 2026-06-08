@@ -106,10 +106,10 @@
 </script>
 
 <div class="ticker-block" role="region" aria-label="Stock tickers">
-	<div class="ticker-container layout-{layout}">
+	<div class={['ticker-container', `layout-${layout}`]}>
 		{#each tickers as ticker, index (ticker.id)}
-			{@const isPositive = ticker.change >= 0}
-			<div class="ticker-card" class:positive={isPositive} class:negative={!isPositive}>
+			{const isPositive = ticker.change >= 0}
+			<div class={['ticker-card', { positive: isPositive, negative: !isPositive }]}>
 				{#if props.isEditing}
 					<input
 						type="text"

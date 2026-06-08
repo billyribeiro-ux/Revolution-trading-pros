@@ -22,6 +22,7 @@
 		onchange?: (dataUrl: string | null) => void;
 	}
 
+	import type { Attachment } from 'svelte/attachments';
 	import Icon from '$lib/components/Icon.svelte';
 
 	let {
@@ -40,7 +41,7 @@
 		onchange
 	}: Props = $props();
 
-	let canvas: HTMLCanvasElement;
+	let canvas: HTMLCanvasElement | undefined;
 	let ctx: CanvasRenderingContext2D | null = null;
 	let isDrawing = $state(false);
 	let hasSignature = $state(false);
@@ -48,20 +49,28 @@
 	let paths = $state<{ x: number; y: number }[][]>([]);
 	let currentPath = $state<{ x: number; y: number }[]>([]);
 
-	$effect(() => {
-		if (canvas) {
-			ctx = canvas.getContext('2d');
-			if (ctx) {
-				ctx.strokeStyle = penColor;
-				ctx.lineWidth = penWidth;
-				ctx.lineCap = 'round';
-				ctx.lineJoin = 'round';
-				clearCanvas();
-			}
+	const canvasAttachment: Attachment<HTMLCanvasElement> = (element) => {
+		canvas = element;
+		ctx = element.getContext('2d');
+		if (ctx) {
+			ctx.strokeStyle = penColor;
+			ctx.lineWidth = penWidth;
+			ctx.lineCap = 'round';
+			ctx.lineJoin = 'round';
+			clearCanvas();
 		}
-	});
+
+		return () => {
+			if (canvas === element) {
+				canvas = undefined;
+				ctx = null;
+			}
+		};
+	};
 
 	function getPosition(e: MouseEvent | TouchEvent): { x: number; y: number } {
+		if (!canvas) return { x: 0, y: 0 };
+
 		const rect = canvas.getBoundingClientRect();
 		const scaleX = canvas.width / rect.width;
 		const scaleY = canvas.height / rect.height;
@@ -184,7 +193,7 @@
 	}
 </script>
 
-<div class="signature-field" class:disabled class:has-error={error}>
+<div class={['signature-field', { disabled, 'has-error': error }]}>
 	<label for="signature-{name}" class="signature-label">
 		{label}
 		{#if required}
@@ -192,13 +201,11 @@
 		{/if}
 	</label>
 
-	<div class="signature-pad-container" style="max-width: {width}px">
+	<div class="signature-pad-container" style:max-width={`${width}px`}>
 		<canvas
-			bind:this={canvas}
 			{width}
 			{height}
-			class="signature-canvas"
-			class:has-signature={hasSignature}
+			class={['signature-canvas', { 'has-signature': hasSignature }]}
 			onmousedown={startDrawing}
 			onmousemove={draw}
 			onmouseup={stopDrawing}
@@ -206,6 +213,7 @@
 			ontouchstart={startDrawing}
 			ontouchmove={draw}
 			ontouchend={stopDrawing}
+			{@attach canvasAttachment}
 		></canvas>
 
 		{#if !hasSignature && !disabled}

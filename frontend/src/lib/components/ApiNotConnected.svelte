@@ -68,12 +68,12 @@
 	<!-- Full Card Version -->
 	<div class="api-not-connected" in:scale={{ duration: 400, start: 0.95 }} role="alert">
 		<!-- Background Glow -->
-		<div class="glow" style="--glow-color: {color}"></div>
+		<div class="glow" style:--glow-color={color}></div>
 
 		<!-- Content -->
 		<div class="content">
 			<!-- Icon -->
-			<div class="icon-container" style="--icon-color: {color}">
+			<div class="icon-container" style:--icon-color={color}>
 				<span class="service-icon">{icon}</span>
 				<div class="plug-indicator">
 					<IconPlugConnected size={20} />
@@ -100,7 +100,7 @@
 			{/if}
 
 			<!-- Connect Button -->
-			<button class="connect-btn" onclick={handleConnect} style="--btn-color: {color}">
+			<button class="connect-btn" onclick={handleConnect} style:--btn-color={color}>
 				<IconPlugConnected size={20} />
 				<span>Connect {serviceName}</span>
 				<IconArrowRight size={18} />

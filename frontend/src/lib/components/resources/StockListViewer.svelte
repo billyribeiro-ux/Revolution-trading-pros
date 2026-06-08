@@ -144,21 +144,20 @@
 >
 	{#if showHeader}
 		<!-- Header -->
-		<div class="border-b border-gray-200 p-4 dark:border-gray-700 {compact ? 'p-3' : 'p-4 lg:p-6'}">
+		<div class={['border-b border-gray-200 dark:border-gray-700', compact ? 'p-3' : 'p-4 lg:p-6']}>
 			<div class="flex flex-wrap items-start justify-between gap-4">
 				<div>
 					<div class="flex items-center gap-2">
 						<h2
-							class="text-xl font-bold text-gray-900 dark:text-white {compact
-								? 'text-lg'
-								: 'text-xl'}"
+							class={['font-bold text-gray-900 dark:text-white', compact ? 'text-lg' : 'text-xl']}
 						>
 							{stockList.name}
 						</h2>
 						<span
-							class="rounded-full px-2.5 py-0.5 text-xs font-medium capitalize {getListTypeColor(
-								stockList.list_type
-							)}"
+							class={[
+								'rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
+								getListTypeColor(stockList.list_type)
+							]}
 						>
 							{stockList.list_type}
 						</span>

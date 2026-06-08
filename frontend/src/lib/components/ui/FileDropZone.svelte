@@ -38,7 +38,7 @@
 
 	// Local state
 	let isDragOver = $state(false);
-	let fileInput = $state<HTMLInputElement | null>(null);
+	let fileInput: HTMLInputElement | null = null;
 
 	// Derived
 	const acceptString = $derived(accept.join(','));
@@ -109,12 +109,20 @@
 	function openFileBrowser() {
 		if (!disabled) fileInput?.click();
 	}
+
+	function trackFileInput(element: HTMLInputElement) {
+		fileInput = element;
+
+		return () => {
+			if (fileInput === element) {
+				fileInput = null;
+			}
+		};
+	}
 </script>
 
 <div
-	class="drop-zone"
-	class:drag-over={isDragOver}
-	class:disabled
+	class={{ 'drop-zone': true, 'drag-over': isDragOver, disabled }}
 	role="region"
 	aria-label="File upload area"
 	ondragover={handleDragOver}
@@ -137,7 +145,7 @@
 </div>
 
 <input
-	bind:this={fileInput}
+	{@attach trackFileInput}
 	type="file"
 	accept={acceptString}
 	hidden

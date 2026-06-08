@@ -34,18 +34,6 @@
 	// Derive text color from settings (supports custom colors)
 	const textColor = $derived(props.block.settings.textColor || '');
 
-	// Build inline styles for custom settings
-	const inlineStyles = $derived.by(() => {
-		const styles: string[] = [];
-		if (textAlign !== 'left') {
-			styles.push(`text-align: ${textAlign}`);
-		}
-		if (textColor) {
-			styles.push(`color: ${textColor}`);
-		}
-		return styles.length > 0 ? styles.join('; ') : undefined;
-	});
-
 	/**
 	 * Update block content with partial updates
 	 */
@@ -84,14 +72,19 @@
 
 <p
 	contenteditable={props.isEditing}
-	class="paragraph-block"
-	class:paragraph-block--editing={props.isEditing}
-	class:paragraph-block--selected={props.isSelected}
-	class:paragraph-block--placeholder={!props.block.content.text}
-	class:paragraph-block--align-center={textAlign === 'center'}
-	class:paragraph-block--align-right={textAlign === 'right'}
-	class:paragraph-block--align-justify={textAlign === 'justify'}
-	style={inlineStyles}
+	class={[
+		'paragraph-block',
+		{
+			'paragraph-block--editing': props.isEditing,
+			'paragraph-block--selected': props.isSelected,
+			'paragraph-block--placeholder': !props.block.content.text,
+			'paragraph-block--align-center': textAlign === 'center',
+			'paragraph-block--align-right': textAlign === 'right',
+			'paragraph-block--align-justify': textAlign === 'justify'
+		}
+	]}
+	style:text-align={textAlign !== 'left' ? textAlign : undefined}
+	style:color={textColor || undefined}
 	oninput={handleTextInput}
 	onpaste={handlePaste}
 	onkeydown={handleKeydown}

@@ -71,8 +71,7 @@
 	<div class="categories">
 		{#each categories as category (category.id)}
 			<button
-				class="category-btn"
-				class:active={selectedCategory === category.id}
+				class={['category-btn', { active: selectedCategory === category.id }]}
 				onclick={() => (selectedCategory = category.id)}
 			>
 				<span class="category-icon">{category.icon}</span>
@@ -103,8 +102,8 @@
 							<span class="field-count">{template.fields.length} fields</span>
 							<span
 								class="theme-badge"
-								style="background: {template.theme.colors.primary}20; color: {template.theme.colors
-									.primary}"
+								style:background={`${template.theme.colors.primary}20`}
+								style:color={template.theme.colors.primary}
 							>
 								{template.theme.name}
 							</span>

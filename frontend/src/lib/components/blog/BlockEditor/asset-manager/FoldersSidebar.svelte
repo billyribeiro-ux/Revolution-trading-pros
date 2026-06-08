@@ -40,8 +40,7 @@
 	</div>
 	<nav class="folder-tree">
 		<button
-			class="folder-item"
-			class:active={currentFolderId === null}
+			class={['folder-item', { active: currentFolderId === null }]}
 			onclick={() => onNavigate(null)}
 		>
 			<Icon name="IconHome" size={16} />
@@ -49,8 +48,7 @@
 		</button>
 		{#each rootFolders as folder (folder.id)}
 			<button
-				class="folder-item"
-				class:active={currentFolderId === folder.id}
+				class={['folder-item', { active: currentFolderId === folder.id }]}
 				onclick={() => onNavigate(folder)}
 			>
 				<Icon name="IconFolder" size={16} color={folder.color || undefined} />

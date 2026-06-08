@@ -10,6 +10,7 @@
 	 */
 
 	import { fade, fly } from 'svelte/transition';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { consentStore, showPreferencesModal, openPreferencesModal } from '../store.svelte';
 
@@ -35,25 +36,50 @@
 	// Svelte 5: Reactive state using $state() rune
 	let visible = $state(false);
 	let expanded = $state(false);
+	let hasInteracted = false;
+	let preferencesModalOpen = false;
+	let showTimer: ReturnType<typeof setTimeout> | undefined;
 
-	// Svelte 5: Side effects using $effect() rune - visibility logic
-	$effect(() => {
-		if (browser && $consentStore.hasInteracted && showAfterConsent) {
-			const timeout = setTimeout(() => {
-				visible = true;
-			}, showDelay);
-			return () => clearTimeout(timeout);
+	function clearShowTimer() {
+		if (showTimer) {
+			clearTimeout(showTimer);
+			showTimer = undefined;
 		}
-		return undefined;
-	});
+	}
 
-	// Svelte 5: Side effect for modal visibility
-	$effect(() => {
-		if ($showPreferencesModal) {
+	function updateVisibility() {
+		clearShowTimer();
+
+		if (!browser) return;
+		if (preferencesModalOpen) {
 			visible = false;
-		} else if (browser && $consentStore.hasInteracted && showAfterConsent) {
-			visible = true;
+			return;
 		}
+		if (hasInteracted && showAfterConsent) {
+			showTimer = setTimeout(() => {
+				visible = true;
+				showTimer = undefined;
+			}, showDelay);
+		} else {
+			visible = false;
+		}
+	}
+
+	onMount(() => {
+		const unsubscribeConsent = consentStore.subscribe((state) => {
+			hasInteracted = state.hasInteracted;
+			updateVisibility();
+		});
+		const unsubscribePreferences = showPreferencesModal.subscribe((isOpen) => {
+			preferencesModalOpen = isOpen;
+			updateVisibility();
+		});
+
+		return () => {
+			clearShowTimer();
+			unsubscribeConsent();
+			unsubscribePreferences();
+		};
 	});
 
 	function handleClick() {
@@ -84,8 +110,7 @@
 {#if visible}
 	<button
 		type="button"
-		class="consent-settings-btn {position} {className}"
-		class:expanded
+		class={['consent-settings-btn', position, className, { expanded }]}
 		onclick={handleClick}
 		onmouseenter={handleMouseEnter}
 		onmouseleave={handleMouseLeave}

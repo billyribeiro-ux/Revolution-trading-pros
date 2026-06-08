@@ -69,9 +69,13 @@
 </script>
 
 <div
-	class="spacer-block"
-	class:editing={props.isEditing}
-	class:selected={props.isSelected}
+	class={[
+		'spacer-block',
+		{
+			editing: props.isEditing,
+			selected: props.isSelected
+		}
+	]}
 	style:height
 	role="separator"
 	aria-label="Vertical spacing: {currentSize}"
@@ -86,8 +90,7 @@
 				{#each Object.keys(HEIGHT_PRESETS) as size (size)}
 					<button
 						type="button"
-						class="size-btn"
-						class:active={currentSize === size}
+						class={['size-btn', { active: currentSize === size }]}
 						onclick={() => setSize(size as HeightSize)}
 						aria-pressed={currentSize === size}
 						title="{size} ({HEIGHT_PRESETS[size as HeightSize]})"
