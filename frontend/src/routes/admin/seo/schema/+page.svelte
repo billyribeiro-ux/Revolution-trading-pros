@@ -178,7 +178,7 @@
 		<h2>Available Schema Types</h2>
 		<div class="type-grid">
 			{#each schemaTypes as type (type.name)}
-				<div class="type-card" class:type-card--deprecated={type.deprecated}>
+				<div class={['type-card', { 'type-card--deprecated': type.deprecated }]}>
 					<div class="type-name">
 						{type.name}
 						{#if type.deprecated}

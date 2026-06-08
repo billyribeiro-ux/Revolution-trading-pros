@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 62 Svelte files remaining.
+- Broad dynamic class/style migration scan: 57 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -78,6 +78,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin orders batch: `OrderDetailModal.svelte`, `OrdersTable.svelte`, and `OrdersToolbar.svelte`; replaced tracked status badge class interpolation and filter active directive with Svelte 5 class arrays.
 - [x] 2026-06-08: Completed admin products edit/create batch: edit and create `ProductBasicFields.svelte`, `ProductPreviewCard.svelte`, `ProductPricingFields.svelte`, and `ProductTypeSelector.svelte`; replaced tracked form error/active/selected class directives, preview badge background strings, CSS custom property strings, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
 - [x] 2026-06-08: Completed admin resources/schedules batch: resources `BulkOperationsModal.svelte`/`RoomTabs.svelte` and schedules `RoomSelector.svelte`/`ScheduleEventCard.svelte`; replaced tracked active/danger/state class directives, room color styles, room-type class interpolation, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
+- [x] 2026-06-08: Completed admin SEO batch: `404-monitor/+page.svelte`, `analytics/+page.svelte`, `meta/+page.svelte`, `news-sitemap/+page.svelte`, and `schema/+page.svelte`; replaced tracked hit/trend/entity/score/status/type class directives and interpolations plus legacy declaration tags with Svelte 5 class arrays/objects and declaration tags.
 
 ## Remaining Files
 
@@ -352,12 +353,12 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/resources/_components/RoomTabs.svelte`
 - [x] `frontend/src/routes/admin/schedules/_components/RoomSelector.svelte`
 - [x] `frontend/src/routes/admin/schedules/_components/ScheduleEventCard.svelte`
-- [ ] `frontend/src/routes/admin/seo/404-monitor/+page.svelte`
-- [ ] `frontend/src/routes/admin/seo/analytics/+page.svelte`
-- [ ] `frontend/src/routes/admin/seo/meta/+page.svelte`
-- [ ] `frontend/src/routes/admin/seo/news-sitemap/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/404-monitor/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/analytics/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/meta/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/news-sitemap/+page.svelte`
 - [x] `frontend/src/routes/admin/seo/redirects/+page.svelte`
-- [ ] `frontend/src/routes/admin/seo/schema/+page.svelte`
+- [x] `frontend/src/routes/admin/seo/schema/+page.svelte`
 - [ ] `frontend/src/routes/admin/trading-rooms/+page.svelte`
 - [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/CloseTradeModal.svelte`
 - [ ] `frontend/src/routes/admin/trading-rooms/[slug]/_components/PageHeader.svelte`

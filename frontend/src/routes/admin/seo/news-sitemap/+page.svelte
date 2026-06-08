@@ -191,7 +191,7 @@
 			<div class="articles-list">
 				{#each articles as article (article.id)}
 					<div class="article-item">
-						<div class="article-status" class:included={article.inSitemap}>
+						<div class={['article-status', { included: article.inSitemap }]}>
 							{#if article.inSitemap}
 								<IconCheck size={16} />
 							{:else}

@@ -198,7 +198,7 @@
 								</div>
 							</td>
 							<td>
-								<span class="hits-badge" class:high={log.hits > 10}>
+								<span class={['hits-badge', { high: log.hits > 10 }]}>
 									{log.hits}
 								</span>
 							</td>
