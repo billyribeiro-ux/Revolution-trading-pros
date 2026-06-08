@@ -9,12 +9,12 @@ step), under 30 seconds on subsequent boots.
 
 ## Prerequisites
 
-| Tool | Version | macOS install |
-|------|---------|---------------|
-| Docker Desktop | ≥ 4.30 | `brew install --cask docker` |
-| Node.js | 24.16.0 LTS (latest LTS "Krypton") | `nvm install 24 && nvm use 24` |
-| pnpm | 11.5.1+ | `corepack enable && corepack prepare pnpm@11.5.1 --activate` |
-| Rust | 1.96.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable` |
+| Tool           | Version                                                               | macOS install                                                |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Docker Desktop | ≥ 4.30                                                                | `brew install --cask docker`                                 |
+| Node.js        | 24.16.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
+| pnpm           | 11.5.2+                                                               | `corepack enable && corepack prepare pnpm@11.5.2 --activate` |
+| Rust           | 1.96.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
 
 You do **not** need `flyctl` for local dev. (You'll need it later if you
 deploy.)
@@ -185,11 +185,14 @@ Use `docker compose --progress=plain up --build api` to see line-by-line
 progress in the terminal.
 
 **API container is `unhealthy`** — check logs:
+
 ```bash
 docker compose logs api
 ```
+
 Most common cause is the DB not being ready when the API tried to run
 migrations. Restart the API:
+
 ```bash
 docker compose restart api
 ```
@@ -216,6 +219,7 @@ run `pnpm install` from the repo root, not from `frontend/`.
 `DATABASE_URL` in your env if you connect with a GUI.
 
 **Port 5173 in use** — kill the previous Vite dev server:
+
 ```bash
 lsof -ti:5173 | xargs kill -9
 ```
@@ -253,9 +257,10 @@ cargo test --manifest-path api/Cargo.toml --all-targets
 ```
 
 > **One-time setup:** `docker-entrypoint-initdb.d` scripts only run when the
-> Postgres data volume is first created.  If you already have a running dev
+> Postgres data volume is first created. If you already have a running dev
 > volume you will need to `docker compose down -v` (wipes all data) and then
 > boot with the overlay, or manually run the SQL in the script:
+>
 > ```sql
 > CREATE ROLE test WITH LOGIN PASSWORD 'test';
 > CREATE DATABASE test_db OWNER test;

@@ -43,20 +43,10 @@
 	let loading = $derived(props.loading ?? false);
 	let className = $derived(props.className ?? '');
 
-	let containerRef: HTMLDivElement | null = null;
-	let chartInstance = $state<unknown>(null);
-
-	const chartContainer: Attachment<HTMLDivElement> = (element) => {
-		containerRef = element;
+	const chartContainer: Attachment<HTMLDivElement> = () => {
 		if (browser) {
 			initChart();
 		}
-
-		return () => {
-			containerRef = null;
-			// Cleanup chart instance
-			chartInstance = null;
-		};
 	};
 
 	function initChart() {

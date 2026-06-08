@@ -87,7 +87,7 @@ pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
     let counter_bytes = counter.to_be_bytes();
 
     // HMAC-SHA1
-    use hmac::{Hmac, Mac};
+    use hmac::{Hmac, KeyInit, Mac};
     use sha1::Sha1;
 
     type HmacSha1 = Hmac<Sha1>;

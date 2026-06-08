@@ -12,7 +12,7 @@
 
 use anyhow::Result;
 use chrono::Utc;
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use reqwest::Client;
 use serde::Serialize;
 use sha2::Sha256;

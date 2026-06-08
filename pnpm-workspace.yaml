@@ -24,7 +24,11 @@ allowBuilds:
   sharp: true
   workerd: true
 minimumReleaseAgeExclude:
-  - '@sveltejs/kit@2.62.0'
+  - "@sveltejs/kit@2.63.0"
   - concurrently@10.0.3
-  - miniflare@4.20260601.0
-  - wrangler@4.97.0
+  - miniflare@4.20260603.0
+  - wrangler@4.98.0
+
+peerDependencyRules:
+  allowedVersions:
+    vite-plugin-devtools-json>vite: ^8.0.0

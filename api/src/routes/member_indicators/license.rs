@@ -28,7 +28,7 @@ fn generate_license_key(user_id: i64, indicator_id: i64) -> String {
     let input = format!("{user_id}-{indicator_id}-{timestamp}-{secret}");
     let mut hasher = Sha256::new();
     hasher.update(input.as_bytes());
-    let hash = format!("{:x}", hasher.finalize());
+    let hash = hex::encode(hasher.finalize());
     // Format: XXXX-XXXX-XXXX-XXXX (16 chars from hash)
     let key_chars: String = hash.chars().take(16).collect();
     format!(

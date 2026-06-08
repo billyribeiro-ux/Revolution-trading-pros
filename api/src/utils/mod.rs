@@ -604,7 +604,7 @@ mod token_version_tests {
             URL_SAFE_NO_PAD.encode(payload_json.as_bytes())
         );
         // HS256 = HMAC-SHA256 over the signing input with the secret.
-        use hmac::{Hmac, Mac};
+        use hmac::{Hmac, KeyInit, Mac};
         use sha2::Sha256;
         // HMAC-SHA256 accepts any key length (RFC 2104); `new_from_slice` only
         // errors on truly invalid lengths which is impossible for a non-empty

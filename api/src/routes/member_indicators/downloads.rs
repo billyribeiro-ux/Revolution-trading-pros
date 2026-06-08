@@ -101,7 +101,7 @@ pub(super) async fn generate_download_url(
     let hash_input = format!("{user_id}{file_id}{expiry_timestamp}{secret}");
     let mut hasher = Sha256::new();
     hasher.update(hash_input.as_bytes());
-    let token = format!("{:x}", hasher.finalize());
+    let token = hex::encode(hasher.finalize());
 
     // ICT 7 FIX: Store download record with i64 indicator_id
     // Note: indicator_downloads table may not exist; this is optional tracking

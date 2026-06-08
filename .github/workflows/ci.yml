@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 # pnpm version is intentionally NOT pinned here — pnpm/action-setup@v4
-# reads it from package.json#packageManager (pnpm@11.5.1), so CI and
+# reads it from package.json#packageManager (pnpm@11.5.2), so CI and
 # local always use the exact same pnpm. One source of truth, no drift.
 env:
   NODE_VERSION: "24.16.0"
