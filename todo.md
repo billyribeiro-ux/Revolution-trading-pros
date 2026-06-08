@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 328 Svelte files remaining.
+- Broad dynamic class/style migration scan: 325 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -24,6 +24,9 @@ Current evidence:
 - [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/InventoryField.svelte`; replaced legacy class directives/interpolated classes, moved selection state to a bindable value array, and used a derived `SvelteMap` for reactive lookup totals.
 - [x] 2026-06-08: Completed `frontend/src/routes/indicators/macd/+page.svelte`; replaced hero visibility `class:` directive with Svelte 5 class composition and moved the bearish signal icon rotation into scoped CSS.
 - [x] 2026-06-08: Completed `frontend/src/routes/admin/seo/redirects/+page.svelte`; replaced filter/status class directives and dynamic redirect type badge classes with Svelte 5 class composition, and moved static table column widths into scoped CSS.
+- [x] 2026-06-08: Completed `frontend/src/lib/components/admin/BunnyVideoUploader.svelte`; replaced upload/dropzone class directives and interpolated progress width with Svelte 5 class/style composition, and replaced the DOM-node file input binding with `$props.id()` plus `bind:files`.
+- [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/FormReport.svelte`; replaced variant/tab class directives and interpolated chart-bar styles with Svelte 5 class/style composition, and replaced the mutating report-load `$effect` with a derived promise rendered through `{#await}`.
+- [x] 2026-06-08: Completed `frontend/src/routes/admin/popups/+page.svelte`; replaced tab/status `class:active` directives with Svelte 5 class composition and derived active/inactive counts for the tab labels.
 
 ## Remaining Files
 
@@ -37,7 +40,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/lib/components/SkeletonLoader.svelte`
 - [ ] `frontend/src/lib/components/Toast.svelte`
 - [ ] `frontend/src/lib/components/admin/ActionsDropdown.svelte`
-- [ ] `frontend/src/lib/components/admin/BunnyVideoUploader.svelte`
+- [x] `frontend/src/lib/components/admin/BunnyVideoUploader.svelte`
 - [ ] `frontend/src/lib/components/admin/ConfirmationModal.svelte`
 - [ ] `frontend/src/lib/components/admin/RoomSelector.svelte`
 - [ ] `frontend/src/lib/components/admin/ScheduledPublishing.svelte`
@@ -122,7 +125,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/lib/components/forms/pro/EnhancedCheckbox.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/FeaturedImageField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/FileUploadField.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/FormReport.svelte`
+- [x] `frontend/src/lib/components/forms/pro/FormReport.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/FormStepField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/GDPRField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/GeolocationAddress.svelte`
@@ -285,7 +288,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/routes/admin/orders/_components/OrderDetailModal.svelte`
 - [ ] `frontend/src/routes/admin/orders/_components/OrdersTable.svelte`
 - [ ] `frontend/src/routes/admin/orders/_components/OrdersToolbar.svelte`
-- [ ] `frontend/src/routes/admin/popups/+page.svelte`
+- [x] `frontend/src/routes/admin/popups/+page.svelte`
 - [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductBasicFields.svelte`
 - [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductPreviewCard.svelte`
 - [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductPricingFields.svelte`
