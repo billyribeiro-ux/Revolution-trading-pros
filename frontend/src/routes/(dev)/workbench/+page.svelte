@@ -22,6 +22,7 @@
 	import ComponentRenderer from './ComponentRenderer.svelte';
 	import PropsEditor from './PropsEditor.svelte';
 	import SnippetEditor from './SnippetEditor.svelte';
+	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -126,9 +127,7 @@
 	// LIFECYCLE - Load component from URL
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	$effect(() => {
-		if (typeof window === 'undefined') return;
-
+	onMount(() => {
 		const url = new URL(window.location.href);
 		const componentPath = url.searchParams.get('component');
 
@@ -166,8 +165,7 @@
 				<span class="toolbar-label">Viewport:</span>
 				{#each viewportPresets as preset (preset.name)}
 					<button
-						class="toolbar-btn"
-						class:active={viewportWidth === preset.width}
+						class={{ 'toolbar-btn': true, active: viewportWidth === preset.width }}
 						onclick={() => setViewport(preset)}
 					>
 						{preset.name}
@@ -198,11 +196,10 @@
 				<span class="toolbar-label">Background:</span>
 				{#each backgroundPresets as preset (preset.name)}
 					<button
-						class="bg-btn"
-						class:active={background === preset.value}
+						class={{ 'bg-btn': true, active: background === preset.value }}
 						onclick={() => (background = preset.value)}
 						title={preset.name}
-						style="background: {preset.value};"
+						style:background={preset.value}
 					></button>
 				{/each}
 			</div>
@@ -248,15 +245,13 @@
 		<!-- Tab Switcher -->
 		<div class="panel-tabs">
 			<button
-				class="panel-tab"
-				class:active={rightPanelTab === 'props'}
+				class={{ 'panel-tab': true, active: rightPanelTab === 'props' }}
 				onclick={() => (rightPanelTab = 'props')}
 			>
 				Props
 			</button>
 			<button
-				class="panel-tab"
-				class:active={rightPanelTab === 'source'}
+				class={{ 'panel-tab': true, active: rightPanelTab === 'source' }}
 				onclick={() => (rightPanelTab = 'source')}
 			>
 				Source

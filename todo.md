@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 139 Svelte files remaining.
+- Broad dynamic class/style migration scan: 134 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -63,6 +63,7 @@ Current evidence:
 - [x] 2026-06-08: Completed options charts/export controls batch: `TickerSearch.svelte`, `TimeMachine.svelte`, `VisualizationTabs.svelte`, charts `Surface3D.svelte`, and export `ExportMenu.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 style directives and declaration tags, migrated dropdown/menu animation refs from `bind:this`/`$effect` to attachments, and moved time-machine playback cleanup to `onDestroy`.
 - [x] 2026-06-08: Completed options export/growth/saved/UI batch: `ExportPNG.svelte`, `WatermarkOverlay.svelte`, `ConfigCard.svelte`, `SaveConfigModal.svelte`, `AnimatedNumber.svelte`, and `AnimatedSlider.svelte`; replaced tracked dynamic style/class bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and style directives, moved export/save modal reset animations to attachments, and replaced effect-driven focus/number display with attachments and derived values.
 - [x] 2026-06-08: Completed options UI controls batch: `ConfirmDialog.svelte`, `GlassCard.svelte`, `InfoTooltip.svelte`, `MetricCard.svelte`, `SkeletonLoader.svelte`, `StrategyLegRow.svelte`, and `Toast.svelte`; replaced tracked dynamic class/style bindings and legacy declaration tags with Svelte 5 class arrays, declaration tags, and style directives, migrated dialog/card/row/toast animation refs from effects/actions to attachments, and moved toast auto-dismiss timers onto per-toast attachments.
+- [x] 2026-06-08: Completed workbench/layout/error batch: workbench `+page.svelte`, `ComponentTree.svelte`, `SnippetEditor.svelte`, root `+layout.svelte`, and admin `+error.svelte`; replaced tracked class/style bindings with Svelte 5 class objects and style directives, moved workbench URL initialization to `onMount`, and moved admin error logging out of `$effect`.
 
 ## Remaining Files
 
@@ -259,11 +260,11 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/lib/options-calculator/components/ui/SkeletonLoader.svelte`
 - [x] `frontend/src/lib/options-calculator/components/ui/StrategyLegRow.svelte`
 - [x] `frontend/src/lib/options-calculator/components/ui/Toast.svelte`
-- [ ] `frontend/src/routes/(dev)/workbench/+page.svelte`
-- [ ] `frontend/src/routes/(dev)/workbench/ComponentTree.svelte`
-- [ ] `frontend/src/routes/(dev)/workbench/SnippetEditor.svelte`
-- [ ] `frontend/src/routes/+layout.svelte`
-- [ ] `frontend/src/routes/admin/+error.svelte`
+- [x] `frontend/src/routes/(dev)/workbench/+page.svelte`
+- [x] `frontend/src/routes/(dev)/workbench/ComponentTree.svelte`
+- [x] `frontend/src/routes/(dev)/workbench/SnippetEditor.svelte`
+- [x] `frontend/src/routes/+layout.svelte`
+- [x] `frontend/src/routes/admin/+error.svelte`
 - [ ] `frontend/src/routes/admin/blog/_components/NotificationsList.svelte`
 - [ ] `frontend/src/routes/admin/blog/categories/_components/CategorySection.svelte`
 - [ ] `frontend/src/routes/admin/blog/categories/_components/TagSection.svelte`

@@ -168,8 +168,10 @@
 				{#each favoriteComponents as component (component.relativePath)}
 					<li>
 						<button
-							class="component-item"
-							class:selected={selectedComponent === component.relativePath}
+							class={{
+								'component-item': true,
+								selected: selectedComponent === component.relativePath
+							}}
 							onclick={() => handleSelect(component)}
 						>
 							<span class="component-name">{component.name}</span>
@@ -192,8 +194,10 @@
 				{#each recentComponentsInfo as component (component.relativePath)}
 					<li>
 						<button
-							class="component-item"
-							class:selected={selectedComponent === component.relativePath}
+							class={{
+								'component-item': true,
+								selected: selectedComponent === component.relativePath
+							}}
 							onclick={() => handleSelect(component)}
 						>
 							<span class="component-name">{component.name}</span>
@@ -227,13 +231,17 @@
 						{#each components as component (component.relativePath)}
 							<li>
 								<button
-									class="component-item"
-									class:selected={selectedComponent === component.relativePath}
+									class={{
+										'component-item': true,
+										selected: selectedComponent === component.relativePath
+									}}
 									onclick={() => handleSelect(component)}
 								>
 									<span
-										class="favorite-btn"
-										class:active={favorites.has(component.relativePath)}
+										class={{
+											'favorite-btn': true,
+											active: favorites.has(component.relativePath)
+										}}
 										onclick={(e) => toggleFavorite(component, e)}
 										onkeydown={(e) => {
 											if (e.key === 'Enter' || e.key === ' ') {
