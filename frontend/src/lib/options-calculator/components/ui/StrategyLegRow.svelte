@@ -30,17 +30,7 @@
 		onRemove
 	}: Props = $props();
 
-	let rowEl: HTMLDivElement | undefined = $state();
-
-	$effect(() => {
-		if (rowEl) {
-			gsap.fromTo(
-				rowEl,
-				{ x: 40, opacity: 0 },
-				{ x: 0, opacity: 1, duration: 0.35, ease: 'power2.out' }
-			);
-		}
-	});
+	let rowEl: HTMLDivElement | undefined;
 
 	let legInputs = $derived<BSInputs>({
 		spotPrice,
@@ -53,6 +43,19 @@
 
 	let computedPrice = $derived(priceOption(legInputs, leg.type));
 	let computedGreeks = $derived<FirstOrderGreeks>(firstOrderGreeks(legInputs, leg.type));
+	let callButtonBackground = $derived(leg.type === 'call' ? 'var(--calc-call-bg)' : undefined);
+	let callButtonColor = $derived(
+		leg.type === 'call' ? 'var(--calc-call)' : 'var(--calc-text-muted)'
+	);
+	let putButtonBackground = $derived(leg.type === 'put' ? 'var(--calc-put-bg)' : undefined);
+	let putButtonColor = $derived(leg.type === 'put' ? 'var(--calc-put)' : 'var(--calc-text-muted)');
+	let positionBackground = $derived(
+		leg.position === 1 ? 'rgba(0,212,170,0.15)' : 'rgba(255,68,119,0.15)'
+	);
+	let positionColor = $derived(leg.position === 1 ? '#00d4aa' : '#ff4477');
+	let positionBorder = $derived(
+		leg.position === 1 ? '1px solid rgba(0,212,170,0.3)' : '1px solid rgba(255,68,119,0.3)'
+	);
 
 	function updateType(type: OptionType) {
 		onUpdate({ ...leg, type });
@@ -101,28 +104,43 @@
 			onRemove(leg.id);
 		}
 	}
+
+	function setupRow(element: HTMLDivElement) {
+		rowEl = element;
+		gsap.fromTo(
+			element,
+			{ x: 40, opacity: 0 },
+			{ x: 0, opacity: 1, duration: 0.35, ease: 'power2.out' }
+		);
+
+		return () => {
+			if (rowEl === element) {
+				rowEl = undefined;
+			}
+		};
+	}
 </script>
 
 <div
-	bind:this={rowEl}
+	{@attach setupRow}
 	class="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all"
-	style="background: var(--calc-surface); border: 1px solid var(--calc-border); border-left: 3px solid {color};"
+	style:background="var(--calc-surface)"
+	style:border="1px solid var(--calc-border)"
+	style:border-left={`3px solid ${color}`}
 >
 	<!-- Call/Put Toggle -->
 	<div class="flex rounded-lg overflow-hidden" style="border: 1px solid var(--calc-border);">
 		<button
 			onclick={() => updateType('call')}
 			class="text-[10px] font-bold px-2 py-1 transition-colors cursor-pointer"
-			style={leg.type === 'call'
-				? 'background: var(--calc-call-bg); color: var(--calc-call);'
-				: 'color: var(--calc-text-muted);'}>C</button
+			style:background={callButtonBackground}
+			style:color={callButtonColor}>C</button
 		>
 		<button
 			onclick={() => updateType('put')}
 			class="text-[10px] font-bold px-2 py-1 transition-colors cursor-pointer"
-			style={leg.type === 'put'
-				? 'background: var(--calc-put-bg); color: var(--calc-put);'
-				: 'color: var(--calc-text-muted);'}>P</button
+			style:background={putButtonBackground}
+			style:color={putButtonColor}>P</button
 		>
 	</div>
 
@@ -161,9 +179,9 @@
 	<button
 		onclick={togglePosition}
 		class="text-[10px] font-bold px-2 py-1 rounded-lg transition-colors cursor-pointer"
-		style={leg.position === 1
-			? 'background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3);'
-			: 'background: rgba(255,68,119,0.15); color: #ff4477; border: 1px solid rgba(255,68,119,0.3);'}
+		style:background={positionBackground}
+		style:color={positionColor}
+		style:border={positionBorder}
 	>
 		{leg.position === 1 ? 'LONG' : 'SHORT'}
 	</button>

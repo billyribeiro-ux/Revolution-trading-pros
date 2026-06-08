@@ -29,7 +29,11 @@
 </script>
 
 <div
-	class="relative flex flex-col gap-1 rounded-xl px-3 py-2.5 transition-all {glowClass} {className}"
+	class={[
+		'relative flex flex-col gap-1 rounded-xl px-3 py-2.5 transition-all',
+		glowClass,
+		className
+	]}
 	style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
 	title={tooltip}
 >

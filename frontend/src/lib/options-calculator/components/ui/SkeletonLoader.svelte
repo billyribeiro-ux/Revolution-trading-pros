@@ -16,12 +16,9 @@
 	}: Props = $props();
 </script>
 
-<div class="flex flex-col" style="gap: {gap};" aria-busy="true" aria-label="Loading">
+<div class="flex flex-col" style:gap aria-busy="true" aria-label="Loading">
 	{#each Array(count) as _, i (i)}
-		<div
-			class="skeleton-shimmer"
-			style="width: {width}; height: {height}; border-radius: {borderRadius};"
-		></div>
+		<div class="skeleton-shimmer" style:width style:height style:border-radius={borderRadius}></div>
 	{/each}
 </div>
 
