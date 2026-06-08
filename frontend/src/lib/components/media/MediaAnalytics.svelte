@@ -19,9 +19,42 @@
 	let statistics: MediaStatistics | null = $state(null);
 	let loading = $state(true);
 	let error: string | null = $state(null);
+	const optimizationRate = $derived.by(() => {
+		const currentStatistics: MediaStatistics | null = statistics;
+		if (!currentStatistics || currentStatistics.total_images === 0) return 0;
+		return Math.round((currentStatistics.optimized_images / currentStatistics.total_images) * 100);
+	});
+	const savingsRate = $derived.by(() => {
+		const currentStatistics: MediaStatistics | null = statistics;
+		if (!currentStatistics || currentStatistics.total_storage === 0) return 0;
+		return Math.round(
+			(currentStatistics.total_savings_bytes / currentStatistics.total_storage) * 100
+		);
+	});
+	const storageTypes = $derived.by(
+		(): Array<{ type: string; count: number; size: number; color: string }> => {
+			if (!statistics?.storage_by_type) return [];
 
-	onMount(async () => {
-		await loadStatistics();
+			const colors: Record<string, string> = {
+				image: '#3b82f6',
+				video: '#ef4444',
+				document: '#10b981',
+				audio: '#f59e0b',
+				archive: '#8b5cf6',
+				other: '#6b7280'
+			};
+
+			return Object.entries(statistics.storage_by_type).map(([type, data]) => ({
+				type,
+				count: data.count,
+				size: data.size,
+				color: colors[type] || colors['other']
+			}));
+		}
+	);
+
+	onMount(() => {
+		void loadStatistics();
 	});
 
 	async function loadStatistics() {
@@ -51,38 +84,13 @@
 		return num.toString();
 	}
 
-	function getOptimizationRate(): number {
-		if (!statistics || statistics.total_images === 0) return 0;
-		return Math.round((statistics.optimized_images / statistics.total_images) * 100);
-	}
-
-	function getSavingsRate(): number {
-		if (!statistics || statistics.total_storage === 0) return 0;
-		return Math.round((statistics.total_savings_bytes / statistics.total_storage) * 100);
-	}
-
-	function getStorageTypes(): Array<{ type: string; count: number; size: number; color: string }> {
-		if (!statistics?.storage_by_type) return [];
-
-		const colors: Record<string, string> = {
-			image: '#3b82f6',
-			video: '#ef4444',
-			document: '#10b981',
-			audio: '#f59e0b',
-			archive: '#8b5cf6',
-			other: '#6b7280'
-		};
-
-		return Object.entries(statistics.storage_by_type).map(([type, data]) => ({
-			type,
-			count: data.count,
-			size: data.size,
-			color: colors[type] || colors['other']
-		})) as { type: string; count: number; size: number; color: string }[];
+	function getStoragePercentage(size: number, total: number): string {
+		if (total === 0) return '0%';
+		return `${(size / total) * 100}%`;
 	}
 </script>
 
-<div class="media-analytics" class:compact>
+<div class={['media-analytics', compact && 'compact']}>
 	{#if loading}
 		<div class="loading">
 			<div class="spinner"></div>
@@ -106,7 +114,7 @@
 				</div>
 				<div class="card-trend positive">
 					<Icon name="IconTrendingUp" size={16} />
-					<span>{getSavingsRate()}%</span>
+					<span>{savingsRate}%</span>
 				</div>
 			</div>
 
@@ -147,14 +155,14 @@
 				<h3 class="section-title">Optimization Progress</h3>
 				<div class="progress-container">
 					<div class="progress-bar">
-						<div class="progress-fill" style="width: {getOptimizationRate()}%"></div>
+						<div class="progress-fill" style:width={`${optimizationRate}%`}></div>
 					</div>
 					<div class="progress-stats">
 						<span class="progress-label">
 							<span class="optimized">{statistics.optimized_images}</span> of {statistics.total_images}
 							images optimized
 						</span>
-						<span class="progress-percent">{getOptimizationRate()}%</span>
+						<span class="progress-percent">{optimizationRate}%</span>
 					</div>
 				</div>
 
@@ -170,12 +178,12 @@
 			<div class="section">
 				<h3 class="section-title">Storage by Type</h3>
 				<div class="storage-breakdown">
-					{#each getStorageTypes() as item (item.type)}
+					{#each storageTypes as item (item.type)}
 						<div class="storage-item">
-							<div class="storage-bar" style="--color: {item.color}">
+							<div class="storage-bar" style:--color={item.color}>
 								<div
 									class="storage-fill"
-									style="width: {(item.size / statistics.total_storage) * 100}%"
+									style:width={getStoragePercentage(item.size, statistics.total_storage)}
 								></div>
 							</div>
 							<div class="storage-info">

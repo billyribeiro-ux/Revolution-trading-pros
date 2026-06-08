@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 324 Svelte files remaining.
+- Broad dynamic class/style migration scan: 323 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -28,6 +28,7 @@ Current evidence:
 - [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/FormReport.svelte`; replaced variant/tab class directives and interpolated chart-bar styles with Svelte 5 class/style composition, and replaced the mutating report-load `$effect` with a derived promise rendered through `{#await}`.
 - [x] 2026-06-08: Completed `frontend/src/routes/admin/popups/+page.svelte`; replaced tab/status `class:active` directives with Svelte 5 class composition and derived active/inactive counts for the tab labels.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/cms/blocks/advanced/CtaBlock.svelte`; replaced interpolated CTA wrapper classes and dynamic style strings with Svelte 5 class arrays plus `style:background-color`.
+- [x] 2026-06-08: Completed `frontend/src/lib/components/media/MediaAnalytics.svelte`; replaced compact class directives and progress/storage style strings with Svelte 5 class/style composition, moved rate/storage calculations to derived values, and made the one-shot mount loader synchronous.
 
 ## Remaining Files
 
@@ -154,7 +155,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/lib/components/media/DropZone.svelte`
 - [ ] `frontend/src/lib/components/media/FolderTree.svelte`
 - [ ] `frontend/src/lib/components/media/ImageComparisonSlider.svelte`
-- [ ] `frontend/src/lib/components/media/MediaAnalytics.svelte`
+- [x] `frontend/src/lib/components/media/MediaAnalytics.svelte`
 - [ ] `frontend/src/lib/components/media/MediaGrid.svelte`
 - [ ] `frontend/src/lib/components/media/MediaUpload.svelte`
 - [ ] `frontend/src/lib/components/media/ResponsivePreview.svelte`
