@@ -11,7 +11,7 @@
 use crate::config::IpCidr;
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, Duration, Utc};
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};

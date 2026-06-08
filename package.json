@@ -1,30 +1,30 @@
 {
-  "name": "revolution-trading-pros-monorepo",
-  "version": "2.0.0",
-  "private": true,
-  "packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
-  "scripts": {
-    "dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
-    "dev:reset": "docker compose down -v && docker volume rm revolution-trading-pros_postgres_data revolution-trading-pros_meili_data 2>/dev/null || true && docker compose up -d db redis meili && echo '✅ Volumes wiped. Run pnpm dev:all to start fresh.'",
-    "dev:docker": "docker compose up -d db redis meili",
-    "dev:docker:stop": "docker compose stop db redis meili",
-    "dev": "pnpm --filter revolution-svelte dev",
-    "build": "pnpm --filter revolution-svelte build",
-    "preview": "pnpm --filter revolution-svelte preview",
-    "check": "pnpm --filter revolution-svelte check",
-    "lint": "pnpm --filter revolution-svelte lint",
-    "format": "pnpm --filter revolution-svelte format",
-    "test": "pnpm --filter revolution-svelte test",
-    "api:lint": "cd api && cargo machete && cargo deny check && cargo clippy --locked --all-targets -- -D warnings",
-    "api:lint:machete": "cd api && cargo machete",
-    "api:lint:deny": "cd api && cargo deny check",
-    "api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
-  },
-  "engines": {
-    "node": ">=24.16.0",
-    "pnpm": ">=11.5.2"
-  },
-  "devDependencies": {
-    "concurrently": "^10.0.3"
-  }
+	"name": "revolution-trading-pros-monorepo",
+	"version": "2.0.0",
+	"private": true,
+	"packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
+	"scripts": {
+		"dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
+		"dev:reset": "docker compose down -v && docker volume rm revolution-trading-pros_postgres_data revolution-trading-pros_meili_data 2>/dev/null || true && docker compose up -d db redis meili && echo '✅ Volumes wiped. Run pnpm dev:all to start fresh.'",
+		"dev:docker": "docker compose up -d db redis meili",
+		"dev:docker:stop": "docker compose stop db redis meili",
+		"dev": "pnpm --filter revolution-svelte dev",
+		"build": "pnpm --filter revolution-svelte build",
+		"preview": "pnpm --filter revolution-svelte preview",
+		"check": "pnpm --filter revolution-svelte check",
+		"lint": "pnpm --filter revolution-svelte lint",
+		"format": "pnpm --filter revolution-svelte format",
+		"test": "pnpm --filter revolution-svelte test",
+		"api:lint": "cd api && cargo machete && cargo deny check && cargo clippy --locked --all-targets -- -D warnings",
+		"api:lint:machete": "cd api && cargo machete",
+		"api:lint:deny": "cd api && cargo deny check",
+		"api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
+	},
+	"engines": {
+		"node": ">=24.16.0",
+		"pnpm": ">=11.5.2"
+	},
+	"devDependencies": {
+		"concurrently": "^10.0.3"
+	}
 }

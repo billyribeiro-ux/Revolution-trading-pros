@@ -11,28 +11,28 @@ publish = false
 # Web Framework
 axum = { version = "0.8.9", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
-tower = "0.5.2"
+tower = "0.5.3"
 tower-http = { version = "0.6.11", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
-lazy_static = "1.5"
-html-escape = "0.2"
+lazy_static = "1.5.0"
+html-escape = "0.2.13"
 
 # Async Runtime
 tokio = { version = "1.52.3", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
 sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
-rust_decimal = { version = "1.42", features = ["serde", "serde-with-str"] }
+rust_decimal = { version = "1.42.0", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
 redis = { version = "1.2.2", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
 # S3/R2 Storage (December 2025 versions)
-aws-sdk-s3 = "1.135"
-aws-config = "1.8"
+aws-sdk-s3 = "1.135.0"
+aws-config = "1.8.18"
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
 
 # Authentication & Crypto
 jsonwebtoken = "10.4"
@@ -42,53 +42,53 @@ argon2 = "0.5"
 bcrypt = "0.19"  # Laravel bcrypt compatibility
 aes-gcm = "0.10" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
 rand = "0.10.1"
-hmac = "0.12"
-sha1 = "0.10"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
-sha2 = "0.10"
-hex = "0.4"
-subtle = "2.6"  # ICT L11+ Security: Constant-time comparison
-md5 = "0.7"  # For Bunny.net signature generation
+hmac = "0.13.0"
+sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
+sha2 = "0.11.0"
+hex = "0.4.3"
+subtle = "2.6.1"  # ICT L11+ Security: Constant-time comparison
+md5 = "0.8.0"  # For Bunny.net signature generation
 
 # CSV Export - ICT 7+ Phase 4 Export Functionality
-csv = "1.4"
+csv = "1.4.0"
 
 # Utilities
-uuid = { version = "1.23", features = ["v4", "serde"] }
-chrono = { version = "0.4", features = ["serde"] }
-regex = "1.12"  # ICT 11+: SEO content analysis regex patterns
-dotenvy = "0.15"
-thiserror = "2.0"
-anyhow = "1.0"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
-slug = "0.1"
-urlencoding = "2.1"  # URL encoding for email links
+uuid = { version = "1.23.2", features = ["v4", "serde"] }
+chrono = { version = "0.4.45", features = ["serde"] }
+regex = "1.12.3"  # ICT 11+: SEO content analysis regex patterns
+dotenvy = "0.15.7"
+thiserror = "2.0.18"
+anyhow = "1.0.102"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
+slug = "0.1.6"
+urlencoding = "2.1.3"  # URL encoding for email links
 
 # SSE/Real-time - ICT 11+ CMS Features
-tokio-stream = "0.1"
-async-stream = "0.3"
-futures = "0.3"
-async-trait = "0.1"
+tokio-stream = "0.1.18"
+async-stream = "0.3.6"
+futures = "0.3.32"
+async-trait = "0.1.89"
 
 # HTTP Client (for external APIs)
 # NOTE: this repo calls Stripe directly via reqwest (see services/stripe.rs);
 # the `async-stripe` crate is intentionally NOT a dep.
-reqwest = { version = "0.13", features = ["json", "rustls", "stream", "form", "query"], default-features = false }
+reqwest = { version = "0.13.4", features = ["json", "rustls", "stream", "form", "query"], default-features = false }
 
 # Search (Meilisearch) - Use updated SDK to avoid unmaintained dependencies
-meilisearch-sdk = "0.33"
+meilisearch-sdk = "0.33.0"
 
 # OpenAPI Documentation
 utoipa = { version = "5.5.0", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "9", features = ["axum"] }
-validator = { version = "0.20", features = ["derive"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
-axum-test = "20"
-tower = { version = "0.5", features = ["util"] }
-hyper = { version = "1.0", features = ["full"] }
-http-body-util = "0.1"
+axum-test = "20.1.0"
+tower = { version = "0.5.3", features = ["util"] }
+hyper = { version = "1.10.1", features = ["full"] }
+http-body-util = "0.1.3"
 
 [profile.release]
 lto = true

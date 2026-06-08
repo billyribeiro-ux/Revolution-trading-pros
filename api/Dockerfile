@@ -3,9 +3,8 @@
 
 # FIX-2026-04-26: pinned from rust:latest to explicit version (Phase 7.3)
 # FROM rust:latest AS builder
-# FIX-2026-04-27: bumped to 1.94 — transitive deps (home, time, time-core,
-# time-macros) now require >= 1.88. Workspace tested on host Rust 1.94.
-FROM rust:1.94-bookworm AS builder
+# FIX-2026-06-08: keep Docker builder aligned with rust-toolchain.toml.
+FROM rust:1.96-bookworm AS builder
 
 # Install build dependencies (Debian-based image)
 RUN apt-get update && apt-get install -y --no-install-recommends \
