@@ -55,8 +55,7 @@
 	let alignment = $derived<Alignment>((props.block.settings.alignment as Alignment) || 'center');
 	let backgroundColor = $derived(props.block.settings.backgroundColor || '#3b82f6');
 
-	// Computed styles
-	let containerStyle = $derived(`background-color: ${backgroundColor};`);
+	// Computed classes
 	let textAlignClass = $derived(`align-${alignment}`);
 
 	// Handlers
@@ -96,7 +95,11 @@
 	}
 </script>
 
-<section class="cta-block {textAlignClass}" style={containerStyle} aria-label="Call to action">
+<section
+	class={['cta-block', textAlignClass]}
+	style:background-color={backgroundColor}
+	aria-label="Call to action"
+>
 	<div class="cta-content">
 		<!-- Heading -->
 		{#if props.isEditing}
