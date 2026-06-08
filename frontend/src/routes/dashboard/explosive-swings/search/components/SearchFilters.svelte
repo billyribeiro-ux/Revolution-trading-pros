@@ -85,8 +85,7 @@
 		<div class="type-filters">
 			{#each ['alerts', 'trades', 'trade_plans'] as const as type (type)}
 				<button
-					class="type-btn"
-					class:active={selectedTypes.includes(type)}
+					class={['type-btn', { active: selectedTypes.includes(type) }]}
 					onclick={() => onToggleType(type)}
 					aria-pressed={selectedTypes.includes(type)}
 				>

@@ -58,9 +58,10 @@
 					aria-label="{update.title} - {update.duration}"
 				>
 					<div
-						class="update-thumb"
-						class:no-thumb={!update.thumbnailUrl}
-						style={update.thumbnailUrl ? `background-image: url('${update.thumbnailUrl}')` : ''}
+						class={['update-thumb', { 'no-thumb': !update.thumbnailUrl }]}
+						style:background-image={update.thumbnailUrl
+							? `url('${update.thumbnailUrl}')`
+							: undefined}
 					>
 						<div class="play-icon" aria-hidden="true">
 							<svg

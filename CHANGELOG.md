@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **33 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **17 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -74,6 +74,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed public/account/day-trading route batch (`behavior/+page.svelte`, `classes/tax-loss-harvest-c/+page.svelte`, account coupons/payment-methods/subscriptions pages, daily videos, trader store, trading strategies, and day-trading video detail pages): converted tracked active/default/expired/featured/status class bindings and dynamic width/background/category/difficulty styles to Svelte 5 class arrays and `style:` directives.
 - Completed explosive swings analytics period batch (analytics `+page.svelte` and `DateRangePicker.svelte`): converted tracked period active class directives to Svelte 5 class arrays.
 - Completed explosive swings analytics chart/table batch (`DrawdownChart.svelte`, `EquityCurveChart.svelte`, `MetricCard.svelte`, `MonthlyReturnsChart.svelte`, `SetupBreakdown.svelte`, `StreakIndicator.svelte`, `TickerHeatmap.svelte`, and `TickerPerformanceTable.svelte`): converted tracked class/style bindings to Svelte 5 class arrays and `style:` directives, migrated legacy declaration tags, and replaced chart container resize wiring with attachments.
+- Completed remaining explosive swings batch (core components, search cards/filters, trades skeleton/stats, favorites, and watchlist pages): converted tracked class/style bindings to Svelte 5 class arrays and `style:` directives, moved modal body-lock/focus lifecycle to an attachment, and moved alert toast timers from `$effect` to `onMount` cleanup.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.

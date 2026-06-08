@@ -47,11 +47,7 @@
 		</div>
 
 		<div class="stat-card">
-			<div
-				class="stat-value"
-				class:profit={stats.totalProfit > 0}
-				class:loss={stats.totalProfit < 0}
-			>
+			<div class={['stat-value', { profit: stats.totalProfit > 0, loss: stats.totalProfit < 0 }]}>
 				${stats.totalProfit.toLocaleString()}
 			</div>
 			<div class="stat-label">Total Profit</div>

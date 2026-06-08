@@ -62,15 +62,12 @@
 </script>
 
 <div
-	class="pulse-container"
-	class:has-label={!!label}
-	style="
-		--pulse-color: {variantConfig.color};
-		--pulse-bg: {variantConfig.bgColor};
-		--dot-size: {sizeConfig.dot}px;
-		--ring-size: {sizeConfig.ring}px;
-		--label-font-size: {sizeConfig.fontSize}px;
-	"
+	class={['pulse-container', { 'has-label': !!label }]}
+	style:--pulse-color={variantConfig.color}
+	style:--pulse-bg={variantConfig.bgColor}
+	style:--dot-size={`${sizeConfig.dot}px`}
+	style:--ring-size={`${sizeConfig.ring}px`}
+	style:--label-font-size={`${sizeConfig.fontSize}px`}
 	role="status"
 	aria-label={label || 'New alert indicator'}
 >
@@ -79,7 +76,7 @@
 			<span class="pulse-ring" aria-hidden="true"></span>
 			<span class="pulse-ring pulse-ring-delayed" aria-hidden="true"></span>
 		{/if}
-		<span class="pulse-dot" class:active aria-hidden="true"></span>
+		<span class={['pulse-dot', { active }]} aria-hidden="true"></span>
 	</div>
 	{#if label}
 		<span class="pulse-label">{label}</span>

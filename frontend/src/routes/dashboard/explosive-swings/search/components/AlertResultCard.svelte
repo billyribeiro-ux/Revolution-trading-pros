@@ -47,10 +47,10 @@
 	const relevancePercent = $derived(Math.round(alert.relevance_score * 100));
 </script>
 
-<article class="alert-card {style.border}">
+<article class={['alert-card', style.border]}>
 	<div class="card-header">
 		<span class="ticker-badge">{alert.ticker}</span>
-		<span class="type-badge {style.bg}">{alert.alert_type}</span>
+		<span class={['type-badge', style.bg]}>{alert.alert_type}</span>
 		<span class="date">{formatDate(alert.published_at)}</span>
 		<span class="relevance" title="Relevance score">
 			<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
