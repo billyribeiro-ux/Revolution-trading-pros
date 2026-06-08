@@ -39,8 +39,8 @@
 </script>
 
 {#if props.variant === 'weekly'}
-	{@const { event, selected, conflict, formatTime } = props}
-	<div class="event-card" class:inactive={!event.is_active} class:selected class:conflict>
+	{const { event, selected, conflict, formatTime } = props}
+	<div class={['event-card', { inactive: !event.is_active, selected, conflict }]}>
 		<div class="event-checkbox">
 			<!-- FIX-2026-04-26 (P3-1): unique id+name per event so a11y label
 				 association and DOM-test selectors stop colliding. -->
@@ -66,7 +66,7 @@
 				</div>
 			{/if}
 			<div class="event-badges">
-				<span class="badge badge-{event.room_type}">{event.room_type}</span>
+				<span class={['badge', `badge-${event.room_type}`]}>{event.room_type}</span>
 				{#if !event.is_active}
 					<span class="badge badge-inactive">Inactive</span>
 				{/if}
@@ -108,8 +108,8 @@
 		</div>
 	</div>
 {:else}
-	{@const { event, formatTime } = props}
-	<div class="event-card" class:inactive={!event.is_active}>
+	{const { event, formatTime } = props}
+	<div class={['event-card', { inactive: !event.is_active }]}>
 		<div class="event-content">
 			<div class="event-time">
 				<IconClock size={14} />

@@ -20,8 +20,7 @@
 	<div class="room-tabs">
 		{#each rooms as room (room.id)}
 			<button
-				class="room-tab"
-				class:active={selectedRoom?.id === room.id}
+				class={['room-tab', { active: selectedRoom?.id === room.id }]}
 				onclick={() => onSelect(room)}
 			>
 				{room.name}

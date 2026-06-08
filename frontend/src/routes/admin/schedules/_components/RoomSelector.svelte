@@ -28,12 +28,11 @@
 	<div class="room-tabs" role="tablist">
 		{#each rooms as room (room.id)}
 			<button
-				class="room-tab"
-				class:active={selectedRoomId === room.id}
+				class={['room-tab', { active: selectedRoomId === room.id }]}
 				onclick={() => onselectRoom(room.id)}
 				role="tab"
 				aria-selected={selectedRoomId === room.id}
-				style="--room-color: {room.color}"
+				style:--room-color={room.color}
 			>
 				<span class="room-icon">{room.icon}</span>
 				<span class="room-name">{room.shortName}</span>
@@ -43,7 +42,7 @@
 
 	<div class="room-info">
 		{#if selectedRoom}
-			<span class="room-full-name" style="color: {selectedRoom.color}">{selectedRoom.name}</span>
+			<span class="room-full-name" style:color={selectedRoom.color}>{selectedRoom.name}</span>
 			<span class="room-stats">
 				{activeSchedules} active / {totalSchedules} total
 			</span>

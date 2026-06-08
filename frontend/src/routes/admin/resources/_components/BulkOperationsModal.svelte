@@ -80,8 +80,7 @@
 		<div class="modal-footer">
 			<button class="btn-secondary" onclick={onClose}>Cancel</button>
 			<button
-				class="btn-primary"
-				class:btn-danger={bulkAction === 'delete'}
+				class={['btn-primary', { 'btn-danger': bulkAction === 'delete' }]}
 				onclick={onConfirm}
 				disabled={isSaving}
 			>
