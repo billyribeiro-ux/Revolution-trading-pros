@@ -582,20 +582,41 @@ impl RedisService {
         Ok(self.get(&key).await?.is_some())
     }
 
-    /// Delete all keys matching a pattern
-    /// ICT 7+ Phase 2: Used for cache invalidation
+    /// Delete all keys matching a pattern.
+    /// ICT 7+ Phase 2: Used for cache invalidation.
+    ///
+    /// RUST_DEEP_AUDIT_2026-06-07 (P2-1): uses incremental `SCAN` (cursor loop)
+    /// instead of `KEYS`. `KEYS` is O(N) over the whole keyspace and blocks the
+    /// single-threaded Redis server for every client (auth, rate-limit, sessions)
+    /// for the duration of the scan; `SCAN` yields between batches.
     pub async fn delete_pattern(&self, pattern: &str) -> Result<usize> {
         let mut conn = self.conn.clone();
-        let keys: Vec<String> = conn.keys(pattern).await?;
-        let count = keys.len();
+        let mut cursor: u64 = 0;
+        let mut deleted = 0usize;
 
-        if !keys.is_empty() {
-            for key in keys {
-                let _: () = conn.del(&key).await?;
+        loop {
+            let (next, keys): (u64, Vec<String>) = redis::cmd("SCAN")
+                .arg(cursor)
+                .arg("MATCH")
+                .arg(pattern)
+                .arg("COUNT")
+                .arg(500)
+                .query_async(&mut conn)
+                .await?;
+
+            if !keys.is_empty() {
+                // Batch delete the matched slice in one round-trip.
+                let n: usize = redis::cmd("DEL").arg(&keys).query_async(&mut conn).await?;
+                deleted += n;
+            }
+
+            cursor = next;
+            if cursor == 0 {
+                break;
             }
         }
 
-        Ok(count)
+        Ok(deleted)
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

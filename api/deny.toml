@@ -37,18 +37,29 @@ yanked = "warn"
 # 2026-04-25; revisit in Week-5 of the Rust-backend plan.
 # ─────────────────────────────────────────────────────────────────────────
 ignore = [
-    # ── rustls-webpki 0.101.7 (transitive via reqwest 0.11) ──────────────
-    # Fix requires bumping reqwest 0.11 → 0.12 (breaking API change in
-    # response builder). Out of scope for the Week-4 tooling slice.
-    # We do not parse user-supplied CRLs; wildcard-constraint exposure
-    # requires CA misissuance (not in our threat model on these paths).
-    { id = "RUSTSEC-2026-0098", reason = "rustls-webpki 0.101.x URI name-constraint bug; pulled via reqwest 0.11. Track as `bump reqwest to 0.12`." },
-    { id = "RUSTSEC-2026-0099", reason = "rustls-webpki 0.101.x DNS wildcard constraint bug; pulled via reqwest 0.11. Track as `bump reqwest to 0.12`." },
-    { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101.x CRL parser panic; pulled via reqwest 0.11. We don't accept CRLs. Track as `bump reqwest to 0.12`." },
+    # ── rustls-webpki 0.101.7 ────────────────────────────────────────────
+    # ROOT CAUSE re-verified 2026-06-08 (the prior "reqwest 0.11" note was
+    # STALE — reqwest 0.11 is no longer in the tree). webpki 0.101 now enters
+    # via the AWS SDK's HTTP client:
+    #   cargo tree -i rustls-webpki@0.101.7
+    #   → rustls 0.21.12 ← aws-smithy-http-client 1.1.13 (latest) + hyper-rustls 0.24.2
+    # The SDK's ACTIVE client TLS uses rustls-aws-lc (rustls 0.23 → webpki
+    # 0.103.13, patched); the 0.101 copy is a duplicate dragged in by
+    # hyper-rustls 0.24's server "acceptor" path, which a client never uses.
+    # No safe manifest fix: aws-smithy-http-client 1.1.13 hard-depends on
+    # hyper-rustls 0.24; a [patch] to a newer hyper-rustls breaks its API usage.
+    # 0104 (CRL panic) is unreachable — we do not parse CRLs; 0098/0099 need a
+    # name-constrained CA in the chain, not in our threat model for AWS/R2.
+    { id = "RUSTSEC-2026-0098", reason = "rustls-webpki 0.101.x URI name-constraint bug; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. Active SDK TLS uses patched webpki 0.103. Track upstream smithy-http-client dedup." },
+    { id = "RUSTSEC-2026-0099", reason = "rustls-webpki 0.101.x wildcard name-constraint bug; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. Active SDK TLS uses patched webpki 0.103. Track upstream smithy-http-client dedup." },
+    { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101.x CRL parser panic; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. We do not parse CRLs. Track upstream smithy-http-client dedup." },
 
-    # ── miscellaneous unmaintained / unsound ─────────────────────────────
-    { id = "RUSTSEC-2024-0370", reason = "proc-macro-error unmaintained; transitive via validator_derive. Replace by bumping validator." },
-    { id = "RUSTSEC-2025-0134", reason = "rustls-pemfile unmaintained; transitive via reqwest 0.11. Resolved by reqwest 0.12 bump." },
+    # ── unmaintained (build-time only) ───────────────────────────────────
+    # The prior proc-macro-error (v1, RUSTSEC-2024-0370) and rustls-pemfile
+    # (RUSTSEC-2025-0134) ignores were removed: both crates are no longer in
+    # the tree (verified 2026-06-08). proc-macro-error2 is the current
+    # unmaintained dep, used only at compile time.
+    { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 unmaintained; build-time only via validator_derive 0.20, never linked into the runtime binary. Resolved by a future validator bump." },
 ]
 
 # ────────────────────────────────────────────────────────────────────────

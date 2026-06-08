@@ -255,6 +255,10 @@ impl WsConnectionManager {
 
     /// Unsubscribe from a room
     pub async fn unsubscribe_room(&self, room_slug: &str) {
+        // RUST_DEEP_AUDIT_2026-06-07 (P1-6): acquire `room_senders` then
+        // `room_connections` — the SAME order as `subscribe_room` — to avoid a
+        // lock-ordering inversion / deadlock now that we also touch the senders map.
+        let mut senders = self.room_senders.write().await;
         let mut connections = self.room_connections.write().await;
 
         if let Some(count) = connections.get_mut(room_slug) {
@@ -266,10 +270,13 @@ impl WsConnectionManager {
                 "Client unsubscribed from room"
             );
 
-            // Clean up room if no more connections
+            // Clean up room if no more connections. Drop the broadcast sender too,
+            // otherwise `room_senders` grows unbounded with client-controlled room
+            // slugs (each entry is a 1000-slot ring buffer). `subscribe_room`
+            // transparently re-creates the sender on the next subscribe.
             if *count == 0 {
                 connections.remove(room_slug);
-                // Note: We keep the sender around for potential reconnections
+                senders.remove(room_slug);
             }
         }
     }
@@ -399,17 +406,35 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
     let connection_id = uuid::Uuid::new_v4().to_string();
     let (mut sender, mut receiver) = socket.split();
 
-    // Parse initial rooms to subscribe to
-    let initial_rooms: Vec<String> = params
-        .rooms
-        .map(|r| r.split(',').map(|s| s.trim().to_string()).collect())
-        .unwrap_or_default();
+    // Parse initial rooms to subscribe to.
+    // RUST_DEEP_AUDIT_2026-06-07 (P2-9): de-duplicate (and drop empties) so a
+    // `?rooms=alpha,alpha` cannot double-increment a room's connection count
+    // (cleanup iterates the deduped HashSet once → off-by-one otherwise).
+    let initial_rooms: Vec<String> = {
+        let mut seen = HashSet::new();
+        params
+            .rooms
+            .map(|r| {
+                r.split(',')
+                    .map(|s| s.trim().to_string())
+                    .filter(|s| !s.is_empty() && seen.insert(s.clone()))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
 
     // Create channels for internal communication
     let (tx, mut rx) = mpsc::channel::<WsMessage>(100);
 
     // Track subscribed rooms
     let subscribed_rooms: Arc<RwLock<HashSet<String>>> = Arc::new(RwLock::new(HashSet::new()));
+
+    // RUST_DEEP_AUDIT_2026-06-07 (P1-5): handles for the per-room forwarder tasks,
+    // shared with the receive task so every forwarder is aborted on disconnect.
+    // Without this they outlive the connection (a forwarder only notices the closed
+    // mpsc on the NEXT room broadcast, so on a quiet room it leaks indefinitely).
+    let forwarders: Arc<tokio::sync::Mutex<Vec<tokio::task::JoinHandle<()>>>> =
+        Arc::new(tokio::sync::Mutex::new(Vec::new()));
 
     info!(
         connection_id = %connection_id,
@@ -440,7 +465,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
         let tx_clone = tx.clone();
         let ws_manager_clone = ws_manager.clone();
 
-        tokio::spawn(async move {
+        let handle = tokio::spawn(async move {
             let mut room_rx = ws_manager_clone.subscribe_room(&room_clone).await;
 
             while let Ok(msg) = room_rx.recv().await {
@@ -449,6 +474,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
                 }
             }
         });
+        forwarders.lock().await.push(handle);
 
         // Confirm subscription
         if let Ok(json) = serde_json::to_string(&WsMessage::Subscribed { room: room.clone() }) {
@@ -475,7 +501,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
     });
 
     // Spawn task to send messages to client
-    let send_handle = tokio::spawn(async move {
+    let mut send_handle = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             if let Ok(json) = serde_json::to_string(&msg) {
                 if sender.send(Message::Text(json.into())).await.is_err() {
@@ -490,8 +516,9 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
     let subscribed_rooms_for_receive = subscribed_rooms.clone();
     let tx_for_receive = tx.clone();
     let connection_id_for_receive = connection_id.clone();
+    let forwarders_for_receive = forwarders.clone();
 
-    let receive_handle = tokio::spawn(async move {
+    let mut receive_handle = tokio::spawn(async move {
         while let Some(result) = receiver.next().await {
             match result {
                 Ok(Message::Text(text)) => {
@@ -508,7 +535,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
                                     let tx_clone = tx_for_receive.clone();
                                     let ws_manager_clone = ws_manager_for_receive.clone();
 
-                                    tokio::spawn(async move {
+                                    let handle = tokio::spawn(async move {
                                         let mut room_rx =
                                             ws_manager_clone.subscribe_room(&room_clone).await;
 
@@ -518,6 +545,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
                                             }
                                         }
                                     });
+                                    forwarders_for_receive.lock().await.push(handle);
 
                                     let _ =
                                         tx_for_receive.send(WsMessage::Subscribed { room }).await;
@@ -574,14 +602,22 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
         }
     });
 
-    // Wait for any task to complete (connection closed)
+    // Wait for any task to complete (connection closed). Borrow the handles so
+    // they survive the select! and can be aborted below — dropping a JoinHandle
+    // only detaches the task, it does not stop it.
     tokio::select! {
-        _ = send_handle => {},
-        _ = receive_handle => {},
+        _ = &mut send_handle => {},
+        _ = &mut receive_handle => {},
     }
 
-    // Cleanup
+    // Cleanup — abort every task spawned for this connection so none outlive it
+    // (RUST_DEEP_AUDIT_2026-06-07 P1-5).
     heartbeat_handle.abort();
+    send_handle.abort();
+    receive_handle.abort();
+    for handle in forwarders.lock().await.drain(..) {
+        handle.abort();
+    }
 
     // Unsubscribe from all rooms
     let rooms = subscribed_rooms.read().await;

@@ -4,23 +4,16 @@
 
 use std::collections::HashMap;
 
-/// Encrypt credentials for storage (uses base64 encoding as placeholder - in production use AES-256)
-pub(super) fn encrypt_credentials(credentials: &HashMap<String, String>) -> String {
-    use base64::{engine::general_purpose::STANDARD, Engine};
-    let json = serde_json::to_string(credentials).unwrap_or_default();
-    // In production, use proper AES-256-GCM encryption with a key from env
-    // For now, we use base64 encoding as a placeholder
-    STANDARD.encode(json.as_bytes())
+/// Encrypt credentials for storage with AES-256-GCM (RUST_DEEP_AUDIT P1-4).
+/// `key` is `Config::credentials_encryption_key`.
+pub(super) fn encrypt_credentials(key: &str, credentials: &HashMap<String, String>) -> String {
+    crate::utils::crypto::encrypt_map(key, credentials)
 }
 
-/// Decrypt credentials from storage
-pub(super) fn decrypt_credentials(encrypted: &str) -> HashMap<String, String> {
-    use base64::{engine::general_purpose::STANDARD, Engine};
-    // In production, use proper AES-256-GCM decryption
-    match STANDARD.decode(encrypted) {
-        Ok(bytes) => serde_json::from_slice(&bytes).unwrap_or_default(),
-        Err(_) => HashMap::new(),
-    }
+/// Decrypt credentials from storage. Transparently reads both the new
+/// AES-256-GCM format and the legacy base64(JSON) format.
+pub(super) fn decrypt_credentials(key: &str, encrypted: &str) -> HashMap<String, String> {
+    crate::utils::crypto::decrypt_map(key, encrypted)
 }
 
 /// Mask sensitive credential values for display
@@ -28,10 +21,13 @@ pub(super) fn mask_credentials(credentials: &HashMap<String, String>) -> HashMap
     credentials
         .iter()
         .map(|(k, v)| {
-            let masked = if v.len() <= 8 {
-                "*".repeat(v.len())
+            // Char-safe (P2-4 class): byte slicing would panic on multibyte tails.
+            let chars: Vec<char> = v.chars().collect();
+            let masked = if chars.len() <= 8 {
+                "*".repeat(chars.len())
             } else {
-                format!("{}...{}", "*".repeat(8), &v[v.len().saturating_sub(4)..])
+                let last4: String = chars[chars.len() - 4..].iter().collect();
+                format!("{}...{}", "*".repeat(8), last4)
             };
             (k.clone(), masked)
         })

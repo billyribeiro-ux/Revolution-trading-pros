@@ -35,11 +35,12 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.150"
 
 # Authentication & Crypto
-jsonwebtoken = "10.4.0"
-base64 = "0.22.1"  # ICT 7: OAuth PKCE and token encoding
-base32 = "0.5.1"   # ICT 7: TOTP secret encoding
-argon2 = "0.5.3"
-bcrypt = "0.19.1"  # Laravel bcrypt compatibility
+jsonwebtoken = "10.4"
+base64 = "0.22"  # ICT 7: OAuth PKCE and token encoding
+base32 = "0.5"   # ICT 7: TOTP secret encoding
+argon2 = "0.5"
+bcrypt = "0.19"  # Laravel bcrypt compatibility
+aes-gcm = "0.10" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
 rand = "0.10.1"
 hmac = "0.13.0"
 sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)

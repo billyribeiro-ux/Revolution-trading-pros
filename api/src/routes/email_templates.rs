@@ -312,7 +312,7 @@ async fn preview_template(
 
     // Variable replacement with XSS protection
     let mut html = template.body.clone();
-    let mut subject = template.subject.clone();
+    let mut subject = template.subject;
 
     if let Some(data_obj) = input.data.as_object() {
         for (key, value) in data_obj {

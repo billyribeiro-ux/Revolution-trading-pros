@@ -227,6 +227,39 @@ pub(super) async fn cancel_subscription(
 
     let cancel_immediately = input.cancel_immediately.unwrap_or(false);
 
+    // RUST_DEEP_AUDIT_2026-06-07 (P1-1): Stripe is the billing source of truth.
+    // Cancel there FIRST — previously this handler only updated the DB, so the
+    // card kept being charged and the nightly reconcile flipped the row back to
+    // 'active'. Fail closed if the membership has no Stripe subscription id. The
+    // customer.subscription.{updated,deleted} webhook remains the authoritative
+    // reconciler; this DB write reflects the request optimistically.
+    let stripe_sub_id = subscription
+        .stripe_subscription_id
+        .as_deref()
+        .ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Subscription has no Stripe ID"})),
+            )
+        })?;
+
+    let env_scope = state.config.environment.clone();
+    let stripe = state
+        .services
+        .credentials
+        .stripe_client(&state.db.pool, &env_scope)
+        .await;
+
+    stripe
+        .cancel_subscription(stripe_sub_id, cancel_immediately)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Stripe error: {}", e)})),
+            )
+        })?;
+
     if cancel_immediately {
         // Cancel immediately
         sqlx::query(

@@ -110,6 +110,15 @@ pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
 /// Verify TOTP code (allows 1 period drift)
 #[allow(clippy::result_large_err)]
 pub fn verify_totp(secret: &str, code: &str) -> Result<bool, ApiError> {
+    Ok(verify_totp_timestep(secret, code)?.is_some())
+}
+
+/// Like [`verify_totp`], but on a match returns the accepted TOTP time-step
+/// counter (Unix time / `TOTP_PERIOD`) so the caller can enforce single-use
+/// replay protection (RUST_DEEP_AUDIT P2-2 / RFC 6238 §5.2). Returns `None`
+/// when the code matches no period in the ±1 drift window.
+#[allow(clippy::result_large_err)]
+pub fn verify_totp_timestep(secret: &str, code: &str) -> Result<Option<i64>, ApiError> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|_| ApiError::internal_error("Time error"))?
@@ -120,11 +129,11 @@ pub fn verify_totp(secret: &str, code: &str) -> Result<bool, ApiError> {
         let check_time = (now as i64 + offset * TOTP_PERIOD as i64) as u64;
         let expected = generate_totp(secret, check_time)?;
         if constant_time_eq(code.as_bytes(), expected.as_bytes()) {
-            return Ok(true);
+            return Ok(Some((check_time / TOTP_PERIOD) as i64));
         }
     }
 
-    Ok(false)
+    Ok(None)
 }
 
 /// Constant-time string comparison to prevent timing attacks
@@ -272,9 +281,47 @@ impl MfaService {
         let mfa_secret =
             mfa_secret.ok_or_else(|| ApiError::new(StatusCode::BAD_REQUEST, "MFA not enabled"))?;
 
-        // Try TOTP first — single-write path; just record the attempt against the pool.
-        if verify_totp(&mfa_secret.totp_secret, code)? {
-            Self::record_mfa_attempt(&self.pool, user_id, ip_address, true, "totp").await?;
+        // Try TOTP first. RUST_DEEP_AUDIT_2026-06-07 (P2-2): enforce single-use
+        // per time-step (RFC 6238 §5.2). The conditional UPDATE only advances
+        // `last_totp_timestep`, so a replay of the same (or an older) code
+        // updates zero rows and is rejected — atomic even under a concurrent
+        // replay of the same code. The advance + attempt record commit together.
+        if let Some(timestep) = verify_totp_timestep(&mfa_secret.totp_secret, code)? {
+            let mut tx = self.pool.begin().await.map_err(|e| {
+                tracing::error!("tx start (verify_mfa totp): {}", e);
+                ApiError::database_error(&e.to_string())
+            })?;
+
+            let advanced = sqlx::query(
+                r"
+                UPDATE user_mfa_secrets
+                SET last_totp_timestep = $1, updated_at = NOW()
+                WHERE user_id = $2
+                  AND (last_totp_timestep IS NULL OR last_totp_timestep < $1)
+                ",
+            )
+            .bind(timestep)
+            .bind(user_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+            if advanced.rows_affected() == 0 {
+                // This time-step (or a newer one) was already consumed — replay.
+                tx.rollback().await.ok();
+                Self::record_mfa_attempt(&self.pool, user_id, ip_address, false, "totp").await?;
+                return Err(ApiError::new(
+                    StatusCode::BAD_REQUEST,
+                    "This code has already been used. Please wait for a new code.",
+                ));
+            }
+
+            Self::record_mfa_attempt(&mut *tx, user_id, ip_address, true, "totp").await?;
+            tx.commit().await.map_err(|e| {
+                tracing::error!("tx commit (verify_mfa totp): {}", e);
+                ApiError::database_error(&e.to_string())
+            })?;
+
             return Ok(MfaVerifyResult {
                 success: true,
                 method: "totp".to_string(),

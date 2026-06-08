@@ -14,6 +14,7 @@
 
 #![allow(dead_code)]
 
+pub mod crypto;
 pub mod errors;
 
 use anyhow::Result;
