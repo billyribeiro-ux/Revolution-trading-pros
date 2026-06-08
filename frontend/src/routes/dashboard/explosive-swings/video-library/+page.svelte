@@ -108,6 +108,10 @@
 		}
 	}
 
+	function thumbnailBackground(thumbnail: string): string {
+		return `url("${thumbnail.replaceAll('"', '\\"')}")`;
+	}
+
 	onMount(() => {
 		fetchVideos();
 	});
@@ -266,43 +270,37 @@
 
 	<div class="filter-section">
 		<button
-			class="filter-btn"
-			class:active={selectedCategory === 'all'}
+			class={['filter-btn', { active: selectedCategory === 'all' }]}
 			onclick={() => (selectedCategory = 'all')}
 		>
 			All Videos
 		</button>
 		<button
-			class="filter-btn"
-			class:active={selectedCategory === 'weekly'}
+			class={['filter-btn', { active: selectedCategory === 'weekly' }]}
 			onclick={() => (selectedCategory = 'weekly')}
 		>
 			Weekly Breakdowns
 		</button>
 		<button
-			class="filter-btn"
-			class:active={selectedCategory === 'entry'}
+			class={['filter-btn', { active: selectedCategory === 'entry' }]}
 			onclick={() => (selectedCategory = 'entry')}
 		>
 			Entry Alerts
 		</button>
 		<button
-			class="filter-btn"
-			class:active={selectedCategory === 'exit'}
+			class={['filter-btn', { active: selectedCategory === 'exit' }]}
 			onclick={() => (selectedCategory = 'exit')}
 		>
 			Exit Alerts
 		</button>
 		<button
-			class="filter-btn"
-			class:active={selectedCategory === 'analysis'}
+			class={['filter-btn', { active: selectedCategory === 'analysis' }]}
 			onclick={() => (selectedCategory = 'analysis')}
 		>
 			Market Analysis
 		</button>
 		<button
-			class="filter-btn"
-			class:active={selectedCategory === 'education'}
+			class={['filter-btn', { active: selectedCategory === 'education' }]}
 			onclick={() => (selectedCategory = 'education')}
 		>
 			Education
@@ -320,7 +318,10 @@
 		<div class="videos-grid">
 			{#each filteredVideos as video (video.id)}
 				<a href={video.href} class="video-card">
-					<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
+					<div
+						class="video-thumbnail"
+						style:background-image={thumbnailBackground(video.thumbnail)}
+					>
 						<div class="play-overlay">
 							<svg
 								aria-hidden="true"
