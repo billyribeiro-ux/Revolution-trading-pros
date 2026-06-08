@@ -16,6 +16,7 @@
 	} from '$lib/icons';
 
 	let heroVisible = $state(false);
+	const heroSectionClass = $derived(['hero-section', heroVisible && 'visible']);
 
 	onMount(() => {
 		if (!browser) return;
@@ -36,7 +37,7 @@
 </script>
 
 <div class="indicator-page">
-	<section class="hero-section" class:visible={heroVisible}>
+	<section class={heroSectionClass}>
 		<div class="hero-background">
 			<div class="glow-orb"></div>
 			<div class="wave-pattern"></div>
@@ -137,7 +138,7 @@
 
 				<div class="signal-card bearish">
 					<div class="signal-icon">
-						<IconTrendingUp size={32} stroke={1.5} style="transform: rotate(180deg)" />
+						<IconTrendingUp size={32} stroke={1.5} />
 					</div>
 					<h3>Bearish Crossover</h3>
 					<p>MACD line crosses below signal line - potential sell signal</p>
@@ -439,6 +440,10 @@
 	.signal-card.bearish:hover {
 		border-color: rgba(239, 68, 68, 0.5);
 		background: rgba(239, 68, 68, 0.05);
+	}
+
+	.signal-card.bearish .signal-icon :global(svg) {
+		transform: rotate(180deg);
 	}
 
 	.signal-card.divergence {

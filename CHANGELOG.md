@@ -6,13 +6,14 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **330 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **329 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
 - Resolved pasted Vitest failures by aligning CMS checklist, risk disclaimer, and explosive swings alert-card tests with the scoped semantic class contracts introduced during the Tailwind-to-CSS migration.
 - Completed `ClassDownloadsSection.svelte`: converted sort button active state to Svelte 5 class composition and moved one-shot client downloads loading from `$effect` to `onMount` with abort cleanup per MCP lifecycle guidance.
 - Completed `InventoryField.svelte`: converted legacy class directives/interpolated stock badge classes to Svelte 5 class composition and replaced effect-assigned `Map` state with bindable selection values plus a derived `SvelteMap`.
+- Completed `indicators/macd/+page.svelte`: converted hero reveal class binding to Svelte 5 class composition and moved static icon rotation from markup into scoped page CSS.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.

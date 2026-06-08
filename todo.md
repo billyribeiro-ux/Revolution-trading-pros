@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 330 Svelte files remaining.
+- Broad dynamic class/style migration scan: 329 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -22,6 +22,7 @@ Current evidence:
 - [x] 2026-06-08: Fixed pasted Vitest failures in `ChecklistBlock.test.ts`, `RiskDisclaimerBlock.test.ts`, and explosive swings `AlertCard.test.ts` by updating stale Tailwind-era class assertions to the current scoped semantic classes.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`; replaced legacy `class:active` sort bindings with Svelte 5 class composition and moved one-shot downloads loading to `onMount` with abort cleanup.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/InventoryField.svelte`; replaced legacy class directives/interpolated classes, moved selection state to a bindable value array, and used a derived `SvelteMap` for reactive lookup totals.
+- [x] 2026-06-08: Completed `frontend/src/routes/indicators/macd/+page.svelte`; replaced hero visibility `class:` directive with Svelte 5 class composition and moved the bearish signal icon rotation into scoped CSS.
 
 ## Remaining Files
 
@@ -353,7 +354,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/routes/dashboard/spx-profit-pulse/premium-videos/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/weekly-watchlist/+page.svelte`
 - [ ] `frontend/src/routes/dashboard/weekly-watchlist/watchlist-rundown-archive/+page.svelte`
-- [ ] `frontend/src/routes/indicators/macd/+page.svelte`
+- [x] `frontend/src/routes/indicators/macd/+page.svelte`
 - [ ] `frontend/src/routes/my/courses/+page.svelte`
 - [ ] `frontend/src/routes/my/indicators/history/+page.svelte`
 - [ ] `frontend/src/routes/our-mission/_sections/MathOfEdgeCalculator.svelte`
