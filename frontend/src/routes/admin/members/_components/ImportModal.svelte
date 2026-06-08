@@ -46,7 +46,7 @@
 			</div>
 
 			<div class="file-upload">
-				<label for="import-file" class="upload-zone" class:has-file={file}>
+				<label for="import-file" class={['upload-zone', { 'has-file': file }]}>
 					<IconUpload size={32} />
 					{#if file}
 						<span class="file-name">{file.name}</span>

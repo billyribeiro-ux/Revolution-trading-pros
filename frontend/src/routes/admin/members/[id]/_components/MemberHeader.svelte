@@ -35,7 +35,7 @@
 			<div class="member-info">
 				<div class="member-name-row">
 					<h1>{member.name}</h1>
-					<span class="status-badge {getStatusColor(member.status)}">
+					<span class={['status-badge', getStatusColor(member.status)]}>
 						{member.status_label}
 					</span>
 				</div>

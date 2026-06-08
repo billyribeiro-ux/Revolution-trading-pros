@@ -49,12 +49,12 @@
 		</div>
 	</div>
 	<div class="stat-card">
-		<div class="stat-icon {engagementIconClass}">
+		<div class={['stat-icon', engagementIconClass]}>
 			<IconChartBar size={24} />
 		</div>
 		<div class="stat-content">
 			<div class="stat-value">{engagementScore}%</div>
-			<div class="stat-label {engagement.color}">
+			<div class={['stat-label', engagement.color]}>
 				{engagement.label}
 			</div>
 		</div>

@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 84 Svelte files remaining.
+- Broad dynamic class/style migration scan: 77 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -74,6 +74,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin email settings/list/templates batch: SMTP `+page.svelte`, subscribers `SubscribersTable.svelte`, and templates `+page.svelte`; replaced tracked alert/status class interpolation, active badge directives, and score-bar width strings with Svelte 5 class arrays and `style:` directives.
 - [x] 2026-06-08: Completed admin indicators detail batch: `IndicatorFilesTab.svelte`, `IndicatorHeader.svelte`, `IndicatorTabs.svelte`, and `IndicatorVideosTab.svelte`; replaced tracked active/published/draft class directives with Svelte 5 class arrays/objects.
 - [x] 2026-06-08: Completed admin media utility batch: `ContextMenu.svelte`, `PageHeader.svelte`, `StatsPanel.svelte`, `ToastContainer.svelte`, and `UploadQueue.svelte`; replaced tracked menu position styles, view/status/toast class directives/interpolations, and progress width strings with Svelte 5 class arrays and `style:` directives.
+- [x] 2026-06-08: Completed admin members detail/list batch: member detail `EmailsTab.svelte`, `ExtendMembershipModal.svelte`, `MemberHeader.svelte`, `MemberStatsGrid.svelte`, `TagModal.svelte`, plus list `ImportModal.svelte` and `StatsGrid.svelte`; replaced tracked status/icon/label interpolated classes, selected/has-file directives, and sparkline height strings with Svelte 5 class arrays and `style:` directives.
 
 ## Remaining Files
 
@@ -325,13 +326,13 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/media/_components/StatsPanel.svelte`
 - [x] `frontend/src/routes/admin/media/_components/ToastContainer.svelte`
 - [x] `frontend/src/routes/admin/media/_components/UploadQueue.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/EmailsTab.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/ExtendMembershipModal.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/MemberHeader.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/MemberStatsGrid.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/TagModal.svelte`
-- [ ] `frontend/src/routes/admin/members/_components/ImportModal.svelte`
-- [ ] `frontend/src/routes/admin/members/_components/StatsGrid.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/EmailsTab.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/ExtendMembershipModal.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/MemberHeader.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/MemberStatsGrid.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/TagModal.svelte`
+- [x] `frontend/src/routes/admin/members/_components/ImportModal.svelte`
+- [x] `frontend/src/routes/admin/members/_components/StatsGrid.svelte`
 - [ ] `frontend/src/routes/admin/orders/_components/OrderDetailModal.svelte`
 - [ ] `frontend/src/routes/admin/orders/_components/OrdersTable.svelte`
 - [ ] `frontend/src/routes/admin/orders/_components/OrdersToolbar.svelte`

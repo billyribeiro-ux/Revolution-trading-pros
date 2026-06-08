@@ -48,8 +48,7 @@
 					<div class="tags-grid">
 						{#each availableTags as tag (tag)}
 							<button
-								class="tag-option"
-								class:selected={tags.includes(tag)}
+								class={['tag-option', { selected: tags.includes(tag) }]}
 								onclick={() => onToggleTag(tag)}
 							>
 								{#if tags.includes(tag)}

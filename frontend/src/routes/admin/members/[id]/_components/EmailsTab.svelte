@@ -36,7 +36,7 @@
 		<div class="email-list">
 			{#each emailHistory as email (email.id)}
 				<div class="email-item">
-					<div class="email-icon {getEmailStatusColor(email.status)}">
+					<div class={['email-icon', getEmailStatusColor(email.status)]}>
 						<IconMail size={20} />
 					</div>
 					<div class="email-content">
@@ -46,7 +46,7 @@
 							<span class="email-date">{formatDateTime(email.sent_at)}</span>
 						</div>
 					</div>
-					<div class="email-status {getEmailStatusColor(email.status)}">
+					<div class={['email-status', getEmailStatusColor(email.status)]}>
 						{#if email.status === 'opened'}
 							<IconCheck size={16} />
 							Opened
