@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 96 Svelte files remaining.
+- Broad dynamic class/style migration scan: 93 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -71,6 +71,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin CRM contacts detail batch: `ContactHeader.svelte`, `EmailsPanel.svelte`, and `OverviewPanel.svelte`; replaced tracked status/email interpolated classes and tag color style strings with Svelte 5 class arrays, declaration tags, and `style:` directives.
 - [x] 2026-06-08: Completed admin CRM deals detail batch: deal `+page.svelte`, `DealHeader.svelte`, `DealValueCard.svelte`, `OverviewTab.svelte`, `StageChangeModal.svelte`, `StageProgress.svelte`, and `Toast.svelte`; replaced tracked tab/stage/toast class directives and interpolations, dynamic color styles, progress widths, CSS custom properties, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, derived helper values, and declaration tags.
 - [x] 2026-06-08: Completed admin email campaign report batch: `AbTestResults.svelte`, `CampaignOverview.svelte`, `DeviceBreakdown.svelte`, `EngagementChart.svelte`, `EngagementQuality.svelte`, and `GeoDistribution.svelte`; replaced tracked winner/status/toggle/bar class bindings, dynamic width/height strings, and legacy declaration tags with Svelte 5 class arrays, declaration tags, and `style:` directives.
+- [x] 2026-06-08: Completed admin email settings/list/templates batch: SMTP `+page.svelte`, subscribers `SubscribersTable.svelte`, and templates `+page.svelte`; replaced tracked alert/status class interpolation, active badge directives, and score-bar width strings with Svelte 5 class arrays and `style:` directives.
 
 ## Remaining Files
 
@@ -310,9 +311,9 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/EngagementChart.svelte`
 - [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/EngagementQuality.svelte`
 - [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/GeoDistribution.svelte`
-- [ ] `frontend/src/routes/admin/email/smtp/+page.svelte`
-- [ ] `frontend/src/routes/admin/email/subscribers/_components/SubscribersTable.svelte`
-- [ ] `frontend/src/routes/admin/email/templates/+page.svelte`
+- [x] `frontend/src/routes/admin/email/smtp/+page.svelte`
+- [x] `frontend/src/routes/admin/email/subscribers/_components/SubscribersTable.svelte`
+- [x] `frontend/src/routes/admin/email/templates/+page.svelte`
 - [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorFilesTab.svelte`
 - [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorHeader.svelte`
 - [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorTabs.svelte`

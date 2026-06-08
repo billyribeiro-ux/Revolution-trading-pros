@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **96 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **93 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -62,6 +62,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed admin CRM contacts detail batch (`ContactHeader.svelte`, `EmailsPanel.svelte`, and `OverviewPanel.svelte`): converted tracked status/email interpolated classes and tag color style strings to Svelte 5 class arrays, declaration tags, and `style:` directives.
 - Completed admin CRM deals detail batch (deal `+page.svelte`, `DealHeader.svelte`, `DealValueCard.svelte`, `OverviewTab.svelte`, `StageChangeModal.svelte`, `StageProgress.svelte`, and `Toast.svelte`): converted tracked tab/stage/toast class directives and interpolations, dynamic color styles, progress widths, CSS custom properties, and legacy declaration tags to Svelte 5 class arrays, `style:` directives, derived helper values, and declaration tags.
 - Completed admin email campaign report batch (`AbTestResults.svelte`, `CampaignOverview.svelte`, `DeviceBreakdown.svelte`, `EngagementChart.svelte`, `EngagementQuality.svelte`, and `GeoDistribution.svelte`): converted tracked winner/status/toggle/bar class bindings, dynamic width/height strings, and legacy declaration tags to Svelte 5 class arrays, declaration tags, and `style:` directives.
+- Completed admin email settings/list/templates batch (SMTP `+page.svelte`, subscribers `SubscribersTable.svelte`, and templates `+page.svelte`): converted tracked alert/status class interpolation, active badge directives, and score-bar width strings to Svelte 5 class arrays and `style:` directives.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.

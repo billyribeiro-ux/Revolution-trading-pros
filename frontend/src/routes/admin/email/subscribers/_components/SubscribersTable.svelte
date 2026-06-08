@@ -76,7 +76,7 @@
 					</div>
 				</td>
 				<td>
-					<span class="status-badge {getStatusColor(subscriber.status)}">
+					<span class={['status-badge', getStatusColor(subscriber.status)]}>
 						{subscriber.status}
 					</span>
 				</td>
@@ -92,7 +92,7 @@
 				</td>
 				<td>
 					<div class="score-bar">
-						<div class="score-fill" style="width: {subscriber.email_score}%"></div>
+						<div class="score-fill" style:width={`${subscriber.email_score}%`}></div>
 						<span>{subscriber.email_score}</span>
 					</div>
 				</td>
