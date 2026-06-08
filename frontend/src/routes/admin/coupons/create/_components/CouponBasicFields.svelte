@@ -65,8 +65,7 @@
 	<div class="discount-type-toggle" role="group" aria-label="Discount Type">
 		<button
 			type="button"
-			class="type-btn"
-			class:active={formData.discount_type === 'percentage'}
+			class={{ 'type-btn': true, active: formData.discount_type === 'percentage' }}
 			onclick={() => (formData.discount_type = 'percentage')}
 		>
 			<IconPercentage size={20} />
@@ -74,8 +73,7 @@
 		</button>
 		<button
 			type="button"
-			class="type-btn"
-			class:active={formData.discount_type === 'fixed'}
+			class={{ 'type-btn': true, active: formData.discount_type === 'fixed' }}
 			onclick={() => (formData.discount_type = 'fixed')}
 		>
 			<IconCurrencyDollar size={20} />
