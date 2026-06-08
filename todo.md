@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 109 Svelte files remaining.
+- Broad dynamic class/style migration scan: 102 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -69,6 +69,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin coupon edit batch: edit `CouponBasicFields.svelte`, `CouponPageHeader.svelte`, `CouponSchedule.svelte`, `CouponUsageLimits.svelte`, and `CouponValidationAlerts.svelte`; replaced tracked class directives and severity class interpolation with Svelte 5 class arrays/objects.
 - [x] 2026-06-08: Completed admin courses header/progress batch: edit `CourseHeader.svelte`, `CourseTabs.svelte`, and create `CompletionProgress.svelte`/`QualityScoreCard.svelte`; replaced tracked status/tab class directives, interpolated validation classes, progress width strings, and SVG dasharray interpolation with Svelte 5 class/style/attribute composition.
 - [x] 2026-06-08: Completed admin CRM contacts detail batch: `ContactHeader.svelte`, `EmailsPanel.svelte`, and `OverviewPanel.svelte`; replaced tracked status/email interpolated classes and tag color style strings with Svelte 5 class arrays, declaration tags, and `style:` directives.
+- [x] 2026-06-08: Completed admin CRM deals detail batch: deal `+page.svelte`, `DealHeader.svelte`, `DealValueCard.svelte`, `OverviewTab.svelte`, `StageChangeModal.svelte`, `StageProgress.svelte`, and `Toast.svelte`; replaced tracked tab/stage/toast class directives and interpolations, dynamic color styles, progress widths, CSS custom properties, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, derived helper values, and declaration tags.
 
 ## Remaining Files
 
@@ -295,13 +296,13 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/ContactHeader.svelte`
 - [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/EmailsPanel.svelte`
 - [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/OverviewPanel.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/DealHeader.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/DealValueCard.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/OverviewTab.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/StageChangeModal.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/StageProgress.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/Toast.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/DealHeader.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/DealValueCard.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/OverviewTab.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/StageChangeModal.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/StageProgress.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/Toast.svelte`
 - [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/AbTestResults.svelte`
 - [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/CampaignOverview.svelte`
 - [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/DeviceBreakdown.svelte`

@@ -29,7 +29,7 @@
 		<div class="info-grid">
 			<div class="info-item">
 				<span class="info-label">Stage</span>
-				<span class="info-value" style="color: {getStageColor(currentStage)}">
+				<span class="info-value" style:color={getStageColor(currentStage)}>
 					{currentStage?.name || 'Unknown'}
 				</span>
 			</div>

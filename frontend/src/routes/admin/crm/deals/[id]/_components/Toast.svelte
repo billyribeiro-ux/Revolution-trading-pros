@@ -11,7 +11,7 @@
 	let { toast, onDismiss }: Props = $props();
 </script>
 
-<div class="toast toast-{toast.type}" role="alert" aria-live="polite">
+<div class={['toast', `toast-${toast.type}`]} role="alert" aria-live="polite">
 	{#if toast.type === 'success'}
 		<IconCheck size={18} />
 	{:else}

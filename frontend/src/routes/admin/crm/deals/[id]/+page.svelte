@@ -274,24 +274,21 @@
 		<!-- Tabs -->
 		<nav class="tabs-nav">
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'overview'}
+				class={['tab-btn', { active: activeTab === 'overview' }]}
 				onclick={() => (activeTab = 'overview')}
 			>
 				<IconBriefcase size={18} />
 				Overview
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'timeline'}
+				class={['tab-btn', { active: activeTab === 'timeline' }]}
 				onclick={() => (activeTab = 'timeline')}
 			>
 				<IconHistory size={18} />
 				Timeline ({timeline.length})
 			</button>
 			<button
-				class="tab-btn"
-				class:active={activeTab === 'notes'}
+				class={['tab-btn', { active: activeTab === 'notes' }]}
 				onclick={() => (activeTab = 'notes')}
 			>
 				<IconNotes size={18} />
@@ -302,24 +299,21 @@
 		<!-- Tab Content - Layout Shift Free Pattern -->
 		<div class="tab-content">
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'overview'}
+				class={['tab-panel', { active: activeTab === 'overview' }]}
 				inert={activeTab !== 'overview' ? true : undefined}
 			>
 				<OverviewTab {deal} {currentStage} {isWon} {isLost} />
 			</div>
 
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'timeline'}
+				class={['tab-panel', { active: activeTab === 'timeline' }]}
 				inert={activeTab !== 'timeline' ? true : undefined}
 			>
 				<TimelineTab {timeline} />
 			</div>
 
 			<div
-				class="tab-panel"
-				class:active={activeTab === 'notes'}
+				class={['tab-panel', { active: activeTab === 'notes' }]}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
 				<NotesTab {notes} onOpenAdd={() => (showAddNoteModal = true)} />
