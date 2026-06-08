@@ -43,8 +43,60 @@
 # REVIEW DATE: 2026-01-17
 # NEXT REVIEW: 2026-04-17 (quarterly)
 # ─────────────────────────────────────────────────────────────────────────────
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# RUSTSEC-2026-0098 / -0099 / -0104: rustls-webpki 0.101.7
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# AFFECTED CRATE: rustls-webpki v0.101.7
+#   0098 — name constraints for URI names incorrectly accepted
+#   0099 — name constraints accepted for wildcard-asserting certs
+#   0104 — reachable panic in CRL parsing
+#
+# ROOT-CAUSE ANALYSIS (verified 2026-06-08 — supersedes the stale "reqwest 0.11"
+# note that previously lived in deny.toml; reqwest 0.11 is no longer in the tree):
+#   $ cargo tree -i rustls-webpki@0.101.7
+#   > rustls v0.21.12
+#   >   ├── aws-smithy-http-client v1.1.13   (latest published)
+#   >   └── hyper-rustls v0.24.2
+#   The AWS SDK's HTTP client (aws-smithy-http-client 1.1.13) pulls a *duplicate*
+#   legacy hyper-rustls 0.24 → rustls 0.21 → webpki 0.101 alongside the modern
+#   stack. The SDK's ACTIVE client TLS uses `rustls-aws-lc` (rustls 0.23 →
+#   rustls-webpki 0.103.13, which IS patched — verified via
+#   `cargo tree -i rustls-webpki@0.103.13`). The 0.101 copy rides in via
+#   hyper-rustls 0.24's server-side "acceptor" path, which a client SDK never
+#   exercises.
+#
+# RISK ASSESSMENT: low.
+#   - 0104 (CRL panic): not reachable — the SDK does not parse CRLs.
+#   - 0098/0099 (name constraints): require a name-constrained CA in the chain
+#     for AWS/R2 endpoints, which use public CAs via the system root store.
+#   - No safe manifest fix exists: aws-smithy-http-client 1.1.13 is the latest
+#     and hard-depends on hyper-rustls 0.24; a [patch] to a newer hyper-rustls
+#     breaks the SDK's rustls 0.21 API usage.
+#
+# REMEDIATION PLAN: track aws-smithy-http-client to drop the duplicate
+#   hyper-rustls 0.24; remove these ignores once it ships.
+# REVIEW DATE: 2026-06-08 / NEXT REVIEW: 2026-09-08
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# RUSTSEC-2026-0173: proc-macro-error2 unmaintained
+# ─────────────────────────────────────────────────────────────────────────────
+# AFFECTED CRATE: proc-macro-error2 v2.0.1 (build-time proc-macro only)
+#   $ cargo tree -i proc-macro-error2
+#   > proc-macro-error2 v2.0.1 └── validator_derive v0.20 └── validator v0.20
+#   Unmaintained advisory (not a vulnerability). proc-macro-error2 runs only at
+#   COMPILE time inside validator_derive; it is never linked into the runtime
+#   binary. Resolved by a future `validator` release that drops the dep.
+# REVIEW DATE: 2026-06-08 / NEXT REVIEW: 2026-09-08
+# ─────────────────────────────────────────────────────────────────────────────
 ignore = [
     "RUSTSEC-2023-0071",
+    "RUSTSEC-2026-0098",
+    "RUSTSEC-2026-0099",
+    "RUSTSEC-2026-0104",
+    "RUSTSEC-2026-0173",
 ]
 
 [database]
