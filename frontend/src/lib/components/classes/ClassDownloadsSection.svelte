@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import { onMount } from 'svelte';
 
 	interface Download {
 		id: number;
@@ -34,11 +35,14 @@
 	let sortBy = $state<'name' | 'date' | 'size'>('name');
 	let sortOrder = $state<'asc' | 'desc'>('asc');
 
-	$effect(() => {
+	onMount(() => {
+		const abortController = new AbortController();
+
 		async function loadDownloads() {
 			try {
 				const response = await fetch(`/api/my/courses/${props.courseSlug}/downloads`, {
-					credentials: 'include'
+					credentials: 'include',
+					signal: abortController.signal
 				});
 
 				if (!response.ok) {
@@ -46,14 +50,23 @@
 				}
 
 				const data = await response.json();
+				if (abortController.signal.aborted) return;
 				downloads = data.data || [];
 			} catch (e) {
+				if (abortController.signal.aborted) return;
 				error = e instanceof Error ? e.message : 'Failed to load downloads';
 			} finally {
-				isLoading = false;
+				if (!abortController.signal.aborted) {
+					isLoading = false;
+				}
 			}
 		}
+
 		loadDownloads();
+
+		return () => {
+			abortController.abort();
+		};
 	});
 
 	const sortedDownloads = $derived.by(() => {
@@ -105,6 +118,10 @@
 		if (type.includes('word') || type.includes('document')) return 'file-text';
 		return 'file';
 	}
+
+	function getSortButtonClass(column: 'name' | 'date' | 'size') {
+		return ['sort-button', sortBy === column && 'active'];
+	}
 </script>
 
 <section class="class-section cpost-section" id="dl-rp-row">
@@ -132,8 +149,8 @@
 						<!-- Header -->
 						<div class="file-browser-header">
 							<button
-								class="sort-button"
-								class:active={sortBy === 'name'}
+								type="button"
+								class={getSortButtonClass('name')}
 								onclick={() => toggleSort('name')}
 							>
 								Name
@@ -142,8 +159,8 @@
 								{/if}
 							</button>
 							<button
-								class="sort-button"
-								class:active={sortBy === 'date'}
+								type="button"
+								class={getSortButtonClass('date')}
 								onclick={() => toggleSort('date')}
 							>
 								Modified
@@ -152,8 +169,8 @@
 								{/if}
 							</button>
 							<button
-								class="sort-button"
-								class:active={sortBy === 'size'}
+								type="button"
+								class={getSortButtonClass('size')}
 								onclick={() => toggleSort('size')}
 							>
 								Size

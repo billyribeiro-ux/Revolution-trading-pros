@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Icon from '$lib/components/Icon.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
+
 	/**
 	 * InventoryField Component (FluentForms 6.1.8 - December 2025)
 	 *
@@ -17,10 +20,19 @@
 		lowStockThreshold?: number;
 	}
 
+	interface SelectionValue {
+		productId: string;
+		quantity: number;
+	}
+
+	interface SelectedProduct extends SelectionValue {
+		product: ProductOption;
+	}
+
 	interface Props {
 		name: string;
 		products: ProductOption[];
-		value?: { productId: string; quantity: number }[];
+		value?: SelectionValue[];
 		label?: string;
 		required?: boolean;
 		disabled?: boolean;
@@ -32,15 +44,13 @@
 		layout?: 'list' | 'grid' | 'compact';
 		columns?: number;
 		error?: string;
-		onchange?: (
-			selection: { productId: string; quantity: number; product: ProductOption }[]
-		) => void;
+		onchange?: (selection: SelectedProduct[]) => void;
 	}
 
 	let {
 		name,
 		products = [],
-		value = [],
+		value = $bindable<SelectionValue[]>([]),
 		label = 'Select Products',
 		required = false,
 		disabled = false,
@@ -55,18 +65,9 @@
 		onchange
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
-	let selections = $state<Map<string, number>>(new Map());
-
-	// Initialize selections from value prop
-	$effect(() => {
-		const newSelections = new Map<string, number>();
-		for (const item of value) {
-			newSelections.set(item.productId, item.quantity);
-		}
-		selections = newSelections;
-	});
+	const selections = $derived(
+		new SvelteMap<string, number>(value.map((item) => [item.productId, item.quantity] as const))
+	);
 
 	function getStockStatus(product: ProductOption): 'in-stock' | 'low-stock' | 'out-of-stock' {
 		if (product.stock <= 0) return 'out-of-stock';
@@ -91,26 +92,18 @@
 	function handleQuantityChange(product: ProductOption, quantity: number) {
 		if (disabled) return;
 
-		const newSelections = new Map(selections);
+		const maxQty = getMaxQuantity(product);
+		const nextQuantity = quantity <= 0 ? 0 : Math.min(quantity, maxQty);
+		let nextValue: SelectionValue[] = allowMultiple
+			? value.filter((item) => item.productId !== product.id)
+			: [];
 
-		if (quantity <= 0) {
-			newSelections.delete(product.id);
-		} else {
-			const maxQty = getMaxQuantity(product);
-			newSelections.set(product.id, Math.min(quantity, maxQty));
+		if (nextQuantity > 0) {
+			nextValue = [...nextValue, { productId: product.id, quantity: nextQuantity }];
 		}
 
-		if (!allowMultiple && quantity > 0) {
-			// Single selection mode - clear others
-			for (const [id] of newSelections) {
-				if (id !== product.id) {
-					newSelections.delete(id);
-				}
-			}
-		}
-
-		selections = newSelections;
-		notifyChange();
+		value = nextValue;
+		notifyChange(nextValue);
 	}
 
 	function handleCheckboxChange(product: ProductOption, checked: boolean) {
@@ -127,10 +120,10 @@
 		handleQuantityChange(product, current - 1);
 	}
 
-	function notifyChange() {
+	function notifyChange(nextValue: SelectionValue[] = value) {
 		if (onchange) {
-			const selection = Array.from(selections.entries())
-				.map(([productId, quantity]) => {
+			const selection = nextValue
+				.map(({ productId, quantity }) => {
 					const product = products.find((p) => p.id === productId);
 					return product ? { productId, quantity, product } : null;
 				})
@@ -164,9 +157,36 @@
 		}
 		return count;
 	});
+
+	const fieldClass = $derived({
+		'inventory-field': true,
+		disabled,
+		'has-error': Boolean(error)
+	});
+
+	const productsContainerClass = $derived([
+		'products-container',
+		layout === 'grid' && 'layout-grid',
+		layout === 'compact' && 'layout-compact'
+	]);
+
+	function getProductItemClass(
+		isSelected: boolean,
+		stockStatus: 'in-stock' | 'low-stock' | 'out-of-stock'
+	) {
+		return [
+			'product-item',
+			isSelected && 'selected',
+			stockStatus === 'out-of-stock' && 'out-of-stock'
+		];
+	}
+
+	function getStockBadgeClass(stockStatus: 'in-stock' | 'low-stock' | 'out-of-stock') {
+		return ['stock-badge', stockStatus];
+	}
 </script>
 
-<div class="inventory-field" class:disabled class:has-error={error}>
+<div class={fieldClass}>
 	<div class="field-header">
 		<label class="field-label" for="{name}-products">
 			{label}
@@ -178,10 +198,8 @@
 
 	<div
 		id="{name}-products"
-		class="products-container"
-		class:layout-grid={layout === 'grid'}
-		class:layout-compact={layout === 'compact'}
-		style={layout === 'grid' ? `--columns: ${columns}` : ''}
+		class={productsContainerClass}
+		style:--columns={columns}
 		role="group"
 		aria-label={label}
 	>
@@ -191,11 +209,7 @@
 			{@const quantity = selections.get(product.id) ?? 0}
 			{@const maxQty = getMaxQuantity(product)}
 
-			<div
-				class="product-item"
-				class:selected={isSelected}
-				class:out-of-stock={stockStatus === 'out-of-stock'}
-			>
+			<div class={getProductItemClass(isSelected, stockStatus)}>
 				{#if product.image}
 					<div class="product-image">
 						<img src={product.image} alt={product.name} loading="lazy" width="60" height="60" />
@@ -215,7 +229,7 @@
 							<span class="product-price">{formatPrice(product.price)}</span>
 						{/if}
 						{#if showStock}
-							<span class="stock-badge {stockStatus}">
+							<span class={getStockBadgeClass(stockStatus)}>
 								{getStockLabel(product)}
 							</span>
 						{/if}
