@@ -90,7 +90,7 @@
 					<span class="stat-label">Total Savings</span>
 				</div>
 				<div class="stat-progress">
-					<div class="progress-bar" style="width: {statsProgress}%"></div>
+					<div class="progress-bar" style:width={`${statsProgress}%`}></div>
 				</div>
 			</div>
 		</div>
