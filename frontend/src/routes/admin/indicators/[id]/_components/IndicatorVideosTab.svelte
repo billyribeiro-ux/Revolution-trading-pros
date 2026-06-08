@@ -68,7 +68,7 @@
 							{#if video.duration_seconds}
 								<span class="tag">{formatDuration(video.duration_seconds)}</span>
 							{/if}
-							<span class="tag" class:active={video.is_active}>
+							<span class={['tag', { active: video.is_active }]}>
 								{video.is_active !== false ? 'Active' : 'Inactive'}
 							</span>
 						</div>

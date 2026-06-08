@@ -20,17 +20,15 @@
 	<h3>Stage Progress</h3>
 	<div class="stages-row">
 		{#each openStages as stage (stage.id)}
-			{@const isCurrent = stage.id === deal?.stage_id}
-			{@const isPast =
+			{const isCurrent = stage.id === deal?.stage_id}
+			{const isPast =
 				stages.findIndex((s) => s.id === stage.id) <
 				stages.findIndex((s) => s.id === deal?.stage_id)}
 			<button
-				class="stage-item"
-				class:current={isCurrent}
-				class:past={isPast}
+				class={['stage-item', { current: isCurrent, past: isPast }]}
 				onclick={() => !isCurrent && onSelectStage(stage)}
 				disabled={isCurrent}
-				style="--stage-color: {stage.color || '#6366f1'}"
+				style:--stage-color={stage.color || '#6366f1'}
 			>
 				<span class="stage-indicator"></span>
 				<span class="stage-name">{stage.name}</span>
@@ -39,7 +37,7 @@
 				{/if}
 			</button>
 			{#if stages.indexOf(stage) < openStages.length - 1}
-				<div class="stage-connector" class:active={isPast}></div>
+				<div class={['stage-connector', { active: isPast }]}></div>
 			{/if}
 		{/each}
 	</div>

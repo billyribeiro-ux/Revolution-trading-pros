@@ -12,15 +12,16 @@
 </script>
 
 <nav class="tabs">
-	<button class:active={activeTab === 'details'} onclick={() => onSelect('details')}>Details</button
-	>
-	<button class:active={activeTab === 'files'} onclick={() => onSelect('files')}
-		>Files <span class="badge">{filesCount}</span></button
-	>
-	<button class:active={activeTab === 'videos'} onclick={() => onSelect('videos')}
-		>Videos <span class="badge">{videosCount}</span></button
-	>
-	<button class:active={activeTab === 'seo'} onclick={() => onSelect('seo')}>SEO</button>
+	<button class={{ active: activeTab === 'details' }} onclick={() => onSelect('details')}>
+		Details
+	</button>
+	<button class={{ active: activeTab === 'files' }} onclick={() => onSelect('files')}>
+		Files <span class="badge">{filesCount}</span>
+	</button>
+	<button class={{ active: activeTab === 'videos' }} onclick={() => onSelect('videos')}>
+		Videos <span class="badge">{videosCount}</span>
+	</button>
+	<button class={{ active: activeTab === 'seo' }} onclick={() => onSelect('seo')}>SEO</button>
 </nav>
 
 <style>

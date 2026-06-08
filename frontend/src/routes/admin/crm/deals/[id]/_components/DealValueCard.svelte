@@ -18,7 +18,7 @@
 		<div class="value-stat">
 			<span class="stat-label">Probability</span>
 			<div class="probability-bar">
-				<div class="bar-fill" style="width: {deal.probability}%"></div>
+				<div class="bar-fill" style:width={`${deal.probability}%`}></div>
 				<span class="bar-text">{deal.probability}%</span>
 			</div>
 		</div>

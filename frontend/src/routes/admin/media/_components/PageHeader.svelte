@@ -51,14 +51,14 @@
 		</div>
 		<div class="view-toggle">
 			<button
-				class:active={viewMode === 'grid'}
+				class={{ active: viewMode === 'grid' }}
 				onclick={() => (viewMode = 'grid')}
 				title="Grid view"
 			>
 				<IconLayoutGrid size={20} aria-hidden="true" />
 			</button>
 			<button
-				class:active={viewMode === 'list'}
+				class={{ active: viewMode === 'list' }}
 				onclick={() => (viewMode = 'list')}
 				title="List view"
 			>

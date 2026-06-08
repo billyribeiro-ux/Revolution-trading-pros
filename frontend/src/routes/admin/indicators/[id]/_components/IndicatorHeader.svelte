@@ -15,7 +15,7 @@
 	<div class="header-left">
 		<a href="/admin/indicators" class="back-link">← Back</a>
 		<h1>{name}</h1>
-		<span class="status" class:status--published={isActive} class:status--draft={!isActive}>
+		<span class={['status', { 'status--published': isActive, 'status--draft': !isActive }]}>
 			{isActive ? 'Active' : 'Inactive'}
 		</span>
 	</div>

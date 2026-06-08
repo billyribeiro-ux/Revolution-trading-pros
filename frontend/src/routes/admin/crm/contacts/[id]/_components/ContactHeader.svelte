@@ -39,10 +39,10 @@
 				</p>
 			{/if}
 			<div class="status-badges">
-				<span class="status-badge {getStatusColor(contact.status)}">
+				<span class={['status-badge', getStatusColor(contact.status)]}>
 					{contact.status}
 				</span>
-				<span class="status-badge {getLifecycleColor(contact.lifecycle_stage)}">
+				<span class={['status-badge', getLifecycleColor(contact.lifecycle_stage)]}>
 					{contact.lifecycle_stage}
 				</span>
 			</div>

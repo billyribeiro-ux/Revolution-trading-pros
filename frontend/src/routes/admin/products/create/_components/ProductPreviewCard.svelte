@@ -47,7 +47,7 @@
 			</div>
 		{/if}
 
-		<div class="preview-badge" style="background: {typeColor}">
+		<div class="preview-badge" style:background={typeColor}>
 			<Icon size={14} />
 			{formData.type}
 		</div>
@@ -82,7 +82,7 @@
 			{/if}
 		</div>
 
-		<div class="preview-status" class:active={formData.is_active}>
+		<div class={['preview-status', { active: formData.is_active }]}>
 			{formData.is_active ? 'Active' : 'Inactive'}
 		</div>
 	</div>

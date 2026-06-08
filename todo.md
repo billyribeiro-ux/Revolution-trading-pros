@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 116 Svelte files remaining.
+- Broad dynamic class/style migration scan: 62 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -67,6 +67,17 @@ Current evidence:
 - [x] 2026-06-08: Completed admin blog taxonomy/edit batch: `NotificationsList.svelte`, category/tag `CategorySection.svelte`, `TagSection.svelte`, `ToastNotification.svelte`, and edit panels `CategoriesPanel.svelte`, `ContentEditorPanel.svelte`, `FeaturedImagePanel.svelte`, and `TagsPanel.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and style directives.
 - [x] 2026-06-08: Completed admin contacts/coupons initial batch: contacts `+page.svelte`, coupons `CouponCard.svelte`, `CouponsFiltersBar.svelte`, and create `CouponBasicFields.svelte`/`CouponRestrictions.svelte`; replaced tracked class directives with Svelte 5 class objects for lead scores, coupon status/expiry, filter tabs, discount type toggles, and restriction tabs.
 - [x] 2026-06-08: Completed admin coupon edit batch: edit `CouponBasicFields.svelte`, `CouponPageHeader.svelte`, `CouponSchedule.svelte`, `CouponUsageLimits.svelte`, and `CouponValidationAlerts.svelte`; replaced tracked class directives and severity class interpolation with Svelte 5 class arrays/objects.
+- [x] 2026-06-08: Completed admin courses header/progress batch: edit `CourseHeader.svelte`, `CourseTabs.svelte`, and create `CompletionProgress.svelte`/`QualityScoreCard.svelte`; replaced tracked status/tab class directives, interpolated validation classes, progress width strings, and SVG dasharray interpolation with Svelte 5 class/style/attribute composition.
+- [x] 2026-06-08: Completed admin CRM contacts detail batch: `ContactHeader.svelte`, `EmailsPanel.svelte`, and `OverviewPanel.svelte`; replaced tracked status/email interpolated classes and tag color style strings with Svelte 5 class arrays, declaration tags, and `style:` directives.
+- [x] 2026-06-08: Completed admin CRM deals detail batch: deal `+page.svelte`, `DealHeader.svelte`, `DealValueCard.svelte`, `OverviewTab.svelte`, `StageChangeModal.svelte`, `StageProgress.svelte`, and `Toast.svelte`; replaced tracked tab/stage/toast class directives and interpolations, dynamic color styles, progress widths, CSS custom properties, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, derived helper values, and declaration tags.
+- [x] 2026-06-08: Completed admin email campaign report batch: `AbTestResults.svelte`, `CampaignOverview.svelte`, `DeviceBreakdown.svelte`, `EngagementChart.svelte`, `EngagementQuality.svelte`, and `GeoDistribution.svelte`; replaced tracked winner/status/toggle/bar class bindings, dynamic width/height strings, and legacy declaration tags with Svelte 5 class arrays, declaration tags, and `style:` directives.
+- [x] 2026-06-08: Completed admin email settings/list/templates batch: SMTP `+page.svelte`, subscribers `SubscribersTable.svelte`, and templates `+page.svelte`; replaced tracked alert/status class interpolation, active badge directives, and score-bar width strings with Svelte 5 class arrays and `style:` directives.
+- [x] 2026-06-08: Completed admin indicators detail batch: `IndicatorFilesTab.svelte`, `IndicatorHeader.svelte`, `IndicatorTabs.svelte`, and `IndicatorVideosTab.svelte`; replaced tracked active/published/draft class directives with Svelte 5 class arrays/objects.
+- [x] 2026-06-08: Completed admin media utility batch: `ContextMenu.svelte`, `PageHeader.svelte`, `StatsPanel.svelte`, `ToastContainer.svelte`, and `UploadQueue.svelte`; replaced tracked menu position styles, view/status/toast class directives/interpolations, and progress width strings with Svelte 5 class arrays and `style:` directives.
+- [x] 2026-06-08: Completed admin members detail/list batch: member detail `EmailsTab.svelte`, `ExtendMembershipModal.svelte`, `MemberHeader.svelte`, `MemberStatsGrid.svelte`, `TagModal.svelte`, plus list `ImportModal.svelte` and `StatsGrid.svelte`; replaced tracked status/icon/label interpolated classes, selected/has-file directives, and sparkline height strings with Svelte 5 class arrays and `style:` directives.
+- [x] 2026-06-08: Completed admin orders batch: `OrderDetailModal.svelte`, `OrdersTable.svelte`, and `OrdersToolbar.svelte`; replaced tracked status badge class interpolation and filter active directive with Svelte 5 class arrays.
+- [x] 2026-06-08: Completed admin products edit/create batch: edit and create `ProductBasicFields.svelte`, `ProductPreviewCard.svelte`, `ProductPricingFields.svelte`, and `ProductTypeSelector.svelte`; replaced tracked form error/active/selected class directives, preview badge background strings, CSS custom property strings, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
+- [x] 2026-06-08: Completed admin resources/schedules batch: resources `BulkOperationsModal.svelte`/`RoomTabs.svelte` and schedules `RoomSelector.svelte`/`ScheduleEventCard.svelte`; replaced tracked active/danger/state class directives, room color styles, room-type class interpolation, and legacy declaration tags with Svelte 5 class arrays, `style:` directives, and declaration tags.
 
 ## Remaining Files
 
@@ -286,61 +297,61 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/coupons/edit/[id]/_components/CouponSchedule.svelte`
 - [x] `frontend/src/routes/admin/coupons/edit/[id]/_components/CouponUsageLimits.svelte`
 - [x] `frontend/src/routes/admin/coupons/edit/[id]/_components/CouponValidationAlerts.svelte`
-- [ ] `frontend/src/routes/admin/courses/[id]/_components/CourseHeader.svelte`
-- [ ] `frontend/src/routes/admin/courses/[id]/_components/CourseTabs.svelte`
-- [ ] `frontend/src/routes/admin/courses/create/_components/CompletionProgress.svelte`
-- [ ] `frontend/src/routes/admin/courses/create/_components/QualityScoreCard.svelte`
-- [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/ContactHeader.svelte`
-- [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/EmailsPanel.svelte`
-- [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/OverviewPanel.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/+page.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/DealHeader.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/DealValueCard.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/OverviewTab.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/StageChangeModal.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/StageProgress.svelte`
-- [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/Toast.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/AbTestResults.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/CampaignOverview.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/DeviceBreakdown.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/EngagementChart.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/EngagementQuality.svelte`
-- [ ] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/GeoDistribution.svelte`
-- [ ] `frontend/src/routes/admin/email/smtp/+page.svelte`
-- [ ] `frontend/src/routes/admin/email/subscribers/_components/SubscribersTable.svelte`
-- [ ] `frontend/src/routes/admin/email/templates/+page.svelte`
-- [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorFilesTab.svelte`
-- [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorHeader.svelte`
-- [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorTabs.svelte`
-- [ ] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorVideosTab.svelte`
-- [ ] `frontend/src/routes/admin/media/_components/ContextMenu.svelte`
-- [ ] `frontend/src/routes/admin/media/_components/PageHeader.svelte`
-- [ ] `frontend/src/routes/admin/media/_components/StatsPanel.svelte`
-- [ ] `frontend/src/routes/admin/media/_components/ToastContainer.svelte`
-- [ ] `frontend/src/routes/admin/media/_components/UploadQueue.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/EmailsTab.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/ExtendMembershipModal.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/MemberHeader.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/MemberStatsGrid.svelte`
-- [ ] `frontend/src/routes/admin/members/[id]/_components/TagModal.svelte`
-- [ ] `frontend/src/routes/admin/members/_components/ImportModal.svelte`
-- [ ] `frontend/src/routes/admin/members/_components/StatsGrid.svelte`
-- [ ] `frontend/src/routes/admin/orders/_components/OrderDetailModal.svelte`
-- [ ] `frontend/src/routes/admin/orders/_components/OrdersTable.svelte`
-- [ ] `frontend/src/routes/admin/orders/_components/OrdersToolbar.svelte`
+- [x] `frontend/src/routes/admin/courses/[id]/_components/CourseHeader.svelte`
+- [x] `frontend/src/routes/admin/courses/[id]/_components/CourseTabs.svelte`
+- [x] `frontend/src/routes/admin/courses/create/_components/CompletionProgress.svelte`
+- [x] `frontend/src/routes/admin/courses/create/_components/QualityScoreCard.svelte`
+- [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/ContactHeader.svelte`
+- [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/EmailsPanel.svelte`
+- [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/OverviewPanel.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/+page.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/DealHeader.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/DealValueCard.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/OverviewTab.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/StageChangeModal.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/StageProgress.svelte`
+- [x] `frontend/src/routes/admin/crm/deals/[id]/_components/Toast.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/AbTestResults.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/CampaignOverview.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/DeviceBreakdown.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/EngagementChart.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/EngagementQuality.svelte`
+- [x] `frontend/src/routes/admin/email/campaigns/[id]/report/_components/GeoDistribution.svelte`
+- [x] `frontend/src/routes/admin/email/smtp/+page.svelte`
+- [x] `frontend/src/routes/admin/email/subscribers/_components/SubscribersTable.svelte`
+- [x] `frontend/src/routes/admin/email/templates/+page.svelte`
+- [x] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorFilesTab.svelte`
+- [x] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorHeader.svelte`
+- [x] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorTabs.svelte`
+- [x] `frontend/src/routes/admin/indicators/[id]/_components/IndicatorVideosTab.svelte`
+- [x] `frontend/src/routes/admin/media/_components/ContextMenu.svelte`
+- [x] `frontend/src/routes/admin/media/_components/PageHeader.svelte`
+- [x] `frontend/src/routes/admin/media/_components/StatsPanel.svelte`
+- [x] `frontend/src/routes/admin/media/_components/ToastContainer.svelte`
+- [x] `frontend/src/routes/admin/media/_components/UploadQueue.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/EmailsTab.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/ExtendMembershipModal.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/MemberHeader.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/MemberStatsGrid.svelte`
+- [x] `frontend/src/routes/admin/members/[id]/_components/TagModal.svelte`
+- [x] `frontend/src/routes/admin/members/_components/ImportModal.svelte`
+- [x] `frontend/src/routes/admin/members/_components/StatsGrid.svelte`
+- [x] `frontend/src/routes/admin/orders/_components/OrderDetailModal.svelte`
+- [x] `frontend/src/routes/admin/orders/_components/OrdersTable.svelte`
+- [x] `frontend/src/routes/admin/orders/_components/OrdersToolbar.svelte`
 - [x] `frontend/src/routes/admin/popups/+page.svelte`
-- [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductBasicFields.svelte`
-- [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductPreviewCard.svelte`
-- [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductPricingFields.svelte`
-- [ ] `frontend/src/routes/admin/products/[id]/edit/_components/ProductTypeSelector.svelte`
-- [ ] `frontend/src/routes/admin/products/create/_components/ProductBasicFields.svelte`
-- [ ] `frontend/src/routes/admin/products/create/_components/ProductPreviewCard.svelte`
-- [ ] `frontend/src/routes/admin/products/create/_components/ProductPricingFields.svelte`
-- [ ] `frontend/src/routes/admin/products/create/_components/ProductTypeSelector.svelte`
-- [ ] `frontend/src/routes/admin/resources/_components/BulkOperationsModal.svelte`
-- [ ] `frontend/src/routes/admin/resources/_components/RoomTabs.svelte`
-- [ ] `frontend/src/routes/admin/schedules/_components/RoomSelector.svelte`
-- [ ] `frontend/src/routes/admin/schedules/_components/ScheduleEventCard.svelte`
+- [x] `frontend/src/routes/admin/products/[id]/edit/_components/ProductBasicFields.svelte`
+- [x] `frontend/src/routes/admin/products/[id]/edit/_components/ProductPreviewCard.svelte`
+- [x] `frontend/src/routes/admin/products/[id]/edit/_components/ProductPricingFields.svelte`
+- [x] `frontend/src/routes/admin/products/[id]/edit/_components/ProductTypeSelector.svelte`
+- [x] `frontend/src/routes/admin/products/create/_components/ProductBasicFields.svelte`
+- [x] `frontend/src/routes/admin/products/create/_components/ProductPreviewCard.svelte`
+- [x] `frontend/src/routes/admin/products/create/_components/ProductPricingFields.svelte`
+- [x] `frontend/src/routes/admin/products/create/_components/ProductTypeSelector.svelte`
+- [x] `frontend/src/routes/admin/resources/_components/BulkOperationsModal.svelte`
+- [x] `frontend/src/routes/admin/resources/_components/RoomTabs.svelte`
+- [x] `frontend/src/routes/admin/schedules/_components/RoomSelector.svelte`
+- [x] `frontend/src/routes/admin/schedules/_components/ScheduleEventCard.svelte`
 - [ ] `frontend/src/routes/admin/seo/404-monitor/+page.svelte`
 - [ ] `frontend/src/routes/admin/seo/analytics/+page.svelte`
 - [ ] `frontend/src/routes/admin/seo/meta/+page.svelte`

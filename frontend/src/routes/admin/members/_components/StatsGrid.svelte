@@ -49,7 +49,7 @@
 		</div>
 		<div class="stat-sparkline">
 			{#each (stats.growth_trend || []).slice(-6) as point, i (i)}
-				<div class="sparkline-bar" style="height: {(point.new / sparklineMax) * 100}%"></div>
+				<div class="sparkline-bar" style:height={`${(point.new / sparklineMax) * 100}%`}></div>
 			{/each}
 		</div>
 	</div>

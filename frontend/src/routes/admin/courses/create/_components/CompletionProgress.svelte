@@ -15,7 +15,7 @@
 
 <div class="completion-progress">
 	<div class="progress-bar">
-		<div class="progress-fill" style="width: {percentage}%"></div>
+		<div class="progress-fill" style:width={`${percentage}%`}></div>
 	</div>
 	<div class="progress-details">
 		<span class="progress-text">{percentage}% Complete</span>

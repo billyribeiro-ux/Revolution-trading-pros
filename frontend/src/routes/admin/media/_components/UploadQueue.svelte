@@ -43,9 +43,13 @@
 	<div class="upload-queue">
 		{#each uploads as upload (upload.id)}
 			<div
-				class="upload-item"
-				class:complete={upload.status === 'complete'}
-				class:error={upload.status === 'error'}
+				class={[
+					'upload-item',
+					{
+						complete: upload.status === 'complete',
+						error: upload.status === 'error'
+					}
+				]}
 			>
 				<div class="upload-icon">
 					{#if upload.status === 'complete'}
@@ -61,7 +65,7 @@
 					<span class="upload-size">{formatBytes(upload.file.size)}</span>
 				</div>
 				<div class="upload-progress-bar">
-					<div class="progress-fill" style="width: {upload.progress}%"></div>
+					<div class="progress-fill" style:width={`${upload.progress}%`}></div>
 				</div>
 			</div>
 		{/each}

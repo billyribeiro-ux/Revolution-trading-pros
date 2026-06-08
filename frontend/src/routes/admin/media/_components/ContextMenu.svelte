@@ -44,7 +44,8 @@
 {#if menu}
 	<div
 		class="context-menu"
-		style="left: {menu.x}px; top: {menu.y}px"
+		style:left={`${menu.x}px`}
+		style:top={`${menu.y}px`}
 		transition:scale={{ duration: 150, start: 0.9 }}
 	>
 		<button onclick={() => trigger('view')}>

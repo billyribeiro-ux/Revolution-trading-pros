@@ -23,14 +23,15 @@
 
 	let { deal, dealId, currentStage, isOpen, onRefresh, onOpenWin, onOpenLose, onDelete }: Props =
 		$props();
+
+	let stageColor = $derived(getStageColor(currentStage));
+	let priorityColor = $derived(getPriorityColor(deal.priority));
+	let statusBadge = $derived(getStatusBadge(deal.status));
 </script>
 
 <header class="deal-header">
 	<div class="deal-identity">
-		<div
-			class="deal-icon"
-			style="background: {getStageColor(currentStage)}20; color: {getStageColor(currentStage)}"
-		>
+		<div class="deal-icon" style:background={`${stageColor}20`} style:color={stageColor}>
 			<IconBriefcase size={28} />
 		</div>
 		<div class="deal-info">
@@ -38,10 +39,10 @@
 				<h1>{deal.name}</h1>
 				<span
 					class="status-badge"
-					style="background: {getStatusBadge(deal.status).bg}; color: {getStatusBadge(deal.status)
-						.color}"
+					style:background={statusBadge.bg}
+					style:color={statusBadge.color}
 				>
-					{getStatusBadge(deal.status).text}
+					{statusBadge.text}
 				</span>
 			</div>
 			<div class="deal-meta-row">
@@ -53,12 +54,12 @@
 				{/if}
 				{#if currentStage}
 					<span class="meta-item">
-						<IconFlag size={14} style="color: {getStageColor(currentStage)}" />
+						<IconFlag size={14} style={`color: ${stageColor}`} />
 						{currentStage.name}
 					</span>
 				{/if}
 				{#if deal.priority && deal.priority !== 'normal'}
-					<span class="meta-item priority" style="color: {getPriorityColor(deal.priority)}">
+					<span class="meta-item priority" style:color={priorityColor}>
 						{deal.priority} priority
 					</span>
 				{/if}

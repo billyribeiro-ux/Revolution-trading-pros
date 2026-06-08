@@ -16,8 +16,8 @@
 	let { open, subscription, extendDays, extending, onDaysChange, onClose, onExtend }: Props =
 		$props();
 
-	// Pre-defined quick-pick values. Bounded set — `class:selected` only matches
-	// these six values, so no unbounded class injection.
+	// Pre-defined quick-pick values. Bounded set keeps selected-state styling
+	// limited to these six values.
 	const PRESETS = [7, 14, 30, 60, 90, 365] as const;
 
 	let previewDate = $derived.by(() => {
@@ -55,8 +55,7 @@
 						{#each PRESETS as days (days)}
 							<button
 								type="button"
-								class="extend-option"
-								class:selected={extendDays === days}
+								class={['extend-option', { selected: extendDays === days }]}
 								onclick={() => onDaysChange(days)}
 							>
 								{days} days

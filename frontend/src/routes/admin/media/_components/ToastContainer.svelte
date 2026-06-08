@@ -15,7 +15,7 @@
 
 <div class="toast-container">
 	{#each toasts as toast (toast.id)}
-		<div class="toast toast-{toast.type}" transition:fly={{ y: 20, duration: 300 }}>
+		<div class={['toast', `toast-${toast.type}`]} transition:fly={{ y: 20, duration: 300 }}>
 			{#if toast.type === 'success'}
 				<IconCircleCheckFilled size={20} aria-hidden="true" />
 			{:else if toast.type === 'error'}

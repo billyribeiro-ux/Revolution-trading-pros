@@ -196,7 +196,7 @@
 						<td class="subject-cell">{tmpl.subject}</td>
 						<td><span class="type-badge">{tmpl.email_type}</span></td>
 						<td>
-							<span class="status-badge" class:active={tmpl.is_active}>
+							<span class={['status-badge', { active: tmpl.is_active }]}>
 								{tmpl.is_active ? 'Active' : 'Inactive'}
 							</span>
 						</td>

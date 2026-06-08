@@ -27,7 +27,7 @@
 					<div class="email-content">
 						<div class="email-header">
 							<span class="email-subject">{email.subject}</span>
-							<span class="email-status {getEmailStatusColor(email.status)}">
+							<span class={['email-status', getEmailStatusColor(email.status)]}>
 								{email.status}
 							</span>
 						</div>

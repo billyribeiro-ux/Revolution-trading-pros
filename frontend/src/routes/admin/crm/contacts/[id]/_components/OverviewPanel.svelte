@@ -124,10 +124,8 @@
 		<div class="tags-list">
 			{#if contact.tags && contact.tags.length > 0}
 				{#each contact.tags as tag (tag.id)}
-					<span
-						class="tag-pill"
-						style="background-color: {tag.color || '#E6B800'}20; color: {tag.color || '#E6B800'}"
-					>
+					{const tagColor = tag.color || '#E6B800'}
+					<span class="tag-pill" style:background-color={`${tagColor}20`} style:color={tagColor}>
 						{tag.name}
 						<button class="tag-remove" onclick={() => onRemoveTag(tag.id)}>
 							<IconX size={12} />

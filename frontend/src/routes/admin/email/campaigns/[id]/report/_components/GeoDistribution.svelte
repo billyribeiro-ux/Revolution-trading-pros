@@ -37,7 +37,7 @@
 
 	<div class="geo-list">
 		{#each distribution.slice(0, 8) as geo, i (geo.country_code)}
-			{@const maxOpens = distribution[0]?.opens || 1}
+			{const maxOpens = distribution[0]?.opens || 1}
 			<div class="geo-row" in:fly={{ x: 10, duration: 300, delay: 350 + i * 40 }}>
 				<div class="geo-info">
 					<span class="geo-flag">{getFlagEmoji(geo.country_code)}</span>
@@ -45,7 +45,7 @@
 				</div>
 				<div class="geo-stats">
 					<div class="geo-bar-wrap">
-						<div class="geo-bar" style="width: {(geo.opens / maxOpens) * 100}%"></div>
+						<div class="geo-bar" style:width={`${(geo.opens / maxOpens) * 100}%`}></div>
 					</div>
 					<div class="geo-metrics">
 						<span class="geo-opens">{formatNumber(geo.opens)} opens</span>

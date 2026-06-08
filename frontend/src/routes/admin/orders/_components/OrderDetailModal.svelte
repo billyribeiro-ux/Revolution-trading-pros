@@ -82,7 +82,7 @@
 						<h4>Order Information</h4>
 						<div class="detail-row">
 							<span class="label">Status:</span>
-							<span class="status-badge {getStatusColor(orderDetail.status)}">
+							<span class={['status-badge', getStatusColor(orderDetail.status)]}>
 								{orderDetail.status}
 							</span>
 						</div>

@@ -48,16 +48,16 @@
 			<div class="stage-change-preview">
 				<div class="stage-from">
 					<span class="stage-label">From</span>
-					<span class="stage-name" style="color: {getStageColor(currentStage)}"
-						>{currentStage?.name}</span
-					>
+					<span class="stage-name" style:color={getStageColor(currentStage)}>
+						{currentStage?.name}
+					</span>
 				</div>
 				<IconArrowRight size={20} class="stage-arrow" />
 				<div class="stage-to">
 					<span class="stage-label">To</span>
-					<span class="stage-name" style="color: {getStageColor(selectedStage)}"
-						>{selectedStage.name}</span
-					>
+					<span class="stage-name" style:color={getStageColor(selectedStage)}>
+						{selectedStage.name}
+					</span>
 				</div>
 			</div>
 			<div class="form-group">

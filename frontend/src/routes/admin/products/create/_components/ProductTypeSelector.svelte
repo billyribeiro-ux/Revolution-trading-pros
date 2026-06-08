@@ -20,13 +20,12 @@
 	<span id="product-type-label" class="group-label">Product Type *</span>
 	<div class="type-selector" role="group" aria-labelledby="product-type-label">
 		{#each productTypes as type (type.value)}
-			{@const Icon = type.icon}
+			{const Icon = type.icon}
 			<button
 				type="button"
-				class="type-option"
-				class:selected={selected === type.value}
+				class={['type-option', { selected: selected === type.value }]}
 				onclick={() => onSelect(type.value)}
-				style="--type-color: {type.color}"
+				style:--type-color={type.color}
 			>
 				<Icon size={24} />
 				<span>{type.label}</span>
