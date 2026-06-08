@@ -20,6 +20,17 @@ use crate::models::video::{
 };
 use crate::AppState;
 
+/// RUST_DEEP_AUDIT_2026-06-07 (P1-7): return a 500 for a failed video-list query
+/// instead of swallowing the DB error into an empty list (which presented as
+/// "no videos" to the user). Logs the real error; generic client message.
+fn video_load_error(err: &sqlx::Error) -> (StatusCode, Json<serde_json::Value>) {
+    tracing::error!(target: "videos", error = %err, "DB error loading videos");
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({"error": "Failed to load videos"})),
+    )
+}
+
 #[derive(Debug, serde::Serialize, FromRow)]
 pub struct UnifiedVideoRow {
     pub id: i64,
@@ -439,7 +450,7 @@ async fn get_related_videos(
     .bind(&tags)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(|e| video_load_error(&e))?;
 
     let responses: Vec<VideoResponse> = related.into_iter().map(video_to_response).collect();
 
@@ -466,7 +477,7 @@ async fn get_weekly_videos(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(|e| video_load_error(&e))?;
 
     // If no videos for current week, get most recent weekly videos
     let videos = if videos.is_empty() {
@@ -480,7 +491,7 @@ async fn get_weekly_videos(
         )
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(|e| video_load_error(&e))?
     } else {
         videos
     };
@@ -525,7 +536,7 @@ async fn get_watch_history(
     .bind(limit as i32)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(|e| video_load_error(&e))?;
 
     Ok(Json(json!({
         "success": true,

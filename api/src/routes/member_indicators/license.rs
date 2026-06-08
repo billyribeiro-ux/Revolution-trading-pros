@@ -15,20 +15,25 @@ use axum::{
     http::StatusCode,
     Json,
 };
+use hmac::{Hmac, Mac};
 use serde_json::json;
-use sha2::{Digest, Sha256};
+use sha2::Sha256;
 
 use crate::models::User;
 use crate::AppState;
 
-/// ICT 7: Generate a license key for an indicator
-fn generate_license_key(user_id: i64, indicator_id: i64) -> String {
-    let secret = std::env::var("MEMBER_LICENSE_SECRET").unwrap_or_default();
+/// ICT 7: Generate a license key for an indicator.
+///
+/// RUST_DEEP_AUDIT_2026-06-07 (P1-3): keyed HMAC-SHA256 over
+/// `user_id-indicator_id-timestamp` using the boot-validated
+/// `MEMBER_LICENSE_SECRET` — was an unkeyed SHA256 of a public formula signed
+/// with a possibly-empty secret, making the shareable key derivable offline.
+fn generate_license_key(secret: &str, user_id: i64, indicator_id: i64) -> String {
     let timestamp = chrono::Utc::now().timestamp();
-    let input = format!("{user_id}-{indicator_id}-{timestamp}-{secret}");
-    let mut hasher = Sha256::new();
-    hasher.update(input.as_bytes());
-    let hash = format!("{:x}", hasher.finalize());
+    let mut mac = <Hmac<Sha256> as Mac>::new_from_slice(secret.as_bytes())
+        .expect("HMAC-SHA256 accepts a key of any length");
+    mac.update(format!("{user_id}-{indicator_id}-{timestamp}").as_bytes());
+    let hash = hex::encode(mac.finalize().into_bytes());
     // Format: XXXX-XXXX-XXXX-XXXX (16 chars from hash)
     let key_chars: String = hash.chars().take(16).collect();
     format!(
@@ -175,7 +180,11 @@ pub(super) async fn get_license_key(
                 Some(key) if !key.is_empty() => key,
                 _ => {
                     // Generate new license key
-                    let new_key = generate_license_key(user_id, indicator_id);
+                    let new_key = generate_license_key(
+                        &state.config.member_license_secret,
+                        user_id,
+                        indicator_id,
+                    );
                     // Save to database
                     sqlx::query("UPDATE user_indicators SET license_key = $1 WHERE id = $2")
                         .bind(&new_key)

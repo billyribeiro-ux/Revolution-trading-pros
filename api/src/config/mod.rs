@@ -229,6 +229,19 @@ pub struct Config {
     pub apple_team_id: Option<String>,
     pub apple_key_id: Option<String>,
     pub apple_private_key: Option<String>,
+
+    // Member-content signing secrets (download capability tokens + license keys).
+    // RUST_DEEP_AUDIT_2026-06-07 (P0-2/P1-3): these key the HMAC for member
+    // download tokens and license keys. Previously read inline via
+    // `std::env::var(...).unwrap_or_default()`, which silently signed those
+    // capability tokens with an EMPTY secret when unset, making them forgeable.
+    // Now read at boot (fail-closed in production) and validated below.
+    pub member_indicator_secret: String,
+    pub member_license_secret: String,
+
+    // RUST_DEEP_AUDIT_2026-06-07 (P1-4): key for AES-256-GCM encryption of
+    // third-party service credentials at rest (was base64 ≈ plaintext).
+    pub credentials_encryption_key: String,
 }
 
 impl std::fmt::Debug for Config {
@@ -294,6 +307,10 @@ impl std::fmt::Debug for Config {
                 "apple_private_key",
                 &self.apple_private_key.as_ref().map(|_| "[REDACTED]"),
             )
+            // Sensitive: member-content signing secrets
+            .field("member_indicator_secret", &"[REDACTED]")
+            .field("member_license_secret", &"[REDACTED]")
+            .field("credentials_encryption_key", &"[REDACTED]")
             .finish()
     }
 }
@@ -461,6 +478,26 @@ impl Config {
             apple_team_id: std::env::var("APPLE_TEAM_ID").ok(),
             apple_key_id: std::env::var("APPLE_KEY_ID").ok(),
             apple_private_key: std::env::var("APPLE_PRIVATE_KEY").ok(),
+
+            // RUST_DEEP_AUDIT_2026-06-07 (P0-2/P1-3): required in production
+            // (hard-fail via `required_or_dev`), with a non-empty dev fallback so
+            // the local stack still boots. Strength is enforced in
+            // `validate_production_secrets`.
+            member_indicator_secret: required_or_dev(
+                "MEMBER_INDICATOR_SECRET",
+                is_dev,
+                "dev-member-indicator-secret-placeholder-not-for-production",
+            )?,
+            member_license_secret: required_or_dev(
+                "MEMBER_LICENSE_SECRET",
+                is_dev,
+                "dev-member-license-secret-placeholder-not-for-production",
+            )?,
+            credentials_encryption_key: required_or_dev(
+                "CREDENTIALS_ENCRYPTION_KEY",
+                is_dev,
+                "dev-credentials-encryption-key-placeholder-not-for-production",
+            )?,
         })
     }
 
@@ -559,6 +596,28 @@ impl Config {
                  'pk_live_'. Refusing to boot — frontend would send card data to a test-mode \
                  Stripe.js."
             );
+        }
+
+        // RUST_DEEP_AUDIT_2026-06-07 (P0-2/P1-3): member-content signing secrets
+        // key the HMAC for download capability tokens and license keys. An empty,
+        // short, or placeholder value makes those tokens forgeable offline. Same
+        // >=32-char bar as JWT_SECRET; fail-fast at boot rather than serve one
+        // forgeable token.
+        for (name, value) in [
+            ("MEMBER_INDICATOR_SECRET", &self.member_indicator_secret),
+            ("MEMBER_LICENSE_SECRET", &self.member_license_secret),
+            (
+                "CREDENTIALS_ENCRYPTION_KEY",
+                &self.credentials_encryption_key,
+            ),
+        ] {
+            if value.len() < 32 || value.to_ascii_lowercase().contains("placeholder") {
+                panic!(
+                    "FATAL: ENVIRONMENT=production but {name} is unset, < 32 chars, or a \
+                     placeholder. It keys the HMAC for member download/license tokens; a weak \
+                     value makes them forgeable. Generate one with `openssl rand -hex 32`."
+                );
+            }
         }
 
         tracing::info!(
@@ -737,6 +796,9 @@ mod tests {
             apple_team_id: None,
             apple_key_id: None,
             apple_private_key: None,
+            member_indicator_secret: format!("member-indicator-{body}"),
+            member_license_secret: format!("member-license-{body}"),
+            credentials_encryption_key: format!("creds-key-{body}"),
         }
     }
 
@@ -808,6 +870,26 @@ mod tests {
         // env var); only check the prefix when one IS set.
         let mut cfg = live_config();
         cfg.stripe_publishable_key = String::new();
+        cfg.validate_production_secrets();
+    }
+
+    // ── RUST_DEEP_AUDIT_2026-06-07 (P0-2/P1-3): member-content signing secrets ──
+
+    #[test]
+    #[should_panic(expected = "MEMBER_INDICATOR_SECRET is unset, < 32 chars")]
+    fn validate_production_secrets_panics_on_short_member_indicator_secret() {
+        let mut cfg = live_config();
+        cfg.member_indicator_secret = "too-short".to_string();
+        cfg.validate_production_secrets();
+    }
+
+    #[test]
+    #[should_panic(expected = "MEMBER_LICENSE_SECRET is unset, < 32 chars")]
+    fn validate_production_secrets_panics_on_placeholder_member_license_secret() {
+        let mut cfg = live_config();
+        // > 32 chars but contains "placeholder" — must still be rejected.
+        cfg.member_license_secret =
+            "dev-member-license-secret-placeholder-not-for-production".to_string();
         cfg.validate_production_secrets();
     }
 

@@ -28,7 +28,17 @@ pub(super) async fn handle_refund(
 
     // Stripe stores charge.amount and charge.amount_refunded in integer cents
     let refund_amount_cents: i64 = charge["amount_refunded"].as_i64().unwrap_or(0);
-    let total_amount_cents: i64 = charge["amount"].as_i64().unwrap_or(0);
+    // RUST_DEEP_AUDIT_2026-06-07 (P2-6): a missing/malformed charge.amount must NOT
+    // default to 0 — that makes any nonzero refund compare as "full" (refund >= 0)
+    // and wrongly revoke ALL access on a partial refund. Treat absence as an error
+    // so the handler returns 5xx and Stripe retries the event.
+    let total_amount_cents: i64 = charge["amount"].as_i64().ok_or_else(|| {
+        tracing::error!(target: "payments", "refund webhook missing/invalid charge.amount");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Malformed charge.amount in refund event"})),
+        )
+    })?;
     let is_full_refund = refund_amount_cents > 0 && refund_amount_cents >= total_amount_cents;
 
     if let Some(pi) = payment_intent {

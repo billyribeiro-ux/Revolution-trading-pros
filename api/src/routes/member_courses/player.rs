@@ -21,6 +21,22 @@ use crate::models::course::{
 use crate::models::User;
 use crate::AppState;
 
+/// RUST_DEEP_AUDIT_2026-06-07 (P1-7): build a 500 for a failed course-player
+/// query instead of swallowing the DB error into an empty Vec (which rendered
+/// a paid course as empty/incomplete to the member). Logs the real error;
+/// returns a generic message to the client.
+fn course_load_error(
+    what: &str,
+    course_id: Uuid,
+    err: &sqlx::Error,
+) -> (StatusCode, Json<serde_json::Value>) {
+    tracing::error!(target: "courses", course_id = %course_id, error = %err, "DB error loading {what}");
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({"error": "Failed to load course"})),
+    )
+}
+
 pub(super) async fn get_my_courses(
     user: User,
     State(state): State<AppState>,
@@ -145,7 +161,7 @@ pub(super) async fn get_course_player(
             .bind(course.id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            .map_err(|e| course_load_error("course modules", course.id, &e))?;
 
     let lessons: Vec<LessonListItem> = sqlx::query_as(
         r"
@@ -159,21 +175,21 @@ pub(super) async fn get_course_player(
     .bind(course.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(|e| course_load_error("lessons", course.id, &e))?;
 
     let downloads: Vec<CourseDownload> =
         sqlx::query_as("SELECT * FROM course_downloads WHERE course_id = $1 ORDER BY sort_order")
             .bind(course.id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            .map_err(|e| course_load_error("course downloads", course.id, &e))?;
 
     let progress: Vec<UserLessonProgress> = if let Some(ref e) = enrollment {
         sqlx::query_as("SELECT * FROM user_lesson_progress WHERE enrollment_id = $1")
             .bind(e.id)
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default()
+            .map_err(|err| course_load_error("lesson progress", course.id, &err))?
     } else {
         Vec::new()
     };

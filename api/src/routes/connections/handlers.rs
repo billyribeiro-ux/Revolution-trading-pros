@@ -89,10 +89,12 @@ pub(super) async fn get_connections_status(
 
         if let Some(db_conn) = db_connections.iter().find(|c| c.service_key == key) {
             // Merge database connection with definition
-            let masked_creds = db_conn
-                .credentials_encrypted
-                .as_ref()
-                .map(|e| mask_credentials(&decrypt_credentials(e)));
+            let masked_creds = db_conn.credentials_encrypted.as_ref().map(|e| {
+                mask_credentials(&decrypt_credentials(
+                    &state.config.credentials_encryption_key,
+                    e,
+                ))
+            });
 
             connections.push(json!({
                 "key": db_conn.service_key,
@@ -280,10 +282,12 @@ pub(super) async fn get_connection(
 
     match (connection, def) {
         (Some(conn), Some(def)) => {
-            let masked_creds = conn
-                .credentials_encrypted
-                .as_ref()
-                .map(|e| mask_credentials(&decrypt_credentials(e)));
+            let masked_creds = conn.credentials_encrypted.as_ref().map(|e| {
+                mask_credentials(&decrypt_credentials(
+                    &state.config.credentials_encryption_key,
+                    e,
+                ))
+            });
 
             Ok(Json(json!({
                 "success": true,
@@ -380,7 +384,8 @@ pub(super) async fn connect_service(
     }
 
     // Encrypt credentials
-    let encrypted_creds = encrypt_credentials(&input.credentials);
+    let encrypted_creds =
+        encrypt_credentials(&state.config.credentials_encryption_key, &input.credentials);
 
     // Check if connection already exists
     let existing: Option<i64> =
@@ -539,7 +544,7 @@ pub(super) async fn test_connection(
         .flatten();
 
         encrypted
-            .map(|e| decrypt_credentials(&e))
+            .map(|e| decrypt_credentials(&state.config.credentials_encryption_key, &e))
             .unwrap_or_default()
     };
 
