@@ -36,8 +36,7 @@
 				id="valid_until"
 				name="valid_until"
 				bind:value={formData.valid_until}
-				class="input"
-				class:error={getFieldError('valid_until')}
+				class={['input', { error: getFieldError('valid_until') }]}
 			/>
 			{#if getFieldError('valid_until')}
 				<span class="field-error">{getFieldError('valid_until')}</span>

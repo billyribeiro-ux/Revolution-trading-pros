@@ -25,9 +25,9 @@
 
 	<div class="tags-selected">
 		{#each post.tags as tagId (tagId)}
-			{@const tag = availableTags.find((t) => t.id === tagId)}
+			{const tag = availableTags.find((t) => t.id === tagId)}
 			{#if tag}
-				<span class="tag-badge" style="background: {tag.color}20; color: {tag.color}">
+				<span class="tag-badge" style:background={`${tag.color}20`} style:color={tag.color}>
 					{tag.name}
 					<button
 						type="button"
@@ -79,7 +79,7 @@
 								}
 							}}
 						/>
-						<span style="color: {tag.color}">{tag.name}</span>
+						<span style:color={tag.color}>{tag.name}</span>
 					</label>
 				{/if}
 			{/each}

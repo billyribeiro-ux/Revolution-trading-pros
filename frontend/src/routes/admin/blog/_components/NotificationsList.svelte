@@ -17,7 +17,7 @@
 
 <div class="notifications">
 	{#each notifications as notification (notification.id)}
-		<div class="notification {notification.type}" transition:fly={{ y: -20, duration: 300 }}>
+		<div class={['notification', notification.type]} transition:fly={{ y: -20, duration: 300 }}>
 			{#if notification.type === 'success'}
 				<IconCheck size={20} />
 			{:else if notification.type === 'error'}

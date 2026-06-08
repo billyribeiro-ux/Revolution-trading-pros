@@ -5,7 +5,7 @@
 	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import gsap from 'gsap';
-	import type { ToastType } from '../../engine/types.js';
+	import type { ToastItem, ToastType } from '../../engine/types.js';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
 
 	interface Props {
@@ -18,30 +18,6 @@
 	const MAX_VISIBLE = 3;
 
 	let visibleToasts = $derived(calc.toasts.slice(0, MAX_VISIBLE));
-
-	$effect(() => {
-		const timers: ReturnType<typeof setTimeout>[] = [];
-
-		for (const toast of calc.toasts) {
-			const dur = toast.duration ?? DEFAULT_DURATION;
-			if (dur > 0) {
-				const timer = setTimeout(() => calc.removeToast(toast.id), dur);
-				timers.push(timer);
-			}
-		}
-
-		return () => {
-			for (const timer of timers) clearTimeout(timer);
-		};
-	});
-
-	function animateIn(el: HTMLElement) {
-		gsap.fromTo(
-			el,
-			{ x: 80, opacity: 0, scale: 0.9 },
-			{ x: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' }
-		);
-	}
 
 	const ICONS: Record<ToastType, typeof IconCircleCheck> = {
 		success: IconCircleCheck,
@@ -67,6 +43,24 @@
 			onComplete: () => calc.removeToast(id)
 		});
 	}
+
+	function setupToast(toast: ToastItem) {
+		return (element: HTMLElement) => {
+			gsap.fromTo(
+				element,
+				{ x: 80, opacity: 0, scale: 0.9 },
+				{ x: 0, opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)' }
+			);
+
+			const duration = toast.duration ?? DEFAULT_DURATION;
+			const timer =
+				duration > 0 ? setTimeout(() => calc.removeToast(toast.id), duration) : undefined;
+
+			return () => {
+				if (timer) clearTimeout(timer);
+			};
+		};
+	}
 </script>
 
 {#if visibleToasts.length > 0}
@@ -76,15 +70,17 @@
 		aria-label="Notifications"
 	>
 		{#each visibleToasts as toast (toast.id)}
-			{@const colors = COLORS[toast.type]}
-			{@const Icon = ICONS[toast.type]}
+			{const colors = COLORS[toast.type]}
+			{const Icon = ICONS[toast.type]}
 			<div
 				class="pointer-events-auto flex items-center gap-2.5 rounded-xl px-4 py-3 min-w-[280px] max-w-[400px] shadow-lg"
-				style="background: {colors.bg}; border: 1px solid {colors.border}; backdrop-filter: blur(16px);"
+				style:background={colors.bg}
+				style:border={`1px solid ${colors.border}`}
+				style:backdrop-filter="blur(16px)"
 				role="alert"
-				use:animateIn
+				{@attach setupToast(toast)}
 			>
-				<Icon size={16} style="color: {colors.icon}; flex-shrink: 0;" />
+				<Icon size={16} style={`color: ${colors.icon}; flex-shrink: 0;`} />
 				<span class="flex-1 text-xs font-medium" style="color: var(--calc-text);">
 					{toast.message}
 				</span>

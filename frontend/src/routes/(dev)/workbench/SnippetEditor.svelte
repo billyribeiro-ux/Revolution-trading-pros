@@ -56,7 +56,7 @@
 	}
 </script>
 
-<div class="snippet-editor" class:expanded={isExpanded}>
+<div class={{ 'snippet-editor': true, expanded: isExpanded }}>
 	<header class="editor-header">
 		<button class="toggle-btn" onclick={() => (isExpanded = !isExpanded)}>
 			<span class="toggle-icon">{isExpanded ? '▼' : '▶'}</span>

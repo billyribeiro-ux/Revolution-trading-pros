@@ -12,7 +12,7 @@
 </script>
 
 <span
-	class="relative inline-flex items-center {className}"
+	class={['relative inline-flex items-center', className]}
 	onmouseenter={() => (isVisible = true)}
 	onmouseleave={() => (isVisible = false)}
 	onfocus={() => (isVisible = true)}

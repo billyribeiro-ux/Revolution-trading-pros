@@ -94,7 +94,7 @@
 								onToggleSelect(category.id, (e.currentTarget as HTMLInputElement).checked)}
 						/>
 					</label>
-					<div class="item-color" style="background: {category.color}"></div>
+					<div class="item-color" style:background={category.color}></div>
 					<div class="item-info">
 						<div class="item-header">
 							<h3>{category.name}</h3>

@@ -207,9 +207,11 @@
 							</td>
 							<td>
 								<span
-									class="lead-score"
-									class:high={contact.lead_score >= 70}
-									class:medium={contact.lead_score >= 40 && contact.lead_score < 70}
+									class={{
+										'lead-score': true,
+										high: contact.lead_score >= 70,
+										medium: contact.lead_score >= 40 && contact.lead_score < 70
+									}}
 								>
 									{contact.lead_score || 0}
 								</span>

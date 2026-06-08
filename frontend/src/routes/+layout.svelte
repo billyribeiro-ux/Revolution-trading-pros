@@ -182,10 +182,12 @@
 	     marketing-shell class is what flips marketing routes into their dark
 	     canvas; dashboard routes keep their own surfaces from dashboard.css. -->
 	<div
-		class="app-shell"
-		class:marketing-shell={isMarketingPage}
-		class:dark={isMarketingPage}
-		class:has-admin-toolbar={showAdminToolbar}
+		class={{
+			'app-shell': true,
+			'marketing-shell': isMarketingPage,
+			dark: isMarketingPage,
+			'has-admin-toolbar': showAdminToolbar
+		}}
 	>
 		<!-- ICT Level 7: ClientOnly prevents hydration mismatch for auth-dependent AdminToolbar -->
 		<ClientOnly>

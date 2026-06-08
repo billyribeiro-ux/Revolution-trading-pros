@@ -34,8 +34,7 @@
 		{#each predefinedCategories as category (category.id)}
 			<button
 				type="button"
-				class="category-btn"
-				class:selected={isSelected(category.id)}
+				class={{ 'category-btn': true, selected: isSelected(category.id) }}
 				style:--tag-color={category.color}
 				onclick={() => toggle(category.id)}
 			>
@@ -51,7 +50,7 @@
 		<div class="selected-categories">
 			<span class="selected-count">{post.categories.length} selected:</span>
 			{#each post.categories as categoryId (categoryId)}
-				{@const category = getPredefinedCategoryById(categoryId)}
+				{const category = getPredefinedCategoryById(categoryId)}
 				{#if category}
 					<span class="selected-tag" style:--tag-color={category.color}>
 						{category.name}

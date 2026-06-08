@@ -54,16 +54,14 @@
 	<div class="restriction-tabs">
 		<button
 			type="button"
-			class="restriction-tab"
-			class:active={restrictionTab === 'include'}
+			class={{ 'restriction-tab': true, active: restrictionTab === 'include' }}
 			onclick={() => onAction({ kind: 'tab-change', tab: 'include' })}
 		>
 			Include Only
 		</button>
 		<button
 			type="button"
-			class="restriction-tab"
-			class:active={restrictionTab === 'exclude'}
+			class={{ 'restriction-tab': true, active: restrictionTab === 'exclude' }}
 			onclick={() => onAction({ kind: 'tab-change', tab: 'exclude' })}
 		>
 			Exclude

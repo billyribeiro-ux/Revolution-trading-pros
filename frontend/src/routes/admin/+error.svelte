@@ -12,6 +12,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { authStore } from '$lib/stores/auth.svelte';
 	import {
 		IconAlertTriangle,
@@ -100,8 +101,8 @@
 	);
 
 	// Log admin errors
-	$effect(() => {
-		if (browser && status >= 400) {
+	onMount(() => {
+		if (status >= 400) {
 			console.error(`[Admin Error ${status}]`, {
 				message,
 				path: page.url.pathname,
@@ -136,7 +137,7 @@
 <div class="admin-error-page">
 	<div class="error-card">
 		<!-- Error Header -->
-		<div class="error-header" style="--accent-color: {config.color}">
+		<div class="error-header" style:--accent-color={config.color}>
 			<div class="error-icon-wrapper">
 				<ErrorIcon size={48} stroke={1.5} />
 			</div>

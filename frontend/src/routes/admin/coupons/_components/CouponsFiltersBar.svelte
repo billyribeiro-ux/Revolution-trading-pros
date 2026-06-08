@@ -33,22 +33,19 @@
 	</div>
 	<div class="filter-tabs">
 		<button
-			class="filter-tab"
-			class:active={filterStatus === 'all'}
+			class={{ 'filter-tab': true, active: filterStatus === 'all' }}
 			onclick={() => (filterStatus = 'all')}
 		>
 			All ({total})
 		</button>
 		<button
-			class="filter-tab"
-			class:active={filterStatus === 'active'}
+			class={{ 'filter-tab': true, active: filterStatus === 'active' }}
 			onclick={() => (filterStatus = 'active')}
 		>
 			Active ({active})
 		</button>
 		<button
-			class="filter-tab"
-			class:active={filterStatus === 'inactive'}
+			class={{ 'filter-tab': true, active: filterStatus === 'inactive' }}
 			onclick={() => (filterStatus = 'inactive')}
 		>
 			Inactive ({inactive})

@@ -48,12 +48,11 @@
 	}
 </script>
 
-<div class="coupon-card" class:expired>
+<div class={{ 'coupon-card': true, expired }}>
 	<div class="coupon-header">
 		<div class="coupon-code">{coupon.code}</div>
 		<button
-			class="coupon-status"
-			class:active={coupon.is_active}
+			class={{ 'coupon-status': true, active: coupon.is_active }}
 			onclick={() => onToggleStatus(coupon)}
 			title="Click to toggle status"
 		>
@@ -73,7 +72,7 @@
 			</span>
 		{/if}
 		{#if expiresAt}
-			<span class="meta-item" class:expired>
+			<span class={{ 'meta-item': true, expired }}>
 				Expires: {formatDate(expiresAt)}
 			</span>
 		{/if}

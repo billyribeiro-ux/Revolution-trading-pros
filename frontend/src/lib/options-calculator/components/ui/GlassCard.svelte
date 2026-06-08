@@ -20,13 +20,7 @@
 		children
 	}: Props = $props();
 
-	let cardEl: HTMLDivElement | undefined = $state();
-
-	$effect(() => {
-		if (animate && cardEl) {
-			cardEntrance(cardEl, delay);
-		}
-	});
+	let cardEl: HTMLDivElement | undefined;
 
 	let glowClass = $derived(
 		glow === 'call'
@@ -37,9 +31,22 @@
 					? 'shadow-[0_0_20px_var(--calc-accent-glow)]'
 					: ''
 	);
+
+	function setupCard(element: HTMLDivElement) {
+		cardEl = element;
+		if (animate) {
+			cardEntrance(element, delay);
+		}
+
+		return () => {
+			if (cardEl === element) {
+				cardEl = undefined;
+			}
+		};
+	}
 </script>
 
-<div bind:this={cardEl} class="glass-card {glowClass} {className}">
+<div {@attach setupCard} class={['glass-card', glowClass, className]}>
 	{#if header}
 		<div class="border-b border-[var(--calc-glass-border)] px-5 py-3">
 			{@render header()}

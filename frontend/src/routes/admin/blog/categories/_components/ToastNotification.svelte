@@ -18,7 +18,7 @@
 	let { message, type, onClose }: Props = $props();
 </script>
 
-<div class="toast toast-{type}" transition:fade>
+<div class={['toast', `toast-${type}`]} transition:fade>
 	{#if type === 'success'}
 		<IconCheck size={20} />
 	{:else}
