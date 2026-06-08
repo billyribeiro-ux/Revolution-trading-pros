@@ -30,7 +30,7 @@
 				fill="none"
 				stroke={overallScore > 70 ? '#10b981' : overallScore > 40 ? '#f59e0b' : '#ef4444'}
 				stroke-width="8"
-				stroke-dasharray="{overallScore * 2.83} 283"
+				stroke-dasharray={`${overallScore * 2.83} 283`}
 				transform="rotate(-90 50 50)"
 				style="transition: stroke-dasharray 0.5s ease"
 			/>
@@ -41,7 +41,7 @@
 	{#if validationResults.length > 0}
 		<div class="validation-items">
 			{#each validationResults as result (result.message)}
-				<div class="validation-item {result.status}">
+				<div class={['validation-item', result.status]}>
 					<span class="item-label">{result.message}</span>
 					<span class="item-score">+{result.score}</span>
 				</div>

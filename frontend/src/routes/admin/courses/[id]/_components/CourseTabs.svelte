@@ -14,18 +14,18 @@
 </script>
 
 <nav class="tabs">
-	<button class:active={activeTab === 'details'} onclick={() => (activeTab = 'details')}
-		>Details</button
-	>
-	<button class:active={activeTab === 'content'} onclick={() => (activeTab = 'content')}
-		>Content</button
-	>
-	<button class:active={activeTab === 'downloads'} onclick={() => (activeTab = 'downloads')}
-		>Downloads</button
-	>
-	<button class:active={activeTab === 'settings'} onclick={() => (activeTab = 'settings')}
-		>Settings</button
-	>
+	<button class={{ active: activeTab === 'details' }} onclick={() => (activeTab = 'details')}>
+		Details
+	</button>
+	<button class={{ active: activeTab === 'content' }} onclick={() => (activeTab = 'content')}>
+		Content
+	</button>
+	<button class={{ active: activeTab === 'downloads' }} onclick={() => (activeTab = 'downloads')}>
+		Downloads
+	</button>
+	<button class={{ active: activeTab === 'settings' }} onclick={() => (activeTab = 'settings')}>
+		Settings
+	</button>
 </nav>
 
 <style>

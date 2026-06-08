@@ -29,7 +29,7 @@
 			Back to Courses
 		</a>
 		<h1>{courseTitle}</h1>
-		<span class="status" class:published={isPublished}>
+		<span class={['status', { published: isPublished }]}>
 			{isPublished ? 'Published' : 'Draft'}
 		</span>
 	</div>

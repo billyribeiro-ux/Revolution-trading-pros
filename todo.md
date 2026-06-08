@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 116 Svelte files remaining.
+- Broad dynamic class/style migration scan: 112 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -67,6 +67,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin blog taxonomy/edit batch: `NotificationsList.svelte`, category/tag `CategorySection.svelte`, `TagSection.svelte`, `ToastNotification.svelte`, and edit panels `CategoriesPanel.svelte`, `ContentEditorPanel.svelte`, `FeaturedImagePanel.svelte`, and `TagsPanel.svelte`; replaced tracked class/style bindings and legacy declaration tags with Svelte 5 class arrays/objects, declaration tags, and style directives.
 - [x] 2026-06-08: Completed admin contacts/coupons initial batch: contacts `+page.svelte`, coupons `CouponCard.svelte`, `CouponsFiltersBar.svelte`, and create `CouponBasicFields.svelte`/`CouponRestrictions.svelte`; replaced tracked class directives with Svelte 5 class objects for lead scores, coupon status/expiry, filter tabs, discount type toggles, and restriction tabs.
 - [x] 2026-06-08: Completed admin coupon edit batch: edit `CouponBasicFields.svelte`, `CouponPageHeader.svelte`, `CouponSchedule.svelte`, `CouponUsageLimits.svelte`, and `CouponValidationAlerts.svelte`; replaced tracked class directives and severity class interpolation with Svelte 5 class arrays/objects.
+- [x] 2026-06-08: Completed admin courses header/progress batch: edit `CourseHeader.svelte`, `CourseTabs.svelte`, and create `CompletionProgress.svelte`/`QualityScoreCard.svelte`; replaced tracked status/tab class directives, interpolated validation classes, progress width strings, and SVG dasharray interpolation with Svelte 5 class/style/attribute composition.
 
 ## Remaining Files
 
@@ -286,10 +287,10 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/coupons/edit/[id]/_components/CouponSchedule.svelte`
 - [x] `frontend/src/routes/admin/coupons/edit/[id]/_components/CouponUsageLimits.svelte`
 - [x] `frontend/src/routes/admin/coupons/edit/[id]/_components/CouponValidationAlerts.svelte`
-- [ ] `frontend/src/routes/admin/courses/[id]/_components/CourseHeader.svelte`
-- [ ] `frontend/src/routes/admin/courses/[id]/_components/CourseTabs.svelte`
-- [ ] `frontend/src/routes/admin/courses/create/_components/CompletionProgress.svelte`
-- [ ] `frontend/src/routes/admin/courses/create/_components/QualityScoreCard.svelte`
+- [x] `frontend/src/routes/admin/courses/[id]/_components/CourseHeader.svelte`
+- [x] `frontend/src/routes/admin/courses/[id]/_components/CourseTabs.svelte`
+- [x] `frontend/src/routes/admin/courses/create/_components/CompletionProgress.svelte`
+- [x] `frontend/src/routes/admin/courses/create/_components/QualityScoreCard.svelte`
 - [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/ContactHeader.svelte`
 - [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/EmailsPanel.svelte`
 - [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/OverviewPanel.svelte`

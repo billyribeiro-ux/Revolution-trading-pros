@@ -6,7 +6,7 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 
-Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **116 Svelte files** and is tracked in `todo.md`.
+Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one-large-file-at-a-time conversion away from Tailwind-era dynamic markup and legacy Svelte binding patterns toward scoped CSS and current Svelte 5 idioms. Evidence source: Svelte MCP docs/autofixer plus repeatable repo scans for `@apply`, `@reference`, legacy `class:` directives, interpolated class strings, and dynamic style strings. Current hard evidence: `@apply/@reference` is at **0 Svelte files**; the broader dynamic class/style sweep still reports **112 Svelte files** and is tracked in `todo.md`.
 
 ### Completed migration slices
 
@@ -58,6 +58,7 @@ Branch: `codex/tailwind-to-page-css-migration`. This pass tracks the ongoing one
 - Completed admin blog taxonomy/edit batch (`NotificationsList.svelte`, category/tag `CategorySection.svelte`, `TagSection.svelte`, `ToastNotification.svelte`, and edit panels `CategoriesPanel.svelte`, `ContentEditorPanel.svelte`, `FeaturedImagePanel.svelte`, and `TagsPanel.svelte`): converted tracked class/style bindings and legacy declaration tags to Svelte 5 class arrays/objects, declaration tags, and style directives.
 - Completed admin contacts/coupons initial batch (contacts `+page.svelte`, coupons `CouponCard.svelte`, `CouponsFiltersBar.svelte`, and create `CouponBasicFields.svelte`/`CouponRestrictions.svelte`): converted tracked class directives to Svelte 5 class objects for lead scores, coupon status/expiry, filter tabs, discount type toggles, and restriction tabs.
 - Completed admin coupon edit batch (edit `CouponBasicFields.svelte`, `CouponPageHeader.svelte`, `CouponSchedule.svelte`, `CouponUsageLimits.svelte`, and `CouponValidationAlerts.svelte`): converted tracked class directives and alert severity class interpolation to Svelte 5 class arrays/objects.
+- Completed admin courses header/progress batch (edit `CourseHeader.svelte`, `CourseTabs.svelte`, and create `CompletionProgress.svelte`/`QualityScoreCard.svelte`): converted tracked status/tab class directives, validation status class interpolation, progress width strings, and SVG dasharray interpolation to Svelte 5 class/style/attribute composition.
 - `c536dda64` Clean site health background classes.
 - `0032efc91` Modernize admin settings class composition.
 - `65fff3755` Modernize board detail dynamic styling.
