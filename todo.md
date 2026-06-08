@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 112 Svelte files remaining.
+- Broad dynamic class/style migration scan: 109 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -68,6 +68,7 @@ Current evidence:
 - [x] 2026-06-08: Completed admin contacts/coupons initial batch: contacts `+page.svelte`, coupons `CouponCard.svelte`, `CouponsFiltersBar.svelte`, and create `CouponBasicFields.svelte`/`CouponRestrictions.svelte`; replaced tracked class directives with Svelte 5 class objects for lead scores, coupon status/expiry, filter tabs, discount type toggles, and restriction tabs.
 - [x] 2026-06-08: Completed admin coupon edit batch: edit `CouponBasicFields.svelte`, `CouponPageHeader.svelte`, `CouponSchedule.svelte`, `CouponUsageLimits.svelte`, and `CouponValidationAlerts.svelte`; replaced tracked class directives and severity class interpolation with Svelte 5 class arrays/objects.
 - [x] 2026-06-08: Completed admin courses header/progress batch: edit `CourseHeader.svelte`, `CourseTabs.svelte`, and create `CompletionProgress.svelte`/`QualityScoreCard.svelte`; replaced tracked status/tab class directives, interpolated validation classes, progress width strings, and SVG dasharray interpolation with Svelte 5 class/style/attribute composition.
+- [x] 2026-06-08: Completed admin CRM contacts detail batch: `ContactHeader.svelte`, `EmailsPanel.svelte`, and `OverviewPanel.svelte`; replaced tracked status/email interpolated classes and tag color style strings with Svelte 5 class arrays, declaration tags, and `style:` directives.
 
 ## Remaining Files
 
@@ -291,9 +292,9 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/admin/courses/[id]/_components/CourseTabs.svelte`
 - [x] `frontend/src/routes/admin/courses/create/_components/CompletionProgress.svelte`
 - [x] `frontend/src/routes/admin/courses/create/_components/QualityScoreCard.svelte`
-- [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/ContactHeader.svelte`
-- [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/EmailsPanel.svelte`
-- [ ] `frontend/src/routes/admin/crm/contacts/[id]/_components/OverviewPanel.svelte`
+- [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/ContactHeader.svelte`
+- [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/EmailsPanel.svelte`
+- [x] `frontend/src/routes/admin/crm/contacts/[id]/_components/OverviewPanel.svelte`
 - [ ] `frontend/src/routes/admin/crm/deals/[id]/+page.svelte`
 - [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/DealHeader.svelte`
 - [ ] `frontend/src/routes/admin/crm/deals/[id]/_components/DealValueCard.svelte`
