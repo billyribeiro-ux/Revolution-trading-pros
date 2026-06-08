@@ -17,6 +17,10 @@ Current evidence:
 - Broad dynamic class/style migration scan: 332 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
+## Completed Validation Repairs
+
+- [x] 2026-06-08: Fixed pasted Vitest failures in `ChecklistBlock.test.ts`, `RiskDisclaimerBlock.test.ts`, and explosive swings `AlertCard.test.ts` by updating stale Tailwind-era class assertions to the current scoped semantic classes.
+
 ## Remaining Files
 
 Generated from the source-of-truth scan on 2026-06-08. Check these off only after the one-file completion loop passes MCP, targeted scan, full gates, commit, and push.
