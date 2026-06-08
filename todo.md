@@ -14,13 +14,14 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 331 Svelte files remaining.
+- Broad dynamic class/style migration scan: 330 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
 
 - [x] 2026-06-08: Fixed pasted Vitest failures in `ChecklistBlock.test.ts`, `RiskDisclaimerBlock.test.ts`, and explosive swings `AlertCard.test.ts` by updating stale Tailwind-era class assertions to the current scoped semantic classes.
 - [x] 2026-06-08: Completed `frontend/src/lib/components/classes/ClassDownloadsSection.svelte`; replaced legacy `class:active` sort bindings with Svelte 5 class composition and moved one-shot downloads loading to `onMount` with abort cleanup.
+- [x] 2026-06-08: Completed `frontend/src/lib/components/forms/pro/InventoryField.svelte`; replaced legacy class directives/interpolated classes, moved selection state to a bindable value array, and used a derived `SvelteMap` for reactive lookup totals.
 
 ## Remaining Files
 
@@ -123,7 +124,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [ ] `frontend/src/lib/components/forms/pro/FormStepField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/GDPRField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/GeolocationAddress.svelte`
-- [ ] `frontend/src/lib/components/forms/pro/InventoryField.svelte`
+- [x] `frontend/src/lib/components/forms/pro/InventoryField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/MolliePayment.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/NPSField.svelte`
 - [ ] `frontend/src/lib/components/forms/pro/PaddlePayment.svelte`
