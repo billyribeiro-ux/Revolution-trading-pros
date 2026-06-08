@@ -40,9 +40,11 @@
 	const currency = $derived(asString(props.field.attributes?.['currency'], 'USD'));
 	const showFormula = $derived(!!props.field.attributes?.['show_formula']);
 
-	let calculatedValue = $state<number | null>(null);
-	let displayValue = $state<string>('—');
-	let error = $state<string | null>(null);
+	interface CalculationResult {
+		value: number | null;
+		display: string;
+		error: string | null;
+	}
 
 	// Currency symbols
 	const currencySymbols: Record<string, string> = {
@@ -55,20 +57,18 @@
 		AUD: 'A$'
 	};
 
-	// Calculate when form data changes
-	$effect(() => {
-		calculate();
-	});
+	const calculation = $derived.by(() => calculateResult());
+	const calculatedValue = $derived(calculation.value);
+	const displayValue = $derived(calculation.display);
+	const error = $derived(calculation.error);
 
 	// Perform calculation
-	function calculate() {
+	function calculateResult(): CalculationResult {
 		if (!formula) {
-			error = 'No formula defined';
-			return;
+			return { value: null, display: '—', error: 'No formula defined' };
 		}
 
 		try {
-			error = null;
 			let expression = formula;
 
 			// Replace field references {field_name} with actual values
@@ -97,16 +97,17 @@
 			const result = safeEval(expression);
 
 			if (typeof result === 'number' && !isNaN(result)) {
-				calculatedValue = result;
-				displayValue = formatValue(result);
 				props.onchange?.(result);
+				return { value: result, display: formatValue(result), error: null };
 			} else {
-				error = 'Invalid calculation result';
-				displayValue = '—';
+				return { value: null, display: '—', error: 'Invalid calculation result' };
 			}
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Calculation error';
-			displayValue = '—';
+			return {
+				value: null,
+				display: '—',
+				error: err instanceof Error ? err.message : 'Calculation error'
+			};
 		}
 	}
 
@@ -268,8 +269,7 @@
 	{/if}
 
 	<div
-		class="calculated-display"
-		class:has-error={!!error}
+		class={['calculated-display', { 'has-error': !!error }]}
 		id={props.field.name}
 		role="status"
 		aria-live="polite"

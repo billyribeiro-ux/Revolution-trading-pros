@@ -16,6 +16,21 @@
 	import { onMount } from 'svelte';
 
 	let mounted = $state(false);
+	const barHeights = [46, 64, 38, 72, 55, 80, 42, 68];
+	const floatingDots = [
+		{ left: 12, top: 18, duration: 3.6, delay: 0.2 },
+		{ left: 28, top: 72, duration: 5.2, delay: 1.1 },
+		{ left: 41, top: 34, duration: 4.4, delay: 0.6 },
+		{ left: 57, top: 82, duration: 6.1, delay: 1.7 },
+		{ left: 73, top: 22, duration: 3.9, delay: 0.9 },
+		{ left: 86, top: 61, duration: 5.7, delay: 1.4 },
+		{ left: 18, top: 48, duration: 4.8, delay: 0.4 },
+		{ left: 35, top: 12, duration: 6.4, delay: 1.9 },
+		{ left: 63, top: 45, duration: 4.1, delay: 0.7 },
+		{ left: 91, top: 31, duration: 5.5, delay: 1.2 },
+		{ left: 7, top: 86, duration: 3.4, delay: 0.1 },
+		{ left: 79, top: 76, duration: 6.8, delay: 1.6 }
+	];
 
 	onMount(() => {
 		mounted = true;
@@ -29,27 +44,30 @@
 
 		<!-- Animated Bars (Price movement) -->
 		<div class="price-bars">
-			{#each { length: 8 } as _, i (i)}
+			{#each barHeights as barHeight, i (i)}
 				<div
-					class="bar"
-					class:bullish={i % 3 !== 0}
-					class:bearish={i % 3 === 0}
-					style="--delay: {i * 0.2}s; --height: {30 + Math.random() * 50}%;"
+					class={[
+						'bar',
+						{
+							bullish: i % 3 !== 0,
+							bearish: i % 3 === 0
+						}
+					]}
+					style:--delay={`${i * 0.2}s`}
+					style:--height={`${barHeight}%`}
 				></div>
 			{/each}
 		</div>
 
 		<!-- Floating Dots -->
 		<div class="floating-dots">
-			{#each { length: 12 } as _, i (i)}
+			{#each floatingDots as dot, i (i)}
 				<div
 					class="dot"
-					style="
-						left: {Math.random() * 100}%;
-						top: {Math.random() * 100}%;
-						--duration: {3 + Math.random() * 4}s;
-						--delay: {Math.random() * 2}s;
-					"
+					style:left={`${dot.left}%`}
+					style:top={`${dot.top}%`}
+					style:--duration={`${dot.duration}s`}
+					style:--delay={`${dot.delay}s`}
 				></div>
 			{/each}
 		</div>

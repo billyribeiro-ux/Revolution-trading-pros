@@ -68,8 +68,7 @@
 	<div class="widget-grid">
 		{#each visibleWidgets as widget (widget.id)}
 			<div
-				class="widget-container"
-				class:dragging={draggedWidget === widget.id}
+				class={{ 'widget-container': true, dragging: draggedWidget === widget.id }}
 				style:--width={widget.width ?? 1}
 				style:--height={widget.height ?? 1}
 				draggable="true"

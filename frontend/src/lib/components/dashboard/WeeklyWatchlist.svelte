@@ -18,7 +18,6 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import { watchlistApi } from '$lib/api/watchlist';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 
@@ -84,7 +83,7 @@
 	// short poll rather than a reactive $effect (avoids the state-in-$effect
 	// malpractice pattern flagged by svelte autofixer).
 	onMount(() => {
-		if (!browser || data) return;
+		if (data) return;
 
 		const attemptFetch = async () => {
 			// Wait up to 3s for auth to be initialized before fetching
@@ -132,13 +131,13 @@
 			}
 		};
 
-		attemptFetch();
+		void attemptFetch();
 	});
 </script>
 
 {#if isLoading}
 	<!-- Loading skeleton for client-side fetch -->
-	<div class="weekly-watchlist-section {className}">
+	<div class={['weekly-watchlist-section', className]}>
 		<div class="row">
 			<div class="col-left">
 				<div class="skeleton-title"></div>
@@ -153,7 +152,7 @@
 	</div>
 {:else if hasError && !watchlist}
 	<!-- Error state: show fallback so section never disappears -->
-	<div class="weekly-watchlist-section {className}">
+	<div class={['weekly-watchlist-section', className]}>
 		<div class="row">
 			<div class="col-left">
 				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
@@ -179,7 +178,7 @@
 	</div>
 {:else}
 	<!-- Main content -->
-	<div class="weekly-watchlist-section {className}">
+	<div class={['weekly-watchlist-section', className]}>
 		<div class="row">
 			<div class="col-left">
 				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>

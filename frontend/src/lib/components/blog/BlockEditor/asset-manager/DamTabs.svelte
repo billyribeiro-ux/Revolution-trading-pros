@@ -15,13 +15,15 @@
 
 <div class="dam-tabs">
 	<button
-		class="tab"
-		class:active={activeTab === 'library'}
+		class={['tab', { active: activeTab === 'library' }]}
 		onclick={() => (activeTab = 'library')}
 	>
 		Library
 	</button>
-	<button class="tab" class:active={activeTab === 'upload'} onclick={() => (activeTab = 'upload')}>
+	<button
+		class={['tab', { active: activeTab === 'upload' }]}
+		onclick={() => (activeTab = 'upload')}
+	>
 		Upload
 		{#if uploadQueueCount > 0}
 			<span class="badge">{uploadQueueCount}</span>

@@ -152,9 +152,13 @@
 			{/if}
 		</div>
 
-		<div class="group/grid grid md:grid-cols-3 gap-8" style="--x: {mouse.x}px; --y: {mouse.y}px;">
+		<div
+			class="group/grid grid md:grid-cols-3 gap-8"
+			style:--x={`${mouse.x}px`}
+			style:--y={`${mouse.y}px`}
+		>
 			{#each features as feature, i (feature.id)}
-				{@const IconComponent = feature.icon}
+				{const IconComponent = feature.icon}
 				{#if isVisible}
 					<div
 						in:heavySlide={{ delay: 300 + i * 150 }}

@@ -52,8 +52,8 @@
 		{/if}
 		<span
 			class="text-[9px] font-medium px-1.5 py-0.5 rounded"
-			style="background: {typeColor.bg}; color: {typeColor.text};"
-			>{config.optionType.toUpperCase()}</span
+			style:background={typeColor.bg}
+			style:color={typeColor.text}>{config.optionType.toUpperCase()}</span
 		>
 		<span
 			class="text-[9px]"

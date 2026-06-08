@@ -13,26 +13,39 @@
 
 	let { calc }: Props = $props();
 
-	let gridEl: HTMLDivElement | undefined = $state();
+	let gridEl: HTMLDivElement | undefined;
 	let showCustom = $state(false);
 	let customSpotPct = $state(0);
 	let customVolPct = $state(0);
 	let customTimeDays = $state(0);
 	let customRateBp = $state(0);
 
-	$effect(() => {
-		if (gridEl) {
-			const cards = gridEl.querySelectorAll('.scenario-card');
-			gsap.fromTo(
-				cards,
-				{ y: 15, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.25, stagger: 0.03, ease: 'power2.out' }
-			);
-		}
-	});
-
 	function isActive(id: string): boolean {
 		return calc.activeScenarios.some((s) => s.id === id);
+	}
+
+	function getScenarioBorderColor(preset: Scenario): string {
+		return isActive(preset.id) ? preset.color : 'var(--calc-border)';
+	}
+
+	function getScenarioShadow(preset: Scenario): string | undefined {
+		return isActive(preset.id) ? `0 0 12px ${preset.color}33` : undefined;
+	}
+
+	function animateScenarioGrid(element: HTMLDivElement) {
+		gridEl = element;
+		const cards = element.querySelectorAll('.scenario-card');
+		gsap.fromTo(
+			cards,
+			{ y: 15, opacity: 0 },
+			{ y: 0, opacity: 1, duration: 0.25, stagger: 0.03, ease: 'power2.out' }
+		);
+
+		return () => {
+			if (gridEl === element) {
+				gridEl = undefined;
+			}
+		};
 	}
 
 	function addCustomScenario() {
@@ -156,20 +169,18 @@
 	{/if}
 
 	<!-- Preset Cards -->
-	<div bind:this={gridEl} class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+	<div {@attach animateScenarioGrid} class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
 		{#each calc.scenarioPresets as preset (preset.id)}
 			<button
 				onclick={() => calc.toggleScenario(preset)}
 				class="scenario-card flex flex-col gap-1 rounded-xl px-3 py-2 text-left transition-all cursor-pointer"
-				style="background: var(--calc-surface); border: 1px solid {isActive(preset.id)
-					? preset.color
-					: 'var(--calc-border)'}; {isActive(preset.id)
-					? `box-shadow: 0 0 12px ${preset.color}33;`
-					: ''}"
+				style:background="var(--calc-surface)"
+				style:border={`1px solid ${getScenarioBorderColor(preset)}`}
+				style:box-shadow={getScenarioShadow(preset)}
 			>
 				<span
 					class="text-xs font-semibold"
-					style="color: {isActive(preset.id) ? preset.color : 'var(--calc-text)'};"
+					style:color={isActive(preset.id) ? preset.color : 'var(--calc-text)'}
 				>
 					{preset.name}
 				</span>
@@ -209,7 +220,7 @@
 							<td class="px-3 py-2">
 								<span
 									class="inline-block w-2 h-2 rounded-full mr-1.5"
-									style="background: {result.scenario.color};"
+									style:background={result.scenario.color}
 								></span>
 								<span style="color: var(--calc-text-secondary);">{result.scenario.name}</span>
 							</td>
@@ -221,17 +232,15 @@
 							>
 							<td
 								class="text-right px-3 py-2"
-								style="color: {result.callPriceChange >= 0
-									? 'var(--calc-call)'
-									: 'var(--calc-put)'};"
+								style:color={result.callPriceChange >= 0 ? 'var(--calc-call)' : 'var(--calc-put)'}
 							>
 								{result.callPriceChange >= 0 ? '+' : ''}{formatCurrency(result.callPriceChange)}
 							</td>
 							<td
 								class="text-right px-3 py-2"
-								style="color: {result.callPriceChangePct >= 0
+								style:color={result.callPriceChangePct >= 0
 									? 'var(--calc-call)'
-									: 'var(--calc-put)'};"
+									: 'var(--calc-put)'}
 							>
 								{result.callPriceChangePct >= 0 ? '+' : ''}{result.callPriceChangePct.toFixed(1)}%
 							</td>

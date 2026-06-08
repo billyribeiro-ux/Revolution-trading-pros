@@ -16,18 +16,11 @@
 	let { onExportPNG, onExportCSV, onShareLink, onEmbedCode }: Props = $props();
 
 	let isOpen = $state(false);
-	let menuEl: HTMLDivElement | undefined = $state();
-	let containerEl: HTMLDivElement | undefined = $state();
-
-	$effect(() => {
-		if (isOpen && menuEl) {
-			gsap.fromTo(
-				menuEl,
-				{ y: -8, opacity: 0, scale: 0.95 },
-				{ y: 0, opacity: 1, scale: 1, duration: 0.2, ease: 'power2.out' }
-			);
-		}
-	});
+	let menuEl: HTMLDivElement | undefined;
+	let containerEl: HTMLDivElement | undefined;
+	let chevronClass = $derived(
+		['transition-transform', isOpen && 'rotate-180'].filter(Boolean).join(' ')
+	);
 
 	function handleAction(action: () => void): void {
 		isOpen = false;
@@ -38,6 +31,31 @@
 		if (containerEl && !containerEl.contains(e.target as Node)) {
 			isOpen = false;
 		}
+	}
+
+	function trackContainer(element: HTMLDivElement) {
+		containerEl = element;
+
+		return () => {
+			if (containerEl === element) {
+				containerEl = undefined;
+			}
+		};
+	}
+
+	function animateMenu(element: HTMLDivElement) {
+		menuEl = element;
+		gsap.fromTo(
+			element,
+			{ y: -8, opacity: 0, scale: 0.95 },
+			{ y: 0, opacity: 1, scale: 1, duration: 0.2, ease: 'power2.out' }
+		);
+
+		return () => {
+			if (menuEl === element) {
+				menuEl = undefined;
+			}
+		};
 	}
 
 	interface MenuItem {
@@ -77,7 +95,7 @@
 
 <svelte:window onclick={handleClickOutside} />
 
-<div bind:this={containerEl} class="relative">
+<div {@attach trackContainer} class="relative">
 	<button
 		onclick={() => (isOpen = !isOpen)}
 		class="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
@@ -87,12 +105,12 @@
 	>
 		<IconCamera size={11} />
 		Export
-		<IconChevronDown size={9} class="transition-transform {isOpen ? 'rotate-180' : ''}" />
+		<IconChevronDown size={9} class={chevronClass} />
 	</button>
 
 	{#if isOpen}
 		<div
-			bind:this={menuEl}
+			{@attach animateMenu}
 			class="absolute right-0 top-full mt-1.5 w-56 rounded-xl py-1.5 z-50"
 			style="
 				background: var(--calc-surface);
@@ -103,7 +121,7 @@
 			role="menu"
 		>
 			{#each ITEMS as item (item.label)}
-				{@const Icon = item.icon}
+				{const Icon = item.icon}
 				<button
 					onclick={item.action}
 					class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs transition-colors cursor-pointer"

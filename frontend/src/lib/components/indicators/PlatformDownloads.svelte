@@ -24,7 +24,7 @@
 	let { platform, logo, files, notes }: Props = $props();
 </script>
 
-<div class="st_box {platform.toLowerCase()}">
+<div class={['st_box', platform.toLowerCase()]}>
 	<!-- TODO(cls): logo aspect ratio is per-platform; height needed but intrinsic dims unknown -->
 	<img width="250" height="100" src={logo} alt={platform} loading="lazy" />
 

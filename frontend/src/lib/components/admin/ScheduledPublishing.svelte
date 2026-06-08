@@ -69,14 +69,18 @@
 		'Australia/Sydney',
 		'UTC'
 	];
+	const componentId = $props.id();
+	const actionId = $derived(`${componentId}-action`);
+	const dateId = $derived(`${componentId}-date`);
+	const timeId = $derived(`${componentId}-time`);
+	const timezoneId = $derived(`${componentId}-timezone`);
 
 	onMount(() => {
 		loadJobs();
 	});
 
 	function getTomorrowDate(): string {
-		const tomorrow = new Date();
-		tomorrow.setDate(tomorrow.getDate() + 1);
+		const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
 		return tomorrow.toISOString().split('T')[0];
 	}
 
@@ -235,11 +239,11 @@
 				<h4>Scheduled Jobs</h4>
 				{#each jobs as job (job.id)}
 					<div class="job-item">
-						<div class="job-icon" style="color: {getActionColor(job.action)}">
+						<div class="job-icon" style:color={getActionColor(job.action)}>
 							<IconClock size={20} />
 						</div>
 						<div class="job-info">
-							<div class="job-action" style="color: {getActionColor(job.action)}">
+							<div class="job-action" style:color={getActionColor(job.action)}>
 								{getActionLabel(job.action)}
 							</div>
 							<div class="job-time">
@@ -275,8 +279,8 @@
 				<h4>Schedule Action</h4>
 
 				<div class="form-group">
-					<label for="action">Action</label>
-					<select id="action" bind:value={selectedAction}>
+					<label for={actionId}>Action</label>
+					<select id={actionId} bind:value={selectedAction}>
 						{#each actions as action (action.value)}
 							<option value={action.value}>{action.label}</option>
 						{/each}
@@ -285,18 +289,18 @@
 
 				<div class="form-row">
 					<div class="form-group">
-						<label for="date">Date</label>
-						<input type="date" id="date" bind:value={scheduledDate} min={getTomorrowDate()} />
+						<label for={dateId}>Date</label>
+						<input type="date" id={dateId} bind:value={scheduledDate} min={getTomorrowDate()} />
 					</div>
 					<div class="form-group">
-						<label for="time">Time</label>
-						<input type="time" id="time" bind:value={scheduledTime} />
+						<label for={timeId}>Time</label>
+						<input type="time" id={timeId} bind:value={scheduledTime} />
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label for="timezone">Timezone</label>
-					<select id="timezone" bind:value={timezone}>
+					<label for={timezoneId}>Timezone</label>
+					<select id={timezoneId} bind:value={timezone}>
 						{#each timezones as tz (tz)}
 							<option value={tz}>{tz.replace(/_/g, ' ')}</option>
 						{/each}

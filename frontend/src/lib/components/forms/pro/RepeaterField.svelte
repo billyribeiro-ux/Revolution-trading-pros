@@ -60,29 +60,19 @@
 		return Math.random().toString(36).substring(2, 11);
 	}
 
-	function createEmptyRow(): RepeaterRow {
+	function createEmptyRow(id = generateId()): RepeaterRow {
 		const values: Record<string, string> = {};
 		fields.forEach((field) => {
 			values[field.name] = '';
 		});
-		return { id: generateId(), values };
+		return { id, values };
 	}
 
-	let rows = $state<RepeaterRow[]>([]);
-
-	$effect(() => {
-		rows = Array.from({ length: minRows }, () => createEmptyRow());
-	});
-
-	// Sync rows with value prop changes
-	$effect(() => {
-		if (value.length > 0) {
-			rows = value;
-		} else if (rows.length === 0) {
-			// Ensure minimum rows if value becomes empty
-			rows = Array.from({ length: minRows }, () => createEmptyRow());
-		}
-	});
+	let rows = $derived<RepeaterRow[]>(
+		value.length > 0
+			? value
+			: Array.from({ length: minRows }, (_, index) => createEmptyRow(`${name}-initial-${index}`))
+	);
 
 	function addRow() {
 		if (rows.length >= maxRows || disabled) return;
@@ -132,7 +122,7 @@
 	}
 </script>
 
-<div class="repeater-field" class:disabled class:has-error={error}>
+<div class={['repeater-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<div id="{name}-label" class="field-label">
 			{label}
@@ -186,7 +176,7 @@
 
 				<div class="row-fields">
 					{#each fields as field (field.name)}
-						<div class="field-wrapper" style="width: {getFieldWidth(field.width)}">
+						<div class="field-wrapper" style:width={getFieldWidth(field.width)}>
 							{#if field.label}
 								<label for="{name}-{index}-{field.name}" class="inner-label">
 									{field.label}

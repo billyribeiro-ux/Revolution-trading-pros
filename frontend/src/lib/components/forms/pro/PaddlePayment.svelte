@@ -11,6 +11,9 @@
 	 * - Subscription management
 	 */
 
+	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface Props {
 		vendorId: number;
 		productId?: number;
@@ -57,16 +60,12 @@
 		onerror
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
 	let loading = $state(true);
 	let processing = $state(false);
 	let paymentError = $state('');
 
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			loadPaddle();
-		}
+	onMount(() => {
+		void loadPaddle();
 	});
 
 	async function loadPaddle() {
@@ -173,7 +172,7 @@
 	}
 </script>
 
-<div class="paddle-payment" class:disabled class:has-error={error || paymentError}>
+<div class={['paddle-payment', { disabled, 'has-error': error || paymentError }]}>
 	{#if testMode}
 		<div class="test-mode-banner">
 			<span>⚠️ Paddle Sandbox Mode</span>

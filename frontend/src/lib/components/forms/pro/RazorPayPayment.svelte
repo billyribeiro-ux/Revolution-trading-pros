@@ -150,7 +150,7 @@
 	}
 </script>
 
-<div class="razorpay-payment" class:disabled class:has-error={error || paymentError}>
+<div class={['razorpay-payment', { disabled, 'has-error': error || paymentError }]}>
 	{#if testMode}
 		<div class="test-mode-banner">
 			<span>⚠️ Razorpay Test Mode</span>

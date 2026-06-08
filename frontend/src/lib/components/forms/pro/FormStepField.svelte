@@ -7,6 +7,7 @@
 	 */
 
 	import type { Snippet } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
 
 	interface StepConfig {
@@ -50,14 +51,9 @@
 		children
 	}: Props = $props();
 
-	let activeStep = $state(0);
-
-	// Sync activeStep with currentStep prop changes
-	$effect(() => {
-		activeStep = currentStep;
-	});
-	let completedSteps = $state<Set<number>>(new Set());
-	let visitedSteps = $state<Set<number>>(new Set([0]));
+	let activeStep = $derived(currentStep);
+	const completedSteps = new SvelteSet<number>();
+	const visitedSteps = new SvelteSet<number>([0]);
 
 	const totalSteps = $derived(steps.length);
 	const progress = $derived(((activeStep + 1) / totalSteps) * 100);
@@ -79,11 +75,9 @@
 
 		if (direction === 'next') {
 			completedSteps.add(activeStep);
-			completedSteps = completedSteps;
 		}
 
 		visitedSteps.add(stepIndex);
-		visitedSteps = visitedSteps;
 		activeStep = stepIndex;
 	}
 
@@ -114,11 +108,11 @@
 	}
 </script>
 
-<div class="form-step" class:disabled>
+<div class={['form-step', { disabled }]}>
 	<!-- Progress Bar -->
 	{#if showProgressBar}
 		<div class="progress-bar">
-			<div class="progress-fill" style="width: {progress}%"></div>
+			<div class="progress-fill" style:width="{progress}%"></div>
 		</div>
 	{/if}
 
@@ -127,7 +121,7 @@
 		{#each steps as step, index (step.id)}
 			<button
 				type="button"
-				class="step-indicator {getStepStatus(index)}"
+				class={['step-indicator', getStepStatus(index)]}
 				disabled={!canClickStep(index)}
 				onclick={() => goToStep(index)}
 			>
@@ -149,7 +143,7 @@
 			</button>
 
 			{#if index < steps.length - 1}
-				<div class="step-connector" class:completed={completedSteps.has(index)}></div>
+				<div class={['step-connector', { completed: completedSteps.has(index) }]}></div>
 			{/if}
 		{/each}
 	</div>

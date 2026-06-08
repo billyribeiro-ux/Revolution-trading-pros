@@ -24,8 +24,7 @@
 		{#each blocks as block, i (block.id)}
 			<button
 				type="button"
-				class="layer-item"
-				class:selected={block.id === selectedBlockId}
+				class={['layer-item', { selected: block.id === selectedBlockId }]}
 				onclick={() => onSelectBlock(block.id)}
 				role="option"
 				aria-selected={block.id === selectedBlockId}

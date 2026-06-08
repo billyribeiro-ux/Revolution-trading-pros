@@ -18,8 +18,7 @@
 <div class="device-preview" role="group" aria-label="Device preview options">
 	<button
 		type="button"
-		class="device-btn"
-		class:active={device === 'desktop'}
+		class={['device-btn', { active: device === 'desktop' }]}
 		onclick={() => onChange('desktop')}
 		title="Desktop Preview"
 		aria-label="Preview as desktop"
@@ -29,8 +28,7 @@
 	</button>
 	<button
 		type="button"
-		class="device-btn"
-		class:active={device === 'tablet'}
+		class={['device-btn', { active: device === 'tablet' }]}
 		onclick={() => onChange('tablet')}
 		title="Tablet Preview"
 		aria-label="Preview as tablet"
@@ -40,8 +38,7 @@
 	</button>
 	<button
 		type="button"
-		class="device-btn"
-		class:active={device === 'mobile'}
+		class={['device-btn', { active: device === 'mobile' }]}
 		onclick={() => onChange('mobile')}
 		title="Mobile Preview"
 		aria-label="Preview as mobile"

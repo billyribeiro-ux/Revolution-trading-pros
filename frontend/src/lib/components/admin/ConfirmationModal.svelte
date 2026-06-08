@@ -6,6 +6,7 @@
 	 * Custom modal to replace browser confirm() dialogs.
 	 * Supports different variants: danger, warning, info, success
 	 */
+	import type { Attachment } from 'svelte/attachments';
 	import { IconX, IconAlertTriangle, IconTrash, IconInfoCircle, IconCheck } from '$lib/icons';
 
 	interface Props {
@@ -45,7 +46,9 @@
 	// Support both confirmText and confirmLabel for flexibility
 	let confirmText = $derived(confirmTextProp ?? confirmLabel ?? 'Confirm');
 
-	let modalRef = $state<HTMLDivElement | null>(null);
+	const componentId = $props.id();
+	const titleId = $derived(`${componentId}-title`);
+	const inputId = $derived(`${componentId}-input`);
 
 	const variantConfig = {
 		danger: {
@@ -80,6 +83,9 @@
 
 	let config = $derived(variantConfig[variant]);
 	let VariantIcon = $derived(config.icon);
+	const focusModal: Attachment<HTMLDivElement> = (element) => {
+		element.focus();
+	};
 
 	function handleBackdropClick(e: MouseEvent) {
 		if (e.target === e.currentTarget && !isLoading) {
@@ -100,7 +106,6 @@
 	$effect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
-			modalRef?.focus();
 		} else {
 			document.body.style.overflow = '';
 		}
@@ -115,30 +120,30 @@
 		class="modal-backdrop"
 		role="dialog"
 		aria-modal="true"
-		aria-labelledby="modal-title"
+		aria-labelledby={titleId}
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}
 		tabindex="-1"
-		bind:this={modalRef}
+		{@attach focusModal}
 	>
 		<div class="modal-container">
 			<!-- Icon -->
-			<div class="modal-icon" style="--icon-color: {config.iconColor}; --icon-bg: {config.iconBg}">
+			<div class="modal-icon" style:--icon-color={config.iconColor} style:--icon-bg={config.iconBg}>
 				<VariantIcon size={28} />
 			</div>
 
 			<!-- Content -->
 			<div class="modal-content">
-				<h3 id="modal-title" class="modal-title">{title}</h3>
+				<h3 id={titleId} class="modal-title">{title}</h3>
 				<p class="modal-message">{message}</p>
 
 				{#if showInput}
 					<div class="modal-input-group">
 						{#if inputLabel}
-							<label for="modal-input" class="modal-input-label">{inputLabel}</label>
+							<label for={inputId} class="modal-input-label">{inputLabel}</label>
 						{/if}
 						<input
-							id="modal-input"
+							id={inputId}
 							type="text"
 							class="modal-input"
 							placeholder={inputPlaceholder}
@@ -157,7 +162,8 @@
 				<button
 					type="button"
 					class="btn-confirm"
-					style="--btn-bg: {config.buttonBg}; --btn-hover-bg: {config.buttonHoverBg}"
+					style:--btn-bg={config.buttonBg}
+					style:--btn-hover-bg={config.buttonHoverBg}
 					onclick={handleConfirm}
 					disabled={isLoading}
 				>

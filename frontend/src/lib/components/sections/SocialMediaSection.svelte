@@ -56,7 +56,8 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						class="social-link"
-						style="--brand-color: {social.color}; --hover-bg: {social.hoverBg}"
+						style:--brand-color={social.color}
+						style:--hover-bg={social.hoverBg}
 						aria-label="Follow us on {social.name}"
 					>
 						<svg

@@ -38,18 +38,6 @@
 	// Derive text color from settings
 	const textColor = $derived(props.block.settings.textColor || '');
 
-	// Build inline styles for quote text
-	const quoteStyles = $derived.by(() => {
-		const styles: string[] = [];
-		if (!isPullQuote && textAlign !== 'left') {
-			styles.push(`text-align: ${textAlign}`);
-		}
-		if (textColor) {
-			styles.push(`color: ${textColor}`);
-		}
-		return styles.length > 0 ? styles.join('; ') : undefined;
-	});
-
 	/**
 	 * Update block content with partial updates
 	 */
@@ -95,7 +83,9 @@
 
 {#if isPullQuote}
 	<!-- Pull Quote Variant -->
-	<figure class="quote-block quote-block--pullquote" class:quote-block--selected={props.isSelected}>
+	<figure
+		class={['quote-block', 'quote-block--pullquote', { 'quote-block--selected': props.isSelected }]}
+	>
 		<!-- Decorative Quote Icon -->
 		<div class="quote-block__icon" aria-hidden="true">
 			<IconQuote size={32} />
@@ -104,10 +94,14 @@
 		<!-- Quote Text -->
 		<blockquote
 			contenteditable={props.isEditing}
-			class="quote-block__pullquote-text"
-			class:quote-block__pullquote-text--editing={props.isEditing}
-			class:quote-block__pullquote-text--placeholder={!props.block.content.text}
-			style={quoteStyles}
+			class={[
+				'quote-block__pullquote-text',
+				{
+					'quote-block__pullquote-text--editing': props.isEditing,
+					'quote-block__pullquote-text--placeholder': !props.block.content.text
+				}
+			]}
+			style:color={textColor || undefined}
 			oninput={handleTextInput}
 			onpaste={handlePaste}
 			onkeydown={handleKeydown}
@@ -122,8 +116,11 @@
 		{#if props.block.content.html || props.isEditing}
 			<figcaption
 				contenteditable={props.isEditing}
-				class="quote-block__cite quote-block__cite--pullquote"
-				class:quote-block__cite--placeholder={!props.block.content.html}
+				class={[
+					'quote-block__cite',
+					'quote-block__cite--pullquote',
+					{ 'quote-block__cite--placeholder': !props.block.content.html }
+				]}
 				oninput={handleCiteInput}
 				onpaste={handlePaste}
 				data-placeholder="Source or author"
@@ -137,17 +134,21 @@
 {:else}
 	<!-- Standard Quote -->
 	<blockquote
-		class="quote-block quote-block--standard"
-		class:quote-block--selected={props.isSelected}
+		class={['quote-block', 'quote-block--standard', { 'quote-block--selected': props.isSelected }]}
 		role="blockquote"
 	>
 		<!-- Quote Text -->
 		<div
 			contenteditable={props.isEditing}
-			class="quote-block__text"
-			class:quote-block__text--editing={props.isEditing}
-			class:quote-block__text--placeholder={!props.block.content.text}
-			style={quoteStyles}
+			class={[
+				'quote-block__text',
+				{
+					'quote-block__text--editing': props.isEditing,
+					'quote-block__text--placeholder': !props.block.content.text
+				}
+			]}
+			style:text-align={textAlign !== 'left' ? textAlign : undefined}
+			style:color={textColor || undefined}
 			oninput={handleTextInput}
 			onpaste={handlePaste}
 			onkeydown={handleKeydown}
@@ -162,8 +163,10 @@
 		{#if props.block.content.html || props.isEditing}
 			<cite
 				contenteditable={props.isEditing}
-				class="quote-block__cite"
-				class:quote-block__cite--placeholder={!props.block.content.html}
+				class={[
+					'quote-block__cite',
+					{ 'quote-block__cite--placeholder': !props.block.content.html }
+				]}
 				oninput={handleCiteInput}
 				onpaste={handlePaste}
 				data-placeholder="Author name"

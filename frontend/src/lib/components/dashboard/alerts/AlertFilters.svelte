@@ -56,8 +56,7 @@
 <div class="filter-pills" role="tablist" aria-label="Filter alerts by type">
 	{#each filters as filter (filter.value)}
 		<button
-			class="pill"
-			class:active={selected === filter.value}
+			class={['pill', { active: selected === filter.value }]}
 			onclick={() => handleFilterClick(filter.value)}
 			onkeydown={(e) => handleKeyDown(e, filter.value)}
 			role="tab"

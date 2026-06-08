@@ -16,10 +16,12 @@
 
 	let tus = $state<TusModule | null>(null);
 
-	onMount(async () => {
-		if (browser) {
-			tus = await import('tus-js-client');
-		}
+	onMount(() => {
+		if (!browser) return;
+
+		void import('tus-js-client').then((module) => {
+			tus = module;
+		});
 	});
 
 	interface Props {
@@ -201,7 +203,7 @@
 
 <div class="video-uploader">
 	{#if status === 'idle' || status === 'error'}
-		<div class="upload-zone" class:has-file={file} class:error={status === 'error'}>
+		<div class={['upload-zone', { 'has-file': file, error: status === 'error' }]}>
 			{#if !file}
 				<input type="file" accept="video/*" onchange={handleFileSelect} id="video-input" />
 				<label for="video-input">
@@ -248,7 +250,7 @@
 				<span>{progress}%</span>
 			</div>
 			<div class="progress-bar">
-				<div class="progress-fill" style="width: {progress}%"></div>
+				<div class="progress-fill" style:width="{progress}%"></div>
 			</div>
 			<div class="progress-footer">
 				<span

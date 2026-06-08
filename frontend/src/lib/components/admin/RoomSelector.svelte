@@ -99,12 +99,11 @@
 	}
 </script>
 
-<div class="room-selector" class:disabled>
+<div class={['room-selector', { disabled }]}>
 	<!-- Trigger Button with accessible label -->
 	<button
 		type="button"
-		class="selector-trigger"
-		class:expanded={isExpanded}
+		class={['selector-trigger', { expanded: isExpanded }]}
 		onclick={toggleDropdown}
 		{disabled}
 	>
@@ -146,9 +145,13 @@
 			<div class="room-group">
 				<button type="button" class="group-header" onclick={() => selectGroup(liveTradingRooms)}>
 					<div
-						class="group-checkbox"
-						class:checked={isGroupSelected(liveTradingRooms)}
-						class:partial={isGroupPartial(liveTradingRooms)}
+						class={[
+							'group-checkbox',
+							{
+								checked: isGroupSelected(liveTradingRooms),
+								partial: isGroupPartial(liveTradingRooms)
+							}
+						]}
 					>
 						{#if isGroupSelected(liveTradingRooms)}
 							<Icon name="IconCheck" size={12} />
@@ -166,19 +169,20 @@
 					{#each liveTradingRooms as room (room.id)}
 						<button
 							type="button"
-							class="room-item"
-							class:selected={selectedRooms.includes(room.id)}
+							class={['room-item', { selected: selectedRooms.includes(room.id) }]}
 							onclick={() => toggleRoom(room.id)}
 						>
-							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
+							<div class={['room-checkbox', { checked: selectedRooms.includes(room.id) }]}>
 								{#if selectedRooms.includes(room.id)}
 									<Icon name="IconCheck" size={12} />
 								{/if}
 							</div>
 							<span class="room-icon">{room.icon}</span>
 							<span class="room-name">{room.name}</span>
-							<span class="room-badge" style="background-color: {room.color}20; color: {room.color}"
-								>{room.shortName}</span
+							<span
+								class="room-badge"
+								style:background-color={`${room.color}20`}
+								style:color={room.color}>{room.shortName}</span
 							>
 						</button>
 					{/each}
@@ -189,9 +193,13 @@
 			<div class="room-group">
 				<button type="button" class="group-header" onclick={() => selectGroup(alertsOnlyServices)}>
 					<div
-						class="group-checkbox"
-						class:checked={isGroupSelected(alertsOnlyServices)}
-						class:partial={isGroupPartial(alertsOnlyServices)}
+						class={[
+							'group-checkbox',
+							{
+								checked: isGroupSelected(alertsOnlyServices),
+								partial: isGroupPartial(alertsOnlyServices)
+							}
+						]}
 					>
 						{#if isGroupSelected(alertsOnlyServices)}
 							<Icon name="IconCheck" size={12} />
@@ -209,19 +217,20 @@
 					{#each alertsOnlyServices as room (room.id)}
 						<button
 							type="button"
-							class="room-item"
-							class:selected={selectedRooms.includes(room.id)}
+							class={['room-item', { selected: selectedRooms.includes(room.id) }]}
 							onclick={() => toggleRoom(room.id)}
 						>
-							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
+							<div class={['room-checkbox', { checked: selectedRooms.includes(room.id) }]}>
 								{#if selectedRooms.includes(room.id)}
 									<Icon name="IconCheck" size={12} />
 								{/if}
 							</div>
 							<span class="room-icon">{room.icon}</span>
 							<span class="room-name">{room.name}</span>
-							<span class="room-badge" style="background-color: {room.color}20; color: {room.color}"
-								>{room.shortName}</span
+							<span
+								class="room-badge"
+								style:background-color={`${room.color}20`}
+								style:color={room.color}>{room.shortName}</span
 							>
 						</button>
 					{/each}
@@ -239,11 +248,13 @@
 	{#if !isExpanded && selectedRooms.length > 0 && selectedRooms.length <= 4 && !allSelected}
 		<div class="selected-tags">
 			{#each selectedRooms as roomId (roomId)}
-				{@const room = ROOMS.find((r) => r.id === roomId)}
+				{const room = ROOMS.find((r) => r.id === roomId)}
 				{#if room}
 					<span
 						class="tag"
-						style="background-color: {room.color}20; color: {room.color}; border-color: {room.color}40"
+						style:background-color={`${room.color}20`}
+						style:color={room.color}
+						style:border-color={`${room.color}40`}
 					>
 						{room.icon}
 						{room.shortName}

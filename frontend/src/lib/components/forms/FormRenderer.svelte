@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { Form, FormField } from '$lib/api/forms';
 	import { submitForm } from '$lib/api/forms';
 	import type { JsonValue } from '$lib/api/_types';
@@ -23,7 +24,7 @@
 	let isSubmitting = $state(false);
 	let submitSuccess = $state(false);
 	let submitMessage = $state('');
-	let visibleFields: Set<number> = $state(new Set());
+	const visibleFields = new SvelteSet<number>();
 
 	// ICT 7 Fix: Honeypot fields for spam protection (hidden from users, visible to bots)
 	let honeypotWebsite = $state('');
@@ -100,13 +101,12 @@
 	function updateVisibleFields() {
 		if (!props.form.fields) return;
 
-		const newVisibleFields = new Set<number>();
+		visibleFields.clear();
 		props.form.fields.forEach((field) => {
 			if (field.id && shouldDisplayField(field)) {
-				newVisibleFields.add(field.id);
+				visibleFields.add(field.id);
 			}
 		});
-		visibleFields = newVisibleFields;
 	}
 
 	// Handle field value change
@@ -201,27 +201,17 @@
 		return `${baseClasses} ${customClasses}`.trim();
 	}
 
-	// Get custom styles
-	function getFormStyles(): string {
-		if (!props.form.styles) return '';
-
-		const styles: string[] = [];
-
-		if (props.form.styles.background_color) {
-			styles.push(`background-color: ${props.form.styles.background_color}`);
-		}
-		if (props.form.styles.padding) {
-			styles.push(`padding: ${props.form.styles.padding}`);
-		}
-		if (props.form.styles.border_radius) {
-			styles.push(`border-radius: ${props.form.styles.border_radius}`);
-		}
-
-		return styles.join('; ');
-	}
+	const formBackgroundColor = $derived(props.form.styles?.background_color);
+	const formPadding = $derived(props.form.styles?.padding);
+	const formBorderRadius = $derived(props.form.styles?.border_radius);
 </script>
 
-<div class={getFormClasses()} style={getFormStyles()}>
+<div
+	class={getFormClasses()}
+	style:background-color={formBackgroundColor}
+	style:padding={formPadding}
+	style:border-radius={formBorderRadius}
+>
 	{#if props.form.description}
 		<div class="form-description">
 			<p>{props.form.description}</p>
@@ -268,7 +258,7 @@
 				{#each props.form.fields.sort((a, b) => a.order - b.order) as field (field.id)}
 					{#if field.id && visibleFields.has(field.id)}
 						<!-- ICT 7 Fix: Use CSS custom property for proper width inheritance -->
-						<div class="field-wrapper" style="--field-width: {field.width ?? 100}%">
+						<div class="field-wrapper" style:--field-width={`${field.width ?? 100}%`}>
 							<FormFieldRenderer
 								{field}
 								value={formData[field.name]}

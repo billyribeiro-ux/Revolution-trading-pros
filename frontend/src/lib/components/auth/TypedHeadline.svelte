@@ -13,6 +13,7 @@
 	 * @version 2.0.0 - Hydration-safe
 	 */
 	import { onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import Typed from 'typed.js';
 
 	interface Props {
@@ -36,8 +37,18 @@
 
 	// ICT 11+ FIX: Track mount state for hydration-safe rendering
 	let mounted = $state(false);
-	let elementRef = $state<HTMLSpanElement | null>(null);
+	let elementRef: HTMLSpanElement | null = null;
 	let typed: Typed;
+
+	const trackElement: Attachment<HTMLSpanElement> = (element) => {
+		elementRef = element;
+
+		return () => {
+			if (elementRef === element) {
+				elementRef = null;
+			}
+		};
+	};
 
 	onMount(() => {
 		mounted = true;
@@ -72,9 +83,9 @@
 	This ensures SSR HTML matches client hydration expectation
 -->
 {#if mounted}
-	<span bind:this={elementRef} class="typed-headline {className}"></span>
+	<span {@attach trackElement} class={['typed-headline', className]}></span>
 {:else}
-	<span class="typed-headline {className}">{strings[0]}</span>
+	<span class={['typed-headline', className]}>{strings[0]}</span>
 {/if}
 
 <style>

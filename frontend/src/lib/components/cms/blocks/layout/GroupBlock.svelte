@@ -107,7 +107,7 @@
 	}
 </script>
 
-<div class="group-block-wrapper" class:editing={props.isEditing} class:selected={props.isSelected}>
+<div class={['group-block-wrapper', { editing: props.isEditing, selected: props.isSelected }]}>
 	{#if props.isEditing && props.isSelected}
 		<div class="group-toolbar" role="toolbar" aria-label="Group settings">
 			<div class="toolbar-row">
@@ -142,8 +142,7 @@
 						{#each ['none', 'small', 'medium', 'large'] as size (size)}
 							<button
 								type="button"
-								class="size-btn"
-								class:active={paddingSize === size}
+								class={['size-btn', { active: paddingSize === size }]}
 								onclick={() => setPadding(size as PaddingSize)}
 								aria-pressed={paddingSize === size}
 							>
@@ -176,8 +175,7 @@
 						{#each ['full', 'large', 'medium', 'small'] as size (size)}
 							<button
 								type="button"
-								class="size-btn"
-								class:active={maxWidthSize === size}
+								class={['size-btn', { active: maxWidthSize === size }]}
 								onclick={() => setMaxWidth(size as MaxWidthSize)}
 								aria-pressed={maxWidthSize === size}
 							>
@@ -192,8 +190,7 @@
 					<div class="button-group">
 						<button
 							type="button"
-							class="align-btn"
-							class:active={alignment === 'left'}
+							class={['align-btn', { active: alignment === 'left' }]}
 							onclick={() => setAlignment('left')}
 							title="Align left"
 							aria-pressed={alignment === 'left'}
@@ -203,8 +200,7 @@
 						</button>
 						<button
 							type="button"
-							class="align-btn"
-							class:active={alignment === 'center'}
+							class={['align-btn', { active: alignment === 'center' }]}
 							onclick={() => setAlignment('center')}
 							title="Align center"
 							aria-pressed={alignment === 'center'}
@@ -214,8 +210,7 @@
 						</button>
 						<button
 							type="button"
-							class="align-btn"
-							class:active={alignment === 'right'}
+							class={['align-btn', { active: alignment === 'right' }]}
 							onclick={() => setAlignment('right')}
 							title="Align right"
 							aria-pressed={alignment === 'right'}

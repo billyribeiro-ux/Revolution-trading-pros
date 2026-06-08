@@ -13,33 +13,11 @@
 
 	let { calc, onSaved }: Props = $props();
 
-	let modalEl: HTMLDivElement | undefined = $state();
-	let nameInputEl: HTMLInputElement | undefined = $state();
+	let modalEl: HTMLDivElement | undefined;
+	let nameInputEl: HTMLInputElement | undefined;
 	let name = $state('');
 	let description = $state('');
 	let tags = $state('');
-
-	$effect(() => {
-		if (calc.showSaveModal) {
-			const ticker = calc.activeTicker;
-			const type = calc.optionType === 'call' ? 'Call' : 'Put';
-			name = ticker ? `${ticker} ${type} Analysis` : `${type} Analysis`;
-			description = '';
-			tags = '';
-
-			requestAnimationFrame(() => {
-				if (modalEl) {
-					gsap.fromTo(
-						modalEl,
-						{ scale: 0.92, opacity: 0 },
-						{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
-					);
-				}
-				nameInputEl?.focus();
-				nameInputEl?.select();
-			});
-		}
-	});
 
 	function handleSave(): void {
 		const trimmedName = name.trim();
@@ -80,6 +58,42 @@
 	}
 
 	let canSave = $derived(name.trim().length > 0);
+
+	function setupModal(element: HTMLDivElement) {
+		modalEl = element;
+		const ticker = calc.activeTicker;
+		const type = calc.optionType === 'call' ? 'Call' : 'Put';
+		name = ticker ? `${ticker} ${type} Analysis` : `${type} Analysis`;
+		description = '';
+		tags = '';
+
+		requestAnimationFrame(() => {
+			if (modalEl !== element) return;
+			gsap.fromTo(
+				element,
+				{ scale: 0.92, opacity: 0 },
+				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
+			);
+			nameInputEl?.focus();
+			nameInputEl?.select();
+		});
+
+		return () => {
+			if (modalEl === element) {
+				modalEl = undefined;
+			}
+		};
+	}
+
+	function trackNameInput(element: HTMLInputElement) {
+		nameInputEl = element;
+
+		return () => {
+			if (nameInputEl === element) {
+				nameInputEl = undefined;
+			}
+		};
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -100,7 +114,7 @@
 		></button>
 
 		<div
-			bind:this={modalEl}
+			{@attach setupModal}
 			class="relative z-10 w-full max-w-sm rounded-2xl p-5 flex flex-col gap-4"
 			style="
 				background: var(--calc-surface);
@@ -149,7 +163,7 @@
 					Name *
 				</span>
 				<input
-					bind:this={nameInputEl}
+					{@attach trackNameInput}
 					type="text"
 					bind:value={name}
 					class="text-xs px-3 py-2 rounded-lg outline-none"
@@ -204,7 +218,9 @@
 					onclick={handleSave}
 					disabled={!canSave}
 					class="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-lg cursor-pointer transition-all duration-150"
-					style="background: var(--calc-accent); color: white; opacity: {canSave ? 1 : 0.5};"
+					style:background="var(--calc-accent)"
+					style:color="white"
+					style:opacity={canSave ? 1 : 0.5}
 				>
 					<IconDeviceFloppy size={12} />
 					Save

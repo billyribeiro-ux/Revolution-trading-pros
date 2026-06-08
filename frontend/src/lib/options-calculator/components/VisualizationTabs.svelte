@@ -40,7 +40,7 @@
 			<button
 				onclick={() => (calc.activeTab = tab.id)}
 				class="relative px-3 py-2.5 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
-				style="color: {calc.activeTab === tab.id ? 'var(--calc-text)' : 'var(--calc-text-muted)'};"
+				style:color={calc.activeTab === tab.id ? 'var(--calc-text)' : 'var(--calc-text-muted)'}
 			>
 				{tab.label}
 				{#if calc.activeTab === tab.id}
@@ -68,7 +68,7 @@
 					Loading 3D surface...
 				</div>
 			{:then module}
-				{@const Surface3D = module?.default}
+				{const Surface3D = module?.default}
 				<Surface3D {calc} />
 			{:catch}
 				<div

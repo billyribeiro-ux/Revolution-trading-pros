@@ -10,6 +10,7 @@
 	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { SvelteMap } from 'svelte/reactivity';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {
@@ -99,7 +100,7 @@
 		if (headingElements.length === 0) return;
 
 		// Track which headings are currently visible
-		const visibleHeadings = new Map<string, number>();
+		const visibleHeadings = new SvelteMap<string, number>();
 
 		intersectionObserver = new IntersectionObserver(
 			(entries) => {
@@ -205,7 +206,7 @@
 	});
 </script>
 
-<nav class="toc-block" class:mobile={isMobile} aria-label="Table of contents">
+<nav class={['toc-block', { mobile: isMobile }]} aria-label="Table of contents">
 	<button
 		type="button"
 		class="toc-header"
@@ -233,7 +234,7 @@
 			<span class="toc-title">{title}</span>
 		{/if}
 
-		<span class="toc-toggle" class:rotated={!isCollapsed} aria-hidden="true">
+		<span class={['toc-toggle', { rotated: !isCollapsed }]} aria-hidden="true">
 			<IconChevronDown size={18} />
 		</span>
 	</button>
@@ -242,7 +243,9 @@
 		{#if tocItems.length > 0}
 			<ul class="toc-list" role="list">
 				{#each tocItems as item (item.id)}
-					<li class="toc-item toc-level-{item.level}" class:active={activeHeading === item.id}>
+					<li
+						class={['toc-item', `toc-level-${item.level}`, { active: activeHeading === item.id }]}
+					>
 						<button type="button" class="toc-link" onclick={() => scrollToHeading(item.id)}>
 							{item.text}
 						</button>

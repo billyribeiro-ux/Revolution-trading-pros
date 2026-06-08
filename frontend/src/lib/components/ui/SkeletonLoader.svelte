@@ -24,47 +24,48 @@
 	let lines = $derived(props.lines ?? 1);
 	let animated = $derived(props.animated ?? true);
 	let className = $derived(props.class ?? '');
+	let textHeight = $derived(height === 'auto' ? '1em' : height);
+	let shimmerClass = $derived(animated ? 'animate-shimmer' : '');
 </script>
 
 {#if variant === 'text'}
-	<div class="space-y-2 {className}" style="width: {width};">
+	<div class={['space-y-2', className]} style:width>
 		{#each Array(lines) as _, i (i)}
 			<div
-				class="skeleton-text rounded {animated ? 'animate-shimmer' : ''}"
-				style="width: {i === lines - 1 && lines > 1 ? '75%' : '100%'}; height: {height === 'auto'
-					? '1em'
-					: height};"
+				class={['skeleton-text rounded', shimmerClass]}
+				style:width={i === lines - 1 && lines > 1 ? '75%' : '100%'}
+				style:height={textHeight}
 			></div>
 		{/each}
 	</div>
 {:else if variant === 'circular'}
 	<div
-		class="skeleton-circular rounded-full {animated ? 'animate-shimmer' : ''} {className}"
-		style="width: {width}; height: {width};"
+		class={['skeleton-circular rounded-full', shimmerClass, className]}
+		style:width
+		style:height={width}
 	></div>
 {:else if variant === 'rectangular'}
-	<div
-		class="skeleton-rect rounded-lg {animated ? 'animate-shimmer' : ''} {className}"
-		style="width: {width}; height: {height};"
-	></div>
+	<div class={['skeleton-rect rounded-lg', shimmerClass, className]} style:width style:height></div>
 {:else if variant === 'stat'}
-	<div class="skeleton-stat p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50 {className}">
+	<div
+		class={['skeleton-stat p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50', className]}
+	>
 		<div class="flex items-start justify-between mb-4">
-			<div class="skeleton-circular w-12 h-12 rounded-xl {animated ? 'animate-shimmer' : ''}"></div>
-			<div class="skeleton-text w-16 h-5 rounded {animated ? 'animate-shimmer' : ''}"></div>
+			<div class={['skeleton-circular w-12 h-12 rounded-xl', shimmerClass]}></div>
+			<div class={['skeleton-text w-16 h-5 rounded', shimmerClass]}></div>
 		</div>
-		<div class="skeleton-text w-24 h-4 rounded mb-2 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-32 h-8 rounded mb-3 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-20 h-4 rounded {animated ? 'animate-shimmer' : ''}"></div>
+		<div class={['skeleton-text w-24 h-4 rounded mb-2', shimmerClass]}></div>
+		<div class={['skeleton-text w-32 h-8 rounded mb-3', shimmerClass]}></div>
+		<div class={['skeleton-text w-20 h-4 rounded', shimmerClass]}></div>
 	</div>
 {:else if variant === 'card'}
-	<div class="skeleton-card p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50 {className}">
-		<div
-			class="skeleton-rect w-full h-40 rounded-xl mb-4 {animated ? 'animate-shimmer' : ''}"
-		></div>
-		<div class="skeleton-text w-3/4 h-6 rounded mb-2 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-full h-4 rounded mb-1 {animated ? 'animate-shimmer' : ''}"></div>
-		<div class="skeleton-text w-2/3 h-4 rounded {animated ? 'animate-shimmer' : ''}"></div>
+	<div
+		class={['skeleton-card p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50', className]}
+	>
+		<div class={['skeleton-rect w-full h-40 rounded-xl mb-4', shimmerClass]}></div>
+		<div class={['skeleton-text w-3/4 h-6 rounded mb-2', shimmerClass]}></div>
+		<div class={['skeleton-text w-full h-4 rounded mb-1', shimmerClass]}></div>
+		<div class={['skeleton-text w-2/3 h-4 rounded', shimmerClass]}></div>
 	</div>
 {/if}
 

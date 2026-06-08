@@ -69,6 +69,14 @@
 		if (change < 0) return inverse ? 'metric-value--positive' : 'metric-value--negative';
 		return 'metric-value--neutral';
 	}
+
+	function getMovementClass(value: number) {
+		return value > 0 ? 'positive' : value < 0 ? 'negative' : undefined;
+	}
+
+	function getWaterfallHeight(value: number) {
+		return `${safeData.mrr > 0 ? (value / safeData.mrr) * 100 : 0}%`;
+	}
 </script>
 
 <div class="revenue-breakdown">
@@ -82,17 +90,19 @@
 		<div class="metric-card primary">
 			<div class="metric-label">Monthly Recurring Revenue</div>
 			<div class="metric-value">{formatCurrency(safeData.mrr)}</div>
-			{#if true}
-				{@const TrendIcon = getTrendIcon(safeData.mrr_change)}
-				<div
-					class="metric-change"
-					class:positive={safeData.mrr_change > 0}
-					class:negative={safeData.mrr_change < 0}
-				>
-					<TrendIcon size={16} />
-					{formatPercent(Math.abs(safeData.mrr_change))} vs last month
-				</div>
-			{/if}
+			{const TrendIcon = getTrendIcon(safeData.mrr_change)}
+			<div
+				class={[
+					'metric-change',
+					{
+						positive: safeData.mrr_change > 0,
+						negative: safeData.mrr_change < 0
+					}
+				]}
+			>
+				<TrendIcon size={16} />
+				{formatPercent(Math.abs(safeData.mrr_change))} vs last month
+			</div>
 		</div>
 
 		<div class="metric-card">
@@ -126,13 +136,7 @@
 				<div class="movement-value">-{formatCurrency(safeData.churn_mrr)}</div>
 			</div>
 
-			<div
-				class="movement-item net {safeData.net_new_mrr > 0
-					? 'positive'
-					: safeData.net_new_mrr < 0
-						? 'negative'
-						: ''}"
-			>
+			<div class={['movement-item', 'net', getMovementClass(safeData.net_new_mrr)]}>
 				<div class="movement-label">Net New MRR</div>
 				<div class="movement-value">
 					{safeData.net_new_mrr > 0 ? '+' : ''}{formatCurrency(safeData.net_new_mrr)}
@@ -146,7 +150,7 @@
 		<div class="metric-row">
 			<div class="metric-item">
 				<div class="metric-label">Churn Rate</div>
-				<div class="metric-value small {getTrendClass(safeData.churn_rate, true)}">
+				<div class={['metric-value', 'small', getTrendClass(safeData.churn_rate, true)]}>
 					{formatPercent(safeData.churn_rate)}
 				</div>
 			</div>
@@ -169,54 +173,42 @@
 		<div class="waterfall-bars">
 			<div class="waterfall-bar start">
 				<div class="bar-label">Start MRR</div>
-				<div class="bar" style="height: 100%">
+				<div class="bar" style:height="100%">
 					<span class="bar-value">{formatCurrency(safeData.mrr - safeData.net_new_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar positive">
 				<div class="bar-label">New</div>
-				<div
-					class="bar"
-					style="height: {safeData.mrr > 0 ? (safeData.new_mrr / safeData.mrr) * 100 : 0}%"
-				>
+				<div class="bar" style:height={getWaterfallHeight(safeData.new_mrr)}>
 					<span class="bar-value">+{formatCurrency(safeData.new_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar positive">
 				<div class="bar-label">Expansion</div>
-				<div
-					class="bar"
-					style="height: {safeData.mrr > 0 ? (safeData.expansion_mrr / safeData.mrr) * 100 : 0}%"
-				>
+				<div class="bar" style:height={getWaterfallHeight(safeData.expansion_mrr)}>
 					<span class="bar-value">+{formatCurrency(safeData.expansion_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar negative">
 				<div class="bar-label">Contraction</div>
-				<div
-					class="bar"
-					style="height: {safeData.mrr > 0 ? (safeData.contraction_mrr / safeData.mrr) * 100 : 0}%"
-				>
+				<div class="bar" style:height={getWaterfallHeight(safeData.contraction_mrr)}>
 					<span class="bar-value">-{formatCurrency(safeData.contraction_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar negative">
 				<div class="bar-label">Churn</div>
-				<div
-					class="bar"
-					style="height: {safeData.mrr > 0 ? (safeData.churn_mrr / safeData.mrr) * 100 : 0}%"
-				>
+				<div class="bar" style:height={getWaterfallHeight(safeData.churn_mrr)}>
 					<span class="bar-value">-{formatCurrency(safeData.churn_mrr)}</span>
 				</div>
 			</div>
 
 			<div class="waterfall-bar end">
 				<div class="bar-label">End MRR</div>
-				<div class="bar" style="height: 100%">
+				<div class="bar" style:height="100%">
 					<span class="bar-value">{formatCurrency(safeData.mrr)}</span>
 				</div>
 			</div>

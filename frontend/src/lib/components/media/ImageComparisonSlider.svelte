@@ -7,6 +7,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 	import Icon from '$lib/components/Icon.svelte';
 
 	interface Props {
@@ -33,20 +34,26 @@
 		afterSize = 0
 	}: Props = $props();
 
-	let container: HTMLElement | null = $state(null);
-	let sliderPosition = $state(50);
+	let container: HTMLElement | undefined;
+	let sliderPosition = $derived<number>(initialPosition);
 	let isDragging = $state(false);
 	let isLoaded = $state(false);
-
-	$effect(() => {
-		sliderPosition = initialPosition;
-	});
 
 	// Calculate savings
 	let savingsPercent = $derived(
 		beforeSize > 0 ? Math.round((1 - afterSize / beforeSize) * 100) : 0
 	);
 	let savingsBytes = $derived(beforeSize - afterSize);
+
+	const containerAttachment: Attachment<HTMLElement> = (element) => {
+		container = element;
+
+		return () => {
+			if (container === element) {
+				container = undefined;
+			}
+		};
+	};
 
 	function formatBytes(bytes: number): string {
 		if (bytes === 0) return '0 B';
@@ -148,7 +155,7 @@
 				<span class="label">{beforeLabel}</span>
 				<span class="size">{formatBytes(beforeSize)}</span>
 			</div>
-			<div class="savings" class:positive={savingsPercent > 0}>
+			<div class={['savings', { positive: savingsPercent > 0 }]}>
 				{#if savingsPercent > 0}
 					<Icon name="IconCircleCheckFilled" size={20} class="icon" />
 					<span>{savingsPercent}% smaller</span>
@@ -166,9 +173,7 @@
 
 	<!-- Comparison container -->
 	<div
-		bind:this={container}
-		class="comparison-container"
-		class:loading={!isLoaded}
+		class={['comparison-container', { loading: !isLoaded }]}
 		role="slider"
 		aria-label="Image comparison slider"
 		aria-valuemin={0}
@@ -180,6 +185,7 @@
 		ontouchmove={handleTouchMove}
 		ontouchend={handleTouchEnd}
 		onkeydown={handleKeydown}
+		{@attach containerAttachment}
 	>
 		<!-- Loading spinner -->
 		{#if !isLoaded}
@@ -205,7 +211,7 @@
 		</div>
 
 		<!-- Before image (clipped) -->
-		<div class="image-layer before-layer" style="clip-path: inset(0 {100 - sliderPosition}% 0 0);">
+		<div class="image-layer before-layer" style:clip-path={`inset(0 ${100 - sliderPosition}% 0 0)`}>
 			<img
 				src={beforeSrc}
 				alt={beforeLabel}
@@ -220,9 +226,9 @@
 		</div>
 
 		<!-- Slider handle -->
-		<div class="slider-handle" style="left: {sliderPosition}%;">
+		<div class="slider-handle" style:left={`${sliderPosition}%`}>
 			<div class="handle-line"></div>
-			<div class="handle-button" class:active={isDragging}>
+			<div class={['handle-button', { active: isDragging }]}>
 				<Icon name="IconArrowsLeftRight" size={24} />
 			</div>
 		</div>

@@ -9,6 +9,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import type { Block, BlockSettings } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
 
@@ -100,6 +101,13 @@
 		document.removeEventListener('mouseup', handleDragEnd);
 	}
 
+	onDestroy(() => {
+		if (typeof document === 'undefined') return;
+
+		document.removeEventListener('mousemove', handleDragMove);
+		document.removeEventListener('mouseup', handleDragEnd);
+	});
+
 	// Keyboard support for drag handle
 	function handleKeyDown(e: KeyboardEvent): void {
 		if (!props.isEditing) return;
@@ -120,7 +128,7 @@
 </script>
 
 {#if props.isEditing}
-	<div class="spacer-block editing" class:selected={props.isSelected} class:dragging={isDragging}>
+	<div class={['spacer-block editing', { selected: props.isSelected, dragging: isDragging }]}>
 		{#if props.isSelected}
 			<div class="spacer-toolbar" role="toolbar" aria-label="Spacer settings">
 				<div class="toolbar-row">
@@ -130,8 +138,7 @@
 							{#each HEIGHT_PRESETS as preset (preset.value)}
 								<button
 									type="button"
-									class="preset-btn"
-									class:active={height === preset.value}
+									class={['preset-btn', { active: height === preset.value }]}
 									onclick={() => setHeight(preset.value)}
 									aria-pressed={height === preset.value}
 									title={preset.value}

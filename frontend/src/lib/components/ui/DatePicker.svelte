@@ -41,45 +41,17 @@
 	let label = $derived(props.label);
 	let required = $derived(props.required ?? false);
 	let disabled = $derived(props.disabled ?? false);
+	const labelId = $props.id();
 
 	// Local state
 	let isOpen = $state(false);
 	let viewDate = $state(new Date());
-	let containerRef = $state<HTMLDivElement | null>(null);
+	let containerRef: HTMLDivElement | null = null;
 
 	// Derived
 	const days = $derived(getCalendarDays(viewDate));
 	const monthYear = $derived(`${MONTHS[viewDate.getMonth()]} ${viewDate.getFullYear()}`);
 	const formattedValue = $derived(formatDisplayDate(value));
-
-	// Initialize view to selected date when opening
-	$effect(() => {
-		if (isOpen && value) {
-			const selected = new Date(value);
-			viewDate = new Date(selected.getFullYear(), selected.getMonth(), 1);
-		}
-	});
-
-	// Click outside to close
-	$effect(() => {
-		if (!isOpen) return;
-
-		const handler = (e: MouseEvent) => {
-			if (containerRef && !containerRef.contains(e.target as Node)) {
-				isOpen = false;
-			}
-		};
-
-		// Delay to avoid immediate close from the toggle click
-		const timer = setTimeout(() => {
-			document.addEventListener('click', handler);
-		}, 0);
-
-		return () => {
-			clearTimeout(timer);
-			document.removeEventListener('click', handler);
-		};
-	});
 
 	function getCalendarDays(date: Date): (number | null)[] {
 		const year = date.getFullYear();
@@ -143,14 +115,43 @@
 		isOpen = false;
 	}
 
+	function toggleCalendar() {
+		if (disabled) return;
+
+		const nextOpen = !isOpen;
+		if (nextOpen && value) {
+			const selected = new Date(value);
+			viewDate = new Date(selected.getFullYear(), selected.getMonth(), 1);
+		}
+		isOpen = nextOpen;
+	}
+
+	function handleDocumentClick(e: MouseEvent) {
+		if (isOpen && containerRef && !containerRef.contains(e.target as Node)) {
+			isOpen = false;
+		}
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') isOpen = false;
 	}
+
+	function trackContainer(element: HTMLDivElement) {
+		containerRef = element;
+
+		return () => {
+			if (containerRef === element) {
+				containerRef = null;
+			}
+		};
+	}
 </script>
 
-<div class="date-picker" bind:this={containerRef}>
+<svelte:document onclick={handleDocumentClick} />
+
+<div class="date-picker" {@attach trackContainer}>
 	{#if label}
-		<span class="date-picker-label" id="date-picker-label">
+		<span class="date-picker-label" id={labelId}>
 			{label}{#if required}<span class="required">*</span>{/if}
 		</span>
 	{/if}
@@ -158,11 +159,11 @@
 	<button
 		type="button"
 		class="date-picker-trigger"
-		onclick={() => (isOpen = !isOpen)}
+		onclick={toggleCalendar}
 		{disabled}
 		aria-expanded={isOpen}
 		aria-haspopup="dialog"
-		aria-labelledby={label ? 'date-picker-label' : undefined}
+		aria-labelledby={label ? labelId : undefined}
 	>
 		<span class="date-picker-value">{formattedValue}</span>
 		<Icon name="IconCalendar" size={18} />
@@ -199,9 +200,7 @@
 					{:else}
 						<button
 							type="button"
-							class="day"
-							class:selected={isSelected(day)}
-							class:today={isToday(day)}
+							class={{ day: true, selected: isSelected(day), today: isToday(day) }}
 							onclick={() => select(day)}
 						>
 							{day}

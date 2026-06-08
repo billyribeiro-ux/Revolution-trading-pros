@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { IconCode, IconCopy, IconCheck } from '$lib/icons';
 	import type { Block, BlockContent } from '../types';
 	import type { BlockId } from '$lib/stores/blockState.svelte';
@@ -24,7 +25,7 @@
 	let props: Props = $props();
 
 	let copied = $state(false);
-	let copyTimeout: ReturnType<typeof setTimeout> | null = $state(null);
+	let copyTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	const languages = [
 		{ value: 'javascript', label: 'JavaScript' },
@@ -87,12 +88,18 @@
 
 			copyTimeout = setTimeout(() => {
 				copied = false;
-				copyTimeout = null;
+				copyTimeout = undefined;
 			}, 2000);
 		} catch (error) {
 			props.onError?.(error instanceof Error ? error : new Error('Failed to copy code'));
 		}
 	}
+
+	onDestroy(() => {
+		if (copyTimeout) {
+			clearTimeout(copyTimeout);
+		}
+	});
 </script>
 
 <div class="code-block" role="region" aria-label="Code block">
@@ -120,8 +127,7 @@
 			{/if}
 			<button
 				type="button"
-				class="code-block__copy-btn"
-				class:code-block__copy-btn--copied={copied}
+				class={['code-block__copy-btn', { 'code-block__copy-btn--copied': copied }]}
 				onclick={copyCode}
 				aria-label={copied ? 'Copied!' : 'Copy code'}
 				disabled={!props.block.content.code}
@@ -140,9 +146,14 @@
 	<div class="code-block__content">
 		<pre class="code-block__pre"><code
 				contenteditable={props.isEditing}
-				class="code-block__code language-{props.block.content.language || 'javascript'}"
-				class:code-block__code--placeholder={!props.block.content.code}
-				class:code-block__code--editable={props.isEditing}
+				class={[
+					'code-block__code',
+					`language-${props.block.content.language || 'javascript'}`,
+					{
+						'code-block__code--placeholder': !props.block.content.code,
+						'code-block__code--editable': props.isEditing
+					}
+				]}
 				oninput={handleCodeInput}
 				onpaste={handlePaste}
 				onkeydown={handleKeyDown}

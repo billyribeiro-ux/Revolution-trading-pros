@@ -10,6 +10,9 @@
 	 * - CSV Data
 	 */
 
+	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface DynamicOption {
 		value: string;
 		label: string;
@@ -78,25 +81,20 @@
 		fetchEndpoint = '/api/forms/dynamic-field'
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
 	let options = $state<DynamicOption[]>([]);
 	let loading = $state(true);
 	let fetchError = $state('');
 	let searchQuery = $state('');
-	let selectedValues = $state<string[]>([]);
+	let selectedValues = $derived(Array.isArray(value) ? value : value ? [value] : []);
 
-	// Sync with prop value changes
-	$effect(() => {
-		selectedValues = Array.isArray(value) ? value : value ? [value] : [];
+	onMount(() => {
+		const controller = new AbortController();
+		void fetchOptions(controller.signal);
+
+		return () => controller.abort();
 	});
 
-	// Fetch options on mount
-	$effect(() => {
-		fetchOptions();
-	});
-
-	async function fetchOptions() {
+	async function fetchOptions(signal?: AbortSignal) {
 		loading = true;
 		fetchError = '';
 
@@ -104,7 +102,8 @@
 			const response = await fetch(fetchEndpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ config: dynamicConfig })
+				body: JSON.stringify({ config: dynamicConfig }),
+				signal
 			});
 
 			if (!response.ok) {
@@ -121,10 +120,14 @@
 
 			options = fetchedOptions;
 		} catch (err) {
+			if (err instanceof DOMException && err.name === 'AbortError') return;
+
 			fetchError = err instanceof Error ? err.message : 'Failed to load options';
 			options = [];
 		} finally {
-			loading = false;
+			if (!signal?.aborted) {
+				loading = false;
+			}
 		}
 	}
 
@@ -181,7 +184,7 @@
 	);
 </script>
 
-<div class="dynamic-field" class:disabled class:has-error={error}>
+<div class={['dynamic-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<div class="field-label">
 			{label}
@@ -200,7 +203,7 @@
 		<div class="error-state">
 			<span class="error-icon">⚠️</span>
 			<span>{fetchError}</span>
-			<button type="button" class="retry-btn" onclick={fetchOptions}>Retry</button>
+			<button type="button" class="retry-btn" onclick={() => void fetchOptions()}>Retry</button>
 		</div>
 	{:else if fieldType === 'select' || fieldType === 'multi_select'}
 		<div class="select-wrapper">
@@ -218,8 +221,7 @@
 				multiple={isMultiple}
 				{disabled}
 				onchange={handleSelectChange}
-				class="select-input"
-				class:searchable={enableSearchable}
+				class={['select-input', { searchable: enableSearchable }]}
 			>
 				{#if !isMultiple && placeholder}
 					<option value="" disabled selected={!selectedValues.length}>{placeholder}</option>

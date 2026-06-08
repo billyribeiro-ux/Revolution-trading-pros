@@ -21,6 +21,7 @@
 	import { listResources } from '$lib/api/room-resources';
 	import ResourceCard from './ResourceCard.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	interface Props {
 		roomId?: number;
@@ -64,42 +65,16 @@
 		onPreview
 	}: Props = $props();
 
-	let resources = $state<RoomResource[]>([]);
-	let loading = $state(true);
+	let resources = $derived<RoomResource[]>(initialResources ?? []);
+	let loading = $derived<boolean>(initialResources === undefined);
 	let error = $state('');
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let total = $state(0);
 	let searchQuery = $state('');
-	let selectedType = $state<ResourceType | ''>('');
-	let selectedSection = $state<SectionType | ''>('');
-	let selectedAccessLevel = $state<AccessLevel | ''>('');
-
-	// Sync state from props when they change
-	$effect(() => {
-		if (initialResources !== undefined) {
-			resources = initialResources;
-			loading = false;
-		}
-	});
-
-	$effect(() => {
-		if (resourceType !== undefined) {
-			selectedType = resourceType;
-		}
-	});
-
-	$effect(() => {
-		if (section !== undefined) {
-			selectedSection = section;
-		}
-	});
-
-	$effect(() => {
-		if (accessLevel !== undefined) {
-			selectedAccessLevel = accessLevel;
-		}
-	});
+	let selectedType = $derived<ResourceType | ''>(resourceType ?? '');
+	let selectedSection = $derived<SectionType | ''>(section ?? '');
+	let selectedAccessLevel = $derived<AccessLevel | ''>(accessLevel ?? '');
 
 	// Resource type options
 	const resourceTypes: { value: ResourceType | ''; label: string }[] = [
@@ -182,18 +157,21 @@
 		}
 	}
 
-	// Initial load
-	$effect(() => {
-		if (!initialResources) {
-			loadResources();
+	onMount(() => {
+		if (initialResources === undefined) {
+			void loadResources();
 		}
 	});
 
 	// Debounced search
-	let searchTimeout: ReturnType<typeof setTimeout>;
+	let searchTimeout: ReturnType<typeof setTimeout> | undefined;
+	onDestroy(() => {
+		if (searchTimeout) clearTimeout(searchTimeout);
+	});
+
 	function handleSearch(event: Event) {
 		const target = event.target as HTMLInputElement;
-		clearTimeout(searchTimeout);
+		if (searchTimeout) clearTimeout(searchTimeout);
 		searchTimeout = setTimeout(() => {
 			searchQuery = target.value;
 			currentPage = 1;
@@ -304,7 +282,7 @@
 
 	<!-- Loading state -->
 	{#if loading}
-		<div class="grid {gridClasses} gap-6">
+		<div class={['grid gap-6', gridClasses]}>
 			{#each Array(perPage) as _, i (i)}
 				<div class="animate-pulse">
 					<div class="aspect-video rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
@@ -364,7 +342,7 @@
 		</div>
 	{:else}
 		<!-- Resource grid -->
-		<div class="grid {gridClasses} gap-6">
+		<div class={['grid gap-6', gridClasses]}>
 			{#each resources as resource (resource.id)}
 				<ResourceCard
 					{resource}
@@ -392,12 +370,15 @@
 
 				<!-- Page numbers -->
 				{#each Array(Math.min(5, totalPages)) as _, i (i)}
-					{@const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
+					{const pageNum = currentPage <= 3 ? i + 1 : currentPage + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
 						<button
-							class="rounded-lg px-3 py-2 text-sm font-medium {pageNum === currentPage
-								? 'bg-blue-600 text-white'
-								: 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}"
+							class={[
+								'rounded-lg px-3 py-2 text-sm font-medium',
+								pageNum === currentPage
+									? 'bg-blue-600 text-white'
+									: 'border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
+							]}
 							onclick={() => handlePageChange(pageNum)}
 						>
 							{pageNum}

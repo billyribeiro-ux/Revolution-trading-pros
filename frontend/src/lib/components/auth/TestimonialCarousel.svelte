@@ -135,8 +135,7 @@
 		{#each testimonials as _, i (i)}
 			<button
 				type="button"
-				class="carousel-dot"
-				class:active={selectedIndex === i}
+				class={['carousel-dot', { active: selectedIndex === i }]}
 				onclick={() => scrollTo(i)}
 				aria-label="Go to testimonial {i + 1}"
 			></button>

@@ -137,21 +137,17 @@
 		}
 	}
 
-	function handleClickOutside(event: MouseEvent) {
+	function handleDocumentClick(event: MouseEvent) {
+		if (!showDropdown) return;
+
 		const target = event.target as HTMLElement;
 		if (!target.closest('.country-selector')) {
 			showDropdown = false;
 		}
 	}
-
-	$effect(() => {
-		if (showDropdown) {
-			document.addEventListener('click', handleClickOutside);
-			return () => document.removeEventListener('click', handleClickOutside);
-		}
-		return undefined;
-	});
 </script>
+
+<svelte:document onclick={handleDocumentClick} />
 
 <div class="phone-intl-field">
 	<label class="field-label" for={`field-${props.field.name}`}>
@@ -188,8 +184,7 @@
 						{#each filteredCountries as country (country.code)}
 							<button
 								type="button"
-								class="country-option"
-								class:selected={selectedCountry.code === country.code}
+								class={['country-option', { selected: selectedCountry.code === country.code }]}
 								onclick={(e: MouseEvent) => {
 									e.stopPropagation();
 									selectCountry(country);
@@ -215,8 +210,7 @@
 			placeholder={props.field.placeholder || 'Phone number'}
 			value={phoneNumber}
 			required={props.field.required}
-			class="phone-input"
-			class:input-error={props.error && props.error.length > 0}
+			class={['phone-input', { 'input-error': props.error && props.error.length > 0 }]}
 			oninput={handlePhoneInput}
 		/>
 	</div>

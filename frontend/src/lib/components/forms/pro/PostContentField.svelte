@@ -10,6 +10,7 @@
 	import { sanitizeHtml } from '$lib/sanitize';
 	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	interface Props {
 		name?: string;
@@ -43,18 +44,13 @@
 		onchange
 	}: Props = $props();
 
-	let content = $state('');
-	let editorRef = $state<HTMLDivElement>();
+	let content = $derived<string>(value);
+	let editorRef: HTMLDivElement | undefined;
 	let showHtml = $state(false);
 
 	// Input modal state (replaces native prompt() for URL entry).
 	let showInsertLinkModal = $state(false);
 	let insertLinkUrl = $state('');
-
-	// Sync content with value prop changes
-	$effect(() => {
-		content = value;
-	});
 
 	const charCount = $derived(content.replace(/<[^>]*>/g, '').length);
 	const wordCount = $derived(
@@ -64,6 +60,16 @@
 			.split(/\s+/)
 			.filter((w) => w.length > 0).length
 	);
+
+	const editorAttachment: Attachment<HTMLDivElement> = (element) => {
+		editorRef = element;
+
+		return () => {
+			if (editorRef === element) {
+				editorRef = undefined;
+			}
+		};
+	};
 
 	function handleInput(e: Event) {
 		if (enableRichText) {
@@ -111,7 +117,7 @@
 	}
 </script>
 
-<div class="post-content-field" class:disabled class:has-error={error}>
+<div class={['post-content-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<div id="content-label" class="field-label">
 			{label}
@@ -193,8 +199,7 @@
 					type="button"
 					onclick={toggleHtmlView}
 					title="Toggle HTML"
-					class="toolbar-btn"
-					class:active={showHtml}
+					class={['toolbar-btn', { active: showHtml }]}
 				>
 					&lt;/&gt;
 				</button>
@@ -204,13 +209,13 @@
 				<textarea class="html-editor" bind:value={content} oninput={handleInput} {rows}></textarea>
 			{:else}
 				<div
-					bind:this={editorRef}
 					class="content-editor"
 					contenteditable={!disabled}
 					oninput={handleInput}
 					role="textbox"
 					aria-multiline="true"
-					style="min-height: {rows * 1.5}rem"
+					style:min-height={`${rows * 1.5}rem`}
+					{@attach editorAttachment}
 				>
 					{@html sanitizeHtml(content || `<p>${placeholder}</p>`, 'rich')}
 				</div>
@@ -236,7 +241,7 @@
 		<span>{wordCount} words</span>
 		<span>{charCount} characters</span>
 		{#if maxLength}
-			<span class:warning={charCount > maxLength * 0.9}>{charCount}/{maxLength}</span>
+			<span class={{ warning: charCount > maxLength * 0.9 }}>{charCount}/{maxLength}</span>
 		{/if}
 	</div>
 

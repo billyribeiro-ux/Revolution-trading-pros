@@ -28,6 +28,8 @@
 	}
 
 	let { variant = 'card', count = 1, height, width, columns = 4 }: Props = $props();
+	const chartBarHeights = [42, 68, 54, 82, 47, 73, 58];
+	const dashboardChartBarHeights = [46, 62, 38, 76, 55, 88, 64, 50, 71, 43];
 </script>
 
 {#each Array(count) as _, i (i)}
@@ -85,13 +87,13 @@
 				<div class="skeleton-line medium"></div>
 			</div>
 			<div class="skeleton-chart-bars">
-				{#each Array(7) as _, i (i)}
-					<div class="skeleton-bar" style:height="{30 + Math.random() * 60}%"></div>
+				{#each chartBarHeights as barHeight, i (i)}
+					<div class="skeleton-bar" style:height={`${barHeight}%`}></div>
 				{/each}
 			</div>
 		</div>
 	{:else if variant === 'dashboard'}
-		<div class="skeleton-dashboard" style="--columns: {columns}">
+		<div class="skeleton-dashboard" style:--columns={columns}>
 			<div class="skeleton-grid">
 				{#each Array(columns) as _, i (i)}
 					<div class="skeleton skeleton-metric">
@@ -109,8 +111,8 @@
 						<div class="skeleton-line medium"></div>
 					</div>
 					<div class="skeleton-chart-bars">
-						{#each Array(10) as _, i (i)}
-							<div class="skeleton-bar" style:height="{30 + Math.random() * 60}%"></div>
+						{#each dashboardChartBarHeights as barHeight, i (i)}
+							<div class="skeleton-bar" style:height={`${barHeight}%`}></div>
 						{/each}
 					</div>
 				</div>

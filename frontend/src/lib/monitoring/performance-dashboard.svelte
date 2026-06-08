@@ -114,7 +114,7 @@
 </script>
 
 {#if visible}
-	<div class="perf-dashboard {positionClass}" role="region" aria-label="Performance metrics">
+	<div class={['perf-dashboard', positionClass]} role="region" aria-label="Performance metrics">
 		<div class="dashboard-header">
 			<span class="dashboard-title">⚡ Performance</span>
 		</div>
@@ -122,12 +122,12 @@
 		<div class="metrics-grid">
 			<div class="metric">
 				<span class="metric-label">FPS</span>
-				<span class="metric-value {getStatusColor(fps, { good: 55, warn: 30 })}">{fps}</span>
+				<span class={['metric-value', getStatusColor(fps, { good: 55, warn: 30 })]}>{fps}</span>
 			</div>
 
 			<div class="metric">
 				<span class="metric-label">Render</span>
-				<span class="metric-value {getInverseStatusColor(renderTime, { good: 8, warn: 16 })}"
+				<span class={['metric-value', getInverseStatusColor(renderTime, { good: 8, warn: 16 })]}
 					>{renderTime}ms</span
 				>
 			</div>
@@ -140,7 +140,8 @@
 			{#if memory.total > 0}
 				<div class="metric">
 					<span class="metric-label">Memory</span>
-					<span class="metric-value {getInverseStatusColor(memory.percent, { good: 50, warn: 75 })}"
+					<span
+						class={['metric-value', getInverseStatusColor(memory.percent, { good: 50, warn: 75 })]}
 						>{memory.used}MB</span
 					>
 				</div>

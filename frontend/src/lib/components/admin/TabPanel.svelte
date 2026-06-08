@@ -81,7 +81,7 @@
 	}
 </script>
 
-<div class="tab-panel-container {variant} {className}">
+<div class={['tab-panel-container', variant, className]}>
 	<!-- Tab Navigation -->
 	<div class="tab-nav" role="tablist" aria-label="Tab navigation">
 		{#each tabs as tab, index (tab.id)}
@@ -92,9 +92,7 @@
 				aria-selected={activeTab === tab.id}
 				aria-controls="panel-{tab.id}"
 				tabindex={activeTab === tab.id ? 0 : -1}
-				class="tab-btn"
-				class:active={activeTab === tab.id}
-				class:disabled={tab.disabled}
+				class={['tab-btn', { active: activeTab === tab.id, disabled: tab.disabled }]}
 				disabled={tab.disabled}
 				onclick={() => handleTabClick(tab.id, tab.disabled)}
 				onkeydown={(e) => handleKeyDown(e, tab.id, index)}
@@ -117,9 +115,13 @@
 				role="tabpanel"
 				id="panel-{tab.id}"
 				aria-labelledby="tab-{tab.id}"
-				class="tab-panel"
-				class:active={activeTab === tab.id}
-				class:inactive={activeTab !== tab.id}
+				class={[
+					'tab-panel',
+					{
+						active: activeTab === tab.id,
+						inactive: activeTab !== tab.id
+					}
+				]}
 				inert={activeTab !== tab.id ? true : undefined}
 			>
 				{@render panel(tab.id)}

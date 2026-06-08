@@ -45,19 +45,19 @@
 <!-- Screen reader live region - announces new toasts -->
 <div class="fixed top-4 right-4 z-50 space-y-2" role="region" aria-label="Notifications">
 	{#each toastList as toast (toast.id)}
-		{@const IconComponent = icons[toast.type]}
+		{const IconComponent = icons[toast.type]}
 		<div
-			class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 shadow-lg
-				min-w-[300px] max-w-md motion-safe:animate-slide-in motion-reduce:opacity-100
-				{colors[toast.type]}"
+			class={[
+				'flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 shadow-lg min-w-[300px] max-w-md motion-safe:animate-slide-in motion-reduce:opacity-100',
+				colors[toast.type]
+			]}
 			role="status"
 			aria-live={getAriaLive(toast.type)}
 			aria-atomic="true"
 		>
 			<!-- Icon -->
 			<span
-				class="flex-shrink-0"
-				class:motion-safe:animate-spin={toast.type === 'loading'}
+				class={{ 'flex-shrink-0': true, 'motion-safe:animate-spin': toast.type === 'loading' }}
 				aria-hidden="true"
 			>
 				<IconComponent size={20} />

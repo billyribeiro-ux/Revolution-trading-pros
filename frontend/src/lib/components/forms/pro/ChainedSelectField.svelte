@@ -43,12 +43,8 @@
 		onchange
 	}: Props = $props();
 
-	let selections = $state<Record<string, string>>({});
-
-	// Sync with prop value changes
-	$effect(() => {
-		selections = { ...value };
-	});
+	// Writable $derived keeps local changes while still resetting from prop updates.
+	let selections = $derived({ ...value });
 
 	function getFilteredOptions(levelIndex: number): SelectOption[] {
 		if (levelIndex === 0) {
@@ -91,15 +87,15 @@
 </script>
 
 <div
-	class="chained-select-field"
-	class:disabled
-	class:has-error={error}
-	class:horizontal={layout === 'horizontal'}
+	class={[
+		'chained-select-field',
+		{ disabled, 'has-error': error, horizontal: layout === 'horizontal' }
+	]}
 >
-	<div class="selects-container" class:horizontal={layout === 'horizontal'}>
+	<div class={['selects-container', { horizontal: layout === 'horizontal' }]}>
 		{#each levels as level, index (level.name)}
-			{@const options = getFilteredOptions(index)}
-			{@const isDisabled = isLevelDisabled(index)}
+			{const options = getFilteredOptions(index)}
+			{const isDisabled = isLevelDisabled(index)}
 
 			<div class="select-group">
 				<label for="{name}_{level.name}" class="field-label">
@@ -116,8 +112,7 @@
 					onchange={(e: Event) =>
 						handleChange(level.name, (e.target as HTMLSelectElement).value, index)}
 					disabled={isDisabled}
-					class="select-input"
-					class:placeholder={!selections[level.name]}
+					class={['select-input', { placeholder: !selections[level.name] }]}
 				>
 					<option value="">{level.placeholder || `Select ${level.label}`}</option>
 					{#each options as option (option.value)}

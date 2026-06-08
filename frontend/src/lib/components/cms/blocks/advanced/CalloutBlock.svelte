@@ -141,22 +141,24 @@
 
 {#if !isDismissed || props.isEditing}
 	<div
-		class="callout-block"
-		class:dismissed={isDismissed}
-		class:callout-info={calloutType === 'info'}
-		class:callout-success={calloutType === 'success'}
-		class:callout-warning={calloutType === 'warning'}
-		class:callout-error={calloutType === 'error'}
+		class={[
+			'callout-block',
+			{
+				dismissed: isDismissed,
+				'callout-info': calloutType === 'info',
+				'callout-success': calloutType === 'success',
+				'callout-warning': calloutType === 'warning',
+				'callout-error': calloutType === 'error'
+			}
+		]}
 		role="alert"
 		aria-label="{currentConfig.label} callout"
-		style="
-			--callout-bg: {currentConfig.bg};
-			--callout-border: {currentConfig.border};
-			--callout-text: {currentConfig.text};
-			--callout-dark-bg: {currentConfig.darkBg};
-			--callout-dark-border: {currentConfig.darkBorder};
-			--callout-dark-text: {currentConfig.darkText};
-		"
+		style:--callout-bg={currentConfig.bg}
+		style:--callout-border={currentConfig.border}
+		style:--callout-text={currentConfig.text}
+		style:--callout-dark-bg={currentConfig.darkBg}
+		style:--callout-dark-border={currentConfig.darkBorder}
+		style:--callout-dark-text={currentConfig.darkText}
 	>
 		<!-- Emoji Icon -->
 		<div class="callout-icon" aria-hidden="true">

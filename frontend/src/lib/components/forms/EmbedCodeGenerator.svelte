@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import type { Form } from '$lib/api/forms';
 
 	interface Props {
@@ -9,6 +10,7 @@
 
 	let embedType: 'iframe' | 'script' | 'link' = $state('iframe');
 	let copiedMessage = $state('');
+	let copyTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	// Get base URL
 	const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
@@ -51,14 +53,20 @@ ${'</'}script>`);
 			.writeText(text)
 			.then(() => {
 				copiedMessage = `${type} copied to clipboard!`;
-				setTimeout(() => {
+				clearTimeout(copyTimeout);
+				copyTimeout = setTimeout(() => {
 					copiedMessage = '';
 				}, 3000);
 			})
 			.catch(() => {
+				clearTimeout(copyTimeout);
 				copiedMessage = 'Failed to copy';
 			});
 	}
+
+	onDestroy(() => {
+		clearTimeout(copyTimeout);
+	});
 
 	function getCode(): string {
 		switch (embedType) {
@@ -80,8 +88,7 @@ ${'</'}script>`);
 
 	<div class="embed-type-selector">
 		<button
-			class="type-btn"
-			class:active={embedType === 'iframe'}
+			class={['type-btn', { active: embedType === 'iframe' }]}
 			onclick={() => (embedType = 'iframe')}
 		>
 			<span class="icon">🖼️</span>
@@ -89,8 +96,7 @@ ${'</'}script>`);
 		</button>
 
 		<button
-			class="type-btn"
-			class:active={embedType === 'script'}
+			class={['type-btn', { active: embedType === 'script' }]}
 			onclick={() => (embedType = 'script')}
 		>
 			<span class="icon">📜</span>
@@ -98,8 +104,7 @@ ${'</'}script>`);
 		</button>
 
 		<button
-			class="type-btn"
-			class:active={embedType === 'link'}
+			class={['type-btn', { active: embedType === 'link' }]}
 			onclick={() => (embedType = 'link')}
 		>
 			<span class="icon">🔗</span>

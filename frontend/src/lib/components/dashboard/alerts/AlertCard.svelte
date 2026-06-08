@@ -53,10 +53,8 @@
 </script>
 
 <div
-	class="alert-card"
-	class:is-new={alert.isNew}
-	class:has-notes-open={isNotesExpanded}
-	style="animation-delay: {index * 50}ms"
+	class={['alert-card', { 'is-new': alert.isNew, 'has-notes-open': isNotesExpanded }]}
+	style:animation-delay={`${index * 50}ms`}
 >
 	{#if alert.isNew}
 		<span class="new-badge pulse">NEW</span>
@@ -73,7 +71,7 @@
 			{:else}
 				<Icon name="IconMinus" size={20} class="direction-icon direction-neutral" />
 			{/if}
-			<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
+			<span class={['alert-type', `alert-type--${alert.type.toLowerCase()}`]}>{alert.type}</span>
 			<span class="alert-ticker">{alert.ticker}</span>
 			<span class="alert-time">{alert.time}</span>
 		</div>
@@ -91,8 +89,7 @@
 	<!-- Action Buttons Row -->
 	<div class="alert-actions-row">
 		<button
-			class="copy-btn"
-			class:copied={isCopied}
+			class={['copy-btn', { copied: isCopied }]}
 			onclick={() => onCopy?.(alert)}
 			aria-label="Copy trade details"
 		>
@@ -105,8 +102,7 @@
 			{/if}
 		</button>
 		<button
-			class="notes-chevron"
-			class:expanded={isNotesExpanded}
+			class={['notes-chevron', { expanded: isNotesExpanded }]}
 			onclick={() => onToggleNotes?.(alert.id)}
 			aria-label="Toggle trade notes"
 			aria-expanded={isNotesExpanded}

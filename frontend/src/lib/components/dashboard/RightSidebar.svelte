@@ -34,7 +34,7 @@
 	let className = $derived(props.className ?? '');
 </script>
 
-<aside class="dashboard__content-sidebar {className}">
+<aside class={['dashboard__content-sidebar', className]}>
 	{#each sections as section (section.heading)}
 		<section class="content-sidebar__section">
 			<h4 class="content-sidebar__heading">

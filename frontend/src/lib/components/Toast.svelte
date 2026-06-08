@@ -37,23 +37,23 @@
 
 <div class="toast-container" aria-live="polite" aria-label="Notifications">
 	{#each toastList as toast, index (toast.id)}
-		{@const IconComponent = getIcon(toast.type)}
 		<div
-			class="toast toast-{toast.type}"
+			class={['toast', `toast-${toast.type}`]}
 			animate:flip={{ duration: 300, easing: quintOut }}
 			in:fly={{ y: -30, x: 30, duration: 400, easing: backOut }}
 			out:scale={{ duration: 200, start: 0.95, opacity: 0 }}
 			role="alert"
-			style="--delay: {index * 50}ms"
+			style:--delay={`${index * 50}ms`}
 		>
+			{const IconComponent = getIcon(toast.type)}
 			<!-- Progress Bar for auto-dismiss -->
 			{#if toast.duration > 0}
 				<div class="toast-progress">
-					<div class="toast-progress-bar" style="animation-duration: {toast.duration}ms"></div>
+					<div class="toast-progress-bar" style:animation-duration={`${toast.duration}ms`}></div>
 				</div>
 			{/if}
 
-			<div class="toast-icon" class:spinning={toast.type === 'loading'}>
+			<div class={['toast-icon', { spinning: toast.type === 'loading' }]}>
 				<IconComponent size={20} stroke={2} />
 			</div>
 			<div class="toast-content">

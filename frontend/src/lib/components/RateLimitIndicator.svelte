@@ -9,7 +9,7 @@
 	 * @version 2.0.0 - Fixed misleading UX
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
 	import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
@@ -33,7 +33,6 @@
 	let rateLimits = $state<RateLimitInfo[]>([]);
 	let isLoading = $state(true);
 	let hasConnectedServices = $state(false);
-	let refreshInterval = $state<ReturnType<typeof setInterval> | undefined>(undefined);
 
 	/**
 	 * Fetch real rate limit data from connected services
@@ -138,19 +137,29 @@
 		isOpen = false;
 	}
 
-	onMount(async () => {
+	onMount(() => {
+		let isMounted = true;
+
+		async function refreshRateLimits() {
+			const nextRateLimits = await fetchRateLimits();
+			if (isMounted) {
+				rateLimits = nextRateLimits;
+				isLoading = false;
+			}
+		}
+
 		isLoading = true;
-		rateLimits = await fetchRateLimits();
-		isLoading = false;
+		void refreshRateLimits();
 
 		// Refresh every minute
-		refreshInterval = setInterval(async () => {
-			rateLimits = await fetchRateLimits();
+		const refreshInterval = setInterval(() => {
+			void refreshRateLimits();
 		}, 60000);
-	});
 
-	onDestroy(() => {
-		if (refreshInterval) clearInterval(refreshInterval);
+		return () => {
+			isMounted = false;
+			clearInterval(refreshInterval);
+		};
 	});
 </script>
 
@@ -158,10 +167,14 @@
 
 <div class="rate-limit-container">
 	<button
-		class="rate-limit-btn"
-		class:warning={overallStatus === 'warning'}
-		class:critical={overallStatus === 'critical'}
-		class:disconnected={overallStatus === 'none'}
+		class={[
+			'rate-limit-btn',
+			{
+				warning: overallStatus === 'warning',
+				critical: overallStatus === 'critical',
+				disconnected: overallStatus === 'none'
+			}
+		]}
 		onclick={(e: MouseEvent) => {
 			e.stopPropagation();
 			toggle();
@@ -177,14 +190,14 @@
 			<IconPlugConnectedX size={18} />
 			<span class="limit-percentage">--</span>
 		{/if}
-		<span class="chevron" class:rotated={isOpen}>
+		<span class={['chevron', { rotated: isOpen }]}>
 			<IconChevronDown size={14} />
 		</span>
 	</button>
 
 	{#if isOpen}
-		{@const status = overallStatus}
-		{@const StatusIcon = getStatusIcon(status)}
+		{const status = overallStatus}
+		{const StatusIcon = getStatusIcon(status)}
 		<div
 			class="rate-limit-dropdown"
 			transition:scale={{ duration: 200, start: 0.95 }}
@@ -195,7 +208,7 @@
 		>
 			<div class="dropdown-header">
 				<h4>API Rate Limits</h4>
-				<span class="header-status" style="color: {getStatusColor(status)}">
+				<span class="header-status" style:color={getStatusColor(status)}>
 					<StatusIcon size={14} />
 					{#if status === 'none'}
 						No services connected
@@ -233,14 +246,15 @@
 						<div class="limit-item">
 							<div class="limit-header">
 								<span class="service-name">{limit.service}</span>
-								<span class="limit-status" style="color: {getStatusColor(limit.status)}">
+								<span class="limit-status" style:color={getStatusColor(limit.status)}>
 									{limit.remaining.toLocaleString()} / {limit.limit.toLocaleString()}
 								</span>
 							</div>
 							<div class="limit-bar-container">
 								<div
 									class="limit-bar"
-									style="width: {limit.percentage}%; background: {getStatusColor(limit.status)}"
+									style:width={`${limit.percentage}%`}
+									style:background={getStatusColor(limit.status)}
 								></div>
 							</div>
 							<div class="limit-footer">

@@ -167,18 +167,22 @@
 		<ul>
 			{#each breadcrumbs as item, index (index)}
 				{#if index > 0}
-					<li class="separator{index === 1 ? ' separator-home' : ''}" aria-hidden="true">/</li>
+					<li class={['separator', { 'separator-home': index === 1 }]} aria-hidden="true">/</li>
 				{/if}
 				<li class={item.className || (item.isCurrent ? 'item-current' : 'item-home')}>
 					{#if item.isCurrent}
 						<strong class="breadcrumb-current" title={item.label}>{item.label}</strong>
 					{:else}
 						<a
-							class="breadcrumb-link{index === 0
-								? ' breadcrumb-home'
-								: ''}{item.className?.includes('custom-post-type-classes')
-								? ' breadcrumb-cat breadcrumb-custom-post-type-classes'
-								: ''}"
+							class={[
+								'breadcrumb-link',
+								{
+									'breadcrumb-home': index === 0,
+									'breadcrumb-cat breadcrumb-custom-post-type-classes': item.className?.includes(
+										'custom-post-type-classes'
+									)
+								}
+							]}
 							href={item.href}
 							title={item.label}
 						>

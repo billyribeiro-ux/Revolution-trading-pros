@@ -167,7 +167,7 @@
 	}
 </script>
 
-<div class="mollie-payment" class:disabled class:has-error={error || methodError}>
+<div class={['mollie-payment', { disabled, 'has-error': error || methodError }]}>
 	{#if label}
 		<label class="field-label" for="mollie-method-select">{label}</label>
 	{/if}
@@ -186,8 +186,7 @@
 		{#each filteredMethods as method (method.id)}
 			<button
 				type="button"
-				class="method-btn"
-				class:selected={selectedMethod === method.id}
+				class={['method-btn', { selected: selectedMethod === method.id }]}
 				aria-label="Select {method.name}"
 				onclick={() => selectMethod(method.id)}
 				{disabled}

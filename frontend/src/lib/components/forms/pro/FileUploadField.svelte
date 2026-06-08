@@ -5,6 +5,9 @@
 	 * Advanced file upload with drag-drop, preview, and validation.
 	 */
 
+	import type { Attachment } from 'svelte/attachments';
+	import Icon from '$lib/components/Icon.svelte';
+
 	interface UploadedFile {
 		id: string;
 		name: string;
@@ -51,16 +54,19 @@
 		onupload
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
-
-	let files = $state<UploadedFile[]>([]);
+	let files = $derived([...value]);
 	let isDragging = $state(false);
-	let fileInput = $state<HTMLInputElement>();
+	let fileInput: HTMLInputElement | undefined;
 
-	// Sync files with value prop
-	$effect(() => {
-		if (value !== undefined) files = [...value];
-	});
+	const fileInputAttachment: Attachment<HTMLInputElement> = (input) => {
+		fileInput = input;
+
+		return () => {
+			if (fileInput === input) {
+				fileInput = undefined;
+			}
+		};
+	};
 
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';
@@ -185,7 +191,7 @@
 	const acceptString = $derived(acceptedTypes.join(','));
 </script>
 
-<div class="file-upload-field" class:disabled class:has-error={error}>
+<div class={['file-upload-field', { disabled, 'has-error': error }]}>
 	{#if label}
 		<label class="field-label" for="{name}-upload-area">
 			{label}
@@ -198,8 +204,7 @@
 	{#if canAddMore}
 		<div
 			id="{name}-upload-area"
-			class="dropzone"
-			class:dragging={isDragging}
+			class={['dropzone', { dragging: isDragging }]}
 			ondrop={handleDrop}
 			ondragover={handleDragOver}
 			ondragleave={handleDragLeave}
@@ -210,13 +215,13 @@
 			aria-label={label || 'Upload files'}
 		>
 			<input
-				bind:this={fileInput}
 				type="file"
 				accept={acceptString}
 				{multiple}
 				onchange={handleInputChange}
 				{disabled}
 				class="file-input"
+				{@attach fileInputAttachment}
 			/>
 
 			<div class="dropzone-content">
@@ -234,7 +239,7 @@
 	{#if files.length > 0}
 		<ul class="file-list">
 			{#each files as file (file.id)}
-				<li class="file-item" class:error={file.status === 'error'}>
+				<li class={['file-item', { error: file.status === 'error' }]}>
 					{#if showPreview && file.type.startsWith('image/') && file.url}
 						<img
 							src={file.url}
@@ -253,7 +258,7 @@
 						<span class="file-size">{formatFileSize(file.size)}</span>
 						{#if file.status === 'uploading'}
 							<div class="progress-bar">
-								<div class="progress-fill" style="width: {file.progress}%"></div>
+								<div class="progress-fill" style:width="{file.progress}%"></div>
 							</div>
 						{/if}
 						{#if file.error}

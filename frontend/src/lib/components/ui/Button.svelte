@@ -67,13 +67,13 @@
 
 <button
 	{type}
-	class="rounded-md font-medium inline-flex items-center justify-center gap-2
-		transition-colors duration-200 touch-manipulation
-		focus:outline-none focus:ring-2 focus:ring-offset-2
-		{variants[variant]} {sizes[size]}
-		{fullWidth ? 'w-full' : 'w-full sm:w-auto'}
-		disabled:cursor-not-allowed disabled:opacity-60
-		{className}"
+	class={[
+		'rounded-md font-medium inline-flex items-center justify-center gap-2 transition-colors duration-200 touch-manipulation focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60',
+		variants[variant],
+		sizes[size],
+		fullWidth ? 'w-full' : 'w-full sm:w-auto',
+		className
+	]}
 	disabled={isDisabled}
 	aria-disabled={isDisabled}
 	aria-busy={loading}
@@ -91,7 +91,7 @@
 			<span class="sr-only">Loading, please wait</span>
 		{/if}
 	{/if}
-	<span class:opacity-0={loading && !loadingText} class:sr-only={loading && loadingText}>
+	<span class={{ 'opacity-0': loading && !loadingText, 'sr-only': loading && loadingText }}>
 		{@render props.children?.()}
 	</span>
 	{#if loading && loadingText}

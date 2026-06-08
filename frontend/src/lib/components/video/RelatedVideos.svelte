@@ -14,7 +14,6 @@
  */
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import Icon from '$lib/components/Icon.svelte';
 
@@ -60,46 +59,27 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	let videos = $state<Video[]>([]);
-	let isLoading = $state(true);
-	let _error = $state<string | null>(null);
-
-	// ═══════════════════════════════════════════════════════════════════════
-	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════
-
-	onMount(async () => {
-		if (!browser || !videoId) return;
-		await fetchRelated();
-	});
-
-	// Refetch when videoId changes
-	$effect(() => {
-		if (browser && videoId) {
-			fetchRelated();
-		}
-	});
+	let relatedVideos = $derived(fetchRelated(videoId, limit));
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// METHODS
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async function fetchRelated() {
+	async function fetchRelated(currentVideoId: number, currentLimit: number): Promise<Video[]> {
+		if (!browser || !currentVideoId) return [];
+
 		try {
-			isLoading = true;
-			_error = null;
-			const response = await fetch(`/api/videos/${videoId}/related`);
+			const response = await fetch(`/api/videos/${currentVideoId}/related`);
 			const data = await response.json();
 
 			if (data.success && Array.isArray(data.data)) {
-				videos = data.data.slice(0, limit);
+				return data.data.slice(0, currentLimit);
 			}
 		} catch (e) {
-			_error = 'Failed to load related videos';
 			console.error('Related videos fetch error:', e);
-		} finally {
-			isLoading = false;
 		}
+
+		return [];
 	}
 
 	function formatViews(count: number): string {
@@ -113,52 +93,8 @@
 	}
 </script>
 
-{#if !isLoading && videos.length > 0}
-	<section
-		class="related-videos {className}"
-		class:related-videos--horizontal={layout === 'horizontal'}
-	>
-		<h3 class="related-videos__title">{title}</h3>
-
-		<div class="related-videos__list">
-			{#each videos as video (video.id)}
-				<a href="/dashboard/videos/{video.slug}" class="related-card">
-					<!-- Thumbnail -->
-					<div class="related-card__thumbnail">
-						{#if video.thumbnail_url}
-							<img
-								src={video.thumbnail_url}
-								alt={video.title}
-								loading="lazy"
-								width="120"
-								height="68"
-							/>
-						{:else}
-							<div class="related-card__placeholder">
-								<Icon name="IconPlayerPlay" size={24} />
-							</div>
-						{/if}
-
-						{#if video.formatted_duration}
-							<span class="related-card__duration">{video.formatted_duration}</span>
-						{/if}
-					</div>
-
-					<!-- Info -->
-					<div class="related-card__info">
-						<h4 class="related-card__title">{video.title}</h4>
-						<p class="related-card__meta">
-							<span>{formatViews(video.views_count)}</span>
-							<span class="related-card__dot"></span>
-							<span>{video.formatted_date}</span>
-						</p>
-					</div>
-				</a>
-			{/each}
-		</div>
-	</section>
-{:else if isLoading}
-	<section class="related-videos {className}">
+{#await relatedVideos}
+	<section class={['related-videos', className]}>
 		<h3 class="related-videos__title">{title}</h3>
 		<div class="related-videos__loading">
 			<div class="related-videos__skeleton"></div>
@@ -166,7 +102,56 @@
 			<div class="related-videos__skeleton"></div>
 		</div>
 	</section>
-{/if}
+{:then videos}
+	{#if videos.length > 0}
+		<section
+			class={[
+				'related-videos',
+				className,
+				{ 'related-videos--horizontal': layout === 'horizontal' }
+			]}
+		>
+			<h3 class="related-videos__title">{title}</h3>
+
+			<div class="related-videos__list">
+				{#each videos as video (video.id)}
+					<a href="/dashboard/videos/{video.slug}" class="related-card">
+						<!-- Thumbnail -->
+						<div class="related-card__thumbnail">
+							{#if video.thumbnail_url}
+								<img
+									src={video.thumbnail_url}
+									alt={video.title}
+									loading="lazy"
+									width="120"
+									height="68"
+								/>
+							{:else}
+								<div class="related-card__placeholder">
+									<Icon name="IconPlayerPlay" size={24} />
+								</div>
+							{/if}
+
+							{#if video.formatted_duration}
+								<span class="related-card__duration">{video.formatted_duration}</span>
+							{/if}
+						</div>
+
+						<!-- Info -->
+						<div class="related-card__info">
+							<h4 class="related-card__title">{video.title}</h4>
+							<p class="related-card__meta">
+								<span>{formatViews(video.views_count)}</span>
+								<span class="related-card__dot"></span>
+								<span>{video.formatted_date}</span>
+							</p>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
+{/await}
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

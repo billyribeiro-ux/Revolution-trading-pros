@@ -34,7 +34,7 @@
 	}
 </script>
 
-<aside class="app-sidebar" class:collapsed={isCollapsed}>
+<aside class={['app-sidebar', { collapsed: isCollapsed }]}>
 	{#if props.header}
 		<div class="sidebar-header">
 			{@render props.header()}

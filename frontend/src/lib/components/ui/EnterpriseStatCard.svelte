@@ -7,10 +7,11 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, type ComponentType } from 'svelte';
-	import { browser } from '$app/environment';
+	import type { Component } from 'svelte';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 	import SkeletonLoader from './SkeletonLoader.svelte';
+
+	type IconComponent = Component<{ size?: number; class?: string }>;
 
 	interface Props {
 		title: string;
@@ -21,7 +22,7 @@
 		suffix?: string;
 		trend?: number | null;
 		trendLabel?: string;
-		icon?: ComponentType;
+		icon?: IconComponent;
 		color?: 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red';
 		loading?: boolean;
 		delay?: number;
@@ -51,7 +52,6 @@
 	let targetLabel = $derived(props.targetLabel ?? 'Target');
 	let onclick = $derived(props.onclick);
 
-	let cardRef: HTMLDivElement;
 	let isVisible = $state(false);
 	let hasAnimated = $state(false);
 
@@ -117,6 +117,9 @@
 	let colors = $derived(colorConfig[color]);
 	let trendIsPositive = $derived(trend !== null && trend >= 0);
 	let progressPercent = $derived(target ? Math.min((value / target) * 100, 100) : 0);
+	let cardTransitionDelay = $derived(`${delay}s`);
+	let progressWidth = $derived(`${hasAnimated ? progressPercent : 0}%`);
+	let progressTransitionDelay = $derived(`${delay + 0.5}s`);
 
 	function generateSparklinePath(data: number[]): string {
 		if (data.length < 2) return '';
@@ -147,10 +150,13 @@
 		}
 	}
 
-	onMount(() => {
-		if (!browser || !cardRef) return;
+	function observeCard(element: HTMLDivElement) {
+		if (typeof IntersectionObserver === 'undefined') {
+			isVisible = true;
+			hasAnimated = true;
+			return;
+		}
 
-		// Intersection observer for viewport-based animation
 		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
@@ -163,21 +169,25 @@
 			{ threshold: 0.2 }
 		);
 
-		observer.observe(cardRef);
+		observer.observe(element);
 
 		return () => observer.disconnect();
-	});
+	}
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
-	bind:this={cardRef}
-	class="enterprise-stat-card relative p-6 rounded-2xl border bg-linear-to-br {colors.bg} {colors.border}
-		backdrop-blur-xl transition-all duration-500
-		{!hasAnimated ? 'esc-enter' : ''} {hasAnimated ? 'esc-enter-active' : ''}
-		{clickable ? 'cursor-pointer hover:scale-[1.02] hover:shadow-xl' : ''}
-		hover:{colors.glow}"
-	style={`transition-delay: ${delay}s`}
+	{@attach observeCard}
+	class={[
+		'enterprise-stat-card relative p-6 rounded-2xl border bg-linear-to-br backdrop-blur-xl transition-all duration-500',
+		colors.bg,
+		colors.border,
+		!hasAnimated && 'esc-enter',
+		hasAnimated && 'esc-enter-active',
+		clickable && 'cursor-pointer hover:scale-[1.02] hover:shadow-xl',
+		`hover:${colors.glow}`
+	]}
+	style:transition-delay={cardTransitionDelay}
 	role={clickable ? 'button' : undefined}
 	tabindex={clickable ? 0 : undefined}
 	onclick={clickable ? handleClick : undefined}
@@ -189,9 +199,9 @@
 		<!-- Header with icon -->
 		<div class="flex items-start justify-between mb-4">
 			{#if icon}
-				{@const IconComponent = icon}
+				{const IconComponent = icon}
 				<div
-					class="stat-icon w-12 h-12 rounded-xl {colors.iconBg} flex items-center justify-center"
+					class={['stat-icon w-12 h-12 rounded-xl flex items-center justify-center', colors.iconBg]}
 				>
 					<IconComponent size={24} class={colors.icon} />
 				</div>
@@ -199,8 +209,10 @@
 
 			{#if trend !== null}
 				<div
-					class="flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold
-						{trendIsPositive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}"
+					class={[
+						'flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold',
+						trendIsPositive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+					]}
 				>
 					<span class="text-xs">{trendIsPositive ? '↑' : '↓'}</span>
 					<span>{Math.abs(trend).toFixed(1)}%</span>
@@ -242,8 +254,10 @@
 				</div>
 				<div class="h-2 bg-slate-700/50 rounded-full overflow-hidden">
 					<div
-						class="progress-fill h-full rounded-full bg-linear-to-r {colors.gradient}"
-						style={`width: ${hasAnimated ? progressPercent : 0}%; transition: width 900ms ease; transition-delay: ${delay + 0.5}s;`}
+						class={['progress-fill h-full rounded-full bg-linear-to-r', colors.gradient]}
+						style:width={progressWidth}
+						style:transition="width 900ms ease"
+						style:transition-delay={progressTransitionDelay}
 					></div>
 				</div>
 			</div>

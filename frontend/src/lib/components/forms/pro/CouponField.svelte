@@ -99,9 +99,10 @@
 			name={props.field.name}
 			placeholder={props.field.placeholder || 'Enter coupon code'}
 			value={inputValue}
-			class="coupon-input"
-			class:valid={validationResult?.valid}
-			class:invalid={validationResult && !validationResult.valid}
+			class={[
+				'coupon-input',
+				{ valid: validationResult?.valid, invalid: validationResult && !validationResult.valid }
+			]}
 			disabled={isValidating || validationResult?.valid}
 			oninput={handleInput}
 			onkeydown={(e: KeyboardEvent) => {
@@ -134,9 +135,10 @@
 
 	{#if validationResult}
 		<div
-			class="validation-result"
-			class:success={validationResult.valid}
-			class:error={!validationResult.valid}
+			class={[
+				'validation-result',
+				{ success: validationResult.valid, error: !validationResult.valid }
+			]}
 		>
 			{#if validationResult.valid}
 				<Icon name="IconCheck" size={16} />

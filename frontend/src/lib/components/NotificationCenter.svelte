@@ -60,20 +60,19 @@
 			Older: []
 		};
 
+		const dayMs = 24 * 60 * 60 * 1000;
 		const now = new Date();
-		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-		const yesterday = new Date(today);
-		yesterday.setDate(yesterday.getDate() - 1);
-		const weekAgo = new Date(today);
-		weekAgo.setDate(weekAgo.getDate() - 7);
+		const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+		const yesterdayStart = todayStart - dayMs;
+		const weekAgoStart = todayStart - 7 * dayMs;
 
 		for (const notif of notifs) {
-			const date = new Date(notif.timestamp);
-			if (date >= today) {
+			const timestamp = new Date(notif.timestamp).getTime();
+			if (timestamp >= todayStart) {
 				groups['Today']?.push(notif);
-			} else if (date >= yesterday) {
+			} else if (timestamp >= yesterdayStart) {
 				groups['Yesterday']?.push(notif);
-			} else if (date >= weekAgo) {
+			} else if (timestamp >= weekAgoStart) {
 				groups['This Week']?.push(notif);
 			} else {
 				groups['Older']?.push(notif);
@@ -178,15 +177,13 @@
 			<!-- Filter Tabs -->
 			<div class="filter-tabs">
 				<button
-					class="filter-tab"
-					class:active={activeFilter === 'all'}
+					class={['filter-tab', { active: activeFilter === 'all' }]}
 					onclick={() => (activeFilter = 'all')}
 				>
 					All
 				</button>
 				<button
-					class="filter-tab"
-					class:active={activeFilter === 'unread'}
+					class={['filter-tab', { active: activeFilter === 'unread' }]}
 					onclick={() => (activeFilter = 'unread')}
 				>
 					Unread
@@ -222,13 +219,12 @@
 						>
 							<div class="group-label">{group}</div>
 							{#each items as notification (notification.id)}
-								{@const Icon = getIcon(notification.type)}
+								{const Icon = getIcon(notification.type)}
 								<button
-									class="notification-item"
-									class:unread={!notification.read}
+									class={['notification-item', { unread: !notification.read }]}
 									onclick={() => handleNotificationClick(notification)}
 								>
-									<div class="item-icon" style="color: {getIconColor(notification.type)}">
+									<div class="item-icon" style:color={getIconColor(notification.type)}>
 										<Icon size={20} />
 									</div>
 									<div class="item-content">

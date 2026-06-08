@@ -89,8 +89,7 @@
 
 	<!-- All Files -->
 	<button
-		class="folder-item"
-		class:active={currentFolderId === null}
+		class={['folder-item', { active: currentFolderId === null }]}
 		onclick={() => selectFolder(null)}
 	>
 		<IconFolder size={20} class="folder-icon" />
@@ -100,7 +99,7 @@
 	<!-- Folder Tree -->
 	<div class="folder-list">
 		{#each folderTree as folder (folder.id)}
-			{@const { level, isExpanded, isSelected, hasChildren } = renderFolder(folder)}
+			{const { level, isExpanded, isSelected, hasChildren } = renderFolder(folder)}
 			<div class="folder-group">
 				<div class="folder-item-wrapper">
 					{#if hasChildren}
@@ -120,9 +119,8 @@
 					{/if}
 
 					<button
-						class="folder-item"
-						class:active={isSelected}
-						style="padding-left: {level * 1.5 + 0.75}rem"
+						class={['folder-item', { active: isSelected }]}
+						style:padding-left={`${level * 1.5 + 0.75}rem`}
 						onclick={() => selectFolder(folder.id)}
 					>
 						<IconFolder size={20} class="folder-icon" />
@@ -133,7 +131,7 @@
 
 				{#if hasChildren && isExpanded && folder.children}
 					{#each folder.children as child (child.id)}
-						{@const childData = renderFolder(child, level + 1)}
+						{const childData = renderFolder(child, level + 1)}
 						<div class="folder-item-wrapper">
 							{#if childData.hasChildren}
 								<button
@@ -152,9 +150,8 @@
 							{/if}
 
 							<button
-								class="folder-item"
-								class:active={childData.isSelected}
-								style="padding-left: {childData.level * 1.5 + 0.75}rem"
+								class={['folder-item', { active: childData.isSelected }]}
+								style:padding-left={`${childData.level * 1.5 + 0.75}rem`}
 								onclick={() => selectFolder(child.id)}
 							>
 								<IconFolder size={20} class="folder-icon" />

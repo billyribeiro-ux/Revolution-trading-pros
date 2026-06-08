@@ -55,6 +55,10 @@
 				return '';
 		}
 	}
+
+	function formatTimestamp(timestamp: string): string {
+		return new Date(timestamp).toLocaleString();
+	}
 </script>
 
 <div class="insights-panel">
@@ -69,8 +73,8 @@
 	<div class="insights-list">
 		{#if insights.length > 0}
 			{#each insights as insight (insight.id)}
-				{@const Icon = getIcon(insight.type)}
-				<div class="insight-card {getSeverityClass(insight.severity)}">
+				{const Icon = getIcon(insight.type)}
+				<div class={['insight-card', getSeverityClass(insight.severity)]}>
 					<div class="insight-icon">
 						<Icon size={20} />
 					</div>
@@ -92,9 +96,13 @@
 									{/if}
 									{#if insight.change !== undefined}
 										<span
-											class="metric-change"
-											class:positive={insight.change > 0}
-											class:negative={insight.change < 0}
+											class={[
+												'metric-change',
+												{
+													positive: insight.change > 0,
+													negative: insight.change < 0
+												}
+											]}
 										>
 											{insight.change > 0 ? '+' : ''}{insight.change}%
 										</span>
@@ -110,7 +118,7 @@
 						{/if}
 
 						<div class="insight-footer">
-							<span class="insight-timestamp">{new Date(insight.timestamp).toLocaleString()}</span>
+							<span class="insight-timestamp">{formatTimestamp(insight.timestamp)}</span>
 						</div>
 					</div>
 				</div>

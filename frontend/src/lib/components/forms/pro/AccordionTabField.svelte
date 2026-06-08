@@ -93,9 +93,9 @@
 </script>
 
 {#if mode === 'accordion'}
-	<div class="accordion-field" class:disabled class:has-error={error}>
+	<div class={['accordion-field', { disabled, 'has-error': error }]}>
 		{#each sections as section (section.id)}
-			<div class="accordion-item" class:open={isOpen(section.id)}>
+			<div class={['accordion-item', { open: isOpen(section.id) }]}>
 				<button
 					type="button"
 					class="accordion-header"
@@ -115,8 +115,7 @@
 				</button>
 				<div
 					id="section-{section.id}"
-					class="accordion-content"
-					class:animated
+					class={['accordion-content', { animated }]}
 					role="region"
 					aria-labelledby="header-{section.id}"
 				>
@@ -130,13 +129,12 @@
 		{/each}
 	</div>
 {:else}
-	<div class="tabs-field" class:disabled class:has-error={error}>
+	<div class={['tabs-field', { disabled, 'has-error': error }]}>
 		<div class="tabs-header" role="tablist">
 			{#each sections as section (section.id)}
 				<button
 					type="button"
-					class="tab-button"
-					class:active={activeTab === section.id}
+					class={['tab-button', { active: activeTab === section.id }]}
 					onclick={() => toggleSection(section.id)}
 					role="tab"
 					aria-selected={activeTab === section.id}
@@ -157,9 +155,7 @@
 			{#each sections as section (section.id)}
 				<div
 					id="panel-{section.id}"
-					class="tab-panel"
-					class:active={activeTab === section.id}
-					class:animated
+					class={['tab-panel', { active: activeTab === section.id, animated }]}
 					role="tabpanel"
 					aria-labelledby="tab-{section.id}"
 				>

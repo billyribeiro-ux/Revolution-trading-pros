@@ -9,7 +9,7 @@
 
 	let { marketData }: Props = $props();
 
-	let indicatorEl: HTMLDivElement | undefined = $state();
+	let indicatorEl: HTMLDivElement | undefined;
 
 	function setMode(mode: DataMode) {
 		marketData.setDataMode(mode);
@@ -23,6 +23,22 @@
 	}
 
 	let isLive = $derived(marketData.dataMode === 'live');
+	let indicatorBackground = $derived(
+		isLive ? 'var(--calc-accent-glow)' : 'var(--calc-surface-hover)'
+	);
+	let indicatorTransform = $derived(`translateX(${isLive ? '100%' : '0%'})`);
+	let manualColor = $derived(!isLive ? 'var(--calc-text)' : 'var(--calc-text-muted)');
+	let liveColor = $derived(isLive ? 'var(--calc-accent)' : 'var(--calc-text-muted)');
+
+	function trackIndicator(element: HTMLDivElement) {
+		indicatorEl = element;
+
+		return () => {
+			if (indicatorEl === element) {
+				indicatorEl = undefined;
+			}
+		};
+	}
 </script>
 
 <div class="flex items-center gap-1.5">
@@ -32,24 +48,23 @@
 	>
 		<!-- Sliding indicator -->
 		<div
-			bind:this={indicatorEl}
+			{@attach trackIndicator}
 			class="absolute top-0 left-0 w-1/2 h-full rounded-lg pointer-events-none transition-transform"
-			style="background: {isLive
-				? 'var(--calc-accent-glow)'
-				: 'var(--calc-surface-hover)'}; transform: translateX({isLive ? '100%' : '0%'});"
+			style:background={indicatorBackground}
+			style:transform={indicatorTransform}
 		></div>
 
 		<button
 			onclick={() => setMode('manual')}
 			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors cursor-pointer"
-			style="color: {!isLive ? 'var(--calc-text)' : 'var(--calc-text-muted)'};"
+			style:color={manualColor}
 		>
 			Manual
 		</button>
 		<button
 			onclick={() => setMode('live')}
 			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors cursor-pointer"
-			style="color: {isLive ? 'var(--calc-accent)' : 'var(--calc-text-muted)'};"
+			style:color={liveColor}
 		>
 			Live Data
 		</button>

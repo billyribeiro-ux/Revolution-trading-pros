@@ -14,7 +14,7 @@
 
 	let { calc, onSelect }: Props = $props();
 
-	let gridEl: HTMLDivElement | undefined = $state();
+	let gridEl: HTMLDivElement | undefined;
 	let filter = $state('');
 
 	let filtered = $derived.by(() => {
@@ -23,17 +23,6 @@
 		return STRATEGY_TEMPLATES.filter(
 			(t) => t.name.toLowerCase().includes(q) || t.sentiment.toLowerCase().includes(q)
 		);
-	});
-
-	$effect(() => {
-		if (gridEl) {
-			const cards = gridEl.querySelectorAll('.preset-card');
-			gsap.fromTo(
-				cards,
-				{ y: 20, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.3, stagger: 0.04, ease: 'power2.out' }
-			);
-		}
 	});
 
 	function applyPreset(template: StrategyTemplate) {
@@ -62,6 +51,22 @@
 				return 'var(--calc-accent)';
 		}
 	}
+
+	function animatePresetGrid(element: HTMLDivElement) {
+		gridEl = element;
+		const cards = element.querySelectorAll('.preset-card');
+		gsap.fromTo(
+			cards,
+			{ y: 20, opacity: 0 },
+			{ y: 0, opacity: 1, duration: 0.3, stagger: 0.04, ease: 'power2.out' }
+		);
+
+		return () => {
+			if (gridEl === element) {
+				gridEl = undefined;
+			}
+		};
+	}
 </script>
 
 <div class="flex flex-col gap-3">
@@ -75,7 +80,7 @@
 	/>
 
 	<!-- Grid -->
-	<div bind:this={gridEl} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+	<div {@attach animatePresetGrid} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
 		{#each filtered as template (template.name)}
 			<button
 				onclick={() => applyPreset(template)}
@@ -91,9 +96,8 @@
 					</span>
 					<span
 						class="text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase"
-						style="color: {sentimentColor(template.sentiment)}; background: {sentimentColor(
-							template.sentiment
-						)}22;"
+						style:color={sentimentColor(template.sentiment)}
+						style:background={`${sentimentColor(template.sentiment)}22`}
 					>
 						{#if template.sentiment === 'bullish'}
 							<IconTrendingUp size={10} class="inline -mt-0.5" />

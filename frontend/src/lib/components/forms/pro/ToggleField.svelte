@@ -51,13 +51,12 @@
 
 	<div class="toggle-wrapper">
 		{#if showLabels}
-			<span class="toggle-label off" class:active={!(props.value ?? false)}>{offLabel}</span>
+			<span class={['toggle-label off', { active: !(props.value ?? false) }]}>{offLabel}</span>
 		{/if}
 
 		<button
 			type="button"
-			class={`toggle-switch ${size}`}
-			class:active={props.value}
+			class={['toggle-switch', size, { active: props.value }]}
 			role="switch"
 			aria-checked={props.value}
 			aria-label="{props.field.label} toggle"
@@ -70,7 +69,7 @@
 		</button>
 
 		{#if showLabels}
-			<span class="toggle-label on" class:active={props.value}>{onLabel}</span>
+			<span class={['toggle-label on', { active: props.value }]}>{onLabel}</span>
 		{/if}
 	</div>
 

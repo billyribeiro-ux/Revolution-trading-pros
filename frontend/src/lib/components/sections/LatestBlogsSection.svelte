@@ -154,7 +154,7 @@
 									{#if leadPost.featured_image}
 										<div
 											class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60"
-											style="background-image: url('{leadPost.featured_image}')"
+											style:background-image={`url('${leadPost.featured_image}')`}
 										></div>
 									{:else}
 										<div

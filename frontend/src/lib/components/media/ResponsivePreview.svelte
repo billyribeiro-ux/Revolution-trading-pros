@@ -176,7 +176,7 @@
 				<div class="responsive-preview__breakpoint-track">
 					<div
 						class="responsive-preview__breakpoint-fill"
-						style="width: {((breakpointWidths[variant.sizeName] ?? 0) / 1920) * 100}%"
+						style:width={`${((breakpointWidths[variant.sizeName] ?? 0) / 1920) * 100}%`}
 					></div>
 				</div>
 			</button>
@@ -194,7 +194,7 @@
 					<div class="responsive-preview__chart-item">
 						<div
 							class="responsive-preview__chart-bar responsive-preview__chart-bar--variant"
-							style="height: {(variant.size / originalSize) * 100}%"
+							style:height={`${(variant.size / originalSize) * 100}%`}
 						></div>
 						<span>{variant.sizeName}</span>
 					</div>
@@ -202,7 +202,7 @@
 				<div class="responsive-preview__chart-item">
 					<div
 						class="responsive-preview__chart-bar responsive-preview__chart-bar--original"
-						style="height: 100%"
+						style:height="100%"
 					></div>
 					<span>orig</span>
 				</div>
@@ -214,7 +214,8 @@
 	{#if hoveredVariant}
 		<div
 			class="responsive-preview__tooltip"
-			style="left: {previewPosition.x}px; top: {previewPosition.y}px;"
+			style:left={`${previewPosition.x}px`}
+			style:top={`${previewPosition.y}px`}
 			transition:fade={{ duration: 150 }}
 		>
 			<img

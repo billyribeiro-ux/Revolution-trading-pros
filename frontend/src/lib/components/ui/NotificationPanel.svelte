@@ -7,7 +7,7 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { gsap } from 'gsap';
 	import {
@@ -37,8 +37,8 @@
 	let onclick = $derived(props.onclick);
 
 	let isOpen = $state(false);
-	let bellRef: HTMLButtonElement | null = $state(null);
-	let panelRef: HTMLDivElement | null = $state(null);
+	let bellRef: HTMLButtonElement | null = null;
+	let panelRef: HTMLDivElement | null = null;
 
 	// Local derived from getters
 	const notifications = $derived(getNotifications());
@@ -62,7 +62,7 @@
 
 	function toggle() {
 		isOpen = !isOpen;
-		if (isOpen) {
+		if (isOpen && bellRef) {
 			// Animate bell
 			gsap.to(bellRef, {
 				rotation: 15,
@@ -126,14 +126,7 @@
 	}
 
 	onMount(() => {
-		document.addEventListener('click', handleClickOutside);
-		document.addEventListener('keydown', handleKeydown);
 		notificationStore.initWebSocket();
-	});
-
-	onDestroy(() => {
-		document.removeEventListener('click', handleClickOutside);
-		document.removeEventListener('keydown', handleKeydown);
 	});
 
 	let positionClasses = $derived(
@@ -144,12 +137,34 @@
 			'bottom-left': 'left-0 bottom-full mb-2'
 		}[position]
 	);
+
+	function trackBell(element: HTMLButtonElement) {
+		bellRef = element;
+
+		return () => {
+			if (bellRef === element) {
+				bellRef = null;
+			}
+		};
+	}
+
+	function trackPanel(element: HTMLDivElement) {
+		panelRef = element;
+
+		return () => {
+			if (panelRef === element) {
+				panelRef = null;
+			}
+		};
+	}
 </script>
+
+<svelte:document onclick={handleClickOutside} onkeydown={handleKeydown} />
 
 <div class="relative">
 	<!-- Bell Button -->
 	<button
-		bind:this={bellRef}
+		{@attach trackBell}
 		onclick={toggle}
 		class="relative p-2 rounded-lg hover:bg-slate-700/50 transition-colors duration-200"
 		aria-label="Notifications"
@@ -171,10 +186,12 @@
 	<!-- Dropdown Panel -->
 	{#if isOpen}
 		<div
-			bind:this={panelRef}
+			{@attach trackPanel}
 			transition:fly={{ y: -10, duration: 200 }}
-			class="absolute {positionClasses} w-96 max-h-[70vh] bg-slate-900/95 backdrop-blur-xl
-				border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden z-50"
+			class={[
+				'absolute w-96 max-h-[70vh] bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden z-50',
+				positionClasses
+			]}
 		>
 			<!-- Header -->
 			<div
@@ -209,12 +226,13 @@
 					</div>
 				{:else}
 					{#each notifications.filter((n) => !n.dismissed) as notification (notification.id)}
-						{@const NotifIcon = iconMap[notification.type]}
+						{const NotifIcon = iconMap[notification.type]}
 						<div
 							transition:fade={{ duration: 150 }}
-							class="group relative px-4 py-3 border-b border-slate-700/30
-								hover:bg-slate-800/50 transition-colors cursor-pointer
-								{notification.read ? 'opacity-70' : ''}"
+							class={[
+								'group relative px-4 py-3 border-b border-slate-700/30 hover:bg-slate-800/50 transition-colors cursor-pointer',
+								notification.read && 'opacity-70'
+							]}
 							onclick={() => handleNotificationClick(notification)}
 							onkeypress={(e: KeyboardEvent) =>
 								e.key === 'Enter' && handleNotificationClick(notification)}
@@ -231,9 +249,10 @@
 							<div class="flex gap-3 pl-2">
 								<!-- Icon -->
 								<div
-									class="flex-shrink-0 w-10 h-10 rounded-lg {colorMap[
-										notification.type
-									]} flex items-center justify-center"
+									class={[
+										'flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center',
+										colorMap[notification.type]
+									]}
 								>
 									<NotifIcon size={20} />
 								</div>

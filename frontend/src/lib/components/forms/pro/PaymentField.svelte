@@ -99,11 +99,10 @@
 		<p class="field-help">{props.field.help_text}</p>
 	{/if}
 
-	<div class="payment-items" class:single={paymentType === 'single'}>
+	<div class={['payment-items', { single: paymentType === 'single' }]}>
 		{#each items as item (item.id)}
 			<div
-				class="payment-item"
-				class:selected={isSelected(item.id)}
+				class={['payment-item', { selected: isSelected(item.id) }]}
 				role="button"
 				tabindex="0"
 				onclick={() => {

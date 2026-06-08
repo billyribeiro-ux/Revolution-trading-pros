@@ -95,15 +95,8 @@
 		}
 	}
 
-	function getVariantClass(variant?: string) {
-		switch (variant) {
-			case 'danger':
-				return 'action-danger';
-			case 'success':
-				return 'action-success';
-			default:
-				return '';
-		}
+	function getVariantClass(variant?: BatchAction['variant']) {
+		return variant ? `action-${variant}` : undefined;
 	}
 </script>
 
@@ -140,9 +133,9 @@
 			<!-- Actions -->
 			<div class="batch-actions">
 				{#each effectiveActions as action (action.id)}
-					{@const ActionIcon = action.icon}
+					{const ActionIcon = action.icon}
 					<button
-						class="action-btn {getVariantClass(action.variant)}"
+						class={['action-btn', getVariantClass(action.variant)]}
 						onclick={() => handleAction(action)}
 						disabled={isProcessing}
 					>

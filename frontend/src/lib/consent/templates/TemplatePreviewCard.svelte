@@ -29,15 +29,6 @@
 		onDelete
 	}: Props = $props();
 
-	// Generate mini preview styles
-	function getMiniPreviewStyles(): string {
-		const styles: string[] = [];
-		styles.push(`background: ${template.colors.background}`);
-		styles.push(`color: ${template.colors.text}`);
-		if (template.border) styles.push(`border: ${template.border}`);
-		return styles.join('; ');
-	}
-
 	// Get button preview color
 	function getButtonColor(): string {
 		return template.colors.acceptButton.startsWith('linear')
@@ -58,8 +49,7 @@
 </script>
 
 <div
-	class="template-card"
-	class:active={isActive}
+	class={{ 'template-card': true, active: isActive }}
 	role="button"
 	tabindex="0"
 	onclick={() => onSelect?.(template)}
@@ -67,18 +57,23 @@
 >
 	<!-- Mini Preview -->
 	<div class="preview-container">
-		<div class="mini-preview" style={getMiniPreviewStyles()}>
+		<div
+			class="mini-preview"
+			style:background={template.colors.background}
+			style:color={template.colors.text}
+			style:border={template.border || undefined}
+		>
 			<!-- Mini banner structure -->
 			<div class="mini-content">
 				{#if template.showIcon}
-					<div class="mini-icon" style="color: {template.colors.accent}">●</div>
+					<div class="mini-icon" style:color={template.colors.accent}>●</div>
 				{/if}
 				<div class="mini-text">
-					<div class="mini-title" style="background: {template.colors.text}"></div>
-					<div class="mini-desc" style="background: {template.colors.textMuted}"></div>
+					<div class="mini-title" style:background={template.colors.text}></div>
+					<div class="mini-desc" style:background={template.colors.textMuted}></div>
 				</div>
 				<div class="mini-buttons">
-					<div class="mini-btn" style="background: {getButtonColor()}"></div>
+					<div class="mini-btn" style:background={getButtonColor()}></div>
 				</div>
 			</div>
 		</div>
@@ -102,7 +97,7 @@
 		{/if}
 
 		<!-- Position indicator -->
-		<div class="position-indicator position-{template.position}">
+		<div class={['position-indicator', `position-${template.position}`]}>
 			<div class="position-dot"></div>
 		</div>
 	</div>
@@ -111,7 +106,9 @@
 	<div class="card-info">
 		<div class="card-header">
 			<h3 class="card-title">{template.name}</h3>
-			<span class="category-badge {categoryColors[template.category] || categoryColors['custom']}">
+			<span
+				class={['category-badge', categoryColors[template.category] || categoryColors['custom']]}
+			>
 				{template.category}
 			</span>
 		</div>

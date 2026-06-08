@@ -82,7 +82,7 @@
 			<IconSparkles size={18} aria-hidden="true" />
 			<span class="header-title">TL;DR</span>
 		</div>
-		<span class="chevron" class:rotated={isExpanded}
+		<span class={['chevron', { rotated: isExpanded }]}
 			><IconChevronDown size={18} aria-hidden="true" /></span
 		>
 	</button>

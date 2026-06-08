@@ -79,13 +79,18 @@
 </script>
 
 {#if error}
-	{@const Icon = IconComponent}
+	{const Icon = IconComponent}
 	<div
-		class="api-error {variant}"
-		class:critical={severity === 'critical'}
-		class:error={severity === 'error'}
-		class:warning={severity === 'warning'}
-		class:info={severity === 'info'}
+		class={[
+			'api-error',
+			variant,
+			{
+				critical: severity === 'critical',
+				error: severity === 'error',
+				warning: severity === 'warning',
+				info: severity === 'info'
+			}
+		]}
 		role="alert"
 		aria-live="polite"
 	>

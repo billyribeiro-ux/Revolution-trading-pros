@@ -22,7 +22,7 @@
 	let props: Props = $props();
 </script>
 
-<div class="marketing-shell" class:has-admin-toolbar={props.showAdminToolbar}>
+<div class={['marketing-shell', { 'has-admin-toolbar': props.showAdminToolbar }]}>
 	<ClientOnly>
 		{#if props.showAdminToolbar}
 			<AdminToolbar />

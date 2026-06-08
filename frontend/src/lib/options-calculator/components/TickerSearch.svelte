@@ -14,8 +14,8 @@
 
 	let { marketData, onSnapshot }: Props = $props();
 
-	let inputEl: HTMLInputElement | undefined = $state();
-	let dropdownEl: HTMLDivElement | undefined = $state();
+	let inputEl: HTMLInputElement | undefined;
+	let dropdownEl: HTMLDivElement | undefined;
 	let query = $state('');
 	let isOpen = $state(false);
 	let selectedIndex = $state(-1);
@@ -24,6 +24,10 @@
 	let searching = $derived(marketData.isSearching);
 	let activeQuote = $derived(marketData.currentQuote);
 	let activeTicker = $derived(marketData.activeTicker);
+	let inputBorderColor = $derived(isOpen ? 'var(--calc-accent)' : 'var(--calc-border)');
+	let quoteChangeColor = $derived(
+		activeQuote && activeQuote.change >= 0 ? 'var(--calc-call)' : 'var(--calc-put)'
+	);
 
 	function handleInput(e: Event) {
 		const val = (e.currentTarget as HTMLInputElement).value;
@@ -100,15 +104,30 @@
 		}, 200);
 	}
 
-	$effect(() => {
-		if (isOpen && dropdownEl) {
-			gsap.fromTo(
-				dropdownEl,
-				{ y: -8, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
-			);
-		}
-	});
+	function trackInput(element: HTMLInputElement) {
+		inputEl = element;
+
+		return () => {
+			if (inputEl === element) {
+				inputEl = undefined;
+			}
+		};
+	}
+
+	function animateDropdown(element: HTMLDivElement) {
+		dropdownEl = element;
+		gsap.fromTo(
+			element,
+			{ y: -8, opacity: 0 },
+			{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
+		);
+
+		return () => {
+			if (dropdownEl === element) {
+				dropdownEl = undefined;
+			}
+		};
+	}
 </script>
 
 <div class="relative w-full max-w-xs">
@@ -120,7 +139,7 @@
 			style="color: var(--calc-text-muted);"
 		/>
 		<input
-			bind:this={inputEl}
+			{@attach trackInput}
 			type="text"
 			value={query}
 			oninput={handleInput}
@@ -129,9 +148,10 @@
 			onblur={handleBlur}
 			placeholder="Search ticker..."
 			class="w-full text-xs pl-8 pr-8 py-1.5 rounded-lg outline-none transition-all"
-			style="background: var(--calc-surface); color: var(--calc-text); border: 1px solid {isOpen
-				? 'var(--calc-accent)'
-				: 'var(--calc-border)'}; font-family: var(--calc-font-mono);"
+			style:background="var(--calc-surface)"
+			style:color="var(--calc-text)"
+			style:border={`1px solid ${inputBorderColor}`}
+			style:font-family="var(--calc-font-mono)"
 			autocomplete="off"
 			spellcheck="false"
 			role="combobox"
@@ -176,9 +196,8 @@
 			</span>
 			<span
 				class="text-[10px] font-medium"
-				style="color: {activeQuote.change >= 0
-					? 'var(--calc-call)'
-					: 'var(--calc-put)'}; font-family: var(--calc-font-mono);"
+				style:color={quoteChangeColor}
+				style:font-family="var(--calc-font-mono)"
 			>
 				{activeQuote.change >= 0 ? '+' : ''}{activeQuote.change.toFixed(2)}
 				({activeQuote.changePercent >= 0 ? '+' : ''}{activeQuote.changePercent.toFixed(2)}%)
@@ -189,7 +208,7 @@
 	<!-- Dropdown -->
 	{#if isOpen && (results.length > 0 || searching)}
 		<div
-			bind:this={dropdownEl}
+			{@attach animateDropdown}
 			class="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
 			style="background: var(--calc-surface); border: 1px solid var(--calc-accent); box-shadow: 0 8px 32px rgba(0,0,0,0.3); backdrop-filter: blur(16px);"
 			role="listbox"
@@ -204,7 +223,7 @@
 					<button
 						onclick={() => selectResult(result.ticker)}
 						class="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors cursor-pointer"
-						style="background: {i === selectedIndex ? 'var(--calc-surface-hover)' : 'transparent'};"
+						style:background={i === selectedIndex ? 'var(--calc-surface-hover)' : 'transparent'}
 						role="option"
 						aria-selected={i === selectedIndex}
 					>

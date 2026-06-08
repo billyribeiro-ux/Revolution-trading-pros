@@ -54,7 +54,7 @@
 	let content = $derived(props.block.content.toggleContent || '');
 </script>
 
-<div class="toggle-block" class:open={isOpen}>
+<div class={['toggle-block', { open: isOpen }]}>
 	<button
 		type="button"
 		class="toggle-header"
@@ -80,7 +80,10 @@
 			<span class="toggle-title">{title}</span>
 		{/if}
 
-		<span class="toggle-icon" class:rotated={isOpen && iconStyle === 'chevron'} aria-hidden="true">
+		<span
+			class={['toggle-icon', { rotated: isOpen && iconStyle === 'chevron' }]}
+			aria-hidden="true"
+		>
 			{#if iconStyle === 'plusminus'}
 				{#if isOpen}
 					<IconMinus size={20} />
@@ -97,8 +100,7 @@
 		{#if props.isEditing}
 			<div
 				contenteditable="true"
-				class="toggle-content editable-content"
-				class:placeholder={!content}
+				class={['toggle-content editable-content', { placeholder: !content }]}
 				role="textbox"
 				aria-label="Toggle content"
 				data-placeholder="Add hidden content..."

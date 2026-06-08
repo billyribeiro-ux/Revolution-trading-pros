@@ -34,7 +34,7 @@
 	let Icon = $derived(props.icon ?? IconInbox);
 </script>
 
-<div class="empty-state size-{currentSize}" style="padding: {sizes[currentSize].padding}">
+<div class={['empty-state', `size-${currentSize}`]} style:padding={sizes[currentSize].padding}>
 	<div class="empty-icon">
 		<Icon size={sizes[currentSize].icon} />
 	</div>
