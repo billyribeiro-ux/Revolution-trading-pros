@@ -85,7 +85,7 @@
 					{#if item.thumbnail_url}
 						<div
 							class="favorite-thumbnail"
-							style="background-image: url('{item.thumbnail_url}')"
+							style:background-image={`url('${item.thumbnail_url}')`}
 						></div>
 					{/if}
 					<div class="favorite-content">

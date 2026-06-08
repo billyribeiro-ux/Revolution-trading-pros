@@ -106,7 +106,7 @@
 					<h3 class="strategy-name">{strategy.name}</h3>
 					<span
 						class="difficulty-badge"
-						style="background-color: {getDifficultyColor(strategy.difficulty)}"
+						style:background-color={getDifficultyColor(strategy.difficulty)}
 					>
 						{strategy.difficulty}
 					</span>

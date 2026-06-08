@@ -127,7 +127,7 @@
 			<!-- Navigation Pills -->
 			<nav class="trader-pills">
 				{#each traderPills as pill (pill.path)}
-					<a href={pill.path} class="trader-pill {pill.active ? 'trader-pill--active' : ''}">
+					<a href={pill.path} class={['trader-pill', { 'trader-pill--active': pill.active }]}>
 						{pill.label}
 					</a>
 				{/each}

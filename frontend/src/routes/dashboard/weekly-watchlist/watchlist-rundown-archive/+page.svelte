@@ -108,7 +108,7 @@
 				<div class="col-xs-12 col-sm-6 col-xl-4 flex-grid-item">
 					<article class="article-card">
 						<figure class="weekly_watchlist">
-							<div class="article-card__image" style="background-image: url({video.image});">
+							<div class="article-card__image" style:background-image={`url(${video.image})`}>
 								<a href={video.href}>
 									<img
 										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"

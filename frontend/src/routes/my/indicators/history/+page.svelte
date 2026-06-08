@@ -154,7 +154,7 @@
 								<td class="platform">{download.platform || 'N/A'}</td>
 								<td class="date">{formatDate(download.downloaded_at)}</td>
 								<td>
-									<span class="status-badge {getStatusClass(download.status)}">
+									<span class={['status-badge', getStatusClass(download.status)]}>
 										{download.status || 'Completed'}
 									</span>
 								</td>

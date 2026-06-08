@@ -14,7 +14,7 @@ rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
-- Broad dynamic class/style migration scan: 17 Svelte files remaining.
+- Broad dynamic class/style migration scan: 0 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -84,6 +84,7 @@ Current evidence:
 - [x] 2026-06-08: Completed explosive swings analytics period batch: analytics `+page.svelte` and `DateRangePicker.svelte`; replaced tracked period active class directives with Svelte 5 class arrays.
 - [x] 2026-06-08: Completed explosive swings analytics chart/table batch: `DrawdownChart.svelte`, `EquityCurveChart.svelte`, `MetricCard.svelte`, `MonthlyReturnsChart.svelte`, `SetupBreakdown.svelte`, `StreakIndicator.svelte`, `TickerHeatmap.svelte`, and `TickerPerformanceTable.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, migrated legacy declaration tags, and replaced chart container `bind:this` resize wiring with attachments.
 - [x] 2026-06-08: Completed remaining explosive swings batch: core components, search cards/filters, trades skeleton/stats, favorites, and watchlist pages; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, moved modal body-lock/focus lifecycle to an attachment, and moved alert toast timers from `$effect` to `onMount` cleanup.
+- [x] 2026-06-08: Completed final route batch: admin CRM logs, workflows, weekly watchlist, small-account mentorship, SPX Profit Pulse, account pages, mission calculator, and pricing; replaced the last tracked declaration tags, class directives/interpolations, and dynamic style strings with Svelte 5 declaration tags, class arrays/objects, and `style:` directives.
 
 ## Remaining Files
 
@@ -404,23 +405,23 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 - [x] `frontend/src/routes/dashboard/explosive-swings/trades/components/StatsGrid.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/trades/components/TableSkeleton.svelte`
 - [x] `frontend/src/routes/dashboard/explosive-swings/watchlist/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/daily-videos/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/favorites/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/meet-the-traders/[slug]/trader-store/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/meet-the-traders/[slug]/trading-strategies/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/small-account-mentorship/video/[slug]/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/spx-profit-pulse/alerts/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/spx-profit-pulse/alerts/[slug]/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/spx-profit-pulse/billy-ribeiro/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/spx-profit-pulse/premium-videos/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/weekly-watchlist/+page.svelte`
-- [ ] `frontend/src/routes/dashboard/weekly-watchlist/watchlist-rundown-archive/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/daily-videos/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/favorites/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/meet-the-traders/[slug]/trader-store/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/meet-the-traders/[slug]/trading-strategies/+page.svelte`
+- [x] `frontend/src/routes/dashboard/small-account-mentorship/video/[slug]/+page.svelte`
+- [x] `frontend/src/routes/dashboard/spx-profit-pulse/alerts/+page.svelte`
+- [x] `frontend/src/routes/dashboard/spx-profit-pulse/alerts/[slug]/+page.svelte`
+- [x] `frontend/src/routes/dashboard/spx-profit-pulse/billy-ribeiro/+page.svelte`
+- [x] `frontend/src/routes/dashboard/spx-profit-pulse/premium-videos/+page.svelte`
+- [x] `frontend/src/routes/dashboard/weekly-watchlist/+page.svelte`
+- [x] `frontend/src/routes/dashboard/weekly-watchlist/watchlist-rundown-archive/+page.svelte`
 - [x] `frontend/src/routes/indicators/macd/+page.svelte`
-- [ ] `frontend/src/routes/my/courses/+page.svelte`
-- [ ] `frontend/src/routes/my/indicators/history/+page.svelte`
-- [ ] `frontend/src/routes/our-mission/_sections/MathOfEdgeCalculator.svelte`
-- [ ] `frontend/src/routes/pricing/+page.svelte`
-- [ ] `frontend/src/routes/workflows/+page.svelte`
+- [x] `frontend/src/routes/my/courses/+page.svelte`
+- [x] `frontend/src/routes/my/indicators/history/+page.svelte`
+- [x] `frontend/src/routes/our-mission/_sections/MathOfEdgeCalculator.svelte`
+- [x] `frontend/src/routes/pricing/+page.svelte`
+- [x] `frontend/src/routes/workflows/+page.svelte`
 
 ## Completed Slices
 
@@ -806,7 +807,7 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 
 ## Final Removal Work
 
-- [ ] Continue the broad Svelte file sweep until the dynamic class/style scan is zero or every remaining hit is documented as a deliberate false positive.
+- [x] Continue the broad Svelte file sweep until the dynamic class/style scan is zero or every remaining hit is documented as a deliberate false positive.
 - [ ] Re-run global zero-reference checks for Tailwind infrastructure and utility APIs.
 - [ ] Remove Tailwind Vite plugin and packages only after zero-reference proof.
 - [ ] Run final full gates and representative browser smoke checks.

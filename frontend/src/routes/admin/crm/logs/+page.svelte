@@ -249,9 +249,9 @@
 	{:else}
 		<div class="logs-list">
 			{#each filteredLogs as log (log.id)}
-				{@const LevelIcon = getLevelIcon(log.level)}
-				{@const CategoryIcon = getCategoryIcon(log.category)}
-				<div class="log-entry {getLevelColor(log.level)}">
+				{const LevelIcon = getLevelIcon(log.level)}
+				{const CategoryIcon = getCategoryIcon(log.category)}
+				<div class={['log-entry', getLevelColor(log.level)]}>
 					<div class="log-header">
 						<div class="log-level">
 							<LevelIcon size={16} />

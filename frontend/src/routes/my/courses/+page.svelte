@@ -98,13 +98,16 @@
 	</div>
 
 	<nav class="tabs">
-		<button class:active={activeTab === 'in-progress'} onclick={() => (activeTab = 'in-progress')}>
+		<button
+			class={{ active: activeTab === 'in-progress' }}
+			onclick={() => (activeTab = 'in-progress')}
+		>
 			In Progress ({stats.inProgress})
 		</button>
-		<button class:active={activeTab === 'completed'} onclick={() => (activeTab = 'completed')}>
+		<button class={{ active: activeTab === 'completed' }} onclick={() => (activeTab = 'completed')}>
 			Completed ({stats.completed})
 		</button>
-		<button class:active={activeTab === 'all'} onclick={() => (activeTab = 'all')}>
+		<button class={{ active: activeTab === 'all' }} onclick={() => (activeTab = 'all')}>
 			All Courses ({stats.total})
 		</button>
 	</nav>

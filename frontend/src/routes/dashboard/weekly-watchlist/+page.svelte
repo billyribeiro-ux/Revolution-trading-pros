@@ -158,7 +158,7 @@
 						<div class="video-grid__item">
 							<article class="video-card">
 								<figure class="video-card__figure">
-									<div class="video-card__thumbnail" style="background-image: url({image});">
+									<div class="video-card__thumbnail" style:background-image={`url(${image})`}>
 										<a {href}>
 											<img
 												src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
