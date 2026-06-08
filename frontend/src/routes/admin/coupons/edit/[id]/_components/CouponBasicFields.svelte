@@ -31,8 +31,7 @@
 			name="code"
 			bind:value={formData.code}
 			placeholder="SUMMER2024"
-			class="input input-large"
-			class:error={getFieldError('code')}
+			class={['input input-large', { error: getFieldError('code') }]}
 			required
 			style="text-transform: uppercase;"
 		/>
@@ -64,8 +63,7 @@
 					min="0"
 					max={formData.type === 'percentage' ? 100 : undefined}
 					step="0.01"
-					class="input"
-					class:error={getFieldError('value')}
+					class={['input', { error: getFieldError('value') }]}
 					disabled={formData.type === 'free_shipping'}
 				/>
 				<span class="input-suffix">

@@ -86,8 +86,7 @@
 					bind:value={formData.duration_in_months}
 					min="1"
 					max="36"
-					class="input"
-					class:error={getFieldError('duration_in_months')}
+					class={['input', { error: getFieldError('duration_in_months') }]}
 					placeholder="e.g. 3"
 				/>
 				{#if getFieldError('duration_in_months')}

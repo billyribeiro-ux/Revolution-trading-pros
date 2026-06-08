@@ -51,7 +51,7 @@
 		{#if !loading && hasCode}
 			<div class="preview-badge">
 				<span class="preview-value">{discountDisplay}</span>
-				<span class="preview-status" class:active={isActive}>
+				<span class={['preview-status', { active: isActive }]}>
 					{isActive ? 'Active' : 'Inactive'}
 				</span>
 			</div>
