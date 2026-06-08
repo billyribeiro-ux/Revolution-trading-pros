@@ -37,8 +37,7 @@
 		{#each periods as period (period.value)}
 			<button
 				type="button"
-				class="period-btn"
-				class:active={selectedPeriod === period.value}
+				class={['period-btn', { active: selectedPeriod === period.value }]}
 				onclick={() => handlePeriodSelect(period.value)}
 				role="radio"
 				aria-checked={selectedPeriod === period.value}
