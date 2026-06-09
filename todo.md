@@ -15,7 +15,7 @@ Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
-- Secondary multiline/interpolated class-style audit scan: 5 Svelte files remaining.
+- Secondary multiline/interpolated class-style audit scan: 4 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -97,6 +97,7 @@ Current evidence:
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/alerts/explosive-swings/_sections/PricingSection.svelte`; replaced pricing toggle/card interpolated class strings with helper-driven Svelte 5 class arrays and moved the selector position string to `style:left`/`style:width` directives.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/members/[id]/_components/OrdersTab.svelte`; replaced the interpolated Tailwind-era order status badge string with Svelte 5 class composition and scoped semantic status CSS.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/StrategyBuilder.svelte`; replaced the remaining Tailwind utility markup with scoped semantic CSS, moved premium and breakeven styling to Svelte 5 class/style composition, and migrated the add-leg animation ref to an attachment.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/MathOfEdgeCalculator.svelte`; replaced the remaining Tailwind utility markup with scoped semantic section CSS and converted risk/expectancy color state to Svelte 5 class composition.
 
 ## Remaining Files
 
