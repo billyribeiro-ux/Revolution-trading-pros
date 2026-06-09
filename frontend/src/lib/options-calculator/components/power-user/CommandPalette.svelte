@@ -1,6 +1,8 @@
 <script lang="ts">
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import gsap from 'gsap';
+	import type { Attachment } from 'svelte/attachments';
+	import { SvelteMap } from 'svelte/reactivity';
 	import type { CalculatorState } from '../../state/calculator.svelte.js';
 
 	interface Props {
@@ -9,8 +11,6 @@
 
 	let { calc }: Props = $props();
 
-	let inputEl: HTMLInputElement | undefined = $state();
-	let paletteEl: HTMLDivElement | undefined = $state();
 	let query = $state('');
 	let selectedIndex = $state(0);
 
@@ -222,7 +222,7 @@
 
 	// Build a flat index map for keyboard navigation
 	let flatIndexMap = $derived.by(() => {
-		const map = new Map<string, number>();
+		const map = new SvelteMap<string, number>();
 		let i = 0;
 		for (const cmd of filtered) {
 			map.set(cmd.id, i++);
@@ -230,29 +230,29 @@
 		return map;
 	});
 
-	$effect(() => {
-		if (calc.showCommandPalette) {
-			query = '';
-			selectedIndex = 0;
-			requestAnimationFrame(() => {
-				inputEl?.focus();
-				if (paletteEl) {
-					gsap.fromTo(
-						paletteEl,
-						{ y: -20, opacity: 0 },
-						{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
-					);
-				}
-			});
-		}
-	});
+	let activeIndex = $derived(
+		filtered.length === 0 ? -1 : Math.min(selectedIndex, filtered.length - 1)
+	);
 
-	// Reset selectedIndex when filtered list changes
-	$effect(() => {
-		if (filtered.length > 0 && selectedIndex >= filtered.length) {
-			selectedIndex = 0;
-		}
-	});
+	const focusSearchInput: Attachment<HTMLInputElement> = (element) => {
+		query = '';
+		selectedIndex = 0;
+		const frame = requestAnimationFrame(() => {
+			element.focus();
+		});
+
+		return () => cancelAnimationFrame(frame);
+	};
+
+	const animatePalette: Attachment<HTMLDivElement> = (element) => {
+		const tween = gsap.fromTo(
+			element,
+			{ y: -20, opacity: 0 },
+			{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
+		);
+
+		return () => tween.kill();
+	};
 
 	function execute(cmd: CommandItem): void {
 		calc.showCommandPalette = false;
@@ -269,13 +269,13 @@
 		}
 		if (e.key === 'ArrowDown') {
 			e.preventDefault();
-			selectedIndex = Math.min(selectedIndex + 1, filtered.length - 1);
+			selectedIndex = Math.min(activeIndex + 1, filtered.length - 1);
 		} else if (e.key === 'ArrowUp') {
 			e.preventDefault();
-			selectedIndex = Math.max(selectedIndex - 1, 0);
+			selectedIndex = Math.max(activeIndex - 1, 0);
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
-			const cmd = filtered[selectedIndex];
+			const cmd = filtered[activeIndex];
 			if (cmd) execute(cmd);
 		}
 	}
@@ -311,7 +311,7 @@
 
 		<!-- Palette -->
 		<div
-			bind:this={paletteEl}
+			{@attach animatePalette}
 			class="relative z-10 w-full max-w-lg rounded-2xl overflow-hidden"
 			style="
 				background: var(--calc-surface);
@@ -326,7 +326,7 @@
 			>
 				<IconSearch size={14} style="color: var(--calc-text-muted);" />
 				<input
-					bind:this={inputEl}
+					{@attach focusSearchInput}
 					bind:value={query}
 					type="text"
 					placeholder="Type a command..."
@@ -354,9 +354,8 @@
 						<button
 							onclick={() => execute(cmd)}
 							class="w-full flex items-center gap-2.5 px-4 py-2 text-xs cursor-pointer transition-colors"
-							style="color: var(--calc-text-secondary); background: {idx === selectedIndex
-								? 'var(--calc-accent-glow)'
-								: 'transparent'};"
+							style:color="var(--calc-text-secondary)"
+							style:background={idx === activeIndex ? 'var(--calc-accent-glow)' : 'transparent'}
 						>
 							<span class="flex-1 text-left">{cmd.label}</span>
 							{#if cmd.shortcut}
