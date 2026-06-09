@@ -289,90 +289,49 @@
 
 <svelte:window onmousemove={handleMouseMove} />
 
-<section
-	{@attach captureSection}
-	class="relative py-20 sm:py-32 overflow-hidden bg-[#050812] selection:bg-violet-500/30 selection:text-violet-200"
->
-	<div class="absolute inset-0 pointer-events-none">
-		<div
-			class="absolute inset-0 opacity-[0.03] mix-blend-overlay"
-			style="background-image: url('/textures/noise.svg');"
-		></div>
+<section {@attach captureSection} class="courses-section">
+	<div class="ambient-layers" aria-hidden="true">
+		<div class="noise-layer"></div>
 
-		<div
-			class="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-violet-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"
-		></div>
-		<div
-			class="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-cyan-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow delay-1000"
-		></div>
+		<div class="ambient-orb ambient-orb-violet"></div>
+		<div class="ambient-orb ambient-orb-cyan"></div>
 
-		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[60px_60px] mask-[radial-gradient(ellipse_at_center,black_40%,transparent_80%)]"
-		></div>
+		<div class="grid-layer"></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+	<div class="courses-shell">
 		{#if isVisible}
-			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: 1000 }}>
-				<div
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-violet-900/30 bg-violet-950/10 text-violet-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
-					<IconSchool class="w-4 h-4" />
+			<div class="section-heading" in:slideUp={{ delay: 0, duration: 1000 }}>
+				<div class="section-eyebrow">
+					<IconSchool size={16} />
 					Professional Education
 				</div>
 
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
-					Trading <span class="text-slate-700">Curriculum.</span>
+				<h2 class="section-title">
+					Trading <span>Curriculum.</span>
 				</h2>
 
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+				<p class="section-copy">
 					We don't sell courses. We provide institutional-grade trading education. Verified by
 					funded traders and prop firm graduates worldwide.
 				</p>
 
-				<div
-					class="courses-stats-grid grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12 pt-8 border-t border-white/5"
-					in:slideUp={{ delay: 200, duration: 800 }}
-				>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							12k+
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Students
-						</div>
+				<div class="courses-stats-grid" in:slideUp={{ delay: 200, duration: 800 }}>
+					<div class="stat-card">
+						<div class="stat-value">12k+</div>
+						<div class="stat-label">Students</div>
 					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							4.9
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Rating
-						</div>
+					<div class="stat-card">
+						<div class="stat-value">4.9</div>
+						<div class="stat-label">Rating</div>
 					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							89%
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Completion
-						</div>
+					<div class="stat-card">
+						<div class="stat-value">89%</div>
+						<div class="stat-label">Completion</div>
 					</div>
-					<div class="text-center group cursor-default">
-						<div
-							class="text-3xl font-bold text-white tabular-nums group-hover:scale-110 transition-transform duration-300"
-						>
-							24/7
-						</div>
-						<div class="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">
-							Support
-						</div>
+					<div class="stat-card">
+						<div class="stat-value">24/7</div>
+						<div class="stat-label">Support</div>
 					</div>
 				</div>
 			</div>
@@ -380,130 +339,90 @@
 
 		<div
 			{@attach captureCards}
-			class="courses-grid grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative"
+			class="courses-grid"
 			style:--mouse-x={`${mouseX}px`}
 			style:--mouse-y={`${mouseY}px`}
 		>
-			<div
-				class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
-				style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
-			></div>
+			<div class="cursor-spotlight" aria-hidden="true"></div>
 
 			{#each courses as course (course.id)}
-				<a
-					href={course.href}
-					class="course-card group relative rounded-4xl overflow-hidden bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-violet-900/20 active:scale-[0.99] z-10 isolate"
-				>
+				<a href={course.href} class="course-card">
 					<div
-						class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"
+						class="course-pattern"
 						style:background={course.imagePattern}
 						style:filter="blur(40px)"
 					></div>
 
-					<div
-						class="absolute inset-0 opacity-50 group-hover:opacity-60 transition-opacity duration-500"
-						style:background={course.backgroundGradient}
-					></div>
+					<div class="course-gradient" style:background={course.backgroundGradient}></div>
 
-					<div class="relative p-6 sm:p-8 lg:p-10 h-full flex flex-col">
-						<div class="flex items-start justify-between gap-4 mb-6">
-							<div class="flex items-center gap-4">
-								<div
-									class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ease-out"
-								>
+					<div class="course-content">
+						<div class="course-header">
+							<div class="course-identity">
+								<div class="course-icon">
 									{#if course.icon}
 										{@const IconComponent = course.icon}
-										<IconComponent
-											class="w-7 h-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-										/>
+										<IconComponent class="course-icon-svg" size={28} />
 									{/if}
 								</div>
 								<div>
-									<span
-										class="inline-flex items-center gap-1.5 text-xs font-bold text-violet-300 uppercase tracking-wider mb-1"
-									>
+									<span class="course-level">
 										{#if course.level === 'Advanced'}
-											<IconFlame size={12} class="animate-pulse" />
+											<IconFlame size={12} class="level-icon-pulse" />
 										{:else if course.level === 'Intermediate'}
 											<IconActivity size={12} />
 										{/if}
 										{course.level}
 									</span>
-									<h3
-										class="text-xl sm:text-2xl font-bold text-white tracking-tight leading-none group-hover:text-violet-200 transition-colors"
-									>
-										{course.title}
-									</h3>
+									<h3 class="course-title">{course.title}</h3>
 								</div>
 							</div>
 
-							<span
-								class="px-3 py-1 text-[10px] sm:text-xs font-bold rounded-full bg-white/10 text-white backdrop-blur-md border border-white/10 shadow-lg group-hover:bg-white/20 transition-colors"
-							>
-								{course.badge}
-							</span>
+							<span class="course-badge">{course.badge}</span>
 						</div>
 
-						<p
-							class="text-base text-zinc-400 mb-8 leading-relaxed line-clamp-2 group-hover:text-zinc-300 transition-colors duration-300"
-						>
+						<p class="course-description">
 							{course.description}
 						</p>
 
-						<div class="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide snap-x">
+						<div class="feature-strip">
 							{#each course.features as feature (feature)}
-								<span
-									class="snap-start shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-300 border border-white/5 whitespace-nowrap group-hover:border-white/20 transition-colors"
-								>
+								<span class="feature-chip">
 									{feature}
 								</span>
 							{/each}
 						</div>
 
-						<div class="grow"></div>
+						<div class="course-spacer"></div>
 
-						<div
-							class="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-end justify-between gap-4"
-						>
-							<div class="flex flex-col gap-2">
-								<div class="flex items-center gap-4 text-xs sm:text-sm text-zinc-500 font-medium">
-									<div class="flex items-center gap-1.5">
-										<IconClock class="w-4 h-4 text-zinc-600" />
+						<div class="course-footer">
+							<div class="course-meta-block">
+								<div class="course-meta">
+									<div class="course-meta-item">
+										<IconClock size={16} />
 										<span>{course.duration}</span>
 									</div>
-									<div class="flex items-center gap-1.5">
-										<IconUsers class="w-4 h-4 text-zinc-600" />
+									<div class="course-meta-item">
+										<IconUsers size={16} />
 										<span>{course.students}</span>
 									</div>
 								</div>
-								<div class="flex items-baseline gap-2 mt-1">
-									<span class="text-2xl font-bold text-white tracking-tight tabular-nums"
-										>{course.price}</span
-									>
-									<span
-										class="text-sm text-zinc-600 line-through decoration-zinc-600/50 tabular-nums"
-										>{course.originalPrice}</span
-									>
+								<div class="course-pricing">
+									<span class="course-price">{course.price}</span>
+									<span class="course-original-price">{course.originalPrice}</span>
 								</div>
 							</div>
 
-							<div
-								class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm shadow-xl shadow-white/5 group-hover:shadow-white/20 transform group-hover:-translate-y-1 transition-all duration-300"
-							>
+							<div class="course-cta">
 								<span>Start Learning</span>
-								<IconArrowRight class="w-4 h-4" />
+								<IconArrowRight size={16} />
 							</div>
 						</div>
 					</div>
 
-					<div
-						class="hidden sm:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20"
-					>
-						<div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-						<div
-							class="relative w-20 h-20 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20 shadow-2xl scale-50 group-hover:scale-100 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)"
-						>
-							<IconPlayerPlay class="w-8 h-8 text-white ml-1 drop-shadow-lg" />
+					<div class="play-overlay">
+						<div class="play-overlay-scrim"></div>
+						<div class="play-button">
+							<IconPlayerPlay class="play-icon" size={32} />
 						</div>
 					</div>
 				</a>
@@ -511,24 +430,15 @@
 		</div>
 
 		{#if isVisible}
-			<div class="text-center mt-20" in:slideUp={{ delay: 400, duration: 800 }}>
-				<a
-					href="/courses"
-					class="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/50 active:scale-[0.98] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
-				>
-					<span
-						class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"
-					></span>
-					<span class="text-base relative z-10">View Full Curriculum</span>
-					<IconArrowRight
-						class="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10"
-					/>
+			<div class="section-actions" in:slideUp={{ delay: 400, duration: 800 }}>
+				<a href="/courses" class="curriculum-link">
+					<span class="curriculum-link-sheen"></span>
+					<span class="curriculum-link-label">View Full Curriculum</span>
+					<IconArrowRight class="curriculum-link-icon" size={20} />
 				</a>
 
-				<p
-					class="mt-6 text-sm text-zinc-500 flex items-center justify-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
-				>
-					<IconCertificate class="w-4 h-4 text-violet-500" />
+				<p class="certification-note">
+					<IconCertificate size={16} />
 					Official certification included with all pathways
 				</p>
 			</div>
@@ -542,13 +452,584 @@
 	 * Breakpoints: xs(360px), sm(640px), md(768px), lg(1024px), xl(1280px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Utility for hiding scrollbars */
-	.scrollbar-hide {
-		-ms-overflow-style: none;
-		scrollbar-width: none;
+	.courses-section {
+		position: relative;
+		overflow: hidden;
+		padding: 5rem env(safe-area-inset-right) 5rem env(safe-area-inset-left);
+		background: #050812;
 	}
-	.scrollbar-hide::-webkit-scrollbar {
+
+	.courses-section::selection {
+		background: rgba(139, 92, 246, 0.3);
+		color: #ddd6fe;
+	}
+
+	.ambient-layers {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.noise-layer,
+	.grid-layer {
+		position: absolute;
+		inset: 0;
+	}
+
+	.noise-layer {
+		background-image: url('/textures/noise.svg');
+		mix-blend-mode: overlay;
+		opacity: 0.03;
+	}
+
+	.ambient-orb {
+		position: absolute;
+		width: 50rem;
+		height: 50rem;
+		border-radius: 999px;
+		filter: blur(120px);
+		mix-blend-mode: screen;
+		animation: pulse-slow 8s ease-in-out infinite;
+	}
+
+	.ambient-orb-violet {
+		top: -10%;
+		left: -10%;
+		background: rgba(124, 58, 237, 0.1);
+	}
+
+	.ambient-orb-cyan {
+		right: -10%;
+		bottom: -10%;
+		background: rgba(8, 145, 178, 0.1);
+		animation-delay: 1000ms;
+	}
+
+	.grid-layer {
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+		background-size: 60px 60px;
+		mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+	}
+
+	.courses-shell {
+		position: relative;
+		z-index: 10;
+		width: min(100% - 2rem, 80rem);
+		margin-inline: auto;
+	}
+
+	.section-heading {
+		width: min(100%, 56rem);
+		margin: 0 auto 6rem;
+		text-align: center;
+	}
+
+	.section-eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 2rem;
+		padding: 0.375rem 1rem;
+		border: 1px solid rgba(76, 29, 149, 0.3);
+		border-radius: 2px;
+		background: rgba(46, 16, 101, 0.1);
+		color: #8b5cf6;
+		font-size: 0.625rem;
+		font-weight: 700;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+	}
+
+	.section-title {
+		margin: 0 0 2rem;
+		color: white;
+		font-family: var(--font-serif, Georgia, serif);
+		font-size: clamp(3rem, 8vw, 4.5rem);
+		font-weight: 400;
+		line-height: 0.95;
+		letter-spacing: 0;
+	}
+
+	.section-title span {
+		color: #334155;
+	}
+
+	.section-copy {
+		width: min(100%, 42rem);
+		margin: 0 auto;
+		color: #94a3b8;
+		font-size: 1.125rem;
+		font-weight: 300;
+		line-height: 1.625;
+	}
+
+	.courses-stats-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.5rem;
+		width: min(100%, 56rem);
+		margin: 3rem auto 0;
+		padding-top: 2rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.stat-card {
+		cursor: default;
+		text-align: center;
+	}
+
+	.stat-value {
+		color: white;
+		font-size: 1.875rem;
+		font-weight: 700;
+		line-height: 1.15;
+		font-variant-numeric: tabular-nums;
+		transition: transform 300ms ease;
+	}
+
+	.stat-card:hover .stat-value {
+		transform: scale(1.1);
+	}
+
+	.stat-label {
+		margin-top: 0.25rem;
+		color: #71717a;
+		font-size: 0.75rem;
+		font-weight: 500;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.courses-grid {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	.cursor-spotlight {
+		position: absolute;
+		z-index: 0;
+		inset: -1px;
+		border-radius: 1.5rem;
+		pointer-events: none;
+		background: radial-gradient(
+			800px circle at var(--mouse-x) var(--mouse-y),
+			rgba(139, 92, 246, 0.08),
+			transparent 40%
+		);
+		opacity: 0;
+		transition: opacity 300ms ease;
+	}
+
+	.course-card {
+		position: relative;
+		z-index: 10;
+		isolation: isolate;
+		display: block;
+		overflow: hidden;
+		min-height: 44px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		border-radius: 2rem;
+		background: rgba(24, 24, 27, 0.4);
+		color: inherit;
+		text-decoration: none;
+		transition:
+			border-color 500ms ease,
+			box-shadow 500ms ease,
+			transform 500ms ease;
+	}
+
+	.course-card:hover {
+		border-color: rgba(255, 255, 255, 0.1);
+		box-shadow: 0 25px 50px -12px rgba(76, 29, 149, 0.2);
+	}
+
+	.course-card:active {
+		transform: scale(0.99);
+	}
+
+	.course-pattern,
+	.course-gradient,
+	.play-overlay,
+	.play-overlay-scrim {
+		position: absolute;
+		inset: 0;
+	}
+
+	.course-pattern {
+		opacity: 0;
+		transition: opacity 700ms ease-in-out;
+	}
+
+	.course-card:hover .course-pattern {
+		opacity: 1;
+	}
+
+	.course-gradient {
+		opacity: 0.5;
+		transition: opacity 500ms ease;
+	}
+
+	.course-card:hover .course-gradient {
+		opacity: 0.6;
+	}
+
+	.course-content {
+		position: relative;
+		display: flex;
+		min-height: 100%;
+		flex-direction: column;
+		padding: 1.5rem;
+	}
+
+	.course-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.course-identity {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		min-width: 0;
+	}
+
+	.course-icon {
+		display: flex;
+		width: 3.5rem;
+		height: 3.5rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 1rem;
+		background: rgba(255, 255, 255, 0.05);
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.35);
+		color: white;
+		backdrop-filter: blur(4px);
+		transition:
+			transform 500ms ease-out,
+			border-color 500ms ease,
+			background 500ms ease;
+	}
+
+	.course-card:hover .course-icon {
+		transform: scale(1.1) rotate(3deg);
+	}
+
+	:global(.course-icon-svg) {
+		filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+	}
+
+	.course-level {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		margin-bottom: 0.25rem;
+		color: #c4b5fd;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	:global(.level-icon-pulse) {
+		animation: icon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	.course-title {
+		margin: 0;
+		color: white;
+		font-size: 1.25rem;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0;
+		transition: color 300ms ease;
+	}
+
+	.course-card:hover .course-title {
+		color: #ddd6fe;
+	}
+
+	.course-badge {
+		flex: 0 0 auto;
+		padding: 0.25rem 0.75rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.1);
+		color: white;
+		font-size: 0.625rem;
+		font-weight: 700;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+		backdrop-filter: blur(12px);
+		transition: background 300ms ease;
+	}
+
+	.course-card:hover .course-badge {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.course-description {
+		display: -webkit-box;
+		overflow: hidden;
+		margin: 0 0 2rem;
+		color: #a1a1aa;
+		font-size: 1rem;
+		line-height: 1.625;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		transition: color 300ms ease;
+	}
+
+	.course-card:hover .course-description {
+		color: #d4d4d8;
+	}
+
+	.feature-strip {
+		display: flex;
+		gap: 0.5rem;
+		overflow-x: auto;
+		margin: 0 -0.5rem 2rem;
+		padding: 0 0.5rem 0.5rem;
+		scrollbar-width: none;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.feature-strip::-webkit-scrollbar {
 		display: none;
+	}
+
+	.feature-chip {
+		flex: 0 0 auto;
+		scroll-snap-align: start;
+		padding: 0.375rem 0.75rem;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		border-radius: 0.5rem;
+		background: rgba(255, 255, 255, 0.05);
+		color: #d4d4d8;
+		font-size: 0.75rem;
+		font-weight: 500;
+		white-space: nowrap;
+		transition: border-color 300ms ease;
+	}
+
+	.course-card:hover .feature-chip {
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.course-spacer {
+		flex-grow: 1;
+	}
+
+	.course-footer {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.course-meta-block {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.course-meta {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		color: #71717a;
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	.course-meta-item {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+
+	.course-meta-item :global(svg) {
+		color: #52525b;
+	}
+
+	.course-pricing {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		margin-top: 0.25rem;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.course-price {
+		color: white;
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0;
+	}
+
+	.course-original-price {
+		color: #52525b;
+		font-size: 0.875rem;
+		text-decoration-line: line-through;
+		text-decoration-color: rgba(82, 82, 91, 0.5);
+	}
+
+	.course-cta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border-radius: 0.75rem;
+		background: white;
+		color: black;
+		font-size: 0.875rem;
+		font-weight: 700;
+		box-shadow: 0 20px 25px -5px rgba(255, 255, 255, 0.05);
+		transition:
+			transform 300ms ease,
+			box-shadow 300ms ease;
+	}
+
+	.course-card:hover .course-cta {
+		transform: translateY(-0.25rem);
+		box-shadow: 0 20px 25px -5px rgba(255, 255, 255, 0.2);
+	}
+
+	.play-overlay {
+		z-index: 20;
+		display: none;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 500ms ease;
+	}
+
+	.course-card:hover .play-overlay {
+		opacity: 1;
+	}
+
+	.play-overlay-scrim {
+		background: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(2px);
+	}
+
+	.play-button {
+		position: relative;
+		display: flex;
+		width: 5rem;
+		height: 5rem;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.1);
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+		color: white;
+		backdrop-filter: blur(24px);
+		transform: scale(0.5);
+		transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.course-card:hover .play-button {
+		transform: scale(1);
+	}
+
+	:global(.play-icon) {
+		margin-left: 0.25rem;
+		filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04)) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
+	}
+
+	.section-actions {
+		margin-top: 5rem;
+		text-align: center;
+	}
+
+	.curriculum-link {
+		position: relative;
+		display: inline-flex;
+		overflow: hidden;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		padding: 1rem 2rem;
+		border-radius: 999px;
+		background: linear-gradient(to right, #7c3aed, #4f46e5);
+		color: white;
+		font-weight: 600;
+		text-decoration: none;
+		box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.25);
+		transition:
+			transform 300ms ease,
+			box-shadow 300ms ease;
+	}
+
+	.curriculum-link:hover {
+		transform: translateY(-0.25rem);
+		box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.5);
+	}
+
+	.curriculum-link:active {
+		transform: scale(0.98);
+	}
+
+	.curriculum-link-sheen {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+		transform: translateX(-100%);
+		transition: transform 700ms ease-in-out;
+	}
+
+	.curriculum-link:hover .curriculum-link-sheen {
+		transform: translateX(100%);
+	}
+
+	.curriculum-link-label,
+	:global(.curriculum-link-icon) {
+		position: relative;
+		z-index: 10;
+	}
+
+	:global(.curriculum-link-icon) {
+		transition: transform 300ms ease;
+	}
+
+	.curriculum-link:hover :global(.curriculum-link-icon) {
+		transform: translateX(0.25rem);
+	}
+
+	.certification-note {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		margin: 1.5rem 0 0;
+		color: #71717a;
+		font-size: 0.875rem;
+		opacity: 0.6;
+		transition: opacity 300ms ease;
+	}
+
+	.certification-note:hover {
+		opacity: 1;
+	}
+
+	.certification-note :global(svg) {
+		color: #8b5cf6;
 	}
 
 	/* Custom Pulse for background orbs */
@@ -563,62 +1044,44 @@
 			transform: scale(1.1);
 		}
 	}
-	.animate-pulse-slow {
-		animation: pulse-slow 8s ease-in-out infinite;
-	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SAFE AREA INSETS - iOS/Android notch & gesture areas
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	section {
-		padding-left: env(safe-area-inset-left);
-		padding-right: env(safe-area-inset-right);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TOUCH TARGETS - Minimum 44x44px for all interactive elements
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (hover: none) and (pointer: coarse) {
-		:global(.course-card),
-		:global(a[href]) {
-			min-height: 44px;
+	@keyframes icon-pulse {
+		50% {
+			opacity: 0.5;
 		}
 	}
 
-	/* Responsive overrides for nested Tailwind utilities. Component <style>
-	   rules are unlayered (win over @layer utilities on layer-order); the
-	   compound `.course-card .p-6` selector also outspecs single-class
-	   utilities. Hardened 2026-04-25 per CSS_ISOLATION_PLAN. */
 	@media (max-width: 359px) {
-		section {
+		.courses-section {
 			padding-top: 3rem;
 			padding-bottom: 3rem;
 		}
 
-		:global(.course-card) {
+		.course-card {
 			border-radius: 1rem;
 		}
 
-		:global(.course-card .p-6),
-		:global(.course-card .p-8),
-		:global(.course-card .p-10) {
+		.course-content {
 			padding: 1rem;
 		}
 
-		:global(.text-5xl),
-		:global(.text-7xl) {
+		.section-title {
 			font-size: 1.75rem;
+		}
+
+		.course-title,
+		.course-price {
+			font-size: 1.25rem;
 		}
 	}
 
 	@media (min-width: 360px) and (max-width: 639px) {
-		section {
+		.courses-section {
 			padding-top: 4rem;
 			padding-bottom: 4rem;
 		}
 
-		:global(.course-card .p-6),
-		:global(.course-card .p-8) {
+		.course-content {
 			padding: 1.25rem;
 		}
 
@@ -631,12 +1094,12 @@
 			gap: 1rem;
 		}
 
-		:global(.text-5xl),
-		:global(.text-7xl) {
+		.section-title {
 			font-size: 2rem;
 		}
 
-		:global(.text-2xl) {
+		.course-title,
+		.course-price {
 			font-size: 1.25rem;
 		}
 	}
@@ -658,11 +1121,68 @@
 		}
 	}
 
+	@media (min-width: 640px) {
+		.courses-section {
+			padding-top: 8rem;
+			padding-bottom: 8rem;
+		}
+
+		.course-content {
+			padding: 2rem;
+		}
+
+		.course-title {
+			font-size: 1.5rem;
+		}
+
+		.course-badge {
+			font-size: 0.75rem;
+		}
+
+		.course-footer {
+			flex-direction: row;
+			align-items: flex-end;
+		}
+
+		.course-meta {
+			font-size: 0.875rem;
+		}
+
+		.play-overlay {
+			display: flex;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.courses-stats-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.cursor-spotlight {
+			opacity: 1;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.courses-shell {
+			width: min(100% - 4rem, 80rem);
+		}
+
+		.courses-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 2rem;
+		}
+
+		.course-content {
+			padding: 2.5rem;
+		}
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DYNAMIC VIEWPORT HEIGHT - Use dvh for modern mobile browsers
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@supports (min-height: 100dvh) {
-		section {
+		.courses-section {
 			min-height: auto;
 		}
 	}
@@ -671,39 +1191,31 @@
 	 * REDUCED MOTION - Accessibility
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	@media (prefers-reduced-motion: reduce) {
-		.animate-pulse-slow {
+		.ambient-orb,
+		:global(.level-icon-pulse) {
 			animation: none;
 		}
 
-		:global(.course-card) {
+		.course-card,
+		.course-icon,
+		.stat-value,
+		.course-cta,
+		.play-button,
+		.curriculum-link,
+		.curriculum-link-sheen,
+		:global(.curriculum-link-icon) {
 			transition: none;
 		}
 	}
 
-	/* Landscape mobile — overrides for horizontal orientation. Component
-	   `<style>` is unlayered, beats `@layer utilities` on layer-order. */
 	@media (max-height: 500px) and (orientation: landscape) {
-		section {
+		.courses-section {
 			padding-top: 2rem;
 			padding-bottom: 2rem;
 		}
 
-		:global(.mb-24) {
+		.section-heading {
 			margin-bottom: 2rem;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * FEATURE TAGS - Horizontal scroll on mobile
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 767px) {
-		:global(.snap-x) {
-			scroll-snap-type: x mandatory;
-			-webkit-overflow-scrolling: touch;
-		}
-
-		:global(.snap-start) {
-			scroll-snap-align: start;
 		}
 	}
 </style>
