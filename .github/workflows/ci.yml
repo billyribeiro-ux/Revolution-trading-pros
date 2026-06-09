@@ -97,16 +97,12 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           components: rustfmt, clippy
 
-      - uses: Swatinem/rust-cache@v2.9.1
-        with:
-          workspaces: api
-
       - name: cargo fmt --check
         run: cargo fmt --all --check
 
       # Canonical gate per CLAUDE.md — blocking, no continue-on-error.
-      - name: cargo clippy (-D warnings, blocking)
-        run: cargo clippy --locked --all-targets -- -D warnings
+      - name: cargo clippy strict
+        run: cargo clippy --locked --all-targets -- -Dwarnings
         env:
           SQLX_OFFLINE: "true"
 
