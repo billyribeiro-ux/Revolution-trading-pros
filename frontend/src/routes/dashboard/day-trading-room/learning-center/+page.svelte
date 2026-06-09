@@ -48,6 +48,8 @@
 	// Pagination derived values
 	let currentPage = $derived(meta.current_page);
 	let totalPages = $derived(meta.last_page);
+	const fallbackThumbnailUrl =
+		'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
@@ -113,6 +115,11 @@
 		}
 
 		return range;
+	}
+
+	function getThumbnailBackgroundImage(thumbnailUrl: string | null | undefined): string {
+		const imageUrl = thumbnailUrl || fallbackThumbnailUrl;
+		return `url("${imageUrl.replaceAll('"', '%22')}")`;
 	}
 </script>
 
@@ -500,11 +507,10 @@
 							<article class="article-card">
 								<figure
 									class="article-card__image"
-									style="background-image: url({video.thumbnail_url ||
-										'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'});"
+									style:background-image={getThumbnailBackgroundImage(video.thumbnail_url)}
 								>
 									<img
-										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
+										src={fallbackThumbnailUrl}
 										alt={video.title}
 										loading="lazy"
 										width="325"
