@@ -56,6 +56,11 @@ export default defineConfig(({ mode }) => ({
 		// compatibility — calc() inside media queries (e.g. Tailwind breakpoint
 		// helpers) currently fails Lightning CSS strict parsing.
 		// Revisit when Lightning CSS calc-in-media-query support lands.
-		cssMinify: 'esbuild'
+		cssMinify: 'esbuild',
+		rolldownOptions: {
+			checks: {
+				pluginTimings: false
+			}
+		}
 	}
 }));

@@ -135,60 +135,62 @@ export function mockPop(): void {}
 // APPLY MOCK TO VITEST
 // ═══════════════════════════════════════════════════════════════════════════════
 
+vi.mock('svelte/internal/client', async (importOriginal) => {
+	const original = (await importOriginal()) as Record<string, unknown>;
+	return {
+		...original,
+		// Override the functions that throw outside component context
+		state: mockState,
+		mutable_source: mockState,
+		set: mockSet,
+		get: mockGet,
+		safe_get: mockGet,
+		user_effect: mockUserEffect,
+		user_pre_effect: mockUserPreEffect,
+		effect: mockUserEffect,
+		render_effect: mockUserEffect,
+		template_effect: vi.fn(),
+		deferred_template_effect: vi.fn(),
+		derived: mockDerived,
+		user_derived: mockDerived,
+		derived_safe_equal: mockDerived,
+		async_derived: mockDerived,
+		push: mockPush,
+		pop: mockPop,
+		push_reaction_value: vi.fn(),
+		effect_root: (fn: () => void) => {
+			fn();
+			return () => {};
+		},
+		effect_tracking: () => false,
+		untrack: <T>(fn: () => T) => fn(),
+		prop: (_props: Record<string, unknown>, key: string, _flags?: number, fallback?: unknown) => {
+			return _props?.[key] ?? fallback;
+		},
+		rest_props: (props: Record<string, unknown>, ...keys: string[]) => {
+			const rest: Record<string, unknown> = {};
+			for (const key of Object.keys(props)) {
+				if (!keys.includes(key)) {
+					rest[key] = props[key];
+				}
+			}
+			return rest;
+		},
+		spread_props: (...sources: Record<string, unknown>[]) => {
+			return Object.assign({}, ...sources);
+		},
+		mutate: (_source: MockSource, value: unknown) => value,
+		update: vi.fn(),
+		update_pre: vi.fn(),
+		// Snapshot just returns the value
+		snapshot: <T>(value: T) => value
+	};
+});
+
 /**
- * Call this in your test setup to mock `svelte/internal/client`.
- * Must be called BEFORE any .svelte.ts imports.
+ * Kept for existing setup files. Importing this module now applies the
+ * top-level Vitest mock, which matches Vitest's hoisting semantics.
  */
 export function applySvelteInternalMock(): void {
-	vi.mock('svelte/internal/client', async (importOriginal) => {
-		const original = (await importOriginal()) as Record<string, unknown>;
-		return {
-			...original,
-			// Override the functions that throw outside component context
-			state: mockState,
-			mutable_source: mockState,
-			set: mockSet,
-			get: mockGet,
-			safe_get: mockGet,
-			user_effect: mockUserEffect,
-			user_pre_effect: mockUserPreEffect,
-			effect: mockUserEffect,
-			render_effect: mockUserEffect,
-			template_effect: vi.fn(),
-			deferred_template_effect: vi.fn(),
-			derived: mockDerived,
-			user_derived: mockDerived,
-			derived_safe_equal: mockDerived,
-			async_derived: mockDerived,
-			push: mockPush,
-			pop: mockPop,
-			push_reaction_value: vi.fn(),
-			effect_root: (fn: () => void) => {
-				fn();
-				return () => {};
-			},
-			effect_tracking: () => false,
-			untrack: <T>(fn: () => T) => fn(),
-			prop: (_props: Record<string, unknown>, key: string, _flags?: number, fallback?: unknown) => {
-				return _props?.[key] ?? fallback;
-			},
-			rest_props: (props: Record<string, unknown>, ...keys: string[]) => {
-				const rest: Record<string, unknown> = {};
-				for (const key of Object.keys(props)) {
-					if (!keys.includes(key)) {
-						rest[key] = props[key];
-					}
-				}
-				return rest;
-			},
-			spread_props: (...sources: Record<string, unknown>[]) => {
-				return Object.assign({}, ...sources);
-			},
-			mutate: (_source: MockSource, value: unknown) => value,
-			update: vi.fn(),
-			update_pre: vi.fn(),
-			// Snapshot just returns the value
-			snapshot: <T>(value: T) => value
-		};
-	});
+	// no-op
 }

@@ -7,9 +7,9 @@
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
 	 */
-	import { onMount, onDestroy } from 'svelte';
-	import { gsap } from 'gsap';
-	import { browser } from '$app/environment';
+	import { untrack } from 'svelte';
+	import { Tween } from 'svelte/motion';
+	import { cubicOut, linear, quadOut, sineOut } from 'svelte/easing';
 
 	interface Props {
 		value: number;
@@ -33,11 +33,21 @@
 	let suffix = $derived(props.suffix ?? '');
 	let locale = $derived(props.locale ?? 'en-US');
 	let currency = $derived(props.currency ?? 'USD');
-	let delay = $derived(props.delay ?? 0);
 	let easing = $derived(props.easing ?? 'power2.out');
+	const initialDelay = untrack(() => props.delay ?? 0);
 
-	let displayValue = $state(0);
-	let tween: gsap.core.Tween | null = null;
+	const easingMap = {
+		linear,
+		'power1.out': sineOut,
+		'power2.out': quadOut,
+		'power3.out': cubicOut
+	};
+
+	let tween = Tween.of(() => value, {
+		delay: initialDelay * 1000,
+		duration: () => duration * 1000,
+		easing: (t) => (easingMap[easing as keyof typeof easingMap] ?? quadOut)(t)
+	});
 
 	function formatValue(val: number): string {
 		let formatted: string;
@@ -75,53 +85,10 @@
 
 		return `${prefix}${formatted}${suffix}`;
 	}
-
-	function animate(targetValue: number) {
-		if (!browser) return;
-
-		// Kill any existing tween
-		if (tween) {
-			tween.kill();
-		}
-
-		// Create the counting animation
-		const obj = { val: displayValue };
-		tween = gsap.to(obj, {
-			val: targetValue,
-			duration,
-			delay,
-			ease: easing,
-			onUpdate: () => {
-				displayValue = obj.val;
-			},
-			onComplete: () => {
-				displayValue = targetValue;
-			}
-		});
-	}
-
-	onMount(() => {
-		// Initial animation from 0 to value
-		displayValue = 0;
-		animate(value);
-	});
-
-	onDestroy(() => {
-		if (tween) {
-			tween.kill();
-		}
-	});
-
-	// Reactively animate when value changes
-	$effect(() => {
-		if (browser && value !== undefined) {
-			animate(value);
-		}
-	});
 </script>
 
 <span class="animated-number tabular-nums" aria-live="polite" aria-atomic="true">
-	{formatValue(displayValue)}
+	{formatValue(tween.current)}
 </span>
 
 <style>

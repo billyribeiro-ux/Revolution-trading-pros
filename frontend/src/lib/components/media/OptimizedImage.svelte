@@ -14,7 +14,6 @@
 -->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { decode } from 'blurhash';
 	import Icon from '$lib/components/Icon.svelte';
 
 	// Props - Svelte 5 $props() pattern with interface
@@ -60,6 +59,12 @@
 	let containerRef = $state<HTMLDivElement | null>(null);
 	let isInView = $state(false);
 	let observer: IntersectionObserver | null = null;
+	let blurhashPromise: Promise<typeof import('blurhash')> | null = null;
+
+	function loadBlurhash() {
+		blurhashPromise ??= import('blurhash');
+		return blurhashPromise;
+	}
 
 	function captureContainer(element: HTMLDivElement) {
 		containerRef = element;
@@ -84,17 +89,21 @@
 	function renderBlurhash(node: HTMLCanvasElement) {
 		if (!blurhash || !node) return;
 
-		try {
-			const pixels = decode(blurhash, 32, 32);
-			const ctx = node.getContext('2d');
-			if (!ctx) return;
+		void loadBlurhash()
+			.then(({ decode }) => {
+				if (!node.isConnected || !blurhash) return;
 
-			const imageData = ctx.createImageData(32, 32);
-			imageData.data.set(pixels);
-			ctx.putImageData(imageData, 0, 0);
-		} catch (err) {
-			console.warn('BlurHash decode failed:', err);
-		}
+				const pixels = decode(blurhash, 32, 32);
+				const ctx = node.getContext('2d');
+				if (!ctx) return;
+
+				const imageData = ctx.createImageData(32, 32);
+				imageData.data.set(pixels);
+				ctx.putImageData(imageData, 0, 0);
+			})
+			.catch((err: unknown) => {
+				console.warn('BlurHash decode failed:', err);
+			});
 	}
 
 	// Build srcset string

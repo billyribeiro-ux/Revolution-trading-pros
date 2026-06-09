@@ -9,7 +9,6 @@
 	 */
 	import { onMount } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
-	import { gsap } from 'gsap';
 	import {
 		IconBell,
 		IconX,
@@ -39,6 +38,12 @@
 	let isOpen = $state(false);
 	let bellRef: HTMLButtonElement | null = null;
 	let panelRef: HTMLDivElement | null = null;
+	let gsapPromise: Promise<(typeof import('gsap'))['gsap']> | null = null;
+
+	function loadGsap() {
+		gsapPromise ??= import('gsap').then((module) => module.gsap);
+		return gsapPromise;
+	}
 
 	// Local derived from getters
 	const notifications = $derived(getNotifications());
@@ -64,15 +69,19 @@
 		isOpen = !isOpen;
 		if (isOpen && bellRef) {
 			// Animate bell
-			gsap.to(bellRef, {
-				rotation: 15,
-				duration: 0.1,
-				yoyo: true,
-				repeat: 3,
-				ease: 'power1.inOut',
-				onComplete: () => {
-					gsap.set(bellRef, { rotation: 0 });
-				}
+			void loadGsap().then((gsap) => {
+				if (!bellRef) return;
+
+				gsap.to(bellRef, {
+					rotation: 15,
+					duration: 0.1,
+					yoyo: true,
+					repeat: 3,
+					ease: 'power1.inOut',
+					onComplete: () => {
+						gsap.set(bellRef, { rotation: 0 });
+					}
+				});
 			});
 		}
 	}
