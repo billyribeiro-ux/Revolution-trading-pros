@@ -15,7 +15,7 @@ Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
-- Secondary multiline/interpolated class-style audit scan: 9 Svelte files remaining.
+- Secondary multiline/interpolated class-style audit scan: 8 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -93,6 +93,7 @@ Current evidence:
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/dashboard/day-trading-room/learning-center/+page.svelte`; replaced the thumbnail background-image style string with a Svelte 5 `style:background-image` directive and shared fallback thumbnail constant.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/power-user/CommandPalette.svelte`; replaced the dynamic command row style string with Svelte 5 `style:` directives, migrated palette/input DOM wiring to attachments, derived the active command index, and replaced the mutable `Map` with `SvelteMap`.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/members/[id]/_components/SubscriptionsTab.svelte`; replaced the interpolated Tailwind-era subscription status badge string with Svelte 5 class composition and scoped semantic status CSS.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/growth/LeadCaptureModal.svelte`; replaced the subscribe button dynamic style string with Svelte 5 `style:` directives, moved modal animation wiring to an attachment, converted delayed display to `onMount`, and added auto-close timer cleanup.
 
 ## Remaining Files
 

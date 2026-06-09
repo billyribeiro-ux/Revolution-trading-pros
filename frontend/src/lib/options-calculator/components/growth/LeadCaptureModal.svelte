@@ -3,21 +3,22 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import gsap from 'gsap';
+	import { onDestroy, onMount } from 'svelte';
+	import type { Attachment } from 'svelte/attachments';
 
 	let modalEl: HTMLDivElement | undefined = $state();
 	let email = $state('');
 	let isSubmitting = $state(false);
 	let submitted = $state(false);
 	let showModal = $state(false);
+	let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const DISMISS_KEY = 'rtp:calc:lead-dismissed';
 	const SHOWN_KEY = 'rtp:calc:lead-shown-session';
 	const DISMISS_DAYS = 30;
 	const TRIGGER_DELAY_MS = 120_000; // 2 minutes
 
-	$effect(() => {
-		if (typeof window === 'undefined') return;
-
+	onMount(() => {
 		// Already shown this session
 		if (sessionStorage.getItem(SHOWN_KEY)) return;
 
@@ -37,15 +38,25 @@
 		return () => clearTimeout(timer);
 	});
 
-	$effect(() => {
-		if (showModal && modalEl) {
-			gsap.fromTo(
-				modalEl,
-				{ scale: 0.9, opacity: 0, y: 20 },
-				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)' }
-			);
+	onDestroy(() => {
+		if (closeTimer) {
+			clearTimeout(closeTimer);
 		}
 	});
+
+	const animateModal: Attachment<HTMLDivElement> = (element) => {
+		modalEl = element;
+		const tween = gsap.fromTo(
+			element,
+			{ scale: 0.9, opacity: 0, y: 20 },
+			{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)' }
+		);
+
+		return () => {
+			tween.kill();
+			if (modalEl === element) modalEl = undefined;
+		};
+	};
 
 	function handleDismiss(): void {
 		if (modalEl) {
@@ -89,8 +100,10 @@
 		localStorage.setItem(DISMISS_KEY, Date.now().toString());
 
 		// Auto-close after 2 seconds
-		setTimeout(() => {
+		if (closeTimer) clearTimeout(closeTimer);
+		closeTimer = setTimeout(() => {
 			showModal = false;
+			closeTimer = null;
 		}, 2000);
 	}
 
@@ -126,7 +139,7 @@
 
 		<!-- Modal -->
 		<div
-			bind:this={modalEl}
+			{@attach animateModal}
 			class="relative z-10 w-full max-w-sm rounded-2xl p-6 flex flex-col items-center gap-4"
 			style="
 				background: var(--calc-surface);
@@ -188,10 +201,9 @@
 							onclick={handleSubmit}
 							disabled={!isValidEmail || isSubmitting}
 							class="text-xs font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200 flex-shrink-0"
-							style="background: var(--calc-accent); color: white; opacity: {isValidEmail &&
-							!isSubmitting
-								? 1
-								: 0.5};"
+							style:background="var(--calc-accent)"
+							style:color="white"
+							style:opacity={isValidEmail && !isSubmitting ? 1 : 0.5}
 						>
 							{isSubmitting ? '...' : 'Subscribe'}
 						</button>
