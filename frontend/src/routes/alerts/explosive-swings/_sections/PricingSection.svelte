@@ -30,6 +30,40 @@
 			tagline: 'Like getting 2.5 months FREE'
 		}
 	};
+
+	function getPlanButtonClass(plan: 'monthly' | 'quarterly' | 'annual'): string[] {
+		return [
+			'relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200',
+			selectedPlan === plan ? 'text-white' : 'text-slate-400 hover:text-white'
+		];
+	}
+
+	function getSelectorLeft(): string {
+		if (selectedPlan === 'monthly') return '0.375rem';
+		if (selectedPlan === 'quarterly') return 'calc(33.33% + 0.2rem)';
+		return 'calc(66.66% + 0.1rem)';
+	}
+
+	function getSidePlanClass(plan: 'monthly' | 'annual'): string[] {
+		const selectedClass =
+			plan === 'monthly'
+				? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'
+				: 'border-emerald-500 opacity-100 scale-105';
+
+		return [
+			'bg-slate-900 p-8 rounded-2xl border transition-all',
+			selectedPlan === plan ? selectedClass : 'border-slate-800 opacity-70 hover:opacity-90'
+		];
+	}
+
+	function getQuarterlyPlanClass(): string[] {
+		return [
+			'bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all',
+			selectedPlan === 'quarterly'
+				? 'border-emerald-500 shadow-emerald-500/20 md:scale-110 opacity-100'
+				: 'border-slate-800 shadow-slate-800/10 md:scale-100 opacity-70 hover:opacity-90'
+		];
+	}
 </script>
 
 <section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
@@ -48,45 +82,29 @@
 				<button
 					type="button"
 					onclick={() => (selectedPlan = 'monthly')}
-					class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
-					'monthly'
-						? 'text-white'
-						: 'text-slate-400 hover:text-white'}">Monthly</button
+					class={getPlanButtonClass('monthly')}>Monthly</button
 				>
 				<button
 					type="button"
 					onclick={() => (selectedPlan = 'quarterly')}
-					class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
-					'quarterly'
-						? 'text-white'
-						: 'text-slate-400 hover:text-white'}">Quarterly</button
+					class={getPlanButtonClass('quarterly')}>Quarterly</button
 				>
 				<button
 					type="button"
 					onclick={() => (selectedPlan = 'annual')}
-					class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
-					'annual'
-						? 'text-white'
-						: 'text-slate-400 hover:text-white'}">Annual</button
+					class={getPlanButtonClass('annual')}>Annual</button
 				>
 
 				<div
 					class="absolute top-1.5 bottom-1.5 bg-emerald-600 rounded-lg shadow-md transition-all duration-300 ease-out"
-					style="left: {selectedPlan === 'monthly'
-						? '0.375rem'
-						: selectedPlan === 'quarterly'
-							? 'calc(33.33% + 0.2rem)'
-							: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+					style:left={getSelectorLeft()}
+					style:width="calc(33.33% - 0.4rem)"
 				></div>
 			</div>
 		</div>
 
 		<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
-			<div
-				class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'monthly'
-					? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'
-					: 'border-slate-800 opacity-70 hover:opacity-90'}"
-			>
+			<div class={getSidePlanClass('monthly')}>
 				<h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
 				<div class="flex items-baseline gap-1 mb-6">
 					<span class="text-4xl font-bold text-white">${pricing.monthly.price}</span>
@@ -114,12 +132,7 @@
 				>
 			</div>
 
-			<div
-				class="bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all {selectedPlan ===
-				'quarterly'
-					? 'border-emerald-500 shadow-emerald-500/20 md:scale-110 opacity-100'
-					: 'border-slate-800 shadow-slate-800/10 md:scale-100 opacity-70 hover:opacity-90'}"
-			>
+			<div class={getQuarterlyPlanClass()}>
 				<div
 					class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-slate-900 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
 				>
@@ -160,11 +173,7 @@
 				>
 			</div>
 
-			<div
-				class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'annual'
-					? 'border-emerald-500 opacity-100 scale-105'
-					: 'border-slate-800 opacity-70 hover:opacity-90'}"
-			>
+			<div class={getSidePlanClass('annual')}>
 				<h3 class="text-xl font-bold text-white mb-4">Annual</h3>
 				<div class="flex items-baseline gap-1 mb-6">
 					<span class="text-4xl font-bold text-white">${pricing.annual.price}</span>
