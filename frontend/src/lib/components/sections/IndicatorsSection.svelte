@@ -473,51 +473,37 @@
 	}
 </script>
 
-<section
-	{@attach captureSection}
-	class="relative py-16 sm:py-24 lg:py-32 overflow-hidden bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
->
+<section {@attach captureSection} class="indicators-section">
 	<!-- Ambient Background -->
-	<div class="absolute inset-0 pointer-events-none">
+	<div class="indicator-ambient" aria-hidden="true">
 		<!-- Gradient orbs - smaller on mobile -->
-		<div
-			class="absolute top-1/4 -left-16 sm:-left-32 w-48 sm:w-96 h-48 sm:h-96 bg-blue-500/10 rounded-full blur-[80px] sm:blur-[128px] animate-pulse"
-		></div>
-		<div
-			class="absolute bottom-1/4 -right-16 sm:-right-32 w-48 sm:w-96 h-48 sm:h-96 bg-violet-500/10 rounded-full blur-[80px] sm:blur-[128px] animate-pulse"
-			style="animation-delay: 1s;"
-		></div>
+		<div class="indicator-orb indicator-orb-blue"></div>
+		<div class="indicator-orb indicator-orb-violet"></div>
 
 		<!-- Grid pattern - larger on mobile for performance -->
-		<div
-			class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[32px_32px] sm:bg-size-[64px_64px]"
-		></div>
+		<div class="indicator-grid-pattern"></div>
 
 		<!-- Radial fade -->
-		<div
-			class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(9,9,11,0.8)_70%)]"
-		></div>
+		<div class="indicator-radial-fade"></div>
 	</div>
 
-	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+	<div class="indicators-shell">
 		<!-- Section Header -->
 		{#if isVisible}
 			<div
-				class="max-w-4xl mx-auto text-center mb-24"
+				class="section-heading"
 				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
 			>
-				<div
-					class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
-				>
-					<IconSparkles class="w-3.5 h-3.5" />
+				<div class="section-eyebrow">
+					<IconSparkles size={14} />
 					Technical Edge
 				</div>
 
-				<h2 class="text-5xl md:text-7xl font-serif text-white mb-8 tracking-tight">
-					Indicator <span class="text-slate-700">Suite.</span>
+				<h2 class="section-title">
+					Indicator <span>Suite.</span>
 				</h2>
 
-				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
+				<p class="section-copy">
 					We don't offer retail indicators. We provide institutional-grade analysis tools. Verified
 					by quantitative funds and professional trading desks.
 				</p>
@@ -525,7 +511,7 @@
 		{/if}
 
 		<!-- Main Content Grid - Stack on mobile -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+		<div class="indicators-layout">
 			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
 			{#if isVisible}
 				<div
@@ -533,56 +519,44 @@
 						delay: prefersReducedMotion ? 0 : 200,
 						duration: prefersReducedMotion ? 0 : 600
 					}}
-					class="relative order-2 lg:order-1"
+					class="chart-column"
 				>
-					<div
-						class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 shadow-2xl"
-					>
+					<div class="chart-panel">
 						<!-- Chart Header -->
-						<div
-							class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50"
-						>
-							<div class="flex items-center gap-2 sm:gap-3">
-								<div class="flex gap-1 sm:gap-1.5">
-									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></div>
-									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/80"></div>
-									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/80"></div>
+						<div class="chart-header">
+							<div class="chart-symbol">
+								<div class="window-controls">
+									<div class="window-control window-control-red"></div>
+									<div class="window-control window-control-yellow"></div>
+									<div class="window-control window-control-green"></div>
 								</div>
-								<span class="text-xs sm:text-sm font-mono text-zinc-400">SPY • 1D</span>
+								<span class="chart-ticker">SPY • 1D</span>
 							</div>
-							<div class="flex items-center gap-1.5 sm:gap-2">
-								<span class="text-[10px] sm:text-xs font-mono text-emerald-400">+2.34%</span>
-								<div
-									class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"
-								></div>
+							<div class="chart-status">
+								<span>+2.34%</span>
+								<div class="live-dot"></div>
 							</div>
 						</div>
 
 						<!-- Chart Canvas -->
-						<div {@attach captureChart} class="relative h-56 sm:h-72 lg:h-80">
+						<div {@attach captureChart} class="chart-viewport">
 							<canvas
 								{@attach captureCanvas}
-								class="absolute inset-0 w-full h-full"
+								class="chart-canvas"
 								style="width: 100%; height: 100%;"
 							></canvas>
 
 							<!-- Indicator overlay label -->
-							<div
-								class="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-zinc-800/80 backdrop-blur-sm border border-zinc-700/50"
-							>
-								<span class="text-[10px] sm:text-xs font-mono text-zinc-300">
-									{indicators[activeIndicator]?.name} Active
-								</span>
+							<div class="active-indicator-badge">
+								<span>{indicators[activeIndicator]?.name} Active</span>
 							</div>
 						</div>
 					</div>
 
 					<!-- Floating stats - Hidden on very small screens -->
-					<div
-						class="hidden sm:block absolute -bottom-4 sm:-bottom-6 -right-2 sm:-right-6 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-zinc-800/90 backdrop-blur-xl border border-zinc-700/50 shadow-xl"
-					>
-						<div class="text-[10px] sm:text-xs text-zinc-500 mb-0.5 sm:mb-1">Win Rate</div>
-						<div class="text-xl sm:text-2xl font-bold text-emerald-400">73.2%</div>
+					<div class="floating-stat">
+						<div class="floating-stat-label">Win Rate</div>
+						<div class="floating-stat-value">73.2%</div>
 					</div>
 				</div>
 			{/if}
@@ -590,7 +564,7 @@
 			<!-- Indicator Cards - Order 1 on mobile, 2 on desktop -->
 			{#if isVisible}
 				<div
-					class="space-y-3 sm:space-y-4 order-1 lg:order-2"
+					class="indicator-list"
 					in:slideUp={{
 						delay: prefersReducedMotion ? 0 : 300,
 						duration: prefersReducedMotion ? 0 : 600
@@ -600,68 +574,45 @@
 						{@const IconComponent = indicator.icon}
 						<a
 							href={indicator.href}
-							class={[
-								'indicator-card group block relative p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-800/30 transition-all duration-300 active:scale-[0.98]',
-								activeIndicator === i && 'ring-2 ring-blue-500/30 bg-zinc-800/40'
-							]}
+							class={['indicator-card', activeIndicator === i && 'indicator-card-active']}
 							onmouseenter={() => (activeIndicator = i)}
 							ontouchstart={() => (activeIndicator = i)}
 						>
-							<div class="flex items-start gap-3 sm:gap-4">
+							<div class="indicator-card-content">
 								<!-- Icon -->
-								<div
-									class={[
-										'shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300',
-										indicator.gradient
-									]}
-								>
-									<IconComponent class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+								<div class={['indicator-icon-shell', `indicator-icon-${indicator.id}`]}>
+									<IconComponent class="indicator-icon" size={24} />
 								</div>
 
 								<!-- Content -->
-								<div class="flex-1 min-w-0">
-									<div class="flex items-center gap-2 mb-0.5 sm:mb-1 flex-wrap">
-										<h3
-											class="text-base sm:text-lg font-semibold text-white group-hover:text-blue-400 transition-colors"
-										>
-											{indicator.name}
-										</h3>
-										<span
-											class="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full bg-zinc-800 text-zinc-400"
-										>
+								<div class="indicator-card-body">
+									<div class="indicator-title-row">
+										<h3 class="indicator-title">{indicator.name}</h3>
+										<span class="indicator-category">
 											{indicator.category}
 										</span>
 									</div>
-									<p class="text-xs sm:text-sm text-zinc-500 mb-1 sm:mb-2 hidden sm:block">
+									<p class="indicator-full-name">
 										{indicator.fullName}
 									</p>
-									<p class="text-xs sm:text-sm text-zinc-400 leading-relaxed line-clamp-2">
+									<p class="indicator-description">
 										{indicator.description}
 									</p>
 								</div>
 
 								<!-- Arrow -->
-								<div
-									class="shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:translate-x-1 transition-all duration-300"
-								>
-									<IconArrowRight
-										class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 group-hover:text-blue-400"
-									/>
+								<div class="indicator-arrow">
+									<IconArrowRight class="indicator-arrow-icon" size={20} />
 								</div>
 							</div>
 						</a>
 					{/each}
 
 					<!-- CTA Button -->
-					<div class="pt-4 sm:pt-6 text-center sm:text-left">
-						<a
-							href="/indicators"
-							class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-linear-to-r from-blue-600 to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
-						>
-							<span class="text-sm sm:text-base">Explore All Indicators</span>
-							<IconArrowRight
-								class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform"
-							/>
+					<div class="indicator-actions">
+						<a href="/indicators" class="indicators-link">
+							<span>Explore All Indicators</span>
+							<IconArrowRight class="indicators-link-icon" size={20} />
 						</a>
 					</div>
 				</div>
@@ -669,3 +620,644 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.indicators-section {
+		position: relative;
+		overflow: hidden;
+		padding: 4rem 0;
+		background: linear-gradient(to bottom, #09090b, #18181b, #09090b);
+	}
+
+	.indicator-ambient {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.indicator-orb,
+	.indicator-grid-pattern,
+	.indicator-radial-fade {
+		position: absolute;
+	}
+
+	.indicator-orb {
+		width: 12rem;
+		height: 12rem;
+		border-radius: 999px;
+		filter: blur(80px);
+		animation: indicator-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	.indicator-orb-blue {
+		top: 25%;
+		left: -4rem;
+		background: rgba(59, 130, 246, 0.1);
+	}
+
+	.indicator-orb-violet {
+		right: -4rem;
+		bottom: 25%;
+		background: rgba(139, 92, 246, 0.1);
+		animation-delay: 1s;
+	}
+
+	.indicator-grid-pattern,
+	.indicator-radial-fade {
+		inset: 0;
+	}
+
+	.indicator-grid-pattern {
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+		background-size: 32px 32px;
+	}
+
+	.indicator-radial-fade {
+		background: radial-gradient(ellipse at center, transparent 0%, rgba(9, 9, 11, 0.8) 70%);
+	}
+
+	.indicators-shell {
+		position: relative;
+		width: min(100% - 2rem, 80rem);
+		margin-inline: auto;
+	}
+
+	.section-heading {
+		width: min(100%, 56rem);
+		margin: 0 auto 6rem;
+		text-align: center;
+	}
+
+	.section-eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 2rem;
+		padding: 0.375rem 1rem;
+		border: 1px solid rgba(30, 58, 138, 0.3);
+		border-radius: 2px;
+		background: rgba(23, 37, 84, 0.1);
+		color: #3b82f6;
+		font-size: 0.625rem;
+		font-weight: 700;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+	}
+
+	.section-title {
+		margin: 0 0 2rem;
+		color: white;
+		font-family: var(--font-serif, Georgia, serif);
+		font-size: clamp(3rem, 8vw, 4.5rem);
+		font-weight: 400;
+		line-height: 0.95;
+		letter-spacing: 0;
+	}
+
+	.section-title span {
+		color: #334155;
+	}
+
+	.section-copy {
+		width: min(100%, 42rem);
+		margin: 0 auto;
+		color: #94a3b8;
+		font-size: 1.125rem;
+		font-weight: 300;
+		line-height: 1.625;
+	}
+
+	.indicators-layout {
+		display: grid;
+		grid-template-columns: 1fr;
+		align-items: center;
+		gap: 2rem;
+	}
+
+	.chart-column {
+		position: relative;
+		order: 2;
+	}
+
+	.chart-panel {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid rgba(39, 39, 42, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(24, 24, 27, 0.5);
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+		backdrop-filter: blur(24px);
+	}
+
+	.chart-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid rgba(39, 39, 42, 0.5);
+	}
+
+	.chart-symbol,
+	.chart-status,
+	.window-controls {
+		display: flex;
+		align-items: center;
+	}
+
+	.chart-symbol {
+		gap: 0.5rem;
+	}
+
+	.window-controls {
+		gap: 0.25rem;
+	}
+
+	.window-control {
+		width: 0.625rem;
+		height: 0.625rem;
+		border-radius: 999px;
+	}
+
+	.window-control-red {
+		background: rgba(239, 68, 68, 0.8);
+	}
+
+	.window-control-yellow {
+		background: rgba(234, 179, 8, 0.8);
+	}
+
+	.window-control-green {
+		background: rgba(34, 197, 94, 0.8);
+	}
+
+	.chart-ticker,
+	.chart-status,
+	.active-indicator-badge {
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+			monospace;
+	}
+
+	.chart-ticker {
+		color: #a1a1aa;
+		font-size: 0.75rem;
+	}
+
+	.chart-status {
+		gap: 0.375rem;
+		color: #34d399;
+		font-size: 0.625rem;
+	}
+
+	.live-dot {
+		width: 0.375rem;
+		height: 0.375rem;
+		border-radius: 999px;
+		background: #10b981;
+		animation: indicator-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	.chart-viewport {
+		position: relative;
+		height: 14rem;
+	}
+
+	.chart-canvas {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.active-indicator-badge {
+		position: absolute;
+		bottom: 0.75rem;
+		left: 0.75rem;
+		padding: 0.25rem 0.5rem;
+		border: 1px solid rgba(63, 63, 70, 0.5);
+		border-radius: 0.375rem;
+		background: rgba(39, 39, 42, 0.8);
+		color: #d4d4d8;
+		font-size: 0.625rem;
+		backdrop-filter: blur(4px);
+	}
+
+	.floating-stat {
+		position: absolute;
+		right: -0.5rem;
+		bottom: -1rem;
+		display: none;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid rgba(63, 63, 70, 0.5);
+		border-radius: 0.5rem;
+		background: rgba(39, 39, 42, 0.9);
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(24px);
+	}
+
+	.floating-stat-label {
+		margin-bottom: 0.125rem;
+		color: #71717a;
+		font-size: 0.625rem;
+	}
+
+	.floating-stat-value {
+		color: #34d399;
+		font-size: 1.25rem;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.indicator-list {
+		order: 1;
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.indicator-card {
+		position: relative;
+		display: block;
+		min-height: 44px;
+		padding: 1rem;
+		border: 1px solid rgba(39, 39, 42, 0.5);
+		border-radius: 0.75rem;
+		background: rgba(24, 24, 27, 0.3);
+		color: inherit;
+		text-decoration: none;
+		backdrop-filter: blur(4px);
+		transition:
+			transform 300ms ease,
+			border-color 300ms ease,
+			background 300ms ease,
+			box-shadow 300ms ease;
+	}
+
+	.indicator-card:hover {
+		border-color: rgba(63, 63, 70, 0.5);
+		background: rgba(39, 39, 42, 0.3);
+	}
+
+	.indicator-card:active {
+		transform: scale(0.98);
+	}
+
+	.indicator-card-active {
+		background: rgba(39, 39, 42, 0.4);
+		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+	}
+
+	.indicator-card-content {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+
+	.indicator-icon-shell {
+		display: flex;
+		width: 2.5rem;
+		height: 2.5rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.5rem;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.35);
+		color: white;
+		transition: transform 300ms ease;
+	}
+
+	.indicator-card:hover .indicator-icon-shell {
+		transform: scale(1.1);
+	}
+
+	.indicator-icon-rsi {
+		background: linear-gradient(to bottom right, #3b82f6, #22d3ee);
+	}
+
+	.indicator-icon-macd {
+		background: linear-gradient(to bottom right, #10b981, #2dd4bf);
+	}
+
+	.indicator-icon-bollinger {
+		background: linear-gradient(to bottom right, #8b5cf6, #a855f7);
+	}
+
+	.indicator-icon-vwap {
+		background: linear-gradient(to bottom right, #f59e0b, #fb923c);
+	}
+
+	.indicator-card-body {
+		min-width: 0;
+		flex: 1 1 auto;
+	}
+
+	.indicator-title-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.125rem;
+	}
+
+	.indicator-title {
+		margin: 0;
+		color: white;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.2;
+		transition: color 300ms ease;
+	}
+
+	.indicator-card:hover .indicator-title {
+		color: #60a5fa;
+	}
+
+	.indicator-category {
+		padding: 0.125rem 0.375rem;
+		border-radius: 999px;
+		background: #27272a;
+		color: #a1a1aa;
+		font-size: 0.625rem;
+		font-weight: 500;
+	}
+
+	.indicator-full-name {
+		display: none;
+		margin: 0 0 0.25rem;
+		color: #71717a;
+		font-size: 0.75rem;
+	}
+
+	.indicator-description {
+		display: -webkit-box;
+		overflow: hidden;
+		margin: 0;
+		color: #a1a1aa;
+		font-size: 0.75rem;
+		line-height: 1.625;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+	}
+
+	.indicator-arrow {
+		display: flex;
+		width: 2rem;
+		height: 2rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border-radius: 999px;
+		background: rgba(39, 39, 42, 0.5);
+		color: #71717a;
+		transition:
+			transform 300ms ease,
+			background 300ms ease,
+			color 300ms ease;
+	}
+
+	.indicator-card:hover .indicator-arrow {
+		transform: translateX(0.25rem);
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+
+	.indicator-actions {
+		padding-top: 1rem;
+		text-align: center;
+	}
+
+	.indicators-link {
+		display: inline-flex;
+		width: 100%;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.875rem 1.5rem;
+		border-radius: 999px;
+		background: linear-gradient(to right, #2563eb, #0891b2);
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: none;
+		box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.25);
+		transition:
+			transform 300ms ease,
+			box-shadow 300ms ease;
+	}
+
+	.indicators-link:hover {
+		transform: scale(1.05);
+		box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+	}
+
+	.indicators-link:active {
+		transform: scale(0.98);
+	}
+
+	:global(.indicators-link-icon) {
+		transition: transform 300ms ease;
+	}
+
+	.indicators-link:hover :global(.indicators-link-icon) {
+		transform: translateX(0.25rem);
+	}
+
+	@keyframes indicator-pulse {
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	@media (min-width: 640px) {
+		.indicators-section {
+			padding-top: 6rem;
+			padding-bottom: 6rem;
+		}
+
+		.indicator-orb {
+			width: 24rem;
+			height: 24rem;
+			filter: blur(128px);
+		}
+
+		.indicator-orb-blue {
+			left: -8rem;
+		}
+
+		.indicator-orb-violet {
+			right: -8rem;
+		}
+
+		.indicator-grid-pattern {
+			background-size: 64px 64px;
+		}
+
+		.chart-panel {
+			border-radius: 1rem;
+		}
+
+		.chart-header {
+			padding: 1rem 1.5rem;
+		}
+
+		.chart-symbol {
+			gap: 0.75rem;
+		}
+
+		.window-controls {
+			gap: 0.375rem;
+		}
+
+		.window-control {
+			width: 0.75rem;
+			height: 0.75rem;
+		}
+
+		.chart-ticker {
+			font-size: 0.875rem;
+		}
+
+		.chart-status {
+			gap: 0.5rem;
+			font-size: 0.75rem;
+		}
+
+		.live-dot {
+			width: 0.5rem;
+			height: 0.5rem;
+		}
+
+		.chart-viewport {
+			height: 18rem;
+		}
+
+		.active-indicator-badge {
+			bottom: 1rem;
+			left: 1rem;
+			padding: 0.375rem 0.75rem;
+			border-radius: 0.5rem;
+			font-size: 0.75rem;
+		}
+
+		.floating-stat {
+			right: -1.5rem;
+			bottom: -1.5rem;
+			display: block;
+			padding: 0.75rem 1rem;
+			border-radius: 0.75rem;
+		}
+
+		.floating-stat-label {
+			margin-bottom: 0.25rem;
+			font-size: 0.75rem;
+		}
+
+		.floating-stat-value {
+			font-size: 1.5rem;
+		}
+
+		.indicator-list {
+			gap: 1rem;
+		}
+
+		.indicator-card {
+			padding: 1.25rem;
+			border-radius: 1rem;
+		}
+
+		.indicator-card-content {
+			gap: 1rem;
+		}
+
+		.indicator-icon-shell {
+			width: 3rem;
+			height: 3rem;
+			border-radius: 0.75rem;
+		}
+
+		.indicator-title-row {
+			margin-bottom: 0.25rem;
+		}
+
+		.indicator-title {
+			font-size: 1.125rem;
+		}
+
+		.indicator-category {
+			padding-inline: 0.5rem;
+			font-size: 0.75rem;
+		}
+
+		.indicator-full-name {
+			display: block;
+			margin-bottom: 0.5rem;
+			font-size: 0.875rem;
+		}
+
+		.indicator-description {
+			font-size: 0.875rem;
+		}
+
+		.indicator-arrow {
+			width: 2.5rem;
+			height: 2.5rem;
+		}
+
+		.indicator-actions {
+			padding-top: 1.5rem;
+			text-align: left;
+		}
+
+		.indicators-link {
+			width: auto;
+			gap: 0.75rem;
+			padding: 1rem 2rem;
+			font-size: 1rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.indicators-section {
+			padding-top: 8rem;
+			padding-bottom: 8rem;
+		}
+
+		.indicators-shell {
+			width: min(100% - 4rem, 80rem);
+		}
+
+		.indicators-layout {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 4rem;
+		}
+
+		.chart-column {
+			order: 1;
+		}
+
+		.indicator-list {
+			order: 2;
+		}
+
+		.chart-viewport {
+			height: 20rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.indicator-orb,
+		.live-dot {
+			animation: none;
+		}
+
+		.indicator-card,
+		.indicator-icon-shell,
+		.indicator-arrow,
+		.indicators-link,
+		:global(.indicators-link-icon) {
+			transition: none;
+		}
+	}
+</style>
