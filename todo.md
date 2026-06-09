@@ -15,7 +15,7 @@ Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
-- Secondary multiline/interpolated class-style audit scan: 1 Svelte file remaining.
+- Secondary multiline/interpolated class-style audit scan: 0 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -101,6 +101,7 @@ Current evidence:
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/InputPanel.svelte`; replaced the remaining Tailwind utility markup with scoped semantic panel CSS and converted option/IV solver dynamic styling to Svelte 5 class composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/MispricingAlert.svelte`; replaced the remaining Tailwind utility markup and dynamic direction style strings with scoped semantic alert CSS and Svelte 5 class composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/SyllabusAccordion.svelte`; replaced the remaining Tailwind utility markup with scoped semantic syllabus CSS and converted accordion chevron state to Svelte 5 class composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/components/ui/Table.svelte`; replaced the final interpolated Tailwind-era table body classes with Svelte 5 class composition and scoped semantic table CSS.
 
 ## Remaining Files
 
@@ -825,5 +826,6 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 
 - [x] Continue the broad Svelte file sweep until the dynamic class/style scan is zero or every remaining hit is documented as a deliberate false positive.
 - [ ] Re-run global zero-reference checks for Tailwind infrastructure and utility APIs.
+  - 2026-06-09 evidence: dynamic Svelte scan is 0, but Tailwind infrastructure references remain in `frontend/src/app.css`, `frontend/vite.config.ts`, and `frontend/package.json`; comments mentioning `@layer` also remain in already-scoped Svelte/CSS files.
 - [ ] Remove Tailwind Vite plugin and packages only after zero-reference proof.
 - [ ] Run final full gates and representative browser smoke checks.
