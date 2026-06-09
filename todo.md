@@ -15,7 +15,7 @@ Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
-- Secondary multiline/interpolated class-style audit scan: 13 Svelte files remaining.
+- Secondary multiline/interpolated class-style audit scan: 12 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -89,6 +89,7 @@ Current evidence:
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/behavior/+page.svelte`; replaced the surviving multiline timeline bar height string with a Svelte 5 `style:height` directive backed by a typed helper.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/settings/+page.svelte`; replaced the maintenance mode row's multiline interpolated class string with Svelte 5 class array composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/components/blog/BlockEditor/BlockEditor.svelte`; replaced the drag block's dynamic touch/will-change style string with Svelte 5 `style:` directives.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/crm/deals/+page.svelte`; replaced priority and stage badge dynamic style strings with typed helper-driven Svelte 5 `style:` directives.
 
 ## Remaining Files
 
