@@ -405,9 +405,7 @@
 	>
 		<!-- Header -->
 		<div class="modal-header">
-			<h2 id="crop-modal-title" class="text-lg font-semibold text-gray-900 dark:text-white">
-				Crop & Edit Image
-			</h2>
+			<h2 id="crop-modal-title" class="modal-title">Crop & Edit Image</h2>
 			<button class="close-btn" onclick={() => dispatch('cancel')} aria-label="Close modal">
 				<Icon name="IconX" size={20} />
 			</button>
@@ -558,21 +556,19 @@
 				</div>
 			{:else}
 				<div class="loading-state">
-					<div
-						class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"
-					></div>
-					<p class="text-gray-500 mt-2">Loading image...</p>
+					<div class="loading-spinner"></div>
+					<p class="loading-copy">Loading image...</p>
 				</div>
 			{/if}
 		</div>
 
 		<!-- Hidden canvas for export -->
-		<canvas {@attach attachCanvas} class="hidden"></canvas>
+		<canvas {@attach attachCanvas} class="export-canvas"></canvas>
 
 		<!-- Footer -->
 		<div class="modal-footer">
 			<div class="crop-info">
-				<span class="text-sm text-gray-500">
+				<span class="crop-dimensions">
 					{Math.round(cropArea.width)} x {Math.round(cropArea.height)} px
 				</span>
 			</div>
@@ -660,6 +656,18 @@
 	:global(.dark) .modal-header {
 		border-color: #374151;
 		background: rgba(31, 41, 55, 0.95);
+	}
+
+	.modal-title {
+		margin: 0;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
+	:global(.dark) .modal-title {
+		color: white;
 	}
 
 	/* Touch target: 44x44px minimum */
@@ -845,6 +853,34 @@
 		align-items: center;
 		justify-content: center;
 		position: relative;
+	}
+
+	.loading-spinner {
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid #3b82f6;
+		border-top-color: transparent;
+		border-radius: 999px;
+		animation: crop-modal-spin 900ms linear infinite;
+	}
+
+	@keyframes crop-modal-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-copy,
+	.crop-dimensions {
+		color: #6b7280;
+	}
+
+	.loading-copy {
+		margin: 0.5rem 0 0;
+	}
+
+	.export-canvas {
+		display: none;
 	}
 
 	.image-wrapper {

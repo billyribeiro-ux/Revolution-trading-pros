@@ -11,11 +11,18 @@ Re-run this scan after each completed file:
 rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[^\"]*\{[^\"]*\}" frontend/src --glob '*.svelte'
 ```
 
+Re-run this refined static Tailwind utility scan during the final infrastructure-removal phase:
+
+```sh
+rg -P -l 'class="[^"]*(?:^|\s)(?:flex|grid|hidden|block|inline|absolute|relative|fixed|sticky|w-(?:\d|full|screen|fit|min|max|\[)|h-(?:\d|full|screen|fit|min|max|\[)|p[trblxy]?-(?:\d|\[)|m[trblxy]?-(?:\d|auto|\[)|text-(?:xs|sm|base|lg|xl|[2-9]xl|center|left|right|white|black|gray|slate|zinc|red|blue|emerald|yellow|green|purple|orange)|bg-(?:white|black|gray|slate|zinc|red|blue|emerald|yellow|green|purple|orange|transparent|\[)|border(?:\s|$|-)|rounded(?:\s|$|-)|shadow(?:\s|$|-)|gap-(?:\d|\[)|space-[xy]-(?:\d|\[)|items-(?:center|start|end|stretch|baseline)|justify-(?:center|between|end|start|around)|min-[wh]-(?:\d|full|screen|0|\[)|max-[wh]-(?:\d|full|screen|none|[0-9]|\[)|overflow-(?:hidden|auto|x-auto|y-auto)|z-(?:\d|\[)|top-(?:\d|0|\[)|left-(?:\d|0|\[)|right-(?:\d|0|\[)|bottom-(?:\d|0|\[)|opacity-\d|transition(?:\s|$|-)|duration-\d|ease-(?:in|out|linear)|hover:[^\s"]+|focus:[^\s"]+|sm:[^\s"]+|md:[^\s"]+|lg:[^\s"]+|xl:[^\s"]+)(?:\s|$)' frontend/src --glob '*.svelte'
+```
+
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
 - Secondary multiline/interpolated class-style audit scan: 0 Svelte files remaining.
+- Refined static Tailwind utility scan: 75 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -102,6 +109,7 @@ Current evidence:
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/MispricingAlert.svelte`; replaced the remaining Tailwind utility markup and dynamic direction style strings with scoped semantic alert CSS and Svelte 5 class composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/SyllabusAccordion.svelte`; replaced the remaining Tailwind utility markup with scoped semantic syllabus CSS and converted accordion chevron state to Svelte 5 class composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/components/ui/Table.svelte`; replaced the final interpolated Tailwind-era table body classes with Svelte 5 class composition and scoped semantic table CSS.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/media/ImageCropModal.svelte`; replaced the remaining local Tailwind utility markup with scoped title, loading, hidden-canvas, and crop-dimension CSS while preserving the existing modal CSS contract.
 
 ## Remaining Files
 
