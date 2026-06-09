@@ -9,7 +9,6 @@
 	 * @version 2.0.0 - Added animated numbers
 	 */
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
 	import type { KpiValue } from '$lib/api/analytics';
 	import Icon from '$lib/components/Icon.svelte';
@@ -39,6 +38,12 @@
 
 	let cardRef = $state<HTMLDivElement | null>(null);
 	let isVisible = $state(false);
+	let gsapPromise: Promise<(typeof import('gsap'))['gsap']> | null = null;
+
+	function loadGsap() {
+		gsapPromise ??= import('gsap').then((module) => module.gsap);
+		return gsapPromise;
+	}
 
 	function captureCard(element: HTMLDivElement) {
 		cardRef = element;
@@ -62,18 +67,22 @@
 				entries.forEach((entry) => {
 					if (entry.isIntersecting && !isVisible) {
 						isVisible = true;
-						gsap.fromTo(
-							cardRef,
-							{ opacity: 0, y: 20, scale: 0.95 },
-							{
-								opacity: 1,
-								y: 0,
-								scale: 1,
-								duration: 0.6,
-								delay: animationDelay,
-								ease: 'power3.out'
-							}
-						);
+						void loadGsap().then((gsap) => {
+							if (!cardRef) return;
+
+							gsap.fromTo(
+								cardRef,
+								{ opacity: 0, y: 20, scale: 0.95 },
+								{
+									opacity: 1,
+									y: 0,
+									scale: 1,
+									duration: 0.6,
+									delay: animationDelay,
+									ease: 'power3.out'
+								}
+							);
+						});
 					}
 				});
 			},
