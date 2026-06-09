@@ -37,9 +37,10 @@
 							<span class="subscription-plan">{sub.plan || 'Standard'}</span>
 						</div>
 						<span
-							class="status-badge {sub.status === 'active'
-								? 'bg-emerald-500/20 text-emerald-400'
-								: 'bg-slate-500/20 text-slate-400'}"
+							class={[
+								'status-badge',
+								sub.status === 'active' ? 'status-active' : 'status-inactive'
+							]}
 						>
 							{sub.status}
 						</span>
@@ -178,6 +179,18 @@
 		font-weight: 600;
 		border: 1px solid;
 		text-transform: capitalize;
+	}
+
+	.status-active {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+		border-color: rgba(16, 185, 129, 0.35);
+	}
+
+	.status-inactive {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+		border-color: rgba(100, 116, 139, 0.35);
 	}
 
 	.subscription-actions {
