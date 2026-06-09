@@ -42,9 +42,10 @@
 						<td>{formatDate(order.created_at)}</td>
 						<td>
 							<span
-								class="status-badge {order.status === 'completed'
-									? 'bg-emerald-500/20 text-emerald-400'
-									: 'bg-yellow-500/20 text-yellow-400'}"
+								class={[
+									'status-badge',
+									order.status === 'completed' ? 'status-completed' : 'status-pending'
+								]}
 							>
 								{order.status}
 							</span>
@@ -146,6 +147,18 @@
 		font-weight: 600;
 		border: 1px solid;
 		text-transform: capitalize;
+	}
+
+	.status-completed {
+		background: rgba(16, 185, 129, 0.2);
+		color: #34d399;
+		border-color: rgba(16, 185, 129, 0.35);
+	}
+
+	.status-pending {
+		background: rgba(234, 179, 8, 0.2);
+		color: #facc15;
+		border-color: rgba(234, 179, 8, 0.35);
 	}
 
 	.btn-secondary {
