@@ -15,7 +15,7 @@ Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
-- Secondary multiline/interpolated class-style audit scan: 2 Svelte files remaining.
+- Secondary multiline/interpolated class-style audit scan: 1 Svelte file remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -100,6 +100,7 @@ Current evidence:
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/MathOfEdgeCalculator.svelte`; replaced the remaining Tailwind utility markup with scoped semantic section CSS and converted risk/expectancy color state to Svelte 5 class composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/InputPanel.svelte`; replaced the remaining Tailwind utility markup with scoped semantic panel CSS and converted option/IV solver dynamic styling to Svelte 5 class composition.
 - [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/MispricingAlert.svelte`; replaced the remaining Tailwind utility markup and dynamic direction style strings with scoped semantic alert CSS and Svelte 5 class composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/SyllabusAccordion.svelte`; replaced the remaining Tailwind utility markup with scoped semantic syllabus CSS and converted accordion chevron state to Svelte 5 class composition.
 
 ## Remaining Files
 
