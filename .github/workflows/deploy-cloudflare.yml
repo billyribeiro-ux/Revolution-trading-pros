@@ -27,12 +27,14 @@ on:
       - ".github/workflows/deploy-cloudflare.yml"
       - "pnpm-lock.yaml"
 
-# pnpm version is intentionally NOT pinned here — pnpm/action-setup@v6
-# reads it from package.json#packageManager (pnpm@11.5.2), so this
-# workflow, ci.yml, and local always use the exact same pnpm. One
-# source of truth, no drift.
+# pnpm version is activated by Corepack from package.json#packageManager
+# (pnpm@11.5.2), so this workflow, ci.yml, and local always use the exact
+# same pnpm. One source of truth, no drift.
 env:
   NODE_VERSION: "24.16.0"
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
   CLOUDFLARE_PROJECT_NAME: revolution-trading-pros
 
 jobs:
@@ -51,12 +53,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.3
 
-      - uses: pnpm/action-setup@v6.0.8
-
       - uses: actions/setup-node@v6.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+
+      - name: Activate pnpm 11.5.2
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.5.2 --activate
+          pnpm --version
 
       - name: Install
         run: pnpm install --frozen-lockfile
@@ -82,7 +87,7 @@ jobs:
         id: gate
         run: |
           if [[ -z "$CLOUDFLARE_API_TOKEN" || -z "$CLOUDFLARE_ACCOUNT_ID" ]]; then
-            echo "::warning::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID secret is not configured. Skipping deploy."
+            echo "::notice::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID secret is not configured. Skipping deploy."
             echo "ready=false" >> "$GITHUB_OUTPUT"
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"

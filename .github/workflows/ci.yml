@@ -7,11 +7,14 @@ on:
   pull_request:
     branches: [main, develop]
 
-# pnpm version is intentionally NOT pinned here — pnpm/action-setup@v6
-# reads it from package.json#packageManager (pnpm@11.5.2), so CI and
-# local always use the exact same pnpm. One source of truth, no drift.
+# pnpm version is activated by Corepack from package.json#packageManager
+# (pnpm@11.5.2), so CI and local use the exact same pnpm. One source of
+# truth, no drift.
 env:
   NODE_VERSION: "24.16.0"
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
   # Pinned (NOT "stable") for a reproducible backend gate — see the
   # rust-toolchain step note + rust-toolchain.toml.
   RUST_VERSION: "1.96.0"
@@ -36,12 +39,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.3
 
-      - uses: pnpm/action-setup@v6.0.8
-
       - uses: actions/setup-node@v6.4.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+
+      - name: Activate pnpm 11.5.2
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.5.2 --activate
+          pnpm --version
 
       - name: Install
         run: pnpm install --frozen-lockfile
