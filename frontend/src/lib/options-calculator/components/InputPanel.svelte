@@ -47,62 +47,43 @@
 	}
 
 	let daysDisplay = $derived(formatDaysToExpiry(calc.timeToExpiry));
+	const ivResultClass = $derived(ivResult?.converged ? 'iv-result--success' : 'iv-result--warning');
+
+	function optionButtonClass(type: OptionType) {
+		return [
+			'option-button',
+			`option-button--${type}`,
+			calc.optionType === type && 'option-button--active'
+		];
+	}
 </script>
 
-<div class="flex flex-col gap-4 h-full overflow-y-auto calc-scrollbar">
+<div class="input-panel calc-scrollbar">
 	<!-- Header -->
-	<div class="flex items-center justify-between">
-		<h2
-			class="text-sm font-semibold tracking-wide uppercase"
-			style="color: var(--calc-text); font-family: var(--calc-font-display);"
-		>
-			Parameters
-		</h2>
-		<button
-			onclick={() => calc.resetInputs()}
-			class="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-			style="background: var(--calc-surface-hover); color: var(--calc-text-secondary); border: 1px solid var(--calc-border);"
-			aria-label="Reset all inputs"
-		>
+	<div class="panel-header">
+		<h2 class="panel-title">Parameters</h2>
+		<button onclick={() => calc.resetInputs()} class="reset-button" aria-label="Reset all inputs">
 			<IconRotate2 size={12} />
 			Reset
 		</button>
 	</div>
 
 	<!-- Option Type Toggle -->
-	<div
-		class="relative flex rounded-xl p-1"
-		style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-	>
-		<button
-			onclick={() => handleOptionTypeChange('call')}
-			class="flex-1 text-center text-sm font-semibold py-2 rounded-lg transition-all cursor-pointer"
-			style={calc.optionType === 'call'
-				? 'background: var(--calc-call-bg); color: var(--calc-call); box-shadow: 0 0 12px var(--calc-call-glow);'
-				: 'color: var(--calc-text-muted);'}
-		>
+	<div class="option-toggle">
+		<button onclick={() => handleOptionTypeChange('call')} class={optionButtonClass('call')}>
 			CALL
 		</button>
-		<button
-			onclick={() => handleOptionTypeChange('put')}
-			class="flex-1 text-center text-sm font-semibold py-2 rounded-lg transition-all cursor-pointer"
-			style={calc.optionType === 'put'
-				? 'background: var(--calc-put-bg); color: var(--calc-put); box-shadow: 0 0 12px var(--calc-put-glow);'
-				: 'color: var(--calc-text-muted);'}
-		>
+		<button onclick={() => handleOptionTypeChange('put')} class={optionButtonClass('put')}>
 			PUT
 		</button>
 	</div>
 
 	<!-- Input Sliders -->
-	<div class="flex flex-col gap-4">
+	<div class="slider-list">
 		{#each INPUT_FIELDS as field (field.key)}
-			<div class="relative">
+			<div class="slider-row">
 				{#if calc.isLivePopulated(field.key)}
-					<span
-						class="absolute -top-1 right-0 text-[8px] font-bold px-1 py-0.5 rounded z-10"
-						style="background: var(--calc-call-bg); color: var(--calc-call);">LIVE</span
-					>
+					<span class="live-badge">LIVE</span>
 				{/if}
 				<AnimatedSlider
 					value={calc[field.key] as number}
@@ -122,10 +103,7 @@
 					}}
 				/>
 				{#if field.key === 'timeToExpiry'}
-					<div
-						class="mt-1 text-[10px] text-center"
-						style="color: var(--calc-text-muted); font-family: var(--calc-font-mono);"
-					>
+					<div class="days-display">
 						≈ {daysDisplay}
 					</div>
 				{/if}
@@ -134,44 +112,24 @@
 	</div>
 
 	<!-- IV Solver -->
-	<div
-		class="flex flex-col gap-2 rounded-xl p-3"
-		style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-	>
-		<div class="flex items-center gap-1.5">
-			<span
-				class="text-xs font-medium"
-				style="color: var(--calc-text-secondary); font-family: var(--calc-font-body);"
-			>
-				IV Solver
-			</span>
+	<div class="iv-solver">
+		<div class="iv-heading">
+			<span class="iv-title">IV Solver</span>
 			<InfoTooltip
 				content="Enter a market price to reverse-engineer the implied volatility using Newton-Raphson iteration."
 			/>
 		</div>
-		<div class="flex gap-2">
+		<div class="iv-controls">
 			<input
 				type="number"
 				bind:value={marketPriceInput}
 				placeholder="Market price"
-				class="flex-1 text-xs px-2.5 py-1.5 rounded-lg outline-none"
-				style="background: var(--calc-surface-hover); color: var(--calc-text); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
+				class="market-price-input"
 			/>
-			<button
-				onclick={solveIV}
-				class="text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-				style="background: var(--calc-accent); color: white;"
-			>
-				Solve
-			</button>
+			<button onclick={solveIV} class="solve-button"> Solve </button>
 		</div>
 		{#if ivResult}
-			<div
-				class="text-xs"
-				style="color: {ivResult.converged
-					? 'var(--calc-call)'
-					: 'var(--calc-warning)'}; font-family: var(--calc-font-mono);"
-			>
+			<div class={['iv-result', ivResultClass]}>
 				{#if ivResult.converged}
 					IV = {(ivResult.iv * 100).toFixed(2)}% ✓
 				{:else}
@@ -181,3 +139,213 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.input-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		height: 100%;
+		overflow-y: auto;
+	}
+
+	.panel-header,
+	.iv-heading,
+	.iv-controls {
+		display: flex;
+		align-items: center;
+	}
+
+	.panel-header {
+		justify-content: space-between;
+	}
+
+	.iv-heading {
+		gap: 0.375rem;
+	}
+
+	.iv-controls {
+		gap: 0.5rem;
+	}
+
+	.panel-title {
+		margin: 0;
+		color: var(--calc-text);
+		font-family: var(--calc-font-display);
+		font-size: 0.875rem;
+		font-weight: 600;
+		letter-spacing: 0.025em;
+		line-height: 1.25;
+		text-transform: uppercase;
+	}
+
+	button,
+	input {
+		font: inherit;
+	}
+
+	button {
+		border: 0;
+	}
+
+	.reset-button,
+	.option-button,
+	.solve-button {
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease,
+			box-shadow 160ms ease,
+			color 160ms ease;
+	}
+
+	.reset-button {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		border: 1px solid var(--calc-border);
+		border-radius: 0.5rem;
+		background: var(--calc-surface-hover);
+		color: var(--calc-text-secondary);
+		font-size: 0.75rem;
+		line-height: 1.2;
+		padding: 0.375rem 0.625rem;
+	}
+
+	.reset-button:hover {
+		color: var(--calc-text);
+		border-color: var(--calc-accent);
+	}
+
+	.option-toggle {
+		position: relative;
+		display: flex;
+		border: 1px solid var(--calc-border);
+		border-radius: 0.75rem;
+		background: var(--calc-surface);
+		padding: 0.25rem;
+	}
+
+	.option-button {
+		flex: 1;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: var(--calc-text-muted);
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.25;
+		padding-block: 0.5rem;
+		text-align: center;
+	}
+
+	.option-button--call.option-button--active {
+		background: var(--calc-call-bg);
+		color: var(--calc-call);
+		box-shadow: 0 0 12px var(--calc-call-glow);
+	}
+
+	.option-button--put.option-button--active {
+		background: var(--calc-put-bg);
+		color: var(--calc-put);
+		box-shadow: 0 0 12px var(--calc-put-glow);
+	}
+
+	.slider-list,
+	.iv-solver {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.slider-list {
+		gap: 1rem;
+	}
+
+	.slider-row {
+		position: relative;
+	}
+
+	.live-badge {
+		position: absolute;
+		top: -0.25rem;
+		right: 0;
+		z-index: 10;
+		border-radius: 0.25rem;
+		background: var(--calc-call-bg);
+		color: var(--calc-call);
+		font-size: 0.5rem;
+		font-weight: 700;
+		line-height: 1.2;
+		padding: 0.125rem 0.25rem;
+	}
+
+	.days-display {
+		margin-top: 0.25rem;
+		color: var(--calc-text-muted);
+		font-family: var(--calc-font-mono);
+		font-size: 0.625rem;
+		line-height: 1.2;
+		text-align: center;
+	}
+
+	.iv-solver {
+		gap: 0.5rem;
+		border: 1px solid var(--calc-border);
+		border-radius: 0.75rem;
+		background: var(--calc-surface);
+		padding: 0.75rem;
+	}
+
+	.iv-title {
+		color: var(--calc-text-secondary);
+		font-family: var(--calc-font-body);
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1.2;
+	}
+
+	.market-price-input {
+		flex: 1;
+		min-width: 0;
+		border: 1px solid var(--calc-border);
+		border-radius: 0.5rem;
+		background: var(--calc-surface-hover);
+		color: var(--calc-text);
+		font-family: var(--calc-font-mono);
+		font-size: 0.75rem;
+		line-height: 1.2;
+		outline: none;
+		padding: 0.375rem 0.625rem;
+	}
+
+	.market-price-input:focus {
+		border-color: var(--calc-accent);
+	}
+
+	.solve-button {
+		border-radius: 0.5rem;
+		background: var(--calc-accent);
+		color: white;
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1.2;
+		padding: 0.375rem 0.75rem;
+	}
+
+	.solve-button:hover {
+		filter: brightness(1.08);
+	}
+
+	.iv-result {
+		font-family: var(--calc-font-mono);
+		font-size: 0.75rem;
+		line-height: 1.2;
+	}
+
+	.iv-result--success {
+		color: var(--calc-call);
+	}
+
+	.iv-result--warning {
+		color: var(--calc-warning);
+	}
+</style>

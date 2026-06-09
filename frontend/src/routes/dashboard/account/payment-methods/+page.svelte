@@ -103,19 +103,19 @@
 				{/if}
 			</div>
 
-			<div class="row">
-				<div class="col-md-6">
+			<div class="payment-methods-card-header">
+				<div class="payment-methods-title-column">
 					<h2 class="section-title">Payment Methods</h2>
 				</div>
-				<div class="col-md-6 text-right hidden-xs hidden-sm">
-					<a class="btn btn-white btn-xs" href="/dashboard/account/add-payment-method">
+				<div class="payment-methods-desktop-action">
+					<a class="secondary-action-link" href="/dashboard/account/add-payment-method">
 						Add payment method
 					</a>
 				</div>
 			</div>
 
-			<p class="visible-xs visible-sm">
-				<a class="btn btn-white btn-xs" href="/dashboard/account/add-payment-method">
+			<p class="payment-methods-mobile-action">
+				<a class="secondary-action-link" href="/dashboard/account/add-payment-method">
 					Add payment method
 				</a>
 			</p>
@@ -125,7 +125,7 @@
 					<p>No saved payment methods.</p>
 				</div>
 			{:else}
-				<table class="table woocommerce-MyAccount-paymentMethods">
+				<table class="payment-methods-table woocommerce-MyAccount-paymentMethods">
 					<thead>
 						<tr>
 							<th
@@ -322,22 +322,23 @@
 		color: #333;
 	}
 
-	.row {
+	.payment-methods-card-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 20px;
 	}
 
-	.col-md-6 {
+	.payment-methods-title-column,
+	.payment-methods-desktop-action {
 		flex: 0 0 50%;
 	}
 
-	.text-right {
+	.payment-methods-desktop-action {
 		text-align: right;
 	}
 
-	.btn {
+	.secondary-action-link {
 		display: inline-block;
 		padding: 8px 16px;
 		font-size: 14px;
@@ -348,23 +349,20 @@
 		border: 1px solid #dee2e6;
 	}
 
-	.btn-white {
+	.secondary-action-link {
 		background: #fff;
 		color: #0984ae;
 		border-color: #0984ae;
-	}
-
-	.btn-white:hover {
-		background: #0984ae;
-		color: #fff;
-	}
-
-	.btn-xs {
 		padding: 6px 12px;
 		font-size: 13px;
 	}
 
-	.table {
+	.secondary-action-link:hover {
+		background: #0984ae;
+		color: #fff;
+	}
+
+	.payment-methods-table {
 		width: 100%;
 		border-collapse: collapse;
 		background: #fff;
@@ -374,12 +372,12 @@
 		margin-top: 20px;
 	}
 
-	.table thead {
+	.payment-methods-table thead {
 		background: #f8f9fa;
 		border-bottom: 2px solid #e9ecef;
 	}
 
-	.table thead th {
+	.payment-methods-table thead th {
 		padding: 16px 20px;
 		font-size: 14px;
 		font-weight: 600;
@@ -389,31 +387,31 @@
 		text-align: left;
 	}
 
-	.table tbody tr {
+	.payment-methods-table tbody tr {
 		border-bottom: 1px solid #e9ecef;
 		transition: background-color 0.15s ease;
 	}
 
-	.table tbody tr:hover {
+	.payment-methods-table tbody tr:hover {
 		background-color: #f8f9fa;
 	}
 
-	.table tbody tr:last-child {
+	.payment-methods-table tbody tr:last-child {
 		border-bottom: none;
 	}
 
-	.table tbody tr.default-payment-method {
+	.payment-methods-table tbody tr.default-payment-method {
 		background-color: #f0f8ff;
 	}
 
-	.table tbody td {
+	.payment-methods-table tbody td {
 		padding: 16px 20px;
 		font-size: 14px;
 		color: #495057;
 		vertical-align: middle;
 	}
 
-	.table tbody td mark.default {
+	.payment-methods-table tbody td mark.default {
 		background: #28a745;
 		color: #fff;
 		padding: 4px 8px;
@@ -422,7 +420,7 @@
 		font-weight: 600;
 	}
 
-	.table tbody td .button {
+	.payment-methods-table tbody td .button {
 		display: inline-block;
 		padding: 6px 12px;
 		font-size: 13px;
@@ -434,7 +432,7 @@
 		transition: all 0.15s ease;
 	}
 
-	.table tbody td .button:hover {
+	.payment-methods-table tbody td .button:hover {
 		background: #dc3545;
 		color: #fff;
 	}
@@ -453,52 +451,49 @@
 		font-size: 14px;
 	}
 
-	.visible-xs,
-	.visible-sm {
+	.payment-methods-mobile-action {
 		display: none;
 	}
 
-	.hidden-xs,
-	.hidden-sm {
+	.payment-methods-desktop-action {
 		display: block;
 	}
 
 	@media (max-width: 767.98px) {
-		.row {
+		.payment-methods-card-header {
 			flex-direction: column;
 			align-items: flex-start;
 		}
 
-		.col-md-6 {
+		.payment-methods-title-column,
+		.payment-methods-desktop-action {
 			flex: 0 0 100%;
 			width: 100%;
 		}
 
-		.text-right {
+		.payment-methods-desktop-action {
 			text-align: left;
 		}
 
-		.hidden-xs,
-		.hidden-sm {
+		.payment-methods-desktop-action {
 			display: none;
 		}
 
-		.visible-xs,
-		.visible-sm {
+		.payment-methods-mobile-action {
 			display: block;
 			margin-bottom: 20px;
 		}
 
-		.table {
+		.payment-methods-table {
 			display: block;
 			overflow-x: auto;
 		}
 
-		.table thead {
+		.payment-methods-table thead {
 			display: none;
 		}
 
-		.table tbody tr {
+		.payment-methods-table tbody tr {
 			display: block;
 			margin-bottom: 16px;
 			border: 1px solid #e9ecef;
@@ -506,7 +501,7 @@
 			padding: 16px;
 		}
 
-		.table tbody td {
+		.payment-methods-table tbody td {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -514,7 +509,7 @@
 			border: none;
 		}
 
-		.table tbody td::before {
+		.payment-methods-table tbody td::before {
 			content: attr(data-title);
 			font-weight: 600;
 			text-transform: uppercase;

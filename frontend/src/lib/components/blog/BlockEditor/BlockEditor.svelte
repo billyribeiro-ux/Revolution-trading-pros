@@ -1708,11 +1708,8 @@
 								aria-dropeffect={editorState.isDragging && !isDragTarget ? 'move' : 'none'}
 								aria-selected={block.id === editorState.selectedBlockId || isMultiSelected}
 								aria-label={`${BLOCK_DEFINITIONS[block.type]?.name || block.type} block, position ${index + 1} of ${editorState.blocks.length}${isMultiSelected ? ', selected' : ''}`}
-								style="touch-action: {editorState.isDragging
-									? 'none'
-									: 'pan-y'}; will-change: {editorState.isDragging
-									? 'transform, opacity'
-									: 'auto'};"
+								style:touch-action={editorState.isDragging ? 'none' : 'pan-y'}
+								style:will-change={editorState.isDragging ? 'transform, opacity' : 'auto'}
 								animate:flip={{ duration: 300, easing: quintOut }}
 							>
 								<!-- Block Toolbar (on hover/select) -->

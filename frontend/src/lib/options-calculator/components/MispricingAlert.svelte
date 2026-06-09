@@ -75,6 +75,14 @@
 		dismissed.add(symbol);
 	}
 
+	function mispricingCardClass(direction: MispricingResult['direction']) {
+		return ['mispricing-card', `mispricing-card--${direction}`];
+	}
+
+	function differenceClass(direction: MispricingResult['direction']) {
+		return ['difference-value', `difference-value--${direction}`];
+	}
+
 	function animateAlerts(count: number): Attachment<HTMLDivElement> {
 		return (node) => {
 			if (count === 0) return;
@@ -90,58 +98,36 @@
 </script>
 
 {#if mispricings.length > 0}
-	<div {@attach animateAlerts(mispricings.length)} class="flex flex-col gap-1.5">
-		<span
-			class="text-[10px] font-semibold uppercase tracking-wider"
-			style="color: var(--calc-warning);"
-		>
+	<div {@attach animateAlerts(mispricings.length)} class="mispricing-list">
+		<span class="mispricing-heading">
 			Mispricing Detected ({mispricings.length})
 		</span>
 		{#each mispricings as mp (mp.option.symbol)}
-			<div
-				class="mispricing-card flex items-center gap-2 rounded-lg px-2.5 py-1.5"
-				style="background: {mp.direction === 'underpriced'
-					? 'rgba(0,212,170,0.08)'
-					: 'rgba(255,68,119,0.08)'}; border: 1px solid {mp.direction === 'underpriced'
-					? 'rgba(0,212,170,0.2)'
-					: 'rgba(255,68,119,0.2)'};"
-			>
+			<div class={mispricingCardClass(mp.direction)}>
 				{#if mp.direction === 'underpriced'}
 					<IconTrendingUp size={12} style="color: var(--calc-call);" />
 				{:else}
 					<IconTrendingDown size={12} style="color: var(--calc-put);" />
 				{/if}
 
-				<div class="flex-1 flex items-center gap-2 min-w-0">
-					<span
-						class="text-[10px] font-bold truncate"
-						style="color: var(--calc-text); font-family: var(--calc-font-mono);"
-					>
+				<div class="mispricing-content">
+					<span class="option-symbol">
 						{mp.option.type === 'call' ? 'C' : 'P'}{mp.option.strike}
 					</span>
-					<span class="text-[9px]" style="color: var(--calc-text-muted);">
+					<span class="price-comparison">
 						Mkt: ${mp.marketPrice.toFixed(2)} · Theo: ${mp.theoreticalPrice.toFixed(2)}
 					</span>
-					<span
-						class="text-[10px] font-bold"
-						style="color: {mp.direction === 'underpriced'
-							? 'var(--calc-call)'
-							: 'var(--calc-put)'}; font-family: var(--calc-font-mono);"
-					>
+					<span class={differenceClass(mp.direction)}>
 						{mp.priceDifferencePct > 0 ? '+' : ''}{mp.priceDifferencePct.toFixed(1)}%
 					</span>
 					{#if mp.significance === 'significant'}
-						<span
-							class="text-[8px] px-1 py-0.5 rounded-full font-bold"
-							style="background: var(--calc-warning); color: white;">!</span
-						>
+						<span class="significance-badge">!</span>
 					{/if}
 				</div>
 
 				<button
 					onclick={() => dismiss(mp.option.symbol)}
-					class="cursor-pointer shrink-0"
-					style="color: var(--calc-text-muted);"
+					class="dismiss-button"
 					aria-label="Dismiss"
 				>
 					<IconX size={10} />
@@ -150,3 +136,101 @@
 		{/each}
 	</div>
 {/if}
+
+<style>
+	.mispricing-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+	}
+
+	.mispricing-heading {
+		color: var(--calc-warning);
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		line-height: 1.2;
+		text-transform: uppercase;
+	}
+
+	.mispricing-card {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		border: 1px solid transparent;
+		border-radius: 0.5rem;
+		padding: 0.375rem 0.625rem;
+	}
+
+	.mispricing-card--underpriced {
+		border-color: rgb(0 212 170 / 0.2);
+		background: rgb(0 212 170 / 0.08);
+	}
+
+	.mispricing-card--overpriced {
+		border-color: rgb(255 68 119 / 0.2);
+		background: rgb(255 68 119 / 0.08);
+	}
+
+	.mispricing-content {
+		display: flex;
+		flex: 1;
+		align-items: center;
+		gap: 0.5rem;
+		min-width: 0;
+	}
+
+	.option-symbol,
+	.difference-value {
+		font-family: var(--calc-font-mono);
+		font-size: 0.625rem;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.option-symbol {
+		overflow: hidden;
+		color: var(--calc-text);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.price-comparison {
+		color: var(--calc-text-muted);
+		font-size: 0.5625rem;
+		line-height: 1.2;
+	}
+
+	.difference-value--underpriced {
+		color: var(--calc-call);
+	}
+
+	.difference-value--overpriced {
+		color: var(--calc-put);
+	}
+
+	.significance-badge {
+		border-radius: 999px;
+		background: var(--calc-warning);
+		color: white;
+		font-size: 0.5rem;
+		font-weight: 700;
+		line-height: 1.2;
+		padding: 0.125rem 0.25rem;
+	}
+
+	.dismiss-button {
+		flex-shrink: 0;
+		border: 0;
+		background: transparent;
+		color: var(--calc-text-muted);
+		cursor: pointer;
+		font: inherit;
+		line-height: 0;
+		padding: 0;
+	}
+
+	.dismiss-button:hover {
+		color: var(--calc-text);
+	}
+</style>

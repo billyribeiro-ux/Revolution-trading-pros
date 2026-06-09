@@ -1063,9 +1063,11 @@
 
 							<!-- ── Maintenance Mode Toggle ─────────────────────────────────────── -->
 							<div
-								class="setting-row setting-row--maintenance {siteSettings.maintenance_mode
-									? 'maintenance-active'
-									: ''}"
+								class={[
+									'setting-row',
+									'setting-row--maintenance',
+									siteSettings.maintenance_mode && 'maintenance-active'
+								]}
 							>
 								<div class="setting-info">
 									<h3>

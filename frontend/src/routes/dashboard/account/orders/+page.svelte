@@ -55,30 +55,30 @@
 							{#if orders.length === 0}
 								<div class="woocommerce-message woocommerce-info">No order has been made yet.</div>
 							{:else}
-								<table class="table">
+								<table class="orders-table">
 									<thead>
 										<tr>
-											<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th
-												class="col-xs-2 text-right">Actions</th
+											<th class="order-column">Order</th><th class="date-column">Date</th><th
+												class="actions-column">Actions</th
 											>
 										</tr>
 									</thead>
-									<tbody class="u--font-size-sm">
+									<tbody class="orders-table-body">
 										{#each orders as order (order.id)}
 											<tr>
-												<td class="col-xs-2">
+												<td class="order-column">
 													<a href="/dashboard/account/view-order/{order.id}">
 														#{order.number}
 													</a>
 												</td>
-												<td class="col-xs-3">
+												<td class="date-column">
 													<time datetime={order.date}>{formatDate(order.date)}</time>
 												</td>
-												<td class="col-xs-2 text-right table__actions">
+												<td class="actions-column table__actions">
 													<div class="dropdown">
 														<button
 															type="button"
-															class="btn btn-xs btn-white table__more-actions"
+															class="order-actions-button"
 															id="dLabel-{order.id}"
 															data-bs-toggle="dropdown"
 															aria-expanded="false"
@@ -225,7 +225,7 @@
 	}
 
 	/* Orders Table - Pixel Perfect */
-	.table {
+	.orders-table {
 		width: 100%;
 		border-collapse: collapse;
 		background: #fff;
@@ -234,16 +234,16 @@
 		border: none;
 	}
 
-	.table thead {
+	.orders-table thead {
 		background: transparent;
 		border-bottom: 2px solid #e5e5e5;
 	}
 
-	.table thead tr {
+	.orders-table thead tr {
 		border: none;
 	}
 
-	.table thead th {
+	.orders-table thead th {
 		padding: 10px 12px;
 		font-size: 12px;
 		font-weight: 600;
@@ -255,20 +255,20 @@
 		background: transparent;
 	}
 
-	.table thead th.text-right {
+	.orders-table thead th.actions-column {
 		text-align: right;
 	}
 
 	/* Table Body */
-	.table tbody tr {
+	.orders-table tbody tr {
 		border-bottom: 1px solid #e5e5e5;
 	}
 
-	.table tbody tr:last-child {
+	.orders-table tbody tr:last-child {
 		border-bottom: 1px solid #e5e5e5;
 	}
 
-	.table tbody td {
+	.orders-table tbody td {
 		padding: 15px 12px;
 		font-size: 14px;
 		color: #333333;
@@ -277,19 +277,19 @@
 	}
 
 	/* Order Number Link */
-	.table tbody td a {
+	.orders-table tbody td a {
 		color: #0984ae;
 		font-weight: 600;
 		text-decoration: none;
 	}
 
-	.table tbody td a:hover {
+	.orders-table tbody td a:hover {
 		color: #076787;
 		text-decoration: underline;
 	}
 
 	/* Date */
-	.table tbody td time {
+	.orders-table tbody td time {
 		color: #333333;
 		font-size: 14px;
 		font-weight: 400;
@@ -301,7 +301,7 @@
 	}
 
 	/* Dropdown Button - Ellipsis */
-	.btn {
+	.order-actions-button {
 		display: inline-block;
 		font-weight: 400;
 		text-align: center;
@@ -315,34 +315,23 @@
 		border-radius: 4px;
 		transition: all 0.15s ease-in-out;
 		cursor: pointer;
-	}
-
-	.btn-xs {
-		padding: 4px 8px;
-		font-size: 12px;
-		line-height: 1.5;
-		border-radius: 3px;
-	}
-
-	.btn-white {
-		background-color: #ffffff;
-		border-color: #d4d4d4;
-		color: #666666;
-	}
-
-	.btn-white:hover {
-		background-color: #f5f5f5;
-		border-color: #c4c4c4;
-		color: #333333;
-	}
-
-	.table__more-actions {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
 		min-width: 32px;
 		height: 28px;
 		padding: 0 8px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+		background-color: #ffffff;
+		border-color: #d4d4d4;
+		color: #666666;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.order-actions-button:hover {
+		background-color: #f5f5f5;
+		border-color: #c4c4c4;
+		color: #333333;
 	}
 
 	/* Ellipsis Icon - Using ::before like reference */
@@ -458,34 +447,36 @@
 	}
 
 	/* Column Widths */
-	.col-xs-2 {
+	.order-column,
+	.actions-column {
 		width: 20%;
 	}
 
-	.col-xs-3 {
+	.date-column {
 		width: 30%;
 	}
 
-	.text-right {
+	.actions-column {
 		text-align: right;
 	}
 
 	/* Responsive */
 	@media (max-width: 767.98px) {
-		.table {
+		.orders-table {
 			display: block;
 			overflow-x: auto;
 			-webkit-overflow-scrolling: touch;
 		}
 
-		.table thead th,
-		.table tbody td {
+		.orders-table thead th,
+		.orders-table tbody td {
 			padding: 10px 8px;
 			font-size: 13px;
 		}
 
-		.col-xs-2,
-		.col-xs-3 {
+		.order-column,
+		.date-column,
+		.actions-column {
 			width: auto;
 		}
 	}

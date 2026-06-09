@@ -307,6 +307,26 @@
 		return colors[priority] || colors.normal;
 	}
 
+	function getBadgeBackground(color: string): string {
+		return `${color}15`;
+	}
+
+	function getPriorityBackground(priority: string): string {
+		return getBadgeBackground(getPriorityColor(priority));
+	}
+
+	function getDealStage(deal: Deal): Stage {
+		return deal.stage || stages.find((stage) => stage.id === deal.stage_id) || ({} as Stage);
+	}
+
+	function getDealStageColor(deal: Deal): string {
+		return getStageColor(getDealStage(deal));
+	}
+
+	function getDealStageBackground(deal: Deal): string {
+		return getBadgeBackground(getDealStageColor(deal));
+	}
+
 	function getDaysColor(days: number): string {
 		if (days <= 7) return '#22c55e';
 		if (days <= 30) return '#f59e0b';
@@ -566,9 +586,8 @@
 										{#if deal.priority && deal.priority !== 'normal'}
 											<span
 												class="priority-badge"
-												style="background: {getPriorityColor(
-													deal.priority
-												)}15; color: {getPriorityColor(deal.priority)}"
+												style:background={getPriorityBackground(deal.priority)}
+												style:color={getPriorityColor(deal.priority)}
 											>
 												{deal.priority}
 											</span>
@@ -644,9 +663,8 @@
 											{#if deal.priority && deal.priority !== 'normal'}
 												<span
 													class="priority-badge small"
-													style="background: {getPriorityColor(
-														deal.priority
-													)}15; color: {getPriorityColor(deal.priority)}"
+													style:background={getPriorityBackground(deal.priority)}
+													style:color={getPriorityColor(deal.priority)}
 												>
 													{deal.priority}
 												</span>
@@ -665,11 +683,8 @@
 									<td>
 										<span
 											class="stage-badge"
-											style="background: {getStageColor(
-												deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
-											)}15; color: {getStageColor(
-												deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
-											)}"
+											style:background={getDealStageBackground(deal)}
+											style:color={getDealStageColor(deal)}
 										>
 											{deal.stage?.name ||
 												stages.find((s) => s.id === deal.stage_id)?.name ||

@@ -41,6 +41,14 @@
 		selectedPeriod = period;
 		loadDashboard();
 	}
+
+	function getTimelineBarHeight(sessions: number): string {
+		const maxSessions = Math.max(
+			...(dashboard?.session_timeline.map((point) => point.sessions) ?? [0])
+		);
+		if (maxSessions === 0) return '0%';
+		return `${(sessions / maxSessions) * 100}%`;
+	}
 </script>
 
 <svelte:head>
@@ -192,9 +200,7 @@
 						<div class="timeline-bar">
 							<div
 								class="bar-fill"
-								style="height: {(point.sessions /
-									Math.max(...dashboard.session_timeline.map((p) => p.sessions))) *
-									100}%"
+								style:height={getTimelineBarHeight(point.sessions)}
 								title="{point.sessions} sessions, {point.avg_engagement.toFixed(1)}% engagement"
 							></div>
 							<div class="bar-label">

@@ -11,10 +11,18 @@ Re-run this scan after each completed file:
 rg -l "@apply|@reference|class:[A-Za-z0-9_-]+|class=\"[^\"]*\{[^\"]*\}|style=\"[^\"]*\{[^\"]*\}" frontend/src --glob '*.svelte'
 ```
 
+Re-run this refined static Tailwind utility scan during the final infrastructure-removal phase:
+
+```sh
+rg -P -l 'class="[^"]*(?:^|\s)(?:flex|grid|hidden|block|inline|absolute|relative|fixed|sticky|w-(?:\d|full|screen|fit|min|max|\[)|h-(?:\d|full|screen|fit|min|max|\[)|p[trblxy]?-(?:\d|\[)|m[trblxy]?-(?:\d|auto|\[)|text-(?:xs|sm|base|lg|xl|[2-9]xl|center|left|right|white|black|gray|slate|zinc|red|blue|emerald|yellow|green|purple|orange)|bg-(?:white|black|gray|slate|zinc|red|blue|emerald|yellow|green|purple|orange|transparent|\[)|border(?:\s|$|-)|rounded(?:\s|$|-)|shadow(?:\s|$|-)|gap-(?:\d|\[)|space-[xy]-(?:\d|\[)|items-(?:center|start|end|stretch|baseline)|justify-(?:center|between|end|start|around)|min-[wh]-(?:\d|full|screen|0|\[)|max-[wh]-(?:\d|full|screen|none|[0-9]|\[)|overflow-(?:hidden|auto|x-auto|y-auto)|z-(?:\d|\[)|top-(?:\d|0|\[)|left-(?:\d|0|\[)|right-(?:\d|0|\[)|bottom-(?:\d|0|\[)|opacity-\d|transition(?:\s|$|-)|duration-\d|ease-(?:in|out|linear)|hover:[^\s"]+|focus:[^\s"]+|sm:[^\s"]+|md:[^\s"]+|lg:[^\s"]+|xl:[^\s"]+)(?:\s|$)' frontend/src --glob '*.svelte'
+```
+
 Current evidence:
 
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
+- Secondary multiline/interpolated class-style audit scan: 0 Svelte files remaining.
+- Refined static Tailwind utility scan: 70 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -85,6 +93,28 @@ Current evidence:
 - [x] 2026-06-08: Completed explosive swings analytics chart/table batch: `DrawdownChart.svelte`, `EquityCurveChart.svelte`, `MetricCard.svelte`, `MonthlyReturnsChart.svelte`, `SetupBreakdown.svelte`, `StreakIndicator.svelte`, `TickerHeatmap.svelte`, and `TickerPerformanceTable.svelte`; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, migrated legacy declaration tags, and replaced chart container `bind:this` resize wiring with attachments.
 - [x] 2026-06-08: Completed remaining explosive swings batch: core components, search cards/filters, trades skeleton/stats, favorites, and watchlist pages; replaced tracked class/style bindings with Svelte 5 class arrays and `style:` directives, moved modal body-lock/focus lifecycle to an attachment, and moved alert toast timers from `$effect` to `onMount` cleanup.
 - [x] 2026-06-08: Completed final route batch: admin CRM logs, workflows, weekly watchlist, small-account mentorship, SPX Profit Pulse, account pages, mission calculator, and pricing; replaced the last tracked declaration tags, class directives/interpolations, and dynamic style strings with Svelte 5 declaration tags, class arrays/objects, and `style:` directives.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/behavior/+page.svelte`; replaced the surviving multiline timeline bar height string with a Svelte 5 `style:height` directive backed by a typed helper.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/settings/+page.svelte`; replaced the maintenance mode row's multiline interpolated class string with Svelte 5 class array composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/components/blog/BlockEditor/BlockEditor.svelte`; replaced the drag block's dynamic touch/will-change style string with Svelte 5 `style:` directives.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/crm/deals/+page.svelte`; replaced priority and stage badge dynamic style strings with typed helper-driven Svelte 5 `style:` directives.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/dashboard/day-trading-room/learning-center/+page.svelte`; replaced the thumbnail background-image style string with a Svelte 5 `style:background-image` directive and shared fallback thumbnail constant.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/power-user/CommandPalette.svelte`; replaced the dynamic command row style string with Svelte 5 `style:` directives, migrated palette/input DOM wiring to attachments, derived the active command index, and replaced the mutable `Map` with `SvelteMap`.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/members/[id]/_components/SubscriptionsTab.svelte`; replaced the interpolated Tailwind-era subscription status badge string with Svelte 5 class composition and scoped semantic status CSS.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/growth/LeadCaptureModal.svelte`; replaced the subscribe button dynamic style string with Svelte 5 `style:` directives, moved modal animation wiring to an attachment, converted delayed display to `onMount`, and added auto-close timer cleanup.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/alerts/explosive-swings/_sections/PricingSection.svelte`; replaced pricing toggle/card interpolated class strings with helper-driven Svelte 5 class arrays and moved the selector position string to `style:left`/`style:width` directives.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/admin/members/[id]/_components/OrdersTab.svelte`; replaced the interpolated Tailwind-era order status badge string with Svelte 5 class composition and scoped semantic status CSS.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/StrategyBuilder.svelte`; replaced the remaining Tailwind utility markup with scoped semantic CSS, moved premium and breakeven styling to Svelte 5 class/style composition, and migrated the add-leg animation ref to an attachment.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/MathOfEdgeCalculator.svelte`; replaced the remaining Tailwind utility markup with scoped semantic section CSS and converted risk/expectancy color state to Svelte 5 class composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/InputPanel.svelte`; replaced the remaining Tailwind utility markup with scoped semantic panel CSS and converted option/IV solver dynamic styling to Svelte 5 class composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/options-calculator/components/MispricingAlert.svelte`; replaced the remaining Tailwind utility markup and dynamic direction style strings with scoped semantic alert CSS and Svelte 5 class composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/routes/our-mission/_sections/SyllabusAccordion.svelte`; replaced the remaining Tailwind utility markup with scoped semantic syllabus CSS and converted accordion chevron state to Svelte 5 class composition.
+- [x] 2026-06-09: Completed secondary multiline audit repair for `frontend/src/lib/components/ui/Table.svelte`; replaced the final interpolated Tailwind-era table body classes with Svelte 5 class composition and scoped semantic table CSS.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/media/ImageCropModal.svelte`; replaced the remaining local Tailwind utility markup with scoped title, loading, hidden-canvas, and crop-dimension CSS while preserving the existing modal CSS contract.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/sections/CoursesSection.svelte`; replaced the homepage course section utility markup with semantic scoped CSS while preserving the January 2026 lazy scroll reveal, GSAP stagger, cursor spotlight, hover play overlay, CTA sheen, and reduced-motion behavior.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/sections/IndicatorsSection.svelte`; replaced the homepage indicator section utility markup with semantic scoped CSS while preserving the January 2026 lazy scroll reveal, canvas chart animation, indicator auto-rotation, GSAP card stagger, active-card states, and reduced-motion behavior.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/routes/dashboard/account/payment-methods/+page.svelte`; replaced the remaining Bootstrap/Tailwind-like helper class names with page-owned semantic classes while preserving add-payment actions, responsive table/card behavior, delete confirmation flow, and SvelteKit enhanced form submission.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/resources/ResourceViewer.svelte`; replaced the modal viewer Tailwind utility markup with scoped semantic CSS while preserving secure downloads, video/PDF/image previews, image pan/zoom attachment behavior, sidebar metadata, version-history loading, and dark-mode states.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/routes/dashboard/account/orders/+page.svelte`; replaced the remaining Bootstrap-like table/action utility classes with page-owned semantic classes while preserving the account orders table, action dropdown, Font Awesome view action, and responsive overflow behavior.
 
 ## Remaining Files
 
@@ -809,5 +839,6 @@ Generated from the source-of-truth scan on 2026-06-08. Check these off only afte
 
 - [x] Continue the broad Svelte file sweep until the dynamic class/style scan is zero or every remaining hit is documented as a deliberate false positive.
 - [ ] Re-run global zero-reference checks for Tailwind infrastructure and utility APIs.
+  - 2026-06-09 evidence: dynamic Svelte scan is 0, but Tailwind infrastructure references remain in `frontend/src/app.css`, `frontend/vite.config.ts`, and `frontend/package.json`; comments mentioning `@layer` also remain in already-scoped Svelte/CSS files.
 - [ ] Remove Tailwind Vite plugin and packages only after zero-reference proof.
 - [ ] Run final full gates and representative browser smoke checks.

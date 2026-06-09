@@ -186,77 +186,63 @@
 		The button is purely visual; the actual focus management lives on the
 		modal below.
 	-->
-	<button
-		type="button"
-		class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm border-0 cursor-default"
-		aria-label="Close viewer"
-		onclick={handleClose}
+	<button type="button" class="viewer-backdrop" aria-label="Close viewer" onclick={handleClose}
 	></button>
 
 	<!-- Modal -->
-	<div
-		{@attach loadVersionsAttachment()}
-		class="fixed inset-4 z-50 flex flex-col overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900 lg:inset-8"
-	>
+	<div {@attach loadVersionsAttachment()} class="resource-viewer-modal resource-viewer-open">
 		<!-- Header -->
-		<header
-			class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700"
-		>
-			<div class="flex items-center gap-3">
+		<header class="viewer-header">
+			<div class="viewer-heading">
 				<!-- Resource type icon -->
 				<div
-					class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30"
+					class={[
+						'resource-type-icon',
+						isVideo && 'resource-type-video',
+						isPdf && 'resource-type-pdf',
+						isImage && 'resource-type-image',
+						!isVideo && !isPdf && !isImage && 'resource-type-file'
+					]}
 				>
 					{#if isVideo}
-						<Icon name="IconVideo" size={20} class="text-blue-600 dark:text-blue-400" />
+						<Icon name="IconVideo" size={20} />
 					{:else if isPdf}
-						<Icon name="IconPdf" size={20} class="text-red-600 dark:text-red-400" />
+						<Icon name="IconPdf" size={20} />
 					{:else if isImage}
-						<Icon name="IconPhoto" size={20} class="text-green-600 dark:text-green-400" />
+						<Icon name="IconPhoto" size={20} />
 					{:else}
-						<Icon name="IconFileText" size={20} class="text-gray-600 dark:text-gray-400" />
+						<Icon name="IconFileText" size={20} />
 					{/if}
 				</div>
 
 				<!-- Title and meta -->
 				<div>
-					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">{resource.title}</h2>
-					<div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+					<h2 class="viewer-title">{resource.title}</h2>
+					<div class="resource-meta">
 						<span>{resource.formatted_date}</span>
 						{#if resource.formatted_size}
-							<span class="text-gray-300 dark:text-gray-600">|</span>
+							<span class="resource-meta-separator">|</span>
 							<span>{resource.formatted_size}</span>
 						{/if}
 						{#if resource.version && resource.version > 1}
-							<span class="text-gray-300 dark:text-gray-600">|</span>
-							<span class="text-blue-600 dark:text-blue-400">v{resource.version}</span>
+							<span class="resource-meta-separator">|</span>
+							<span class="resource-version">v{resource.version}</span>
 						{/if}
 					</div>
 				</div>
 			</div>
 
 			<!-- Actions -->
-			<div class="flex items-center gap-2">
+			<div class="viewer-actions">
 				<!-- Access level badge -->
-				<span
-					class={[
-						'rounded-md px-2 py-1 text-xs font-medium',
-						isPremium
-							? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-							: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
-					]}
-				>
+				<span class={['access-badge', isPremium ? 'access-badge-premium' : 'access-badge-free']}>
 					{isPremium ? 'Premium' : 'Free'}
 				</span>
 
 				<!-- Download button -->
-				<button
-					class="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-					onclick={handleDownload}
-					disabled={downloading}
-				>
+				<button class="download-button" onclick={handleDownload} disabled={downloading}>
 					{#if downloading}
-						<Icon name="IconLoader2" size={16} class="animate-spin" />
+						<Icon name="IconLoader2" size={16} class="spinner-icon" />
 						Downloading...
 					{:else}
 						<Icon name="IconDownload" size={16} />
@@ -265,29 +251,23 @@
 				</button>
 
 				<!-- Close button -->
-				<button
-					class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-					onclick={handleClose}
-					aria-label="Close"
-				>
+				<button class="close-button" onclick={handleClose} aria-label="Close">
 					<Icon name="IconX" size={20} />
 				</button>
 			</div>
 		</header>
 
 		<!-- Content -->
-		<div class="flex flex-1 overflow-hidden">
+		<div class="viewer-content">
 			<!-- Main preview area -->
-			<div class="flex-1 overflow-auto bg-gray-100 dark:bg-gray-800">
+			<div class="preview-area">
 				{#if isVideo}
 					<!-- Video player -->
-					<div class="flex h-full w-full items-center justify-center p-4">
-						<div
-							class="aspect-video w-full max-w-5xl overflow-hidden rounded-lg bg-black shadow-lg"
-						>
+					<div class="video-preview">
+						<div class="video-frame">
 							<iframe
 								src={resource.embed_url}
-								class="h-full w-full"
+								class="media-frame"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen
 								title={resource.title}
@@ -296,17 +276,14 @@
 					</div>
 				{:else if isPdf}
 					<!-- PDF viewer -->
-					<div class="h-full w-full p-4">
-						<iframe
-							src={`${resource.file_url}#view=FitH`}
-							class="h-full w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700"
-							title={resource.title}
+					<div class="pdf-preview">
+						<iframe src={`${resource.file_url}#view=FitH`} class="pdf-frame" title={resource.title}
 						></iframe>
 					</div>
 				{:else if isImage}
 					<!-- Image viewer with zoom - using Svelte action for a11y compliance -->
 					<div
-						class="relative flex h-full w-full items-center justify-center overflow-hidden p-4"
+						class="image-preview"
 						role="group"
 						aria-label="Image viewer with zoom controls"
 						{@attach panZoomAttachment()}
@@ -315,7 +292,7 @@
 						<img
 							src={resource.file_url}
 							alt={resource.title}
-							class="max-h-full max-w-full object-contain transition-transform duration-200"
+							class="preview-image"
 							style:transform={`scale(${imageZoom}) translate(${imagePosition.x / imageZoom}px, ${imagePosition.y / imageZoom}px)`}
 							style:cursor={imageZoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'default'}
 							draggable="false"
@@ -323,60 +300,44 @@
 						/>
 
 						<!-- Zoom controls -->
-						<div
-							class="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-black/70 p-2 backdrop-blur-sm"
-						>
+						<div class="zoom-controls">
 							<button
-								class="rounded p-1 text-white hover:bg-white/20"
+								class="zoom-button"
 								onclick={zoomOut}
 								disabled={imageZoom <= 0.5}
 								aria-label="Zoom out"
 							>
 								<Icon name="IconMinus" size={20} />
 							</button>
-							<span class="min-w-[3rem] text-center text-sm text-white"
-								>{Math.round(imageZoom * 100)}%</span
-							>
+							<span class="zoom-value">{Math.round(imageZoom * 100)}%</span>
 							<button
-								class="rounded p-1 text-white hover:bg-white/20"
+								class="zoom-button"
 								onclick={zoomIn}
 								disabled={imageZoom >= 3}
 								aria-label="Zoom in"
 							>
 								<Icon name="IconPlus" size={20} />
 							</button>
-							<button
-								class="rounded p-1 text-white hover:bg-white/20"
-								onclick={resetZoom}
-								aria-label="Reset zoom"
-							>
+							<button class="zoom-button" onclick={resetZoom} aria-label="Reset zoom">
 								<Icon name="IconRefresh" size={20} />
 							</button>
 						</div>
 					</div>
 				{:else}
 					<!-- Non-previewable content -->
-					<div class="flex h-full w-full flex-col items-center justify-center p-8 text-center">
-						<div
-							class="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700"
-						>
-							<Icon name="IconFileText" size={48} class="text-gray-400" />
+					<div class="empty-preview">
+						<div class="empty-preview-icon">
+							<Icon name="IconFileText" size={48} />
 						</div>
-						<h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-							Preview not available
-						</h3>
-						<p class="mb-6 max-w-md text-gray-600 dark:text-gray-400">
+						<h3 class="empty-preview-title">Preview not available</h3>
+						<p class="empty-preview-copy">
 							This file type cannot be previewed in the browser. Click the download button to save
 							it to your device.
 						</p>
-						<div class="flex flex-col items-center gap-2">
-							<span class="text-sm text-gray-500"
-								>File type: <strong>{resource.mime_type || 'Unknown'}</strong></span
-							>
+						<div class="empty-preview-meta">
+							<span>File type: <strong>{resource.mime_type || 'Unknown'}</strong></span>
 							{#if resource.formatted_size}
-								<span class="text-sm text-gray-500"
-									>Size: <strong>{resource.formatted_size}</strong></span
-								>
+								<span>Size: <strong>{resource.formatted_size}</strong></span>
 							{/if}
 						</div>
 					</div>
@@ -384,53 +345,43 @@
 			</div>
 
 			<!-- Sidebar (description & version history) -->
-			<aside
-				class="hidden w-80 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900 lg:block"
-			>
+			<aside class="viewer-sidebar">
 				<!-- Description -->
 				{#if resource.description}
-					<div class="mb-6">
-						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</h3>
-						<p class="text-sm text-gray-600 dark:text-gray-400">{resource.description}</p>
+					<div class="sidebar-section">
+						<h3 class="sidebar-heading">Description</h3>
+						<p class="sidebar-copy">{resource.description}</p>
 					</div>
 				{/if}
 
 				<!-- Tags -->
 				{#if resource.tags && resource.tags.length > 0}
-					<div class="mb-6">
-						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Tags</h3>
-						<div class="flex flex-wrap gap-1">
+					<div class="sidebar-section">
+						<h3 class="sidebar-heading">Tags</h3>
+						<div class="tag-list">
 							{#each resource.tags as tag (tag)}
-								<span
-									class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-								>
-									{tag}
-								</span>
+								<span class="resource-tag">{tag}</span>
 							{/each}
 						</div>
 					</div>
 				{/if}
 
 				<!-- Stats -->
-				<div class="mb-6">
-					<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Statistics</h3>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-gray-500 dark:text-gray-400">Views</span>
-							<span class="font-medium text-gray-900 dark:text-white">{resource.views_count}</span>
+				<div class="sidebar-section">
+					<h3 class="sidebar-heading">Statistics</h3>
+					<div class="stat-list">
+						<div class="stat-row">
+							<span class="stat-label">Views</span>
+							<span class="stat-value">{resource.views_count}</span>
 						</div>
-						<div class="flex justify-between">
-							<span class="text-gray-500 dark:text-gray-400">Downloads</span>
-							<span class="font-medium text-gray-900 dark:text-white"
-								>{resource.downloads_count}</span
-							>
+						<div class="stat-row">
+							<span class="stat-label">Downloads</span>
+							<span class="stat-value">{resource.downloads_count}</span>
 						</div>
 						{#if resource.difficulty_level}
-							<div class="flex justify-between">
-								<span class="text-gray-500 dark:text-gray-400">Difficulty</span>
-								<span class="font-medium capitalize text-gray-900 dark:text-white"
-									>{resource.difficulty_level}</span
-								>
+							<div class="stat-row">
+								<span class="stat-label">Difficulty</span>
+								<span class="stat-value stat-value-capitalize">{resource.difficulty_level}</span>
 							</div>
 						{/if}
 					</div>
@@ -439,50 +390,38 @@
 				<!-- Version history -->
 				{#if showVersionHistory}
 					<div>
-						<h3 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
-							Version History
-						</h3>
+						<h3 class="sidebar-heading">Version History</h3>
 						{#if loadingVersions}
-							<div class="space-y-2">
+							<div class="version-list">
 								{#each [1, 2, 3] as _, i (i)}
-									<div class="animate-pulse rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
-										<div class="mb-1 h-4 w-16 rounded bg-gray-200 dark:bg-gray-700"></div>
-										<div class="h-3 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
+									<div class="version-skeleton">
+										<div class="version-skeleton-title"></div>
+										<div class="version-skeleton-date"></div>
 									</div>
 								{/each}
 							</div>
 						{:else if versions.length > 0}
-							<div class="space-y-2">
+							<div class="version-list">
 								{#each versions as version (version.id)}
 									<button
 										class={[
-											'w-full rounded-lg border p-3 text-left transition-colors',
-											version.id === resource.id
-												? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-												: 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'
+											'version-button',
+											version.id === resource.id && 'version-button-current'
 										]}
 										onclick={() => selectVersion(version)}
 									>
-										<div class="flex items-center justify-between">
-											<span class="text-sm font-medium text-gray-900 dark:text-white">
-												Version {version.version}
-											</span>
+										<div class="version-row">
+											<span class="version-title">Version {version.version}</span>
 											{#if version.is_latest_version}
-												<span
-													class="rounded bg-green-100 px-1.5 py-0.5 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
-												>
-													Latest
-												</span>
+												<span class="latest-badge">Latest</span>
 											{/if}
 										</div>
-										<span class="text-xs text-gray-500 dark:text-gray-400"
-											>{version.created_at}</span
-										>
+										<span class="version-date">{version.created_at}</span>
 									</button>
 								{/each}
 							</div>
 						{:else}
-							<p class="text-sm text-gray-500 dark:text-gray-400">No version history available.</p>
+							<p class="empty-version-copy">No version history available.</p>
 						{/if}
 					</div>
 				{/if}
@@ -495,5 +434,579 @@
 	/* Prevent body scroll when modal is open */
 	:global(body:has(.resource-viewer-open)) {
 		overflow: hidden;
+	}
+
+	.viewer-backdrop {
+		position: fixed;
+		z-index: 50;
+		inset: 0;
+		cursor: default;
+		border: 0;
+		background: rgba(0, 0, 0, 0.8);
+		backdrop-filter: blur(4px);
+	}
+
+	.resource-viewer-modal {
+		position: fixed;
+		z-index: 50;
+		inset: 1rem;
+		display: flex;
+		overflow: hidden;
+		flex-direction: column;
+		border-radius: 0.75rem;
+		background: white;
+		box-shadow:
+			0 25px 50px -12px rgba(0, 0, 0, 0.35),
+			0 0 0 1px rgba(15, 23, 42, 0.08);
+	}
+
+	.viewer-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.viewer-heading,
+	.viewer-actions,
+	.resource-meta,
+	.download-button,
+	.video-preview,
+	.image-preview,
+	.empty-preview,
+	.empty-preview-icon,
+	.tag-list,
+	.stat-row,
+	.version-row {
+		display: flex;
+	}
+
+	.viewer-heading {
+		align-items: center;
+		gap: 0.75rem;
+		min-width: 0;
+	}
+
+	.resource-type-icon {
+		display: flex;
+		width: 2.5rem;
+		height: 2.5rem;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.5rem;
+		background: #dbeafe;
+	}
+
+	.resource-type-video {
+		color: #2563eb;
+	}
+
+	.resource-type-pdf {
+		color: #dc2626;
+	}
+
+	.resource-type-image {
+		color: #16a34a;
+	}
+
+	.resource-type-file {
+		color: #4b5563;
+	}
+
+	.viewer-title {
+		overflow: hidden;
+		margin: 0;
+		color: #111827;
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.35;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.resource-meta {
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		color: #6b7280;
+		font-size: 0.875rem;
+	}
+
+	.resource-meta-separator {
+		color: #d1d5db;
+	}
+
+	.resource-version {
+		color: #2563eb;
+	}
+
+	.viewer-actions {
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.access-badge {
+		border-radius: 0.375rem;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	.access-badge-premium {
+		background: #fef3c7;
+		color: #92400e;
+	}
+
+	.access-badge-free {
+		background: #d1fae5;
+		color: #065f46;
+	}
+
+	.download-button {
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: #2563eb;
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 500;
+		transition: background 150ms ease;
+	}
+
+	.download-button:hover {
+		background: #1d4ed8;
+	}
+
+	.download-button:disabled {
+		opacity: 0.5;
+	}
+
+	:global(.spinner-icon) {
+		animation: resource-viewer-spin 1s linear infinite;
+	}
+
+	.close-button {
+		padding: 0.5rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: transparent;
+		color: #6b7280;
+		transition:
+			background 150ms ease,
+			color 150ms ease;
+	}
+
+	.close-button:hover {
+		background: #f3f4f6;
+		color: #374151;
+	}
+
+	.viewer-content {
+		display: flex;
+		min-height: 0;
+		flex: 1 1 auto;
+		overflow: hidden;
+	}
+
+	.preview-area {
+		flex: 1 1 auto;
+		overflow: auto;
+		background: #f3f4f6;
+	}
+
+	.video-preview,
+	.image-preview,
+	.empty-preview {
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.video-preview,
+	.pdf-preview,
+	.image-preview {
+		padding: 1rem;
+	}
+
+	.video-frame {
+		overflow: hidden;
+		width: 100%;
+		max-width: 64rem;
+		aspect-ratio: 16 / 9;
+		border-radius: 0.5rem;
+		background: black;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.35);
+	}
+
+	.media-frame,
+	.pdf-frame {
+		width: 100%;
+		height: 100%;
+	}
+
+	.pdf-preview {
+		width: 100%;
+		height: 100%;
+	}
+
+	.pdf-frame {
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		background: white;
+	}
+
+	.image-preview {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.preview-image {
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+		transition: transform 200ms ease;
+	}
+
+	.zoom-controls {
+		position: absolute;
+		bottom: 1rem;
+		left: 50%;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		background: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(4px);
+		transform: translateX(-50%);
+	}
+
+	.zoom-button {
+		padding: 0.25rem;
+		border: 0;
+		border-radius: 0.25rem;
+		background: transparent;
+		color: white;
+		transition: background 150ms ease;
+	}
+
+	.zoom-button:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.zoom-button:disabled {
+		opacity: 0.45;
+	}
+
+	.zoom-value {
+		min-width: 3rem;
+		color: white;
+		font-size: 0.875rem;
+		text-align: center;
+	}
+
+	.empty-preview {
+		flex-direction: column;
+		padding: 2rem;
+		text-align: center;
+	}
+
+	.empty-preview-icon {
+		width: 6rem;
+		height: 6rem;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+		border-radius: 999px;
+		background: #e5e7eb;
+		color: #9ca3af;
+	}
+
+	.empty-preview-title {
+		margin: 0 0 0.5rem;
+		color: #111827;
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+
+	.empty-preview-copy {
+		width: min(100%, 28rem);
+		margin: 0 0 1.5rem;
+		color: #4b5563;
+	}
+
+	.empty-preview-meta {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		color: #6b7280;
+		font-size: 0.875rem;
+	}
+
+	.viewer-sidebar {
+		display: none;
+		width: 20rem;
+		flex: 0 0 auto;
+		overflow-y: auto;
+		padding: 1rem;
+		border-left: 1px solid #e5e7eb;
+		background: white;
+	}
+
+	.sidebar-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.sidebar-heading {
+		margin: 0 0 0.5rem;
+		color: #111827;
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+
+	.sidebar-copy,
+	.empty-version-copy {
+		margin: 0;
+		color: #4b5563;
+		font-size: 0.875rem;
+	}
+
+	.tag-list {
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+
+	.resource-tag {
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+		background: #f3f4f6;
+		color: #4b5563;
+		font-size: 0.75rem;
+	}
+
+	.stat-list,
+	.version-list {
+		display: grid;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+	}
+
+	.stat-row,
+	.version-row {
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+
+	.stat-label,
+	.version-date {
+		color: #6b7280;
+	}
+
+	.stat-value,
+	.version-title {
+		color: #111827;
+		font-weight: 500;
+	}
+
+	.stat-value-capitalize {
+		text-transform: capitalize;
+	}
+
+	.version-skeleton {
+		padding: 0.75rem;
+		border-radius: 0.5rem;
+		background: #f3f4f6;
+		animation: resource-viewer-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+
+	.version-skeleton-title,
+	.version-skeleton-date {
+		border-radius: 0.25rem;
+		background: #e5e7eb;
+	}
+
+	.version-skeleton-title {
+		width: 4rem;
+		height: 1rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.version-skeleton-date {
+		width: 6rem;
+		height: 0.75rem;
+	}
+
+	.version-button {
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		background: transparent;
+		text-align: left;
+		transition:
+			background 150ms ease,
+			border-color 150ms ease;
+	}
+
+	.version-button:hover {
+		background: #f9fafb;
+	}
+
+	.version-button-current {
+		border-color: #3b82f6;
+		background: #eff6ff;
+	}
+
+	.latest-badge {
+		padding: 0.125rem 0.375rem;
+		border-radius: 0.25rem;
+		background: #dcfce7;
+		color: #15803d;
+		font-size: 0.75rem;
+	}
+
+	.version-date {
+		font-size: 0.75rem;
+	}
+
+	@keyframes resource-viewer-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@keyframes resource-viewer-pulse {
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.resource-viewer-modal {
+			inset: 2rem;
+		}
+
+		.viewer-sidebar {
+			display: block;
+		}
+	}
+
+	:global(.dark) .resource-viewer-modal {
+		background: #111827;
+		box-shadow:
+			0 25px 50px -12px rgba(0, 0, 0, 0.55),
+			0 0 0 1px rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .viewer-header,
+	:global(.dark) .viewer-sidebar,
+	:global(.dark) .pdf-frame {
+		border-color: #374151;
+	}
+
+	:global(.dark) .viewer-title,
+	:global(.dark) .empty-preview-title,
+	:global(.dark) .sidebar-heading,
+	:global(.dark) .stat-value,
+	:global(.dark) .version-title {
+		color: white;
+	}
+
+	:global(.dark) .resource-meta,
+	:global(.dark) .sidebar-copy,
+	:global(.dark) .empty-version-copy,
+	:global(.dark) .empty-preview-copy {
+		color: #9ca3af;
+	}
+
+	:global(.dark) .resource-meta-separator {
+		color: #4b5563;
+	}
+
+	:global(.dark) .resource-version,
+	:global(.dark) .resource-type-video {
+		color: #60a5fa;
+	}
+
+	:global(.dark) .resource-type-icon {
+		background: rgba(30, 58, 138, 0.3);
+	}
+
+	:global(.dark) .resource-type-pdf {
+		color: #f87171;
+	}
+
+	:global(.dark) .resource-type-image {
+		color: #4ade80;
+	}
+
+	:global(.dark) .resource-type-file,
+	:global(.dark) .close-button,
+	:global(.dark) .stat-label,
+	:global(.dark) .version-date,
+	:global(.dark) .empty-preview-meta {
+		color: #9ca3af;
+	}
+
+	:global(.dark) .access-badge-premium {
+		background: rgba(120, 53, 15, 0.3);
+		color: #fcd34d;
+	}
+
+	:global(.dark) .access-badge-free {
+		background: rgba(6, 78, 59, 0.3);
+		color: #6ee7b7;
+	}
+
+	:global(.dark) .close-button:hover,
+	:global(.dark) .resource-tag,
+	:global(.dark) .version-skeleton {
+		background: #1f2937;
+	}
+
+	:global(.dark) .preview-area {
+		background: #1f2937;
+	}
+
+	:global(.dark) .pdf-frame,
+	:global(.dark) .viewer-sidebar {
+		background: #111827;
+	}
+
+	:global(.dark) .empty-preview-icon,
+	:global(.dark) .version-skeleton-title,
+	:global(.dark) .version-skeleton-date {
+		background: #374151;
+	}
+
+	:global(.dark) .resource-tag {
+		color: #9ca3af;
+	}
+
+	:global(.dark) .version-button {
+		border-color: #374151;
+		color: #f9fafb;
+	}
+
+	:global(.dark) .version-button:hover {
+		background: #1f2937;
+	}
+
+	:global(.dark) .version-button-current {
+		border-color: #60a5fa;
+		background: rgba(30, 58, 138, 0.2);
+	}
+
+	:global(.dark) .latest-badge {
+		background: rgba(20, 83, 45, 0.3);
+		color: #86efac;
 	}
 </style>
