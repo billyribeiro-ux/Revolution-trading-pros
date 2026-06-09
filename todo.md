@@ -22,7 +22,7 @@ Current evidence:
 - `@apply` / `@reference`: 0 Svelte files remaining.
 - Broad dynamic class/style migration scan: 0 Svelte files remaining.
 - Secondary multiline/interpolated class-style audit scan: 0 Svelte files remaining.
-- Refined static Tailwind utility scan: 73 Svelte files remaining.
+- Refined static Tailwind utility scan: 72 Svelte files remaining.
 - Active method: finish one larger file completely, validate it, update this TODO, update `changelog.md`, commit, push, then move to the next file.
 
 ## Completed Validation Repairs
@@ -112,6 +112,7 @@ Current evidence:
 - [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/media/ImageCropModal.svelte`; replaced the remaining local Tailwind utility markup with scoped title, loading, hidden-canvas, and crop-dimension CSS while preserving the existing modal CSS contract.
 - [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/sections/CoursesSection.svelte`; replaced the homepage course section utility markup with semantic scoped CSS while preserving the January 2026 lazy scroll reveal, GSAP stagger, cursor spotlight, hover play overlay, CTA sheen, and reduced-motion behavior.
 - [x] 2026-06-09: Completed refined static utility repair for `frontend/src/lib/components/sections/IndicatorsSection.svelte`; replaced the homepage indicator section utility markup with semantic scoped CSS while preserving the January 2026 lazy scroll reveal, canvas chart animation, indicator auto-rotation, GSAP card stagger, active-card states, and reduced-motion behavior.
+- [x] 2026-06-09: Completed refined static utility repair for `frontend/src/routes/dashboard/account/payment-methods/+page.svelte`; replaced the remaining Bootstrap/Tailwind-like helper class names with page-owned semantic classes while preserving add-payment actions, responsive table/card behavior, delete confirmation flow, and SvelteKit enhanced form submission.
 
 ## Remaining Files
 
