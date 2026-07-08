@@ -31,7 +31,7 @@ on:
 # (pnpm@11.5.2), so this workflow, ci.yml, and local always use the exact
 # same pnpm. One source of truth, no drift.
 env:
-  NODE_VERSION: "24.16.0"
+  NODE_VERSION: "24.18.0"
   GIT_CONFIG_COUNT: "1"
   GIT_CONFIG_KEY_0: init.defaultBranch
   GIT_CONFIG_VALUE_0: main
