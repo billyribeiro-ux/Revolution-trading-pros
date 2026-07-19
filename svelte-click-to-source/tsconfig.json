@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    // tsup's dts bundler injects `baseUrl` internally, which TypeScript 6
+    // reports as deprecated (TS5101) and fails the build. Silence until tsup
+    // resolves modules without it; nothing in this package uses baseUrl.
+    "ignoreDeprecations": "6.0",
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",

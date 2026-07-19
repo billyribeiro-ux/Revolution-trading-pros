@@ -10,18 +10,11 @@
 //! distinguishes an AEAD blob from a legacy base64(JSON) value; anything
 //! without the prefix is treated as legacy.
 
-// aes-gcm 0.10 exposes its key/nonce types as `generic-array` 0.14
-// `GenericArray`, which 0.14.7 deprecated in favor of generic-array 1.x. We
-// can't move off it until aes-gcm ships a release on the new array crate, so
-// the deprecation is suppressed here. It's transitive-only — not masking a real
-// issue — and scoped to this module.
-#![allow(deprecated)]
-
 use std::collections::HashMap;
 
 use aes_gcm::{
-    aead::{generic_array::GenericArray, Aead, KeyInit},
-    Aes256Gcm,
+    aead::{Aead, KeyInit},
+    Aes256Gcm, Nonce,
 };
 use base64::{engine::general_purpose::STANDARD, Engine};
 use rand::RngExt;
@@ -48,7 +41,7 @@ pub fn encrypt_map(secret: &str, map: &HashMap<String, String>) -> String {
 
     let mut rng = rand::rng();
     let nonce_bytes: [u8; 12] = std::array::from_fn(|_| rng.random());
-    let nonce = GenericArray::from(nonce_bytes);
+    let nonce = Nonce::from(nonce_bytes);
 
     match cipher.encrypt(&nonce, plaintext.as_ref()) {
         Ok(ciphertext) => {
@@ -85,7 +78,7 @@ pub fn decrypt_map(secret: &str, blob: &str) -> HashMap<String, String> {
     let cipher = Aes256Gcm::new_from_slice(&derive_key(secret))
         .expect("SHA-256 derivation always yields a 32-byte key");
 
-    match cipher.decrypt(&GenericArray::from(nonce_arr), ciphertext) {
+    match cipher.decrypt(&Nonce::from(nonce_arr), ciphertext) {
         Ok(plaintext) => serde_json::from_slice(&plaintext).unwrap_or_default(),
         Err(_) => HashMap::new(),
     }

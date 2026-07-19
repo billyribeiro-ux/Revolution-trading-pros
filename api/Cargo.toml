@@ -12,7 +12,7 @@ publish = false
 axum = { version = "0.8.9", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
-tower-http = { version = "0.6.11", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
+tower-http = { version = "0.7.0", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
 lazy_static = "1.5.0"
 html-escape = "0.2.13"
 
@@ -40,7 +40,7 @@ base64 = "0.22"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5"   # ICT 7: TOTP secret encoding
 argon2 = "0.5"
 bcrypt = "0.19"  # Laravel bcrypt compatibility
-aes-gcm = "0.10" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
+aes-gcm = "0.11" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
 rand = "0.10.1"
 hmac = "0.13.0"
 sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
@@ -80,12 +80,12 @@ meilisearch-sdk = "0.33.0"
 
 # OpenAPI Documentation
 utoipa = { version = "5.5.0", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "9.0.2", features = ["axum"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "vendored"] }
 validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
-axum-test = "20.1.0"
+axum-test = "21.0.0"
 tower = { version = "0.5.3", features = ["util"] }
 hyper = { version = "1.10.1", features = ["full"] }
 http-body-util = "0.1.3"
