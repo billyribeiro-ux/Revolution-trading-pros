@@ -2,28 +2,38 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
+// Validate the user-controlled ticker before it reaches the upstream URL.
+const TICKER_RE = /^[A-Z.\-]{1,10}$/i;
+
 export const GET: RequestHandler = async ({ url }) => {
-	const ticker = url.searchParams.get('ticker');
+	const rawTicker = url.searchParams.get('ticker');
 	const provider = url.searchParams.get('provider') ?? 'polygon';
 	const healthcheck = url.searchParams.get('healthcheck');
 
-	if (!ticker && !healthcheck) {
-		return error(400, 'Missing ticker parameter');
+	if (!rawTicker && !healthcheck) {
+		throw error(400, 'Missing ticker parameter');
+	}
+
+	const ticker = rawTicker?.toUpperCase() ?? null;
+	if (ticker && !TICKER_RE.test(ticker)) {
+		throw error(400, 'Invalid ticker format');
 	}
 
 	if (provider === 'polygon') {
 		const apiKey = env.POLYGON_API_KEY;
-		if (!apiKey) return error(401, 'Polygon API key not configured');
+		if (!apiKey) throw error(401, 'Polygon API key not configured');
 
 		if (healthcheck) return json({ ok: true });
 
+		if (!ticker) throw error(400, 'Missing ticker parameter');
+
 		try {
 			const response = await fetch(
-				`https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${ticker}?apiKey=${apiKey}`
+				`https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${encodeURIComponent(ticker)}?apiKey=${apiKey}`
 			);
 
 			if (!response.ok) {
-				return error(response.status, `Polygon API error: ${response.statusText}`);
+				throw error(response.status, `Polygon API error: ${response.statusText}`);
 			}
 
 			const data = await response.json();
@@ -46,12 +56,12 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			return json(quote);
 		} catch (err) {
-			return error(
+			throw error(
 				502,
 				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
 			);
 		}
 	}
 
-	return error(400, `Unsupported provider: ${provider}`);
+	throw error(400, `Unsupported provider: ${provider}`);
 };
