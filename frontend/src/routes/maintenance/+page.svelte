@@ -1156,7 +1156,11 @@
 							<span class="stage-index">{String(index + 1).padStart(2, '0')}</span>
 							<span class="stage-name">{line}</span>
 							<span class="stage-state">
-								{index < completedStages ? 'Complete' : index === completedStages ? 'Underway' : 'Queued'}
+								{index < completedStages
+									? 'Complete'
+									: index === completedStages
+										? 'Underway'
+										: 'Queued'}
 							</span>
 						</li>
 					{/each}
@@ -1177,9 +1181,7 @@
 
 			<figure class="note-card" data-cine-self>
 				<blockquote>{deskNote}</blockquote>
-				<p class="note-foot">
-					A new note is posted at the open, Monday through Friday.
-				</p>
+				<p class="note-foot">A new note is posted at the open, Monday through Friday.</p>
 				<figcaption class="note-meta">
 					<span>Desk note</span>
 					<strong>№ {noteNumber}</strong>
