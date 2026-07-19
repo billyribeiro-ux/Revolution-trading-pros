@@ -19,7 +19,7 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import { response } from 'super-sitemap';
+import { response } from 'super-sitemap/sveltekit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { PaginatedPosts } from '$lib/types/post';
 import { indicators } from '../indicators/data';
@@ -61,45 +61,47 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		origin: SITE_URL,
 		excludeRoutePatterns: [
 			// Private/auth/admin routes — must never appear in sitemap
-			'^/account.*',
-			'^/admin.*',
-			'^/api.*',
-			'^/auth.*',
-			'^/cart.*',
-			'^/checkout.*',
-			'^/cms.*',
-			'^/crm.*',
-			'^/dashboard.*',
-			'^/embed.*',
-			'^/forgot-password.*',
-			'^/logout.*',
-			'^/my.*',
-			'^/reset-password.*',
-			'^/verify-email.*',
+			/^\/account/,
+			/^\/admin/,
+			/^\/api/,
+			/^\/auth/,
+			/^\/cart/,
+			/^\/checkout/,
+			/^\/cms/,
+			/^\/crm/,
+			/^\/dashboard/,
+			/^\/embed/,
+			/^\/forgot-password/,
+			/^\/logout/,
+			/^\/my/,
+			/^\/reset-password/,
+			/^\/verify-email/,
 			// Technical routes
-			'^/\\(dev\\).*',
-			'^/atom\\.xml.*',
-			'^/feed\\.xml.*',
-			'^/manifest\\.json.*',
-			'^/news-sitemap\\.xml.*',
-			'^/robots\\.txt.*',
-			'^/sitemap\\.xml.*',
-			'^/video-sitemap\\.xml.*',
-			'^/test-backend.*',
-			'^/popup-demo.*',
-			'^/popup-advanced-demo.*',
-			'^/behavior.*',
-			'^/analytics.*',
-			'^/email.*',
-			'^/workflows.*',
-			'^/chatroom-archive.*',
+			// (v2 strips route groups from route keys, so the old `(dev)` group
+			// pattern can't match — exclude its inner routes directly instead)
+			/^\/workbench/,
+			/^\/atom\.xml/,
+			/^\/feed\.xml/,
+			/^\/manifest\.json/,
+			/^\/news-sitemap\.xml/,
+			/^\/robots\.txt/,
+			/^\/sitemap\.xml/,
+			/^\/video-sitemap\.xml/,
+			/^\/test-backend/,
+			/^\/popup-demo/,
+			/^\/popup-advanced-demo/,
+			/^\/behavior/,
+			/^\/analytics/,
+			/^\/email/,
+			/^\/workflows/,
+			/^\/chatroom-archive/,
 			// Dynamic routes are enumerated via additionalPaths below
-			'.*\\[slug\\].*',
-			'.*\\[id\\].*',
-			'.*\\[room\\].*',
-			'.*\\[page\\].*',
-			'.*\\[room_slug\\].*',
-			'.*\\[date_slug\\].*'
+			/\[slug\]/,
+			/\[id\]/,
+			/\[room\]/,
+			/\[page\]/,
+			/\[room_slug\]/,
+			/\[date_slug\]/
 		],
 		additionalPaths: [
 			'/about',
