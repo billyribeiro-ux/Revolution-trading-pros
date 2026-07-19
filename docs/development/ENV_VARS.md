@@ -30,7 +30,7 @@ Set in `api/.env` for local, <deploy target TBD — set via your platform secret
 | `PORT` | optional | 8080 | Listen port |
 | `ENVIRONMENT` | optional | `production` | Tags log lines, enables dev-only paths when `development` |
 | `APP_URL` | optional | `https://revolution-trading-pros.pages.dev` | Used in transactional emails as link host |
-| `DATABASE_URL` | **required** | — | Postgres connection string. sqlx 0.8, native-tls. |
+| `DATABASE_URL` | **required** | — | Postgres connection string. sqlx 0.9, native-tls. |
 | `REDIS_URL` | **required** | — | Sessions, rate limit, JWT blacklist, hot-content cache |
 | `JWT_SECRET` | **required** | — | HS256 signing secret. ≥ 32 chars. |
 | `JWT_EXPIRES_IN` | optional | 24 | Access-token TTL in hours |
@@ -120,10 +120,11 @@ STRIPE_SECRET=sk_test_xxxxx
   there is public.
 - **Putting a secret in `VITE_X`** — it's bundled into the browser. Use a
   non-`VITE_`/`PUBLIC_` name and read it via `$env/dynamic/private`.
-- **Hardcoding the Fly URL** — the audit found 14 of these. Use `env.API_BASE_URL`
-  with the prod URL as a fallback.
-- **Forgetting `.env.local`** — the homepage will keep hitting Fly even
-  though you ran `docker compose up`.
+- **Hardcoding a production API URL in a proxy** — the 2026-04-25 audit found
+  14 of these. Use `env.API_BASE_URL || env.BACKEND_URL` with the
+  `http://localhost:8080` fallback.
+- **Forgetting `.env.local`** — the homepage will keep hitting the remote
+  production API even though you ran `docker compose up`.
 - **Stale `node_modules`** after switching env mode — Vite caches; restart
   `pnpm dev`.
 
@@ -138,5 +139,5 @@ STRIPE_SECRET=sk_test_xxxxx
 | `frontend/.env.production` | Vite, when building/serving in production mode | Yes (no secrets) |
 | `frontend/.env.local` | Vite, in any mode (overrides others) | No (gitignored) |
 | `frontend/.env.[mode]` | Vite, in that mode | Yes/No depending on `.gitignore` |
-| Fly.io secrets | API process env in production | Not in repo |
+| API host secrets (deploy target TBD — Fly.io removed 2026-04-28) | API process env in production | Not in repo |
 | Cloudflare Pages env | Frontend build + runtime in production | Not in repo |

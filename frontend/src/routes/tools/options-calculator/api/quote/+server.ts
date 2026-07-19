@@ -56,10 +56,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			return json(quote);
 		} catch (err) {
-			throw error(
-				502,
-				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
-			);
+			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}
 	}
 

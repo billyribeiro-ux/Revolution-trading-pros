@@ -44,8 +44,8 @@ against a service container.
 |----------|------|--------|
 | TypeScript / Svelte | Prettier 3 | `frontend/.prettierrc` (or root) |
 | TypeScript / Svelte | ESLint 10 | `frontend/eslint.config.js` |
-| Rust | rustfmt | `api/rustfmt.toml` |
-| Rust | clippy | `cargo clippy --all-targets --all-features -- -D warnings` |
+| Rust | rustfmt | defaults (no `rustfmt.toml` in the repo) |
+| Rust | clippy | `cargo clippy --locked --all-targets -- -D warnings` |
 | All files | EditorConfig | `.editorconfig` (this repo's tabs/spaces rules) |
 
 Don't manually format; let the tools do it. Most editors auto-format on save when EditorConfig is detected.
@@ -110,7 +110,7 @@ Use `psql -v key=value <<'SQL' … :'key' …` parameter substitution. Do **not*
 - New runbooks go in `docs/development/`.
 - Setup guides go in `docs/setup/`.
 - Architecture docs go in `docs/architecture/`.
-- Postmortems go in `docs/forensics/`.
+- Postmortems go in `docs/audits/` with the date in the filename (there is no separate `docs/forensics/` directory).
 
 The top-level `README.md` only links to canonical entry points; resist the
 urge to dump audit content there.

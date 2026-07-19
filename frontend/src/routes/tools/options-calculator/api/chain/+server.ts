@@ -119,10 +119,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				source: 'polygon'
 			});
 		} catch (err) {
-			throw error(
-				502,
-				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
-			);
+			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}
 	}
 

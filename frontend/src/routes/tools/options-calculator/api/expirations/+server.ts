@@ -2,25 +2,33 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
+// Validate the user-controlled ticker before it reaches the upstream URL.
+const TICKER_RE = /^[A-Z.\-]{1,10}$/i;
+
 export const GET: RequestHandler = async ({ url }) => {
-	const ticker = url.searchParams.get('ticker');
+	const rawTicker = url.searchParams.get('ticker');
 	const provider = url.searchParams.get('provider') ?? 'polygon';
 
-	if (!ticker) {
-		return error(400, 'Missing ticker parameter');
+	if (!rawTicker) {
+		throw error(400, 'Missing ticker parameter');
+	}
+
+	const ticker = rawTicker.toUpperCase();
+	if (!TICKER_RE.test(ticker)) {
+		throw error(400, 'Invalid ticker format');
 	}
 
 	if (provider === 'polygon') {
 		const apiKey = env.POLYGON_API_KEY;
-		if (!apiKey) return error(401, 'Polygon API key not configured');
+		if (!apiKey) throw error(401, 'Polygon API key not configured');
 
 		try {
 			const response = await fetch(
-				`https://api.polygon.io/v3/reference/options/contracts?underlying_ticker=${ticker}&apiKey=${apiKey}&limit=1000&order=asc&sort=expiration_date`
+				`https://api.polygon.io/v3/reference/options/contracts?underlying_ticker=${encodeURIComponent(ticker)}&apiKey=${apiKey}&limit=1000&order=asc&sort=expiration_date`
 			);
 
 			if (!response.ok) {
-				return error(response.status, `Polygon API error: ${response.statusText}`);
+				throw error(response.status, `Polygon API error: ${response.statusText}`);
 			}
 
 			const data = await response.json();
@@ -39,12 +47,9 @@ export const GET: RequestHandler = async ({ url }) => {
 				source: 'polygon'
 			});
 		} catch (err) {
-			return error(
-				502,
-				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
-			);
+			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}
 	}
 
-	return error(400, `Unsupported provider: ${provider}`);
+	throw error(400, `Unsupported provider: ${provider}`);
 };

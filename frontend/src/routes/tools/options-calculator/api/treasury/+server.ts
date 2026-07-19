@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	if (provider === 'fred') {
 		const apiKey = env.FRED_API_KEY;
-		if (!apiKey) return error(401, 'FRED API key not configured');
+		if (!apiKey) throw error(401, 'FRED API key not configured');
 
 		if (healthcheck) return json({ ok: true });
 
@@ -59,9 +59,9 @@ export const GET: RequestHandler = async ({ url }) => {
 				source: 'fred'
 			});
 		} catch (err) {
-			return error(502, `FRED request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+			throw error(502, `FRED request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}
 	}
 
-	return error(400, `Unsupported provider: ${provider}`);
+	throw error(400, `Unsupported provider: ${provider}`);
 };

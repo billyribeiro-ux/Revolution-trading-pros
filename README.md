@@ -57,7 +57,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 | [`docs/audits/`](docs/audits/) | Five 2026-04-25 audits — start with `REPO_STATE_2026-04-25.md` |
 | [`docs/setup/`](docs/setup/) | Production deployment + Stripe + R2 setup |
 | [`docs/frontend/`](docs/frontend/) | Frontend-specific guides (admin responsive, footer audit, remote-functions migration) |
-| [`docs/forensics/`](docs/forensics/) | Older incident reports kept for institutional memory |
+| [`docs/audits/`](docs/audits/) (incident/forensic reports) | Older incident and forensic reports also live in `docs/audits/` — there is no separate `docs/forensics/` directory |
 
 ## Stack
 

@@ -5,15 +5,20 @@ import { env } from '$env/dynamic/private';
 export const GET: RequestHandler = async ({ url }) => {
 	const query = url.searchParams.get('q');
 	const provider = url.searchParams.get('provider') ?? 'polygon';
-	const limit = url.searchParams.get('limit') ?? '10';
+	// Clamp limit to a bounded integer so raw user input can't reshape the
+	// upstream URL. Falls back to 10, capped at 100.
+	const limit = Math.min(
+		Math.max(parseInt(url.searchParams.get('limit') ?? '10', 10) || 10, 1),
+		100
+	);
 
 	if (!query) {
-		return error(400, 'Missing q parameter');
+		throw error(400, 'Missing q parameter');
 	}
 
 	if (provider === 'polygon') {
 		const apiKey = env.POLYGON_API_KEY;
-		if (!apiKey) return error(401, 'Polygon API key not configured');
+		if (!apiKey) throw error(401, 'Polygon API key not configured');
 
 		try {
 			const response = await fetch(
@@ -21,7 +26,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			);
 
 			if (!response.ok) {
-				return error(response.status, `Polygon API error: ${response.statusText}`);
+				throw error(response.status, `Polygon API error: ${response.statusText}`);
 			}
 
 			const data = await response.json();
@@ -35,12 +40,9 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			return json(results);
 		} catch (err) {
-			return error(
-				502,
-				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
-			);
+			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}
 	}
 
-	return error(400, `Unsupported provider: ${provider}`);
+	throw error(400, `Unsupported provider: ${provider}`);
 };

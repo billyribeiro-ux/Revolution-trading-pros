@@ -2113,6 +2113,7 @@
 		display: grid;
 		place-items: center;
 		margin: 0;
+		overflow: hidden;
 		font-size: clamp(12rem, 28vw, 24rem);
 		font-weight: 700;
 		letter-spacing: -0.03em;

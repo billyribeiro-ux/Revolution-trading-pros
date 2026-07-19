@@ -1,143 +1,57 @@
-# GitHub Secrets Configuration
-**ICT 7 Apple Principal Engineer Grade**  
-**Revolution Trading Pros CI/CD Pipeline**
+# GitHub Actions Secrets
 
-## Overview
+Configured under **Repository Settings → Secrets and variables →
+Actions**. The two workflows in this repo (`ci.yml`,
+`deploy-cloudflare.yml`) reference exactly two secrets — nothing else.
 
-This document lists all GitHub secrets required for the CI/CD pipeline. Secrets are configured in:
-**Repository Settings → Secrets and variables → Actions**
+## Secrets actually used
 
-## Required Secrets (Deployment)
+| Secret | Workflow | Purpose |
+|--------|----------|---------|
+| `CLOUDFLARE_API_TOKEN` | `deploy-cloudflare.yml` (job `build-and-deploy`) | Cloudflare API token with "Pages: Edit" permission |
+| `CLOUDFLARE_ACCOUNT_ID` | `deploy-cloudflare.yml` (job `build-and-deploy`) | Cloudflare account ID |
 
-### Cloudflare Pages Deployment
+`ci.yml` uses no secrets at all.
 
-| Secret Name | Required | Used In | Description |
-|------------|----------|---------|-------------|
-| `CLOUDFLARE_API_TOKEN` | ✅ Yes | `deploy-preview`, `deploy-production` | Cloudflare API token with Pages write access |
-| `CLOUDFLARE_ACCOUNT_ID` | ✅ Yes | `deploy-preview`, `deploy-production` | Cloudflare account ID |
+**Behavior when missing:** deploy-cloudflare.yml does not fail. A gate
+step checks both values and skips the wrangler deploy with a
+`::notice::` if either is empty. The build itself still runs.
 
-**How to get:**
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Navigate to: Profile → API Tokens
-3. Create token with "Cloudflare Pages" template
-4. Copy Account ID from any Pages project URL
+**How to get them:**
 
-## Optional Secrets (Features)
+1. [Cloudflare Dashboard](https://dash.cloudflare.com) → Profile → API
+   Tokens → create a token with the "Cloudflare Pages" template
+   (Pages: Edit).
+2. Account ID is shown in the dashboard sidebar / any Pages project URL.
 
-### AI Features (Anthropic Claude)
+## Managing secrets
 
-| Secret Name | Required | Used In | Description |
-|------------|----------|---------|-------------|
-| `VITE_ANTHROPIC_API_KEY` | ⚠️ Optional | `build`, `deploy-production` | Anthropic API key for AI writing assistant |
-
-**Impact if missing:** AI writing features disabled, build succeeds  
-**How to get:** [Anthropic Console](https://console.anthropic.com) → API Keys
-
-### Supabase (Legacy - Not Currently Used)
-
-| Secret Name | Required | Used In | Description |
-|------------|----------|---------|-------------|
-| `VITE_PUBLIC_SUPABASE_URL` | ⚠️ Optional | `deploy-production` | Supabase project URL |
-| `VITE_PUBLIC_SUPABASE_ANON_KEY` | ⚠️ Optional | `deploy-production` | Supabase anonymous key |
-
-**Impact if missing:** No impact, Supabase not currently integrated  
-**Status:** Reserved for future use
-
-## Automatic Secrets (Provided by GitHub)
-
-| Secret Name | Description |
-|------------|-------------|
-| `GITHUB_TOKEN` | Automatically provided by GitHub Actions for API access |
-
-## Secret Validation
-
-### Check if secrets are configured:
 ```bash
-# This will show which secrets exist (not their values)
-gh secret list
-```
-
-### Test deployment secrets:
-```bash
-# Trigger a workflow manually to test
-gh workflow run ci.yml
-```
-
-## Adding Secrets
-
-### Via GitHub UI:
-1. Go to repository on GitHub
-2. Settings → Secrets and variables → Actions
-3. Click "New repository secret"
-4. Enter name and value
-5. Click "Add secret"
-
-### Via GitHub CLI:
-```bash
-# Set a secret
-gh secret set CLOUDFLARE_API_TOKEN
-
-# Set from file
+gh secret list                          # names only, never values
+gh secret set CLOUDFLARE_API_TOKEN      # prompts for value
 gh secret set CLOUDFLARE_API_TOKEN < token.txt
-
-# Set from environment variable
-gh secret set CLOUDFLARE_API_KEY --body "$CLOUDFLARE_TOKEN"
 ```
 
-## Security Best Practices
+To verify end-to-end, dispatch a manual preview deploy:
 
-### ✅ DO:
-- Rotate secrets regularly (every 90 days)
-- Use least-privilege tokens (only required permissions)
-- Store secrets in GitHub Secrets (never commit to code)
-- Use separate tokens for staging/production
-- Enable secret scanning in repository settings
+```bash
+gh workflow run deploy-cloudflare.yml -f branch=preview
+```
 
-### ❌ DON'T:
-- Commit secrets to code or `.env` files
-- Share secrets via Slack/email
-- Use personal API keys for CI/CD
-- Log secret values in workflow outputs
-- Use the same secrets across multiple projects
+## Practices
 
-## Troubleshooting
+- Least-privilege tokens (Pages: Edit only); rotate periodically.
+- Never commit secrets or log them in workflow output.
+- Don't reuse these tokens outside this repo.
 
-### "Context access might be invalid" warnings in IDE
+## History
 
-**Cause:** IDE cannot verify if secrets exist in GitHub  
-**Solution:** This is expected - warnings will disappear once secrets are configured  
-**Workaround:** Secrets have `|| ''` fallback to allow builds without them
-
-### Deployment fails with "unauthorized"
-
-**Cause:** Missing or invalid `CLOUDFLARE_API_TOKEN`  
-**Solution:**
-1. Verify token exists: `gh secret list`
-2. Check token permissions in Cloudflare Dashboard
-3. Regenerate token if expired
-4. Update secret: `gh secret set CLOUDFLARE_API_TOKEN`
-
-### Build succeeds but features don't work
-
-**Cause:** Optional secrets not configured  
-**Solution:** Add the optional secret for the feature you need  
-**Note:** Build will succeed without optional secrets
-
-## Secrets Audit Log
-
-| Date | Action | Secret | Performed By |
-|------|--------|--------|--------------|
-| 2026-02-05 | Documentation created | All | Cascade AI |
-| TBD | Initial setup | `CLOUDFLARE_API_TOKEN` | Admin |
-| TBD | Initial setup | `CLOUDFLARE_ACCOUNT_ID` | Admin |
-
-## Related Documentation
-
-- [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
-- [Cloudflare Pages Deployment](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/)
-- [Anthropic API Keys](https://docs.anthropic.com/claude/reference/getting-started-with-the-api)
+Older versions of this document listed `VITE_ANTHROPIC_API_KEY`, Supabase
+keys, `CLOUDFLARE_ZONE_ID`, `LHCI_GITHUB_APP_TOKEN`, and
+`SLACK_WEBHOOK_URL` for jobs named `deploy-preview` / `deploy-production`
+and a Fly.io workflow. Fly.io was removed 2026-04-28; none of those
+secrets or jobs exist in the current workflows. If a future workflow
+needs a new secret, add it to the table above in the same change.
 
 ---
-**Last Updated:** 2026-02-05  
-**Maintained By:** DevOps Team  
-**Review Frequency:** Quarterly
+**Last updated:** 2026-07-19

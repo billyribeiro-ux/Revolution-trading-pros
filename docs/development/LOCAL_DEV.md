@@ -1,6 +1,6 @@
 # Local development runbook
 
-> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. (The original Fly configuration backup is no longer kept in the repo.)
 
 This is the canonical guide for running the full stack on your laptop, against
 local Docker Postgres + Redis + Rust API + native SvelteKit dev server. It
@@ -13,7 +13,7 @@ step), under 30 seconds on subsequent boots.
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
 | Docker Desktop | ≥ 4.30                                                                | `brew install --cask docker`                                 |
 | Node.js        | 24.18.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
-| pnpm           | 11.10.0+                                                               | `corepack enable && corepack prepare pnpm@11.10.0 --activate` |
+| pnpm           | 11.15.0 (pinned in `package.json#packageManager`)                     | `corepack enable && corepack prepare pnpm@11.15.0 --activate` |
 | Rust           | 1.96.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
 
 You do **not** need `flyctl` for local dev. (You'll need it later if you
@@ -84,7 +84,7 @@ points the SvelteKit server at the local API on port 8080.
 Vite will print:
 
 ```
-VITE v7.x.x  ready in NNN ms
+VITE v8.x.x  ready in NNN ms
 ➜  Local:   http://localhost:5173/
 ```
 
@@ -209,9 +209,6 @@ exact password you'll type at the login form.
 script always sets `email_verified_at = NOW()`. If you're seeing this, you're
 hitting a different (production) API. Check `frontend/.env.local` exists and
 has `VITE_API_URL=http://localhost:8080`.
-
-**`pnpm dev` fails with `Cannot find module 'svelte-click-to-source'`** —
-run `pnpm install` from the repo root, not from `frontend/`.
 
 **Port 5432 conflict** — you have a host Postgres running. Either stop it
 (`brew services stop postgresql`) or change the host port in

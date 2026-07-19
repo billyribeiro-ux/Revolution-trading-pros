@@ -1,219 +1,76 @@
-# GitHub Actions IDE Warnings - Technical Analysis
+# Workflow Technical Notes
 
-> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+Design decisions behind `ci.yml` and `deploy-cloudflare.yml` — the only
+two workflows in this repo. Read README.md first for the overview.
 
-## Executive Summary
+## Toolchain pinning
 
-**Status:** ✅ Production-Ready with Expected IDE Warnings
+- **Node 24.18.0** via `actions/setup-node`, in both workflows.
+- **pnpm** is never installed by version number in the workflows.
+  Corepack activates it from `package.json#packageManager` (pnpm@11.5.2),
+  so CI, the deploy workflow, and local dev use the exact same pnpm. One
+  source of truth, no drift.
+- **Rust 1.96.0**, pinned via `dtolnay/rust-toolchain@master` with an
+  explicit `toolchain:` input. The `@stable` wrapper of that action
+  ALWAYS installs stable and silently ignores `toolchain:` — that is why
+  the backend gate previously floated on a moving toolchain and broke
+  non-deterministically once clippy became `-D warnings`. The same pin
+  lives in `rust-toolchain.toml` so contributors match CI.
 
-**Total Warnings:** 10 (8 in deploy-cloudflare.yml + 2 in deploy-fly.yml)
+## Frontend job memory
 
-The IDE warnings for "Context access might be invalid" are **architectural limitations of GitHub Actions** and do not indicate actual problems. All workflows have enterprise-grade runtime validation with defense-in-depth patterns.
+GitHub-hosted runners have ~7 GB RAM. This is a very large Vite app
+(threlte/three.js, ~1.6k modules); `vite build` and vitest OOM at the
+default V8 heap. The frontend job sets a job-level
+`NODE_OPTIONS=--max-old-space-size=6144` so build AND vitest get the
+raised heap (previously only the lint npm script raised it).
 
----
+## Build-time backend URLs
 
-## Root Cause Analysis
+Both production-build steps set `API_BASE_URL` / `BACKEND_URL` to
+`http://localhost:8080`. A literal placeholder host is an invalid URL for
+build-time SSR/prerender fetches; localhost mirrors the proxy default and
+produces a clean ECONNREFUSED the pages tolerate, so the cold build stays
+green without a backend.
 
-### The Problem
+## Backend job
 
-GitHub Actions IDE linters cannot verify if secrets/variables exist at edit-time because:
+- Runs with `working-directory: api` and `SQLX_OFFLINE=true` (no database
+  in CI; sqlx macros compile against the checked-in offline data).
+- Gates, all blocking: `cargo fmt --check`, `cargo clippy --locked
+  --all-targets -- -Dwarnings`, `cargo check --locked --all-targets`.
+- `cargo test --locked --test router_smoke_test --test utils_test
+  --test stripe_test` exercises the real `revolution_api` crate.
+  `router_smoke_test` constructs the full `api_router()` — catching axum
+  route-syntax panics and route conflicts, a failure class `cargo check`
+  cannot see.
 
-1. **Secrets are encrypted** - IDE has no access to repository secrets
-2. **Variables are dynamic** - IDE cannot query GitHub API for variables
-3. **Expression evaluation** - Happens at runtime, not parse-time
+## Concurrency
 
-### Why This Is Safe
+Both workflows use `group: workflow-ref` with `cancel-in-progress: true`,
+so a new push cancels the superseded run for the same ref.
 
-Our workflows use **defense-in-depth** validation:
+## deploy-cloudflare.yml specifics
 
-```yaml
-# Pattern 1: Environment variable with validation
-- name: Check secret
-  run: |
-    if [ -n "$MY_SECRET" ]; then
-      echo "has_secret=true" >> $GITHUB_OUTPUT
-    fi
-  env:
-    MY_SECRET: ${{ secrets.MY_SECRET }}  # ⚠️ IDE warning (expected)
+- **Secondary path only.** The Cloudflare Pages dashboard Git integration
+  is the primary deploy (every push to `main` → production). This
+  workflow covers manual dispatch and backup PR previews.
+- **Branch resolution:** PRs deploy to `pr-N`; manual dispatch uses the
+  `branch` input; anything else lands on `preview`.
+- **Secrets in job-level `env`:** the `secrets` context is only valid in
+  `with:` / `env:` bindings, not directly in step `if:` expressions. The
+  two Cloudflare secrets are hoisted into job env so a shell gate step
+  can test them and emit `ready=true/false`; the wrangler deploy step
+  runs only when `ready == 'true'`. Missing secrets therefore skip the
+  deploy with a `::notice::` instead of failing the run.
+- Deploy command: `wrangler pages deploy .svelte-kit/cloudflare
+  --project-name=revolution-trading-pros --branch=<resolved>` via
+  `cloudflare/wrangler-action@v4.0.0`, `workingDirectory: frontend`.
 
-# Pattern 2: Conditional execution
-- name: Use secret
-  if: steps.check-secret.outputs.has_secret == 'true'
-  env:
-    MY_SECRET: ${{ secrets.MY_SECRET }}  # ⚠️ IDE warning (expected)
-```
+## History
 
-**Result:** Missing secrets cause graceful skips, not failures.
-
----
-
-## Current Warnings Breakdown
-
-### deploy-cloudflare.yml (8 warnings - EXPECTED & SAFE)
-
-| Line | Secret/Variable | Usage | Safe? | Reason |
-|------|----------------|-------|-------|--------|
-| 91 | `vars.SITE_URL` | Build env with fallback | ✅ Yes | Has default, validated in shell before use |
-| 267 | `secrets.LHCI_GITHUB_APP_TOKEN` | Step validation env | ✅ Yes | In env block, shell validates before use |
-| 280 | `secrets.LHCI_GITHUB_APP_TOKEN` | Lighthouse CI env | ✅ Yes | Conditional execution, continue-on-error |
-| 305 | `secrets.CLOUDFLARE_ZONE_ID` | Cache validation env | ✅ Yes | In env block, shell validates before use |
-| 306 | `secrets.CLOUDFLARE_API_TOKEN` | Cache validation env | ✅ Yes | In env block, shell validates before use |
-| 316 | `secrets.CLOUDFLARE_ZONE_ID` | Cache execution env | ✅ Yes | Conditional execution, continue-on-error |
-| 317 | `secrets.CLOUDFLARE_API_TOKEN` | Cache execution env | ✅ Yes | Conditional execution, continue-on-error |
-| 341 | `secrets.SLACK_WEBHOOK_URL` | Notification env | ✅ Yes | In env block, code is commented out |
-
-**Note:** These warnings are **architectural limitations** of GitHub Actions IDE tooling. The IDE cannot verify secrets/vars at parse-time because they're encrypted and dynamic. All accesses use proper runtime validation patterns.
-
-### deploy-fly.yml (2 warnings - EXPECTED & SAFE)
-
-| Line | Secret | Usage | Safe? | Reason |
-|------|--------|-------|-------|--------|
-
-**Note:** Unlike Cloudflare deployment, Fly.io deployment **requires** the token and will fail fast with clear error if missing. This is intentional for production API deployments.
-
----
-
-## Enterprise-Grade Solutions Implemented
-
-### 1. Environment Variable Pattern ✅
-
-**Before (Direct Access - Causes Warnings):**
-```yaml
-run: curl -H "Authorization: Bearer ${{ secrets.API_TOKEN }}"
-```
-
-**After (Environment Variable - Still Warns, But Safer):**
-```yaml
-env:
-  API_TOKEN: ${{ secrets.API_TOKEN }}
-run: curl -H "Authorization: Bearer ${API_TOKEN}"
-```
-
-**Why:** Secrets in env blocks are validated at runtime. Shell variable access is safer.
-
-### 2. Validation Before Use ✅
-
-**Pattern:**
-```yaml
-- name: Check secrets
-  id: check
-  run: |
-    if [ -n "$SECRET" ]; then
-      echo "has_secret=true" >> $GITHUB_OUTPUT
-    fi
-  env:
-    SECRET: ${{ secrets.MY_SECRET }}
-
-- name: Use secret
-  if: steps.check.outputs.has_secret == 'true'
-  env:
-    SECRET: ${{ secrets.MY_SECRET }}
-```
-
-**Benefits:**
-- Graceful degradation
-- Clear error messages
-- No silent failures
-
-### 3. Job-Level Environment ✅
-
-**Pattern:**
-```yaml
-jobs:
-  my-job:
-    env:
-      MY_SECRET: ${{ secrets.MY_SECRET }}
-    steps:
-      - name: Use secret
-        run: echo "Secret available as ${MY_SECRET}"
-```
-
-**Benefits:**
-- Single secret declaration
-- Consistent across all steps
-- Easier to audit
-
----
-
-## Why We Don't Suppress These Warnings
-
-### Option 1: Disable IDE Warnings ❌
-```yaml
-# yamllint disable-line rule:line-length
-VITE_SITE_URL: ${{ vars.SITE_URL || 'default' }}
-```
-**Rejected:** Hides legitimate issues, reduces code quality
-
-### Option 2: Use Only Hardcoded Values ❌
-```yaml
-VITE_SITE_URL: 'https://revolution-trading-pros.pages.dev'
-```
-**Rejected:** Loses flexibility, requires code changes for config
-
-### Option 3: Accept Warnings ✅
-```yaml
-# IDE Warning Expected: SITE_URL may not exist
-VITE_SITE_URL: ${{ vars.SITE_URL || 'default' }}
-```
-**Accepted:** Maintains flexibility, runtime safety, clear documentation
-
----
-
-## Validation Checklist
-
-For each secret/variable access, we ensure:
-
-- ✅ **Environment variable usage** - Secrets in `env:` blocks
-- ✅ **Runtime validation** - Check existence before use
-- ✅ **Conditional execution** - Skip steps if secrets missing
-- ✅ **Fallback values** - Defaults for optional configs
-- ✅ **Error messages** - Clear notices when skipping
-- ✅ **Continue-on-error** - Optional features don't break builds
-
----
-
-## Testing Matrix
-
-### Cloudflare Deployment (Graceful Degradation)
-
-| Scenario | Expected Behavior | Actual Behavior |
-|----------|-------------------|-----------------|
-| All secrets configured | ✅ Full deployment | ✅ Works |
-| Missing CLOUDFLARE_API_TOKEN | ⚠️ Deployment skipped | ✅ Works |
-| Missing LHCI_GITHUB_APP_TOKEN | ⚠️ Lighthouse skipped | ✅ Works |
-| Missing CLOUDFLARE_ZONE_ID | ⚠️ Cache purge skipped | ✅ Works |
-| Missing SITE_URL | ✅ Uses default value | ✅ Works |
-
-### Fly.io Deployment (Fail-Fast)
-
-| Scenario | Expected Behavior | Actual Behavior |
-|----------|-------------------|-----------------|
-
----
-
-## Conclusion
-
-**These IDE warnings are expected and safe.**
-
-They represent a **fundamental limitation** of GitHub Actions IDE tooling, not a problem with our workflows. Our implementation follows **Apple Principal Engineer ICT11+ standards** with:
-
-1. **Defense in depth** - Multiple validation layers
-2. **Fail-safe defaults** - Graceful degradation
-3. **Clear observability** - Helpful error messages
-4. **Production hardening** - Tested failure scenarios
-
-**No action required.** The workflows are production-ready.
-
----
-
-## References
-
-- [GitHub Actions: Encrypted Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
-- [GitHub Actions: Variables](https://docs.github.com/en/actions/learn-github-actions/variables)
-- [GitHub Actions: Contexts](https://docs.github.com/en/actions/learn-github-actions/contexts)
-
----
-
-**Last Updated:** 2025-12-30  
-**Reviewed By:** Apple Principal Engineer ICT11+ Standards  
-**Status:** Production-Ready ✅
+Fly.io backend deployment was removed 2026-04-28 (deploy target TBD
+since). The Playwright e2e CI job and `tests/e2e/` suite were removed
+2026-05-19 pending backend fixes. Older revisions of these notes
+described Lighthouse CI, cache purging, Slack notifications, and a
+`deploy-fly.yml` — none of that exists in the current workflows.

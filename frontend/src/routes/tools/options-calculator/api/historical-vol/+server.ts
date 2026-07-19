@@ -2,29 +2,48 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
+// Validate user-controlled query params before they reach the upstream URL.
+const TICKER_RE = /^[A-Z.\-]{1,10}$/i;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 export const GET: RequestHandler = async ({ url }) => {
-	const ticker = url.searchParams.get('ticker');
+	const rawTicker = url.searchParams.get('ticker');
 	const provider = url.searchParams.get('provider') ?? 'polygon';
 	const type = url.searchParams.get('type') ?? 'vol';
 
-	if (!ticker) {
-		return error(400, 'Missing ticker parameter');
+	if (!rawTicker) {
+		throw error(400, 'Missing ticker parameter');
+	}
+
+	const ticker = rawTicker.toUpperCase();
+	if (!TICKER_RE.test(ticker)) {
+		throw error(400, 'Invalid ticker format');
 	}
 
 	if (provider === 'polygon') {
 		const apiKey = env.POLYGON_API_KEY;
-		if (!apiKey) return error(401, 'Polygon API key not configured');
+		if (!apiKey) throw error(401, 'Polygon API key not configured');
+
+		// Validate the user-supplied date window up front (outside the try/catch)
+		// so an invalid date returns a clean 400 rather than the catch's 502.
+		let priceFrom = '';
+		let priceTo = '';
+		if (type === 'prices') {
+			priceFrom = url.searchParams.get('from') ?? '';
+			priceTo = url.searchParams.get('to') ?? '';
+			if (!DATE_RE.test(priceFrom) || !DATE_RE.test(priceTo)) {
+				throw error(400, 'Invalid from/to date format (expected YYYY-MM-DD)');
+			}
+		}
 
 		try {
 			if (type === 'prices') {
-				const from = url.searchParams.get('from') ?? '';
-				const to = url.searchParams.get('to') ?? '';
 				const response = await fetch(
-					`https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`
+					`https://api.polygon.io/v2/aggs/ticker/${encodeURIComponent(ticker)}/range/1/day/${encodeURIComponent(priceFrom)}/${encodeURIComponent(priceTo)}?adjusted=true&sort=asc&apiKey=${apiKey}`
 				);
 
 				if (!response.ok) {
-					return error(response.status, `Polygon API error: ${response.statusText}`);
+					throw error(response.status, `Polygon API error: ${response.statusText}`);
 				}
 
 				const data = await response.json();
@@ -47,18 +66,18 @@ export const GET: RequestHandler = async ({ url }) => {
 			const from = fromDate.toISOString().split('T')[0];
 
 			const response = await fetch(
-				`https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`
+				`https://api.polygon.io/v2/aggs/ticker/${encodeURIComponent(ticker)}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${apiKey}`
 			);
 
 			if (!response.ok) {
-				return error(response.status, `Polygon API error: ${response.statusText}`);
+				throw error(response.status, `Polygon API error: ${response.statusText}`);
 			}
 
 			const data = await response.json();
 			const prices: number[] = (data.results ?? []).map((r: Record<string, number>) => r.c);
 
 			if (prices.length < 20) {
-				return error(422, 'Insufficient price data for volatility calculation');
+				throw error(422, 'Insufficient price data for volatility calculation');
 			}
 
 			// Calculate log returns
@@ -85,12 +104,9 @@ export const GET: RequestHandler = async ({ url }) => {
 				source: 'polygon'
 			});
 		} catch (err) {
-			return error(
-				502,
-				`Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`
-			);
+			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}
 	}
 
-	return error(400, `Unsupported provider: ${provider}`);
+	throw error(400, `Unsupported provider: ${provider}`);
 };

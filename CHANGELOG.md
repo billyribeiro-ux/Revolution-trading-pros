@@ -1,8 +1,40 @@
 # Changelog
 
-> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
+> **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. (The original Fly configuration backup is no longer kept in the repo.)
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
+
+## [Unreleased] — 2026-07-19 — Dependency top-ups, axum 0.8 route migration (boot fix), maintenance-page redesign, principal audit + security remediation
+
+Catch-up entry covering 2026-07-07 → 2026-07-19. Evidence source: git history (`2fdaa148a`/`085acca16`, `186d8a1c1`, `8b2b65219`/`e15014591`, `888847c3c`, `f6bee735d`, `78d873331`, and the remediation checkpoints `f6cddb8ca`/`df40b83f3`/`05e431b6d`).
+
+### Toolchain & dependencies
+
+- JS dependency top-ups: all JS dependencies updated to latest as of 2026-07-07 via PR #804 (`2fdaa148a`, merged `085acca16`), which also pinned **Node 24.18.0 LTS** repo-wide; a second workspace-wide top-up on 2026-07-19 (`186d8a1c1`, `pnpm up -r --latest`) brought @sveltejs/kit 2.70.0, vite 8.1.5, svelte 5.56.6, tailwind 4.3.3, wrangler 4.112, eslint 10.7, vitest 4.1.10, playwright 1.61, @anthropic-ai/sdk 0.112, and the remaining minor/patch set. Deliberately held back: TypeScript stays 6.0.3 (Kit and typescript-eslint reject TS 7 peers); @types/node pinned to 24.x to match the runtime.
+- **pnpm 11.15.0** pinned in `packageManager` (root + frontend) with refreshed integrity hash; CI now activates pnpm from `package.json#packageManager` via Corepack instead of a hardcoded version (`78d873331`).
+- Rust crate majors (`186d8a1c1`): **aes-gcm 0.10 → 0.11** with the `crypto.rs` migration off the removed `aead::generic_array` (wire format unchanged; round-trip and legacy-read tests pass), **tower-http 0.6 → 0.7**, **axum-test 20 → 21**, and `utoipa-swagger-ui` switched to the **vendored** feature so builds no longer download Swagger UI at compile time.
+
+### Fixed
+
+- **P0 — API boot panic** (`f6bee735d`): completed the axum 0.8 route migration — 365 route paths across 61 files converted from axum 0.7 `:param` syntax to 0.8 `{param}` (the server panicked at router construction and could not boot). Resolved the `/analytics` route conflict this exposed: `/room/{slug}/*` is now owned solely by `room_analytics::router()`, and three shadowed duplicate handlers were removed.
+- New CI gate (`78d873331`): `tests/router_smoke_test.rs` constructs the full `api_router()` — the class of failure `cargo check` cannot catch — and now runs in the backend CI job. Also added concurrency groups to both workflows and corrected the canonical test-gate blocks and README stack table (CI/docs truth drift found by the audit).
+
+### Changed
+
+- Maintenance page redesigned to an institutional visual standard (`8b2b65219`), then motion polish plus a live AAPL candlestick hero backdrop (`e15014591`): staged focus-pull entrance, muted continuously-ticking chart closing on the tape's AAPL quote, live-price badge, and a reduced-motion still-chart fallback.
+
+### Added
+
+- Principal engineer audit 2026-07-19 (`888847c3c`): [docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md](docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md) — 2 P0s (boot panic, unauthenticated premium downloads), 17 P1s, 41 P2s, ~56 P3s; overall B- with a prioritized 10-year sustainability plan.
+
+### Security
+
+Remediation wave from the audit (checkpoints `f6cddb8ca`, `df40b83f3`, `05e431b6d`):
+
+- Room-resources endpoints (`api/src/routes/room_resources/`) now require an authenticated user (P0: premium download endpoints were previously unauthenticated) and attribute access/downloads to the authenticated `User.id` — removing the client-supplied `x-user-id` header and request-body `user_id` IDOR surface.
+- Service HTTP clients (Bunny, CMS content, email, MFA) gained request timeouts (30 s client-wide, mirroring `services/stripe.rs`, plus tighter per-request caps on caller-supplied URLs).
+- MFA hardened to fail closed: the rate-limit check now denies on DB errors instead of treating them as "0 failed attempts" (`unwrap_or(0)` removed), and verify-and-enable writes commit atomically in a transaction.
+- Analytics/price proxies (`api/analytics/batch`, `api/analytics/performance`, `api/prices`, options-calculator quote/chain) moved to the house `$env/dynamic/private` env shape with timeouts; the CMS AI generate proxy now requires an authenticated admin/editor session and caps `max_tokens`.
 
 ## [Unreleased] — 2026-06-07 — Tailwind-to-scoped-CSS Svelte 5 migration ledger
 

@@ -9,7 +9,7 @@ Documentation for the Revolution Trading Pros monorepo.
 | [`setup/`](setup/) | Production deployment + Stripe + R2 setup | You're deploying or wiring up a 3rd-party service |
 | [`audits/`](audits/) | 2026-04-25 audit series | You want to know what's broken / what's been done / what's next |
 | [`frontend/`](frontend/) | Frontend-specific guides (responsive admin, footer audit, remote-functions migration) | You're working on the SvelteKit side |
-| [`forensics/`](forensics/) | Older incident reports kept for institutional memory | You're investigating "why was this done this way?" |
+| [`audits/`](audits/) (incident/forensic reports) | Older incident and forensic reports live in `audits/` — there is no separate `forensics/` folder | You're investigating "why was this done this way?" |
 
 ## Where to start
 
