@@ -26,7 +26,7 @@ import type { Post, PaginatedPosts } from '$lib/types/post';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
 const FEED_TITLE = 'Revolution Trading Pros Blog';
 const FEED_DESCRIPTION =
 	'Expert trading education, market analysis, and strategies from Revolution Trading Pros. Master day trading, swing trading, options, and risk management with institutional-grade insights.';

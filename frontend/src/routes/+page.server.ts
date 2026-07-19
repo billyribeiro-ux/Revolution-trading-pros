@@ -24,11 +24,11 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			{
 				'@context': 'https://schema.org',
 				'@type': 'FinancialService',
-				'@id': 'https://revolution-trading-pros.pages.dev/#financialservice',
+				'@id': 'https://revolutiontradingpros.com/#financialservice',
 				name: 'Revolution Trading Pros',
 				description:
 					'Professional trading education, live trading rooms, custom indicators, and alert services for active traders.',
-				url: 'https://revolution-trading-pros.pages.dev',
+				url: 'https://revolutiontradingpros.com',
 				serviceType: 'Trading Education',
 				areaServed: 'Worldwide'
 			}

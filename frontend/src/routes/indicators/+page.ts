@@ -12,7 +12,7 @@ import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildItemList } from '$lib/seo/schemas';
 import { indicators } from './data';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 // Enable static site generation for SEO
 export const prerender = true;

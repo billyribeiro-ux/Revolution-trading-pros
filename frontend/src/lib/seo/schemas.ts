@@ -68,7 +68,7 @@ export interface ArticleInput {
 
 const DEFAULT_PUBLISHER = {
 	name: 'Revolution Trading Pros',
-	logoUrl: 'https://revolution-trading-pros.pages.dev/icon-512.png'
+	logoUrl: 'https://revolutiontradingpros.com/icon-512.png'
 };
 
 export function buildArticle(input: ArticleInput): JsonLdArticle {

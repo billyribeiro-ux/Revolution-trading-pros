@@ -3,7 +3,7 @@ import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildSoftwareApplication } from '$lib/seo/schemas';
 import { indicators } from '../data';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 export const prerender = false;
 

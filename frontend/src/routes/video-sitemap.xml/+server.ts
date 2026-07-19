@@ -16,7 +16,7 @@
  */
 
 // Use environment variable - configure VITE_SITE_URL for your domain
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
 
 interface VideoEntry {
 	pageUrl: string;

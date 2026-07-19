@@ -90,7 +90,7 @@ See [`docs/development/ENV_VARS.md`](docs/development/ENV_VARS.md) for the full 
 
 ## What's NOT in the active build
 
-`frontend/Implementation/`, `frontend/Do's/`, and `frontend/blogsample` are reference / design-mockup material kept in tree
+`frontend/Do's/` and `frontend/blogsample` are reference / design-mockup material kept in tree (`retiredmay26/` and `frontend/Implementation/` were removed 2026-07-19 — recover from git history if needed)
 for historical context. They are:
 
 - **Tracked** in git (so they're not lost)

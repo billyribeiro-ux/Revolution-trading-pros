@@ -15,7 +15,7 @@ import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildItemList } from '$lib/seo/schemas';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 // Static data that can be generated at build time
 const tradingRoomsData = [

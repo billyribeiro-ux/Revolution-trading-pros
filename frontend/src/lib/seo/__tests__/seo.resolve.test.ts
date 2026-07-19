@@ -60,13 +60,13 @@ describe('resolveSEO', () => {
 	it('canonical is normalized from pathname', () => {
 		const ctx = makeContext({ pathname: '/blog/my-post' });
 		const result = resolveSEO(ctx, seoDefaults);
-		expect(result.canonical).toBe('https://revolution-trading-pros.pages.dev/blog/my-post');
+		expect(result.canonical).toBe('https://revolutiontradingpros.com/blog/my-post');
 	});
 
 	it('explicit canonical override is normalized', () => {
 		const ctx = makeContext({ pathname: '/blog/my-post' });
 		const seo: SEOInput = {
-			canonical: 'https://revolution-trading-pros.pages.dev/blog/my-post?utm_source=twitter'
+			canonical: 'https://revolutiontradingpros.com/blog/my-post?utm_source=twitter'
 		};
 		const result = resolveSEO(ctx, seoDefaults, seo);
 		expect(result.canonical).not.toContain('utm_source');

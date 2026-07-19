@@ -169,7 +169,7 @@ export const load = async ({ params, url }) => {
 	const seo: SEOInput = {
 		title: post.title,
 		description: post.excerpt,
-		canonical: `https://revolution-trading-pros.pages.dev${url.pathname}`,
+		canonical: `https://revolutiontradingpros.com${url.pathname}`,
 		og: {
 			type: 'article',
 			image: post.image,
@@ -181,16 +181,16 @@ export const load = async ({ params, url }) => {
 		jsonld: [
 			articleSchema({
 				headline: post.title,
-				url: `https://revolution-trading-pros.pages.dev${url.pathname}`,
+				url: `https://revolutiontradingpros.com${url.pathname}`,
 				datePublished: post.publishedAt,
 				authorName: post.author,
 				publisherName: 'Revolution Trading Pros',
 				type: 'BlogPosting'
 			}),
 			breadcrumbSchema([
-				{ name: 'Home', url: 'https://revolution-trading-pros.pages.dev' },
-				{ name: 'Blog', url: 'https://revolution-trading-pros.pages.dev/blog' },
-				{ name: post.title, url: `https://revolution-trading-pros.pages.dev${url.pathname}` }
+				{ name: 'Home', url: 'https://revolutiontradingpros.com' },
+				{ name: 'Blog', url: 'https://revolutiontradingpros.com/blog' },
+				{ name: post.title, url: `https://revolutiontradingpros.com${url.pathname}` }
 			])
 		]
 	};
@@ -322,7 +322,7 @@ paramValues: {
 The `robots.txt` at `src/routes/robots.txt/+server.ts` already references:
 
 ```
-Sitemap: https://revolution-trading-pros.pages.dev/sitemap.xml
+Sitemap: https://revolutiontradingpros.com/sitemap.xml
 ```
 
 ## Google Search Console Verification

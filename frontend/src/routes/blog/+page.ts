@@ -4,7 +4,7 @@ import type { PaginatedPosts } from '$lib/types/post';
 import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb } from '$lib/seo/schemas';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 export const prerender = false; // Disable prerendering - dynamic content
 // SSR enabled for SEO - blog content should be server-rendered

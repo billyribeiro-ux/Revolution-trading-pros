@@ -17,7 +17,7 @@ import type { PageServerLoad } from './$types';
 import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildCourse } from '$lib/seo/schemas';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 const API_URL = env.API_URL || 'http://localhost:8080';
 

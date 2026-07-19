@@ -2,7 +2,7 @@ import type { Load } from '@sveltejs/kit';
 import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildService } from '$lib/seo/schemas';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 // Critical: Render this page as static HTML at build time.
 export const prerender = true;

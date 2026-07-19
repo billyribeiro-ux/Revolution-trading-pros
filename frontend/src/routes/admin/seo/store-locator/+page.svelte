@@ -89,7 +89,7 @@
 				{ type: 'phone', value: '+1 (555) 123-4567', isPrimary: true },
 				{ type: 'email', value: 'info@revolutiontradingpros.com', isPrimary: true }
 			],
-			website: 'https://revolution-trading-pros.pages.dev',
+			website: 'https://revolutiontradingpros.com',
 			hours: [
 				{ dayOfWeek: 'Monday', opens: '09:00', closes: '17:00' },
 				{ dayOfWeek: 'Tuesday', opens: '09:00', closes: '17:00' },

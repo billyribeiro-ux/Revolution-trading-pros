@@ -384,7 +384,7 @@
 					<!-- Social Share Section -->
 					<div class="share-section">
 						<SocialShare
-							url={`https://revolution-trading-pros.pages.dev/blog/${post.slug}`}
+							url={`https://revolutiontradingpros.com/blog/${post.slug}`}
 							title={post.title}
 							description={post.excerpt || post.meta_description || ''}
 							hashtags="trading,forex,stocks"

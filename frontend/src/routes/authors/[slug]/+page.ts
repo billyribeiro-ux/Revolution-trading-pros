@@ -4,7 +4,7 @@ import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildPerson, buildWebPage } from '$lib/seo/schemas';
 import { findAuthor } from '$lib/authors/authors';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 export const prerender = false;
 

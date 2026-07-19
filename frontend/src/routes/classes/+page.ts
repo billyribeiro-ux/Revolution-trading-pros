@@ -11,7 +11,7 @@
 import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb } from '$lib/seo/schemas';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 // Enable static site generation for SEO
 export const prerender = true;

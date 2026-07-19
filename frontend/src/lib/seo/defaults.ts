@@ -12,7 +12,11 @@
 
 import type { SEODefaults } from './types';
 
-const SITE_URL = 'https://revolution-trading-pros.pages.dev';
+// Canonical site origin. Override with VITE_SITE_URL per environment (the
+// house pattern the feed endpoints already use — e.g. a .pages.dev
+// preview); the default is the production apex so canonicals, OG URLs,
+// sitemaps, and feeds never point at a staging host.
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
 
 export const seoDefaults: SEODefaults = {
 	siteUrl: SITE_URL,

@@ -440,7 +440,7 @@
 					</div>
 
 					<a
-						href="mailto:institutional@revolution-trading-pros.pages.dev?subject=Institutional%20Audit%20Application"
+						href="mailto:institutional@revolutiontradingpros.com?subject=Institutional%20Audit%20Application"
 						class="cta__button"
 					>
 						Submit Request

@@ -24,7 +24,7 @@ import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { PaginatedPosts } from '$lib/types/post';
 import { indicators } from '../indicators/data';
 
-const SITE_URL = 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = 'https://revolutiontradingpros.com';
 
 // Disable prerender — additionalPaths fetches the live API at request time.
 // 1h CDN cache (s-maxage=3600) is set in headers below.

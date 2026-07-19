@@ -16,7 +16,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Use environment variable - configure VITE_SITE_URL for your domain
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolution-trading-pros.pages.dev';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
 const LAST_UPDATED = new Date().toISOString().split('T')[0];
 
 const robotsTxt = `# ═══════════════════════════════════════════════════════════════════════════════

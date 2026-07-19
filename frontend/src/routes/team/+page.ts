@@ -2,7 +2,7 @@ import type { SEOInput } from '$lib/seo/types';
 import { buildBreadcrumb, buildItemList, buildPerson } from '$lib/seo/schemas';
 import { authors } from '$lib/authors/authors';
 
-const SITE = 'https://revolution-trading-pros.pages.dev';
+const SITE = 'https://revolutiontradingpros.com';
 
 export const prerender = true;
 
