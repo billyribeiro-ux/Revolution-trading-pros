@@ -19,7 +19,7 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import { response } from 'super-sitemap';
+import { response } from 'super-sitemap/sveltekit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { PaginatedPosts } from '$lib/types/post';
 import { indicators } from '../indicators/data';
@@ -59,6 +59,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 
 	return await response({
 		origin: SITE_URL,
+		// super-sitemap v2 takes RegExp[]; patterns kept as strings and compiled here.
 		excludeRoutePatterns: [
 			// Private/auth/admin routes — must never appear in sitemap
 			'^/account.*',
@@ -100,7 +101,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			'.*\\[page\\].*',
 			'.*\\[room_slug\\].*',
 			'.*\\[date_slug\\].*'
-		],
+		].map((pattern) => new RegExp(pattern)),
 		additionalPaths: [
 			'/about',
 			'/alerts/explosive-swings',
