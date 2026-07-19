@@ -10,6 +10,7 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::middleware::admin::AdminUser;
+use crate::models::User;
 use crate::AppState;
 
 #[derive(Debug, Deserialize)]
@@ -142,12 +143,16 @@ pub(super) async fn get_video_analytics(
 
 /// POST /video-advanced/analytics/progress/:id
 /// ICT 7 FIX: Actually persist watch progress to database
+///
+/// SECURITY (P1): binds the authenticated `User.id` instead of trusting a
+/// `user_id` field in the request body, which let any caller record (or
+/// overwrite) watch progress for an arbitrary user.
 pub(super) async fn update_watch_progress(
     State(state): State<AppState>,
+    user: User,
     Path(video_id): Path<i64>,
     Json(input): Json<serde_json::Value>,
 ) -> Json<serde_json::Value> {
-    let user_id = input.get("user_id").and_then(|v| v.as_i64()).unwrap_or(0);
     let current_time = input
         .get("current_time")
         .and_then(|v| v.as_i64())
@@ -173,7 +178,7 @@ pub(super) async fn update_watch_progress(
            DO UPDATE SET current_time_seconds = $3, completion_percent = $4, completed = $5, last_watched_at = NOW(), updated_at = NOW()
            RETURNING id"
     )
-    .bind(user_id)
+    .bind(user.id)
     .bind(video_id)
     .bind(current_time)
     .bind(completion_percent)

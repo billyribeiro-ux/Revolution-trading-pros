@@ -11,7 +11,7 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::AppState;
+use crate::{models::User, AppState};
 
 use super::RoomResource;
 
@@ -20,8 +20,13 @@ use super::RoomResource;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// POST /api/room-resources/:id/secure-download - Generate secure download URL
+///
+/// SECURITY (P0): requires an authenticated `User`. Previously unauthenticated,
+/// this handler minted a signed download token and leaked `file_url` for any
+/// resource to any caller.
 pub(super) async fn generate_secure_download(
     State(state): State<AppState>,
+    _user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Generate a secure token
@@ -75,9 +80,14 @@ pub(super) async fn generate_secure_download(
     })))
 }
 
-/// GET /api/room-resources/:id/download - Download with optional token verification
+/// GET /api/room-resources/:id/download - Download with mandatory token verification
+///
+/// SECURITY (P0): requires an authenticated `User`, and for any non-`free`
+/// resource the `token` query param is MANDATORY — a missing token is rejected
+/// with 401 instead of falling through and returning `file_url`.
 pub(super) async fn download_resource(
     State(state): State<AppState>,
+    _user: User,
     Path(id): Path<i64>,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -104,24 +114,28 @@ pub(super) async fn download_resource(
     // Check if resource requires premium access
     let access_level = resource.access_level.as_deref().unwrap_or("premium");
     if access_level != "free" {
-        // Verify token for premium resources
-        if let Some(token) = params.get("token") {
-            let is_valid: bool =
-                sqlx::query_scalar("SELECT validate_secure_download_token($1, $2)")
-                    .bind(id)
-                    .bind(token)
-                    .fetch_one(&state.db.pool)
-                    .await
-                    .unwrap_or(false);
+        // SECURITY (P0): the token is MANDATORY for premium resources. A missing
+        // token must never fall through to returning `file_url`; reject with 401.
+        let token = params.get("token").ok_or_else(|| {
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error": "Download token required"})),
+            )
+        })?;
 
-            if !is_valid {
-                return Err((
-                    StatusCode::FORBIDDEN,
-                    Json(json!({"error": "Invalid or expired download token"})),
-                ));
-            }
+        let is_valid: bool = sqlx::query_scalar("SELECT validate_secure_download_token($1, $2)")
+            .bind(id)
+            .bind(token)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or(false);
+
+        if !is_valid {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(json!({"error": "Invalid or expired download token"})),
+            ));
         }
-        // Note: In production, you'd also verify user session/membership here
     }
 
     // Track download

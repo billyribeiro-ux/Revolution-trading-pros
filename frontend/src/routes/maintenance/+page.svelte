@@ -6,6 +6,7 @@
 		CandlestickData,
 		HistogramData,
 		IChartApi,
+		IPriceLine,
 		ISeriesApi,
 		UTCTimestamp
 	} from 'lightweight-charts';
@@ -400,6 +401,7 @@
 	let statsRaf = 0;
 	let gsapContext: { revert: () => void } | null = null;
 	let masterTimeline: { progress: (value: number) => unknown } | null = null;
+	let entranceDeadlinePassed = false;
 
 	let chartData = $state<Record<ChartKey, CandlestickData[]>>({
 		main: [],
@@ -412,6 +414,8 @@
 	let heroChartEl: HTMLDivElement;
 	let heroChart: IChartApi | null = null;
 	let heroSeries: ISeriesApi<'Candlestick'> | null = null;
+	let heroFloorSeries: ISeriesApi<'Area'> | null = null;
+	let heroPriceLine: IPriceLine | null = null;
 	let heroChartReady = false;
 	let heroFeedTimer = 0;
 	let heroLastCandle: CandlestickData | null = null;
@@ -457,6 +461,7 @@
 		// Failsafe: if the entrance hasn't finished shortly after load
 		// (throttled tabs, broken rAF), settle everything to its final state.
 		const entranceFailsafe = window.setTimeout(() => {
+			entranceDeadlinePassed = true;
 			masterTimeline?.progress(1);
 		}, 2500);
 
@@ -602,25 +607,49 @@
 
 		const settle = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
 
-		// Entrance: the backdrop breathes in first, then the copy pulls into
-		// focus line by line, and the status card lands last with more weight.
+		// Hero title sequence: the backdrop resolves into focus, the headline
+		// rises out of its masked wrappers, supporting copy pulls sharp, and
+		// the status card lands last. Total run ≈ 2.55s.
 		const master = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } });
 		masterTimeline = master;
 
 		master
+			.addLabel('backdrop', 0)
 			.fromTo(
 				'.hero-chart',
-				{ autoAlpha: 0, scale: 1.015 },
-				{ autoAlpha: 1, scale: 1, duration: 1.8, ease: 'power2.out' },
-				0
+				{ autoAlpha: 0, scale: 1.03, clipPath: 'inset(0% 0% 12% 0%)' },
+				{ autoAlpha: 1, scale: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 2, ease: 'expo.out' },
+				'backdrop'
 			)
-			.to('#hero .eyebrow', { ...settle, duration: 0.6 }, 0.15)
-			.to('#hero .hero-title .line', { ...settle, duration: 0.9, stagger: 0.14 }, 0.28)
-			.to('#hero .lede', settle, 0.62)
-			.to('#hero .hero-actions', settle, 0.76)
-			.to('#hero .hero-note', { ...settle, duration: 0.6 }, 0.88)
-			.to('#hero .drop-timer', settle, 0.96)
-			.to('#hero .status-card', { ...settle, duration: 1.0 }, 0.52);
+			.fromTo(
+				'.hero-watermark',
+				{ autoAlpha: 0, x: '-2%' },
+				{ autoAlpha: 1, x: '0%', duration: 1.8, ease: 'power2.out' },
+				'backdrop+=0.1'
+			)
+			.to('#hero .eyebrow', { ...settle, duration: 0.6 }, 0.2)
+			.addLabel('headline', 0.34)
+			.fromTo(
+				'#hero .hero-title .line-inner',
+				{ y: '105%', rotation: 0.4 },
+				{ y: '0%', rotation: 0, duration: 1, ease: 'expo.out', stagger: 0.14 },
+				'headline'
+			)
+			.addLabel('copy', 0.7)
+			.to('#hero .lede', { ...settle }, 'copy')
+			.to('#hero .hero-actions', { ...settle }, 'copy+=0.16')
+			.to('#hero .hero-note', { ...settle, duration: 0.6 }, 'copy+=0.28')
+			.to('#hero .drop-timer', { ...settle }, 'copy+=0.38')
+			.addLabel('card', 1)
+			.to('#hero .status-card', { ...settle, duration: 1.1 }, 'card')
+			.addLabel('cue', 1.95)
+			.to('#hero .scroll-cue', { autoAlpha: 1, duration: 0.5 }, 'cue')
+			.fromTo(
+				'#hero .scroll-cue i',
+				{ scaleX: 0 },
+				{ scaleX: 1, transformOrigin: 'left center', duration: 0.5, ease: 'power2.out' },
+				'cue+=0.1'
+			);
 
 		// Progress figure settles from its fallback to today's value.
 		const progressProxy = { value: Math.max(0, buildProgress - 6) };
@@ -638,14 +667,25 @@
 			0.8
 		);
 
-		// Depth: the backdrop drifts a few pixels as the page scrolls away.
+		// Depth: layered parallax as the hero leaves the viewport.
 		gsap.to('.hero-chart', {
-			yPercent: -6,
+			yPercent: -7,
 			ease: 'none',
 			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
 		});
+		gsap.to('.hero-watermark', {
+			y: -90,
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
+		});
+		gsap.to('.note-card blockquote', {
+			yPercent: -3,
+			ease: 'none',
+			scrollTrigger: { trigger: '#note', start: 'top bottom', end: 'bottom top', scrub: 0.8 }
+		});
 
-		// Sections: kicker leads, the heading pulls into focus, content follows.
+		// Editorial section grammar: kicker rises, the heading wipes open on a
+		// clip-path, then content blocks stage in with a soft focus pull.
 		const sections = gsap.utils.toArray<HTMLElement>('.page-shell section:not(#hero)');
 		sections.forEach((section) => {
 			const kicker = section.querySelector('.section-kicker');
@@ -653,22 +693,42 @@
 			const blocks = section.querySelectorAll('[data-cine] > *, [data-cine-self]');
 
 			const timeline = gsap.timeline({
-				defaults: { ease: 'power3.out' },
+				defaults: { ease: 'power4.out' },
 				scrollTrigger: { trigger: section, start: 'top 80%', once: true }
 			});
 
-			if (kicker) timeline.from(kicker, { autoAlpha: 0, y: 10, duration: 0.55 });
+			if (kicker) {
+				timeline.from(kicker, { autoAlpha: 0, y: 12, duration: 0.55, ease: 'power3.out' });
+			}
 			if (heading) {
-				timeline.from(
+				timeline.fromTo(
 					heading,
-					{ autoAlpha: 0, y: 18, filter: 'blur(6px)', duration: 0.85 },
+					{ clipPath: 'inset(0% 0% 100% 0%)', y: 20 },
+					{ clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: 0.9 },
 					'<0.1'
 				);
 			}
 			if (blocks.length) {
-				timeline.from(blocks, { autoAlpha: 0, y: 18, duration: 0.7, stagger: 0.07 }, '<0.25');
+				timeline.from(
+					blocks,
+					{
+						autoAlpha: 0,
+						y: 18,
+						filter: 'blur(4px)',
+						duration: 0.7,
+						stagger: 0.08,
+						ease: 'power3.out'
+					},
+					'<0.2'
+				);
 			}
 		});
+
+		// If the settle deadline already passed while GSAP was still loading
+		// (slow network, throttled tab), jump straight to the final frame.
+		if (entranceDeadlinePassed) {
+			master.progress(1);
+		}
 	}
 
 	function setupRevealObserver() {
@@ -765,6 +825,8 @@
 		nvdaSeries = null;
 		volumeSeries = null;
 		heroSeries = null;
+		heroFloorSeries = null;
+		heroPriceLine = null;
 		chartsReady = false;
 		heroChartReady = false;
 	}
@@ -778,7 +840,8 @@
 		if (heroChartReady || !browser || !mounted || !heroChartEl) return;
 
 		try {
-			const { createChart, CandlestickSeries } = await import('lightweight-charts');
+			const { createChart, CandlestickSeries, AreaSeries, LineStyle } =
+				await import('lightweight-charts');
 			if (!mounted || heroChartReady || !heroChartEl) return;
 
 			heroChart = createChart(heroChartEl, {
@@ -792,14 +855,19 @@
 				},
 				grid: {
 					vertLines: { visible: false },
-					horzLines: { color: 'rgba(255, 255, 255, 0.04)' }
+					horzLines: { color: 'rgba(236, 234, 228, 0.035)' }
 				},
 				rightPriceScale: {
 					visible: true,
-					borderColor: 'rgba(255, 255, 255, 0.07)',
-					scaleMargins: { top: 0.12, bottom: 0.12 }
+					borderVisible: false,
+					scaleMargins: { top: 0.16, bottom: 0.14 }
 				},
-				timeScale: { visible: false, rightOffset: 5, barSpacing: 10 },
+				timeScale: {
+					visible: false,
+					rightOffset: 6,
+					barSpacing: 7,
+					lockVisibleTimeRangeOnResize: true
+				},
 				crosshair: {
 					vertLine: { visible: false, labelVisible: false },
 					horzLine: { visible: false, labelVisible: false }
@@ -808,16 +876,30 @@
 				handleScale: false
 			});
 
+			// Luminous floor under the candles: a whisper of gold that gives the
+			// tape depth without changing the palette. Added first so it renders
+			// beneath the candle series.
+			heroFloorSeries = heroChart.addSeries(AreaSeries, {
+				lineColor: 'rgba(198, 161, 91, 0.35)',
+				topColor: 'rgba(198, 161, 91, 0.1)',
+				bottomColor: 'transparent',
+				lineWidth: 1,
+				priceLineVisible: false,
+				lastValueVisible: false,
+				crosshairMarkerVisible: false
+			});
+
 			heroSeries = heroChart.addSeries(CandlestickSeries, {
 				upColor: '#2e9c77',
 				downColor: '#c25555',
+				borderVisible: true,
 				borderUpColor: '#2e9c77',
 				borderDownColor: '#c25555',
-				wickUpColor: '#2e9c77',
-				wickDownColor: '#c25555',
-				priceLineVisible: true,
-				priceLineColor: 'rgba(236, 234, 228, 0.28)',
-				lastValueVisible: true
+				wickUpColor: 'rgba(46, 156, 119, 0.7)',
+				wickDownColor: 'rgba(194, 85, 85, 0.7)',
+				priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
+				priceLineVisible: false,
+				lastValueVisible: false
 			});
 
 			// Re-center and compress the seeded walk so it closes exactly on the
@@ -835,7 +917,21 @@
 				close: compress(candle.close)
 			}));
 			heroSeries.setData(seed);
+			heroFloorSeries.setData(seed.map((candle) => ({ time: candle.time, value: candle.close })));
 			heroLastCandle = seed.at(-1) ?? null;
+
+			// The dashed bronze reference line doubles as the last-price element:
+			// it carries both the line and the gold axis chip.
+			heroPriceLine = heroSeries.createPriceLine({
+				price: heroLastCandle?.close ?? HERO_BASE_PRICE,
+				color: 'rgba(198, 161, 91, 0.5)',
+				lineWidth: 1,
+				lineStyle: LineStyle.Dashed,
+				axisLabelVisible: true,
+				axisLabelColor: 'rgba(198, 161, 91, 0.92)',
+				axisLabelTextColor: '#0a0b0e',
+				title: ''
+			});
 			if (heroLastCandle) {
 				heroPrice = heroLastCandle.close;
 				heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
@@ -883,6 +979,8 @@
 		}
 
 		heroSeries.update(heroLastCandle);
+		heroFloorSeries?.update({ time: heroLastCandle.time, value: heroLastCandle.close });
+		heroPriceLine?.applyOptions({ price: heroLastCandle.close });
 		heroPrice = heroLastCandle.close;
 		heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
 	}
@@ -1245,6 +1343,8 @@
 	{@attach mountShell}
 	onscroll={handleScroll}
 >
+	<div class="grain" aria-hidden="true"></div>
+
 	<div class="progress-rail" aria-hidden="true">
 		<span></span>
 	</div>
@@ -1268,6 +1368,8 @@
 
 	<main class="page-shell">
 		<section id="hero" class={{ hero: true, reveal: true, visible: visible.hero }}>
+			<span class="hero-watermark" aria-hidden="true">AAPL</span>
+
 			<div class="hero-chart" aria-hidden="true">
 				<div class="hero-chart-canvas" {@attach mountHeroChart}></div>
 				<div class="hero-chart-badge">
@@ -1282,86 +1384,102 @@
 			<div class="hero-copy">
 				<p class="eyebrow" data-entrance>Platform rebuild · Day {dayNumber || '—'}</p>
 				<h1 class="hero-title">
-					<span class="line" data-entrance>We didn’t go quiet.</span>
-					<span class="line" data-entrance>We went to work.</span>
+					<span class="line"><span class="line-inner" data-entrance>We didn’t go quiet.</span></span
+					>
+					<span class="line"
+						><span class="line-inner" data-entrance
+							>We went to <em class="serif-accent">work.</em></span
+						></span
+					>
 				</h1>
-				<p class="lede" data-entrance>
-					Revolution Trading Pros is being rebuilt end to end — faster market data, more rigorous
-					scanners, and a trading curriculum run to an institutional standard. Progress is posted on
-					this page every trading day.
-				</p>
+				<div class="hero-lower">
+					<div class="hero-lower-copy">
+						<p class="lede" data-entrance>
+							Revolution Trading Pros is being rebuilt end to end — faster market data, more
+							rigorous scanners, and a trading curriculum run to an institutional standard. Progress
+							is posted on this page every trading day.
+						</p>
 
-				<div class="hero-actions" data-entrance>
-					<a class="primary-link" href="#access">Request first access</a>
-					<a class="ghost-link" href="#operations">Review the work</a>
+						<div class="hero-actions" data-entrance>
+							<a class="primary-link" href="#access">Request first access</a>
+							<a class="ghost-link" href="#operations">Review the work</a>
+						</div>
+						<p class="hero-note" data-entrance>
+							Founding-member pricing at launch · one email at reopening · no marketing sequence
+						</p>
+
+						<p
+							class="drop-timer"
+							data-entrance
+							role="timer"
+							aria-label="Time until the next daily update at 9:30 AM Eastern"
+						>
+							<span class="timer-label">Next update</span>
+							<span class="timer-clock"
+								>{countdown.hours}:{countdown.minutes}:{countdown.seconds}</span
+							>
+							<span class="timer-meta">9:30 AM ET · Monday–Friday</span>
+						</p>
+					</div>
+
+					<aside class="status-card panel" aria-label="Rebuild status" data-entrance>
+						<div class="card-topline">
+							<span>Rebuild status</span>
+							<span class="status-flag">In progress</span>
+						</div>
+
+						<div class="progress-block">
+							<div class="progress-head">
+								<span>Overall completion</span>
+								<strong>{progressDisplay}%</strong>
+							</div>
+							<div class="progress-track">
+								<span style:width={`${progressDisplay}%`}></span>
+							</div>
+						</div>
+
+						<ol class="stage-list">
+							{#each stageLines as line, index (line)}
+								<li
+									class={{
+										complete: index < completedStages,
+										current: index === completedStages
+									}}
+								>
+									<span class="stage-index">{String(index + 1).padStart(2, '0')}</span>
+									<span class="stage-name">{line}</span>
+									<span class="stage-state">
+										{index < completedStages
+											? 'Complete'
+											: index === completedStages
+												? 'Underway'
+												: 'Queued'}
+									</span>
+								</li>
+							{/each}
+						</ol>
+
+						<div class="card-footline">
+							<span>Day {dayNumber || '—'}</span>
+							<span>Next update {countdown.hours}:{countdown.minutes}:{countdown.seconds}</span>
+						</div>
+					</aside>
 				</div>
-				<p class="hero-note" data-entrance>
-					Founding-member pricing at launch · one email at reopening · no marketing sequence
-				</p>
-
-				<p
-					class="drop-timer"
-					data-entrance
-					role="timer"
-					aria-label="Time until the next daily update at 9:30 AM Eastern"
-				>
-					<span class="timer-label">Next update</span>
-					<span class="timer-clock">{countdown.hours}:{countdown.minutes}:{countdown.seconds}</span>
-					<span class="timer-meta">9:30 AM ET · Monday–Friday</span>
-				</p>
 			</div>
 
-			<aside class="status-card" aria-label="Rebuild status" data-entrance>
-				<div class="card-topline">
-					<span>Rebuild status</span>
-					<span class="status-flag">In progress</span>
-				</div>
-
-				<div class="progress-block">
-					<div class="progress-head">
-						<span>Overall completion</span>
-						<strong>{progressDisplay}%</strong>
-					</div>
-					<div class="progress-track">
-						<span style:width={`${progressDisplay}%`}></span>
-					</div>
-				</div>
-
-				<ol class="stage-list">
-					{#each stageLines as line, index (line)}
-						<li
-							class={{
-								complete: index < completedStages,
-								current: index === completedStages
-							}}
-						>
-							<span class="stage-index">{String(index + 1).padStart(2, '0')}</span>
-							<span class="stage-name">{line}</span>
-							<span class="stage-state">
-								{index < completedStages
-									? 'Complete'
-									: index === completedStages
-										? 'Underway'
-										: 'Queued'}
-							</span>
-						</li>
-					{/each}
-				</ol>
-
-				<div class="card-footline">
-					<span>Day {dayNumber || '—'}</span>
-					<span>Next update {countdown.hours}:{countdown.minutes}:{countdown.seconds}</span>
-				</div>
-			</aside>
+			<div class="scroll-cue" aria-hidden="true" data-entrance>
+				<span>Scroll</span>
+				<i></i>
+			</div>
 		</section>
 
 		<section id="note" class={{ 'note-section': true, reveal: true, visible: visible.note }}>
 			<div class="section-heading">
-				<p class="section-kicker">Daily desk note</p>
+				<p class="section-kicker"><span class="section-index">01</span>Daily desk note</p>
 				<h2>One disciplined idea, every trading day.</h2>
 			</div>
 
-			<figure class="note-card" data-cine-self>
+			<figure class="note-card panel panel-feature" data-cine-self>
 				<blockquote>{deskNote}</blockquote>
 				<p class="note-foot">A new note is posted at the open, Monday through Friday.</p>
 				<figcaption class="note-meta">
@@ -1376,14 +1494,14 @@
 			class={{ 'ops-section': true, reveal: true, visible: visible.operations }}
 		>
 			<div class="section-heading">
-				<p class="section-kicker">Scope of work</p>
+				<p class="section-kicker"><span class="section-index">02</span>Scope of work</p>
 				<h2>Every system, rebuilt to institutional spec.</h2>
 			</div>
 
 			<div class="ops-stage">
 				<div class="ops-grid" aria-label="Rebuild scope" data-cine>
 					{#each operationsChapters as chapter (chapter.number)}
-						<article class="ops-card">
+						<article class="ops-card panel">
 							<span class="ops-index">{chapter.number}</span>
 							<h3>{chapter.title}</h3>
 							<p>{chapter.copy}</p>
@@ -1392,7 +1510,7 @@
 					{/each}
 				</div>
 
-				<div class="systems-panel" aria-label="System status" data-cine-self>
+				<div class="systems-panel panel" aria-label="System status" data-cine-self>
 					<div class="card-topline">
 						<span>System status</span>
 						<span class="status-flag">Operational</span>
@@ -1415,11 +1533,11 @@
 
 		<section id="charts" class={{ 'charts-section': true, reveal: true, visible: visible.charts }}>
 			<div class="section-heading">
-				<p class="section-kicker">Market data</p>
+				<p class="section-kicker"><span class="section-index">03</span>Market data</p>
 				<h2>The data engine never went dark.</h2>
 			</div>
 
-			<div class="chart-stage" data-cine-self>
+			<div class="chart-stage panel panel-feature" data-cine-self>
 				<div class="chart-toolbar">
 					<div>
 						<span class="market-label">SPX · Upgrade feed</span>
@@ -1460,7 +1578,7 @@
 			</div>
 
 			<div class="mini-feed-grid" data-cine>
-				<div class="mini-feed">
+				<div class="mini-feed panel">
 					<div>
 						<span>AAPL</span>
 						<strong>{(chartData.aapl.at(-1)?.close ?? 232.3).toFixed(2)}</strong>
@@ -1468,7 +1586,7 @@
 					<div class="mini-chart" {@attach mountAaplChart}></div>
 				</div>
 
-				<div class="mini-feed">
+				<div class="mini-feed panel">
 					<div>
 						<span>NVDA</span>
 						<strong>{(chartData.nvda.at(-1)?.close ?? 1475.2).toFixed(2)}</strong>
@@ -1483,12 +1601,12 @@
 			class={{ 'signals-section': true, reveal: true, visible: visible.signals }}
 		>
 			<div class="section-heading">
-				<p class="section-kicker">Scanner engine</p>
+				<p class="section-kicker"><span class="section-index">04</span>Scanner engine</p>
 				<h2>Signal clarity, engineered under pressure.</h2>
 			</div>
 
 			<div class="signals-layout">
-				<div class="coverage-panel" data-cine-self>
+				<div class="coverage-panel panel" data-cine-self>
 					<div class="card-topline">
 						<span>Coverage</span>
 					</div>
@@ -1512,7 +1630,7 @@
 					</dl>
 				</div>
 
-				<div class="signals-table" data-cine-self>
+				<div class="signals-table panel" data-cine-self>
 					<div class="table-head">
 						<span>Detected signals</span>
 						<span>Internal preview</span>
@@ -1542,7 +1660,7 @@
 			class={{ 'academy-section': true, reveal: true, visible: visible.academy }}
 		>
 			<div class="section-heading">
-				<p class="section-kicker">Trading university</p>
+				<p class="section-kicker"><span class="section-index">05</span>Trading university</p>
 				<h2>Stocks, options, and desk discipline in one curriculum.</h2>
 			</div>
 
@@ -1563,7 +1681,7 @@
 					{/each}
 				</div>
 
-				<div class="academy-feature" data-cine-self>
+				<div class="academy-feature panel" data-cine-self>
 					<div class="academy-summary">
 						<h3>{activeAcademy.title}</h3>
 						<p>{activeAcademy.tagline}</p>
@@ -1616,12 +1734,12 @@
 			class={{ 'infra-section': true, reveal: true, visible: visible.infrastructure }}
 		>
 			<div class="section-heading">
-				<p class="section-kicker">Build telemetry</p>
+				<p class="section-kicker"><span class="section-index">06</span>Build telemetry</p>
 				<h2>Capacity, reliability, and speed — measured daily.</h2>
 			</div>
 
 			<div class="infra-grid">
-				<div class="node-list" data-cine-self>
+				<div class="node-list panel" data-cine-self>
 					{#each nodes as node (node.id)}
 						<article class="node-row">
 							<div>
@@ -1636,7 +1754,7 @@
 					{/each}
 				</div>
 
-				<div class="stat-board" data-cine-self>
+				<div class="stat-board panel" data-cine-self>
 					<div>
 						<strong>{formatNumber(stats.traders)}+</strong>
 						<span>Traders trained</span>
@@ -1662,11 +1780,11 @@
 			class={{ 'buildlog-section': true, reveal: true, visible: visible.buildlog }}
 		>
 			<div class="section-heading">
-				<p class="section-kicker">Build log</p>
+				<p class="section-kicker"><span class="section-index">07</span>Build log</p>
 				<h2>Completed while you were away.</h2>
 			</div>
 
-			<div class="log-panel" data-cine>
+			<div class="log-panel panel" data-cine>
 				{#each buildLog as entry (entry.text)}
 					<article class="log-row">
 						<span class="log-date">{entry.date || '···'}</span>
@@ -1680,7 +1798,7 @@
 
 		<section id="access" class={{ 'access-section': true, reveal: true, visible: visible.access }}>
 			{#if isSubmitted}
-				<div class="success-panel" role="status">
+				<div class="success-panel panel panel-feature" role="status">
 					<div class="success-mark" aria-hidden="true">
 						<svg viewBox="0 0 56 56">
 							<circle cx="28" cy="28" r="25" />
@@ -1697,7 +1815,7 @@
 				</div>
 			{:else}
 				<form
-					class="access-panel"
+					class="access-panel panel panel-feature"
 					data-cine
 					onsubmit={(event) => {
 						event.preventDefault();
@@ -1705,7 +1823,7 @@
 					}}
 				>
 					<div>
-						<p class="section-kicker">First access</p>
+						<p class="section-kicker"><span class="section-index">08</span>First access</p>
 						<h2>Be notified when we reopen.</h2>
 						<p>
 							One email when the platform reopens — nothing else. Founding members receive launch
@@ -1717,7 +1835,7 @@
 					</div>
 
 					<div class="email-block">
-						<div class="email-row">
+						<div class={{ 'email-row': true, 'has-error': Boolean(errorMessage) }}>
 							<label class="sr-only" for="maintenance-email">Email address</label>
 							<input
 								id="maintenance-email"
@@ -1763,22 +1881,44 @@
 
 	.maintenance-experience {
 		--bg: #0a0b0e;
+		--ivory: #eceae4;
+		--gold: #c6a15b;
 		--panel: rgba(255, 255, 255, 0.02);
+		--panel-1: rgba(255, 255, 255, 0.015);
+		--panel-2: rgba(255, 255, 255, 0.028);
+		--panel-solid: rgba(10, 11, 14, 0.72);
 		--line: rgba(255, 255, 255, 0.07);
 		--line-strong: rgba(255, 255, 255, 0.12);
-		--text: #eceae4;
-		--muted: rgba(236, 234, 228, 0.64);
-		--dim: rgba(236, 234, 228, 0.42);
-		--accent: #c6a15b;
+		--hair-faint: rgba(255, 255, 255, 0.05);
+		--text: var(--ivory);
+		--muted: rgba(236, 234, 228, 0.66);
+		--dim: rgba(236, 234, 228, 0.44);
+		--faint: rgba(236, 234, 228, 0.28);
+		--accent: var(--gold);
+		--gold-06: rgba(198, 161, 91, 0.06);
+		--gold-25: rgba(198, 161, 91, 0.25);
+		--gold-30: rgba(198, 161, 91, 0.3);
 		--up: #2e9c77;
 		--down: #c25555;
+		--edge-hairline: linear-gradient(
+			140deg,
+			rgba(236, 234, 228, 0.08),
+			var(--gold-25) 42%,
+			rgba(255, 255, 255, 0) 72%
+		);
+		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+		--shadow-md: 0 12px 32px -18px rgba(0, 0, 0, 0.75);
+		--shadow-lg: 0 40px 80px -40px rgba(0, 0, 0, 0.85), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
+		--font-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+		--font-mono: 'SF Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 		position: fixed;
 		inset: 0;
 		z-index: 99999;
 		overflow-x: hidden;
 		overflow-y: auto;
 		background:
-			radial-gradient(1100px 520px at 72% -12%, rgba(198, 161, 91, 0.05), transparent 62%),
+			radial-gradient(1200px 560px at 78% -12%, var(--gold-06), transparent 60%),
+			radial-gradient(1100px 620px at 12% 118%, rgba(46, 156, 119, 0.035), transparent 62%),
 			var(--bg);
 		color: var(--text);
 		font-family:
@@ -1790,6 +1930,31 @@
 			'Segoe UI',
 			sans-serif;
 		-webkit-font-smoothing: antialiased;
+	}
+
+	.maintenance-experience::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background-image: repeating-linear-gradient(
+			to bottom,
+			var(--hair-faint) 0 1px,
+			transparent 1px 32px
+		);
+		mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 56%, transparent 92%);
+		opacity: 0.5;
+	}
+
+	.grain {
+		position: fixed;
+		inset: 0;
+		z-index: 40;
+		pointer-events: none;
+		opacity: 0.05;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+		background-size: 140px 140px;
 	}
 
 	.maintenance-experience::-webkit-scrollbar {
@@ -1835,7 +2000,7 @@
 		flex: 1;
 		min-width: 0;
 		overflow: hidden;
-		mask-image: linear-gradient(90deg, transparent, black 3%, black 97%, transparent);
+		mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
 	}
 
 	.market-tape:hover .tape-track {
@@ -1911,54 +2076,146 @@
 
 	.hero {
 		position: relative;
+		isolation: isolate;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-height: min(860px, calc(100vh - 96px));
+		padding-bottom: clamp(72px, 10vh, 132px);
+	}
+
+	.hero-title {
+		margin: 6px 0 0;
+		max-width: 15ch;
+		font-size: clamp(3.2rem, 6.5vw, 6rem);
+		font-weight: 600;
+		letter-spacing: -0.028em;
+		line-height: 0.98;
+		text-wrap: balance;
+	}
+
+	.hero-lower {
 		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.68fr);
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
 		gap: clamp(28px, 5vw, 72px);
+		align-items: start;
+		margin-top: clamp(32px, 5vh, 56px);
+	}
+
+	.hero-lower-copy {
+		min-width: 0;
+	}
+
+	.hero-watermark {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		display: grid;
+		place-items: center;
+		margin: 0;
+		font-size: clamp(12rem, 28vw, 24rem);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		line-height: 0.8;
+		white-space: nowrap;
+		color: transparent;
+		-webkit-text-stroke: 1px rgba(236, 234, 228, 0.045);
+		user-select: none;
+		pointer-events: none;
+	}
+
+	.scroll-cue {
+		position: absolute;
+		bottom: clamp(18px, 4vh, 40px);
+		left: 0;
+		z-index: 4;
+		display: inline-flex;
 		align-items: center;
-		min-height: min(720px, calc(100vh - 120px));
-		padding-bottom: 4vh;
+		gap: 14px;
+		pointer-events: none;
+	}
+
+	.scroll-cue span {
+		color: var(--dim);
+		font-family: var(--font-mono);
+		font-size: 10.5px;
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
+	}
+
+	.scroll-cue i {
+		position: relative;
+		display: block;
+		width: clamp(48px, 7vw, 96px);
+		height: 1px;
+		overflow: hidden;
+		background: linear-gradient(90deg, rgba(236, 234, 228, 0.32), rgba(236, 234, 228, 0.04));
+	}
+
+	.scroll-cue i::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		width: 34%;
+		background: linear-gradient(90deg, transparent, rgba(198, 161, 91, 0.9), transparent);
+		animation: cue-travel 2.8s ease-in-out infinite;
 	}
 
 	/* ── Hero backdrop chart ─────────────────────────────────────────────── */
 
 	.hero-chart {
 		position: absolute;
-		inset: -6% -1% -2% -4%;
-		z-index: 0;
+		inset: -4% -1% 0 -6%;
+		z-index: 1;
 		overflow: hidden;
 		pointer-events: none;
-		opacity: 0.5;
-		mask-image: linear-gradient(100deg, transparent 4%, rgba(0, 0, 0, 0.4) 30%, black 62%);
+		opacity: 0.55;
+		mask-image: linear-gradient(
+			100deg,
+			transparent 0%,
+			rgba(0, 0, 0, 0.35) 26%,
+			#000 58%,
+			#000 100%
+		);
 	}
 
 	.hero-chart-canvas {
 		position: absolute;
 		inset: 0;
-		mask-image: linear-gradient(180deg, transparent 0%, black 16%, black 86%, transparent 100%);
+		mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 88%, transparent 100%);
 	}
 
 	.hero-chart-badge {
 		position: absolute;
-		top: 4%;
-		right: 6px;
-		display: flex;
+		top: clamp(10px, 3%, 28px);
+		right: clamp(14px, 3vw, 34px);
+		display: inline-flex;
 		align-items: baseline;
-		gap: 10px;
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		gap: 11px;
+		padding: 7px 13px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: rgba(10, 11, 14, 0.5);
+		backdrop-filter: blur(8px);
+		font-family: var(--font-mono);
 		font-size: 11px;
 		letter-spacing: 0.08em;
 		color: var(--dim);
+		box-shadow: 0 8px 30px -18px rgba(0, 0, 0, 0.9);
 	}
 
 	.badge-symbol {
 		color: var(--muted);
 		font-weight: 600;
+		letter-spacing: 0.12em;
 	}
 
 	.badge-live {
 		display: inline-flex;
 		align-items: center;
-		gap: 5px;
+		gap: 6px;
+		font-size: 10px;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 	}
 
@@ -1966,19 +2223,21 @@
 		width: 5px;
 		height: 5px;
 		border-radius: 999px;
-		background: var(--up);
+		background: var(--accent);
+		box-shadow: 0 0 8px rgba(198, 161, 91, 0.6);
 		animation: live-dot 2.4s ease-in-out infinite;
 	}
 
 	.hero-chart-badge strong {
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.02em;
 	}
 
 	.hero-copy {
 		position: relative;
-		z-index: 1;
-		max-width: 720px;
+		z-index: 3;
+		width: 100%;
 	}
 
 	.eyebrow,
@@ -1992,6 +2251,37 @@
 		text-transform: uppercase;
 	}
 
+	.section-kicker {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 26px;
+	}
+
+	.section-index {
+		color: var(--gold);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		letter-spacing: 0.16em;
+	}
+
+	.section-kicker::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(90deg, var(--line-strong), transparent);
+	}
+
+	.serif-accent {
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-weight: 400;
+		font-size: 1.06em;
+		letter-spacing: -0.01em;
+		padding-right: 0.04em;
+		color: var(--gold);
+	}
+
 	h1 {
 		margin: 0;
 		font-size: clamp(2.2rem, 3.9vw, 3.6rem);
@@ -2002,6 +2292,13 @@
 	}
 
 	.hero-title .line {
+		display: block;
+		overflow: hidden;
+		padding-bottom: 0.09em;
+		margin-bottom: -0.09em;
+	}
+
+	.hero-title .line-inner {
 		display: block;
 	}
 
@@ -2043,43 +2340,79 @@
 	.primary-link,
 	.ghost-link,
 	.email-row button {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 44px;
+		min-height: 48px;
 		border-radius: 4px;
-		padding: 0 20px;
+		padding: 0 24px;
 		font-size: 14.5px;
 		font-weight: 600;
 		letter-spacing: 0.01em;
 		text-decoration: none;
 		transition:
-			background 160ms ease,
-			border-color 160ms ease,
+			transform 200ms ease,
+			box-shadow 200ms ease,
 			color 160ms ease;
 	}
 
 	.primary-link,
 	.email-row button {
-		border: 1px solid var(--text);
-		background: var(--text);
-		color: #101114;
+		overflow: hidden;
+		border: 0;
+		background: var(--ivory);
+		color: #0a0b0e;
+		box-shadow: var(--shadow-sm);
 	}
 
 	.primary-link:hover,
 	.email-row button:hover:not(:disabled) {
-		background: #fbf9f4;
-		border-color: #fbf9f4;
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-md);
+	}
+
+	.primary-link::after,
+	.email-row button::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(
+			100deg,
+			transparent 30%,
+			rgba(255, 255, 255, 0.55) 50%,
+			transparent 70%
+		);
+		transform: translateX(-120%);
+	}
+
+	.primary-link:hover::after,
+	.email-row button:hover:not(:disabled)::after {
+		animation: sheen 600ms ease-out 1;
 	}
 
 	.ghost-link {
-		border: 1px solid var(--line-strong);
 		background: transparent;
 		color: var(--text);
 	}
 
+	.ghost-link::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		padding: 1px;
+		border-radius: inherit;
+		pointer-events: none;
+		background: linear-gradient(120deg, var(--line-strong), var(--gold-25) 60%, transparent);
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		mask-composite: exclude;
+	}
+
 	.ghost-link:hover {
-		border-color: var(--accent);
+		color: var(--gold);
 	}
 
 	/* ── Countdown ────────────────────────────────────────────────────────── */
@@ -2117,21 +2450,42 @@
 
 	/* ── Panels ───────────────────────────────────────────────────────────── */
 
-	.status-card,
-	.note-card,
-	.ops-card,
-	.systems-panel,
-	.chart-stage,
-	.mini-feed,
-	.coverage-panel,
-	.signals-table,
-	.academy-selector button,
-	.academy-feature,
-	.node-list,
-	.stat-board,
-	.log-panel,
-	.access-panel,
-	.success-panel {
+	.panel {
+		position: relative;
+		border-radius: 8px;
+		background: var(--panel-1);
+		backdrop-filter: blur(14px) saturate(1.05);
+		box-shadow: var(--shadow-md);
+	}
+
+	.panel::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		padding: 1px;
+		border-radius: inherit;
+		background: var(--edge-hairline);
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		mask-composite: exclude;
+		pointer-events: none;
+	}
+
+	.panel-feature {
+		background: var(--panel-2);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.06),
+			var(--shadow-lg);
+	}
+
+	.panel-solid {
+		background: var(--panel-solid);
+		backdrop-filter: blur(12px);
+	}
+
+	.academy-selector button {
 		border: 1px solid var(--line);
 		border-radius: 6px;
 		background: var(--panel);
@@ -2156,12 +2510,18 @@
 
 	.status-card {
 		position: relative;
-		z-index: 1;
-		padding: 22px;
-		/* Same base hue, raised alpha + blur so the card stays crisp over the
-		   live chart backdrop. */
-		background: rgba(10, 11, 14, 0.72);
-		backdrop-filter: blur(10px);
+		z-index: 3;
+		align-self: start;
+		padding: 24px;
+		border-radius: 10px;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%),
+			rgba(10, 11, 14, 0.62);
+		backdrop-filter: blur(18px) saturate(118%);
+		box-shadow:
+			inset 0 1px 0 rgba(236, 234, 228, 0.07),
+			0 2px 26px rgba(0, 0, 0, 0.35),
+			0 44px 90px -46px rgba(0, 0, 0, 0.85);
 	}
 
 	.progress-block {
@@ -2292,15 +2652,48 @@
 		transition: none;
 	}
 
-	/* GSAP entrance initial state — applied only when the motion layer runs. */
-	.gsap-on #hero [data-entrance] {
-		opacity: 0;
-		transform: translateY(14px);
-		filter: blur(8px);
-	}
-
+	/* GSAP entrance initial states — applied only when the motion layer runs.
+	   Every rule here is settled by the master timeline; the load failsafe
+	   (masterTimeline.progress(1)) resolves all of them. */
 	.gsap-on .hero-chart {
 		opacity: 0;
+		transform: scale(1.03);
+		clip-path: inset(0% 0% 12% 0%);
+		will-change: transform, clip-path, opacity;
+	}
+
+	.gsap-on .hero-watermark {
+		opacity: 0;
+		transform: translateX(-2%);
+		will-change: transform, opacity;
+	}
+
+	.gsap-on #hero [data-entrance] {
+		opacity: 0;
+		transform: translateY(16px);
+		filter: blur(8px);
+		will-change: transform, opacity, filter;
+	}
+
+	.gsap-on #hero .hero-title .line-inner[data-entrance] {
+		opacity: 1;
+		filter: none;
+		transform: translateY(105%) rotate(0.4deg);
+		will-change: transform;
+	}
+
+	.gsap-on #hero .status-card[data-entrance] {
+		transform: translateY(24px);
+	}
+
+	.gsap-on #hero .scroll-cue[data-entrance] {
+		transform: none;
+		filter: none;
+	}
+
+	.gsap-on #hero .scroll-cue i {
+		transform: scaleX(0);
+		transform-origin: left center;
 	}
 
 	/* ── Sections ─────────────────────────────────────────────────────────── */
@@ -2336,15 +2729,30 @@
 	}
 
 	.note-card blockquote {
+		position: relative;
 		max-width: 760px;
-		margin: 18px 0 0;
-		font-family: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
-		font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+		margin: 22px 0 0;
+		padding-left: 32px;
+		border-left: 2px solid var(--gold);
+		font-family: var(--font-serif);
+		font-size: clamp(1.5rem, 3vw, 2.4rem);
 		font-style: italic;
 		font-weight: 400;
-		line-height: 1.42;
+		line-height: 1.36;
 		letter-spacing: 0.002em;
 		color: var(--text);
+		text-wrap: balance;
+	}
+
+	.note-card blockquote::before {
+		content: '\201C';
+		position: absolute;
+		top: -0.12em;
+		left: 10px;
+		font-size: 2.4em;
+		line-height: 1;
+		color: var(--gold-25);
+		pointer-events: none;
 	}
 
 	.note-foot {
@@ -3103,24 +3511,45 @@
 
 	.email-row input {
 		width: 100%;
-		min-height: 46px;
+		min-height: 54px;
 		border: 1px solid var(--line-strong);
 		border-radius: 4px;
-		padding: 0 14px;
-		background: rgba(0, 0, 0, 0.25);
+		padding: 0 16px;
+		background: rgba(0, 0, 0, 0.28);
 		color: var(--text);
 		font: inherit;
 		font-size: 14.5px;
 		outline: none;
-		transition: border-color 160ms ease;
+		transition:
+			border-color 160ms ease,
+			box-shadow 160ms ease,
+			background 160ms ease;
+	}
+
+	.email-row input::placeholder {
+		color: var(--faint);
+	}
+
+	.email-row input:hover {
+		border-color: rgba(255, 255, 255, 0.2);
 	}
 
 	.email-row input:focus {
-		border-color: var(--accent);
+		border-color: var(--gold);
+		background: rgba(0, 0, 0, 0.4);
+		box-shadow: 0 0 0 3px var(--gold-30);
+	}
+
+	.email-row.has-error input {
+		border-color: var(--down);
+	}
+
+	.email-row.has-error input:focus {
+		box-shadow: 0 0 0 3px rgba(194, 85, 85, 0.28);
 	}
 
 	.email-row button {
-		min-height: 46px;
+		min-height: 54px;
 		cursor: pointer;
 	}
 
@@ -3210,6 +3639,22 @@
 		}
 	}
 
+	@keyframes sheen {
+		to {
+			transform: translateX(120%);
+		}
+	}
+
+	@keyframes cue-travel {
+		0% {
+			transform: translateX(-120%);
+		}
+		60%,
+		100% {
+			transform: translateX(320%);
+		}
+	}
+
 	@keyframes live-dot {
 		50% {
 			opacity: 0.35;
@@ -3219,7 +3664,6 @@
 	/* ── Responsive ───────────────────────────────────────────────────────── */
 
 	@media (max-width: 960px) {
-		.hero,
 		.ops-stage,
 		.signals-layout,
 		.infra-grid,
@@ -3230,11 +3674,37 @@
 
 		.hero {
 			min-height: auto;
-			padding-top: 48px;
+			justify-content: flex-start;
+			padding-top: 40px;
+			padding-bottom: clamp(48px, 8vh, 80px);
+		}
+
+		.hero-lower {
+			grid-template-columns: 1fr;
+			gap: clamp(24px, 6vw, 40px);
+		}
+
+		.hero-title {
+			max-width: 18ch;
+			font-size: clamp(2.8rem, 11vw, 4.4rem);
+		}
+
+		.hero-watermark {
+			font-size: clamp(9rem, 40vw, 15rem);
+			opacity: 0.75;
 		}
 
 		.hero-chart {
-			opacity: 0.32;
+			inset: -3% -2% 0 -4%;
+			opacity: 0.3;
+		}
+
+		.status-card {
+			align-self: stretch;
+		}
+
+		.scroll-cue {
+			display: none;
 		}
 
 		.academy-summary {
@@ -3254,6 +3724,17 @@
 
 		h1 {
 			font-size: clamp(2.1rem, 9vw, 2.8rem);
+		}
+
+		.hero-title {
+			max-width: none;
+			font-size: clamp(2.6rem, 13vw, 3.6rem);
+			letter-spacing: -0.02em;
+			line-height: 1;
+		}
+
+		.hero-watermark {
+			font-size: clamp(7rem, 46vw, 12rem);
 		}
 
 		.chart-toolbar,

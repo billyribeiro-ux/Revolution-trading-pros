@@ -24,6 +24,8 @@ interface PriceData {
 	change: number;
 	changePercent: number;
 	marketOpen: boolean;
+	/** True when the price is a fabricated fallback, false when it comes from a real upstream quote. */
+	simulated: boolean;
 }
 
 interface ExternalPriceResponse {
@@ -126,7 +128,8 @@ function getSimulatedPrice(ticker: string): PriceData {
 		price: Math.round(price * 100) / 100,
 		change: Math.round(change * 100) / 100,
 		changePercent: Math.round(changePercent * 100) / 100,
-		marketOpen: isMarketOpen()
+		marketOpen: isMarketOpen(),
+		simulated: true
 	};
 }
 
@@ -160,7 +163,8 @@ async function fetchExternalPrices(tickers: string[]): Promise<PriceData[]> {
 						price: item.price,
 						change: item.change ?? 0,
 						changePercent: item.changesPercentage ?? 0,
-						marketOpen: isMarketOpen()
+						marketOpen: isMarketOpen(),
+						simulated: false
 					}));
 				}
 			}

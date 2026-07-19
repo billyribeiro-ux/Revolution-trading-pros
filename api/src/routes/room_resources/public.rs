@@ -15,7 +15,7 @@ use serde::Serialize;
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::AppState;
+use crate::{models::User, AppState};
 
 use super::helpers::resource_to_response;
 use super::{
@@ -499,94 +499,81 @@ pub struct RecentlyAccessed {
 }
 
 /// POST /api/room-resources/:id/track-access - Track resource access (requires auth)
+///
+/// SECURITY (P1): binds the authenticated `User.id` instead of trusting a
+/// client-supplied `x-user-id` header, which let any caller attribute access
+/// to (or spoof) an arbitrary user.
 pub(super) async fn track_resource_access(
     State(state): State<AppState>,
+    user: User,
     Path(id): Path<i64>,
-    headers: axum::http::HeaderMap,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Extract user ID from auth header/session (simplified - in production use proper auth)
-    let user_id: Option<i64> = headers
-        .get("x-user-id")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse().ok());
+    // Get resource info
+    let resource: Option<(String, String, Option<String>)> = sqlx::query_as(
+        "SELECT resource_type, title, thumbnail_url FROM room_resources WHERE id = $1",
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .unwrap_or(None);
 
-    if let Some(uid) = user_id {
-        // Get resource info
-        let resource: Option<(String, String, Option<String>)> = sqlx::query_as(
-            "SELECT resource_type, title, thumbnail_url FROM room_resources WHERE id = $1",
+    if let Some((resource_type, title, thumbnail)) = resource {
+        // Upsert into recently_accessed
+        let _ = sqlx::query(
+            r"
+            INSERT INTO resource_access_log (user_id, resource_id, resource_type, resource_title, resource_thumbnail)
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (user_id, resource_id) DO UPDATE SET accessed_at = NOW()
+            "
+        )
+        .bind(user.id)
+        .bind(id)
+        .bind(&resource_type)
+        .bind(&title)
+        .bind(&thumbnail)
+        .execute(&state.db.pool)
+        .await;
+
+        // Increment view count
+        let _ = sqlx::query(
+            "UPDATE room_resources SET views_count = views_count + 1 WHERE id = $1",
         )
         .bind(id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .unwrap_or(None);
-
-        if let Some((resource_type, title, thumbnail)) = resource {
-            // Upsert into recently_accessed
-            let _ = sqlx::query(
-                r"
-                INSERT INTO resource_access_log (user_id, resource_id, resource_type, resource_title, resource_thumbnail)
-                VALUES ($1, $2, $3, $4, $5)
-                ON CONFLICT (user_id, resource_id) DO UPDATE SET accessed_at = NOW()
-                "
-            )
-            .bind(uid)
-            .bind(id)
-            .bind(&resource_type)
-            .bind(&title)
-            .bind(&thumbnail)
-            .execute(&state.db.pool)
-            .await;
-
-            // Increment view count
-            let _ = sqlx::query(
-                "UPDATE room_resources SET views_count = views_count + 1 WHERE id = $1",
-            )
-            .bind(id)
-            .execute(&state.db.pool)
-            .await;
-        }
+        .execute(&state.db.pool)
+        .await;
     }
 
     Ok(Json(json!({"success": true})))
 }
 
 /// GET /api/room-resources/recently-accessed - Get user's recently accessed resources
+///
+/// SECURITY (P1): reads the authenticated `User.id` instead of a spoofable
+/// `x-user-id` header.
 pub(super) async fn get_recently_accessed(
     State(state): State<AppState>,
-    headers: axum::http::HeaderMap,
+    user: User,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id: Option<i64> = headers
-        .get("x-user-id")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse().ok());
-
     let limit: i64 = params
         .get("limit")
         .and_then(|s| s.parse().ok())
         .unwrap_or(10)
         .min(50);
 
-    if let Some(uid) = user_id {
-        let recent: Vec<RecentlyAccessed> = sqlx::query_as(
-            "SELECT * FROM resource_access_log WHERE user_id = $1 ORDER BY accessed_at DESC LIMIT $2"
-        )
-        .bind(uid)
-        .bind(limit)
-        .fetch_all(&state.db.pool)
-        .await
-        .unwrap_or_default();
+    let recent: Vec<RecentlyAccessed> = sqlx::query_as(
+        "SELECT * FROM resource_access_log WHERE user_id = $1 ORDER BY accessed_at DESC LIMIT $2",
+    )
+    .bind(user.id)
+    .bind(limit)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
 
-        Ok(Json(json!({
-            "success": true,
-            "data": recent
-        })))
-    } else {
-        Ok(Json(json!({
-            "success": true,
-            "data": []
-        })))
-    }
+    Ok(Json(json!({
+        "success": true,
+        "data": recent
+    })))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -594,26 +581,18 @@ pub(super) async fn get_recently_accessed(
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// POST /api/room-resources/:id/favorite - Add to favorites
+///
+/// SECURITY (P1): binds the authenticated `User.id` instead of a spoofable
+/// `x-user-id` header.
 pub(super) async fn add_resource_favorite(
     State(state): State<AppState>,
+    user: User,
     Path(id): Path<i64>,
-    headers: axum::http::HeaderMap,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id: i64 = headers
-        .get("x-user-id")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse().ok())
-        .ok_or_else(|| {
-            (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"error": "Authentication required"})),
-            )
-        })?;
-
     let result = sqlx::query(
         "INSERT INTO resource_favorites (user_id, resource_id) VALUES ($1, $2) ON CONFLICT DO NOTHING"
     )
-    .bind(user_id)
+    .bind(user.id)
     .bind(id)
     .execute(&state.db.pool)
     .await
@@ -627,25 +606,17 @@ pub(super) async fn add_resource_favorite(
 }
 
 /// DELETE /api/room-resources/:id/favorite - Remove from favorites
+///
+/// SECURITY (P1): binds the authenticated `User.id` instead of a spoofable
+/// `x-user-id` header.
 pub(super) async fn remove_resource_favorite(
     State(state): State<AppState>,
+    user: User,
     Path(id): Path<i64>,
-    headers: axum::http::HeaderMap,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id: i64 = headers
-        .get("x-user-id")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse().ok())
-        .ok_or_else(|| {
-            (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"error": "Authentication required"})),
-            )
-        })?;
-
     let result =
         sqlx::query("DELETE FROM resource_favorites WHERE user_id = $1 AND resource_id = $2")
-            .bind(user_id)
+            .bind(user.id)
             .bind(id)
             .execute(&state.db.pool)
             .await
@@ -664,55 +635,38 @@ pub(super) async fn remove_resource_favorite(
 }
 
 /// GET /api/room-resources/:id/favorite - Check if favorited
+///
+/// SECURITY (P1): reads the authenticated `User.id` instead of a spoofable
+/// `x-user-id` header.
 pub(super) async fn check_resource_favorite(
     State(state): State<AppState>,
+    user: User,
     Path(id): Path<i64>,
-    headers: axum::http::HeaderMap,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id: Option<i64> = headers
-        .get("x-user-id")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse().ok());
+    let exists: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM resource_favorites WHERE user_id = $1 AND resource_id = $2)",
+    )
+    .bind(user.id)
+    .bind(id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(false);
 
-    if let Some(uid) = user_id {
-        let exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM resource_favorites WHERE user_id = $1 AND resource_id = $2)"
-        )
-        .bind(uid)
-        .bind(id)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or(false);
-
-        Ok(Json(json!({
-            "success": true,
-            "is_favorited": exists
-        })))
-    } else {
-        Ok(Json(json!({
-            "success": true,
-            "is_favorited": false
-        })))
-    }
+    Ok(Json(json!({
+        "success": true,
+        "is_favorited": exists
+    })))
 }
 
 /// GET /api/room-resources/favorites - Get user's favorite resources
+///
+/// SECURITY (P1): binds the authenticated `User.id` instead of a spoofable
+/// `x-user-id` header.
 pub(super) async fn get_favorite_resources(
     State(state): State<AppState>,
-    headers: axum::http::HeaderMap,
+    user: User,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id: i64 = headers
-        .get("x-user-id")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse().ok())
-        .ok_or_else(|| {
-            (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"error": "Authentication required"})),
-            )
-        })?;
-
     let page: i64 = params
         .get("page")
         .and_then(|s| s.parse().ok())
@@ -734,7 +688,7 @@ pub(super) async fn get_favorite_resources(
         LIMIT $2 OFFSET $3
         ",
     )
-    .bind(user_id)
+    .bind(user.id)
     .bind(per_page)
     .bind(offset)
     .fetch_all(&state.db.pool)
@@ -743,7 +697,7 @@ pub(super) async fn get_favorite_resources(
 
     let total: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM resource_favorites WHERE user_id = $1")
-            .bind(user_id)
+            .bind(user.id)
             .fetch_one(&state.db.pool)
             .await
             .unwrap_or((0,));
