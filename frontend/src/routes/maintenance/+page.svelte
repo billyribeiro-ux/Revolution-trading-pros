@@ -13,15 +13,19 @@
 	type Direction = 'up' | 'down';
 	type SectionId =
 		| 'hero'
+		| 'note'
 		| 'operations'
 		| 'charts'
 		| 'signals'
 		| 'academy'
 		| 'infrastructure'
+		| 'buildlog'
 		| 'access';
 	type ChartKey = 'main' | 'aapl' | 'nvda';
 	type SignalStatus = 'active' | 'watch' | 'cooling';
 	type AcademyTrackId = 'day' | 'swing';
+	type GsapCore = typeof import('gsap').gsap;
+	type ScrollTriggerStatic = typeof import('gsap/ScrollTrigger').ScrollTrigger;
 
 	interface Ticker {
 		symbol: string;
@@ -78,16 +82,144 @@
 		hue: number;
 	}
 
+	interface BuildLogEntry {
+		date: string;
+		tag: string;
+		text: string;
+	}
+
 	const timeframes = ['1m', '5m', '15m', '1H'];
 	const revealSections: SectionId[] = [
 		'hero',
+		'note',
 		'operations',
 		'charts',
 		'signals',
 		'academy',
 		'infrastructure',
+		'buildlog',
 		'access'
 	];
+
+	/* ── Date-driven content engine ──────────────────────────────────────────
+	 * Everything below rotates with the calendar so the page is different on
+	 * every visit: build progress climbs, the desk note changes at the open,
+	 * and the build log always shows the last few trading days.
+	 */
+	const BUILD_EPOCH_UTC = Date.UTC(2026, 5, 1); // day 1 of the rebuild
+	const DAY_MS = 86_400_000;
+
+	const bootWordmark = 'REVOLUTION';
+
+	const heroLines = [
+		['We', 'didn’t', 'go', 'quiet.'],
+		['We', 'went', 'to', 'work.']
+	];
+	// Rendered between word masks — Svelte trims plain whitespace at each-block
+	// boundaries, so the gap has to be an explicit text expression.
+	const wordGap = ' ';
+
+	const deskNotes = [
+		'Amateurs open the day with a prediction. Professionals open it with a plan for every scenario.',
+		'Your edge is not the setup. It is the discipline to only trade the setup.',
+		'Risk a fixed fraction, every time. Streaks end; sizing rules should not.',
+		'The market pays you to wait and charges you to act. Make every action worth the fee.',
+		'One clean trade, reviewed honestly, teaches more than fifty impulsive ones.',
+		'Liquidity is oxygen. Trade where it is deep, or do not trade at all.',
+		'If you cannot write the invalidation down before entry, you do not have a trade — you have a hope.',
+		'Volatility is not risk. Position size without a plan is risk.',
+		'The open is an auction, not a starting gun. Let it find balance before you commit.',
+		'Every chart tells two stories. The tape tells you which one is true.',
+		'Scaling out is a decision you make before the trade, not a feeling you have during it.',
+		'Your worst drawdowns follow your best streaks. Confidence is a position — manage it.',
+		'News moves price for minutes. Positioning moves it for days. Trade the second one.',
+		'A red day executed to plan beats a green day that broke your rules.',
+		'Options give you leverage on being right — and a clock that punishes being early.',
+		'Theta does not care about your thesis. Respect the calendar as much as the chart.',
+		'Relative strength at the lows shows you what is being accumulated. Watch what refuses to go down.',
+		'The journal is the only indicator with a perfect hit rate on your own behavior.',
+		'Process goals are the only goals you control. P&L is a byproduct, not a target.',
+		'Big money leaves footprints: volume, repeated levels, and time. Learn to read all three.',
+		'Cut the loser at your level, not at your pain threshold.',
+		'The best trade of the week is often the one you did not take.',
+		'Gap-and-go and gap-and-fade look identical at 9:31. The first thirty minutes of volume decides which one you are in.',
+		'Consistency compounds. Intensity burns out. Build the boring routine that survives.'
+	];
+
+	const buildLogPool: Array<Omit<BuildLogEntry, 'date'>> = [
+		{
+			tag: 'Shipped',
+			text: 'New scanner ranking engine online — relative volume, float rotation, and liquidity sweeps now score in real time.'
+		},
+		{
+			tag: 'Hardened',
+			text: 'Order-flow feed moved to redundant routes across NY4 and CH2 — zero dropped ticks in stress tests.'
+		},
+		{
+			tag: 'Shipped',
+			text: 'Day Trading University replay lab indexed — every session searchable by setup, symbol, and outcome.'
+		},
+		{
+			tag: 'Tuned',
+			text: 'Chart engine latency cut 38% — candles, VWAP, and volume profile now render in a single pass.'
+		},
+		{
+			tag: 'Shipped',
+			text: 'Options risk desk live internally — Greeks, IV rank, and 0DTE exposure in one panel.'
+		},
+		{
+			tag: 'Tuned',
+			text: 'Alert pipeline re-scored — the confidence model now weighs sector leadership and market regime.'
+		},
+		{
+			tag: 'Hardened',
+			text: 'Member room authentication rebuilt — faster sign-in with stricter session controls.'
+		},
+		{
+			tag: 'Shipped',
+			text: 'Swing Trading University portfolio simulator wired to live volatility surfaces.'
+		},
+		{
+			tag: 'Tuned',
+			text: 'Watchlist sync brought down to sub-second across devices.'
+		},
+		{
+			tag: 'Hardened',
+			text: 'Full failover drill passed — the platform survives a data-center loss without dropping a session.'
+		},
+		{
+			tag: 'Shipped',
+			text: 'Dark-pool repeat detection added to the scanner edge engine.'
+		},
+		{
+			tag: 'Tuned',
+			text: 'Mobile charts rebuilt for one-handed review — faster pan, cleaner drawing tools.'
+		},
+		{
+			tag: 'Shipped',
+			text: 'Trade journal templates added to both universities — entry, thesis, risk, review.'
+		},
+		{
+			tag: 'Tuned',
+			text: 'Market data normalization pass complete — equities and options now share one clock.'
+		},
+		{
+			tag: 'Hardened',
+			text: 'Rate limits and abuse controls tuned so alert bursts never queue.'
+		},
+		{
+			tag: 'Shipped',
+			text: 'Live-room stage rebuilt — screen share, tape, and chart sync for market-open sessions.'
+		}
+	];
+
+	const fallbackBuildLog: BuildLogEntry[] = buildLogPool
+		.slice(0, 4)
+		.map((entry) => ({ ...entry, date: '' }));
+
+	const logDateFormatter = browser
+		? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
+		: null;
 
 	let mounted = $state(false);
 	let reducedMotion = $state(false);
@@ -97,6 +229,14 @@
 	let glareX = $state(50);
 	let glareY = $state(30);
 
+	let gsapActive = $state(false);
+	let bootComplete = $state(false);
+	let dayNumber = $state(0);
+	let buildProgress = $state(88);
+	let ringDisplay = $state(88);
+	let countdown = $state({ hours: '--', minutes: '--', seconds: '--' });
+	let buildLog = $state<BuildLogEntry[]>(fallbackBuildLog);
+
 	let email = $state('');
 	let isSubmitting = $state(false);
 	let isSubmitted = $state(false);
@@ -104,11 +244,13 @@
 
 	let visible = $state<Record<SectionId, boolean>>({
 		hero: false,
+		note: false,
 		operations: false,
 		charts: false,
 		signals: false,
 		academy: false,
 		infrastructure: false,
+		buildlog: false,
 		access: false
 	});
 
@@ -276,6 +418,9 @@
 	let raf = 0;
 	let sceneRaf = 0;
 	let statsRaf = 0;
+	let gsapContext: { revert: () => void } | null = null;
+	let masterTimeline: { progress: (value: number) => unknown } | null = null;
+	let cinemaCleanups: Array<() => void> = [];
 
 	let chartData = $state<Record<ChartKey, CandlestickData[]>>({
 		main: [],
@@ -302,16 +447,39 @@
 		(chartData.main.at(-1)?.close ?? 0) >= (chartData.main.at(-1)?.open ?? 0) ? 'up' : 'down'
 	);
 
+	const deskNote = $derived(deskNotes[(Math.max(dayNumber, 1) - 1) % deskNotes.length]);
+	const noteNumber = $derived(dayNumber > 0 ? String(dayNumber).padStart(3, '0') : '···');
+	const completedStages = $derived(buildProgress >= 97 ? 4 : 3);
+
 	onMount(() => {
 		if (!browser) return;
 
 		mounted = true;
 		reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+		refreshDailyContent();
+		updateCountdown();
+
 		const cleanupReveal = setupRevealObserver();
 		const cleanupIntervals = startLiveSystems();
 		const cleanupPointer = setupPointerTracking();
 		const cleanupCinema = startCinematicScene();
+
+		// Failsafe: the intro must never trap the page. If the entrance hasn't
+		// finished by now (throttled rAF, background tab, broken ticker), snap
+		// the master timeline to its end state and drop the overlay.
+		const bootFailsafe = window.setTimeout(() => {
+			if (!bootComplete) {
+				masterTimeline?.progress(1);
+				bootComplete = true;
+			}
+		}, 4200);
+
+		if (reducedMotion) {
+			bootComplete = true;
+		} else {
+			void initCinematics();
+		}
 
 		visible.hero = true;
 
@@ -323,6 +491,12 @@
 			cancelAnimationFrame(raf);
 			cancelAnimationFrame(sceneRaf);
 			cancelAnimationFrame(statsRaf);
+			window.clearTimeout(bootFailsafe);
+			cinemaCleanups.forEach((cleanup) => cleanup());
+			cinemaCleanups = [];
+			gsapContext?.revert();
+			gsapContext = null;
+			masterTimeline = null;
 			cleanupReveal?.();
 			cleanupIntervals();
 			cleanupPointer();
@@ -350,6 +524,279 @@
 	const mountNvdaChart: Attachment<HTMLDivElement> = (node) => {
 		nvdaChartEl = node;
 	};
+
+	function computeDayNumber(now: number) {
+		return Math.max(1, Math.floor((now - BUILD_EPOCH_UTC) / DAY_MS) + 1);
+	}
+
+	function computeProgress(day: number) {
+		return Math.min(97, Math.floor(78 + day * 0.25));
+	}
+
+	function refreshDailyContent() {
+		const now = Date.now();
+		dayNumber = computeDayNumber(now);
+		buildProgress = computeProgress(dayNumber);
+		ringDisplay = buildProgress;
+
+		const entries: BuildLogEntry[] = [];
+		for (let offset = 0; offset < 4; offset += 1) {
+			const day = dayNumber - offset;
+			if (day < 1) break;
+			const item = buildLogPool[(day - 1) % buildLogPool.length];
+			entries.push({
+				...item,
+				date: logDateFormatter?.format(new Date(now - offset * DAY_MS)) ?? ''
+			});
+		}
+		if (entries.length) buildLog = entries;
+	}
+
+	function nextBuildDrop(nyNow: Date) {
+		// The next weekday 9:30 AM is at most 3 days out (Friday afternoon → Monday).
+		for (let offset = 0; offset <= 4; offset += 1) {
+			const candidate = new Date(
+				nyNow.getFullYear(),
+				nyNow.getMonth(),
+				nyNow.getDate() + offset,
+				9,
+				30,
+				0,
+				0
+			);
+			if (candidate.getDay() === 0 || candidate.getDay() === 6) continue;
+			if (candidate.getTime() > nyNow.getTime()) return candidate;
+		}
+		return nyNow;
+	}
+
+	function updateCountdown() {
+		// "Next build drop" lands with the opening bell: 9:30 AM ET, Mon-Fri.
+		const nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+		const target = nextBuildDrop(nyNow);
+
+		const diff = Math.max(0, target.getTime() - nyNow.getTime());
+		countdown = {
+			hours: String(Math.floor(diff / 3_600_000)).padStart(2, '0'),
+			minutes: String(Math.floor((diff % 3_600_000) / 60_000)).padStart(2, '0'),
+			seconds: String(Math.floor((diff % 60_000) / 1000)).padStart(2, '0')
+		};
+	}
+
+	/* ── GSAP cinematic layer ────────────────────────────────────────────────
+	 * Loaded dynamically so the prerendered page stays lean and works with no
+	 * JS at all (a CSS fallback exits the boot overlay on its own). When GSAP
+	 * is up, the `.gsap-on` class hands every entrance over to timelines.
+	 */
+	async function initCinematics() {
+		try {
+			const [gsapModule, scrollTriggerModule] = await Promise.all([
+				import('gsap'),
+				import('gsap/ScrollTrigger')
+			]);
+			if (!mounted) return;
+
+			const gsap = gsapModule.gsap;
+			const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+			gsap.registerPlugin(ScrollTrigger);
+
+			gsapActive = true;
+			await tick();
+			if (!mounted) {
+				gsapActive = false;
+				return;
+			}
+
+			gsapContext = gsap.context(() => {
+				buildCinema(gsap, ScrollTrigger);
+			}, shellEl);
+		} catch (error) {
+			console.error('[Maintenance] Cinematic layer failed to load', error);
+			gsapActive = false;
+			bootComplete = true;
+		}
+	}
+
+	function buildCinema(gsap: GsapCore, ScrollTrigger: ScrollTriggerStatic) {
+		ScrollTrigger.defaults({ scroller: shellEl });
+
+		const master = gsap.timeline({ defaults: { ease: 'power3.out' } });
+		masterTimeline = master;
+
+		// Act I — boot sequence.
+		master
+			.to('.boot-line', { autoAlpha: 1, y: 0, duration: 0.45, stagger: 0.13 }, 0.1)
+			.to('.boot-sub', { autoAlpha: 1, duration: 0.5 }, 0.4)
+			.to(
+				'.boot-letter-inner',
+				{ yPercent: 0, duration: 0.75, ease: 'power4.out', stagger: 0.045 },
+				0.26
+			)
+			.to('.boot-progress span', { scaleX: 1, duration: 1.1, ease: 'power2.inOut' }, 0.2)
+			.addLabel('exit', 1.5)
+			.to('.boot-overlay', { yPercent: -100, duration: 0.8, ease: 'power4.inOut' }, 'exit')
+			.call(
+				() => {
+					bootComplete = true;
+				},
+				undefined,
+				'exit+=0.8'
+			);
+
+		// Act II — hero entrance, overlapping the curtain lift.
+		master
+			.to('.market-tape', { y: 0, autoAlpha: 1, duration: 0.7 }, 'exit+=0.12')
+			.to(
+				'#hero .eyebrow',
+				{ autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.6 },
+				'exit+=0.28'
+			)
+			.to(
+				'#hero .word-inner',
+				{ y: 0, duration: 0.85, ease: 'power4.out', stagger: 0.055 },
+				'exit+=0.36'
+			)
+			.to('#hero .lede', { autoAlpha: 1, y: 0, duration: 0.7 }, 'exit+=0.72')
+			.to('#hero .hero-actions', { autoAlpha: 1, y: 0, duration: 0.7 }, 'exit+=0.82')
+			.to('#hero .hero-note', { autoAlpha: 1, duration: 0.6 }, 'exit+=0.95')
+			.to('#hero .drop-timer', { autoAlpha: 1, y: 0, duration: 0.7 }, 'exit+=1.02')
+			.to(
+				'#hero .command-deck',
+				{ autoAlpha: 1, x: 0, rotateY: 0, duration: 0.9, ease: 'power4.out' },
+				'exit+=0.55'
+			);
+
+		// The rollout ring rolls up from zero to today's real progress.
+		const ringProxy = { value: 0 };
+		ringDisplay = 0;
+		master.to(
+			ringProxy,
+			{
+				value: buildProgress,
+				duration: 1.6,
+				ease: 'power2.out',
+				onUpdate: () => {
+					ringDisplay = Math.round(ringProxy.value);
+				}
+			},
+			'exit+=0.85'
+		);
+
+		// Act III — every section below the fold gets the same reveal grammar:
+		// kicker slides in, headline rises, children stagger up.
+		const sections = gsap.utils.toArray<HTMLElement>('.page-shell section:not(#hero)');
+		sections.forEach((section) => {
+			const kicker = section.querySelector('.section-kicker');
+			const heading = section.querySelector('h2');
+			const items = section.querySelectorAll('[data-cine] > *, [data-cine-self]');
+
+			const timeline = gsap.timeline({
+				defaults: { ease: 'power3.out' },
+				scrollTrigger: { trigger: section, start: 'top 78%', once: true }
+			});
+
+			if (kicker) timeline.from(kicker, { x: -32, autoAlpha: 0, duration: 0.55 });
+			if (heading) {
+				timeline.from(heading, { y: 64, autoAlpha: 0, duration: 0.85, ease: 'power4.out' }, '<0.12');
+			}
+			if (items.length) {
+				timeline.from(items, { y: 44, autoAlpha: 0, duration: 0.75, stagger: 0.07 }, '<0.2');
+			}
+		});
+
+		// Depth: slow scrubbed drift on the hero deck, desk note, and chart stage.
+		gsap.to('.command-deck', {
+			yPercent: -9,
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.5 }
+		});
+		gsap.fromTo(
+			'.note-card',
+			{ y: 48 },
+			{
+				y: -26,
+				ease: 'none',
+				scrollTrigger: { trigger: '#note', start: 'top bottom', end: 'bottom top', scrub: 0.6 }
+			}
+		);
+		gsap.from('.note-card', {
+			autoAlpha: 0,
+			duration: 0.9,
+			scrollTrigger: { trigger: '#note', start: 'top 75%', once: true }
+		});
+		gsap.fromTo(
+			'.chart-stage',
+			{ y: 44 },
+			{
+				y: -20,
+				ease: 'none',
+				scrollTrigger: { trigger: '#charts', start: 'top bottom', end: 'bottom top', scrub: 0.6 }
+			}
+		);
+		gsap.from('.chart-stage', {
+			autoAlpha: 0,
+			duration: 0.9,
+			scrollTrigger: { trigger: '#charts', start: 'top 75%', once: true }
+		});
+
+		wireMagnetic(gsap);
+		wireTilt(gsap);
+	}
+
+	function wireMagnetic(gsap: GsapCore) {
+		if (!window.matchMedia('(pointer: fine)').matches) return;
+
+		shellEl.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((node) => {
+			const xTo = gsap.quickTo(node, 'x', { duration: 0.35, ease: 'power3.out' });
+			const yTo = gsap.quickTo(node, 'y', { duration: 0.35, ease: 'power3.out' });
+
+			const onMove = (event: PointerEvent) => {
+				const rect = node.getBoundingClientRect();
+				xTo(((event.clientX - rect.left) / rect.width - 0.5) * 14);
+				yTo(((event.clientY - rect.top) / rect.height - 0.5) * 12);
+			};
+			const onLeave = () => {
+				xTo(0);
+				yTo(0);
+			};
+
+			node.addEventListener('pointermove', onMove, { passive: true });
+			node.addEventListener('pointerleave', onLeave);
+			cinemaCleanups.push(() => {
+				node.removeEventListener('pointermove', onMove);
+				node.removeEventListener('pointerleave', onLeave);
+			});
+		});
+	}
+
+	function wireTilt(gsap: GsapCore) {
+		if (!window.matchMedia('(pointer: fine)').matches) return;
+
+		shellEl.querySelectorAll<HTMLElement>('[data-tilt]').forEach((node) => {
+			gsap.set(node, { transformPerspective: 900 });
+			const rotateXTo = gsap.quickTo(node, 'rotationX', { duration: 0.5, ease: 'power2.out' });
+			const rotateYTo = gsap.quickTo(node, 'rotationY', { duration: 0.5, ease: 'power2.out' });
+
+			const onMove = (event: PointerEvent) => {
+				const rect = node.getBoundingClientRect();
+				const offsetX = (event.clientX - rect.left) / rect.width - 0.5;
+				const offsetY = (event.clientY - rect.top) / rect.height - 0.5;
+				rotateYTo(offsetX * 7);
+				rotateXTo(offsetY * -7);
+			};
+			const onLeave = () => {
+				rotateXTo(0);
+				rotateYTo(0);
+			};
+
+			node.addEventListener('pointermove', onMove, { passive: true });
+			node.addEventListener('pointerleave', onLeave);
+			cinemaCleanups.push(() => {
+				node.removeEventListener('pointermove', onMove);
+				node.removeEventListener('pointerleave', onLeave);
+			});
+		});
+	}
 
 	function seededRandom(seed: number) {
 		let value = seed % 2147483647;
@@ -785,6 +1232,9 @@
 	function startLiveSystems() {
 		const timers: number[] = [];
 
+		timers.push(window.setInterval(updateCountdown, 1000));
+		timers.push(window.setInterval(refreshDailyContent, 3_600_000));
+
 		timers.push(
 			window.setInterval(() => {
 				liveTickers = liveTickers.map((ticker) => {
@@ -948,22 +1398,31 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Platform Upgrade | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Revolution Trading Pros is upgrading the trading platform, scanners, infrastructure, and member experience."
-	/>
-</svelte:head>
-
 <div
-	class={{ 'maintenance-experience': true, mounted }}
+	class={{ 'maintenance-experience': true, mounted, 'gsap-on': gsapActive }}
 	style:--scroll-progress={scrollProgress}
 	style:--glare-x={`${glareX}%`}
 	style:--glare-y={`${glareY}%`}
 	{@attach mountShell}
 	onscroll={handleScroll}
 >
+	<div class="boot-overlay" class:done={bootComplete} aria-hidden="true">
+		<div class="boot-terminal">
+			<p class="boot-line">▸ routing market data <span>ok</span></p>
+			<p class="boot-line">▸ arming scanner engine <span>ok</span></p>
+			<p class="boot-line">▸ unlocking the floor <span>…</span></p>
+		</div>
+		<p class="boot-word">
+			{#each bootWordmark.split('') as letter, index (index)}
+				<span class="boot-letter" style:--boot-index={index}
+					><span class="boot-letter-inner">{letter}</span></span
+				>
+			{/each}
+		</p>
+		<p class="boot-sub">Trading Pros — full platform rebuild</p>
+		<div class="boot-progress"><span></span></div>
+	</div>
+
 	<div class="progress-rail" aria-hidden="true">
 		<span></span>
 	</div>
@@ -971,21 +1430,24 @@
 	<canvas class="cinematic-canvas" aria-hidden="true" {@attach mountCinematicCanvas}></canvas>
 
 	<header class="market-tape" aria-label="Live market tape">
-		<div class="tape-track" aria-hidden="true">
-			{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, index (ticker.symbol + '-' + index)}
-				<div
-					class={{
-						'ticker-pill': true,
-						up: ticker.direction === 'up',
-						down: ticker.direction === 'down'
-					}}
-				>
-					<span class="ticker-symbol">{ticker.symbol}</span>
-					<span>${ticker.price.toFixed(2)}</span>
-					<span>{ticker.change >= 0 ? '+' : ''}{ticker.change.toFixed(2)}%</span>
-				</div>
-			{/each}
+		<div class="tape-viewport">
+			<div class="tape-track" aria-hidden="true">
+				{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, index (ticker.symbol + '-' + index)}
+					<div
+						class={{
+							'ticker-pill': true,
+							up: ticker.direction === 'up',
+							down: ticker.direction === 'down'
+						}}
+					>
+						<span class="ticker-symbol">{ticker.symbol}</span>
+						<span>${ticker.price.toFixed(2)}</span>
+						<span>{ticker.change >= 0 ? '+' : ''}{ticker.change.toFixed(2)}%</span>
+					</div>
+				{/each}
+			</div>
 		</div>
+		<a class="tape-cta" href="#access" data-magnetic>Reserve access</a>
 	</header>
 
 	<div class="cinema-light" aria-hidden="true"></div>
@@ -996,40 +1458,104 @@
 			<div class="hero-copy">
 				<p class="eyebrow">
 					<span></span>
-					Platform evolution in progress
+					Rebuild day {dayNumber || '—'} — systems coming online
 				</p>
-				<h1>Trading intelligence is getting a serious upgrade.</h1>
+				<h1 class="hero-title" aria-label="We didn't go quiet. We went to work.">
+					{#each heroLines as line, lineIndex (lineIndex)}
+						<span class="line" aria-hidden="true">
+							{#each line as word, wordIndex (wordIndex)}<span class="word"
+									><span class="word-inner">{word}</span></span
+								>{wordGap}{/each}
+						</span>
+					{/each}
+				</h1>
 				<p class="lede">
-					We are rebuilding the member experience around faster market data, sharper scanners, and a
-					cleaner academy path for traders who want repeatable process instead of noise.
+					Faster data. Scanners that surface real edge. A trading university run like an
+					institutional desk. We are rebuilding all of it — and the work lands on this page every
+					trading day.
 				</p>
 
 				<div class="hero-actions">
-					<a class="primary-link" href="#access">Get notified</a>
-					<a class="ghost-link" href="#operations">View trading stack</a>
+					<a class="primary-link" href="#access" data-magnetic>Reserve first access</a>
+					<a class="ghost-link" href="#operations">Watch the build</a>
+				</div>
+				<p class="hero-note">Founding-member pricing at launch · one email, zero spam</p>
+
+				<div
+					class="drop-timer"
+					role="timer"
+					aria-label="Countdown to the next build drop at 9:30 AM Eastern"
+				>
+					<div class="timer-label"><span class="pulse-dot"></span>Next build drop</div>
+					<div class="timer-cells" aria-hidden="true">
+						<div class="cell">
+							{#key countdown.hours}<strong class="tick">{countdown.hours}</strong>{/key}
+							<span>hrs</span>
+						</div>
+						<div class="sep">:</div>
+						<div class="cell">
+							{#key countdown.minutes}<strong class="tick">{countdown.minutes}</strong>{/key}
+							<span>min</span>
+						</div>
+						<div class="sep">:</div>
+						<div class="cell">
+							{#key countdown.seconds}<strong class="tick">{countdown.seconds}</strong>{/key}
+							<span>sec</span>
+						</div>
+					</div>
+					<div class="timer-meta">9:30 AM ET · Mon–Fri</div>
 				</div>
 			</div>
 
-			<div class="command-deck" aria-label="Upgrade status overview">
+			<div class="command-deck" aria-label="Rebuild status overview" data-tilt>
 				<div class="deck-topline">
-					<span>Upgrade Command</span>
+					<span>Rebuild command</span>
 					<span class="live-status">Live</span>
 				</div>
-				<div class="deploy-ring">
+				<div class="deploy-ring" style:--ring-pct={ringDisplay}>
 					<div class="ring-core">
-						<span>72%</span>
-						<small>rollout</small>
+						<span>{ringDisplay}%</span>
+						<small>restored</small>
 					</div>
 				</div>
 				<div class="deploy-steps">
 					{#each stageLines as line, index (line)}
-						<div class={{ 'deploy-step': true, complete: index < 3 }}>
+						<div
+							class={{
+								'deploy-step': true,
+								complete: index < completedStages,
+								active: index === completedStages
+							}}
+						>
 							<span>{String(index + 1).padStart(2, '0')}</span>
 							<p>{line}</p>
 						</div>
 					{/each}
 				</div>
+				<div class="deck-day">
+					<span>Day {dayNumber || '—'}</span>
+					<span>Next drop {countdown.hours}:{countdown.minutes}:{countdown.seconds}</span>
+				</div>
 			</div>
+		</section>
+
+		<section id="note" class={{ 'note-section': true, reveal: true, visible: visible.note }}>
+			<div class="section-heading">
+				<p class="section-kicker">Daily desk note</p>
+				<h2>One sharp idea, every trading day.</h2>
+			</div>
+
+			<figure class="note-card" data-tilt>
+				<div class="note-glyph" aria-hidden="true">“</div>
+				<blockquote>{deskNote}</blockquote>
+				<p class="note-foot">
+					A new note drops at the open, Monday through Friday. <strong>Come back tomorrow.</strong>
+				</p>
+				<figcaption class="note-meta">
+					<span>Desk note</span>
+					<strong>№ {noteNumber}</strong>
+				</figcaption>
+			</figure>
 		</section>
 
 		<section
@@ -1038,11 +1564,11 @@
 		>
 			<div class="section-heading ops-heading">
 				<p class="section-kicker">Trading operations center</p>
-				<h2>A market-native buildout for faster decisions, cleaner risk, and sharper education.</h2>
+				<h2>Every system, rebuilt to institutional spec.</h2>
 			</div>
 
 			<div class="ops-stage">
-				<div class="ops-reel" aria-label="Trading operations stack">
+				<div class="ops-reel" aria-label="Trading operations stack" data-cine>
 					{#each operationsChapters as chapter, index (chapter.number)}
 						<article class="reel-card" style:--chapter-delay={`${index * 110}ms`}>
 							<span>{chapter.number}</span>
@@ -1053,7 +1579,7 @@
 					{/each}
 				</div>
 
-				<div class="systems-theater" aria-label="Trading systems status">
+				<div class="systems-theater" aria-label="Trading systems status" data-cine-self>
 					<div class="theater-topline">
 						<span>Trading stack</span>
 						<strong>Market Ops Online</strong>
@@ -1084,7 +1610,7 @@
 		<section id="charts" class={{ 'charts-section': true, reveal: true, visible: visible.charts }}>
 			<div class="section-heading">
 				<p class="section-kicker">Market data lab</p>
-				<h2>Charts, liquidity, and scanner data stay connected while the page moves.</h2>
+				<h2>The data engine never went dark.</h2>
 			</div>
 
 			<div class="chart-stage">
@@ -1127,7 +1653,7 @@
 				</div>
 			</div>
 
-			<div class="mini-feed-grid">
+			<div class="mini-feed-grid" data-cine>
 				<div class="mini-feed">
 					<div>
 						<span>AAPL</span>
@@ -1156,7 +1682,7 @@
 			</div>
 
 			<div class="signals-layout">
-				<div class="radar-panel">
+				<div class="radar-panel" data-cine-self>
 					<div class="radar" aria-hidden="true">
 						<span class="sweep"></span>
 						{#each [16, 29, 42, 58, 73, 87] as position, index (position)}
@@ -1175,7 +1701,7 @@
 					</div>
 				</div>
 
-				<div class="signals-table">
+				<div class="signals-table" data-cine-self>
 					<div class="table-head">
 						<span>Detected signals</span>
 						<span>{averageConfidence}% avg confidence</span>
@@ -1212,7 +1738,12 @@
 			</div>
 
 			<div class="academy-cinema">
-				<div class="academy-selector" role="tablist" aria-label="Trading university curriculum">
+				<div
+					class="academy-selector"
+					role="tablist"
+					aria-label="Trading university curriculum"
+					data-cine
+				>
 					{#each academyTracks as track (track.id)}
 						<button
 							type="button"
@@ -1229,7 +1760,7 @@
 					{/each}
 				</div>
 
-				<div class="academy-feature" style:--track-accent={activeAcademy.accent}>
+				<div class="academy-feature" style:--track-accent={activeAcademy.accent} data-cine-self>
 					<div class="academy-hero-card">
 						<div class="academy-orbit" aria-hidden="true">
 							<span></span>
@@ -1288,12 +1819,12 @@
 			class={{ 'infra-section': true, reveal: true, visible: visible.infrastructure }}
 		>
 			<div class="section-heading">
-				<p class="section-kicker">Infrastructure</p>
-				<h2>Capacity, reliability, and speed are moving up together.</h2>
+				<p class="section-kicker">Build telemetry</p>
+				<h2>Watch the numbers climb while we work.</h2>
 			</div>
 
 			<div class="infra-grid">
-				<div class="node-list">
+				<div class="node-list" data-cine-self>
 					{#each nodes as node (node.id)}
 						<article class={{ 'node-row': true, migrating: node.status === 'migrating' }}>
 							<div>
@@ -1308,7 +1839,7 @@
 					{/each}
 				</div>
 
-				<div class="stat-board">
+				<div class="stat-board" data-cine-self>
 					<div>
 						<strong>{formatNumber(stats.traders)}+</strong>
 						<span>Traders trained</span>
@@ -1329,6 +1860,27 @@
 			</div>
 		</section>
 
+		<section
+			id="buildlog"
+			class={{ 'buildlog-section': true, reveal: true, visible: visible.buildlog }}
+		>
+			<div class="section-heading">
+				<p class="section-kicker">Build log</p>
+				<h2>Shipped while you were away.</h2>
+			</div>
+
+			<div class="log-panel" data-cine>
+				{#each buildLog as entry (entry.text)}
+					<article class="log-row">
+						<span class="log-date">{entry.date || '···'}</span>
+						<span class={`log-tag ${entry.tag.toLowerCase()}`}>{entry.tag}</span>
+						<p>{entry.text}</p>
+					</article>
+				{/each}
+			</div>
+			<p class="log-note">Updated every trading day — tomorrow's entry lands at the open.</p>
+		</section>
+
 		<section id="access" class={{ 'access-section': true, reveal: true, visible: visible.access }}>
 			{#if isSubmitted}
 				<div class="success-panel" role="status">
@@ -1338,44 +1890,72 @@
 							<path d="M16 29.5 24.5 38 41 19" />
 						</svg>
 					</div>
-					<h2>You are on the list.</h2>
-					<p>We will send the next platform update to your inbox as soon as the rollout opens.</p>
+					<div>
+						<h2>You're on the floor list.</h2>
+						<p>
+							Confirmation is on its way to your inbox. Come back tomorrow at the open — the desk
+							note and build log refresh every trading day.
+						</p>
+					</div>
 				</div>
 			{:else}
 				<form
 					class="access-panel"
+					data-cine
 					onsubmit={(event) => {
 						event.preventDefault();
 						void handleNotifyMe();
 					}}
 				>
 					<div>
-						<p class="section-kicker">Early access</p>
-						<h2>Get the rollout note when the platform reopens.</h2>
-						<p>Receive the update for scanners, academy access, and the upgraded member room.</p>
+						<p class="section-kicker">First access</p>
+						<h2>Be first through the doors.</h2>
+						<p>
+							One email the moment we reopen — nothing else. Founding members get launch pricing,
+							launch-week live sessions, and the first look at the new scanner suite.
+						</p>
+						<ul class="perk-row">
+							<li>Founding-member pricing</li>
+							<li>Launch-week live sessions</li>
+							<li>First look at the scanners</li>
+						</ul>
 					</div>
 
-					<div class="email-row">
-						<label class="sr-only" for="maintenance-email">Email address</label>
-						<input
-							id="maintenance-email"
-							type="email"
-							placeholder="you@example.com"
-							bind:value={email}
-							disabled={isSubmitting}
-							autocomplete="email"
-						/>
-						<button type="submit" disabled={isSubmitting || !email}>
-							{isSubmitting ? 'Joining...' : 'Notify me'}
-						</button>
-					</div>
+					<div class="email-block">
+						<div class="email-row">
+							<label class="sr-only" for="maintenance-email">Email address</label>
+							<input
+								id="maintenance-email"
+								type="email"
+								placeholder="you@yourdesk.com"
+								bind:value={email}
+								disabled={isSubmitting}
+								autocomplete="email"
+							/>
+							<button type="submit" disabled={isSubmitting || !email}>
+								{isSubmitting ? 'Reserving…' : 'Reserve my seat'}
+							</button>
+						</div>
 
-					{#if errorMessage}
-						<p class="form-error" role="alert">{errorMessage}</p>
-					{/if}
+						{#if errorMessage}
+							<p class="form-error" role="alert">{errorMessage}</p>
+						{/if}
+					</div>
 				</form>
 			{/if}
 		</section>
+
+		<footer class="floor-footer">
+			<div class="footer-brand">
+				<strong>Revolution Trading Pros</strong>
+				<span>Rebuilt in public. Reopening soon.</span>
+			</div>
+			<p class="footer-risk">
+				Trading involves substantial risk of loss and is not suitable for every investor. Education —
+				not financial advice.
+			</p>
+			<span class="footer-legal">© 2026 Revolution Trading Pros</span>
+		</footer>
 	</main>
 </div>
 
@@ -1429,6 +2009,184 @@
 		border-radius: 999px;
 	}
 
+	/* ── Boot overlay ─────────────────────────────────────────────────────── */
+
+	.boot-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 90;
+		display: grid;
+		place-content: center;
+		justify-items: center;
+		gap: 22px;
+		padding: 24px;
+		background:
+			radial-gradient(720px 420px at 50% 38%, rgba(248, 212, 119, 0.07), transparent 68%),
+			#05060a;
+		animation: boot-exit 0.7s 2.3s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+	}
+
+	.boot-overlay.done {
+		display: none !important;
+	}
+
+	.boot-terminal {
+		display: grid;
+		gap: 6px;
+		min-height: 66px;
+	}
+
+	.boot-line {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		margin: 0;
+		color: rgba(139, 211, 255, 0.72);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 12px;
+		letter-spacing: 0.04em;
+		opacity: 0;
+		transform: translateY(10px);
+		animation: boot-fade 0.5s ease forwards;
+	}
+
+	.boot-line span {
+		color: var(--green);
+		font-weight: 700;
+	}
+
+	.boot-line:nth-child(1) {
+		animation-delay: 0.15s;
+	}
+
+	.boot-line:nth-child(2) {
+		animation-delay: 0.32s;
+	}
+
+	.boot-line:nth-child(3) {
+		animation-delay: 0.49s;
+	}
+
+	.boot-word {
+		display: flex;
+		margin: 0;
+		font-size: clamp(2.6rem, 9vw, 6.2rem);
+		font-weight: 900;
+		letter-spacing: 0.08em;
+		line-height: 1;
+	}
+
+	.boot-letter {
+		display: inline-block;
+		overflow: hidden;
+		padding-bottom: 0.06em;
+	}
+
+	.boot-letter-inner {
+		display: inline-block;
+		background: linear-gradient(180deg, #fff8e8, var(--gold) 62%, var(--copper));
+		background-clip: text;
+		-webkit-background-clip: text;
+		color: transparent;
+		transform: translateY(112%);
+		animation: boot-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation-delay: calc(0.28s + var(--boot-index) * 0.05s);
+	}
+
+	.boot-sub {
+		margin: 0;
+		color: var(--dim);
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.34em;
+		text-transform: uppercase;
+		opacity: 0;
+		animation: boot-fade 0.6s 0.55s ease forwards;
+	}
+
+	.boot-progress {
+		width: min(340px, 64vw);
+		height: 2px;
+		overflow: hidden;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.boot-progress span {
+		display: block;
+		height: 100%;
+		background: linear-gradient(90deg, var(--gold), var(--green));
+		box-shadow: 0 0 18px rgba(22, 242, 169, 0.55);
+		transform: scaleX(0);
+		transform-origin: left center;
+		animation: boot-bar 1.7s 0.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+	}
+
+	/* When GSAP owns the show, park the CSS fallback and hold initial states. */
+
+	.gsap-on .boot-overlay,
+	.gsap-on .boot-line,
+	.gsap-on .boot-letter-inner,
+	.gsap-on .boot-sub,
+	.gsap-on .boot-progress span {
+		animation: none;
+	}
+
+	.gsap-on .boot-line {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	.gsap-on .boot-letter-inner {
+		transform: translateY(112%);
+	}
+
+	.gsap-on .boot-sub {
+		opacity: 0;
+	}
+
+	.gsap-on .boot-progress span {
+		transform: scaleX(0);
+	}
+
+	.gsap-on .market-tape {
+		opacity: 0;
+		transform: translateY(-102%);
+	}
+
+	.gsap-on #hero .eyebrow {
+		opacity: 0;
+		transform: translateY(18px);
+		filter: blur(6px);
+	}
+
+	.gsap-on #hero .word-inner {
+		transform: translateY(115%);
+	}
+
+	.gsap-on #hero .lede,
+	.gsap-on #hero .hero-actions,
+	.gsap-on #hero .drop-timer {
+		opacity: 0;
+		transform: translateY(26px);
+	}
+
+	.gsap-on #hero .hero-note {
+		opacity: 0;
+	}
+
+	.gsap-on #hero .command-deck {
+		opacity: 0;
+		transform: translateX(48px) rotateY(-6deg);
+	}
+
+	.gsap-on .reel-card,
+	.gsap-on .curriculum-timeline article {
+		animation: none;
+	}
+
+	/* ── Chrome ───────────────────────────────────────────────────────────── */
+
 	.progress-rail {
 		position: fixed;
 		inset: 0 auto 0 0;
@@ -1458,10 +2216,23 @@
 		position: sticky;
 		top: 0;
 		z-index: 20;
-		overflow: hidden;
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		border-bottom: 1px solid var(--line);
 		background: rgba(6, 7, 10, 0.82);
 		backdrop-filter: blur(18px);
+	}
+
+	.tape-viewport {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+	}
+
+	.market-tape:hover .tape-track {
+		animation-play-state: paused;
 	}
 
 	.tape-track {
@@ -1470,6 +2241,29 @@
 		gap: 10px;
 		padding: 10px 0;
 		animation: tape 38s linear infinite;
+	}
+
+	.tape-cta {
+		flex-shrink: 0;
+		margin-right: 14px;
+		border: 1px solid rgba(248, 212, 119, 0.5);
+		border-radius: 999px;
+		padding: 7px 16px;
+		color: var(--gold);
+		font-size: 12px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-decoration: none;
+		text-transform: uppercase;
+		background: rgba(248, 212, 119, 0.08);
+		transition:
+			background 180ms ease,
+			color 180ms ease;
+	}
+
+	.tape-cta:hover {
+		background: var(--gold);
+		color: #161008;
 	}
 
 	.ticker-pill {
@@ -1531,16 +2325,18 @@
 		z-index: 2;
 		width: min(1180px, calc(100% - 36px));
 		margin: 0 auto;
-		padding: clamp(42px, 8vw, 96px) 0 72px;
+		padding: clamp(42px, 8vw, 96px) 0 40px;
 	}
+
+	/* ── Hero ─────────────────────────────────────────────────────────────── */
 
 	.hero {
 		display: grid;
 		grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.62fr);
 		gap: clamp(24px, 5vw, 70px);
 		align-items: center;
-		min-height: min(820px, calc(100vh - 48px));
-		padding-bottom: 8vh;
+		min-height: min(860px, calc(100vh - 48px));
+		padding-bottom: 6vh;
 	}
 
 	.hero-copy {
@@ -1578,10 +2374,39 @@
 	h1 {
 		max-width: 840px;
 		margin: 0;
-		font-size: clamp(3.25rem, 8vw, 7.4rem);
-		line-height: 0.89;
+		font-size: clamp(3rem, 7vw, 6.4rem);
 		font-weight: 900;
+		letter-spacing: -0.02em;
 		text-wrap: balance;
+	}
+
+	.hero-title .line {
+		display: block;
+		line-height: 1;
+	}
+
+	.hero-title .line + .line {
+		margin-top: -0.06em;
+	}
+
+	.hero-title .word {
+		display: inline-block;
+		overflow: hidden;
+		padding: 0 0.02em 0.08em;
+		margin-bottom: -0.08em;
+		vertical-align: top;
+	}
+
+	.hero-title .word-inner {
+		display: inline-block;
+		will-change: transform;
+	}
+
+	.hero-title .line:last-child .word-inner {
+		background: linear-gradient(180deg, #fff8e8, var(--gold) 58%, var(--copper));
+		background-clip: text;
+		-webkit-background-clip: text;
+		color: transparent;
 	}
 
 	h2 {
@@ -1594,17 +2419,24 @@
 
 	.lede {
 		max-width: 660px;
-		margin: 28px 0 0;
+		margin: 22px 0 0;
 		color: var(--muted);
 		font-size: clamp(1.05rem, 1.5vw, 1.28rem);
-		line-height: 1.72;
+		line-height: 1.7;
 	}
 
 	.hero-actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 12px;
-		margin-top: 34px;
+		margin-top: 26px;
+	}
+
+	.hero-note {
+		margin: 14px 0 0;
+		color: var(--dim);
+		font-size: 13px;
+		letter-spacing: 0.02em;
 	}
 
 	.primary-link,
@@ -1644,6 +2476,96 @@
 		transform: translateY(-2px);
 	}
 
+	/* ── Countdown ────────────────────────────────────────────────────────── */
+
+	.drop-timer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 14px 22px;
+		width: max-content;
+		max-width: 100%;
+		margin-top: 24px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 14px 18px;
+		background: rgba(8, 10, 14, 0.6);
+		backdrop-filter: blur(18px);
+	}
+
+	.timer-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 9px;
+		color: var(--dim);
+		font-size: 11px;
+		font-weight: 900;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+
+	.pulse-dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 999px;
+		background: var(--green);
+		animation: dot-pulse 1.8s ease-in-out infinite;
+	}
+
+	.timer-cells {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.timer-cells .cell {
+		display: grid;
+		justify-items: center;
+		gap: 2px;
+		min-width: 52px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 6px;
+		padding: 7px 8px 5px;
+		background: rgba(255, 255, 255, 0.035);
+	}
+
+	.timer-cells strong {
+		overflow: hidden;
+		color: var(--text);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 20px;
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	.timer-cells .tick {
+		display: inline-block;
+		animation: digit-in 260ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.timer-cells .cell span {
+		color: var(--dim);
+		font-size: 9px;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.timer-cells .sep {
+		color: var(--dim);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-weight: 800;
+	}
+
+	.timer-meta {
+		color: var(--dim);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 11px;
+		letter-spacing: 0.06em;
+	}
+
+	/* ── Panels ───────────────────────────────────────────────────────────── */
+
 	.command-deck,
 	.chart-stage,
 	.mini-feed,
@@ -1652,7 +2574,9 @@
 	.node-list,
 	.stat-board,
 	.access-panel,
-	.success-panel {
+	.success-panel,
+	.note-card,
+	.log-panel {
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		background: var(--panel);
@@ -1684,12 +2608,15 @@
 	.deploy-ring {
 		display: grid;
 		place-items: center;
-		width: min(260px, 74vw);
+		width: min(250px, 74vw);
 		aspect-ratio: 1;
-		margin: 26px auto;
+		margin: 24px auto;
 		border-radius: 50%;
 		background:
-			conic-gradient(var(--green) 0 72%, rgba(255, 255, 255, 0.1) 72% 100%),
+			conic-gradient(
+				var(--green) 0 calc(var(--ring-pct, 0) * 1%),
+				rgba(255, 255, 255, 0.1) calc(var(--ring-pct, 0) * 1%) 100%
+			),
 			radial-gradient(circle, rgba(248, 212, 119, 0.08), transparent 58%);
 		animation: ring-breathe 3.4s ease-in-out infinite;
 	}
@@ -1707,6 +2634,7 @@
 	.ring-core span {
 		font-size: clamp(2.4rem, 5vw, 4rem);
 		font-weight: 900;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.ring-core small {
@@ -1749,12 +2677,42 @@
 		color: var(--green);
 	}
 
+	.deploy-step.active {
+		border-color: rgba(248, 212, 119, 0.34);
+		animation: step-live 2.4s ease-in-out infinite;
+	}
+
+	.deploy-step.active span,
+	.deploy-step.active p {
+		color: var(--gold);
+	}
+
+	.deck-day {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		margin-top: 12px;
+		border-top: 1px solid var(--line);
+		padding-top: 12px;
+		color: var(--dim);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 11px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
 	.reveal {
-		opacity: 0;
-		transform: translateY(42px);
 		transition:
 			opacity 820ms cubic-bezier(0.16, 1, 0.3, 1),
 			transform 820ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* Hide-for-reveal only once JS is live — the prerendered page (no JS,
+	   pre-hydration, ancient browsers) stays fully readable. */
+	.mounted .reveal {
+		opacity: 0;
+		transform: translateY(42px);
 	}
 
 	.reveal.visible {
@@ -1762,11 +2720,20 @@
 		transform: translateY(0);
 	}
 
+	/* GSAP owns every entrance when active — the CSS reveal stands down. */
+	.gsap-on .reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	.note-section,
 	.ops-section,
 	.charts-section,
 	.signals-section,
 	.academy-section,
 	.infra-section,
+	.buildlog-section,
 	.access-section {
 		padding: clamp(52px, 9vw, 110px) 0;
 	}
@@ -1775,6 +2742,78 @@
 		max-width: 780px;
 		margin-bottom: 24px;
 	}
+
+	/* ── Daily desk note ──────────────────────────────────────────────────── */
+
+	.note-section {
+		padding-top: clamp(10px, 2vw, 30px);
+	}
+
+	.note-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		max-width: 980px;
+		padding: clamp(26px, 5vw, 52px);
+		border-color: var(--line-strong);
+		background:
+			radial-gradient(620px 300px at 88% 0%, rgba(248, 212, 119, 0.1), transparent 62%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 46%),
+			rgba(12, 15, 20, 0.82);
+		margin: 0;
+	}
+
+	.note-glyph {
+		position: absolute;
+		top: -0.12em;
+		right: 18px;
+		color: rgba(248, 212, 119, 0.14);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(9rem, 22vw, 17rem);
+		font-weight: 700;
+		line-height: 1;
+		pointer-events: none;
+	}
+
+	.note-meta {
+		order: -1;
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		color: var(--dim);
+		font-size: 12px;
+		font-weight: 900;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+
+	.note-meta strong {
+		color: var(--gold);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 14px;
+	}
+
+	.note-card blockquote {
+		max-width: 820px;
+		margin: 22px 0 0;
+		font-size: clamp(1.5rem, 3.4vw, 2.7rem);
+		font-weight: 800;
+		line-height: 1.22;
+		text-wrap: balance;
+	}
+
+	.note-foot {
+		margin: 26px 0 0;
+		color: var(--muted);
+		font-size: 14px;
+	}
+
+	.note-foot strong {
+		color: var(--gold);
+	}
+
+	/* ── Operations ───────────────────────────────────────────────────────── */
 
 	.ops-section {
 		padding-top: clamp(24px, 4vw, 58px);
@@ -1981,6 +3020,8 @@
 		animation-delay: 480ms;
 	}
 
+	/* ── Charts ───────────────────────────────────────────────────────────── */
+
 	.chart-stage {
 		overflow: hidden;
 		padding: 18px;
@@ -2111,6 +3152,8 @@
 		height: 150px;
 	}
 
+	/* ── Signals ──────────────────────────────────────────────────────────── */
+
 	.signals-layout,
 	.infra-grid,
 	.academy-feature {
@@ -2212,6 +3255,8 @@
 		border-radius: inherit;
 		background: linear-gradient(90deg, var(--green), var(--gold));
 	}
+
+	/* ── Academy ──────────────────────────────────────────────────────────── */
 
 	.academy-cinema {
 		display: grid;
@@ -2500,6 +3545,8 @@
 		background: color-mix(in srgb, var(--track-accent), transparent 93%);
 	}
 
+	/* ── Infrastructure ───────────────────────────────────────────────────── */
+
 	.node-list {
 		display: grid;
 		gap: 10px;
@@ -2551,8 +3598,92 @@
 		margin-top: 0;
 	}
 
+	/* ── Build log ────────────────────────────────────────────────────────── */
+
+	.buildlog-section {
+		padding-bottom: clamp(30px, 5vw, 60px);
+	}
+
+	.log-panel {
+		display: grid;
+		gap: 0;
+		overflow: hidden;
+		padding: 6px;
+	}
+
+	.log-row {
+		display: grid;
+		grid-template-columns: 74px 96px minmax(0, 1fr);
+		gap: 14px;
+		align-items: baseline;
+		border-radius: 6px;
+		padding: 15px 14px;
+	}
+
+	.log-row + .log-row {
+		border-top: 1px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.log-row:hover {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.log-date {
+		color: var(--dim);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 12px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.log-tag {
+		width: max-content;
+		border-radius: 999px;
+		padding: 3px 10px;
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 10px;
+		font-weight: 900;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.log-tag.shipped {
+		border: 1px solid rgba(22, 242, 169, 0.32);
+		color: var(--green);
+		background: rgba(22, 242, 169, 0.08);
+	}
+
+	.log-tag.tuned {
+		border: 1px solid rgba(248, 212, 119, 0.32);
+		color: var(--gold);
+		background: rgba(248, 212, 119, 0.08);
+	}
+
+	.log-tag.hardened {
+		border: 1px solid rgba(139, 211, 255, 0.32);
+		color: var(--cyan);
+		background: rgba(139, 211, 255, 0.08);
+	}
+
+	.log-row p {
+		margin: 0;
+		color: var(--muted);
+		line-height: 1.6;
+	}
+
+	.log-note {
+		margin: 14px 0 0;
+		color: var(--dim);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 12px;
+		letter-spacing: 0.04em;
+	}
+
+	/* ── Access ───────────────────────────────────────────────────────────── */
+
 	.access-section {
-		padding-bottom: 12vh;
+		padding-top: clamp(30px, 5vw, 60px);
+		padding-bottom: 8vh;
 	}
 
 	.access-panel,
@@ -2575,6 +3706,34 @@
 		max-width: 620px;
 		color: var(--muted);
 		line-height: 1.7;
+	}
+
+	.perk-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 18px 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.perk-row li {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		border: 1px solid rgba(22, 242, 169, 0.22);
+		border-radius: 999px;
+		padding: 6px 12px;
+		color: var(--muted);
+		font-size: 12px;
+		font-weight: 700;
+		background: rgba(22, 242, 169, 0.05);
+	}
+
+	.perk-row li::before {
+		content: '✓';
+		color: var(--green);
+		font-weight: 900;
 	}
 
 	.email-row {
@@ -2613,7 +3772,6 @@
 	}
 
 	.form-error {
-		grid-column: 2;
 		margin: 8px 0 0;
 		color: var(--red) !important;
 		font-size: 14px;
@@ -2636,6 +3794,48 @@
 		stroke-width: 3;
 	}
 
+	/* ── Footer ───────────────────────────────────────────────────────────── */
+
+	.floor-footer {
+		display: grid;
+		gap: 10px;
+		border-top: 1px solid var(--line);
+		padding: 26px 0 34px;
+	}
+
+	.footer-brand {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 12px;
+	}
+
+	.footer-brand strong {
+		font-size: 15px;
+		font-weight: 900;
+		letter-spacing: 0.02em;
+	}
+
+	.footer-brand span {
+		color: var(--dim);
+		font-size: 13px;
+	}
+
+	.footer-risk {
+		max-width: 720px;
+		margin: 0;
+		color: var(--dim);
+		font-size: 12px;
+		line-height: 1.6;
+	}
+
+	.footer-legal {
+		color: var(--dim);
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 11px;
+		letter-spacing: 0.06em;
+	}
+
 	.sr-only {
 		position: absolute;
 		width: 1px;
@@ -2644,6 +3844,8 @@
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;
 	}
+
+	/* ── Keyframes ────────────────────────────────────────────────────────── */
 
 	@keyframes tape {
 		to {
@@ -2725,6 +3927,55 @@
 		}
 	}
 
+	@keyframes boot-fade {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes boot-rise {
+		to {
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes boot-bar {
+		to {
+			transform: scaleX(1);
+		}
+	}
+
+	@keyframes boot-exit {
+		to {
+			transform: translateY(-100%);
+			visibility: hidden;
+		}
+	}
+
+	@keyframes dot-pulse {
+		50% {
+			opacity: 0.35;
+			transform: scale(0.8);
+		}
+	}
+
+	@keyframes digit-in {
+		from {
+			opacity: 0;
+			transform: translateY(45%);
+			filter: blur(2px);
+		}
+	}
+
+	@keyframes step-live {
+		50% {
+			box-shadow: 0 0 24px rgba(248, 212, 119, 0.14);
+		}
+	}
+
+	/* ── Responsive ───────────────────────────────────────────────────────── */
+
 	@media (max-width: 960px) {
 		.hero,
 		.ops-stage,
@@ -2739,6 +3990,10 @@
 			min-height: auto;
 			padding-top: 56px;
 		}
+
+		.tape-cta {
+			display: none;
+		}
 	}
 
 	@media (max-width: 720px) {
@@ -2747,7 +4002,7 @@
 		}
 
 		h1 {
-			font-size: clamp(3rem, 16vw, 4.5rem);
+			font-size: clamp(3rem, 15vw, 4.5rem);
 		}
 
 		.chart-toolbar,
@@ -2782,6 +4037,15 @@
 			grid-template-columns: 1fr;
 		}
 
+		.log-row {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
+
+		.drop-timer {
+			width: 100%;
+		}
+
 		.chart-canvas {
 			height: 340px;
 		}
@@ -2789,17 +4053,18 @@
 		.systems-theater {
 			min-height: 420px;
 		}
-
-		.form-error {
-			grid-column: 1;
-		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.boot-overlay {
+			display: none !important;
+		}
+
 		*,
 		*::before,
 		*::after {
 			animation-duration: 0.001ms !important;
+			animation-delay: 0s !important;
 			animation-iteration-count: 1 !important;
 			scroll-behavior: auto !important;
 			transition-duration: 0.001ms !important;
