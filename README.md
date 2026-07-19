@@ -54,7 +54,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 |-------|------|
 | [`docs/development/LOCAL_DEV.md`](docs/development/LOCAL_DEV.md) | Boot the stack from a fresh clone in 10 min |
 | [`docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md`](docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md) | Stack reference, public URLs, full auth flow |
-| [`docs/audits/`](docs/audits/) | Five 2026-04-25 audits — start with `REPO_STATE_2026-04-25.md` |
+| [`docs/audits/`](docs/audits/) | All audits, newest first — start with `PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md` |
 | [`docs/setup/`](docs/setup/) | Production deployment + Stripe + R2 setup |
 | [`docs/frontend/`](docs/frontend/) | Frontend-specific guides (admin responsive, footer audit, remote-functions migration) |
 | [`docs/audits/`](docs/audits/) (incident/forensic reports) | Older incident and forensic reports also live in `docs/audits/` — there is no separate `docs/forensics/` directory |
@@ -72,7 +72,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 | Email | Postmark | Postmark |
 | Payments | Stripe | external |
 | Video / large file CDN | Bunny.net | Bunny |
-| Realtime | WebSockets + SSE | same Fly app |
+| Realtime | WebSockets + SSE | same API process (deploy target TBD) |
 | Error tracking | Sentry | Sentry SaaS |
 
 ## Development commands
@@ -103,24 +103,22 @@ cd api && cargo test --test utils_test \
                      --test stripe_test  # run no-DB tests
 ```
 
-## Status of the system (2026-04-25 audit)
+## Status of the system (2026-07-19 audit)
 
 | Gate | Status |
 |------|--------|
-| Frontend typecheck | ✅ 8799 files / 0 errors / 0 warnings |
-| Frontend unit (vitest) | ✅ 1442 / 32 skipped / 0 failed |
-| Frontend e2e (playwright chromium) | ✅ 85 / 8 skipped / 0 failed |
-| Backend `cargo check` | ✅ clean compile |
-| Backend `cargo test --no-run` | ✅ all test binaries compile |
-| Production deploy | ⚠️ Fly Postgres needs attention |
+| Frontend typecheck (svelte-check) | ✅ 4,745 files / 0 errors / 0 warnings |
+| Frontend lint (eslint) | ✅ clean |
+| Frontend unit (vitest) | ✅ 2,272 passed / 32 skipped |
+| Frontend production build | ✅ |
+| Backend `cargo check` + `clippy -D warnings` | ✅ clean |
+| Backend no-DB tests (router smoke, utils, stripe, crypto) | ✅ all pass |
+| Production deploy | ⚠️ target TBD (Fly.io stripped 2026-04-28) |
 
-Top blockers (full list in [`docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md`](docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md)):
-
-1. Restore Fly Postgres
-2. CMS editor toolbar add-block click is broken (`frontend/src/routes/cms/editor/+page.svelte:113`)
-3. Stripe Checkout-Session creation is a `// TODO` (`api/src/routes/subscriptions.rs:446`)
-4. `/admin` frontend has no role gate
-5. Favorites proxy reads the wrong cookie
+Current priorities live in
+[`docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md`](docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md)
+(the earlier 2026-04-25 series is historical; its top blockers have since been
+fixed or superseded).
 
 ## Contributing
 

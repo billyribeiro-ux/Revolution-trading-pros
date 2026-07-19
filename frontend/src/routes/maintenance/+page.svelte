@@ -3697,7 +3697,7 @@
 
 		.hero-chart {
 			inset: -3% -2% 0 -4%;
-			opacity: 0.3;
+			opacity: 0.22;
 		}
 
 		.status-card {
