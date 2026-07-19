@@ -455,12 +455,12 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_templates).post(create_template))
         .route(
-            "/:id",
+            "/{id}",
             get(get_template)
                 .put(update_template)
                 .delete(delete_template),
         )
-        .route("/:id/preview", post(preview_template))
-        .route("/:id/test", post(send_test_email))
+        .route("/{id}/preview", post(preview_template))
+        .route("/{id}/test", post(send_test_email))
         .route("/settings", get(get_email_settings))
 }

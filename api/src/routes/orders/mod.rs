@@ -63,22 +63,22 @@ pub use admin_list::{admin_index, admin_show};
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(user::index))
-        .route("/by-number/:order_number", get(user::show_by_number))
-        .route("/:id", get(user::show))
+        .route("/by-number/{order_number}", get(user::show_by_number))
+        .route("/{id}", get(user::show))
 }
 
 /// Build admin orders router - ICT 7 COMPLETE
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(admin_list::admin_index))
-        .route("/:id", get(admin_list::admin_show))
+        .route("/{id}", get(admin_list::admin_show))
         // Order management endpoints - ICT 7 FIX
-        .route("/:id/status", post(admin_actions::admin_update_status))
-        .route("/:id/refund", post(admin_actions::admin_refund))
-        .route("/:id/cancel", post(admin_actions::admin_cancel))
-        .route("/:id/fulfill", post(admin_actions::admin_fulfill))
+        .route("/{id}/status", post(admin_actions::admin_update_status))
+        .route("/{id}/refund", post(admin_actions::admin_refund))
+        .route("/{id}/cancel", post(admin_actions::admin_cancel))
+        .route("/{id}/fulfill", post(admin_actions::admin_fulfill))
         .route(
-            "/:id/resend-confirmation",
+            "/{id}/resend-confirmation",
             post(admin_actions::admin_resend_confirmation),
         )
 }

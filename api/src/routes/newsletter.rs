@@ -818,8 +818,8 @@ pub fn public_router() -> Router<AppState> {
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/subscribers", get(list_subscribers))
-        .route("/subscribers/:id", delete(delete_subscriber))
-        .route("/subscribers/:id/export", get(export_subscriber))
+        .route("/subscribers/{id}", delete(delete_subscriber))
+        .route("/subscribers/{id}/export", get(export_subscriber))
         .route("/stats", get(get_stats))
         .route("/bulk-send", post(send_bulk_email))
 }
@@ -833,8 +833,8 @@ pub fn router() -> Router<AppState> {
         .route("/unsubscribe", get(unsubscribe))
         // Admin routes (now properly protected)
         .route("/subscribers", get(list_subscribers))
-        .route("/subscribers/:id", delete(delete_subscriber))
-        .route("/subscribers/:id/export", get(export_subscriber))
+        .route("/subscribers/{id}", delete(delete_subscriber))
+        .route("/subscribers/{id}/export", get(export_subscriber))
         .route("/stats", get(get_stats))
         .route("/bulk-send", post(send_bulk_email))
 }

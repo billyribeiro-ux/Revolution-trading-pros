@@ -41,21 +41,21 @@ pub use dtos::{
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/plans", get(plans::list_plans))
-        .route("/plans/:slug", get(plans::get_plan))
-        .route("/room/:room_slug/plans", get(plans::get_room_plans))
+        .route("/plans/{slug}", get(plans::get_plan))
+        .route("/room/{room_slug}/plans", get(plans::get_room_plans))
         .route("/my", get(my_subs::get_my_subscriptions))
         .route("/my/active", get(my_subs::get_active_subscription))
         .route("/export", get(admin::export_subscriptions))
         .route("/", post(lifecycle::create_subscription))
-        .route("/:id/cancel", post(lifecycle::cancel_subscription))
-        .route("/:id/change-plan", post(change_plan::change_plan))
+        .route("/{id}/cancel", post(lifecycle::cancel_subscription))
+        .route("/{id}/change-plan", post(change_plan::change_plan))
         .route(
-            "/:id/preview-change",
+            "/{id}/preview-change",
             post(change_plan::preview_plan_change),
         )
-        .route("/:id/reactivate", post(lifecycle::reactivate_subscription))
+        .route("/{id}/reactivate", post(lifecycle::reactivate_subscription))
         .route(
-            "/:id/send-cancellation-email",
+            "/{id}/send-cancellation-email",
             post(notifications::send_cancellation_email),
         )
         .route("/metrics", get(admin::get_metrics))
@@ -74,5 +74,5 @@ pub fn router() -> Router<AppState> {
 pub fn my_router() -> Router<AppState> {
     Router::new()
         .route("/", get(my_subs::get_my_subscriptions))
-        .route("/:id", get(my_subs::get_subscription_by_id))
+        .route("/{id}", get(my_subs::get_subscription_by_id))
 }

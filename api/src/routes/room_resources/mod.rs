@@ -305,28 +305,28 @@ pub struct StockListQuery {
 pub fn public_router() -> Router<AppState> {
     Router::new()
         .route("/", get(public::list_resources))
-        .route("/:id_or_slug", get(public::get_resource))
-        .route("/:id/download", get(download::download_resource))
-        .route("/:id/download", post(public::track_download))
+        .route("/{id_or_slug}", get(public::get_resource))
+        .route("/{id}/download", get(download::download_resource))
+        .route("/{id}/download", post(public::track_download))
         .route(
-            "/:id/secure-download",
+            "/{id}/secure-download",
             post(download::generate_secure_download),
         )
-        .route("/:id/versions", get(versioning::get_version_history))
-        .route("/by-course/:course_id", get(public::get_course_resources))
-        .route("/by-lesson/:lesson_id", get(public::get_lesson_resources))
+        .route("/{id}/versions", get(versioning::get_version_history))
+        .route("/by-course/{course_id}", get(public::get_course_resources))
+        .route("/by-lesson/{lesson_id}", get(public::get_lesson_resources))
         // ICT 7 NEW: User engagement
-        .route("/:id/track-access", post(public::track_resource_access))
+        .route("/{id}/track-access", post(public::track_resource_access))
         .route("/recently-accessed", get(public::get_recently_accessed))
-        .route("/:id/favorite", get(public::check_resource_favorite))
-        .route("/:id/favorite", post(public::add_resource_favorite))
-        .route("/:id/favorite", delete(public::remove_resource_favorite))
+        .route("/{id}/favorite", get(public::check_resource_favorite))
+        .route("/{id}/favorite", post(public::add_resource_favorite))
+        .route("/{id}/favorite", delete(public::remove_resource_favorite))
         .route("/favorites", get(public::get_favorite_resources))
         // ICT 7 NEW: Stock/ETF lists
         .route("/stock-lists", get(public::list_stock_lists))
-        .route("/stock-lists/:id", get(public::get_stock_list))
+        .route("/stock-lists/{id}", get(public::get_stock_list))
         .route(
-            "/stock-lists/latest/:room_id",
+            "/stock-lists/latest/{room_id}",
             get(public::get_latest_watchlist),
         )
 }
@@ -335,9 +335,9 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(admin_crud::admin_list_resources))
         .route("/", post(admin_crud::create_resource))
-        .route("/:id", put(admin_crud::update_resource))
-        .route("/:id", delete(admin_crud::delete_resource))
-        .route("/:id/new-version", post(versioning::create_new_version))
+        .route("/{id}", put(admin_crud::update_resource))
+        .route("/{id}", delete(admin_crud::delete_resource))
+        .route("/{id}/new-version", post(versioning::create_new_version))
         .route("/bulk-create", post(bulk::bulk_create_resources))
         .route("/bulk-update", put(bulk::bulk_update_resources))
         .route("/bulk-delete", delete(bulk::bulk_delete_resources))
@@ -348,6 +348,6 @@ pub fn admin_router() -> Router<AppState> {
         .route("/download-logs", get(admin_crud::get_download_logs))
         // ICT 7 NEW: Stock/ETF lists admin
         .route("/stock-lists", post(admin_crud::create_stock_list))
-        .route("/stock-lists/:id", put(admin_crud::update_stock_list))
-        .route("/stock-lists/:id", delete(admin_crud::delete_stock_list))
+        .route("/stock-lists/{id}", put(admin_crud::update_stock_list))
+        .route("/stock-lists/{id}", delete(admin_crud::delete_stock_list))
 }

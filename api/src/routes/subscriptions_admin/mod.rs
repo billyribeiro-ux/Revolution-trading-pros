@@ -53,25 +53,25 @@ pub fn subscriptions_router() -> Router<AppState> {
             get(subscriptions::list_subscriptions).post(subscriptions::create_subscription),
         )
         .route(
-            "/:id",
+            "/{id}",
             get(subscriptions::get_subscription)
                 .put(subscriptions::update_subscription)
                 .delete(subscriptions::delete_subscription),
         )
         .route(
-            "/:id/cancel",
+            "/{id}/cancel",
             post(subscription_lifecycle::cancel_subscription),
         )
         .route(
-            "/:id/pause",
+            "/{id}/pause",
             post(subscription_lifecycle::pause_subscription),
         )
         .route(
-            "/:id/resume",
+            "/{id}/resume",
             post(subscription_lifecycle::resume_subscription),
         )
         .route(
-            "/:id/renew",
+            "/{id}/renew",
             post(subscription_lifecycle::renew_subscription),
         )
 }
@@ -82,15 +82,15 @@ pub fn plans_router() -> Router<AppState> {
         .route("/", get(plans::list_plans).post(plans::create_plan))
         .route("/stats", get(plans::plan_stats))
         .route(
-            "/:id",
+            "/{id}",
             get(plans::get_plan)
                 .put(plans::update_plan)
                 .delete(plans::delete_plan),
         )
         // Stripe-syncing price-change endpoints (admin only)
-        .route("/:id/price", post(price_changes::change_plan_price))
+        .route("/{id}/price", post(price_changes::change_plan_price))
         .route(
-            "/:id/price-history",
+            "/{id}/price-history",
             get(price_changes::list_plan_price_history),
         )
 }

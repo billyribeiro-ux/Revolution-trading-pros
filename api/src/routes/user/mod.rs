@@ -52,9 +52,9 @@ pub use dtos::{
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/memberships", get(memberships::get_memberships))
-        .route("/memberships/:id", get(memberships::get_membership_details))
+        .route("/memberships/{id}", get(memberships::get_membership_details))
         .route(
-            "/memberships/:id/cancel",
+            "/memberships/{id}/cancel",
             post(memberships::cancel_membership),
         )
         .route("/profile", get(profile::get_profile))
@@ -71,7 +71,7 @@ pub fn router() -> Router<AppState> {
             post(payment_methods::add_payment_method),
         )
         .route(
-            "/payment-methods/:id",
+            "/payment-methods/{id}",
             axum::routing::delete(payment_methods::delete_payment_method),
         )
 }

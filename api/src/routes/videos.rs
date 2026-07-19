@@ -566,7 +566,7 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_videos))
         .route("/weekly", get(get_weekly_videos))
         .route("/history", get(get_watch_history))
-        .route("/:id_or_slug", get(get_video))
-        .route("/:id/related", get(get_related_videos))
-        .route("/:id/track", post(track_event))
+        .route("/{id_or_slug}", get(get_video))
+        .route("/{id}/related", get(get_related_videos))
+        .route("/{id}/track", post(track_event))
 }

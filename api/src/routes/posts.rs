@@ -1070,18 +1070,18 @@ async fn admin_list_posts(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_posts))
-        .route("/:slug", get(get_post))
-        .route("/:slug/related", get(get_related_posts))
+        .route("/{slug}", get(get_post))
+        .route("/{slug}/related", get(get_related_posts))
 }
 
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(admin_list_posts).post(create_post))
         .route(
-            "/:id",
+            "/{id}",
             get(get_post_by_id).put(update_post).delete(delete_post),
         )
-        .route("/:id/publish", post(publish_post))
-        .route("/:id/unpublish", post(unpublish_post))
-        .route("/:id/archive", post(archive_post))
+        .route("/{id}/publish", post(publish_post))
+        .route("/{id}/unpublish", post(unpublish_post))
+        .route("/{id}/archive", post(archive_post))
 }

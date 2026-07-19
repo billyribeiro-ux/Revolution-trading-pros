@@ -50,7 +50,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(public::list_trading_rooms))
         .route("/sections", get(public::list_sections))
-        .route("/:slug", get(public::get_trading_room))
+        .route("/{slug}", get(public::get_trading_room))
         .route("/traders", get(public::list_traders))
 }
 
@@ -59,12 +59,12 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(admin_rooms::admin_list_trading_rooms))
         .route("/sections", get(admin_rooms::admin_list_sections))
-        .route("/:slug", get(admin_rooms::admin_get_trading_room))
+        .route("/{slug}", get(admin_rooms::admin_get_trading_room))
         .route("/traders", get(admin_rooms::admin_list_traders))
         // ICT 7 FIX: Add videos routes for frontend compatibility
         .route("/videos", get(admin_videos::admin_list_videos))
         .route(
-            "/videos/:slug",
+            "/videos/{slug}",
             get(admin_videos::admin_list_videos_by_room),
         )
 }

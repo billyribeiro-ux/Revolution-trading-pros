@@ -358,9 +358,9 @@ async fn list_recurring_campaigns(
 pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/sequences", get(list_sequences).post(create_sequence))
-        .route("/sequences/:id", get(get_sequence).delete(delete_sequence))
+        .route("/sequences/{id}", get(get_sequence).delete(delete_sequence))
         .route("/campaigns", get(list_campaigns).post(create_campaign))
-        .route("/campaigns/:id", get(get_campaign).delete(delete_campaign))
-        .route("/campaigns/:id/duplicate", post(duplicate_campaign))
+        .route("/campaigns/{id}", get(get_campaign).delete(delete_campaign))
+        .route("/campaigns/{id}/duplicate", post(duplicate_campaign))
         .route("/recurring-campaigns", get(list_recurring_campaigns))
 }

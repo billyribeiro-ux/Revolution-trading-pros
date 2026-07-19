@@ -144,5 +144,5 @@ async fn delete_template(
 pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/templates", get(list_templates).post(create_template))
-        .route("/templates/:id", get(get_template).delete(delete_template))
+        .route("/templates/{id}", get(get_template).delete(delete_template))
 }

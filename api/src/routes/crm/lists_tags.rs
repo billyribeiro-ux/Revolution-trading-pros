@@ -254,12 +254,12 @@ pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/lists", get(list_contact_lists).post(create_contact_list))
         .route(
-            "/lists/:id",
+            "/lists/{id}",
             get(get_contact_list).delete(delete_contact_list),
         )
         .route(
             "/contact-tags",
             get(list_contact_tags).post(create_contact_tag),
         )
-        .route("/contact-tags/:id", delete(delete_contact_tag))
+        .route("/contact-tags/{id}", delete(delete_contact_tag))
 }

@@ -57,8 +57,8 @@ pub use types::{
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/rooms", get(public::get_trading_rooms))
-        .route("/:plan_slug", get(public::get_schedule_by_plan))
-        .route("/:plan_slug/upcoming", get(public::get_upcoming_events))
+        .route("/{plan_slug}", get(public::get_schedule_by_plan))
+        .route("/{plan_slug}/upcoming", get(public::get_upcoming_events))
 }
 
 /// Admin schedule routes
@@ -68,9 +68,9 @@ pub fn admin_router() -> Router<AppState> {
             "/",
             get(admin::admin_list_schedules).post(admin::admin_create_schedule),
         )
-        .route("/plan/:plan_id", get(admin::admin_get_plan_schedules))
+        .route("/plan/{plan_id}", get(admin::admin_get_plan_schedules))
         .route(
-            "/:id",
+            "/{id}",
             put(admin::admin_update_schedule).delete(admin::admin_delete_schedule),
         )
         .route("/bulk", post(admin_bulk_exceptions::admin_bulk_schedules))
@@ -79,7 +79,7 @@ pub fn admin_router() -> Router<AppState> {
             post(admin_bulk_exceptions::admin_create_exception),
         )
         .route(
-            "/exceptions/:id",
+            "/exceptions/{id}",
             delete(admin_bulk_exceptions::admin_delete_exception),
         )
 }

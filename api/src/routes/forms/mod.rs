@@ -41,9 +41,9 @@ pub use types::{
 pub fn public_router() -> Router<AppState> {
     Router::new()
         .route("/", get(public::list_public_forms))
-        .route("/:id", get(public::get_public_form))
-        .route("/:slug/submit", post(public::submit_form))
-        .route("/:slug/view", post(public::track_form_view))
+        .route("/{id}", get(public::get_public_form))
+        .route("/{slug}/submit", post(public::submit_form))
+        .route("/{slug}/view", post(public::track_form_view))
 }
 
 pub fn admin_router() -> Router<AppState> {
@@ -53,35 +53,35 @@ pub fn admin_router() -> Router<AppState> {
         .route("/stats", get(crud::form_stats))
         .route("/field-types", get(crud::field_types))
         .route(
-            "/:id",
+            "/{id}",
             get(crud::get_form)
                 .put(crud::update_form)
                 .delete(crud::delete_form),
         )
-        .route("/:id/publish", post(crud::publish_form))
-        .route("/:id/unpublish", post(crud::unpublish_form))
-        .route("/:id/duplicate", post(crud::duplicate_form))
-        .route("/:id/analytics", get(analytics::get_form_analytics))
+        .route("/{id}/publish", post(crud::publish_form))
+        .route("/{id}/unpublish", post(crud::unpublish_form))
+        .route("/{id}/duplicate", post(crud::duplicate_form))
+        .route("/{id}/analytics", get(analytics::get_form_analytics))
         // Submissions
-        .route("/:form_id/submissions", get(submissions::list_submissions))
+        .route("/{form_id}/submissions", get(submissions::list_submissions))
         .route(
-            "/:form_id/submissions/export",
+            "/{form_id}/submissions/export",
             get(submissions::export_submissions),
         )
         .route(
-            "/:form_id/submissions/bulk-update-status",
+            "/{form_id}/submissions/bulk-update-status",
             post(submissions::bulk_update_status),
         )
         .route(
-            "/:form_id/submissions/bulk-delete",
+            "/{form_id}/submissions/bulk-delete",
             post(submissions::bulk_delete_submissions),
         )
         .route(
-            "/:form_id/submissions/:submission_id",
+            "/{form_id}/submissions/{submission_id}",
             get(submissions::get_submission).delete(submissions::delete_submission),
         )
         .route(
-            "/:form_id/submissions/:submission_id/status",
+            "/{form_id}/submissions/{submission_id}/status",
             put(submissions::update_submission_status),
         )
 }

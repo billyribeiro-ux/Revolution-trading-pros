@@ -389,10 +389,10 @@ pub fn router() -> Router<AppState> {
         // Admin routes (require auth)
         .route("/admin/redirects", get(index).post(store))
         .route(
-            "/admin/redirects/:id",
+            "/admin/redirects/{id}",
             get(show).put(update).delete(destroy),
         )
-        .route("/admin/redirects/:id/hit", post(increment_hit))
+        .route("/admin/redirects/{id}/hit", post(increment_hit))
         // Public route for redirect resolution
         .route("/redirect/resolve", get(resolve_redirect))
 }

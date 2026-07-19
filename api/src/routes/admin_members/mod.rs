@@ -59,7 +59,7 @@ pub fn router() -> Router<AppState> {
             get(segments::list_segments).post(segments::create_segment),
         )
         .route(
-            "/segments/:id",
+            "/segments/{id}",
             get(segments::get_segment)
                 .put(segments::update_segment)
                 .delete(segments::delete_segment),
@@ -70,7 +70,7 @@ pub fn router() -> Router<AppState> {
             get(tags::list_member_tags).post(tags::create_member_tag),
         )
         .route(
-            "/tags/:id",
+            "/tags/{id}",
             get(tags::get_member_tag)
                 .put(tags::update_member_tag)
                 .delete(tags::delete_member_tag),
@@ -84,7 +84,7 @@ pub fn router() -> Router<AppState> {
             get(filters::list_member_filters).post(filters::create_member_filter),
         )
         .route(
-            "/filters/:id",
+            "/filters/{id}",
             get(filters::get_member_filter)
                 .put(filters::update_member_filter)
                 .delete(filters::delete_member_filter),
@@ -101,8 +101,8 @@ pub fn router() -> Router<AppState> {
         .route("/analytics/segments", get(analytics::analytics_segments))
         // Member Notes & Emails (ICT 7 FIX: Missing endpoints)
         .route(
-            "/:id/notes",
+            "/{id}/notes",
             get(notes_emails::get_member_notes).post(notes_emails::create_member_note),
         )
-        .route("/:id/emails", get(notes_emails::get_member_emails))
+        .route("/{id}/emails", get(notes_emails::get_member_emails))
 }

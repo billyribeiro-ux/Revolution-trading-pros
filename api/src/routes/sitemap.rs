@@ -473,7 +473,7 @@ fn xml_response(content: &str) -> Response {
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/sitemap", get(index))
-        .route("/sitemap/posts/:page", get(posts))
+        .route("/sitemap/posts/{page}", get(posts))
         .route("/sitemap/categories", get(categories))
         .route("/sitemap/tags", get(tags_sitemap))
 }

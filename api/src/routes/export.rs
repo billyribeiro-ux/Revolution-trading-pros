@@ -310,9 +310,9 @@ pub async fn get_performance_report(
 /// All routes require authentication and are rate-limited.
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/:room_slug/alerts.csv", get(export_alerts_csv))
-        .route("/:room_slug/trades.csv", get(export_trades_csv))
-        .route("/:room_slug/performance", get(get_performance_report))
+        .route("/{room_slug}/alerts.csv", get(export_alerts_csv))
+        .route("/{room_slug}/trades.csv", get(export_trades_csv))
+        .route("/{room_slug}/performance", get(get_performance_report))
 }
 
 #[cfg(test)]

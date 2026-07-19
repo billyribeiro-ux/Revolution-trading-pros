@@ -823,6 +823,6 @@ pub fn router() -> Router<AppState> {
         .route("/admin/members/churned", get(churned_members))
         .route("/admin/members/export", get(export_members))
         .route("/admin/members/email-templates", get(email_templates))
-        .route("/admin/members/service/:id", get(members_by_service))
-        .route("/admin/members/:id", get(show))
+        .route("/admin/members/service/{id}", get(members_by_service))
+        .route("/admin/members/{id}", get(show))
 }

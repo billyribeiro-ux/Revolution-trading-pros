@@ -28,8 +28,8 @@ mod reviews;
 pub fn public_router() -> Router<AppState> {
     Router::new()
         .route("/", get(public::list_published_courses))
-        .route("/:slug", get(public::get_course_detail))
-        .route("/:slug/reviews", get(public::get_course_reviews))
+        .route("/{slug}", get(public::get_course_detail))
+        .route("/{slug}/reviews", get(public::get_course_reviews))
 }
 
 pub fn member_router() -> Router<AppState> {
@@ -37,30 +37,30 @@ pub fn member_router() -> Router<AppState> {
 
     Router::new()
         .route("/", get(player::get_my_courses))
-        .route("/:slug/player", get(player::get_course_player))
-        .route("/:slug/progress", put(player::update_lesson_progress))
-        .route("/:slug/downloads", get(player::get_course_downloads))
-        .route("/:slug/certificate", get(certificates::get_certificate))
-        .route("/:slug/resume", get(certificates::resume_course))
+        .route("/{slug}/player", get(player::get_course_player))
+        .route("/{slug}/progress", put(player::update_lesson_progress))
+        .route("/{slug}/downloads", get(player::get_course_downloads))
+        .route("/{slug}/certificate", get(certificates::get_certificate))
+        .route("/{slug}/resume", get(certificates::resume_course))
         // Reviews
         .route(
-            "/:slug/reviews",
+            "/{slug}/reviews",
             post(reviews::submit_review).delete(reviews::delete_review),
         )
         // Quizzes
-        .route("/:slug/quizzes", get(quizzes::get_course_quizzes))
-        .route("/:slug/quizzes/:quiz_id/start", post(quizzes::start_quiz))
+        .route("/{slug}/quizzes", get(quizzes::get_course_quizzes))
+        .route("/{slug}/quizzes/{quiz_id}/start", post(quizzes::start_quiz))
         .route(
-            "/:slug/quizzes/:quiz_id/attempts/:attempt_id/submit",
+            "/{slug}/quizzes/{quiz_id}/attempts/{attempt_id}/submit",
             post(quizzes::submit_quiz),
         )
         .route(
-            "/:slug/quizzes/:quiz_id/results",
+            "/{slug}/quizzes/{quiz_id}/results",
             get(quizzes::get_quiz_results),
         )
         // Prerequisites
         .route(
-            "/:slug/lessons/:lesson_id/access",
+            "/{slug}/lessons/{lesson_id}/access",
             get(prerequisites::check_lesson_access),
         )
 }

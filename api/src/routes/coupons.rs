@@ -760,11 +760,11 @@ pub fn router() -> Router<AppState> {
         // Admin CRUD endpoints
         .route("/", get(list_coupons).post(create_coupon))
         .route(
-            "/:id",
+            "/{id}",
             get(get_coupon).put(update_coupon).delete(delete_coupon),
         )
         // Admin management endpoints - ICT 7 FIX
-        .route("/:id/deactivate", post(deactivate_coupon))
-        .route("/:id/reactivate", post(reactivate_coupon))
-        .route("/:id/reset-usage", post(reset_coupon_usage))
+        .route("/{id}/deactivate", post(deactivate_coupon))
+        .route("/{id}/reactivate", post(reactivate_coupon))
+        .route("/{id}/reset-usage", post(reset_coupon_usage))
 }

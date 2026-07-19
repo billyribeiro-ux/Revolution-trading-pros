@@ -58,31 +58,31 @@ pub fn router() -> Router<AppState> {
         // Indicator CRUD
         .route("/", get(crud::list_indicators).post(crud::create_indicator))
         .route(
-            "/:id",
+            "/{id}",
             get(crud::get_indicator)
                 .put(crud::update_indicator)
                 .delete(crud::delete_indicator),
         )
-        .route("/:id/toggle", post(crud::toggle_indicator))
-        .route("/:id/change-price", post(pricing::change_indicator_price))
+        .route("/{id}/toggle", post(crud::toggle_indicator))
+        .route("/{id}/change-price", post(pricing::change_indicator_price))
         // ICT 7: File management
         .route(
-            "/:id/files",
+            "/{id}/files",
             get(files::list_indicator_files).post(files::create_indicator_file),
         )
         .route(
-            "/:id/files/:file_id",
+            "/{id}/files/{file_id}",
             put(files::update_indicator_file).delete(files::delete_indicator_file),
         )
         // ICT 7: Video management
         .route(
-            "/:id/videos",
+            "/{id}/videos",
             get(videos::list_indicator_videos).post(videos::create_indicator_video),
         )
         .route(
-            "/:id/videos/:video_id",
+            "/{id}/videos/{video_id}",
             delete(videos::delete_indicator_video),
         )
         // ICT 7: Analytics
-        .route("/:id/analytics", get(analytics::get_download_analytics))
+        .route("/{id}/analytics", get(analytics::get_download_analytics))
 }

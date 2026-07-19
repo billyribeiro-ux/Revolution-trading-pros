@@ -138,6 +138,6 @@ async fn test_webhook(
 pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/webhooks", get(list_webhooks).post(create_webhook))
-        .route("/webhooks/:id", delete(delete_webhook))
-        .route("/webhooks/:id/test", post(test_webhook))
+        .route("/webhooks/{id}", delete(delete_webhook))
+        .route("/webhooks/{id}/test", post(test_webhook))
 }

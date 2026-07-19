@@ -434,6 +434,6 @@ pub fn router() -> Router<AppState> {
         .route("/admin/tags", get(index).post(store))
         .route("/admin/tags/merge", post(merge_tags))
         .route("/admin/tags/with-counts", get(list_with_counts))
-        .route("/admin/tags/:id", get(show).put(update).delete(destroy))
-        .route("/admin/tags/:id/usage", get(get_usage))
+        .route("/admin/tags/{id}", get(show).put(update).delete(destroy))
+        .route("/admin/tags/{id}/usage", get(get_usage))
 }

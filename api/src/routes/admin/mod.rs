@@ -51,19 +51,19 @@ pub fn router() -> Router<AppState> {
         .route("/users", get(users::list_users).post(users::create_user))
         .route("/users/stats", get(users::user_stats))
         .route(
-            "/users/:id",
+            "/users/{id}",
             get(users::get_user)
                 .put(users::update_user)
                 .delete(users::delete_user),
         )
-        .route("/users/:id/ban", post(users::ban_user))
-        .route("/users/:id/unban", post(users::unban_user))
+        .route("/users/{id}/ban", post(users::ban_user))
+        .route("/users/{id}/unban", post(users::unban_user))
         .route(
-            "/users/:id/memberships",
+            "/users/{id}/memberships",
             get(memberships::get_user_memberships_by_user),
         )
         .route(
-            "/users/:id/subscriptions",
+            "/users/{id}/subscriptions",
             get(campaigns_stats::get_user_subscriptions),
         )
         // FIX-H-5 (2026-04-29): /users/:id/impersonate route removed
@@ -75,7 +75,7 @@ pub fn router() -> Router<AppState> {
             get(memberships::list_user_memberships).post(memberships::grant_membership),
         )
         .route(
-            "/user-memberships/:id",
+            "/user-memberships/{id}",
             get(memberships::get_user_membership)
                 .put(memberships::update_user_membership)
                 .delete(memberships::revoke_membership),
@@ -85,7 +85,7 @@ pub fn router() -> Router<AppState> {
             "/campaigns",
             get(campaigns_stats::list_campaigns).post(campaigns_stats::create_campaign),
         )
-        .route("/campaigns/:id", delete(campaigns_stats::delete_campaign))
+        .route("/campaigns/{id}", delete(campaigns_stats::delete_campaign))
         // Coupons
         // FIX-2026-04-26 (P0-1, CC-1): mount the missing GET/PUT for /coupons/:id
         // so the admin coupon-edit page can load and save against the
@@ -95,24 +95,24 @@ pub fn router() -> Router<AppState> {
             get(coupons::list_coupons).post(coupons::create_coupon),
         )
         .route(
-            "/coupons/:id",
+            "/coupons/{id}",
             get(coupons::get_coupon)
                 .put(coupons::update_coupon)
                 .delete(coupons::delete_coupon),
         )
         // Batch 4 P2: backfill mirror for rows whose stripe_coupon_id is NULL
         .route(
-            "/coupons/:id/sync-to-stripe",
+            "/coupons/{id}/sync-to-stripe",
             post(coupons::sync_coupon_to_stripe),
         )
-        .route("/coupons/validate/:code", get(coupons::validate_coupon))
+        .route("/coupons/validate/{code}", get(coupons::validate_coupon))
         // Batch 6: email diagnostics
         .route("/email/status", get(campaigns_stats::get_email_status))
         .route("/email/logs", get(campaigns_stats::list_email_logs))
         // Settings
         .route("/settings", get(settings::get_settings))
         .route(
-            "/settings/:key",
+            "/settings/{key}",
             get(settings::get_setting).put(settings::update_setting),
         )
 }

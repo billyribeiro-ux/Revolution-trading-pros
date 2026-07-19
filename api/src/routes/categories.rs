@@ -603,8 +603,8 @@ pub fn router() -> Router<AppState> {
         .route("/admin/categories", get(index).post(store))
         .route("/admin/categories/tree", get(get_tree))
         .route(
-            "/admin/categories/:id",
+            "/admin/categories/{id}",
             get(show).put(update).delete(destroy),
         )
-        .route("/admin/categories/:id/children", get(get_children))
+        .route("/admin/categories/{id}/children", get(get_children))
 }

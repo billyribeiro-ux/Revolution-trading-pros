@@ -147,5 +147,5 @@ async fn delete_company(
 pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/companies", get(list_companies).post(create_company))
-        .route("/companies/:id", get(get_company).delete(delete_company))
+        .route("/companies/{id}", get(get_company).delete(delete_company))
 }

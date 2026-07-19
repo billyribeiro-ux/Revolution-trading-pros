@@ -54,7 +54,7 @@ pub fn teams_router() -> Router<AppState> {
     Router::new()
         .route("/", get(teams::list_teams).post(teams::create_team))
         .route(
-            "/:id",
+            "/{id}",
             get(teams::get_team)
                 .put(teams::update_team)
                 .delete(teams::delete_team),
@@ -69,7 +69,7 @@ pub fn departments_router() -> Router<AppState> {
             get(departments::list_departments).post(departments::create_department),
         )
         .route(
-            "/:id",
+            "/{id}",
             get(departments::get_department)
                 .put(departments::update_department)
                 .delete(departments::delete_department),

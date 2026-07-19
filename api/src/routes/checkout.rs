@@ -669,5 +669,5 @@ pub fn router() -> Router<AppState> {
         .route("/", post(create_checkout))
         .route("/calculate-tax", post(calculate_tax))
         .route("/orders", get(get_orders))
-        .route("/orders/:order_number", get(get_order))
+        .route("/orders/{order_number}", get(get_order))
 }

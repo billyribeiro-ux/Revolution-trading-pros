@@ -1083,10 +1083,10 @@ pub async fn get_audit_logs(
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(index).post(create).put(update))
-        .route("/:key", get(show).put(update_single).delete(delete_setting))
+        .route("/{key}", get(show).put(update_single).delete(delete_setting))
         .route("/feature-flags", get(list_feature_flags).post(create_feature_flag))
         .route(
-            "/feature-flags/:key",
+            "/feature-flags/{key}",
             get(get_feature_flag)
                 .put(update_feature_flag)
                 .delete(delete_feature_flag),
@@ -1098,12 +1098,12 @@ pub fn admin_router() -> Router<AppState> {
 pub fn public_router() -> Router<AppState> {
     Router::new()
         .route("/public", get(public_settings))
-        .route("/feature-flags/check/:key", get(check_feature_flag))
+        .route("/feature-flags/check/{key}", get(check_feature_flag))
 }
 
 /// Legacy router for backward compatibility
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/admin/settings", get(index).put(update))
-        .route("/admin/settings/:key", get(show).put(update_single))
+        .route("/admin/settings/{key}", get(show).put(update_single))
 }

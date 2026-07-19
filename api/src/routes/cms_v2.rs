@@ -837,7 +837,7 @@ pub fn admin_router() -> Router<AppState> {
             get(list_asset_folders).post(create_asset_folder),
         )
         .route(
-            "/folders/:id",
+            "/folders/{id}",
             get(get_asset_folder)
                 .put(update_asset_folder)
                 .delete(delete_asset_folder),
@@ -845,31 +845,31 @@ pub fn admin_router() -> Router<AppState> {
         // Assets
         .route("/assets", get(list_assets).post(create_asset))
         .route(
-            "/assets/:id",
+            "/assets/{id}",
             get(get_asset).put(update_asset).delete(delete_asset),
         )
         // Content
         .route("/content", get(list_content).post(create_content))
         .route(
-            "/content/:id",
+            "/content/{id}",
             get(get_content).put(update_content).delete(delete_content),
         )
-        .route("/content/:id/status", post(transition_content_status))
-        .route("/content/:id/revisions", get(get_content_revisions))
+        .route("/content/{id}/status", post(transition_content_status))
+        .route("/content/{id}/revisions", get(get_content_revisions))
         .route(
-            "/content/:content_id/revisions/:revision_number/restore",
+            "/content/{content_id}/revisions/{revision_number}/restore",
             post(restore_revision),
         )
-        .route("/content/:content_id/tags", get(get_content_tags))
+        .route("/content/{content_id}/tags", get(get_content_tags))
         .route(
-            "/content/:content_id/tags/:tag_id",
+            "/content/{content_id}/tags/{tag_id}",
             post(add_tag_to_content).delete(remove_tag_from_content),
         )
         .route(
-            "/content/:content_id/comments",
+            "/content/{content_id}/comments",
             get(get_content_comments).post(create_comment),
         )
-        .route("/comments/:comment_id/resolve", post(resolve_comment))
+        .route("/comments/{comment_id}/resolve", post(resolve_comment))
         // Tags
         .route("/tags", get(list_tags).post(create_tag))
         // Site Settings
@@ -883,22 +883,22 @@ pub fn admin_router() -> Router<AppState> {
             get(list_navigation_menus).post(create_navigation_menu),
         )
         .route(
-            "/menus/:id",
+            "/menus/{id}",
             get(get_navigation_menu).put(update_navigation_menu),
         )
         // Redirects
         .route("/redirects", get(list_redirects).post(create_redirect))
-        .route("/redirects/:id", delete(delete_redirect))
+        .route("/redirects/{id}", delete(delete_redirect))
 }
 
 /// Public CMS routes (no auth required)
 pub fn public_router() -> Router<AppState> {
     Router::new()
         // Public content access by type and slug
-        .route("/content/:content_type/:slug", get(get_content_by_slug))
+        .route("/content/{content_type}/{slug}", get(get_content_by_slug))
         // Public site settings
         .route("/settings", get(get_site_settings))
         // Public navigation menus
         .route("/menus", get(list_navigation_menus))
-        .route("/menus/:slug", get(get_navigation_menu))
+        .route("/menus/{slug}", get(get_navigation_menu))
 }

@@ -310,12 +310,12 @@ pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/contacts", get(list_contacts).post(create_contact))
         .route(
-            "/contacts/:id",
+            "/contacts/{id}",
             get(get_contact).put(update_contact).delete(delete_contact),
         )
-        .route("/contacts/:id/timeline", get(get_contact_timeline))
+        .route("/contacts/{id}/timeline", get(get_contact_timeline))
         .route(
-            "/contacts/:id/recalculate-score",
+            "/contacts/{id}/recalculate-score",
             post(recalculate_contact_score),
         )
 }

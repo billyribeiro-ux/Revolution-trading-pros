@@ -484,8 +484,8 @@ async fn delete_watchlist(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_watchlist))
-        .route("/:slug", get(get_watchlist))
+        .route("/{slug}", get(get_watchlist))
         .route("/", post(create_watchlist))
-        .route("/:slug", put(update_watchlist))
-        .route("/:slug", delete(delete_watchlist))
+        .route("/{slug}", put(update_watchlist))
+        .route("/{slug}", delete(delete_watchlist))
 }

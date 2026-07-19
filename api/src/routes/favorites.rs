@@ -355,8 +355,8 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_favorites))
         .route("/", post(add_favorite))
-        .route("/:id", delete(remove_favorite))
+        .route("/{id}", delete(remove_favorite))
         .route("/remove", delete(remove_favorite_by_item))
         .route("/check", get(check_favorite))
-        .route("/room/:room_slug", get(list_room_favorites))
+        .route("/room/{room_slug}", get(list_room_favorites))
 }

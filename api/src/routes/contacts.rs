@@ -332,7 +332,7 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_contacts).post(create_contact))
         .route("/stats", get(contact_stats))
         .route(
-            "/:id",
+            "/{id}",
             get(get_contact).put(update_contact).delete(delete_contact),
         )
 }

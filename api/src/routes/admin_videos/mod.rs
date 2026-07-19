@@ -85,7 +85,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(crud::list_videos).post(crud::create_video))
         .route(
-            "/:id",
+            "/{id}",
             get(crud::get_video)
                 .put(crud::update_video)
                 .delete(crud::delete_video),
@@ -108,9 +108,9 @@ pub fn analytics_router() -> Router<AppState> {
             "/analytics/track-batch",
             post(analytics::track_video_events_batch),
         )
-        .route("/analytics/video/:id", get(analytics::get_video_analytics))
+        .route("/analytics/video/{id}", get(analytics::get_video_analytics))
         .route(
-            "/analytics/progress/:id",
+            "/analytics/progress/{id}",
             post(analytics::update_watch_progress),
         )
         // Series
@@ -119,34 +119,34 @@ pub fn analytics_router() -> Router<AppState> {
             get(series_chapters::list_series).post(series_chapters::create_series),
         )
         .route(
-            "/series/:id",
+            "/series/{id}",
             get(series_chapters::get_series)
                 .put(series_chapters::update_series)
                 .delete(series_chapters::delete_series),
         )
         .route(
-            "/series/:id/videos",
+            "/series/{id}/videos",
             post(series_chapters::add_series_videos),
         )
         .route(
-            "/series/:id/videos/:video_id",
+            "/series/{id}/videos/{video_id}",
             delete(series_chapters::remove_series_video),
         )
         .route(
-            "/series/:id/reorder",
+            "/series/{id}/reorder",
             post(series_chapters::reorder_series_videos),
         )
         // Chapters
         .route(
-            "/videos/:id/chapters",
+            "/videos/{id}/chapters",
             get(series_chapters::list_chapters).post(series_chapters::create_chapter),
         )
         .route(
-            "/videos/:id/chapters/bulk",
+            "/videos/{id}/chapters/bulk",
             post(series_chapters::bulk_create_chapters),
         )
         .route(
-            "/videos/:id/chapters/:chapter_id",
+            "/videos/{id}/chapters/{chapter_id}",
             put(series_chapters::update_chapter).delete(series_chapters::delete_chapter),
         )
         // Scheduled Jobs
@@ -155,17 +155,17 @@ pub fn analytics_router() -> Router<AppState> {
             get(operations::list_scheduled_jobs).post(operations::create_scheduled_job),
         )
         .route(
-            "/scheduled-jobs/:id/cancel",
+            "/scheduled-jobs/{id}/cancel",
             post(operations::cancel_scheduled_job),
         )
         // Bulk Upload
         .route("/bulk-upload", post(operations::init_bulk_upload))
-        .route("/bulk-upload/:batch_id", get(operations::get_batch_status))
-        .route("/bulk-upload/item/:id", put(operations::update_upload_item))
+        .route("/bulk-upload/{batch_id}", get(operations::get_batch_status))
+        .route("/bulk-upload/item/{id}", put(operations::update_upload_item))
         // Video Operations
-        .route("/videos/:id/clone", post(operations::clone_video))
+        .route("/videos/{id}/clone", post(operations::clone_video))
         .route(
-            "/videos/:id/duration",
+            "/videos/{id}/duration",
             post(operations::fetch_video_duration),
         )
         .route(
@@ -174,21 +174,21 @@ pub fn analytics_router() -> Router<AppState> {
         )
         .route("/bulk-edit", post(operations::bulk_edit_videos))
         .route("/export/csv", get(operations::export_videos_csv))
-        .route("/rooms/:id/reorder", post(operations::reorder_room_videos))
+        .route("/rooms/{id}/reorder", post(operations::reorder_room_videos))
         // CDN
-        .route("/cdn/purge/:id", post(operations::purge_video_cdn))
+        .route("/cdn/purge/{id}", post(operations::purge_video_cdn))
         .route("/cdn/purge-all", post(operations::purge_all_cdn))
         // ICT 7 ADDITIONS: Transcoding, Thumbnails, Embed, Bulk Operations
         .route("/bunny/webhook", post(bunny_embed::bunny_webhook))
         .route(
-            "/videos/:id/transcoding-status",
+            "/videos/{id}/transcoding-status",
             get(bunny_embed::get_transcoding_status),
         )
         .route(
-            "/videos/:id/generate-thumbnail",
+            "/videos/{id}/generate-thumbnail",
             post(bunny_embed::generate_thumbnail),
         )
-        .route("/videos/:id/embed-code", get(bunny_embed::get_embed_code))
+        .route("/videos/{id}/embed-code", get(bunny_embed::get_embed_code))
         .route("/bulk/tags", post(operations::bulk_update_tags))
         .route("/bulk/feature", post(operations::bulk_feature))
 }

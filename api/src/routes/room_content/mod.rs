@@ -441,32 +441,32 @@ pub fn public_router() -> Router<AppState> {
     Router::new()
         // Trade Plans (read-only for members)
         .route(
-            "/rooms/:room_slug/trade-plan",
+            "/rooms/{room_slug}/trade-plan",
             get(trade_plans::list_trade_plans),
         )
         // Alerts (read-only for members)
-        .route("/rooms/:room_slug/alerts", get(alerts::list_alerts))
+        .route("/rooms/{room_slug}/alerts", get(alerts::list_alerts))
         .route(
-            "/rooms/:room_slug/alerts/:id/read",
+            "/rooms/{room_slug}/alerts/{id}/read",
             post(alerts::mark_alert_read),
         )
         // Trades (read-only for members)
-        .route("/rooms/:room_slug/trades", get(trades::list_trades))
+        .route("/rooms/{room_slug}/trades", get(trades::list_trades))
         // Weekly Video
         .route(
-            "/rooms/:room_slug/weekly-video",
+            "/rooms/{room_slug}/weekly-video",
             get(weekly_videos::get_weekly_video),
         )
         .route(
-            "/rooms/:room_slug/weekly-videos",
+            "/rooms/{room_slug}/weekly-videos",
             get(weekly_videos::list_weekly_videos),
         )
         .route(
-            "/weekly-video/:room_slug/archive",
+            "/weekly-video/{room_slug}/archive",
             get(weekly_videos::list_archived_videos),
         )
         // Stats
-        .route("/rooms/:room_slug/stats", get(stats::get_room_stats))
+        .route("/rooms/{room_slug}/stats", get(stats::get_room_stats))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -477,40 +477,40 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         // Trade Plans CRUD
         .route(
-            "/rooms/:room_slug/trade-plan",
+            "/rooms/{room_slug}/trade-plan",
             get(trade_plans::list_trade_plans),
         )
         .route("/trade-plan", post(trade_plans::create_trade_plan))
-        .route("/trade-plan/:id", put(trade_plans::update_trade_plan))
-        .route("/trade-plan/:id", delete(trade_plans::delete_trade_plan))
+        .route("/trade-plan/{id}", put(trade_plans::update_trade_plan))
+        .route("/trade-plan/{id}", delete(trade_plans::delete_trade_plan))
         .route(
-            "/rooms/:room_slug/trade-plan/reorder",
+            "/rooms/{room_slug}/trade-plan/reorder",
             put(trade_plans::reorder_trade_plans),
         )
         // Alerts CRUD
-        .route("/rooms/:room_slug/alerts", get(alerts::list_alerts))
+        .route("/rooms/{room_slug}/alerts", get(alerts::list_alerts))
         .route("/alerts", post(alerts::create_alert))
-        .route("/alerts/:id", put(alerts::update_alert))
-        .route("/alerts/:id", delete(alerts::delete_alert))
+        .route("/alerts/{id}", put(alerts::update_alert))
+        .route("/alerts/{id}", delete(alerts::delete_alert))
         // Trades CRUD (Trade Tracker)
-        .route("/rooms/:room_slug/trades", get(trades::list_trades))
+        .route("/rooms/{room_slug}/trades", get(trades::list_trades))
         .route("/trades", post(trades::create_trade))
-        .route("/trades/:id", put(trades::update_trade))
-        .route("/trades/:id/close", put(trades::close_trade))
-        .route("/trades/:id/invalidate", post(trades::invalidate_trade))
-        .route("/trades/:id", delete(trades::delete_trade))
+        .route("/trades/{id}", put(trades::update_trade))
+        .route("/trades/{id}/close", put(trades::close_trade))
+        .route("/trades/{id}/invalidate", post(trades::invalidate_trade))
+        .route("/trades/{id}", delete(trades::delete_trade))
         // Weekly Videos CRUD
         .route(
-            "/rooms/:room_slug/weekly-video",
+            "/rooms/{room_slug}/weekly-video",
             get(weekly_videos::get_weekly_video),
         )
         .route(
-            "/rooms/:room_slug/weekly-videos",
+            "/rooms/{room_slug}/weekly-videos",
             get(weekly_videos::list_weekly_videos),
         )
         .route("/weekly-video", post(weekly_videos::create_weekly_video))
         // Stats
-        .route("/rooms/:room_slug/stats", get(stats::get_room_stats))
+        .route("/rooms/{room_slug}/stats", get(stats::get_room_stats))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════

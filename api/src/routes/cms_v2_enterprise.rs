@@ -317,24 +317,24 @@ pub fn router() -> Router<AppState> {
         // Audit Logs
         .route("/audit-logs", get(get_audit_logs))
         // Workflow Management
-        .route("/workflow/:content_id", get(get_workflow_status))
+        .route("/workflow/{content_id}", get(get_workflow_status))
         .route(
-            "/workflow/:content_id/transition",
+            "/workflow/{content_id}/transition",
             post(transition_workflow),
         )
-        .route("/workflow/:content_id/assign", post(assign_for_review))
-        .route("/workflow/:content_id/unassign", post(unassign_content))
-        .route("/workflow/:content_id/history", get(get_workflow_history))
+        .route("/workflow/{content_id}/assign", post(assign_for_review))
+        .route("/workflow/{content_id}/unassign", post(unassign_content))
+        .route("/workflow/{content_id}/history", get(get_workflow_history))
         .route("/workflow/my-assignments", get(get_my_assignments))
         // Preview Tokens
         .route(
-            "/preview/:content_id/tokens",
+            "/preview/{content_id}/tokens",
             get(get_content_preview_tokens).post(create_preview_token),
         )
-        .route("/preview/token/:token", delete(revoke_preview_token))
+        .route("/preview/token/{token}", delete(revoke_preview_token))
 }
 
 /// Public preview validation endpoint
 pub fn public_router() -> Router<AppState> {
-    Router::new().route("/preview/:token", get(validate_preview_token))
+    Router::new().route("/preview/{token}", get(validate_preview_token))
 }

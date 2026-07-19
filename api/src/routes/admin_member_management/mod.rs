@@ -148,18 +148,18 @@ pub fn router() -> Router<AppState> {
         .route("/", post(crud::create_member))
         .route("/export", get(export::export_members))
         .route(
-            "/:id",
+            "/{id}",
             get(crud::get_member_full)
                 .put(crud::update_member)
                 .delete(crud::delete_member),
         )
         // Ban/Suspend/Unban
-        .route("/:id/ban", post(moderation::ban_member))
-        .route("/:id/suspend", post(moderation::suspend_member))
-        .route("/:id/unban", post(moderation::unban_member))
+        .route("/{id}/ban", post(moderation::ban_member))
+        .route("/{id}/suspend", post(moderation::suspend_member))
+        .route("/{id}/unban", post(moderation::unban_member))
         // Notes
-        .route("/:id/notes", get(notes::get_notes).post(notes::create_note))
-        .route("/:id/notes/:note_id", delete(notes::delete_note))
+        .route("/{id}/notes", get(notes::get_notes).post(notes::create_note))
+        .route("/{id}/notes/{note_id}", delete(notes::delete_note))
         // Activity
-        .route("/:id/activity", get(activity::get_activity))
+        .route("/{id}/activity", get(activity::get_activity))
 }

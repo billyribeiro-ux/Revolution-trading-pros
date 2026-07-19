@@ -1559,27 +1559,27 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_indicators).post(create_indicator))
         .route("/stats", get(get_indicator_stats))
         .route("/downloads", get(get_download_log))
-        .route("/:indicator_id", get(get_indicator).put(update_indicator).delete(delete_indicator))
+        .route("/{indicator_id}", get(get_indicator).put(update_indicator).delete(delete_indicator))
         // Platforms
         .route("/platforms", get(list_platforms).post(create_platform))
-        .route("/platforms/:platform_id", put(update_platform))
+        .route("/platforms/{platform_id}", put(update_platform))
         // Videos
-        .route("/:indicator_id/videos", post(create_video))
-        .route("/:indicator_id/videos/reorder", put(reorder_videos))
-        .route("/:indicator_id/videos/:video_id", put(update_video).delete(delete_video))
+        .route("/{indicator_id}/videos", post(create_video))
+        .route("/{indicator_id}/videos/reorder", put(reorder_videos))
+        .route("/{indicator_id}/videos/{video_id}", put(update_video).delete(delete_video))
         // Platform Files
-        .route("/:indicator_id/files", post(create_platform_file))
-        .route("/:indicator_id/files/bulk", post(bulk_upload_files))
-        .route("/:indicator_id/files/:file_id", put(update_platform_file).delete(delete_platform_file))
-        .route("/:indicator_id/files/:file_id/download", post(log_download))
+        .route("/{indicator_id}/files", post(create_platform_file))
+        .route("/{indicator_id}/files/bulk", post(bulk_upload_files))
+        .route("/{indicator_id}/files/{file_id}", put(update_platform_file).delete(delete_platform_file))
+        .route("/{indicator_id}/files/{file_id}/download", post(log_download))
         // Documentation
-        .route("/:indicator_id/docs", post(create_documentation))
-        .route("/:indicator_id/docs/:doc_id", put(update_documentation).delete(delete_documentation))
+        .route("/{indicator_id}/docs", post(create_documentation))
+        .route("/{indicator_id}/docs/{doc_id}", put(update_documentation).delete(delete_documentation))
         // TradingView Access
-        .route("/:indicator_id/tradingview", get(list_tradingview_accesses).post(grant_tradingview_access))
-        .route("/:indicator_id/tradingview/bulk", post(bulk_grant_tradingview_access))
-        .route("/:indicator_id/tradingview/:access_id", delete(revoke_tradingview_access))
+        .route("/{indicator_id}/tradingview", get(list_tradingview_accesses).post(grant_tradingview_access))
+        .route("/{indicator_id}/tradingview/bulk", post(bulk_grant_tradingview_access))
+        .route("/{indicator_id}/tradingview/{access_id}", delete(revoke_tradingview_access))
         // User Access
-        .route("/:indicator_id/access", post(grant_user_access))
-        .route("/:indicator_id/access/:user_id", delete(revoke_user_access))
+        .route("/{indicator_id}/access", post(grant_user_access))
+        .route("/{indicator_id}/access/{user_id}", delete(revoke_user_access))
 }

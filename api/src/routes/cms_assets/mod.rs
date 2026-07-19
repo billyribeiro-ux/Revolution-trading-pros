@@ -69,21 +69,21 @@ pub fn router() -> Router<AppState> {
             get(folders::list_folders).post(folders::create_folder),
         )
         .route(
-            "/folders/:id",
+            "/folders/{id}",
             put(folders::update_folder).delete(folders::delete_folder),
         )
         // Single asset operations
         .route("/upload", post(crud::create_asset))
         .route(
-            "/:id",
+            "/{id}",
             get(listing::get_asset)
                 .put(crud::update_asset)
                 .delete(crud::delete_asset),
         )
-        .route("/:id/restore", post(crud::restore_asset))
-        .route("/:id/replace", post(crud::replace_asset))
-        .route("/:id/usage", get(usage::get_asset_usage))
-        .route("/:id/track-usage", post(usage::track_usage))
+        .route("/{id}/restore", post(crud::restore_asset))
+        .route("/{id}/replace", post(crud::replace_asset))
+        .route("/{id}/usage", get(usage::get_asset_usage))
+        .route("/{id}/track-usage", post(usage::track_usage))
         // Bulk operations
         .route("/bulk/move", post(bulk::bulk_move))
         .route("/bulk/delete", post(bulk::bulk_delete))

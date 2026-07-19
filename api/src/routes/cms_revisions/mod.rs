@@ -78,20 +78,20 @@ pub use dtos::{
 pub fn router() -> Router<AppState> {
     Router::new()
         // List revisions for content
-        .route("/content/:id/revisions", get(handlers::list_revisions))
+        .route("/content/{id}/revisions", get(handlers::list_revisions))
         // Compare revisions - must come before :version to avoid conflict
         .route(
-            "/content/:id/revisions/compare",
+            "/content/{id}/revisions/compare",
             get(handlers::compare_revisions),
         )
         // Get specific revision
         .route(
-            "/content/:id/revisions/:version",
+            "/content/{id}/revisions/{version}",
             get(handlers::get_revision),
         )
         // Restore revision
         .route(
-            "/content/:id/revisions/:version/restore",
+            "/content/{id}/revisions/{version}/restore",
             post(handlers::restore_revision),
         )
 }

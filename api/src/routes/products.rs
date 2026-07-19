@@ -391,7 +391,7 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_products).post(create_product))
         .route("/my", get(get_user_products))
         .route(
-            "/:slug",
+            "/{slug}",
             get(get_product).put(update_product).delete(delete_product),
         )
 }
@@ -404,14 +404,14 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_products_admin).post(create_product))
         .route(
-            "/:id",
+            "/{id}",
             get(get_product_by_id)
                 .put(update_product)
                 .delete(delete_product),
         )
         // ICT 7 FIX: Archive/restore endpoints for soft delete functionality
-        .route("/:id/archive", post(archive_product))
-        .route("/:id/restore", post(restore_product))
+        .route("/{id}/archive", post(archive_product))
+        .route("/{id}/restore", post(restore_product))
 }
 
 /// Archive product (soft delete) - admin only

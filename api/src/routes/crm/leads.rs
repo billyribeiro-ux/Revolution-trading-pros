@@ -533,7 +533,7 @@ pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/leads", get(list_leads).post(create_lead))
         .route("/leads/stats", get(get_lead_stats))
-        .route("/leads/:id", put(update_lead).delete(delete_lead))
+        .route("/leads/{id}", put(update_lead).delete(delete_lead))
         // Bulk operations
         .route("/leads/bulk-delete", post(bulk_delete_leads))
         .route("/leads/bulk-status", post(bulk_update_lead_status))

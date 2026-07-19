@@ -526,8 +526,8 @@ pub struct BatchEvent {
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/active", get(get_active_popups))
-        .route("/:id/impression", post(track_impression))
-        .route("/:id/conversion", post(track_conversion))
-        .route("/:id/form-submit", post(submit_popup_form))
+        .route("/{id}/impression", post(track_impression))
+        .route("/{id}/conversion", post(track_conversion))
+        .route("/{id}/form-submit", post(submit_popup_form))
         .route("/events", post(track_events_batch))
 }

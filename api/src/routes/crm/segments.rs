@@ -211,7 +211,7 @@ async fn duplicate_segment(
 pub(super) fn router() -> Router<AppState> {
     Router::new()
         .route("/segments", get(list_segments).post(create_segment))
-        .route("/segments/:id", get(get_segment).delete(delete_segment))
-        .route("/segments/:id/sync", post(sync_segment))
-        .route("/segments/:id/duplicate", post(duplicate_segment))
+        .route("/segments/{id}", get(get_segment).delete(delete_segment))
+        .route("/segments/{id}/sync", post(sync_segment))
+        .route("/segments/{id}/duplicate", post(duplicate_segment))
 }

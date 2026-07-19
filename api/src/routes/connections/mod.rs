@@ -131,16 +131,16 @@ pub fn admin_router() -> Router<AppState> {
         .route("/audit-logs", get(audit_log::get_audit_logs))
         // Individual connection routes
         .route(
-            "/:key",
+            "/{key}",
             get(handlers::get_connection).delete(handlers::delete_connection),
         )
-        .route("/:key/connect", post(handlers::connect_service))
-        .route("/:key/test", post(handlers::test_connection))
-        .route("/:key/disconnect", post(handlers::disconnect_service))
+        .route("/{key}/connect", post(handlers::connect_service))
+        .route("/{key}/test", post(handlers::test_connection))
+        .route("/{key}/disconnect", post(handlers::disconnect_service))
         // Webhook routes
         .route(
-            "/:key/webhooks",
+            "/{key}/webhooks",
             get(webhooks::list_webhooks).post(webhooks::create_webhook),
         )
-        .route("/:key/webhooks/:id", delete(webhooks::delete_webhook))
+        .route("/{key}/webhooks/{id}", delete(webhooks::delete_webhook))
 }

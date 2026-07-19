@@ -133,5 +133,5 @@ pub(super) fn router() -> Router<AppState> {
             "/smart-links",
             get(list_smart_links).post(create_smart_link),
         )
-        .route("/smart-links/:id", delete(delete_smart_link))
+        .route("/smart-links/{id}", delete(delete_smart_link))
 }

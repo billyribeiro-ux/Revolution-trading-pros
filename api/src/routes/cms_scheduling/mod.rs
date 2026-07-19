@@ -449,24 +449,24 @@ pub fn router() -> Router<AppState> {
         .route("/schedules/calendar", get(calendar_history::get_calendar))
         .route("/schedules/history", get(calendar_history::get_history))
         .route("/schedules/process", post(cron::process_pending_schedules))
-        .route("/schedules/:id", get(schedules::get_schedule))
-        .route("/schedules/:id", put(schedules::update_schedule))
-        .route("/schedules/:id", delete(schedules::delete_schedule))
-        .route("/schedules/:id/cancel", post(schedules::cancel_schedule))
+        .route("/schedules/{id}", get(schedules::get_schedule))
+        .route("/schedules/{id}", put(schedules::update_schedule))
+        .route("/schedules/{id}", delete(schedules::delete_schedule))
+        .route("/schedules/{id}/cancel", post(schedules::cancel_schedule))
         // Releases
         .route("/releases", post(releases::create_release))
         .route("/releases", get(releases::list_releases))
         .route("/releases/process", post(cron::process_pending_releases))
-        .route("/releases/:id", get(releases::get_release))
-        .route("/releases/:id", put(releases::update_release))
-        .route("/releases/:id", delete(releases::delete_release))
-        .route("/releases/:id/items", post(releases::add_release_item))
+        .route("/releases/{id}", get(releases::get_release))
+        .route("/releases/{id}", put(releases::update_release))
+        .route("/releases/{id}", delete(releases::delete_release))
+        .route("/releases/{id}/items", post(releases::add_release_item))
         .route(
-            "/releases/:release_id/items/:item_id",
+            "/releases/{release_id}/items/{item_id}",
             delete(releases::remove_release_item),
         )
-        .route("/releases/:id/schedule", post(releases::schedule_release))
-        .route("/releases/:id/cancel", post(releases::cancel_release))
+        .route("/releases/{id}/schedule", post(releases::schedule_release))
+        .route("/releases/{id}/cancel", post(releases::cancel_release))
 }
 
 // =====================================================================================

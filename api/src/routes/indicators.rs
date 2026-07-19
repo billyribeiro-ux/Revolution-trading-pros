@@ -286,6 +286,6 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_indicators).post(create_indicator))
         .route("/my", get(get_user_indicators))
-        .route("/:slug", get(get_indicator))
-        .route("/:id/download", get(download_indicator))
+        .route("/{slug}", get(get_indicator))
+        .route("/{id}/download", get(download_indicator))
 }

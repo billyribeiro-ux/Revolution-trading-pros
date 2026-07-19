@@ -542,18 +542,18 @@ pub fn delivery_router() -> Router<AppState> {
         // Search
         .route("/search", get(search_content))
         // Content delivery
-        .route("/content/:content_type/:slug", get(get_content_full))
-        .route("/content/:content_type", get(get_recent_content))
+        .route("/content/{content_type}/{slug}", get(get_content_full))
+        .route("/content/{content_type}", get(get_recent_content))
         // Stats (public-safe)
         .route("/stats", get(get_public_stats))
         // Sitemap support
         .route("/sitemap", get(get_sitemap_entries))
         // Navigation
         .route("/menus", get(get_all_menus))
-        .route("/menus/:location", get(get_menu_by_location))
+        .route("/menus/{location}", get(get_menu_by_location))
         // Redirects
-        .route("/redirect/*path", get(check_redirect))
+        .route("/redirect/{*path}", get(check_redirect))
         // Tags
         .route("/tags", get(get_all_tags))
-        .route("/tags/:tag_slug", get(get_content_by_tag))
+        .route("/tags/{tag_slug}", get(get_content_by_tag))
 }

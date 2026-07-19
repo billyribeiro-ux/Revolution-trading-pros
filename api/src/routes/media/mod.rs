@@ -53,9 +53,9 @@ pub fn admin_router() -> Router<AppState> {
         .route("/bulk-delete", post(bulk::bulk_delete))
         .route("/bulk-update", post(bulk::bulk_update))
         .route("/cleanup-orphans", post(bulk::cleanup_orphaned_files))
-        .route("/scan/:id", post(scanning::scan_media_file))
+        .route("/scan/{id}", post(scanning::scan_media_file))
         .route(
-            "/:id",
+            "/{id}",
             get(crud::show).put(crud::update).delete(crud::destroy),
         )
 }

@@ -566,6 +566,6 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/create-video", post(create_video))
         .nest("/upload", upload_router)
-        .route("/video-status/:guid", get(get_video_status))
+        .route("/video-status/{guid}", get(get_video_status))
         .route("/uploads", get(list_uploads))
 }
