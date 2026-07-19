@@ -236,6 +236,15 @@ impl MfaService {
             });
         }
 
+        // ICT 7 SAFETY: mirror `disable_mfa` — marking the secret verified and
+        // setting `users.mfa_enabled` must commit atomically. A crash between the
+        // two writes would leave a user with a verified secret but
+        // mfa_enabled=false (or the inverse), a half-enabled MFA state.
+        let mut tx = self.pool.begin().await.map_err(|e| {
+            tracing::error!("tx start (verify_and_enable_mfa): {}", e);
+            ApiError::database_error(&e.to_string())
+        })?;
+
         // Mark as verified and enable MFA
         sqlx::query(
             r"
@@ -244,16 +253,21 @@ impl MfaService {
             ",
         )
         .bind(user_id)
-        .execute(&self.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         // Update user's mfa_enabled flag
         sqlx::query("UPDATE users SET mfa_enabled = true, updated_at = NOW() WHERE id = $1")
             .bind(user_id)
-            .execute(&self.pool)
+            .execute(&mut *tx)
             .await
             .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+        tx.commit().await.map_err(|e| {
+            tracing::error!("tx commit (verify_and_enable_mfa): {}", e);
+            ApiError::database_error(&e.to_string())
+        })?;
 
         Ok(MfaVerifyResult {
             success: true,
@@ -505,7 +519,7 @@ impl MfaService {
         ip_address: &str,
     ) -> Result<bool, ApiError> {
         // Allow max 5 failed attempts in 15 minutes
-        let count: i64 = sqlx::query_scalar(
+        let count: i64 = match sqlx::query_scalar(
             r"
             SELECT COUNT(*) FROM mfa_attempts
             WHERE user_id = $1
@@ -518,7 +532,23 @@ impl MfaService {
         .bind(ip_address)
         .fetch_one(&self.pool)
         .await
-        .unwrap_or(0);
+        {
+            Ok(c) => c,
+            Err(e) => {
+                // FAIL CLOSED: a DB fault must DENY, not allow. The previous
+                // `.unwrap_or(0)` treated an error as "0 failed attempts",
+                // disabling the rate limit precisely when the datastore is
+                // unhealthy — an attacker-friendly failure mode.
+                tracing::warn!(
+                    target: "security_audit",
+                    event = "mfa_rate_limit_check_failed_fail_closed",
+                    user_id = %user_id,
+                    error = %e,
+                    "MFA rate-limit COUNT query failed; denying (fail-closed)"
+                );
+                return Ok(false);
+            }
+        };
 
         Ok(count < 5)
     }

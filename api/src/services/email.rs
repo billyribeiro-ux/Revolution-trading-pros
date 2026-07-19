@@ -12,6 +12,24 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
+/// Build the shared Postmark HTTP client with a request timeout.
+///
+/// Mirrors the pattern in `services/stripe.rs`: a `reqwest::Client::builder()`
+/// with a 30s timeout, and a graceful fallback to a default (no-timeout)
+/// client if the builder fails rather than panicking at construction time.
+fn build_http_client() -> Client {
+    Client::builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .build()
+        .unwrap_or_else(|e| {
+            tracing::error!(
+                "Failed to create HTTP client with timeout: {}, using default",
+                e
+            );
+            Client::new()
+        })
+}
+
 /// Email service for sending transactional emails via Postmark.
 ///
 /// **Batch 6 — graceful no-op fallback.** `postmark_token` is
@@ -90,7 +108,7 @@ impl EmailService {
             Some(token.to_string())
         };
         Self {
-            client: Client::new(),
+            client: build_http_client(),
             token,
             from_email: from_email.to_string(),
             from_name: "Revolution Trading Pros".to_string(),
@@ -125,7 +143,7 @@ impl EmailService {
         }
 
         Self {
-            client: Client::new(),
+            client: build_http_client(),
             token,
             from_email,
             from_name: "Revolution Trading Pros".to_string(),

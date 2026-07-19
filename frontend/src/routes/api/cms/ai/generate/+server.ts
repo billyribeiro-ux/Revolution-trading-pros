@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import Anthropic from '@anthropic-ai/sdk';
 import { env } from '$env/dynamic/private';
+import { isAdminRole } from '$lib/server/auth';
 
 function getAnthropicClient() {
 	const apiKey = env.ANTHROPIC_API_KEY;
@@ -18,8 +19,21 @@ interface GenerateRequest {
 	maxTokens?: number;
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
+		// This endpoint calls a paid third-party LLM (Anthropic). Gate it behind
+		// an authenticated, privileged CMS session. `locals.user` is populated by
+		// hooks.server.ts:authHandler for any request carrying a valid token
+		// (this route is not in PROTECTED_ROUTES, but the hook still hydrates the
+		// user when a token is present).
+		const user = locals.user;
+		if (!user) {
+			return json({ error: 'Unauthorized' }, { status: 401 });
+		}
+		if (!isAdminRole(user.role) && (user.role ?? '').toLowerCase() !== 'editor') {
+			return json({ error: 'Forbidden' }, { status: 403 });
+		}
+
 		const body: GenerateRequest = await request.json();
 
 		if (!body.prompt || typeof body.prompt !== 'string') {
@@ -37,7 +51,7 @@ ${body.context ? `Context: ${body.context}` : ''}`;
 		const anthropic = getAnthropicClient();
 		const response = await anthropic.messages.create({
 			model: 'claude-sonnet-4-20250514',
-			max_tokens: body.maxTokens || 1024,
+			max_tokens: Math.min(body.maxTokens ?? 1024, 4096),
 			system: systemPrompt,
 			messages: [{ role: 'user', content: body.prompt }]
 		});

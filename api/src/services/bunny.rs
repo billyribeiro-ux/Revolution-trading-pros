@@ -27,7 +27,18 @@ pub struct BunnyClient {
 impl BunnyClient {
     pub fn new() -> Self {
         Self {
-            http: Client::new(),
+            // Mirror services/stripe.rs: builder with a 30s request timeout and
+            // a graceful fallback to a default client instead of panicking.
+            http: Client::builder()
+                .timeout(std::time::Duration::from_secs(30))
+                .build()
+                .unwrap_or_else(|e| {
+                    error!(
+                        "Failed to create HTTP client with timeout: {}, using default",
+                        e
+                    );
+                    Client::new()
+                }),
             stream_api_key: env::var("BUNNY_STREAM_API_KEY")
                 .map(|s| s.trim().to_string())
                 .unwrap_or_default(),
@@ -259,10 +270,13 @@ impl BunnyClient {
         source_url: &str,
         path: &str,
     ) -> Result<String, BunnyError> {
-        // Download image
+        // Download image. Per-request timeout on the caller-supplied URL so a
+        // slow/hostile source can't hold the connection (and worker) open
+        // indefinitely — shorter than the client-wide default above.
         let response = self
             .http
             .get(source_url)
+            .timeout(std::time::Duration::from_secs(20))
             .send()
             .await
             .map_err(|e| BunnyError::Request(e.to_string()))?;

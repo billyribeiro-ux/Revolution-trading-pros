@@ -242,11 +242,3 @@ async function sendConfirmationEmail(email: string, apiKey: string): Promise<voi
 		throw new Error('Failed to send confirmation email');
 	}
 }
-
-// GET endpoint to check subscriber count (admin only)
-export const GET = async () => {
-	return json({
-		subscriberCount: subscribers.size,
-		message: 'Maintenance notification subscriber count'
-	});
-};

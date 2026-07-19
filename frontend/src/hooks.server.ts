@@ -167,13 +167,16 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		if (token) {
 			try {
 				// ICT7 FIX: Backend /me endpoint is under /auth router
+				// ICT 7 FIX: match the protected branch's 10s abort guard so a
+				// hung API can't stall non-protected SSR requests indefinitely.
 				const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
 						Authorization: `Bearer ${token}`,
 						'Content-Type': 'application/json',
 						Accept: 'application/json'
-					}
+					},
+					signal: AbortSignal.timeout(10000)
 				});
 				if (response.ok) {
 					const json = await response.json();

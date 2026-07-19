@@ -206,19 +206,27 @@ pub async fn update_asset_folder(
 
 /// Delete asset folder (and optionally move contents)
 pub async fn delete_asset_folder(pool: &PgPool, id: Uuid, move_to: Option<Uuid>) -> Result<()> {
+    // Both writes (reparent assets, then delete the folder) must commit
+    // atomically. Without a transaction, a failure between them could either
+    // delete the folder while assets still reference it (orphaned `folder_id`)
+    // or reparent assets and then leave the now-empty folder behind.
+    let mut tx = pool.begin().await?;
+
     // Move assets to new folder if specified
     if let Some(target_folder_id) = move_to {
         sqlx::query("UPDATE cms_assets SET folder_id = $1 WHERE folder_id = $2")
             .bind(target_folder_id)
             .bind(id)
-            .execute(pool)
+            .execute(&mut *tx)
             .await?;
     }
 
     sqlx::query("DELETE FROM cms_asset_folders WHERE id = $1")
         .bind(id)
-        .execute(pool)
+        .execute(&mut *tx)
         .await?;
+
+    tx.commit().await?;
 
     Ok(())
 }
