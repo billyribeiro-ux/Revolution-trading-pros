@@ -407,6 +407,18 @@
 		nvda: []
 	});
 
+	// Hero backdrop: an always-on AAPL feed rendered behind the hero copy.
+	const HERO_BASE_PRICE = 232.3;
+	let heroChartEl: HTMLDivElement;
+	let heroChart: IChartApi | null = null;
+	let heroSeries: ISeriesApi<'Candlestick'> | null = null;
+	let heroChartReady = false;
+	let heroFeedTimer = 0;
+	let heroLastCandle: CandlestickData | null = null;
+	let heroTickCount = 0;
+	let heroPrice = $state(HERO_BASE_PRICE);
+	let heroPriceDirection = $state<Direction>('up');
+
 	const averageConfidence = $derived(
 		Math.round(
 			scannerSignals.reduce((total, signal) => total + signal.confidence, 0) / scannerSignals.length
@@ -451,6 +463,7 @@
 		if (!reducedMotion) {
 			void initMotion();
 		}
+		void initHeroChart();
 
 		visible.hero = true;
 
@@ -462,6 +475,7 @@
 			cancelAnimationFrame(raf);
 			cancelAnimationFrame(statsRaf);
 			window.clearTimeout(entranceFailsafe);
+			window.clearInterval(heroFeedTimer);
 			gsapContext?.revert();
 			gsapContext = null;
 			masterTimeline = null;
@@ -473,6 +487,10 @@
 
 	const mountShell: Attachment<HTMLDivElement> = (node) => {
 		shellEl = node;
+	};
+
+	const mountHeroChart: Attachment<HTMLDivElement> = (node) => {
+		heroChartEl = node;
 	};
 
 	const mountMainChart: Attachment<HTMLDivElement> = (node) => {
@@ -546,9 +564,10 @@
 	}
 
 	/* ── Motion ──────────────────────────────────────────────────────────────
-	 * Deliberately restrained: short fades and small rises, standard easing,
-	 * nothing looping. Loaded dynamically; the prerendered page is complete
-	 * without it, and reduced-motion skips it entirely.
+	 * Restrained but deliberate: staged focus-pulls (small rise + blur→sharp),
+	 * weighted overlaps, and a single slow depth drift on the hero backdrop.
+	 * The only loop is the live chart feed. Loaded dynamically; the
+	 * prerendered page is complete without it, and reduced-motion skips it.
 	 */
 	async function initMotion() {
 		try {
@@ -581,11 +600,27 @@
 	function buildMotion(gsap: GsapCore, ScrollTrigger: ScrollTriggerStatic) {
 		ScrollTrigger.defaults({ scroller: shellEl });
 
-		// Entrance: one quiet pass over the hero, under a second in total.
-		const master = gsap.timeline({ defaults: { ease: 'power2.out', duration: 0.55 } });
+		const settle = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+
+		// Entrance: the backdrop breathes in first, then the copy pulls into
+		// focus line by line, and the status card lands last with more weight.
+		const master = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } });
 		masterTimeline = master;
 
-		master.to('#hero [data-entrance]', { autoAlpha: 1, y: 0, stagger: 0.07 }, 0.05);
+		master
+			.fromTo(
+				'.hero-chart',
+				{ autoAlpha: 0, scale: 1.015 },
+				{ autoAlpha: 1, scale: 1, duration: 1.8, ease: 'power2.out' },
+				0
+			)
+			.to('#hero .eyebrow', { ...settle, duration: 0.6 }, 0.15)
+			.to('#hero .hero-title .line', { ...settle, duration: 0.9, stagger: 0.14 }, 0.28)
+			.to('#hero .lede', settle, 0.62)
+			.to('#hero .hero-actions', settle, 0.76)
+			.to('#hero .hero-note', { ...settle, duration: 0.6 }, 0.88)
+			.to('#hero .drop-timer', settle, 0.96)
+			.to('#hero .status-card', { ...settle, duration: 1.0 }, 0.52);
 
 		// Progress figure settles from its fallback to today's value.
 		const progressProxy = { value: Math.max(0, buildProgress - 6) };
@@ -594,31 +629,45 @@
 			progressProxy,
 			{
 				value: buildProgress,
-				duration: 0.9,
+				duration: 1.1,
 				ease: 'power1.out',
 				onUpdate: () => {
 					progressDisplay = Math.round(progressProxy.value);
 				}
 			},
-			0.35
+			0.8
 		);
 
-		// Sections: a single short fade-and-rise per block as it enters.
+		// Depth: the backdrop drifts a few pixels as the page scrolls away.
+		gsap.to('.hero-chart', {
+			yPercent: -6,
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
+		});
+
+		// Sections: kicker leads, the heading pulls into focus, content follows.
 		const sections = gsap.utils.toArray<HTMLElement>('.page-shell section:not(#hero)');
 		sections.forEach((section) => {
-			const blocks = section.querySelectorAll(
-				'.section-heading, [data-cine] > *, [data-cine-self]'
-			);
-			if (!blocks.length) return;
+			const kicker = section.querySelector('.section-kicker');
+			const heading = section.querySelector('.section-heading h2');
+			const blocks = section.querySelectorAll('[data-cine] > *, [data-cine-self]');
 
-			gsap.from(blocks, {
-				autoAlpha: 0,
-				y: 14,
-				duration: 0.5,
-				ease: 'power2.out',
-				stagger: 0.06,
-				scrollTrigger: { trigger: section, start: 'top 82%', once: true }
+			const timeline = gsap.timeline({
+				defaults: { ease: 'power3.out' },
+				scrollTrigger: { trigger: section, start: 'top 80%', once: true }
 			});
+
+			if (kicker) timeline.from(kicker, { autoAlpha: 0, y: 10, duration: 0.55 });
+			if (heading) {
+				timeline.from(
+					heading,
+					{ autoAlpha: 0, y: 18, filter: 'blur(6px)', duration: 0.85 },
+					'<0.1'
+				);
+			}
+			if (blocks.length) {
+				timeline.from(blocks, { autoAlpha: 0, y: 18, duration: 0.7, stagger: 0.07 }, '<0.25');
+			}
 		});
 	}
 
@@ -706,14 +755,136 @@
 		mainChart?.remove();
 		aaplChart?.remove();
 		nvdaChart?.remove();
+		heroChart?.remove();
 		mainChart = null;
 		aaplChart = null;
 		nvdaChart = null;
+		heroChart = null;
 		mainSeries = null;
 		aaplSeries = null;
 		nvdaSeries = null;
 		volumeSeries = null;
+		heroSeries = null;
 		chartsReady = false;
+		heroChartReady = false;
+	}
+
+	/* ── Hero backdrop feed ──────────────────────────────────────────────────
+	 * A muted AAPL candlestick chart rendered across the hero, right price
+	 * axis visible, ticking continuously. Palette reuses the existing chart
+	 * tokens; interaction is disabled — it is scenery with real mechanics.
+	 */
+	async function initHeroChart() {
+		if (heroChartReady || !browser || !mounted || !heroChartEl) return;
+
+		try {
+			const { createChart, CandlestickSeries } = await import('lightweight-charts');
+			if (!mounted || heroChartReady || !heroChartEl) return;
+
+			heroChart = createChart(heroChartEl, {
+				autoSize: true,
+				layout: {
+					background: { color: 'transparent' },
+					textColor: 'rgba(236, 234, 228, 0.45)',
+					fontFamily: "'SF Mono', ui-monospace, Menlo, monospace",
+					fontSize: 10,
+					attributionLogo: false
+				},
+				grid: {
+					vertLines: { visible: false },
+					horzLines: { color: 'rgba(255, 255, 255, 0.04)' }
+				},
+				rightPriceScale: {
+					visible: true,
+					borderColor: 'rgba(255, 255, 255, 0.07)',
+					scaleMargins: { top: 0.12, bottom: 0.12 }
+				},
+				timeScale: { visible: false, rightOffset: 5, barSpacing: 10 },
+				crosshair: {
+					vertLine: { visible: false, labelVisible: false },
+					horzLine: { visible: false, labelVisible: false }
+				},
+				handleScroll: false,
+				handleScale: false
+			});
+
+			heroSeries = heroChart.addSeries(CandlestickSeries, {
+				upColor: '#2e9c77',
+				downColor: '#c25555',
+				borderUpColor: '#2e9c77',
+				borderDownColor: '#c25555',
+				wickUpColor: '#2e9c77',
+				wickDownColor: '#c25555',
+				priceLineVisible: true,
+				priceLineColor: 'rgba(236, 234, 228, 0.28)',
+				lastValueVisible: true
+			});
+
+			// Re-center and compress the seeded walk so it closes exactly on the
+			// base price with a believable intraday range (~1.5%), keeping this
+			// chart consistent with the tape and mini-feed AAPL quotes.
+			const raw = generateCandles(232, HERO_BASE_PRICE, 96, 0.0035);
+			const rawClose = raw.at(-1)?.close ?? HERO_BASE_PRICE;
+			const compress = (value: number) =>
+				Number((HERO_BASE_PRICE + (value - rawClose) * 0.18).toFixed(2));
+			const seed = raw.map((candle) => ({
+				time: candle.time,
+				open: compress(candle.open),
+				high: compress(candle.high),
+				low: compress(candle.low),
+				close: compress(candle.close)
+			}));
+			heroSeries.setData(seed);
+			heroLastCandle = seed.at(-1) ?? null;
+			if (heroLastCandle) {
+				heroPrice = heroLastCandle.close;
+				heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
+			}
+			heroChart.timeScale().scrollToRealTime();
+			heroChartReady = true;
+
+			// The feed never stops; reduced-motion readers get a still image.
+			if (!reducedMotion) {
+				heroFeedTimer = window.setInterval(tickHeroFeed, 700);
+			}
+		} catch (error) {
+			if (mounted) console.error('[Maintenance] Failed to initialize hero chart', error);
+		}
+	}
+
+	function tickHeroFeed() {
+		if (!heroSeries || !heroLastCandle) return;
+
+		heroTickCount += 1;
+
+		// Mean-reverting jitter keeps the tape believable around the base price.
+		const reversion = (HERO_BASE_PRICE - heroLastCandle.close) * 0.02;
+		const move = (Math.random() - 0.5) * 0.16 + reversion;
+
+		if (heroTickCount % 5 === 0) {
+			// Roll a fresh candle roughly every 3.5 seconds.
+			const open = heroLastCandle.close;
+			const close = Number((open + move).toFixed(2));
+			heroLastCandle = {
+				time: (Number(heroLastCandle.time) + 60) as UTCTimestamp,
+				open,
+				high: Math.max(open, close),
+				low: Math.min(open, close),
+				close
+			};
+		} else {
+			const close = Number((heroLastCandle.close + move).toFixed(2));
+			heroLastCandle = {
+				...heroLastCandle,
+				close,
+				high: Math.max(heroLastCandle.high, close),
+				low: Math.min(heroLastCandle.low, close)
+			};
+		}
+
+		heroSeries.update(heroLastCandle);
+		heroPrice = heroLastCandle.close;
+		heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
 	}
 
 	async function initCharts() {
@@ -1097,11 +1268,22 @@
 
 	<main class="page-shell">
 		<section id="hero" class={{ hero: true, reveal: true, visible: visible.hero }}>
+			<div class="hero-chart" aria-hidden="true">
+				<div class="hero-chart-canvas" {@attach mountHeroChart}></div>
+				<div class="hero-chart-badge">
+					<span class="badge-symbol">AAPL</span>
+					<span class="badge-live"><i></i>Live</span>
+					<strong class={{ up: heroPriceDirection === 'up', down: heroPriceDirection === 'down' }}>
+						{heroPrice.toFixed(2)}
+					</strong>
+				</div>
+			</div>
+
 			<div class="hero-copy">
 				<p class="eyebrow" data-entrance>Platform rebuild · Day {dayNumber || '—'}</p>
-				<h1 class="hero-title" data-entrance>
-					<span class="line">We didn’t go quiet.</span>
-					<span class="line">We went to work.</span>
+				<h1 class="hero-title">
+					<span class="line" data-entrance>We didn’t go quiet.</span>
+					<span class="line" data-entrance>We went to work.</span>
 				</h1>
 				<p class="lede" data-entrance>
 					Revolution Trading Pros is being rebuilt end to end — faster market data, more rigorous
@@ -1728,6 +1910,7 @@
 	}
 
 	.hero {
+		position: relative;
 		display: grid;
 		grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.68fr);
 		gap: clamp(28px, 5vw, 72px);
@@ -1736,7 +1919,65 @@
 		padding-bottom: 4vh;
 	}
 
+	/* ── Hero backdrop chart ─────────────────────────────────────────────── */
+
+	.hero-chart {
+		position: absolute;
+		inset: -6% -1% -2% -4%;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+		opacity: 0.5;
+		mask-image: linear-gradient(100deg, transparent 4%, rgba(0, 0, 0, 0.4) 30%, black 62%);
+	}
+
+	.hero-chart-canvas {
+		position: absolute;
+		inset: 0;
+		mask-image: linear-gradient(180deg, transparent 0%, black 16%, black 86%, transparent 100%);
+	}
+
+	.hero-chart-badge {
+		position: absolute;
+		top: 4%;
+		right: 6px;
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		color: var(--dim);
+	}
+
+	.badge-symbol {
+		color: var(--muted);
+		font-weight: 600;
+	}
+
+	.badge-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		text-transform: uppercase;
+	}
+
+	.badge-live i {
+		width: 5px;
+		height: 5px;
+		border-radius: 999px;
+		background: var(--up);
+		animation: live-dot 2.4s ease-in-out infinite;
+	}
+
+	.hero-chart-badge strong {
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
 	.hero-copy {
+		position: relative;
+		z-index: 1;
 		max-width: 720px;
 	}
 
@@ -1914,7 +2155,13 @@
 	}
 
 	.status-card {
+		position: relative;
+		z-index: 1;
 		padding: 22px;
+		/* Same base hue, raised alpha + blur so the card stays crisp over the
+		   live chart backdrop. */
+		background: rgba(10, 11, 14, 0.72);
+		backdrop-filter: blur(10px);
 	}
 
 	.progress-block {
@@ -2048,7 +2295,12 @@
 	/* GSAP entrance initial state — applied only when the motion layer runs. */
 	.gsap-on #hero [data-entrance] {
 		opacity: 0;
-		transform: translateY(12px);
+		transform: translateY(14px);
+		filter: blur(8px);
+	}
+
+	.gsap-on .hero-chart {
+		opacity: 0;
 	}
 
 	/* ── Sections ─────────────────────────────────────────────────────────── */
@@ -2958,6 +3210,12 @@
 		}
 	}
 
+	@keyframes live-dot {
+		50% {
+			opacity: 0.35;
+		}
+	}
+
 	/* ── Responsive ───────────────────────────────────────────────────────── */
 
 	@media (max-width: 960px) {
@@ -2973,6 +3231,10 @@
 		.hero {
 			min-height: auto;
 			padding-top: 48px;
+		}
+
+		.hero-chart {
+			opacity: 0.32;
 		}
 
 		.academy-summary {
