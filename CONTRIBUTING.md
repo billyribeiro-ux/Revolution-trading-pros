@@ -25,8 +25,8 @@ Quick reference for working on this repo. Read [`docs/development/LOCAL_DEV.md`]
 ```bash
 # Frontend
 pnpm check                                                # typecheck
-pnpm test:unit                                            # vitest
-cd frontend && pnpm exec playwright test tests/e2e --project=chromium  # e2e
+pnpm --filter revolution-svelte test:unit                 # vitest
+cd frontend && pnpm test:a11y                             # playwright a11y suite
 
 # Backend
 cd api

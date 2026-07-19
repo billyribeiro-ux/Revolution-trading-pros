@@ -27,6 +27,10 @@ on:
       - ".github/workflows/deploy-cloudflare.yml"
       - "pnpm-lock.yaml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # pnpm version is activated by Corepack from package.json#packageManager
 # (pnpm@11.5.2), so this workflow, ci.yml, and local always use the exact
 # same pnpm. One source of truth, no drift.
@@ -57,10 +61,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Activate pnpm 11.5.2
+      - name: Activate pnpm (from package.json#packageManager)
         run: |
           corepack enable
-          corepack prepare pnpm@11.5.2 --activate
+          corepack prepare --activate
           pnpm --version
 
       - name: Install
@@ -69,8 +73,11 @@ jobs:
       - name: Build (production)
         run: pnpm --filter revolution-svelte build
         env:
-          API_BASE_URL: <your-api-host>
-          BACKEND_URL: <your-api-host>
+          # Mirrors ci.yml: a literal placeholder is an invalid URL for any
+          # build-time SSR/prerender fetch; localhost matches the proxy
+          # default under which the cold build is proven green.
+          API_BASE_URL: http://localhost:8080
+          BACKEND_URL: http://localhost:8080
 
       # Branch resolution: PRs go to pr-N, manual dispatch uses the chosen
       # input, anything else lands on the "preview" branch.

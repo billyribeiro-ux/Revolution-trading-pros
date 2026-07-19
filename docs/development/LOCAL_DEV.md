@@ -155,8 +155,8 @@ SELECT name, version, applied_on FROM _sqlx_migrations ORDER BY version DESC LIM
 ```bash
 # Frontend (≈1 minute total)
 pnpm check
-pnpm test:unit
-cd frontend && pnpm exec playwright test tests/e2e --project=chromium
+pnpm --filter revolution-svelte test:unit
+cd frontend && pnpm test:a11y
 
 # Backend (≈3 minutes cold, seconds warm)
 cd ../api

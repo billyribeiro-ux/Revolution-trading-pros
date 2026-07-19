@@ -38,7 +38,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 │   ├── scripts/
 │   │   └── seed-local-admin.sh
 │   └── Dockerfile
-├── frontend/               SvelteKit 2 + Svelte 5 (runes) + Vite 7
+├── frontend/               SvelteKit 2 + Svelte 5 (runes) + Vite 8
 │   └── src/
 ├── docs/                   Documentation (see below)
 ├── scripts/                Repo-level utility scripts
@@ -63,10 +63,10 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 
 | Layer | Technology | Where it runs |
 |-------|-----------|---------------|
-| Frontend | SvelteKit 2 / Svelte 5 / Vite 7 | Cloudflare Pages (prod), `pnpm dev` (local) |
-| Backend | Rust 1.94 + Axum 0.7 | Fly.io (prod), Docker (local) |
-| Database | PostgreSQL 16 + sqlx 0.8 | Fly.io (prod), Docker (local) |
-| Cache / sessions / rate-limit / JWT blacklist | Redis 7 | Upstash (prod), Docker (local) |
+| Frontend | SvelteKit 2 / Svelte 5 / Vite 8 | Cloudflare Pages (prod), `pnpm dev` (local) |
+| Backend | Rust 1.96 + Axum 0.8 | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
+| Database | PostgreSQL 18 + sqlx 0.9 | prod target TBD, Docker (local) |
+| Cache / sessions / rate-limit / JWT blacklist | Redis 8 | Upstash (prod), Docker (local) |
 | Object storage | Cloudflare R2 (S3-compatible) | Cloudflare |
 | Search | Meilisearch | Meilisearch Cloud |
 | Email | Postmark | Postmark |
@@ -91,7 +91,7 @@ pnpm lint             # eslint
 End-to-end tests:
 
 ```bash
-cd frontend && pnpm exec playwright test tests/e2e --project=chromium
+cd frontend && pnpm test:a11y
 ```
 
 Backend:
@@ -128,7 +128,7 @@ Code style is enforced via `prettier` and `eslint` for the frontend, `rustfmt` a
 `clippy` for the backend. Before opening a PR:
 
 ```bash
-pnpm check && pnpm test:unit && pnpm exec playwright test tests/e2e --project=chromium
+pnpm check && pnpm --filter revolution-svelte test:unit && (cd frontend && pnpm test:a11y)
 cd api && cargo check && cargo test --test utils_test --test stripe_test
 ```
 

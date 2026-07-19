@@ -7,9 +7,12 @@ on:
   pull_request:
     branches: [main, develop]
 
-# pnpm version is activated by Corepack from package.json#packageManager
-# (pnpm@11.5.2), so CI and local use the exact same pnpm. One source of
-# truth, no drift.
+# pnpm is activated by Corepack from package.json#packageManager, so CI
+# and local use the exact same pnpm. One source of truth, no drift.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: "24.18.0"
   GIT_CONFIG_COUNT: "1"
@@ -43,10 +46,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Activate pnpm 11.5.2
+      - name: Activate pnpm (from package.json#packageManager)
         run: |
           corepack enable
-          corepack prepare pnpm@11.5.2 --activate
+          corepack prepare --activate
           pnpm --version
 
       - name: Install
@@ -112,7 +115,10 @@ jobs:
           SQLX_OFFLINE: "true"
 
       # Exercises the REAL revolution_api crate (no duplicated copies).
+      # router_smoke_test constructs the full api_router() — the class of
+      # failure (axum route-syntax panics, route conflicts) that cargo
+      # check cannot catch.
       - name: cargo test (no-DB unit tests, real crate)
-        run: cargo test --locked --test utils_test --test stripe_test
+        run: cargo test --locked --test router_smoke_test --test utils_test --test stripe_test
         env:
           SQLX_OFFLINE: "true"

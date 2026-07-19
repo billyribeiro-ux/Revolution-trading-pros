@@ -114,11 +114,11 @@ is TBD (Fly.io references stripped on 2026-04-28).
 Run the four gates locally:
 
 ```bash
-pnpm check                                                # frontend typecheck
-pnpm test:unit                                            # vitest
-cd frontend && pnpm exec playwright test tests/e2e --project=chromium
+pnpm --filter revolution-svelte check                      # frontend typecheck
+pnpm --filter revolution-svelte test:unit                 # vitest
+cd frontend && pnpm test:a11y                             # playwright a11y suite
 cd ../api && cargo check
-cd api && cargo test --test utils_test --test stripe_test  # no-DB tests
+cd api && cargo test --test router_smoke_test --test utils_test --test stripe_test  # no-DB tests
 ```
 
 All four must pass before committing.

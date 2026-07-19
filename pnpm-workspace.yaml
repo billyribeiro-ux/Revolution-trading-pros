@@ -23,11 +23,9 @@ allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
+# (Stale pins for versions no longer in the lockfile removed 2026-07-19.)
 minimumReleaseAgeExclude:
-  - "@sveltejs/kit@2.63.0"
   - concurrently@10.0.3
-  - miniflare@4.20260603.0
-  - wrangler@4.98.0
 
 peerDependencyRules:
   allowedVersions:
