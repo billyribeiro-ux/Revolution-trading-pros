@@ -45,6 +45,11 @@ export default defineConfig(({ mode }) => ({
 		strictPort: false,
 		host: 'localhost'
 	},
+	optimizeDeps: {
+		// Dynamically imported in-page (maintenance motion layer, charts). Pre-bundle
+		// them so first discovery doesn't trigger a dev-server full page reload.
+		include: ['gsap', 'gsap/ScrollTrigger', 'lightweight-charts']
+	},
 	build: {
 		target: 'es2022',
 		// Surface3D is an intentionally lazy WebGL/Three tab in the options

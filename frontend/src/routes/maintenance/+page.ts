@@ -11,13 +11,13 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = () => {
 	return {
 		seo: {
-			title: 'Improving Our Services | Revolution Trading Pros',
+			title: 'Platform Rebuild in Progress',
 			description:
-				"We're upgrading our infrastructure to serve more students with better speed, reliability, and features. Back soon!",
+				'Revolution Trading Pros is being rebuilt end to end: faster market data, more rigorous scanners, and an institutional-standard trading curriculum. Progress is posted every trading day. Request first access.',
 			og: {
-				title: 'Improving Our Services | Revolution Trading Pros',
+				title: 'Platform Rebuild in Progress',
 				description:
-					"We're upgrading our infrastructure to serve more students with better speed, reliability, and features."
+					'Faster market data, more rigorous scanners, and an institutional-standard trading curriculum. Progress is posted on this page every trading day.'
 			}
 		}
 	};

@@ -175,18 +175,18 @@ async function sendConfirmationEmail(email: string, apiKey: string): Promise<voi
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Revolution Trading Pros</h1>
+            <h1>Revolution Trading Pros</h1>
         </div>
 
         <div class="content">
-            <h2>You're In! Welcome to the Revolution.</h2>
+            <h2>You're on the list.</h2>
 
-            <p>Thank you for joining our exclusive launch list. We're <strong>raising the bar</strong> for stocks and options trading education—and you're going to be part of it from day one.</p>
+            <p>Thank you for requesting first access. We are rebuilding the platform end to end, and you'll receive one email the moment it reopens.</p>
 
-            <p><strong>No fake "holy grail" indicators.</strong> Just real institutional tools and strategies that actually work.</p>
+            <p>No gimmicks and no marketing sequence — just the reopening notice and your founding-member terms.</p>
 
             <div class="features">
-                <h3>🎯 What You'll Get First Access To:</h3>
+                <h3>What you'll get first access to:</h3>
                 <ul>
                     <li><strong>Institutional-Grade Scanners</strong> - Pro-level technology previously reserved for hedge funds</li>
                     <li><strong>Day Trading University</strong> - Complete curriculum for intraday mastery</li>
@@ -200,7 +200,7 @@ async function sendConfirmationEmail(email: string, apiKey: string): Promise<voi
 
             <p><strong>Our commitment:</strong> Leading stocks and options trading education by providing the unseen institutional tools and strategies that professionals actually use. No gimmicks. No false promises. Just authentic trading excellence.</p>
 
-            <p>Trading education will never be the same. Stay tuned—we'll notify you the moment we launch!</p>
+            <p>Progress is posted on the site every trading day if you would like to follow the rebuild.</p>
 
             <center>
                 <a href="https://revolutiontradingpros.com" class="cta-button">Visit Our Website</a>
@@ -230,7 +230,7 @@ async function sendConfirmationEmail(email: string, apiKey: string): Promise<voi
 		body: JSON.stringify({
 			from: 'Revolution Trading Pros <noreply@revolutiontradingpros.com>',
 			to: email,
-			subject: "🚀 You're In! Welcome to the Trading Revolution",
+			subject: "You're on the list — Revolution Trading Pros",
 			html: emailHtml
 		})
 	});
