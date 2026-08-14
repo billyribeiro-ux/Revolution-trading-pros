@@ -1346,7 +1346,7 @@ export function initPerformanceMonitoring(): void {
 // ============================================================================
 
 // Import from centralized config - single source of truth
-import { API_ENDPOINTS } from '$lib/api/config';
+import { API_ENDPOINTS } from '#lib/api/config.js';
 
 export interface LegacyPerformanceMetric {
 	name: string;

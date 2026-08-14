@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { fade, scale } from 'svelte/transition';
 	import { onMount, untrack } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types

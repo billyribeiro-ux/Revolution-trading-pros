@@ -8,7 +8,7 @@
  * gate on role/credential mutating endpoints. This module unifies the pattern.
  *
  * Usage:
- *   import { requireAdminToken, requireSuperadmin } from '$lib/server/auth';
+ *   import { requireAdminToken, requireSuperadmin } from '#lib/server/auth.js';
  *
  *   export const GET: RequestHandler = async (event) => {
  *     const token = requireAdminToken(event);
@@ -28,7 +28,7 @@ import { error, type RequestEvent } from '@sveltejs/kit';
 
 /**
  * Names that count as super-admin in `event.locals.user.role`.
- * Mirrors the list in `$lib/config/roles.ts:isSuperadmin` so server and client
+ * Mirrors the list in `#lib/config/roles.ts:isSuperadmin` so server and client
  * agree.
  */
 const SUPERADMIN_ROLE_VALUES = new Set(['super-admin', 'super_admin', 'superadmin']);

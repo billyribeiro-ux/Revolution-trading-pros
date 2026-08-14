@@ -5,10 +5,10 @@
 		IconTrash,
 		IconEyeOff,
 		IconAlertTriangle
-	} from '$lib/icons';
-	import CreateRedirectModal from '$lib/components/seo/CreateRedirectModal.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import CreateRedirectModal from '#lib/components/seo/CreateRedirectModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 	import { getLogs, getStats, ignoreLog, bulkDeleteLogs } from './monitor.remote';
 	import type { Seo404Log, Seo404Sort } from './monitor.types';
 

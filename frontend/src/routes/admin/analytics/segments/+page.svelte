@@ -7,11 +7,11 @@
 	 * based on behavior, attributes, and rules.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { analyticsApi, type Segment } from '$lib/api/analytics';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { browser } from '$app/env';
+	import { analyticsApi, type Segment } from '#lib/api/analytics.js';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconLayoutGrid from '@tabler/icons-svelte-runes/icons/layout-grid';
@@ -19,7 +19,7 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Svelte 5 Runes - State
 	let segments = $state<Segment[]>([]);
@@ -214,9 +214,10 @@
 							<IconList size={16} aria-hidden="true" />
 						</button>
 					</div>
-					<button type="button" onclick={() => (showCreateModal = true)} class="primary-button">
-						Create Segment
-					</button>
+
+					<button type="button" onclick={() => (showCreateModal = true)} class="primary-button"
+						>Create Segment</button
+					>
 				</div>
 			{/if}
 		</header>
@@ -431,8 +432,7 @@
 							bind:value={newSegment.description}
 							placeholder="Describe this segment..."
 							rows={2}
-							class="form-control textarea-control"
-						></textarea>
+							class="form-control textarea-control"></textarea>
 					</div>
 				</div>
 
@@ -443,7 +443,10 @@
 							<button
 								type="button"
 								onclick={() => (newSegment.type = type.value as typeof newSegment.type)}
-								class={{ 'type-option': true, selected: newSegment.type === type.value }}
+								class={{
+									'type-option': true,
+									selected: newSegment.type === type.value
+								}}
 							>
 								<span>{type.label}</span>
 								<small>{type.desc}</small>
@@ -507,9 +510,10 @@
 			</div>
 
 			<footer class="modal-footer">
-				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-button">
-					Cancel
-				</button>
+				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-button"
+					>Cancel</button
+				>
+
 				<button
 					type="button"
 					onclick={createSegment}

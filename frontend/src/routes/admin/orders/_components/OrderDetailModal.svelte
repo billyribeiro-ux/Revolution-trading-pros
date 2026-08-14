@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX } from '$lib/icons';
+	import { IconX } from '#lib/icons/index.js';
 
 	interface Order {
 		id: number;

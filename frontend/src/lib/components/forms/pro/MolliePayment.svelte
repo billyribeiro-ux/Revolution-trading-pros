@@ -60,7 +60,7 @@
 		onerror
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let selectedMethod = $state('');
 	let selectedIssuer = $state('');

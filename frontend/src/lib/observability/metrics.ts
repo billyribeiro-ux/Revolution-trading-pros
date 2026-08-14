@@ -25,7 +25,7 @@
 /// <reference lib="dom" />
 /// <reference lib="dom.iterable" />
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { getOrchestrator } from './orchestrator';
 import type {
 	PageViewPayload,

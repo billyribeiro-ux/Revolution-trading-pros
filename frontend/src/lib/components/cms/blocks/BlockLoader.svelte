@@ -8,9 +8,9 @@
 
 <script lang="ts">
 	import type { Component as SvelteComponent } from 'svelte';
-	import { IconLoader2 } from '$lib/icons';
+	import { IconLoader2 } from '#lib/icons/index.js';
 	import type { Block, BlockType } from './types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// Prop shape every block component receives from the loader — and exactly
 	// what BlockLoader itself accepts (it's a pass-through wrapper). Individual

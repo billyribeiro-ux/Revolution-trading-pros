@@ -4,8 +4,8 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import FormList from '$lib/components/forms/FormList.svelte';
-	import type { Form } from '$lib/api/forms';
+	import FormList from '#lib/components/forms/FormList.svelte';
+	import type { Form } from '#lib/api/forms.js';
 
 	function handleEdit(form: Form) {
 		goto(`/admin/forms/${form.id}/edit`);

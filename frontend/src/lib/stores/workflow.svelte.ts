@@ -3,7 +3,7 @@
  * @version 2.0.0 - Migrated to Svelte 5 Runes (February 2026)
  */
 
-import type { WorkflowNode, WorkflowEdge, WorkflowCanvas } from '$lib/types/workflow';
+import type { WorkflowNode, WorkflowEdge, WorkflowCanvas } from '#lib/types/workflow.js';
 
 // Initial state
 const initialState: WorkflowCanvas = {

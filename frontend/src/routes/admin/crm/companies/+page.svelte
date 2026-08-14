@@ -25,11 +25,11 @@
 		IconBriefcase,
 		IconWorld,
 		IconCopy
-	} from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let companies = $state<CrmCompany[]>([]);
 	let isLoading = $state(true);

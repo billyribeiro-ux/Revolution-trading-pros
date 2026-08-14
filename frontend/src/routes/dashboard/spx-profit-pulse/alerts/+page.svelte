@@ -7,7 +7,7 @@
 	 *
 	 * @version 1.0.0
 	 */
-	import { IconSearch } from '$lib/icons';
+	import { IconSearch } from '#lib/icons/index.js';
 
 	// Filter state
 	let selectedFilter = $state('all');

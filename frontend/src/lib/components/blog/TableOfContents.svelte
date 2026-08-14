@@ -4,9 +4,9 @@
 	 *
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived, $effect)
 	 */
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount, untrack } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface ContentBlock {
 		type: string;

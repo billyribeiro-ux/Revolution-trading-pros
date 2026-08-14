@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { IconCheck } from '$lib/icons';
+	import { IconCheck } from '#lib/icons/index.js';
 	import type {
 		CreateResourceRequest,
 		ResourceType,
 		ContentType,
 		VideoPlatform,
 		AccessLevel
-	} from '$lib/api/room-resources';
-	import type { Trader } from '$lib/api/trading-rooms';
+	} from '#lib/api/room-resources.js';
+	import type { Trader } from '#lib/api/trading-rooms.js';
 
 	type ResourceTypeOption = { id: ResourceType; name: string; icon: unknown };
 	type ContentTypeOption = { id: ContentType; name: string; resourceTypes: ResourceType[] };
@@ -91,8 +91,7 @@
 					id="description"
 					bind:value={formData.description}
 					placeholder="Brief description..."
-					rows="3"
-				></textarea>
+					rows="3"></textarea>
 			</div>
 
 			<!-- Type Selection -->

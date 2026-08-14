@@ -19,7 +19,7 @@
 	 *
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
 	import { onMount, type Component } from 'svelte';
 	import {
@@ -40,7 +40,7 @@
 		IconPin,
 		IconPinFilled,
 		IconAlertCircle
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		roomResourcesApi,
 		type RoomResource,
@@ -52,9 +52,9 @@
 		type BulkUpdateFields,
 		bulkUpdateResources,
 		bulkDeleteResources
-	} from '$lib/api/room-resources';
-	import { tradingRoomApi, type TradingRoom, type Trader } from '$lib/api/trading-rooms';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/api/room-resources.js';
+	import { tradingRoomApi, type TradingRoom, type Trader } from '#lib/api/trading-rooms.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import AlertsBanner from './_components/AlertsBanner.svelte';
 	import PageHeader from './_components/PageHeader.svelte';
 	import RoomTabs from './_components/RoomTabs.svelte';
@@ -86,9 +86,24 @@
 		{ id: 'trade_plan', name: 'Trade Plan', resourceTypes: ['pdf', 'document'] },
 		{ id: 'guide', name: 'Guide', resourceTypes: ['pdf', 'document', 'video'] },
 		{ id: 'chart', name: 'Chart', resourceTypes: ['image', 'pdf'] },
-		{ id: 'screenshot', name: 'Screenshot', resourceTypes: ['image'] },
-		{ id: 'template', name: 'Template', resourceTypes: ['document', 'spreadsheet'] },
-		{ id: 'cheat_sheet', name: 'Cheat Sheet', resourceTypes: ['pdf', 'image'] },
+		{
+			id: 'screenshot',
+			name: 'Screenshot',
+			resourceTypes: ['image']
+		},
+
+		{
+			id: 'template',
+			name: 'Template',
+			resourceTypes: ['document', 'spreadsheet']
+		},
+
+		{
+			id: 'cheat_sheet',
+			name: 'Cheat Sheet',
+			resourceTypes: ['pdf', 'image']
+		},
+
 		{
 			id: 'other',
 			name: 'Other',
@@ -795,6 +810,7 @@
 
 	<div class="admin-page-container">
 		<!-- Alerts -->
+
 		<AlertsBanner {successMessage} {error} onClearError={() => (error = '')} />
 
 		<!-- Header -->
@@ -808,6 +824,7 @@
 		/>
 
 		<!-- Room Tabs -->
+
 		<RoomTabs {rooms} {selectedRoom} {isLoadingRooms} onSelect={selectRoom} />
 
 		<!-- Stats Bar -->
@@ -940,12 +957,14 @@
 
 						<!-- Actions -->
 						<div class="resource-actions">
-							<button class="btn-icon" title="Replace" onclick={() => openReplaceModal(resource)}>
-								<IconLink size={16} />
-							</button>
-							<button class="btn-icon" title="Edit" onclick={() => openEditModal(resource)}>
-								<IconEdit size={16} />
-							</button>
+							<button class="btn-icon" title="Replace" onclick={() => openReplaceModal(resource)}
+								><IconLink size={16} /></button
+							>
+
+							<button class="btn-icon" title="Edit" onclick={() => openEditModal(resource)}
+								><IconEdit size={16} /></button
+							>
+
 							<button
 								class="btn-icon"
 								title={resource.is_featured ? 'Unfeature' : 'Feature'}

@@ -7,10 +7,10 @@
 	 * with interactive heatmap overlays.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { browser } from '$app/env';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconPointer from '@tabler/icons-svelte-runes/icons/pointer';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';

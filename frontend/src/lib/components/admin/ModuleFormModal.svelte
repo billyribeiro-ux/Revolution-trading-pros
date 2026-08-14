@@ -10,8 +10,8 @@
 		type CourseModule,
 		type CreateModuleRequest,
 		type UpdateModuleRequest
-	} from '$lib/api/courses';
-	import { IconX, IconPlus, IconEdit, IconClock } from '$lib/icons';
+	} from '#lib/api/courses.js';
+	import { IconX, IconPlus, IconEdit, IconClock } from '#lib/icons/index.js';
 	import { untrack } from 'svelte';
 
 	interface Props {
@@ -227,8 +227,7 @@
 						placeholder="Brief description of this module..."
 						bind:value={description}
 						disabled={isLoading}
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-row">

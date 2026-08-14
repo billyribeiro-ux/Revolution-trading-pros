@@ -72,7 +72,7 @@ import type {
 	// FluentCRM Pro - Campaigns
 	Campaign,
 	CampaignStats
-} from '$lib/crm/types';
+} from '#lib/crm/types.js';
 import { apiClient } from './client.svelte';
 import type { JsonValue, PaginatedResponse } from './_types';
 

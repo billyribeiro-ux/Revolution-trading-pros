@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconCode } from '$lib/icons';
+	import { IconCode } from '#lib/icons/index.js';
 
 	interface EmbedData {
 		video_id: number;

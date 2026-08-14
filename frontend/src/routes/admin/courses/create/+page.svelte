@@ -37,11 +37,11 @@
 		IconBrandGoogle,
 		IconBrandFacebook,
 		IconChevronDown
-	} from '$lib/icons';
-	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { productsApi, AdminApiError, type Product } from '#lib/api/admin.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import PublishWarningModal from './_components/PublishWarningModal.svelte';
 	import PricingAnalysisModal from './_components/PricingAnalysisModal.svelte';
 	import QualityScoreCard from './_components/QualityScoreCard.svelte';
@@ -2040,8 +2040,7 @@
 								id="description"
 								bind:value={course.description}
 								placeholder="Provide a detailed overview of what students will learn..."
-								rows="10"
-							></textarea>
+								rows="10"></textarea>
 							<p class="help-text">
 								Aim for 200+ words. Include outcomes, who it's for, and what makes it unique.
 							</p>
@@ -2280,8 +2279,7 @@
 											bind:value={module.description}
 											placeholder="Brief module description..."
 											class="module-description"
-											rows="2"
-										></textarea>
+											rows="2"></textarea>
 
 										<div class="lessons-container">
 											{#each module.lessons as lesson, lessonIndex (lesson.id)}
@@ -2847,8 +2845,7 @@
 								bind:value={course.meta_description}
 								placeholder="Compelling description for search results..."
 								rows="3"
-								maxlength="160"
-							></textarea>
+								maxlength="160"></textarea>
 							<span class="char-count">{course.meta_description.length}/160</span>
 						</div>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TemplateForm from '$lib/components/admin/TemplateForm.svelte';
+	import TemplateForm from '#lib/components/admin/TemplateForm.svelte';
 </script>
 
 <svelte:head>

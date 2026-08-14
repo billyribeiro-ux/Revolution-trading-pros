@@ -46,8 +46,7 @@
 			id="meta_description"
 			rows="3"
 			bind:value={indicator.meta_description}
-			placeholder="Description for search engines"
-		></textarea>
+			placeholder="Description for search engines"></textarea>
 	</div>
 </div>
 

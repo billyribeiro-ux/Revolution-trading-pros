@@ -22,10 +22,10 @@
 		IconUsers,
 		IconX,
 		IconCheck
-	} from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
-	import type { ContactTag } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { ContactTag } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let tags = $state<ContactTag[]>([]);
 	let isLoading = $state(true);
@@ -375,8 +375,7 @@
 						bind:value={formData.description}
 						placeholder="Optional description"
 						rows="3"
-						disabled={isSaving}
-					></textarea>
+						disabled={isSaving}></textarea>
 				</div>
 				<div class="form-group">
 					<span id="tag-color-label" class="group-label">Color</span>

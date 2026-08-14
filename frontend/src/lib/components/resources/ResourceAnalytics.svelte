@@ -9,9 +9,9 @@
   - Recent uploads
 -->
 <script lang="ts">
-	import type { ResourceAnalytics } from '$lib/api/room-resources';
-	import { getResourceAnalytics } from '$lib/api/room-resources';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { ResourceAnalytics } from '#lib/api/room-resources.js';
+	import { getResourceAnalytics } from '#lib/api/room-resources.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 
 	interface Props {

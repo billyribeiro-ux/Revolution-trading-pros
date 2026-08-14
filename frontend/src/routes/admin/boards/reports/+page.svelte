@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { boardsAPI } from '$lib/api/boards';
-	import type { Board, BoardReport, ReportPeriod } from '$lib/boards/types';
+	import { boardsAPI } from '#lib/api/boards.js';
+	import type { Board, BoardReport, ReportPeriod } from '#lib/boards/types.js';
 	import {
 		IconChartBar,
 		IconArrowLeft,
@@ -12,7 +12,7 @@
 		IconChecks,
 		IconClock,
 		IconCalendar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// State
 	let boards = $state<Board[]>([]);

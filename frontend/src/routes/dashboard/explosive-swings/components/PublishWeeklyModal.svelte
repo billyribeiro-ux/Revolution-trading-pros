@@ -34,7 +34,7 @@
 		tradePlanApi,
 		type Bias,
 		type TradePlanEntry
-	} from '$lib/api/room-content';
+	} from '#lib/api/room-content.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS
@@ -523,8 +523,7 @@
 								id="description"
 								bind:value={videoForm.description}
 								placeholder="Complete breakdown of this week's top swing trade opportunities..."
-								rows="3"
-							></textarea>
+								rows="3"></textarea>
 						</div>
 
 						<!-- Video Preview -->
@@ -765,8 +764,7 @@
 															oninput={(e) => updateRow(row.id, 'notes', e.currentTarget.value)}
 															placeholder="Add trade notes, analysis, or key levels..."
 															rows="2"
-															class="notes-textarea"
-														></textarea>
+															class="notes-textarea"></textarea>
 													</div>
 												</td>
 											</tr>

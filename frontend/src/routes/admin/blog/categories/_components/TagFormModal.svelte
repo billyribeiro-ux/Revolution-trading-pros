@@ -4,7 +4,7 @@
 	 * `CategoryFormModal.svelte` minus the `description` field — kept
 	 * separate so labels (id="tag-…") and form types stay explicit.
 	 */
-	import { IconAlertCircle } from '$lib/icons';
+	import { IconAlertCircle } from '#lib/icons/index.js';
 	import type { TagFormData } from './types';
 
 	interface Props {

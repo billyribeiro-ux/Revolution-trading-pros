@@ -6,7 +6,7 @@
 	 * Supports Accept.js for PCI-compliant tokenization.
 	 */
 	import { onMount } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		name: string;

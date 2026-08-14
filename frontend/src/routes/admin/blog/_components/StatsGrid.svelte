@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconChartBar, IconCheck, IconEdit, IconEye, IconTrendingUp } from '$lib/icons';
+	import { IconChartBar, IconCheck, IconEdit, IconEye, IconTrendingUp } from '#lib/icons/index.js';
 
 	type Stats = {
 		total: number;

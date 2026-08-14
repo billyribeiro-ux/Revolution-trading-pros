@@ -6,7 +6,7 @@
 	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import type { Deal, Stage } from '$lib/crm/types';
+	import type { Deal, Stage } from '#lib/crm/types.js';
 	import { formatDate, getStageColor } from './helpers';
 
 	interface Props {

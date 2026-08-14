@@ -1,15 +1,3 @@
-<!--
-	/admin/crm/tags/[id] - Tag Detail & Contacts View
-	Apple Principal Engineer ICT 7 Grade - January 2026
-
-	Features:
-	- View tag details
-	- List contacts with this tag
-	- Remove tag from contacts
-	- Search/filter contacts
-	- Full Svelte 5 $state/$derived/$effect reactivity
--->
-
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
@@ -23,10 +11,10 @@
 		IconX,
 		IconChevronLeft,
 		IconChevronRight
-	} from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
-	import type { ContactTag, Contact } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { ContactTag, Contact } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// Get tag ID from route params
 	let tagId = $derived(page.params.id ?? '');
@@ -55,6 +43,7 @@
 		contacts.filter((contact) => {
 			if (!searchQuery) return true;
 			const query = searchQuery.toLowerCase();
+
 			return (
 				contact.email.toLowerCase().includes(query) ||
 				contact.full_name.toLowerCase().includes(query) ||
@@ -124,6 +113,7 @@
 
 	function getInitials(name: string): string {
 		if (!name) return 'U';
+
 		return (
 			name
 				.split(' ')
@@ -147,7 +137,9 @@
 	}
 
 	// Load tag on initial mount and when SvelteKit reuses this page for another tag id.
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		if (tagId && tagId !== loadedTagId) {
 			loadedTagId = tagId;
 			void loadTag();
@@ -155,9 +147,18 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{tag?.title || 'Tag'} - Contact Tags - FluentCRM Pro</title>
-</svelte:head>
+<!--
+	/admin/crm/tags/[id] - Tag Detail & Contacts View
+	Apple Principal Engineer ICT 7 Grade - January 2026
+
+	Features:
+	- View tag details
+	- List contacts with this tag
+	- Remove tag from contacts
+	- Search/filter contacts
+	- Full Svelte 5 $state/$derived/$effect reactivity
+-->
+<svelte:head><title>{tag?.title || 'Tag'} - Contact Tags - FluentCRM Pro</title></svelte:head>
 
 <div class="tag-detail-page">
 	<!-- Back Button & Header -->
@@ -271,11 +272,9 @@
 											<span class="contact-name">{contact.full_name}</span>
 										</div>
 									</td>
-									<td>
-										<a href="mailto:{contact.email}" class="email-link">
-											{contact.email}
-										</a>
-									</td>
+
+									<td><a href="mailto:{contact.email}" class="email-link">{contact.email}</a></td>
+
 									<td>
 										<span
 											class="status-badge"

@@ -10,8 +10,8 @@
   - Responsive design
 -->
 <script lang="ts">
-	import type { StockList, StockSymbol } from '$lib/api/room-resources';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { StockList, StockSymbol } from '#lib/api/room-resources.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		stockList: StockList;

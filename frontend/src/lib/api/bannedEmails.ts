@@ -60,10 +60,10 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -359,11 +359,9 @@ class BannedEmailManagementService {
 	public highRiskEmails = derived(this.bannedEmails, ($emails) =>
 		$emails.filter((e) => (e.risk_score || 0) >= RISK_SCORE_THRESHOLD)
 	);
-
 	public pendingReviews = derived(this.reviewQueue, ($queue) =>
 		$queue.filter((r) => r.status === 'pending')
 	);
-
 	public activeAppeals = derived(this.bannedEmails, ($emails) =>
 		$emails.filter((e) => e.appeal_status?.status === 'pending')
 	);

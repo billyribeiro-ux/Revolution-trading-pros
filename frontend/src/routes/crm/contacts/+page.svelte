@@ -6,10 +6,16 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { crmAPI } from '$lib/api/crm';
-	import { crmStore } from '$lib/stores/crm.svelte';
-	import type { Contact, ContactStatus, LifecycleStage } from '$lib/crm/types';
-	import { IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
+	import { crmAPI } from '#lib/api/crm.js';
+	import { crmStore } from '#lib/stores/crm.svelte.js';
+	import type { Contact, ContactStatus, LifecycleStage } from '#lib/crm/types.js';
+	import {
+		IconUser,
+		IconSearch,
+		IconFilter,
+		IconTrendingUp,
+		IconAlertTriangle
+	} from '#lib/icons/index.js';
 
 	// Initialize filters from URL query params (ICT 7: URL-driven state)
 	let localSearch = $state(page.url.searchParams.get('search') ?? '');

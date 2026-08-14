@@ -11,7 +11,7 @@
 	 * - EMI
 	 */
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		keyId: string;

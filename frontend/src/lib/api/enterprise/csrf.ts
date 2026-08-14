@@ -18,9 +18,9 @@
  * - Timing-safe token comparison (server-side)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Configuration

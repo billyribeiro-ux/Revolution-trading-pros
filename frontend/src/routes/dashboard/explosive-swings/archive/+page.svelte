@@ -6,8 +6,8 @@
 	 * Layout matches watchlist card design for consistency
 	 */
 	import { onMount } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '#lib/components/dashboard/LoadingState.svelte';
 	import { ROOM_SLUG } from '../constants';
 
 	interface ArchivedWeek {

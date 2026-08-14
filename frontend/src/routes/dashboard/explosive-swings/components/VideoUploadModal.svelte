@@ -23,11 +23,11 @@
 -->
 <script lang="ts">
 	import { SvelteDate } from 'svelte/reactivity';
-	import { weeklyVideoApi } from '$lib/api/room-content';
-	import DatePicker from '$lib/components/ui/DatePicker.svelte';
-	import FileDropZone from '$lib/components/ui/FileDropZone.svelte';
-	import UploadProgress from '$lib/components/ui/UploadProgress.svelte';
-	import ThumbnailSelector from '$lib/components/ui/ThumbnailSelector.svelte';
+	import { weeklyVideoApi } from '#lib/api/room-content.js';
+	import DatePicker from '#lib/components/ui/DatePicker.svelte';
+	import FileDropZone from '#lib/components/ui/FileDropZone.svelte';
+	import UploadProgress from '#lib/components/ui/UploadProgress.svelte';
+	import ThumbnailSelector from '#lib/components/ui/ThumbnailSelector.svelte';
 
 	// Type definitions
 	interface BunnyProcessingResult {
@@ -799,8 +799,7 @@
 							bind:value={form.description}
 							placeholder="Brief overview of this week's content..."
 							class="form-textarea"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 
 					<div class="form-actions">

@@ -1,28 +1,9 @@
-<!--
-/**
- * BunnyVideoPlayer - Zero-Latency Bunny.net Video Player
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Apple ICT 11+ Principal Engineer Grade - January 2026
- *
- * PERFORMANCE OPTIMIZATIONS:
- * 1. Blurhash placeholder (<1ms render)
- * 2. LQIP (Low Quality Image Placeholder)
- * 3. Eager iframe loading with preload
- * 4. Connection-aware quality selection
- * 5. Optimized Bunny.net embed params
- *
- * TARGET: 0ms perceived loading time
- *
- * @version 1.0.0
- */
--->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { fade } from 'svelte/transition';
-	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
-	import Icon from '$lib/components/Icon.svelte';
+	import { decodeBlurhash, DEFAULT_BLURHASHES } from '#lib/utils/blurhash.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// PROPS
@@ -286,7 +267,7 @@
 				body: JSON.stringify({
 					user_id: userId,
 					current_time: Math.floor(currentTime),
-					duration: duration,
+					duration,
 					completed: completed || (duration > 0 && currentTime >= duration * 0.9)
 				})
 			});
@@ -356,6 +337,25 @@
 	export { play, pause, seek, getCurrentTime, getProgress, saveProgress };
 </script>
 
+<!--
+/**
+ * BunnyVideoPlayer - Zero-Latency Bunny.net Video Player
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Apple ICT 11+ Principal Engineer Grade - January 2026
+ *
+ * PERFORMANCE OPTIMIZATIONS:
+ * 1. Blurhash placeholder (<1ms render)
+ * 2. LQIP (Low Quality Image Placeholder)
+ * 3. Eager iframe loading with preload
+ * 4. Connection-aware quality selection
+ * 5. Optimized Bunny.net embed params
+ *
+ * TARGET: 0ms perceived loading time
+ *
+ * @version 1.0.0
+ */
+-->
 <!-- Player Container -->
 <div
 	class={['bunny-player', className, { 'is-loaded': isLoaded, 'is-playing': isPlaying }]}

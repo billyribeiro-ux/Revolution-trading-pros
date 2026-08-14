@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { slide } from 'svelte/transition';
-	import type { JsonValue } from '$lib/api/_types';
+	import type { JsonValue } from '#lib/api/_types.js';
 
 	// Each repeater row holds the form values for one configured group: keys
 	// are `FieldConfig.name`, values are the string/number/boolean payloads
@@ -397,8 +397,7 @@
 													index,
 													field.name,
 													(e.currentTarget as HTMLTextAreaElement).value
-												)}
-										></textarea>
+												)}></textarea>
 									{:else}
 										<input
 											type={field.type}

@@ -8,8 +8,8 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth.svelte';
+import { browser } from '$app/env';
+import { authStore } from '#lib/stores/auth.svelte.js';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '/api';

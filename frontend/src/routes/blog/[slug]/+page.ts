@@ -1,9 +1,9 @@
 import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
-import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
-import type { Post } from '$lib/types/post';
-import type { SEOInput } from '$lib/seo/types';
-import { articleSchema, breadcrumbSchema, speakableSchema } from '$lib/seo/jsonld';
+import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
+import type { Post } from '#lib/types/post.js';
+import type { SEOInput } from '#lib/seo/types.js';
+import { articleSchema, breadcrumbSchema, speakableSchema } from '#lib/seo/jsonld.js';
 
 const SITE_URL = 'https://revolutiontradingpros.com';
 
@@ -17,9 +17,7 @@ export const load: Load = async ({ params, url }) => {
 		post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''));
 	} catch (err) {
 		console.error('Failed to load post:', err);
-		error(404, {
-			message: 'Blog post not found'
-		});
+		error(404, 'Blog post not found');
 	}
 
 	const postUrl = `${SITE_URL}${url.pathname}`;

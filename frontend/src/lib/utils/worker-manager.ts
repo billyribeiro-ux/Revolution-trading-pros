@@ -4,7 +4,7 @@
  * Manages Web Worker lifecycle and communication
  */
 
-import type { Block, BlockContent } from '$lib/components/cms/blocks/types';
+import type { Block, BlockContent } from '#lib/components/cms/blocks/types.js';
 
 export class WorkerManager {
 	private worker: Worker | null = null;

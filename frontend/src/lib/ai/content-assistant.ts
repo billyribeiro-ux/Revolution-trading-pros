@@ -4,7 +4,7 @@
  * Real-time AI-powered writing assistance
  */
 
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 export interface SuggestionResult {
 	suggestions: string[];

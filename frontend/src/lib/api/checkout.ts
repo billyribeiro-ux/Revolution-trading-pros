@@ -5,7 +5,7 @@
  * Connects to backend PaymentController endpoints.
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '/api';

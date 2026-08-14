@@ -12,7 +12,7 @@
  * @version 3.0.0 (SvelteKit / December 2025)
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
 
 // ═══════════════════════════════════════════════════════════════════════════

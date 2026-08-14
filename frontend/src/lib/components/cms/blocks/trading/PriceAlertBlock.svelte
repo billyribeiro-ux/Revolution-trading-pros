@@ -7,9 +7,9 @@
 -->
 
 <script lang="ts">
-	import { IconBell, IconTrendingUp, IconTrendingDown, IconTarget } from '$lib/icons';
+	import { IconBell, IconTrendingUp, IconTrendingDown, IconTarget } from '#lib/icons/index.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	interface Props {
 		block: Block;
@@ -159,8 +159,7 @@
 						placeholder="Add notes about this alert..."
 						value={note}
 						oninput={(e) => updateContent({ alertNote: (e.target as HTMLTextAreaElement).value })}
-						aria-label="Alert notes"
-					></textarea>
+						aria-label="Alert notes"></textarea>
 				{:else}
 					<p>{note}</p>
 				{/if}

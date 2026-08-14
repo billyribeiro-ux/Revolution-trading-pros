@@ -12,8 +12,8 @@
 	 * @version 2.0.0
 	 */
 
-	import type { FormField } from '$lib/api/forms';
-	import { safeMathEval, SafeMathError } from '$lib/utils/safe-math-parser';
+	import type { FormField } from '#lib/api/forms.js';
+	import { safeMathEval, SafeMathError } from '#lib/utils/safe-math-parser.js';
 
 	interface Props {
 		field: FormField;

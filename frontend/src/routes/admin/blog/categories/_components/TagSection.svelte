@@ -15,8 +15,8 @@
 		IconChartBar,
 		IconEyeOff,
 		IconCopy
-	} from '$lib/icons';
-	import type { Tag } from '$lib/api/admin';
+	} from '#lib/icons/index.js';
+	import type { Tag } from '#lib/api/admin.js';
 
 	interface Props {
 		tags: Tag[];

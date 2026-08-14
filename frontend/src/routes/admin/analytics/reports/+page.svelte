@@ -6,11 +6,11 @@
 	 * with multiple visualization options.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { browser } from '$app/env';
+	import { analyticsApi } from '#lib/api/analytics.js';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Report {
 		id: string;
@@ -97,10 +97,7 @@
 				name: newReport.name,
 				description: newReport.description,
 				type: newReport.type,
-				config: {
-					metrics: newReport.metrics,
-					dimensions: newReport.dimensions
-				},
+				config: { metrics: newReport.metrics, dimensions: newReport.dimensions },
 				...(newReport.schedule && {
 					schedule: {
 						frequency: newReport.frequency,
@@ -231,9 +228,9 @@
 				<p>Create and manage custom analytics reports</p>
 			</div>
 			{#if isAnalyticsConnected}
-				<button type="button" onclick={() => (showCreateModal = true)} class="create-button">
-					Create Report
-				</button>
+				<button type="button" onclick={() => (showCreateModal = true)} class="create-button"
+					>Create Report</button
+				>
 			{/if}
 		</div>
 
@@ -377,8 +374,7 @@
 							bind:value={newReport.description}
 							placeholder="Describe this report..."
 							rows={2}
-							class="field-control"
-						></textarea>
+							class="field-control"></textarea>
 					</div>
 					<div>
 						<label class="field-label" for="report-type">Type</label>
@@ -469,9 +465,10 @@
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-button">
-					Cancel
-				</button>
+				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-button"
+					>Cancel</button
+				>
+
 				<button
 					type="button"
 					onclick={createReport}

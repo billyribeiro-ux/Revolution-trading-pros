@@ -31,9 +31,9 @@
 	import IconWorldWww from '@tabler/icons-svelte-runes/icons/world-www';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import { crmAPI } from '$lib/api/crm';
-	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// STATE
 
@@ -717,8 +717,7 @@
 									id="email-body"
 									rows="6"
 									placeholder="Enter email content..."
-									bind:value={actionForm.settings.body}
-								></textarea>
+									bind:value={actionForm.settings.body}></textarea>
 							</div>
 						{:else if actionForm.action_type === 'http_request'}
 							<div class="form-group">

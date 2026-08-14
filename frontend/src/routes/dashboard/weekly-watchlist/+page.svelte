@@ -8,8 +8,8 @@
 	@version 2.1.0 - January 2026 - Semantic class names, Svelte 5 patterns
 -->
 <script lang="ts">
-	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
-	import RightSidebar from '$lib/components/dashboard/RightSidebar.svelte';
+	import FeaturedCards from '#lib/components/dashboard/FeaturedCards.svelte';
+	import RightSidebar from '#lib/components/dashboard/RightSidebar.svelte';
 
 	// Featured cards configuration
 	const cards = [

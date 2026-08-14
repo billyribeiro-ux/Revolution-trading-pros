@@ -8,7 +8,7 @@
 -->
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 </script>
 
 <div class="drag-overlay" transition:fade={{ duration: 150 }}>

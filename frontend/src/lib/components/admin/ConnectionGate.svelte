@@ -30,7 +30,7 @@
 		getIsBehaviorConnected,
 		FEATURE_SERVICES,
 		type ServiceKey
-	} from '$lib/stores/connections.svelte';
+	} from '#lib/stores/connections.svelte.js';
 
 	interface Props {
 		/** Feature category to check */

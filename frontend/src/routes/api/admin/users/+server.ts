@@ -13,17 +13,17 @@
  *   - 4xx responses now forward the backend's body verbatim (audit P2-2);
  *     previously the proxy emitted a generic "Failed to create user" string,
  *     hiding field-level validation messages from the UI.
- *   - Auth pattern extracted to `$lib/server/auth.ts`.
+ *   - Auth pattern extracted to `#lib/server/auth.ts`.
  *
  * @version 3.0.0 - April 2026 (audit hardening)
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Forward the upstream JSON body verbatim (status preserved). Used on both

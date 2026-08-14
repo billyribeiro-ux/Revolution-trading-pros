@@ -11,9 +11,9 @@
 	 *
 	 */
 
-	import { getAuthToken } from '$lib/stores/auth.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface FormImportResult {
 		fields_created?: number;

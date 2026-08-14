@@ -5,7 +5,7 @@
 	 * Displays a retention matrix/heatmap showing user retention
 	 * across cohorts and time periods.
 	 */
-	import type { CohortRow } from '$lib/api/analytics';
+	import type { CohortRow } from '#lib/api/analytics.js';
 
 	type CohortPeriodValue = NonNullable<CohortRow['periods']>[number];
 

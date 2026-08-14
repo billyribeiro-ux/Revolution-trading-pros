@@ -8,12 +8,12 @@
 
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { cartStore, getCartItemCount, getCartTotal } from '$lib/stores/cart.svelte';
-	import { validateCoupon } from '$lib/api/coupons';
-	import { isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
-	import { createAppliedCoupon, type AppliedCoupon } from '$lib/utils/coupon-helpers';
-	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { cartStore, getCartItemCount, getCartTotal } from '#lib/stores/cart.svelte.js';
+	import { validateCoupon } from '#lib/api/coupons.js';
+	import { isAuthenticated, isInitializing } from '#lib/stores/auth.svelte.js';
+	import { createAppliedCoupon, type AppliedCoupon } from '#lib/utils/coupon-helpers.js';
+	import NonMemberCheckout from '#lib/components/cart/NonMemberCheckout.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';

@@ -5,7 +5,7 @@
 	 */
 	import type { ActivePosition } from '../types';
 	import { formatPercent, formatPrice } from '../utils/formatters';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		position: ActivePosition;

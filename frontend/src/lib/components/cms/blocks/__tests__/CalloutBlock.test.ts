@@ -21,7 +21,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import CalloutBlock from '../advanced/CalloutBlock.svelte';
 import type { Block } from '../types';
-import { toBlockId } from '$lib/stores/blockState.svelte';
+import { toBlockId } from '#lib/stores/blockState.svelte.js';
 
 // ===============================================================================
 // TEST FIXTURES

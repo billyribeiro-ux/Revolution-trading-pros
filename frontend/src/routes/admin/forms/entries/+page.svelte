@@ -4,16 +4,16 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Card, Button, Badge, Table, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
+	import { Card, Button, Badge, Table, Select } from '#lib/components/ui/index.js';
+	import { addToast } from '#lib/utils/toast.js';
 	import {
 		getForms,
 		getSubmissions,
 		exportSubmissions,
 		type Form,
 		type FormEntry
-	} from '$lib/api/forms';
-	import { IconDownload, IconEye } from '$lib/icons';
+	} from '#lib/api/forms.js';
+	import { IconDownload, IconEye } from '#lib/icons/index.js';
 
 	let forms = $state<Form[]>([]);
 	let entries = $state<FormEntry[]>([]);

@@ -12,7 +12,7 @@
 
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
-	import { IconPlugConnected, IconArrowRight, IconLock } from '$lib/icons';
+	import { IconPlugConnected, IconArrowRight, IconLock } from '#lib/icons/index.js';
 
 	interface Props {
 		/** Name of the service that needs to be connected */

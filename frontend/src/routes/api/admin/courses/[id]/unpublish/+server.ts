@@ -5,10 +5,10 @@
 
 import { json, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { requireAdminToken } from '$lib/server/auth';
+import { requireAdminToken } from '#lib/server/auth.js';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 
-import { env } from '$env/dynamic/private';
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 function envelope(
 	raw: unknown,
@@ -20,10 +20,12 @@ function envelope(
 			return obj as { success: boolean; data?: unknown; error?: string; message?: string };
 		}
 		if (status < 400) return { success: true, data: obj };
+
 		const message =
 			(typeof obj.message === 'string' && obj.message) ||
 			(typeof obj.error === 'string' && obj.error) ||
 			'Request failed';
+
 		return { success: false, error: message, message };
 	}
 	if (status < 400) return { success: true, data: raw };

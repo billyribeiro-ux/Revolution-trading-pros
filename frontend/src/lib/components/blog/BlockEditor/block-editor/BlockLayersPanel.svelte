@@ -3,7 +3,7 @@
 	Extracted from BlockEditor.svelte (R7-C).
 -->
 <script lang="ts">
-	import { IconGripVertical } from '$lib/icons';
+	import { IconGripVertical } from '#lib/icons/index.js';
 	import type { Block } from '../types';
 	import { BLOCK_DEFINITIONS } from '../types';
 

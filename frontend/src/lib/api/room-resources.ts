@@ -20,13 +20,7 @@ import type { QueryParams } from './_types';
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type ResourceType =
-	| 'video'
-	| 'pdf'
-	| 'document'
-	| 'image'
-	| 'spreadsheet'
-	| 'archive'
-	| 'other';
+	'video' | 'pdf' | 'document' | 'image' | 'spreadsheet' | 'archive' | 'other';
 
 export type ContentType =
 	| 'introduction' // ICT 7: Main videos

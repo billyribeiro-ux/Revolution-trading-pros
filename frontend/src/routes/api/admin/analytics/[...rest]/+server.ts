@@ -35,7 +35,7 @@
  */
 
 import type { RequestHandler } from './$types';
-import { proxyAnalytics } from '$lib/server/analytics-proxy';
+import { proxyAnalytics } from '#lib/server/analytics-proxy.js';
 
 // Generous allowlist covering every query param observed across the analytics
 // client. Unknown params (e.g. injection attempts) are dropped.

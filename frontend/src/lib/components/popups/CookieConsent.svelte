@@ -21,8 +21,8 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { IconSettings, IconCheck } from '$lib/icons';
+	import { browser } from '$app/env';
+	import { IconSettings, IconCheck } from '#lib/icons/index.js';
 
 	// Props
 	interface Props {
@@ -367,9 +367,10 @@
 			<!-- Actions -->
 			<div class="cookie-actions">
 				{#if isPreferencesOpen}
-					<button type="button" class="cookie-btn cookie-btn-secondary" onclick={togglePreferences}>
-						Back
-					</button>
+					<button type="button" class="cookie-btn cookie-btn-secondary" onclick={togglePreferences}
+						>Back</button
+					>
+
 					<button
 						type="button"
 						class="cookie-btn cookie-btn-primary"

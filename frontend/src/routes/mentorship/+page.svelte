@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { slide } from 'svelte/transition';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import IconGlobe from '@tabler/icons-svelte-runes/icons/globe';

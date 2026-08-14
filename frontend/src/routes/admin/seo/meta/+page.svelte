@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconSearch, IconFileText, IconEye } from '$lib/icons';
-	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
+	import { IconSearch, IconFileText, IconEye } from '#lib/icons/index.js';
+	import SeoMetaEditor from '#lib/components/seo/SeoMetaEditor.svelte';
 	import type { ComponentProps } from 'svelte';
 
 	type SeoEntity = ComponentProps<typeof SeoMetaEditor>['entity'] & {

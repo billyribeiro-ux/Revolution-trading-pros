@@ -137,7 +137,7 @@ export function mockFetchNetworkError(message = 'Network error') {
 /**
  * Mock API client - bypass retries, circuit breakers, and timeouts
  */
-vi.mock('$lib/api/client', () => {
+vi.mock('#lib/api/client.js', () => {
 	const mockApiGet = vi.fn();
 	const mockApiPost = vi.fn();
 	const mockApiPut = vi.fn();
@@ -170,7 +170,7 @@ vi.mock('$lib/api/client', () => {
 	};
 });
 
-vi.mock('$lib/api/errors', () => ({
+vi.mock('#lib/api/errors.js', () => ({
 	ApiError: class ApiError extends Error {
 		status: number;
 		code: string;
@@ -186,7 +186,7 @@ vi.mock('$lib/api/errors', () => ({
 		err instanceof Error ? err.message : 'An error occurred'
 }));
 
-vi.mock('$lib/api/cache', () => ({
+vi.mock('#lib/api/cache.js', () => ({
 	getCache: vi.fn(() => ({
 		get: vi.fn(),
 		set: vi.fn(),
@@ -209,42 +209,32 @@ vi.mock('$app/navigation', () => ({
 }));
 
 /**
- * Mock SvelteKit stores
+ * Mock SvelteKit app state
+ *
+ * SvelteKit 3 removed `$app/stores`. `$app/state` exposes `page`, `navigating`
+ * and `updated` as plain reactive values rather than stores, so these mocks are
+ * the values themselves — no `subscribe`, and `updated.current` instead of the
+ * store's boolean payload.
  */
-vi.mock('$app/stores', () => ({
+vi.mock('$app/state', () => ({
 	page: {
-		subscribe: vi.fn((fn) => {
-			fn({
-				url: new URL('http://localhost:5174/dashboard/explosive-swings'),
-				params: {},
-				route: { id: '/dashboard/explosive-swings' },
-				status: 200,
-				error: null,
-				data: {},
-				form: null
-			});
-			return () => {};
-		})
+		url: new URL('http://localhost:5174/dashboard/explosive-swings'),
+		params: {},
+		route: { id: '/dashboard/explosive-swings' },
+		status: 200,
+		error: null,
+		data: {},
+		form: null,
+		state: {}
 	},
-	navigating: {
-		subscribe: vi.fn((fn) => {
-			fn(null);
-			return () => {};
-		})
-	},
-	updated: {
-		subscribe: vi.fn((fn) => {
-			fn(false);
-			return () => {};
-		}),
-		check: vi.fn(() => Promise.resolve(false))
-	}
+	navigating: { from: null, to: null, type: null, willUnload: false, delta: undefined },
+	updated: { current: false, check: vi.fn(() => Promise.resolve(false)) }
 }));
 
 /**
- * Mock SvelteKit environment
+ * Mock SvelteKit environment (`$app/environment` became `$app/env` in Kit 3)
  */
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	dev: true,
 	building: false,

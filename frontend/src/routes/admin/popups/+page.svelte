@@ -9,14 +9,14 @@
 		IconEyeOff,
 		IconChartBar,
 		IconSettings
-	} from '$lib/icons';
-	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
-	import type { Popup } from '$lib/stores/popups.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '#lib/api/popups.js';
+	import type { Popup } from '#lib/stores/popups.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 	// FIX-2026-04-26 (07-marketing P0-4): the delete button used to set a
 	// `_showDeleteModal` flag with no actual modal rendered — clicking
 	// "Delete" did nothing visible. Wire up the shared ConfirmationModal.
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);

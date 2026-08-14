@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Form } from '$lib/api/forms';
+	import type { Form } from '#lib/api/forms.js';
 	import {
 		getForms,
 		deleteForm,
@@ -8,9 +8,9 @@
 		unpublishForm,
 		archiveForm,
 		duplicateForm
-	} from '$lib/api/forms';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/api/forms.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Props {
 		onEdit?: (form: Form) => void;

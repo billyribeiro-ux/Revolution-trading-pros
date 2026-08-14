@@ -38,7 +38,7 @@
 
 	import { onMount, onDestroy, tick } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	// FIX P1-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
 	// Replaced legacy `$authStore` / `$userStore` autosubscribes throughout
@@ -49,11 +49,11 @@
 	// the same component's `$derived` blocks, this participated in the
 	// post-login cascade fixed in `+layout.svelte` / `AdminSidebar.svelte`
 	// commit 05acf3231. AdminToolbar was the last hold-out.
-	import { authStore, user, isAuthenticated } from '$lib/stores/auth.svelte';
-	import type { User } from '$lib/stores/auth.svelte';
-	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
-	import { getUser, logout as apiLogout } from '$lib/api/auth';
-	import { logger } from '$lib/utils/logger';
+	import { authStore, user, isAuthenticated } from '#lib/stores/auth.svelte.js';
+	import type { User } from '#lib/stores/auth.svelte.js';
+	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '#lib/config/roles.js';
+	import { getUser, logout as apiLogout } from '#lib/api/auth.js';
+	import { logger } from '#lib/utils/logger.js';
 	// Individual Tabler icon imports (Svelte 5 compatible)
 	import IconDashboard from '@tabler/icons-svelte-runes/icons/dashboard';
 	import IconForms from '@tabler/icons-svelte-runes/icons/forms';

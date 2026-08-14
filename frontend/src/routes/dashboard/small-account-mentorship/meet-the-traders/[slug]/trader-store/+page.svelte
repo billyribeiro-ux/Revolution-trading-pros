@@ -7,7 +7,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { getTraderBySlug } from '$lib/data/traders';
+	import { getTraderBySlug } from '#lib/data/traders.js';
 
 	interface Product {
 		id: string;

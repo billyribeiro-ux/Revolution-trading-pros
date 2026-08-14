@@ -1,5 +1,5 @@
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildEvent, buildService } from '$lib/seo/schemas';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildEvent, buildService } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 

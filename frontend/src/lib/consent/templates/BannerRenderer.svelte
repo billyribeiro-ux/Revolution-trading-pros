@@ -10,14 +10,14 @@
 	 * @component
 	 */
 	import { onDestroy, onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { consentStore, openPreferencesModal } from '../store.svelte';
 	import { activeTemplate, isPreviewMode } from './store';
 	import { t } from '../i18n';
 	import { recordImpression, recordDecision } from '../ab-testing';
 	import type { BannerTemplate } from './types';
-	import { sanitizeHtml } from '$lib/sanitize';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	// Svelte 5: Props using $props() rune
 	interface Props {
@@ -38,6 +38,7 @@
 	// Svelte 5: Derived values using $derived() rune
 	// ICT9+ Hydration-Safe: Only show after mount to prevent SSR/client mismatch
 	let template = $derived($activeTemplate);
+
 	let shouldShow = $derived(
 		mounted && (forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible))
 	);
@@ -322,7 +323,8 @@
 					stroke="currentColor"
 					stroke-width="2"
 				>
-					<path d="M18 6 6 18" /><path d="m6 6 12 12" />
+					<path d="M18 6 6 18"></path>
+					<path d="m6 6 12 12"></path>
 				</svg>
 			</button>
 		{/if}

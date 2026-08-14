@@ -11,7 +11,7 @@
 	 * @version 1.0.0 - L8 Principal Engineer
 	 */
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);

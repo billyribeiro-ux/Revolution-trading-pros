@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconShoppingCart, IconCurrencyDollar, IconCheck, IconClock } from '$lib/icons';
+	import { IconShoppingCart, IconCurrencyDollar, IconCheck, IconClock } from '#lib/icons/index.js';
 
 	interface OrderStats {
 		total_orders: number;

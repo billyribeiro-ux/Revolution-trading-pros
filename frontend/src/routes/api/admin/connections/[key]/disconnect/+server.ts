@@ -9,12 +9,12 @@
  *   - 4xx responses forward upstream JSON verbatim.
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireSuperadmin } from '$lib/server/auth';
+import { requireSuperadmin } from '#lib/server/auth.js';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 const SERVICE_KEY_RE = /^[a-z][a-z0-9_]*$/;
 

@@ -32,10 +32,10 @@
 		IconClock,
 		IconCheck,
 		IconX
-	} from '$lib/icons';
-	import { api } from '$lib/api/config';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { api } from '#lib/api/config.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// TYPES
 

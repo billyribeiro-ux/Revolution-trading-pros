@@ -2,7 +2,7 @@
 	URL: /careers
 -->
 <script lang="ts">
-	import { IconArrowRight, IconBriefcase, IconMapPin, IconClock } from '$lib/icons';
+	import { IconArrowRight, IconBriefcase, IconMapPin, IconClock } from '#lib/icons/index.js';
 
 	const openings = [
 		{

@@ -13,7 +13,7 @@
 		getDashboard,
 		getIsAnalyticsLoading,
 		getAnalyticsSelectedPeriod
-	} from '$lib/stores/analytics.svelte';
+	} from '#lib/stores/analytics.svelte.js';
 	import {
 		KpiGrid,
 		RealTimeWidget,
@@ -22,7 +22,7 @@
 		FunnelChart,
 		CohortMatrix,
 		AttributionChart
-	} from '$lib/components/analytics';
+	} from '#lib/components/analytics/index.js';
 	import {
 		IconTrendingUp,
 		IconUsers,
@@ -32,7 +32,7 @@
 		IconTarget,
 		IconBrain,
 		IconAlertTriangle
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let selectedTab = $state<
 		'overview' | 'funnels' | 'cohorts' | 'attribution' | 'behavior' | 'revenue'

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconFileText, IconPlus, IconTrash } from '$lib/icons';
+	import { IconFileText, IconPlus, IconTrash } from '#lib/icons/index.js';
 	import type { NoteItem } from './helpers';
 	import { formatDateTime } from './helpers';
 

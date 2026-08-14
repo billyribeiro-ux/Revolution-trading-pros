@@ -11,7 +11,7 @@
  * @version 2.0.0 - Complete Order Details Integration
  */
 import type { ServerLoad } from '@sveltejs/kit';
-import { API_BASE_URL } from '$lib/api/config';
+import { API_BASE_URL } from '#lib/api/config.js';
 import type { OrderDetail } from './types';
 
 // Disable prerendering - this page requires dynamic URL parameters

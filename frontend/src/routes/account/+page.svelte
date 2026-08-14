@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { authStore, isAuthenticated } from '$lib/stores/auth.svelte';
+	import { authStore, isAuthenticated } from '#lib/stores/auth.svelte.js';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import apiClient, { type Membership, type Product } from '$lib/api/client.svelte';
+	import apiClient, { type Membership, type Product } from '#lib/api/client.svelte.js';
 
 	let memberships = $state<Membership[]>([]);
 	let products = $state<Product[]>([]);

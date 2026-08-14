@@ -5,12 +5,12 @@
 	 *
 	 * Enterprise-grade modal for subscription CRUD operations with plan management.
 	 */
-	import type { Subscription, SubscriptionInterval } from '$lib/stores/subscriptions.svelte';
+	import type { Subscription, SubscriptionInterval } from '#lib/stores/subscriptions.svelte.js';
 	import {
 		createSubscription,
 		updateSubscription,
 		type EnhancedSubscription
-	} from '$lib/api/subscriptions';
+	} from '#lib/api/subscriptions.js';
 	import {
 		IconX,
 		IconCreditCard,
@@ -18,7 +18,7 @@
 		IconEdit,
 		IconCalendar,
 		IconCurrencyDollar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { untrack } from 'svelte';
 
 	interface Props {
@@ -343,8 +343,7 @@
 								placeholder="Add any internal notes about this subscription..."
 								bind:value={notes}
 								disabled={isLoading}
-								rows="3"
-							></textarea>
+								rows="3"></textarea>
 						</div>
 					</div>
 				{:else if activeSection === 'billing'}

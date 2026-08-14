@@ -36,10 +36,10 @@
 	 * capturing raw form inputs. Build the redaction policy FIRST.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { browser } from '$app/env';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
@@ -300,11 +300,11 @@
 							<tbody>
 								{#each recordings as recording (recording.session_id)}
 									<tr>
-										<td>
-											<span class="recording-session">
-												{recording.session_id.slice(0, 8)}...
-											</span>
-										</td>
+										<td
+											><span class="recording-session">{recording.session_id.slice(0, 8)}...</span
+											></td
+										>
+
 										<td>
 											{#if recording.user_email}
 												<span class="recording-user">{recording.user_email}</span>
@@ -325,17 +325,17 @@
 														stroke-linejoin="round"
 														stroke-width="2"
 														d={getDeviceIcon(recording.device_type)}
-													/>
+													></path>
 												</svg>
 												<span>{recording.device_type}</span>
 											</div>
 										</td>
-										<td>
-											<span class="recording-value">{formatDuration(recording.duration)}</span>
-										</td>
-										<td>
-											<span class="recording-muted">{recording.pages_viewed} pages</span>
-										</td>
+
+										<td
+											><span class="recording-value">{formatDuration(recording.duration)}</span></td
+										>
+										<td><span class="recording-muted">{recording.pages_viewed} pages</span></td>
+
 										<td>
 											<div class="recording-flags">
 												{#if recording.has_errors}
@@ -353,9 +353,9 @@
 											{formatDate(recording.started_at)}
 										</td>
 										<td class="align-right">
-											<button onclick={() => (selectedRecording = recording)} class="play-button">
-												Play
-											</button>
+											<button onclick={() => (selectedRecording = recording)} class="play-button"
+												>Play</button
+											>
 										</td>
 									</tr>
 								{/each}

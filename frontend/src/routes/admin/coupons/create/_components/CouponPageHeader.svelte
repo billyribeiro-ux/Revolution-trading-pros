@@ -4,7 +4,7 @@
 	 * Back arrow + title + subtitle. Cancel/back action is dispatched via the
 	 * single `onCancel` callback prop so the parent owns the `goto()` call.
 	 */
-	import { IconX } from '$lib/icons';
+	import { IconX } from '#lib/icons/index.js';
 
 	interface Props {
 		onCancel: () => void;

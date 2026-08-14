@@ -22,7 +22,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import GroupBlock from '../layout/GroupBlock.svelte';
 import type { Block } from '../types';
-import { toBlockId } from '$lib/stores/blockState.svelte';
+import { toBlockId } from '#lib/stores/blockState.svelte.js';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -299,7 +299,7 @@ describe('GroupBlock - Padding Settings', () => {
 		});
 
 		const groupContainer = container.querySelector('.group-container');
-		expect(groupContainer).toHaveStyle({ padding: '1rem' });
+		expect(groupContainer).toHaveStyle({ padding: '16px' }); // 1rem
 	});
 
 	it('should apply medium padding', () => {
@@ -317,7 +317,7 @@ describe('GroupBlock - Padding Settings', () => {
 		});
 
 		const groupContainer = container.querySelector('.group-container');
-		expect(groupContainer).toHaveStyle({ padding: '2rem' });
+		expect(groupContainer).toHaveStyle({ padding: '32px' }); // 2rem
 	});
 
 	it('should apply large padding', () => {
@@ -335,7 +335,7 @@ describe('GroupBlock - Padding Settings', () => {
 		});
 
 		const groupContainer = container.querySelector('.group-container');
-		expect(groupContainer).toHaveStyle({ padding: '3rem' });
+		expect(groupContainer).toHaveStyle({ padding: '48px' }); // 3rem
 	});
 
 	it('should show padding buttons in toolbar', () => {

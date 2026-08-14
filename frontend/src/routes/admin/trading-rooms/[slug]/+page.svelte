@@ -1,20 +1,9 @@
-<!--
-	Trading Room Content Management - Per-Room Admin
-	═══════════════════════════════════════════════════════════════════════════════════
-	Apple Principal Engineer ICT 7+ Grade - January 13, 2026
-	
-	Tabbed interface for managing:
-	- Trade Plan (watchlist table with ticker, bias, entry, targets, stop, options, notes)
-	- Alerts (entry/exit/update with expandable notes)
-	- Weekly Video (featured video with auto-archive)
-	
--->
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onDestroy, untrack } from 'svelte';
 	import type { PageData } from './$types';
-	import { getRoomById } from '$lib/config/rooms';
+	import { getRoomById } from '#lib/config/rooms.js';
 	import {
 		tradePlanApi,
 		alertsApi,
@@ -29,13 +18,13 @@
 		type Bias,
 		type AlertType,
 		type TradeStatus
-	} from '$lib/api/room-content';
+	} from '#lib/api/room-content.js';
 	import {
 		roomResourcesApi,
 		type RoomResource,
 		type ResourceListQuery
-	} from '$lib/api/room-resources';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/api/room-resources.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Icons
 	import IconTable from '@tabler/icons-svelte-runes/icons/table';
@@ -49,7 +38,7 @@
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import PageHeader from './_components/PageHeader.svelte';
 	import MessagesBanner from './_components/MessagesBanner.svelte';
 	import TabNavigation from './_components/TabNavigation.svelte';
@@ -352,7 +341,9 @@
 	// first navigation callback is a no-op (SSR already populated all six lists).
 	let lastLoadedSlug: string | null = untrack(() => slug || null);
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		const currentSlug = slug;
 		if (!currentSlug || currentSlug === lastLoadedSlug) return;
 
@@ -896,15 +887,26 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{room?.name || 'Trading Room'} Content | Admin</title>
-</svelte:head>
+<!--
+	Trading Room Content Management - Per-Room Admin
+	═══════════════════════════════════════════════════════════════════════════════════
+	Apple Principal Engineer ICT 7+ Grade - January 13, 2026
+	
+	Tabbed interface for managing:
+	- Trade Plan (watchlist table with ticker, bias, entry, targets, stop, options, notes)
+	- Alerts (entry/exit/update with expandable notes)
+	- Weekly Video (featured video with auto-archive)
+	
+-->
+<svelte:head><title>{room?.name || 'Trading Room'} Content | Admin</title></svelte:head>
 
 <div class="admin-page">
 	<!-- Header -->
+
 	<PageHeader {room} {roomStats} {isLoadingStats} />
 
 	<!-- Messages -->
+
 	<MessagesBanner {successMessage} {errorMessage} onDismissError={clearErrorMessage} />
 
 	<!-- Tabs -->
@@ -980,9 +982,10 @@
 									<td>{entry.options_strike || '-'}</td>
 									<td>{entry.options_exp || '-'}</td>
 									<td class="actions-cell">
-										<button class="icon-btn" onclick={() => openEditTradePlan(entry)} title="Edit">
-											<IconEdit size={16} />
-										</button>
+										<button class="icon-btn" onclick={() => openEditTradePlan(entry)} title="Edit"
+											><IconEdit size={16} /></button
+										>
+
 										<button
 											class="icon-btn danger"
 											onclick={() => deleteTradePlan(entry)}
@@ -1017,28 +1020,23 @@
 					<div class="filter-pills">
 						<button
 							class={getPillClass(alertTypeFilter === 'all')}
-							onclick={() => (alertTypeFilter = 'all')}
+							onclick={() => (alertTypeFilter = 'all')}>All</button
 						>
-							All
-						</button>
+
 						<button
 							class={getPillClass(alertTypeFilter === 'ENTRY')}
-							onclick={() => (alertTypeFilter = 'ENTRY')}
+							onclick={() => (alertTypeFilter = 'ENTRY')}>Entry</button
 						>
-							Entry
-						</button>
+
 						<button
 							class={getPillClass(alertTypeFilter === 'EXIT')}
-							onclick={() => (alertTypeFilter = 'EXIT')}
+							onclick={() => (alertTypeFilter = 'EXIT')}>Exit</button
 						>
-							Exit
-						</button>
+
 						<button
 							class={getPillClass(alertTypeFilter === 'UPDATE')}
-							onclick={() => (alertTypeFilter = 'UPDATE')}
+							onclick={() => (alertTypeFilter = 'UPDATE')}>Update</button
 						>
-							Update
-						</button>
 					</div>
 					<button class="btn-primary" onclick={openAddAlert}>
 						<IconPlus size={18} />
@@ -1154,21 +1152,20 @@
 			<div class="section-header">
 				<h2>Trade Tracker</h2>
 				<div class="filter-pills">
-					<button class={getPillClass(tradeFilter === 'all')} onclick={() => (tradeFilter = 'all')}>
-						All ({tradesCount})
-					</button>
+					<button class={getPillClass(tradeFilter === 'all')} onclick={() => (tradeFilter = 'all')}
+						>All ({tradesCount})</button
+					>
+
 					<button
 						class={getPillClass(tradeFilter === 'open')}
-						onclick={() => (tradeFilter = 'open')}
+						onclick={() => (tradeFilter = 'open')}>Active ({activeTradesCount})</button
 					>
-						Active ({activeTradesCount})
-					</button>
+
 					<button
 						class={getPillClass(tradeFilter === 'closed')}
 						onclick={() => (tradeFilter = 'closed')}
+						>Closed ({tradesCount - activeTradesCount})</button
 					>
-						Closed ({tradesCount - activeTradesCount})
-					</button>
 				</div>
 			</div>
 
@@ -1278,33 +1275,29 @@
 			<div class="section-header">
 				<h2>Video Library</h2>
 				<div class="filter-pills">
-					<button class={getPillClass(videoFilter === 'all')} onclick={() => (videoFilter = 'all')}>
-						All
-					</button>
+					<button class={getPillClass(videoFilter === 'all')} onclick={() => (videoFilter = 'all')}
+						>All</button
+					>
+
 					<button
 						class={getPillClass(videoFilter === 'weekly')}
-						onclick={() => (videoFilter = 'weekly')}
+						onclick={() => (videoFilter = 'weekly')}>Weekly</button
 					>
-						Weekly
-					</button>
+
 					<button
 						class={getPillClass(videoFilter === 'entry')}
-						onclick={() => (videoFilter = 'entry')}
+						onclick={() => (videoFilter = 'entry')}>Entry</button
 					>
-						Entry
-					</button>
+
 					<button
 						class={getPillClass(videoFilter === 'exit')}
-						onclick={() => (videoFilter = 'exit')}
+						onclick={() => (videoFilter = 'exit')}>Exit</button
 					>
-						Exit
-					</button>
+
 					<button
 						class={getPillClass(videoFilter === 'education')}
-						onclick={() => (videoFilter = 'education')}
+						onclick={() => (videoFilter = 'education')}>Education</button
 					>
-						Education
-					</button>
 				</div>
 			</div>
 

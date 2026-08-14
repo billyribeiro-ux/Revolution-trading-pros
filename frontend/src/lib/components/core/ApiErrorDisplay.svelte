@@ -16,13 +16,13 @@
 		IconInfoCircle,
 		IconRefresh,
 		IconX
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		isApiError,
 		getUserFriendlyMessage,
 		getValidationErrors
-	} from '$lib/api/enterprise/errors';
-	import type { EnterpriseApiError, ErrorSeverity } from '$lib/api/enterprise/types';
+	} from '#lib/api/enterprise/errors.js';
+	import type { EnterpriseApiError, ErrorSeverity } from '#lib/api/enterprise/types.js';
 
 	// Props
 	interface Props {

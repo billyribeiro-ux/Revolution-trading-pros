@@ -2,7 +2,7 @@
 	import type { Component } from 'svelte';
 	import type { Block } from './types';
 	// `Component` is used in the heterogeneous block registry type below.
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// Content blocks
 	import ParagraphBlock from './content/ParagraphBlock.svelte';

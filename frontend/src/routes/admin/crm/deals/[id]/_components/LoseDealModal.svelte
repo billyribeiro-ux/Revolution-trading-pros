@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import type { Deal } from '$lib/crm/types';
+	import type { Deal } from '#lib/crm/types.js';
 	import { formatCurrency } from './helpers';
 
 	interface Props {
@@ -46,8 +46,7 @@
 					oninput={(e) => onUpdateReason(e.currentTarget.value)}
 					placeholder="Why was this deal lost? (required)"
 					rows="4"
-					required
-				></textarea>
+					required></textarea>
 			</div>
 		</div>
 		<div class="modal-footer">

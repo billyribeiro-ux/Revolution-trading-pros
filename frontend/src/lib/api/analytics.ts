@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 import type { JsonValue } from './_types';
 
 /**

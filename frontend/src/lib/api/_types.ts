@@ -80,12 +80,7 @@ export interface PaginatedResponse<T> {
  * svelte-check error in the baseline.
  */
 export type JsonValue =
-	| string
-	| number
-	| boolean
-	| null
-	| { [k: string]: JsonValue | undefined }
-	| JsonValue[];
+	string | number | boolean | null | { [k: string]: JsonValue | undefined } | JsonValue[];
 
 /**
  * Scalar or array-of-scalar values acceptable as URL query-string parameters.
@@ -100,11 +95,6 @@ export type JsonValue =
  * (`{ status: filter || undefined }`); the buildUrl helper filters them out.
  */
 export type QueryValue =
-	| string
-	| number
-	| boolean
-	| null
-	| undefined
-	| Array<string | number | boolean>;
+	string | number | boolean | null | undefined | Array<string | number | boolean>;
 
 export type QueryParams = Record<string, QueryValue>;

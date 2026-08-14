@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { WorkflowNode as Node } from '$lib/types/workflow';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { WorkflowNode as Node } from '#lib/types/workflow.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		node: Node;

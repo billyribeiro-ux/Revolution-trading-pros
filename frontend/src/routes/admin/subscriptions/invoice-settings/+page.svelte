@@ -2,8 +2,8 @@
 	import { onMount } from 'svelte';
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { fade, slide } from 'svelte/transition';
-	import { browser } from '$app/environment';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { browser } from '$app/env';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconFileDownload from '@tabler/icons-svelte-runes/icons/file-download';
@@ -17,7 +17,7 @@
 	// admin-uploaded company info. Trust boundary is "our own backend" but
 	// not zero, so route through DOMPurify (`sanitizeHtml`, profile `rich`)
 	// before `{@html}`.
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { sanitizeHtml } from '#lib/utils/sanitize.js';
 
 	// API URL
 	const API_BASE = '/api/admin/invoice-settings';
@@ -684,8 +684,7 @@
 										class="form-control textarea-control mono-control"
 										placeholder={`.invoice-title { font-size: 36px; }
 .items-table th { border-radius: 0; }
-.footer-text { font-style: italic; }`}
-									></textarea>
+.footer-text { font-style: italic; }`}></textarea>
 								</div>
 
 								<div class="danger-zone">

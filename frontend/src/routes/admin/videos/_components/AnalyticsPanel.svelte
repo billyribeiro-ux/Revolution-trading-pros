@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconChartBar, IconX } from '$lib/icons';
-	import type { AnalyticsDashboard } from '$lib/api/video-advanced';
+	import { IconChartBar, IconX } from '#lib/icons/index.js';
+	import type { AnalyticsDashboard } from '#lib/api/video-advanced.js';
 
 	interface UsedCategory {
 		id: string;

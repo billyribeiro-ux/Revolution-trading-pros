@@ -31,9 +31,9 @@
 	 * @version 3.0.0 - ICT 11 Grade
 	 */
 	import { goto } from '$app/navigation';
-	import { login } from '$lib/api/auth';
+	import { login } from '#lib/api/auth.js';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { fade, slide } from 'svelte/transition';
 	import { fromAction, type Attachment } from 'svelte/attachments';
 
@@ -56,7 +56,7 @@
 		IconArrowRight,
 		IconCheck,
 		IconLoader
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Import new components
 	import TypedHeadline from './TypedHeadline.svelte';
@@ -214,13 +214,13 @@
 
 			console.warn('[LoginForm:ICT11] Redirect URL failed validation:', {
 				original: url,
-				decoded: decoded,
+				decoded,
 				reason: 'Security checks failed'
 			});
 		} catch (decodeError) {
 			// Handle malformed URL encoding
 			console.error('[LoginForm:ICT11] URL decode failed:', {
-				url: url,
+				url,
 				error: decodeError instanceof Error ? decodeError.message : String(decodeError)
 			});
 		}
@@ -382,7 +382,7 @@
 			await goto(validatedUrl, {
 				replaceState: true,
 				invalidateAll: true,
-				noScroll: false // Allow natural scroll to top
+				reset: true // Allow natural scroll to top (was noScroll: false)
 			});
 		} catch (navigationError) {
 			// ICT 11+ Error Recovery: Log error and use native navigation as fallback

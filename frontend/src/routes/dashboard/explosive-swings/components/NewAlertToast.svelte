@@ -7,7 +7,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
-	import type { RoomAlert } from '$lib/types/trading';
+	import type { RoomAlert } from '#lib/types/trading.js';
 
 	// Toast payload — `type` is the in-app alert state, `alert_type` is the
 	// upstream field (we accept either; see the switch in alertTypeConfig).

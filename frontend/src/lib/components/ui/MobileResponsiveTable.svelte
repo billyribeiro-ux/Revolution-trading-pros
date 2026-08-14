@@ -10,12 +10,12 @@
 	 * @security XSS protection via DOMPurify sanitization
 	 */
 	import { onMount } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
-	import { browser } from '$app/environment';
+	import Icon from '#lib/components/Icon.svelte';
+	import { browser } from '$app/env';
 	import SkeletonLoader from './SkeletonLoader.svelte';
 	import ExportButton from './ExportButton.svelte';
-	import type { ExportColumn } from '$lib/utils/export';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import type { ExportColumn } from '#lib/utils/export.js';
+	import { sanitizeHtml } from '#lib/utils/sanitize.js';
 
 	// Debounce utility for resize handler
 	function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {

@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { videoOpsApi } from '$lib/api/video-advanced';
+	import { videoOpsApi } from '#lib/api/video-advanced.js';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';

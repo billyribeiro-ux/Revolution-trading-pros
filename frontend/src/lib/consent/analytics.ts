@@ -8,8 +8,8 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { ConsentCategory, ConsentAnalytics, ConsentInteractionEvent } from './types';
 
 const ANALYTICS_STORAGE_KEY = 'rtp_consent_analytics';

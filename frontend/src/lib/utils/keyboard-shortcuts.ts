@@ -1056,7 +1056,7 @@ export function getAllShortcutDisplays(
  * ```typescript
  * // In a Svelte component
  * import { onMount, onDestroy } from 'svelte';
- * import { useKeyboardShortcuts } from '$lib/utils/keyboard-shortcuts';
+ * import { useKeyboardShortcuts } from '#lib/utils/keyboard-shortcuts.js';
  *
  * let shortcuts: ReturnType<typeof useKeyboardShortcuts>;
  *
@@ -1163,7 +1163,7 @@ export function useKeyboardShortcuts(
  * @example
  * ```svelte
  * <script lang="ts">
- *   import { createKeyboardShortcuts } from '$lib/utils/keyboard-shortcuts';
+ *   import { createKeyboardShortcuts } from '#lib/utils/keyboard-shortcuts.js';
  *
  *   const shortcuts = createKeyboardShortcuts({
  *     save: () => saveDocument(),

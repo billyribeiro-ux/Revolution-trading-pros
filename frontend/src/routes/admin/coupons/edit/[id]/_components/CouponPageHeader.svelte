@@ -4,8 +4,8 @@
 	 * cancel / delete / save action buttons. Discrete callback props
 	 * (R8-C discriminated-callback style: each callback names its action).
 	 */
-	import { IconTicket, IconCheck, IconX, IconRefresh, IconTrash } from '$lib/icons';
-	import type { Coupon } from '$lib/api/admin';
+	import { IconTicket, IconCheck, IconX, IconRefresh, IconTrash } from '#lib/icons/index.js';
+	import type { Coupon } from '#lib/api/admin.js';
 
 	interface Props {
 		originalCoupon: Coupon | null;

@@ -24,8 +24,15 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { IconCrown, IconPlus, IconX, IconCheck, IconArrowLeft, IconTarget } from '$lib/icons';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import {
+		IconCrown,
+		IconPlus,
+		IconX,
+		IconCheck,
+		IconArrowLeft,
+		IconTarget
+	} from '#lib/icons/index.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 
 	// TYPES
 
@@ -265,8 +272,7 @@
 						id="description"
 						bind:value={membership.description}
 						placeholder="Describe the benefits of this membership plan..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-row">

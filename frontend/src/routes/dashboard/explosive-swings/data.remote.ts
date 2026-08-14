@@ -20,14 +20,14 @@ import {
 	axumStats,
 	axumVideos,
 	axumAuth
-} from '$lib/server/axum';
+} from '#lib/server/axum/index.js';
 import {
 	FetchAlertsInputSchema,
 	FetchTradePlanInputSchema,
 	FetchStatsInputSchema,
 	FetchTradesInputSchema,
 	FetchWeeklyVideoInputSchema
-} from '$lib/shared/schemas/trades';
+} from '#lib/shared/schemas/trades.js';
 import { formatTimeAgo } from './utils/formatters';
 import type {
 	QuickStats,

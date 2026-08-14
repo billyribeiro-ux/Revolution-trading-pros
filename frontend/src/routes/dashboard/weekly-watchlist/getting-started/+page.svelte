@@ -10,7 +10,7 @@
 	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
-	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import WeeklyWatchlist from '#lib/components/dashboard/WeeklyWatchlist.svelte';
 	import type { PageData } from './$types';
 
 	interface Props {

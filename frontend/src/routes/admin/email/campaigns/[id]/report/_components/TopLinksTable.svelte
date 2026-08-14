@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconLink } from '$lib/icons';
+	import { IconLink } from '#lib/icons/index.js';
 
 	interface TopLink {
 		url: string;

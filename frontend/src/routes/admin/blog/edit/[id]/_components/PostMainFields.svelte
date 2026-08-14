@@ -35,8 +35,7 @@
 		id="excerpt"
 		bind:value={post.excerpt}
 		placeholder="Brief description of the post..."
-		rows="3"
-	></textarea>
+		rows="3"></textarea>
 </div>
 
 <style>

@@ -29,10 +29,10 @@
 		IconToggleLeft,
 		IconToggleRight,
 		IconCheck
-	} from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
-	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { SmartLink, SmartLinkFilters } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	type LinkActiveFilter = boolean | 'all';
 

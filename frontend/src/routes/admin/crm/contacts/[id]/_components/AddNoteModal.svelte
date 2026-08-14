@@ -34,8 +34,7 @@
 					class="note-input"
 					placeholder="Write your note here..."
 					bind:value={content}
-					rows="4"
-				></textarea>
+					rows="4"></textarea>
 			</div>
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={onClose}>Cancel</button>

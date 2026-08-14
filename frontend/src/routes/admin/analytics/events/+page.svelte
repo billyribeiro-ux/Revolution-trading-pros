@@ -7,11 +7,11 @@
 	 * filtering, grouping, and visualization capabilities.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { browser } from '$app/env';
+	import { analyticsApi, type AnalyticsEvent } from '#lib/api/analytics.js';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';

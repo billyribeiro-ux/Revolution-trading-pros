@@ -9,8 +9,8 @@
 	import { createSearchState } from './search.state.svelte';
 
 	// Layout Components
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import Pagination from '$lib/components/dashboard/pagination/Pagination.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import Pagination from '#lib/components/dashboard/pagination/Pagination.svelte';
 
 	// Search Components
 	import SearchInput from './components/SearchInput.svelte';

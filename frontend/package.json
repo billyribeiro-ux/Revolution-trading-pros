@@ -123,5 +123,8 @@
 		"vite-plugin-devtools-json": "^1.1.0",
 		"vitest": "^4.1.10",
 		"wrangler": "^4.123.0"
+	},
+	"imports": {
+		"#lib/*": "./src/lib/*"
 	}
 }

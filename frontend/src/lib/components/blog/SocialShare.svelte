@@ -31,7 +31,7 @@
 		onShare?: (platform: string) => void;
 	}
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let props: Props = $props();
 

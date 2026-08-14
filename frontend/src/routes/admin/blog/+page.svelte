@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	// FIX-2026-04-26 (CLAUDE.md): init/cleanup belongs in onMount, not $effect.
 	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import { slide, scale } from 'svelte/transition';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import {
 		IconPlus,
 		IconSearch,
@@ -32,10 +32,10 @@
 		IconRefresh,
 		IconMenu2,
 		IconLayoutGrid
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
-	import { predefinedCategories, type BlogCategory } from '$lib/data/predefined-categories';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
+	import { predefinedCategories, type BlogCategory } from '#lib/data/predefined-categories.js';
 	import PreviewModal from './_components/PreviewModal.svelte';
 	import ExportModal from './_components/ExportModal.svelte';
 	import AnalyticsModal from './_components/AnalyticsModal.svelte';
@@ -875,14 +875,17 @@
 				{#if showBulkActions}
 					<div class="bulk-actions" transition:slide={{ duration: 200 }}>
 						<span class="bulk-count">{selectedPosts.size} selected</span>
-						<button class="btn-secondary" onclick={() => bulkChangeStatus('published')}>
-							Publish
-						</button>
-						<button class="btn-secondary" onclick={() => bulkChangeStatus('draft')}> Draft </button>
-						<button class="btn-secondary danger" onclick={bulkDelete}>
-							<IconTrash size={18} />
-							Delete
-						</button>
+
+						<button class="btn-secondary" onclick={() => bulkChangeStatus('published')}
+							>Publish</button
+						>
+
+						<button class="btn-secondary" onclick={() => bulkChangeStatus('draft')}>Draft</button>
+
+						<button class="btn-secondary danger" onclick={bulkDelete}
+							><IconTrash size={18} />Delete</button
+						>
+
 						<button
 							class="btn-ghost"
 							onclick={() => {
@@ -992,10 +995,9 @@
 
 				<!-- Actions -->
 				<div class="action-buttons">
-					<button class="btn-secondary" onclick={() => (showExportModal = true)}>
-						<IconDownload size={18} />
-						Export
-					</button>
+					<button class="btn-secondary" onclick={() => (showExportModal = true)}
+						><IconDownload size={18} />Export</button
+					>
 					<label class="btn-secondary">
 						<IconUpload size={18} />
 						Import
@@ -1186,9 +1188,9 @@
 										Edit
 									</button>
 
-									<button class="action-btn" onclick={() => (previewPost = post)} title="Preview">
-										<IconEye size={18} />
-									</button>
+									<button class="action-btn" onclick={() => (previewPost = post)} title="Preview"
+										><IconEye size={18} /></button
+									>
 
 									<button
 										class="action-btn"
@@ -1220,15 +1222,14 @@
 													api/src/main.rs that polls posts WHERE status='scheduled'
 													AND scheduled_publish_at <= NOW() and flips them to 'published'.
 												-->
+												<button onclick={() => loadPostAnalytics(post)}
+													><IconChartBar size={16} />Analytics</button
+												>
 
-												<button onclick={() => loadPostAnalytics(post)}>
-													<IconChartBar size={16} />
-													Analytics
-												</button>
-												<button onclick={() => window.open(`/blog/${post.slug}`, '_blank')}>
-													<IconExternalLink size={16} />
-													View Live
-												</button>
+												<button onclick={() => window.open(`/blog/${post.slug}`, '_blank')}
+													><IconExternalLink size={16} />View Live</button
+												>
+
 												<hr />
 												<button class="danger" onclick={() => deletePost(post.id)}>
 													<IconTrash size={16} />
@@ -1330,14 +1331,17 @@
 										{/if}
 									</td>
 									<td class="table-mobile-optional">{formatNumber(post.view_count || 0)}</td>
+
 									<td class="table-mobile-optional table-tablet-optional">
 										<div class="seo-score-bar" style:--score={`${post.seo_score}%`}>
 											{post.seo_score}
 										</div>
 									</td>
+
 									<td class="table-mobile-optional"
 										>{post.published_at ? formatDate(post.published_at) : '-'}</td
 									>
+
 									<td class="td-actions">
 										<div class="table-actions">
 											<button
@@ -1391,6 +1395,7 @@
 		{/if}
 
 		<!-- Preview Modal -->
+
 		<PreviewModal post={previewPost} onClose={() => (previewPost = null)} />
 
 		<!-- Export Modal -->

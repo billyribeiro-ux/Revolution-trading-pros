@@ -9,9 +9,9 @@
 	 * ══════════════════════════════════════════════════════════════════════════
 	 */
 	import '../../../marketing.css';
-	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
-	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
-	import { NavBar } from '$lib/components/nav';
+	import AdminToolbar from '#lib/components/AdminToolbar.svelte';
+	import ClientOnly from '#lib/components/ssr/ClientOnly.svelte';
+	import { NavBar } from '#lib/components/nav/index.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

@@ -7,7 +7,7 @@
 	 * Uses Svelte 5 runes ($state, $derived, $effect)
 	 */
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		src: string;

@@ -4,7 +4,7 @@
  *
  * FIX-2026-04-26 (P1-7): The CMS datasources page was the only admin surface that
  * bypassed the SvelteKit proxy and hit the Rust backend directly with a token from
- * `$lib/stores/auth.svelte`. That coupled the surface to a CORS contract no other
+ * `#lib/stores/auth.svelte.js`. That coupled the surface to a CORS contract no other
  * admin surface needs, made token-rotation drift, and broke 401-redirect parity.
  *
  * This proxy is a thin pass-through to `/api/admin/cms/datasources/...` on the
@@ -19,9 +19,9 @@
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
-const PROD_BACKEND = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
+const PROD_BACKEND = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 function buildUpstreamUrl(pathSegments: string, search: string): string {
 	const cleanPath = pathSegments ? `/${pathSegments}` : '';

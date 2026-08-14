@@ -13,13 +13,17 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
+import {
+	API_BASE_URL,
+	BACKEND_URL as ENV_BACKEND_URL,
+	BUNNY_VIDEO_LIBRARY_ID
+} from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
 
 // FIX-2026-04-26-audit: align with repo-wide proxy env-var chain.
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 // FIX-2026-04-26-audit (P3): make the default Bunny library id env-driven (was a magic 585929).
-const DEFAULT_BUNNY_LIBRARY_ID = env.BUNNY_VIDEO_LIBRARY_ID || '585929';
+const DEFAULT_BUNNY_LIBRARY_ID = BUNNY_VIDEO_LIBRARY_ID || '585929';
 
 // PUT - Upload video file to Bunny.net via backend
 export const PUT: RequestHandler = async (event) => {

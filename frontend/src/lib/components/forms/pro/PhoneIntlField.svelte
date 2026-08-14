@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { FormField } from '$lib/api/forms';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { FormField } from '#lib/api/forms.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Country {
 		code: string;

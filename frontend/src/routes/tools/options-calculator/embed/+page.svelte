@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { createCalculatorState } from '$lib/options-calculator/state/calculator.svelte.js';
-	import { decodeState } from '$lib/options-calculator/utils/share-utils.js';
-	import InputPanel from '$lib/options-calculator/components/InputPanel.svelte';
-	import ResultsBar from '$lib/options-calculator/components/ResultsBar.svelte';
+	import { createCalculatorState } from '#lib/options-calculator/state/calculator.svelte.js';
+	import { decodeState } from '#lib/options-calculator/utils/share-utils.js';
+	import InputPanel from '#lib/options-calculator/components/InputPanel.svelte';
+	import ResultsBar from '#lib/options-calculator/components/ResultsBar.svelte';
 
 	const calc = $state(createCalculatorState());
 
 	onMount(() => {
-		const params = page.url.searchParams;
+		// page.url.searchParams is readonly in SvelteKit 3; take a mutable copy so
+		// it still satisfies decodeState's URLSearchParams parameter.
+		const params = new URL(page.url.href).searchParams;
 
 		// Apply theme from URL
 		const theme = params.get('theme');

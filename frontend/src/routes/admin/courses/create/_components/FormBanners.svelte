@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconAlertCircle, IconCheck, IconX } from '$lib/icons';
+	import { IconAlertCircle, IconCheck, IconX } from '#lib/icons/index.js';
 
 	// Top-of-form error / success banners. The error banner has a dismiss
 	// button that clears the message via the `onDismissError` callback.

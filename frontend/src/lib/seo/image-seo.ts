@@ -579,7 +579,7 @@ function escapeHtml(text: string): string {
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { writable, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 const STORAGE_KEY = 'image-seo-settings';
 

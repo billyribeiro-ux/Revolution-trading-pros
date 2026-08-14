@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { boardsAPI } from '$lib/api/boards';
-	import type { BoardTemplate } from '$lib/boards/types';
-	import { logger } from '$lib/utils/logger';
+	import { boardsAPI } from '#lib/api/boards.js';
+	import type { BoardTemplate } from '#lib/boards/types.js';
+	import { logger } from '#lib/utils/logger.js';
 	import {
 		IconTemplate,
 		IconArrowLeft,
@@ -16,7 +16,7 @@
 		IconRocket,
 		IconBook,
 		IconChartBar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// State
 	let templates = $state<BoardTemplate[]>([]);

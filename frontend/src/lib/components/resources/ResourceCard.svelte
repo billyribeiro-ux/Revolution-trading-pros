@@ -11,10 +11,10 @@
   - Version indicator
 -->
 <script lang="ts">
-	import type { RoomResource } from '$lib/api/room-resources';
-	import { formatResourceForDisplay, trackDownload, trackAccess } from '$lib/api/room-resources';
+	import type { RoomResource } from '#lib/api/room-resources.js';
+	import { formatResourceForDisplay, trackDownload, trackAccess } from '#lib/api/room-resources.js';
 	import FavoriteButton from './FavoriteButton.svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		resource: RoomResource;

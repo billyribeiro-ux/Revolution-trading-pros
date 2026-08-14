@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconCheck, IconX, IconAlertCircle } from '$lib/icons';
+	import { IconCheck, IconX, IconAlertCircle } from '#lib/icons/index.js';
 
 	type Notification = {
 		id: string;

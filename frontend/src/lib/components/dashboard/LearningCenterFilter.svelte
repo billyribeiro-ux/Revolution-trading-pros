@@ -31,7 +31,7 @@
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		if (categoryId === 'all' || categoryId === '0') {
 			url.searchParams.delete('category');
 		} else {

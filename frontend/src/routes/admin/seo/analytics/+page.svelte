@@ -6,10 +6,10 @@
 		IconMinus,
 		IconRefresh,
 		IconCalendar
-	} from '$lib/icons';
-	import { connections, getIsSeoConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { connections, getIsSeoConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	interface SeoStats {
 		total_impressions?: number;

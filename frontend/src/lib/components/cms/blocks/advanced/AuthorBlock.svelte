@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { IconUser, IconLink, IconX, IconPlus } from '$lib/icons';
-	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
+	import { IconUser, IconLink, IconX, IconPlus } from '#lib/icons/index.js';
+	import { sanitizeURL, validateFile } from '#lib/utils/sanitization.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Attachment } from 'svelte/attachments';
 
 	// Props

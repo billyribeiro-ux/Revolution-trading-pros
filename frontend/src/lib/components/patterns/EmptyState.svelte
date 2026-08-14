@@ -5,7 +5,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { IconInbox } from '$lib/icons';
+	import { IconInbox } from '#lib/icons/index.js';
 	import type { ComponentType, Snippet } from 'svelte';
 
 	interface Props {

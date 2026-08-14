@@ -6,8 +6,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
-	import { IconCircleCheck, IconAlertCircle } from '$lib/icons';
+	import { browser } from '$app/env';
+	import { IconCircleCheck, IconAlertCircle } from '#lib/icons/index.js';
 
 	// Svelte 5 state runes
 	let verifying = $state(true);
@@ -65,14 +65,18 @@
 		name="description"
 		content="Verify your email address to complete your Revolution Trading registration."
 	/>
+
 	<meta property="og:title" content="Verify Email | Revolution Trading" />
+
 	<meta
 		property="og:description"
 		content="Verify your email address to complete your Revolution Trading registration."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary_large_image" />
+
 	<meta name="twitter:title" content="Verify Email | Revolution Trading" />
+
 	<meta
 		name="twitter:description"
 		content="Verify your email address to complete your Revolution Trading registration."

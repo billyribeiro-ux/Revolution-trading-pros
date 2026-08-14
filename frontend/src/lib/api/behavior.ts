@@ -20,7 +20,7 @@ import type {
 	BehaviorDashboardData,
 	FrictionPoint,
 	IntentSignal
-} from '$lib/behavior/types';
+} from '#lib/behavior/types.js';
 import { apiClient } from './client.svelte';
 
 export class BehaviorAPI {

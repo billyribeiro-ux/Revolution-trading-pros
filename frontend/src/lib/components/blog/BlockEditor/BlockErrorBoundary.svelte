@@ -21,7 +21,7 @@
 	import type { Snippet } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
-	import { IconAlertTriangle, IconRefresh, IconTrash, IconArrowBackUp } from '$lib/icons';
+	import { IconAlertTriangle, IconRefresh, IconTrash, IconArrowBackUp } from '#lib/icons/index.js';
 
 	import type { Block } from './types';
 	import { BLOCK_DEFINITIONS } from './types';

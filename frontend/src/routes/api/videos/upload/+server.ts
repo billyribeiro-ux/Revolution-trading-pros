@@ -9,7 +9,7 @@
 
 import { json, error, type RequestEvent } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 // FIX-2026-04-26: process.env.VITE_API_URL → canonical private env pattern
 // const PROD_API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
 // const getApiUrl = () => {
@@ -19,7 +19,7 @@ import { env } from '$env/dynamic/private';
 //   return `${PROD_API_ROOT}/api`;
 // };
 // const API_URL = getApiUrl();
-const API_URL = `${env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080'}/api`;
+const API_URL = `${API_BASE_URL || BACKEND_URL || 'http://localhost:8080'}/api`;
 
 // Upload configuration
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
@@ -234,9 +234,7 @@ async function handleDirectUpload(request: Request, token?: string) {
 
 		const response = await fetch(`${API_URL}/videos/upload`, {
 			method: 'POST',
-			headers: {
-				...(token ? { Authorization: `Bearer ${token}` } : {})
-			},
+			headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
 			body: backendFormData
 		});
 

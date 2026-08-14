@@ -350,8 +350,7 @@
 						oninput={(event) => updateForm('notes', event.currentTarget.value)}
 						placeholder="Why are you closing this position? Target hit, stopped out, etc..."
 						class="form-textarea"
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<!-- Error Message -->

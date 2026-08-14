@@ -472,12 +472,7 @@ export interface ImportJob {
 export type ImportSource = 'trello' | 'asana' | 'csv' | 'json' | 'fluent_boards';
 
 export type ImportStatus =
-	| 'pending'
-	| 'mapping'
-	| 'processing'
-	| 'completed'
-	| 'failed'
-	| 'cancelled';
+	'pending' | 'mapping' | 'processing' | 'completed' | 'failed' | 'cancelled';
 
 export interface ImportError {
 	row?: number;

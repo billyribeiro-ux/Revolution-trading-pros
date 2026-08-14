@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FormField } from '$lib/api/forms';
+	import type { FormField } from '#lib/api/forms.js';
 
 	interface Props {
 		field: FormField;

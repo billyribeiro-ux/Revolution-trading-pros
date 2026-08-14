@@ -4,13 +4,7 @@
 
 export type ContactStatus = 'lead' | 'prospect' | 'customer' | 'churned' | 'unqualified';
 export type LifecycleStage =
-	| 'subscriber'
-	| 'lead'
-	| 'mql'
-	| 'sql'
-	| 'opportunity'
-	| 'customer'
-	| 'evangelist';
+	'subscriber' | 'lead' | 'mql' | 'sql' | 'opportunity' | 'customer' | 'evangelist';
 export type ContactSource = 'website' | 'form' | 'import' | 'api' | 'manual' | 'referral' | 'event';
 export type SubscriptionStatus = 'none' | 'trial' | 'active' | 'paused' | 'cancelled' | 'expired';
 export type DealStatus = 'open' | 'won' | 'lost' | 'abandoned';
@@ -775,13 +769,7 @@ export interface TagPivot {
 // =====================================================
 
 export type CompanySize =
-	| '1-10'
-	| '11-50'
-	| '51-200'
-	| '201-500'
-	| '501-1000'
-	| '1001-5000'
-	| '5001+';
+	'1-10' | '11-50' | '51-200' | '201-500' | '501-1000' | '1001-5000' | '5001+';
 export type CompanyIndustry =
 	| 'technology'
 	| 'finance'
@@ -1080,13 +1068,7 @@ export interface WebhookLog {
 // =====================================================
 
 export type ImportType =
-	| 'contacts'
-	| 'tags'
-	| 'lists'
-	| 'sequences'
-	| 'campaigns'
-	| 'automations'
-	| 'templates';
+	'contacts' | 'tags' | 'lists' | 'sequences' | 'campaigns' | 'automations' | 'templates';
 export type ImportStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface ImportJob {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import { sanitizeHtml } from '$lib/sanitize';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	interface OrderItem {
 		id: number;

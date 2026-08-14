@@ -13,9 +13,9 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
-	import { logger } from '$lib/utils/logger';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		formId: number;

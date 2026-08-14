@@ -12,7 +12,7 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { ConsentState, ConsentCategory, PrivacySignals } from './types';
 import {
 	DEFAULT_CONSENT_STATE,

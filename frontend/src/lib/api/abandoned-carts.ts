@@ -18,17 +18,12 @@
  * @author Revolution Trading Pros
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 
 const API_BASE = '/api/admin/abandoned-carts';
 
 export type CartStatus =
-	| 'pending'
-	| 'email_sent'
-	| 'clicked'
-	| 'recovered'
-	| 'expired'
-	| 'unsubscribed';
+	'pending' | 'email_sent' | 'clicked' | 'recovered' | 'expired' | 'unsubscribed';
 
 export interface AbandonedCart {
 	id: number;

@@ -51,9 +51,9 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { SvelteDate } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
-	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { logger } from '$lib/utils/logger';
-	import type { IconComponent } from '$lib/icons';
+	import { usersApi, AdminApiError } from '#lib/api/admin.js';
+	import { logger } from '#lib/utils/logger.js';
+	import type { IconComponent } from '#lib/icons/index.js';
 	import {
 		IconCheck,
 		IconUser,
@@ -64,7 +64,7 @@
 		IconShieldCheck,
 		IconSettings,
 		IconCheckupList
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Type Definitions
 

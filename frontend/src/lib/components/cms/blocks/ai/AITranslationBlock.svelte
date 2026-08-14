@@ -7,8 +7,14 @@
 
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { IconLanguage, IconArrowsLeftRight, IconCopy, IconCheck, IconLoader2 } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import {
+		IconLanguage,
+		IconArrowsLeftRight,
+		IconCopy,
+		IconCheck,
+		IconLoader2
+	} from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {

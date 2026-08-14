@@ -32,14 +32,14 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '#lib/api/crm.js';
 	import type {
 		AutomationFunnel,
 		FunnelAction,
 		FunnelSubscriber,
 		FunnelStats,
 		FunnelStatus
-	} from '$lib/crm/types';
+	} from '#lib/crm/types.js';
 
 	// STATE
 

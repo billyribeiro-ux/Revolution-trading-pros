@@ -4,8 +4,8 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { IconUserPlus, IconArrowLeft } from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
+	import { IconUserPlus, IconArrowLeft } from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
 
 	let formData = $state({
 		first_name: '',

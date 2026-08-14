@@ -36,7 +36,7 @@
 	// direct API_BASE_URL calls from the browser, no more getAuthToken bearer fetches.
 	// TODO(2026-04-26-audit): remove unused $lib/api/config + auth.svelte imports here
 	// once the page is fully migrated.
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// Types
 	interface Datasource {
@@ -1139,8 +1139,7 @@
 							id="ds-description"
 							bind:value={datasourceForm.description}
 							placeholder="Brief description of this datasource"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 				</div>
 			</div>

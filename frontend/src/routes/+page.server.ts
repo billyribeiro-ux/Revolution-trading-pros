@@ -1,10 +1,10 @@
 import type { PageServerLoad } from './$types';
-import type { SEOInput } from '$lib/seo/types';
-import { env } from '$env/dynamic/private';
+import type { SEOInput } from '#lib/seo/types.js';
+import { API_BASE_URL as ENV_API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // API base resolves from runtime env (reads .env.local in dev, secrets in prod)
 // with a Fly fallback so prerender / Cloudflare deploys still work without env vars.
-const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_BASE_URL = ENV_API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
  * ICT11+ Performance: Simple server load without streaming

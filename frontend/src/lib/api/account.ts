@@ -22,7 +22,7 @@
  */
 
 import { apiClient } from './client.svelte';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions

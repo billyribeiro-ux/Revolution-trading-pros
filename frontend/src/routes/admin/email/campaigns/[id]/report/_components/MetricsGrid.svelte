@@ -11,7 +11,7 @@
 		IconClick,
 		IconAlertTriangle,
 		IconUserMinus
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Metrics {
 		sent: number;

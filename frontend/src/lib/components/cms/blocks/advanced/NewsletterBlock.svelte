@@ -8,9 +8,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconMail, IconLoader2, IconCheck, IconAlertCircle } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
-	import { isValidEmail } from '$lib/utils/sanitization';
+	import { IconMail, IconLoader2, IconCheck, IconAlertCircle } from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
+	import { isValidEmail } from '#lib/utils/sanitization.js';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {

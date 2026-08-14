@@ -5,7 +5,7 @@
 	 * @standards Svelte 5 January 2026 | Apple Principal Engineer ICT 7+
 	 */
 	import type { AlertSearchResult } from '../search.state.svelte';
-	import { sanitizeHtml } from '$lib/sanitize';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	interface Props {
 		alert: AlertSearchResult;

@@ -4,7 +4,7 @@
  * Command pattern for reversible operations
  */
 
-import type { Block } from '$lib/components/cms/blocks/types';
+import type { Block } from '#lib/components/cms/blocks/types.js';
 
 export interface Command {
 	execute(): void;

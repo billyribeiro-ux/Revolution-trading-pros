@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconUserPlus } from '$lib/icons';
+	import { IconX, IconUserPlus } from '#lib/icons/index.js';
 
 	export interface NewSubscriberForm {
 		email: string;

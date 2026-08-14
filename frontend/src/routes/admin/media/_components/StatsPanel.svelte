@@ -11,7 +11,7 @@
 	 * 1 bindable scalar, 0 callbacks.
 	 */
 	import { slide } from 'svelte/transition';
-	import type { OptimizationStatistics } from '$lib/api/media';
+	import type { OptimizationStatistics } from '#lib/api/media.js';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';

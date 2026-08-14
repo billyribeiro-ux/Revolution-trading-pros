@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	/**
 	 * QuizField - Interactive Quiz/Scoring Form Field

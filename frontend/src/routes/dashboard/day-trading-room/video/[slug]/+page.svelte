@@ -14,9 +14,9 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import type { PageData } from './+page.server';
-	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
-	import { authStore } from '$lib/stores/auth.svelte';
-	import { sanitizeHtml } from '$lib/sanitize';
+	import BunnyVideoPlayer from '#lib/components/video/BunnyVideoPlayer.svelte';
+	import { authStore } from '#lib/stores/auth.svelte.js';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	// Server-loaded data with Previous/Next navigation
 	let props: { data: PageData } = $props();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconAlertTriangle } from '$lib/icons';
+	import { IconAlertTriangle } from '#lib/icons/index.js';
 
 	interface Props {
 		error: string;

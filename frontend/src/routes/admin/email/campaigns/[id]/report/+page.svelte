@@ -1,19 +1,3 @@
-<!--
-	Email Campaign Report - Apple ICT7 Principal Engineer Grade
-	═══════════════════════════════════════════════════════════════════════════════
-
-	Comprehensive email campaign analytics with:
-	- Campaign overview (name, subject, sent date)
-	- Key metrics (sent, delivered, opened, clicked, bounced, unsubscribed)
-	- Open/click rate charts
-	- Top links clicked
-	- Device/client breakdown
-	- Geographic distribution
-	- Export functionality
-
-	R22-C extracted 8 read-only display components into _components/.
--->
-
 <script lang="ts">
 	/**
 	 * Email Campaign Report - Svelte 5 Runes Implementation
@@ -22,9 +6,9 @@
 	import type { PageData } from './$types';
 	import { fade, fly } from 'svelte/transition';
 	import { afterNavigate, goto } from '$app/navigation';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import ExportButton from '$lib/components/ExportButton.svelte';
-	import { IconArrowLeft, IconRefresh, IconAlertTriangle, IconChartBar } from '$lib/icons';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import ExportButton from '#lib/components/ExportButton.svelte';
+	import { IconArrowLeft, IconRefresh, IconAlertTriangle, IconChartBar } from '#lib/icons/index.js';
 
 	import CampaignOverview from './_components/CampaignOverview.svelte';
 	import MetricsGrid from './_components/MetricsGrid.svelte';
@@ -142,25 +126,96 @@
 		if (!report) return [];
 
 		const data = [
-			{ category: 'Overview', metric: 'Campaign Name', value: report.name },
-			{ category: 'Overview', metric: 'Subject', value: report.subject },
-			{ category: 'Overview', metric: 'Sent Date', value: report.sent_at || 'Not sent' },
-			{ category: 'Overview', metric: 'Segment', value: report.segment_name || 'All' },
-			{ category: 'Metrics', metric: 'Emails Sent', value: report.metrics.sent },
-			{ category: 'Metrics', metric: 'Delivered', value: report.metrics.delivered },
-			{ category: 'Metrics', metric: 'Opened', value: report.metrics.opened },
-			{ category: 'Metrics', metric: 'Unique Opens', value: report.metrics.unique_opens },
-			{ category: 'Metrics', metric: 'Clicked', value: report.metrics.clicked },
-			{ category: 'Metrics', metric: 'Unique Clicks', value: report.metrics.unique_clicks },
-			{ category: 'Metrics', metric: 'Bounced', value: report.metrics.bounced },
-			{ category: 'Metrics', metric: 'Unsubscribed', value: report.metrics.unsubscribed },
+			{
+				category: 'Overview',
+				metric: 'Campaign Name',
+				value: report.name
+			},
+
+			{
+				category: 'Overview',
+				metric: 'Subject',
+				value: report.subject
+			},
+
+			{
+				category: 'Overview',
+				metric: 'Sent Date',
+				value: report.sent_at || 'Not sent'
+			},
+
+			{
+				category: 'Overview',
+				metric: 'Segment',
+				value: report.segment_name || 'All'
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Emails Sent',
+				value: report.metrics.sent
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Delivered',
+				value: report.metrics.delivered
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Opened',
+				value: report.metrics.opened
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Unique Opens',
+				value: report.metrics.unique_opens
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Clicked',
+				value: report.metrics.clicked
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Unique Clicks',
+				value: report.metrics.unique_clicks
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Bounced',
+				value: report.metrics.bounced
+			},
+
+			{
+				category: 'Metrics',
+				metric: 'Unsubscribed',
+				value: report.metrics.unsubscribed
+			},
+
 			{
 				category: 'Rates',
 				metric: 'Delivery Rate',
 				value: `${report.rates.delivery_rate.toFixed(1)}%`
 			},
-			{ category: 'Rates', metric: 'Open Rate', value: `${report.rates.open_rate.toFixed(1)}%` },
-			{ category: 'Rates', metric: 'Click Rate', value: `${report.rates.click_rate.toFixed(1)}%` },
+
+			{
+				category: 'Rates',
+				metric: 'Open Rate',
+				value: `${report.rates.open_rate.toFixed(1)}%`
+			},
+
+			{
+				category: 'Rates',
+				metric: 'Click Rate',
+				value: `${report.rates.click_rate.toFixed(1)}%`
+			},
+
 			{
 				category: 'Rates',
 				metric: 'Click-to-Open Rate',
@@ -205,7 +260,9 @@
 	});
 
 	// Lifecycle
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		if (campaignId) {
 			void loadReport();
 		}
@@ -364,9 +421,25 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Campaign Report - {report?.name || 'Loading...'} | Revolution Trading Pros</title>
-</svelte:head>
+<!--
+	Email Campaign Report - Apple ICT7 Principal Engineer Grade
+	═══════════════════════════════════════════════════════════════════════════════
+
+	Comprehensive email campaign analytics with:
+	- Campaign overview (name, subject, sent date)
+	- Key metrics (sent, delivered, opened, clicked, bounced, unsubscribed)
+	- Open/click rate charts
+	- Top links clicked
+	- Device/client breakdown
+	- Geographic distribution
+	- Export functionality
+
+	R22-C extracted 8 read-only display components into _components/.
+-->
+<svelte:head
+	><title>Campaign Report - {report?.name || 'Loading...'} | Revolution Trading Pros</title
+	></svelte:head
+>
 
 <div class="report-page">
 	<!-- Header -->

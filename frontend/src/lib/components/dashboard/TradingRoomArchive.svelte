@@ -20,7 +20,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Video type from API
 	interface VideoData {
@@ -202,7 +202,7 @@
 			params.set('search', searchQuery.trim());
 		}
 		params.set('page', '1');
-		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
+		goto(`?${params.toString()}`, { replaceState: true, reset: false });
 	}
 
 	// Handle page change

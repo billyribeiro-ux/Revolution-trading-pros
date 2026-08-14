@@ -5,7 +5,7 @@
 	 * truth via `$bindable` so both inputs stay in sync with the parent's
 	 * `searchQuery` / `filterStatus` runes (no event indirection).
 	 */
-	import { IconSearch } from '$lib/icons';
+	import { IconSearch } from '#lib/icons/index.js';
 	import type { FilterStatus } from './types';
 
 	interface Props {

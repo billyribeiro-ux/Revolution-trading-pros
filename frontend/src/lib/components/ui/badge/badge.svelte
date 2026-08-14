@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
-	import { type WithElementRef } from '$lib/utils.js';
+	import { type WithElementRef } from '#lib/utils.js';
 	import { badgeVariants, type BadgeVariant } from './badge.types';
 
 	let {

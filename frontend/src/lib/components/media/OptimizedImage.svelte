@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Props - Svelte 5 $props() pattern with interface
 	interface Props {

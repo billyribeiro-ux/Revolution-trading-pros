@@ -9,9 +9,9 @@
 -->
 
 <script lang="ts">
-	import { IconColorPicker } from '$lib/icons';
+	import { IconColorPicker } from '#lib/icons/index.js';
 	import type { Block } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// Types
 

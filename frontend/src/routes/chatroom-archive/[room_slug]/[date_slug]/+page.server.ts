@@ -10,7 +10,7 @@
  * @version 1.0.0
  */
 
-import { env } from '$env/dynamic/private';
+import { API_URL as ENV_API_URL } from '$app/env/private';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -112,7 +112,7 @@ function dateToSlug(date: Date): string {
 }
 
 export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDetailPageData> => {
-	const API_URL = env.API_URL || 'http://localhost:8080';
+	const API_URL = ENV_API_URL || 'http://localhost:8080';
 	const roomSlug = params.room_slug as string;
 	const dateSlug = params.date_slug as string;
 

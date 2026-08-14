@@ -7,9 +7,9 @@
 	 * Supports basic formatting with toolbar.
 	 */
 
-	import { sanitizeHtml } from '$lib/sanitize';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { sanitizeHtml } from '#lib/sanitize.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import type { Attachment } from 'svelte/attachments';
 
 	interface Props {
@@ -233,8 +233,7 @@
 			maxlength={maxLength}
 			oninput={handleInput}
 			class="plain-textarea"
-			aria-labelledby={label ? 'content-label' : undefined}
-		></textarea>
+			aria-labelledby={label ? 'content-label' : undefined}></textarea>
 	{/if}
 
 	<div class="stats-bar">

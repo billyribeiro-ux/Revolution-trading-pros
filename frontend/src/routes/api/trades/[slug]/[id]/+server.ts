@@ -11,13 +11,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import type { TradeUpdateInput } from '$lib/types/trading';
+import type { TradeUpdateInput } from '#lib/types/trading.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
 // R22-A: `Trade` type import dropped — the in-file mock array and the
 // helpers that built fake closed-trade rows are gone.
-import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess, isObject } from '#lib/server/proxy-fetch.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // R22-A: Deleted `mockTrades` (3 fake explosive-swings rows: closed MSFT

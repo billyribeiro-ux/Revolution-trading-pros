@@ -4,7 +4,7 @@
 	 * title, subtitle. Discrete `onBack` callback (R8-C style — names the
 	 * action, not a generic event).
 	 */
-	import { IconArrowLeft } from '$lib/icons';
+	import { IconArrowLeft } from '#lib/icons/index.js';
 
 	interface Props {
 		onBack: () => void;

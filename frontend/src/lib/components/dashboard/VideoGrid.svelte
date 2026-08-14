@@ -70,7 +70,7 @@
 	// Navigate to page
 	function goToPage(pageNum: number) {
 		if (pageNum >= 1 && pageNum <= totalPages) {
-			const url = new URL(page.url);
+			const url = new URL(page.url.href);
 			if (pageNum === 1) {
 				url.searchParams.delete('page');
 			} else {

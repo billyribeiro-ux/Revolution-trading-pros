@@ -19,8 +19,8 @@
 		IconChevronDown,
 		IconCheck,
 		IconLoader
-	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Props {
 		/** Data to export (array of objects) */

@@ -11,10 +11,10 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { log } from '$lib/api/enterprise/tracing';
-	import { serializeError } from '$lib/api/enterprise/errors';
-	import { IconAlertTriangle, IconRefresh } from '$lib/icons';
+	import { browser } from '$app/env';
+	import { log } from '#lib/api/enterprise/tracing.js';
+	import { serializeError } from '#lib/api/enterprise/errors.js';
+	import { IconAlertTriangle, IconRefresh } from '#lib/icons/index.js';
 
 	// Props
 	interface Props {
@@ -129,13 +129,9 @@
 				{/if}
 
 				<div class="error-actions">
-					<button class="btn-retry" onclick={reset}>
-						<IconRefresh size={18} />
-						Try Again
-					</button>
-					<button class="btn-home" onclick={() => (window.location.href = '/')}>
-						Go to Home
-					</button>
+					<button class="btn-retry" onclick={reset}><IconRefresh size={18} />Try Again</button>
+
+					<button class="btn-home" onclick={() => (window.location.href = '/')}>Go to Home</button>
 				</div>
 			</div>
 		</div>

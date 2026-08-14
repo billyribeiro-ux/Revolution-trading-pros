@@ -5,8 +5,8 @@
 	 * Displays media items in a responsive grid with selection,
 	 * preview, and bulk actions support.
 	 */
-	import type { MediaItem } from '$lib/api/media';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { MediaItem } from '#lib/api/media.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		items?: MediaItem[];

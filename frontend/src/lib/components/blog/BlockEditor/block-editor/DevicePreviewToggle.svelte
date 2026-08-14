@@ -3,7 +3,7 @@
 	Extracted from BlockEditor.svelte (R7-C).
 -->
 <script lang="ts">
-	import { IconDeviceDesktop, IconDeviceTablet, IconDeviceMobile } from '$lib/icons';
+	import { IconDeviceDesktop, IconDeviceTablet, IconDeviceMobile } from '#lib/icons/index.js';
 
 	type Device = 'desktop' | 'tablet' | 'mobile';
 

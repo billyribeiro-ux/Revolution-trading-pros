@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { boardsAPI } from '$lib/api/boards';
-	import type { ImportJob, ImportSource } from '$lib/boards/types';
+	import { boardsAPI } from '#lib/api/boards.js';
+	import type { ImportJob, ImportSource } from '#lib/boards/types.js';
 	import {
 		IconUpload,
 		IconArrowLeft,
@@ -12,7 +12,7 @@
 		IconX,
 		IconLoader,
 		IconAlertCircle
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// State
 	let selectedSource = $state<ImportSource | null>(null);

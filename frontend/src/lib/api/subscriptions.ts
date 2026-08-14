@@ -48,17 +48,17 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import type {
 	Subscription,
 	SubscriptionStatus,
 	SubscriptionFilters,
 	SubscriptionStats,
 	SubscriptionPayment
-} from '$lib/stores/subscriptions.svelte';
+} from '#lib/stores/subscriptions.svelte.js';
 // R6-A: typed-envelope helpers. `JsonValue` replaces the heterogeneous
 // `Record<string, any>` / metadata `any` patterns. `PaginatedResponse<T>` is
 // not consumed here — no endpoint in this file emits the `{ data, meta }`
@@ -719,13 +719,7 @@ class SubscriptionService {
 	}
 
 	private handleMetricsUpdate(metrics: Partial<RevenueMetrics>): void {
-		this.revenueMetrics.update(
-			(current) =>
-				({
-					...current,
-					...metrics
-				}) as RevenueMetrics
-		);
+		this.revenueMetrics.update((current) => ({ ...current, ...metrics }) as RevenueMetrics);
 	}
 
 	private handleAlert(alert: {

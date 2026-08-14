@@ -8,7 +8,7 @@
  * @version 1.0.0 - January 2026
  */
 
-import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$app/env/public';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

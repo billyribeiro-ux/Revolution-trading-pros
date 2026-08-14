@@ -4,7 +4,7 @@
 		IconChevronLeft,
 		IconChevronRight,
 		IconExternalLink
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Order {
 		id: number;

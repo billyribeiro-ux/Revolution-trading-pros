@@ -1,28 +1,10 @@
-<!--
-/**
- * VideoTranscript - Interactive Video Transcript Component
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Apple ICT 7 Principal Engineer Grade - February 2026
- *
- * FEATURES:
- * 1. Displays video transcript with timestamps
- * 2. Syncs with video playback (highlights current line)
- * 3. Click to seek to transcript position
- * 4. Search within transcript
- * 5. Copy transcript functionality
- * 6. Mobile-first responsive design
- *
- * @version 1.0.0
- */
--->
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Attachment } from 'svelte/attachments';
-	import { sanitizeHtml } from '$lib/sanitize';
-	import Icon from '$lib/components/Icon.svelte';
+	import { sanitizeHtml } from '#lib/sanitize.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -225,6 +207,25 @@
 		return text.replace(regex, '<mark>$1</mark>');
 	}
 </script>
+
+<!--
+/**
+ * VideoTranscript - Interactive Video Transcript Component
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Apple ICT 7 Principal Engineer Grade - February 2026
+ *
+ * FEATURES:
+ * 1. Displays video transcript with timestamps
+ * 2. Syncs with video playback (highlights current line)
+ * 3. Click to seek to transcript position
+ * 4. Search within transcript
+ * 5. Copy transcript functionality
+ * 6. Mobile-first responsive design
+ *
+ * @version 1.0.0
+ */
+-->
 
 <div class={['transcript', className]}>
 	<!-- Header with search and copy -->

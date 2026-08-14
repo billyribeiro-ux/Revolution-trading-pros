@@ -11,7 +11,7 @@
 	 * @version 2.0.0
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Canvas } from '@threlte/core';
 	import type Scene3D from './Scene3D.svelte';
 

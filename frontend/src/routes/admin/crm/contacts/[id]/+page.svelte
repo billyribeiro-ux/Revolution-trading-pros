@@ -16,9 +16,9 @@
 	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { api } from '$lib/api/config';
-	import { logger } from '$lib/utils/logger';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { api } from '#lib/api/config.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	import ContactHeader from './_components/ContactHeader.svelte';
 	import ContactStatsGrid from './_components/ContactStatsGrid.svelte';

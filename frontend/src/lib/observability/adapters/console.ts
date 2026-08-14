@@ -19,7 +19,7 @@
  * output IS its entire purpose. console.* here is the implementation,
  * not stray debug logging. (audit 2026-05-17) */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type {
 	AnalyticsAdapter,
 	AnalyticsConfig,

@@ -10,8 +10,8 @@
  * forwarding (URL, body, headers, streaming) is preserved verbatim.
  */
 import type { RequestHandler } from '@sveltejs/kit';
-import { createProxyShim } from '$lib/utils/createProxyShim';
-import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
+import { createProxyShim } from '#lib/utils/createProxyShim.js';
+import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
 
 const shim = createProxyShim('/api/admin/users');
 

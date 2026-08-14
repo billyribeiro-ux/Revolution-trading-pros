@@ -12,9 +12,15 @@
 	import { fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
-	import { toasts, toastStore } from '$lib/stores/toast.svelte';
-	import type { Toast } from '$lib/stores/toast.svelte';
-	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
+	import { toasts, toastStore } from '#lib/stores/toast.svelte.js';
+	import type { Toast } from '#lib/stores/toast.svelte.js';
+	import {
+		IconCheck,
+		IconX,
+		IconAlertTriangle,
+		IconInfoCircle,
+		IconLoader
+	} from '#lib/icons/index.js';
 
 	// Local derived from getter
 	const toastList = $derived(toasts.value);

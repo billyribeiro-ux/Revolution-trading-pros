@@ -16,7 +16,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // ============================================================================
 
 // Mock sanitization utilities
-vi.mock('$lib/utils/sanitization', () => ({
+vi.mock('#lib/utils/sanitization.js', () => ({
 	validateFile: vi.fn((file, options) => {
 		// Simulate validation based on options
 		if (options.maxSize && file.size > options.maxSize) {

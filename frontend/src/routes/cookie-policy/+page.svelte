@@ -1,7 +1,3 @@
-<!--
-	URL: /cookie-policy
--->
-
 <script lang="ts">
 	/**
 	 * Cookie Policy Page
@@ -10,17 +6,25 @@
 	 * that lists all cookies used on the site with full transparency.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { scanCookies, openPreferencesModal, consentStore, getVendorInfo } from '$lib/consent';
-	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '$lib/consent/i18n';
+
+	import { browser } from '$app/env';
+
+	import {
+		scanCookies,
+		openPreferencesModal,
+		consentStore,
+		getVendorInfo
+	} from '#lib/consent/index.js';
+
+	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '#lib/consent/i18n.js';
 	import {
 		generateConsentReceipt,
 		downloadReceiptAsJSON,
 		printReceipt
-	} from '$lib/consent/consent-receipt';
-	import { getVersionInfo } from '$lib/consent/versioning';
-	import type { CookieScanResult } from '$lib/consent';
-	import type { SupportedLanguage } from '$lib/consent/i18n';
+	} from '#lib/consent/consent-receipt.js';
+	import { getVersionInfo } from '#lib/consent/versioning.js';
+	import type { CookieScanResult } from '#lib/consent/index.js';
+	import type { SupportedLanguage } from '#lib/consent/i18n.js';
 
 	let cookieScan: CookieScanResult | null = $state(null);
 	let vendorList: ReturnType<typeof getVendorInfo> = $state([]);
@@ -93,6 +97,10 @@
 	};
 </script>
 
+<!--
+	URL: /cookie-policy
+-->
+
 <svelte:head>
 	<title>{$t.cookiePolicyTitle} | Revolution Trading Pros</title>
 	<meta name="description" content={$t.cookiePolicyIntro} />
@@ -130,8 +138,8 @@
 				>
 					<path
 						d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-					/>
-					<circle cx="12" cy="12" r="3" />
+					></path>
+					<circle cx="12" cy="12" r="3"></circle>
 				</svg>
 				{$t.cookieSettings}
 			</button>
@@ -146,9 +154,9 @@
 						stroke="currentColor"
 						stroke-width="2"
 					>
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-						<polyline points="7 10 12 15 17 10" />
-						<line x1="12" y1="15" x2="12" y2="3" />
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+						<polyline points="7 10 12 15 17 10"></polyline>
+						<line x1="12" y1="15" x2="12" y2="3"></line>
 					</svg>
 					{$t.downloadReceipt}
 				</button>
@@ -162,9 +170,12 @@
 						stroke="currentColor"
 						stroke-width="2"
 					>
-						<polyline points="6 9 6 2 18 2 18 9" />
-						<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-						<rect x="6" y="14" width="12" height="8" />
+						<polyline points="6 9 6 2 18 2 18 9"></polyline>
+
+						<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+						></path>
+
+						<rect x="6" y="14" width="12" height="8"></rect>
 					</svg>
 					Print Receipt
 				</button>

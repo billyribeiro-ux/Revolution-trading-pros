@@ -5,7 +5,7 @@
  * Handles: validation, sanitization, word counts, processing
  */
 
-import type { Block, BlockContent } from '$lib/components/cms/blocks/types';
+import type { Block, BlockContent } from '#lib/components/cms/blocks/types.js';
 
 // Message types
 interface ProcessBlocksMessage {
@@ -29,10 +29,7 @@ interface CalculateStatsMessage {
 }
 
 type WorkerMessage =
-	| ProcessBlocksMessage
-	| ValidateBlockMessage
-	| SanitizeContentMessage
-	| CalculateStatsMessage;
+	ProcessBlocksMessage | ValidateBlockMessage | SanitizeContentMessage | CalculateStatsMessage;
 
 // Word count helper
 function countWords(text: string | undefined): number {

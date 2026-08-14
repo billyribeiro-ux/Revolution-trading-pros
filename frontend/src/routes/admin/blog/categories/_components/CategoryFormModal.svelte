@@ -6,7 +6,7 @@
 	 * saving state are read-only props from the parent (the parent is
 	 * the source of truth for the API call result).
 	 */
-	import { IconAlertCircle } from '$lib/icons';
+	import { IconAlertCircle } from '#lib/icons/index.js';
 	import type { CategoryFormData } from './types';
 
 	interface Props {
@@ -102,8 +102,7 @@
 						id="cat-desc"
 						bind:value={form.description}
 						placeholder="Brief description"
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-row">

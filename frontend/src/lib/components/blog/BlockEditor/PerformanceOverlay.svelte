@@ -1,26 +1,7 @@
-<!--
-/**
- * Revolution Trading Pros - Performance Overlay
- * ===============================================================================
- * Real-time performance monitoring overlay for the Block Editor
- *
- * Features:
- * - Toggle with Ctrl+Shift+P
- * - Core Web Vitals display with color-coded thresholds
- * - FPS counter with visual indicator
- * - Memory usage graph
- * - Editor-specific metrics
- * - Only visible in development mode
- *
- * @version 1.0.0
- * @author Revolution Trading Pros
- */
--->
-
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser, dev } from '$app/environment';
-	import Icon from '$lib/components/Icon.svelte';
+	import { browser, dev } from '$app/env';
+	import Icon from '#lib/components/Icon.svelte';
 	import {
 		subscribeToMetrics,
 		getWebVitalThresholds,
@@ -188,6 +169,25 @@
 	}
 </script>
 
+<!--
+/**
+ * Revolution Trading Pros - Performance Overlay
+ * ===============================================================================
+ * Real-time performance monitoring overlay for the Block Editor
+ *
+ * Features:
+ * - Toggle with Ctrl+Shift+P
+ * - Core Web Vitals display with color-coded thresholds
+ * - FPS counter with visual indicator
+ * - Memory usage graph
+ * - Editor-specific metrics
+ * - Only visible in development mode
+ *
+ * @version 1.0.0
+ * @author Revolution Trading Pros
+ */
+-->
+
 <svelte:window onmousemove={handleMouseMove} onmouseup={handleMouseUp} />
 
 {#if dev && isVisible}
@@ -247,7 +247,7 @@
 								stroke={getFpsColor(snapshot.fps)}
 								stroke-width="1.5"
 								opacity="0.8"
-							/>
+							></path>
 						</svg>
 					</div>
 				</div>
@@ -304,7 +304,7 @@
 									stroke={getMemoryColor(snapshot.memoryMetrics.usagePercentage)}
 									stroke-width="1.5"
 									opacity="0.8"
-								/>
+								></path>
 							</svg>
 						</div>
 					</div>

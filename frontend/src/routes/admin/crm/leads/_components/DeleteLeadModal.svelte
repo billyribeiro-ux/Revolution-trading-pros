@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconTrash, IconX } from '$lib/icons';
+	import { IconTrash, IconX } from '#lib/icons/index.js';
 
 	interface DeletingLead {
 		full_name: string;

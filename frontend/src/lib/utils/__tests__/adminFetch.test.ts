@@ -44,16 +44,18 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
 // `$app/environment` — browser=true gates the 401 redirect path.
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	dev: true,
 	building: false,
 	version: 'test'
 }));
 
-// `$app/paths` — `base` must be a string for the goto() URL.
+// `$app/paths` — SvelteKit 3 removed the `base` + string-concat pattern in
+// favour of `resolve()`, which adminFetch now calls to build the login URL.
+// Stand in for it with the empty-base behaviour: prefix a leading slash.
 vi.mock('$app/paths', () => ({
-	base: ''
+	resolve: (path: string) => `/${path}`
 }));
 
 // `$app/navigation` — capture goto calls so we can assert redirects.
@@ -72,9 +74,9 @@ vi.mock('$app/navigation', () => ({
 	goto: mocks.gotoMock
 }));
 
-// `$lib/stores/auth.svelte` — return a controllable token. Tests flip
+// `#lib/stores/auth.svelte.js` — return a controllable token. Tests flip
 // it through `setAuthToken(...)` below.
-vi.mock('$lib/stores/auth.svelte', () => ({
+vi.mock('#lib/stores/auth.svelte.js', () => ({
 	getAuthToken: () => mocks.authToken,
 	authStore: {
 		logout: mocks.logoutMock,

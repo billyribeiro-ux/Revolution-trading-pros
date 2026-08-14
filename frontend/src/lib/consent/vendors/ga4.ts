@@ -24,15 +24,15 @@
  *
  * Usage in +layout.svelte:
  *   import { afterNavigate } from '$app/navigation';
- *   import { trackPageView } from '$lib/consent/vendors/ga4';
+ *   import { trackPageView } from '#lib/consent/vendors/ga4.js';
  *   afterNavigate(() => trackPageView());
  *
  * @module consent/vendors/ga4
  * @version 2.1.0 - SvelteKit-native implementation with deferred loading
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { VendorConfig } from '../types';
 import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
@@ -64,6 +64,7 @@ function enableSilentHistoryMode(): () => void {
 	(
 		silentPushState as typeof silentPushState & { __sveltekit_external?: boolean }
 	).__sveltekit_external = true;
+
 	(
 		silentReplaceState as typeof silentReplaceState & { __sveltekit_external?: boolean }
 	).__sveltekit_external = true;

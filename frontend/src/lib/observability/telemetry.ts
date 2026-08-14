@@ -10,8 +10,8 @@
  * - Performance monitoring
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

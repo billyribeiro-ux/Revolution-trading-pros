@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { IconPhoto, IconMaximize, IconX } from '$lib/icons';
-	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
-	import { generateSrcSet } from '$lib/utils/performance';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import { IconPhoto, IconMaximize, IconX } from '#lib/icons/index.js';
+	import { sanitizeURL, validateFile } from '#lib/utils/sanitization.js';
+	import { generateSrcSet } from '#lib/utils/performance.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 	import type { Attachment } from 'svelte/attachments';
 

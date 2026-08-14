@@ -7,7 +7,7 @@
 		IconPdf,
 		IconAlertTriangle,
 		IconUserPlus
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	export type HeaderAction =
 		| { type: 'refresh' }

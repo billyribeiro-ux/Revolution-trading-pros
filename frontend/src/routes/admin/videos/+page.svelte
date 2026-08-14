@@ -34,13 +34,13 @@
 		IconTags,
 		IconCloudUpload,
 		IconProgressCheck
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		tradingRoomApi,
 		type TradingRoom,
 		type Trader,
 		type DailyVideo
-	} from '$lib/api/trading-rooms';
+	} from '#lib/api/trading-rooms.js';
 	import {
 		bulkUploadApi,
 		analyticsApi,
@@ -49,14 +49,14 @@
 		embedApi,
 		type AnalyticsDashboard,
 		type BatchStatus
-	} from '$lib/api/video-advanced';
+	} from '#lib/api/video-advanced.js';
 	import IconCode from '@tabler/icons-svelte-runes/icons/code';
 	import IconCheckbox from '@tabler/icons-svelte-runes/icons/checkbox';
 	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
 	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import IconStarOff from '@tabler/icons-svelte-runes/icons/star-off';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 	import FormBanners from './_components/FormBanners.svelte';
 	import EmbedCodeModal from './_components/EmbedCodeModal.svelte';
 	import ReplaceVideoModal from './_components/ReplaceVideoModal.svelte';
@@ -1760,8 +1760,7 @@
 						id="video-description"
 						rows="3"
 						placeholder="Brief description of the video content..."
-						bind:value={formData.description}
-					></textarea>
+						bind:value={formData.description}></textarea>
 				</div>
 
 				<!-- Categories Section -->

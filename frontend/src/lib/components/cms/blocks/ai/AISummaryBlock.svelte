@@ -7,8 +7,8 @@
 -->
 
 <script lang="ts">
-	import { IconSparkles, IconChevronDown, IconRefresh, IconLoader2 } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import { IconSparkles, IconChevronDown, IconRefresh, IconLoader2 } from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {
@@ -98,8 +98,7 @@
 							value={sourceContent}
 							oninput={(e) =>
 								updateContent({ summarySource: (e.target as HTMLTextAreaElement).value })}
-							rows="4"
-						></textarea>
+							rows="4"></textarea>
 					</label>
 
 					<div class="summary-controls">
@@ -110,9 +109,7 @@
 								onchange={(e) =>
 									updateContent({
 										summaryLength: (e.target as HTMLSelectElement).value as
-											| 'short'
-											| 'medium'
-											| 'long'
+											'short' | 'medium' | 'long'
 									})}
 							>
 								<option value="short">Short (~1 sentence)</option>

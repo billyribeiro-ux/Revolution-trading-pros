@@ -3,7 +3,7 @@
 	Extracted from /admin/schedules in R21-C.
 -->
 <script lang="ts">
-	import type { Room } from '$lib/config/rooms';
+	import type { Room } from '#lib/config/rooms.js';
 
 	interface Props {
 		rooms: readonly Room[];

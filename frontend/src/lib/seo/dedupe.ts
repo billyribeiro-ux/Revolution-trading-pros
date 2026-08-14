@@ -27,12 +27,7 @@ import { jsonLdHash } from './jsonld';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export type HeadTagType =
-	| 'title'
-	| 'meta-name'
-	| 'meta-property'
-	| 'link-canonical'
-	| 'link-alternate'
-	| 'jsonld';
+	'title' | 'meta-name' | 'meta-property' | 'link-canonical' | 'link-alternate' | 'jsonld';
 
 export interface HeadTag {
 	type: HeadTagType;

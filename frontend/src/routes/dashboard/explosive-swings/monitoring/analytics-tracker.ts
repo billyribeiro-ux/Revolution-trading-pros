@@ -3,9 +3,9 @@
  * Tracks user interactions and feature usage for A+++ grade observability
  */
 
-import { browser } from '$app/environment';
-import { track, Events } from '$lib/observability';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { track, Events } from '#lib/observability/index.js';
+import { logger } from '#lib/utils/logger.js';
 import { performanceMonitor } from './performance';
 
 // ============================================================================

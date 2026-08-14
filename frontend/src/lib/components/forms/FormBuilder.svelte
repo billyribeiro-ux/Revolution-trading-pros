@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Form, FormField, FormSettings } from '$lib/api/forms';
-	import { getFieldTypes, createForm, updateForm } from '$lib/api/forms';
+	import type { Form, FormField, FormSettings } from '#lib/api/forms.js';
+	import { getFieldTypes, createForm, updateForm } from '#lib/api/forms.js';
 	import FieldEditor from './FieldEditor.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// Confirmation modal state (replaces native confirm())
 	let showDeleteFieldModal = $state(false);
@@ -109,7 +109,7 @@
 	function handleAddField(fieldType: string) {
 		const fieldTypeInfo = availableFieldTypes.find((ft) => ft.type === fieldType);
 		const newField: FormField = {
-			field_type: fieldType as import('$lib/api/forms').FieldType,
+			field_type: fieldType as import('#lib/api/forms.js').FieldType,
 			label: fieldTypeInfo?.label || fieldType,
 			name: `field_${Date.now()}`,
 			placeholder: '',
@@ -257,8 +257,7 @@
 						bind:value={formData.description}
 						placeholder="Optional form description"
 						class="form-input"
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 			</div>
 

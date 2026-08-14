@@ -16,11 +16,11 @@
 -->
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { sanitizeHtml as sanitizeHtmlSafe } from '$lib/sanitize';
-	import { logger } from '$lib/utils/logger';
+	import { sanitizeHtml as sanitizeHtmlSafe } from '#lib/sanitize.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Platform logo mapping
 	const platformLogos: Record<string, string> = {

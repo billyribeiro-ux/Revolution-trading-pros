@@ -11,8 +11,8 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { ConsentState } from './types';
 import { consentStore } from './store.svelte';
 import { loadConsent } from './storage';
@@ -49,10 +49,7 @@ let messageListener: ((event: MessageEvent) => void) | null = null;
  * Message types for postMessage
  */
 type CrossDomainMessageType =
-	| 'consent_request'
-	| 'consent_response'
-	| 'consent_update'
-	| 'consent_sync';
+	'consent_request' | 'consent_response' | 'consent_update' | 'consent_sync';
 
 /**
  * Cross-domain message structure

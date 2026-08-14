@@ -18,8 +18,8 @@
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
-import { API_BASE_URL } from '$lib/api/config';
-import type { Post, PaginatedPosts } from '$lib/types/post';
+import { API_BASE_URL } from '#lib/api/config.js';
+import type { Post, PaginatedPosts } from '#lib/types/post.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

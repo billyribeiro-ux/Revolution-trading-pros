@@ -15,7 +15,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	interface Props {
 		/** Fallback content when error occurs */
@@ -93,7 +93,7 @@
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-						/>
+						></path>
 					</svg>
 				</div>
 				<h3 class="error-title">Something went wrong</h3>
@@ -108,8 +108,8 @@
 						height="16"
 						aria-hidden="true"
 					>
-						<path d="M1 4v6h6" />
-						<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+						<path d="M1 4v6h6"></path>
+						<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
 					</svg>
 					Try again
 				</button>

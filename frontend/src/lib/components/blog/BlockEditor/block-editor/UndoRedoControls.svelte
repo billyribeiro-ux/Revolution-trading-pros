@@ -3,7 +3,7 @@
 	Extracted from BlockEditor.svelte (R7-C).
 -->
 <script lang="ts">
-	import { IconArrowBackUp, IconArrowForwardUp } from '$lib/icons';
+	import { IconArrowBackUp, IconArrowForwardUp } from '#lib/icons/index.js';
 
 	interface Props {
 		canUndo: boolean;

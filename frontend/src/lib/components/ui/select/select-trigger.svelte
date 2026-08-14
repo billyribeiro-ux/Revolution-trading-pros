@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Select as SelectPrimitive } from 'bits-ui';
 	import ChevronDownIcon from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import { type WithoutChild } from '$lib/utils.js';
+	import { type WithoutChild } from '#lib/utils.js';
 
 	type TriggerProps = WithoutChild<SelectPrimitive.TriggerProps> & {
 		size?: 'sm' | 'default';

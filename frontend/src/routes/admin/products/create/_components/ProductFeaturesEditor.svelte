@@ -5,7 +5,7 @@
 	 * The parent owns the array and the mutation helpers (so the empty-state
 	 * "always keep at least one row" rule lives in one place).
 	 */
-	import { IconPlus, IconTag, IconX } from '$lib/icons';
+	import { IconPlus, IconTag, IconX } from '#lib/icons/index.js';
 
 	interface Props {
 		features: string[];

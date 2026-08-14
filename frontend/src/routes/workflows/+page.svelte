@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { workflowApi } from '$lib/api/workflow';
-	import type { Workflow } from '$lib/types/workflow';
+	import { workflowApi } from '#lib/api/workflow.js';
+	import type { Workflow } from '#lib/types/workflow.js';
 
 	let workflows = $state<Workflow[]>([]);
 	let isLoading = $state(true);

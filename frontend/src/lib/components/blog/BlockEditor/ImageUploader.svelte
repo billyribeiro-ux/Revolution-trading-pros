@@ -37,7 +37,7 @@
 		type ProcessOptions
 	} from './upload/image-processor';
 	import AssetManager from './AssetManager.svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Props
 

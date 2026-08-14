@@ -25,7 +25,7 @@ import { setupTestEnvironment, resetAllMocks } from './setup';
 setupTestEnvironment();
 
 // Import the mocked api module
-import { api } from '$lib/api/client';
+import { api } from '#lib/api/client.js';
 
 // Import after setup to ensure mocks are in place
 import {

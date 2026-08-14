@@ -1,3 +1,5 @@
+import type { HandleClientError } from '@sveltejs/kit/hooks';
+
 /**
  * SvelteKit Client Hooks - Enterprise Error Tracking & Performance Monitoring
  *
@@ -10,9 +12,6 @@
  * @version 1.0.0 - L8 Principal Engineer
  * @see https://kit.svelte.dev/docs/hooks#client-hooks
  */
-
-import type { HandleClientError } from '@sveltejs/kit';
-
 /**
  * Error severity levels for categorization
  */
@@ -184,6 +183,7 @@ function generateErrorId(): string {
 function isStaleChunkError(error: unknown): boolean {
 	if (!(error instanceof Error)) return false;
 	const message = error.message.toLowerCase();
+
 	return (
 		message.includes('failed to fetch dynamically imported module') ||
 		message.includes('loading chunk') ||
@@ -220,13 +220,18 @@ function forceReloadForFreshChunks(): void {
  * - Navigation
  * - Client-side component lifecycle
  */
-export const handleError: HandleClientError = async ({
-	error,
-	event,
-	status: _status,
-	message
-}) => {
+export const handleError: HandleClientError = async ({ kind, error, event }) => {
 	const errorId = generateErrorId();
+
+	// SvelteKit 3 no longer passes `status`/`message` alongside the error —
+	// they are derived from `kind`. `app` and `framework` errors carry their own
+	// message; `unknown` errors are whatever application code threw.
+	const message =
+		kind === 'app' || kind === 'framework'
+			? error.message
+			: error instanceof Error
+				? error.message
+				: String(error);
 
 	// ICT11+ Pattern: Handle stale chunk errors from Cloudflare Pages cache
 	// When a new deployment happens, old HTML may reference chunks that no longer exist

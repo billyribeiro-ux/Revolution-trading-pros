@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import type { Alert } from './types';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() pattern

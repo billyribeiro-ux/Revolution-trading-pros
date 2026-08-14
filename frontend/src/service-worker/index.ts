@@ -39,7 +39,12 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { build, files, version } from '$service-worker';
+// SvelteKit 3 removed `$service-worker`. `version` now comes from `$app/env`,
+// and the built-chunk / static-file lists from `$app/manifest` — where the old
+// `build` and `files` string arrays are now `immutable` and `assets`, each an
+// array of `{ path }` objects rather than bare strings.
+import { version } from '$app/env';
+import { immutable, assets } from '$app/manifest';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -76,8 +81,8 @@ const VIDEO_MANIFEST_TTL = 5 * 60 * 1000; // 5 minutes
 // Assets to cache (from SvelteKit build)
 // Filter out any potentially problematic paths
 const ASSETS = [
-	...build, // Built app chunks
-	...files // Static files
+	...immutable.map(({ path }) => path), // Built app chunks
+	...assets.map(({ path }) => path) // Static files
 ].filter((asset) => {
 	// Skip assets that might cause issues
 	if (!asset) return false;

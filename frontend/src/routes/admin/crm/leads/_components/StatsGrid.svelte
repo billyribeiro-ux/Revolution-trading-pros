@@ -6,7 +6,7 @@
 		IconCheck,
 		IconChartBar,
 		IconTrendingUp
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface LeadStats {
 		total: number;

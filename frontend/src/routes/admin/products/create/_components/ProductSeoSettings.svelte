@@ -39,8 +39,7 @@
 				id="meta_description"
 				bind:value={formData.meta_description}
 				placeholder="SEO description for search engines..."
-				rows="2"
-			></textarea>
+				rows="2"></textarea>
 		</div>
 
 		<div class="form-group">

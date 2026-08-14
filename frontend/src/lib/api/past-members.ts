@@ -6,7 +6,7 @@
  * @author Revolution Trading Pros
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 
 const API_BASE = '/api/admin/past-members';
 

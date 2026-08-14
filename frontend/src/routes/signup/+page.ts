@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 
 // Disable prerendering - page has dynamic auth redirect
 export const prerender = false;

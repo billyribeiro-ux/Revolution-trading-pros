@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { FormTheme } from '$lib/data/formTemplates';
-	import { themes } from '$lib/data/formTemplates';
+	import type { FormTheme } from '#lib/data/formTemplates.js';
+	import { themes } from '#lib/data/formTemplates.js';
 
 	interface Props {
 		selectedTheme?: FormTheme;

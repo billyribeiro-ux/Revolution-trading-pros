@@ -5,10 +5,10 @@
 
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { requireAdminToken } from '$lib/server/auth';
+import { requireAdminToken } from '#lib/server/auth.js';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 
-import { env } from '$env/dynamic/private';
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 /**
  * FIX-2026-04-26 (P0-2 / CC-2): normalize backend response into the
@@ -35,6 +35,7 @@ function envelope(
 			(typeof obj.message === 'string' && obj.message) ||
 			(typeof obj.error === 'string' && obj.error) ||
 			'Request failed';
+
 		return { success: false, error: message, message };
 	}
 	if (status < 400) return { success: true, data: raw };

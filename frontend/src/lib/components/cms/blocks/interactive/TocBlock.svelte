@@ -1,15 +1,8 @@
-<!--
-/**
- * Table of Contents Block Component
- * Auto-generates TOC from document headings with smooth scroll
- */
--->
-
 <script lang="ts">
-	import { IconList, IconChevronDown } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import { IconList, IconChevronDown } from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { SvelteMap } from 'svelte/reactivity';
 	import type { Block, BlockContent } from '../types';
 
@@ -205,6 +198,13 @@
 		};
 	});
 </script>
+
+<!--
+/**
+ * Table of Contents Block Component
+ * Auto-generates TOC from document headings with smooth scroll
+ */
+-->
 
 <nav class={['toc-block', { mobile: isMobile }]} aria-label="Table of contents">
 	<button

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconCheck, IconX, IconAlertCircle } from '$lib/icons';
+	import { IconCheck, IconX, IconAlertCircle } from '#lib/icons/index.js';
 
 	type Props = {
 		successMessage: string;

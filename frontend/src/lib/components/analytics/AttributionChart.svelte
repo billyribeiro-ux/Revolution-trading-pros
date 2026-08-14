@@ -5,7 +5,7 @@
 	 * Displays marketing channel attribution with multiple
 	 * attribution models comparison.
 	 */
-	import type { ChannelAttribution } from '$lib/api/analytics';
+	import type { ChannelAttribution } from '#lib/api/analytics.js';
 
 	interface Props {
 		channels?: ChannelAttribution[];

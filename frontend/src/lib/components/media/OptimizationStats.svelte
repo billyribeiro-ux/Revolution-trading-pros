@@ -14,7 +14,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Stats {
 		originalSize: number;

@@ -146,11 +146,11 @@ export async function executeErrorInterceptors(
 // Built-in Interceptors
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { getAuthToken, authStore } from '$lib/stores/auth.svelte';
+import { getAuthToken, authStore } from '#lib/stores/auth.svelte.js';
 import { getTraceHeaders, log } from './tracing';
 import { getCsrfHeaders, csrfResponseInterceptor } from './csrf';
 import { createApiError, ErrorCodes } from './errors';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 /**
  * Authentication interceptor - adds auth token to requests

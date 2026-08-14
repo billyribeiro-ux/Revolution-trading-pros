@@ -9,8 +9,8 @@
 	 * - Tab Mode: horizontal tabs for quick navigation between sections
 	 */
 
-	import { sanitizeHtml } from '$lib/sanitize';
-	import Icon from '$lib/components/Icon.svelte';
+	import { sanitizeHtml } from '#lib/sanitize.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	interface Section {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconRefresh, IconPlus } from '$lib/icons';
+	import { IconRefresh, IconPlus } from '#lib/icons/index.js';
 
 	type Props = {
 		selectedCount: number;

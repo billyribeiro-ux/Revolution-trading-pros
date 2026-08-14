@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconChartBar } from '$lib/icons';
+	import { IconChartBar } from '#lib/icons/index.js';
 
 	interface TopService {
 		id: number;

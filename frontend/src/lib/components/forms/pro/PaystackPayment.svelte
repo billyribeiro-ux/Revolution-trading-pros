@@ -54,7 +54,7 @@
 		onerror
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let loading = $state(false);
 	let paymentError = $state('');

@@ -6,7 +6,7 @@
 	 * @version 2.0.0 - January 2026
 	 * Updated: TypeScript strict mode, modern CSS patterns
 	 */
-	import { IconX, IconPlus } from '$lib/icons';
+	import { IconX, IconPlus } from '#lib/icons/index.js';
 
 	/**
 	 * SEO metadata structure for blog posts
@@ -88,8 +88,7 @@
 			bind:value={meta.meta_description}
 			placeholder="Brief description for search results"
 			rows="3"
-			maxlength="170"
-		></textarea>
+			maxlength="170"></textarea>
 		<div class="hint">Recommended: 150-160 characters</div>
 	</div>
 

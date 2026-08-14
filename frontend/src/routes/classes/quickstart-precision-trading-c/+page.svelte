@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
-	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
+	import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import HaveQuestionsSection from '#lib/components/sections/HaveQuestionsSection.svelte';
+	import ClassDownloads from '#lib/components/ClassDownloads.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SVELTE 5 RUNES - Reactive State Management

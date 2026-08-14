@@ -13,7 +13,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { sanitizeHtml } from '$lib/sanitize';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	interface LearningResource {
 		id: number;

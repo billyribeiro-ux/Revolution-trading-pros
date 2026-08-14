@@ -11,7 +11,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import type { VideoDetail } from './+page.server';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	interface Props {
 		data: PageData;

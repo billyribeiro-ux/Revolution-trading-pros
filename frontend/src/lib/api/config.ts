@@ -4,7 +4,7 @@
  * Enhanced with better type safety and error handling
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import type { JsonValue, QueryParams } from './_types';
 
 // ICT11+ PRODUCTION DEPLOYMENT: Always use deployed URLs

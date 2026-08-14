@@ -14,8 +14,15 @@
 		getHasPendingActions,
 		getPendingActionsCount,
 		getIsSyncing
-	} from '$lib/stores/offline.svelte';
-	import { IconWifi, IconUpload, IconLoader, IconCheck, IconX, IconRefresh } from '$lib/icons';
+	} from '#lib/stores/offline.svelte.js';
+	import {
+		IconWifi,
+		IconUpload,
+		IconLoader,
+		IconCheck,
+		IconX,
+		IconRefresh
+	} from '#lib/icons/index.js';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);

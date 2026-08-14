@@ -2,7 +2,7 @@
  * Blog Post Types
  */
 
-import type { JsonValue } from '$lib/types/common';
+import type { JsonValue } from '#lib/types/common.js';
 
 export interface Author {
 	id: number;

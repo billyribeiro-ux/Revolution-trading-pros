@@ -7,13 +7,13 @@
 	 * with detailed drop-off analysis.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { page } from '$app/state';
-	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { analyticsApi } from '#lib/api/analytics.js';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import FunnelChart from '#lib/components/analytics/FunnelChart.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
@@ -21,7 +21,7 @@
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Funnel {
 		key: string;
@@ -167,9 +167,10 @@
 			{#if isAnalyticsConnected}
 				<div class="funnels-header__actions">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-					<button onclick={() => (showCreateModal = true)} class="primary-action">
-						Create Funnel
-					</button>
+
+					<button onclick={() => (showCreateModal = true)} class="primary-action"
+						>Create Funnel</button
+					>
 				</div>
 			{/if}
 		</header>
@@ -217,7 +218,10 @@
 				{#each funnels as funnel (funnel.key)}
 					<button
 						onclick={() => (selectedFunnel = funnel)}
-						class={{ 'funnel-card': true, 'is-selected': selectedFunnel?.key === funnel.key }}
+						class={{
+							'funnel-card': true,
+							'is-selected': selectedFunnel?.key === funnel.key
+						}}
 					>
 						<div class="funnel-card__header">
 							<h3>{funnel.name}</h3>
@@ -276,23 +280,20 @@
 										{@const firstStep = selectedFunnel.steps[0]}
 										{@const fromStart =
 											firstStep && firstStep.count > 0 ? (step.count / firstStep.count) * 100 : 0}
+
 										<tr>
-											<td>
-												<div class="step-label">
-													<span>
-														{i + 1}
-													</span>
-													<strong>{step.name}</strong>
-												</div>
-											</td>
-											<td class="align-right table-value">
-												{step.count.toLocaleString()}
-											</td>
-											<td class="align-right">
-												<span class="table-value table-value--positive">
-													{step.conversion_rate.toFixed(1)}%
-												</span>
-											</td>
+											<td
+												><div class="step-label">
+													<span>{i + 1}</span><strong>{step.name}</strong>
+												</div></td
+											>
+											<td class="align-right table-value">{step.count.toLocaleString()}</td>
+											<td class="align-right"
+												><span class="table-value table-value--positive"
+													>{step.conversion_rate.toFixed(1)}%</span
+												></td
+											>
+
 											<td class="align-right">
 												{#if i > 0}
 													<span class="table-value--negative">
@@ -361,8 +362,7 @@
 							bind:value={newFunnel.description}
 							placeholder="Describe this funnel..."
 							rows={2}
-							class="form-control form-control--textarea"
-						></textarea>
+							class="form-control form-control--textarea"></textarea>
 					</div>
 				</div>
 
@@ -411,7 +411,8 @@
 			</div>
 
 			<div class="funnel-modal__footer">
-				<button onclick={() => (showCreateModal = false)} class="secondary-action"> Cancel </button>
+				<button onclick={() => (showCreateModal = false)} class="secondary-action">Cancel</button>
+
 				<button
 					onclick={createFunnel}
 					disabled={!newFunnel.name || newFunnel.steps.some((s) => !s.name || !s.event_name)}

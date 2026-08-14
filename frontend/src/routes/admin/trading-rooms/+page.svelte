@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ROOMS, type Room } from '$lib/config/rooms';
+	import { ROOMS, type Room } from '#lib/config/rooms.js';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
 	import IconVideo from '@tabler/icons-svelte-runes/icons/video';

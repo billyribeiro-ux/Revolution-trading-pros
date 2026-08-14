@@ -147,8 +147,7 @@
 							id="notes"
 							bind:value={customNotes}
 							rows="3"
-							placeholder="Add any additional context..."
-						></textarea>
+							placeholder="Add any additional context..."></textarea>
 					</div>
 				</div>
 

@@ -11,8 +11,8 @@
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 
 export interface PendingAction {
 	id: string;

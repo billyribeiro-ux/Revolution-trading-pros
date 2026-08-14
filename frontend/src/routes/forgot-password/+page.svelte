@@ -4,8 +4,8 @@
 	 * @version 2.0.0
 	 */
 	import { onMount } from 'svelte';
-	import { forgotPassword } from '$lib/api/auth';
-	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '$lib/icons';
+	import { forgotPassword } from '#lib/api/auth.js';
+	import { IconMail, IconAlertCircle, IconCheck, IconSend } from '#lib/icons/index.js';
 
 	// Svelte 5 state runes
 	let email = $state('');

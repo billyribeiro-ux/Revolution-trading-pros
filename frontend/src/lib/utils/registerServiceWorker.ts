@@ -8,7 +8,7 @@
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 export async function registerServiceWorker(): Promise<void> {
 	// SvelteKit handles registration automatically via svelte.config.js

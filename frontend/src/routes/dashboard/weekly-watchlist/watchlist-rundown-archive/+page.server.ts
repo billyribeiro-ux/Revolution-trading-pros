@@ -11,7 +11,7 @@
  */
 
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 /** API response structure from backend */
 interface WatchlistApiEntry {
@@ -108,7 +108,7 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 
 export async function load({ fetch }: ServerLoadEvent) {
 	try {
-		const apiBase = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+		const apiBase = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 		const response = await fetch(`${apiBase}/api/watchlist/entries`);
 
 		if (!response.ok) {

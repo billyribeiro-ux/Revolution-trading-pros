@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconCheck, IconPlus } from '$lib/icons';
+	import { IconX, IconCheck, IconPlus } from '#lib/icons/index.js';
 
 	interface Props {
 		open: boolean;

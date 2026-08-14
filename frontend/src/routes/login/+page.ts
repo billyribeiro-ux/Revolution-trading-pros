@@ -1,4 +1,4 @@
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 
 // Disable prerendering for auth page
 export const prerender = false;

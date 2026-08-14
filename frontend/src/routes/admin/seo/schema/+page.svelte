@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface SchemaItem {
 		id: number;

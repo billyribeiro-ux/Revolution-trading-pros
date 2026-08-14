@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX } from '$lib/icons';
+	import { IconX } from '#lib/icons/index.js';
 
 	type Props = {
 		post: { title: string; slug: string } | null;

@@ -20,8 +20,8 @@
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { response } from 'super-sitemap/sveltekit';
-import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
-import type { PaginatedPosts } from '$lib/types/post';
+import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
+import type { PaginatedPosts } from '#lib/types/post.js';
 import { indicators } from '../indicators/data';
 
 const SITE_URL = 'https://revolutiontradingpros.com';

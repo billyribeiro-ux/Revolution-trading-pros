@@ -21,7 +21,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
@@ -33,20 +33,15 @@
 		IconLogin,
 		IconAlertTriangle,
 		IconClock
-	} from '$lib/icons';
-	import { verifyEmail, resendVerificationEmail } from '$lib/api/auth';
+	} from '#lib/icons/index.js';
+	import { verifyEmail, resendVerificationEmail } from '#lib/api/auth.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	type VerificationStatus =
-		| 'loading'
-		| 'success'
-		| 'error'
-		| 'expired'
-		| 'no-token'
-		| 'rate-limited';
+		'loading' | 'success' | 'error' | 'expired' | 'no-token' | 'rate-limited';
 
 	let status = $state<VerificationStatus>('loading');
 	let errorMessage = $state('');
@@ -349,11 +344,11 @@
 					>
 						<IconCheck size={40} aria-hidden="true" />
 					</div>
+
 					<h2 class="state-title">Email Verified!</h2>
 					<p class="state-copy">
 						Your email has been successfully verified. You now have full access to your account.
 					</p>
-
 					<!-- Auto-redirect countdown -->
 					{#if redirectTimer}
 						<div class="redirect-notice" in:fly={{ y: 10, duration: 300 }}>

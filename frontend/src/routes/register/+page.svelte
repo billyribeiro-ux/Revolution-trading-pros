@@ -5,7 +5,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
-	import { register } from '$lib/api/auth';
+	import { register } from '#lib/api/auth.js';
 	import {
 		IconUser,
 		IconMail,
@@ -18,7 +18,7 @@
 		IconInbox,
 		IconEye,
 		IconEyeOff
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Svelte 5 state runes
 	let name = $state('');

@@ -47,9 +47,9 @@
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Deal, Pipeline, Stage } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// STATE (Svelte 5 Runes)
 
@@ -806,8 +806,7 @@
 						id="win-details"
 						bind:value={winDetails}
 						placeholder="Add notes about how this deal was won..."
-						rows="4"
-					></textarea>
+						rows="4"></textarea>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -874,8 +873,7 @@
 						bind:value={lostReason}
 						placeholder="Why was this deal lost? (required)"
 						rows="4"
-						required
-					></textarea>
+						required></textarea>
 				</div>
 			</div>
 			<div class="modal-footer">

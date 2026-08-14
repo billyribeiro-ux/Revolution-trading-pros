@@ -19,16 +19,16 @@
 	 *
 	 * @since January 2026
 	 */
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import DropZone from '$lib/components/media/DropZone.svelte';
-	import OptimizedImage from '$lib/components/media/OptimizedImage.svelte';
-	import ImageCropModal from '$lib/components/media/ImageCropModal.svelte';
-	import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
-	import { mediaApi, type MediaItem, type OptimizationStatistics } from '$lib/api/media';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import DropZone from '#lib/components/media/DropZone.svelte';
+	import OptimizedImage from '#lib/components/media/OptimizedImage.svelte';
+	import ImageCropModal from '#lib/components/media/ImageCropModal.svelte';
+	import MediaSkeleton from '#lib/components/media/MediaSkeleton.svelte';
+	import { mediaApi, type MediaItem, type OptimizationStatistics } from '#lib/api/media.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import ToastContainer from './_components/ToastContainer.svelte';
 	import StatsPanel from './_components/StatsPanel.svelte';
 	import UploadQueue from './_components/UploadQueue.svelte';
@@ -859,6 +859,7 @@
 		/>
 
 		<!-- Statistics Panel (extracted to _components/StatsPanel.svelte) -->
+
 		<StatsPanel {statistics} bind:showStatsPanel statsProgress={$statsProgress} />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -960,9 +961,10 @@
 						<IconUpload size={48} aria-hidden="true" />
 						<h3>No media files</h3>
 						<p>Upload files to get started</p>
-						<button class="btn-primary" onclick={() => (showUploadPanel = true)}>
-							Upload Files
-						</button>
+
+						<button class="btn-primary" onclick={() => (showUploadPanel = true)}
+							>Upload Files</button
+						>
 					</div>
 				{:else}
 					<div class={`media-${viewMode}`}>
@@ -1118,6 +1120,7 @@
 				{/if}
 
 				<!-- Pagination (extracted to _components/Pagination.svelte) -->
+
 				<Pagination bind:currentPage {totalPages} onChange={() => void loadMedia()} />
 			</main>
 
@@ -1215,8 +1218,7 @@
 							class="alt-input"
 							placeholder="Enter alt text for accessibility..."
 							value={detailItem.alt_text || ''}
-							onblur={(event) => void handleAltTextBlur(event)}
-						></textarea>
+							onblur={(event) => void handleAltTextBlur(event)}></textarea>
 					</div>
 
 					<!-- AI Analysis -->
@@ -1259,6 +1261,7 @@
 								<IconCrop size={20} aria-hidden="true" />
 								Crop
 							</button>
+
 							<button class="btn-secondary" onclick={() => (showPreviewModal = true)}>
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: devices (responsive preview) -->
 								<IconDevices size={20} aria-hidden="true" />
@@ -1286,6 +1289,7 @@
 		</div>
 
 		<!-- Context Menu (extracted to _components/ContextMenu.svelte) -->
+
 		<ContextMenu bind:menu={contextMenu} {aiEnabled} onAction={handleContextAction} />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->

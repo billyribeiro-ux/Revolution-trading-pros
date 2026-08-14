@@ -23,9 +23,9 @@
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '$lib/api/admin';
-	import { IconRefresh } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '#lib/api/admin.js';
+	import { IconRefresh } from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import CouponPageHeader from './_components/CouponPageHeader.svelte';
 	import CouponValidationAlerts from './_components/CouponValidationAlerts.svelte';
 	import CouponBasicFields from './_components/CouponBasicFields.svelte';

@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
-import type { JsonValue } from '$lib/api/_types';
+import { browser } from '$app/env';
+import type { JsonValue } from '#lib/api/_types.js';
 
 interface WebSocketMessage {
 	event: string;

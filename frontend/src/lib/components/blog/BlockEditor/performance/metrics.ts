@@ -10,7 +10,7 @@
  * @author Revolution Trading Pros
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { onCLS, onLCP, onINP, onTTFB, onFCP } from 'web-vitals';
 import type { Metric } from 'web-vitals';
 

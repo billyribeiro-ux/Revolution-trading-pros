@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
-	import { type WithElementRef, type WithoutChildren } from '$lib/utils.js';
+	import { type WithElementRef, type WithoutChildren } from '#lib/utils.js';
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 
 	let {
@@ -26,8 +26,7 @@
 	data-slot={dataSlot}
 	class={['ui-textarea', className]}
 	bind:value
-	{...restProps}
-></textarea>
+	{...restProps}></textarea>
 
 <style>
 	.ui-textarea {

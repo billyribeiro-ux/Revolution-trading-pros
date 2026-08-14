@@ -24,10 +24,10 @@
 	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import IconHistory from '@tabler/icons-svelte-runes/icons/history';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Deal, Pipeline, Stage, TimelineEvent } from '$lib/crm/types';
-	import { api } from '$lib/api/config';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Deal, Pipeline, Stage, TimelineEvent } from '#lib/crm/types.js';
+	import { api } from '#lib/api/config.js';
 
 	import DealHeader from './_components/DealHeader.svelte';
 	import DealValueCard from './_components/DealValueCard.svelte';

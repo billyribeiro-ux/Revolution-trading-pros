@@ -13,10 +13,10 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { getPlansByRoom, planToCartItem, type SubscriptionPlan } from '$lib/api/plans';
-	import { cartStore } from '$lib/stores/cart.svelte';
-	import { isAuthenticated } from '$lib/stores/auth.svelte';
-	import PricingSelector from '$lib/components/checkout/PricingSelector.svelte';
+	import { getPlansByRoom, planToCartItem, type SubscriptionPlan } from '#lib/api/plans.js';
+	import { cartStore } from '#lib/stores/cart.svelte.js';
+	import { isAuthenticated } from '#lib/stores/auth.svelte.js';
+	import PricingSelector from '#lib/components/checkout/PricingSelector.svelte';
 
 	// Get room slug from URL - validated to ensure it exists
 	const roomSlug = page.params.slug ?? '';

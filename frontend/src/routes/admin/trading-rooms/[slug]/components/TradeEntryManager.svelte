@@ -12,8 +12,8 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { tradePlanApi, type TradePlanEntry, type Bias } from '$lib/api/room-content';
-	import { logger } from '$lib/utils/logger';
+	import { tradePlanApi, type TradePlanEntry, type Bias } from '#lib/api/room-content.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Icons
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -23,7 +23,7 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// PROPS
 
@@ -557,8 +557,7 @@
 						bind:value={form.notes}
 						placeholder="Entry thesis, key levels, catalysts..."
 						class="form-textarea"
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-actions">

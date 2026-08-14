@@ -12,12 +12,12 @@
 
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
 	// FIX-2026-04-26-audit (P2-3): replace native window.confirm() with the
 	// shared ConfirmationModal used everywhere else in the admin. The native
 	// dialog is blocked in some sandboxed contexts and is inconsistent UX.
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import IndicatorHeader from './_components/IndicatorHeader.svelte';
 	import IndicatorTabs from './_components/IndicatorTabs.svelte';
 	import IndicatorDetailsTab from './_components/IndicatorDetailsTab.svelte';

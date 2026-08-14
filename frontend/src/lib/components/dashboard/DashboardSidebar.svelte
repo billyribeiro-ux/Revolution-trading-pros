@@ -24,9 +24,9 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { SvelteSet } from 'svelte/reactivity';
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import Tooltip from '$lib/components/ui/Tooltip.svelte';
-	import type { MembershipType } from '$lib/api/user-memberships';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
+	import Tooltip from '#lib/components/ui/Tooltip.svelte';
+	import type { MembershipType } from '#lib/api/user-memberships.js';
 
 	// Types for navigation links
 	interface NavLink {

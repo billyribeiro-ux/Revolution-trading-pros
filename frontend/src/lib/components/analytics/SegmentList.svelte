@@ -4,7 +4,7 @@
 	 *
 	 * Lists user segments with counts and percentages.
 	 */
-	import type { Segment } from '$lib/api/analytics';
+	import type { Segment } from '#lib/api/analytics.js';
 
 	interface Props {
 		segments?: Segment[];

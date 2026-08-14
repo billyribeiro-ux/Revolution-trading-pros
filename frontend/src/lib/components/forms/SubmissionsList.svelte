@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { FormSubmission } from '$lib/api/forms';
+	import type { FormSubmission } from '#lib/api/forms.js';
 	import {
 		getSubmissions,
 		getSubmissionStats,
@@ -10,9 +10,9 @@
 		bulkUpdateSubmissionStatus,
 		bulkDeleteSubmissions,
 		exportSubmissions
-	} from '$lib/api/forms';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/api/forms.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Props {
 		formId: number;

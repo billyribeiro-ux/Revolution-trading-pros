@@ -63,7 +63,7 @@ The root `+layout.svelte` renders `<Seo seo={resolvedSeo} />`.
 In any `+page.server.ts` or `+page.ts`:
 
 ```typescript
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 
 export const load = async () => {
 	const seo: SEOInput = {
@@ -145,7 +145,7 @@ Environment-aware robots directive builder. Returns `{ directives, content }`.
 
 ```typescript
 // src/routes/about/+page.server.ts
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 
 export const load = async () => {
 	const seo: SEOInput = {
@@ -161,8 +161,8 @@ export const load = async () => {
 
 ```typescript
 // src/routes/blog/[slug]/+page.ts
-import type { SEOInput } from '$lib/seo/types';
-import { articleSchema, breadcrumbSchema } from '$lib/seo/jsonld';
+import type { SEOInput } from '#lib/seo/types.js';
+import { articleSchema, breadcrumbSchema } from '#lib/seo/jsonld.js';
 
 export const load = async ({ params, url }) => {
 	const post = await fetchPost(params.slug);
@@ -202,7 +202,7 @@ export const load = async ({ params, url }) => {
 
 ```typescript
 // src/routes/account/+page.server.ts
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 
 export const load = async () => {
 	const seo: SEOInput = {
@@ -263,7 +263,7 @@ robots: {
 ### FAQ Page
 
 ```typescript
-import { faqSchema } from '$lib/seo/jsonld';
+import { faqSchema } from '#lib/seo/jsonld.js';
 
 const seo: SEOInput = {
 	jsonld: [
@@ -283,7 +283,7 @@ sites. Keep visible FAQ copy as normal page content.
 ### Course Page
 
 ```typescript
-import type { JsonLdNode } from '$lib/seo/types';
+import type { JsonLdNode } from '#lib/seo/types.js';
 
 const courseNode: JsonLdNode = {
 	'@context': 'https://schema.org',
@@ -469,7 +469,7 @@ export const load = async () => {
    - Keep non-SEO tags (theme-color, RSS feeds, etc.)
 
 2. **Add `seo` to load functions** for each page that had custom SEO
-   - Import `SEOInput` from `$lib/seo/types`
+   - Import `SEOInput` from `#lib/seo/types.js`
    - Return `{ seo: { title, description, ... } }` from load
 
 3. **Remove duplicate meta from `app.html`**

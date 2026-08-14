@@ -6,7 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { CourseCard } from '$lib/components/courses';
+	import { CourseCard } from '#lib/components/courses/index.js';
 
 	interface Course {
 		id: string;

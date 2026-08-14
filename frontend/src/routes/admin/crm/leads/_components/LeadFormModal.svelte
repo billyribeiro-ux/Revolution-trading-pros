@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconUserPlus, IconEdit, IconCheck, IconX } from '$lib/icons';
+	import { IconUserPlus, IconEdit, IconCheck, IconX } from '#lib/icons/index.js';
 
 	export interface LeadFormData {
 		first_name: string;

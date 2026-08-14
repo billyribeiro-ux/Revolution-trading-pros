@@ -25,13 +25,13 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
 	import { onMount } from 'svelte';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Webhook, WebhookEvent } from '$lib/crm/types';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Webhook, WebhookEvent } from '#lib/crm/types.js';
 	import {
 		generateWebhookSecret,
 		isValidWebhookUrl,
 		validateWebhookUrl
-	} from '$lib/utils/webhookSecurity';
+	} from '#lib/utils/webhookSecurity.js';
 
 	// STATE MANAGEMENT - Svelte 5 Runes
 

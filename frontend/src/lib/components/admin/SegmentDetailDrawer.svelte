@@ -21,8 +21,8 @@
 		IconClock,
 		IconRefresh,
 		IconExternalLink
-	} from '$lib/icons';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	} from '#lib/icons/index.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import { goto } from '$app/navigation';
 
 	// FIX-2026-04-26 (audit 02 §P1-4): keep `memberCount` nullable so admins

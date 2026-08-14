@@ -6,7 +6,7 @@
 	 * animated counters.
 	 */
 	import { onMount } from 'svelte';
-	import { analyticsApi, type RealTimeMetrics } from '$lib/api/analytics';
+	import { analyticsApi, type RealTimeMetrics } from '#lib/api/analytics.js';
 
 	interface Props {
 		refreshInterval?: number;

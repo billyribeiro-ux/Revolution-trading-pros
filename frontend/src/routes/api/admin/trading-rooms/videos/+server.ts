@@ -9,12 +9,12 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/auth';
+import { requireAdmin } from '#lib/server/auth.js';
 // R20-A: migrated off local `Promise<any | null>` helper to shared
-// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
+// `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once;
 // `Promise<unknown>` return type; `hasSuccess` narrowing replaces the
 // unsound `backendData?.success` pattern).
-import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess, isObject } from '#lib/server/proxy-fetch.js';
 
 /** Body shape for POST /api/admin/trading-rooms/videos — every field optional from the wire. */
 interface VideoCreateBody {

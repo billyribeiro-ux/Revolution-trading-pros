@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * ResponsivePreviewModal — full-screen modal wrapping `$lib/components/media/ResponsivePreview`.
+	 * ResponsivePreviewModal — full-screen modal wrapping `#lib/components/media/ResponsivePreview`.
 	 * Extracted from `admin/media/+page.svelte` (R10-C).
 	 *
 	 * Props:
@@ -10,8 +10,8 @@
 	 * 1 bindable scalar, 0 callbacks.
 	 */
 	import { fade, scale } from 'svelte/transition';
-	import type { MediaItem } from '$lib/api/media';
-	import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
+	import type { MediaItem } from '#lib/api/media.js';
+	import ResponsivePreview from '#lib/components/media/ResponsivePreview.svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	let {

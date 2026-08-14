@@ -8,7 +8,14 @@
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { IconTrash, IconInbox, IconDownload, IconX, IconCheck, IconLoader } from '$lib/icons';
+	import {
+		IconTrash,
+		IconInbox,
+		IconDownload,
+		IconX,
+		IconCheck,
+		IconLoader
+	} from '#lib/icons/index.js';
 
 	interface BatchAction {
 		id: string;

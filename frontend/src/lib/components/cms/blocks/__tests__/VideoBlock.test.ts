@@ -23,7 +23,7 @@ import './setup';
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
-import { BlockStateManager, createBlockId, type BlockId } from '$lib/stores/blockState.svelte';
+import { BlockStateManager, createBlockId, type BlockId } from '#lib/stores/blockState.svelte.js';
 import type { Block } from '../types';
 
 // ===============================================================================
@@ -34,8 +34,8 @@ import type { Block } from '../types';
 let testStateManager: BlockStateManager;
 
 // Mock the getBlockStateManager function to return our test instance
-vi.mock('$lib/stores/blockState.svelte', async (importOriginal) => {
-	const actual = await importOriginal<typeof import('$lib/stores/blockState.svelte')>();
+vi.mock('#lib/stores/blockState.svelte.js', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('#lib/stores/blockState.svelte.js')>();
 	return {
 		...actual,
 		getBlockStateManager: () => {

@@ -8,7 +8,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

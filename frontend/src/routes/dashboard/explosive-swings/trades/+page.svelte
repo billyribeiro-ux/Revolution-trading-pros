@@ -6,9 +6,9 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { onMount } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 	import ClosePositionModal from '../components/ClosePositionModal.svelte';
-	import { checkAdminStatus } from '$lib/utils/auth';
+	import { checkAdminStatus } from '#lib/utils/auth.js';
 	import { fetchTrades, calculateStats } from './api';
 	import type { Trade, TradeStats, FilterStatus } from './types';
 	import type { ActivePosition } from '../types';

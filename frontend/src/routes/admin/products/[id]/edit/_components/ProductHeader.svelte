@@ -3,7 +3,7 @@
 	 * R20-C extraction (2026-05-20): page-header for the product edit page.
 	 * Pure leaf: back-button + title + delete trigger.
 	 */
-	import { IconArrowLeft, IconTrash } from '$lib/icons';
+	import { IconArrowLeft, IconTrash } from '#lib/icons/index.js';
 
 	interface Props {
 		productName: string | null;

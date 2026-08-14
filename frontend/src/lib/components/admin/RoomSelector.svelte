@@ -13,8 +13,8 @@
 		getAlertsOnlyServices,
 		isAllRooms,
 		type Room
-	} from '$lib/config/rooms';
-	import Icon from '$lib/components/Icon.svelte';
+	} from '#lib/config/rooms.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Props interface
 	interface Props {

@@ -15,11 +15,11 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
+import type { RequestHandler } from './$types';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
 
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 async function proxy(method: string, backendPath: string, token: string, request: Request) {
 	const headers: Record<string, string> = {
@@ -40,7 +40,6 @@ async function proxy(method: string, backendPath: string, token: string, request
 		headers,
 		...(body !== undefined ? { body } : {})
 	});
-
 	const text = await response.text();
 	let payload: unknown = null;
 	if (text) {

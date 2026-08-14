@@ -12,7 +12,12 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { IconChevronLeft, IconChevronRight, IconFileText, IconArrowLeft } from '$lib/icons';
+	import {
+		IconChevronLeft,
+		IconChevronRight,
+		IconFileText,
+		IconArrowLeft
+	} from '#lib/icons/index.js';
 	import type { ArchiveDetailPageData } from './+page.server';
 
 	// Server data

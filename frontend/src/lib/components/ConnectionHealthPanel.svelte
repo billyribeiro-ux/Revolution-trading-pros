@@ -16,7 +16,7 @@
 		connections,
 		getAllConnectionStatuses,
 		type ConnectionState
-	} from '$lib/stores/connections.svelte';
+	} from '#lib/stores/connections.svelte.js';
 	import {
 		IconX,
 		IconPlugConnected,
@@ -30,7 +30,7 @@
 		IconActivity,
 		IconChartLine,
 		IconExternalLink
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		isOpen?: boolean;

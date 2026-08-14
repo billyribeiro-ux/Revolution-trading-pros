@@ -17,14 +17,14 @@
 		IconCircleCheck,
 		IconAlertTriangle,
 		IconSettings
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		notificationStore,
 		getNotifications,
 		getUnreadCount,
 		type Notification,
 		type NotificationType
-	} from '$lib/stores/notifications.svelte';
+	} from '#lib/stores/notifications.svelte.js';
 
 	interface Props {
 		position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';

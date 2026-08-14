@@ -19,10 +19,10 @@
 		IconShieldCheck,
 		IconMaximize,
 		IconMinimize
-	} from '$lib/icons';
-	import { sanitizeHTML } from '$lib/utils/sanitization';
+	} from '#lib/icons/index.js';
+	import { sanitizeHTML } from '#lib/utils/sanitization.js';
 	import type { Block, BlockContent, BlockSettings } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// =========================================================================
 	// Types
@@ -214,8 +214,7 @@ Example:
 						onkeydown={handleKeyDown}
 						spellcheck="false"
 						autocomplete="off"
-						autocapitalize="off"
-					></textarea>
+						autocapitalize="off"></textarea>
 
 					<!-- Editor Footer -->
 					<div class="editor-footer">

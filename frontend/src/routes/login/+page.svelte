@@ -12,7 +12,7 @@
 	 *
 	 * @version 2.0.0
 	 */
-	import { LoginLayout, TradingHeroBackground, LoginForm } from '$lib/components/auth';
+	import { LoginLayout, TradingHeroBackground, LoginForm } from '#lib/components/auth/index.js';
 </script>
 
 <LoginLayout>

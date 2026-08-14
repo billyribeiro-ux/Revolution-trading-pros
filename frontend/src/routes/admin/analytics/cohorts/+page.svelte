@@ -7,18 +7,18 @@
 	 * cohort-based retention matrices.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { page } from '$app/state';
-	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import CohortMatrix from '$lib/components/analytics/CohortMatrix.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { analyticsApi } from '#lib/api/analytics.js';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import CohortMatrix from '#lib/components/analytics/CohortMatrix.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// FIX-2026-04-26 (audit 08-analytics §P2-4): widened `type` and `granularity`
 	// to `string`. The backend returns `string` (not the strict literal union),
@@ -224,9 +224,10 @@
 							<option value="monthly">Monthly</option>
 						</select>
 					</label>
-					<button type="button" onclick={() => (showCreateModal = true)} class="primary-action">
-						Create Cohort
-					</button>
+
+					<button type="button" onclick={() => (showCreateModal = true)} class="primary-action"
+						>Create Cohort</button
+					>
 				</div>
 			{/if}
 		</header>
@@ -280,10 +281,11 @@
 					<button
 						type="button"
 						onclick={() => (selectedCohort = cohort)}
-						class={{ 'cohort-tab': true, 'is-active': selectedCohort?.key === cohort.key }}
+						class={{
+							'cohort-tab': true,
+							'is-active': selectedCohort?.key === cohort.key
+						}}>{cohort.name}</button
 					>
-						{cohort.name}
-					</button>
 				{/each}
 			</div>
 
@@ -387,8 +389,7 @@
 						bind:value={newCohort.description}
 						placeholder="Describe this cohort..."
 						rows={2}
-						class="form-control form-control--textarea"
-					></textarea>
+						class="form-control form-control--textarea"></textarea>
 				</div>
 
 				<div class="form-grid">
@@ -439,9 +440,10 @@
 			</div>
 
 			<div class="cohort-modal__footer">
-				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-action">
-					Cancel
-				</button>
+				<button type="button" onclick={() => (showCreateModal = false)} class="secondary-action"
+					>Cancel</button
+				>
+
 				<button
 					type="button"
 					onclick={createCohort}

@@ -1,26 +1,9 @@
-<!--
-/**
- * VideoCardOptimized - Zero-Latency Video Card
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Apple ICT 11+ Principal Engineer Grade - January 2026
- *
- * PERFORMANCE OPTIMIZATIONS:
- * 1. Blurhash instant placeholder (<1ms)
- * 2. Hover-based video preloading
- * 3. Intersection Observer for viewport preloading
- * 4. Optimized image loading (eager above fold, lazy below)
- * 5. CSS containment for layout stability
- *
- * @version 1.0.0
- */
--->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { decodeBlurhash, DEFAULT_BLURHASHES } from '$lib/utils/blurhash';
-	import { videoPreloader, type VideoPreloadInfo } from '$lib/utils/videoPreloader';
-	import Icon from '$lib/components/Icon.svelte';
+	import { browser } from '$app/env';
+	import { decodeBlurhash, DEFAULT_BLURHASHES } from '#lib/utils/blurhash.js';
+	import { videoPreloader, type VideoPreloadInfo } from '#lib/utils/videoPreloader.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -103,7 +86,7 @@
 			return {
 				videoId: video.bunny_video_guid,
 				libraryId: String(video.bunny_library_id),
-				thumbnailUrl: thumbnailUrl
+				thumbnailUrl
 			};
 		}
 		return null;
@@ -195,6 +178,24 @@
 		return `${views} views`;
 	}
 </script>
+
+<!--
+/**
+ * VideoCardOptimized - Zero-Latency Video Card
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Apple ICT 11+ Principal Engineer Grade - January 2026
+ *
+ * PERFORMANCE OPTIMIZATIONS:
+ * 1. Blurhash instant placeholder (<1ms)
+ * 2. Hover-based video preloading
+ * 3. Intersection Observer for viewport preloading
+ * 4. Optimized image loading (eager above fold, lazy below)
+ * 5. CSS containment for layout stability
+ *
+ * @version 1.0.0
+ */
+-->
 
 <article
 	{@attach attachVideoCard}

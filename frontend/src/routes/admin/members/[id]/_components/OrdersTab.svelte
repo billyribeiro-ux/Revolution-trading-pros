@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconReceipt, IconDownload, IconExternalLink } from '$lib/icons';
-	import type { Order } from '$lib/api/members';
+	import { IconReceipt, IconDownload, IconExternalLink } from '#lib/icons/index.js';
+	import type { Order } from '#lib/api/members.js';
 	import { formatCurrency, formatDate } from './helpers';
 
 	interface Props {

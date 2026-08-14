@@ -4,7 +4,7 @@
 	TODO(2026-04-26-audit): This file is the legacy `admin/Sidebar.svelte`,
 	flagged in audits/admin-2026-04-26/01-shell-and-dashboard.md §P1-2.
 
-	  - The canonical sidebar is `$lib/components/layout/AdminSidebar.svelte`
+	  - The canonical sidebar is `#lib/components/layout/AdminSidebar.svelte`
 	    (6 sections, 26 items, rune-based auth, calls the API logout endpoint).
 	  - This file ships a 3-item nav (Dashboard / Forms / SEO), uses the
 	    legacy `$authStore` autosubscribe (P1-1 hazard), and bypasses the
@@ -13,7 +13,7 @@
 	    the body is safe per the CREATE-not-DELETE rule.
 
 	If you find yourself wanting to use this file, import
-	`AdminSidebar` from `$lib/components/layout` instead.
+	`AdminSidebar` from `#lib/components/layout/index.js` instead.
 
 	Original implementation kept below in a Svelte HTML comment so the file
 	still parses as a no-op component. To restore, lift the comment block.
@@ -38,9 +38,9 @@
 			IconError404,
 			IconSettings,
 			IconLogout
-		} from '$lib/icons';
+		} from '#lib/icons/index.js';
 		import type { ComponentType } from 'svelte';
-		import { authStore } from '$lib/stores/auth.svelte';
+		import { authStore } from '#lib/stores/auth.svelte.js';
 		import { goto } from '$app/navigation';
 
 		interface Props {

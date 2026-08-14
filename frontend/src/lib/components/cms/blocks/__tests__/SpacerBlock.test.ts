@@ -21,7 +21,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import SpacerBlock from '../layout/SpacerBlock.svelte';
 import type { Block } from '../types';
-import { toBlockId } from '$lib/stores/blockState.svelte';
+import { toBlockId } from '#lib/stores/blockState.svelte.js';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -137,7 +137,7 @@ describe('SpacerBlock - Height Control', () => {
 		});
 
 		const spacerBlock = container.querySelector('.spacer-block');
-		expect(spacerBlock).toHaveStyle({ height: '4rem' });
+		expect(spacerBlock).toHaveStyle({ height: '64px' }); // 4rem
 	});
 
 	it('should apply default height when not specified', () => {
@@ -155,7 +155,7 @@ describe('SpacerBlock - Height Control', () => {
 		});
 
 		const spacerBlock = container.querySelector('.spacer-block');
-		expect(spacerBlock).toHaveStyle({ height: '2.5rem' });
+		expect(spacerBlock).toHaveStyle({ height: '40px' }); // 2.5rem
 	});
 
 	it('should display height in pixels in edit mode', () => {

@@ -24,9 +24,9 @@
 		AlertCreateInput,
 		AlertUpdateInput,
 		TosStringParams
-	} from '$lib/types/trading';
-	import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
-	import Icon from '$lib/components/Icon.svelte';
+	} from '#lib/types/trading.js';
+	import { buildTosString, validateTosParams } from '#lib/utils/tos-builder.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import { untrack } from 'svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -497,8 +497,7 @@
 						id="message"
 						bind:value={message}
 						rows="3"
-						placeholder="Detailed alert message for subscribers..."
-					></textarea>
+						placeholder="Detailed alert message for subscribers..."></textarea>
 				</div>
 
 				<!-- Notes -->
@@ -508,8 +507,7 @@
 						id="notes"
 						bind:value={notes}
 						rows="2"
-						placeholder="Notes visible to admins only..."
-					></textarea>
+						placeholder="Notes visible to admins only..."></textarea>
 				</div>
 			</form>
 

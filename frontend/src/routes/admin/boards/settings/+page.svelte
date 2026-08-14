@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { boardsAPI } from '$lib/api/boards';
-	import type { BoardsSettings, StorageConfig } from '$lib/boards/types';
+	import { boardsAPI } from '#lib/api/boards.js';
+	import type { BoardsSettings, StorageConfig } from '#lib/boards/types.js';
 	// FIX-2026-04-26: replaced native alert() with toastStore.
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconLayoutKanban,
 		IconArrowLeft,
@@ -16,7 +16,7 @@
 		IconCheck,
 		IconAlertCircle,
 		IconRefresh
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// State
 	let settings = $state<BoardsSettings>({

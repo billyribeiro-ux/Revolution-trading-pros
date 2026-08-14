@@ -3,7 +3,7 @@
 	 * R28-C extraction (2026-05-20): page header for the categories/tags
 	 * admin page — title, subtitle, and a single refresh action button.
 	 */
-	import { IconRefresh } from '$lib/icons';
+	import { IconRefresh } from '#lib/icons/index.js';
 
 	interface Props {
 		loading: boolean;

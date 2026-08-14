@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
+	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '#lib/api/admin.js';
 	import { goto } from '$app/navigation';
-	import { IconDeviceFloppy, IconX } from '$lib/icons';
+	import { IconDeviceFloppy, IconX } from '#lib/icons/index.js';
 	import { untrack } from 'svelte';
 
 	/**

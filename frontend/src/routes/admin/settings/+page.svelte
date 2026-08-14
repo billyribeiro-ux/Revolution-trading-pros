@@ -1,7 +1,3 @@
-<!--
-    URL: /admin/settings
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
 	/**
@@ -18,11 +14,11 @@
 	 * - Beautiful animations and transitions
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
@@ -445,7 +441,13 @@
 				color: '#FFE01B',
 				is_oauth: true,
 				fields: [
-					{ key: 'api_key', label: 'API Key', type: 'password', required: true },
+					{
+						key: 'api_key',
+						label: 'API Key',
+						type: 'password',
+						required: true
+					},
+
 					{
 						key: 'server_prefix',
 						label: 'Server Prefix',
@@ -770,10 +772,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>API Settings & Integrations | Admin</title>
-</svelte:head>
-
+<!--
+    URL: /admin/settings
+-->
+<svelte:head><title>API Settings & Integrations | Admin</title></svelte:head>
 <!-- Apple-grade Settings Dashboard -->
 <div class="admin-settings">
 	<!-- Animated Background -->

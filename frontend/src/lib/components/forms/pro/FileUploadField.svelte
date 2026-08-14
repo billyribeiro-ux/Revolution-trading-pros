@@ -6,7 +6,7 @@
 	 */
 
 	import type { Attachment } from 'svelte/attachments';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface UploadedFile {
 		id: string;

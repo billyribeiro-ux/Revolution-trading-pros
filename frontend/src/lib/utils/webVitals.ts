@@ -390,8 +390,7 @@ function getNavigationType(): string {
 	if (typeof window === 'undefined') return 'unknown';
 
 	const nav = performance.getEntriesByType('navigation')[0] as
-		| PerformanceNavigationTiming
-		| undefined;
+		PerformanceNavigationTiming | undefined;
 	if (nav) return nav.type;
 
 	// Fallback for older browsers
@@ -403,7 +402,7 @@ function getNavigationType(): string {
  *
  * @example
  * ```ts
- * import { initWebVitals } from '$lib/utils/webVitals';
+ * import { initWebVitals } from '#lib/utils/webVitals.js';
  *
  * // In +layout.svelte or app initialization
  * if (browser) {

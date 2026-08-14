@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import {
+		IconNews,
+		IconRefresh,
+		IconExternalLink,
+		IconCheck,
+		IconX,
+		IconClock
+	} from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// State using Svelte 5 runes
 	interface NewsArticle {

@@ -7,10 +7,10 @@
 -->
 
 <script lang="ts">
-	import { IconPlus, IconX, IconExternalLink } from '$lib/icons';
-	import { sanitizeURL } from '$lib/utils/sanitization';
+	import { IconPlus, IconX, IconExternalLink } from '#lib/icons/index.js';
+	import { sanitizeURL } from '#lib/utils/sanitization.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	interface Props {
 		block: Block;
@@ -196,9 +196,7 @@
 								settings: {
 									...props.block.settings,
 									buttonAlignment: (e.target as HTMLSelectElement).value as
-										| 'left'
-										| 'center'
-										| 'right'
+										'left' | 'center' | 'right'
 								}
 							})}
 					>

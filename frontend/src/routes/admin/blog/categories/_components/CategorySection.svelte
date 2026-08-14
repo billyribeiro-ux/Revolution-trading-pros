@@ -17,8 +17,8 @@
 		IconChartBar,
 		IconEyeOff,
 		IconCopy
-	} from '$lib/icons';
-	import type { Category } from '$lib/api/admin';
+	} from '#lib/icons/index.js';
+	import type { Category } from '#lib/api/admin.js';
 
 	interface Props {
 		categories: Category[];

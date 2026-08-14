@@ -10,7 +10,7 @@
 	 * props — the parent owns API calls, optimistic updates, and the
 	 * delete-confirmation modal.
 	 */
-	import { IconEdit, IconRefresh, IconTrash } from '$lib/icons';
+	import { IconEdit, IconRefresh, IconTrash } from '#lib/icons/index.js';
 	import type { Coupon } from './types';
 
 	interface Props {

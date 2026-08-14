@@ -9,7 +9,7 @@
 	 * callback. The parent owns the Set updates (creating new `Set` instances
 	 * so Svelte 5 sees the reassignment).
 	 */
-	import type { Product, SubscriptionPlan } from '$lib/api/admin';
+	import type { Product, SubscriptionPlan } from '#lib/api/admin.js';
 	import type { RestrictionTab } from './types';
 
 	export type CouponRestrictionAction =

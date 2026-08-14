@@ -11,11 +11,11 @@
  * @version 3.0.0 (SvelteKit / December 2025)
  */
 
-import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { authStore } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
-import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
+import { isSuperadminEmail, isDeveloperEmail } from '#lib/config/roles.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS

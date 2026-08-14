@@ -20,9 +20,9 @@
 	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
 	import IconUser from '@tabler/icons-svelte-runes/icons/user';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import { crmAPI } from '$lib/api/crm';
-	import type { ManagerRole, ManagerUser } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { ManagerRole, ManagerUser } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let roles = $state<ManagerRole[]>([]);
 	let managers = $state<ManagerUser[]>([]);

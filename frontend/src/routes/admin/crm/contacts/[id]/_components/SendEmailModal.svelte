@@ -120,8 +120,7 @@
 						placeholder="Compose your email message here..."
 						bind:value={body}
 						rows="10"
-						disabled={sending}
-					></textarea>
+						disabled={sending}></textarea>
 					<p class="form-hint">You can use basic text formatting. HTML tags will be preserved.</p>
 				</div>
 			</div>

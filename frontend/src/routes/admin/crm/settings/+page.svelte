@@ -18,8 +18,8 @@
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import { crmAPI } from '$lib/api/crm';
-	import type { DoubleOptInSettings, EmailPreferencePage } from '$lib/crm/types';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { DoubleOptInSettings, EmailPreferencePage } from '#lib/crm/types.js';
 
 	let activeTab = $state('double-optin');
 	let isLoading = $state(true);
@@ -220,8 +220,7 @@
 								id="doi-body"
 								bind:value={doubleOptIn.email_body}
 								rows={8}
-								placeholder="HTML email content..."
-							></textarea>
+								placeholder="HTML email content..."></textarea>
 							<p class="form-help">
 								Available smart tags: {'{{first_name}}'}, {'{{last_name}}'}, {'{{email}}'}, {'{{confirmation_link}}'}
 							</p>
@@ -300,8 +299,7 @@
 								id="ep-intro"
 								bind:value={emailPreferences.intro_text}
 								rows={3}
-								placeholder="Manage your email subscription preferences..."
-							></textarea>
+								placeholder="Manage your email subscription preferences..."></textarea>
 						</div>
 
 						<div class="form-group">
@@ -354,8 +352,7 @@
 								id="ep-css"
 								bind:value={emailPreferences.custom_css}
 								rows={5}
-								placeholder="/* Custom styles */"
-							></textarea>
+								placeholder="/* Custom styles */"></textarea>
 						</div>
 
 						<div class="form-group">

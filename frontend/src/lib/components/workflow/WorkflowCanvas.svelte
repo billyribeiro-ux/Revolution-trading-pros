@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { workflowCanvas } from '$lib/stores/workflow.svelte';
+	import { workflowCanvas } from '#lib/stores/workflow.svelte.js';
 	import WorkflowNode from './WorkflowNode.svelte';
 	import WorkflowEdge from './WorkflowEdge.svelte';
-	import type { NodeType } from '$lib/types/workflow';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { NodeType } from '#lib/types/workflow.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		workflowId: number;

@@ -17,7 +17,7 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived as _derived, type Readable } from 'svelte/store';
 
 import type {
@@ -443,17 +443,15 @@ export class EnterpriseClient {
 
 					if (shouldRetry) {
 						const delay = this.calculateRetryDelay(attempt, config.retry, response);
-						log('debug', `Retrying request (attempt ${attempt + 1})`, context, { delay });
 
+						log('debug', `Retrying request (attempt ${attempt + 1})`, context, { delay });
 						config.retry?.onRetry?.(
 							await createErrorFromResponse(response.clone(), context),
 							attempt + 1
 						);
-
 						this._metrics.retryRate =
 							(this._metrics.retryRate * this._metrics.totalRequests + 1) /
 							(this._metrics.totalRequests + 1);
-
 						this.emit('request:retry', { attempt: attempt + 1, delay });
 						await this.delay(delay);
 						continue;

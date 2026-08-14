@@ -10,13 +10,13 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { isValidPeriod } from '$lib/server/analytics-proxy';
-import { requireAdmin } from '$lib/server/auth';
+import { isValidPeriod } from '#lib/server/analytics-proxy.js';
+import { requireAdmin } from '#lib/server/auth.js';
 // R20-A: migrated off local `Promise<any | null>` helper to shared
-// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
+// `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once;
 // `Promise<unknown>` return; `hasSuccess` + `extractBackendData`
 // fix the R18-A Latent Bug §3 short-circuit on `{ data: null }`).
-import { fetchBackend, hasSuccess, isObject, extractBackendData } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess, isObject, extractBackendData } from '#lib/server/proxy-fetch.js';
 
 // Generate realistic baseline analytics based on actual platform activity
 function generateBuiltInAnalytics(_period: string) {

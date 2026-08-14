@@ -12,9 +12,9 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import { seoDefaults } from '$lib/seo/defaults';
-import { createSEOContext } from '$lib/seo/resolve';
-import type { Environment } from '$lib/seo/types';
+import { seoDefaults } from '#lib/seo/defaults.js';
+import { createSEOContext } from '#lib/seo/resolve.js';
+import type { Environment } from '#lib/seo/types.js';
 
 function detectEnv(): Environment {
 	const mode = import.meta.env.MODE;

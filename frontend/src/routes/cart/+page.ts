@@ -1,4 +1,4 @@
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 
 const seo: SEOInput = {
 	title: 'Cart',

@@ -23,7 +23,7 @@ import {
 } from '../useBlockValidation.svelte';
 
 import type { Block } from '../../types';
-import { toBlockId } from '$lib/stores/blockState.svelte';
+import { toBlockId } from '#lib/stores/blockState.svelte.js';
 
 // ============================================================================
 // Test Utilities

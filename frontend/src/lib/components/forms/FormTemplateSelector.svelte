@@ -4,8 +4,8 @@
 	 *
 	 * Updated: December 2025 - Migrated to Svelte 5 runes ($props, $state, $derived)
 	 */
-	import type { FormTemplate } from '$lib/data/formTemplates';
-	import { templates } from '$lib/data/formTemplates';
+	import type { FormTemplate } from '#lib/data/formTemplates.js';
+	import { templates } from '#lib/data/formTemplates.js';
 
 	// Svelte 5: Props using $props() rune with callback events
 	interface Props {

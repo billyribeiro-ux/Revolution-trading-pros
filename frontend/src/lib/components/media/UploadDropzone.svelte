@@ -6,9 +6,9 @@
 -->
 
 <script lang="ts">
-	import { uploadStore } from '$lib/stores/media.svelte';
-	import { IconUpload, IconX, IconCheck, IconAlertCircle } from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { uploadStore } from '#lib/stores/media.svelte.js';
+	import { IconUpload, IconX, IconCheck, IconAlertCircle } from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Props {
 		folderId?: string | null;

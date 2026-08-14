@@ -12,7 +12,7 @@
 	 * @version 2.0.0
 	 */
 
-	import type { FormField, ConditionalLogic, ConditionalRule } from '$lib/api/forms';
+	import type { FormField, ConditionalLogic, ConditionalRule } from '#lib/api/forms.js';
 
 	interface Props {
 		fields: FormField[];

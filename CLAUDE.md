@@ -83,17 +83,36 @@ patterns:
 41 components were migrated off the legacy pattern in commit `05acf3231`.
 The repo's typecheck must stay at 0 errors / 0 warnings.
 
+### SvelteKit 3
+
+The repo is on SvelteKit 3 (currently the `3.0.0-next` prerelease line — see
+BACKLOG.md "SvelteKit 3 follow-ups"). Two structural consequences:
+
+- **There is no `svelte.config.js`.** All Kit config is passed as options to
+  the `sveltekit()` plugin in `frontend/vite.config.ts`.
+- **`$lib` is gone**; imports use the `#lib/*` subpath declared in
+  `frontend/package.json#imports`, and **file extensions are required**:
+  `import { foo } from '#lib/utils/foo.js';`
+
+Other renames you will hit: `$app/environment` → `$app/env`, `$app/stores` →
+`$app/state` (plain values, no `$` prefix), `$service-worker` → `$app/env` +
+`$app/manifest`, and `error(status, { message })` → `error(status, message)`.
+
 ### SvelteKit `+server.ts` proxies
 
 Every proxy under `frontend/src/routes/api/` reads its backend URL from
-`$env/dynamic/private`. Match this shape:
+`$app/env/private`. Env vars are declared explicitly in `frontend/src/env.ts`
+(`defineEnvVars`) and imported as named exports — the `$env/*` modules and the
+old `env.FOO` object no longer exist. Match this shape:
 
 ```ts
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 ```
+
+If the local constant would collide with an imported name, alias the import
+(`import { API_URL as ENV_API_URL } ...`) rather than shadowing it.
 
 **Never** add a new proxy with a hardcoded production URL. The audit found 14 of
 these on 2026-04-25 and they were all fixed; don't re-introduce them. The

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { WorkflowEdge as Edge, WorkflowNode } from '$lib/types/workflow';
+	import type { WorkflowEdge as Edge, WorkflowNode } from '#lib/types/workflow.js';
 
 	interface Props {
 		edge: Edge;

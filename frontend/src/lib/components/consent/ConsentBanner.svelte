@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import Icon from '$lib/components/Icon.svelte';
+	import { browser } from '$app/env';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// `window.gtag` is declared globally in `src/app.d.ts` as a variadic
 	// function — use that ambient typing rather than redeclaring locally.

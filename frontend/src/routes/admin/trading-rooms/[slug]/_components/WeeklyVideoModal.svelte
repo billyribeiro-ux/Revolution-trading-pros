@@ -125,8 +125,7 @@
 						id="description"
 						bind:value={form.description}
 						placeholder="This week's breakdown covers..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="info-box">

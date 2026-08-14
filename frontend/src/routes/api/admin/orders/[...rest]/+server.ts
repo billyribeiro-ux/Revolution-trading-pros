@@ -22,8 +22,8 @@
  * The shim's upstream forwarding (URL, body, headers, streaming) is preserved.
  */
 import type { RequestHandler } from '@sveltejs/kit';
-import { createProxyShim } from '$lib/utils/createProxyShim';
-import { requireAdmin } from '$lib/server/auth';
+import { createProxyShim } from '#lib/utils/createProxyShim.js';
+import { requireAdmin } from '#lib/server/auth.js';
 
 const shim = createProxyShim('/api/admin/orders');
 

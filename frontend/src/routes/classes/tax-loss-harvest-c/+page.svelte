@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
-	import ClassVideoSection from '$lib/components/classes/ClassVideoSection.svelte';
-	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
+	import ClassHeaderSection from '#lib/components/classes/ClassHeaderSection.svelte';
+	import ClassVideoSection from '#lib/components/classes/ClassVideoSection.svelte';
+	import ClassDownloadsSection from '#lib/components/classes/ClassDownloadsSection.svelte';
 
 	const videos = [
 		{

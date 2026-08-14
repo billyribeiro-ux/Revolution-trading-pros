@@ -7,7 +7,7 @@
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { emailApi } from '$lib/api/email';
+import { emailApi } from '#lib/api/email.js';
 import type {
 	EmailCampaign,
 	EmailTemplate,
@@ -16,7 +16,7 @@ import type {
 	EmailSegment,
 	EmailSubscriber,
 	EmailAnalytics
-} from '$lib/api/email';
+} from '#lib/api/email.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Store State

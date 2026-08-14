@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconCheck, IconX, IconTrash } from '$lib/icons';
-	import type { EmailSubscriber } from '$lib/api/email';
+	import { IconCheck, IconX, IconTrash } from '#lib/icons/index.js';
+	import type { EmailSubscriber } from '#lib/api/email.js';
 
 	export type RowAction =
 		| { type: 'unsubscribe'; id: string }

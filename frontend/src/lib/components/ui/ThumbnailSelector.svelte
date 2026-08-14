@@ -8,7 +8,7 @@
 	
 -->
 <script lang="ts">
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		thumbnails: string[];

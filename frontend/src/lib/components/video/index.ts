@@ -24,7 +24,7 @@ export {
 	getCachedBlurhash,
 	precomputeBlurhashes,
 	DEFAULT_BLURHASHES
-} from '$lib/utils/blurhash';
+} from '#lib/utils/blurhash.js';
 
 export {
 	videoPreloader,
@@ -32,4 +32,4 @@ export {
 	addBunnyPreconnects,
 	type VideoPreloadInfo,
 	type PreloadOptions
-} from '$lib/utils/videoPreloader';
+} from '#lib/utils/videoPreloader.js';

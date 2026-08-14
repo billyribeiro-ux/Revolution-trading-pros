@@ -11,7 +11,7 @@
 
 	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { consentStore, showPreferencesModal, openPreferencesModal } from '../store.svelte';
 
 	// Svelte 5: Props using $props() rune
@@ -137,12 +137,12 @@
 				stroke-linejoin="round"
 			>
 				<!-- Cookie icon -->
-				<circle cx="12" cy="12" r="10" />
-				<circle cx="8" cy="9" r="1" fill="currentColor" />
-				<circle cx="15" cy="8" r="1" fill="currentColor" />
-				<circle cx="10" cy="14" r="1" fill="currentColor" />
-				<circle cx="16" cy="13" r="1" fill="currentColor" />
-				<circle cx="13" cy="17" r="1" fill="currentColor" />
+				<circle cx="12" cy="12" r="10"></circle>
+				<circle cx="8" cy="9" r="1" fill="currentColor"></circle>
+				<circle cx="15" cy="8" r="1" fill="currentColor"></circle>
+				<circle cx="10" cy="14" r="1" fill="currentColor"></circle>
+				<circle cx="16" cy="13" r="1" fill="currentColor"></circle>
+				<circle cx="13" cy="17" r="1" fill="currentColor"></circle>
 			</svg>
 		</span>
 		{#if expanded}

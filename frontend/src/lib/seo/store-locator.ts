@@ -19,20 +19,14 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type DayOfWeek =
-	| 'Monday'
-	| 'Tuesday'
-	| 'Wednesday'
-	| 'Thursday'
-	| 'Friday'
-	| 'Saturday'
-	| 'Sunday';
+	'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 
 export type BusinessType =
 	| 'LocalBusiness'

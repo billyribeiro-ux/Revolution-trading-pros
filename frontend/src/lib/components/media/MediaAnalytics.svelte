@@ -6,8 +6,8 @@
 	 * and storage usage breakdowns.
 	 */
 	import { onMount } from 'svelte';
-	import { mediaApi, type MediaStatistics } from '$lib/api/media';
-	import Icon from '$lib/components/Icon.svelte';
+	import { mediaApi, type MediaStatistics } from '#lib/api/media.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		compact?: boolean;

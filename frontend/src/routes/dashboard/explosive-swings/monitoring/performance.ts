@@ -3,8 +3,8 @@
  * Tracks key metrics for A+++ grade observability
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 
 export interface PerformanceMetrics {
 	// Page load metrics

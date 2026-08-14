@@ -11,9 +11,9 @@
 -->
 
 <script lang="ts">
-	import { IconX } from '$lib/icons';
+	import { IconX } from '#lib/icons/index.js';
 	import type { Block, BlockContent, BlockSettings } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// =========================================================================
 	// Types

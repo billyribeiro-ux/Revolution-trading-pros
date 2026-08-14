@@ -1,10 +1,6 @@
-<!--
-	URL: /indicators/macd
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconWaveSine,
 		IconTrendingUp,
@@ -13,7 +9,7 @@
 		IconBolt,
 		IconChartLine,
 		IconTarget
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let heroVisible = $state(false);
 	const heroSectionClass = $derived(['hero-section', heroVisible && 'visible']);
@@ -35,6 +31,10 @@
 		return () => heroObserver.disconnect();
 	});
 </script>
+
+<!--
+	URL: /indicators/macd
+-->
 
 <div class="indicator-page">
 	<section class={heroSectionClass}>

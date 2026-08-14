@@ -18,12 +18,12 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/auth';
+import { requireAdmin } from '#lib/server/auth.js';
 // R20-A: migrated off local `Promise<any | null>` helper to shared
-// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once;
+// `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once;
 // `Promise<unknown>` return; `hasSuccess` narrow replaces unsound
 // `backendData?.success`).
-import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess } from '#lib/server/proxy-fetch.js';
 
 // GET - List videos for a specific room by slug
 export const GET: RequestHandler = async (event) => {

@@ -3,7 +3,7 @@
 	Extracted from BlockEditor.svelte (R7-C).
 -->
 <script lang="ts">
-	import { IconCloudUpload } from '$lib/icons';
+	import { IconCloudUpload } from '#lib/icons/index.js';
 
 	interface Props {
 		isSaving: boolean;

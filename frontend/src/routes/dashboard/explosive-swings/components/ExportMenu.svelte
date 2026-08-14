@@ -27,7 +27,7 @@
 		type AlertExportFilters,
 		type TradeExportFilters,
 		type ReportDateRange
-	} from '$lib/utils/export';
+	} from '#lib/utils/export.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS

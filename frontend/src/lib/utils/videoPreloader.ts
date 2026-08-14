@@ -16,7 +16,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

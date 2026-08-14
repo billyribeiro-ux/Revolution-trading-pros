@@ -8,9 +8,9 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { getTraderBySlug } from '$lib/data/traders';
-	import TraderHeader from '$lib/components/traders/TraderHeader.svelte';
-	import TraderNav from '$lib/components/traders/TraderNav.svelte';
+	import { getTraderBySlug } from '#lib/data/traders.js';
+	import TraderHeader from '#lib/components/traders/TraderHeader.svelte';
+	import TraderNav from '#lib/components/traders/TraderNav.svelte';
 	import type { Snippet } from 'svelte';
 
 	let props: { children: Snippet } = $props();

@@ -8,8 +8,8 @@
  * @version 1.0.0
  */
 
-import { browser, dev } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser, dev } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -63,6 +63,7 @@ function processEventQueue(): void {
 	if (!window.pintrk || !pinterestReady) return;
 
 	let queued: { event: string; data?: Record<string, unknown> } | undefined;
+
 	while ((queued = eventQueue.shift())) {
 		window.pintrk('track', queued.event, queued.data);
 	}

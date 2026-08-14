@@ -1,61 +1,11 @@
-<!--
-/**
- * CountdownTimer Component - Google L7+ Enterprise Implementation
- *
- * ENTERPRISE FEATURES:
- *
- * 1. ADVANCED DISPLAY MODES:
- *    - Digital clock format
- *    - Circular progress rings
- *    - Flip card animation
- *    - Minimal text
- *    - Bar chart style
- *    - Custom formats
- *
- * 2. TIME FEATURES:
- *    - Timezone support
- *    - Server sync
- *    - Recurring events
- *    - Multiple timers
- *    - Pause/Resume
- *    - Dynamic updates
- *
- * 3. VISUAL EFFECTS:
- *    - Smooth animations
- *    - Urgency indicators
- *    - Milestone alerts
- *    - Particle effects
- *    - Glow effects
- *    - Custom themes
- *
- * 4. EVENTS & HOOKS:
- *    - Milestone callbacks
- *    - Warning thresholds
- *    - Completion actions
- *    - Update events
- *    - Format functions
- *    - Custom triggers
- *
- * 5. ACCESSIBILITY:
- *    - Screen reader updates
- *    - ARIA labels
- *    - Keyboard controls
- *    - High contrast
- *    - Reduced motion
- *    - Focus management
- *
- * @component
- */
--->
-
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy } from 'svelte';
 	import { Spring, Tween } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { cubicOut } from 'svelte/easing';
-	import { browser } from '$app/environment';
-	import { sanitizeHtml } from '$lib/sanitize';
+	import { browser } from '$app/env';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	// Props
 
@@ -460,6 +410,7 @@
 
 		// Calculate progress (guard against zero/negative duration)
 		const elapsed = now - start;
+
 		const progress =
 			totalDuration > 0 ? Math.max(0, Math.min(100, (elapsed / totalDuration) * 100)) : 0;
 
@@ -727,6 +678,55 @@
 	}
 </script>
 
+<!--
+/**
+ * CountdownTimer Component - Google L7+ Enterprise Implementation
+ *
+ * ENTERPRISE FEATURES:
+ *
+ * 1. ADVANCED DISPLAY MODES:
+ *    - Digital clock format
+ *    - Circular progress rings
+ *    - Flip card animation
+ *    - Minimal text
+ *    - Bar chart style
+ *    - Custom formats
+ *
+ * 2. TIME FEATURES:
+ *    - Timezone support
+ *    - Server sync
+ *    - Recurring events
+ *    - Multiple timers
+ *    - Pause/Resume
+ *    - Dynamic updates
+ *
+ * 3. VISUAL EFFECTS:
+ *    - Smooth animations
+ *    - Urgency indicators
+ *    - Milestone alerts
+ *    - Particle effects
+ *    - Glow effects
+ *    - Custom themes
+ *
+ * 4. EVENTS & HOOKS:
+ *    - Milestone callbacks
+ *    - Warning thresholds
+ *    - Completion actions
+ *    - Update events
+ *    - Format functions
+ *    - Custom triggers
+ *
+ * 5. ACCESSIBILITY:
+ *    - Screen reader updates
+ *    - ARIA labels
+ *    - Keyboard controls
+ *    - High contrast
+ *    - Reduced motion
+ *    - Focus management
+ *
+ * @component
+ */
+-->
 <!-- Main Container -->
 <div
 	class={rootClasses}
@@ -859,7 +859,7 @@
 									stroke="var(--bg-color)"
 									stroke-width="5"
 									fill="none"
-								/>
+								></circle>
 								<circle
 									cx="50"
 									cy="50"
@@ -871,7 +871,7 @@
 									stroke-dashoffset={offset}
 									transform="rotate(-90 50 50)"
 									style="transition: stroke-dashoffset 0.3s ease;"
-								/>
+								></circle>
 								<text
 									x="50"
 									y="50"
@@ -906,6 +906,7 @@
 				{#if showDays}
 					<div class="bar-unit">
 						<div class="bar-fill" style:height={`${(timeData.days / 30) * 100}%`}></div>
+
 						<div class="bar-value">{timeData.days}</div>
 						<div class="bar-label">Days</div>
 					</div>
@@ -913,6 +914,7 @@
 				{#if showHours}
 					<div class="bar-unit">
 						<div class="bar-fill" style:height={`${(timeData.hours / 24) * 100}%`}></div>
+
 						<div class="bar-value">{timeData.hours}</div>
 						<div class="bar-label">Hours</div>
 					</div>
@@ -920,6 +922,7 @@
 				{#if showMinutes}
 					<div class="bar-unit">
 						<div class="bar-fill" style:height={`${(timeData.minutes / 60) * 100}%`}></div>
+
 						<div class="bar-value">{timeData.minutes}</div>
 						<div class="bar-label">Mins</div>
 					</div>
@@ -927,6 +930,7 @@
 				{#if showSeconds}
 					<div class="bar-unit">
 						<div class="bar-fill" style:height={`${(timeData.seconds / 60) * 100}%`}></div>
+
 						<div class="bar-value">{timeData.seconds}</div>
 						<div class="bar-label">Secs</div>
 					</div>

@@ -40,8 +40,8 @@
 		IconCheck,
 		IconClock,
 		IconTarget
-	} from '$lib/icons';
-	import { connections, getIsSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
+	} from '#lib/icons/index.js';
+	import { connections, getIsSeoConnected, SERVICE_KEYS } from '#lib/stores/connections.svelte.js';
 
 	// State
 

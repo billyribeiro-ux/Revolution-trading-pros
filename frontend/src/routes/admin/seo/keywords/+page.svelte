@@ -7,9 +7,9 @@
 		IconMinus,
 		IconTrash,
 		IconRefresh
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 	import { getKeywords, getKeywordStats, removeKeyword } from './keywords.remote';
 
 	let searchQuery = $state('');

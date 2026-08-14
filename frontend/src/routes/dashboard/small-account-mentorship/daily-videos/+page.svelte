@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import type { DailyVideo, PageData } from './+page.server';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Svelte 5 props with SvelteKit typing
 	interface Props {

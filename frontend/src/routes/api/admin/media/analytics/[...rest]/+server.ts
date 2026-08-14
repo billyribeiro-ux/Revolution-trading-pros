@@ -14,10 +14,10 @@
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
 
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 // Generous allowlist for query params observed in the analytics dashboard.
 // Unknown params are dropped to keep the forward URL clean.

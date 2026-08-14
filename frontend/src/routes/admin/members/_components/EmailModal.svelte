@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconX, IconSend } from '$lib/icons';
-	import type { EmailTemplate } from '$lib/api/members';
+	import { IconX, IconSend } from '#lib/icons/index.js';
+	import type { EmailTemplate } from '#lib/api/members.js';
 
 	interface Props {
 		recipientCount: number;
@@ -70,8 +70,7 @@
 					id="email-body"
 					bind:value={body}
 					rows="10"
-					placeholder="Email body... Use {'{{ name }}'} for personalization"
-				></textarea>
+					placeholder="Email body... Use {'{{ name }}'} for personalization"></textarea>
 			</div>
 		</div>
 

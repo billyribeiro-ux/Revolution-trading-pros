@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { cubicOut } from 'svelte/easing';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
@@ -187,8 +187,9 @@
 									>
 										<defs>
 											<linearGradient id="grad-spx" x1="0%" y1="0%" x2="100%" y2="0%">
-												<stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1" />
-												<stop offset="100%" stop-color={item.chartColor} stop-opacity="1" />
+												<stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1"></stop>
+
+												<stop offset="100%" stop-color={item.chartColor} stop-opacity="1"></stop>
 											</linearGradient>
 										</defs>
 										<path
@@ -199,15 +200,18 @@
 											stroke-linecap="round"
 											stroke-linejoin="round"
 											class="drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]"
-										/>
+										></path>
+
 										<circle cx="300" cy="10" r="3" fill={item.chartColor} class="animate-pulse">
-											<animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
+											<animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite"
+											></animate>
+
 											<animate
 												attributeName="opacity"
 												values="1;0.5;1"
 												dur="2s"
 												repeatCount="indefinite"
-											/>
+											></animate>
 										</circle>
 										<rect
 											x="240"
@@ -219,7 +223,7 @@
 											stroke={item.chartColor}
 											stroke-opacity="0.2"
 											stroke-dasharray="4 2"
-										/>
+										></rect>
 										<text
 											x="245"
 											y="85"
@@ -237,8 +241,9 @@
 									>
 										<defs>
 											<linearGradient id="grad-swing" x1="0%" y1="0%" x2="100%" y2="0%">
-												<stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1" />
-												<stop offset="100%" stop-color={item.chartColor} stop-opacity="1" />
+												<stop offset="0%" stop-color={item.chartColor} stop-opacity="0.1"></stop>
+
+												<stop offset="100%" stop-color={item.chartColor} stop-opacity="1"></stop>
 											</linearGradient>
 										</defs>
 										<path
@@ -248,7 +253,7 @@
 											stroke-width="2"
 											stroke-linecap="round"
 											class="drop-shadow-[0_0_10px_rgba(251,146,60,0.5)]"
-										/>
+										></path>
 										<line
 											x1="200"
 											y1="50"
@@ -257,8 +262,8 @@
 											stroke="white"
 											stroke-opacity="0.1"
 											stroke-dasharray="4"
-										/>
-										<circle cx="280" cy="30" r="3" fill={item.chartColor} />
+										></line>
+										<circle cx="280" cy="30" r="3" fill={item.chartColor}></circle>
 										<text
 											x="220"
 											y="40"

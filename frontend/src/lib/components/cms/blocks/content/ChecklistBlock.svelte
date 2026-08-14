@@ -9,9 +9,9 @@
 -->
 
 <script lang="ts">
-	import { IconPlus, IconX, IconCheck, IconCircleCheck, IconProgress } from '$lib/icons';
+	import { IconPlus, IconX, IconCheck, IconCircleCheck, IconProgress } from '#lib/icons/index.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// Types
 

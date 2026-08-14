@@ -8,7 +8,7 @@
  * @level L8 Principal Engineer
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 /**
  * Safe localStorage access with SSR support

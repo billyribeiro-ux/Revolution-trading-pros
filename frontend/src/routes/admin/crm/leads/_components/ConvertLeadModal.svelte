@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconArrowRight, IconX } from '$lib/icons';
+	import { IconArrowRight, IconX } from '#lib/icons/index.js';
 
 	interface ConvertingLead {
 		full_name: string;

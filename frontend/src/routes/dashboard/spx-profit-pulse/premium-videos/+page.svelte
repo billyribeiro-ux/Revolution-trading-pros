@@ -1,23 +1,9 @@
-<!--
-	SPX Profit Pulse - Premium Videos
-	═══════════════════════════════════════════════════════════════════════════
-	
-	Apple ICT 11+ Principal Engineer Grade - January 2026
-	Pixel-perfect match: frontend/Do's/SPX Tr3ndy/spx-premium-videos
-	
-	Svelte 5 / SvelteKit 2.0 Best Practices:
-	- $props() rune for component props
-	- $derived() rune for reactive computed values
-	- $state() rune for local state
-	- Type imports from server load function
-	
--->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { PageData } from './$types';
 	import type { PremiumVideo } from './+page.server';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Svelte 5 props with SvelteKit typing
 	interface Props {
@@ -63,9 +49,21 @@
 	}
 </script>
 
-<svelte:head>
-	<title>SPX Profit Pulse Premium Videos - Revolution Trading Pros</title>
-</svelte:head>
+<!--
+	SPX Profit Pulse - Premium Videos
+	═══════════════════════════════════════════════════════════════════════════
+	
+	Apple ICT 11+ Principal Engineer Grade - January 2026
+	Pixel-perfect match: frontend/Do's/SPX Tr3ndy/spx-premium-videos
+	
+	Svelte 5 / SvelteKit 2.0 Best Practices:
+	- $props() rune for component props
+	- $derived() rune for reactive computed values
+	- $state() rune for local state
+	- Type imports from server load function
+	
+-->
+<svelte:head><title>SPX Profit Pulse Premium Videos - Revolution Trading Pros</title></svelte:head>
 
 <TradingRoomHeader
 	roomName="SPX Profit Pulse"

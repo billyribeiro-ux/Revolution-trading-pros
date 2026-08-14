@@ -15,8 +15,8 @@
 	import { goto } from '$app/navigation';
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { browser } from '$app/environment';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { browser } from '$app/env';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconSearch,
 		IconCode,
@@ -41,7 +41,7 @@
 		IconDownload,
 		IconUpload,
 		IconLogout
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		isOpen?: boolean;
@@ -55,7 +55,14 @@
 
 	// Navigation items
 	const navigationItems = [
-		{ id: 'dashboard', label: 'Dashboard', path: '/admin', icon: IconHome, category: 'Navigation' },
+		{
+			id: 'dashboard',
+			label: 'Dashboard',
+			path: '/admin',
+			icon: IconHome,
+			category: 'Navigation'
+		},
+
 		{
 			id: 'analytics',
 			label: 'Analytics',
@@ -91,10 +98,39 @@
 			icon: IconPhoto,
 			category: 'Content'
 		},
-		{ id: 'videos', label: 'Videos', path: '/admin/videos', icon: IconVideo, category: 'Content' },
-		{ id: 'forms', label: 'Forms', path: '/admin/forms', icon: IconForms, category: 'Content' },
-		{ id: 'members', label: 'Members', path: '/admin/members', icon: IconUsers, category: 'Users' },
-		{ id: 'crm', label: 'CRM', path: '/admin/crm', icon: IconUsers, category: 'Users' },
+
+		{
+			id: 'videos',
+			label: 'Videos',
+			path: '/admin/videos',
+			icon: IconVideo,
+			category: 'Content'
+		},
+
+		{
+			id: 'forms',
+			label: 'Forms',
+			path: '/admin/forms',
+			icon: IconForms,
+			category: 'Content'
+		},
+
+		{
+			id: 'members',
+			label: 'Members',
+			path: '/admin/members',
+			icon: IconUsers,
+			category: 'Users'
+		},
+
+		{
+			id: 'crm',
+			label: 'CRM',
+			path: '/admin/crm',
+			icon: IconUsers,
+			category: 'Users'
+		},
+
 		{
 			id: 'campaigns',
 			label: 'Email Campaigns',

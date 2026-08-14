@@ -1,41 +1,3 @@
-<!--
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║  NavBar Component                                                              ║
-║  ═══════════════════════════════════════════════════════════════════════════  ║
-║  ICT8+ Distinguished Engineer Standards | Apple/Google/Microsoft Grade        ║
-║  Version: 3.1.0 | Svelte 5.x / SvelteKit 2.x (January 2026)                   ║
-║                                                                                ║
-║  Architecture:                                                                 ║
-║  • State Machine pattern for menu states (idle → open → closing)              ║
-║  • Intersection Observer for scroll detection (60fps, no jank)                ║
-║  • Snippet-based composition for maximum flexibility                          ║
-║  • Props API for enterprise customization                                      ║
-║  • Custom events for analytics/tracking integration                           ║
-║                                                                                ║
-║  Accessibility:                                                                ║
-║  • WCAG 2.1 AAA compliant                                                     ║
-║  • Full keyboard navigation with roving tabindex                              ║
-║  • Screen reader announcements via live regions                               ║
-║  • Reduced motion + high contrast support                                      ║
-║  • Focus visible indicators (3:1 contrast ratio)                              ║
-║                                                                                ║
-║  Internationalization:                                                         ║
-║  • RTL/LTR bidirectional support via logical properties                       ║
-║  • Text scaling support (up to 200%)                                          ║
-║  • Locale-aware number formatting                                              ║
-║                                                                                ║
-║  Performance:                                                                  ║
-║  • Zero CLS with explicit dimensions                                          ║
-║  • CSS containment for paint optimization                                      ║
-║  • RAF-throttled animations                                                    ║
-║  • Passive event listeners                                                     ║
-║  • will-change hints for compositor layers                                    ║
-║                                                                                ║
-║  @author Revolution Trading Pros Engineering                                   ║
-║  @license MIT                                                                  ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
--->
-
 <script lang="ts" module>
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MODULE CONTEXT - Shared across all instances
@@ -97,10 +59,10 @@
 	import { onMount, tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
-	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
-	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
-	import { getCartItemCount } from '$lib/stores/cart.svelte';
-	import { logout as logoutApi } from '$lib/api/auth';
+	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '#lib/icons/index.js';
+	import { authStore, isAuthenticated, user } from '#lib/stores/auth.svelte.js';
+	import { getCartItemCount } from '#lib/stores/cart.svelte.js';
+	import { logout as logoutApi } from '#lib/api/auth.js';
 
 	// FIX-2026-05-19 (maint-round1): replaced 10 legacy `$user`/`$isAuthenticated` autosubscribes across 8 sites with `.current` rune-getters — mirrors AdminSidebar FIX-2026-04-26 to prevent `effect_update_depth_exceeded` on post-login `goto({ invalidateAll: true })` flush.
 
@@ -578,14 +540,17 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// NAVIGATION LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
+	beforeNavigate(({ shallow }) => {
+		if (shallow) return;
 
-	beforeNavigate(() => {
 		isNavigating = true;
 		closeMobileMenu();
 		closeDropdown();
 	});
 
-	afterNavigate(() => {
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
 		isNavigating = false;
 	});
 
@@ -627,8 +592,44 @@
 	});
 </script>
 
-<svelte:body {@attach scrollLockAttachment} />
-
+<!--
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║  NavBar Component                                                              ║
+║  ═══════════════════════════════════════════════════════════════════════════  ║
+║  ICT8+ Distinguished Engineer Standards | Apple/Google/Microsoft Grade        ║
+║  Version: 3.1.0 | Svelte 5.x / SvelteKit 2.x (January 2026)                   ║
+║                                                                                ║
+║  Architecture:                                                                 ║
+║  • State Machine pattern for menu states (idle → open → closing)              ║
+║  • Intersection Observer for scroll detection (60fps, no jank)                ║
+║  • Snippet-based composition for maximum flexibility                          ║
+║  • Props API for enterprise customization                                      ║
+║  • Custom events for analytics/tracking integration                           ║
+║                                                                                ║
+║  Accessibility:                                                                ║
+║  • WCAG 2.1 AAA compliant                                                     ║
+║  • Full keyboard navigation with roving tabindex                              ║
+║  • Screen reader announcements via live regions                               ║
+║  • Reduced motion + high contrast support                                      ║
+║  • Focus visible indicators (3:1 contrast ratio)                              ║
+║                                                                                ║
+║  Internationalization:                                                         ║
+║  • RTL/LTR bidirectional support via logical properties                       ║
+║  • Text scaling support (up to 200%)                                          ║
+║  • Locale-aware number formatting                                              ║
+║                                                                                ║
+║  Performance:                                                                  ║
+║  • Zero CLS with explicit dimensions                                          ║
+║  • CSS containment for paint optimization                                      ║
+║  • RAF-throttled animations                                                    ║
+║  • Passive event listeners                                                     ║
+║  • will-change hints for compositor layers                                    ║
+║                                                                                ║
+║  @author Revolution Trading Pros Engineering                                   ║
+║  @license MIT                                                                  ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+-->
+<svelte:body {@attach scrollLockAttachment}></svelte:body>
 <!-- Scroll Sentinel (Intersection Observer target) -->
 <div {@attach scrollSentinelAttachment} class="scroll-sentinel" aria-hidden="true"></div>
 

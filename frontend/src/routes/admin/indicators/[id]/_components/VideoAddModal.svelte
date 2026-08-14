@@ -57,8 +57,7 @@
 					id="video-description"
 					rows="3"
 					bind:value={newVideo.description}
-					placeholder="Brief description of the video"
-				></textarea>
+					placeholder="Brief description of the video"></textarea>
 			</div>
 			<div class="form-group">
 				<label for="video-url">Video URL (Direct)</label>

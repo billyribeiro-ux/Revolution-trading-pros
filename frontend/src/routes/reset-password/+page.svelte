@@ -4,7 +4,7 @@
 	 * @version 2.0.0
 	 */
 	import { goto } from '$app/navigation';
-	import { resetPassword } from '$lib/api/auth';
+	import { resetPassword } from '#lib/api/auth.js';
 	import {
 		IconLock,
 		IconAlertCircle,
@@ -12,9 +12,9 @@
 		IconShieldCheck,
 		IconEye,
 		IconEyeOff
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { onDestroy, onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// Svelte 5 state runes
 	let email = $state('');
@@ -254,7 +254,7 @@
 							stroke-linejoin="round"
 							stroke-width="2"
 							d="M10 19l-7-7m0 0l7-7m-7 7h18"
-						/>
+						></path>
 					</svg>
 					<span>Back to login</span>
 				</a>

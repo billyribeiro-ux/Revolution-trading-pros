@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconUpload, IconX } from '$lib/icons';
+	import { IconUpload, IconX } from '#lib/icons/index.js';
 
 	interface Props {
 		file: File | null;

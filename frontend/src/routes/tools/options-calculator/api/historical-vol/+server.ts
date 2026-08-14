@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { POLYGON_API_KEY } from '$app/env/private';
 
 // Validate user-controlled query params before they reach the upstream URL.
 const TICKER_RE = /^[A-Z.\-]{1,10}$/i;
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 
 	if (provider === 'polygon') {
-		const apiKey = env.POLYGON_API_KEY;
+		const apiKey = POLYGON_API_KEY;
 		if (!apiKey) throw error(401, 'Polygon API key not configured');
 
 		// Validate the user-supplied date window up front (outside the try/catch)

@@ -1,14 +1,6 @@
-<!--
-/**
- * Performance Monitoring Dashboard
- * ═══════════════════════════════════════════════════════════════════════════
- * Real-time performance metrics display
- */
--->
-
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	interface Props {
 		visible?: boolean;
@@ -112,6 +104,14 @@
 		}[position]
 	);
 </script>
+
+<!--
+/**
+ * Performance Monitoring Dashboard
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Real-time performance metrics display
+ */
+-->
 
 {#if visible}
 	<div class={['perf-dashboard', positionClass]} role="region" aria-label="Performance metrics">

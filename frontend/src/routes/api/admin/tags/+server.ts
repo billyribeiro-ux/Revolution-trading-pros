@@ -8,11 +8,11 @@
  */
 
 import { json, error, isHttpError } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+import type { RequestHandler } from '@sveltejs/kit';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);

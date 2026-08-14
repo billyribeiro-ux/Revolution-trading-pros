@@ -34,10 +34,10 @@
  * @license MIT
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
-import type { User } from '$lib/stores/auth.svelte';
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { authStore } from '#lib/stores/auth.svelte.js';
+import type { User } from '#lib/stores/auth.svelte.js';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -96,12 +96,10 @@ export interface MFALoginData extends LoginData {
 	mfa_code?: string;
 	backup_code?: string;
 }
-
 export interface BiometricLoginData {
 	credential: string;
 	device_id: string;
 }
-
 export interface ForgotPasswordData {
 	email: string;
 	captcha?: string;
@@ -142,7 +140,7 @@ export interface AuthResponse {
 }
 
 export interface SessionsResponse {
-	sessions: import('$lib/stores/auth.svelte').UserSession[];
+	sessions: import('#lib/stores/auth.svelte.js').UserSession[];
 	count: number;
 }
 
@@ -150,13 +148,11 @@ export interface LogoutAllResponse {
 	message: string;
 	revoked_count: number;
 }
-
 export interface TokenResponse {
 	token: string;
 	refresh_token: string;
 	expires_in: number;
 }
-
 export interface MessageResponse {
 	message: string;
 	success?: boolean;
@@ -697,11 +693,7 @@ class AuthenticationService {
 	 * Login with biometric
 	 */
 	async loginWithBiometric(credential: string): Promise<User> {
-		const data: BiometricLoginData = {
-			credential,
-			device_id: this.getDeviceId()
-		};
-
+		const data: BiometricLoginData = { credential, device_id: this.getDeviceId() };
 		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.loginBiometric, {
 			method: 'POST',
 			body: JSON.stringify(data),
@@ -1440,6 +1432,7 @@ export const getSecurityEvents = () => authService.getSecurityEvents();
 function isUserLike(value: unknown): value is User {
 	if (!value || typeof value !== 'object') return false;
 	const candidate = value as Partial<User>;
+
 	return (
 		typeof candidate.id === 'number' &&
 		typeof candidate.email === 'string' &&

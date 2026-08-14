@@ -2,10 +2,10 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
-	import type { Member } from '$lib/api/members';
+	import { churnedStore, emailStore } from '#lib/stores/members.svelte.js';
+	import type { Member } from '#lib/api/members.js';
 	// FIX-2026-04-26: replaced native alert() with toastStore.
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconArrowLeft,
 		IconHeart,
@@ -24,7 +24,7 @@
 		IconTrendingDown,
 		IconSparkles,
 		IconRefresh
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Store state (local derived from getters)
 	let members = $derived(churnedStore.members);
@@ -586,8 +586,7 @@
 						id="email-body"
 						bind:value={emailBody}
 						rows="12"
-						placeholder="Email body... Use {'{{ name }}'} for personalization"
-					></textarea>
+						placeholder="Email body... Use {'{{ name }}'} for personalization"></textarea>
 					<p class="form-hint">
 						Available variables: {'{{name}}'}, {'{{first_name}}'}, {'{{email}}'}
 					</p>

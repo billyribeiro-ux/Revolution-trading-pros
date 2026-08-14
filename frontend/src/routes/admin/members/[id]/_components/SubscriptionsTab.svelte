@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconCreditCard, IconCalendar, IconTrash, IconGift } from '$lib/icons';
-	import type { Subscription } from '$lib/api/members';
+	import { IconCreditCard, IconCalendar, IconTrash, IconGift } from '#lib/icons/index.js';
+	import type { Subscription } from '#lib/api/members.js';
 	import { formatCurrency, formatDate } from './helpers';
 
 	interface Props {

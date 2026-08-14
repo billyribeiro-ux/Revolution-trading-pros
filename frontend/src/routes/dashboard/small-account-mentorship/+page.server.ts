@@ -14,14 +14,14 @@
  */
 
 import type { ServerLoad } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { getLatestWatchlist } from '$lib/server/watchlist';
-import type { RoomResource } from '$lib/api/room-resources';
+import { API_BASE_URL } from '$app/env/private';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
+import type { RoomResource } from '#lib/api/room-resources.js';
 
 const SMALL_ACCOUNT_MENTORSHIP_ID = 1;
 
 export const load: ServerLoad = async ({ fetch, locals }) => {
-	const baseUrl = env.API_BASE_URL || 'http://localhost:8080';
+	const baseUrl = API_BASE_URL || 'http://localhost:8080';
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = (locals as { accessToken?: string }).accessToken ?? undefined;
 

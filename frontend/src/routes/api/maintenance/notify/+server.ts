@@ -26,7 +26,7 @@ export const POST = async ({ request, platform }: { request: Request; platform: 
 
 		// Validation
 		if (!email || !EMAIL_REGEX.test(email)) {
-			throw error(400, { message: 'Please provide a valid email address' });
+			throw error(400, 'Please provide a valid email address');
 		}
 
 		const normalizedEmail = email.toLowerCase().trim();
@@ -66,7 +66,7 @@ export const POST = async ({ request, platform }: { request: Request; platform: 
 			throw err; // Re-throw SvelteKit errors
 		}
 
-		throw error(500, { message: 'Something went wrong. Please try again.' });
+		throw error(500, 'Something went wrong. Please try again.');
 	}
 };
 

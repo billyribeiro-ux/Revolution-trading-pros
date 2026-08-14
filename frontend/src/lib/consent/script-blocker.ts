@@ -11,7 +11,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { ConsentCategory, ConsentState } from './types';
 
 /**
@@ -130,7 +130,12 @@ export const EMBEDDED_CONTENT_PATTERNS: Record<
 	{ pattern: RegExp; category: ConsentCategory; name: string }[]
 > = {
 	youtube: [
-		{ pattern: /youtube\.com\/embed/i, category: 'preferences', name: 'YouTube' },
+		{
+			pattern: /youtube\.com\/embed/i,
+			category: 'preferences',
+			name: 'YouTube'
+		},
+
 		{
 			pattern: /youtube-nocookie\.com\/embed/i,
 			category: 'preferences',

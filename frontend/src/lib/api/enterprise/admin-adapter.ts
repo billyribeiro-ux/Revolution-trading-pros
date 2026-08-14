@@ -9,11 +9,11 @@
  * - Exposes enterprise metrics and diagnostics
  *
  * Usage:
- * Instead of importing from '$lib/api/admin', import from this file
+ * Instead of importing from '#lib/api/admin.js', import from this file
  * to get enterprise-enhanced versions of the admin APIs.
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, get as _get } from 'svelte/store';
 
 // Import existing admin APIs

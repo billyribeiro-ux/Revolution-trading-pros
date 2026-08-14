@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { emailStore, getIsEmailLoading } from '$lib/stores/email.svelte';
+	import { emailStore, getIsEmailLoading } from '#lib/stores/email.svelte.js';
 	import {
 		IconMail,
 		IconSend,
@@ -17,7 +17,7 @@
 		IconFileText,
 		IconRocket,
 		IconBolt
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		$state('campaigns');

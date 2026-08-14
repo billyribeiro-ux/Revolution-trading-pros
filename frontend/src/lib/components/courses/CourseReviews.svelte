@@ -6,9 +6,9 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { apiFetch } from '$lib/api/config';
-	import Icon from '$lib/components/Icon.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { apiFetch } from '#lib/api/config.js';
+	import Icon from '#lib/components/Icon.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Review {
 		id: number;
@@ -206,8 +206,7 @@
 					bind:value={content}
 					placeholder="Tell others what you thought about this course..."
 					rows="4"
-					maxlength="2000"
-				></textarea>
+					maxlength="2000"></textarea>
 			</div>
 
 			{#if error}

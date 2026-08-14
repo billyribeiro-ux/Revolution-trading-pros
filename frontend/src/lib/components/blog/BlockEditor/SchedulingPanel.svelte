@@ -18,9 +18,9 @@
 	import { onMount } from 'svelte';
 	import { fromAction } from 'svelte/attachments';
 	import { fade, slide } from 'svelte/transition';
-	import Icon from '$lib/components/Icon.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	import Icon from '#lib/components/Icon.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Props
 	interface Props {
@@ -658,8 +658,7 @@
 									id="schedule-notes"
 									bind:value={scheduleNotes}
 									placeholder="Add any notes about this schedule..."
-									rows="2"
-								></textarea>
+									rows="2"></textarea>
 							</div>
 
 							<button
@@ -741,8 +740,7 @@
 										id="release-description"
 										bind:value={newReleaseDescription}
 										placeholder="Describe this release..."
-										rows="2"
-									></textarea>
+										rows="2"></textarea>
 								</div>
 								<button
 									class="btn-primary"

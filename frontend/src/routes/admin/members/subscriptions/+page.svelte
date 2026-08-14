@@ -13,7 +13,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconRefresh,
 		IconSearch,
@@ -23,8 +23,8 @@
 		IconEdit,
 		IconX,
 		IconCreditCard
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getSubscriptions,
 		cancelSubscription,
@@ -32,13 +32,13 @@
 		resumeSubscription,
 		exportSubscriptions,
 		type EnhancedSubscription
-	} from '$lib/api/subscriptions';
+	} from '#lib/api/subscriptions.js';
 	import type {
 		SubscriptionFilters,
 		SubscriptionStatus,
 		SubscriptionInterval
-	} from '$lib/stores/subscriptions.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/stores/subscriptions.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// State - Svelte 5 Runes
 

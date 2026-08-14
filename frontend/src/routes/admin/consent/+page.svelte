@@ -10,17 +10,17 @@
 	 * - Audit log viewer
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		getAnalyticsSummary,
 		getAuditLog,
 		getAuditStats,
 		scanCookies,
 		exportConsentData
-	} from '$lib/consent';
-	import { getABTestAnalytics, exportABTestData } from '$lib/consent/ab-testing';
-	import { getVersionInfo } from '$lib/consent/versioning';
-	import type { ConsentAnalytics, ConsentAuditEntry } from '$lib/consent';
+	} from '#lib/consent/index.js';
+	import { getABTestAnalytics, exportABTestData } from '#lib/consent/ab-testing.js';
+	import { getVersionInfo } from '#lib/consent/versioning.js';
+	import type { ConsentAnalytics, ConsentAuditEntry } from '#lib/consent/index.js';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
@@ -160,28 +160,23 @@
 		<nav class="tabs">
 			<button
 				class={['tab', { active: activeTab === 'overview' }]}
-				onclick={() => (activeTab = 'overview')}
+				onclick={() => (activeTab = 'overview')}>Overview</button
 			>
-				Overview
-			</button>
+
 			<button
 				class={['tab', { active: activeTab === 'audit' }]}
-				onclick={() => (activeTab = 'audit')}
+				onclick={() => (activeTab = 'audit')}>Audit Log</button
 			>
-				Audit Log
-			</button>
+
 			<button
 				class={['tab', { active: activeTab === 'cookies' }]}
-				onclick={() => (activeTab = 'cookies')}
+				onclick={() => (activeTab = 'cookies')}>Cookies</button
 			>
-				Cookies
-			</button>
+
 			<button
 				class={['tab', { active: activeTab === 'ab-tests' }]}
-				onclick={() => (activeTab = 'ab-tests')}
+				onclick={() => (activeTab = 'ab-tests')}>A/B Tests</button
 			>
-				A/B Tests
-			</button>
 		</nav>
 
 		<!-- Overview Tab -->

@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconMail, IconCalendar, IconUsers } from '$lib/icons';
+	import { IconMail, IconCalendar, IconUsers } from '#lib/icons/index.js';
 
 	interface Overview {
 		name: string;

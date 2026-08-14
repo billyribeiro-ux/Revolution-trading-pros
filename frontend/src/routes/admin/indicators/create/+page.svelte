@@ -9,8 +9,8 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconFileDescription from '@tabler/icons-svelte-runes/icons/file-description';
@@ -732,8 +732,7 @@
 							id="short_description"
 							bind:value={indicator.short_description}
 							placeholder="Brief summary for listings and cards..."
-							rows="2"
-						></textarea>
+							rows="2"></textarea>
 					</div>
 
 					<div class="form-group">
@@ -742,8 +741,7 @@
 							id="description"
 							bind:value={indicator.description}
 							placeholder="Detailed description with features, benefits, and usage..."
-							rows="6"
-						></textarea>
+							rows="6"></textarea>
 					</div>
 
 					<!-- Tags -->
@@ -1102,8 +1100,7 @@
 							id="version_notes"
 							bind:value={indicator.version_notes}
 							placeholder="What's new in this version..."
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 				</section>
 			</div>

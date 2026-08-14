@@ -9,8 +9,8 @@
 
 <script lang="ts">
 	import type { Block, BlockSettings } from '../types';
-	import Icon from '$lib/components/Icon.svelte';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	interface Props {
 		block: Block;

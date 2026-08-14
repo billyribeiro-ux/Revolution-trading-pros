@@ -9,7 +9,7 @@
 	import { createAnalyticsState, type TimePeriod } from './analytics.state.svelte';
 
 	// Layout Components
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Analytics Components
 	import PerformanceOverview from './components/PerformanceOverview.svelte';

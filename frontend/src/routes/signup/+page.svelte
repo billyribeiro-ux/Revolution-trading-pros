@@ -8,8 +8,8 @@
 	 * @version 2.0.0 - November 2025
 	 */
 	import { onMount } from 'svelte';
-	import { authStore } from '$lib/stores/auth.svelte';
-	import { registerAndLogin } from '$lib/api/auth';
+	import { authStore } from '#lib/stores/auth.svelte.js';
+	import { registerAndLogin } from '#lib/api/auth.js';
 	import { goto } from '$app/navigation';
 
 	// Svelte 5 state runes

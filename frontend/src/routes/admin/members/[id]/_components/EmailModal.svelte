@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconSend } from '$lib/icons';
+	import { IconX, IconSend } from '#lib/icons/index.js';
 
 	interface Props {
 		open: boolean;
@@ -63,8 +63,7 @@
 						value={body}
 						oninput={(e) => onBodyChange((e.target as HTMLTextAreaElement).value)}
 						rows="10"
-						placeholder="Email body..."
-					></textarea>
+						placeholder="Email body..."></textarea>
 				</div>
 			</div>
 			<div class="modal-footer">

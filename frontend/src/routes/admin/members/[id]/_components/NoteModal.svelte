@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconPlus } from '$lib/icons';
+	import { IconX, IconPlus } from '#lib/icons/index.js';
 
 	interface Props {
 		open: boolean;
@@ -38,8 +38,7 @@
 						value={newNote}
 						oninput={(e) => onNoteChange((e.target as HTMLTextAreaElement).value)}
 						rows="5"
-						placeholder="Add internal note about this member..."
-					></textarea>
+						placeholder="Add internal note about this member..."></textarea>
 				</div>
 			</div>
 			<div class="modal-footer">

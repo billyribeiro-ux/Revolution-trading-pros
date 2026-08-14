@@ -8,7 +8,7 @@
 
 	import { onMount } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		beforeSrc: string;

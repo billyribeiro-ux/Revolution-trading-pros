@@ -15,9 +15,9 @@
 	import IconApi from '@tabler/icons-svelte-runes/icons/api';
 	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import { crmAPI } from '$lib/api/crm';
-        import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import type { SystemLog, LogLevel, LogCategory } from '$lib/crm/types';
+	import { crmAPI } from '#lib/api/crm.js';
+        import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import type { SystemLog, LogLevel, LogCategory } from '#lib/crm/types.js';
 
 	let logs = $state<SystemLog[]>([]);
 	let isLoading = $state(true);

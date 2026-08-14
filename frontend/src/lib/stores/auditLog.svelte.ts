@@ -11,7 +11,7 @@
  * @version 2.0.0 - Svelte 5 Runes (January 2026)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types
@@ -32,13 +32,7 @@ export type AuditActionType =
 	| 'api_disconnect';
 
 export type AuditCategory =
-	| 'content'
-	| 'users'
-	| 'settings'
-	| 'security'
-	| 'integrations'
-	| 'commerce'
-	| 'marketing';
+	'content' | 'users' | 'settings' | 'security' | 'integrations' | 'commerce' | 'marketing';
 
 export interface AuditLogEntry {
 	id: string;

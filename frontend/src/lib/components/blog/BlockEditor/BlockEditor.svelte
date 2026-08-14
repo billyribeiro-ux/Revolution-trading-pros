@@ -42,10 +42,10 @@
 		IconKeyboard,
 		IconHistory,
 		IconCalendar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
-	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
+	import type { Block as CMSBlock } from '#lib/components/cms/blocks/types.js';
 
 	import { BLOCK_DEFINITIONS } from './types';
 

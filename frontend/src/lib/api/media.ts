@@ -9,7 +9,7 @@
  */
 
 import { get as _get } from 'svelte/store';
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 import type { JsonValue, QueryParams } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════

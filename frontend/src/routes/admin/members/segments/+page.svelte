@@ -12,8 +12,8 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import {
 		IconFilter,
 		IconPlus,
@@ -33,9 +33,9 @@
 		IconCurrencyDollar,
 		IconCalendar,
 		IconTrendingUp
-	} from '$lib/icons';
-	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import SegmentDetailDrawer from '#lib/components/admin/SegmentDetailDrawer.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// State - Svelte 5 Runes
 

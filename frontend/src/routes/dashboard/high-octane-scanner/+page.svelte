@@ -7,7 +7,7 @@
 	 * 2. The exact trade plan (entries, targets, stops, options)
 	 *
 	 */
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
 	interface WeeklyContent {
@@ -66,8 +66,8 @@
 	type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
 
 	// COMPONENT PROPS - Server data with types
-	import type { WatchlistResponse } from '$lib/types/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
+	import type { WatchlistResponse } from '#lib/types/watchlist.js';
+	import type { RoomResource } from '#lib/api/room-resources.js';
 
 	// SvelteKit 2.0+ / Svelte 5: Use PageProps from generated types for full type safety
 	// Falls back to inline interface when types not yet generated

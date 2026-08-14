@@ -7,9 +7,15 @@
 -->
 
 <script lang="ts">
-	import { IconTrendingUp, IconTrendingDown, IconPlus, IconX, IconChartLine } from '$lib/icons';
+	import {
+		IconTrendingUp,
+		IconTrendingDown,
+		IconPlus,
+		IconX,
+		IconChartLine
+	} from '#lib/icons/index.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 	import { onMount } from 'svelte';
 
 	interface Props {

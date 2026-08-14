@@ -16,12 +16,13 @@
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		BANNER_TEMPLATES,
 		getTemplateCategories,
 		DEFAULT_TEMPLATE_ID
-	} from '$lib/consent/templates/registry';
+	} from '#lib/consent/templates/registry.js';
+
 	import {
 		allTemplates,
 		initializeTemplateStore,
@@ -35,12 +36,12 @@
 		getActiveTemplateConfig,
 		exportTemplateConfig,
 		importTemplateConfig
-	} from '$lib/consent/templates/store';
-	import TemplatePreviewCard from '$lib/consent/templates/TemplatePreviewCard.svelte';
-	import TemplateEditor from '$lib/consent/templates/TemplateEditor.svelte';
-	import BannerRenderer from '$lib/consent/templates/BannerRenderer.svelte';
-	import type { BannerTemplate } from '$lib/consent/templates/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/consent/templates/store.js';
+	import TemplatePreviewCard from '#lib/consent/templates/TemplatePreviewCard.svelte';
+	import TemplateEditor from '#lib/consent/templates/TemplateEditor.svelte';
+	import BannerRenderer from '#lib/consent/templates/BannerRenderer.svelte';
+	import type { BannerTemplate } from '#lib/consent/templates/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// State
 	let selectedCategory = $state('all');
@@ -340,13 +341,12 @@
 					class="import-textarea"
 					bind:value={importJson}
 					placeholder={importPlaceholder}
-					rows="10"
-				></textarea>
+					rows="10"></textarea>
 				<div class="modal-actions">
-					<button class="btn btn-secondary" onclick={() => (showImportModal = false)}>
-						Cancel
-					</button>
-					<button class="btn btn-primary" onclick={confirmImport}> Import </button>
+					<button class="btn btn-secondary" onclick={() => (showImportModal = false)}>Cancel</button
+					>
+
+					<button class="btn btn-primary" onclick={confirmImport}>Import</button>
 				</div>
 			</div>
 		</div>

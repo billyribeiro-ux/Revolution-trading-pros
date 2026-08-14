@@ -21,9 +21,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { categoriesApi, tagsApi, AdminApiError, type Category, type Tag } from '$lib/api/admin';
-	import { logger } from '$lib/utils/logger';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import {
+		categoriesApi,
+		tagsApi,
+		AdminApiError,
+		type Category,
+		type Tag
+	} from '#lib/api/admin.js';
+	import { logger } from '#lib/utils/logger.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	import CategoriesPageHeader from './_components/CategoriesPageHeader.svelte';
 	import CategoriesToolbar from './_components/CategoriesToolbar.svelte';

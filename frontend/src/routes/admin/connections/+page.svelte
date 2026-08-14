@@ -12,8 +12,8 @@
 	import { onMount } from 'svelte';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 
 	// FIX-2026-04-26: Tabler icons replace 11 raw inline <svg> blocks for
 	// consistent professional styling per CLAUDE.md icon-system standard.

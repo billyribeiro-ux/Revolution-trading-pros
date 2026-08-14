@@ -189,8 +189,8 @@ The Class Downloads section displays embedded Box.com file listings for course m
 
 ```typescript
 import { onMount } from 'svelte';
-import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
+import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
+import HaveQuestionsSection from '#lib/components/sections/HaveQuestionsSection.svelte';
 ```
 
 #### 2. Svelte 5 Runes - State Variables
@@ -331,20 +331,21 @@ onMount(() => {
 ```
 
 **Color Palette:**
-| Token | Hex Value | RGB | Usage |
-|-------|-----------|-----|-------|
-| `--color-page-bg` | `#EFEFEF` | rgb(239, 239, 239) | Body background (light gray) |
-| `--color-content-bg` | `#FFFFFF` | rgb(255, 255, 255) | Downloads container background (white) |
-| `--color-video-bg` | `#0a2335` | rgb(10, 35, 53) | Video section background (dark blue) |
-| `--color-text-primary` | `#666666` | rgb(102, 102, 102) | Primary text color (medium gray) |
-| `--color-text-heading` | `#4a4a4a` | rgb(74, 74, 74) | Heading text color (dark gray) |
-| `--color-text-light` | `#999999` | rgb(153, 153, 153) | Light text color |
-| `--color-text-inverse` | `#ffffff` | rgb(255, 255, 255) | Inverse text (white on dark) |
-| `--color-text-inverse-muted` | `#d5d5d5` | rgb(213, 213, 213) | Muted inverse text |
-| `--color-link` | `#1e73be` | rgb(30, 115, 190) | Link color (blue) |
-| `--color-link-hover` | `#000000` | rgb(0, 0, 0) | Link hover color (black) |
-| `--color-border` | `#999999` | rgb(153, 153, 153) | Border color (medium gray) |
-| `--color-border-light` | `#dddddd` | rgb(221, 221, 221) | Light border color |
+
+| Token                        | Hex Value | RGB                | Usage                                  |
+| ---------------------------- | --------- | ------------------ | -------------------------------------- |
+| `--color-page-bg`            | `#EFEFEF` | rgb(239, 239, 239) | Body background (light gray)           |
+| `--color-content-bg`         | `#FFFFFF` | rgb(255, 255, 255) | Downloads container background (white) |
+| `--color-video-bg`           | `#0a2335` | rgb(10, 35, 53)    | Video section background (dark blue)   |
+| `--color-text-primary`       | `#666666` | rgb(102, 102, 102) | Primary text color (medium gray)       |
+| `--color-text-heading`       | `#4a4a4a` | rgb(74, 74, 74)    | Heading text color (dark gray)         |
+| `--color-text-light`         | `#999999` | rgb(153, 153, 153) | Light text color                       |
+| `--color-text-inverse`       | `#ffffff` | rgb(255, 255, 255) | Inverse text (white on dark)           |
+| `--color-text-inverse-muted` | `#d5d5d5` | rgb(213, 213, 213) | Muted inverse text                     |
+| `--color-link`               | `#1e73be` | rgb(30, 115, 190)  | Link color (blue)                      |
+| `--color-link-hover`         | `#000000` | rgb(0, 0, 0)       | Link hover color (black)               |
+| `--color-border`             | `#999999` | rgb(153, 153, 153) | Border color (medium gray)             |
+| `--color-border-light`       | `#dddddd` | rgb(221, 221, 221) | Light border color                     |
 
 #### Spacing Tokens (Lines 199-209)
 
@@ -363,18 +364,19 @@ onMount(() => {
 ```
 
 **8px Grid System:**
-| Token | Rem | Pixels | Usage |
-|-------|-----|--------|-------|
-| `--space-1` | 0.25rem | 4px | Micro spacing |
-| `--space-2` | 0.5rem | 8px | Base grid unit |
-| `--space-3` | 0.75rem | 12px | Small spacing |
-| `--space-4` | 1rem | 16px | Standard spacing |
-| `--space-5` | 1.25rem | 20px | Section padding (mobile) |
-| `--space-6` | 1.5rem | 24px | Medium spacing |
-| `--space-8` | 2rem | 32px | Large spacing |
-| `--space-10` | 2.5rem | 40px | Section padding (desktop) |
-| `--space-12` | 3rem | 48px | Extra large spacing |
-| `--space-15` | 3.75rem | 60px | Section padding (vertical) |
+
+| Token        | Rem     | Pixels | Usage                      |
+| ------------ | ------- | ------ | -------------------------- |
+| `--space-1`  | 0.25rem | 4px    | Micro spacing              |
+| `--space-2`  | 0.5rem  | 8px    | Base grid unit             |
+| `--space-3`  | 0.75rem | 12px   | Small spacing              |
+| `--space-4`  | 1rem    | 16px   | Standard spacing           |
+| `--space-5`  | 1.25rem | 20px   | Section padding (mobile)   |
+| `--space-6`  | 1.5rem  | 24px   | Medium spacing             |
+| `--space-8`  | 2rem    | 32px   | Large spacing              |
+| `--space-10` | 2.5rem  | 40px   | Section padding (desktop)  |
+| `--space-12` | 3rem    | 48px   | Extra large spacing        |
+| `--space-15` | 3.75rem | 60px   | Section padding (vertical) |
 
 #### Typography Tokens (Lines 211-217)
 
@@ -389,14 +391,15 @@ onMount(() => {
 ```
 
 **Fluid Typography Scale:**
-| Token | Min Size | Fluid Formula | Max Size | Usage |
-|-------|----------|---------------|----------|-------|
-| `--font-size-sm` | 0.875rem (14px) | 0.8rem + 0.375vw | 1rem (16px) | Small text |
-| `--font-size-base` | 1rem (16px) | 0.925rem + 0.375vw | 1.125rem (18px) | Body text |
-| `--font-size-lg` | 1.1rem (17.6px) | 1rem + 0.5vw | 1.4rem (22.4px) | Large text |
-| `--font-size-xl` | 1.2rem (19.2px) | 1rem + 1vw | 1.75rem (28px) | Extra large |
-| `--font-size-2xl` | 1.5rem (24px) | 1.25rem + 1.25vw | 2rem (32px) | Heading 2 |
-| `--font-size-3xl` | 1.75rem (28px) | 1.5rem + 1.5vw | 2.5rem (40px) | Heading 1 |
+
+| Token              | Min Size        | Fluid Formula      | Max Size        | Usage       |
+| ------------------ | --------------- | ------------------ | --------------- | ----------- |
+| `--font-size-sm`   | 0.875rem (14px) | 0.8rem + 0.375vw   | 1rem (16px)     | Small text  |
+| `--font-size-base` | 1rem (16px)     | 0.925rem + 0.375vw | 1.125rem (18px) | Body text   |
+| `--font-size-lg`   | 1.1rem (17.6px) | 1rem + 0.5vw       | 1.4rem (22.4px) | Large text  |
+| `--font-size-xl`   | 1.2rem (19.2px) | 1rem + 1vw         | 1.75rem (28px)  | Extra large |
+| `--font-size-2xl`  | 1.5rem (24px)   | 1.25rem + 1.25vw   | 2rem (32px)     | Heading 2   |
+| `--font-size-3xl`  | 1.75rem (28px)  | 1.5rem + 1.5vw     | 2.5rem (40px)   | Heading 1   |
 
 #### Safe Area Insets (Lines 219-223)
 
@@ -452,14 +455,15 @@ onMount(() => {
 ```
 
 **Properties:**
-| Property | Value | Purpose |
-|----------|-------|---------|
-| `display` | flex | Flexbox layout |
-| `flex-direction` | column | Vertical stacking |
-| `align-items` | center | Horizontal centering |
-| `max-width` | 1100px | Container max width |
-| `margin` | 0 auto | Horizontal centering |
-| `padding` | 0 20px | Horizontal padding |
+
+| Property         | Value  | Purpose              |
+| ---------------- | ------ | -------------------- |
+| `display`        | flex   | Flexbox layout       |
+| `flex-direction` | column | Vertical stacking    |
+| `align-items`    | center | Horizontal centering |
+| `max-width`      | 1100px | Container max width  |
+| `margin`         | 0 auto | Horizontal centering |
+| `padding`        | 0 20px | Horizontal padding   |
 
 #### 3. Downloads Subsection Container (Lines 448-456)
 
@@ -476,15 +480,16 @@ onMount(() => {
 ```
 
 **EXACT DESKTOP DIMENSIONS:**
-| Property | Value | Pixels | Notes |
-|----------|-------|--------|-------|
-| `background-color` | #FFFFFF | - | White background |
-| `padding` | 25px | 25px | All sides |
-| `width` | 100% | - | Full width of parent |
-| `max-width` | 1080px | 1080px | **EXACT container width** |
-| `height` | 512px | 512px | **EXACT container height** |
-| `box-sizing` | border-box | - | Padding included in dimensions |
-| `margin` | 0 auto | - | Horizontal centering |
+
+| Property           | Value      | Pixels | Notes                          |
+| ------------------ | ---------- | ------ | ------------------------------ |
+| `background-color` | #FFFFFF    | -      | White background               |
+| `padding`          | 25px       | 25px   | All sides                      |
+| `width`            | 100%       | -      | Full width of parent           |
+| `max-width`        | 1080px     | 1080px | **EXACT container width**      |
+| `height`           | 512px      | 512px  | **EXACT container height**     |
+| `box-sizing`       | border-box | -      | Padding included in dimensions |
+| `margin`           | 0 auto     | -      | Horizontal centering           |
 
 **Content Area Calculation:**
 
@@ -508,14 +513,15 @@ onMount(() => {
 ```
 
 **Typography Specifications:**
-| Property | Value | Computed | Notes |
-|----------|-------|----------|-------|
-| `font-size` | 1.75rem | 28px | Fixed size (not fluid) |
-| `font-weight` | 400 | normal | Regular weight |
-| `color` | #4a4a4a | Dark gray | Heading color token |
-| `margin` | 0 0 25px 0 | - | 25px bottom margin |
-| `text-align` | left | - | Left-aligned |
-| `line-height` | 1.2 | 33.6px | Tight line height |
+
+| Property      | Value      | Computed  | Notes                  |
+| ------------- | ---------- | --------- | ---------------------- |
+| `font-size`   | 1.75rem    | 28px      | Fixed size (not fluid) |
+| `font-weight` | 400        | normal    | Regular weight         |
+| `color`       | #4a4a4a    | Dark gray | Heading color token    |
+| `margin`      | 0 0 25px 0 | -         | 25px bottom margin     |
+| `text-align`  | left       | -         | Left-aligned           |
+| `line-height` | 1.2        | 33.6px    | Tight line height      |
 
 #### 5. Iframe Container (Lines 467-472)
 
@@ -529,12 +535,13 @@ onMount(() => {
 ```
 
 **Container Specifications:**
-| Property | Value | Notes |
-|----------|-------|-------|
-| `width` | 100% | Full width of parent (1030px after padding) |
-| `height` | 518px | **EXACT iframe container height** |
-| `box-sizing` | border-box | Standard box model |
-| `background` | #FFFFFF | White background |
+
+| Property     | Value      | Notes                                       |
+| ------------ | ---------- | ------------------------------------------- |
+| `width`      | 100%       | Full width of parent (1030px after padding) |
+| `height`     | 518px      | **EXACT iframe container height**           |
+| `box-sizing` | border-box | Standard box model                          |
+| `background` | #FFFFFF    | White background                            |
 
 **Height Calculation:**
 
@@ -557,12 +564,13 @@ onMount(() => {
 ```
 
 **Iframe Specifications:**
-| Property | Value | Notes |
-|----------|-------|-------|
-| `width` | 100% | Full width of container |
-| `height` | 518px | **EXACT iframe height** |
-| `border` | none | No border |
-| `display` | block | Block-level element |
+
+| Property  | Value | Notes                   |
+| --------- | ----- | ----------------------- |
+| `width`   | 100%  | Full width of container |
+| `height`  | 518px | **EXACT iframe height** |
+| `border`  | none  | No border               |
+| `display` | block | Block-level element     |
 
 **Critical Dimension:**
 
@@ -592,19 +600,20 @@ onMount(() => {
 ```
 
 **Fallback Specifications:**
-| Selector | Property | Value | Purpose |
-|----------|----------|-------|---------|
-| `.iframe-fallback` | padding | 20px | Inner spacing |
-| | text-align | center | Centered text |
-| | background-color | #FFFFFF | White background |
-| | border | 1px solid #dddddd | Light border |
-| | border-radius | 4px | Rounded corners |
-| | color | #666666 | Text color |
-| `.iframe-fallback a` | color | #1e73be | Link color |
-| | text-decoration | underline | Underlined |
-| | display | inline-block | Block formatting |
-| | min-height | 44px | Touch target |
-| | line-height | 44px | Vertical centering |
+
+| Selector             | Property         | Value             | Purpose            |
+| -------------------- | ---------------- | ----------------- | ------------------ |
+| `.iframe-fallback`   | padding          | 20px              | Inner spacing      |
+|                      | text-align       | center            | Centered text      |
+|                      | background-color | #FFFFFF           | White background   |
+|                      | border           | 1px solid #dddddd | Light border       |
+|                      | border-radius    | 4px               | Rounded corners    |
+|                      | color            | #666666           | Text color         |
+| `.iframe-fallback a` | color            | #1e73be           | Link color         |
+|                      | text-decoration  | underline         | Underlined         |
+|                      | display          | inline-block      | Block formatting   |
+|                      | min-height       | 44px              | Touch target       |
+|                      | line-height      | 44px              | Vertical centering |
 
 ---
 
@@ -645,15 +654,16 @@ onMount(() => {
 ```
 
 **Mobile Small Specifications:**
-| Element | Property | Value | Change from Desktop |
-|---------|----------|-------|---------------------|
-| `.section-inner` | padding | 0 16px | Reduced from 20px |
-| `.class-subsection#class-downloads` | width | 100% | Full width |
-| | height | auto | Flexible height |
-| | min-height | 350px | Minimum container |
-| | padding | 16px | Reduced from 25px |
-| `.class-downloads-container` | height | 300px | Reduced from 518px |
-| `.class-downloads-container iframe` | height | 300px | Reduced from 518px |
+
+| Element                             | Property   | Value  | Change from Desktop |
+| ----------------------------------- | ---------- | ------ | ------------------- |
+| `.section-inner`                    | padding    | 0 16px | Reduced from 20px   |
+| `.class-subsection#class-downloads` | width      | 100%   | Full width          |
+|                                     | height     | auto   | Flexible height     |
+|                                     | min-height | 350px  | Minimum container   |
+|                                     | padding    | 16px   | Reduced from 25px   |
+| `.class-downloads-container`        | height     | 300px  | Reduced from 518px  |
+| `.class-downloads-container iframe` | height     | 300px  | Reduced from 518px  |
 
 **Dimension Changes:**
 
@@ -682,13 +692,14 @@ onMount(() => {
 ```
 
 **Mobile Specifications:**
-| Element | Property | Value |
-|---------|----------|-------|
-| `.class-subsection#class-downloads` | width | 100% |
-| | height | auto |
-| | min-height | 400px |
-| `.class-downloads-container` | height | 350px |
-| `.class-downloads-container iframe` | height | 350px |
+
+| Element                             | Property   | Value |
+| ----------------------------------- | ---------- | ----- |
+| `.class-subsection#class-downloads` | width      | 100%  |
+|                                     | height     | auto  |
+|                                     | min-height | 400px |
+| `.class-downloads-container`        | height     | 350px |
+| `.class-downloads-container iframe` | height     | 350px |
 
 ### Tablet: 744px - 1023px (Lines 550-574)
 
@@ -720,15 +731,16 @@ onMount(() => {
 ```
 
 **Tablet Specifications:**
-| Element | Property | Value |
-|---------|----------|-------|
-| `.section-inner` | padding | 0 32px |
-| `.class-subsection#class-downloads` | width | 100% |
-| | max-width | 720px |
-| | height | auto |
-| | min-height | 450px |
-| `.class-downloads-container` | height | 400px |
-| `.class-downloads-container iframe` | height | 400px |
+
+| Element                             | Property   | Value  |
+| ----------------------------------- | ---------- | ------ |
+| `.section-inner`                    | padding    | 0 32px |
+| `.class-subsection#class-downloads` | width      | 100%   |
+|                                     | max-width  | 720px  |
+|                                     | height     | auto   |
+|                                     | min-height | 450px  |
+| `.class-downloads-container`        | height     | 400px  |
+| `.class-downloads-container iframe` | height     | 400px  |
 
 ### Desktop: 1024px - 1365px (Lines 576-595)
 
@@ -755,14 +767,15 @@ onMount(() => {
 ```
 
 **Desktop Specifications:**
-| Element | Property | Value |
-|---------|----------|-------|
-| `.section-inner` | padding | 0 40px |
-| `.class-subsection#class-downloads` | width | 100% |
-| | max-width | 1080px |
-| | height | 512px |
-| `.class-downloads-container` | height | 518px |
-| `.class-downloads-container iframe` | height | 518px |
+
+| Element                             | Property  | Value  |
+| ----------------------------------- | --------- | ------ |
+| `.section-inner`                    | padding   | 0 40px |
+| `.class-subsection#class-downloads` | width     | 100%   |
+|                                     | max-width | 1080px |
+|                                     | height    | 512px  |
+| `.class-downloads-container`        | height    | 518px  |
+| `.class-downloads-container iframe` | height    | 518px  |
 
 ### Desktop Large: 1366px+ (Lines 597-616)
 
@@ -789,14 +802,15 @@ onMount(() => {
 ```
 
 **Desktop Large Specifications:**
-| Element | Property | Value |
-|---------|----------|-------|
-| `.section-inner` | padding | 0 |
-| `.class-subsection#class-downloads` | width | 1080px (fixed) |
-| | max-width | 1080px |
-| | height | 512px |
-| `.class-downloads-container` | height | 518px |
-| `.class-downloads-container iframe` | height | 518px |
+
+| Element                             | Property  | Value          |
+| ----------------------------------- | --------- | -------------- |
+| `.section-inner`                    | padding   | 0              |
+| `.class-subsection#class-downloads` | width     | 1080px (fixed) |
+|                                     | max-width | 1080px         |
+|                                     | height    | 512px          |
+| `.class-downloads-container`        | height    | 518px          |
+| `.class-downloads-container iframe` | height    | 518px          |
 
 ### Responsive Dimension Summary
 

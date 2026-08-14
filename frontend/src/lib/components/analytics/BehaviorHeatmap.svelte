@@ -8,7 +8,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconClick, IconEye, IconChartBar } from '$lib/icons';
+	import { IconClick, IconEye, IconChartBar } from '#lib/icons/index.js';
 
 	interface DataPoint {
 		x: number;

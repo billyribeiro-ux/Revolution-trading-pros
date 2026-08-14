@@ -13,8 +13,8 @@
  */
 
 import type { PageServerLoad } from './$types';
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb } from '$lib/seo/schemas';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 

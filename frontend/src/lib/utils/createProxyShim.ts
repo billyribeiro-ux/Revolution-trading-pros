@@ -20,15 +20,15 @@
  *
  * @example
  *   // frontend/src/routes/api/admin/posts/[...rest]/+server.ts
- *   import { createProxyShim } from '$lib/utils/createProxyShim';
+ *   import { createProxyShim } from '#lib/utils/createProxyShim.js';
  *   export const { GET, POST, PUT, PATCH, DELETE } = createProxyShim('/api/admin/posts');
  */
 
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Create a `[...rest]/+server.ts` proxy shim that forwards every HTTP method

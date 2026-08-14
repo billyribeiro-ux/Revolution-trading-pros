@@ -1,0 +1,6 @@
+{
+	// SvelteKit 3 type-checks the service worker as its own TypeScript project:
+	// it runs in a ServiceWorkerGlobalScope, not the DOM, so it cannot share the
+	// root tsconfig's lib set. The root tsconfig excludes this directory.
+	"extends": "$app/tsconfig/service-worker"
+}

@@ -9,7 +9,7 @@
 
 	import { onMount } from 'svelte';
 	import { SvelteDate } from 'svelte/reactivity';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	type OptInStatus = 'pending' | 'sent' | 'confirmed' | 'expired' | 'failed';
 

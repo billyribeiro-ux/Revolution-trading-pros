@@ -2,12 +2,12 @@
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
-	import { browser } from '$app/environment';
-	import { popupsApi } from '$lib/api/popups';
-	import type { Popup } from '$lib/stores/popups.svelte';
-	import { IconX } from '$lib/icons';
-	import { logger } from '$lib/utils/logger';
-	import { sanitizePopupContent } from '$lib/utils/sanitize';
+	import { browser } from '$app/env';
+	import { popupsApi } from '#lib/api/popups.js';
+	import type { Popup } from '#lib/stores/popups.svelte.js';
+	import { IconX } from '#lib/icons/index.js';
+	import { logger } from '#lib/utils/logger.js';
+	import { sanitizePopupContent } from '#lib/utils/sanitize.js';
 
 	interface Props {
 		pageUrl?: string;

@@ -1,7 +1,7 @@
-import { cartStore, type CartItem } from '$lib/stores/cart.svelte';
-import { addToCart as addToCartApi } from '$lib/api/cart';
+import { cartStore, type CartItem } from '#lib/stores/cart.svelte.js';
+import { addToCart as addToCartApi } from '#lib/api/cart.js';
 import { goto } from '$app/navigation';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 
 /**
  * Add a product/membership to cart and optionally navigate to cart page
@@ -26,7 +26,7 @@ export async function addItemToCart(
 
 	// Navigate to cart if requested
 	if (navigateToCart) {
-		await goto(`${base}/cart`);
+		await goto(resolve(`cart`));
 	}
 }
 

@@ -12,9 +12,9 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LearningCenterFilter from '$lib/components/dashboard/LearningCenterFilter.svelte';
-	import VideoGrid from '$lib/components/dashboard/VideoGrid.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import LearningCenterFilter from '#lib/components/dashboard/LearningCenterFilter.svelte';
+	import VideoGrid from '#lib/components/dashboard/VideoGrid.svelte';
 	import type { PageData } from './$types';
 
 	// Server-side data

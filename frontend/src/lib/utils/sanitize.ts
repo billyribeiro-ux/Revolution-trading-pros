@@ -159,7 +159,7 @@ export type SanitizeProfile = keyof typeof SANITIZE_PROFILES;
  * @example
  * ```svelte
  * <script>
- *   import { sanitizeHtml } from '$lib/utils/sanitize';
+ *   import { sanitizeHtml } from '#lib/utils/sanitize.js';
  *   const safeHtml = sanitizeHtml(userContent);
  * </script>
  * {@html safeHtml}

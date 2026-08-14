@@ -173,25 +173,11 @@ export type ThemeMode = 'dark' | 'light';
 
 /** Chart tab options */
 export type ChartTab =
-	| 'payoff'
-	| 'heatmap'
-	| 'surface'
-	| 'montecarlo'
-	| 'volsmile'
-	| 'theta'
-	| 'sensitivity'
-	| 'chain';
+	'payoff' | 'heatmap' | 'surface' | 'montecarlo' | 'volsmile' | 'theta' | 'sensitivity' | 'chain';
 
 /** Greek to display in heatmap */
 export type HeatmapGreek =
-	| 'delta'
-	| 'gamma'
-	| 'theta'
-	| 'vega'
-	| 'rho'
-	| 'charm'
-	| 'vanna'
-	| 'volga';
+	'delta' | 'gamma' | 'theta' | 'vega' | 'rho' | 'charm' | 'vanna' | 'volga';
 
 /** Calculator mode */
 export type CalculatorMode = 'single' | 'strategy' | 'compare';

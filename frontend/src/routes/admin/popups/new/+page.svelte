@@ -2,14 +2,14 @@
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { Card, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
-	import { popupsApi, type Popup } from '$lib/api/popups';
+	import { Card, Input, Select } from '#lib/components/ui/index.js';
+	import { addToast } from '#lib/utils/toast.js';
+	import { popupsApi, type Popup } from '#lib/api/popups.js';
 	// FIX-2026-04-26 (07-marketing P0-5): the popup content textarea accepts
 	// raw HTML and the live preview rendered it via {@html} unsanitized.
 	// Multi-admin = stored XSS in the admin's own session. Route through
 	// sanitizeHtml so any <script>/on*/javascript: gets stripped before render.
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { sanitizeHtml } from '#lib/utils/sanitize.js';
 
 	// Form state
 	let formData = $state<Partial<Popup>>({
@@ -623,8 +623,7 @@
 							bind:value={formData['content']}
 							class={{ 'native-control': true, 'has-error': Boolean(errors['content']) }}
 							rows="4"
-							placeholder="Enter your message (HTML allowed)"
-						></textarea>
+							placeholder="Enter your message (HTML allowed)"></textarea>
 						{#if errors['content']}
 							<p class="field-error">{errors['content']}</p>
 						{/if}
@@ -1032,8 +1031,7 @@
 							bind:value={includePages}
 							class="native-control"
 							rows="3"
-							placeholder="/pricing&#10;/products/*&#10;/checkout"
-						></textarea>
+							placeholder="/pricing&#10;/products/*&#10;/checkout"></textarea>
 						<p class="field-help">
 							One URL pattern per line. Use * as wildcard. Leave empty to show on all pages.
 						</p>
@@ -1046,8 +1044,7 @@
 							bind:value={excludePages}
 							class="native-control"
 							rows="3"
-							placeholder="/admin/*&#10;/login&#10;/register"
-						></textarea>
+							placeholder="/admin/*&#10;/login&#10;/register"></textarea>
 						<p class="field-help">Pages to exclude even if they match include patterns.</p>
 					</div>
 				</div>

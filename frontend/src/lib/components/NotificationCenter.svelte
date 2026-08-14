@@ -18,7 +18,7 @@
 		getNotifications,
 		getUnreadCount,
 		type Notification
-	} from '$lib/stores/notifications.svelte';
+	} from '#lib/stores/notifications.svelte.js';
 	import {
 		IconBell,
 		IconX,
@@ -30,7 +30,7 @@
 		IconAlertCircle,
 		IconSettings,
 		IconChevronRight
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		isOpen?: boolean;

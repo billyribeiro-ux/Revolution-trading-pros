@@ -14,7 +14,7 @@
  * - Optimistic prepending for real-time updates
  */
 
-import { getEnterpriseClient } from '$lib/api/enterprise/client';
+import { getEnterpriseClient } from '#lib/api/enterprise/client.js';
 import { ROOM_SLUG, ALERTS_PER_PAGE } from '../constants';
 import type { FormattedAlert } from '../page.api';
 import type { PaginationState, AlertFilter } from '../types';

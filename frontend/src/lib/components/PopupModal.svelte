@@ -1,68 +1,21 @@
-<!--
-/**
- * PopupModal Component - Google L7+ Enterprise Implementation
- * ═══════════════════════════════════════════════════════════════════════════
- * 
- * ENTERPRISE FEATURES:
- * 
- * 1. ADVANCED TARGETING:
- *    - Behavioral triggers
- *    - Geo-targeting
- *    - Device detection
- *    - User segmentation
- *    - Time-based rules
- *    - Exit intent detection
- * 
- * 2. CONVERSION OPTIMIZATION:
- *    - A/B testing
- *    - Dynamic content
- *    - Personalization
- *    - Smart timing
- *    - Urgency creation
- *    - Social proof
- * 
- * 3. ANIMATION SYSTEM:
- *    - 15+ entrance effects
- *    - Smooth transitions
- *    - Attention grabbers
- *    - Mobile optimization
- *    - Performance tuning
- *    - GPU acceleration
- * 
- * 4. ANALYTICS:
- *    - Impression tracking
- *    - Conversion tracking
- *    - Engagement metrics
- *    - Heatmap data
- *    - Form analytics
- *    - Revenue attribution
- * 
- * 5. USER EXPERIENCE:
- *    - Accessibility (ARIA)
- *    - Keyboard navigation
- *    - Mobile responsive
- *    - Touch gestures
- *    - Smooth scrolling
- *    - Focus management
- * 
- * @version 3.0.0 (Google L7+ Enterprise)
- * @component
- */
--->
-
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { spring, tweened } from 'svelte/motion';
-	import { popupStore, activePopup, type Popup, type PopupButton } from '$lib/stores/popups.svelte';
-	import { browser } from '$app/environment';
+	import {
+		popupStore,
+		activePopup,
+		type Popup,
+		type PopupButton
+	} from '#lib/stores/popups.svelte.js';
+	import { browser } from '$app/env';
 	import { page } from '$app/state';
 	import type { Attachment } from 'svelte/attachments';
-	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
+	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '#lib/icons/index.js';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
-	import { sanitizePopupContent } from '$lib/utils/sanitize';
+	import { sanitizePopupContent } from '#lib/utils/sanitize.js';
 
 	type PopupFormValue = string | number | boolean | null | undefined;
 
@@ -979,7 +932,58 @@
 	}
 </script>
 
-<svelte:document onkeydown={handleKeydown} />
+<!--
+/**
+ * PopupModal Component - Google L7+ Enterprise Implementation
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * ENTERPRISE FEATURES:
+ * 
+ * 1. ADVANCED TARGETING:
+ *    - Behavioral triggers
+ *    - Geo-targeting
+ *    - Device detection
+ *    - User segmentation
+ *    - Time-based rules
+ *    - Exit intent detection
+ * 
+ * 2. CONVERSION OPTIMIZATION:
+ *    - A/B testing
+ *    - Dynamic content
+ *    - Personalization
+ *    - Smart timing
+ *    - Urgency creation
+ *    - Social proof
+ * 
+ * 3. ANIMATION SYSTEM:
+ *    - 15+ entrance effects
+ *    - Smooth transitions
+ *    - Attention grabbers
+ *    - Mobile optimization
+ *    - Performance tuning
+ *    - GPU acceleration
+ * 
+ * 4. ANALYTICS:
+ *    - Impression tracking
+ *    - Conversion tracking
+ *    - Engagement metrics
+ *    - Heatmap data
+ *    - Form analytics
+ *    - Revenue attribution
+ * 
+ * 5. USER EXPERIENCE:
+ *    - Accessibility (ARIA)
+ *    - Keyboard navigation
+ *    - Mobile responsive
+ *    - Touch gestures
+ *    - Smooth scrolling
+ *    - Focus management
+ * 
+ * @version 3.0.0 (Google L7+ Enterprise)
+ * @component
+ */
+-->
+<svelte:document onkeydown={handleKeydown}></svelte:document>
 
 {#if currentPopup && isVisible}
 	<!-- Overlay -->
@@ -1203,7 +1207,7 @@
 								aria-busy={button.action === 'submit' && isSubmitting}
 							>
 								{#if button.action === 'submit' && isSubmitting}
-									<IconLoader size={20} class="animate-spin"></IconLoader>
+									<IconLoader size={20} class="animate-spin" />
 								{/if}
 								{button.text}
 							</button>

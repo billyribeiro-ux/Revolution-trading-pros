@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconInbox, IconPlus } from '$lib/icons';
+	import { IconInbox, IconPlus } from '#lib/icons/index.js';
 
 	interface Props {
 		title: string;

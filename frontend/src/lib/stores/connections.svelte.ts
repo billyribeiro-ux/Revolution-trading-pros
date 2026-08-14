@@ -12,26 +12,21 @@
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 // FIX-2026-04-26: untrack imported for the read-helper shield (Change 1B in
 // docs/audits/PRINCIPAL_FIX_PLAN_2026-04-26.md). Wrapping the rune read inside each
 // getIs*Connected() helper prevents a $effect caller from installing
 // connectionsState as a tracked dep — eliminating the cascade-prone
 // read+write pattern that bit 13 admin pages.
 import { untrack } from 'svelte';
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export type ConnectionState =
-	| 'connected'
-	| 'disconnected'
-	| 'error'
-	| 'expired'
-	| 'pending'
-	| 'connecting';
+	'connected' | 'disconnected' | 'error' | 'expired' | 'pending' | 'connecting';
 
 export interface ConnectionStatus {
 	key: string;
@@ -547,6 +542,7 @@ export const connections = {
 export function getIsAnalyticsConnected(): boolean {
 	return untrack(() => {
 		const analyticsServices = FEATURE_SERVICES['analytics'];
+
 		return (
 			analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false
 		);

@@ -15,10 +15,10 @@
  * - Comprehensive error handling
  */
 
-import { browser } from '$app/environment';
-import { api, type RequestOptions } from '$lib/api/client';
-import { ApiError, isApiError, getUserFriendlyMessage } from '$lib/api/errors';
-import { getCache, type CacheConfig } from '$lib/api/cache';
+import { browser } from '$app/env';
+import { api, type RequestOptions } from '#lib/api/client.js';
+import { ApiError, isApiError, getUserFriendlyMessage } from '#lib/api/errors.js';
+import { getCache, type CacheConfig } from '#lib/api/cache.js';
 import type {
 	ApiTrade,
 	ApiWeeklyVideo,
@@ -174,7 +174,7 @@ export function createAlertsQuery(
 	options?: { enabled?: boolean; refetchInterval?: number }
 ) {
 	// Lazy import to avoid circular dependencies
-	return import('$lib/api/hooks.svelte').then(({ createQuery }) =>
+	return import('#lib/api/hooks.svelte.js').then(({ createQuery }) =>
 		createQuery(() => fetchAlerts(roomSlug, page, limit), {
 			enabled: options?.enabled ?? true,
 			refetchInterval: options?.refetchInterval ?? 30_000, // 30 second polling

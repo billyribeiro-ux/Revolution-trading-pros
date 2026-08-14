@@ -1,8 +1,8 @@
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildPerson, buildWebPage } from '$lib/seo/schemas';
-import { findAuthor } from '$lib/authors/authors';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildPerson, buildWebPage } from '#lib/seo/schemas.js';
+import { findAuthor } from '#lib/authors/authors.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 
@@ -11,7 +11,7 @@ export const prerender = false;
 export const load: PageLoad = ({ params }) => {
 	const author = findAuthor(params.slug);
 	if (!author) {
-		error(404, { message: 'Author not found' });
+		error(404, 'Author not found');
 	}
 
 	const url = `${SITE}/authors/${author.slug}`;

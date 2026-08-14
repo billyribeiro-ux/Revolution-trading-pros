@@ -11,7 +11,7 @@
  * @version 2.0.0 - Svelte 5 Runes Migration (February 2026)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { goto } from '$app/navigation';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -217,6 +217,7 @@ function handleKeyDown(event: KeyboardEvent) {
 			if (!s.enabled) return false;
 			const sModifiers = s.keys.filter((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k));
 			const sKey = s.keys.find((k) => !['Meta', 'Control', 'Shift', 'Alt'].includes(k));
+
 			return (
 				sModifiers.every((m) => modifiers.includes(m)) &&
 				modifiers.every((m) => sModifiers.includes(m)) &&
@@ -255,6 +256,7 @@ function handleKeyDown(event: KeyboardEvent) {
 		const shortcut = storeState.shortcuts.find((s) => {
 			if (!s.enabled) return false;
 			if (s.keys.some((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k))) return false;
+
 			return (
 				s.keys.length === keySequence.length &&
 				s.keys.every((k, i) => k.toLowerCase() === keySequence[i])

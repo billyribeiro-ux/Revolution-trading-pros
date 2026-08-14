@@ -6,7 +6,7 @@
 -->
 
 <script lang="ts">
-	import { IconArrowRight, IconX, IconCheck } from '$lib/icons';
+	import { IconArrowRight, IconX, IconCheck } from '#lib/icons/index.js';
 
 	interface JourneyStep {
 		step: string;

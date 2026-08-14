@@ -16,7 +16,7 @@
  * Built for the next 10 years with extensibility in mind.
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import {
 	createWebSocketService,
 	type AlertPayload,
@@ -25,8 +25,8 @@ import {
 	type TradePlanPayload,
 	type WsMessage,
 	type WebSocketService
-} from '$lib/services/websocket.svelte';
-import { logger } from '$lib/utils/logger';
+} from '#lib/services/websocket.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import { formatTimeAgo } from './utils/formatters';
 
 // ═══════════════════════════════════════════════════════════════════════════════

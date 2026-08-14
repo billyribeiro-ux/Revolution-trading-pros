@@ -6,10 +6,10 @@
  * @author Revolution Trading Pros
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
 import { track } from './metrics';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -28,7 +28,6 @@ export interface ExperimentAssignment {
 	variant: string;
 	assignedAt: number;
 }
-
 export interface FeatureFlag {
 	id: string;
 	enabled: boolean;

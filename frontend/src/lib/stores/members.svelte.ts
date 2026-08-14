@@ -15,7 +15,7 @@ import {
 	type ChurnedFilters,
 	type PaginationInfo,
 	type EmailTemplate
-} from '$lib/api/members';
+} from '#lib/api/members.js';
 
 // State interfaces
 interface MembersState {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { cubicOut } from 'svelte/easing';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
@@ -185,7 +185,7 @@
 										stroke-width="1"
 										stroke-dasharray="4 4"
 										opacity="0.3"
-									/>
+									></line>
 									<line
 										x1="0"
 										y1="100"
@@ -195,7 +195,7 @@
 										stroke-width="1"
 										stroke-dasharray="4 4"
 										opacity="0.3"
-									/>
+									></line>
 									<line
 										x1="0"
 										y1="150"
@@ -205,12 +205,14 @@
 										stroke-width="1"
 										stroke-dasharray="4 4"
 										opacity="0.3"
-									/>
+									></line>
 
-									<line x1="40" y1="120" x2="40" y2="180" stroke="#3b82f6" stroke-width="1" />
-									<rect x="30" y="140" width="20" height="30" fill="#3b82f6" opacity="0.8" />
+									<line x1="40" y1="120" x2="40" y2="180" stroke="#3b82f6" stroke-width="1"></line>
 
-									<line x1="90" y1="130" x2="90" y2="150" stroke="#1e3a8a" stroke-width="1" />
+									<rect x="30" y="140" width="20" height="30" fill="#3b82f6" opacity="0.8"></rect>
+
+									<line x1="90" y1="130" x2="90" y2="150" stroke="#1e3a8a" stroke-width="1"></line>
+
 									<rect
 										x="80"
 										y="135"
@@ -219,15 +221,18 @@
 										fill="none"
 										stroke="#3b82f6"
 										stroke-width="2"
-									/>
+									></rect>
 
-									<line x1="140" y1="80" x2="140" y2="140" stroke="#3b82f6" stroke-width="1" />
-									<rect x="130" y="90" width="20" height="40" fill="#3b82f6" opacity="0.9" />
+									<line x1="140" y1="80" x2="140" y2="140" stroke="#3b82f6" stroke-width="1"></line>
 
-									<line x1="190" y1="85" x2="190" y2="105" stroke="#3b82f6" stroke-width="1" />
-									<rect x="180" y="90" width="20" height="5" fill="#3b82f6" opacity="0.8" />
+									<rect x="130" y="90" width="20" height="40" fill="#3b82f6" opacity="0.9"></rect>
 
-									<line x1="240" y1="80" x2="240" y2="120" stroke="#1e3a8a" stroke-width="1" />
+									<line x1="190" y1="85" x2="190" y2="105" stroke="#3b82f6" stroke-width="1"></line>
+
+									<rect x="180" y="90" width="20" height="5" fill="#3b82f6" opacity="0.8"></rect>
+
+									<line x1="240" y1="80" x2="240" y2="120" stroke="#1e3a8a" stroke-width="1"></line>
+
 									<rect
 										x="230"
 										y="95"
@@ -236,14 +241,17 @@
 										fill="none"
 										stroke="#3b82f6"
 										stroke-width="2"
-									/>
+									></rect>
 
-									<line x1="290" y1="60" x2="290" y2="110" stroke="#3b82f6" stroke-width="1" />
-									<rect x="280" y="70" width="20" height="35" fill="#3b82f6" opacity="0.9" />
+									<line x1="290" y1="60" x2="290" y2="110" stroke="#3b82f6" stroke-width="1"></line>
+
+									<rect x="280" y="70" width="20" height="35" fill="#3b82f6" opacity="0.9"></rect>
 
 									<g class="animate-live-candle origin-bottom">
-										<line x1="340" y1="20" x2="340" y2="80" stroke="#60a5fa" stroke-width="1" />
-										<rect x="330" y="40" width="20" height="30" fill="#60a5fa" />
+										<line x1="340" y1="20" x2="340" y2="80" stroke="#60a5fa" stroke-width="1"
+										></line>
+
+										<rect x="330" y="40" width="20" height="30" fill="#60a5fa"></rect>
 									</g>
 								</svg>
 							</div>
@@ -262,14 +270,14 @@
 									<path
 										d="M0,150 C150,50 350,250 500,150 C650,50 850,250 1000,150 V300 H0 Z"
 										fill="currentColor"
-									/>
+									></path>
 									<path
 										d="M0,160 C140,60 360,260 500,160 C640,60 860,260 1000,160"
 										fill="none"
 										stroke="currentColor"
 										stroke-width="2"
 										class="text-emerald-400/40"
-									/>
+									></path>
 								</svg>
 							</div>
 						{/if}

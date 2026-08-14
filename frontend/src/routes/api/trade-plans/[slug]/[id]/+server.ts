@@ -16,7 +16,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
-import { fetchBackend, isObject, extractBackendData } from '$lib/server/proxy-fetch';
+import { fetchBackend, isObject, extractBackendData } from '#lib/server/proxy-fetch.js';
 
 interface TradePlanPutBody {
 	ticker?: string;

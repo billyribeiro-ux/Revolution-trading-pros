@@ -12,11 +12,11 @@
  * not a fake success.
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import type { RequestHandler } from './$types';
-import { requireAdmin } from '$lib/server/auth';
+import { requireAdmin } from '#lib/server/auth.js';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);

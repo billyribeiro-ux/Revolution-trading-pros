@@ -13,7 +13,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	// Types
 	interface Subscription {
@@ -616,8 +616,7 @@
 						bind:value={cancelReason}
 						rows="3"
 						placeholder="Please let us know why you're cancelling..."
-						class="field-textarea"
-					></textarea>
+						class="field-textarea"></textarea>
 				</div>
 
 				<div class="field-group">

@@ -17,10 +17,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
 
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 // GET - Check video processing status
 export const GET: RequestHandler = async (event) => {

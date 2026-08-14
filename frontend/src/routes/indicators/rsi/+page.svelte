@@ -1,10 +1,6 @@
-<!--
-	URL: /indicators/rsi
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconActivity,
 		IconTrendingUp,
@@ -14,7 +10,7 @@
 		IconBolt,
 		IconChartLine,
 		IconTarget
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let heroVisible = $state(false);
 	let sectionsVisible = $state<boolean[]>([false, false, false]);
@@ -66,6 +62,10 @@
 		return ['animated-section', extraClass, { visible }];
 	}
 </script>
+
+<!--
+	URL: /indicators/rsi
+-->
 
 <div class="indicator-page">
 	<!-- Hero Section -->

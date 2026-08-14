@@ -1,14 +1,10 @@
-<!--
-	URL: /about
--->
-
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
 	import { aboutFaqs } from './about-data';
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, draw, slide } from 'svelte/transition';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
 	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
@@ -165,6 +161,10 @@
 	];
 </script>
 
+<!--
+	URL: /about
+-->
+
 <div role="main" class="about">
 	<div class="about__atmosphere" aria-hidden="true">
 		<div class="about__noise"></div>
@@ -195,6 +195,7 @@
 			{#if isVisible}
 				<div in:heavySlide={{ delay: 0, duration: 1200 }} class="hero__shell">
 					<div class="hero__bracket hero__bracket--tl" aria-hidden="true"></div>
+
 					<div class="hero__bracket hero__bracket--br" aria-hidden="true"></div>
 
 					<div class="hero__copy">
@@ -270,17 +271,17 @@
 								stroke-linecap="round"
 								vector-effect="non-scaling-stroke"
 								in:draw={{ duration: 3000, easing: cubicOut }}
-							/>
+							></path>
 							<path
 								d="M0 280 L50 250 L100 260 L150 180 L200 200 L250 100 L300 120 L350 50 L400 20 V 300 H 0 Z"
 								fill="url(#grad)"
 								opacity="0.1"
 								in:fade={{ delay: 1000, duration: 2000 }}
-							/>
+							></path>
 							<defs>
 								<linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-									<stop offset="0%" stop-color="#d97706" />
-									<stop offset="100%" stop-color="transparent" />
+									<stop offset="0%" stop-color="#d97706"></stop>
+									<stop offset="100%" stop-color="transparent"></stop>
 								</linearGradient>
 							</defs>
 						</svg>

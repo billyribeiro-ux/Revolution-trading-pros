@@ -29,13 +29,13 @@
 		IconChevronRight,
 		IconLayoutGrid,
 		IconColumns
-	} from '$lib/icons';
-	import { sanitizeURL } from '$lib/utils/sanitization';
+	} from '#lib/icons/index.js';
+	import { sanitizeURL } from '#lib/utils/sanitization.js';
 	import {
 		getBlockStateManager,
 		type BlockId,
 		type LightboxState
-	} from '$lib/stores/blockState.svelte';
+	} from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 
 	// Types

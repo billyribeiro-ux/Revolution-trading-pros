@@ -7,8 +7,8 @@
 	 * @version 2.1.0 - Svelte 5 + Responsive Design
 	 */
 
-	import type { FormField } from '$lib/api/forms';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { FormField } from '#lib/api/forms.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface PaymentMethod {
 		id: string;

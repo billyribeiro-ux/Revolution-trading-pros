@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconUsers, IconUserPlus } from '$lib/icons';
+	import { IconUsers, IconUserPlus } from '#lib/icons/index.js';
 
 	interface Props {
 		onadd: () => void;

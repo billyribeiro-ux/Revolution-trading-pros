@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconChevronLeft, IconChevronRight } from '$lib/icons';
-	import type { PaginationInfo } from '$lib/api/members';
+	import { IconChevronLeft, IconChevronRight } from '#lib/icons/index.js';
+	import type { PaginationInfo } from '#lib/api/members.js';
 
 	interface Props {
 		pagination: PaginationInfo;

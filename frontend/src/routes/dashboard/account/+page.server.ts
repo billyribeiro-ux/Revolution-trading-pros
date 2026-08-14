@@ -21,12 +21,12 @@
  */
 
 import { fail, type RequestEvent } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL as ENV_API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import {
 	accountApi,
 	type UpdateProfileRequest,
 	type UpdatePasswordRequest
-} from '$lib/api/account';
+} from '#lib/api/account.js';
 // SvelteKit auto-generates types - this import will be available after build
 import type { PageServerLoad, Actions } from './$types';
 
@@ -105,7 +105,7 @@ export const load: PageServerLoad = async ({
 		// This uses SvelteKit's fetch which handles cookies and headers correctly
 		// SvelteKit-canonical server env read (was process.env.VITE_API_URL,
 		// which only worked because Node's process.env happens to expose it).
-		const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+		const API_BASE_URL = ENV_API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 		const profileResponse = await fetch(`${API_BASE_URL}/api/user/profile`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
@@ -215,7 +215,7 @@ export const actions: Actions = {
 			const updateData: UpdateProfileRequest = {
 				first_name: firstName,
 				last_name: lastName,
-				email: email
+				email
 			};
 
 			const updatedProfile = await accountApi.updateProfile(updateData);
@@ -289,6 +289,7 @@ export const actions: Actions = {
 
 		// Additional password strength checks
 		const hasUpperCase = /[A-Z]/.test(newPassword);
+
 		const hasLowerCase = /[a-z]/.test(newPassword);
 		const hasNumber = /[0-9]/.test(newPassword);
 

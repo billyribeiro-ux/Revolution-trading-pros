@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { membersApi } from '$lib/api/members';
-	import type { Member, Subscription } from '$lib/api/members';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { membersApi } from '#lib/api/members.js';
+	import type { Member, Subscription } from '#lib/api/members.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconMail,
 		IconCreditCard,
@@ -14,9 +14,9 @@
 		IconAlertTriangle,
 		IconRefresh,
 		IconFileText
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	import MemberHeader from './_components/MemberHeader.svelte';
 	import MemberStatsGrid from './_components/MemberStatsGrid.svelte';

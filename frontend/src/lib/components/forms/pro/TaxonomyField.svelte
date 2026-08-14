@@ -36,7 +36,7 @@
 		oncreate?: (name: string) => Promise<TaxonomyTerm>;
 	}
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 

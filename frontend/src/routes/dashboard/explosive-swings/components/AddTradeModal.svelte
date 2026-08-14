@@ -8,7 +8,7 @@
 	
 -->
 <script lang="ts">
-	import type { TradeType, OptionType, ContractType, TradeSetup } from '$lib/types/trading';
+	import type { TradeType, OptionType, ContractType, TradeSetup } from '#lib/types/trading.js';
 
 	interface Props {
 		isOpen: boolean;
@@ -413,8 +413,7 @@
 							bind:value={form.notes}
 							placeholder="Entry thesis, key levels, catalysts, position sizing..."
 							class="form-textarea"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 				</div>
 

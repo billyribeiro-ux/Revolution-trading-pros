@@ -5,7 +5,7 @@
  * Add new forms here and they become available with full TypeScript support.
  *
  * Usage:
- *   import { FORMS } from '$lib/config/forms';
+ *   import { FORMS } from '#lib/config/forms.js';
  *   <Form form={FORMS.CONTACT} />
  *
  * @version 1.0.0

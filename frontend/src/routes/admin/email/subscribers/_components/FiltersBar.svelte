@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconSearch, IconRefresh, IconTrash } from '$lib/icons';
+	import { IconSearch, IconRefresh, IconTrash } from '#lib/icons/index.js';
 
 	interface Props {
 		searchQuery: string;

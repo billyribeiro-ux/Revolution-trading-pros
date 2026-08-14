@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconWorld as IconBrandBing,
 		IconRocket,
@@ -15,13 +15,13 @@
 		IconWorld,
 		IconSearch,
 		IconFileText
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		bingSeoApi,
 		type BingSeoStats,
 		type BingSubmission,
 		type BingSearchPerformance
-	} from '$lib/api/bing-seo';
+	} from '#lib/api/bing-seo.js';
 
 	// State
 	let loading = $state(true);
@@ -450,8 +450,7 @@
 					placeholder="https://yourdomain.com/page-1
 https://yourdomain.com/page-2
 https://yourdomain.com/page-3"
-					rows="10"
-				></textarea>
+					rows="10"></textarea>
 				<div class="batch-count">
 					{batchUrls.split('\n').filter((u) => u.trim()).length} URLs
 				</div>

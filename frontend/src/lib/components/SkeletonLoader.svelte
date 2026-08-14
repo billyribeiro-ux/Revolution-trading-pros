@@ -9,14 +9,7 @@
 	interface Props {
 		/** Type of skeleton to display */
 		variant?:
-			| 'card'
-			| 'metric'
-			| 'table-row'
-			| 'list-item'
-			| 'text'
-			| 'avatar'
-			| 'chart'
-			| 'dashboard';
+			'card' | 'metric' | 'table-row' | 'list-item' | 'text' | 'avatar' | 'chart' | 'dashboard';
 		/** Number of items to render */
 		count?: number;
 		/** Custom height */

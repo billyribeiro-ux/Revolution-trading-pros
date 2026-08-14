@@ -10,13 +10,13 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to the shared
-// `$lib/server/proxy-fetch` primitives (R19-A's extraction). The shared
+// `#lib/server/proxy-fetch` primitives (R19-A's extraction). The shared
 // helper pins the CLAUDE.md URL-fallback chain (API_BASE_URL ||
 // BACKEND_URL || localhost) AND the `Promise<unknown>` return type at
 // one site, instead of copy-pasted across 13+ proxy files. Behaviour
 // matches R18-A's edit pattern verbatim (narrowing via type-guards,
 // `isFavoriteRecord` predicate filter, etc.).
-import { fetchBackend, hasData, hasSuccess, isObject } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasData, hasSuccess, isObject } from '#lib/server/proxy-fetch.js';
 
 // ─── Local response shapes ────────────────────────────────────────────────
 // Backend at /api/favorites/check returns `{ success, is_favorited, data }`

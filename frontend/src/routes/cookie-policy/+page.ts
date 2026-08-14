@@ -5,8 +5,8 @@
  * for scanning cookies and displaying consent information.
  */
 
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildWebPage } from '$lib/seo/schemas';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildWebPage } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 

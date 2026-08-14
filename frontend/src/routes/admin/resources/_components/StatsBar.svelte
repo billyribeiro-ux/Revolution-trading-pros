@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { IconVideo, IconFileText, IconPhoto, IconCheck, IconStarFilled } from '$lib/icons';
+	import {
+		IconVideo,
+		IconFileText,
+		IconPhoto,
+		IconCheck,
+		IconStarFilled
+	} from '#lib/icons/index.js';
 
 	type Stats = {
 		total: number;

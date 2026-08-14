@@ -6,7 +6,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import { traderSubPages } from '$lib/data/traders';
+	import { traderSubPages } from '#lib/data/traders.js';
 
 	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
 	interface Props {

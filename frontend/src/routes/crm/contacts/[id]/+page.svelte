@@ -6,9 +6,15 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Contact, TimelineEvent } from '$lib/crm/types';
-	import { IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle } from '$lib/icons';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Contact, TimelineEvent } from '#lib/crm/types.js';
+	import {
+		IconArrowLeft,
+		IconMail,
+		IconPhone,
+		IconActivity,
+		IconUserCircle
+	} from '#lib/icons/index.js';
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);

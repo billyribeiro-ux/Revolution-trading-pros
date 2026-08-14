@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconChartLine,
 		IconClock,
@@ -16,7 +16,7 @@
 		IconTarget,
 		IconShield,
 		IconTrophy
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Module {
 		week: number;
@@ -101,9 +101,24 @@
 	];
 
 	const features = [
-		{ icon: IconVideo, title: '34 hours of video content', description: 'Comprehensive lessons' },
-		{ icon: IconFileText, title: 'Swing trading templates', description: 'Ready-to-use tools' },
-		{ icon: IconHeadset, title: 'Weekly market reviews', description: 'Live analysis sessions' },
+		{
+			icon: IconVideo,
+			title: '34 hours of video content',
+			description: 'Comprehensive lessons'
+		},
+
+		{
+			icon: IconFileText,
+			title: 'Swing trading templates',
+			description: 'Ready-to-use tools'
+		},
+
+		{
+			icon: IconHeadset,
+			title: 'Weekly market reviews',
+			description: 'Live analysis sessions'
+		},
+
 		{
 			icon: IconCertificate,
 			title: 'Certificate included',

@@ -12,7 +12,7 @@
 	 * identical without the duplicate-name workaround.
 	 */
 	import type { Component } from 'svelte';
-	import { IconCheck } from '$lib/icons';
+	import { IconCheck } from '#lib/icons/index.js';
 	import type { ProductFormData, ProductPricePreview } from './types';
 
 	interface Props {

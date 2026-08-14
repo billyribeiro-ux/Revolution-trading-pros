@@ -18,7 +18,7 @@
  */
 import { json } from '@sveltejs/kit';
 import type { RequestHandler, Cookies } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -27,7 +27,7 @@ import { env } from '$env/dynamic/private';
 // FIX-2026-04-26: env.VITE_API_URL → canonical pattern
 // const PROD_API_ROOT = 'http://localhost:8080';
 // const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
-const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 // ICT 7: Retry configuration with exponential backoff.
 // In dev the backend is frequently down; retrying 3× with 1-2-4 s backoff
@@ -301,6 +301,7 @@ async function proxyRequest(
 	// Use warn in dev (backend down is normal/expected) so Vite's error
 	// overlay counter doesn't increment. Use error in prod for alerting.
 	const logFn = IS_DEV ? console.warn : console.error;
+
 	logFn(
 		`[API Proxy] Failed after ${MAX_RETRIES} retries: ${path} (${duration}ms)`,
 		lastError?.message

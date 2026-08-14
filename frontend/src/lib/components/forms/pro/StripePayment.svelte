@@ -16,7 +16,7 @@
 
 	import { onMount } from 'svelte';
 	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import type { Attachment } from 'svelte/attachments';
 	import type {
 		Stripe,

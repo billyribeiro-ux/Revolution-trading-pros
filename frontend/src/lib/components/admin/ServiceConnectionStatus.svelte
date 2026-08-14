@@ -18,7 +18,7 @@
 	import { goto } from '$app/navigation';
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import {
 		connections,
 		getIsAnalyticsConnected,
@@ -30,7 +30,7 @@
 		getIsBehaviorConnected,
 		FEATURE_SERVICES,
 		type ServiceKey
-	} from '$lib/stores/connections.svelte';
+	} from '#lib/stores/connections.svelte.js';
 
 	// Feature configuration - maps features to display info
 	const FEATURE_CONFIG: Record<

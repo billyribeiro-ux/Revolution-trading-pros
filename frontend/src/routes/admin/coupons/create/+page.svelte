@@ -29,7 +29,7 @@
 		couponsApi,
 		type Product,
 		type SubscriptionPlan
-	} from '$lib/api/admin';
+	} from '#lib/api/admin.js';
 	import CouponPageHeader from './_components/CouponPageHeader.svelte';
 	import CouponAlerts from './_components/CouponAlerts.svelte';
 	import CouponBasicFields from './_components/CouponBasicFields.svelte';

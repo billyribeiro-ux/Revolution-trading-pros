@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { Tween } from 'svelte/motion';
 	import { expoOut } from 'svelte/easing';
 	import type { Attachment } from 'svelte/attachments';
@@ -23,7 +23,7 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 
 	// Assumed existing component based on your snippet
-	import type { IconComponent } from '$lib/icons';
+	import type { IconComponent } from '#lib/icons/index.js';
 
 	// --- TYPES ---
 
@@ -50,7 +50,6 @@
 		question: string;
 		answer: string;
 	}
-
 	interface VisualBar {
 		id: number;
 		height: string;

@@ -4,7 +4,7 @@
  * Wrapper for analytics providers (Google Analytics, Plausible, etc.)
  */
 
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 interface AnalyticsEvent {
 	action: string;
@@ -46,11 +46,7 @@ export function trackEvent({ action, category, label, value }: AnalyticsEvent): 
 
 	// Google Analytics
 	if (typeof window !== 'undefined' && window.gtag) {
-		window.gtag('event', action, {
-			event_category: category,
-			event_label: label,
-			value: value
-		});
+		window.gtag('event', action, { event_category: category, event_label: label, value });
 	}
 
 	// Plausible

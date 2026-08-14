@@ -1,10 +1,6 @@
-<!--
-	URL: /indicators
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { Attachment } from 'svelte/attachments';
 
@@ -227,6 +223,10 @@
 	});
 </script>
 
+<!--
+	URL: /indicators
+-->
+
 <div class="indicators-page" {@attach capturePage}>
 	<div class="indicators-page__grain" aria-hidden="true"></div>
 
@@ -246,14 +246,14 @@
 						fill="none"
 						stroke="#2e8eff"
 						stroke-width="2"
-					/>
+					></path>
 					<path
 						class="chart-line-svg line-2"
 						d="M0,350 Q400,300 800,400 T1600,250"
 						fill="none"
 						stroke="#34d399"
 						stroke-width="2"
-					/>
+					></path>
 				</svg>
 			</div>
 		</div>
@@ -392,8 +392,9 @@
 							<svg aria-hidden="true" class="chart-mockup__svg" viewBox="0 0 400 200">
 								<defs>
 									<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-										<stop offset="0%" stop-color="#2e8eff" stop-opacity="0.3" />
-										<stop offset="100%" stop-color="#2e8eff" stop-opacity="0" />
+										<stop offset="0%" stop-color="#2e8eff" stop-opacity="0.3"></stop>
+
+										<stop offset="100%" stop-color="#2e8eff" stop-opacity="0"></stop>
 									</linearGradient>
 								</defs>
 								<path
@@ -404,7 +405,7 @@
 									stroke-width="3"
 									stroke-linecap="round"
 									stroke-linejoin="round"
-								/>
+								></path>
 
 								<path
 									class="mockup-indicator-path"
@@ -414,7 +415,7 @@
 									stroke-width="2"
 									stroke-dasharray="4 4"
 									opacity="0.8"
-								/>
+								></path>
 							</svg>
 
 							<div class="mockup-annotation">
@@ -440,10 +441,8 @@
 				{#each categories as category (category)}
 					<button
 						class={['filter-button', { active: selectedCategory === category }]}
-						onclick={() => (selectedCategory = category)}
+						onclick={() => (selectedCategory = category)}>{category}</button
 					>
-						{category}
-					</button>
 				{/each}
 			</div>
 		</div>
@@ -534,6 +533,7 @@
 				<div class="confluence-connector confluence-connector--horizontal">
 					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
+
 				<div class="confluence-connector confluence-connector--vertical">
 					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
@@ -550,6 +550,7 @@
 				<div class="confluence-connector confluence-connector--horizontal">
 					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>
+
 				<div class="confluence-connector confluence-connector--vertical">
 					<IconArrowRight size={32} class="confluence-connector__icon" />
 				</div>

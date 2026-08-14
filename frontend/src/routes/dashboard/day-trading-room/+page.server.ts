@@ -13,15 +13,15 @@
  * @version 4.0.0 - SvelteKit 2.0+ satisfies pattern
  */
 
-import { env } from '$env/dynamic/private';
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { API_BASE_URL } from '$app/env/private';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
 import type { PageServerLoad } from './$types';
-import type { RoomResource } from '$lib/api/room-resources';
+import type { RoomResource } from '#lib/api/room-resources.js';
 
 const DAY_TRADING_ROOM_ID = 1;
 
 export const load = (async ({ fetch, locals }) => {
-	const baseUrl = env.API_BASE_URL || 'http://localhost:8080';
+	const baseUrl = API_BASE_URL || 'http://localhost:8080';
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = locals.accessToken ?? undefined;
 

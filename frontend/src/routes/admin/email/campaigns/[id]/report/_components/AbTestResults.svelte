@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconChartBar } from '$lib/icons';
+	import { IconChartBar } from '#lib/icons/index.js';
 
 	interface AbVariant {
 		subject: string;

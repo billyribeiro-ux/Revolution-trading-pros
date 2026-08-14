@@ -1,41 +1,21 @@
-<!--
-	Dashboard Layout - Member Dashboard with Sidebar
-	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
-	Svelte 5 (December 2025) Best Practices
-
-	SERVER-SIDE AUTH PATTERN (Svelte 5 Recommended):
-	- Auth is validated server-side in hooks.server.ts BEFORE this component loads
-	- User data is passed from +layout.server.ts via load function
-	- No client-side auth polling needed - server already handled it
-	- Memberships fetched client-side for dynamic updates
-
-	Svelte 5 Features:
-	- $props() for component props including data from load
-	- $state() for reactive state management
-	- $derived() for computed values
-	- $effect() for side effects
-	- Snippet for children rendering
-
--->
 <script lang="ts">
 	// Dashboard Design System - Only loaded in dashboard area, not globally
-	import '$lib/styles/main.css';
-	import '$lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
+	import '#lib/styles/main.css';
+	import '#lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
-	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
-	import { logger } from '$lib/utils/logger';
+	import { browser } from '$app/env';
+	import { authStore, isAuthenticated, user } from '#lib/stores/auth.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 	import {
 		getUserMemberships,
 		type UserMembershipsResponse,
 		type MembershipType
-	} from '$lib/api/user-memberships';
-	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	} from '#lib/api/user-memberships.js';
+	import DashboardSidebar from '#lib/components/dashboard/DashboardSidebar.svelte';
+	import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import type { Snippet } from 'svelte'; // FIXED: Separate type import for clarity
 
 	// PROPS - Svelte 5 Pattern
@@ -102,8 +82,7 @@
 					...(membershipsData.scanners ?? []),
 					...(membershipsData.weeklyWatchlist ?? []),
 					...(membershipsData.premiumReports ?? [])
-				]
-					// active OR expiring: both grant access and BOTH are emitted by the
+				] // active OR expiring: both grant access and BOTH are emitted by the
 					// SSR list. Filtering to active-only here would drop a membership
 					// that the client's enhanceMemberships() flipped to 'expiring'
 					// (<7 days to renewal), making a sidebar row disappear after the
@@ -354,7 +333,12 @@
 					icon: 'users',
 					text: 'Meet Billy',
 					submenu: [
-						{ href: '/dashboard/spx-profit-pulse/billy-ribeiro', icon: '', text: 'Overview' },
+						{
+							href: '/dashboard/spx-profit-pulse/billy-ribeiro',
+							icon: '',
+							text: 'Overview'
+						},
+
 						{
 							href: '/dashboard/spx-profit-pulse/billy-ribeiro/trading-strategies',
 							icon: '',
@@ -382,15 +366,37 @@
 					icon: 'layout-dashboard',
 					text: 'Explosive Swings Dashboard'
 				},
-				{ href: '/dashboard/explosive-swings/start-here', icon: 'info', text: 'Start Here' },
-				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' },
+
+				{
+					href: '/dashboard/explosive-swings/start-here',
+					icon: 'info',
+					text: 'Start Here'
+				},
+
+				{
+					href: '/dashboard/explosive-swings/alerts',
+					icon: 'bolt',
+					text: 'Alerts'
+				},
+
 				{
 					href: '/dashboard/explosive-swings/trades',
 					icon: 'chart-line',
 					text: 'Trade Tracker'
 				},
-				{ href: '/dashboard/explosive-swings/watchlist', icon: 'list', text: 'Watchlist' },
-				{ href: '/dashboard/explosive-swings/video-library', icon: 'video', text: 'Video Library' },
+
+				{
+					href: '/dashboard/explosive-swings/watchlist',
+					icon: 'list',
+					text: 'Watchlist'
+				},
+
+				{
+					href: '/dashboard/explosive-swings/video-library',
+					icon: 'video',
+					text: 'Video Library'
+				},
+
 				{
 					href: '/dashboard/explosive-swings/learning-center',
 					icon: 'school',
@@ -402,7 +408,12 @@
 		'/dashboard/weekly-watchlist': {
 			title: 'Weekly Watchlist',
 			items: [
-				{ href: '/dashboard/weekly-watchlist', icon: 'layout-dashboard', text: 'Weekly Watchlist' },
+				{
+					href: '/dashboard/weekly-watchlist',
+					icon: 'layout-dashboard',
+					text: 'Weekly Watchlist'
+				},
+
 				{
 					href: '/dashboard/weekly-watchlist/watchlist-rundown-archive',
 					icon: 'video',
@@ -531,6 +542,27 @@
 		userToggledSidebar = collapsed;
 	}
 </script>
+
+<!--
+	Dashboard Layout - Member Dashboard with Sidebar
+	═══════════════════════════════════════════════════════════════════════════
+	Apple ICT 11+ Principal Engineer Implementation
+	Svelte 5 (December 2025) Best Practices
+
+	SERVER-SIDE AUTH PATTERN (Svelte 5 Recommended):
+	- Auth is validated server-side in hooks.server.ts BEFORE this component loads
+	- User data is passed from +layout.server.ts via load function
+	- No client-side auth polling needed - server already handled it
+	- Memberships fetched client-side for dynamic updates
+
+	Svelte 5 Features:
+	- $props() for component props including data from load
+	- $state() for reactive state management
+	- $derived() for computed values
+	- $effect() for side effects
+	- Snippet for children rendering
+
+-->
 
 <svelte:head>
 	<meta name="robots" content="noindex, nofollow" />

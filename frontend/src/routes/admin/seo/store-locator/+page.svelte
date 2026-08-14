@@ -12,7 +12,7 @@
 		IconPhone,
 		IconMail,
 		IconWorld
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		locations,
 		generateLocationSchema,
@@ -24,9 +24,9 @@
 		daysOfWeek,
 		type Location,
 		type BusinessType
-	} from '$lib/seo';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/seo/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// State using Svelte 5 runes
 	let locationList = $state<Location[]>([]);

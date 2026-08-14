@@ -8,12 +8,12 @@
 -->
 
 <script lang="ts">
-	import { IconSparkles, IconTrophy } from '$lib/icons';
+	import { IconSparkles, IconTrophy } from '#lib/icons/index.js';
 	import {
 		getBlockStateManager,
 		type BlockId,
 		type CountdownState
-	} from '$lib/stores/blockState.svelte';
+	} from '#lib/stores/blockState.svelte.js';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Block, BlockContent } from '../types';
 

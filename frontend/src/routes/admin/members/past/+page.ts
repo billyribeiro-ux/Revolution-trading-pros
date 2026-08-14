@@ -10,16 +10,16 @@
  * @version 3.0.0 (SvelteKit / December 2025)
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { redirect } from '@sveltejs/kit';
-import { authStore } from '$lib/stores/auth.svelte';
+import { authStore } from '#lib/stores/auth.svelte.js';
 import pastMembersApi, {
 	type DashboardOverview,
 	type ChurnReason,
 	type ServiceStats,
 	type CampaignHistory,
 	preloadDashboardData
-} from '$lib/api/past-members-dashboard';
+} from '#lib/api/past-members-dashboard.js';
 import type { Load } from '@sveltejs/kit';
 
 // ═══════════════════════════════════════════════════════════════════════════

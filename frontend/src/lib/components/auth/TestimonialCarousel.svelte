@@ -15,7 +15,7 @@
 	 */
 	import { onDestroy } from 'svelte';
 	import emblaCarouselSvelte from 'embla-carousel-svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import Autoplay from 'embla-carousel-autoplay';
 	import type { EmblaCarouselType } from 'embla-carousel';
 

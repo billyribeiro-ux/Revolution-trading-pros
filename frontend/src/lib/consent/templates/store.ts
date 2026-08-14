@@ -8,11 +8,11 @@
  * @version 2.0.0 - Backend API Integration
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
 import type { BannerTemplate, TemplateCustomization, ActiveTemplateConfig } from './types';
 import { BANNER_TEMPLATES, getTemplate, DEFAULT_TEMPLATE_ID } from './registry';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // =============================================================================
 // API CONFIGURATION
@@ -386,7 +386,6 @@ function convertToBackendFormat(
 	const t = template as Record<string, unknown>;
 	const asRecord = (value: unknown): Record<string, unknown> | undefined =>
 		value && typeof value === 'object' ? (value as Record<string, unknown>) : undefined;
-
 	const colors = asRecord(t.colors);
 	const typography = asRecord(t.typography);
 	const spacing = asRecord(t.spacing);
