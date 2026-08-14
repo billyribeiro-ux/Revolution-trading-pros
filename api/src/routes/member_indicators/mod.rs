@@ -53,7 +53,10 @@ pub fn member_router() -> Router<AppState> {
         )
         .route("/{slug}/license", get(license::get_license_key))
         .route("/{slug}/validate", get(license::validate_license_key))
-        .route("/{slug}/guide/{platform}", get(guide::get_installation_guide))
+        .route(
+            "/{slug}/guide/{platform}",
+            get(guide::get_installation_guide),
+        )
 }
 
 pub fn download_router() -> Router<AppState> {

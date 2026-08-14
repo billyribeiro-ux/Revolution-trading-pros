@@ -35,7 +35,13 @@ serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 
 # Authentication & Crypto
-jsonwebtoken = "11.0.0"
+# jsonwebtoken 11 made the crypto backend pluggable and ships NO provider by
+# default (default = ["use_pem"]), so every sign/verify panics with "Could not
+# automatically determine the process-level CryptoProvider" until exactly one of
+# `rust_crypto` / `aws_lc_rs` is enabled. `rust_crypto` is pure Rust and reuses
+# the RustCrypto stack this crate already depends on (hmac, sha2); `aws_lc_rs`
+# would pull in a C/cmake toolchain for the build.
+jsonwebtoken = { version = "11.0.0", features = ["rust_crypto"] }
 base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5.1"   # ICT 7: TOTP secret encoding
 argon2 = "0.5.3"

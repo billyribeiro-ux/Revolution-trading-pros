@@ -38,10 +38,10 @@ fn generate_license_key(secret: &str, user_id: i64, indicator_id: i64) -> String
     let key_chars: String = hash.chars().take(16).collect();
     format!(
         "{}-{}-{}-{}",
-        &key_chars[0..4].to_uppercase(),
-        &key_chars[4..8].to_uppercase(),
-        &key_chars[8..12].to_uppercase(),
-        &key_chars[12..16].to_uppercase()
+        key_chars[0..4].to_uppercase(),
+        key_chars[4..8].to_uppercase(),
+        key_chars[8..12].to_uppercase(),
+        key_chars[12..16].to_uppercase()
     )
 }
 

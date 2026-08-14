@@ -161,7 +161,10 @@ pub fn analytics_router() -> Router<AppState> {
         // Bulk Upload
         .route("/bulk-upload", post(operations::init_bulk_upload))
         .route("/bulk-upload/{batch_id}", get(operations::get_batch_status))
-        .route("/bulk-upload/item/{id}", put(operations::update_upload_item))
+        .route(
+            "/bulk-upload/item/{id}",
+            put(operations::update_upload_item),
+        )
         // Video Operations
         .route("/videos/{id}/clone", post(operations::clone_video))
         .route(
