@@ -14,12 +14,12 @@
 	// FIX-2026-04-26: onMount imported for $effect-cascade fix below.
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
-	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
+	import { connections, getIsEmailConnected } from '#lib/stores/connections.svelte.js';
+	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import {
 		IconMail,
 		IconPlus,
@@ -37,8 +37,8 @@
 		IconCopy,
 		IconTrendingUp,
 		IconArrowLeft
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getCampaigns,
 		getCampaignStats,
@@ -49,7 +49,7 @@
 		cancelCampaign,
 		type Campaign as APICampaign,
 		type CampaignStats
-	} from '$lib/api/campaigns';
+	} from '#lib/api/campaigns.js';
 
 	// Types
 

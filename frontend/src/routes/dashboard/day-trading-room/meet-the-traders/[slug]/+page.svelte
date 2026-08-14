@@ -7,8 +7,8 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import { getTraderBySlug } from '$lib/data/traders';
-	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import { getTraderBySlug } from '#lib/data/traders.js';
+	import WeeklyWatchlist from '#lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 </script>

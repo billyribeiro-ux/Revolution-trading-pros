@@ -28,25 +28,25 @@
 	// applied on marketing pages, so admin/dashboard/cms get zero visual
 	// effect from this import (rules don't match their DOM).
 	import '../marketing.css';
-	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
-	import ClientOnly from '$lib/components/ssr/ClientOnly.svelte';
-	import Seo from '$lib/seo/Seo.svelte';
-	import { resolveSEO } from '$lib/seo/resolve';
-	import { createPageSeoContext } from '$lib/seo/page-seo-context.svelte';
-	import type { SEOInput, RouteSEOContext, SEODefaults } from '$lib/seo/types';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-	import { NavBar } from '$lib/components/nav';
+	import AdminToolbar from '#lib/components/AdminToolbar.svelte';
+	import ClientOnly from '#lib/components/ssr/ClientOnly.svelte';
+	import Seo from '#lib/seo/Seo.svelte';
+	import { resolveSEO } from '#lib/seo/resolve.js';
+	import { createPageSeoContext } from '#lib/seo/page-seo-context.svelte.js';
+	import type { SEOInput, RouteSEOContext, SEODefaults } from '#lib/seo/types.js';
+	import MarketingFooter from '#lib/components/sections/MarketingFooter.svelte';
+	import { NavBar } from '#lib/components/nav/index.js';
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
-	import { initPerformanceMonitoring } from '$lib/utils/performance';
-	import { isAdminUser } from '$lib/stores/auth.svelte';
-	import { initializeAuth } from '$lib/api/auth';
+	import { registerServiceWorker } from '#lib/utils/registerServiceWorker.js';
+	import { initPerformanceMonitoring } from '#lib/utils/performance.js';
+	import { isAdminUser } from '#lib/stores/auth.svelte.js';
+	import { initializeAuth } from '#lib/api/auth.js';
 	import type { Snippet } from 'svelte';
-	import { initializeConsent } from '$lib/consent';
-	import { trackPageView } from '$lib/consent/vendors/ga4';
-	import { logger } from '$lib/utils/logger';
+	import { initializeConsent } from '#lib/consent/index.js';
+	import { trackPageView } from '#lib/consent/vendors/ga4.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() Pattern (no destructuring)
@@ -105,7 +105,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SIDE EFFECTS - SvelteKit Navigation Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
-	afterNavigate(({ to }) => {
+	afterNavigate(({ to, shallow }) => {
+		if (shallow) return;
+
 		if (to?.url) {
 			try {
 				trackPageView(to.url.href);
@@ -198,7 +200,12 @@
 
 		<NavBar />
 
-		<main id="main-content" class="app-main">
+		<!-- tabindex="-1" makes this a valid target for the "Skip to main content"
+		     link in app.html. SvelteKit 3's focus reset sets the fragment as the
+		     sequential-focus starting point rather than calling focus() on it, so
+		     without this the element is not focusable and activating the skip link
+		     leaves focus on <body> — the keyboard user never reaches main. -->
+		<main id="main-content" class="app-main" tabindex="-1">
 			{@render props.children()}
 		</main>
 

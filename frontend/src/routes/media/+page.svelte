@@ -14,9 +14,9 @@
 		getSelectedCount,
 		getCurrentViewMode,
 		getIsMediaLoading
-	} from '$lib/stores/media.svelte';
-	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
-	import FolderTree from '$lib/components/media/FolderTree.svelte';
+	} from '#lib/stores/media.svelte.js';
+	import UploadDropzone from '#lib/components/media/UploadDropzone.svelte';
+	import FolderTree from '#lib/components/media/FolderTree.svelte';
 	import {
 		IconPhoto,
 		IconVideo,
@@ -26,8 +26,8 @@
 		IconList,
 		IconTrash,
 		IconSparkles
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let showUploadModal = $state(false);
 	// TODO: Implement CreateFolderModal component

@@ -11,11 +11,11 @@
 	 *
 	 */
 
-	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '$lib/api/admin';
+	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '#lib/api/admin.js';
 	import { goto } from '$app/navigation';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// State - Svelte 5 Runes
 

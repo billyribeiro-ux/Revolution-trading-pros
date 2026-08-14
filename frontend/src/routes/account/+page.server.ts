@@ -11,7 +11,7 @@
  * @since February 2026
  */
 
-import type { SEOInput } from '$lib/seo/types';
+import type { SEOInput } from '#lib/seo/types.js';
 import type { ServerLoad } from '@sveltejs/kit';
 
 export const load: ServerLoad = async () => {

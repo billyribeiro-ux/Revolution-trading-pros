@@ -40,8 +40,7 @@
 					value={newNoteContent}
 					oninput={(e) => onUpdateContent(e.currentTarget.value)}
 					placeholder="Write your note here..."
-					rows="6"
-				></textarea>
+					rows="6"></textarea>
 			</div>
 		</div>
 		<div class="modal-footer">

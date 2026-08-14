@@ -1,28 +1,10 @@
-<!--
-	URL: /dashboard
-	
-	Dashboard Home Page - Member Dashboard Landing
-	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
-
-	CLIENT-SIDE AUTH PATTERN:
-	- User data from auth store (not server props)
-	- Memberships fetched client-side
-	- Reactive updates on auth changes
-
-	Svelte 5 Features:
-	- $state() for component state
-	- $derived() for computed values from auth store
-	- $effect() for reactive side effects
-
--->
 <script lang="ts">
 	import { onMount, type ComponentProps } from 'svelte';
-	import { dev } from '$app/environment';
-	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
-	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import { dev } from '$app/env';
+	import { user, isAuthenticated, isInitializing } from '#lib/stores/auth.svelte.js';
+	import { getUserMemberships, type UserMembershipsResponse } from '#lib/api/user-memberships.js';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
+	import WeeklyWatchlist from '#lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	// SSR data from +page.server.ts
 	let props = $props();
@@ -280,6 +262,24 @@
 	});
 </script>
 
+<!--
+	URL: /dashboard
+	
+	Dashboard Home Page - Member Dashboard Landing
+	═══════════════════════════════════════════════════════════════════════════
+	Apple ICT 11+ Principal Engineer Implementation
+
+	CLIENT-SIDE AUTH PATTERN:
+	- User data from auth store (not server props)
+	- Memberships fetched client-side
+	- Reactive updates on auth changes
+
+	Svelte 5 Features:
+	- $state() for component state
+	- $derived() for computed values from auth store
+	- $effect() for reactive side effects
+
+-->
 <!-- Dashboard Header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">

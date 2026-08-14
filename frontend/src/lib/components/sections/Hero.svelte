@@ -10,7 +10,7 @@
 	 * - Premium button interactions
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { CandlestickData, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 	import type gsap from 'gsap';
 	import type { Attachment } from 'svelte/attachments';
@@ -465,37 +465,33 @@
 
 		// Each slide has a unique CINEMATIC entrance
 		switch (slideIndex) {
-			case 0: // "EPIC REVEAL" - Title explodes from center with shockwave
-				timeline
-					// Title bursts from tiny with massive blur
+			case 0:
+				// "EPIC REVEAL" - Title explodes from center with shockwave
+				timeline // Title bursts from tiny with massive blur
 					.fromTo(
 						h1,
 						{ opacity: 0, scale: 0.3, filter: 'blur(30px)', y: 50 },
 						{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, duration: 1.2, ease: 'expo.out' },
 						0
-					)
-					// Subtitle slides up with golden shimmer
+					) // Subtitle slides up with golden shimmer
 					.fromTo(
 						h2,
 						{ opacity: 0, y: 60, scale: 0.9, filter: 'blur(8px)' },
 						{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' },
 						0.3
-					)
-					// Description fades in smoothly
+					) // Description fades in smoothly
 					.fromTo(
 						p,
 						{ opacity: 0, y: 30 },
 						{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' },
 						0.5
-					)
-					// Buttons pop in with spring physics
+					) // Buttons pop in with spring physics
 					.fromTo(
 						buttons,
 						{ opacity: 0, y: 40, scale: 0.7 },
 						{ opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.12, ease: 'back.out(1.7)' },
 						0.65
-					)
-					// Subtle pulse on primary button
+					) // Subtle pulse on primary button
 					.to(
 						buttons[0],
 						{
@@ -508,30 +504,27 @@
 					);
 				break;
 
-			case 1: // "METEOR DROP" - Elements crash in from above with bounce
-				timeline
-					// Title slams down from way above
+			case 1:
+				// "METEOR DROP" - Elements crash in from above with bounce
+				timeline // Title slams down from way above
 					.fromTo(
 						h1,
 						{ opacity: 0, y: -200, scale: 1.3, rotationX: -45 },
 						{ opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.1, ease: 'bounce.out' },
 						0
-					)
-					// Subtitle follows with lighter bounce
+					) // Subtitle follows with lighter bounce
 					.fromTo(
 						h2,
 						{ opacity: 0, y: -150, scale: 1.2 },
 						{ opacity: 1, y: 0, scale: 1, duration: 1, ease: 'elastic.out(1, 0.4)' },
 						0.15
-					)
-					// Description drops in
+					) // Description drops in
 					.fromTo(
 						p,
 						{ opacity: 0, y: -80 },
 						{ opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
 						0.35
-					)
-					// Buttons slam in from above
+					) // Buttons slam in from above
 					.fromTo(
 						buttons,
 						{ opacity: 0, y: -60, rotationX: -30 },
@@ -540,30 +533,27 @@
 					);
 				break;
 
-			case 2: // "CINEMATIC ZOOM" - Dolly zoom effect like Hitchcock
-				timeline
-					// Title zooms from far away with dramatic blur
+			case 2:
+				// "CINEMATIC ZOOM" - Dolly zoom effect like Hitchcock
+				timeline // Title zooms from far away with dramatic blur
 					.fromTo(
 						h1,
 						{ opacity: 0, scale: 3, filter: 'blur(40px)', z: -500 },
 						{ opacity: 1, scale: 1, filter: 'blur(0px)', z: 0, duration: 1.4, ease: 'expo.out' },
 						0
-					)
-					// Subtitle emerges from the blur
+					) // Subtitle emerges from the blur
 					.fromTo(
 						h2,
 						{ opacity: 0, scale: 2, filter: 'blur(20px)' },
 						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.1, ease: 'power4.out' },
 						0.2
-					)
-					// Description materializes
+					) // Description materializes
 					.fromTo(
 						p,
 						{ opacity: 0, scale: 1.5, filter: 'blur(10px)' },
 						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' },
 						0.45
-					)
-					// Buttons zoom in from distance
+					) // Buttons zoom in from distance
 					.fromTo(
 						buttons,
 						{ opacity: 0, scale: 0.3, filter: 'blur(5px)' },
@@ -579,30 +569,27 @@
 					);
 				break;
 
-			case 3: // "MATRIX SLIDE" - Dramatic side-to-side with skew distortion
-				timeline
-					// Title slides from left with heavy skew
+			case 3:
+				// "MATRIX SLIDE" - Dramatic side-to-side with skew distortion
+				timeline // Title slides from left with heavy skew
 					.fromTo(
 						h1,
 						{ opacity: 0, x: -300, skewX: -20, scale: 0.8 },
 						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' },
 						0
-					)
-					// Subtitle slides from right with opposite skew
+					) // Subtitle slides from right with opposite skew
 					.fromTo(
 						h2,
 						{ opacity: 0, x: 300, skewX: 20, scale: 0.8 },
 						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' },
 						0.12
-					)
-					// Description slides up
+					) // Description slides up
 					.fromTo(
 						p,
 						{ opacity: 0, y: 50, skewY: 3 },
 						{ opacity: 1, y: 0, skewY: 0, duration: 0.8, ease: 'power3.out' },
 						0.35
-					)
-					// Buttons slide in from left with stagger
+					) // Buttons slide in from left with stagger
 					.fromTo(
 						buttons,
 						{ opacity: 0, x: -80, skewX: -10 },

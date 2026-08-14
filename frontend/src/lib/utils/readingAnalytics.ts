@@ -69,7 +69,7 @@ export function formatReadingTime(minutes: number): string {
  *
  * @example
  * ```ts
- * import { initReadingAnalytics } from '$lib/utils/readingAnalytics';
+ * import { initReadingAnalytics } from '#lib/utils/readingAnalytics.js';
  *
  * // In blog post component
  * $effect(() => {

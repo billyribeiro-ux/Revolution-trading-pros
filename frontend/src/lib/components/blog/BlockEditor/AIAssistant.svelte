@@ -36,10 +36,10 @@
 		IconLoader,
 		IconX,
 		IconClock
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
-	import { API_BASE_URL } from '$lib/api/config';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { API_BASE_URL } from '#lib/api/config.js';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 	import type { EditorState, AIWritingRequest } from './types';
 
 	// ==========================================================================
@@ -715,8 +715,7 @@
 						bind:value={prompt}
 						placeholder="Describe what you want to write about..."
 						rows="3"
-						disabled={isGenerating}
-					></textarea>
+						disabled={isGenerating}></textarea>
 				</div>
 
 				<div class="options-row">
@@ -758,8 +757,7 @@
 						bind:value={prompt}
 						placeholder="Paste the text you want to improve..."
 						rows="6"
-						disabled={isGenerating}
-					></textarea>
+						disabled={isGenerating}></textarea>
 				</div>
 				<p class="help-text">AI will enhance clarity, fix grammar, and improve readability.</p>
 			</div>
@@ -770,8 +768,7 @@
 						bind:value={prompt}
 						placeholder="Paste the text you want to translate..."
 						rows="6"
-						disabled={isGenerating}
-					></textarea>
+						disabled={isGenerating}></textarea>
 				</div>
 				<div class="options-row">
 					<div class="option-group full">
@@ -791,8 +788,7 @@
 						bind:value={prompt}
 						placeholder="Paste the text you want to summarize..."
 						rows="6"
-						disabled={isGenerating}
-					></textarea>
+						disabled={isGenerating}></textarea>
 				</div>
 				<p class="help-text">AI will create a concise summary with key takeaways.</p>
 			</div>

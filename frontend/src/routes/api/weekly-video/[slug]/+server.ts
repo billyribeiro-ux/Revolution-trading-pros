@@ -13,10 +13,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
-// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
 // `Promise<unknown>` return; `extractBackendData` preserves the
 // R18-A Latent Bug §3 fix for `{ data: null }` semantics).
-import { fetchBackend, extractBackendData } from '$lib/server/proxy-fetch';
+import { fetchBackend, extractBackendData } from '#lib/server/proxy-fetch.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

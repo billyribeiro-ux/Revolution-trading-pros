@@ -9,12 +9,12 @@
  * @author Revolution Trading Pros
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import { goto } from '$app/navigation';
-import { base } from '$app/paths';
-import { browser } from '$app/environment';
-// ICT 11+ CORB Fix: Use same-origin endpoints
+import { resolve } from '$app/paths';
+import { browser } from '$app/env';
 
+// ICT 11+ CORB Fix: Use same-origin endpoints
 /**
  * Response type for API calls
  */
@@ -102,7 +102,7 @@ export async function adminFetch<T = any>(
 		if (response.status === 401 && !skipAuthRedirect && browser) {
 			// Redirect to login with return URL
 			const returnUrl = encodeURIComponent(window.location.pathname);
-			goto(`${base}/login?redirect=${returnUrl}`);
+			goto(resolve(`login?redirect=${returnUrl}`));
 			throw new AdminApiError('Unauthorized', 401);
 		}
 

@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
+	import { setBlockStateManager, BlockStateManager } from '#lib/stores/blockState.svelte.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

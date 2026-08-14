@@ -6,9 +6,9 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Deal } from '$lib/crm/types';
-	import { IconArrowLeft, IconCurrencyDollar, IconActivity } from '$lib/icons';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Deal } from '#lib/crm/types.js';
+	import { IconArrowLeft, IconCurrencyDollar, IconActivity } from '#lib/icons/index.js';
 
 	let deal = $state<Deal | null>(null);
 	let loading = $state(true);

@@ -6,13 +6,13 @@
 		IconCircleX,
 		IconRefresh,
 		IconTrendingUp
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// ─────────────────────────────────────────────────────────────────────
 	// Endpoint contract
 	// ─────────────────────────────────────────────────────────────────────
 	// `/api/seo/meta/analyze` returns a shape distinct from the canonical
-	// `SeoAnalysis` / `ReadabilityMetrics` types in `$lib/api/seo.ts` —
+	// `SeoAnalysis` / `ReadabilityMetrics` types in `#lib/api/seo.ts` —
 	// those describe the persisted record, this is the live preview form.
 	// We type only the fields this component actually reads in markup; any
 	// extra payload keys flow through untyped (`data` is still narrowed via

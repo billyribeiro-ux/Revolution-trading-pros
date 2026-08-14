@@ -6,7 +6,7 @@ import type {
 	WorkflowEdge,
 	WorkflowRun,
 	WorkflowAnalytics
-} from '$lib/types/workflow';
+} from '#lib/types/workflow.js';
 
 export const workflowApi = {
 	// Workflows

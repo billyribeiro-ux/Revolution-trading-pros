@@ -13,13 +13,13 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import type { RoomAlert, AlertUpdateInput } from '$lib/types/trading';
+import type { RoomAlert, AlertUpdateInput } from '#lib/types/trading.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
 // R22-A: `buildTosString`/`validateTosParams` no longer imported — the
 // mock-update path that rebuilt the TOS string client-side is gone.
-import { fetchBackend, hasData, isObject } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasData, isObject } from '#lib/server/proxy-fetch.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE GUARDS

@@ -52,7 +52,10 @@ pub use dtos::{
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/memberships", get(memberships::get_memberships))
-        .route("/memberships/{id}", get(memberships::get_membership_details))
+        .route(
+            "/memberships/{id}",
+            get(memberships::get_membership_details),
+        )
         .route(
             "/memberships/{id}/cancel",
             post(memberships::cancel_membership),

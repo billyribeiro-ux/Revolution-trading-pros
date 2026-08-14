@@ -13,7 +13,7 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import type { Snippet } from 'svelte';
-	import { IconX } from '$lib/icons';
+	import { IconX } from '#lib/icons/index.js';
 
 	interface Props {
 		open?: boolean;

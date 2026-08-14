@@ -12,7 +12,7 @@
 		type Course,
 		type CourseWithContent,
 		type CourseModule
-	} from '$lib/api/courses';
+	} from '#lib/api/courses.js';
 	import {
 		IconX,
 		IconBook,
@@ -32,7 +32,7 @@
 		IconPlayerPlay,
 		IconVideo,
 		IconFile
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
 	// FIX-2026-04-26: Analytics tab now wired to real backend data via

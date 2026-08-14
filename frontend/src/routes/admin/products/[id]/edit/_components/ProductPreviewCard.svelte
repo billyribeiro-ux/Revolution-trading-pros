@@ -4,9 +4,9 @@
 	 * product-info block. Receives parent-computed derived data so this
 	 * component stays a dumb renderer.
 	 */
-	import { IconCheck, IconShoppingCart } from '$lib/icons';
+	import { IconCheck, IconShoppingCart } from '#lib/icons/index.js';
 	import type { Component } from 'svelte';
-	import type { Product } from '$lib/api/admin';
+	import type { Product } from '#lib/api/admin.js';
 
 	type ProductType = 'course' | 'indicator' | 'membership' | 'bundle';
 

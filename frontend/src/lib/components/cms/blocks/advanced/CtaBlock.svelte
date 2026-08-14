@@ -8,9 +8,9 @@
 -->
 
 <script lang="ts">
-	import { sanitizeURL } from '$lib/utils/sanitization';
+	import { sanitizeURL } from '#lib/utils/sanitization.js';
 	import type { Block, BlockContent, BlockSettings } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// Types
 

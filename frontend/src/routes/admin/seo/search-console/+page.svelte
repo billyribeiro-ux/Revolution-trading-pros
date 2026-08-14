@@ -6,9 +6,9 @@
 		IconDownload,
 		IconPlugConnected,
 		IconPlugConnectedX
-	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	interface GscStatus {
 		connected?: boolean;

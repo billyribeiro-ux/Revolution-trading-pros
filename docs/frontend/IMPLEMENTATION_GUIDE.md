@@ -442,7 +442,7 @@ export async function load({ fetch }: ServerLoadEvent) {
 ```typescript
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Get SSR data
 	let { data } = $props();

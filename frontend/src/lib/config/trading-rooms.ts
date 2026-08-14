@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '$lib/config/google';
+import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '#lib/config/google.js';
 
 export interface TradingRoomConfig {
 	slug: string;

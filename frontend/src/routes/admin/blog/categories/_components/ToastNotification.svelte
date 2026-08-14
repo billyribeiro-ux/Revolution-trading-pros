@@ -6,7 +6,7 @@
 	 * close-button.
 	 */
 	import { fade } from 'svelte/transition';
-	import { IconCheck, IconAlertCircle, IconX } from '$lib/icons';
+	import { IconCheck, IconAlertCircle, IconX } from '#lib/icons/index.js';
 	import type { ToastType } from './types';
 
 	interface Props {

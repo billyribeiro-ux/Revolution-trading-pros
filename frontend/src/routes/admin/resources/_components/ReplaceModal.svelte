@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconLink } from '$lib/icons';
-	import type { RoomResource } from '$lib/api/room-resources';
+	import { IconLink } from '#lib/icons/index.js';
+	import type { RoomResource } from '#lib/api/room-resources.js';
 
 	type Props = {
 		resource: RoomResource;

@@ -17,7 +17,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import IconHeartbeat from '@tabler/icons-svelte-runes/icons/heartbeat';
 	import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
 	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
@@ -49,8 +49,8 @@
 		getConnectedCount,
 		getOverallHealth,
 		getServicesWithErrors
-	} from '$lib/stores/connections.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/stores/connections.svelte.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Types
 
@@ -171,12 +171,10 @@
 			performance: {
 				responseTime:
 					((apiData['performance'] as Record<string, unknown>)?.['response_time'] as
-						| number
-						| null) ?? null,
+						number | null) ?? null,
 				memoryUsage:
 					((apiData['performance'] as Record<string, unknown>)?.['memory_usage'] as
-						| number
-						| null) ?? null,
+						number | null) ?? null,
 				cpuUsage:
 					((apiData['performance'] as Record<string, unknown>)?.['cpu_usage'] as number | null) ??
 					null,

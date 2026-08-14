@@ -231,8 +231,7 @@
 								class="form-input"
 								bind:value={editedTemplate.description}
 								placeholder="A brief description of this template..."
-								rows="2"
-							></textarea>
+								rows="2"></textarea>
 						</label>
 					</div>
 				</div>
@@ -605,8 +604,7 @@
 								class="form-input"
 								bind:value={editedTemplate.copy.description}
 								rows="3"
-								placeholder="We use cookies to enhance your browsing experience..."
-							></textarea>
+								placeholder="We use cookies to enhance your browsing experience..."></textarea>
 						</label>
 					</div>
 				</div>
@@ -839,8 +837,7 @@
 								class="form-input code"
 								bind:value={editedTemplate.customCSS}
 								rows="6"
-								placeholder="/* Add custom CSS here */"
-							></textarea>
+								placeholder="/* Add custom CSS here */"></textarea>
 						</label>
 					</div>
 				</div>

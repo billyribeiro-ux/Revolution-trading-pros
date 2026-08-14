@@ -10,7 +10,7 @@
 		Subscription,
 		SubscriptionStatus,
 		SubscriptionPayment
-	} from '$lib/stores/subscriptions.svelte';
+	} from '#lib/stores/subscriptions.svelte.js';
 	import {
 		pauseSubscription,
 		resumeSubscription,
@@ -18,7 +18,7 @@
 		reactivateSubscription,
 		retryPayment,
 		getPaymentHistory
-	} from '$lib/api/subscriptions';
+	} from '#lib/api/subscriptions.js';
 	import {
 		IconX,
 		IconCreditCard,
@@ -35,7 +35,7 @@
 		IconAlertTriangle,
 		IconMail,
 		IconCurrencyDollar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
 	interface Props {

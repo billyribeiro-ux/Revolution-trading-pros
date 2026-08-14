@@ -62,8 +62,7 @@
 		{rows}
 		maxlength={maxLength}
 		oninput={handleInput}
-		class="excerpt-textarea"
-	></textarea>
+		class="excerpt-textarea"></textarea>
 
 	{#if maxLength}
 		<div class={['char-counter', { 'near-limit': charCount > maxLength * 0.8 }]}>

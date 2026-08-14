@@ -7,9 +7,9 @@
  *
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
+import { browser } from '$app/env';
 
-import { browser } from '$app/environment';
-import { mediaApi, type MediaFile, type MediaFolder, type UploadProgress } from '$lib/api/media';
+import { mediaApi, type MediaFile, type MediaFolder, type UploadProgress } from '#lib/api/media.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

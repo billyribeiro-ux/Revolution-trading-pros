@@ -3,7 +3,7 @@
 	 * R20-C extraction (2026-05-20): pricing + thumbnail fields.
 	 * Mutates the parent's `formData` proxy directly.
 	 */
-	import { IconPhoto } from '$lib/icons';
+	import { IconPhoto } from '#lib/icons/index.js';
 
 	interface FormFields {
 		price: string;

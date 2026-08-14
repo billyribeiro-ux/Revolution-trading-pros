@@ -13,13 +13,13 @@
 	import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
 	import IconMaximize from '@tabler/icons-svelte-runes/icons/maximize';
 	import IconMinimize from '@tabler/icons-svelte-runes/icons/minimize';
-	import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
-	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
-	import { api } from '$lib/api/config';
-	import { mediaApi } from '$lib/api/media';
+	import { BlockEditor, type Block } from '#lib/components/blog/BlockEditor/index.js';
+	import SeoMetaFields from '#lib/components/blog/SeoMetaFields.svelte';
+	import { api } from '#lib/api/config.js';
+	import { mediaApi } from '#lib/api/media.js';
 	// FIX-2026-04-26 (P2-4): sanitize raw-HTML blog blocks before send.
-	import { sanitizeBlogContent } from '$lib/utils/sanitize';
-	import { logger } from '$lib/utils/logger';
+	import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
+	import { logger } from '#lib/utils/logger.js';
 	import {
 		predefinedCategories,
 		getPredefinedCategoryById
@@ -28,7 +28,7 @@
 		// and never annotates with BlogCategory. Kept here (not deleted) as a
 		// pointer in case typed categories get wired in later.
 		// , type BlogCategory
-	} from '$lib/data/predefined-categories';
+	} from '#lib/data/predefined-categories.js';
 
 	// Tag row as returned by /api/admin/tags. `color` is used for badge styling.
 	interface TagRow {
@@ -457,8 +457,7 @@
 					name="excerpt"
 					bind:value={post.excerpt}
 					placeholder="Brief description of the post..."
-					rows="3"
-				></textarea>
+					rows="3"></textarea>
 			</div>
 
 			<!-- Advanced Block Editor -->
@@ -611,8 +610,7 @@
 							name="featured_image_description"
 							bind:value={post.featured_image_description}
 							placeholder="Detailed description of the image"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 				{:else}
 					<label class={['upload-box', { disabled: uploadingImage }]}>

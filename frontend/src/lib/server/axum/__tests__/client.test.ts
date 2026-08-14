@@ -12,12 +12,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Mocks — Must be before imports
 // ═══════════════════════════════════════════════════════════════════════════
 
-vi.mock('$env/dynamic/private', () => ({
-	env: {
-		API_BASE_URL: 'https://test-api.example.com',
-		VITE_API_URL: undefined,
-		BACKEND_URL: undefined
-	}
+// SvelteKit 3: `$env/dynamic/private` became `$app/env/private`, and the
+// variables are named exports rather than properties of an `env` object.
+vi.mock('$app/env/private', () => ({
+	API_BASE_URL: 'https://test-api.example.com',
+	VITE_API_URL: undefined,
+	BACKEND_URL: undefined
 }));
 
 vi.mock('$app/server', () => ({

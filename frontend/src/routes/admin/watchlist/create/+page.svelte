@@ -22,9 +22,9 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { watchlistApi, type WatchlistDate } from '$lib/api/watchlist';
-	import { ALL_ROOM_IDS } from '$lib/config/rooms';
-	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
+	import { watchlistApi, type WatchlistDate } from '#lib/api/watchlist.js';
+	import { ALL_ROOM_IDS } from '#lib/config/rooms.js';
+	import RoomSelector from '#lib/components/admin/RoomSelector.svelte';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -270,8 +270,7 @@
 							id="description"
 							bind:value={description}
 							placeholder={autoDescription || 'Optional description (auto-generated if left blank)'}
-							rows="2"
-						></textarea>
+							rows="2"></textarea>
 					</div>
 				</div>
 			</section>

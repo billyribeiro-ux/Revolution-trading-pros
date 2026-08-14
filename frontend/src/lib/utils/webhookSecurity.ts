@@ -85,10 +85,7 @@ export function isPrivateOrLoopbackHost(hostname: string): boolean {
 }
 
 export type WebhookUrlValidationError =
-	| 'invalid_url'
-	| 'must_be_https'
-	| 'private_or_loopback'
-	| 'invalid_host';
+	'invalid_url' | 'must_be_https' | 'private_or_loopback' | 'invalid_host';
 
 export interface WebhookUrlValidationResult {
 	ok: boolean;

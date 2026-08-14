@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconChartCandle,
 		IconClock,
@@ -17,7 +17,7 @@
 		IconChartLine,
 		IconShield,
 		IconTrophy
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	interface Module {
 		week: number;

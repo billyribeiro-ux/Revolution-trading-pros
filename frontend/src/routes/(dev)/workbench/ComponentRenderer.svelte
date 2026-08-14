@@ -10,7 +10,7 @@
 	 */
 	import type { ComponentInfo } from './+page.server';
 	import type { Component } from 'svelte';
-	import { logger } from '$lib/utils/logger';
+	import { logger } from '#lib/utils/logger.js';
 
 	interface Props {
 		component: ComponentInfo | null;

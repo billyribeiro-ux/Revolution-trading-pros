@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Card, Button, Badge, Table } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
-	import { seoApi, type Error404 } from '$lib/api/seo';
-	import { IconAlertCircle, IconTrash } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { Card, Button, Badge, Table } from '#lib/components/ui/index.js';
+	import { addToast } from '#lib/utils/toast.js';
+	import { seoApi, type Error404 } from '#lib/api/seo.js';
+	import { IconAlertCircle, IconTrash } from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// State using Svelte 5 runes
 	let errors = $state<Error404[]>([]);

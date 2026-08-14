@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconHistory from '@tabler/icons-svelte-runes/icons/history';
-	import type { TimelineEvent } from '$lib/crm/types';
+	import type { TimelineEvent } from '#lib/crm/types.js';
 	import { formatDateTime } from './helpers';
 
 	interface Props {

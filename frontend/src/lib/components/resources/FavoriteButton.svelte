@@ -9,8 +9,8 @@
   - Accessible design
 -->
 <script lang="ts">
-	import { addFavorite, removeFavorite, checkFavorite } from '$lib/api/room-resources';
-	import Icon from '$lib/components/Icon.svelte';
+	import { addFavorite, removeFavorite, checkFavorite } from '#lib/api/room-resources.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 
 	interface Props {

@@ -4,7 +4,7 @@
  * Import this in your root layout to enable behavior tracking
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { BehaviorTracker } from './tracker';
 
 let tracker: BehaviorTracker | null = null;

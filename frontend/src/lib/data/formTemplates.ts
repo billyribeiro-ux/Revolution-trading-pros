@@ -1,4 +1,4 @@
-import type { FieldValidation, FormSettings } from '$lib/api/forms';
+import type { FieldValidation, FormSettings } from '#lib/api/forms.js';
 
 export interface TemplateField {
 	field_type: string;

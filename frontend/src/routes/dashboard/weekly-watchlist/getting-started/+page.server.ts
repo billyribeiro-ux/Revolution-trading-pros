@@ -8,7 +8,7 @@
  * - Typed return value
  */
 
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ fetch, locals }) => {

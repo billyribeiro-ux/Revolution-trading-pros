@@ -16,7 +16,7 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

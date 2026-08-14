@@ -5,9 +5,9 @@
 	 * Full-screen media preview with metadata display,
 	 * variant comparison, and optimization controls.
 	 */
-	import type { MediaItem, MediaVariant } from '$lib/api/media';
-	import Icon from '$lib/components/Icon.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import type { MediaItem, MediaVariant } from '#lib/api/media.js';
+	import Icon from '#lib/components/Icon.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		item?: MediaItem | null;

@@ -1,71 +1,9 @@
-<!--
-/**
- * @deprecated As of May 2026 SEO audit, all importers were migrated to the
- * unified SEO layer at `$lib/seo/`. This legacy component has zero importers
- * (verified by grep) and is retained for archaeological reference only.
- *
- * Do not import. Write SEO payloads in your route's `load()` and return
- * { seo: SEOInput } instead. See frontend/src/routes/about/+page.ts.
- *
- * SEOHead Component - Google November 2025 Enterprise Implementation
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * ENTERPRISE FEATURES (Updated November 2025):
- *
- * 1. ADVANCED SEO:
- *    - Dynamic meta generation
- *    - GEO (Generative Engine Optimization) for AI search
- *    - Multi-language support with hreflang
- *    - Regional targeting
- *    - Mobile-first indexing
- *    - Core Web Vitals hints (LCP, INP, CLS)
- *
- * 2. SCHEMA GENERATION (November 2025):
- *    - Auto schema detection
- *    - Rich snippets
- *    - Knowledge graph
- *    - FAQ schema
- *    - Product schema
- *    - Course schema
- *    - VideoObject schema
- *    - HowTo schema
-	 *    - Speakable schema metadata
- *
- * 3. SOCIAL OPTIMIZATION:
- *    - Multi-platform cards
- *    - Dynamic OG images
- *    - Twitter/X cards
- *    - LinkedIn optimization
- *    - Pinterest Rich Pins
- *    - WhatsApp preview
- *
- * 4. PERFORMANCE:
- *    - Preconnect hints
- *    - DNS prefetch
- *    - Resource hints
- *    - Critical CSS
- *    - Lazy loading
- *    - Priority hints
- *
- * 5. ANALYTICS:
- *    - SEO scoring
- *    - Keyword density
- *    - Readability score
- *    - Schema validation
- *    - SERP preview
- *    - AI citation tracking
- *
- * @version 4.0.0 (Google November 2025 + GEO)
- * @component
- */
--->
-
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
+	import { browser } from '$app/env';
+	import { serializeJsonLd } from '#lib/seo/serializeJsonLd.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Types
@@ -322,7 +260,7 @@
 	 *
 	 * Serialization (deterministic key ordering for stable SSR/CSR output
 	 * AND HTML-`<script>`-injection safety) is delegated to the single
-	 * canonical serializer in `$lib/seo/serializeJsonLd`. The script-tag
+	 * canonical serializer in `#lib/seo/serializeJsonLd.js`. The script-tag
 	 * name is concatenated so the Svelte compiler does not parse it.
 	 */
 	function generateJsonLdScript(schema: Record<string, unknown>): string {
@@ -815,6 +753,68 @@
 	});
 </script>
 
+<!--
+/**
+ * @deprecated As of May 2026 SEO audit, all importers were migrated to the
+ * unified SEO layer at `#lib/seo//index.js`. This legacy component has zero importers
+ * (verified by grep) and is retained for archaeological reference only.
+ *
+ * Do not import. Write SEO payloads in your route's `load()` and return
+ * { seo: SEOInput } instead. See frontend/src/routes/about/+page.ts.
+ *
+ * SEOHead Component - Google November 2025 Enterprise Implementation
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * ENTERPRISE FEATURES (Updated November 2025):
+ *
+ * 1. ADVANCED SEO:
+ *    - Dynamic meta generation
+ *    - GEO (Generative Engine Optimization) for AI search
+ *    - Multi-language support with hreflang
+ *    - Regional targeting
+ *    - Mobile-first indexing
+ *    - Core Web Vitals hints (LCP, INP, CLS)
+ *
+ * 2. SCHEMA GENERATION (November 2025):
+ *    - Auto schema detection
+ *    - Rich snippets
+ *    - Knowledge graph
+ *    - FAQ schema
+ *    - Product schema
+ *    - Course schema
+ *    - VideoObject schema
+ *    - HowTo schema
+	 *    - Speakable schema metadata
+ *
+ * 3. SOCIAL OPTIMIZATION:
+ *    - Multi-platform cards
+ *    - Dynamic OG images
+ *    - Twitter/X cards
+ *    - LinkedIn optimization
+ *    - Pinterest Rich Pins
+ *    - WhatsApp preview
+ *
+ * 4. PERFORMANCE:
+ *    - Preconnect hints
+ *    - DNS prefetch
+ *    - Resource hints
+ *    - Critical CSS
+ *    - Lazy loading
+ *    - Priority hints
+ *
+ * 5. ANALYTICS:
+ *    - SEO scoring
+ *    - Keyword density
+ *    - Readability score
+ *    - Schema validation
+ *    - SERP preview
+ *    - AI citation tracking
+ *
+ * @version 4.0.0 (Google November 2025 + GEO)
+ * @component
+ */
+-->
+
 <svelte:head>
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 	<!-- Primary Meta Tags -->
@@ -840,7 +840,9 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
 	<link rel="canonical" href={fullCanonical} />
+
 	<link rel="alternate" {hreflang} href={fullCanonical} />
+
 	<link rel="alternate" hreflang="x-default" href={fullCanonical} />
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════ -->

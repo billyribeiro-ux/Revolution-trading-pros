@@ -1,11 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import Anthropic from '@anthropic-ai/sdk';
-import { env } from '$env/dynamic/private';
-import { isAdminRole } from '$lib/server/auth';
+import { ANTHROPIC_API_KEY } from '$app/env/private';
+import { isAdminRole } from '#lib/server/auth.js';
 
 function getAnthropicClient() {
-	const apiKey = env.ANTHROPIC_API_KEY;
+	const apiKey = ANTHROPIC_API_KEY;
 	if (!apiKey) {
 		throw new Error('ANTHROPIC_API_KEY is not configured');
 	}

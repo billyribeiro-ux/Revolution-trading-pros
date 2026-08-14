@@ -8,7 +8,7 @@
 
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { keyboard } from '$lib/stores/keyboard.svelte';
+	import { keyboard } from '#lib/stores/keyboard.svelte.js';
 	import IconCommand from '@tabler/icons-svelte-runes/icons/command';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 

@@ -8,14 +8,14 @@
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import {
 	analyticsApi,
 	type DashboardData,
 	type EventProperties,
 	type RealTimeMetrics
-} from '$lib/api/analytics';
-import { logger } from '$lib/utils/logger';
+} from '#lib/api/analytics.js';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Queue payload shape — mirrors the body `analyticsApi.trackEvent` accepts.

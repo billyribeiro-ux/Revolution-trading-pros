@@ -21,7 +21,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import DividerBlock from '../layout/DividerBlock.svelte';
 import type { Block } from '../types';
-import { toBlockId } from '$lib/stores/blockState.svelte';
+import { toBlockId } from '#lib/stores/blockState.svelte.js';
 
 // ===============================================================================
 // TEST FIXTURES
@@ -413,7 +413,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		});
 
 		const wrapper = container.querySelector('.divider-wrapper');
-		expect(wrapper).toHaveStyle({ marginTop: '1rem', marginBottom: '1rem' });
+		expect(wrapper).toHaveStyle({ marginTop: '16px', marginBottom: '16px' }); // 1rem
 	});
 
 	it('should apply medium spacing', () => {
@@ -431,7 +431,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		});
 
 		const wrapper = container.querySelector('.divider-wrapper');
-		expect(wrapper).toHaveStyle({ marginTop: '2rem', marginBottom: '2rem' });
+		expect(wrapper).toHaveStyle({ marginTop: '32px', marginBottom: '32px' }); // 2rem
 	});
 
 	it('should apply large spacing', () => {
@@ -449,7 +449,7 @@ describe('DividerBlock - Spacing Settings', () => {
 		});
 
 		const wrapper = container.querySelector('.divider-wrapper');
-		expect(wrapper).toHaveStyle({ marginTop: '3rem', marginBottom: '3rem' });
+		expect(wrapper).toHaveStyle({ marginTop: '48px', marginBottom: '48px' }); // 3rem
 	});
 
 	it('should show spacing buttons in toolbar', () => {

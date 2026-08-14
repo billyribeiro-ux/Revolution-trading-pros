@@ -1,24 +1,10 @@
-<!--
-/**
- * Accordion Block Component
- * ICT Level 7 - Collapsible accordion with keyboard navigation
- * 
- * Features:
- * - Full ARIA compliance (WAI-ARIA Accordion Pattern)
- * - Keyboard navigation (Arrow keys, Home, End)
- * - SSR-safe contenteditable handling
- * - Error boundary integration
- * - Proper cleanup on unmount
- */
--->
-
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { browser } from '$app/environment';
-	import { IconChevronDown, IconPlus, IconMinus, IconX } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import { browser } from '$app/env';
+	import { IconChevronDown, IconPlus, IconMinus, IconX } from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 
 	interface AccordionItem {
@@ -152,6 +138,20 @@
 		};
 	}
 </script>
+
+<!--
+/**
+ * Accordion Block Component
+ * ICT Level 7 - Collapsible accordion with keyboard navigation
+ * 
+ * Features:
+ * - Full ARIA compliance (WAI-ARIA Accordion Pattern)
+ * - Keyboard navigation (Arrow keys, Home, End)
+ * - SSR-safe contenteditable handling
+ * - Error boundary integration
+ * - Proper cleanup on unmount
+ */
+-->
 
 <div class="accordion-block" role="region" aria-label="Accordion">
 	{#each items as item, index (item.id)}

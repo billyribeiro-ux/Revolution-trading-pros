@@ -11,7 +11,7 @@
  * W3C Trace Context compliant header propagation
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { RequestContext, RequestPriority, RequestMetrics } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -112,10 +112,7 @@ export function createRequestContext(
 		retryAttempt: 0,
 		...(userId !== undefined && { userId }),
 		...(sessionId !== undefined && { sessionId }),
-		metadata: {
-			...parentContext?.metadata,
-			...options.metadata
-		}
+		metadata: { ...parentContext?.metadata, ...options.metadata }
 	};
 }
 

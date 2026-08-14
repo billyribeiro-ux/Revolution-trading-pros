@@ -40,19 +40,19 @@
 		IconStar,
 		IconStarFilled,
 		IconArrowRight
-	} from '$lib/icons';
-	import { api } from '$lib/api/config';
-	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { api } from '#lib/api/config.js';
+	import { connections, getIsCrmConnected } from '#lib/stores/connections.svelte.js';
+	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import PageHeader from './_components/PageHeader.svelte';
 	import StatsGrid from './_components/StatsGrid.svelte';
 	import DeleteLeadModal from './_components/DeleteLeadModal.svelte';
 	import ConvertLeadModal from './_components/ConvertLeadModal.svelte';
 	import LeadFormModal from './_components/LeadFormModal.svelte';
 	import LeadsPagination from './_components/LeadsPagination.svelte';
-	import { logger } from '$lib/utils/logger';
+	import { logger } from '#lib/utils/logger.js';
 	import { onMount } from 'svelte';
 
 	// TYPES

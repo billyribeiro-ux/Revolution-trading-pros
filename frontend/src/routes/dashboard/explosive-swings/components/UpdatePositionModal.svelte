@@ -241,8 +241,7 @@
 							id="notes"
 							bind:value={notes}
 							rows="3"
-							placeholder="Add notes about this position..."
-						></textarea>
+							placeholder="Add notes about this position..."></textarea>
 					</div>
 				</div>
 

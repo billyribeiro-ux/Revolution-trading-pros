@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount, tick } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
 	import type {
@@ -71,7 +71,6 @@
 		copy: string;
 		metric: string;
 	}
-
 	interface BuildLogEntry {
 		date: string;
 		tag: string;
@@ -1551,10 +1550,8 @@
 								type="button"
 								class={{ active: activeTimeframe === timeframe }}
 								aria-pressed={activeTimeframe === timeframe}
-								onclick={() => (activeTimeframe = timeframe)}
+								onclick={() => (activeTimeframe = timeframe)}>{timeframe}</button
 							>
-								{timeframe}
-							</button>
 						{/each}
 					</div>
 				</div>
@@ -1562,14 +1559,9 @@
 				<div class="chart-canvas" {@attach mountMainChart}></div>
 
 				<div class="chart-metrics">
-					<div>
-						<span>Latency</span>
-						<strong>15ms</strong>
-					</div>
-					<div>
-						<span>Signals/min</span>
-						<strong>4.2M</strong>
-					</div>
+					<div><span>Latency</span><strong>15ms</strong></div>
+					<div><span>Signals/min</span><strong>4.2M</strong></div>
+
 					<div>
 						<span>Avg. confidence</span>
 						<strong>{averageConfidence}%</strong>
@@ -1615,6 +1607,7 @@
 							<dt>Symbols monitored</dt>
 							<dd>12,847</dd>
 						</div>
+
 						<div>
 							<dt>Signals active now</dt>
 							<dd>{activeSignals}</dd>
@@ -1801,8 +1794,8 @@
 				<div class="success-panel panel panel-feature" role="status">
 					<div class="success-mark" aria-hidden="true">
 						<svg viewBox="0 0 56 56">
-							<circle cx="28" cy="28" r="25" />
-							<path d="M16 29.5 24.5 38 41 19" />
+							<circle cx="28" cy="28" r="25"></circle>
+							<path d="M16 29.5 24.5 38 41 19"></path>
 						</svg>
 					</div>
 					<div>

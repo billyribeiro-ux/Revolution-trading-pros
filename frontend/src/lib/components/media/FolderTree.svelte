@@ -6,9 +6,9 @@
 -->
 
 <script lang="ts">
-	import { mediaStore as _mediaStore, getCurrentFolders } from '$lib/stores/media.svelte';
-	import type { MediaFolder } from '$lib/api/media';
-	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '$lib/icons';
+	import { mediaStore as _mediaStore, getCurrentFolders } from '#lib/stores/media.svelte.js';
+	import type { MediaFolder } from '#lib/api/media.js';
+	import { IconFolder, IconChevronRight, IconChevronDown, IconPlus } from '#lib/icons/index.js';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	interface Props {

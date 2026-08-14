@@ -24,10 +24,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
-// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
 // `Promise<unknown>` return, narrowing primitives consolidated).
 // R22-A: `ALL_ROOM_IDS` import dropped — no caller after the mock map went.
-import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess } from '#lib/server/proxy-fetch.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

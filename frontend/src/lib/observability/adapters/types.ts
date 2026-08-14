@@ -241,11 +241,7 @@ export interface ErrorPayload extends BaseEventPayload {
  * Union of all event payloads.
  */
 export type EventPayload =
-	| PageViewPayload
-	| IdentifyPayload
-	| PurchasePayload
-	| ErrorPayload
-	| CustomEventPayload;
+	PageViewPayload | IdentifyPayload | PurchasePayload | ErrorPayload | CustomEventPayload;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Analytics Configuration

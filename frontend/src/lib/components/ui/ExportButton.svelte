@@ -8,15 +8,15 @@
 	 * @level L8 Principal Engineer
 	 */
 	import { fly } from 'svelte/transition';
-	import { IconDownload, IconCsv, IconPdf, IconJson } from '$lib/icons';
-	import Icon from '$lib/components/Icon.svelte';
+	import { IconDownload, IconCsv, IconPdf, IconJson } from '#lib/icons/index.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import {
 		exportToCSV,
 		exportToPDF,
 		exportToJSON,
 		type ExportColumn,
 		type ExportOptions
-	} from '$lib/utils/export';
+	} from '#lib/utils/export.js';
 
 	interface Props {
 		data?: Record<string, unknown>[];

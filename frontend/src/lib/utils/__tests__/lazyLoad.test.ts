@@ -37,7 +37,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 // SvelteKit's `$app/environment` exports `browser`. In jsdom the default
 // stub leaves it undefined; the lazyLoad helpers fork on `browser === true`,
 // so we mock both pathways explicitly.
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	dev: true,
 	building: false,

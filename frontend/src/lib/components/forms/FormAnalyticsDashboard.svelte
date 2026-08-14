@@ -15,7 +15,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import type { Form } from '$lib/api/forms';
+	import type { Form } from '#lib/api/forms.js';
 
 	type DateRange = '7d' | '30d' | '90d' | '365d';
 

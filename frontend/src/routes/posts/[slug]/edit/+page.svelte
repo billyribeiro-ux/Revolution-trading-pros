@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { setBlockStateManager, BlockStateManager } from '$lib/stores/blockState.svelte';
-	import BlockRenderer from '$lib/components/cms/blocks/BlockRenderer.svelte';
-	import { createBlock, deserializeBlocks } from '$lib/utils/blocks';
-	import { IconPlus } from '$lib/icons';
-	import type { Block, BlockType } from '$lib/components/cms/blocks/types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { setBlockStateManager, BlockStateManager } from '#lib/stores/blockState.svelte.js';
+	import BlockRenderer from '#lib/components/cms/blocks/BlockRenderer.svelte';
+	import { createBlock, deserializeBlocks } from '#lib/utils/blocks.js';
+	import { IconPlus } from '#lib/icons/index.js';
+	import type { Block, BlockType } from '#lib/components/cms/blocks/types.js';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Initialize state manager
 	const stateManager = new BlockStateManager();

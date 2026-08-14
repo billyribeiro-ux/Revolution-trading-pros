@@ -10,10 +10,10 @@
 	 *
 	 */
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { authStore } from '$lib/stores/auth.svelte';
+	import { authStore } from '#lib/stores/auth.svelte.js';
 	import {
 		IconAlertTriangle,
 		IconLock,
@@ -22,7 +22,7 @@
 		IconHome,
 		IconRefresh,
 		IconArrowLeft
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);

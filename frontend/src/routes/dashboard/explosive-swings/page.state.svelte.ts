@@ -34,8 +34,8 @@ import {
 	type FormattedAlert
 } from './data.remote';
 import { deleteTrade as remoteDeleteTrade } from './commands.remote';
-import type { RoomAlert } from '$lib/types/trading';
-import type { TradePlanEntry as ApiTradePlanEntry } from '$lib/types/trading';
+import type { RoomAlert } from '#lib/types/trading.js';
+import type { TradePlanEntry as ApiTradePlanEntry } from '#lib/types/trading.js';
 import {
 	performanceMonitor,
 	analyticsTracker,
@@ -43,7 +43,7 @@ import {
 	trackPagination,
 	trackModalOpened
 } from './monitoring';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 /**
  * ApiTrade may optionally carry update-tracking fields that are not part of the

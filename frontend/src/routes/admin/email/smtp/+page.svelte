@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { apiFetch } from '$lib/api/config';
-	import { connections, getIsEmailConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
+	import { apiFetch } from '#lib/api/config.js';
+	import { connections, getIsEmailConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
 
 	let connectionLoading = $state(true);
 	let settings = $state({

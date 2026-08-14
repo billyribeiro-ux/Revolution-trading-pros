@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconDeviceFloppy } from '$lib/icons';
+	import { IconX, IconDeviceFloppy } from '#lib/icons/index.js';
 
 	interface Props {
 		url404?: string;

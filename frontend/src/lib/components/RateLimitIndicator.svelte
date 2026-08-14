@@ -18,7 +18,7 @@
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconPlugOff from '@tabler/icons-svelte-runes/icons/plug-off';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 
 	interface RateLimitInfo {
 		service: string;

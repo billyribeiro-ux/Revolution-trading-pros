@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
+	import type { Deal, Pipeline, Stage } from '#lib/crm/types.js';
 
 	interface Props {
 		deal: Deal;
@@ -9,7 +9,7 @@
 
 	let { deal, pipeline, onSelectStage }: Props = $props();
 
-	// `Pipeline.stages` is typed as optional in `$lib/crm/types`. The parent
+	// `Pipeline.stages` is typed as optional in `#lib/crm/types.js`. The parent
 	// only mounts this component when `pipeline?.stages` is truthy, but the
 	// type system can't follow that — narrow once here via $derived.
 	let stages = $derived(pipeline.stages ?? []);

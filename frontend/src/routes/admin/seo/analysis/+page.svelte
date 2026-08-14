@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Card, Button, Badge, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
-	import { seoApi, type SeoAnalysis } from '$lib/api/seo';
-	import { getForms, type Form } from '$lib/api/forms';
-	import { IconSearch, IconChartBar } from '$lib/icons';
+	import { Card, Button, Badge, Input, Select } from '#lib/components/ui/index.js';
+	import { addToast } from '#lib/utils/toast.js';
+	import { seoApi, type SeoAnalysis } from '#lib/api/seo.js';
+	import { getForms, type Form } from '#lib/api/forms.js';
+	import { IconSearch, IconChartBar } from '#lib/icons/index.js';
 
 	let contentType = $state('posts');
 	let contentId = $state('');

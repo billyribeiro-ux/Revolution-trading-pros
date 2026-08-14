@@ -5,8 +5,8 @@
  * Provides playback, time, and volume controls with Svelte 5 runes
  */
 
-import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
-import { logger } from '$lib/utils/logger';
+import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 
 // ============================================================================
 // Types

@@ -5,11 +5,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { crmAPI } from '$lib/api/crm';
-	import { crmStore } from '$lib/stores/crm.svelte';
-	import type { Deal, Pipeline, Stage } from '$lib/crm/types';
-	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '$lib/icons';
-	import { logger } from '$lib/utils/logger';
+	import { crmAPI } from '#lib/api/crm.js';
+	import { crmStore } from '#lib/stores/crm.svelte.js';
+	import type { Deal, Pipeline, Stage } from '#lib/crm/types.js';
+	import { IconActivity, IconArrowRight, IconCurrencyDollar } from '#lib/icons/index.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	let forecastPeriod = $state('this_month');
 	let forecast = $state<{

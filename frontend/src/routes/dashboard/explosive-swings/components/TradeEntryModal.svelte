@@ -8,7 +8,7 @@
 	
 -->
 <script lang="ts">
-	import { tradePlanApi, type Bias, type TradePlanEntry } from '$lib/api/room-content';
+	import { tradePlanApi, type Bias, type TradePlanEntry } from '#lib/api/room-content.js';
 
 	interface Props {
 		isOpen: boolean;
@@ -553,8 +553,7 @@
 							bind:value={form.notes}
 							placeholder="Entry thesis, key levels, catalysts, position sizing..."
 							class="form-textarea"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 				</div>
 

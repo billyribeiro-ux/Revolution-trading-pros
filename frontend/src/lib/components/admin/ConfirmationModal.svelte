@@ -7,7 +7,13 @@
 	 * Supports different variants: danger, warning, info, success
 	 */
 	import type { Attachment } from 'svelte/attachments';
-	import { IconX, IconAlertTriangle, IconTrash, IconInfoCircle, IconCheck } from '$lib/icons';
+	import {
+		IconX,
+		IconAlertTriangle,
+		IconTrash,
+		IconInfoCircle,
+		IconCheck
+	} from '#lib/icons/index.js';
 
 	interface Props {
 		isOpen: boolean;

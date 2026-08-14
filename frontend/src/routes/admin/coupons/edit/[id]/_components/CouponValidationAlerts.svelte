@@ -3,7 +3,7 @@
 	 * R23-C extraction (2026-05-20): top-of-form validation alerts list.
 	 */
 	import { slide } from 'svelte/transition';
-	import { IconAlertCircle } from '$lib/icons';
+	import { IconAlertCircle } from '#lib/icons/index.js';
 	import type { ValidationError } from './types';
 
 	interface Props {

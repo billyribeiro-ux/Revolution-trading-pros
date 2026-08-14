@@ -28,7 +28,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Block } from '$lib/components/cms/blocks/types';
+import type { Block } from '#lib/components/cms/blocks/types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FakeWorker — synchronous round-trip for deterministic tests

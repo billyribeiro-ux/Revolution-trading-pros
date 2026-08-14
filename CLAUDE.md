@@ -83,17 +83,36 @@ patterns:
 41 components were migrated off the legacy pattern in commit `05acf3231`.
 The repo's typecheck must stay at 0 errors / 0 warnings.
 
+### SvelteKit 3
+
+The repo is on SvelteKit 3 (currently the `3.0.0-next` prerelease line — see
+BACKLOG.md "SvelteKit 3 follow-ups"). Two structural consequences:
+
+- **There is no `svelte.config.js`.** All Kit config is passed as options to
+  the `sveltekit()` plugin in `frontend/vite.config.ts`.
+- **`$lib` is gone**; imports use the `#lib/*` subpath declared in
+  `frontend/package.json#imports`, and **file extensions are required**:
+  `import { foo } from '#lib/utils/foo.js';`
+
+Other renames you will hit: `$app/environment` → `$app/env`, `$app/stores` →
+`$app/state` (plain values, no `$` prefix), `$service-worker` → `$app/env` +
+`$app/manifest`, and `error(status, { message })` → `error(status, message)`.
+
 ### SvelteKit `+server.ts` proxies
 
 Every proxy under `frontend/src/routes/api/` reads its backend URL from
-`$env/dynamic/private`. Match this shape:
+`$app/env/private`. Env vars are declared explicitly in `frontend/src/env.ts`
+(`defineEnvVars`) and imported as named exports — the `$env/*` modules and the
+old `env.FOO` object no longer exist. Match this shape:
 
 ```ts
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 ```
+
+If the local constant would collide with an imported name, alias the import
+(`import { API_URL as ENV_API_URL } ...`) rather than shadowing it.
 
 **Never** add a new proxy with a hardcoded production URL. The audit found 14 of
 these on 2026-04-25 and they were all fixed; don't re-introduce them. The
@@ -108,20 +127,40 @@ is TBD (Fly.io references stripped on 2026-04-28).
   transaction wrapper.
 - Don't swallow errors with `unwrap_or_default()` on `Result<T, E>` —
   propagate via `?`.
+- Adding or bumping a crate is not done until `cargo deny check` passes.
+  It gates advisories, licences and sources, and it is the only gate that
+  catches a *transitive* crate arriving with an unpatched RUSTSEC advisory
+  — which is exactly how `rsa` (RUSTSEC-2023-0071) tried to enter the tree
+  behind jsonwebtoken 11. Prefer a clean backend over a `deny.toml`
+  exemption; add an exemption only when it is genuinely unreachable and say
+  why, with a date.
 
 ### When you finish a change
 
-Run the four gates locally:
+Run the gates locally:
 
 ```bash
-pnpm --filter revolution-svelte check                      # frontend typecheck
-pnpm --filter revolution-svelte test:unit                 # vitest
-cd frontend && pnpm test:a11y                             # playwright a11y suite
-cd ../api && cargo check
+# Frontend
+pnpm --filter revolution-svelte check      # typecheck, must be 0 errors / 0 warnings
+pnpm --filter revolution-svelte lint       # eslint, must be 0 errors
+pnpm --filter revolution-svelte test:unit  # vitest
+cd frontend && pnpm test:a11y              # playwright a11y suite
+cd frontend && pnpm build                  # catches env/config errors typecheck can't
+
+# Backend
+cd api && cargo fmt --check
+cd api && cargo clippy --locked --all-targets -- -D warnings
+cd api && cargo deny check
 cd api && cargo test --test router_smoke_test --test utils_test --test stripe_test  # no-DB tests
 ```
 
-All four must pass before committing.
+All must pass before committing. `pnpm api:lint` bundles the three backend
+lint gates; it needs `cargo install cargo-machete cargo-deny` once per machine.
+
+Two frontend checks are worth running on anything UI-facing, since CI's
+`check` does not escalate warnings: `pnpm check:strict` (`--fail-on-warnings`)
+and `pnpm check:a11y` (promotes Svelte's a11y compiler warnings to errors).
+Both are currently clean at 0/0 — keep them there.
 
 ---
 

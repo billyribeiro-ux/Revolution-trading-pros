@@ -7,8 +7,8 @@
  * @author Revolution Trading Pros
  */
 
-import { API_BASE_URL, CDN_URL } from '$lib/api/config';
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { API_BASE_URL, CDN_URL } from '#lib/api/config.js';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 // =============================================================================
 // Types

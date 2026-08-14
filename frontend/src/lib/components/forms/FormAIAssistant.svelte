@@ -12,7 +12,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	// The AI endpoints return loose, generation-time field/form shapes (note the
 	// `type` key, not the persisted `field_type`), so these intentionally model
@@ -240,8 +240,7 @@
 					bind:value={prompt}
 					placeholder="E.g., Create a customer feedback form with rating, comments, and contact info"
 					class="prompt-input"
-					rows="3"
-				></textarea>
+					rows="3"></textarea>
 
 				<div class="example-prompts">
 					<span class="examples-label">Try:</span>

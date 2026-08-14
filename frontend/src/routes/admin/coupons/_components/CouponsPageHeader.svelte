@@ -5,7 +5,7 @@
 	 * the `loading` flag (drives the spinning refresh icon + disabled state)
 	 * and the two click handlers — this component is presentation-only.
 	 */
-	import { IconPlus, IconRefresh } from '$lib/icons';
+	import { IconPlus, IconRefresh } from '#lib/icons/index.js';
 
 	interface Props {
 		loading: boolean;

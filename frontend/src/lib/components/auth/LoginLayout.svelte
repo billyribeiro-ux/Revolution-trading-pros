@@ -13,7 +13,7 @@
 	 * @version 1.0.0
 	 */
 	import type { Snippet } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
 	import MobileBackground from './MobileBackground.svelte';
 

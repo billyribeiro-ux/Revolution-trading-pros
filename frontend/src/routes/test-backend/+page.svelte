@@ -9,9 +9,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { submitForm } from '$lib/api/forms';
-	import { popupsApi, recordPopupImpression } from '$lib/api/popups';
-	import { IconMail, IconUser, IconCheck } from '$lib/icons';
+	import { submitForm } from '#lib/api/forms.js';
+	import { popupsApi, recordPopupImpression } from '#lib/api/popups.js';
+	import { IconMail, IconUser, IconCheck } from '#lib/icons/index.js';
 
 	// Form state
 	let formData = $state({
@@ -288,8 +288,7 @@
 							required
 							disabled={formStatus === 'submitting'}
 							class={['input-field', { error: Boolean(formErrors.message) }]}
-							rows="5"
-						></textarea>
+							rows="5"></textarea>
 						{#if formErrors.message}
 							<span class="error-text">{formErrors.message[0]}</span>
 						{/if}

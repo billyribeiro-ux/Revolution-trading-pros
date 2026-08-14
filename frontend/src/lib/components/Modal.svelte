@@ -4,7 +4,7 @@
 	 * Displays content in an overlay with backdrop
 	 */
 	import type { Snippet } from 'svelte';
-	import { IconX } from '$lib/icons';
+	import { IconX } from '#lib/icons/index.js';
 
 	interface Props {
 		isOpen?: boolean;

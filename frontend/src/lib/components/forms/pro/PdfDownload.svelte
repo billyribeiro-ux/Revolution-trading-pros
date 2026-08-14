@@ -26,7 +26,7 @@
 		variant = 'button'
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let isGenerating = $state(false);
 	let isLoading = $state(false);

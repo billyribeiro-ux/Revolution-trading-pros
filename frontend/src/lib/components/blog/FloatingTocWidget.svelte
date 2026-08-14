@@ -5,10 +5,10 @@
 	 * Updated: January 2026 - CSS layers, oklch colors, modern patterns
 	 * Migrated to Svelte 5 runes and reactive window values
 	 */
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { scrollY } from 'svelte/reactivity/window';
 	import TableOfContents from './TableOfContents.svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface ContentBlock {
 		type: string;

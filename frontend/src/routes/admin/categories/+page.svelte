@@ -1,20 +1,6 @@
-<!--
-	/admin/categories - Product & Content Category Management
-	Apple Principal Engineer ICT 7 Grade - January 2026
-
-	Features:
-	- Full CRUD operations with categoriesApi
-	- Hierarchical category support (parent/child)
-	- Bulk operations (delete, visibility toggle)
-	- Drag-and-drop reorder capability
-	- Search and filter functionality
-	- Category merge and export
-	- Full Svelte 5 $state/$derived/$effect reactivity
--->
-
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	// FIX-2026-04-26 (CLAUDE.md / P3-13): init belongs in onMount, not $effect.
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -35,8 +21,8 @@
 	import IconGitMerge from '@tabler/icons-svelte-runes/icons/git-merge';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
-	import { categoriesApi, AdminApiError, type Category } from '$lib/api/admin';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { categoriesApi, AdminApiError, type Category } from '#lib/api/admin.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// STATE - Svelte 5 Runes
 
@@ -377,6 +363,7 @@
 	function validateForm(): boolean {
 		formErrors = [];
 		if (!categoryForm.name.trim()) formErrors.push('Name is required');
+
 		if (!categoryForm.slug.trim()) formErrors.push('Slug is required');
 		else if (!/^[a-z0-9-]+$/.test(categoryForm.slug)) {
 			// FIX-2026-04-26 (P2-3): include offending characters in the error.
@@ -444,10 +431,20 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Categories | Admin Dashboard</title>
-</svelte:head>
+<!--
+	/admin/categories - Product & Content Category Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
 
+	Features:
+	- Full CRUD operations with categoriesApi
+	- Hierarchical category support (parent/child)
+	- Bulk operations (delete, visibility toggle)
+	- Drag-and-drop reorder capability
+	- Search and filter functionality
+	- Category merge and export
+	- Full Svelte 5 $state/$derived/$effect reactivity
+-->
+<svelte:head><title>Categories | Admin Dashboard</title></svelte:head>
 <!-- Toast Notification -->
 {#if showToast}
 	<div class={['toast', `toast-${toastType}`]} transition:fade>
@@ -457,9 +454,8 @@
 			<IconAlertCircle size={20} />
 		{/if}
 		<span>{toastMessage}</span>
-		<button onclick={() => (showToast = false)} class="toast-close">
-			<IconX size={16} />
-		</button>
+
+		<button onclick={() => (showToast = false)} class="toast-close"><IconX size={16} /></button>
 	</div>
 {/if}
 
@@ -564,22 +560,20 @@
 			<div class="bulk-actions-bar" transition:fade>
 				<span class="selected-count">{selectedIds.size} selected</span>
 				<div class="bulk-buttons">
-					<button class="btn-bulk" onclick={() => bulkToggleVisibility(true)}>
-						<IconEye size={16} />
-						Show
-					</button>
-					<button class="btn-bulk" onclick={() => bulkToggleVisibility(false)}>
-						<IconEyeOff size={16} />
-						Hide
-					</button>
-					<button class="btn-bulk" onclick={() => (showMergeModal = true)}>
-						<IconGitMerge size={16} />
-						Merge
-					</button>
-					<button class="btn-bulk danger" onclick={bulkDelete}>
-						<IconTrash size={16} />
-						Delete
-					</button>
+					<button class="btn-bulk" onclick={() => bulkToggleVisibility(true)}
+						><IconEye size={16} />Show</button
+					>
+
+					<button class="btn-bulk" onclick={() => bulkToggleVisibility(false)}
+						><IconEyeOff size={16} />Hide</button
+					>
+
+					<button class="btn-bulk" onclick={() => (showMergeModal = true)}
+						><IconGitMerge size={16} />Merge</button
+					>
+
+					<button class="btn-bulk danger" onclick={bulkDelete}><IconTrash size={16} />Delete</button
+					>
 				</div>
 			</div>
 		{/if}
@@ -678,9 +672,9 @@
 											<IconCopy size={12} />
 										</button>
 									</td>
-									<td>
-										<span class="count-badge">{category.post_count}</span>
-									</td>
+
+									<td><span class="count-badge">{category.post_count}</span></td>
+
 									<td>
 										{#if category.is_visible}
 											<span class="visibility-badge visible">
@@ -814,8 +808,7 @@
 							id="cat-desc"
 							bind:value={categoryForm.description}
 							placeholder="Brief description of this category"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 
 					<div class="form-group">
@@ -856,8 +849,7 @@
 							id="cat-meta-desc"
 							bind:value={categoryForm.meta_description}
 							placeholder="Custom description for search engines"
-							rows="2"
-						></textarea>
+							rows="2"></textarea>
 					</div>
 				</div>
 			</div>
@@ -897,9 +889,10 @@
 		>
 			<div class="modal-header">
 				<h3>Merge Categories</h3>
-				<button class="modal-close" onclick={() => (showMergeModal = false)}>
-					<IconX size={20} />
-				</button>
+
+				<button class="modal-close" onclick={() => (showMergeModal = false)}
+					><IconX size={20} /></button
+				>
 			</div>
 
 			<div class="modal-body">
@@ -920,11 +913,11 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showMergeModal = false)}> Cancel </button>
-				<button class="btn-primary" onclick={mergeCategories} disabled={!mergeForm.targetId}>
-					<IconGitMerge size={18} />
-					Merge Categories
-				</button>
+				<button class="btn-secondary" onclick={() => (showMergeModal = false)}>Cancel</button>
+
+				<button class="btn-primary" onclick={mergeCategories} disabled={!mergeForm.targetId}
+					><IconGitMerge size={18} />Merge Categories</button
+				>
 			</div>
 		</div>
 	</div>

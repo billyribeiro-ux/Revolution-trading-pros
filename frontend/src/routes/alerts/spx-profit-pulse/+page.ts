@@ -1,6 +1,6 @@
 import type { Load } from '@sveltejs/kit';
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildService } from '$lib/seo/schemas';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildService } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 

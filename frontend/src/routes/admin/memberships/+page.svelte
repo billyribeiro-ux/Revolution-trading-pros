@@ -1,16 +1,3 @@
-<!--
-	/admin/memberships - Membership Plan Management
-	Apple Principal Engineer ICT 7 Grade - January 2026
-
-	Features:
-	- Full membership plan CRUD operations
-	- Plan pricing and billing cycle management
-	- Feature list management per plan
-	- Status toggling (active/inactive)
-	- Subscriber statistics per plan
-	- Full Svelte 5 $state/$derived/$effect reactivity
--->
-
 <script lang="ts">
 	/**
 	 * Membership Plans Management - Apple ICT 7 Principal Engineer Grade
@@ -25,7 +12,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import {
 		IconCrown,
@@ -46,9 +33,9 @@
 		IconToggleRight,
 		IconCopy,
 		IconChartBar
-	} from '$lib/icons';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// TYPES
 
@@ -92,10 +79,12 @@
 		if (plans.length === 0) {
 			return { total_plans: 0, active_plans: 0, total_subscribers: 0, total_mrr: 0 };
 		}
+
 		const top = plans.reduce(
 			(acc, p) => ((p.subscriber_count || 0) > (acc?.subscriber_count || 0) ? p : acc),
 			plans[0]
 		);
+
 		return {
 			total_plans: plans.length,
 			active_plans: plans.filter((p) => p.is_active).length,
@@ -401,23 +390,11 @@
 	}
 
 	function getBillingLabel(cycle: string): string {
-		return (
-			{
-				monthly: '/month',
-				quarterly: '/quarter',
-				annual: '/year'
-			}[cycle] || '/month'
-		);
+		return { monthly: '/month', quarterly: '/quarter', annual: '/year' }[cycle] || '/month';
 	}
 
 	function getBillingBadge(cycle: string): string {
-		return (
-			{
-				monthly: 'Monthly',
-				quarterly: 'Quarterly',
-				annual: 'Annual'
-			}[cycle] || cycle
-		);
+		return { monthly: 'Monthly', quarterly: 'Quarterly', annual: 'Annual' }[cycle] || cycle;
 	}
 
 	// LIFECYCLE
@@ -430,9 +407,19 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Membership Plans | Admin Dashboard</title>
-</svelte:head>
+<!--
+	/admin/memberships - Membership Plan Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+
+	Features:
+	- Full membership plan CRUD operations
+	- Plan pricing and billing cycle management
+	- Feature list management per plan
+	- Status toggling (active/inactive)
+	- Subscriber statistics per plan
+	- Full Svelte 5 $state/$derived/$effect reactivity
+-->
+<svelte:head><title>Membership Plans | Admin Dashboard</title></svelte:head>
 
 <div class="admin-memberships">
 	<!-- Animated Background -->
@@ -521,6 +508,7 @@
 					class="search-input"
 				/>
 			</div>
+
 			<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
 				<IconFilter size={18} />
 				Filters
@@ -621,15 +609,18 @@
 									</span>
 								</div>
 								<div class="plan-actions">
-									<button class="btn-icon" title="Preview" onclick={() => openPreviewModal(plan)}>
-										<IconEye size={16} />
-									</button>
-									<button class="btn-icon" title="Edit" onclick={() => openEditModal(plan)}>
-										<IconEdit size={16} />
-									</button>
-									<button class="btn-icon" title="Duplicate" onclick={() => duplicatePlan(plan)}>
-										<IconCopy size={16} />
-									</button>
+									<button class="btn-icon" title="Preview" onclick={() => openPreviewModal(plan)}
+										><IconEye size={16} /></button
+									>
+
+									<button class="btn-icon" title="Edit" onclick={() => openEditModal(plan)}
+										><IconEdit size={16} /></button
+									>
+
+									<button class="btn-icon" title="Duplicate" onclick={() => duplicatePlan(plan)}
+										><IconCopy size={16} /></button
+									>
+
 									<button
 										class="btn-icon danger"
 										title="Delete"
@@ -702,13 +693,11 @@
 	>
 		<div class="modal modal-large" role="document">
 			<div class="modal-header">
-				<h3 id="edit-modal-title">
-					<IconEdit size={20} />
-					Edit Membership Plan
-				</h3>
-				<button class="modal-close" onclick={() => (showEditModal = false)}>
-					<IconX size={20} />
-				</button>
+				<h3 id="edit-modal-title"><IconEdit size={20} />Edit Membership Plan</h3>
+
+				<button class="modal-close" onclick={() => (showEditModal = false)}
+					><IconX size={20} /></button
+				>
 			</div>
 			<div class="modal-body">
 				{#if formError}
@@ -818,7 +807,8 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showEditModal = false)}> Cancel </button>
+				<button class="btn-secondary" onclick={() => (showEditModal = false)}>Cancel</button>
+
 				<button
 					class="btn-primary"
 					onclick={updatePlan}
@@ -851,13 +841,11 @@
 	>
 		<div class="modal modal-small" role="document">
 			<div class="modal-header">
-				<h3 id="delete-modal-title">
-					<IconTrash size={20} />
-					Delete Plan
-				</h3>
-				<button class="modal-close" onclick={() => (showDeleteModal = false)}>
-					<IconX size={20} />
-				</button>
+				<h3 id="delete-modal-title"><IconTrash size={20} />Delete Plan</h3>
+
+				<button class="modal-close" onclick={() => (showDeleteModal = false)}
+					><IconX size={20} /></button
+				>
 			</div>
 			<div class="modal-body">
 				<p class="confirm-text">
@@ -871,11 +859,8 @@
 				</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
-				<button class="btn-danger" onclick={deletePlan}>
-					<IconTrash size={18} />
-					Delete Plan
-				</button>
+				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}>Cancel</button>
+				<button class="btn-danger" onclick={deletePlan}><IconTrash size={18} />Delete Plan</button>
 			</div>
 		</div>
 	</div>
@@ -896,13 +881,11 @@
 	>
 		<div class="modal modal-preview" role="document">
 			<div class="modal-header">
-				<h3 id="preview-modal-title">
-					<IconEye size={20} />
-					Plan Preview
-				</h3>
-				<button class="modal-close" onclick={() => (showPreviewModal = false)}>
-					<IconX size={20} />
-				</button>
+				<h3 id="preview-modal-title"><IconEye size={20} />Plan Preview</h3>
+
+				<button class="modal-close" onclick={() => (showPreviewModal = false)}
+					><IconX size={20} /></button
+				>
 			</div>
 			<div class="modal-body preview-body">
 				<div class="preview-card">

@@ -4,7 +4,7 @@
 	 * Receives the parent's `features` array as a bindable prop so the parent
 	 * can keep using `validFeatures = formData.features.filter(...)` derived.
 	 */
-	import { IconPlus, IconTag, IconX } from '$lib/icons';
+	import { IconPlus, IconTag, IconX } from '#lib/icons/index.js';
 
 	interface Props {
 		features: string[];

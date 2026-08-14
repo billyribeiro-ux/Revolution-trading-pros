@@ -37,7 +37,7 @@
 		onupload
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let imageUrl = $derived(value);
 	let imageId = $state('');

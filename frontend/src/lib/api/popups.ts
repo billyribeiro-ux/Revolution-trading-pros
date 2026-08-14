@@ -48,11 +48,11 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
-import type { Popup } from '$lib/stores/popups.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
+import type { Popup } from '#lib/stores/popups.svelte.js';
 import { ML_API_URL } from './config';
 import type { JsonValue } from './_types';
 
@@ -76,7 +76,7 @@ function getErrorMessage(err: unknown): string {
 }
 
 // Re-export Popup type for convenience
-export type { Popup } from '$lib/stores/popups.svelte';
+export type { Popup } from '#lib/stores/popups.svelte.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -432,14 +432,7 @@ export interface AnimationConfig {
 }
 
 export type AnimationType =
-	| 'none'
-	| 'fade'
-	| 'slide'
-	| 'zoom'
-	| 'flip'
-	| 'rotate'
-	| 'bounce'
-	| 'custom';
+	'none' | 'fade' | 'slide' | 'zoom' | 'flip' | 'rotate' | 'bounce' | 'custom';
 
 export interface AttentionAnimation {
 	type: 'shake' | 'pulse' | 'bounce' | 'wobble' | 'swing';
@@ -482,7 +475,6 @@ export interface DeviceBreakdown {
 	mobile: number;
 	tablet: number;
 }
-
 export interface SourceBreakdown {
 	[key: string]: number;
 }
@@ -513,13 +505,7 @@ export interface PopupEvent {
 }
 
 export type EventType =
-	| 'impression'
-	| 'interaction'
-	| 'conversion'
-	| 'close'
-	| 'minimize'
-	| 'error'
-	| 'timeout';
+	'impression' | 'interaction' | 'conversion' | 'close' | 'minimize' | 'error' | 'timeout';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Core Service Class

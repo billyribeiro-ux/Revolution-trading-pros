@@ -2,7 +2,7 @@
 	import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
 	import IconMaximize from '@tabler/icons-svelte-runes/icons/maximize';
 	import IconMinimize from '@tabler/icons-svelte-runes/icons/minimize';
-	import { BlockEditor, type Block } from '$lib/components/blog/BlockEditor';
+	import { BlockEditor, type Block } from '#lib/components/blog/BlockEditor/index.js';
 
 	type Props = {
 		contentBlocks: Block[];

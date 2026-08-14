@@ -26,7 +26,7 @@
 		IconCopy,
 		IconChevronUp,
 		IconChevronDown
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import BlockRenderer from './BlockRenderer.svelte';
 	import type {
 		VirtualBlockListProps,
@@ -35,7 +35,7 @@
 		PerformanceMetrics
 	} from './VirtualBlockList.types';
 	import type { Block } from './types';
-	import type { Block as CMSBlock } from '$lib/components/cms/blocks/types';
+	import type { Block as CMSBlock } from '#lib/components/cms/blocks/types.js';
 
 	// ==========================================================================
 	// Props

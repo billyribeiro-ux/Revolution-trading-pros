@@ -7,8 +7,8 @@
 -->
 
 <script lang="ts">
-	import { IconSparkles, IconRefresh, IconLoader2, IconCopy, IconCheck } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
+	import { IconSparkles, IconRefresh, IconLoader2, IconCopy, IconCheck } from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {
@@ -99,8 +99,7 @@
 					value={prompt}
 					oninput={(e) => updateContent({ aiPrompt: (e.target as HTMLTextAreaElement).value })}
 					aria-label="AI prompt"
-					rows="3"
-				></textarea>
+					rows="3"></textarea>
 			</label>
 
 			<div class="ai-controls">

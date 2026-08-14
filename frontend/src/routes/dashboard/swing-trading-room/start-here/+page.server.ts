@@ -15,7 +15,7 @@
  */
 
 import type { PageServerLoad } from './$types';
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true; // Enable server-side rendering

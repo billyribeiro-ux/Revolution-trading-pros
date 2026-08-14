@@ -89,7 +89,10 @@ pub fn router() -> Router<AppState> {
         )
         // Enrollments & Progress
         .route("/{course_id}/enroll", post(enrollments::enroll_user))
-        .route("/{course_id}/enrollments", get(enrollments::get_enrollments))
+        .route(
+            "/{course_id}/enrollments",
+            get(enrollments::get_enrollments),
+        )
         .route(
             "/{course_id}/lessons/{lesson_id}/progress",
             post(enrollments::update_lesson_progress),

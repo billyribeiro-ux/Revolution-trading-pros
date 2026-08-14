@@ -1,8 +1,8 @@
 import type { Load } from '@sveltejs/kit';
-import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
-import type { PaginatedPosts } from '$lib/types/post';
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb } from '$lib/seo/schemas';
+import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
+import type { PaginatedPosts } from '#lib/types/post.js';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 

@@ -47,7 +47,7 @@ import type {
 	ReportPeriod,
 	StorageConfig,
 	WebhookEvent
-} from '$lib/boards/types';
+} from '#lib/boards/types.js';
 import type { JsonValue, PaginatedResponse } from './_types';
 import { apiClient } from './client.svelte';
 

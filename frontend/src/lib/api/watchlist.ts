@@ -8,8 +8,8 @@
  * @version 2.0.0 - December 2025 - Added room targeting
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { ALL_ROOM_IDS } from '$lib/config/rooms';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { ALL_ROOM_IDS } from '#lib/config/rooms.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

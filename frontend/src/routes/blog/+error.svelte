@@ -12,7 +12,7 @@
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// Error details from SvelteKit
 	let status = $derived(page.status);

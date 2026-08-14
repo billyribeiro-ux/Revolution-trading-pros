@@ -48,15 +48,15 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived as _derived, get } from 'svelte/store';
-import type { FormTheme } from '$lib/data/formTemplates';
-import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import type { FormTheme } from '#lib/data/formTemplates.js';
+import { getAuthToken, getSessionId as _getAuthSessionId } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue, PaginatedResponse } from './_types';
 
 // R8-A: re-export `PaginatedResponse` so the type is reachable to forms-area
-// callers without forcing them to `import from '$lib/api/_types'` directly.
+// callers without forcing them to `import from '#lib/api/_types'` directly.
 // `_types.ts` is intentionally underscore-prefixed (private to `api/`); this
 // is the public surface for now. Forward-compat for the day forms.rs ships
 // an explicit `{ data, meta }` contract — at that point `getForms` will
@@ -663,7 +663,7 @@ class FormsService {
 				if (response.status === 401) {
 					// Try to refresh token before giving up
 					try {
-						const { authStore } = await import('$lib/stores/auth.svelte');
+						const { authStore } = await import('#lib/stores/auth.svelte.js');
 						const refreshed = await authStore.refreshToken();
 						if (refreshed && retriesLeft > 0) {
 							// Token refreshed, retry the request
@@ -972,7 +972,7 @@ class FormsService {
 		if (!browser) return;
 		// Import and use the auth store's logout method
 		// This properly clears the secure memory-only token and handles redirect
-		const { authStore } = await import('$lib/stores/auth.svelte');
+		const { authStore } = await import('#lib/stores/auth.svelte.js');
 		await authStore.logout('/login');
 	}
 
@@ -1025,7 +1025,6 @@ class FormsService {
 			let forms: Form[] = [];
 			let total = 0;
 			let responsePerPage = perPage;
-
 			const isRecord = (v: unknown): v is Record<string, unknown> =>
 				typeof v === 'object' && v !== null && !Array.isArray(v);
 
@@ -1687,7 +1686,7 @@ export const getABTestResults = (formId: number, testId: string) =>
 	formsService.getABTestResults(formId, testId);
 
 /**
- * @deprecated Use crmAPI from '$lib/api/crm' instead for contact management.
+ * @deprecated Use crmAPI from '#lib/api/crm.js' instead for contact management.
  * This export is maintained for backwards compatibility only.
  */
 export { crmAPI as contactsApi } from './crm';
@@ -1698,7 +1697,6 @@ export const publishForm = (formId: number) =>
 
 export const unpublishForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'draft' });
-
 export const archiveForm = (formId: number) =>
 	formsService.updateForm(formId, { status: 'archived' });
 
@@ -1780,9 +1778,9 @@ export interface FormEntry {
 }
 
 /**
- * @deprecated Use Contact type from '$lib/crm/types' instead.
+ * @deprecated Use Contact type from '#lib/crm/types.js' instead.
  */
-export type { Contact } from '$lib/crm/types';
+export type { Contact } from '#lib/crm/types.js';
 
 // Analytics
 export const getSubmissionStats = (formId: number) => formsService.getFormAnalytics(formId);

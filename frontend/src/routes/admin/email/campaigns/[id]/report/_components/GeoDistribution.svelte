@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconWorld } from '$lib/icons';
+	import { IconWorld } from '#lib/icons/index.js';
 
 	interface GeoEntry {
 		country: string;

@@ -4,11 +4,11 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import FormBuilder from '$lib/components/forms/FormBuilder.svelte';
-	import FormTemplateSelector from '$lib/components/forms/FormTemplateSelector.svelte';
-	import ThemeCustomizer from '$lib/components/forms/ThemeCustomizer.svelte';
-	import type { Form, FormField } from '$lib/api/forms';
-	import type { FormTemplate, FormTheme } from '$lib/data/formTemplates';
+	import FormBuilder from '#lib/components/forms/FormBuilder.svelte';
+	import FormTemplateSelector from '#lib/components/forms/FormTemplateSelector.svelte';
+	import ThemeCustomizer from '#lib/components/forms/ThemeCustomizer.svelte';
+	import type { Form, FormField } from '#lib/api/forms.js';
+	import type { FormTemplate, FormTheme } from '#lib/data/formTemplates.js';
 
 	// Svelte 5 runes for reactive state
 	let showTemplateSelector = $state(true);

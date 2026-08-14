@@ -9,26 +9,26 @@
 	 * - KPIs, funnels, cohorts, attribution
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
+	import { analyticsApi, type DashboardData } from '#lib/api/analytics.js';
 	import {
 		connections,
 		getIsAnalyticsConnected,
 		FEATURE_SERVICES,
 		SERVICE_KEYS
-	} from '$lib/stores/connections.svelte';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
-	import KpiGrid from '$lib/components/analytics/KpiGrid.svelte';
-	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';
-	import CohortMatrix from '$lib/components/analytics/CohortMatrix.svelte';
-	import TimeSeriesChart from '$lib/components/analytics/TimeSeriesChart.svelte';
-	import RealTimeWidget from '$lib/components/analytics/RealTimeWidget.svelte';
-	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
-	import ExportButton from '$lib/components/ExportButton.svelte';
-	import { IconPlugConnected, IconRefresh, IconArrowRight } from '$lib/icons';
+	} from '#lib/stores/connections.svelte.js';
+	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
+	import KpiGrid from '#lib/components/analytics/KpiGrid.svelte';
+	import FunnelChart from '#lib/components/analytics/FunnelChart.svelte';
+	import CohortMatrix from '#lib/components/analytics/CohortMatrix.svelte';
+	import TimeSeriesChart from '#lib/components/analytics/TimeSeriesChart.svelte';
+	import RealTimeWidget from '#lib/components/analytics/RealTimeWidget.svelte';
+	import AttributionChart from '#lib/components/analytics/AttributionChart.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
+	import ExportButton from '#lib/components/ExportButton.svelte';
+	import { IconPlugConnected, IconRefresh, IconArrowRight } from '#lib/icons/index.js';
 
 	// State
 	let dashboardData: DashboardData | null = $state(null);
@@ -41,7 +41,7 @@
 
 	// Helper to get KPI value by key
 	function getKpiValue(
-		kpis: import('$lib/api/analytics').KpiValue[] | undefined,
+		kpis: import('#lib/api/analytics.js').KpiValue[] | undefined,
 		key: string
 	): number {
 		if (!kpis) return 0;

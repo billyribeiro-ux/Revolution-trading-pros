@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { cubicOut } from 'svelte/easing';
 	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
 	import IconCircleCheckFilled from '@tabler/icons-svelte-runes/icons/circle-check-filled';
@@ -300,8 +300,9 @@
 								class="absolute top-0 right-0 w-full h-full text-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
 								viewBox="0 0 24 24"
 							>
-								<path d="M24 0 L0 0" stroke="currentColor" stroke-width="1" />
-								<path d="M24 0 L24 24" stroke="currentColor" stroke-width="1" />
+								<path d="M24 0 L0 0" stroke="currentColor" stroke-width="1"></path>
+
+								<path d="M24 0 L24 24" stroke="currentColor" stroke-width="1"></path>
 							</svg>
 						</div>
 					</div>

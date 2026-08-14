@@ -14,9 +14,9 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { SvelteDate } from 'svelte/reactivity';
-	import { weeklyVideoApi, type WeeklyVideo } from '$lib/api/room-content';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
+	import { weeklyVideoApi, type WeeklyVideo } from '#lib/api/room-content.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Icons
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
@@ -626,8 +626,7 @@
 							bind:value={form.description}
 							placeholder="Brief overview of this week's content..."
 							class="form-textarea"
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 					</div>
 				</div>
 			</div>

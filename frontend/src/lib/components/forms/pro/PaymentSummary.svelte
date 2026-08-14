@@ -39,7 +39,7 @@
 		showBreakdown = true
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	function formatCurrency(amount: number): string {
 		return new Intl.NumberFormat('en-US', {

@@ -8,7 +8,7 @@ import {
 	getBlockStateManager,
 	type BlockId,
 	type AIBlockState
-} from '$lib/stores/blockState.svelte';
+} from '#lib/stores/blockState.svelte.js';
 
 // ============================================================================
 // Types

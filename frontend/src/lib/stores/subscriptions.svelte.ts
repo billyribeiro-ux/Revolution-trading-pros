@@ -201,7 +201,7 @@ export const subscriptionStore = {
 
 		try {
 			// Import dynamically to avoid circular dependencies
-			const { getSubscriptions } = await import('$lib/api/subscriptions');
+			const { getSubscriptions } = await import('#lib/api/subscriptions.js');
 			const subscriptions = await getSubscriptions(filters);
 
 			subscriptionState = {
@@ -224,7 +224,7 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { updateSubscription } = await import('$lib/api/subscriptions');
+			const { updateSubscription } = await import('#lib/api/subscriptions.js');
 			const updated = await updateSubscription(subscriptionId, {
 				status: newStatus,
 				...(reason && { cancellationReason: reason, pauseReason: reason })
@@ -251,7 +251,7 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { pauseSubscription } = await import('$lib/api/subscriptions');
+			const { pauseSubscription } = await import('#lib/api/subscriptions.js');
 			const updated = await pauseSubscription(subscriptionId, reason);
 
 			subscriptionState = {
@@ -275,7 +275,7 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { resumeSubscription } = await import('$lib/api/subscriptions');
+			const { resumeSubscription } = await import('#lib/api/subscriptions.js');
 			const updated = await resumeSubscription(subscriptionId);
 
 			subscriptionState = {
@@ -299,7 +299,7 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { cancelSubscription } = await import('$lib/api/subscriptions');
+			const { cancelSubscription } = await import('#lib/api/subscriptions.js');
 			const updated = await cancelSubscription(subscriptionId, reason, immediate);
 
 			subscriptionState = {
@@ -323,7 +323,7 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { reactivateSubscription } = await import('$lib/api/subscriptions');
+			const { reactivateSubscription } = await import('#lib/api/subscriptions.js');
 			const updated = await reactivateSubscription(subscriptionId);
 
 			subscriptionState = {
@@ -347,11 +347,11 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { retryPayment } = await import('$lib/api/subscriptions');
+			const { retryPayment } = await import('#lib/api/subscriptions.js');
 			await retryPayment(subscriptionId, paymentId);
 
 			// Reload subscriptions to get updated payment status
-			const { getSubscriptions } = await import('$lib/api/subscriptions');
+			const { getSubscriptions } = await import('#lib/api/subscriptions.js');
 			const subscriptions = await getSubscriptions();
 
 			subscriptionState = {
@@ -373,10 +373,10 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { updatePaymentMethod } = await import('$lib/api/subscriptions');
+			const { updatePaymentMethod } = await import('#lib/api/subscriptions.js');
 			const updated = await updatePaymentMethod(
 				subscriptionId,
-				paymentMethod as import('$lib/api/subscriptions').PaymentMethod
+				paymentMethod as import('#lib/api/subscriptions.js').PaymentMethod
 			);
 
 			subscriptionState = {
@@ -400,11 +400,11 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { processPayment } = await import('$lib/api/subscriptions');
+			const { processPayment } = await import('#lib/api/subscriptions.js');
 			await processPayment(subscriptionId);
 
 			// Reload subscriptions to get updated renewal status
-			const { getSubscriptions } = await import('$lib/api/subscriptions');
+			const { getSubscriptions } = await import('#lib/api/subscriptions.js');
 			const subscriptions = await getSubscriptions();
 
 			subscriptionState = {
@@ -428,7 +428,7 @@ export const subscriptionStore = {
 		subscriptionState = { ...subscriptionState, loading: true };
 
 		try {
-			const { getSubscriptions } = await import('$lib/api/subscriptions');
+			const { getSubscriptions } = await import('#lib/api/subscriptions.js');
 			const subscriptions = await getSubscriptions();
 
 			subscriptionState = {

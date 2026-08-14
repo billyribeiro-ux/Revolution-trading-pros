@@ -12,7 +12,7 @@
  */
 
 import { error } from '@sveltejs/kit';
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 export const load = async () => {
 	// Block access in production - return 404 as if route doesn't exist

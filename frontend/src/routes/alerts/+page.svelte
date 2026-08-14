@@ -8,7 +8,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
 	onMount(() => {
@@ -185,7 +185,7 @@
 										stroke-linejoin="round"
 										stroke-width="2"
 										d="M5 13l4 4L19 7"
-									/>
+									></path>
 								</svg>
 								{feature}
 							</li>
@@ -221,7 +221,7 @@
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M13 7l5 5m0 0l-5 5m5-5H6"
-							/>
+							></path>
 						</svg>
 					</a>
 				</article>

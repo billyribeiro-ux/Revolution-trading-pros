@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { generateOGMeta } from '$lib/options-calculator/utils/seo.js';
-	import Calculator from '$lib/options-calculator/components/Calculator.svelte';
+	import { generateOGMeta } from '#lib/options-calculator/utils/seo.js';
+	import Calculator from '#lib/options-calculator/components/Calculator.svelte';
 
 	const ogMeta = generateOGMeta();
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconDownload } from '$lib/icons';
+	import { IconX, IconDownload } from '#lib/icons/index.js';
 
 	type ExportFormat = 'csv' | 'json' | 'wordpress';
 

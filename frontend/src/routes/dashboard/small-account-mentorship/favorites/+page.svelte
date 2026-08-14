@@ -6,10 +6,10 @@
 	 * paint — no client fetch, no loading skeleton, no layout shift. Removal uses
 	 * the `removeFavorite` remote command with an optimistic update.
 	 */
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { removeFavorite } from '../../favorites.remote';
-	import { logger } from '$lib/utils/logger';
+	import { logger } from '#lib/utils/logger.js';
 	import type { PageData } from './$types';
 
 	const ROOM_SLUG = 'small-account-mentorship';

@@ -20,14 +20,14 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
-	import { ALL_ROOM_IDS } from '$lib/config/rooms';
-	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
+	import { watchlistApi, type WatchlistItem } from '#lib/api/watchlist.js';
+	import { ALL_ROOM_IDS } from '#lib/config/rooms.js';
+	import RoomSelector from '#lib/components/admin/RoomSelector.svelte';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
-	import { logger } from '$lib/utils/logger';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Get slug from URL using Svelte 5 $derived
 	const slug = $derived(page.params.slug ?? '');
@@ -275,8 +275,7 @@
 								id="description"
 								bind:value={formData.description}
 								placeholder="Week of December 22, 2025."
-								rows="3"
-							></textarea>
+								rows="3"></textarea>
 						</div>
 					</div>
 				</section>

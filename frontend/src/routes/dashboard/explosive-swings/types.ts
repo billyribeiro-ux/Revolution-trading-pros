@@ -453,7 +453,7 @@ export interface TickerPillProps {
 // ═══════════════════════════════════════════════════════════════════════════
 //
 // These align with Tailwind defaults and are used across all components.
-// Import from '$lib/constants/breakpoints' for programmatic use.
+// Import from '#lib/constants/breakpoints.js' for programmatic use.
 //
 // CSS Usage (max-width for desktop-first):
 //   @media (max-width: 639px)  → Mobile phones (< sm)
@@ -486,12 +486,7 @@ export type TradeType = 'stock' | 'option' | 'spread';
  * @description Indicates whether entering or exiting a position.
  */
 export type TradeAction =
-	| 'buy'
-	| 'sell'
-	| 'buy_to_open'
-	| 'sell_to_close'
-	| 'buy_to_close'
-	| 'sell_to_open';
+	'buy' | 'sell' | 'buy_to_open' | 'sell_to_close' | 'buy_to_close' | 'sell_to_open';
 
 /**
  * Type of option contract.

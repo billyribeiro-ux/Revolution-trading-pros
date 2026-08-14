@@ -15,7 +15,7 @@
 	 * 1 bindable scalar, 1 callback.
 	 */
 	import { scale } from 'svelte/transition';
-	import type { MediaItem } from '$lib/api/media';
+	import type { MediaItem } from '#lib/api/media.js';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconCrop from '@tabler/icons-svelte-runes/icons/crop';

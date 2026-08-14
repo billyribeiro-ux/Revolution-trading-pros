@@ -30,9 +30,9 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconToggleLeft from '@tabler/icons-svelte-runes/icons/toggle-left';
 	import IconToggleRight from '@tabler/icons-svelte-runes/icons/toggle-right';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Webhook } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Webhook } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// STATE MANAGEMENT - Svelte 5 Runes
 

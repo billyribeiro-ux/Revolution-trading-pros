@@ -7,7 +7,7 @@
 	 */
 
 	import { flip } from 'svelte/animate';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface FieldConfig {
 		name: string;

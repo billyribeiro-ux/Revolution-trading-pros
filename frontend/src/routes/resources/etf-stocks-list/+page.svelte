@@ -23,7 +23,7 @@
 		IconArrowRight,
 		IconCheck,
 		IconExternalLink
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Featured ETFs with full descriptions
 	const featuredETFs = [
@@ -124,15 +124,7 @@
 		symbol: string;
 		icon: typeof IconCpu;
 		variant:
-			| 'blue'
-			| 'pink'
-			| 'orange'
-			| 'green'
-			| 'teal'
-			| 'yellow'
-			| 'slate'
-			| 'purple'
-			| 'indigo';
+			'blue' | 'pink' | 'orange' | 'green' | 'teal' | 'yellow' | 'slate' | 'purple' | 'indigo';
 		etfs: string[];
 	}> = [
 		{

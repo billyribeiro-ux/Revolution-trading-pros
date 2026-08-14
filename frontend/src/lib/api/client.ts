@@ -25,8 +25,8 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { browser } from '$app/env';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import {
 	ApiError,
 	NetworkError,
@@ -90,11 +90,7 @@ export type BackoffStrategy = 'linear' | 'exponential' | 'fibonacci' | 'jitter';
 
 /** Cache strategies */
 export type CacheStrategy =
-	| 'cache-first'
-	| 'network-first'
-	| 'stale-while-revalidate'
-	| 'cache-only'
-	| 'network-only';
+	'cache-first' | 'network-first' | 'stale-while-revalidate' | 'cache-only' | 'network-only';
 
 /**
  * API Client configuration - Immutable after creation

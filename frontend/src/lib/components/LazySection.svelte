@@ -15,7 +15,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	interface Props {
 		/** Distance from viewport to start loading */

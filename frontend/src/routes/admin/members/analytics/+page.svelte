@@ -12,7 +12,7 @@
 		IconDownload,
 		IconCalendar,
 		IconSettings
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { getMemberAnalytics } from './analytics.remote';
 	import { EMPTY_METRICS, type DateRange } from './analytics.types';
 

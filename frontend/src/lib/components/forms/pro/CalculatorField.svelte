@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { FormField } from '$lib/api/forms';
-	import { tryMathEval } from '$lib/utils/safe-math-parser';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { FormField } from '#lib/api/forms.js';
+	import { tryMathEval } from '#lib/utils/safe-math-parser.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface CalculationVariable {
 		name: string;

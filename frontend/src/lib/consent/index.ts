@@ -26,7 +26,7 @@
  *        ConsentPreferencesModal,
  *        ConsentSettingsButton,
  *        initializeConsent
- *      } from '$lib/consent';
+ *      } from '#lib/consent/index.js';
  *      import { onMount } from 'svelte';
  *
  *      onMount(() => {
@@ -500,7 +500,7 @@ export {
 // INITIALIZATION
 // =============================================================================
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { consentStore } from './store.svelte';
 import { applyConsentMode } from './google-consent-mode';
 import { applyBingConsentMode } from './bing-consent-mode';

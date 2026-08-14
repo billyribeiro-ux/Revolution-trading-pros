@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconUsers } from '$lib/icons';
+	import { IconUsers } from '#lib/icons/index.js';
 </script>
 
 <header class="page-header">

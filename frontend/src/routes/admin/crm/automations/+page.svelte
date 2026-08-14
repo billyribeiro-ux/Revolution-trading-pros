@@ -1,23 +1,7 @@
-<!--
-	/admin/crm/automations - Automation Funnels Management
-	Apple Principal Engineer ICT 7 Grade - January 2026
-
-	Features:
-	- Automation funnel CRUD with stats dashboard
-	- Trigger-based filtering (contact_created, tag_applied, etc.)
-	- Status filtering (draft, active, paused)
-	- Duplicate, export, import, delete functionality
-	- Completion rate tracking
-	- Activate/Pause toggle controls
-	- Add contacts to funnel modal
-	- Debounced auto-refresh on filter changes
-	- Full Svelte 5 $state/$derived reactivity
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { browser } from '$app/environment';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { browser } from '$app/env';
 	import {
 		IconPlus,
 		IconSearch,
@@ -38,9 +22,14 @@
 		IconCheck,
 		IconAlertCircle,
 		IconUserPlus
-	} from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
-	import type { AutomationFunnel, FunnelFilters, FunnelStatus, TriggerType } from '$lib/crm/types';
+	} from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type {
+		AutomationFunnel,
+		FunnelFilters,
+		FunnelStatus,
+		TriggerType
+	} from '#lib/crm/types.js';
 
 	// STATE
 
@@ -511,11 +500,24 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Automation Funnels - FluentCRM Pro</title>
-</svelte:head>
+<!--
+	/admin/crm/automations - Automation Funnels Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
 
+	Features:
+	- Automation funnel CRUD with stats dashboard
+	- Trigger-based filtering (contact_created, tag_applied, etc.)
+	- Status filtering (draft, active, paused)
+	- Duplicate, export, import, delete functionality
+	- Completion rate tracking
+	- Activate/Pause toggle controls
+	- Add contacts to funnel modal
+	- Debounced auto-refresh on filter changes
+	- Full Svelte 5 $state/$derived reactivity
+-->
+<svelte:head><title>Automation Funnels - FluentCRM Pro</title></svelte:head>
 <!-- Handle escape key for modal -->
+
 <svelte:window onkeydown={hasActiveModal ? handleModalKeydown : undefined} />
 
 <div class="admin-crm-automations">
@@ -552,9 +554,9 @@
 		<div class="success-alert">
 			<IconCheck size={18} />
 			<span>{successMessage}</span>
-			<button onclick={() => (successMessage = '')} aria-label="Dismiss">
-				<IconX size={16} />
-			</button>
+
+			<button onclick={() => (successMessage = '')} aria-label="Dismiss"><IconX size={16} /></button
+			>
 		</div>
 	{/if}
 
@@ -563,9 +565,8 @@
 		<div class="error-alert">
 			<IconAlertCircle size={18} />
 			<span>{error}</span>
-			<button onclick={() => (error = '')} aria-label="Dismiss error">
-				<IconX size={16} />
-			</button>
+
+			<button onclick={() => (error = '')} aria-label="Dismiss error"><IconX size={16} /></button>
 		</div>
 	{/if}
 
@@ -710,9 +711,8 @@
 							</td>
 							<td>{formatNumber(funnel.subscribers_count)}</td>
 							<td>{formatNumber(funnel.completed_count)}</td>
-							<td>
-								<span class="rate-value">{getCompletionRate(funnel)}</span>
-							</td>
+							<td><span class="rate-value">{getCompletionRate(funnel)}</span></td>
+
 							<td>
 								<div class="action-buttons">
 									{#if funnel.status !== 'draft'}
@@ -844,8 +844,7 @@
 							bind:value={importForm.jsonData}
 							disabled={importForm.isLoading}
 							rows="8"
-							class={{ error: importForm.error }}
-						></textarea>
+							class={{ error: importForm.error }}></textarea>
 						{#if importForm.error}
 							<span class="error-message">{importForm.error}</span>
 						{/if}
@@ -927,8 +926,7 @@ contact_789"
 							bind:value={addContactsForm.contactIds}
 							disabled={addContactsForm.isLoading}
 							rows="6"
-							class={{ error: addContactsForm.error }}
-						></textarea>
+							class={{ error: addContactsForm.error }}></textarea>
 						{#if addContactsForm.error}
 							<span class="error-message">{addContactsForm.error}</span>
 						{/if}
@@ -948,10 +946,9 @@ contact_789"
 					<button
 						class="btn-secondary"
 						onclick={closeAddContactsModal}
-						disabled={addContactsForm.isLoading}
+						disabled={addContactsForm.isLoading}>Cancel</button
 					>
-						Cancel
-					</button>
+
 					<button class="btn-primary" onclick={addContactsToFunnel} disabled={!canAddContacts}>
 						{#if addContactsForm.isLoading}
 							<div class="btn-spinner"></div>

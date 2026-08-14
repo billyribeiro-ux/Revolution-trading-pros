@@ -1,7 +1,3 @@
-<!--
-	URL: /admin
--->
-
 <script lang="ts">
 	import { fade, fly, scale } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
@@ -44,15 +40,15 @@
 		IconDeviceMobile,
 		IconExternalLink,
 		IconPlugConnected
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { dev } from '$app/environment';
+	import { dev } from '$app/env';
 	import {
 		connections,
 		getIsAnalyticsConnected,
 		getIsSeoConnected
-	} from '$lib/stores/connections.svelte';
+	} from '#lib/stores/connections.svelte.js';
 
 	// Per-request timeout — without this, `Promise.allSettled` would wait
 	// forever on a single hung endpoint and `isLoading` would never settle,
@@ -317,9 +313,11 @@
 			if (membersRes.status === 'fulfilled') {
 				const memberData = membersRes.value;
 				const newMembers = memberData?.overview?.total_members || memberData?.total || 0;
+
 				if (mounted)
 					animateValue(stats.totalMembers, newMembers, 800, (v) => (stats.totalMembers = v));
 				else stats.totalMembers = newMembers;
+
 				stats.activeSubscriptions = memberData?.subscriptions?.active || 0;
 				stats.monthlyRevenue = memberData?.revenue?.mrr || 0;
 			}
@@ -517,6 +515,10 @@
 		};
 	});
 </script>
+
+<!--
+	URL: /admin
+-->
 
 <div class="admin-dashboard">
 	<div class="admin-page-container">

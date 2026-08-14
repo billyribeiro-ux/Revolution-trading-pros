@@ -11,7 +11,7 @@
 		type Member,
 		type CreateMemberRequest,
 		type UpdateMemberRequest
-	} from '$lib/api/members';
+	} from '#lib/api/members.js';
 	import {
 		IconX,
 		IconUserPlus,
@@ -20,7 +20,7 @@
 		IconEyeOff,
 		IconCopy,
 		IconCheck
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { onDestroy, untrack } from 'svelte';
 
 	interface Props {
@@ -649,8 +649,7 @@
 											bind:value={bio}
 											disabled={isLoading}
 											maxlength="500"
-											rows="4"
-										></textarea>
+											rows="4"></textarea>
 									</div>
 								</div>
 							</div>
@@ -868,8 +867,7 @@
 										bind:value={adminNotes}
 										disabled={isLoading}
 										maxlength="2000"
-										rows="8"
-									></textarea>
+										rows="8"></textarea>
 									<span class="field-hint">
 										These notes are for internal use only and will not be shared with the member.
 									</span>

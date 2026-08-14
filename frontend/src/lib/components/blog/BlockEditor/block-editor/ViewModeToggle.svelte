@@ -3,7 +3,7 @@
 	Extracted from BlockEditor.svelte (R7-C).
 -->
 <script lang="ts">
-	import { IconEdit, IconEye } from '$lib/icons';
+	import { IconEdit, IconEye } from '#lib/icons/index.js';
 
 	type ViewMode = 'edit' | 'preview';
 

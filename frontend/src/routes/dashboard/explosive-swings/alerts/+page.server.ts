@@ -7,14 +7,14 @@
  * @version 1.1.0 - ICT 7 update: proper error handling and typed return
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL } from '$app/env/private';
 import type { PageServerLoad } from './$types';
-import type { RoomAlert } from '$lib/types/trading';
+import type { RoomAlert } from '#lib/types/trading.js';
 
 const ROOM_SLUG = 'explosive-swings';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
-	const baseUrl = env.API_BASE_URL || 'http://localhost:8080/api';
+	const baseUrl = API_BASE_URL || 'http://localhost:8080/api';
 
 	try {
 		const response = await fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/alerts?per_page=50`, {

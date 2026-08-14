@@ -8,9 +8,9 @@
 	 * @version 1.0.0 - Initial Implementation
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
-	import type { RoomAlert } from '$lib/types/trading';
+	import type { RoomAlert } from '#lib/types/trading.js';
 
 	interface Props {
 		enabled?: boolean;
@@ -96,8 +96,8 @@
 			height="16"
 			aria-hidden="true"
 		>
-			<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-			<path d="M13.73 21a2 2 0 0 1-3.46 0" />
+			<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+			<path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
 		</svg>
 		Enable notifications for new alerts
 	</button>

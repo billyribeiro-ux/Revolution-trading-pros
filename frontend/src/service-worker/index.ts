@@ -39,7 +39,22 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-import { build, files, version } from '$service-worker';
+// SvelteKit 3 removed `$service-worker`. The built-chunk / static-file lists
+// now come from `$app/manifest` — where the old `build` and `files` string
+// arrays are `immutable` and `assets`, each an array of `{ path }` objects
+// rather than bare strings.
+//
+// `version` deliberately does NOT come from `$app/env`. That export is
+// `BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and `payload` is
+// only populated by the client app boot, never in a ServiceWorkerGlobalScope —
+// so inside this file it is `undefined`, which would pin every cache name to
+// `cache-undefined` on every deploy and turn the `activate` purge below into a
+// permanent no-op. `__APP_VERSION__` is injected by Vite's `define` (see
+// vite.config.ts), which the service-workers docs specify is applied to the
+// worker bundle, and is fed from the same value as `kit.version.name`.
+import { immutable, assets } from '$app/manifest';
+
+const version = __APP_VERSION__;
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -74,10 +89,24 @@ const VIDEO_SEGMENT_TTL = 60 * 60 * 1000; // 1 hour
 const VIDEO_MANIFEST_TTL = 5 * 60 * 1000; // 5 minutes
 
 // Assets to cache (from SvelteKit build)
+//
+// `$app/manifest` paths are relative to the base path (`_app/immutable/x.js`),
+// unlike `$service-worker`'s `build`/`files` in SvelteKit 2, which were rooted
+// (`/_app/immutable/x.js`). Everything downstream compares these against
+// `url.pathname`, which is always rooted — so leaving them relative silently
+// breaks BOTH the `/api/` filter below and the cache-first lookup in `fetch`,
+// with no type or test failure to show for it.
+//
+// Resolving against `location.href` (the service worker's own script URL, which
+// sits at the base path) is exactly how the browser resolves a relative path
+// passed to `cache.add()`, so the cache keys and these lookups stay in
+// agreement, and a configured base path is handled for free.
+const toRootedPath = (path: string) => new URL(path, location.href).pathname;
+
 // Filter out any potentially problematic paths
 const ASSETS = [
-	...build, // Built app chunks
-	...files // Static files
+	...immutable.map(({ path }) => toRootedPath(path)), // Built app chunks
+	...assets.map(({ path }) => toRootedPath(path)) // Static files
 ].filter((asset) => {
 	// Skip assets that might cause issues
 	if (!asset) return false;

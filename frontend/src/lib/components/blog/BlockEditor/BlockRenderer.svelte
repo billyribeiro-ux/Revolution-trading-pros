@@ -10,8 +10,8 @@
 -->
 
 <script lang="ts">
-	import type { Block } from '$lib/components/cms/blocks/types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { Block } from '#lib/components/cms/blocks/types.js';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Component } from 'svelte';
 
 	// ============================================

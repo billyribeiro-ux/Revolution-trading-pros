@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { usersApi, AdminApiError } from '$lib/api/admin';
-	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { usersApi, AdminApiError } from '#lib/api/admin.js';
+	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 
 	let loading = $state(true);
 	interface AdminUser {

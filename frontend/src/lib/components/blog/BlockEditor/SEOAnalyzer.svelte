@@ -16,8 +16,8 @@
 	 * @author Revolution Trading Pros
 	 */
 
-	import { API_BASE_URL } from '$lib/api/config';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { API_BASE_URL } from '#lib/api/config.js';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { SEOAnalysis, HeadingNode } from './types';
 

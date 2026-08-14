@@ -12,7 +12,7 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import type { Snippet } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Export Props interface for external use
 	export interface ButtonProps {

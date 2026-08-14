@@ -1,6 +1,6 @@
 import type { PageLoad } from './$types';
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildSoftwareApplication } from '$lib/seo/schemas';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildSoftwareApplication } from '#lib/seo/schemas.js';
 import { indicators } from '../data';
 
 const SITE = 'https://revolutiontradingpros.com';

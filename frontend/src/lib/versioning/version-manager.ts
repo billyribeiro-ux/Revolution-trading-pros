@@ -5,7 +5,7 @@
  */
 
 import { diff_match_patch } from 'diff-match-patch';
-import type { Block } from '$lib/components/cms/blocks/types';
+import type { Block } from '#lib/components/cms/blocks/types.js';
 
 export interface Version {
 	id: string;

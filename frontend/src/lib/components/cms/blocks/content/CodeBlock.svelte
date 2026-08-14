@@ -9,9 +9,9 @@
 
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { IconCode, IconCopy, IconCheck } from '$lib/icons';
+	import { IconCode, IconCopy, IconCheck } from '#lib/icons/index.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	interface Props {
 		block: Block;

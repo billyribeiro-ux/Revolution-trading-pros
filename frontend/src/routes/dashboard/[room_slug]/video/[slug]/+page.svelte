@@ -13,8 +13,8 @@
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
 	import type { PageData } from './+page.server';
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import { sanitizeHtml } from '$lib/sanitize';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
+	import { sanitizeHtml } from '#lib/sanitize.js';
 
 	// Server-loaded data with Previous/Next navigation
 	let props: { data: PageData } = $props();

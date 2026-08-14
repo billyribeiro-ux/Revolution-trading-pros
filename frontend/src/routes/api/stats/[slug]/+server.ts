@@ -17,7 +17,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
 // R22-A: `RoomStats` type no longer needed (the in-file `mockStats` map is
 // gone; backend rows pass through unchanged via `extractBackendData`).
-import { fetchBackend, hasData, extractBackendData } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasData, extractBackendData } from '#lib/server/proxy-fetch.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // R22-A: Deleted `mockStats` (one hardcoded `explosive-swings` entry with

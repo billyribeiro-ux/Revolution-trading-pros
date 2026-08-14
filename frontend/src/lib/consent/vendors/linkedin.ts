@@ -8,8 +8,8 @@
  * @version 1.0.0
  */
 
-import { browser, dev } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser, dev } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { VendorConfig } from '../types';
 
 declare global {
@@ -68,6 +68,7 @@ function processEventQueue(): void {
 	if (!window.lintrk || !linkedinReady) return;
 
 	let queued: { conversionId: string; data?: Record<string, unknown> } | undefined;
+
 	while ((queued = eventQueue.shift())) {
 		window.lintrk('track', { conversion_id: queued.conversionId, ...queued.data });
 	}

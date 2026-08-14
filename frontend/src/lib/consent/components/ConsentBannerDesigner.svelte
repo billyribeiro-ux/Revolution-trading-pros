@@ -664,8 +664,7 @@
 						id="banner-description"
 						class="textarea"
 						bind:value={config.message_text}
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="control-group">

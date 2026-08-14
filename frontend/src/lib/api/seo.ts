@@ -49,9 +49,9 @@
  */
 
 import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { api, type ApiResponse } from './client.svelte';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
 
 /**
@@ -296,7 +296,6 @@ export interface LabData {
 	device: 'mobile' | 'desktop';
 	metrics: CoreWebVitalMetrics;
 }
-
 export interface CoreWebVitalMetrics {
 	lcp: number;
 	fid: number;
@@ -490,7 +489,6 @@ export interface BusinessHours {
 	close: string;
 	is_closed: boolean;
 }
-
 export interface SocialProfile {
 	platform: string;
 	url: string;
@@ -516,7 +514,6 @@ export interface CompetitorRank {
 	position: number;
 	url: string;
 }
-
 export interface RankHistory {
 	date: string;
 	position: number;

@@ -12,7 +12,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
 
 	// Props
 	interface TradingRoom {

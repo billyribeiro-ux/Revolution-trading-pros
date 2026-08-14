@@ -14,7 +14,7 @@
  * - Graceful degradation on API failures
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import type { PageServerLoad } from './$types';
 import { ROOM_SLUG } from '../constants';
 
@@ -90,7 +90,7 @@ interface AnalyticsPageData {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const LOG_PREFIX = '[analytics-ssr]';
-const DEFAULT_API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const DEFAULT_API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 const DEFAULT_PERIOD = '30d';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -197,7 +197,7 @@ async function fetchAnalyticsData(
  *              Never throws - returns fallback data on failure.
  */
 export const load = (async ({ fetch, url }) => {
-	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
+	const baseUrl = API_BASE_URL || DEFAULT_API_URL;
 	const period = url.searchParams.get('period') || DEFAULT_PERIOD;
 
 	try {

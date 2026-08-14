@@ -9,8 +9,8 @@ import type {
 	BlockContent,
 	BlockType,
 	CreateBlockPayload
-} from '$lib/components/cms/blocks/types';
-import { toBlockId, type BlockId } from '$lib/stores/blockState.svelte';
+} from '#lib/components/cms/blocks/types.js';
+import { toBlockId, type BlockId } from '#lib/stores/blockState.svelte.js';
 
 /**
  * Generate a unique block ID
@@ -476,7 +476,7 @@ export function countBlocksByType(blocks: Block[]): Record<string, number> {
  *
  * Flagged as **LB-R26-NESTED-TRAVERSAL** in R26-A. Zero runtime callers in
  * `src/` — `routes/blog/[slug]/+page.svelte` uses the text-based
- * `calculateReadingTime` from `$lib/utils/readingAnalytics.ts` instead
+ * `calculateReadingTime` from `#lib/utils/readingAnalytics.ts` instead
  * (which works off rendered prose, not the editor block tree, and is the
  * canonical reading-time helper for this codebase).
  *

@@ -5,7 +5,7 @@
 // reactivity / no closed-over state in the original — only inputs in, value
 // out — so a plain `.ts` module is safe (no $state survives the move).
 
-import type { Stage } from '$lib/crm/types';
+import type { Stage } from '#lib/crm/types.js';
 
 export function formatCurrency(amount: number | undefined): string {
 	if (!amount) return '$0';

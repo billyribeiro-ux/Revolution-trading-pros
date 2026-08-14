@@ -48,10 +48,10 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
 
 /**
@@ -144,14 +144,7 @@ export interface Coupon {
 }
 
 export type CouponType =
-	| 'percentage'
-	| 'fixed'
-	| 'bogo'
-	| 'free_shipping'
-	| 'tiered'
-	| 'bundle'
-	| 'cashback'
-	| 'points';
+	'percentage' | 'fixed' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
 
 export interface Campaign {
 	id: string;
@@ -361,7 +354,6 @@ export interface GeoDistribution {
 	redemptions: number;
 	revenue: number;
 }
-
 export interface DeviceData {
 	device: string;
 	redemptions: number;

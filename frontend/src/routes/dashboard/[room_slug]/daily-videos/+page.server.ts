@@ -9,11 +9,11 @@
  * @version 5.0.0 - January 2026
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import type { PageServerLoad } from './$types';
 
 // FIX-2026-04-26: canonical private-env URL pattern (CLAUDE.md house style).
-const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 export interface DailyVideo {
 	id: number;
@@ -145,6 +145,7 @@ function getRoomName(slug: string): string {
 		'swing-trading-room': 'Swing Trading Room',
 		'options-room': 'Options Room'
 	};
+
 	return (
 		roomNames[slug] ||
 		slug

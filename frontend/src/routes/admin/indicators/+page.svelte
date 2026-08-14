@@ -13,8 +13,8 @@
 	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
 	interface IndicatorListItem {

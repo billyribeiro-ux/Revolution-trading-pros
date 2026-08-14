@@ -17,8 +17,8 @@
 -->
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
-	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import BunnyVideoPlayer from '#lib/components/video/BunnyVideoPlayer.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Lesson {
 		id: string;

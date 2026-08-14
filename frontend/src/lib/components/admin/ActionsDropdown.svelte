@@ -7,7 +7,7 @@
 	 * Supports icons, dividers, and danger actions.
 	 */
 	import type { Attachment } from 'svelte/attachments';
-	import { IconDotsVertical, type IconComponent } from '$lib/icons';
+	import { IconDotsVertical, type IconComponent } from '#lib/icons/index.js';
 
 	interface Action {
 		id: string;

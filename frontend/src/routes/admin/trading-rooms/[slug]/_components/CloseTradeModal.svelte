@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import type { RoomTrade } from '$lib/api/room-content';
+	import type { RoomTrade } from '#lib/api/room-content.js';
 
 	export interface CloseTradeFormData {
 		exit_price: string;
@@ -118,8 +118,7 @@
 						id="close_notes"
 						bind:value={form.notes}
 						placeholder="Optional notes about the exit..."
-						rows="2"
-					></textarea>
+						rows="2"></textarea>
 				</div>
 
 				<div class="modal-actions">

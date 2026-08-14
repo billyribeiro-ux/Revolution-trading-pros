@@ -1,6 +1,6 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { goto } from '$app/navigation';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 import {
 	isSuperadmin,
 	isAdmin as checkIsAdmin,
@@ -13,7 +13,7 @@ import {
 	ROLES,
 	PERMISSIONS,
 	type PermissionType
-} from '$lib/config/roles';
+} from '#lib/config/roles.js';
 
 /**
  * Revolution Trading Pros - Secure Authentication Store

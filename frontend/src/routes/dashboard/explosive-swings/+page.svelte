@@ -9,20 +9,20 @@
 	import { createRealtimeState } from './realtime.svelte';
 
 	// Layout Components
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import Pagination from '$lib/components/dashboard/pagination/Pagination.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import Pagination from '#lib/components/dashboard/pagination/Pagination.svelte';
 
 	// Page Components
 	import PerformanceSummary from './components/PerformanceSummary.svelte';
 	import WeeklyHero from './components/WeeklyHero.svelte';
 	import AlertCard from './components/AlertCard.svelte';
 	import type { ComponentProps } from 'svelte';
-	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
+	import AlertFilters from '#lib/components/dashboard/alerts/AlertFilters.svelte';
 	import SidebarComponent from './components/Sidebar.svelte';
 	import NewAlertPulse from './components/NewAlertPulse.svelte';
 
 	// Modals
-	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
+	import TradeAlertModal from '#lib/components/dashboard/TradeAlertModal.svelte';
 	import TradeEntryModal from './components/TradeEntryModal.svelte';
 	import VideoUploadModal from './components/VideoUploadModal.svelte';
 	import PublishWeeklyModal from './components/PublishWeeklyModal.svelte';
@@ -30,7 +30,7 @@
 	import AddTradeModal from './components/AddTradeModal.svelte';
 	import UpdatePositionModal from './components/UpdatePositionModal.svelte';
 	import InvalidatePositionModal from './components/InvalidatePositionModal.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// Remote Commands
 	import { saveAlert, deleteAlertCommand } from './commands.remote';
@@ -42,9 +42,9 @@
 		AlertUpdateInput,
 		RoomAlert,
 		TradePlanEntry as ApiTradePlanEntry
-	} from '$lib/types/trading';
-	import type { WatchlistData } from '$lib/server/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
+	} from '#lib/types/trading.js';
+	import type { WatchlistData } from '#lib/server/watchlist.js';
+	import type { RoomResource } from '#lib/api/room-resources.js';
 
 	// Props from +page.server.ts - ICT 7 Fix: Proper type definitions (no any)
 	interface PageData {

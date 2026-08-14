@@ -7,7 +7,7 @@
 		IconCheck,
 		IconAlertTriangle,
 		IconSettings
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		imageSeoSettings,
 		processImages,
@@ -15,9 +15,9 @@
 		type CaseTransform,
 		type ImageMetadata,
 		type ProcessedImage
-	} from '$lib/seo';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/seo/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Reset-defaults confirmation modal state
 	let showResetSettingsModal = $state(false);

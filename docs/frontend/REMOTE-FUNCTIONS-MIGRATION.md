@@ -2,27 +2,38 @@
 
 ## Date: Feb 8, 2026 | Status: PHASE 1 COMPLETE — AWAITING APPROVAL
 
+> **Historical record — read for intent, not for paths or config.** This is a
+> point-in-time inventory taken against SvelteKit 2.50 in Feb 2026. The repo
+> has since moved to SvelteKit 3, so the `$lib/...` module paths listed
+> throughout are now `#lib/...` (with explicit file extensions), and the
+> `svelte.config.js` shown below no longer exists. The prerequisite block has
+> been corrected in place because it reads as setup instructions; the
+> inventory sections below are left as they were written.
+
 ---
 
 ## CRITICAL PREREQUISITE
 
-Remote Functions are **experimental** in SvelteKit 2.27+. Requires opt-in:
+Remote Functions are still **experimental**. Opt in from the `sveltekit()`
+plugin options in `vite.config.ts` — SvelteKit 3 has no `svelte.config.js`:
 
-```js
-// svelte.config.js
-kit: {
+```ts
+// vite.config.ts
+sveltekit({
   experimental: {
     remoteFunctions: true
+  },
+  compilerOptions: {
+    experimental: {
+      async: true // required for client-side resolution of remote queries
+    }
   }
-},
-compilerOptions: {
-  experimental: {
-    async: true // optional, for await in components
-  }
-}
+})
 ```
 
-Current SvelteKit version: `^2.50.2` ✅ (supports remote functions)
+Both flags are already enabled in this repo. `compilerOptions.experimental.async`
+is **not** optional here despite the older note below: without it, any
+client-side remote-query resolution throws `experimental_async_required`.
 
 ---
 

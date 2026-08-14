@@ -1,20 +1,8 @@
-<!--
-/**
- * Social Share Block Component
- * ═══════════════════════════════════════════════════════════════════════════
- * Social media share buttons with platform-specific styling
- * Features: Twitter/X, Facebook, LinkedIn, Email, Copy Link
- *
- * @version 2.0.0
- * @author Revolution Trading Pros
- */
--->
-
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { IconLink, IconCheck } from '$lib/icons';
-	import { getBlockStateManager, type BlockId } from '$lib/stores/blockState.svelte';
-	import { browser } from '$app/environment';
+	import { IconLink, IconCheck } from '#lib/icons/index.js';
+	import { getBlockStateManager, type BlockId } from '#lib/stores/blockState.svelte.js';
+	import { browser } from '$app/env';
 	import type { Block, BlockContent } from '../types';
 
 	// =========================================================================
@@ -169,6 +157,18 @@
 		}
 	});
 </script>
+
+<!--
+/**
+ * Social Share Block Component
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Social media share buttons with platform-specific styling
+ * Features: Twitter/X, Facebook, LinkedIn, Email, Copy Link
+ *
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ */
+-->
 
 <div
 	class={['social-share-block', { disabled: props.isEditing }]}

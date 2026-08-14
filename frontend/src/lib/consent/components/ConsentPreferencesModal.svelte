@@ -16,7 +16,7 @@
 	 */
 
 	import { fade, scale } from 'svelte/transition';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { ConsentCategory } from '../types';
 	import { consentStore, showPreferencesModal, closePreferencesModal } from '../store.svelte';
 	import { getVendorsByCategory } from '../vendors';
@@ -208,8 +208,8 @@
 						stroke-linecap="round"
 						stroke-linejoin="round"
 					>
-						<line x1="18" y1="6" x2="6" y2="18" />
-						<line x1="6" y1="6" x2="18" y2="18" />
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
 					</svg>
 				</button>
 			</div>

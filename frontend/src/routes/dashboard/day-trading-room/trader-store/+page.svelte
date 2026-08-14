@@ -11,7 +11,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
+	import TradingRoomDropdown from '#lib/components/dashboard/TradingRoomDropdown.svelte';
 
 	interface TraderStore {
 		id: string;

@@ -16,7 +16,7 @@
  * @author Revolution Trading Pros
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Environment-Based Configuration (ICT 7)

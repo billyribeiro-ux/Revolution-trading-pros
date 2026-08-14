@@ -9,10 +9,10 @@
  * @since January 2026
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { Block, Revision } from '../types';
-import type { Post } from '$lib/types/post';
-import { logger } from '$lib/utils/logger';
+import type { Post } from '#lib/types/post.js';
+import { logger } from '#lib/utils/logger.js';
 
 // =============================================================================
 // Database Configuration

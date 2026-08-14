@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ fetch, locals }) => {

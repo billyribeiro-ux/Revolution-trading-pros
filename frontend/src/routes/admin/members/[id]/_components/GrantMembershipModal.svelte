@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconX, IconGift } from '$lib/icons';
+	import { IconX, IconGift } from '#lib/icons/index.js';
 	import type { MembershipPlan } from './helpers';
 
 	interface Props {

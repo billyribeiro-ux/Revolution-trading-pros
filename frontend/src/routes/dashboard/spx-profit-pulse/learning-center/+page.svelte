@@ -1,20 +1,8 @@
-<!--
-	URL: /dashboard/spx-profit-pulse/learning-center
-
-	SPX Profit Pulse Learning Center Page
-	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
-	Reference: frontend/Do's/SPX Tr3ndy/LearningCenter
-
-	Educational resources and training materials for SPX Profit Pulse members.
-	Fetches data with server-side rendering.
-
--->
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import { browser } from '$app/env';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 	import type { VideoResponse } from './+page.server';
 
 	interface PageData {
@@ -62,7 +50,7 @@
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
-		const url = new URL(page.url);
+		const url = new URL(page.url.href);
 		if (categoryId === 'all' || categoryId === '0') {
 			url.searchParams.delete('category');
 		} else {
@@ -76,7 +64,7 @@
 	function goToPage(pageNum: number) {
 		if (!browser) return;
 		if (pageNum >= 1 && pageNum <= totalPages) {
-			const url = new URL(page.url);
+			const url = new URL(page.url.href);
 			if (pageNum === 1) {
 				url.searchParams.delete('page');
 			} else {
@@ -138,6 +126,19 @@
 		};
 	}
 </script>
+
+<!--
+	URL: /dashboard/spx-profit-pulse/learning-center
+
+	SPX Profit Pulse Learning Center Page
+	═══════════════════════════════════════════════════════════════════════════
+	Apple ICT 11+ Principal Engineer Implementation
+	Reference: frontend/Do's/SPX Tr3ndy/LearningCenter
+
+	Educational resources and training materials for SPX Profit Pulse members.
+	Fetches data with server-side rendering.
+
+-->
 
 <svelte:head>
 	<title>Learning Center | SPX Profit Pulse | Revolution Trading Pros</title>

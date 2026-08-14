@@ -10,13 +10,13 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
 
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
+import type { RequestHandler } from '@sveltejs/kit';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback, localhost last.
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async (event) => {
 	// PRINCIPAL-2026-05-17 (audit FULL_REPO_AUDIT_2026-05-17 §P2-F): replaced the

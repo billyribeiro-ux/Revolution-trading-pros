@@ -8,14 +8,14 @@
 	 * savings badges and recommended highlighting. Used in checkout flows.
 	 */
 
-	import type { SubscriptionPlan } from '$lib/api/plans';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { SubscriptionPlan } from '#lib/api/plans.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import {
 		formatPlanPrice,
 		getBillingIntervalText,
 		getMonthlyEquivalent,
 		sortPlansByBillingCycle
-	} from '$lib/api/plans';
+	} from '#lib/api/plans.js';
 
 	// Props
 	interface Props {

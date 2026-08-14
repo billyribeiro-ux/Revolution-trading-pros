@@ -10,7 +10,7 @@
 		type Course,
 		type CreateCourseRequest,
 		type UpdateCourseRequest
-	} from '$lib/api/courses';
+	} from '#lib/api/courses.js';
 	import {
 		IconX,
 		IconBook,
@@ -19,7 +19,7 @@
 		IconCurrencyDollar,
 		IconUser,
 		IconTag
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { untrack } from 'svelte';
 
 	interface Props {
@@ -358,8 +358,7 @@
 								placeholder="Full course description..."
 								bind:value={description}
 								disabled={isLoading}
-								rows="3"
-							></textarea>
+								rows="3"></textarea>
 						</div>
 
 						<div class="form-group">
@@ -370,8 +369,7 @@
 								placeholder="Short description for course cards..."
 								bind:value={cardDescription}
 								disabled={isLoading}
-								rows="2"
-							></textarea>
+								rows="2"></textarea>
 							<span class="form-hint">Brief description shown on course cards</span>
 						</div>
 
@@ -488,8 +486,7 @@
 								placeholder="Brief bio about the instructor..."
 								bind:value={instructorBio}
 								disabled={isLoading}
-								rows="4"
-							></textarea>
+								rows="4"></textarea>
 						</div>
 					</div>
 				{:else if activeSection === 'seo'}
@@ -515,8 +512,7 @@
 								placeholder="SEO description for search engines..."
 								bind:value={metaDescription}
 								disabled={isLoading}
-								rows="3"
-							></textarea>
+								rows="3"></textarea>
 							<span class="form-hint">{metaDescription.length}/160 characters</span>
 						</div>
 					</div>

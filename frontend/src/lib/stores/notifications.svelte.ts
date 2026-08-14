@@ -9,8 +9,8 @@
  * @level L8 Principal Engineer
  */
 
-import { browser } from '$app/environment';
-import { websocketService, type NotificationPayload } from '$lib/services/websocket';
+import { browser } from '$app/env';
+import { websocketService, type NotificationPayload } from '#lib/services/websocket.js';
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error' | 'system';
 export type NotificationPriority = 'low' | 'normal' | 'high' | 'urgent';
@@ -171,9 +171,7 @@ function initWebSocket(userId?: string) {
 						...(notification.action.href && { href: notification.action.href })
 					}
 				}),
-				...(notification.metadata && {
-					metadata: notification.metadata as Record<string, unknown>
-				})
+				...(notification.metadata && { metadata: notification.metadata as Record<string, unknown> })
 			});
 		}
 	);

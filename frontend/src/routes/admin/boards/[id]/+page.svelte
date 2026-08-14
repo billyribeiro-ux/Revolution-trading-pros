@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { boardsAPI } from '$lib/api/boards';
+	import { boardsAPI } from '#lib/api/boards.js';
 	import type {
 		Board,
 		Stage,
@@ -13,7 +13,7 @@
 		Attachment,
 		Subtask,
 		CustomFieldDefinition
-	} from '$lib/boards/types';
+	} from '#lib/boards/types.js';
 	import {
 		IconArrowLeft,
 		IconPlus,
@@ -35,11 +35,11 @@
 		IconPlayerPlay,
 		IconPlayerStop,
 		IconSubtask
-	} from '$lib/icons';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26 (P0-4): toast for drop-failure surfacing.
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { logger } from '$lib/utils/logger';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Get board ID from URL
 	const boardId = $derived(page.params['id'] ?? '');
@@ -733,8 +733,7 @@
 												showNewTaskInput = null;
 												newTaskTitle = '';
 											}
-										}}
-									></textarea>
+										}}></textarea>
 									<div class="composer-actions">
 										<div class="button-row">
 											<button
@@ -891,8 +890,7 @@
 									}}
 									rows="4"
 									class="form-control"
-									placeholder="Add a description..."
-								></textarea>
+									placeholder="Add a description..."></textarea>
 							{:else}
 								<div
 									onclick={() => (editingTaskDescription = true)}
@@ -996,8 +994,7 @@
 											bind:value={newComment}
 											placeholder="Write a comment..."
 											rows="2"
-											class="form-control"
-										></textarea>
+											class="form-control"></textarea>
 										<button
 											onclick={addComment}
 											disabled={!newComment.trim()}

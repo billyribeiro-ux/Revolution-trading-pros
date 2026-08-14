@@ -1,26 +1,6 @@
-<!--
-	Trading Room Sidebar - Schedule + Quick Links
-	Pixel-perfect extraction from WordPress DASHMAIN
-	
-	ICT 11+ Apple Principal Engineer Implementation:
-	- Backend API integration (database-backed schedules)
-	- Per-room schedule support (Day Trading, Swing Trading, Small Account Mentorship)
-	- Exponential backoff retry logic (3 attempts)
-	- Circuit breaker pattern (prevents API abuse)
-	- localStorage caching with 5-minute TTL
-	- Stale-while-revalidate pattern
-	- Structured logging for monitoring
-	- Performance metrics tracking
-	- Graceful degradation with cached fallback
-	- Error boundary with user-friendly messages
-	- Accessibility improvements (ARIA live regions)
-	
-	@version 3.0.0 - ICT 11+ Backend Integration
-	@author Revolution Trading Pros
--->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser, dev } from '$app/environment';
+	import { browser, dev } from '$app/env';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - ICT 11+ TypeScript Best Practice
@@ -41,7 +21,6 @@
 	interface Props {
 		planSlug?: string;
 	}
-
 	interface CacheEntry {
 		data: ScheduleEvent[];
 		timestamp: number;
@@ -394,6 +373,26 @@
 	});
 </script>
 
+<!--
+	Trading Room Sidebar - Schedule + Quick Links
+	Pixel-perfect extraction from WordPress DASHMAIN
+	
+	ICT 11+ Apple Principal Engineer Implementation:
+	- Backend API integration (database-backed schedules)
+	- Per-room schedule support (Day Trading, Swing Trading, Small Account Mentorship)
+	- Exponential backoff retry logic (3 attempts)
+	- Circuit breaker pattern (prevents API abuse)
+	- localStorage caching with 5-minute TTL
+	- Stale-while-revalidate pattern
+	- Structured logging for monitoring
+	- Performance metrics tracking
+	- Graceful degradation with cached fallback
+	- Error boundary with user-friendly messages
+	- Accessibility improvements (ARIA live regions)
+	
+	@version 3.0.0 - ICT 11+ Backend Integration
+	@author Revolution Trading Pros
+-->
 <!-- Trading Room Sidebar -->
 <aside class="dashboard__content-sidebar">
 	<!-- Trading Room Schedule Section -->

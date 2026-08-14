@@ -5,7 +5,7 @@
 	 * binds `search` and `showHidden`; a single `$effect` in the parent
 	 * re-runs `applyFilters()` when either changes.
 	 */
-	import { IconSearch } from '$lib/icons';
+	import { IconSearch } from '#lib/icons/index.js';
 
 	interface Props {
 		search: string;

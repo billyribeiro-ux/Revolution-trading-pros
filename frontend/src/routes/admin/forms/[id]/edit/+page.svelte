@@ -6,13 +6,13 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import FormBuilder from '$lib/components/forms/FormBuilder.svelte';
-	import EmbedCodeGenerator from '$lib/components/forms/EmbedCodeGenerator.svelte';
-	import ThemeCustomizer from '$lib/components/forms/ThemeCustomizer.svelte';
-	import { getForm } from '$lib/api/forms';
-	import type { Form } from '$lib/api/forms';
-	import type { FormTheme } from '$lib/data/formTemplates';
-	import { themes } from '$lib/data/formTemplates';
+	import FormBuilder from '#lib/components/forms/FormBuilder.svelte';
+	import EmbedCodeGenerator from '#lib/components/forms/EmbedCodeGenerator.svelte';
+	import ThemeCustomizer from '#lib/components/forms/ThemeCustomizer.svelte';
+	import { getForm } from '#lib/api/forms.js';
+	import type { Form } from '#lib/api/forms.js';
+	import type { FormTheme } from '#lib/data/formTemplates.js';
+	import { themes } from '#lib/data/formTemplates.js';
 
 	let form = $state<Form | null>(null);
 	let loading = $state(true);
@@ -21,7 +21,7 @@
 	let showThemeCustomizer = $state(false);
 	let selectedTheme = $state<FormTheme | null>(null);
 
-	let formId = $derived(parseInt(page.params['id']));
+	let formId = $derived(parseInt(page.params['id'] ?? ''));
 
 	onMount(async () => {
 		try {

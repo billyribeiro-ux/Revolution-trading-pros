@@ -16,12 +16,12 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
-	import IndicatorHeader from '$lib/components/indicators/IndicatorHeader.svelte';
-	import TrainingVideosSection from '$lib/components/indicators/TrainingVideosSection.svelte';
-	import PlatformDownloads from '$lib/components/indicators/PlatformDownloads.svelte';
-	import SupportDocsSection from '$lib/components/indicators/SupportDocsSection.svelte';
+	import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import HaveQuestionsSection from '#lib/components/sections/HaveQuestionsSection.svelte';
+	import IndicatorHeader from '#lib/components/indicators/IndicatorHeader.svelte';
+	import TrainingVideosSection from '#lib/components/indicators/TrainingVideosSection.svelte';
+	import PlatformDownloads from '#lib/components/indicators/PlatformDownloads.svelte';
+	import SupportDocsSection from '#lib/components/indicators/SupportDocsSection.svelte';
 
 	interface DownloadFile {
 		name: string;

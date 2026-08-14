@@ -17,8 +17,8 @@
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-	import { IconX } from '$lib/icons';
+	import { browser } from '$app/env';
+	import { IconX } from '#lib/icons/index.js';
 	import {
 		activePopup,
 		getActivePopups,
@@ -26,9 +26,9 @@
 		recordPopupImpression,
 		recordPopupConversion,
 		type EnhancedPopup
-	} from '$lib/api/popups';
-	import { popupStore } from '$lib/stores/popups.svelte';
-	import { sanitizePopupContent } from '$lib/sanitize';
+	} from '#lib/api/popups.js';
+	import { popupStore } from '#lib/stores/popups.svelte.js';
+	import { sanitizePopupContent } from '#lib/sanitize.js';
 
 	// Props
 	interface Props {

@@ -178,8 +178,7 @@
 						id="description"
 						bind:value={formData.description}
 						placeholder="Optional description of the session..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-group form-checkbox">

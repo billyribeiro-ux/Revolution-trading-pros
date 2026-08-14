@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import type { Form } from '$lib/api/forms';
+	import type { Form } from '#lib/api/forms.js';
 
 	interface Props {
 		form: Form;

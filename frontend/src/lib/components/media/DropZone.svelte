@@ -13,7 +13,7 @@
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Svelte 5 Props with callback pattern
 	interface Props {

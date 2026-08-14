@@ -23,14 +23,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	type PropInputType =
-		| 'text'
-		| 'number'
-		| 'boolean'
-		| 'select'
-		| 'array'
-		| 'object'
-		| 'function'
-		| 'snippet';
+		'text' | 'number' | 'boolean' | 'select' | 'array' | 'object' | 'function' | 'snippet';
 
 	function detectInputType(prop: PropDefinition): PropInputType {
 		const type = prop.type.toLowerCase().trim();

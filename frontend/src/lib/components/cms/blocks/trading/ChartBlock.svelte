@@ -19,9 +19,9 @@
 		IconRefresh,
 		IconExternalLink,
 		IconMaximize
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import type { Block, BlockContent, BlockSettings } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 	import { onMount } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
 

@@ -14,11 +14,11 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
-	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
-	import { createCheckoutSession } from '$lib/api/cart';
-	import { validateCoupon } from '$lib/api/coupons';
-	import { createAppliedCoupon, type AppliedCoupon } from '$lib/utils/coupon-helpers';
+	import { user, isAuthenticated, isInitializing } from '#lib/stores/auth.svelte.js';
+	import { cartStore, getCartTotal } from '#lib/stores/cart.svelte.js';
+	import { createCheckoutSession } from '#lib/api/cart.js';
+	import { validateCoupon } from '#lib/api/coupons.js';
+	import { createAppliedCoupon, type AppliedCoupon } from '#lib/utils/coupon-helpers.js';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';

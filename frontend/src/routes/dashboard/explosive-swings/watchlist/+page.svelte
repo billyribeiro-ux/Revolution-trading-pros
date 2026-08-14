@@ -5,9 +5,9 @@
 	 *
 	 */
 	import { onMount } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
-	import type { TradePlanEntry } from '$lib/types/trading';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '#lib/components/dashboard/LoadingState.svelte';
+	import type { TradePlanEntry } from '#lib/types/trading.js';
 
 	const ROOM_SLUG = 'explosive-swings';
 

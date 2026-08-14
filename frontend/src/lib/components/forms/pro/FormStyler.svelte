@@ -65,7 +65,7 @@
 
 	let { settings = {}, previewMode = false, onSettingsChange }: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let activeTab = $state<'container' | 'inputs' | 'buttons' | 'typography'>('container');
 

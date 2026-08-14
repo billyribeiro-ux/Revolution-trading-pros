@@ -18,7 +18,7 @@
 -->
 <script lang="ts">
 	import type { VideoUpdate } from '../alerts/types';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() pattern

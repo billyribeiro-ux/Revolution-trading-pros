@@ -22,7 +22,7 @@
 		FieldValidation,
 		ConditionalLogic,
 		ConditionalRule
-	} from '$lib/api/forms';
+	} from '#lib/api/forms.js';
 
 	interface Props {
 		/** The field to edit. `null`/`undefined` boots an empty `text` field. */
@@ -322,8 +322,7 @@
 					placeholder="Option 1&#10;Option 2&#10;Option 3"
 					class="form-input"
 					rows="5"
-					required
-				></textarea>
+					required></textarea>
 			</div>
 		{/if}
 

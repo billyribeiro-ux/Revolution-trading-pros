@@ -1,10 +1,6 @@
-<!--
-	URL: /admin/behavior
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconEye,
 		IconCursor,
@@ -14,10 +10,10 @@
 		IconRefresh,
 		IconPlay,
 		IconClick
-	} from '$lib/icons';
-	import { connections, getIsBehaviorConnected } from '$lib/stores/connections.svelte';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	} from '#lib/icons/index.js';
+	import { connections, getIsBehaviorConnected } from '#lib/stores/connections.svelte.js';
+	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 
 	type PeriodOption = {
 		label: string;
@@ -130,9 +126,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Behavior Tracking - Admin Dashboard</title>
-</svelte:head>
+<!--
+	URL: /admin/behavior
+-->
+<svelte:head><title>Behavior Tracking - Admin Dashboard</title></svelte:head>
 
 <div class="admin-behavior">
 	<div class="admin-page-container">

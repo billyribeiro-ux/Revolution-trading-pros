@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { emailApi, type EmailSubscriber } from '$lib/api/email';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { emailApi, type EmailSubscriber } from '#lib/api/email.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	import PageHeader from './_components/PageHeader.svelte';
 	import StatsGrid from './_components/StatsGrid.svelte';

@@ -32,8 +32,8 @@
 	import IconLink from '@tabler/icons-svelte-runes/icons/link';
 	import IconCode from '@tabler/icons-svelte-runes/icons/code';
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import { crmAPI } from '$lib/api/crm';
-	import type { TriggerType, FunnelStatus, SegmentCondition } from '$lib/crm/types';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { TriggerType, FunnelStatus, SegmentCondition } from '#lib/crm/types.js';
 
 	// STATE
 
@@ -415,8 +415,7 @@
 						id="description"
 						placeholder="Describe what this automation does..."
 						bind:value={formData.description}
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 			</div>
 		{/if}

@@ -3,7 +3,7 @@
 	 * R24-C extraction (2026-05-20): cancel + save buttons row. Discrete
 	 * callbacks (R8-C style): `onCancel`, `onSave` — each names its action.
 	 */
-	import { IconCheck } from '$lib/icons';
+	import { IconCheck } from '#lib/icons/index.js';
 
 	interface Props {
 		saving: boolean;

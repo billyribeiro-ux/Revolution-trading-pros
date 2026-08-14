@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { WorkflowAnalytics } from '$lib/types/workflow';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { WorkflowAnalytics } from '#lib/types/workflow.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
 		workflowId: number;

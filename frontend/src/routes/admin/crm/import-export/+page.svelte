@@ -25,10 +25,10 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import { crmAPI } from '$lib/api/crm';
-	import type { ImportJob, ExportJob } from '$lib/crm/types';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { ImportJob, ExportJob } from '#lib/crm/types.js';
 	// FIX-2026-04-26: replaced native alert() with toastStore.
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	let importJobs = $state<ImportJob[]>([]);
 	let exportJobs = $state<ExportJob[]>([]);

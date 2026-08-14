@@ -24,9 +24,9 @@
  * @author Revolution Trading Pros
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived } from 'svelte/store';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 import type {
 	AnalyticsAdapter,
 	AnalyticsConfig,
@@ -190,23 +190,29 @@ class AnalyticsOrchestrator {
 					: ga.debug !== undefined
 						? { debug: ga.debug }
 						: {}),
+
 				...(customConfig?.googleAnalytics?.sendPageView !== undefined
 					? { sendPageView: customConfig.googleAnalytics.sendPageView }
 					: ga.sendPageView !== undefined
 						? { sendPageView: ga.sendPageView }
 						: {}),
+
 				...(customConfig?.googleAnalytics?.anonymizeIp !== undefined
 					? { anonymizeIp: customConfig.googleAnalytics.anonymizeIp }
 					: ga.anonymizeIp !== undefined
 						? { anonymizeIp: ga.anonymizeIp }
 						: {}),
 				...(customConfig?.googleAnalytics?.allowGoogleSignals !== undefined
-					? { allowGoogleSignals: customConfig.googleAnalytics.allowGoogleSignals }
+					? {
+							allowGoogleSignals: customConfig.googleAnalytics.allowGoogleSignals
+						}
 					: ga.allowGoogleSignals !== undefined
 						? { allowGoogleSignals: ga.allowGoogleSignals }
 						: {}),
 				...(customConfig?.googleAnalytics?.allowAdPersonalization !== undefined
-					? { allowAdPersonalization: customConfig.googleAnalytics.allowAdPersonalization }
+					? {
+							allowAdPersonalization: customConfig.googleAnalytics.allowAdPersonalization
+						}
 					: ga.allowAdPersonalization !== undefined
 						? { allowAdPersonalization: ga.allowAdPersonalization }
 						: {})
@@ -218,11 +224,13 @@ class AnalyticsOrchestrator {
 					: be.flushIntervalMs !== undefined
 						? { flushIntervalMs: be.flushIntervalMs }
 						: {}),
+
 				...(customConfig?.backend?.maxBatchSize !== undefined
 					? { maxBatchSize: customConfig.backend.maxBatchSize }
 					: be.maxBatchSize !== undefined
 						? { maxBatchSize: be.maxBatchSize }
 						: {}),
+
 				...(customConfig?.backend?.useSendBeacon !== undefined
 					? { useSendBeacon: customConfig.backend.useSendBeacon }
 					: be.useSendBeacon !== undefined

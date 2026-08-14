@@ -5,9 +5,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { productsApi, AdminApiError, type Product } from '#lib/api/admin.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import {
 		IconPlus,
 		IconEdit,
@@ -18,7 +18,7 @@
 		IconShoppingCart,
 		IconRefresh,
 		IconSearch
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Svelte 5 state runes
 	let loading = $state(true);

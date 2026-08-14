@@ -2,7 +2,7 @@
 	URL: /pricing
 -->
 <script lang="ts">
-	import { IconArrowRight, IconCheck } from '$lib/icons';
+	import { IconArrowRight, IconCheck } from '#lib/icons/index.js';
 
 	const plans = [
 		{

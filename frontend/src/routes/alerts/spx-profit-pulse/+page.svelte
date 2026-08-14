@@ -83,7 +83,7 @@
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- GSAP ScrollTrigger Animations ---
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';

@@ -14,61 +14,73 @@ axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
 tower-http = { version = "0.7.0", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
 lazy_static = "1.5.0"
-html-escape = "0.2.13"
+html-escape = "0.2.15"
 
 # Async Runtime
-tokio = { version = "1.52.3", features = ["full"] }
+tokio = { version = "1.53.1", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
 sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
-rust_decimal = { version = "1.42.0", features = ["serde", "serde-with-str"] }
+rust_decimal = { version = "1.42.1", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "1.2.2", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "1.5.0", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
 # S3/R2 Storage (December 2025 versions)
-aws-sdk-s3 = "1.135.0"
-aws-config = "1.8.18"
+aws-sdk-s3 = "1.141.0"
+aws-config = "1.10.1"
 
 # Serialization
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.150"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
 
 # Authentication & Crypto
-jsonwebtoken = "10.4"
-base64 = "0.22"  # ICT 7: OAuth PKCE and token encoding
-base32 = "0.5"   # ICT 7: TOTP secret encoding
-argon2 = "0.5"
-bcrypt = "0.19"  # Laravel bcrypt compatibility
-aes-gcm = "0.11" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
-rand = "0.10.1"
+# jsonwebtoken 11 made the crypto backend pluggable and ships NO provider by
+# default (default = ["use_pem"]), so every sign/verify panics with "Could not
+# automatically determine the process-level CryptoProvider" until exactly one of
+# `rust_crypto` / `aws_lc_rs` is enabled.
+#
+# `aws_lc_rs` and NOT `rust_crypto`: the pure-Rust backend pulls in `rsa`, which
+# carries RUSTSEC-2023-0071 (Marvin timing sidechannel) with no fixed release
+# available, and `cargo deny check` fails on it. This crate signs HS256 only, so
+# the RSA path would never execute — but shipping a known-vulnerable crate we
+# cannot patch is not worth a `deny.toml` exemption when a clean backend exists.
+# AWS-LC is constant-time and actively maintained; it needs cmake + a C compiler
+# at build time, which CI and the Docker image already provide.
+jsonwebtoken = { version = "11.0.0", features = ["aws_lc_rs"] }
+base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
+base32 = "0.5.1"   # ICT 7: TOTP secret encoding
+argon2 = "0.5.3"
+bcrypt = "0.19.3"  # Laravel bcrypt compatibility
+aes-gcm = "0.11.0" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
+rand = "0.10.2"
 hmac = "0.13.0"
 sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
 sha2 = "0.11.0"
 hex = "0.4.3"
 subtle = "2.6.1"  # ICT L11+ Security: Constant-time comparison
-md5 = "0.8.0"  # For Bunny.net signature generation
+md5 = "0.8.1"  # For Bunny.net signature generation
 
 # CSV Export - ICT 7+ Phase 4 Export Functionality
 csv = "1.4.0"
 
 # Utilities
-uuid = { version = "1.23.2", features = ["v4", "serde"] }
+uuid = { version = "1.24.0", features = ["v4", "serde"] }
 chrono = { version = "0.4.45", features = ["serde"] }
-regex = "1.12.3"  # ICT 11+: SEO content analysis regex patterns
+regex = "1.13.1"  # ICT 11+: SEO content analysis regex patterns
 dotenvy = "0.15.7"
-thiserror = "2.0.18"
-anyhow = "1.0.102"
+thiserror = "2.0.20"
+anyhow = "1.0.104"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
 slug = "0.1.6"
 urlencoding = "2.1.3"  # URL encoding for email links
 
 # SSE/Real-time - ICT 11+ CMS Features
-tokio-stream = "0.1.18"
+tokio-stream = "0.1.19"
 async-stream = "0.3.6"
-futures = "0.3.32"
-async-trait = "0.1.89"
+futures = "0.3.34"
+async-trait = "0.1.92"
 
 # HTTP Client (for external APIs)
 # NOTE: this repo calls Stripe directly via reqwest (see services/stripe.rs);
@@ -81,14 +93,14 @@ meilisearch-sdk = "0.33.0"
 # OpenAPI Documentation
 utoipa = { version = "5.5.0", features = ["axum_extras", "uuid", "chrono"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "vendored"] }
-validator = { version = "0.20.0", features = ["derive"] }
+validator = { version = "0.21.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
 axum-test = "21.0.0"
 tower = { version = "0.5.3", features = ["util"] }
-hyper = { version = "1.10.1", features = ["full"] }
-http-body-util = "0.1.3"
+hyper = { version = "1.11.0", features = ["full"] }
+http-body-util = "0.1.5"
 
 [profile.release]
 lto = true

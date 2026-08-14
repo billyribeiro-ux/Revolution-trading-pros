@@ -4,7 +4,7 @@
  * Offline-first storage for blocks and documents
  */
 
-import type { Block } from '$lib/components/cms/blocks/types';
+import type { Block } from '#lib/components/cms/blocks/types.js';
 
 const DB_NAME = 'RTP_CMS';
 const DB_VERSION = 2;

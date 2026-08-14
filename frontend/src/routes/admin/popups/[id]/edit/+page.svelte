@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Card, Button, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
-	import { popupsApi, type Popup } from '$lib/api/popups';
+	import { Card, Button, Input, Select } from '#lib/components/ui/index.js';
+	import { addToast } from '#lib/utils/toast.js';
+	import { popupsApi, type Popup } from '#lib/api/popups.js';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 
 	const popupId = parseInt(page.params['id'] ?? '0');
@@ -321,8 +321,7 @@
 								bind:value={formData['content']}
 								class={{ 'native-control': true, 'has-error': Boolean(errors['content']) }}
 								rows="4"
-								placeholder="Enter your message (HTML allowed)"
-							></textarea>
+								placeholder="Enter your message (HTML allowed)"></textarea>
 							{#if errors['content']}
 								<p class="field-error">{errors['content']}</p>
 							{/if}

@@ -9,7 +9,11 @@
 	// explicit unmount hook instead of via the more cryptic
 	// `$effect(() => () => stopPolling())` pattern.
 	import { onDestroy } from 'svelte';
-	import { bulkUploadApi, type BatchStatus, type UploadQueueItem } from '$lib/api/video-advanced';
+	import {
+		bulkUploadApi,
+		type BatchStatus,
+		type UploadQueueItem
+	} from '#lib/api/video-advanced.js';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';

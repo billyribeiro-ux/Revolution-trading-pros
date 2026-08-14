@@ -5,7 +5,7 @@
 	 * Displays a multi-step conversion funnel with drop-off rates
 	 * and conversion percentages.
 	 */
-	import type { FunnelStep } from '$lib/api/analytics';
+	import type { FunnelStep } from '#lib/api/analytics.js';
 
 	interface Props {
 		steps?: FunnelStep[];

@@ -22,9 +22,9 @@
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import { crmAPI } from '$lib/api/crm';
-	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { AbandonedCart, AbandonedCartStatus, AbandonedCartStats } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let carts = $state<AbandonedCart[]>([]);
 	let isLoading = $state(true);

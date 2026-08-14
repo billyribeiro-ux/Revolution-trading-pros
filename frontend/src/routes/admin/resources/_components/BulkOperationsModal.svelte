@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { IconAlertCircle } from '$lib/icons';
-	import type { AccessLevel } from '$lib/api/room-resources';
+	import { IconAlertCircle } from '#lib/icons/index.js';
+	import type { AccessLevel } from '#lib/api/room-resources.js';
 
 	type AccessLevelOption = { id: AccessLevel; name: string; color: string };
 

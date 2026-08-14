@@ -20,7 +20,7 @@ import type {
 	OrderType,
 	ContractType,
 	TosStringParams
-} from '$lib/types/trading';
+} from '#lib/types/trading.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATE FORMATTING

@@ -7,7 +7,7 @@
 	 * @author Revolution Trading Pros
 	 */
 	import type { Attachment } from 'svelte/attachments';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	type ChartType = 'line' | 'area' | 'bar' | 'candlestick' | 'pie' | 'donut';
 
@@ -15,7 +15,6 @@
 		x: number | string | Date;
 		y: number;
 	}
-
 	interface Series {
 		name: string;
 		data: DataPoint[] | number[];

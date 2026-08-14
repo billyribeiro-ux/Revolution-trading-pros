@@ -12,12 +12,12 @@
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { requireAdmin } from '$lib/server/auth';
+import { requireAdmin } from '#lib/server/auth.js';
 import {
 	fetchBackendWithStatus,
 	isObject,
 	extractBackendErrorMessage
-} from '$lib/server/proxy-fetch';
+} from '#lib/server/proxy-fetch.js';
 
 // GET - List categories
 export const GET: RequestHandler = async (event) => {

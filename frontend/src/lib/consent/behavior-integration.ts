@@ -8,13 +8,13 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { ConsentState } from './types';
 import { consentStore } from './store.svelte';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 import { get } from 'svelte/store';
-import type { BehaviorTracker } from '$lib/behavior/tracker';
-import type { BehaviorEventType } from '$lib/behavior/types';
+import type { BehaviorTracker } from '#lib/behavior/tracker.js';
+import type { BehaviorEventType } from '#lib/behavior/types.js';
 
 /**
  * Track if the behavior tracker has been initialized.
@@ -88,7 +88,7 @@ async function enableTracking(): Promise<void> {
 
 	try {
 		// Dynamically import the behavior tracker
-		const { BehaviorTracker } = await import('$lib/behavior/tracker');
+		const { BehaviorTracker } = await import('#lib/behavior/tracker.js');
 
 		behaviorTracker = new BehaviorTracker({
 			apiEndpoint: '/api/behavior/events',

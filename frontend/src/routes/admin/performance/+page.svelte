@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { browser } from '$app/env';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconGauge,
 		IconServer,
@@ -15,13 +15,13 @@
 		IconChartBar,
 		IconClock,
 		IconFlame
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		bingSeoApi,
 		type PerformanceDashboard,
 		type CoreWebVitals,
 		type OptimizationRecommendation
-	} from '$lib/api/bing-seo';
+	} from '#lib/api/bing-seo.js';
 
 	type VitalRatingColor = 'emerald' | 'yellow' | 'red' | 'slate';
 	type PriorityColor = 'red' | 'orange' | 'yellow' | 'slate';

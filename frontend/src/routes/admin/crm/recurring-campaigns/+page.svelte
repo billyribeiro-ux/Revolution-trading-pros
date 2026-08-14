@@ -24,13 +24,13 @@
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import { crmAPI } from '$lib/api/crm';
+	import { crmAPI } from '#lib/api/crm.js';
 	import type {
 		RecurringCampaign,
 		RecurringCampaignFilters,
 		RecurringCampaignStatus
-	} from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let campaigns = $state<RecurringCampaign[]>([]);
 	let isLoading = $state(true);
@@ -150,8 +150,7 @@
 
 	function handleStatusChange(event: Event) {
 		selectedStatus = (event.currentTarget as HTMLSelectElement).value as
-			| RecurringCampaignStatus
-			| 'all';
+			RecurringCampaignStatus | 'all';
 		void loadCampaigns(searchQuery, selectedStatus);
 	}
 

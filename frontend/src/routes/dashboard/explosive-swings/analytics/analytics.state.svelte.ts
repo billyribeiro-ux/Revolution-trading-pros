@@ -11,9 +11,9 @@
  * for the Explosive Swings Analytics Dashboard with comprehensive metrics.
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { ROOM_SLUG } from '../constants';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS - Matching Backend API Response
@@ -335,11 +335,7 @@ export function createAnalyticsState() {
 		error = null;
 
 		try {
-			const params = new URLSearchParams({
-				from: dateRange.from,
-				to: dateRange.to
-			});
-
+			const params = new URLSearchParams({ from: dateRange.from, to: dateRange.to });
 			const response = await fetch(`${API_BASE}/${ROOM_SLUG}?${params}`, {
 				credentials: 'include'
 			});
@@ -377,11 +373,7 @@ export function createAnalyticsState() {
 		equityCurveError = null;
 
 		try {
-			const params = new URLSearchParams({
-				from: dateRange.from,
-				to: dateRange.to
-			});
-
+			const params = new URLSearchParams({ from: dateRange.from, to: dateRange.to });
 			const response = await fetch(`${API_BASE}/${ROOM_SLUG}/equity-curve?${params}`, {
 				credentials: 'include'
 			});
@@ -412,11 +404,7 @@ export function createAnalyticsState() {
 		drawdownsError = null;
 
 		try {
-			const params = new URLSearchParams({
-				from: dateRange.from,
-				to: dateRange.to
-			});
-
+			const params = new URLSearchParams({ from: dateRange.from, to: dateRange.to });
 			const response = await fetch(`${API_BASE}/${ROOM_SLUG}/drawdowns?${params}`, {
 				credentials: 'include'
 			});

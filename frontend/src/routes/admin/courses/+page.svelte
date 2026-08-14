@@ -9,10 +9,10 @@
 	 * Includes enterprise CourseDetailDrawer, CourseFormModal, and ModuleFormModal.
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
-	import { CourseCard } from '$lib/components/courses';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { CourseCard } from '#lib/components/courses/index.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -27,13 +27,13 @@
 	import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
-	import CourseDetailDrawer from '$lib/components/admin/CourseDetailDrawer.svelte';
-	import CourseFormModal from '$lib/components/admin/CourseFormModal.svelte';
-	import ModuleFormModal from '$lib/components/admin/ModuleFormModal.svelte';
-	import type { Course as APICourse, CourseModule } from '$lib/api/courses';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import CourseDetailDrawer from '#lib/components/admin/CourseDetailDrawer.svelte';
+	import CourseFormModal from '#lib/components/admin/CourseFormModal.svelte';
+	import ModuleFormModal from '#lib/components/admin/ModuleFormModal.svelte';
+	import type { Course as APICourse, CourseModule } from '#lib/api/courses.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26: replaced native alert() with toastStore.
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Course {
 		id: string;
@@ -331,6 +331,7 @@
 				<option value="published">Published</option>
 				<option value="archived">Archived</option>
 			</select>
+
 			<button class="btn-primary" onclick={() => (showQuickCreate = true)}>
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: plus -->
 				<IconPlus size={18} aria-hidden="true" />
@@ -358,6 +359,7 @@
 				<IconBook size={64} aria-hidden="true" />
 				<h3>No courses found</h3>
 				<p>Get started by creating your first course</p>
+
 				<button class="btn-primary" onclick={() => (showQuickCreate = true)}>Create Course</button>
 			</div>
 		{:else}
@@ -513,8 +515,7 @@
 						placeholder="What will students learn?"
 						rows="2"
 						bind:value={quickCreateDescription}
-						disabled={quickCreateLoading}
-					></textarea>
+						disabled={quickCreateLoading}></textarea>
 				</div>
 			</div>
 
@@ -522,6 +523,7 @@
 				<button class="btn-cancel" onclick={closeQuickCreate} disabled={quickCreateLoading}
 					>Cancel</button
 				>
+
 				<button
 					class="btn-create-course"
 					onclick={handleQuickCreate}

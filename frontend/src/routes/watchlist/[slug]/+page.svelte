@@ -77,7 +77,7 @@
 	let activeTab = $state<'rundown' | 'watchlist'>('rundown');
 
 	// Get current slug from URL
-	const slug = $derived(page.params.slug);
+	const slug = $derived(page.params.slug ?? null);
 	let selectedDateSelection = $state<{ slug: string | null; index: number }>({
 		slug: null,
 		index: 0

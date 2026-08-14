@@ -12,9 +12,9 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import ClassVideos from '$lib/components/ClassVideos.svelte';
-	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
+	import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import ClassVideos from '#lib/components/ClassVideos.svelte';
+	import ClassDownloads from '#lib/components/ClassDownloads.svelte';
 
 	interface Props {
 		data: {

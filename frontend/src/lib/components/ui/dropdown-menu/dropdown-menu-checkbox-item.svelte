@@ -2,7 +2,7 @@
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
 	import CheckIcon from '@tabler/icons-svelte-runes/icons/check';
 	import MinusIcon from '@tabler/icons-svelte-runes/icons/minus';
-	import { type WithoutChildrenOrChild } from '$lib/utils.js';
+	import { type WithoutChildrenOrChild } from '#lib/utils.js';
 	import type { Snippet } from 'svelte';
 
 	type CheckboxItemProps = WithoutChildrenOrChild<DropdownMenuPrimitive.CheckboxItemProps> & {

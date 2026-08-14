@@ -5,16 +5,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import FormRenderer from '$lib/components/forms/FormRenderer.svelte';
-	import { previewForm } from '$lib/api/forms';
-	import type { Form } from '$lib/api/forms';
+	import FormRenderer from '#lib/components/forms/FormRenderer.svelte';
+	import { previewForm } from '#lib/api/forms.js';
+	import type { Form } from '#lib/api/forms.js';
 
 	let form = $state<Form | null>(null);
 	let loading = $state(true);
 	let error = $state('');
 	let _submitted = $state(false);
 
-	let formSlug = $derived(page.params.slug);
+	let formSlug = $derived(page.params.slug ?? '');
 
 	onMount(async () => {
 		try {

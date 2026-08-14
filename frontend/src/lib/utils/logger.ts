@@ -5,7 +5,7 @@
  * to prevent information leakage and improve performance.
  *
  * @example
- * import { logger } from '$lib/utils/logger';
+ * import { logger } from '#lib/utils/logger.js';
  * logger.log('Debug info'); // Only logs in dev
  * logger.error('Critical error', error); // Only logs in dev
  */

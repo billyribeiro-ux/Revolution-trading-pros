@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import type { Bias, TradePlanEntry } from '$lib/api/room-content';
+	import type { Bias, TradePlanEntry } from '#lib/api/room-content.js';
 
 	export interface TradePlanFormData {
 		ticker: string;
@@ -175,8 +175,7 @@
 						id="notes"
 						bind:value={form.notes}
 						placeholder="Breakout above consolidation. Wait for pullback to entry..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="modal-actions">

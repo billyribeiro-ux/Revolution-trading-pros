@@ -17,8 +17,8 @@
 	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 	import type { Block, BlockSettings } from './types';
-	import { API_BASE_URL } from '$lib/api/config';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { API_BASE_URL } from '#lib/api/config.js';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	interface Props {
 		block: Block;
@@ -1401,8 +1401,7 @@
 											updateSetting(
 												'staticOptions',
 												(e.currentTarget as HTMLTextAreaElement).value
-											)}
-									></textarea>
+											)}></textarea>
 								</label>
 								<p class="help-text">Format: Label|value (one per line)</p>
 							</div>

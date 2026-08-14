@@ -1,27 +1,5 @@
-<!--
-	Tooltip Component - Svelte 5 (January 2026)
-	Enterprise-grade tooltip with portal rendering and smart positioning
-	
-	@version 2.0.0 - SURGICAL FIX
-	@author Revolution Trading Pros
-	
-	FIXES APPLIED (ICT 11+ Forensic Investigation):
-	1. Portal rendering to document.body - prevents overflow:hidden cutoff
-	2. Dynamic viewport boundary detection - auto-adjusts position
-	3. Absolute positioning with getBoundingClientRect() - pixel-perfect placement
-	4. Z-index 9999 - always on top
-	5. Proper cleanup on unmount
-	
-	Features:
-	- Portal rendering (appends to body, not parent)
-	- Smart positioning (flips if near viewport edge)
-	- Viewport boundary detection
-	- Accessible with ARIA attributes
-	- Smooth animations
-	- Works in ANY container (overflow:hidden, scroll, etc.)
--->
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onDestroy } from 'svelte';
 
 	interface Props {
@@ -190,6 +168,29 @@
 		};
 	}
 </script>
+
+<!--
+	Tooltip Component - Svelte 5 (January 2026)
+	Enterprise-grade tooltip with portal rendering and smart positioning
+	
+	@version 2.0.0 - SURGICAL FIX
+	@author Revolution Trading Pros
+	
+	FIXES APPLIED (ICT 11+ Forensic Investigation):
+	1. Portal rendering to document.body - prevents overflow:hidden cutoff
+	2. Dynamic viewport boundary detection - auto-adjusts position
+	3. Absolute positioning with getBoundingClientRect() - pixel-perfect placement
+	4. Z-index 9999 - always on top
+	5. Proper cleanup on unmount
+	
+	Features:
+	- Portal rendering (appends to body, not parent)
+	- Smart positioning (flips if near viewport edge)
+	- Viewport boundary detection
+	- Accessible with ARIA attributes
+	- Smooth animations
+	- Works in ANY container (overflow:hidden, scroll, etc.)
+-->
 
 <div
 	{@attach trackTrigger}

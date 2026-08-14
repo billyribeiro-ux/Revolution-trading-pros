@@ -9,8 +9,8 @@
 		IconCurrencyDollar,
 		IconAlertTriangle,
 		IconExternalLink
-	} from '$lib/icons';
-	import type { MemberStats } from '$lib/api/members';
+	} from '#lib/icons/index.js';
+	import type { MemberStats } from '#lib/api/members.js';
 
 	interface Props {
 		stats: MemberStats;

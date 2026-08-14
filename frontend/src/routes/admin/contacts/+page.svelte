@@ -1,15 +1,11 @@
-<!--
-	URL: /admin/contacts
--->
-
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
-	import { Card, Badge, Table, Input, Select } from '$lib/components/ui';
-	import { addToast } from '$lib/utils/toast';
-	import { crmAPI } from '$lib/api/crm';
-	import type { Contact, ContactStatus } from '$lib/crm/types';
-	import { IconPlus, IconMail, IconPhone } from '$lib/icons';
+	import { Card, Badge, Table, Input, Select } from '#lib/components/ui/index.js';
+	import { addToast } from '#lib/utils/toast.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Contact, ContactStatus } from '#lib/crm/types.js';
+	import { IconPlus, IconMail, IconPhone } from '#lib/icons/index.js';
 
 	let contacts = $state<Contact[]>([]);
 	let loading = $state(true);
@@ -94,9 +90,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Contacts | Revolution Admin</title>
-</svelte:head>
+<!--
+	URL: /admin/contacts
+-->
+<svelte:head><title>Contacts | Revolution Admin</title></svelte:head>
 
 <div class="admin-contacts">
 	<div class="admin-page-container">
@@ -200,11 +197,8 @@
 								{/if}
 							</td>
 							<td>{contact.job_title || '—'}</td>
-							<td>
-								<Badge variant={getStatusColor(contact.status)}>
-									{contact.status}
-								</Badge>
-							</td>
+							<td><Badge variant={getStatusColor(contact.status)}>{contact.status}</Badge></td>
+
 							<td>
 								<span
 									class={{

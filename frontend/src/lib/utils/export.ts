@@ -17,8 +17,8 @@
  * - Error handling with retry logic
  */
 
-import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth.svelte';
+import { browser } from '$app/env';
+import { authStore } from '#lib/stores/auth.svelte.js';
 
 /**
  * Escape HTML entities to prevent XSS attacks in PDF export

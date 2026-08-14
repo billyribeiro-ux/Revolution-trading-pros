@@ -1,9 +1,9 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
-	import type { FormField } from '$lib/api/forms';
-	import type { JsonValue } from '$lib/api/_types';
-	import { sanitizeFormContent } from '$lib/utils/sanitize';
+	import type { FormField } from '#lib/api/forms.js';
+	import type { JsonValue } from '#lib/api/_types.js';
+	import { sanitizeFormContent } from '#lib/utils/sanitize.js';
 
 	// `value` round-trips through PostgreSQL JSONB columns and can be any of
 	// the FormField default_value shapes (string for text/textarea, boolean for
@@ -373,8 +373,7 @@
 						: 5}
 				minlength={props.field.validation?.min_length}
 				maxlength={props.field.validation?.max_length}
-				{...(props.field.attributes as Record<string, unknown>) || {}}
-			></textarea>
+				{...(props.field.attributes as Record<string, unknown>) || {}}></textarea>
 
 			<!-- Select Dropdown -->
 		{:else if props.field.field_type === 'select'}

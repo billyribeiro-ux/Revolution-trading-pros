@@ -15,13 +15,13 @@
 	 *
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { adminFetch } from '$lib/utils/adminFetch';
+	import { browser } from '$app/env';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconCircleX from '@tabler/icons-svelte-runes/icons/circle-x';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Reset confirmation modal state
 	let showResetModal = $state(false);

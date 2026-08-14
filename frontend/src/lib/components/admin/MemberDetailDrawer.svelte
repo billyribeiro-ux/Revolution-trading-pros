@@ -6,7 +6,7 @@
 	 * Enterprise-grade slide-out drawer showing complete member profile
 	 * with tabs for overview, subscriptions, orders, activity, and notes.
 	 */
-	import { membersApi, type MemberFullDetails } from '$lib/api/members';
+	import { membersApi, type MemberFullDetails } from '#lib/api/members.js';
 	import {
 		IconX,
 		IconUser,
@@ -24,7 +24,7 @@
 		IconClock,
 		IconCheck,
 		IconAlertTriangle
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { fromAction } from 'svelte/attachments';
 	import ConfirmationModal from './ConfirmationModal.svelte';
 
@@ -633,8 +633,7 @@
 									placeholder="Add a note about this member..."
 									bind:value={newNote}
 									rows="3"
-									disabled={isAddingNote}
-								></textarea>
+									disabled={isAddingNote}></textarea>
 								<button
 									type="button"
 									class="btn-add-note"

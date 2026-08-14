@@ -7,8 +7,8 @@
 
 	import { onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { apiFetch } from '$lib/api/config';
-	import Icon from '$lib/components/Icon.svelte';
+	import { apiFetch } from '#lib/api/config.js';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Question {
 		id: number;

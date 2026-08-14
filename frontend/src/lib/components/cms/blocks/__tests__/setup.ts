@@ -8,7 +8,7 @@
 import { expect, afterEach, vi, beforeAll, afterAll, beforeEach } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
-import { BlockStateManager } from '$lib/stores/blockState.svelte';
+import { BlockStateManager } from '#lib/stores/blockState.svelte.js';
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers);

@@ -13,10 +13,10 @@
  * @version 1.0.0
  * @author Revolution Trading Pros
  */
+import { browser } from '$app/env';
 
-import { browser } from '$app/environment';
-import { dev } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { dev } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import {
 	subscribeToMetrics,
 	type MetricsSnapshot,
@@ -679,8 +679,8 @@ class PerformanceReporter {
 				`Memory: ${payload.memoryUsage.usedMB.toFixed(1)}MB / ${payload.memoryUsage.limitMB.toFixed(0)}MB (${payload.memoryUsage.usagePercentage.toFixed(1)}%)`
 			);
 		}
-		logger.groupEnd();
 
+		logger.groupEnd();
 		logger.groupEnd();
 	}
 

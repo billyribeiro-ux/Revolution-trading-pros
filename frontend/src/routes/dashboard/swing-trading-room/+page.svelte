@@ -10,13 +10,13 @@
 	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
 	import { onMount, type ComponentProps } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
-	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
-	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
-	import type { WatchlistResponse } from '$lib/types/watchlist';
-	import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '$lib/config/google';
-	import { logger } from '$lib/utils/logger';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import WeeklyWatchlist from '#lib/components/dashboard/WeeklyWatchlist.svelte';
+	import LatestUpdates from '#lib/components/dashboard/LatestUpdates.svelte';
+	import TradingRoomSidebar from '#lib/components/dashboard/TradingRoomSidebar.svelte';
+	import type { WatchlistResponse } from '#lib/types/watchlist.js';
+	import { GOOGLE_CALENDAR_API_KEY, GOOGLE_OAUTH_CLIENT_ID } from '#lib/config/google.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {

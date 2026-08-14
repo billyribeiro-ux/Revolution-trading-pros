@@ -7,7 +7,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface AddressValue {
 		address_line_1: string;

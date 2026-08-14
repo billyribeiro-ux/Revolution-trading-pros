@@ -624,8 +624,7 @@
 						id="edit-description"
 						bind:value={editingPlan.description}
 						rows="3"
-						class="form-input"
-					></textarea>
+						class="form-input"></textarea>
 				</div>
 
 				<div class="form-group">

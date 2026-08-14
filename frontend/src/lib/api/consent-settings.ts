@@ -8,8 +8,8 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
 
 const API_BASE = '/api';
@@ -331,6 +331,7 @@ export async function getBannerTemplates(): Promise<{
 
 		const data: ApiResponse<{ templates: BannerTemplate[]; activeId: number | null }> =
 			await response.json();
+
 		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		logger.error('Error fetching banner templates:', { error });

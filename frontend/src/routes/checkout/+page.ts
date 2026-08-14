@@ -1,8 +1,8 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { redirect } from '@sveltejs/kit';
-import { authStore } from '$lib/stores/auth.svelte';
-import { getUser } from '$lib/api/auth';
-import type { SEOInput } from '$lib/seo/types';
+import { authStore } from '#lib/stores/auth.svelte.js';
+import { getUser } from '#lib/api/auth.js';
+import type { SEOInput } from '#lib/seo/types.js';
 import type { Load } from '@sveltejs/kit';
 
 const seo: SEOInput = {

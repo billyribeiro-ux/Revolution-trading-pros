@@ -1,21 +1,6 @@
-<!--
-/**
- * RelatedVideos - Related Video Suggestions Component
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Apple ICT 7 Principal Engineer Grade - February 2026
- *
- * FEATURES:
- * 1. Shows related videos based on tags and content type
- * 2. Compact card design for sidebar/below video
- * 3. Mobile-first responsive design
- *
- * @version 1.0.0
- */
--->
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import Icon from '$lib/components/Icon.svelte';
+	import { browser } from '$app/env';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -92,6 +77,22 @@
 		return `${count} views`;
 	}
 </script>
+
+<!--
+/**
+ * RelatedVideos - Related Video Suggestions Component
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Apple ICT 7 Principal Engineer Grade - February 2026
+ *
+ * FEATURES:
+ * 1. Shows related videos based on tags and content type
+ * 2. Compact card design for sidebar/below video
+ * 3. Mobile-first responsive design
+ *
+ * @version 1.0.0
+ */
+-->
 
 {#await relatedVideos}
 	<section class={['related-videos', className]}>

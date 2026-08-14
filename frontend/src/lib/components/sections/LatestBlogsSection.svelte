@@ -5,7 +5,7 @@
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconNews from '@tabler/icons-svelte-runes/icons/news';
 	import IconChartCandle from '@tabler/icons-svelte-runes/icons/chart-candle';
-	import type { Post } from '$lib/types/post';
+	import type { Post } from '#lib/types/post.js';
 	import type { Attachment } from 'svelte/attachments';
 
 	// ─────────────────────────────────────────────────────────────────────────

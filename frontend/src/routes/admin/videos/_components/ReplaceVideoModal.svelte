@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconLink } from '$lib/icons';
+	import { IconLink } from '#lib/icons/index.js';
 
 	interface ReplacingVideo {
 		title: string;

@@ -5,7 +5,7 @@
 <script lang="ts">
 	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import type { WeeklyVideo } from '$lib/api/room-content';
+	import type { WeeklyVideo } from '#lib/api/room-content.js';
 
 	interface Props {
 		isLoadingVideo: boolean;

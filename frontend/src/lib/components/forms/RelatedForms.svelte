@@ -12,7 +12,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	interface Props {
 		formId: number;

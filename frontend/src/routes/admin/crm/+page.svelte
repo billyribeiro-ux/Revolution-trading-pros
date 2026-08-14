@@ -1,15 +1,3 @@
-<!--
-	/admin/crm - CRM Dashboard & Contact Management
-	Apple Principal Engineer ICT 7 Grade - January 2026
-	
-	Features:
-	- Contact listing with search and filtering
-	- Quick Links dropdown (Segments, Sequences, Campaigns)
-	- Stats dashboard (contacts, deals, scores)
-	- Sidebar navigation to all CRM modules
-	- Full Svelte 5 $state/$derived reactivity
--->
-
 <script lang="ts">
 	/**
 	 * CRM Admin - FluentCRM Pro Identical Implementation
@@ -23,7 +11,7 @@
 	 * @version 2.0.0 (December 2025)
 	 */
 
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
 	import {
 		IconUsers,
@@ -48,11 +36,11 @@
 		IconLink,
 		IconRobot,
 		IconTarget
-	} from '$lib/icons';
-	import { api } from '$lib/api/config';
-	import { connections, getIsCrmConnected } from '$lib/stores/connections.svelte';
-	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	} from '#lib/icons/index.js';
+	import { api } from '#lib/api/config.js';
+	import { connections, getIsCrmConnected } from '#lib/stores/connections.svelte.js';
+	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPES - Apple ICT 7 Standard: No 'any' types
@@ -325,9 +313,18 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Contacts | CRM - Admin Dashboard</title>
-</svelte:head>
+<!--
+	/admin/crm - CRM Dashboard & Contact Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Contact listing with search and filtering
+	- Quick Links dropdown (Segments, Sequences, Campaigns)
+	- Stats dashboard (contacts, deals, scores)
+	- Sidebar navigation to all CRM modules
+	- Full Svelte 5 $state/$derived reactivity
+-->
+<svelte:head><title>Contacts | CRM - Admin Dashboard</title></svelte:head>
 
 <div class="admin-crm">
 	<!-- Animated Background -->
@@ -532,11 +529,13 @@
 											</div>
 										</a>
 									</td>
-									<td>
-										<span class={['status-badge', contactStatus]}>
-											{contact.status || 'Subscribed'}
-										</span>
-									</td>
+
+									<td
+										><span class={['status-badge', contactStatus]}
+											>{contact.status || 'Subscribed'}</span
+										></td
+									>
+
 									<td>
 										{#if contact.lists && contact.lists.length > 0}
 											<span class="count-badge">{contact.lists.length}</span>

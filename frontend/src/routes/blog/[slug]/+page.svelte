@@ -8,24 +8,24 @@
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Attachment } from 'svelte/attachments';
-	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
-	import TableOfContents from '$lib/components/blog/TableOfContents.svelte';
-	import FloatingTocWidget from '$lib/components/blog/FloatingTocWidget.svelte';
-	import ReadingProgress from '$lib/components/blog/ReadingProgress.svelte';
-	import SocialShare from '$lib/components/blog/SocialShare.svelte';
-	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
-	import type { Post } from '$lib/types/post';
-	import { sanitizeBlogContent } from '$lib/utils/sanitize';
+	import BlurHashImage from '#lib/components/ui/BlurHashImage.svelte';
+	import TableOfContents from '#lib/components/blog/TableOfContents.svelte';
+	import FloatingTocWidget from '#lib/components/blog/FloatingTocWidget.svelte';
+	import ReadingProgress from '#lib/components/blog/ReadingProgress.svelte';
+	import SocialShare from '#lib/components/blog/SocialShare.svelte';
+	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
+	import type { Post } from '#lib/types/post.js';
+	import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
 	import {
 		initReadingAnalytics,
 		calculateReadingTime,
 		formatReadingTime
-	} from '$lib/utils/readingAnalytics';
+	} from '#lib/utils/readingAnalytics.js';
 
 	// Import print stylesheet
-	import '$lib/styles/print.css';
+	import '#lib/styles/print.css';
 
 	interface Category {
 		id: number;
@@ -342,7 +342,10 @@
 									{/if}
 								{:else if block.type === 'callout'}
 									<aside class={getCalloutClass(d['type'])}>
-										{#if d['title']}<strong>{d['title']}</strong>{/if}
+										{#if d['title']}
+											<strong>{d['title']}</strong>
+										{/if}
+
 										<div>
 											{@html sanitizeBlogContent(
 												(d['text'] as string) || (d['content'] as string) || ''
@@ -358,9 +361,9 @@
 									<div style:height={getSpacerHeight(d['height'])}></div>
 								{:else if block.type === 'button'}
 									{#if d['url']}
-										<a class="block-button" href={d['url'] as string}>
-											{(d['text'] as string) || (d['label'] as string) || 'Learn more'}
-										</a>
+										<a class="block-button" href={d['url'] as string}
+											>{(d['text'] as string) || (d['label'] as string) || 'Learn more'}</a
+										>
 									{/if}
 								{/if}
 							{/each}

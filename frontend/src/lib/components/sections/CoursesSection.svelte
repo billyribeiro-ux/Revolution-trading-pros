@@ -4,7 +4,7 @@
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
 	 */
 	import { onMount, tick } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { cubicOut } from 'svelte/easing';
 
 	// Tabler Icons (Preserving sub-path imports for tree-shaking)
@@ -302,14 +302,8 @@
 	<div class="courses-shell">
 		{#if isVisible}
 			<div class="section-heading" in:slideUp={{ delay: 0, duration: 1000 }}>
-				<div class="section-eyebrow">
-					<IconSchool size={16} />
-					Professional Education
-				</div>
-
-				<h2 class="section-title">
-					Trading <span>Curriculum.</span>
-				</h2>
+				<div class="section-eyebrow"><IconSchool size={16} />Professional Education</div>
+				<h2 class="section-title">Trading <span>Curriculum.</span></h2>
 
 				<p class="section-copy">
 					We don't sell courses. We provide institutional-grade trading education. Verified by

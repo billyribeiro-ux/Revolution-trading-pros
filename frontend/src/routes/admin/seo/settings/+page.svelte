@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { IconDeviceFloppy, IconRefresh } from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// State using Svelte 5 runes
 	type SettingValue = string | number | boolean;
@@ -139,8 +139,7 @@
 									value={String(getSetting(group.key, field.key))}
 									oninput={(e: Event) =>
 										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
-									rows="3"
-								></textarea>
+									rows="3"></textarea>
 							{:else if field.type === 'checkbox'}
 								<input
 									id={field.key}

@@ -21,7 +21,7 @@
  * @version 1.0.0
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import type { JsonValue, QueryParams } from './_types';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB

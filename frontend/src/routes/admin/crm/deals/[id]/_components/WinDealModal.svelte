@@ -2,7 +2,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
-	import type { Deal } from '$lib/crm/types';
+	import type { Deal } from '#lib/crm/types.js';
 	import { formatCurrency } from './helpers';
 
 	interface Props {
@@ -48,8 +48,7 @@
 					value={winDetails}
 					oninput={(e) => onUpdateWinDetails(e.currentTarget.value)}
 					placeholder="Add notes about how this deal was won..."
-					rows="4"
-				></textarea>
+					rows="4"></textarea>
 			</div>
 		</div>
 		<div class="modal-footer">

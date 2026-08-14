@@ -15,11 +15,11 @@
 		IconWaveSine,
 		IconAlertCircle,
 		IconUpload
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import { useMediaControls } from '../hooks/useMediaControls.svelte';
-	import { sanitizeURL, validateFile } from '$lib/utils/sanitization';
+	import { sanitizeURL, validateFile } from '#lib/utils/sanitization.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 	// Props
 

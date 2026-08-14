@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
 	import type { HTMLThAttributes } from 'svelte/elements';
-	import { type WithElementRef } from '$lib/utils.js';
+	import { type WithElementRef } from '#lib/utils.js';
 
 	let {
 		ref = $bindable(null),

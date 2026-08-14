@@ -12,7 +12,7 @@
 
 import { decode, encode } from 'blurhash';
 
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

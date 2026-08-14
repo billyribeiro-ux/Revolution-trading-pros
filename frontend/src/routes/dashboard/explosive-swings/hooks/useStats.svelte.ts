@@ -14,7 +14,7 @@
  * - Fallback data support
  */
 
-import { getEnterpriseClient } from '$lib/api/enterprise/client';
+import { getEnterpriseClient } from '#lib/api/enterprise/client.js';
 import { ROOM_SLUG } from '../constants';
 import type { QuickStats, WeeklyPerformance } from '../types';
 

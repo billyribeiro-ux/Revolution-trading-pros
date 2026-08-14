@@ -13,7 +13,7 @@
 	- Matches original WordPress structure exactly
 -->
 <script lang="ts">
-	import IndicatorCard from '$lib/components/indicators/IndicatorCard.svelte';
+	import IndicatorCard from '#lib/components/indicators/IndicatorCard.svelte';
 
 	interface Indicator {
 		id: number;

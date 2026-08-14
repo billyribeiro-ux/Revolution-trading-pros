@@ -17,14 +17,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Create a mock state manager
 const mockStateManager = {
-	getAIGeneratedState: vi.fn(
-		(): AIBlockState => ({
-			loading: false,
-			error: null,
-			output: null,
-			lastGenerated: null
-		})
-	),
+	getAIGeneratedState: vi.fn((): AIBlockState => ({
+		loading: false,
+		error: null,
+		output: null,
+		lastGenerated: null
+	})),
 	setAIGeneratedState: vi.fn(),
 	getAISummaryState: vi.fn(() => ({
 		loading: false,
@@ -47,14 +45,14 @@ const mockStateManager = {
 };
 
 // Mock the blockState module
-vi.mock('$lib/stores/blockState.svelte', () => ({
+vi.mock('#lib/stores/blockState.svelte.js', () => ({
 	getBlockStateManager: () => mockStateManager,
 	createBlockId: (id: string) => id
 }));
 
 // Import the hook after mocking
 import { useAIGeneration, type AIGenerationType } from '../useAIGeneration.svelte';
-import type { AIBlockState } from '$lib/stores/blockState.svelte';
+import type { AIBlockState } from '#lib/stores/blockState.svelte.js';
 
 // ============================================================================
 // Test Setup

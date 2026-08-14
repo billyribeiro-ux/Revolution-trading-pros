@@ -8,9 +8,9 @@
 	 * @version 1.1.0
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import { IconSearch } from '$lib/icons';
-	import type { RoomAlert } from '$lib/types/trading';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import { IconSearch } from '#lib/icons/index.js';
+	import type { RoomAlert } from '#lib/types/trading.js';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {
@@ -171,21 +171,19 @@
 		}
 
 		// Production: transform SSR data
-		return data.alerts.map(
-			(a): DisplayAlert => ({
-				id: a.id,
-				type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
-				alertType: a.alert_type,
-				title: a.title,
-				date: formatAlertDate(a.published_at),
-				excerpt: a.message,
-				status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
-				profitLoss: null,
-				href: `/dashboard/explosive-swings/alerts/${a.id}`,
-				tosString: a.tos_string,
-				ticker: a.ticker
-			})
-		);
+		return data.alerts.map((a): DisplayAlert => ({
+			id: a.id,
+			type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
+			alertType: a.alert_type,
+			title: a.title,
+			date: formatAlertDate(a.published_at),
+			excerpt: a.message,
+			status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
+			profitLoss: null,
+			href: `/dashboard/explosive-swings/alerts/${a.id}`,
+			tosString: a.tos_string,
+			ticker: a.ticker
+		}));
 	});
 
 	// Filtered alerts based on selection and search

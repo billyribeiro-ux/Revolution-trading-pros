@@ -17,10 +17,10 @@
 		ResourceType,
 		AccessLevel,
 		SectionType
-	} from '$lib/api/room-resources';
-	import { listResources } from '$lib/api/room-resources';
+	} from '#lib/api/room-resources.js';
+	import { listResources } from '#lib/api/room-resources.js';
 	import ResourceCard from './ResourceCard.svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onDestroy, onMount } from 'svelte';
 
 	interface Props {

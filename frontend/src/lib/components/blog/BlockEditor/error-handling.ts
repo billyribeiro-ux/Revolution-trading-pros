@@ -15,7 +15,7 @@
  */
 
 import { writable, derived, type Readable, type Writable } from 'svelte/store';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 import type { Block, BlockType, BlockContent, BlockSettings, BlockMetadata } from './types';
 import { BLOCK_DEFINITIONS } from './types';
 

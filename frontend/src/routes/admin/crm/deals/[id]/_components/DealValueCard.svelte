@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Deal } from '$lib/crm/types';
+	import type { Deal } from '#lib/crm/types.js';
 	import { formatCurrency, formatDate } from './helpers';
 
 	interface Props {

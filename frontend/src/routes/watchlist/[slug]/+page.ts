@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import type { WatchlistItem } from '$lib/api/watchlist';
+import type { WatchlistItem } from '#lib/api/watchlist.js';
 
 export const load = async ({
 	params,

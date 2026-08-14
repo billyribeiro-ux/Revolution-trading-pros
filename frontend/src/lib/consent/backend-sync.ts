@@ -11,8 +11,8 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { ConsentState, ConsentAuditEntry } from './types';
 import { getAuditLog } from './audit-log';
 

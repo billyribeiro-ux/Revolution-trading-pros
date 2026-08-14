@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconChartBar, IconCloudUpload, IconRefresh, IconPlus } from '$lib/icons';
+	import { IconChartBar, IconCloudUpload, IconRefresh, IconPlus } from '#lib/icons/index.js';
 
 	interface Props {
 		hasSelectedRoom: boolean;

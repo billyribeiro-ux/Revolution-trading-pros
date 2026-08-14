@@ -11,8 +11,8 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
-	import { traders } from '$lib/data/traders';
+	import TradingRoomDropdown from '#lib/components/dashboard/TradingRoomDropdown.svelte';
+	import { traders } from '#lib/data/traders.js';
 </script>
 
 <svelte:head>

@@ -1,22 +1,8 @@
-<!--
-	RoomChat Component
-	===============================================================================
-	Apple ICT 11+ Principal Engineer Implementation
-
-	Flexible chat integration for trading rooms:
-	- Discord widget embed support
-	- Custom WebSocket chat (real-time messages)
-	- Zoom/GoToWebinar integration placeholder
-	- Mobile-responsive collapsible panel
-
-	@version 1.0.0 - January 2026
-	@author Revolution Trading Pros
--->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import { authStore } from '$lib/stores/auth.svelte';
+	import { browser } from '$app/env';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
+	import { authStore } from '#lib/stores/auth.svelte.js';
 
 	// ===============================================================================
 	// PROPS
@@ -226,6 +212,21 @@
 	});
 </script>
 
+<!--
+	RoomChat Component
+	===============================================================================
+	Apple ICT 11+ Principal Engineer Implementation
+
+	Flexible chat integration for trading rooms:
+	- Discord widget embed support
+	- Custom WebSocket chat (real-time messages)
+	- Zoom/GoToWebinar integration placeholder
+	- Mobile-responsive collapsible panel
+
+	@version 1.0.0 - January 2026
+	@author Revolution Trading Pros
+-->
+
 <div class={{ 'room-chat': true, 'room-chat--collapsed': collapsed }}>
 	{#if showHeader}
 		<header class="chat-header">
@@ -329,8 +330,7 @@
 							placeholder="Type a message..."
 							rows="1"
 							class="chat-input"
-							disabled={!isConnected}
-						></textarea>
+							disabled={!isConnected}></textarea>
 						<button
 							class="send-btn"
 							onclick={sendMessage}

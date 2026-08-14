@@ -7,8 +7,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
-	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '$lib/icons';
+	import { analyticsApi, type AnalyticsEvent } from '#lib/api/analytics.js';
+	import { IconSearch, IconFilter, IconDownload, IconRefresh } from '#lib/icons/index.js';
 
 	interface Props {
 		period?: string;

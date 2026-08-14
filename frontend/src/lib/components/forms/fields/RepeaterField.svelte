@@ -12,9 +12,9 @@
 	 * @version 2.0.0
 	 */
 
-	import type { FormField } from '$lib/api/forms';
-	import type { JsonValue } from '$lib/api/_types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import type { FormField } from '#lib/api/forms.js';
+	import type { JsonValue } from '#lib/api/_types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// Each sub-field's stored value: the same shape as `FormField.default_value`
 	// (a `JsonValue`) — strings for text/email/date/select, booleans for
@@ -340,8 +340,7 @@
 												)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-textarea"
-											rows={3}
-										></textarea>
+											rows={3}></textarea>
 									{:else if subField.field_type === 'number'}
 										<input
 											type="number"

@@ -4,7 +4,7 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface Course {
 		id: string;

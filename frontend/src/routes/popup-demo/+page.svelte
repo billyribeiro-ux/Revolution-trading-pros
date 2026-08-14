@@ -3,9 +3,9 @@
 -->
 
 <script lang="ts">
-	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
-	import { IconRocket } from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { popupStore, type Popup } from '#lib/stores/popups.svelte.js';
+	import { IconRocket } from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Demo popup templates
 	const demoPopups: Partial<Popup>[] = [

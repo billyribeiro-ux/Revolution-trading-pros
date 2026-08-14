@@ -39,26 +39,13 @@ export type TemplateStyle =
  * Button style variant
  */
 export type ButtonVariant =
-	| 'solid'
-	| 'outline'
-	| 'ghost'
-	| 'gradient'
-	| 'pill'
-	| 'rounded'
-	| 'square';
+	'solid' | 'outline' | 'ghost' | 'gradient' | 'pill' | 'rounded' | 'square';
 
 /**
  * Animation type
  */
 export type AnimationType =
-	| 'none'
-	| 'fade'
-	| 'slide-up'
-	| 'slide-down'
-	| 'slide-left'
-	| 'slide-right'
-	| 'scale'
-	| 'bounce';
+	'none' | 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'bounce';
 
 /**
  * Color scheme configuration

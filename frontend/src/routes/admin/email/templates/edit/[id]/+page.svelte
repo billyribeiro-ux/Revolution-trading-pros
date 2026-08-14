@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { apiFetch } from '$lib/api/config';
-	import TemplateForm from '$lib/components/admin/TemplateForm.svelte';
-	import type { EmailTemplate } from '$lib/api/admin';
+	import { apiFetch } from '#lib/api/config.js';
+	import TemplateForm from '#lib/components/admin/TemplateForm.svelte';
+	import type { EmailTemplate } from '#lib/api/admin.js';
 	import { page } from '$app/state';
 
 	/**

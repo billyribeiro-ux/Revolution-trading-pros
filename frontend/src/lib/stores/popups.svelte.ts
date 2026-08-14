@@ -3,8 +3,8 @@
  * @version 2.0.0 - Migrated to Svelte 5 Runes (February 2026)
  */
 
-import { browser } from '$app/environment';
-import type { JsonValue } from '$lib/api/_types';
+import { browser } from '$app/env';
+import type { JsonValue } from '#lib/api/_types.js';
 
 // Popup configuration types for a fully customizable popup system
 export interface PopupButton {
@@ -59,23 +59,9 @@ export interface PopupDesign {
 
 export interface PopupAnimation {
 	entrance:
-		| 'fade'
-		| 'slide-up'
-		| 'slide-down'
-		| 'slide-left'
-		| 'slide-right'
-		| 'zoom'
-		| 'bounce'
-		| 'flip';
+		'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom' | 'bounce' | 'flip';
 	exit:
-		| 'fade'
-		| 'slide-up'
-		| 'slide-down'
-		| 'slide-left'
-		| 'slide-right'
-		| 'zoom'
-		| 'bounce'
-		| 'flip';
+		'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom' | 'bounce' | 'flip';
 	duration: number; // in ms
 	easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'custom';
 	customEasing?: string;
@@ -411,7 +397,7 @@ export const popupStore = {
 
 		// Send to backend API
 		if (browser) {
-			import('$lib/api/popups').then(({ recordPopupImpression }) => {
+			import('#lib/api/popups.js').then(({ recordPopupImpression }) => {
 				recordPopupImpression(popupId).catch((err) => {
 					console.error('Failed to record impression:', err);
 				});
@@ -430,7 +416,7 @@ export const popupStore = {
 	recordConversion(popupId: string, data?: Record<string, JsonValue>) {
 		// Send to backend API
 		if (browser) {
-			import('$lib/api/popups').then(({ recordPopupConversion }) => {
+			import('#lib/api/popups.js').then(({ recordPopupConversion }) => {
 				// `data` is a freeform JSON payload (callers pass `{ formData,
 				// variant, submissionTime, ... }`); pass through unchanged so
 				// the wire shape stays flat — see LB-1 in R23-A report for the

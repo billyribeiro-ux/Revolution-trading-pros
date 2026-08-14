@@ -19,20 +19,20 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock SvelteKit modules
 // ═══════════════════════════════════════════════════════════════════════════
 
-vi.mock('$app/environment', () => ({
+vi.mock('$app/env', () => ({
 	browser: true,
 	dev: true,
 	building: false,
 	version: 'test'
 }));
 
-vi.mock('$env/dynamic/public', () => ({
-	env: {
-		PUBLIC_GA4_MEASUREMENT_ID: 'G-TESTID12345'
-	}
+// SvelteKit 3: `$env/dynamic/public` became `$app/env/public`, and the
+// variables are named exports rather than properties of an `env` object.
+vi.mock('$app/env/public', () => ({
+	PUBLIC_GA4_MEASUREMENT_ID: 'G-TESTID12345'
 }));
 
-vi.mock('$lib/api/config', () => ({
+vi.mock('#lib/api/config.js', () => ({
 	API_BASE_URL: 'http://localhost:8000'
 }));
 

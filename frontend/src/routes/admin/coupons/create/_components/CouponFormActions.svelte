@@ -5,7 +5,7 @@
 	 * via slot positioning (it's a sibling type=submit, parent owns the form's
 	 * `onsubmit`).
 	 */
-	import { IconCheck, IconRefresh } from '$lib/icons';
+	import { IconCheck, IconRefresh } from '#lib/icons/index.js';
 
 	interface Props {
 		saving: boolean;

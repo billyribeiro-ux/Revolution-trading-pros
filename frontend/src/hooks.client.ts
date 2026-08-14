@@ -1,3 +1,5 @@
+import type { HandleClientError } from '@sveltejs/kit/hooks';
+
 /**
  * SvelteKit Client Hooks - Enterprise Error Tracking & Performance Monitoring
  *
@@ -10,9 +12,6 @@
  * @version 1.0.0 - L8 Principal Engineer
  * @see https://kit.svelte.dev/docs/hooks#client-hooks
  */
-
-import type { HandleClientError } from '@sveltejs/kit';
-
 /**
  * Error severity levels for categorization
  */
@@ -184,6 +183,7 @@ function generateErrorId(): string {
 function isStaleChunkError(error: unknown): boolean {
 	if (!(error instanceof Error)) return false;
 	const message = error.message.toLowerCase();
+
 	return (
 		message.includes('failed to fetch dynamically imported module') ||
 		message.includes('loading chunk') ||
@@ -220,13 +220,18 @@ function forceReloadForFreshChunks(): void {
  * - Navigation
  * - Client-side component lifecycle
  */
-export const handleError: HandleClientError = async ({
-	error,
-	event,
-	status: _status,
-	message
-}) => {
+export const handleError: HandleClientError = async ({ kind, error, event }) => {
 	const errorId = generateErrorId();
+
+	// SvelteKit 3 no longer passes `status`/`message` alongside the error —
+	// they are derived from `kind`. `app` and `framework` errors carry their own
+	// message; `unknown` errors are whatever application code threw.
+	const message =
+		kind === 'app' || kind === 'framework'
+			? error.message
+			: error instanceof Error
+				? error.message
+				: String(error);
 
 	// ICT11+ Pattern: Handle stale chunk errors from Cloudflare Pages cache
 	// When a new deployment happens, old HTML may reference chunks that no longer exist
@@ -239,12 +244,19 @@ export const handleError: HandleClientError = async ({
 		};
 	}
 
+	// For `app` and `framework` errors SvelteKit 3 hands over a plain
+	// `{ message, ... }` body rather than an Error instance, so passing it
+	// straight to the telemetry helpers below stringifies it as "[object
+	// Object]" and loses the one useful field. Normalise to a real Error first —
+	// `message` was already derived per-kind above.
+	const reportable = error instanceof Error ? error : new Error(message);
+
 	// Build error metadata
 	const sessionId = getSessionId();
 	const userId = getUserId();
 	const metadata: ErrorMetadata = {
-		severity: getErrorSeverity(error),
-		category: categorizeError(error),
+		severity: getErrorSeverity(reportable),
+		category: categorizeError(reportable),
 		userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
 		url: event.url.href,
 		timestamp: new Date().toISOString(),
@@ -253,15 +265,26 @@ export const handleError: HandleClientError = async ({
 	};
 
 	// Report error asynchronously
-	reportError(error, metadata, errorId);
+	reportError(reportable, metadata, errorId);
 
 	// Development: Log full error details
 	if (import.meta.env.DEV) {
 		console.error(`[${errorId}] Unhandled client error:`, error);
 	}
 
-	// Return user-friendly error message
-	// Include errorId for support reference
+	// SvelteKit 3 routes `app` and `framework` errors through this hook too —
+	// SvelteKit 2 only sent unexpected ones. Since `message` is an OVERRIDE,
+	// returning the generic string unconditionally would replace a deliberate
+	// `error(404, 'Post not found')` with "An unexpected error occurred", and
+	// disagree with what the server already rendered for the same navigation.
+	// Those two kinds carry messages that are safe and intended to be seen, so
+	// inherit them.
+	if (kind === 'app' || kind === 'framework') {
+		return { errorId };
+	}
+
+	// `unknown` errors are whatever application code threw: mask in production,
+	// keep the detail in dev. Include errorId for support reference.
 	return {
 		message: import.meta.env.DEV
 			? `${message} (Error ID: ${errorId})`

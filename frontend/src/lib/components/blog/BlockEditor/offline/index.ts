@@ -9,8 +9,8 @@
  * @since January 2026
  */
 
-import { browser } from '$app/environment';
-import type { Post } from '$lib/types/post';
+import { browser } from '$app/env';
+import type { Post } from '#lib/types/post.js';
 import {
 	blogEditorDB,
 	createDraftFromPost,
@@ -632,7 +632,7 @@ export interface OfflineEditorHook {
  * @example
  * ```svelte
  * <script lang="ts">
- *   import { useOfflineEditor } from '$lib/components/blog/BlockEditor/offline';
+ *   import { useOfflineEditor } from '#lib/components/blog/BlockEditor/offline/index.js';
  *
  *   const offline = useOfflineEditor();
  *

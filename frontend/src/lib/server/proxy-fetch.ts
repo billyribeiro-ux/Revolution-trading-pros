@@ -20,7 +20,7 @@
  *   for that chain across every proxy that adopts it.
  *
  * Usage:
- *   import { fetchBackend, hasSuccess } from '$lib/server/proxy-fetch';
+ *   import { fetchBackend, hasSuccess } from '#lib/server/proxy-fetch.js';
  *
  *   const backendData = await fetchBackend(
  *     `/api/room-content/rooms/${slug}/alerts`,
@@ -37,11 +37,11 @@
  *   the "client posted `null`" 500-NPE class (R18-A §2) at zero runtime cost.
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback,
 // localhost last (dev-only). Do NOT collapse to BACKEND_URL alone.
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Fetch from the backend and return the parsed JSON body on 2xx, or

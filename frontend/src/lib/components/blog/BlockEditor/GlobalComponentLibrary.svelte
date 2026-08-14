@@ -41,13 +41,13 @@
 		IconLoader,
 		IconAlertCircle,
 		IconFilter
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
-	import { API_BASE_URL } from '$lib/api/config';
-	import { getAuthToken } from '$lib/stores/auth.svelte';
+	import { API_BASE_URL } from '#lib/api/config.js';
+	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 	import type { Block } from './types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	// Types
 
@@ -948,8 +948,7 @@
 						id="comp-description"
 						bind:value={formDescription}
 						placeholder="Brief description of this component"
-						rows="2"
-					></textarea>
+						rows="2"></textarea>
 				</div>
 
 				<div class="form-row">

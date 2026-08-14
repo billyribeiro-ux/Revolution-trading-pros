@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { IconArrowLeft, IconMail, IconX, IconPlus, IconFileText } from '$lib/icons';
+	import { IconArrowLeft, IconMail, IconX, IconPlus, IconFileText } from '#lib/icons/index.js';
 	import { goto } from '$app/navigation';
-	import type { Member } from '$lib/api/members';
+	import type { Member } from '#lib/api/members.js';
 	import { getMemberInitials, getStatusColor } from './helpers';
 
 	interface Props {

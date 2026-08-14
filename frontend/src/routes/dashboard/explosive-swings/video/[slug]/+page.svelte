@@ -6,9 +6,9 @@
 	 */
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
-	import FavoriteButton from '$lib/components/dashboard/FavoriteButton.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import BunnyVideoPlayer from '#lib/components/video/BunnyVideoPlayer.svelte';
+	import FavoriteButton from '#lib/components/dashboard/FavoriteButton.svelte';
 
 	const ROOM_SLUG = 'explosive-swings';
 

@@ -18,8 +18,8 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { watchlistApi } from '$lib/api/watchlist';
-	import { isAuthenticated } from '$lib/stores/auth.svelte';
+	import { watchlistApi } from '#lib/api/watchlist.js';
+	import { isAuthenticated } from '#lib/stores/auth.svelte.js';
 
 	interface WatchlistData {
 		id: number;

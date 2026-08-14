@@ -19,7 +19,7 @@
 		variant = 'button'
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let isSaving = $state(false);
 	let showEmailModal = $state(false);

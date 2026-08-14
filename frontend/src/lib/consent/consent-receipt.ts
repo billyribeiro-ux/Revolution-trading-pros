@@ -10,7 +10,7 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import type { ConsentState, ConsentAuditEntry } from './types';
 import { getAuditLog } from './audit-log';
 

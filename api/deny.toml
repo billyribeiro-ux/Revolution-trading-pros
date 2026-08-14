@@ -55,11 +55,17 @@ ignore = [
     { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101.x CRL parser panic; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. We do not parse CRLs. Track upstream smithy-http-client dedup." },
 
     # ── unmaintained (build-time only) ───────────────────────────────────
-    # The prior proc-macro-error (v1, RUSTSEC-2024-0370) and rustls-pemfile
-    # (RUSTSEC-2025-0134) ignores were removed: both crates are no longer in
-    # the tree (verified 2026-06-08). proc-macro-error2 is the current
-    # unmaintained dep, used only at compile time.
-    { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 unmaintained; build-time only via validator_derive 0.20, never linked into the runtime binary. Resolved by a future validator bump." },
+    # The prior proc-macro-error (v1, RUSTSEC-2024-0370), rustls-pemfile
+    # (RUSTSEC-2025-0134) and proc-macro-error2 (RUSTSEC-2026-0173) ignores were
+    # all removed: none of those crates are in the tree any more. The last of
+    # them came in via validator_derive 0.20 and left with the bump to
+    # validator 0.21 (verified 2026-08-14 — cargo-deny reported the ignore as
+    # `advisory-not-detected`).
+    #
+    # NOTE: jsonwebtoken 11 must keep the `aws_lc_rs` feature, not `rust_crypto`.
+    # The pure-Rust backend pulls in `rsa`, which carries RUSTSEC-2023-0071
+    # (Marvin timing sidechannel) with no fixed release — it would land here as
+    # a permanent exemption rather than a tracked one.
 ]
 
 # ────────────────────────────────────────────────────────────────────────

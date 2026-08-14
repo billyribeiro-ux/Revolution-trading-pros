@@ -17,12 +17,12 @@
  * authoritative and cannot be skipped by disabling JavaScript.
  *
  * Role policy is the single server-side source of truth in
- * `$lib/server/auth.ts` — the SAME predicate the admin API proxies use, so
+ * `#lib/server/auth.ts` — the SAME predicate the admin API proxies use, so
  * the page gate and the API gate can never drift apart.
  */
 
 import { redirect } from '@sveltejs/kit';
-import { isAdminRole } from '$lib/server/auth';
+import { isAdminRole } from '#lib/server/auth.js';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, url }) => {

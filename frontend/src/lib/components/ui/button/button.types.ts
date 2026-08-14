@@ -1,7 +1,7 @@
 /**
  * Button Component Types
  */
-import { type WithElementRef } from '$lib/utils.js';
+import { type WithElementRef } from '#lib/utils.js';
 import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
 export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';

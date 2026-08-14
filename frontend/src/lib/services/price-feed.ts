@@ -17,8 +17,8 @@
  * Built for the next 10 years with extensibility in mind.
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -354,6 +354,7 @@ class PriceFeedService {
 		}
 
 		this.reconnectAttempts++;
+
 		const delay = Math.min(
 			RECONNECT_BASE_DELAY * Math.pow(2, this.reconnectAttempts - 1),
 			RECONNECT_MAX_DELAY

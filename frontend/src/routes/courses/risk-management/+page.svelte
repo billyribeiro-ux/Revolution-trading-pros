@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconShield,
 		IconClock,
@@ -9,7 +9,7 @@
 		IconCheck,
 		IconBolt,
 		IconTrendingUp
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let heroVisible = $state(false);
 

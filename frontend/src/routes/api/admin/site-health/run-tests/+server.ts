@@ -8,11 +8,11 @@
  *   - Built per CREATE-not-DELETE rule.
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import type { RequestHandler } from './$types';
-import { requireSuperadmin } from '$lib/server/auth';
+import { requireSuperadmin } from '#lib/server/auth.js';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 export const POST: RequestHandler = async (event) => {
 	const { token } = requireSuperadmin(event);

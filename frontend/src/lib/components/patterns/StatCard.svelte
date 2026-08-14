@@ -5,7 +5,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { IconTrendingUp, IconTrendingDown, IconMinus } from '$lib/icons';
+	import { IconTrendingUp, IconTrendingDown, IconMinus } from '#lib/icons/index.js';
 	import type { ComponentType } from 'svelte';
 
 	interface Props {

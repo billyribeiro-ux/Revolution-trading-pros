@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconUsers, IconCheck, IconX, IconMail } from '$lib/icons';
+	import { IconUsers, IconCheck, IconX, IconMail } from '#lib/icons/index.js';
 
 	interface Stats {
 		total: number;

@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconDevices, IconDeviceMobile, IconBrowser } from '$lib/icons';
+	import { IconDevices, IconDeviceMobile, IconBrowser } from '#lib/icons/index.js';
 
 	interface DeviceCounts {
 		desktop: number;

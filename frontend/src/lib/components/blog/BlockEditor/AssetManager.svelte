@@ -21,9 +21,9 @@
 	import { cubicOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-	import Icon from '$lib/components/Icon.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	import Icon from '#lib/components/Icon.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 	import DamHeader from './asset-manager/DamHeader.svelte';
 	import DamTabs from './asset-manager/DamTabs.svelte';
 	import DamFooter from './asset-manager/DamFooter.svelte';

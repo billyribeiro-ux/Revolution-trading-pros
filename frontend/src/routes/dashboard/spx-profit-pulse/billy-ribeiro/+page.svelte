@@ -9,7 +9,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 
 	interface Product {
 		id: string;

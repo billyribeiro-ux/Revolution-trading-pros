@@ -7,7 +7,7 @@
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 	import IconTrophy from '@tabler/icons-svelte-runes/icons/trophy';
 	import IconFlag from '@tabler/icons-svelte-runes/icons/flag';
-	import type { Deal, Stage } from '$lib/crm/types';
+	import type { Deal, Stage } from '#lib/crm/types.js';
 	import { getStageColor, getPriorityColor, getStatusBadge } from './helpers';
 
 	interface Props {

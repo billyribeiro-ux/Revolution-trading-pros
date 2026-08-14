@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * @deprecated As of May 2026 SEO audit, all pages have been migrated to the
-	 * unified SEO layer at `$lib/seo/` (Seo.svelte + resolveSEO + +page.{ts,server.ts}
+	 * unified SEO layer at `#lib/seo//index.js` (Seo.svelte + resolveSEO + +page.{ts,server.ts}
 	 * load returning `{ seo: SEOInput }`). This legacy component is retained only
 	 * for archaeological reference and has zero importers (verified by grep).
 	 *
@@ -23,9 +23,9 @@
 	 * @version 2.0.0 - January 2026
 	 */
 
-	import { generateStructuredData, type StructuredDataConfig } from '$lib/utils/structured-data';
-	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
-	import { getPageSeoContext } from '$lib/seo/page-seo-context.svelte';
+	import { generateStructuredData, type StructuredDataConfig } from '#lib/utils/structured-data.js';
+	import { serializeJsonLd } from '#lib/seo/serializeJsonLd.js';
+	import { getPageSeoContext } from '#lib/seo/page-seo-context.svelte.js';
 
 	// ==========================================================================
 	// Props

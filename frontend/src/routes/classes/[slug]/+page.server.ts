@@ -12,14 +12,14 @@
  * @version 1.0.0
  */
 
-import { env } from '$env/dynamic/private';
+import { API_URL as ENV_API_URL } from '$app/env/private';
 import type { PageServerLoad } from './$types';
-import type { SEOInput } from '$lib/seo/types';
-import { buildBreadcrumb, buildCourse } from '$lib/seo/schemas';
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildCourse } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 
-const API_URL = env.API_URL || 'http://localhost:8080';
+const API_URL = ENV_API_URL || 'http://localhost:8080';
 
 interface Lesson {
 	id: string;

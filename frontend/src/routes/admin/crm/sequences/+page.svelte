@@ -1,22 +1,6 @@
-<!--
-	/admin/crm/sequences - Email Drip Sequences
-	Apple Principal Engineer ICT 7 Grade - January 2026
-
-	Features:
-	- Automated email sequence management
-	- Status filtering (draft, active, paused, completed)
-	- Open/click rate tracking
-	- Subscriber count per sequence
-	- Duplicate and delete functionality
-	- Send test email modal
-	- Pause/Resume sequence controls
-	- Debounced reload on search/filter changes
-	- Full Svelte 5 $state/$derived reactivity
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		IconMail,
 		IconMailForward,
@@ -35,11 +19,11 @@
 		IconSend,
 		IconCheck,
 		IconAlertCircle
-	} from '$lib/icons';
-	import { crmAPI } from '$lib/api/crm';
-	import { api } from '$lib/api/config';
-	import type { EmailSequence, SequenceFilters, SequenceStatus } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/icons/index.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import { api } from '#lib/api/config.js';
+	import type { EmailSequence, SequenceFilters, SequenceStatus } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// STATE
 
@@ -343,11 +327,24 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Email Sequences - FluentCRM Pro</title>
-</svelte:head>
+<!--
+	/admin/crm/sequences - Email Drip Sequences
+	Apple Principal Engineer ICT 7 Grade - January 2026
 
+	Features:
+	- Automated email sequence management
+	- Status filtering (draft, active, paused, completed)
+	- Open/click rate tracking
+	- Subscriber count per sequence
+	- Duplicate and delete functionality
+	- Send test email modal
+	- Pause/Resume sequence controls
+	- Debounced reload on search/filter changes
+	- Full Svelte 5 $state/$derived reactivity
+-->
+<svelte:head><title>Email Sequences - FluentCRM Pro</title></svelte:head>
 <!-- Handle escape key for modal -->
+
 <svelte:window onkeydown={showSendEmailModal ? handleModalKeydown : undefined} />
 
 <div class="admin-crm-sequences">
@@ -451,9 +448,8 @@
 			<div class="error-alert">
 				<IconAlertCircle size={18} />
 				<span>{error}</span>
-				<button onclick={() => (error = '')} aria-label="Dismiss error">
-					<IconX size={16} />
-				</button>
+
+				<button onclick={() => (error = '')} aria-label="Dismiss error"><IconX size={16} /></button>
 			</div>
 		{/if}
 
@@ -513,16 +509,17 @@
 								</td>
 								<td>{sequence.emails_count}</td>
 								<td>{formatNumber(sequence.subscribers_count)}</td>
-								<td>
-									<span class="rate-value"
+								<td
+									><span class="rate-value"
 										>{formatRate(sequence.total_sent, sequence.total_opened)}</span
-									>
-								</td>
-								<td>
-									<span class="rate-value"
+									></td
+								>
+								<td
+									><span class="rate-value"
 										>{formatRate(sequence.total_sent, sequence.total_clicked)}</span
-									>
-								</td>
+									></td
+								>
+
 								<td>
 									<div class="action-buttons">
 										{#if sequence.status === 'draft' || sequence.status === 'active' || sequence.status === 'paused'}
@@ -656,10 +653,9 @@
 					<button
 						class="btn-secondary"
 						onclick={closeSendEmailModal}
-						disabled={sendEmailForm.isLoading}
+						disabled={sendEmailForm.isLoading}>Cancel</button
 					>
-						Cancel
-					</button>
+
 					<button class="btn-primary" onclick={sendTestEmail} disabled={!canSendTestEmail}>
 						{#if sendEmailForm.isLoading}
 							<div class="btn-spinner"></div>

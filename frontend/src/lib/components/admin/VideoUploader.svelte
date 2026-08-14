@@ -12,7 +12,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	// Props
 	interface Props {
@@ -494,8 +494,7 @@
 					id="description"
 					bind:value={description}
 					placeholder="Enter video description"
-					rows="4"
-				></textarea>
+					rows="4"></textarea>
 			</div>
 
 			<div class="form-row">

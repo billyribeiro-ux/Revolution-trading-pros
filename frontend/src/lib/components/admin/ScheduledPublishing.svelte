@@ -5,7 +5,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { scheduledApi, type ScheduledJob } from '$lib/api/video-advanced';
+	import { scheduledApi, type ScheduledJob } from '#lib/api/video-advanced.js';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
@@ -13,7 +13,7 @@
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		resourceType?: 'video' | 'series';

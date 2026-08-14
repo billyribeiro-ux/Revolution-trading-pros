@@ -4,8 +4,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { dashboardData, isLoading } from '$lib/stores/behavior.svelte';
-	import { behaviorAPI } from '$lib/api/behavior';
+	import { dashboardData, isLoading } from '#lib/stores/behavior.svelte.js';
+	import { behaviorAPI } from '#lib/api/behavior.js';
 	import {
 		IconBrain,
 		IconAlertTriangle,
@@ -13,7 +13,7 @@
 		IconTrendingUp,
 		IconUsers,
 		IconChartBar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let selectedPeriod = $state('7d');
 

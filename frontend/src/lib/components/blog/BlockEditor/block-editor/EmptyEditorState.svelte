@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { IconPlus } from '$lib/icons';
+	import { IconPlus } from '#lib/icons/index.js';
 
 	interface Props {
 		onAddBlock: () => void;

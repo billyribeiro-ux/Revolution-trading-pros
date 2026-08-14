@@ -8,7 +8,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
 	import { onMount } from 'svelte';
 
 	interface Download {

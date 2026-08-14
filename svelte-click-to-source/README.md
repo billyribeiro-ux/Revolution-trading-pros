@@ -40,6 +40,10 @@ export default {
 };
 ```
 
+> **SvelteKit 3** removed `svelte.config.js` — pass `preprocess` to the
+> `sveltekit()` plugin in `vite.config.ts` instead. (This repo's own frontend is
+> on SvelteKit 3 and does not currently consume this package.)
+
 ### 3. Use it
 
 1. `npm run dev`

@@ -7,9 +7,9 @@
 	 */
 	import { preloadData } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
-	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
-	import type { Post } from '$lib/types/post';
+	import BlurHashImage from '#lib/components/ui/BlurHashImage.svelte';
+	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
+	import type { Post } from '#lib/types/post.js';
 
 	// ============================================================================
 	// TypeScript Interfaces

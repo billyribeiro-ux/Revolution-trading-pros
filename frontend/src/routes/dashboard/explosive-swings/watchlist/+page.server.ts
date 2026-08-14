@@ -13,8 +13,8 @@
  * - Environment variables via $env/dynamic/private
  */
 
-import { env } from '$env/dynamic/private';
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
 import type { PageServerLoad } from './$types';
 import { ROOM_SLUG } from '../constants';
 
@@ -23,7 +23,7 @@ import { ROOM_SLUG } from '../constants';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const LOG_PREFIX = '[explosive-swings/watchlist]';
-const DEFAULT_API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const DEFAULT_API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LOAD FUNCTION - ICT 7 Server-Side Rendering
@@ -40,7 +40,7 @@ const DEFAULT_API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost
  * @returns Page data for client hydration (type inferred from PageServerLoad)
  */
 export const load: PageServerLoad = async ({ fetch, locals }) => {
-	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
+	const baseUrl = API_BASE_URL || DEFAULT_API_URL;
 	// ICT 7 FIX: Pass access token from locals for authenticated API calls
 	const accessToken = locals.accessToken ?? undefined;
 

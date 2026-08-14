@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconRefresh, IconDownload } from '$lib/icons';
+	import { IconRefresh, IconDownload } from '#lib/icons/index.js';
 
 	interface Props {
 		onrefresh: () => void;

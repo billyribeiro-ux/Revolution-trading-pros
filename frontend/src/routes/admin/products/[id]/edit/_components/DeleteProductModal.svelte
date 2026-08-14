@@ -3,7 +3,7 @@
 	 * R20-C extraction (2026-05-20): delete-confirmation modal.
 	 * Self-contained: parent only toggles `open` and passes `onConfirm`/`onCancel`.
 	 */
-	import { IconTrash } from '$lib/icons';
+	import { IconTrash } from '#lib/icons/index.js';
 
 	interface Props {
 		open: boolean;

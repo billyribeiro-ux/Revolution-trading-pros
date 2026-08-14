@@ -7,7 +7,7 @@
  * Supports room-based plan queries with monthly/quarterly/annual variants.
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

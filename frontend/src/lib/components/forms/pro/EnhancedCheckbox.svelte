@@ -45,7 +45,7 @@
 		onchange
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let selectedValues = $derived([...value]);
 	let otherChecked = $state(false);

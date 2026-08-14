@@ -2,7 +2,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import type { Stage } from '$lib/crm/types';
+	import type { Stage } from '#lib/crm/types.js';
 	import { getStageColor } from './helpers';
 
 	interface Props {
@@ -67,8 +67,7 @@
 					value={stageChangeReason}
 					oninput={(e) => onUpdateReason(e.currentTarget.value)}
 					placeholder="Why is this stage changing?"
-					rows="3"
-				></textarea>
+					rows="3"></textarea>
 			</div>
 		</div>
 		<div class="modal-footer">

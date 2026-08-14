@@ -19,13 +19,7 @@ export interface Contact {
 	company_id?: string;
 	status: 'subscribed' | 'pending' | 'unsubscribed' | 'bounced' | 'complained';
 	lifecycle_stage:
-		| 'subscriber'
-		| 'lead'
-		| 'mql'
-		| 'sql'
-		| 'opportunity'
-		| 'customer'
-		| 'evangelist';
+		'subscriber' | 'lead' | 'mql' | 'sql' | 'opportunity' | 'customer' | 'evangelist';
 	lead_score: number;
 	health_score: number;
 	engagement_score: number;

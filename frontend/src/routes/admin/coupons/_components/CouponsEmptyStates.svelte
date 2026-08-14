@@ -8,7 +8,7 @@
 	 * component instead of an if/else chain in markup. The shared chrome
 	 * (centered column, padding, typography) lives here once.
 	 */
-	import { IconFilter, IconPlus, IconRefresh } from '$lib/icons';
+	import { IconFilter, IconPlus, IconRefresh } from '#lib/icons/index.js';
 
 	type StateProps =
 		| { kind: 'loading' }

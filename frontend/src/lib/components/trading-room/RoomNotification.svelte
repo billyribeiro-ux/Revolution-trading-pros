@@ -1,22 +1,8 @@
-<!--
-	RoomNotification Component
-	===============================================================================
-	Apple ICT 11+ Principal Engineer Implementation
-
-	Real-time notification system for trading room start times:
-	- Countdown timer to next room session
-	- Push notification permission request
-	- Browser notifications when room is starting
-	- Integrates with room schedules API
-
-	@version 1.0.0 - January 2026
-	@author Revolution Trading Pros
--->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import { logger } from '$lib/utils/logger';
+	import { browser } from '$app/env';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	// ===============================================================================
 	// PROPS
@@ -264,6 +250,21 @@
 		}
 	});
 </script>
+
+<!--
+	RoomNotification Component
+	===============================================================================
+	Apple ICT 11+ Principal Engineer Implementation
+
+	Real-time notification system for trading room start times:
+	- Countdown timer to next room session
+	- Push notification permission request
+	- Browser notifications when room is starting
+	- Integrates with room schedules API
+
+	@version 1.0.0 - January 2026
+	@author Revolution Trading Pros
+-->
 
 {#if isLoading}
 	<div class="room-notification room-notification--loading">

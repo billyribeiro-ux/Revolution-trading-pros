@@ -14,7 +14,7 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
 	import { fade, slide } from 'svelte/transition';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface UploadItem {
 		id: string;

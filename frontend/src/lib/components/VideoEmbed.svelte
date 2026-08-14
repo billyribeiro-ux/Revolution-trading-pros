@@ -1,62 +1,9 @@
-<!--
-/**
- * VideoEmbed Component - Google L7+ Enterprise Implementation
- * ═══════════════════════════════════════════════════════════════════════════
- * 
- * ENTERPRISE FEATURES:
- * 
- * 1. PLATFORM SUPPORT:
- *    - YouTube
- *    - Vimeo
- *    - Wistia
- *    - Dailymotion
- *    - Twitch
- *    - Custom HTML5
- *    - HLS/DASH streams
- * 
- * 2. ADVANCED CONTROLS:
- *    - Custom player UI
- *    - Playback speed
- *    - Quality selection
- *    - Chapter markers
- *    - Subtitles/CC
- *    - Picture-in-Picture
- * 
- * 3. ANALYTICS:
- *    - View tracking
- *    - Engagement metrics
- *    - Heatmap data
- *    - Drop-off points
- *    - Completion rate
- *    - Interaction tracking
- * 
- * 4. INTERACTIVE:
- *    - Clickable overlays
- *    - Call-to-actions
- *    - Annotations
- *    - Polls/Quizzes
- *    - Lead capture
- *    - Shopping tags
- * 
- * 5. OPTIMIZATION:
- *    - Lazy loading
- *    - Thumbnail preview
- *    - Adaptive streaming
- *    - Bandwidth detection
- *    - CDN integration
- *    - Error recovery
- * 
- * @version 3.0.0 (Google L7+ Enterprise)
- * @component
- */
--->
-
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount, onDestroy } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type VimeoPlayer from '@vimeo/player';
 	import type { ErrorEvent as VimeoErrorEvent, VimeoEvent } from '@vimeo/player';
 
@@ -114,9 +61,9 @@
 		IconMinimize,
 		IconTextCaption,
 		IconPictureInPictureOn
-	} from '$lib/icons';
-	import { sanitizeVideoOverlay } from '$lib/utils/sanitize';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { sanitizeVideoOverlay } from '#lib/utils/sanitize.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Props
@@ -138,15 +85,7 @@
 		startTime?: number;
 		endTime?: number | null;
 		defaultQuality?:
-			| 'auto'
-			| '144p'
-			| '240p'
-			| '360p'
-			| '480p'
-			| '720p'
-			| '1080p'
-			| '1440p'
-			| '2160p';
+			'auto' | '144p' | '240p' | '360p' | '480p' | '720p' | '1080p' | '1440p' | '2160p';
 		defaultSpeed?: number;
 		volume?: number;
 		// Display Props
@@ -1498,6 +1437,58 @@
 	}
 </script>
 
+<!--
+/**
+ * VideoEmbed Component - Google L7+ Enterprise Implementation
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * ENTERPRISE FEATURES:
+ * 
+ * 1. PLATFORM SUPPORT:
+ *    - YouTube
+ *    - Vimeo
+ *    - Wistia
+ *    - Dailymotion
+ *    - Twitch
+ *    - Custom HTML5
+ *    - HLS/DASH streams
+ * 
+ * 2. ADVANCED CONTROLS:
+ *    - Custom player UI
+ *    - Playback speed
+ *    - Quality selection
+ *    - Chapter markers
+ *    - Subtitles/CC
+ *    - Picture-in-Picture
+ * 
+ * 3. ANALYTICS:
+ *    - View tracking
+ *    - Engagement metrics
+ *    - Heatmap data
+ *    - Drop-off points
+ *    - Completion rate
+ *    - Interaction tracking
+ * 
+ * 4. INTERACTIVE:
+ *    - Clickable overlays
+ *    - Call-to-actions
+ *    - Annotations
+ *    - Polls/Quizzes
+ *    - Lead capture
+ *    - Shopping tags
+ * 
+ * 5. OPTIMIZATION:
+ *    - Lazy loading
+ *    - Thumbnail preview
+ *    - Adaptive streaming
+ *    - Bandwidth detection
+ *    - CDN integration
+ *    - Error recovery
+ * 
+ * @version 3.0.0 (Google L7+ Enterprise)
+ * @component
+ */
+-->
 <!-- Main Container -->
 <div
 	{@attach capturePlayerElement}

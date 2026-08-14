@@ -7,14 +7,14 @@
 	// FIX P2-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
 	// onMount imported to replace one-shot init-as-effect.
 	import { onMount } from 'svelte';
-	import { chaptersApi, parseTimeToSeconds, type VideoChapter } from '$lib/api/video-advanced';
+	import { chaptersApi, parseTimeToSeconds, type VideoChapter } from '#lib/api/video-advanced.js';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Props {
 		videoId: number;
@@ -271,8 +271,7 @@
 							<textarea
 								bind:value={editForm.description}
 								placeholder="Description (optional)"
-								rows="2"
-							></textarea>
+								rows="2"></textarea>
 							<div class="edit-actions">
 								<button
 									type="button"
@@ -368,8 +367,7 @@
 			<textarea
 				id="bulk-import-text"
 				placeholder="0:00 Introduction&#10;1:30 Main Topic&#10;5:45 Conclusion"
-				rows="4"
-			></textarea>
+				rows="4"></textarea>
 			<button
 				type="button"
 				class="btn-import"

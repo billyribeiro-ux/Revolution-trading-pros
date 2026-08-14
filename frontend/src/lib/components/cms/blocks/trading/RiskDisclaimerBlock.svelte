@@ -18,9 +18,9 @@
 		IconEdit,
 		IconSquare,
 		IconSquareCheck
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import type { Block, BlockContent } from '../types';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 	import { onMount } from 'svelte';
 
 	// Props Interface
@@ -323,8 +323,7 @@
 						value={text}
 						oninput={handleTextChange}
 						placeholder="Enter the main warning message..."
-						rows="2"
-					></textarea>
+						rows="2"></textarea>
 				</label>
 			</div>
 
@@ -335,8 +334,7 @@
 						value={expandedText}
 						oninput={handleExpandedTextChange}
 						placeholder="Enter detailed disclaimer text for the expandable section..."
-						rows="4"
-					></textarea>
+						rows="4"></textarea>
 				</label>
 			</div>
 		</div>

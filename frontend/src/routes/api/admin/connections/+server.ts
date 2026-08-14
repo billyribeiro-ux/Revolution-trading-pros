@@ -8,12 +8,12 @@
  *   - 4xx responses forward upstream body verbatim.
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
+import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 async function forwardJson(upstream: Response): Promise<Response> {
 	const text = await upstream.text();

@@ -16,8 +16,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { cartStore } from '$lib/stores/cart.svelte';
-	import { getProductBySlug, productToCartItem } from '$lib/data/products';
+	import { cartStore } from '#lib/stores/cart.svelte.js';
+	import { getProductBySlug, productToCartItem } from '#lib/data/products.js';
 
 	// Get the product slug from the URL. The `[slug]` route segment is always
 	// present at runtime; the `?? ''` keeps the type as `string` without a

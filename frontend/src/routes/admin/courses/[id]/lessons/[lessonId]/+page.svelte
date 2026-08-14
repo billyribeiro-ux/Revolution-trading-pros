@@ -15,14 +15,14 @@
 	// beforeNavigate to guard unsaved changes.
 	import { goto, beforeNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import BunnyVideoUploader from '#lib/components/admin/BunnyVideoUploader.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	interface Lesson {
 		id: string;
@@ -109,6 +109,8 @@
 	let hasUnsavedChanges = $derived(lesson ? JSON.stringify(lesson) !== lastSavedSnapshot : false);
 
 	beforeNavigate((nav) => {
+		if (nav.shallow) return;
+
 		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
 		// nav.cancel() must be called inline, so native confirm() is the only
 		// portable option today.
@@ -306,9 +308,10 @@
 		<!-- FIX-2026-04-26 (P3-8): surface previously-silent errorMessage. -->
 		<div class="error-banner" role="alert">
 			<span>{errorMessage}</span>
-			<button type="button" aria-label="Dismiss" onclick={() => (errorMessage = '')}>
-				<IconX size={14} aria-hidden="true" />
-			</button>
+
+			<button type="button" aria-label="Dismiss" onclick={() => (errorMessage = '')}
+				><IconX size={14} aria-hidden="true" /></button
+			>
 		</div>
 	{/if}
 	{#if loading}
@@ -428,10 +431,8 @@
 										<button
 											type="button"
 											class="btn-cancel-upload"
-											onclick={() => (showVideoUploader = false)}
+											onclick={() => (showVideoUploader = false)}>Cancel</button
 										>
-											Cancel
-										</button>
 									</div>
 								{:else}
 									<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: video (video placeholder) -->

@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import type { AlertType, RoomAlert } from '$lib/api/room-content';
+	import type { AlertType, RoomAlert } from '#lib/api/room-content.js';
 
 	export interface AlertFormData {
 		alert_type: AlertType;
@@ -116,8 +116,7 @@
 						id="alert_message"
 						bind:value={form.message}
 						placeholder="Entering NVDA at $142.50. First target $148, stop at $136..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-group full-width">
@@ -126,8 +125,7 @@
 						id="alert_notes"
 						bind:value={form.notes}
 						placeholder="Entry based on breakout above $142 resistance with strong volume confirmation..."
-						rows="4"
-					></textarea>
+						rows="4"></textarea>
 				</div>
 
 				<!-- TOS Format Section -->

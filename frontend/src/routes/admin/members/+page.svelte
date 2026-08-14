@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
-	import { membersStore, emailStore } from '$lib/stores/members.svelte';
-	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
+	import { membersStore, emailStore } from '#lib/stores/members.svelte.js';
+	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
+	import type { Member, MemberFilters, MemberFullDetails } from '#lib/api/members.js';
 	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
 		IconUsers,
@@ -18,15 +18,15 @@
 		IconTrash,
 		IconBan,
 		IconPlayerPlay
-	} from '$lib/icons';
-	import { membersApi } from '$lib/api/members';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/icons/index.js';
+	import { membersApi } from '#lib/api/members.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// New enterprise components
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import MemberFormModal from '$lib/components/admin/MemberFormModal.svelte';
-	import MemberDetailDrawer from '$lib/components/admin/MemberDetailDrawer.svelte';
-	import ActionsDropdown from '$lib/components/admin/ActionsDropdown.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import MemberFormModal from '#lib/components/admin/MemberFormModal.svelte';
+	import MemberDetailDrawer from '#lib/components/admin/MemberDetailDrawer.svelte';
+	import ActionsDropdown from '#lib/components/admin/ActionsDropdown.svelte';
 
 	// Route-local extractions
 	import ErrorBanner from './_components/ErrorBanner.svelte';

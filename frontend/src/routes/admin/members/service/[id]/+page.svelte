@@ -3,10 +3,10 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { serviceMembersStore, emailStore } from '$lib/stores/members.svelte';
-	import type { Member } from '$lib/api/members';
+	import { serviceMembersStore, emailStore } from '#lib/stores/members.svelte.js';
+	import type { Member } from '#lib/api/members.js';
 	// FIX-2026-04-26: replaced native alert() with toastStore.
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconArrowLeft,
 		IconUsers,
@@ -23,7 +23,7 @@
 		IconSend,
 		IconCrown,
 		IconChartBar
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	let serviceId = $derived(Number(page.params.id));
 

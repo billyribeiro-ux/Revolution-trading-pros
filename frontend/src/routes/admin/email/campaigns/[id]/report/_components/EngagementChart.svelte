@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { IconTrendingUp } from '$lib/icons';
+	import { IconTrendingUp } from '#lib/icons/index.js';
 
 	interface EngagementPoint {
 		hour: number;

@@ -27,10 +27,7 @@ describe('normalizeCanonical', () => {
 	});
 
 	it('lowercases hostname', () => {
-		const result = normalizeCanonical(
-			'https://RevolutionTradingPros.COM/about',
-			baseConfig
-		);
+		const result = normalizeCanonical('https://RevolutionTradingPros.COM/about', baseConfig);
 		expect(result).toBe('https://revolutiontradingpros.com/about');
 	});
 
@@ -99,10 +96,7 @@ describe('normalizeCanonical', () => {
 	});
 
 	it('handles already-absolute URLs', () => {
-		const result = normalizeCanonical(
-			'https://revolutiontradingpros.com/about',
-			baseConfig
-		);
+		const result = normalizeCanonical('https://revolutiontradingpros.com/about', baseConfig);
 		expect(result).toBe('https://revolutiontradingpros.com/about');
 	});
 

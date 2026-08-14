@@ -12,12 +12,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import type { RoomAlert, AlertCreateInput } from '$lib/types/trading';
-import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
+import type { RoomAlert, AlertCreateInput } from '#lib/types/trading.js';
+import { buildTosString, validateTosParams } from '#lib/utils/tos-builder.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
 // `Promise<any | null>` helper with `Promise<unknown>` + narrowing guards.
-import { fetchBackend, hasData, isObject, extractMetaTotal } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasData, isObject, extractMetaTotal } from '#lib/server/proxy-fetch.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE GUARDS

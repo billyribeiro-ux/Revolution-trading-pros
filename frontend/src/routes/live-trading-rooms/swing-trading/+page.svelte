@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 
 	// --- Pricing State (Svelte 5 Runes) ---

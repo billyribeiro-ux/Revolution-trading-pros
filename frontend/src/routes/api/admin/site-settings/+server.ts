@@ -10,9 +10,9 @@
 
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL as ENV_API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
-const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_BASE_URL = ENV_API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const token = locals.accessToken;

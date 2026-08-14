@@ -1,22 +1,8 @@
-<!--
-	LiveStreamBadge Component
-	===============================================================================
-	Apple ICT 11+ Principal Engineer Implementation
-
-	Visual indicator showing when a trading room is currently live.
-	- Pulsing animation for live status
-	- Viewer count display (optional)
-	- Click to join functionality
-	- Integrates with WebSocket for real-time updates
-
-	@version 1.0.0 - January 2026
-	@author Revolution Trading Pros
--->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
-	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
-	import { logger } from '$lib/utils/logger';
+	import { browser } from '$app/env';
+	import RtpIcon from '#lib/components/icons/RtpIcon.svelte';
+	import { logger } from '#lib/utils/logger.js';
 
 	// ===============================================================================
 	// PROPS
@@ -176,6 +162,21 @@
 		}
 	});
 </script>
+
+<!--
+	LiveStreamBadge Component
+	===============================================================================
+	Apple ICT 11+ Principal Engineer Implementation
+
+	Visual indicator showing when a trading room is currently live.
+	- Pulsing animation for live status
+	- Viewer count display (optional)
+	- Click to join functionality
+	- Integrates with WebSocket for real-time updates
+
+	@version 1.0.0 - January 2026
+	@author Revolution Trading Pros
+-->
 
 {#if isLoading}
 	<!-- Loading state - show nothing or skeleton -->

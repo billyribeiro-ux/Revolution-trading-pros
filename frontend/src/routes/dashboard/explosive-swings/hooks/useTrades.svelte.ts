@@ -11,9 +11,9 @@
  * - Derived calculations for display
  */
 
-import { getEnterpriseClient } from '$lib/api/enterprise/client';
-import { getPriceFeed } from '$lib/services/price-feed';
-import { logger } from '$lib/utils/logger';
+import { getEnterpriseClient } from '#lib/api/enterprise/client.js';
+import { getPriceFeed } from '#lib/services/price-feed.js';
+import { logger } from '#lib/utils/logger.js';
 import { ROOM_SLUG, TRADES_PER_PAGE } from '../constants';
 import type { ApiTrade, ActivePosition, ClosedTrade } from '../types';
 

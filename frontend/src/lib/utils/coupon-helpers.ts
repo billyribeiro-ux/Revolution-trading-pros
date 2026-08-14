@@ -1,4 +1,4 @@
-import type { CouponType, CouponValidationResponse } from '$lib/api/coupons';
+import type { CouponType, CouponValidationResponse } from '#lib/api/coupons.js';
 
 export interface AppliedCoupon {
 	code: string;

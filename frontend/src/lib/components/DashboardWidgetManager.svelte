@@ -21,7 +21,7 @@
 		getAutoRefreshEnabled,
 		type DashboardWidget,
 		type WidgetSize
-	} from '$lib/stores/widgets.svelte';
+	} from '#lib/stores/widgets.svelte.js';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconGripVertical from '@tabler/icons-svelte-runes/icons/grip-vertical';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';

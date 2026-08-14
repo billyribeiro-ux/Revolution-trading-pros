@@ -71,8 +71,7 @@
 				id="img-description"
 				bind:value={post.featured_image_description}
 				placeholder="Detailed description of the image"
-				rows="3"
-			></textarea>
+				rows="3"></textarea>
 		</div>
 	{:else}
 		<label class={{ 'upload-box': true, disabled: uploadingImage }}>

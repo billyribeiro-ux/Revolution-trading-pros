@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { logger } from '$lib/utils/logger';
+	import { browser } from '$app/env';
+	import { logger } from '#lib/utils/logger.js';
 	import {
 		getSubscriptions,
 		getSubscriptionStats,
@@ -12,16 +12,16 @@
 		retryPayment,
 		getUpcomingRenewals,
 		getFailedPayments
-	} from '$lib/api/subscriptions';
+	} from '#lib/api/subscriptions.js';
 	import type {
 		Subscription,
 		SubscriptionStatus,
 		SubscriptionStats
-	} from '$lib/stores/subscriptions.svelte';
-	import { connections, getIsPaymentConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import SubscriptionDetailDrawer from '$lib/components/admin/SubscriptionDetailDrawer.svelte';
-	import SubscriptionFormModal from '$lib/components/admin/SubscriptionFormModal.svelte';
+	} from '#lib/stores/subscriptions.svelte.js';
+	import { connections, getIsPaymentConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import SubscriptionDetailDrawer from '#lib/components/admin/SubscriptionDetailDrawer.svelte';
+	import SubscriptionFormModal from '#lib/components/admin/SubscriptionFormModal.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconCircleXFilled from '@tabler/icons-svelte-runes/icons/circle-x-filled';
@@ -166,6 +166,7 @@
 				if (intervalFilter !== 'all' && sub.interval !== intervalFilter) return false;
 				if (searchQuery) {
 					const query = searchQuery.toLowerCase();
+
 					return (
 						sub.productName.toLowerCase().includes(query) ||
 						sub.userId.toLowerCase().includes(query) ||
@@ -528,23 +529,19 @@
 											<div class="table-primary">{subscription.productName}</div>
 											<div class="table-muted">{subscription.id.slice(0, 8)}...</div>
 										</td>
+
+										<td><div class="table-secondary">{subscription.userId.slice(0, 8)}...</div></td>
+
 										<td>
-											<div class="table-secondary">{subscription.userId.slice(0, 8)}...</div>
+											<span class="status-badge" data-status={subscription.status}
+												>{subscription.status}</span
+											>
 										</td>
-										<td>
-											<span class="status-badge" data-status={subscription.status}>
-												{subscription.status}
-											</span>
-										</td>
-										<td class="table-secondary">
-											{getIntervalLabel(subscription.interval)}
-										</td>
-										<td class="table-primary">
-											{formatCurrency(subscription.price)}
-										</td>
-										<td class="table-secondary">
-											{formatDate(subscription.nextPaymentDate)}
-										</td>
+
+										<td class="table-secondary">{getIntervalLabel(subscription.interval)}</td>
+										<td class="table-primary">{formatCurrency(subscription.price)}</td>
+										<td class="table-secondary">{formatDate(subscription.nextPaymentDate)}</td>
+
 										<td>
 											<!-- FIX-2026-04-26 (audit 02 §P2-3): action buttons used to bubble
 											     into the row's openSubscriptionDetail handler — clicking Cancel
@@ -646,8 +643,7 @@
 					bind:value={pauseReason}
 					rows="3"
 					placeholder="Enter reason..."
-					class="form-control form-control--textarea form-control--warning"
-				></textarea>
+					class="form-control form-control--textarea form-control--warning"></textarea>
 			</div>
 
 			<div class="modal-actions">
@@ -691,8 +687,7 @@
 					bind:value={cancelReason}
 					rows="3"
 					placeholder="Enter reason..."
-					class="form-control form-control--textarea form-control--danger"
-				></textarea>
+					class="form-control form-control--textarea form-control--danger"></textarea>
 			</div>
 
 			<div class="modal-field">

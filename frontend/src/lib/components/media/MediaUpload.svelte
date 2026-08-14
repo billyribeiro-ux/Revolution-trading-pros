@@ -5,8 +5,8 @@
 	 * Drag-and-drop file upload with progress tracking
 	 * and optimization queue integration.
 	 */
-	import { mediaApi, type MediaItem, type UploadOptions } from '$lib/api/media';
-	import Icon from '$lib/components/Icon.svelte';
+	import { mediaApi, type MediaItem, type UploadOptions } from '#lib/api/media.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import type { Attachment } from 'svelte/attachments';
 	import { SvelteMap } from 'svelte/reactivity';
 

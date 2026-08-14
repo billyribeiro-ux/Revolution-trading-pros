@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
+	import LoadingState from '#lib/components/dashboard/LoadingState.svelte';
 	interface EnrolledCourse {
 		id: number;
 		course_id: string;

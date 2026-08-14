@@ -2,7 +2,7 @@
 	/**
 	 * Icon - Centralized Tabler icon wrapper.
 	 *
-	 * Selects an icon from the `$lib/icons` barrel by name and renders it with
+	 * Selects an icon from the `#lib/icons/index.js` barrel by name and renders it with
 	 * a consistent size token system. Use this in place of inline `<svg>` markup
 	 * so analytics dashboards (and the rest of the app) share one source of
 	 * truth for iconography, sizing, and accessibility semantics.
@@ -12,7 +12,7 @@
 	 *   <Icon name="IconSearch" size={18} />
 	 *   <Icon name="IconCheck" class="w-4 h-4 text-emerald-400" />
 	 */
-	import * as Icons from '$lib/icons';
+	import * as Icons from '#lib/icons/index.js';
 
 	type IconName = keyof typeof Icons;
 	type SizeToken = 'xs' | 'sm' | 'md' | 'lg' | 'xl';

@@ -11,8 +11,8 @@
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 
-	import { isApiError, getUserFriendlyMessage } from '$lib/api/enterprise/errors';
-	import type { EnterpriseApiError } from '$lib/api/enterprise/types';
+	import { isApiError, getUserFriendlyMessage } from '#lib/api/enterprise/errors.js';
+	import type { EnterpriseApiError } from '#lib/api/enterprise/types.js';
 
 	interface Props {
 		error: EnterpriseApiError | Error | string | null;

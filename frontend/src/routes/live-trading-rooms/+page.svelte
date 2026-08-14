@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import RoomsGrid from './_sections/RoomsGrid.svelte';
 
 	// GSAP types for TypeScript (actual imports are dynamic for SSR safety)
@@ -446,11 +446,17 @@
 	<meta name="language" content="en" />
 
 	<!-- Preconnect for Performance - Google December 2025 Core Web Vitals -->
+
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
+
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+
 	<link rel="dns-prefetch" href="//www.googletagmanager.com" />
+
 	<link rel="dns-prefetch" href="//www.google-analytics.com" />
+
 	<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous" />
+
 	<link
 		rel="preload"
 		href="/fonts/inter-var.woff2"
@@ -505,11 +511,14 @@
 				<svg class="hero__chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none">
 					<defs>
 						<linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-							<stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2" />
-							<stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+							<stop offset="0%" stop-color="#3b82f6" stop-opacity="0.2"></stop>
+
+							<stop offset="100%" stop-color="#3b82f6" stop-opacity="0"></stop>
 						</linearGradient>
 					</defs>
-					<path d={`M0,300 ${chartPoints} L1000,300 Z`} fill="url(#chartGradient)" />
+
+					<path d={`M0,300 ${chartPoints} L1000,300 Z`} fill="url(#chartGradient)"></path>
+
 					<polyline
 						class="hero-chart-path"
 						points={chartPoints}
@@ -517,7 +526,7 @@
 						stroke="#60a5fa"
 						stroke-width="2"
 						vector-effect="non-scaling-stroke"
-					/>
+					></polyline>
 				</svg>
 			</div>
 
@@ -631,9 +640,11 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 								>
-									<circle cx="12" cy="12" r="10" stroke-dasharray="4 4" class="svg-spin-track" />
-									<path d="M12 2v20M2 12h20" class="svg-muted" />
-									<circle cx="12" cy="12" r="3" class="svg-scale-target" />
+									<circle cx="12" cy="12" r="10" stroke-dasharray="4 4" class="svg-spin-track"
+									></circle>
+
+									<path d="M12 2v20M2 12h20" class="svg-muted"></path>
+									<circle cx="12" cy="12" r="3" class="svg-scale-target"></circle>
 								</svg>
 							{:else if item.iconType === 'radar'}
 								<svg
@@ -643,8 +654,9 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 								>
-									<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-									<path class="svg-pulse-target" d="M12 8v4l3 3" stroke-linecap="round" />
+									<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+
+									<path class="svg-pulse-target" d="M12 8v4l3 3" stroke-linecap="round"></path>
 								</svg>
 							{:else if item.iconType === 'strategy'}
 								<svg
@@ -654,15 +666,17 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 								>
-									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-									<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+									<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+
+									<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+
 									<path
 										class="svg-draw-line"
 										stroke-dasharray="10"
 										stroke-dashoffset="10"
 										d="M9 8h6M9 12h4"
 										stroke-linecap="round"
-									/>
+									></path>
 								</svg>
 							{:else if item.iconType === 'network'}
 								<svg
@@ -672,10 +686,15 @@
 									stroke="currentColor"
 									stroke-width="1.5"
 								>
-									<circle cx="12" cy="5" r="2" class="svg-fill-target" />
-									<circle cx="5" cy="19" r="2" class="svg-fill-target svg-fill-delay-short" />
-									<circle cx="19" cy="19" r="2" class="svg-fill-target svg-fill-delay-long" />
-									<path d="M12 7l-7 12M12 7l7 12M5 19h14" class="svg-soft" />
+									<circle cx="12" cy="5" r="2" class="svg-fill-target"></circle>
+
+									<circle cx="5" cy="19" r="2" class="svg-fill-target svg-fill-delay-short"
+									></circle>
+
+									<circle cx="19" cy="19" r="2" class="svg-fill-target svg-fill-delay-long"
+									></circle>
+
+									<path d="M12 7l-7 12M12 7l7 12M5 19h14" class="svg-soft"></path>
 								</svg>
 							{/if}
 						</div>

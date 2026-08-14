@@ -2,8 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { IconCheck, IconX, IconUser } from '$lib/icons';
-	import { logger } from '$lib/utils/logger';
+	import { IconCheck, IconX, IconUser } from '#lib/icons/index.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	interface UserRole {
 		name: string;

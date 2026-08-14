@@ -4,7 +4,7 @@
 	 * thumbnail URL. Parent binds `formData` so the child stays a thin form;
 	 * `getFieldError` is passed in (parent owns validation state).
 	 */
-	import { IconPhoto } from '$lib/icons';
+	import { IconPhoto } from '#lib/icons/index.js';
 	import type { ProductFormData } from './types';
 
 	interface Props {
@@ -57,8 +57,7 @@
 		id="description"
 		bind:value={formData.description}
 		placeholder="Brief description of the product..."
-		rows="3"
-	></textarea>
+		rows="3"></textarea>
 </div>
 
 <!-- Long Description -->
@@ -68,8 +67,7 @@
 		id="long_description"
 		bind:value={formData.long_description}
 		placeholder="Detailed description with features and benefits..."
-		rows="6"
-	></textarea>
+		rows="6"></textarea>
 </div>
 
 <!-- Thumbnail -->

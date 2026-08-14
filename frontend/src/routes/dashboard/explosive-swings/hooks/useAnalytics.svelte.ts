@@ -15,7 +15,7 @@
  * - Time-based analytics (daily, weekly, monthly)
  */
 
-import { getEnterpriseClient } from '$lib/api/enterprise/client';
+import { getEnterpriseClient } from '#lib/api/enterprise/client.js';
 import { ROOM_SLUG } from '../constants';
 
 // ═══════════════════════════════════════════════════════════════════════════════

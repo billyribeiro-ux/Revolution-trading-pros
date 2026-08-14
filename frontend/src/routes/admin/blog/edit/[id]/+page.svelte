@@ -3,13 +3,13 @@
 	import { goto, beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	// FIX-2026-04-26 (P2-4): sanitize raw-HTML blog blocks before send.
-	import { sanitizeBlogContent } from '$lib/utils/sanitize';
+	import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
 	import IconLoader from '@tabler/icons-svelte-runes/icons/loader';
-	import { type Block } from '$lib/components/blog/BlockEditor';
-	import SeoMetaFields from '$lib/components/blog/SeoMetaFields.svelte';
-	import { api } from '$lib/api/config';
-	import { mediaApi } from '$lib/api/media';
-	import { logger } from '$lib/utils/logger';
+	import { type Block } from '#lib/components/blog/BlockEditor/index.js';
+	import SeoMetaFields from '#lib/components/blog/SeoMetaFields.svelte';
+	import { api } from '#lib/api/config.js';
+	import { mediaApi } from '#lib/api/media.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	import EditorHeader from './_components/EditorHeader.svelte';
 	import PostMainFields from './_components/PostMainFields.svelte';
@@ -109,6 +109,8 @@
 	);
 
 	beforeNavigate((nav) => {
+		if (nav.shallow) return;
+
 		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
 		// nav.cancel() must be called inline, so native confirm() is the only
 		// portable option today. Migrating requires a state-driven flow that
@@ -286,6 +288,7 @@
 							escapeHtml(content.code) +
 							'</code></pre>'
 						);
+
 					case 'separator':
 						return '<hr />';
 					case 'html':
@@ -514,6 +517,7 @@
 					onRemove={removeFeaturedImage}
 				/>
 				<CategoriesPanel bind:post />
+
 				<TagsPanel bind:post {availableTags} {tagsLoading} bind:newTag onCreateTag={createTag} />
 			</div>
 		</div>

@@ -24,14 +24,14 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import HtmlBlock from '../advanced/HtmlBlock.svelte';
 import type { Block } from '../types';
-import { toBlockId } from '$lib/stores/blockState.svelte';
+import { toBlockId } from '#lib/stores/blockState.svelte.js';
 
 // ===============================================================================
 // MOCKS
 // ===============================================================================
 
 // Mock the sanitization module
-vi.mock('$lib/utils/sanitization', () => ({
+vi.mock('#lib/utils/sanitization.js', () => ({
 	sanitizeHTML: vi.fn((html: string, _options?: { mode?: string }) => {
 		// Simplified sanitization for testing - removes script tags
 		if (!html || typeof html !== 'string') return '';

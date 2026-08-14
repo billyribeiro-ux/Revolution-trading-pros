@@ -16,7 +16,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { getOrders, getOrderDetail } from './orders.remote';
 	import type { Order, OrderStats, Pagination, OrderDetail } from './orders.types';
 

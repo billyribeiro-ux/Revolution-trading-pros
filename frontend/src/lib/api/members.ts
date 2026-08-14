@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from './client.svelte';
-import { getAuthToken } from '$lib/stores/auth.svelte';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 // Types
 export interface Member {
@@ -455,13 +455,7 @@ export interface MemberFullDetailsMember {
 	email: string;
 	avatar: string | null;
 	status:
-		| 'active'
-		| 'trial'
-		| 'churned'
-		| 'never_subscribed'
-		| 'banned'
-		| 'suspended'
-		| 'restricted';
+		'active' | 'trial' | 'churned' | 'never_subscribed' | 'banned' | 'suspended' | 'restricted';
 	status_label: string;
 	joined_at: string;
 	total_spent: number;

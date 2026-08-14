@@ -7,16 +7,16 @@
 	 * with real-time progress monitoring.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { connections, getIsAnalyticsConnected } from '$lib/stores/connections.svelte';
-	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { browser } from '$app/env';
+	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
+	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconDots from '@tabler/icons-svelte-runes/icons/dots-vertical';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Goal {
 		id: string;
@@ -203,9 +203,10 @@
 			{#if isAnalyticsConnected}
 				<div class="goals-header__actions">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-					<button onclick={() => (showCreateModal = true)} class="primary-action">
-						Create Goal
-					</button>
+
+					<button onclick={() => (showCreateModal = true)} class="primary-action"
+						>Create Goal</button
+					>
 				</div>
 			{/if}
 		</header>
@@ -245,10 +246,11 @@
 				{#each [{ value: 'all', label: 'All Goals' }, { value: 'active', label: 'Active' }, { value: 'paused', label: 'Paused' }, { value: 'completed', label: 'Completed' }] as filter (filter.value)}
 					<button
 						onclick={() => (activeFilter = filter.value as typeof activeFilter)}
-						class={{ 'goal-filter': true, 'is-active': activeFilter === filter.value }}
+						class={{
+							'goal-filter': true,
+							'is-active': activeFilter === filter.value
+						}}>{filter.label}</button
 					>
-						{filter.label}
-					</button>
 				{/each}
 			</div>
 
@@ -302,7 +304,7 @@
 												stroke-width="2"
 												d={goalTypes.find((t) => t.value === goal.type)?.icon ||
 													'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}
-											/>
+											></path>
 										</svg>
 									</div>
 									<div>
@@ -388,8 +390,7 @@
 							bind:value={newGoal.description}
 							placeholder="Describe this goal..."
 							rows={2}
-							class="form-control form-control--textarea"
-						></textarea>
+							class="form-control form-control--textarea"></textarea>
 					</div>
 				</div>
 
@@ -400,7 +401,10 @@
 						{#each goalTypes as type (type.value)}
 							<button
 								onclick={() => (newGoal.type = type.value as typeof newGoal.type)}
-								class={{ 'type-option': true, 'is-selected': newGoal.type === type.value }}
+								class={{
+									'type-option': true,
+									'is-selected': newGoal.type === type.value
+								}}
 							>
 								<svg
 									class="type-option__icon"
@@ -413,7 +417,7 @@
 										stroke-linejoin="round"
 										stroke-width="2"
 										d={type.icon}
-									/>
+									></path>
 								</svg>
 								<div class="type-option__label">{type.label}</div>
 								<div class="type-option__description">{type.description}</div>
@@ -465,10 +469,11 @@
 			</div>
 
 			<div class="goal-modal__footer">
-				<button onclick={() => (showCreateModal = false)} class="secondary-action"> Cancel </button>
-				<button onclick={createGoal} disabled={!newGoal.name} class="primary-action">
-					Create Goal
-				</button>
+				<button onclick={() => (showCreateModal = false)} class="secondary-action">Cancel</button>
+
+				<button onclick={createGoal} disabled={!newGoal.name} class="primary-action"
+					>Create Goal</button
+				>
 			</div>
 		</div>
 	</div>

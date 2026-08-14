@@ -11,8 +11,8 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import TradingRoomArchive from '$lib/components/dashboard/TradingRoomArchive.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomArchive from '#lib/components/dashboard/TradingRoomArchive.svelte';
 	import type { ArchivePageData } from './+page.server';
 
 	// Server data - extends parent layout data

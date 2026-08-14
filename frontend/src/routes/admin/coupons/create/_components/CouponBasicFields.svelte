@@ -9,7 +9,7 @@
 	 * card inside the value-input wrapper) and passed in to avoid duplicating
 	 * the `$derived` logic across two surfaces.
 	 */
-	import { IconTag, IconSparkles, IconPercentage, IconCurrencyDollar } from '$lib/icons';
+	import { IconTag, IconSparkles, IconPercentage, IconCurrencyDollar } from '#lib/icons/index.js';
 	import type { CouponFormData } from './types';
 
 	interface Props {

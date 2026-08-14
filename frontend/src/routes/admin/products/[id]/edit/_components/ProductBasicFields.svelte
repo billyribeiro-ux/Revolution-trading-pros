@@ -56,8 +56,7 @@
 		id="description"
 		bind:value={formData.description}
 		placeholder="Brief description of the product..."
-		rows="3"
-	></textarea>
+		rows="3"></textarea>
 </div>
 
 <div class="form-group">
@@ -66,8 +65,7 @@
 		id="long_description"
 		bind:value={formData.long_description}
 		placeholder="Detailed description with features and benefits..."
-		rows="6"
-	></textarea>
+		rows="6"></textarea>
 </div>
 
 <style>

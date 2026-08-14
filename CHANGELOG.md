@@ -4,6 +4,147 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-08-14 — SvelteKit 3 migration, Node 24.19.0 LTS, full dependency + toolchain top-up
+
+Evidence source: this branch (`claude/update-libraries-dependencies-kzycj8`).
+Version research grounded in the official Svelte blog for June/July/August 2026
+and the SvelteKit 3 RC announcement (2026-08-13).
+
+### Toolchain & dependencies
+
+- **Node 24.19.0 LTS** ("Krypton") pinned repo-wide — `.nvmrc`, `.node-version`,
+  both `engines`, and `NODE_VERSION` in `ci.yml` + `deploy-cloudflare.yml`.
+  Node 26 is Current, not LTS, so the 24.x line stays; `@types/node` is held on
+  24.x to match the runtime rather than following its own 26.x latest.
+- **Rust 1.97.1** in `rust-toolchain.toml`, kept in lockstep with `RUST_VERSION`.
+- 31 npm packages and 26 Rust crates to latest as of 2026-08-14. Majors:
+  `@testing-library/jest-dom` 6 → 7, `web-vitals` 5 → 6, `base64` 0.22 → 0.23,
+  `jsonwebtoken` 10.4 → 11, `validator` 0.20 → 0.21.
+- **TypeScript deliberately held at 6.0.3.** 7.0.2 is released but `svelte-check`
+  peers on `^5 || ^6` and `@sveltejs/kit@3` requires `typescript ^6`.
+
+### SvelteKit 3
+
+Migrated via `sv migrate sveltekit-3` plus manual work. Pinned to
+`@sveltejs/kit@3.0.0-next.23` and `@sveltejs/adapter-cloudflare@8.0.0-next.6` —
+the latest published builds; there is no stable 3.0.0 and no `rc` dist-tag yet.
+
+- `svelte.config.js` deleted; Kit config now passed to the `sveltekit()` plugin
+  in `vite.config.ts`. Removed options that no longer exist: `vitePlugin`,
+  `output.preloadStrategy`, `env.publicPrefix`, and the `alias` block.
+- `$lib` → `#lib/*` subpath imports with explicit file extensions (~1060 files).
+  `frontend/components.json` (shadcn CLI aliases) updated to match, so generated
+  components no longer emit unresolvable imports.
+- `$env/*` → explicit env vars declared in `frontend/src/env.ts` via
+  `defineEnvVars`, with valibot Standard Schema validators and `description`
+  fields per the official docs. URL-valued variables now reject a malformed
+  value at startup instead of at first request. The hand-written `src/env.d.ts`
+  ambient declarations for the removed `$env/*` modules were deleted.
+- `$app/environment` → `$app/env`, `$app/stores` → `$app/state`,
+  `$service-worker` → `$app/env` + `$app/manifest`. The service worker moved to
+  `src/service-worker/index.ts` with its own tsconfig extending
+  `$app/tsconfig/service-worker`.
+- `error(status, { message })` → `error(status, message)`; `goto`'s removed
+  `noScroll`/`keepFocus` → `reset`; `handleError` now receives
+  `{ kind, error, event }`; `page.url` is readonly.
+
+### Fixed
+
+- **Skip-link accessibility regression** — Kit 3's focus reset sets the URL
+  fragment as the sequential-focus starting point rather than focusing it, so
+  `<main id="main-content">` needed `tabindex="-1"` to stay reachable by
+  keyboard. Caught by the a11y suite and confirmed against the pre-migration
+  baseline, where the test passed.
+- **`rsa` (RUSTSEC-2023-0071) kept out of the dependency tree** — jsonwebtoken 11
+  made its crypto backend pluggable and ships none by default. The obvious
+  pure-Rust choice (`rust_crypto`) pulls in `rsa`, which carries an unpatched
+  Marvin timing-sidechannel advisory and fails `cargo deny check`. Switched to
+  `aws_lc_rs`, which is constant-time and avoids the crate entirely.
+- **`dynamicCompileOptions` forcing `runes: false` on `node_modules`** broke
+  runes-based dependencies: `@tabler/icons-svelte-runes` calls `$props()` and
+  threw "Cannot access 'props' before initialization" at render time, failing
+  342 unit tests across 14 files. Removed — Svelte 5 auto-detects runes mode.
+- 16 duplicate icon declarations in `src/lib/types/svelte-app.d.ts`, latent
+  because `skipLibCheck` hid them.
+- eslint config: `vite.config.ts` was parsed by espree (so TS-only syntax
+  failed) and `src/service-worker` errored under the project-aware parser after
+  being excluded from `tsconfig.json`. Both now use the TS parser without a project.
+- Stale `deny.toml` exemption for RUSTSEC-2026-0173 removed — `validator` 0.21
+  dropped the `proc-macro-error2` build dep that caused it.
+- Test mocks silently stopped mocking after the module renames: `vi.mock`
+  targets for `$app/environment` and `$env/dynamic/*` retargeted to `$app/env`
+  and `$app/env/{private,public}`, with the `env` wrapper flattened to named
+  exports.
+
+### Fixed — runtime defects found by a pre-merge audit
+
+Four regressions that every static gate was blind to. All were introduced by the
+Kit 3 migration itself: SvelteKit 2 never routed expected errors through
+`handleError`, and `$service-worker` supplied values that `$app/*` does not.
+
+- **Service worker cache invalidation was permanently dead.** `version` from
+  `$app/env` is `BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and
+  `payload` is only populated by the client app boot — never in a
+  `ServiceWorkerGlobalScope`. The built bundle contained `var e={}.version`,
+  making every cache name the literal `cache-undefined`, so the `activate` purge
+  could never distinguish the previous deploy's cache from its own and returning
+  visitors could be served pre-deploy HTML referencing deleted chunks. Fixed by
+  injecting `__APP_VERSION__` through Vite's `define` (which the service-workers
+  docs specify is applied to the worker bundle) and feeding the same value to
+  `kit.version.name`. Verified in the artifact: ``n=`1786741312245` ``, matching
+  Kit's own prelude `version`.
+- **The service worker's cache-first branch never matched.** `$app/manifest`
+  paths are relative to the base path (`_app/immutable/x.js`), where
+  `$service-worker`'s `build`/`files` were rooted. Compared against
+  `url.pathname` — always rooted — every lookup failed, silently disabling the
+  static-asset fast path and the `/api/` exclusion filter. Paths are now
+  resolved with `new URL(path, location.href).pathname`, which is how the
+  browser resolves the same relative string passed to `cache.add()`.
+- **Every `error(404, ...)` rendered as HTTP 500 "Internal error".** In
+  SvelteKit 3 a `status`/`message` returned from `handleError` is an *override*,
+  and omitted properties are inherited from the caught error. The migrated hook
+  returned a hardcoded `{ message: 'Internal error', status: 500 }`, which
+  clobbered the status and message of every app error. Both hooks now return
+  only `errorId`, so each kind inherits correctly — app errors keep the
+  developer's status and message, framework errors keep the real status and
+  SvelteKit's safe message, and unknown errors still fall back to
+  500/'Internal Error' with no leak of internals.
+- **Client error telemetry logged `[object Object]`.** For `app` and `framework`
+  errors the hook receives a plain body, not an `Error`. Normalised before it
+  reaches the reporting helpers.
+
+Env-var validation was also reconsidered and deliberately relaxed. Kit throws on
+a failed schema, and adapter-cloudflare `await`s `server.init()` before routing
+every request — so a single malformed value in the Cloudflare dashboard would
+have 500'd the entire site rather than degrading one feature. Since CI cannot
+see those values, the URL schemas are back to plain optional strings; the
+valibot wiring and `description` fields stay.
+
+### Docs
+
+- `CLAUDE.md`: SvelteKit 3 section, rewritten `+server.ts` proxy pattern,
+  `cargo deny` discipline, and a corrected gate list including `check:strict`
+  and `check:a11y`.
+- `docs/development/ENV_VARS.md`: reading-discipline table rewritten for
+  `$app/env/*`, plus a "declaring a new frontend variable" section.
+- `CONTRIBUTING.md`, `README.md`, `docs/development/LOCAL_DEV.md`,
+  `docs/frontend/{SHADCN_SVELTE_GUIDE,DEBUGGING_TOOLS,IMPLEMENTATION_GUIDE}.md`,
+  `.windsurfrules` updated. `docs/frontend/REMOTE-FUNCTIONS-MIGRATION.md` got a
+  historical-record banner and a corrected prerequisite block; dated files under
+  `docs/audits/` were left as written, since they are point-in-time records.
+- Deferred work (deprecated-but-working `invalidateAll`/`json`/`text` APIs, the
+  prerelease re-pin, TypeScript 7) captured in `BACKLOG.md`.
+
+### Verification
+
+check 0/0 across 4,847 files, `check:strict` and `check:a11y` also 0/0, eslint
+0 errors, prettier clean, 2,272 unit tests passing (58/58 files — identical to
+the pre-migration baseline), production build + prerender + service worker
+green. Backend: `cargo fmt --check`, `clippy -D warnings`, `cargo deny check`
+and `cargo machete` all clean, 38/38 no-DB tests. The a11y suite has one
+remaining failure ("form inputs should have associated labels") which
+reproduces on the pre-migration baseline and is tracked in `BACKLOG.md`.
+
 ## [Unreleased] — 2026-07-19 — Dependency top-ups, axum 0.8 route migration (boot fix), maintenance-page redesign, principal audit + security remediation
 
 Catch-up entry covering 2026-07-07 → 2026-07-19. Evidence source: git history (`2fdaa148a`/`085acca16`, `186d8a1c1`, `8b2b65219`/`e15014591`, `888847c3c`, `f6bee735d`, `78d873331`, and the remediation checkpoints `f6cddb8ca`/`df40b83f3`/`05e431b6d`).

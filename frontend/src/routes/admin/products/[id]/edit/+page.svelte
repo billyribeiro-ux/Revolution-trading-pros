@@ -12,7 +12,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
-	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
+	import { productsApi, AdminApiError, type Product } from '#lib/api/admin.js';
 	import {
 		IconCheck,
 		IconBook,
@@ -20,7 +20,7 @@
 		IconCrown,
 		IconShoppingCart,
 		IconX
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import ProductHeader from './_components/ProductHeader.svelte';
 	import ProductTypeSelector from './_components/ProductTypeSelector.svelte';
 	import ProductBasicFields from './_components/ProductBasicFields.svelte';

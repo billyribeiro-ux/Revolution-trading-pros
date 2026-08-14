@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TradingRoom } from '$lib/api/trading-rooms';
+	import type { TradingRoom } from '#lib/api/trading-rooms.js';
 
 	interface Props {
 		room: TradingRoom;

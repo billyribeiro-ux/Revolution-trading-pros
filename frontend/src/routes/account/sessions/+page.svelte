@@ -9,15 +9,15 @@
 	 */
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import {
 		authStore,
 		isAuthenticated,
 		sessionInvalidated,
 		type UserSession
-	} from '$lib/stores/auth.svelte';
-	import authService from '$lib/api/auth';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	} from '#lib/stores/auth.svelte.js';
+	import authService from '#lib/api/auth.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let sessions = $state<UserSession[]>([]);
 	let loading = $state(true);
@@ -196,7 +196,7 @@
 							stroke-linejoin="round"
 							stroke-width="2"
 							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-						/>
+						></path>
 					</svg>
 					<div>
 						<p class="session-notice__title">Session Notice</p>
@@ -233,12 +233,12 @@
 									stroke="currentColor"
 									stroke-width="4"
 									fill="none"
-								/>
+								></circle>
 								<path
 									class="spinner__mark"
 									fill="currentColor"
 									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-								/>
+								></path>
 							</svg>
 							Refreshing...
 						</span>
@@ -287,7 +287,7 @@
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-							/>
+							></path>
 						</svg>
 						<p class="sessions-empty__title">No active sessions</p>
 						<p class="sessions-empty__text">You don't have any active sessions.</p>
@@ -310,7 +310,7 @@
 											stroke-linejoin="round"
 											stroke-width="2"
 											d={getDeviceIcon(session.device_type)}
-										/>
+										></path>
 									</svg>
 								</div>
 
@@ -362,12 +362,12 @@
 														stroke="currentColor"
 														stroke-width="4"
 														fill="none"
-													/>
+													></circle>
 													<path
 														class="spinner__mark"
 														fill="currentColor"
 														d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-													/>
+													></path>
 												</svg>
 												Revoking...
 											</span>
@@ -399,7 +399,7 @@
 								fill-rule="evenodd"
 								d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
 								clip-rule="evenodd"
-							/>
+							></path>
 						</svg>
 						<span>For security, only one active session is allowed at a time.</span>
 					</li>
@@ -414,7 +414,7 @@
 								fill-rule="evenodd"
 								d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
 								clip-rule="evenodd"
-							/>
+							></path>
 						</svg>
 						<span>Signing in on a new device will automatically sign you out from others.</span>
 					</li>
@@ -429,7 +429,7 @@
 								fill-rule="evenodd"
 								d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
 								clip-rule="evenodd"
-							/>
+							></path>
 						</svg>
 						<span
 							>If you see a session you don't recognize, revoke it and change your password.</span
@@ -453,7 +453,7 @@
 							stroke-linejoin="round"
 							stroke-width="2"
 							d="M10 19l-7-7m0 0l7-7m-7 7h18"
-						/>
+						></path>
 					</svg>
 					Back to Account
 				</a>

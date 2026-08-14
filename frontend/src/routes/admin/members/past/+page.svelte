@@ -23,7 +23,7 @@
 		type PeriodStats,
 		TIME_PERIOD_LABELS,
 		invalidateDashboardCache
-	} from '$lib/api/past-members-dashboard';
+	} from '#lib/api/past-members-dashboard.js';
 	import {
 		IconArrowLeft,
 		IconUsers,
@@ -44,9 +44,9 @@
 		IconSparkles,
 		IconCheck,
 		IconAlertTriangle
-	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 	import type { PastMembersPageData } from './+page';
 
 	// PAGE DATA
@@ -226,7 +226,7 @@
 		sending = true;
 
 		try {
-			const options: import('$lib/api/past-members-dashboard').BulkEmailOptions = {
+			const options: import('#lib/api/past-members-dashboard.js').BulkEmailOptions = {
 				period: selectedPeriod,
 				template: emailTemplate
 			};
@@ -781,8 +781,7 @@
 							id="custom-body"
 							rows="8"
 							placeholder="Enter email body... Use {'{{ name }}'} for personalization"
-							bind:value={customBody}
-						></textarea>
+							bind:value={customBody}></textarea>
 					</div>
 				{/if}
 			</div>

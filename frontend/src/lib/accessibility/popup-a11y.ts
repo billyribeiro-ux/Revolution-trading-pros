@@ -33,7 +33,7 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -167,6 +167,7 @@ export function prefersReducedMotion(): boolean {
  */
 export function prefersHighContrast(): boolean {
 	if (!browser) return false;
+
 	return (
 		window.matchMedia('(prefers-contrast: high)').matches ||
 		window.matchMedia('(forced-colors: active)').matches

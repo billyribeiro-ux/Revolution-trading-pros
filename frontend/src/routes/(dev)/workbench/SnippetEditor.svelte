@@ -92,8 +92,7 @@
 						oninput={handleInput}
 						placeholder="Enter HTML content for children..."
 						rows="8"
-						spellcheck="false"
-					></textarea>
+						spellcheck="false"></textarea>
 					<div class="editor-footer">
 						<span class="char-count">{value.length} chars</span>
 						<button class="clear-btn" onclick={() => onChange('')}> Clear </button>

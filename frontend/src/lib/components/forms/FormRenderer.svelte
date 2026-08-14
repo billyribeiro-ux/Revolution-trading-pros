@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { Form, FormField } from '$lib/api/forms';
-	import { submitForm } from '$lib/api/forms';
-	import type { JsonValue } from '$lib/api/_types';
+	import type { Form, FormField } from '#lib/api/forms.js';
+	import { submitForm } from '#lib/api/forms.js';
+	import type { JsonValue } from '#lib/api/_types.js';
 	import FormFieldRenderer from './FormFieldRenderer.svelte';
 
 	// Mirrors FormFieldRenderer's local `FieldValue` (File acceptable for

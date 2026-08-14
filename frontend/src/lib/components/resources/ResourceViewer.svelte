@@ -11,9 +11,9 @@
   - Access control indication
 -->
 <script lang="ts">
-	import type { RoomResource } from '$lib/api/room-resources';
-	import { trackDownload } from '$lib/api/room-resources';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { RoomResource } from '#lib/api/room-resources.js';
+	import { trackDownload } from '#lib/api/room-resources.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import type { Attachment } from 'svelte/attachments';
 
 	interface Props {

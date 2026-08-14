@@ -23,7 +23,7 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -31,11 +31,7 @@ import { browser } from '$app/environment';
 
 /** Cache strategy determines fetch/cache priority */
 export type CacheStrategy =
-	| 'cache-first'
-	| 'network-first'
-	| 'stale-while-revalidate'
-	| 'cache-only'
-	| 'network-only';
+	'cache-first' | 'network-first' | 'stale-while-revalidate' | 'cache-only' | 'network-only';
 
 /** Cache configuration for individual requests */
 export interface CacheConfig {

@@ -93,11 +93,7 @@ export interface RetryConfig {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export type CacheStrategy =
-	| 'cache-first'
-	| 'network-first'
-	| 'stale-while-revalidate'
-	| 'cache-only'
-	| 'network-only';
+	'cache-first' | 'network-first' | 'stale-while-revalidate' | 'cache-only' | 'network-only';
 
 export interface CacheConfig {
 	/** Cache strategy */

@@ -8,7 +8,7 @@ import {
 	validateFile,
 	sanitizeFilename,
 	type FileValidationOptions
-} from '$lib/utils/sanitization';
+} from '#lib/utils/sanitization.js';
 
 // ============================================================================
 // Types

@@ -9,7 +9,7 @@
  *
  * ```svelte
  * <script>
- *   import { Form } from '$lib/components/forms';
+ *   import { Form } from '#lib/components/forms/index.js';
  * </script>
  *
  * <!-- By ID (recommended - like FluentForm's [fluentform id="5"]) -->

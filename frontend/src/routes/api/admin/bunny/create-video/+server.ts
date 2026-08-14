@@ -11,11 +11,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { requireAdmin } from '$lib/server/auth';
+import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
+import { requireAdmin } from '#lib/server/auth.js';
 
 // FIX-2026-04-26-audit: align with repo-wide proxy env-var chain.
-const BACKEND_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
 // POST - Create video entry on Bunny.net
 export const POST: RequestHandler = async (event) => {

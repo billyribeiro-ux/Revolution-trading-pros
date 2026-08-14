@@ -18,7 +18,7 @@
 		IconChartBar,
 		IconBuildingSkyscraper,
 		IconChevronDown
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// Major Stock Indexes with detailed info
 	const majorIndexes = [

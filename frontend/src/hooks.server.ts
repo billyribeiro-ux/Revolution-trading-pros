@@ -1,3 +1,5 @@
+import { redirect, isRedirect } from '@sveltejs/kit';
+
 /**
  * SvelteKit Server Hooks - Auth, Security Headers & Performance
  * Apple ICT 11+ Principal Engineer Implementation
@@ -14,15 +16,17 @@
  *
  * @version 3.0.0 - ICT 11+ Server-Side Auth + November 2025 Standards
  */
+import { sequence, type Handle, type HandleServerError } from '@sveltejs/kit/hooks';
 
-import type { Handle, HandleServerError } from '@sveltejs/kit';
-import { redirect, isRedirect } from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
-import { env } from '$env/dynamic/private';
+import {
+	API_BASE_URL as ENV_API_BASE_URL,
+	BACKEND_URL,
+	VITE_ERROR_TRACKING_URL
+} from '$app/env/private';
 
 // API URL for server-side token validation. Precedence matches every
 // +server.ts proxy and lib/server/axum/client.ts.
-const API_BASE_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_BASE_URL = ENV_API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
  * MAINTENANCE MODE
@@ -464,9 +468,8 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 				'X-Robots-Tag',
 				'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
 			);
-		}
-		// Prevent indexing for private areas
-		else if (
+		} else // Prevent indexing for private areas
+		if (
 			pathname.startsWith('/admin') ||
 			pathname.startsWith('/account') ||
 			pathname.startsWith('/cart') ||
@@ -594,12 +597,25 @@ export const handle: Handle = sequence(
  *   (mirrors hooks.client.ts:128 — server has no window.gtag).
  * - Returns a safe, sanitized payload: never leaks stack to the browser.
  */
-export const handleError: HandleServerError = async ({ error, event, status }) => {
+export const handleError: HandleServerError = async ({ kind, error, event }) => {
 	const errorId = crypto.randomUUID();
 
 	const url = event.url?.toString() ?? 'unknown';
 	const method = event.request?.method ?? 'unknown';
-	const message = error instanceof Error ? error.message : String(error);
+
+	// SvelteKit 3 no longer passes a top-level `status`/`message`; they are
+	// carried by the error itself and discriminated by `kind`. A status is only
+	// observable here for `framework` and `validation` errors — for `app` errors
+	// SvelteKit hands over the App.Error *body* (which has no status field), and
+	// `unknown` errors have none at all. Left undefined rather than defaulted to
+	// 500, so the log says "unknown" instead of asserting something false.
+	const status = kind === 'framework' || kind === 'validation' ? error.status : undefined;
+	const message =
+		kind === 'app' || kind === 'framework' || kind === 'validation'
+			? error.message
+			: error instanceof Error
+				? error.message
+				: String(error);
 	const stack = error instanceof Error ? (error.stack ?? '') : '';
 
 	// Always log full details on the server.
@@ -619,7 +635,7 @@ export const handleError: HandleServerError = async ({ error, event, status }) =
 		import.meta.env.PROD;
 
 	if (isProduction) {
-		const errorEndpoint = env.VITE_ERROR_TRACKING_URL;
+		const errorEndpoint = VITE_ERROR_TRACKING_URL;
 		if (errorEndpoint) {
 			try {
 				await fetch(errorEndpoint, {
@@ -644,9 +660,20 @@ export const handleError: HandleServerError = async ({ error, event, status }) =
 		}
 	}
 
-	return {
-		message: 'Internal error',
-		errorId,
-		status: status >= 500 ? 500 : status
-	};
+	// Return ONLY `errorId`.
+	//
+	// In SvelteKit 3 a returned `status`/`message` is an OVERRIDE, and omitted
+	// properties are inherited from the caught error. Inheriting is exactly what
+	// every kind wants here:
+	//   app        → the body passed to `error(...)`, i.e. the status and message
+	//                the developer deliberately chose to show
+	//   framework  → the real status (404 etc.) and SvelteKit's safe message
+	//   validation → likewise
+	//   unknown    → 500 / 'Internal Error', so internals are never leaked
+	//
+	// Returning a hardcoded `{ message: 'Internal error', status: 500 }` — which
+	// is what this did on arrival in SvelteKit 3 — turned every `error(404, ...)`
+	// in the app into a 500 "Internal error". SvelteKit 2 never routed expected
+	// errors through this hook at all, so the bug had no analogue on `main`.
+	return { errorId };
 };

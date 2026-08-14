@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { FRED_API_KEY } from '$app/env/private';
 
 const FRED_SERIES: Record<string, string> = {
 	rate1M: 'DGS1MO',
@@ -16,9 +16,9 @@ export const GET: RequestHandler = async ({ url }) => {
 	const healthcheck = url.searchParams.get('healthcheck');
 
 	if (provider === 'fred') {
-		const apiKey = env.FRED_API_KEY;
-		if (!apiKey) throw error(401, 'FRED API key not configured');
+		const apiKey = FRED_API_KEY;
 
+		if (!apiKey) throw error(401, 'FRED API key not configured');
 		if (healthcheck) return json({ ok: true });
 
 		try {

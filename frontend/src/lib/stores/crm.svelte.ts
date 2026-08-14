@@ -6,7 +6,7 @@
  * for improved reactivity and type safety.
  */
 
-import type { Contact, Deal, Pipeline, ContactFilters, DealFilters } from '$lib/crm/types';
+import type { Contact, Deal, Pipeline, ContactFilters, DealFilters } from '#lib/crm/types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STATE - Svelte 5 Runes

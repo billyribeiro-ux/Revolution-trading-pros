@@ -7,13 +7,13 @@
  * @version 1.0.0
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL } from '$app/env/private';
 import type { PageServerLoad } from './$types';
 
 const ROOM_SLUG = 'explosive-swings';
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const baseUrl = env.API_BASE_URL || 'http://localhost:8080/api';
+	const baseUrl = API_BASE_URL || 'http://localhost:8080/api';
 
 	try {
 		const videosRes = await fetch(

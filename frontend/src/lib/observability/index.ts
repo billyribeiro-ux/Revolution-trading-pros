@@ -10,7 +10,7 @@
  *
  * Quick Start:
  * ```typescript
- * import { initializeAnalytics, track, trackPageView } from '$lib/observability';
+ * import { initializeAnalytics, track, trackPageView } from '#lib/observability/index.js';
  *
  * // Initialize on client mount
  * await initializeAnalytics({ consent: { analytics: true, marketing: false } });
@@ -131,7 +131,7 @@ export * from './telemetry';
 // Initialization Helper
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { metrics } from './metrics';
 import { getOrchestrator } from './orchestrator';
 import type { AnalyticsConfig } from './adapters';
@@ -143,7 +143,7 @@ import type { AnalyticsConfig } from './adapters';
  * ```svelte
  * <script>
  *   import { onMount } from 'svelte';
- *   import { initializeAnalytics } from '$lib/observability';
+ *   import { initializeAnalytics } from '#lib/observability/index.js';
  *
  *   onMount(async () => {
  *     await initializeAnalytics({
@@ -168,7 +168,7 @@ export async function initializeAnalytics(config?: Partial<AnalyticsConfig>): Pr
  *
  * Call this when user consent changes:
  * ```typescript
- * import { updateAnalyticsConsent } from '$lib/observability';
+ * import { updateAnalyticsConsent } from '#lib/observability/index.js';
  *
  * // When consent is granted
  * updateAnalyticsConsent({ analytics: true, marketing: true });

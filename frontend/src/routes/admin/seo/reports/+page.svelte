@@ -11,7 +11,7 @@
 		IconCheck,
 		IconX,
 		IconDownload
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import {
 		reportTemplates,
 		formatSchedule,
@@ -19,9 +19,9 @@
 		defaultSections,
 		type ReportTemplate,
 		type ReportFrequency
-	} from '$lib/seo';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/seo/index.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// State using Svelte 5 runes
 	let templates = $state<ReportTemplate[]>([]);

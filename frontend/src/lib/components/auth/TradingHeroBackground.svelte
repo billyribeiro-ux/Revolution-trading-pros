@@ -14,7 +14,7 @@
 	 * @version 2.0.0
 	 */
 	import { onMount, onDestroy } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Attachment } from 'svelte/attachments';
 	import TestimonialCarousel from './TestimonialCarousel.svelte';
 

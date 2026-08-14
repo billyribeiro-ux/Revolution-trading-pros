@@ -9,10 +9,10 @@
 	 * @version 2.0.0 - Added animated numbers
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import type { KpiValue } from '$lib/api/analytics';
-	import Icon from '$lib/components/Icon.svelte';
-	import * as Icons from '$lib/icons';
+	import { browser } from '$app/env';
+	import type { KpiValue } from '#lib/api/analytics.js';
+	import Icon from '#lib/components/Icon.svelte';
+	import * as Icons from '#lib/icons/index.js';
 
 	type IconName = keyof typeof Icons;
 
@@ -93,7 +93,7 @@
 		return () => observer.disconnect();
 	});
 
-	// Icon mapping: KPI key → Tabler icon name from `$lib/icons`.
+	// Icon mapping: KPI key → Tabler icon name from `#lib/icons/index.js`.
 	const iconMap: Record<string, IconName> = {
 		'currency-dollar': 'IconCurrencyDollar',
 		'shopping-cart': 'IconShoppingCart',
@@ -139,14 +139,7 @@
 	);
 
 	let trendIcon = $derived(kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→');
-
-	let sizeClasses = $derived(
-		{
-			sm: 'kpi-card--sm',
-			md: 'kpi-card--md',
-			lg: 'kpi-card--lg'
-		}[size]
-	);
+	let sizeClasses = $derived({ sm: 'kpi-card--sm', md: 'kpi-card--md', lg: 'kpi-card--lg' }[size]);
 
 	let valueSizeClasses = $derived(
 		{
@@ -242,7 +235,7 @@
 					stroke-width="1.5"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-				/>
+				></path>
 			</svg>
 		</div>
 	{/if}

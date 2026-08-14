@@ -9,11 +9,11 @@
 		IconRefresh,
 		IconEye,
 		IconCode
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import SeoAnalyzer from './SeoAnalyzer.svelte';
 	import SeoPreview from './SeoPreview.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Entity shape derived from the template reads: `type`/`id` for the API
 	// path, `title` for the preview header, `url` for the canonical fallback.
@@ -214,8 +214,7 @@
 						bind:value={meta.description}
 						placeholder="Enter meta description..."
 						rows="3"
-						maxlength="170"
-					></textarea>
+						maxlength="170"></textarea>
 					<div class="hint">Recommended: 150-160 characters</div>
 				</div>
 
@@ -278,8 +277,7 @@
 						id="og-description"
 						bind:value={meta.og_description}
 						placeholder="Leave empty to use meta description"
-						rows="2"
-					></textarea>
+						rows="2"></textarea>
 				</div>
 
 				<div class="form-group">
@@ -330,8 +328,7 @@
 						id="twitter-description"
 						bind:value={meta.twitter_description}
 						placeholder="Leave empty to use OG description"
-						rows="2"
-					></textarea>
+						rows="2"></textarea>
 				</div>
 
 				<div class="form-group">

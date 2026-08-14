@@ -9,9 +9,9 @@
   - Empty state handling
 -->
 <script lang="ts">
-	import type { RecentlyAccessed } from '$lib/api/room-resources';
-	import { getRecentlyAccessed } from '$lib/api/room-resources';
-	import Icon from '$lib/components/Icon.svelte';
+	import type { RecentlyAccessed } from '#lib/api/room-resources.js';
+	import { getRecentlyAccessed } from '#lib/api/room-resources.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 
 	interface Props {

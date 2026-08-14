@@ -32,7 +32,7 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import { Button } from '$lib/components/ui/button';
+  import { Button } from '#lib/components/ui/button/index.js';
 </script>
 
 <!-- Variants -->
@@ -60,8 +60,8 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
+  import * as Dialog from '#lib/components/ui/dialog/index.js';
+  import { Button } from '#lib/components/ui/button/index.js';
   
   let open = $state(false);
 </script>
@@ -100,8 +100,8 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import { Button } from '$lib/components/ui/button';
+  import * as DropdownMenu from '#lib/components/ui/dropdown-menu/index.js';
+  import { Button } from '#lib/components/ui/button/index.js';
 </script>
 
 <DropdownMenu.Root>
@@ -137,8 +137,8 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import * as Card from '$lib/components/ui/card';
-  import { Button } from '$lib/components/ui/button';
+  import * as Card from '#lib/components/ui/card/index.js';
+  import { Button } from '#lib/components/ui/button/index.js';
 </script>
 
 <Card.Root>
@@ -164,7 +164,7 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import * as Table from '$lib/components/ui/table';
+  import * as Table from '#lib/components/ui/table/index.js';
   
   const trades = [
     { ticker: 'NVDA', entry: 142.50, exit: 156.00, profit: '+9.5%' },
@@ -201,11 +201,11 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import * as Select from '$lib/components/ui/select';
-  import { Textarea } from '$lib/components/ui/textarea';
+  import { Button } from '#lib/components/ui/button/index.js';
+  import { Input } from '#lib/components/ui/input/index.js';
+  import { Label } from '#lib/components/ui/label/index.js';
+  import * as Select from '#lib/components/ui/select/index.js';
+  import { Textarea } from '#lib/components/ui/textarea/index.js';
   
   let ticker = $state('');
   let notes = $state('');
@@ -246,7 +246,7 @@ All components are in: `src/lib/components/ui/`
 
 ```svelte
 <script>
-  import { Badge } from '$lib/components/ui/badge';
+  import { Badge } from '#lib/components/ui/badge/index.js';
 </script>
 
 <Badge>Default</Badge>
@@ -377,8 +377,8 @@ Edit component source to match your design system:
 ### 4. Combine with Existing Patterns
 ```svelte
 <script>
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
+  import * as Dialog from '#lib/components/ui/dialog/index.js';
+  import { Button } from '#lib/components/ui/button/index.js';
   
   // Use with your existing state management
   const ps = createPageState();
@@ -398,7 +398,7 @@ All components are fully typed. Use `$props()` for type safety:
 
 ```svelte
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
+  import { Button } from '#lib/components/ui/button/index.js';
   import type { Button as ButtonPrimitive } from 'bits-ui';
   
   type Props = ButtonPrimitive.Props & {

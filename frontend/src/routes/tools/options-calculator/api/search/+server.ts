@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { POLYGON_API_KEY } from '$app/env/private';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const query = url.searchParams.get('q');
@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 
 	if (provider === 'polygon') {
-		const apiKey = env.POLYGON_API_KEY;
+		const apiKey = POLYGON_API_KEY;
 		if (!apiKey) throw error(401, 'Polygon API key not configured');
 
 		try {

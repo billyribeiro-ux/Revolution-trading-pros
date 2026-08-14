@@ -6,8 +6,8 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import Icon from '$lib/components/Icon.svelte';
-	import { browser } from '$app/environment';
+	import Icon from '#lib/components/Icon.svelte';
+	import { browser } from '$app/env';
 
 	// Dynamic import for tus-js-client to avoid SSR issues
 	// Type definition for tus module

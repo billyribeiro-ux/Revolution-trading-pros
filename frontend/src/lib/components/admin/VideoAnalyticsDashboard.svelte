@@ -9,7 +9,7 @@
 		analyticsApi,
 		type AnalyticsDashboard,
 		type VideoAnalytics
-	} from '$lib/api/video-advanced';
+	} from '#lib/api/video-advanced.js';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';

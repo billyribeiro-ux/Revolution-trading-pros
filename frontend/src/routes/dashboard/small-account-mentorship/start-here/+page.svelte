@@ -9,8 +9,8 @@
 -->
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
-	import { IconChevronRight } from '$lib/icons';
-	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import { IconChevronRight } from '#lib/icons/index.js';
+	import WeeklyWatchlist from '#lib/components/dashboard/WeeklyWatchlist.svelte';
 	import type { PageData } from './$types';
 
 	// Svelte 5 props with proper typing

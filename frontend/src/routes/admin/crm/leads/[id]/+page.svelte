@@ -53,9 +53,9 @@
 		IconNote,
 		IconTarget,
 		IconWorld
-	} from '$lib/icons';
-	import { api } from '$lib/api/config';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import { api } from '#lib/api/config.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	// TYPES
 
@@ -774,8 +774,7 @@
 					class="note-input"
 					placeholder="Write your note here..."
 					bind:value={newNoteContent}
-					rows="5"
-				></textarea>
+					rows="5"></textarea>
 			</div>
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showAddNoteModal = false)}> Cancel </button>

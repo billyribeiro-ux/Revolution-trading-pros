@@ -22,7 +22,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/auth';
+import { requireAdmin } from '#lib/server/auth.js';
 
 interface ConnectionStatus {
 	key: string;

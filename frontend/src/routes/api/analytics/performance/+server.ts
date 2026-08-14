@@ -17,12 +17,12 @@
  * - Correlation ID in header for debugging
  */
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // FIX-2026-07-19: env.VITE_API_URL → canonical pattern
 // const PROD_API_ROOT = 'http://localhost:8080';
 // const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
-const API_ROOT = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_ROOT = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 const API_URL = `${API_ROOT}/api`;
 
 function generateRequestId(): string {

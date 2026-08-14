@@ -20,7 +20,7 @@
 import * as v from 'valibot';
 import { error } from '@sveltejs/kit';
 import { command, getRequestEvent } from '$app/server';
-import { axumAlerts, axumTrades, axumTradePlans, axumAuth } from '$lib/server/axum';
+import { axumAlerts, axumTrades, axumTradePlans, axumAuth } from '#lib/server/axum/index.js';
 import {
 	CreateTradeInputSchema,
 	CloseTradeInputSchema,
@@ -29,7 +29,7 @@ import {
 	CreateTradePlanEntryInputSchema,
 	UpdateTradePlanEntryInputSchema,
 	DeleteTradePlanEntryInputSchema
-} from '$lib/shared/schemas/trades';
+} from '#lib/shared/schemas/trades.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Auth Guard

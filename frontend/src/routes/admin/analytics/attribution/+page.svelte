@@ -6,10 +6,10 @@
 	 * channel performance across the customer journey.
 	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { analyticsApi, type AttributionReport } from '$lib/api/analytics';
-	import AttributionChart from '$lib/components/analytics/AttributionChart.svelte';
-	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
+	import { browser } from '$app/env';
+	import { analyticsApi, type AttributionReport } from '#lib/api/analytics.js';
+	import AttributionChart from '#lib/components/analytics/AttributionChart.svelte';
+	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
 
 	let report = $state<AttributionReport | null>(null);
 	let loading = $state(true);
@@ -18,10 +18,30 @@
 	let selectedModel = $state('linear');
 
 	const models = [
-		{ value: 'first_touch', label: 'First Touch', description: 'Credits the first interaction' },
-		{ value: 'last_touch', label: 'Last Touch', description: 'Credits the last interaction' },
-		{ value: 'linear', label: 'Linear', description: 'Equal credit to all touchpoints' },
-		{ value: 'time_decay', label: 'Time Decay', description: 'More credit to recent touchpoints' },
+		{
+			value: 'first_touch',
+			label: 'First Touch',
+			description: 'Credits the first interaction'
+		},
+
+		{
+			value: 'last_touch',
+			label: 'Last Touch',
+			description: 'Credits the last interaction'
+		},
+
+		{
+			value: 'linear',
+			label: 'Linear',
+			description: 'Equal credit to all touchpoints'
+		},
+
+		{
+			value: 'time_decay',
+			label: 'Time Decay',
+			description: 'More credit to recent touchpoints'
+		},
+
 		{
 			value: 'position_based',
 			label: 'Position Based',
@@ -69,6 +89,7 @@
 	const totalRevenue = $derived(
 		report?.channels?.reduce((sum, c) => sum + c.attributed_revenue, 0) || 0
 	);
+
 	const totalConversions = $derived(
 		report?.channels?.reduce((sum, c) => sum + c.attributed_conversions, 0) || 0
 	);

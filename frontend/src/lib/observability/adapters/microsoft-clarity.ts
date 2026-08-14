@@ -22,8 +22,8 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type {
 	AnalyticsAdapter,
 	AnalyticsConfig,
@@ -52,7 +52,6 @@ interface ClarityWindow extends Window {
 	clarity?: ClarityFunction;
 	[key: string]: unknown;
 }
-
 interface ClarityFunction {
 	(command: string, ...args: unknown[]): void;
 	q?: unknown[][];

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconSearch } from '$lib/icons';
+	import { IconSearch } from '#lib/icons/index.js';
 
 	interface Props {
 		title?: string;

@@ -17,7 +17,7 @@
 	 */
 
 	import { fly } from 'svelte/transition';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import { consentStore, showConsentBanner, openPreferencesModal } from '../store.svelte';
 	// Template store imported by BannerRenderer
 	import BannerRenderer from '../templates/BannerRenderer.svelte';

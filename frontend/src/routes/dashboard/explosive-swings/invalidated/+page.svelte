@@ -4,8 +4,8 @@
 	 * @standards Apple ICT 7+ | Svelte 5 January 2026 | WCAG 2.1 AA
 	 */
 	import { onMount } from 'svelte';
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LoadingState from '$lib/components/dashboard/LoadingState.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import LoadingState from '#lib/components/dashboard/LoadingState.svelte';
 	import { ROOM_SLUG } from '../constants';
 
 	interface InvalidatedTrade {

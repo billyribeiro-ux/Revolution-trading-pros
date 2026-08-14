@@ -12,7 +12,7 @@
  */
 
 import { json, type RequestEvent } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { FMP_API_KEY, FINNHUB_API_KEY } from '$app/env/private';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -138,7 +138,7 @@ function getSimulatedPrice(ticker: string): PriceData {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 async function fetchExternalPrices(tickers: string[]): Promise<PriceData[]> {
-	const apiKey = env.FMP_API_KEY || env.FINNHUB_API_KEY;
+	const apiKey = FMP_API_KEY || FINNHUB_API_KEY;
 
 	if (!apiKey) {
 		// No API key - use simulated prices
@@ -147,10 +147,10 @@ async function fetchExternalPrices(tickers: string[]): Promise<PriceData[]> {
 
 	try {
 		// Try Financial Modeling Prep API
-		if (env.FMP_API_KEY) {
+		if (FMP_API_KEY) {
 			const tickerList = tickers.join(',');
 			const response = await fetch(
-				`https://financialmodelingprep.com/api/v3/quote/${tickerList}?apikey=${env.FMP_API_KEY}`,
+				`https://financialmodelingprep.com/api/v3/quote/${tickerList}?apikey=${FMP_API_KEY}`,
 				{ signal: AbortSignal.timeout(5000) }
 			);
 

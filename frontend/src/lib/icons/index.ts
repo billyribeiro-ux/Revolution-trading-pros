@@ -6,7 +6,7 @@
  * This pattern is required for tabler-icons-svelte v3.x.
  *
  * Usage:
- * import { IconMapPin, IconUser, IconMail } from '$lib/icons';
+ * import { IconMapPin, IconUser, IconMail } from '#lib/icons/index.js';
  */
 
 // Core UI Icons

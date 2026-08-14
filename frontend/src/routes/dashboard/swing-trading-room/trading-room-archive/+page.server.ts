@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { env } from '$env/dynamic/private';
+import { API_URL as ENV_API_URL } from '$app/env/private';
 import type { PageServerLoad } from './$types';
 
 // Video response from API
@@ -65,7 +65,7 @@ export interface ArchivePageData {
 }
 
 export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageData> => {
-	const API_URL = env.API_URL || 'http://localhost:8080';
+	const API_URL = ENV_API_URL || 'http://localhost:8080';
 	const ROOM_SLUG = 'swing-trading-room';
 
 	// Get query params

@@ -20,7 +20,7 @@
 		IconBrandInstagram,
 		IconBrandYoutube,
 		IconBrandFacebook
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// --- State (Svelte 5 Runes) ---
 	let currentYear = $state(new Date().getFullYear());

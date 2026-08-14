@@ -7,7 +7,7 @@
 
 import DOMPurify from 'isomorphic-dompurify';
 import type { Config } from 'dompurify';
-import { logger } from '$lib/utils/logger';
+import { logger } from '#lib/utils/logger.js';
 
 // ============================================================================
 // Types

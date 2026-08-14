@@ -155,7 +155,10 @@ pub fn router() -> Router<AppState> {
         )
         .route("/{course_id}/upload-url", post(media::get_upload_url))
         // Video Upload (TUS)
-        .route("/{course_id}/video-upload", post(media::create_video_upload))
+        .route(
+            "/{course_id}/video-upload",
+            post(media::create_video_upload),
+        )
 }
 
 // FIX-2026-04-26: ORPHAN — defined but never registered/called. Either wire up via routes/mod.rs / main.rs or delete in follow-up.

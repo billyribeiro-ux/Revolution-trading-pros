@@ -617,8 +617,7 @@
 						id="preset-description"
 						bind:value={savePresetDescription}
 						placeholder="Describe what this preset is for..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-field">

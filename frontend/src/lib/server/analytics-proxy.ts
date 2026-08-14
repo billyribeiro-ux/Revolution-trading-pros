@@ -8,7 +8,7 @@
  *   This module unifies the pattern so every new proxy is one short call.
  *
  * Usage:
- *   import { proxyAnalytics } from '$lib/server/analytics-proxy';
+ *   import { proxyAnalytics } from '#lib/server/analytics-proxy.js';
  *
  *   export const GET: RequestHandler = (event) =>
  *     proxyAnalytics(event, '/api/admin/analytics/recordings', {
@@ -25,10 +25,10 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from './auth';
 
-const API_URL = env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Allowlist for the `period` query param. Anything outside this set is

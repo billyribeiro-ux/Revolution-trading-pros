@@ -12,9 +12,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
-// `$lib/server/proxy-fetch` (CLAUDE.md URL-fallback pinned once,
+// `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
 // `Promise<unknown>` return, narrowing primitives consolidated).
-import { fetchBackend, hasSuccess, isObject } from '$lib/server/proxy-fetch';
+import { fetchBackend, hasSuccess, isObject } from '#lib/server/proxy-fetch.js';
 
 // GET - List user's favorites
 export const GET: RequestHandler = async ({ url, cookies }) => {

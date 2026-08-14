@@ -36,10 +36,10 @@
 	import IconSquare from '@tabler/icons-svelte-runes/icons/square';
 	import IconSquareCheck from '@tabler/icons-svelte-runes/icons/square-check';
 	import IconFileExport from '@tabler/icons-svelte-runes/icons/file-export';
-	import { crmAPI } from '$lib/api/crm';
-	import type { EmailTemplate, TemplateCategory } from '$lib/crm/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { EmailTemplate, TemplateCategory } from '#lib/crm/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { sanitizeHtml } from '#lib/utils/sanitize.js';
 
 	// STATE MANAGEMENT - Svelte 5 Runes
 

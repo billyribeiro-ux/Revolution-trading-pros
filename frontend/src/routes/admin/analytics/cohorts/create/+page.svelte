@@ -1,3 +1,16 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { browser } from '$app/env';
+	import { goto } from '$app/navigation';
+
+	onMount(() => {
+		if (!browser) return;
+
+		// replaceState so the back button doesn't trap users in a redirect loop.
+		goto('/admin/analytics/cohorts?create=1', { replaceState: true });
+	});
+</script>
+
 <!--
 	URL: /admin/analytics/cohorts/create
 
@@ -11,18 +24,6 @@
 	thin redirect into the cohorts list page with `?create=1` so the existing
 	modal can open itself.
 -->
-
-<script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
-
-	onMount(() => {
-		if (!browser) return;
-		// replaceState so the back button doesn't trap users in a redirect loop.
-		goto('/admin/analytics/cohorts?create=1', { replaceState: true });
-	});
-</script>
 
 <svelte:head>
 	<title>Create Cohort | Analytics</title>

@@ -3,7 +3,7 @@
  * Complete type system for all blocks
  */
 
-import type { BlockId } from '$lib/stores/blockState.svelte';
+import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
 // Base block type
 export type BlockType =
@@ -126,14 +126,7 @@ export interface BlockContent {
 	// Embed
 	embedUrl?: string;
 	embedType?:
-		| 'youtube'
-		| 'vimeo'
-		| 'twitter'
-		| 'instagram'
-		| 'tiktok'
-		| 'soundcloud'
-		| 'spotify'
-		| 'custom';
+		'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'tiktok' | 'soundcloud' | 'spotify' | 'custom';
 
 	// Trading
 	symbol?: string;

@@ -3,7 +3,7 @@
  * @version 2.0.0 - Migrated to Svelte 5 Runes (February 2026)
  */
 
-import type { BehaviorSession, BehaviorDashboardData } from '$lib/behavior/types';
+import type { BehaviorSession, BehaviorDashboardData } from '#lib/behavior/types.js';
 
 // Svelte 5 reactive state
 let currentSessionValue = $state<BehaviorSession | null>(null);

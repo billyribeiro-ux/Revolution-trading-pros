@@ -11,8 +11,14 @@
 	 * @version 2.0.0 - Accessibility Enhanced
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
-	import { IconCheck, IconX, IconAlertCircle, IconInfoCircle, IconLoader } from '$lib/icons';
-	import { toasts, removeToast, type ToastType } from '$lib/stores/toast.svelte';
+	import {
+		IconCheck,
+		IconX,
+		IconAlertCircle,
+		IconInfoCircle,
+		IconLoader
+	} from '#lib/icons/index.js';
+	import { toasts, removeToast, type ToastType } from '#lib/stores/toast.svelte.js';
 
 	// Local derived from getter
 	const toastList = $derived(toasts.value);

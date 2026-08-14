@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';

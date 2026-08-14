@@ -12,8 +12,8 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { isAuthenticated } from '$lib/stores/auth.svelte';
-	import { addToCart } from '$lib/stores/cart.svelte';
+	import { isAuthenticated } from '#lib/stores/auth.svelte.js';
+	import { addToCart } from '#lib/stores/cart.svelte.js';
 	import {
 		IconCheck,
 		IconShoppingCart,
@@ -21,8 +21,8 @@
 		IconBell,
 		IconFilter,
 		IconClock
-	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// Product configuration
 	const product = {

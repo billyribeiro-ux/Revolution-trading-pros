@@ -17,8 +17,8 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import { onDestroy, onMount } from 'svelte';
-	import { ROOMS } from '$lib/config/rooms';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { ROOMS } from '#lib/config/rooms.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import AlertBanner from './_components/AlertBanner.svelte';

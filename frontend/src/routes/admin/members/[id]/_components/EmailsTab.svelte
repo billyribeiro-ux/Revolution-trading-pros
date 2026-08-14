@@ -6,7 +6,7 @@
 		IconClock,
 		IconAlertTriangle,
 		IconTrendingUp
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	import type { EmailHistoryItem } from './helpers';
 	import { formatDateTime, getEmailStatusColor } from './helpers';
 

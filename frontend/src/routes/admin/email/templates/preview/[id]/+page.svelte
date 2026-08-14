@@ -1,10 +1,10 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
-	import { apiFetch } from '$lib/api/config';
+	import { apiFetch } from '#lib/api/config.js';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { sanitizeHtml } from '#lib/utils/sanitize.js';
 
 	let loading = $state(true);
 	let error = $state('');

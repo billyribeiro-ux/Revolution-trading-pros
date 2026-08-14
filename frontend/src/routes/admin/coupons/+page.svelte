@@ -17,10 +17,10 @@
 	 * `CouponCard` so this loop body stays trivial.
 	 */
 	import { goto } from '$app/navigation';
-	import { couponsApi, AdminApiError } from '$lib/api/admin';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { logger } from '$lib/utils/logger';
+	import { couponsApi, AdminApiError } from '#lib/api/admin.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
 
 	import CouponCard from './_components/CouponCard.svelte';
 	import CouponsEmptyStates from './_components/CouponsEmptyStates.svelte';

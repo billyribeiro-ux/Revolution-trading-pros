@@ -6,10 +6,10 @@
 		IconEdit,
 		IconToggleLeft,
 		IconToggleRight
-	} from '$lib/icons';
-	import RedirectEditor from '$lib/components/seo/RedirectEditor.svelte';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
-	import { logger } from '$lib/utils/logger';
+	} from '#lib/icons/index.js';
+	import RedirectEditor from '#lib/components/seo/RedirectEditor.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import { logger } from '#lib/utils/logger.js';
 	import {
 		getRedirects,
 		getRedirectStats,

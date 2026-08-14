@@ -8,9 +8,9 @@
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { user } from '$lib/stores/auth.svelte';
-	import { logout } from '$lib/api/auth';
-	import { isSuperadmin } from '$lib/config/roles';
+	import { user } from '#lib/stores/auth.svelte.js';
+	import { logout } from '#lib/api/auth.js';
+	import { isSuperadmin } from '#lib/config/roles.js';
 	import {
 		IconDashboard,
 		IconReceipt,
@@ -44,7 +44,7 @@
 		IconShieldLock,
 		IconGauge,
 		IconPackage
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 	interface Props {
 		isOpen?: boolean;
 		onclose?: () => void;

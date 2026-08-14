@@ -17,7 +17,7 @@
  * @version 1.0.0
  */
 
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { getRequestEvent } from '$app/server';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -29,7 +29,7 @@ const PROD_API_ROOT = 'http://localhost:8080';
 function getApiRoot(): string {
 	// Server-side ONLY — VITE_* vars belong in client bundles. Match the
 	// precedence used by every +server.ts proxy so dev/prod is consistent.
-	return env.API_BASE_URL || env.BACKEND_URL || PROD_API_ROOT;
+	return API_BASE_URL || BACKEND_URL || PROD_API_ROOT;
 }
 
 const MAX_RETRIES = 3;

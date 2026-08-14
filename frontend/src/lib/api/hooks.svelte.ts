@@ -30,7 +30,7 @@
  */
 
 import { onDestroy, untrack } from 'svelte';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { getApiClient, type RequestOptions } from './client';
 import { type ApiError, isApiError, isRetryableError, UnknownError } from './errors';
 import { getCache, type CacheConfig } from './cache';

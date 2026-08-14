@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { SvelteDate } from 'svelte/reactivity';
-	import { boardsAPI } from '$lib/api/boards';
-	import type { TimeEntry, Board, TimeTrackingStats } from '$lib/boards/types';
+	import { boardsAPI } from '#lib/api/boards.js';
+	import type { TimeEntry, Board, TimeTrackingStats } from '#lib/boards/types.js';
 	import {
 		IconClock,
 		IconArrowLeft,
@@ -10,7 +10,7 @@
 		IconCurrencyDollar,
 		IconDownload,
 		IconRefresh
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// State
 	let timeEntries = $state<TimeEntry[]>([]);

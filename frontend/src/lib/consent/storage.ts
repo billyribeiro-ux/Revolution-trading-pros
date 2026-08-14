@@ -8,8 +8,8 @@
  * @version 1.0.0
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import type { ConsentState, ConsentStorageOptions } from './types';
 import { DEFAULT_CONSENT_STATE, DEFAULT_STORAGE_OPTIONS, CONSENT_SCHEMA_VERSION } from './types';
 

@@ -31,9 +31,14 @@ export default [
 			}
 		}
 	},
-	// TS rules with project-aware parser — only src/** is in tsconfig.json
+	// TS rules with project-aware parser — only src/** is in tsconfig.json.
+	// src/service-worker is excluded here rather than just overridden below:
+	// flat config *merges* languageOptions across matching blocks, so leaving it
+	// matched would keep `project: './tsconfig.json'` applied to a file that
+	// tsconfig.json deliberately excludes, and the parser errors out.
 	{
 		files: ['src/**/*.ts'],
+		ignores: ['src/service-worker/**/*.ts'],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
@@ -88,19 +93,32 @@ export default [
 			'no-undef': 'off'
 		}
 	},
-	// TS rules without project for test/script files (not in tsconfig.json)
+	// TS rules without project for test/script files (not in tsconfig.json).
+	// vite.config.ts is TypeScript but sits outside the src/** project block, so
+	// it needs the TS parser here or TS-only syntax (e.g. `as const` in the CSP
+	// directives) fails to parse. src/service-worker is its own TS project
+	// (see src/service-worker/tsconfig.json) and is excluded from tsconfig.json.
 	{
 		files: [
 			'tests/**/*.{ts,js}',
 			'e2e/**/*.{ts,js}',
 			'scripts/**/*.{ts,js}',
-			'playwright.config.ts'
+			'playwright.config.ts',
+			'vite.config.ts',
+			'src/service-worker/**/*.{ts,js}'
 		],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
 				// No `project` — these files are not in tsconfig.json
 				extraFileExtensions: ['.svelte']
+			},
+			globals: {
+				// Injected by Vite's `define` (see vite.config.ts) and declared for
+				// TypeScript in src/service-worker/globals.d.ts. ESLint resolves
+				// globals separately from TypeScript, so it needs telling too or
+				// `no-undef` fires on the service worker's version constant.
+				__APP_VERSION__: 'readonly'
 			}
 		},
 		plugins: {

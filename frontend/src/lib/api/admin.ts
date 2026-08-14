@@ -38,9 +38,9 @@
  * @license MIT
  */
 
-import { authStore } from '$lib/stores/auth.svelte';
-import type { User } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import { authStore } from '#lib/stores/auth.svelte.js';
+import type { User } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { PaginatedResponse, PaginationMeta } from './_types';
 
@@ -55,12 +55,7 @@ import type { PaginatedResponse, PaginationMeta } from './_types';
  * but doesn't pretend to know a shape we don't actually know.
  */
 export type JsonValue =
-	| string
-	| number
-	| boolean
-	| null
-	| { [k: string]: JsonValue | undefined }
-	| JsonValue[];
+	string | number | boolean | null | { [k: string]: JsonValue | undefined } | JsonValue[];
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_VERSION = 'v1';
@@ -342,14 +337,7 @@ export interface CouponCreateData {
 
 	// Legacy aliases (DO NOT WRITE) — kept so existing UI code compiles.
 	type?:
-		| 'fixed'
-		| 'percentage'
-		| 'bogo'
-		| 'free_shipping'
-		| 'tiered'
-		| 'bundle'
-		| 'cashback'
-		| 'points';
+		'fixed' | 'percentage' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
 	value?: number;
 	display_name?: string;
 	internal_notes?: string;

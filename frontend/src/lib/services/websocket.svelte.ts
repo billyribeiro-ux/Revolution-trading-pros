@@ -17,8 +17,8 @@
  * Built for the next 10 years with extensibility in mind.
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -131,7 +131,10 @@ export type WsMessage =
 	| { type: 'TradePlanDeleted'; payload: { entry_id: number } }
 	| { type: 'VideoPublished'; payload: VideoPayload }
 	| { type: 'Heartbeat'; payload: { timestamp: number } }
-	| { type: 'Connected'; payload: { connection_id: string; rooms: string[]; timestamp: number } }
+	| {
+			type: 'Connected';
+			payload: { connection_id: string; rooms: string[]; timestamp: number };
+	  }
 	| { type: 'Error'; payload: { code: string; message: string } }
 	| { type: 'Subscribed'; payload: { room: string } }
 	| { type: 'Unsubscribed'; payload: { room: string } };

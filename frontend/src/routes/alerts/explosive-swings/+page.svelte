@@ -3,7 +3,7 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import PricingSection from './_sections/PricingSection.svelte';
 	import { faqData } from './faq-data';
 

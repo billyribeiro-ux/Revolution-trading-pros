@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { IconX, IconDeviceFloppy } from '$lib/icons';
+	import { IconX, IconDeviceFloppy } from '#lib/icons/index.js';
 
 	// Shape derived from the form template and the prop-sync (previously
 	// `any`). Optional on the prop because edit-mode passes a partial row;
@@ -184,8 +184,7 @@
 						id="notes"
 						bind:value={form.notes}
 						placeholder="Add notes about this redirect..."
-						rows="3"
-					></textarea>
+						rows="3"></textarea>
 				</div>
 
 				<div class="form-group">

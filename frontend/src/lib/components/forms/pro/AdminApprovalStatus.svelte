@@ -6,7 +6,7 @@
 	 * Supports approval workflows with multiple statuses and notes.
 	 */
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	interface ApprovalLog {
 		id: string;
@@ -166,8 +166,7 @@
 							id={approvalNoteId}
 							bind:value={noteText}
 							placeholder="Enter reason or instructions..."
-							rows="3"
-						></textarea>
+							rows="3"></textarea>
 						<div class="note-actions">
 							<button
 								type="button"

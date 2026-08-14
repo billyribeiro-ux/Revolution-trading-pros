@@ -5,7 +5,7 @@
 	 * state, this just renders.
 	 */
 	import { slide } from 'svelte/transition';
-	import { IconCheck, IconAlertCircle } from '$lib/icons';
+	import { IconCheck, IconAlertCircle } from '#lib/icons/index.js';
 
 	interface Props {
 		successMessage: string | null;

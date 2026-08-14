@@ -5,16 +5,16 @@
 	 * @version 4.1.0 - Svelte 5 Runes
 	 * @author Revolution Trading Pros
 	 */
-	import '$lib/styles/main.css';
-	import '$lib/styles/admin-responsive.css';
+	import '#lib/styles/main.css';
+	import '#lib/styles/admin-responsive.css';
 
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import { isAuthenticated, user, isInitializing } from '$lib/stores/auth.svelte';
-	import { isAdmin as checkIsAdmin } from '$lib/config/roles';
-	import { getUnreadCount } from '$lib/stores/notifications.svelte';
-	import { keyboard } from '$lib/stores/keyboard.svelte';
+	import { browser } from '$app/env';
+	import { isAuthenticated, user, isInitializing } from '#lib/stores/auth.svelte.js';
+	import { isAdmin as checkIsAdmin } from '#lib/config/roles.js';
+	import { getUnreadCount } from '#lib/stores/notifications.svelte.js';
+	import { keyboard } from '#lib/stores/keyboard.svelte.js';
 
 	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
 	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
@@ -24,14 +24,14 @@
 
 	// PRINCIPAL-2026-04-26: onMount imported for auth-guard conversion (see line ~52).
 	import { onMount } from 'svelte';
-	import { AdminSidebar } from '$lib/components/layout';
-	import Toast from '$lib/components/Toast.svelte';
-	import CommandPalette from '$lib/components/CommandPalette.svelte';
-	import NotificationCenter from '$lib/components/NotificationCenter.svelte';
-	import KeyboardShortcutsHelp from '$lib/components/KeyboardShortcutsHelp.svelte';
-	import RateLimitIndicator from '$lib/components/RateLimitIndicator.svelte';
-	import ConnectionHealthPanel from '$lib/components/ConnectionHealthPanel.svelte';
-	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
+	import { AdminSidebar } from '#lib/components/layout/index.js';
+	import Toast from '#lib/components/Toast.svelte';
+	import CommandPalette from '#lib/components/CommandPalette.svelte';
+	import NotificationCenter from '#lib/components/NotificationCenter.svelte';
+	import KeyboardShortcutsHelp from '#lib/components/KeyboardShortcutsHelp.svelte';
+	import RateLimitIndicator from '#lib/components/RateLimitIndicator.svelte';
+	import ConnectionHealthPanel from '#lib/components/ConnectionHealthPanel.svelte';
+	import OfflineIndicator from '#lib/components/OfflineIndicator.svelte';
 
 	import type { Snippet } from 'svelte';
 

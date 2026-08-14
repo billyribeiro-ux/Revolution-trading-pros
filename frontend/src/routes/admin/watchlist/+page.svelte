@@ -21,12 +21,12 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+	import { watchlistApi, type WatchlistItem } from '#lib/api/watchlist.js';
 	// FIX-2026-04-26 (P3-2): replace native alert() with the standard toast surface.
-	import { toastStore } from '$lib/stores/toast.svelte';
-	import { logger } from '$lib/utils/logger';
-	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
-	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import { logger } from '#lib/utils/logger.js';
+	import { ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '#lib/config/rooms.js';
+	import RoomSelector from '#lib/components/admin/RoomSelector.svelte';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
@@ -542,8 +542,7 @@
 							id="description"
 							bind:value={newItem.description}
 							placeholder="Week of December 22, 2025."
-							rows="2"
-						></textarea>
+							rows="2"></textarea>
 					</div>
 
 					<div class="form-group full-width">

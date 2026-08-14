@@ -7,9 +7,9 @@
 -->
 
 <script lang="ts">
-	import { IconGif, IconSearch, IconLoader2, IconX } from '$lib/icons';
-	import { sanitizeURL } from '$lib/utils/sanitization';
-	import type { BlockId } from '$lib/stores/blockState.svelte';
+	import { IconGif, IconSearch, IconLoader2, IconX } from '#lib/icons/index.js';
+	import { sanitizeURL } from '#lib/utils/sanitization.js';
+	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 	import type { Block, BlockContent } from '../types';
 
 	interface Props {

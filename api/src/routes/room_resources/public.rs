@@ -535,12 +535,11 @@ pub(super) async fn track_resource_access(
         .await;
 
         // Increment view count
-        let _ = sqlx::query(
-            "UPDATE room_resources SET views_count = views_count + 1 WHERE id = $1",
-        )
-        .bind(id)
-        .execute(&state.db.pool)
-        .await;
+        let _ =
+            sqlx::query("UPDATE room_resources SET views_count = views_count + 1 WHERE id = $1")
+                .bind(id)
+                .execute(&state.db.pool)
+                .await;
     }
 
     Ok(Json(json!({"success": true})))

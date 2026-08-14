@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { boardsAPI } from '$lib/api/boards';
-	import { logger } from '$lib/utils/logger';
-	import type { Board, Folder, Activity, Task } from '$lib/boards/types';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { boardsAPI } from '#lib/api/boards.js';
+	import { logger } from '#lib/utils/logger.js';
+	import type { Board, Folder, Activity, Task } from '#lib/boards/types.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import {
 		IconLayoutKanban,
 		IconPlus,
@@ -28,7 +28,7 @@
 		IconTrash,
 		IconCopy,
 		IconEye
-	} from '$lib/icons';
+	} from '#lib/icons/index.js';
 
 	// State
 	let boards = $state<Board[]>([]);
@@ -752,8 +752,7 @@
 							bind:value={newBoard.description}
 							placeholder="Enter description..."
 							rows="3"
-							class="form-control"
-						></textarea>
+							class="form-control"></textarea>
 					</div>
 					<div class="form-field">
 						<label class="form-label" for="board-type">Board Type</label>

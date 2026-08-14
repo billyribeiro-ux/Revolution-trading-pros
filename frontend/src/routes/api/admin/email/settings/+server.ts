@@ -28,12 +28,12 @@
 import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { requireAdmin, requireSuperadmin } from '$lib/server/auth';
+import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
 import {
 	fetchBackendWithStatus,
 	isObject,
 	extractBackendErrorMessage
-} from '$lib/server/proxy-fetch';
+} from '#lib/server/proxy-fetch.js';
 
 const PASSWORD_MASK = '••••••••';
 

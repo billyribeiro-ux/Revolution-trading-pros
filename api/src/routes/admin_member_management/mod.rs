@@ -158,7 +158,10 @@ pub fn router() -> Router<AppState> {
         .route("/{id}/suspend", post(moderation::suspend_member))
         .route("/{id}/unban", post(moderation::unban_member))
         // Notes
-        .route("/{id}/notes", get(notes::get_notes).post(notes::create_note))
+        .route(
+            "/{id}/notes",
+            get(notes::get_notes).post(notes::create_note),
+        )
         .route("/{id}/notes/{note_id}", delete(notes::delete_note))
         // Activity
         .route("/{id}/activity", get(activity::get_activity))

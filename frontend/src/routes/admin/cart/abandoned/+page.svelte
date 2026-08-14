@@ -7,7 +7,7 @@
 		type DashboardStats,
 		type CartStatus,
 		STATUS_LABELS
-	} from '$lib/api/abandoned-carts';
+	} from '#lib/api/abandoned-carts.js';
 	import {
 		IconArrowLeft,
 		IconShoppingCart,
@@ -28,8 +28,8 @@
 		IconChartBar,
 		IconUsers,
 		IconExternalLink
-	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	} from '#lib/icons/index.js';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	// State
 	let loading = $state(true);
@@ -127,7 +127,7 @@
 
 		sending = true;
 		try {
-			const options: import('$lib/api/abandoned-carts').RecoveryEmailOptions = {
+			const options: import('#lib/api/abandoned-carts.js').RecoveryEmailOptions = {
 				template: recoveryTemplate
 			};
 			if (recoveryTemplate === 'custom' && customSubject) options.custom_subject = customSubject;
@@ -773,8 +773,7 @@
 							id="custom-body"
 							rows="8"
 							placeholder={'Enter email body... Use {{name}}, {{cart_items}}, {{cart_total}} for personalization'}
-							bind:value={customBody}
-						></textarea>
+							bind:value={customBody}></textarea>
 					</div>
 				{/if}
 			</div>

@@ -50,7 +50,7 @@
 		variant = 'full'
 	}: Props = $props();
 
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let actionError = $state<string | null>(null);
 	let isExporting = $state(false);

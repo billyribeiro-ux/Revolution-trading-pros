@@ -6,15 +6,15 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import FormAnalytics from '$lib/components/forms/FormAnalytics.svelte';
-	import { getForm } from '$lib/api/forms';
-	import type { Form } from '$lib/api/forms';
+	import FormAnalytics from '#lib/components/forms/FormAnalytics.svelte';
+	import { getForm } from '#lib/api/forms.js';
+	import type { Form } from '#lib/api/forms.js';
 
 	let form = $state<Form | null>(null);
 	let loading = $state(true);
 	let error = $state('');
 
-	let formId = $derived(parseInt(page.params['id']));
+	let formId = $derived(parseInt(page.params['id'] ?? ''));
 
 	onMount(async () => {
 		try {

@@ -48,12 +48,12 @@
  * @license MIT
  */
 
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import type { CartItem } from '$lib/stores/cart.svelte';
-import { websocketService, type CartUpdatePayload } from '$lib/services/websocket';
-import { logger } from '$lib/utils/logger';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import type { CartItem } from '#lib/stores/cart.svelte.js';
+import { websocketService, type CartUpdatePayload } from '#lib/services/websocket.js';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -125,7 +125,6 @@ export interface ProductVariant {
 	value: string;
 	priceModifier?: number;
 }
-
 export interface AppliedPromotion {
 	id: string;
 	type: string;
@@ -290,13 +289,7 @@ export interface CheckoutSession {
 }
 
 export type CheckoutStatus =
-	| 'pending'
-	| 'processing'
-	| 'requires_action'
-	| 'succeeded'
-	| 'failed'
-	| 'cancelled'
-	| 'expired';
+	'pending' | 'processing' | 'requires_action' | 'succeeded' | 'failed' | 'cancelled' | 'expired';
 
 export type PaymentProvider = 'stripe' | 'paypal' | 'square' | 'razorpay' | 'mollie' | 'custom';
 

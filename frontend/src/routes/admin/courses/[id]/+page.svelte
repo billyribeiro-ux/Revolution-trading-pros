@@ -14,11 +14,11 @@
 	// parsing window.location.pathname (which doesn't react to client-side nav).
 	import { page } from '$app/state';
 	import { beforeNavigate } from '$app/navigation';
-	import { adminFetch } from '$lib/utils/adminFetch';
-	import { logger } from '$lib/utils/logger';
-	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import { logger } from '#lib/utils/logger.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	// FIX-2026-04-26: replaced native alert() calls with toastStore for non-blocking UX.
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import CourseHeader from './_components/CourseHeader.svelte';
 	import CourseTabs from './_components/CourseTabs.svelte';
 	import CourseDetailsTab from './_components/CourseDetailsTab.svelte';
@@ -121,6 +121,8 @@
 	let hasUnsavedChanges = $derived(course ? JSON.stringify(course) !== lastSavedSnapshot : false);
 
 	beforeNavigate((nav) => {
+		if (nav.shallow) return;
+
 		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
 		// nav.cancel() must be called inline, so native confirm() is the only
 		// portable option today.

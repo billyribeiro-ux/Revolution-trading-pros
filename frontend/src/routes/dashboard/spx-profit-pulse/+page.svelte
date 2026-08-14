@@ -8,9 +8,9 @@
 	 *
 	 * @version 3.0.0 - January 2026 - Full API Integration
 	 */
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
-	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
+	import LatestUpdates from '#lib/components/dashboard/LatestUpdates.svelte';
+	import WeeklyWatchlist from '#lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	// SSR data from +page.server.ts
 	let props = $props();

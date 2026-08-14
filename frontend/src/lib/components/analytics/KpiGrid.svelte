@@ -6,7 +6,7 @@
 	 * and responsive layout.
 	 */
 	import KpiCard from './KpiCard.svelte';
-	import type { KpiValue } from '$lib/api/analytics';
+	import type { KpiValue } from '#lib/api/analytics.js';
 
 	interface Props {
 		kpis?: KpiValue[];

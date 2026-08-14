@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
-	import type { RoomStats } from '$lib/api/room-content';
+	import type { RoomStats } from '#lib/api/room-content.js';
 
 	interface RoomBadge {
 		name?: string;

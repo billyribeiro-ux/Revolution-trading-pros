@@ -7,8 +7,8 @@
 		SubmissionData,
 		FormAnalytics as FormAnalyticsResponse,
 		FormSubmissionTrendPoint
-	} from '$lib/api/forms';
-	import { getSubmissionStats, getSubmissions } from '$lib/api/forms';
+	} from '#lib/api/forms.js';
+	import { getSubmissionStats, getSubmissions } from '#lib/api/forms.js';
 
 	interface Props {
 		form: Form;

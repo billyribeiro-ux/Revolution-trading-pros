@@ -49,8 +49,8 @@
  */
 
 import { writable, derived } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { logger } from '$lib/utils/logger';
+import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -170,11 +170,7 @@ export interface CacheConfig {
 }
 
 export type CacheStrategy =
-	| 'cache-first'
-	| 'network-first'
-	| 'cache-only'
-	| 'network-only'
-	| 'stale-while-revalidate';
+	'cache-first' | 'network-first' | 'cache-only' | 'network-only' | 'stale-while-revalidate';
 
 export type RequestPriority = 'low' | 'normal' | 'high' | 'critical';
 
@@ -244,12 +240,7 @@ export interface Membership {
 }
 
 export type MembershipStatus =
-	| 'active'
-	| 'trial'
-	| 'expired'
-	| 'cancelled'
-	| 'suspended'
-	| 'pending';
+	'active' | 'trial' | 'expired' | 'cancelled' | 'suspended' | 'pending';
 
 export interface MembershipPlan {
 	id: number;

@@ -28,7 +28,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import type { PageData } from './+page';
-	import { serializeJsonLd } from '$lib/seo/serializeJsonLd';
+	import { serializeJsonLd } from '#lib/seo/serializeJsonLd.js';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() rune with explicit typing

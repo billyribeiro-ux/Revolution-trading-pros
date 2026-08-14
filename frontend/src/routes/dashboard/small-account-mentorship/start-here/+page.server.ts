@@ -14,7 +14,7 @@
  * @version 1.0.0
  */
 
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { getLatestWatchlist } from '#lib/server/watchlist.js';
 import type { ServerLoad } from '@sveltejs/kit';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs

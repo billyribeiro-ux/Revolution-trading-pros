@@ -4,7 +4,7 @@
 	 * updated dates, total uses, internal ID. Renders only when the
 	 * coupon has loaded.
 	 */
-	import type { Coupon } from '$lib/api/admin';
+	import type { Coupon } from '#lib/api/admin.js';
 
 	interface Props {
 		coupon: Coupon;

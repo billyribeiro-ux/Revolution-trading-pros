@@ -11,10 +11,10 @@
 
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { cartStore, getCartTotal } from '$lib/stores/cart.svelte';
-	import { login, register } from '$lib/api/auth';
-	import { validateCoupon } from '$lib/api/coupons';
-	import { createAppliedCoupon, type AppliedCoupon } from '$lib/utils/coupon-helpers';
+	import { cartStore, getCartTotal } from '#lib/stores/cart.svelte.js';
+	import { login, register } from '#lib/api/auth.js';
+	import { validateCoupon } from '#lib/api/coupons.js';
+	import { createAppliedCoupon, type AppliedCoupon } from '#lib/utils/coupon-helpers.js';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
 	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
 	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';

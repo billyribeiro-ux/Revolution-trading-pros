@@ -9,8 +9,8 @@
  * @since January 2026
  */
 
-import { browser } from '$app/environment';
-import { logger } from '$lib/utils/logger';
+import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import {
 	blogEditorDB,
 	generateChecksum,
@@ -431,7 +431,11 @@ class SyncManager {
 				return { success: false, changeId: change.id, conflict: true };
 			}
 
-			return { success: true, changeId: change.id, serverData: result.serverData };
+			return {
+				success: true,
+				changeId: change.id,
+				serverData: result.serverData
+			};
 		} catch (error) {
 			return {
 				success: false,

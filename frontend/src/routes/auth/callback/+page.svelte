@@ -22,7 +22,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { authStore } from '$lib/stores/auth.svelte';
+	import { authStore } from '#lib/stores/auth.svelte.js';
 	import { fade } from 'svelte/transition';
 
 	let status = $state<'processing' | 'success' | 'error'>('processing');

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');

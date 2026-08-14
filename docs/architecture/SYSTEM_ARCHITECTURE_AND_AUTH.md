@@ -398,7 +398,7 @@ but means a custom local API needs `API_BASE_URL` set in
     repo's `npm ci` workflow files are stale; see follow-ups in
     [`REPO_STATE_2026-04-25.md`](REPO_STATE_2026-04-25.md))
   - Build output directory: `.svelte-kit/cloudflare`
-- **Adapter:** `@sveltejs/adapter-cloudflare` (configured in `svelte.config.js`).
+- **Adapter:** `@sveltejs/adapter-cloudflare` (configured via the `sveltekit()` plugin options in `vite.config.ts`).
 - A **parallel** GitHub Actions workflow exists at
   [`.github/workflows/deploy-cloudflare.yml`](.github/workflows/deploy-cloudflare.yml).
   It still uses `npm ci` + `npm run build` and will fail until migrated to
