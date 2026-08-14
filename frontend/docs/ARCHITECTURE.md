@@ -223,6 +223,6 @@ Target metrics:
 ## Resources
 
 - [Svelte 5 Runes Documentation](https://svelte-5-preview.vercel.app/docs/runes)
-- [SvelteKit 2.x Guide](https://kit.svelte.dev/docs)
+- [SvelteKit Docs](https://svelte.dev/docs/kit)
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)

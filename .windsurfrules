@@ -125,7 +125,7 @@ cargo fmt --manifest-path api/Cargo.toml --all --check
 
 ### Frontend (SvelteKit)
 - Location: `/frontend/`
-- Framework: SvelteKit 2.x with Svelte 5 (runes mode)
+- Framework: SvelteKit 3.x with Svelte 5 (runes mode)
 - Icons: `phosphor-svelte` (NOT lucide)
 - Styling: Tailwind v4 (migrating to PE7 CSS)
 - Key packages: `sveltekit-superforms`, `formsnap`, `@tanstack/svelte-query`

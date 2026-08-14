@@ -52,7 +52,7 @@ Use the wrapper component in your Svelte files:
 
 ```svelte
 <script>
-  import InspectValue from '$lib/components/dev/InspectValue.svelte';
+  import InspectValue from '#lib/components/dev/InspectValue.svelte';
   
   let myState = $state({ count: 0, user: { name: 'John' } });
 </script>

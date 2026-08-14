@@ -127,20 +127,40 @@ is TBD (Fly.io references stripped on 2026-04-28).
   transaction wrapper.
 - Don't swallow errors with `unwrap_or_default()` on `Result<T, E>` —
   propagate via `?`.
+- Adding or bumping a crate is not done until `cargo deny check` passes.
+  It gates advisories, licences and sources, and it is the only gate that
+  catches a *transitive* crate arriving with an unpatched RUSTSEC advisory
+  — which is exactly how `rsa` (RUSTSEC-2023-0071) tried to enter the tree
+  behind jsonwebtoken 11. Prefer a clean backend over a `deny.toml`
+  exemption; add an exemption only when it is genuinely unreachable and say
+  why, with a date.
 
 ### When you finish a change
 
-Run the four gates locally:
+Run the gates locally:
 
 ```bash
-pnpm --filter revolution-svelte check                      # frontend typecheck
-pnpm --filter revolution-svelte test:unit                 # vitest
-cd frontend && pnpm test:a11y                             # playwright a11y suite
-cd ../api && cargo check
+# Frontend
+pnpm --filter revolution-svelte check      # typecheck, must be 0 errors / 0 warnings
+pnpm --filter revolution-svelte lint       # eslint, must be 0 errors
+pnpm --filter revolution-svelte test:unit  # vitest
+cd frontend && pnpm test:a11y              # playwright a11y suite
+cd frontend && pnpm build                  # catches env/config errors typecheck can't
+
+# Backend
+cd api && cargo fmt --check
+cd api && cargo clippy --locked --all-targets -- -D warnings
+cd api && cargo deny check
 cd api && cargo test --test router_smoke_test --test utils_test --test stripe_test  # no-DB tests
 ```
 
-All four must pass before committing.
+All must pass before committing. `pnpm api:lint` bundles the three backend
+lint gates; it needs `cargo install cargo-machete cargo-deny` once per machine.
+
+Two frontend checks are worth running on anything UI-facing, since CI's
+`check` does not escalate warnings: `pnpm check:strict` (`--fail-on-warnings`)
+and `pnpm check:a11y` (promotes Svelte's a11y compiler warnings to errors).
+Both are currently clean at 0/0 — keep them there.
 
 ---
 

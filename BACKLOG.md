@@ -91,3 +91,24 @@ The branch pins `@sveltejs/kit@3.0.0-next.23` and
 no `rc` dist-tag on npm yet. Re-pin to the stable releases when they land.
 Known upstream rough edge: adapter-cloudflare 8 prints
 "Reading `config.kit` inside adapters is deprecated" on every build.
+
+### 7. Remaining Svelte-5 modernisation surface
+**Severity:** P3 (all currently supported; no warnings fired)
+
+Measured 2026-08-14 against the official [Svelte best practices](https://svelte.dev/docs/svelte/best-practices)
+list. The codebase is already fully migrated on the big-ticket items —
+**0** `export let`, **0** `on:` event directives, **0** `$:` reactive statements,
+**0** `class:` directives, and **0** real `<slot>` or `<svelte:component>` uses
+(the few textual matches are comments recording that they were replaced).
+
+What is left, in full:
+
+| Pattern | Count | Recommended replacement | Notes |
+|---------|-------|-------------------------|-------|
+| `svelte/store` imports | 28 files | classes with `$state` fields | The largest remaining item. |
+| `setContext` / `getContext` | 24 calls | `createContext` | Docs prefer it for type safety. |
+| `use:tilt` action | 1 | `{@attach ...}` | The other two `use:` directives are not legacy: `use:enhance` is SvelteKit's own API and `use:emblaCarouselSvelte` is the library's public interface. |
+
+None of these emit warnings — `pnpm check:strict` and `pnpm check:a11y` are both
+clean at 0 errors / 0 warnings across 4,847 files — so this is voluntary
+modernisation, not remediation.

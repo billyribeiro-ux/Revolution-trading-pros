@@ -38,10 +38,16 @@ serde_json = "1.0.151"
 # jsonwebtoken 11 made the crypto backend pluggable and ships NO provider by
 # default (default = ["use_pem"]), so every sign/verify panics with "Could not
 # automatically determine the process-level CryptoProvider" until exactly one of
-# `rust_crypto` / `aws_lc_rs` is enabled. `rust_crypto` is pure Rust and reuses
-# the RustCrypto stack this crate already depends on (hmac, sha2); `aws_lc_rs`
-# would pull in a C/cmake toolchain for the build.
-jsonwebtoken = { version = "11.0.0", features = ["rust_crypto"] }
+# `rust_crypto` / `aws_lc_rs` is enabled.
+#
+# `aws_lc_rs` and NOT `rust_crypto`: the pure-Rust backend pulls in `rsa`, which
+# carries RUSTSEC-2023-0071 (Marvin timing sidechannel) with no fixed release
+# available, and `cargo deny check` fails on it. This crate signs HS256 only, so
+# the RSA path would never execute — but shipping a known-vulnerable crate we
+# cannot patch is not worth a `deny.toml` exemption when a clean backend exists.
+# AWS-LC is constant-time and actively maintained; it needs cmake + a C compiler
+# at build time, which CI and the Docker image already provide.
+jsonwebtoken = { version = "11.0.0", features = ["aws_lc_rs"] }
 base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5.1"   # ICT 7: TOTP secret encoding
 argon2 = "0.5.3"

@@ -65,11 +65,15 @@ CLAUDE.md contains the project-specific Svelte MCP tooling rules (use the
 It's tempting to copy a hardcoded production URL into `const API_URL`. **Don't.** The PE7 pattern is:
 
 ```ts
-import { env } from '$env/dynamic/private';
+import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
-const API_URL =
-	env.API_BASE_URL || env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 ```
+
+Both variables must be declared in `frontend/src/env.ts` — under SvelteKit 3
+the `$env/*` modules are gone and an undeclared variable does not exist. If
+your local constant would collide with an imported name, alias the import
+(`import { API_BASE_URL as ENV_API_BASE_URL } …`) rather than shadowing it.
 
 This way the proxy works against:
 - local Docker (`API_BASE_URL=http://localhost:8080` from `frontend/.env.local`)

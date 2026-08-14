@@ -103,17 +103,25 @@ cd api && cargo test --test utils_test \
                      --test stripe_test  # run no-DB tests
 ```
 
-## Status of the system (2026-07-19 audit)
+## Status of the system (2026-08-14, post SvelteKit 3 migration)
 
 | Gate | Status |
 |------|--------|
-| Frontend typecheck (svelte-check) | ✅ 4,745 files / 0 errors / 0 warnings |
-| Frontend lint (eslint) | ✅ clean |
+| Frontend typecheck (svelte-check) | ✅ 4,847 files / 0 errors / 0 warnings |
+| Frontend strict typecheck (`check:strict`, `--fail-on-warnings`) | ✅ 0 / 0 |
+| Frontend a11y compiler gate (`check:a11y`) | ✅ 0 / 0 |
+| Frontend lint (eslint) | ✅ 0 errors (4 pre-existing `no-useless-escape` warnings) |
+| Frontend format (prettier) | ✅ clean |
 | Frontend unit (vitest) | ✅ 2,272 passed / 32 skipped |
-| Frontend production build | ✅ |
-| Backend `cargo check` + `clippy -D warnings` | ✅ clean |
-| Backend no-DB tests (router smoke, utils, stripe, crypto) | ✅ all pass |
+| Frontend production build + prerender + service worker | ✅ |
+| Frontend a11y suite (playwright) | ⚠️ 1 pre-existing failure — see BACKLOG.md |
+| Backend `cargo fmt` + `clippy -D warnings` | ✅ clean |
+| Backend `cargo deny check` + `cargo machete` | ✅ clean / no unused deps |
+| Backend no-DB tests (router smoke, utils, stripe, crypto) | ✅ 38 pass |
 | Production deploy | ⚠️ target TBD (Fly.io stripped 2026-04-28) |
+
+> SvelteKit 3 is pinned to the `3.0.0-next` prerelease line — there is no stable
+> 3.0.0 release yet. See [BACKLOG.md](BACKLOG.md) "SvelteKit 3 follow-ups".
 
 Current priorities live in
 [`docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md`](docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md)
@@ -126,9 +134,14 @@ Code style is enforced via `prettier` and `eslint` for the frontend, `rustfmt` a
 `clippy` for the backend. Before opening a PR:
 
 ```bash
-pnpm check && pnpm --filter revolution-svelte test:unit && (cd frontend && pnpm test:a11y)
-cd api && cargo check && cargo test --test utils_test --test stripe_test
+pnpm check && pnpm lint && pnpm --filter revolution-svelte test:unit
+cd frontend && pnpm build && pnpm test:a11y
+cd api && cargo fmt --check && cargo clippy --locked --all-targets -- -D warnings
+cd api && cargo deny check && cargo test --test utils_test --test stripe_test
 ```
+
+`cargo deny check` and `cargo machete` (wrapped together as `pnpm api:lint`)
+need a one-time `cargo install cargo-machete cargo-deny`.
 
 Commits should land cleanly through both gates. CI replicates these checks via
 `.github/workflows/`.
