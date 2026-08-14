@@ -112,6 +112,13 @@ export default [
 			parserOptions: {
 				// No `project` — these files are not in tsconfig.json
 				extraFileExtensions: ['.svelte']
+			},
+			globals: {
+				// Injected by Vite's `define` (see vite.config.ts) and declared for
+				// TypeScript in src/service-worker/globals.d.ts. ESLint resolves
+				// globals separately from TypeScript, so it needs telling too or
+				// `no-undef` fires on the service worker's version constant.
+				__APP_VERSION__: 'readonly'
 			}
 		},
 		plugins: {

@@ -244,12 +244,19 @@ export const handleError: HandleClientError = async ({ kind, error, event }) => 
 		};
 	}
 
+	// For `app` and `framework` errors SvelteKit 3 hands over a plain
+	// `{ message, ... }` body rather than an Error instance, so passing it
+	// straight to the telemetry helpers below stringifies it as "[object
+	// Object]" and loses the one useful field. Normalise to a real Error first —
+	// `message` was already derived per-kind above.
+	const reportable = error instanceof Error ? error : new Error(message);
+
 	// Build error metadata
 	const sessionId = getSessionId();
 	const userId = getUserId();
 	const metadata: ErrorMetadata = {
-		severity: getErrorSeverity(error),
-		category: categorizeError(error),
+		severity: getErrorSeverity(reportable),
+		category: categorizeError(reportable),
 		userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
 		url: event.url.href,
 		timestamp: new Date().toISOString(),
@@ -258,15 +265,26 @@ export const handleError: HandleClientError = async ({ kind, error, event }) => 
 	};
 
 	// Report error asynchronously
-	reportError(error, metadata, errorId);
+	reportError(reportable, metadata, errorId);
 
 	// Development: Log full error details
 	if (import.meta.env.DEV) {
 		console.error(`[${errorId}] Unhandled client error:`, error);
 	}
 
-	// Return user-friendly error message
-	// Include errorId for support reference
+	// SvelteKit 3 routes `app` and `framework` errors through this hook too —
+	// SvelteKit 2 only sent unexpected ones. Since `message` is an OVERRIDE,
+	// returning the generic string unconditionally would replace a deliberate
+	// `error(404, 'Post not found')` with "An unexpected error occurred", and
+	// disagree with what the server already rendered for the same navigation.
+	// Those two kinds carry messages that are safe and intended to be seen, so
+	// inherit them.
+	if (kind === 'app' || kind === 'framework') {
+		return { errorId };
+	}
+
+	// `unknown` errors are whatever application code threw: mask in production,
+	// keep the detail in dev. Include errorId for support reference.
 	return {
 		message: import.meta.env.DEV
 			? `${message} (Error ID: ${errorId})`

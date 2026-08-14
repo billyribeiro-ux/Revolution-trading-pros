@@ -604,10 +604,12 @@ export const handleError: HandleServerError = async ({ kind, error, event }) => 
 	const method = event.request?.method ?? 'unknown';
 
 	// SvelteKit 3 no longer passes a top-level `status`/`message`; they are
-	// carried by the error itself and discriminated by `kind`. Only `framework`
-	// and `validation` errors have a status — app errors default to 500 here as
-	// unknown ones do, which matches what this handler logged before.
-	const status = kind === 'framework' || kind === 'validation' ? error.status : 500;
+	// carried by the error itself and discriminated by `kind`. A status is only
+	// observable here for `framework` and `validation` errors — for `app` errors
+	// SvelteKit hands over the App.Error *body* (which has no status field), and
+	// `unknown` errors have none at all. Left undefined rather than defaulted to
+	// 500, so the log says "unknown" instead of asserting something false.
+	const status = kind === 'framework' || kind === 'validation' ? error.status : undefined;
 	const message =
 		kind === 'app' || kind === 'framework' || kind === 'validation'
 			? error.message
@@ -658,9 +660,20 @@ export const handleError: HandleServerError = async ({ kind, error, event }) => 
 		}
 	}
 
-	return {
-		message: 'Internal error',
-		errorId,
-		status: status >= 500 ? 500 : status
-	};
+	// Return ONLY `errorId`.
+	//
+	// In SvelteKit 3 a returned `status`/`message` is an OVERRIDE, and omitted
+	// properties are inherited from the caught error. Inheriting is exactly what
+	// every kind wants here:
+	//   app        → the body passed to `error(...)`, i.e. the status and message
+	//                the developer deliberately chose to show
+	//   framework  → the real status (404 etc.) and SvelteKit's safe message
+	//   validation → likewise
+	//   unknown    → 500 / 'Internal Error', so internals are never leaked
+	//
+	// Returning a hardcoded `{ message: 'Internal error', status: 500 }` — which
+	// is what this did on arrival in SvelteKit 3 — turned every `error(404, ...)`
+	// in the app into a 500 "Internal error". SvelteKit 2 never routed expected
+	// errors through this hook at all, so the bug had no analogue on `main`.
+	return { errorId };
 };

@@ -18,61 +18,81 @@ import * as v from 'valibot';
  * a value and fail the build.
  */
 
-/** Optional free-form secret: absent reads as `''`, which is falsy for the `||` chains. */
-const optionalSecret = v.optional(v.string(), '');
-
 /**
- * Optional URL: absent reads as `''`, but a value that *is* set must be a
- * well-formed absolute URL. A typo'd API host would otherwise surface as a
- * confusing fetch failure on first request; this fails fast at startup
- * instead, which is the behaviour the SvelteKit docs recommend validators for.
+ * Optional free-form value: absent reads as `''`, which is falsy for the `||`
+ * chains every consumer funnels through.
+ *
+ * Deliberately NOT narrowed further — in particular the URL-valued variables
+ * below are not run through `v.url()`. On this stack a rejected value is not a
+ * localised error, it is a total outage:
+ *
+ *   - a failed schema makes SvelteKit call `handle_issues()`, which throws
+ *     (`@sveltejs/kit/src/exports/internal/env.js`);
+ *   - adapter-cloudflare calls `server.init({ env })` at Worker module scope and
+ *     `await`s it before routing *every* request (`.svelte-kit/cloudflare/
+ *     _worker.js`), so the throw takes down 100% of dynamic routes — every
+ *     `/api/*` proxy and all SSR pages — not just the feature that reads the
+ *     variable.
+ *
+ * These values are set in the Cloudflare Pages dashboard, so CI cannot see them
+ * and a stricter schema can only ever be disproved in production. Meanwhile the
+ * consumers already degrade gracefully: the API bases sit behind
+ * `API_BASE_URL || BACKEND_URL || 'http://localhost:8080'`, and
+ * VITE_ERROR_TRACKING_URL is guarded by `if (errorEndpoint)` inside a
+ * `try`/`catch`, so a malformed value costs one failed fetch. A relative path
+ * is also a legitimate value there — `fetch()` accepts one, and the client half
+ * of that feature reads the same name via `import.meta.env` — but `v.url()`
+ * rejects it.
+ *
+ * Trading a silently-degraded error report for a site-wide 500 is a bad
+ * exchange, so validation stops at "is a string".
  */
-const optionalUrl = v.optional(v.union([v.literal(''), v.pipe(v.string(), v.url())]), '');
+const optionalString = v.optional(v.string(), '');
 
 export const variables = defineEnvVars({
 	API_BASE_URL: {
 		description: 'Base URL of the Rust/Axum API. Primary source for every +server.ts proxy.',
-		schema: optionalUrl
+		schema: optionalString
 	},
 	BACKEND_URL: {
 		description: 'Fallback API base URL, used when API_BASE_URL is unset.',
-		schema: optionalUrl
+		schema: optionalString
 	},
 	API_URL: {
 		description: 'Legacy API base URL still read by a few server load functions.',
-		schema: optionalUrl
+		schema: optionalString
 	},
 	VITE_ERROR_TRACKING_URL: {
 		description: 'Endpoint that hooks.server.ts POSTs handled errors to in production.',
-		schema: optionalUrl
+		schema: optionalString
 	},
 	FRED_API_KEY: {
 		description: 'Federal Reserve (FRED) API key — options-calculator treasury rates.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	POLYGON_API_KEY: {
 		description: 'Polygon.io API key — options chain and quote data.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	FMP_API_KEY: {
 		description: 'Financial Modeling Prep API key — historical volatility.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	FINNHUB_API_KEY: {
 		description: 'Finnhub API key — symbol search and quotes.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	ANTHROPIC_API_KEY: {
 		description: 'Anthropic API key — CMS AI content generation and media alt-text.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	BUNNY_STREAM_LIBRARY_ID: {
 		description: 'Bunny.net Stream library id for video playback.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	BUNNY_VIDEO_LIBRARY_ID: {
 		description: 'Bunny.net video library id used by the admin upload flow.',
-		schema: optionalSecret
+		schema: optionalString
 	},
 	PUBLIC_STRIPE_PUBLISHABLE_KEY: {
 		description:

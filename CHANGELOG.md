@@ -76,6 +76,50 @@ the latest published builds; there is no stable 3.0.0 and no `rc` dist-tag yet.
   and `$app/env/{private,public}`, with the `env` wrapper flattened to named
   exports.
 
+### Fixed — runtime defects found by a pre-merge audit
+
+Four regressions that every static gate was blind to. All were introduced by the
+Kit 3 migration itself: SvelteKit 2 never routed expected errors through
+`handleError`, and `$service-worker` supplied values that `$app/*` does not.
+
+- **Service worker cache invalidation was permanently dead.** `version` from
+  `$app/env` is `BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and
+  `payload` is only populated by the client app boot — never in a
+  `ServiceWorkerGlobalScope`. The built bundle contained `var e={}.version`,
+  making every cache name the literal `cache-undefined`, so the `activate` purge
+  could never distinguish the previous deploy's cache from its own and returning
+  visitors could be served pre-deploy HTML referencing deleted chunks. Fixed by
+  injecting `__APP_VERSION__` through Vite's `define` (which the service-workers
+  docs specify is applied to the worker bundle) and feeding the same value to
+  `kit.version.name`. Verified in the artifact: ``n=`1786741312245` ``, matching
+  Kit's own prelude `version`.
+- **The service worker's cache-first branch never matched.** `$app/manifest`
+  paths are relative to the base path (`_app/immutable/x.js`), where
+  `$service-worker`'s `build`/`files` were rooted. Compared against
+  `url.pathname` — always rooted — every lookup failed, silently disabling the
+  static-asset fast path and the `/api/` exclusion filter. Paths are now
+  resolved with `new URL(path, location.href).pathname`, which is how the
+  browser resolves the same relative string passed to `cache.add()`.
+- **Every `error(404, ...)` rendered as HTTP 500 "Internal error".** In
+  SvelteKit 3 a `status`/`message` returned from `handleError` is an *override*,
+  and omitted properties are inherited from the caught error. The migrated hook
+  returned a hardcoded `{ message: 'Internal error', status: 500 }`, which
+  clobbered the status and message of every app error. Both hooks now return
+  only `errorId`, so each kind inherits correctly — app errors keep the
+  developer's status and message, framework errors keep the real status and
+  SvelteKit's safe message, and unknown errors still fall back to
+  500/'Internal Error' with no leak of internals.
+- **Client error telemetry logged `[object Object]`.** For `app` and `framework`
+  errors the hook receives a plain body, not an `Error`. Normalised before it
+  reaches the reporting helpers.
+
+Env-var validation was also reconsidered and deliberately relaxed. Kit throws on
+a failed schema, and adapter-cloudflare `await`s `server.init()` before routing
+every request — so a single malformed value in the Cloudflare dashboard would
+have 500'd the entire site rather than degrading one feature. Since CI cannot
+see those values, the URL schemas are back to plain optional strings; the
+valibot wiring and `description` fields stay.
+
 ### Docs
 
 - `CLAUDE.md`: SvelteKit 3 section, rewritten `+server.ts` proxy pattern,

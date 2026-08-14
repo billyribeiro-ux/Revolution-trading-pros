@@ -12,6 +12,28 @@ import tailwindcss from '@tailwindcss/vite';
 // `pnpm dev`, and the `dev:fast` alias.
 const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('dev');
 
+// Build-unique app version, shared by Kit and the service worker.
+//
+// The service worker CANNOT get this from `$app/env`. In SvelteKit 3 that
+// export is `BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and
+// `payload` is only ever populated by the client app boot — never in a
+// ServiceWorkerGlobalScope. So inside the worker it resolves to `undefined`,
+// which silently pins every cache name to `cache-undefined` for all time and
+// makes the `activate` purge a permanent no-op (it can never distinguish the
+// previous deploy's cache from its own). `$service-worker` used to supply a
+// real string in SvelteKit 2; nothing in `$app/*` replaces it today.
+//
+// Vite's `define` replacements ARE applied to the service-worker bundle, per
+// the official service-workers docs, so that is the supported channel. Feeding
+// the same value to `kit.version.name` keeps Kit's own version polling and the
+// worker's cache names on one identifier.
+//
+// Prefer the deploy commit SHA (Cloudflare Pages and GitHub Actions both
+// provide one) and fall back to a timestamp, which is what Kit itself defaults
+// to.
+const APP_VERSION =
+	process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString();
+
 // SvelteKit 3 takes its config as options to the `sveltekit()` Vite plugin —
 // the old svelte.config.js is gone. Callback form so `mode` is available;
 // dev-only plugins gated on mode === 'development'.
@@ -141,7 +163,11 @@ export default defineConfig(({ mode }) => ({
 					'form-action': ['self']
 				}
 			},
-			serviceWorker: { register: process.env.NODE_ENV !== 'development' }
+			serviceWorker: { register: process.env.NODE_ENV !== 'development' },
+			// Pinned so the worker's `__APP_VERSION__` and Kit's version polling
+			// agree on one identifier. Kit would otherwise default to its own
+			// timestamp, which the worker has no way to read.
+			version: { name: APP_VERSION }
 			// `env.publicPrefix` and `output.preloadStrategy` are both gone in
 			// SvelteKit 3. Client exposure is now declared per-variable in
 			// src/env.ts (`public: true`) instead of by name prefix, and
@@ -149,6 +175,11 @@ export default defineConfig(({ mode }) => ({
 		}),
 		...(mode === 'development' ? [devtoolsJson()] : [])
 	],
+	// Applied to the service-worker bundle as well as client/server — the only
+	// way to get a real version string into the worker. See APP_VERSION above.
+	define: {
+		__APP_VERSION__: JSON.stringify(APP_VERSION)
+	},
 	resolve: {
 		// Force Svelte client bundle in tests (default resolves to server bundle
 		// which doesn't have mount/unmount needed by @testing-library/svelte)

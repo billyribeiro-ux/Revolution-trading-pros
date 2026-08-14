@@ -112,3 +112,32 @@ What is left, in full:
 None of these emit warnings — `pnpm check:strict` and `pnpm check:a11y` are both
 clean at 0 errors / 0 warnings across 4,847 files — so this is voluntary
 modernisation, not remediation.
+
+### 8. adapter-cloudflare 8.0.0-next.6 reads deprecated `config.kit`
+**Severity:** P3 (warning only, no behavioural effect)
+
+Every production build prints:
+
+```
+Reading `config.kit` inside adapters is deprecated — it should access
+configuration on the `config` object directly. You may need to update your adapter
+```
+
+This comes from inside the prerelease adapter, not from repo code, so there is
+nothing to fix here — it clears when adapter-cloudflare ships a build that reads
+`config` directly. Re-check when the SvelteKit 3 pins are moved off the
+`next` line (item 1).
+
+### 9. `$app/env`'s `version` is unusable in service workers
+**Severity:** P3 (worked around; upstream issue)
+
+`@sveltejs/kit@3.0.0-next.23` defines it as
+`BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and `payload` is only
+ever populated by the client app boot — so in a `ServiceWorkerGlobalScope` it is
+`undefined`. `$service-worker` supplied a real string in SvelteKit 2 and nothing
+in `$app/*` replaces it today.
+
+Worked around by injecting `__APP_VERSION__` via Vite's `define` and pinning
+`kit.version.name` to the same value (see `frontend/vite.config.ts`). If a later
+Kit 3 build fixes the export, that indirection can be dropped and the import
+restored. Worth reporting upstream if it is still present at 3.0.0 stable.
