@@ -4,6 +4,43 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-08-16 — Maintenance page: cinematic redesign
+
+Full redesign of `/maintenance` (`frontend/src/routes/maintenance/+page.svelte`)
+as a film-style title sequence over a live trading floor. New since the July
+institutional redesign:
+
+- **Terminal chrome.** Persistent top tape with brand mark, plus a new fixed
+  bottom HUD: real Eastern-time clock, correct NYSE session state
+  (pre/open/after-hours/closed, weekends included), feed-latency readout, build
+  day and progress, and a scroll-progress hairline.
+- **Cinematic title card.** Letterbox mattes that close during the entrance and
+  retract on scroll, slow push-in on the live AAPL candlestick backdrop,
+  masked-line headline rise, anamorphic flare, film grain and vignette. The
+  entire motion layer stays dynamically imported with the same settle-failsafe,
+  and `prefers-reduced-motion` skips it entirely.
+- **Hero live quote.** Oversized tabular price with direction flash, session
+  change, and a day-range meter that tracks the simulated session's low/high.
+- **"The desk, live" scene** — four new terminal modules with mechanically real
+  simulations: an L2 order book (five levels a side, depth bars, live spread),
+  time & sales (timestamped prints, buy/sell coloring, block-trade highlights),
+  an 11-sector S&P heat map, and the restyled scanner feed.
+- **Timeframe rail is now a real control.** 1m/5m/15m/1H regenerate the SPX
+  series at that granularity and re-fit the view; previously the buttons did
+  nothing.
+- **Seeded series recentered.** All seeded walks now close exactly on their base
+  price, so chart prices agree with the tape (the SPX chart previously drifted
+  ~4% away from the tape quote for the same symbol).
+- Scene-slate section grammar, scope manifest rows (now including the live
+  trading room), terminal-window build log with blinking cursor, and the same
+  notify endpoint, desk-note/build-log daily rotation, and prerender contract.
+
+Verified: svelte-autofixer clean (0 issues); check/check:strict/check:a11y all
+0/0 across 4,847 files; eslint 0 errors; prettier clean; 2,272 unit tests;
+production build green with `maintenance.html` prerendered; a11y suite at
+baseline; rendered in headless Chromium against the built output with
+screenshots confirming the title card, live desk modules, and coherent quotes.
+
 ## [Unreleased] — 2026-08-14 — SvelteKit 3 migration, Node 24.19.0 LTS, full dependency + toolchain top-up
 
 Evidence source: this branch (`claude/update-libraries-dependencies-kzycj8`).
