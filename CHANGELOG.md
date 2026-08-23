@@ -4,6 +4,33 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-08-23 (later) — Maintenance page: bespoke cinematic hero renderer
+
+The hero backdrop is no longer a charting library. `/maintenance` now renders
+its title-card tape with a hand-rolled 2D-canvas engine (zero dependencies,
+prerender-safe) composited in three passes:
+
+- **Depth**: the price series pre-rendered onto blurred offscreen layers,
+  drifting at different speeds behind the live tape — real parallax
+  depth-of-field, blur baked at build so runtime cost is two `drawImage` calls.
+- **Bloom**: candles drawn solid at 1/3 resolution and composited back up
+  through a single blur with additive blending, so only drawn pixels glow.
+- **Sharp pass**: gradient-lit candle bodies, a comet trail through recent
+  closes, ember particles drifting off the live price, a breathing halo, sparse
+  price grid, and a dashed gold price line with a hand-drawn axis chip.
+
+Renders at ~30fps, pauses when the hero is offscreen or the tab is hidden, and
+reduced-motion gets a single fully-graded static frame. The interaction layer
+grew too: a crosshair HUD over the title card that reads the price under the
+cursor off the live render's scale (decorative, `aria-hidden`, hidden on coarse
+pointers), a one-shot shine sweep across the headline after the entrance,
+animated film grain, hover physics on the desk modules, a slow scanner sweep
+over the order book, and glow on the countdown digits.
+
+Verified: check/check:strict/check:a11y 0/0; eslint 0 errors; prettier clean;
+2,272 unit tests; build green with `maintenance.html` prerendered; a11y suite
+at baseline; headless-Chromium screenshot confirms all renderer passes.
+
 ## [Unreleased] — 2026-08-23 — Maintenance page: graphics grade + terminal authenticity pass
 
 A cinematography and credibility pass over the `/maintenance` title sequence,

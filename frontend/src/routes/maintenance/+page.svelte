@@ -6,7 +6,6 @@
 		CandlestickData,
 		HistogramData,
 		IChartApi,
-		IPriceLine,
 		ISeriesApi,
 		UTCTimestamp
 	} from 'lightweight-charts';
@@ -479,16 +478,42 @@
 	/* ── Chart plumbing ────────────────────────────────────────────────────── */
 
 	let shellEl: HTMLDivElement;
-	let heroChartEl: HTMLDivElement;
 	let mainChartEl: HTMLDivElement;
 	let aaplChartEl: HTMLDivElement;
 	let nvdaChartEl: HTMLDivElement;
 
-	let heroChart: IChartApi | null = null;
-	let heroSeries: ISeriesApi<'Candlestick'> | null = null;
-	let heroFloorSeries: ISeriesApi<'Area'> | null = null;
-	let heroPriceLine: IPriceLine | null = null;
-	let heroChartReady = false;
+	/* Bespoke hero renderer state — raw 2D canvas, no library. */
+	interface Ember {
+		x: number;
+		y: number;
+		vx: number;
+		vy: number;
+		life: number;
+		max: number;
+		up: boolean;
+	}
+
+	let heroCanvasEl: HTMLCanvasElement;
+	let heroCtx: CanvasRenderingContext2D | null = null;
+	let heroCanvasReady = false;
+	let canvasFilterOk = true;
+	let heroDpr = 1;
+	let heroW = 0;
+	let heroH = 0;
+	let heroRaf = 0;
+	let heroLastFrame = 0;
+	let heroPrevPhysicsTs = 0;
+	let heroInView = true;
+	let heroResizeObserver: ResizeObserver | null = null;
+	let heroViewObserver: IntersectionObserver | null = null;
+	let heroCandles: CandlestickData[] = [];
+	let heroEmbers: Ember[] = [];
+	let heroTrail: number[] = [];
+	let ghostNear: HTMLCanvasElement | null = null;
+	let ghostFar: HTMLCanvasElement | null = null;
+	let glowLayer: HTMLCanvasElement | null = null;
+	let heroRangeTop = 234;
+	let heroRangeBottom = 230;
 	let heroFeedTimer = 0;
 	let heroLastCandle: CandlestickData | null = null;
 	let heroTickCount = 0;
@@ -524,6 +549,10 @@
 	let heroSessionLow = $state(HERO_BASE_PRICE);
 	let heroSessionHigh = $state(HERO_BASE_PRICE);
 	let heroOpenPrice = $state(HERO_BASE_PRICE);
+
+	/* Crosshair HUD: follows the pointer over the title card and reads the
+	 * price under the cursor off the live render's scale. */
+	let heroCrosshair = $state({ x: 0, y: 0, price: '', visible: false });
 
 	/* ── Derived readouts ──────────────────────────────────────────────────── */
 
@@ -598,7 +627,7 @@
 		if (!reducedMotion) {
 			void initMotion();
 		}
-		void initHeroChart();
+		initHeroCanvas();
 
 		visible.hero = true;
 
@@ -612,6 +641,12 @@
 			window.clearTimeout(entranceFailsafe);
 			window.clearTimeout(priceFlashTimer);
 			window.clearInterval(heroFeedTimer);
+			cancelAnimationFrame(heroRaf);
+			heroResizeObserver?.disconnect();
+			heroResizeObserver = null;
+			heroViewObserver?.disconnect();
+			heroViewObserver = null;
+			heroCanvasReady = false;
 			gsapContext?.revert();
 			gsapContext = null;
 			masterTimeline = null;
@@ -625,8 +660,42 @@
 		shellEl = node;
 	};
 
-	const mountHeroChart: Attachment<HTMLDivElement> = (node) => {
-		heroChartEl = node;
+	const mountHeroCanvas: Attachment<HTMLCanvasElement> = (node) => {
+		heroCanvasEl = node;
+	};
+
+	/* Pointer tracking is wired imperatively so the section keeps clean
+	 * semantics — the listeners are passive and feed only the decorative
+	 * crosshair HUD. */
+	const heroPointerAttach: Attachment<HTMLElement> = (node) => {
+		const move = (event: PointerEvent) => {
+			const rect = node.getBoundingClientRect();
+			let price = '';
+			if (heroCanvasEl) {
+				const canvasRect = heroCanvasEl.getBoundingClientRect();
+				if (canvasRect.height > 0) {
+					const rel = (event.clientY - canvasRect.top) / canvasRect.height;
+					if (rel >= 0 && rel <= 1) {
+						price = (heroRangeTop - (heroRangeTop - heroRangeBottom) * rel).toFixed(2);
+					}
+				}
+			}
+			heroCrosshair = {
+				x: event.clientX - rect.left,
+				y: event.clientY - rect.top,
+				price,
+				visible: true
+			};
+		};
+		const leave = () => {
+			heroCrosshair = { ...heroCrosshair, visible: false };
+		};
+		node.addEventListener('pointermove', move, { passive: true });
+		node.addEventListener('pointerleave', leave);
+		return () => {
+			node.removeEventListener('pointermove', move);
+			node.removeEventListener('pointerleave', leave);
+		};
 	};
 
 	const mountMainChart: Attachment<HTMLDivElement> = (node) => {
@@ -832,135 +901,350 @@
 		mainChart?.remove();
 		aaplChart?.remove();
 		nvdaChart?.remove();
-		heroChart?.remove();
 		mainChart = null;
 		aaplChart = null;
 		nvdaChart = null;
-		heroChart = null;
 		mainSeries = null;
 		mainFloorSeries = null;
 		aaplSeries = null;
 		nvdaSeries = null;
 		volumeSeries = null;
-		heroSeries = null;
-		heroFloorSeries = null;
-		heroPriceLine = null;
 		chartsReady = false;
-		heroChartReady = false;
 	}
 
-	/* ── Hero backdrop feed ────────────────────────────────────────────────── */
+	/* ── Hero backdrop: bespoke cinematic tape renderer ─────────────────────
+	 * Raw 2D canvas, no chart library. Three composited passes give the tape a
+	 * film grade lightweight-charts cannot reach:
+	 *   1. parallax "ghost" layers — the same series pre-rendered blurred onto
+	 *      offscreen canvases, drifting at different speeds (depth of field);
+	 *   2. a bloom pass — candles drawn solid at 1/3 resolution, composited
+	 *      back up through one blur with additive blending, so only the drawn
+	 *      pixels glow;
+	 *   3. the sharp pass — gradient-lit candles, a comet trail through recent
+	 *      closes, ember particles off the live price, a breathing halo, and
+	 *      the dashed gold price line with its axis chip.
+	 * Renders at ~30fps, pauses when the hero is offscreen or the tab is
+	 * hidden, and reduced-motion gets a single fully-graded static frame.
+	 */
+	const HERO_RIGHT_GUTTER = 96;
 
-	async function initHeroChart() {
-		if (heroChartReady || !browser || !mounted || !heroChartEl) return;
+	function initHeroCanvas() {
+		if (heroCanvasReady || !browser || !mounted || !heroCanvasEl) return;
+		const ctx = heroCanvasEl.getContext('2d');
+		if (!ctx) return;
+		heroCtx = ctx;
+		canvasFilterOk = 'filter' in ctx;
 
-		try {
-			const { createChart, CandlestickSeries, AreaSeries, LineStyle } =
-				await import('lightweight-charts');
-			if (!mounted || heroChartReady || !heroChartEl) return;
+		// Same seeded, recentered walk as before — the quote chip, tape, and
+		// desk all stay coherent with the backdrop.
+		const seed = recenter(generateCandles(232, HERO_BASE_PRICE, 96, 0.0035), HERO_BASE_PRICE, 0.18);
+		heroCandles = seed;
+		heroLastCandle = seed.at(-1) ?? null;
+		heroOpenPrice = seed[0]?.open ?? HERO_BASE_PRICE;
+		heroSessionLow = Math.min(...seed.map((candle) => candle.low));
+		heroSessionHigh = Math.max(...seed.map((candle) => candle.high));
+		if (heroLastCandle) {
+			heroPrice = heroLastCandle.close;
+			heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
+		}
+		heroTrail = seed.slice(-10).map((candle) => candle.close);
 
-			heroChart = createChart(heroChartEl, {
-				autoSize: true,
-				layout: {
-					background: { color: 'transparent' },
-					textColor: 'rgba(236, 234, 228, 0.4)',
-					fontFamily: "'SF Mono', ui-monospace, Menlo, monospace",
-					fontSize: 10,
-					attributionLogo: false
-				},
-				grid: {
-					vertLines: { visible: false },
-					horzLines: { color: 'rgba(236, 234, 228, 0.03)' }
-				},
-				rightPriceScale: {
-					visible: true,
-					borderVisible: false,
-					scaleMargins: { top: 0.14, bottom: 0.16 }
-				},
-				timeScale: {
-					visible: false,
-					rightOffset: 6,
-					barSpacing: 11,
-					lockVisibleTimeRangeOnResize: true
-				},
-				crosshair: {
-					vertLine: { visible: false, labelVisible: false },
-					horzLine: { visible: false, labelVisible: false }
-				},
-				handleScroll: false,
-				handleScale: false
-			});
+		const host = heroCanvasEl.parentElement;
+		const applySize = () => {
+			if (!heroCanvasEl || !host) return;
+			heroW = host.clientWidth;
+			heroH = host.clientHeight;
+			heroDpr = Math.min(2, window.devicePixelRatio || 1);
+			heroCanvasEl.width = Math.max(1, Math.round(heroW * heroDpr));
+			heroCanvasEl.height = Math.max(1, Math.round(heroH * heroDpr));
+			buildHeroLayers();
+			if (reducedMotion) renderHeroFrame(performance.now());
+		};
 
-			// A whisper of gold beneath the candles gives the tape depth without
-			// changing the palette. Added first so it renders under the series.
-			heroFloorSeries = heroChart.addSeries(AreaSeries, {
-				lineColor: 'rgba(198, 161, 91, 0.32)',
-				topColor: 'rgba(198, 161, 91, 0.09)',
-				bottomColor: 'transparent',
-				lineWidth: 1,
-				priceLineVisible: false,
-				lastValueVisible: false,
-				crosshairMarkerVisible: false
-			});
+		if (host) {
+			heroResizeObserver = new ResizeObserver(applySize);
+			heroResizeObserver.observe(host);
+		}
+		applySize();
 
-			heroSeries = heroChart.addSeries(CandlestickSeries, {
-				upColor: '#35b98c',
-				downColor: '#d16060',
-				borderVisible: true,
-				borderUpColor: '#3fd39e',
-				borderDownColor: '#e07272',
-				wickUpColor: 'rgba(63, 211, 158, 0.8)',
-				wickDownColor: 'rgba(224, 114, 114, 0.8)',
-				priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
-				priceLineVisible: false,
-				lastValueVisible: false
-			});
+		heroViewObserver = new IntersectionObserver(
+			(entries) => {
+				heroInView = entries[0]?.isIntersecting ?? true;
+			},
+			{ root: shellEl, threshold: 0 }
+		);
+		heroViewObserver.observe(heroCanvasEl);
 
-			// Tighter squeeze here than the desk charts: the backdrop reads as one
-			// intraday session, so its range stays around 1.5%.
-			const seed = recenter(
-				generateCandles(232, HERO_BASE_PRICE, 96, 0.0035),
-				HERO_BASE_PRICE,
-				0.18
-			);
-			heroSeries.setData(seed);
-			heroFloorSeries.setData(seed.map((candle) => ({ time: candle.time, value: candle.close })));
-			heroLastCandle = seed.at(-1) ?? null;
+		heroCanvasReady = true;
 
-			heroOpenPrice = seed[0]?.open ?? HERO_BASE_PRICE;
-			heroSessionLow = Math.min(...seed.map((candle) => candle.low));
-			heroSessionHigh = Math.max(...seed.map((candle) => candle.high));
-
-			// The dashed bronze line doubles as the last-price element: it
-			// carries both the reference line and the gold axis chip.
-			heroPriceLine = heroSeries.createPriceLine({
-				price: heroLastCandle?.close ?? HERO_BASE_PRICE,
-				color: 'rgba(198, 161, 91, 0.5)',
-				lineWidth: 1,
-				lineStyle: LineStyle.Dashed,
-				axisLabelVisible: true,
-				axisLabelColor: 'rgba(198, 161, 91, 0.92)',
-				axisLabelTextColor: '#07080b',
-				title: ''
-			});
-			if (heroLastCandle) {
-				heroPrice = heroLastCandle.close;
-				heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
-			}
-			heroChart.timeScale().scrollToRealTime();
-			heroChartReady = true;
-
-			// The feed never stops; reduced-motion readers get a still frame.
-			if (!reducedMotion) {
-				heroFeedTimer = window.setInterval(tickHeroFeed, 700);
-			}
-		} catch (error) {
-			if (mounted) console.error('[Maintenance] Failed to initialize hero chart', error);
+		if (!reducedMotion) {
+			heroFeedTimer = window.setInterval(tickHeroFeed, 700);
+			heroRaf = requestAnimationFrame(heroLoop);
 		}
 	}
 
+	/* Pre-render the depth layers once per resize/reseed: smoothed close-line
+	 * paths, blur baked in, drawn twice side-by-side so runtime drift is two
+	 * cheap drawImage calls with a modulo offset. */
+	function buildHeroLayers() {
+		if (!heroW || !heroH) return;
+		ghostNear = makeGhostLayer(12, 'rgba(198, 161, 91, 0.17)', 8);
+		ghostFar = makeGhostLayer(30, 'rgba(168, 196, 220, 0.12)', 15);
+		glowLayer = document.createElement('canvas');
+		glowLayer.width = Math.max(1, Math.round(heroW / 3));
+		glowLayer.height = Math.max(1, Math.round(heroH / 3));
+	}
+
+	function makeGhostLayer(verticalShift: number, stroke: string, blur: number) {
+		const layer = document.createElement('canvas');
+		layer.width = Math.max(2, heroW * 2);
+		layer.height = Math.max(2, heroH);
+		const g = layer.getContext('2d');
+		if (!g) return layer;
+
+		const closes = heroCandles.map((candle) => candle.close);
+		const min = Math.min(...closes);
+		const span = Math.max(0.01, Math.max(...closes) - min);
+		const points = closes.map((value, index) => ({
+			x: (index / (closes.length - 1)) * heroW,
+			y: heroH * 0.16 + (1 - (value - min) / span) * heroH * 0.52 + verticalShift
+		}));
+
+		if (canvasFilterOk) g.filter = `blur(${blur}px)`;
+		g.strokeStyle = stroke;
+		g.lineWidth = 2.5;
+		g.lineJoin = 'round';
+		for (const offset of [0, heroW]) {
+			g.beginPath();
+			points.forEach((point, index) => {
+				if (index === 0) g.moveTo(point.x + offset, point.y);
+				else g.lineTo(point.x + offset, point.y);
+			});
+			g.stroke();
+		}
+		return layer;
+	}
+
+	function heroLoop(now: number) {
+		heroRaf = requestAnimationFrame(heroLoop);
+		if (document.hidden || !heroInView) return;
+		if (now - heroLastFrame < 33) return;
+		heroLastFrame = now;
+		renderHeroFrame(now);
+	}
+
+	function niceGridStep(rough: number) {
+		const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(rough, 0.0001))));
+		for (const unit of [1, 2, 2.5, 5, 10]) {
+			if (unit * magnitude >= rough) return unit * magnitude;
+		}
+		return 10 * magnitude;
+	}
+
+	function renderHeroFrame(now: number) {
+		const ctx = heroCtx;
+		if (!ctx || !heroW || !heroH) return;
+		ctx.setTransform(heroDpr, 0, 0, heroDpr, 0, 0);
+		ctx.clearRect(0, 0, heroW, heroH);
+
+		const visible = heroCandles.slice(-72);
+		if (!visible.length) return;
+		const plotW = heroW - HERO_RIGHT_GUTTER;
+		const slot = plotW / (visible.length + 4);
+		const bodyW = Math.max(3, slot * 0.58);
+
+		let lo = Infinity;
+		let hi = -Infinity;
+		for (const candle of visible) {
+			lo = Math.min(lo, candle.low);
+			hi = Math.max(hi, candle.high);
+		}
+		const pad = (hi - lo) * 0.18 + 0.05;
+		lo -= pad;
+		hi += pad;
+		heroRangeTop = hi;
+		heroRangeBottom = lo;
+		const yFor = (price: number) => ((hi - price) / (hi - lo)) * heroH;
+		const xFor = (index: number) => slot * (index + 1);
+		const leadIndex = visible.length - 1;
+		const leadX = xFor(leadIndex);
+		const leadY = yFor(visible[leadIndex].close);
+
+		// 1 — depth: the ghost layers drift at different speeds.
+		const t = now / 1000;
+		if (ghostFar) ctx.drawImage(ghostFar, -((t * 4) % heroW), 0);
+		if (ghostNear) ctx.drawImage(ghostNear, -((t * 9) % heroW), 0);
+
+		// Grid + right-edge price labels.
+		ctx.font = "10px 'SF Mono', ui-monospace, Menlo, monospace";
+		ctx.textAlign = 'right';
+		const step = niceGridStep((hi - lo) / 5);
+		for (let price = Math.ceil(lo / step) * step; price < hi; price += step) {
+			const y = yFor(price);
+			ctx.strokeStyle = 'rgba(236, 234, 228, 0.045)';
+			ctx.beginPath();
+			ctx.moveTo(0, y);
+			ctx.lineTo(heroW, y);
+			ctx.stroke();
+			ctx.fillStyle = 'rgba(236, 234, 228, 0.3)';
+			ctx.fillText(price.toFixed(2), heroW - 10, y - 4);
+		}
+
+		// 2 — bloom: solid candles at 1/3 resolution, one blur, additive.
+		if (glowLayer) {
+			const g = glowLayer.getContext('2d');
+			if (g) {
+				g.setTransform(glowLayer.width / heroW, 0, 0, glowLayer.height / heroH, 0, 0);
+				g.clearRect(0, 0, heroW, heroH);
+				visible.forEach((candle, index) => {
+					const up = candle.close >= candle.open;
+					const x = xFor(index);
+					g.fillStyle = up ? 'rgba(63, 211, 158, 0.9)' : 'rgba(224, 114, 114, 0.9)';
+					const yOpen = yFor(candle.open);
+					const yClose = yFor(candle.close);
+					g.fillRect(
+						x - bodyW / 2,
+						Math.min(yOpen, yClose),
+						bodyW,
+						Math.max(2, Math.abs(yClose - yOpen))
+					);
+					g.fillRect(
+						x - 0.7,
+						yFor(candle.high),
+						1.4,
+						Math.max(1, yFor(candle.low) - yFor(candle.high))
+					);
+				});
+				ctx.save();
+				ctx.globalCompositeOperation = 'lighter';
+				ctx.globalAlpha = canvasFilterOk ? 0.55 : 0.3;
+				if (canvasFilterOk) ctx.filter = 'blur(9px)';
+				ctx.drawImage(glowLayer, 0, 0, glowLayer.width, glowLayer.height, 0, 0, heroW, heroH);
+				ctx.restore();
+			}
+		}
+
+		// 3 — sharp pass: gradient-lit bodies over hairline wicks.
+		visible.forEach((candle, index) => {
+			const up = candle.close >= candle.open;
+			const x = xFor(index);
+			const yHigh = yFor(candle.high);
+			const yLow = yFor(candle.low);
+			const yOpen = yFor(candle.open);
+			const yClose = yFor(candle.close);
+			const yTop = Math.min(yOpen, yClose);
+			const height = Math.max(1.6, Math.abs(yClose - yOpen));
+
+			ctx.strokeStyle = up ? 'rgba(63, 211, 158, 0.7)' : 'rgba(224, 114, 114, 0.7)';
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(x, yHigh);
+			ctx.lineTo(x, yLow);
+			ctx.stroke();
+
+			const fill = ctx.createLinearGradient(0, yTop, 0, yTop + height);
+			if (up) {
+				fill.addColorStop(0, '#4fe0ac');
+				fill.addColorStop(1, '#27946f');
+			} else {
+				fill.addColorStop(0, '#ec8888');
+				fill.addColorStop(1, '#aa4a4a');
+			}
+			ctx.fillStyle = fill;
+			ctx.fillRect(x - bodyW / 2, yTop, bodyW, height);
+		});
+
+		// Breathing halo on the live price.
+		const pulse = 0.5 + 0.5 * Math.sin(now / 380);
+		const halo = ctx.createRadialGradient(leadX, leadY, 0, leadX, leadY, 90);
+		halo.addColorStop(0, `rgba(198, 161, 91, ${(0.1 + 0.08 * pulse).toFixed(3)})`);
+		halo.addColorStop(1, 'rgba(198, 161, 91, 0)');
+		ctx.save();
+		ctx.globalCompositeOperation = 'lighter';
+		ctx.fillStyle = halo;
+		ctx.beginPath();
+		ctx.arc(leadX, leadY, 90, 0, Math.PI * 2);
+		ctx.fill();
+
+		// Comet trail through the last few closes.
+		const trail = heroTrail.slice(-10);
+		ctx.lineCap = 'round';
+		for (let i = 1; i < trail.length; i += 1) {
+			const from = leadIndex - (trail.length - 1) + (i - 1);
+			const to = from + 1;
+			if (from < 0) continue;
+			const alpha = i / trail.length;
+			ctx.strokeStyle = `rgba(236, 220, 180, ${(0.04 + alpha * 0.3).toFixed(3)})`;
+			ctx.lineWidth = 0.5 + alpha * 2.2;
+			ctx.beginPath();
+			ctx.moveTo(xFor(from), yFor(trail[i - 1]));
+			ctx.lineTo(xFor(to), yFor(trail[i]));
+			ctx.stroke();
+		}
+
+		// Embers: data-dust drifting off the live price.
+		const dt = heroPrevPhysicsTs ? Math.min(200, now - heroPrevPhysicsTs) : 16;
+		heroPrevPhysicsTs = now;
+		heroEmbers = heroEmbers.filter((ember) => (ember.life += dt) < ember.max);
+		for (const ember of heroEmbers) {
+			ember.x += ember.vx * dt;
+			ember.y += ember.vy * dt;
+			const fade = 1 - ember.life / ember.max;
+			ctx.fillStyle = ember.up
+				? `rgba(126, 226, 184, ${(fade * 0.7).toFixed(3)})`
+				: `rgba(233, 152, 152, ${(fade * 0.7).toFixed(3)})`;
+			ctx.beginPath();
+			ctx.arc(ember.x, ember.y, 0.8 + fade * 1.3, 0, Math.PI * 2);
+			ctx.fill();
+		}
+		ctx.restore();
+
+		// Dashed gold price line + axis chip.
+		ctx.save();
+		ctx.setLineDash([4, 4]);
+		ctx.strokeStyle = 'rgba(198, 161, 91, 0.5)';
+		ctx.lineWidth = 1;
+		ctx.beginPath();
+		ctx.moveTo(0, leadY);
+		ctx.lineTo(heroW, leadY);
+		ctx.stroke();
+		ctx.restore();
+
+		const chipY = Math.max(12, Math.min(heroH - 12, leadY));
+		ctx.fillStyle = 'rgba(198, 161, 91, 0.95)';
+		ctx.beginPath();
+		ctx.roundRect(heroW - HERO_RIGHT_GUTTER + 10, chipY - 10, 78, 20, 3);
+		ctx.fill();
+		ctx.fillStyle = '#06070a';
+		ctx.font = "700 11px 'SF Mono', ui-monospace, Menlo, monospace";
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(heroPrice.toFixed(2), heroW - HERO_RIGHT_GUTTER + 49, chipY + 0.5);
+		ctx.textBaseline = 'alphabetic';
+	}
+
+	function spawnEmbers(up: boolean) {
+		if (!heroW || !heroH) return;
+		const span = Math.max(0.01, heroRangeTop - heroRangeBottom);
+		const leadX = ((heroW - HERO_RIGHT_GUTTER) / 76) * 72;
+		const leadY = ((heroRangeTop - heroPrice) / span) * heroH;
+		const count = 1 + (Math.random() > 0.6 ? 1 : 0);
+		for (let i = 0; i < count; i += 1) {
+			heroEmbers.push({
+				x: leadX + (Math.random() - 0.5) * 8,
+				y: leadY + (Math.random() - 0.5) * 8,
+				vx: -(0.006 + Math.random() * 0.012),
+				vy: -(0.01 + Math.random() * 0.02),
+				life: 0,
+				max: 1600 + Math.random() * 1400,
+				up
+			});
+		}
+		if (heroEmbers.length > 70) heroEmbers.splice(0, heroEmbers.length - 70);
+	}
+
 	function tickHeroFeed() {
-		if (!heroSeries || !heroLastCandle) return;
+		if (!heroLastCandle) return;
 
 		heroTickCount += 1;
 
@@ -979,6 +1263,8 @@
 				low: Math.min(open, close),
 				close
 			};
+			heroCandles.push(heroLastCandle);
+			if (heroCandles.length > 140) heroCandles.shift();
 		} else {
 			const close = Number((heroLastCandle.close + move).toFixed(2));
 			heroLastCandle = {
@@ -987,17 +1273,19 @@
 				high: Math.max(heroLastCandle.high, close),
 				low: Math.min(heroLastCandle.low, close)
 			};
+			heroCandles[heroCandles.length - 1] = heroLastCandle;
 		}
 
-		heroSeries.update(heroLastCandle);
-		heroFloorSeries?.update({ time: heroLastCandle.time, value: heroLastCandle.close });
-		heroPriceLine?.applyOptions({ price: heroLastCandle.close });
+		heroTrail.push(heroLastCandle.close);
+		if (heroTrail.length > 12) heroTrail.shift();
 
 		const previous = heroPrice;
 		heroPrice = heroLastCandle.close;
 		heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
 		heroSessionLow = Math.min(heroSessionLow, heroLastCandle.low);
 		heroSessionHigh = Math.max(heroSessionHigh, heroLastCandle.high);
+
+		spawnEmbers(heroPrice >= previous);
 
 		// Direction flash on the big figure — cleared after the pulse lands.
 		if (heroPrice !== previous) {
@@ -1775,11 +2063,15 @@
 
 	<main class="page-shell">
 		<!-- ═══ TITLE CARD ═══════════════════════════════════════════════════ -->
-		<section id="hero" class={{ hero: true, reveal: true, visible: visible.hero }}>
+		<section
+			id="hero"
+			class={{ hero: true, reveal: true, visible: visible.hero }}
+			{@attach heroPointerAttach}
+		>
 			<span class="hero-watermark" aria-hidden="true">AAPL</span>
 
 			<div class="hero-chart" aria-hidden="true">
-				<div class="hero-chart-canvas" {@attach mountHeroChart}></div>
+				<canvas class="hero-canvas" {@attach mountHeroCanvas}></canvas>
 			</div>
 			<div class="hero-scrim" aria-hidden="true"></div>
 			<div class="hero-flare" aria-hidden="true"></div>
@@ -1911,6 +2203,19 @@
 			<div class="scroll-cue" aria-hidden="true" data-entrance>
 				<span>Scroll</span>
 				<i></i>
+			</div>
+
+			<div
+				class={{ crosshair: true, on: heroCrosshair.visible }}
+				aria-hidden="true"
+				style:--chx={`${heroCrosshair.x}px`}
+				style:--chy={`${heroCrosshair.y}px`}
+			>
+				<i class="ch-v"></i>
+				<i class="ch-h"></i>
+				{#if heroCrosshair.price}
+					<span class="ch-tag">{heroCrosshair.price}</span>
+				{/if}
 			</div>
 		</section>
 
@@ -2522,6 +2827,19 @@
 		opacity: 0.05;
 		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 		background-size: 140px 140px;
+		animation: grain-shift 1.1s steps(6) infinite;
+	}
+
+	@keyframes grain-shift {
+		0% {
+			background-position: 0 0;
+		}
+		50% {
+			background-position: -46px 62px;
+		}
+		100% {
+			background-position: 38px -34px;
+		}
 	}
 
 	.vignette {
@@ -2831,6 +3149,7 @@
 
 	.hero {
 		position: relative;
+		cursor: crosshair;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -2864,12 +3183,12 @@
 		mask-image: linear-gradient(to bottom, transparent 2%, #000 22%, #000 78%, transparent 98%);
 	}
 
-	.hero-chart-canvas {
+	.hero-canvas {
 		position: absolute;
 		inset: 0;
-		/* Neon bloom: drop-shadow keys off the canvas alpha, so only the drawn
-		 * candles glow — the transparent field casts nothing. */
-		filter: drop-shadow(0 0 14px rgba(198, 161, 91, 0.16));
+		width: 100%;
+		height: 100%;
+		/* Bloom lives inside the renderer's own compositing passes. */
 	}
 
 	.hero-flare {
@@ -2969,11 +3288,28 @@
 		 * text. The clip lives on the SAME element GSAP transforms: putting
 		 * background-clip:text on an ancestor of a transformed span misplaces
 		 * the rasterized glyph mask in Chromium and shatters the headline. */
-		background: linear-gradient(180deg, #ffffff 6%, var(--ivory) 52%, rgba(236, 234, 228, 0.68));
+		background:
+			linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.55) 50%, transparent 58%),
+			linear-gradient(180deg, #ffffff 6%, var(--ivory) 52%, rgba(236, 234, 228, 0.68));
+		background-size:
+			240% 100%,
+			100% 100%;
+		background-position:
+			-150% 0,
+			0 0;
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
 		text-shadow: 0 0 90px rgba(198, 161, 91, 0.16);
+		animation: title-shine 1.6s ease 3.4s 1 forwards;
+	}
+
+	@keyframes title-shine {
+		to {
+			background-position:
+				250% 0,
+				0 0;
+		}
 	}
 
 	.serif-accent {
@@ -3221,6 +3557,7 @@
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 		color: var(--accent);
+		text-shadow: 0 0 18px rgba(198, 161, 91, 0.45);
 	}
 
 	.timer-meta {
@@ -3342,6 +3679,76 @@
 		background: linear-gradient(90deg, var(--accent), transparent);
 	}
 
+	/* Crosshair HUD: hairlines + a live price tag riding the pointer. Purely
+	 * decorative (aria-hidden, pointer-events none); the native crosshair
+	 * cursor stays, so there is no a11y cost. Hidden on coarse pointers. */
+	.crosshair {
+		position: absolute;
+		inset: 0;
+		z-index: 3;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.crosshair.on {
+		opacity: 1;
+	}
+
+	.ch-v {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: var(--chx);
+		width: 1px;
+		background: linear-gradient(
+			180deg,
+			transparent,
+			rgba(198, 161, 91, 0.35) 25%,
+			rgba(198, 161, 91, 0.35) 75%,
+			transparent
+		);
+	}
+
+	.ch-h {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: var(--chy);
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgba(198, 161, 91, 0.35) 25%,
+			rgba(198, 161, 91, 0.35) 75%,
+			transparent
+		);
+	}
+
+	.ch-tag {
+		position: absolute;
+		left: var(--chx);
+		top: var(--chy);
+		transform: translate(12px, -50%);
+		padding: 2px 8px;
+		border: 1px solid var(--gold-25);
+		background: rgba(6, 7, 10, 0.82);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-variant-numeric: tabular-nums;
+		color: var(--accent);
+	}
+
+	@media (pointer: coarse) {
+		.crosshair {
+			display: none;
+		}
+
+		.hero {
+			cursor: auto;
+		}
+	}
+
 	/* ── Scene 01: desk note ──────────────────────────────────────────────── */
 
 	.note-card {
@@ -3404,6 +3811,19 @@
 		flex-direction: column;
 		padding: 18px 20px;
 		min-height: 320px;
+		transition:
+			transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+			border-color 0.35s ease,
+			box-shadow 0.35s ease;
+	}
+
+	.desk-module:hover {
+		transform: translateY(-3px);
+		border-color: var(--gold-25);
+		box-shadow:
+			var(--shadow-md),
+			0 22px 48px -26px rgba(0, 0, 0, 0.9),
+			0 0 0 1px rgba(198, 161, 91, 0.1);
 	}
 
 	/* Camera-framing corner brackets: the HUD grammar that marks each module
@@ -3494,10 +3914,40 @@
 
 	/* Order book */
 	.book-columns {
+		position: relative;
+		overflow: hidden;
 		flex: 1;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 14px;
+	}
+
+	/* A slow scanner pass over the ladder — instrument, not decoration. */
+	.book-columns::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(
+			180deg,
+			transparent 0%,
+			rgba(236, 234, 228, 0.035) 48%,
+			rgba(198, 161, 91, 0.05) 50%,
+			rgba(236, 234, 228, 0.035) 52%,
+			transparent 100%
+		);
+		background-size: 100% 340%;
+		background-repeat: no-repeat;
+		animation: book-scan 7s linear infinite;
+	}
+
+	@keyframes book-scan {
+		from {
+			background-position: 0 -120%;
+		}
+		to {
+			background-position: 0 220%;
+		}
 	}
 
 	.book-side {
@@ -4816,6 +5266,27 @@
 
 		.aurora {
 			animation: none;
+		}
+
+		.grain {
+			animation: none;
+		}
+
+		.hero-title .line-inner {
+			animation: none;
+		}
+
+		.book-columns::after {
+			animation: none;
+			background: none;
+		}
+
+		.crosshair {
+			transition: none;
+		}
+
+		.desk-module {
+			transition: none;
 		}
 
 		section.visible .panel-feature::after {
