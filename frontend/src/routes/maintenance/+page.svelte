@@ -107,6 +107,8 @@
 		count: number;
 		volatility: number;
 		barSpacing: number;
+		/** Seconds per bar — a 5m rail must produce 5-minute bars, not 1-minute. */
+		interval: number;
 	}
 
 	const revealScenes: SceneId[] = [
@@ -120,11 +122,13 @@
 		'access'
 	];
 
+	/* Wider bar spacing than the library default: chunky candles read like a
+	 * graded film frame at viewing distance, not a cramped analysis screen. */
 	const TIMEFRAMES: Record<TimeframeId, TimeframeConfig> = {
-		'1m': { seed: 1487, count: 96, volatility: 0.0038, barSpacing: 6 },
-		'5m': { seed: 2861, count: 76, volatility: 0.0052, barSpacing: 8 },
-		'15m': { seed: 5233, count: 64, volatility: 0.0071, barSpacing: 9 },
-		'1H': { seed: 7919, count: 56, volatility: 0.0104, barSpacing: 11 }
+		'1m': { seed: 1487, count: 96, volatility: 0.0038, barSpacing: 9, interval: 60 },
+		'5m': { seed: 2861, count: 76, volatility: 0.0052, barSpacing: 11, interval: 300 },
+		'15m': { seed: 5233, count: 64, volatility: 0.0071, barSpacing: 12, interval: 900 },
+		'1H': { seed: 7919, count: 56, volatility: 0.0104, barSpacing: 14, interval: 3600 }
 	};
 	const timeframeIds = Object.keys(TIMEFRAMES) as TimeframeId[];
 
@@ -381,7 +385,7 @@
 
 	let liveTickers = $state<Ticker[]>([
 		{ symbol: 'SPX', basePrice: 5892.33, price: 5892.33, change: 1.24, direction: 'up' },
-		{ symbol: 'NQ', basePrice: 20845.2, price: 20845.2, change: 2.34, direction: 'up' },
+		{ symbol: 'NQ', basePrice: 20845.25, price: 20845.25, change: 2.34, direction: 'up' },
 		{ symbol: 'ES', basePrice: 5890.5, price: 5890.5, change: 0.89, direction: 'up' },
 		{ symbol: 'VIX', basePrice: 12.45, price: 12.45, change: -8.2, direction: 'down' },
 		{ symbol: 'AAPL', basePrice: 232.3, price: 232.3, change: 1.45, direction: 'up' },
@@ -436,20 +440,22 @@
 		{ id: 'TY3-04', region: 'Tokyo', load: 31, status: 'standby' }
 	]);
 
-	/* Order book — five levels a side around the live AAPL mid. */
+	/* Order book — five levels a side on a penny grid around the live AAPL mid.
+	 * AAPL's book is penny-quoted with a 1-2 cent spread; a 2-cent grid with a
+	 * 4-cent spread reads wrong to anyone who has watched an L2. */
 	let bookBids = $state<BookLevel[]>([
-		{ price: 232.28, size: 1240 },
-		{ price: 232.26, size: 860 },
-		{ price: 232.24, size: 1580 },
-		{ price: 232.22, size: 640 },
-		{ price: 232.2, size: 2210 }
+		{ price: 232.29, size: 1240 },
+		{ price: 232.28, size: 860 },
+		{ price: 232.27, size: 1580 },
+		{ price: 232.26, size: 640 },
+		{ price: 232.25, size: 2210 }
 	]);
 	let bookAsks = $state<BookLevel[]>([
-		{ price: 232.32, size: 980 },
-		{ price: 232.34, size: 1420 },
-		{ price: 232.36, size: 760 },
-		{ price: 232.38, size: 1130 },
-		{ price: 232.4, size: 1890 }
+		{ price: 232.31, size: 980 },
+		{ price: 232.32, size: 1420 },
+		{ price: 232.33, size: 760 },
+		{ price: 232.34, size: 1130 },
+		{ price: 232.35, size: 1890 }
 	]);
 
 	/* Time & sales — the print stream beside the book. */
@@ -489,6 +495,7 @@
 
 	let mainChart: IChartApi | null = null;
 	let mainSeries: ISeriesApi<'Candlestick'> | null = null;
+	let mainFloorSeries: ISeriesApi<'Area'> | null = null;
 	let volumeSeries: ISeriesApi<'Histogram'> | null = null;
 	let aaplChart: IChartApi | null = null;
 	let aaplSeries: ISeriesApi<'Area'> | null = null;
@@ -722,6 +729,23 @@
 
 	/* ── Deterministic market fiction ──────────────────────────────────────── */
 
+	/* lightweight-charts renders UTC timestamps verbatim, but every other clock
+	 * on this page speaks Eastern time — without this shift the SPX axis reads
+	 * "18:10" while the HUD says 14:10 ET, which no trading audience forgives.
+	 * Shifting the fictional timestamps by the current ET offset makes the
+	 * UTC-rendered labels read as ET wall-clock time. */
+	const ET_SHIFT_SEC = browser
+		? Math.round(
+				(new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })).getTime() -
+					Date.now()) /
+					60_000
+			) * 60
+		: 0;
+
+	function chartNow() {
+		return (Math.floor(Date.now() / 1000) + ET_SHIFT_SEC) as UTCTimestamp;
+	}
+
 	function seededRandom(seed: number) {
 		let value = seed % 2147483647;
 		if (value <= 0) value += 2147483646;
@@ -732,10 +756,19 @@
 		};
 	}
 
-	function generateCandles(seed: number, startPrice: number, count: number, volatility = 0.007) {
+	function generateCandles(
+		seed: number,
+		startPrice: number,
+		count: number,
+		volatility = 0.007,
+		intervalSec = 60
+	) {
 		const random = seededRandom(seed);
 		const candles: CandlestickData[] = [];
-		const start = Math.floor(Date.now() / 1000) - count * 60;
+		// Bars land on interval boundaries in ET wall-clock time, so a 5m rail
+		// shows :00/:05/:10 labels rather than arbitrary minutes.
+		const now = Number(chartNow());
+		const start = Math.floor((now - count * intervalSec) / intervalSec) * intervalSec;
 		let price = startPrice;
 		let drift = 0.35;
 
@@ -748,7 +781,7 @@
 			const low = Math.min(open, close) - random() * startPrice * volatility * 0.55;
 
 			candles.push({
-				time: (start + i * 60) as UTCTimestamp,
+				time: (start + i * intervalSec) as UTCTimestamp,
 				open: Number(open.toFixed(2)),
 				high: Number(high.toFixed(2)),
 				low: Number(low.toFixed(2)),
@@ -779,11 +812,20 @@
 	}
 
 	function volumeFor(candles: CandlestickData[]): HistogramData[] {
-		return candles.map((candle, index) => ({
-			time: candle.time,
-			value: 480000 + ((index * 13729) % 620000),
-			color: candle.close >= candle.open ? 'rgba(46, 156, 119, 0.28)' : 'rgba(194, 85, 85, 0.28)'
-		}));
+		// Volume follows the bar's own energy — bigger bodies print bigger volume,
+		// with seeded noise on top. The previous modular ramp drew two perfect
+		// staircases with a cliff, which reads as fake to anyone who trades.
+		const random = seededRandom(4242);
+		return candles.map((candle) => {
+			const body = Math.abs(candle.close - candle.open);
+			const range = Math.max(candle.high - candle.low, 0.0001);
+			const energy = 0.5 + (body / range) * 0.7 + random() * 0.9;
+			return {
+				time: candle.time,
+				value: Math.floor(300000 * energy + random() * 240000),
+				color: candle.close >= candle.open ? 'rgba(53, 185, 140, 0.5)' : 'rgba(209, 96, 96, 0.42)'
+			};
+		});
 	}
 
 	function disposeCharts() {
@@ -796,6 +838,7 @@
 		nvdaChart = null;
 		heroChart = null;
 		mainSeries = null;
+		mainFloorSeries = null;
 		aaplSeries = null;
 		nvdaSeries = null;
 		volumeSeries = null;
@@ -837,7 +880,7 @@
 				timeScale: {
 					visible: false,
 					rightOffset: 6,
-					barSpacing: 8,
+					barSpacing: 11,
 					lockVisibleTimeRangeOnResize: true
 				},
 				crosshair: {
@@ -861,13 +904,13 @@
 			});
 
 			heroSeries = heroChart.addSeries(CandlestickSeries, {
-				upColor: '#2e9c77',
-				downColor: '#c25555',
+				upColor: '#35b98c',
+				downColor: '#d16060',
 				borderVisible: true,
-				borderUpColor: '#2e9c77',
-				borderDownColor: '#c25555',
-				wickUpColor: 'rgba(46, 156, 119, 0.7)',
-				wickDownColor: 'rgba(194, 85, 85, 0.7)',
+				borderUpColor: '#3fd39e',
+				borderDownColor: '#e07272',
+				wickUpColor: 'rgba(63, 211, 158, 0.8)',
+				wickDownColor: 'rgba(224, 114, 114, 0.8)',
 				priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
 				priceLineVisible: false,
 				lastValueVisible: false
@@ -988,7 +1031,7 @@
 				return;
 			}
 
-			const { createChart, CandlestickSeries, AreaSeries, HistogramSeries } =
+			const { createChart, CandlestickSeries, AreaSeries, HistogramSeries, LineStyle } =
 				await import('lightweight-charts');
 
 			if (
@@ -1004,7 +1047,13 @@
 
 			const timeframe = TIMEFRAMES[activeTimeframe];
 			const seededMain = recenter(
-				generateCandles(timeframe.seed, 5892.33, timeframe.count, timeframe.volatility),
+				generateCandles(
+					timeframe.seed,
+					5892.33,
+					timeframe.count,
+					timeframe.volatility,
+					timeframe.interval
+				),
 				5892.33,
 				0.35
 			);
@@ -1016,7 +1065,8 @@
 				textColor: 'rgba(236, 234, 228, 0.62)',
 				fontFamily:
 					'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-				fontSize: 11
+				fontSize: 11,
+				attributionLogo: false
 			};
 
 			mainChart = createChart(mainChartEl, {
@@ -1034,7 +1084,8 @@
 					borderColor: 'rgba(255, 255, 255, 0.1)',
 					timeVisible: true,
 					secondsVisible: false,
-					barSpacing: timeframe.barSpacing
+					barSpacing: timeframe.barSpacing,
+					rightOffset: 5
 				},
 				crosshair: {
 					vertLine: { color: 'rgba(198, 161, 91, 0.4)', style: 3 },
@@ -1042,38 +1093,62 @@
 				}
 			});
 
+			// A luminous gold floor beneath the candles — same grammar as the hero
+			// backdrop — so the tape sits in an atmosphere instead of on a void.
+			// Added first so it renders under the candle series.
+			mainFloorSeries = mainChart.addSeries(AreaSeries, {
+				lineColor: 'rgba(198, 161, 91, 0.28)',
+				topColor: 'rgba(198, 161, 91, 0.08)',
+				bottomColor: 'transparent',
+				lineWidth: 1,
+				priceLineVisible: false,
+				lastValueVisible: false,
+				crosshairMarkerVisible: false
+			});
+
 			mainSeries = mainChart.addSeries(CandlestickSeries, {
-				upColor: '#2e9c77',
-				downColor: '#c25555',
-				borderUpColor: '#2e9c77',
-				borderDownColor: '#c25555',
-				wickUpColor: '#2e9c77',
-				wickDownColor: '#c25555'
+				upColor: '#35b98c',
+				downColor: '#d16060',
+				borderUpColor: '#3fd39e',
+				borderDownColor: '#e07272',
+				wickUpColor: 'rgba(63, 211, 158, 0.85)',
+				wickDownColor: 'rgba(224, 114, 114, 0.85)',
+				priceLineVisible: true,
+				priceLineColor: 'rgba(198, 161, 91, 0.55)',
+				priceLineStyle: LineStyle.Dashed,
+				lastValueVisible: true
 			});
 
 			volumeSeries = mainChart.addSeries(HistogramSeries, {
 				priceFormat: { type: 'volume' },
-				priceScaleId: ''
+				priceScaleId: '',
+				// No axis pill or price line for volume — the right axis belongs to
+				// price alone; the volume tag was occluding price labels.
+				lastValueVisible: false,
+				priceLineVisible: false
 			});
 
+			mainFloorSeries.setData(
+				seededMain.map((candle) => ({ time: candle.time, value: candle.close }))
+			);
 			mainSeries.setData(seededMain);
-			volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+			volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
 			volumeSeries.setData(volumeFor(seededMain));
 
 			aaplChart = createMiniChart(createChart, aaplChartEl);
 			nvdaChart = createMiniChart(createChart, nvdaChartEl);
 
 			aaplSeries = aaplChart.addSeries(AreaSeries, {
-				lineColor: 'rgba(143, 166, 184, 0.9)',
-				topColor: 'rgba(143, 166, 184, 0.14)',
-				bottomColor: 'rgba(143, 166, 184, 0)',
+				lineColor: 'rgba(168, 196, 220, 0.95)',
+				topColor: 'rgba(168, 196, 220, 0.2)',
+				bottomColor: 'rgba(168, 196, 220, 0)',
 				lineWidth: 2
 			});
 
 			nvdaSeries = nvdaChart.addSeries(AreaSeries, {
-				lineColor: 'rgba(198, 161, 91, 0.9)',
-				topColor: 'rgba(198, 161, 91, 0.14)',
-				bottomColor: 'rgba(198, 161, 91, 0)',
+				lineColor: 'rgba(216, 181, 116, 0.95)',
+				topColor: 'rgba(216, 181, 116, 0.2)',
+				bottomColor: 'rgba(216, 181, 116, 0)',
 				lineWidth: 2
 			});
 
@@ -1107,7 +1182,8 @@
 				background: { color: 'transparent' },
 				textColor: 'rgba(236, 234, 228, 0.45)',
 				fontFamily: 'Inter, ui-sans-serif, system-ui',
-				fontSize: 10
+				fontSize: 10,
+				attributionLogo: false
 			},
 			grid: {
 				vertLines: { visible: false },
@@ -1131,11 +1207,18 @@
 		if (!chartsReady || !mainSeries || !mainChart) return;
 		const timeframe = TIMEFRAMES[next];
 		const candles = recenter(
-			generateCandles(timeframe.seed, 5892.33, timeframe.count, timeframe.volatility),
+			generateCandles(
+				timeframe.seed,
+				5892.33,
+				timeframe.count,
+				timeframe.volatility,
+				timeframe.interval
+			),
 			5892.33,
 			0.35
 		);
 		mainSeries.setData(candles);
+		mainFloorSeries?.setData(candles.map((candle) => ({ time: candle.time, value: candle.close })));
 		volumeSeries?.setData(volumeFor(candles));
 		mainChart.timeScale().applyOptions({ barSpacing: timeframe.barSpacing });
 		mainChart.timeScale().fitContent();
@@ -1146,32 +1229,20 @@
 		const last = mainCandles.at(-1);
 		if (!last || !mainSeries) return;
 
-		const now = Math.floor(Date.now() / 1000) as UTCTimestamp;
+		// The live tick only develops the CURRENT bar. Appending wall-clock bars
+		// would break interval alignment on the 5m/15m/1H rails — a new bar can
+		// only legitimately open on an interval boundary.
 		const move = (Math.random() - 0.48) * 7.4;
-		let next: CandlestickData;
+		last.close = Number((last.close + move).toFixed(2));
+		last.high = Math.max(last.high, last.close);
+		last.low = Math.min(last.low, last.close);
 
-		if (now - Number(last.time) > 45) {
-			next = {
-				time: now,
-				open: last.close,
-				high: Math.max(last.close, last.close + move),
-				low: Math.min(last.close, last.close + move),
-				close: Number((last.close + move).toFixed(2))
-			};
-			mainCandles.push(next);
-			if (mainCandles.length > 96) mainCandles.shift();
-		} else {
-			last.close = Number((last.close + move).toFixed(2));
-			last.high = Math.max(last.high, last.close);
-			last.low = Math.min(last.low, last.close);
-			next = last;
-		}
-
-		mainSeries.update(next);
+		mainSeries.update(last);
+		mainFloorSeries?.update({ time: last.time, value: last.close });
 		volumeSeries?.update({
-			time: next.time,
+			time: last.time,
 			value: Math.floor(520000 + Math.random() * 640000),
-			color: next.close >= next.open ? 'rgba(46, 156, 119, 0.28)' : 'rgba(194, 85, 85, 0.28)'
+			color: last.close >= last.open ? 'rgba(53, 185, 140, 0.5)' : 'rgba(209, 96, 96, 0.42)'
 		});
 	}
 
@@ -1182,11 +1253,11 @@
 		const drift = () => Math.round((Math.random() - 0.5) * 380);
 
 		bookBids = bookBids.map((level, index) => ({
-			price: Number((mid - 0.02 - index * 0.02).toFixed(2)),
+			price: Number((mid - 0.01 - index * 0.01).toFixed(2)),
 			size: Math.max(120, Math.min(2600, level.size + drift()))
 		}));
 		bookAsks = bookAsks.map((level, index) => ({
-			price: Number((mid + 0.02 + index * 0.02).toFixed(2)),
+			price: Number((mid + 0.01 + index * 0.01).toFixed(2)),
 			size: Math.max(120, Math.min(2600, level.size + drift()))
 		}));
 	}
@@ -1210,7 +1281,7 @@
 
 	function seedPrints() {
 		const seeded: TapePrint[] = [];
-		for (let i = 0; i < 9; i += 1) seeded.push(makePrint());
+		for (let i = 0; i < 12; i += 1) seeded.push(makePrint());
 		prints = seeded;
 	}
 
@@ -1218,7 +1289,7 @@
 		const burst = Math.random() > 0.72 ? 2 : 1;
 		const next = [...prints];
 		for (let i = 0; i < burst; i += 1) next.unshift(makePrint());
-		prints = next.slice(0, 12);
+		prints = next.slice(0, 14);
 	}
 
 	function driftSectors() {
@@ -1254,8 +1325,13 @@
 		timers.push(
 			window.setInterval(() => {
 				liveTickers = liveTickers.map((ticker) => {
-					const move = (Math.random() - 0.48) * ticker.basePrice * 0.0009;
-					const price = Number((ticker.price + move).toFixed(2));
+					// VIX moves in percentage terms far more than an index; and the
+					// futures (ES/NQ) only ever print on the CME 0.25 tick grid —
+					// a 5891.64 ES print is the kind of detail a trader clocks.
+					const scale = ticker.symbol === 'VIX' ? 0.0042 : 0.0009;
+					const tick = ticker.symbol === 'ES' || ticker.symbol === 'NQ' ? 0.25 : 0.01;
+					const move = (Math.random() - 0.48) * ticker.basePrice * scale;
+					const price = Number((Math.round((ticker.price + move) / tick) * tick).toFixed(2));
 					const change = Number((((price - ticker.basePrice) / ticker.basePrice) * 100).toFixed(2));
 
 					return {
@@ -1671,6 +1747,7 @@
 	{@attach mountShell}
 	onscroll={handleScroll}
 >
+	<div class="aurora" aria-hidden="true"></div>
 	<div class="grain" aria-hidden="true"></div>
 	<div class="vignette" aria-hidden="true"></div>
 
@@ -1686,6 +1763,7 @@
 						<span class="tape-symbol">{ticker.symbol}</span>
 						<span class="tape-price">{ticker.price.toFixed(2)}</span>
 						<span class={{ 'tape-change': true, up: ticker.change >= 0, down: ticker.change < 0 }}>
+							{ticker.change >= 0 ? '▲' : '▼'}
 							{ticker.change >= 0 ? '+' : ''}{ticker.change.toFixed(2)}%
 						</span>
 					</div>
@@ -1703,6 +1781,7 @@
 			<div class="hero-chart" aria-hidden="true">
 				<div class="hero-chart-canvas" {@attach mountHeroChart}></div>
 			</div>
+			<div class="hero-scrim" aria-hidden="true"></div>
 			<div class="hero-flare" aria-hidden="true"></div>
 
 			<div class="hero-copy">
@@ -1860,10 +1939,11 @@
 				<p class="scene-slate">
 					<span class="slate-no">Scene 02</span><span class="slate-title">The desk, live</span>
 				</p>
-				<h2>Live to the tick, even mid-rebuild.</h2>
+				<h2>Live to the tick.</h2>
 				<p class="scene-lede">
 					Order book, tape, sector map, and the scanner feed — the same instruments the rebuilt
-					platform ships with, running on this page right now.
+					platform ships with, running on this page right now. Outside market hours, the desk
+					replays the previous session through the new engine.
 				</p>
 			</div>
 
@@ -1904,7 +1984,9 @@
 				<article class="desk-module panel" aria-label="Time and sales">
 					<div class="module-head">
 						<span class="module-title">Time &amp; sales</span>
-						<span class="module-tag">Prints</span>
+						<span class="module-tag"
+							>{sessionState === 'open' ? 'Live prints' : 'Session replay'}</span
+						>
 					</div>
 					<div class="prints-stream" role="log" aria-live="off" aria-label="Recent prints">
 						{#each prints as print (print.id)}
@@ -2011,7 +2093,7 @@
 
 				<div class="chart-metrics">
 					<div><span>Latency</span><strong>{feedLatency}ms</strong></div>
-					<div><span>Signals/min</span><strong>4.2M</strong></div>
+					<div><span>Ticks/min</span><strong>4.2M</strong></div>
 					<div>
 						<span>Avg. confidence</span>
 						<strong>{averageConfidence}%</strong>
@@ -2353,10 +2435,10 @@
 		--gold-06: rgba(198, 161, 91, 0.06);
 		--gold-25: rgba(198, 161, 91, 0.25);
 		--gold-30: rgba(198, 161, 91, 0.3);
-		--up: #2e9c77;
-		--down: #c25555;
-		--up-soft: rgba(46, 156, 119, 0.16);
-		--down-soft: rgba(194, 85, 85, 0.16);
+		--up: #35b98c;
+		--down: #d16060;
+		--up-soft: rgba(53, 185, 140, 0.18);
+		--down-soft: rgba(209, 96, 96, 0.18);
 		--edge-hairline: linear-gradient(
 			140deg,
 			rgba(236, 234, 228, 0.08),
@@ -2407,6 +2489,31 @@
 		opacity: 0.5;
 	}
 
+	/* Aurora: three blurred color fields drifting almost imperceptibly — the
+	 * grade that stops the void reading as flat black. Composited transform
+	 * only, and switched off under reduced motion. */
+	.aurora {
+		position: fixed;
+		inset: -20%;
+		z-index: 0;
+		pointer-events: none;
+		filter: blur(64px);
+		background:
+			radial-gradient(38% 30% at 20% 22%, rgba(198, 161, 91, 0.075), transparent 70%),
+			radial-gradient(34% 28% at 82% 68%, rgba(53, 185, 140, 0.055), transparent 70%),
+			radial-gradient(30% 26% at 68% 12%, rgba(143, 166, 184, 0.05), transparent 70%);
+		animation: aurora-drift 46s ease-in-out infinite alternate;
+	}
+
+	@keyframes aurora-drift {
+		from {
+			transform: translate3d(-2%, -1%, 0);
+		}
+		to {
+			transform: translate3d(2%, 2.5%, 0);
+		}
+	}
+
 	.grain {
 		position: fixed;
 		inset: 0;
@@ -2439,12 +2546,12 @@
 
 	.letterbox.top {
 		top: var(--chrome-h);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		border-bottom: 1px solid rgba(198, 161, 91, 0.18);
 	}
 
 	.letterbox.bottom {
 		bottom: var(--hud-h);
-		border-top: 1px solid rgba(255, 255, 255, 0.04);
+		border-top: 1px solid rgba(198, 161, 91, 0.18);
 	}
 
 	.maintenance-experience:not(.gsap-on) .letterbox {
@@ -2638,7 +2745,10 @@
 		font-weight: 700;
 		letter-spacing: -0.02em;
 		line-height: 1.04;
-		color: var(--text);
+		background: linear-gradient(180deg, #ffffff 8%, var(--ivory) 58%, rgba(236, 234, 228, 0.7));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
 	}
 
 	.scene-lede {
@@ -2670,6 +2780,35 @@
 
 	.panel-feature {
 		box-shadow: var(--shadow-lg);
+		overflow: hidden;
+	}
+
+	/* Specular sweep: one pass of studio light across a feature panel as its
+	 * scene becomes visible — the frame is lit, then settles. */
+	section.visible .panel-feature::after {
+		content: '';
+		position: absolute;
+		top: -40%;
+		bottom: -40%;
+		left: -60%;
+		width: 34%;
+		background: linear-gradient(
+			105deg,
+			transparent,
+			rgba(236, 234, 228, 0.045) 45%,
+			rgba(198, 161, 91, 0.1) 50%,
+			rgba(236, 234, 228, 0.045) 55%,
+			transparent
+		);
+		transform: skewX(-14deg);
+		pointer-events: none;
+		animation: specular-sweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.55s 1 forwards;
+	}
+
+	@keyframes specular-sweep {
+		to {
+			left: 130%;
+		}
 	}
 
 	.card-topline,
@@ -2696,8 +2835,8 @@
 		flex-direction: column;
 		justify-content: center;
 		min-height: calc(100dvh - var(--chrome-h) - var(--hud-h));
-		padding-top: clamp(48px, 8vh, 90px);
-		padding-bottom: clamp(60px, 9vh, 110px);
+		padding-top: clamp(36px, 5.5vh, 60px);
+		padding-bottom: clamp(52px, 8vh, 96px);
 		border-bottom: 1px solid var(--hair-faint);
 	}
 
@@ -2728,6 +2867,9 @@
 	.hero-chart-canvas {
 		position: absolute;
 		inset: 0;
+		/* Neon bloom: drop-shadow keys off the canvas alpha, so only the drawn
+		 * candles glow — the transparent field casts nothing. */
+		filter: drop-shadow(0 0 14px rgba(198, 161, 91, 0.16));
 	}
 
 	.hero-flare {
@@ -2735,17 +2877,18 @@
 		top: 30%;
 		left: -10%;
 		right: -10%;
-		height: 2px;
+		height: 3px;
 		z-index: 0;
 		background: linear-gradient(
 			90deg,
 			transparent,
-			rgba(198, 161, 91, 0.35) 30%,
-			rgba(236, 234, 228, 0.5) 50%,
-			rgba(198, 161, 91, 0.35) 70%,
+			rgba(198, 161, 91, 0.4) 30%,
+			rgba(236, 234, 228, 0.65) 50%,
+			rgba(198, 161, 91, 0.4) 70%,
 			transparent
 		);
-		filter: blur(1px);
+		filter: blur(1.5px);
+		box-shadow: 0 0 24px rgba(198, 161, 91, 0.35);
 		opacity: 0.5;
 		pointer-events: none;
 		animation: flare-drift 14s ease-in-out infinite alternate;
@@ -2760,6 +2903,21 @@
 			transform: translateY(26px);
 			opacity: 0.6;
 		}
+	}
+
+	/* Grounds the copy column: the backdrop tape dims where text sits, the way
+	 * a DP would flag the subject before rolling — not a box, a light decision. */
+	.hero-scrim {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background: radial-gradient(
+			58% 64% at 26% 66%,
+			rgba(6, 7, 10, 0.62),
+			rgba(6, 7, 10, 0.28) 55%,
+			transparent 78%
+		);
 	}
 
 	.hero-copy {
@@ -2787,7 +2945,7 @@
 	}
 
 	.hero-title {
-		margin: 0 0 clamp(28px, 4.5vh, 48px);
+		margin: 0 0 clamp(22px, 3.4vh, 36px);
 		font-family: var(--font-display);
 		font-size: clamp(46px, 8.6vw, 108px);
 		font-weight: 800;
@@ -2806,6 +2964,16 @@
 	.hero-title .line-inner {
 		display: inline-block;
 		will-change: transform;
+		/* Graded ink: bright at the cap line falling to warm ivory, with a wide
+		 * low-alpha bloom behind the glyphs — screen-title treatment, not UI
+		 * text. The clip lives on the SAME element GSAP transforms: putting
+		 * background-clip:text on an ancestor of a transformed span misplaces
+		 * the rasterized glyph mask in Chromium and shatters the headline. */
+		background: linear-gradient(180deg, #ffffff 6%, var(--ivory) 52%, rgba(236, 234, 228, 0.68));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		text-shadow: 0 0 90px rgba(198, 161, 91, 0.16);
 	}
 
 	.serif-accent {
@@ -2815,6 +2983,7 @@
 		letter-spacing: -0.01em;
 		text-transform: none;
 		color: var(--accent);
+		text-shadow: 0 0 36px rgba(198, 161, 91, 0.4);
 	}
 
 	.hero-lower {
@@ -2824,10 +2993,18 @@
 		align-items: end;
 	}
 
-	/* The live quote block — the price is the co-star of the title card. */
+	/* The live quote block — the price is the co-star of the title card. Glass
+	 * chip so the figure stays legible over whatever the tape is doing. */
 	.hero-quote {
-		margin-bottom: clamp(22px, 3.5vh, 34px);
+		margin-bottom: clamp(18px, 2.8vh, 26px);
 		max-width: 420px;
+		padding: 14px 20px 13px;
+		border: 1px solid var(--line);
+		background: rgba(6, 7, 10, 0.55);
+		backdrop-filter: blur(12px);
+		box-shadow:
+			inset 0 1px 0 rgba(236, 234, 228, 0.06),
+			0 18px 44px -26px rgba(0, 0, 0, 0.8);
 	}
 
 	.quote-head {
@@ -2876,7 +3053,7 @@
 
 	.quote-figure {
 		font-family: var(--font-mono);
-		font-size: clamp(44px, 6vw, 72px);
+		font-size: clamp(40px, 5.2vw, 60px);
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 		letter-spacing: -0.02em;
@@ -2971,13 +3148,14 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 14px 30px;
-		background: var(--accent);
+		background: linear-gradient(135deg, #dab671, #b8934f);
 		color: #06070a;
 		font-size: 12px;
 		font-weight: 700;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		text-decoration: none;
+		box-shadow: 0 10px 30px -14px rgba(198, 161, 91, 0.5);
 		transition:
 			transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
 			box-shadow 0.25s ease;
@@ -2986,7 +3164,9 @@
 	.primary-link:hover,
 	.primary-link:focus-visible {
 		transform: translateY(-2px);
-		box-shadow: 0 14px 34px -14px rgba(198, 161, 91, 0.6);
+		box-shadow:
+			0 16px 40px -14px rgba(198, 161, 91, 0.65),
+			0 0 24px rgba(198, 161, 91, 0.2);
 	}
 
 	.ghost-link {
@@ -3226,6 +3406,43 @@
 		min-height: 320px;
 	}
 
+	/* Camera-framing corner brackets: the HUD grammar that marks each module
+	 * as a live instrument in frame. Eight gradient strips, two per corner. */
+	.desk-module::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image:
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30)),
+			linear-gradient(var(--gold-30), var(--gold-30));
+		background-size:
+			14px 1px,
+			1px 14px,
+			14px 1px,
+			1px 14px,
+			14px 1px,
+			1px 14px,
+			14px 1px,
+			1px 14px;
+		background-position:
+			top left,
+			top left,
+			top right,
+			top right,
+			bottom left,
+			bottom left,
+			bottom right,
+			bottom right;
+		background-repeat: no-repeat;
+	}
+
 	.desk-module.wide {
 		grid-column: span 1;
 	}
@@ -3322,12 +3539,14 @@
 
 	.bids .book-row .depth {
 		right: 0;
-		background: var(--up-soft);
+		background: linear-gradient(90deg, rgba(53, 185, 140, 0.05), var(--up-soft));
+		border-right: 1px solid rgba(53, 185, 140, 0.45);
 	}
 
 	.asks .book-row .depth {
 		left: 0;
-		background: var(--down-soft);
+		background: linear-gradient(90deg, var(--down-soft), rgba(209, 96, 96, 0.05));
+		border-left: 1px solid rgba(209, 96, 96, 0.45);
 	}
 
 	.book-size {
@@ -3366,7 +3585,7 @@
 		font-family: var(--font-mono);
 		font-size: 11px;
 		font-variant-numeric: tabular-nums;
-		animation: print-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+		animation: print-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	@keyframes print-in {
@@ -3428,6 +3647,9 @@
 		gap: 6px;
 		padding: 12px;
 		border: 1px solid rgba(255, 255, 255, 0.05);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.06),
+			inset 0 -16px 26px -20px rgba(0, 0, 0, 0.7);
 		transition: background 1.2s ease;
 	}
 
@@ -3543,6 +3765,7 @@
 		inset: 0 auto 0 0;
 		width: var(--confidence);
 		background: var(--accent);
+		box-shadow: 0 0 8px rgba(198, 161, 91, 0.55);
 		transition: width 0.6s ease;
 	}
 
@@ -3689,6 +3912,7 @@
 
 	.mini-chart {
 		height: 130px;
+		filter: drop-shadow(0 0 8px rgba(198, 161, 91, 0.14));
 	}
 
 	/* ── Scene 04: scope of work ──────────────────────────────────────────── */
@@ -4261,7 +4485,7 @@
 		flex: none;
 		padding: 0 26px;
 		border: 0;
-		background: var(--accent);
+		background: linear-gradient(135deg, #dab671, #b8934f);
 		color: #06070a;
 		font-size: 11px;
 		font-weight: 700;
@@ -4362,6 +4586,7 @@
 		left: 0;
 		height: 1px;
 		background: var(--accent);
+		box-shadow: 0 0 10px rgba(198, 161, 91, 0.6);
 		transition: width 0.15s linear;
 	}
 
@@ -4443,6 +4668,9 @@
 	.hud-latency {
 		color: var(--dim);
 		font-variant-numeric: tabular-nums;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-size: 10px;
 		white-space: nowrap;
 	}
 
@@ -4584,6 +4812,14 @@
 			opacity: 1;
 			transform: none;
 			transition: none;
+		}
+
+		.aurora {
+			animation: none;
+		}
+
+		section.visible .panel-feature::after {
+			display: none;
 		}
 
 		.tape-track {

@@ -4,6 +4,47 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-08-23 — Maintenance page: graphics grade + terminal authenticity pass
+
+A cinematography and credibility pass over the `/maintenance` title sequence,
+driven by an adversarial multi-lens review of rendered screenshots.
+
+### Chart cinematography
+
+- Candles regraded (brighter up/down with luminous borders), wider bar spacing,
+  neon bloom on the hero backdrop and mini charts via alpha-keyed drop-shadow,
+  a gold floor gradient and dashed gold last-price line under the SPX tape, the
+  TradingView attribution logo removed from the desk and mini charts, and
+  organic volume (bar "energy" plus seeded noise — the old modular ramp drew a
+  sawtooth any trader would clock as fake).
+- Aurora atmosphere: three blurred color fields drifting behind the page;
+  graded ink on the headline and scene heads; specular light sweep across
+  feature panels on reveal; camera-framing corner brackets on desk modules;
+  glass chip under the hero quote; radial scrim seating the hero copy.
+
+### Terminal authenticity (from the review)
+
+- **ES/NQ now print on the CME 0.25 tick grid** — every futures quote on the
+  tape previously showed arbitrary decimals (ES 5891.64), the single fastest
+  tell for the exact audience the page courts. VIX now moves at index-vol scale.
+- **The 5m rail now renders true 5-minute bars** (per-timeframe bar intervals,
+  aligned to interval boundaries); the live tick develops the current bar
+  instead of appending misaligned wall-clock bars.
+- **The SPX axis now reads Eastern time** — timestamps are shifted by the
+  current ET offset so the UTC-rendering chart agrees with every other clock on
+  the page (it previously showed 18:10 against a 14:16 ET page clock).
+- AAPL book on a penny grid with a 2-cent spread; time-and-sales honestly
+  tagged "Session replay" outside market hours; volume axis pill removed from
+  the price lane; "Ticks/min" metric; HUD casing unified.
+- Scene 02 headline shortened to "Live to the tick." — the old line broke
+  across the hyphen in "mid-rebuild".
+
+Verified: check/check:strict/check:a11y 0/0 across 4,847 files; eslint 0
+errors; prettier clean; 2,272 unit tests; build green with `maintenance.html`
+prerendered; a11y suite at baseline; headless-Chromium screenshots re-reviewed
+after the fixes confirm the ET axis, true 5m bars, on-grid futures, organic
+volume, and the restored fold.
+
 ## [Unreleased] — 2026-08-16 — Maintenance page: cinematic redesign
 
 Full redesign of `/maintenance` (`frontend/src/routes/maintenance/+page.svelte`)
