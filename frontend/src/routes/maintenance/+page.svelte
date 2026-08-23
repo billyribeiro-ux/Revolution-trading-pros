@@ -11,20 +11,24 @@
 		UTCTimestamp
 	} from 'lightweight-charts';
 
+	/* ═══════════════════════════════════════════════════════════════════════
+	 * REVOLUTION TRADING PROS — REBUILD IN SESSION
+	 * A trading floor, shot like a film. The page opens as a title sequence
+	 * (letterboxed, graded, scored by the tape), then moves scene by scene
+	 * through the desk: live market modules, the data engine, the scope of
+	 * work, both universities, the build log, and first access.
+	 *
+	 * Everything on screen is mechanically real — charts tick, books reprice,
+	 * prints stream — but no market data leaves this file: the page is
+	 * prerendered and self-contained so it stands even when the API is down.
+	 * ═══════════════════════════════════════════════════════════════════════ */
+
 	type Direction = 'up' | 'down';
-	type SectionId =
-		| 'hero'
-		| 'note'
-		| 'operations'
-		| 'charts'
-		| 'signals'
-		| 'academy'
-		| 'infrastructure'
-		| 'buildlog'
-		| 'access';
-	type ChartKey = 'main' | 'aapl' | 'nvda';
+	type SceneId = 'hero' | 'note' | 'desk' | 'charts' | 'scope' | 'academy' | 'buildlog' | 'access';
 	type SignalStatus = 'active' | 'watch' | 'cooling';
 	type AcademyTrackId = 'day' | 'swing';
+	type SessionState = 'pre' | 'open' | 'after' | 'closed';
+	type TimeframeId = '1m' | '5m' | '15m' | '1H';
 	type GsapCore = typeof import('gsap').gsap;
 	type ScrollTriggerStatic = typeof import('gsap/ScrollTrigger').ScrollTrigger;
 
@@ -46,6 +50,26 @@
 		status: SignalStatus;
 	}
 
+	interface BookLevel {
+		price: number;
+		size: number;
+	}
+
+	interface TapePrint {
+		id: number;
+		time: string;
+		price: number;
+		size: number;
+		side: 'buy' | 'sell';
+		block: boolean;
+	}
+
+	interface SectorTile {
+		code: string;
+		name: string;
+		change: number;
+	}
+
 	interface NodeLoad {
 		id: string;
 		region: string;
@@ -65,34 +89,48 @@
 		outcome: string;
 	}
 
-	interface OperationsChapter {
+	interface ScopeChapter {
 		number: string;
 		title: string;
 		copy: string;
 		metric: string;
 	}
+
 	interface BuildLogEntry {
 		date: string;
 		tag: string;
 		text: string;
 	}
 
-	const timeframes = ['1m', '5m', '15m', '1H'];
-	const revealSections: SectionId[] = [
+	interface TimeframeConfig {
+		seed: number;
+		count: number;
+		volatility: number;
+		barSpacing: number;
+	}
+
+	const revealScenes: SceneId[] = [
 		'hero',
 		'note',
-		'operations',
+		'desk',
 		'charts',
-		'signals',
+		'scope',
 		'academy',
-		'infrastructure',
 		'buildlog',
 		'access'
 	];
 
+	const TIMEFRAMES: Record<TimeframeId, TimeframeConfig> = {
+		'1m': { seed: 1487, count: 96, volatility: 0.0038, barSpacing: 6 },
+		'5m': { seed: 2861, count: 76, volatility: 0.0052, barSpacing: 8 },
+		'15m': { seed: 5233, count: 64, volatility: 0.0071, barSpacing: 9 },
+		'1H': { seed: 7919, count: 56, volatility: 0.0104, barSpacing: 11 }
+	};
+	const timeframeIds = Object.keys(TIMEFRAMES) as TimeframeId[];
+
 	/* ── Date-driven content ─────────────────────────────────────────────────
-	 * Progress, the desk note, and the build log all rotate with the calendar,
-	 * so the page changes every trading day without a backend.
+	 * The desk note, day counter, progress figure, and build log rotate with
+	 * the calendar, so the page changes every trading day without a backend.
 	 */
 	const BUILD_EPOCH_UTC = Date.UTC(2026, 5, 1); // day 1 of the rebuild
 	const DAY_MS = 86_400_000;
@@ -199,6 +237,49 @@
 		? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
 		: null;
 
+	const etClockFormatter = browser
+		? new Intl.DateTimeFormat('en-US', {
+				timeZone: 'America/New_York',
+				hour12: false,
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit'
+			})
+		: null;
+
+	const scopeChapters: ScopeChapter[] = [
+		{
+			number: '01',
+			title: 'Market data layer',
+			copy: 'Tick, quote, chart, watchlist, and scanner data normalized into one decision layer for equities and index products — a single clock across the whole desk.',
+			metric: 'sub-20ms feed'
+		},
+		{
+			number: '02',
+			title: 'Scanner edge engine',
+			copy: 'Relative volume, liquidity sweeps, sector leadership, dark-pool repeats, and momentum quality — ranked and scored before an alert ever reaches the desk.',
+			metric: '12,847 symbols'
+		},
+		{
+			number: '03',
+			title: 'Options risk desk',
+			copy: 'Delta, gamma, theta, IV rank, 0DTE exposure, spread structure, and event risk brought into one options workflow with position-level guardrails.',
+			metric: 'Greeks + IV'
+		},
+		{
+			number: '04',
+			title: 'Live trading room',
+			copy: 'The market-open stage rebuilt end to end — synced charts, shared tape, screen share, and a session recording pipeline indexed for replay.',
+			metric: 'open to close'
+		},
+		{
+			number: '05',
+			title: 'Trading universities',
+			copy: 'Day Trading University and Swing Trading University split stock execution, options strategy, risk protocol, and replay review into institution-grade tracks.',
+			metric: 'stocks + options'
+		}
+	];
+
 	const systemStatus = [
 		{ label: 'Equities data', state: 'Normalized' },
 		{ label: 'Options greeks', state: 'Mapped' },
@@ -208,42 +289,95 @@
 		{ label: 'Member access', state: 'Hardened' }
 	];
 
+	const stageLines = [
+		'Resilient data routes',
+		'Scanner model deployment',
+		'Institutional curriculum migration',
+		'Member room hardening'
+	];
+
+	const academyTracks: AcademyTrack[] = [
+		{
+			id: 'day',
+			number: '01',
+			title: 'Day Trading University',
+			tagline:
+				'An institutional intraday desk curriculum for stocks and options, built around execution quality, tape speed, and repeatable risk.',
+			stockFocus: ['Opening range', 'VWAP execution', 'Tape reading', 'Liquidity sweeps'],
+			optionsFocus: [
+				'0DTE playbooks',
+				'Greeks under pressure',
+				'Premium decay',
+				'Flow confirmation'
+			],
+			curriculum: [
+				'Market structure, auction theory, and pre-market scenario mapping',
+				'Equity momentum, relative volume, news catalysts, and sector rotation',
+				'Options chain reading, delta selection, spread construction, and gamma risk',
+				'Trade management: scaling, invalidation, max loss, review, and journaling'
+			],
+			lab: 'Live-market replay lab with execution scoring, risk heatmaps, and coach review checkpoints.',
+			outcome:
+				'Graduate with a written intraday stock/options playbook, daily prep routine, and measurable execution rules.'
+		},
+		{
+			id: 'swing',
+			number: '02',
+			title: 'Swing Trading University',
+			tagline:
+				'A professional portfolio curriculum for stocks and options, focused on multi-day thesis building, catalysts, and volatility-aware sizing.',
+			stockFocus: ['Relative strength', 'Base breakouts', 'Catalyst mapping', 'Position sizing'],
+			optionsFocus: ['Debit spreads', 'Calendars', 'IV rank', 'Event risk'],
+			curriculum: [
+				'Top-down market regime, sector leadership, breadth, and macro calendar analysis',
+				'Equity screening, trend quality, accumulation, and breakout failure diagnostics',
+				'Options strategy selection by volatility, duration, delta, theta, and event calendar',
+				'Portfolio construction: correlation, drawdown control, exits, and post-trade audit'
+			],
+			lab: 'Multi-session portfolio simulator with catalyst timelines, volatility shifts, and scenario stress tests.',
+			outcome:
+				'Graduate with a swing stock/options model portfolio, risk template, watchlist process, and review cadence.'
+		}
+	];
+
+	/* ── Live state ────────────────────────────────────────────────────────── */
+
 	let mounted = $state(false);
 	let reducedMotion = $state(false);
-	let activeTimeframe = $state('5m');
-	let activeAcademyTrack = $state<AcademyTrackId>('day');
+	let gsapActive = $state(false);
 	let scrollProgress = $state(0);
 
-	let gsapActive = $state(false);
 	let dayNumber = $state(0);
 	let buildProgress = $state(88);
 	let progressDisplay = $state(88);
 	let countdown = $state({ hours: '--', minutes: '--', seconds: '--' });
 	let buildLog = $state<BuildLogEntry[]>(fallbackBuildLog);
 
+	let etClock = $state('--:--:--');
+	let sessionState = $state<SessionState>('closed');
+	let sessionLabel = $state('Market status');
+	let feedLatency = $state(14);
+
+	let activeTimeframe = $state<TimeframeId>('5m');
+	let activeAcademyTrack = $state<AcademyTrackId>('day');
+
 	let email = $state('');
 	let isSubmitting = $state(false);
 	let isSubmitted = $state(false);
 	let errorMessage = $state('');
 
-	let visible = $state<Record<SectionId, boolean>>({
+	let visible = $state<Record<SceneId, boolean>>({
 		hero: false,
 		note: false,
-		operations: false,
+		desk: false,
 		charts: false,
-		signals: false,
+		scope: false,
 		academy: false,
-		infrastructure: false,
 		buildlog: false,
 		access: false
 	});
 
-	let stats = $state({
-		traders: 0,
-		scanners: 0,
-		latency: 0,
-		uptime: 0
-	});
+	let stats = $state({ traders: 0, scanners: 0, latency: 0, uptime: 0 });
 
 	let liveTickers = $state<Ticker[]>([
 		{ symbol: 'SPX', basePrice: 5892.33, price: 5892.33, change: 1.24, direction: 'up' },
@@ -302,115 +436,48 @@
 		{ id: 'TY3-04', region: 'Tokyo', load: 31, status: 'standby' }
 	]);
 
-	const stageLines = [
-		'Resilient data routes',
-		'Scanner model deployment',
-		'Institutional curriculum migration',
-		'Member room hardening'
-	];
+	/* Order book — five levels a side around the live AAPL mid. */
+	let bookBids = $state<BookLevel[]>([
+		{ price: 232.28, size: 1240 },
+		{ price: 232.26, size: 860 },
+		{ price: 232.24, size: 1580 },
+		{ price: 232.22, size: 640 },
+		{ price: 232.2, size: 2210 }
+	]);
+	let bookAsks = $state<BookLevel[]>([
+		{ price: 232.32, size: 980 },
+		{ price: 232.34, size: 1420 },
+		{ price: 232.36, size: 760 },
+		{ price: 232.38, size: 1130 },
+		{ price: 232.4, size: 1890 }
+	]);
 
-	const operationsChapters: OperationsChapter[] = [
-		{
-			number: '01',
-			title: 'Market Data Layer',
-			copy: 'Tick, quote, chart, watchlist, and scanner data are being normalized into a faster decision layer for equities and index products.',
-			metric: 'sub-20ms feed'
-		},
-		{
-			number: '02',
-			title: 'Options Risk Desk',
-			copy: 'Delta, gamma, theta, IV rank, 0DTE exposure, spread structure, and event risk move into one options workflow.',
-			metric: 'Greeks + IV'
-		},
-		{
-			number: '03',
-			title: 'Scanner Edge Engine',
-			copy: 'Relative volume, liquidity sweeps, sector leadership, dark-pool repeats, and momentum quality are ranked before alerts reach the desk.',
-			metric: '12,847 symbols'
-		},
-		{
-			number: '04',
-			title: 'Education Desk',
-			copy: 'Day Trading University and Swing Trading University now separate stock execution, options strategy, risk protocol, and replay review into institution-grade tracks.',
-			metric: 'stocks + options'
-		}
-	];
+	/* Time & sales — the print stream beside the book. */
+	let prints = $state<TapePrint[]>([]);
+	let printCounter = 0;
 
-	const academyTracks: AcademyTrack[] = [
-		{
-			id: 'day',
-			number: '01',
-			title: 'Day Trading University',
-			tagline:
-				'An institutional intraday desk curriculum for stocks and options, built around execution quality, tape speed, and repeatable risk.',
-			stockFocus: ['Opening range', 'VWAP execution', 'Tape reading', 'Liquidity sweeps'],
-			optionsFocus: [
-				'0DTE playbooks',
-				'Greeks under pressure',
-				'Premium decay',
-				'Flow confirmation'
-			],
-			curriculum: [
-				'Market structure, auction theory, and pre-market scenario mapping',
-				'Equity momentum, relative volume, news catalysts, and sector rotation',
-				'Options chain reading, delta selection, spread construction, and gamma risk',
-				'Trade management: scaling, invalidation, max loss, review, and journaling'
-			],
-			lab: 'Live-market replay lab with execution scoring, risk heatmaps, and coach review checkpoints.',
-			outcome:
-				'Graduate with a written intraday stock/options playbook, daily prep routine, and measurable execution rules.'
-		},
-		{
-			id: 'swing',
-			number: '02',
-			title: 'Swing Trading University',
-			tagline:
-				'A professional portfolio curriculum for stocks and options, focused on multi-day thesis building, catalysts, and volatility-aware sizing.',
-			stockFocus: ['Relative strength', 'Base breakouts', 'Catalyst mapping', 'Position sizing'],
-			optionsFocus: ['Debit spreads', 'Calendars', 'IV rank', 'Event risk'],
-			curriculum: [
-				'Top-down market regime, sector leadership, breadth, and macro calendar analysis',
-				'Equity screening, trend quality, accumulation, and breakout failure diagnostics',
-				'Options strategy selection by volatility, duration, delta, theta, and event calendar',
-				'Portfolio construction: correlation, drawdown control, exits, and post-trade audit'
-			],
-			lab: 'Multi-session portfolio simulator with catalyst timelines, volatility shifts, and scenario stress tests.',
-			outcome:
-				'Graduate with a swing stock/options model portfolio, risk template, watchlist process, and review cadence.'
-		}
-	];
+	let sectors = $state<SectorTile[]>([
+		{ code: 'XLK', name: 'Technology', change: 1.62 },
+		{ code: 'XLC', name: 'Communications', change: 0.94 },
+		{ code: 'XLY', name: 'Consumer disc.', change: 0.58 },
+		{ code: 'XLF', name: 'Financials', change: 0.31 },
+		{ code: 'XLI', name: 'Industrials', change: 0.12 },
+		{ code: 'XLB', name: 'Materials', change: -0.08 },
+		{ code: 'XLE', name: 'Energy', change: -0.34 },
+		{ code: 'XLP', name: 'Staples', change: -0.19 },
+		{ code: 'XLV', name: 'Health care', change: 0.44 },
+		{ code: 'XLU', name: 'Utilities', change: -0.52 },
+		{ code: 'XLRE', name: 'Real estate', change: -0.71 }
+	]);
+
+	/* ── Chart plumbing ────────────────────────────────────────────────────── */
 
 	let shellEl: HTMLDivElement;
+	let heroChartEl: HTMLDivElement;
 	let mainChartEl: HTMLDivElement;
 	let aaplChartEl: HTMLDivElement;
 	let nvdaChartEl: HTMLDivElement;
 
-	let mainChart: IChartApi | null = null;
-	let aaplChart: IChartApi | null = null;
-	let nvdaChart: IChartApi | null = null;
-	let mainSeries: ISeriesApi<'Candlestick'> | null = null;
-	let aaplSeries: ISeriesApi<'Area'> | null = null;
-	let nvdaSeries: ISeriesApi<'Area'> | null = null;
-	let volumeSeries: ISeriesApi<'Histogram'> | null = null;
-	let chartsReady = false;
-	let statsPlayed = false;
-	let chartInitGeneration = 0;
-	let notifyAbortController: AbortController | null = null;
-	let raf = 0;
-	let statsRaf = 0;
-	let gsapContext: { revert: () => void } | null = null;
-	let masterTimeline: { progress: (value: number) => unknown } | null = null;
-	let entranceDeadlinePassed = false;
-
-	let chartData = $state<Record<ChartKey, CandlestickData[]>>({
-		main: [],
-		aapl: [],
-		nvda: []
-	});
-
-	// Hero backdrop: an always-on AAPL feed rendered behind the hero copy.
-	const HERO_BASE_PRICE = 232.3;
-	let heroChartEl: HTMLDivElement;
 	let heroChart: IChartApi | null = null;
 	let heroSeries: ISeriesApi<'Candlestick'> | null = null;
 	let heroFloorSeries: ISeriesApi<'Area'> | null = null;
@@ -419,8 +486,39 @@
 	let heroFeedTimer = 0;
 	let heroLastCandle: CandlestickData | null = null;
 	let heroTickCount = 0;
+
+	let mainChart: IChartApi | null = null;
+	let mainSeries: ISeriesApi<'Candlestick'> | null = null;
+	let volumeSeries: ISeriesApi<'Histogram'> | null = null;
+	let aaplChart: IChartApi | null = null;
+	let aaplSeries: ISeriesApi<'Area'> | null = null;
+	let nvdaChart: IChartApi | null = null;
+	let nvdaSeries: ISeriesApi<'Area'> | null = null;
+	let chartsReady = false;
+	let chartInitGeneration = 0;
+
+	let statsPlayed = false;
+	let statsRaf = 0;
+	let raf = 0;
+	let notifyAbortController: AbortController | null = null;
+	let gsapContext: { revert: () => void } | null = null;
+	let masterTimeline: { progress: (value: number) => unknown } | null = null;
+	let entranceDeadlinePassed = false;
+	let priceFlashTimer = 0;
+
+	let mainCandles = $state<CandlestickData[]>([]);
+	let miniCloses = $state({ aapl: 232.3, nvda: 1475.2 });
+
+	/* Hero feed — an always-on AAPL session rendered behind the title card. */
+	const HERO_BASE_PRICE = 232.3;
 	let heroPrice = $state(HERO_BASE_PRICE);
 	let heroPriceDirection = $state<Direction>('up');
+	let heroPriceFlash = $state<'' | 'up' | 'down'>('');
+	let heroSessionLow = $state(HERO_BASE_PRICE);
+	let heroSessionHigh = $state(HERO_BASE_PRICE);
+	let heroOpenPrice = $state(HERO_BASE_PRICE);
+
+	/* ── Derived readouts ──────────────────────────────────────────────────── */
 
 	const averageConfidence = $derived(
 		Math.round(
@@ -436,14 +534,39 @@
 		academyTracks.find((track) => track.id === activeAcademyTrack) ?? academyTracks[0]
 	);
 
-	const latestMainPrice = $derived(chartData.main.at(-1)?.close ?? 5892.33);
+	const latestMainPrice = $derived(mainCandles.at(-1)?.close ?? 5892.33);
 	const mainDirection = $derived(
-		(chartData.main.at(-1)?.close ?? 0) >= (chartData.main.at(-1)?.open ?? 0) ? 'up' : 'down'
+		(mainCandles.at(-1)?.close ?? 0) >= (mainCandles.at(-1)?.open ?? 0) ? 'up' : 'down'
 	);
 
 	const deskNote = $derived(deskNotes[(Math.max(dayNumber, 1) - 1) % deskNotes.length]);
 	const noteNumber = $derived(dayNumber > 0 ? String(dayNumber).padStart(3, '0') : '···');
 	const completedStages = $derived(buildProgress >= 97 ? 4 : 3);
+
+	const heroChangePct = $derived(((heroPrice - heroOpenPrice) / heroOpenPrice) * 100);
+	const heroRangeSpan = $derived(Math.max(heroSessionHigh - heroSessionLow, 0.01));
+	const heroRangePosition = $derived(
+		Math.min(100, Math.max(0, ((heroPrice - heroSessionLow) / heroRangeSpan) * 100))
+	);
+
+	const bookMaxSize = $derived(
+		Math.max(...bookBids.map((level) => level.size), ...bookAsks.map((level) => level.size), 1)
+	);
+	const bookSpread = $derived(
+		Math.max(0.01, (bookAsks[0]?.price ?? 0) - (bookBids[0]?.price ?? 0))
+	);
+
+	const sessionShort = $derived(
+		sessionState === 'open'
+			? 'OPEN'
+			: sessionState === 'pre'
+				? 'PRE'
+				: sessionState === 'after'
+					? 'AH'
+					: 'CLSD'
+	);
+
+	/* ── Lifecycle ─────────────────────────────────────────────────────────── */
 
 	onMount(() => {
 		if (!browser) return;
@@ -452,17 +575,18 @@
 		reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		refreshDailyContent();
-		updateCountdown();
+		updateClocks();
+		seedPrints();
 
 		const cleanupReveal = setupRevealObserver();
 		const cleanupIntervals = startLiveSystems();
 
-		// Failsafe: if the entrance hasn't finished shortly after load
-		// (throttled tabs, broken rAF), settle everything to its final state.
+		// Failsafe: if the title sequence hasn't finished shortly after load
+		// (throttled tab, broken rAF), settle everything to its final frame.
 		const entranceFailsafe = window.setTimeout(() => {
 			entranceDeadlinePassed = true;
 			masterTimeline?.progress(1);
-		}, 2500);
+		}, 2600);
 
 		if (!reducedMotion) {
 			void initMotion();
@@ -479,6 +603,7 @@
 			cancelAnimationFrame(raf);
 			cancelAnimationFrame(statsRaf);
 			window.clearTimeout(entranceFailsafe);
+			window.clearTimeout(priceFlashTimer);
 			window.clearInterval(heroFeedTimer);
 			gsapContext?.revert();
 			gsapContext = null;
@@ -509,6 +634,8 @@
 		nvdaChartEl = node;
 	};
 
+	/* ── Calendar, clock, and session ──────────────────────────────────────── */
+
 	function computeDayNumber(now: number) {
 		return Math.max(1, Math.floor((now - BUILD_EPOCH_UTC) / DAY_MS) + 1);
 	}
@@ -536,6 +663,10 @@
 		if (entries.length) buildLog = entries;
 	}
 
+	function easternNow() {
+		return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+	}
+
 	function nextBuildDrop(nyNow: Date) {
 		// The next weekday 9:30 AM is at most 3 days out (Friday afternoon → Monday).
 		for (let offset = 0; offset <= 4; offset += 1) {
@@ -554,221 +685,42 @@
 		return nyNow;
 	}
 
-	function updateCountdown() {
-		// The daily update lands with the opening bell: 9:30 AM ET, Mon-Fri.
-		const nyNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
-		const target = nextBuildDrop(nyNow);
+	function updateClocks() {
+		const nyNow = easternNow();
 
+		// Countdown to the next daily update at the opening bell.
+		const target = nextBuildDrop(nyNow);
 		const diff = Math.max(0, target.getTime() - nyNow.getTime());
 		countdown = {
 			hours: String(Math.floor(diff / 3_600_000)).padStart(2, '0'),
 			minutes: String(Math.floor((diff % 3_600_000) / 60_000)).padStart(2, '0'),
 			seconds: String(Math.floor((diff % 60_000) / 1000)).padStart(2, '0')
 		};
-	}
 
-	/* ── Motion ──────────────────────────────────────────────────────────────
-	 * Restrained but deliberate: staged focus-pulls (small rise + blur→sharp),
-	 * weighted overlaps, and a single slow depth drift on the hero backdrop.
-	 * The only loop is the live chart feed. Loaded dynamically; the
-	 * prerendered page is complete without it, and reduced-motion skips it.
-	 */
-	async function initMotion() {
-		try {
-			const [gsapModule, scrollTriggerModule] = await Promise.all([
-				import('gsap'),
-				import('gsap/ScrollTrigger')
-			]);
-			if (!mounted) return;
+		etClock = etClockFormatter?.format(new Date()) ?? '--:--:--';
 
-			const gsap = gsapModule.gsap;
-			const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
-			gsap.registerPlugin(ScrollTrigger);
-
-			gsapActive = true;
-			await tick();
-			if (!mounted) {
-				gsapActive = false;
-				return;
-			}
-
-			gsapContext = gsap.context(() => {
-				buildMotion(gsap, ScrollTrigger);
-			}, shellEl);
-		} catch (error) {
-			console.error('[Maintenance] Motion layer failed to load', error);
-			gsapActive = false;
+		// NYSE session windows, Eastern time.
+		const day = nyNow.getDay();
+		const minutes = nyNow.getHours() * 60 + nyNow.getMinutes();
+		if (day === 0 || day === 6) {
+			sessionState = 'closed';
+			sessionLabel = 'Market closed';
+		} else if (minutes >= 240 && minutes < 570) {
+			sessionState = 'pre';
+			sessionLabel = 'Pre-market';
+		} else if (minutes >= 570 && minutes < 960) {
+			sessionState = 'open';
+			sessionLabel = 'Market open';
+		} else if (minutes >= 960 && minutes < 1200) {
+			sessionState = 'after';
+			sessionLabel = 'After hours';
+		} else {
+			sessionState = 'closed';
+			sessionLabel = 'Market closed';
 		}
 	}
 
-	function buildMotion(gsap: GsapCore, ScrollTrigger: ScrollTriggerStatic) {
-		ScrollTrigger.defaults({ scroller: shellEl });
-
-		const settle = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
-
-		// Hero title sequence: the backdrop resolves into focus, the headline
-		// rises out of its masked wrappers, supporting copy pulls sharp, and
-		// the status card lands last. Total run ≈ 2.55s.
-		const master = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } });
-		masterTimeline = master;
-
-		master
-			.addLabel('backdrop', 0)
-			.fromTo(
-				'.hero-chart',
-				{ autoAlpha: 0, scale: 1.03, clipPath: 'inset(0% 0% 12% 0%)' },
-				{ autoAlpha: 1, scale: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 2, ease: 'expo.out' },
-				'backdrop'
-			)
-			.fromTo(
-				'.hero-watermark',
-				{ autoAlpha: 0, x: '-2%' },
-				{ autoAlpha: 1, x: '0%', duration: 1.8, ease: 'power2.out' },
-				'backdrop+=0.1'
-			)
-			.to('#hero .eyebrow', { ...settle, duration: 0.6 }, 0.2)
-			.addLabel('headline', 0.34)
-			.fromTo(
-				'#hero .hero-title .line-inner',
-				{ y: '105%', rotation: 0.4 },
-				{ y: '0%', rotation: 0, duration: 1, ease: 'expo.out', stagger: 0.14 },
-				'headline'
-			)
-			.addLabel('copy', 0.7)
-			.to('#hero .lede', { ...settle }, 'copy')
-			.to('#hero .hero-actions', { ...settle }, 'copy+=0.16')
-			.to('#hero .hero-note', { ...settle, duration: 0.6 }, 'copy+=0.28')
-			.to('#hero .drop-timer', { ...settle }, 'copy+=0.38')
-			.addLabel('card', 1)
-			.to('#hero .status-card', { ...settle, duration: 1.1 }, 'card')
-			.addLabel('cue', 1.95)
-			.to('#hero .scroll-cue', { autoAlpha: 1, duration: 0.5 }, 'cue')
-			.fromTo(
-				'#hero .scroll-cue i',
-				{ scaleX: 0 },
-				{ scaleX: 1, transformOrigin: 'left center', duration: 0.5, ease: 'power2.out' },
-				'cue+=0.1'
-			);
-
-		// Progress figure settles from its fallback to today's value.
-		const progressProxy = { value: Math.max(0, buildProgress - 6) };
-		progressDisplay = progressProxy.value;
-		master.to(
-			progressProxy,
-			{
-				value: buildProgress,
-				duration: 1.1,
-				ease: 'power1.out',
-				onUpdate: () => {
-					progressDisplay = Math.round(progressProxy.value);
-				}
-			},
-			0.8
-		);
-
-		// Depth: layered parallax as the hero leaves the viewport.
-		gsap.to('.hero-chart', {
-			yPercent: -7,
-			ease: 'none',
-			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
-		});
-		gsap.to('.hero-watermark', {
-			y: -90,
-			ease: 'none',
-			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
-		});
-		gsap.to('.note-card blockquote', {
-			yPercent: -3,
-			ease: 'none',
-			scrollTrigger: { trigger: '#note', start: 'top bottom', end: 'bottom top', scrub: 0.8 }
-		});
-
-		// Editorial section grammar: kicker rises, the heading wipes open on a
-		// clip-path, then content blocks stage in with a soft focus pull.
-		const sections = gsap.utils.toArray<HTMLElement>('.page-shell section:not(#hero)');
-		sections.forEach((section) => {
-			const kicker = section.querySelector('.section-kicker');
-			const heading = section.querySelector('.section-heading h2');
-			const blocks = section.querySelectorAll('[data-cine] > *, [data-cine-self]');
-
-			const timeline = gsap.timeline({
-				defaults: { ease: 'power4.out' },
-				scrollTrigger: { trigger: section, start: 'top 80%', once: true }
-			});
-
-			if (kicker) {
-				timeline.from(kicker, { autoAlpha: 0, y: 12, duration: 0.55, ease: 'power3.out' });
-			}
-			if (heading) {
-				timeline.fromTo(
-					heading,
-					{ clipPath: 'inset(0% 0% 100% 0%)', y: 20 },
-					{ clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: 0.9 },
-					'<0.1'
-				);
-			}
-			if (blocks.length) {
-				timeline.from(
-					blocks,
-					{
-						autoAlpha: 0,
-						y: 18,
-						filter: 'blur(4px)',
-						duration: 0.7,
-						stagger: 0.08,
-						ease: 'power3.out'
-					},
-					'<0.2'
-				);
-			}
-		});
-
-		// If the settle deadline already passed while GSAP was still loading
-		// (slow network, throttled tab), jump straight to the final frame.
-		if (entranceDeadlinePassed) {
-			master.progress(1);
-		}
-	}
-
-	function setupRevealObserver() {
-		if (!browser || !('IntersectionObserver' in window)) {
-			revealSections.forEach((section) => {
-				visible[section] = true;
-			});
-			void initCharts();
-			playStats();
-			return;
-		}
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-					const id = entry.target.id as SectionId;
-					visible[id] = true;
-
-					if (id === 'charts') void initCharts();
-					if (id === 'infrastructure') playStats();
-				}
-			},
-			{ root: shellEl, threshold: 0.26, rootMargin: '0px 0px -8% 0px' }
-		);
-
-		revealSections.forEach((id) => {
-			const element = document.getElementById(id);
-			if (element) observer.observe(element);
-		});
-
-		return () => observer.disconnect();
-	}
-
-	function handleScroll() {
-		cancelAnimationFrame(raf);
-		raf = requestAnimationFrame(() => {
-			const max = shellEl.scrollHeight - shellEl.clientHeight;
-			scrollProgress = max > 0 ? shellEl.scrollTop / max : 0;
-		});
-	}
+	/* ── Deterministic market fiction ──────────────────────────────────────── */
 
 	function seededRandom(seed: number) {
 		let value = seed % 2147483647;
@@ -810,6 +762,30 @@
 		return candles;
 	}
 
+	/* Re-center a seeded walk so it closes exactly on its base price. The raw
+	 * generator drifts a few percent over a long series, which would put the
+	 * chart's last price visibly out of line with the same symbol on the tape —
+	 * the kind of inconsistency a trading audience clocks immediately. */
+	function recenter(candles: CandlestickData[], base: number, k: number): CandlestickData[] {
+		const rawClose = candles.at(-1)?.close ?? base;
+		const squeeze = (value: number) => Number((base + (value - rawClose) * k).toFixed(2));
+		return candles.map((candle) => ({
+			time: candle.time,
+			open: squeeze(candle.open),
+			high: squeeze(candle.high),
+			low: squeeze(candle.low),
+			close: squeeze(candle.close)
+		}));
+	}
+
+	function volumeFor(candles: CandlestickData[]): HistogramData[] {
+		return candles.map((candle, index) => ({
+			time: candle.time,
+			value: 480000 + ((index * 13729) % 620000),
+			color: candle.close >= candle.open ? 'rgba(46, 156, 119, 0.28)' : 'rgba(194, 85, 85, 0.28)'
+		}));
+	}
+
 	function disposeCharts() {
 		mainChart?.remove();
 		aaplChart?.remove();
@@ -830,11 +806,8 @@
 		heroChartReady = false;
 	}
 
-	/* ── Hero backdrop feed ──────────────────────────────────────────────────
-	 * A muted AAPL candlestick chart rendered across the hero, right price
-	 * axis visible, ticking continuously. Palette reuses the existing chart
-	 * tokens; interaction is disabled — it is scenery with real mechanics.
-	 */
+	/* ── Hero backdrop feed ────────────────────────────────────────────────── */
+
 	async function initHeroChart() {
 		if (heroChartReady || !browser || !mounted || !heroChartEl) return;
 
@@ -847,24 +820,24 @@
 				autoSize: true,
 				layout: {
 					background: { color: 'transparent' },
-					textColor: 'rgba(236, 234, 228, 0.45)',
+					textColor: 'rgba(236, 234, 228, 0.4)',
 					fontFamily: "'SF Mono', ui-monospace, Menlo, monospace",
 					fontSize: 10,
 					attributionLogo: false
 				},
 				grid: {
 					vertLines: { visible: false },
-					horzLines: { color: 'rgba(236, 234, 228, 0.035)' }
+					horzLines: { color: 'rgba(236, 234, 228, 0.03)' }
 				},
 				rightPriceScale: {
 					visible: true,
 					borderVisible: false,
-					scaleMargins: { top: 0.16, bottom: 0.14 }
+					scaleMargins: { top: 0.14, bottom: 0.16 }
 				},
 				timeScale: {
 					visible: false,
 					rightOffset: 6,
-					barSpacing: 7,
+					barSpacing: 8,
 					lockVisibleTimeRangeOnResize: true
 				},
 				crosshair: {
@@ -875,12 +848,11 @@
 				handleScale: false
 			});
 
-			// Luminous floor under the candles: a whisper of gold that gives the
-			// tape depth without changing the palette. Added first so it renders
-			// beneath the candle series.
+			// A whisper of gold beneath the candles gives the tape depth without
+			// changing the palette. Added first so it renders under the series.
 			heroFloorSeries = heroChart.addSeries(AreaSeries, {
-				lineColor: 'rgba(198, 161, 91, 0.35)',
-				topColor: 'rgba(198, 161, 91, 0.1)',
+				lineColor: 'rgba(198, 161, 91, 0.32)',
+				topColor: 'rgba(198, 161, 91, 0.09)',
 				bottomColor: 'transparent',
 				lineWidth: 1,
 				priceLineVisible: false,
@@ -901,26 +873,23 @@
 				lastValueVisible: false
 			});
 
-			// Re-center and compress the seeded walk so it closes exactly on the
-			// base price with a believable intraday range (~1.5%), keeping this
-			// chart consistent with the tape and mini-feed AAPL quotes.
-			const raw = generateCandles(232, HERO_BASE_PRICE, 96, 0.0035);
-			const rawClose = raw.at(-1)?.close ?? HERO_BASE_PRICE;
-			const compress = (value: number) =>
-				Number((HERO_BASE_PRICE + (value - rawClose) * 0.18).toFixed(2));
-			const seed = raw.map((candle) => ({
-				time: candle.time,
-				open: compress(candle.open),
-				high: compress(candle.high),
-				low: compress(candle.low),
-				close: compress(candle.close)
-			}));
+			// Tighter squeeze here than the desk charts: the backdrop reads as one
+			// intraday session, so its range stays around 1.5%.
+			const seed = recenter(
+				generateCandles(232, HERO_BASE_PRICE, 96, 0.0035),
+				HERO_BASE_PRICE,
+				0.18
+			);
 			heroSeries.setData(seed);
 			heroFloorSeries.setData(seed.map((candle) => ({ time: candle.time, value: candle.close })));
 			heroLastCandle = seed.at(-1) ?? null;
 
-			// The dashed bronze reference line doubles as the last-price element:
-			// it carries both the line and the gold axis chip.
+			heroOpenPrice = seed[0]?.open ?? HERO_BASE_PRICE;
+			heroSessionLow = Math.min(...seed.map((candle) => candle.low));
+			heroSessionHigh = Math.max(...seed.map((candle) => candle.high));
+
+			// The dashed bronze line doubles as the last-price element: it
+			// carries both the reference line and the gold axis chip.
 			heroPriceLine = heroSeries.createPriceLine({
 				price: heroLastCandle?.close ?? HERO_BASE_PRICE,
 				color: 'rgba(198, 161, 91, 0.5)',
@@ -928,7 +897,7 @@
 				lineStyle: LineStyle.Dashed,
 				axisLabelVisible: true,
 				axisLabelColor: 'rgba(198, 161, 91, 0.92)',
-				axisLabelTextColor: '#0a0b0e',
+				axisLabelTextColor: '#07080b',
 				title: ''
 			});
 			if (heroLastCandle) {
@@ -938,7 +907,7 @@
 			heroChart.timeScale().scrollToRealTime();
 			heroChartReady = true;
 
-			// The feed never stops; reduced-motion readers get a still image.
+			// The feed never stops; reduced-motion readers get a still frame.
 			if (!reducedMotion) {
 				heroFeedTimer = window.setInterval(tickHeroFeed, 700);
 			}
@@ -980,9 +949,24 @@
 		heroSeries.update(heroLastCandle);
 		heroFloorSeries?.update({ time: heroLastCandle.time, value: heroLastCandle.close });
 		heroPriceLine?.applyOptions({ price: heroLastCandle.close });
+
+		const previous = heroPrice;
 		heroPrice = heroLastCandle.close;
 		heroPriceDirection = heroLastCandle.close >= heroLastCandle.open ? 'up' : 'down';
+		heroSessionLow = Math.min(heroSessionLow, heroLastCandle.low);
+		heroSessionHigh = Math.max(heroSessionHigh, heroLastCandle.high);
+
+		// Direction flash on the big figure — cleared after the pulse lands.
+		if (heroPrice !== previous) {
+			heroPriceFlash = heroPrice > previous ? 'up' : 'down';
+			window.clearTimeout(priceFlashTimer);
+			priceFlashTimer = window.setTimeout(() => {
+				heroPriceFlash = '';
+			}, 520);
+		}
 	}
+
+	/* ── Market data scene ─────────────────────────────────────────────────── */
 
 	async function initCharts() {
 		if (chartsReady || !browser || !mounted || !mainChartEl || !aaplChartEl || !nvdaChartEl) {
@@ -1018,11 +1002,14 @@
 				return;
 			}
 
-			const nextChartData = {
-				main: generateCandles(1487, 5892.33, 76, 0.0045),
-				aapl: generateCandles(412, 232.3, 48, 0.0065),
-				nvda: generateCandles(911, 1475.2, 48, 0.0078)
-			};
+			const timeframe = TIMEFRAMES[activeTimeframe];
+			const seededMain = recenter(
+				generateCandles(timeframe.seed, 5892.33, timeframe.count, timeframe.volatility),
+				5892.33,
+				0.35
+			);
+			const seededAapl = recenter(generateCandles(412, 232.3, 48, 0.0065), 232.3, 0.35);
+			const seededNvda = recenter(generateCandles(911, 1475.2, 48, 0.0078), 1475.2, 0.35);
 
 			const commonLayout = {
 				background: { color: 'transparent' },
@@ -1046,7 +1033,8 @@
 				timeScale: {
 					borderColor: 'rgba(255, 255, 255, 0.1)',
 					timeVisible: true,
-					secondsVisible: false
+					secondsVisible: false,
+					barSpacing: timeframe.barSpacing
 				},
 				crosshair: {
 					vertLine: { color: 'rgba(198, 161, 91, 0.4)', style: 3 },
@@ -1068,16 +1056,9 @@
 				priceScaleId: ''
 			});
 
-			mainSeries.setData(nextChartData.main);
+			mainSeries.setData(seededMain);
 			volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
-			volumeSeries.setData(
-				nextChartData.main.map<HistogramData>((candle, index) => ({
-					time: candle.time,
-					value: 480000 + ((index * 13729) % 620000),
-					color:
-						candle.close >= candle.open ? 'rgba(46, 156, 119, 0.28)' : 'rgba(194, 85, 85, 0.28)'
-				}))
-			);
+			volumeSeries.setData(volumeFor(seededMain));
 
 			aaplChart = createMiniChart(createChart, aaplChartEl);
 			nvdaChart = createMiniChart(createChart, nvdaChartEl);
@@ -1096,17 +1077,18 @@
 				lineWidth: 2
 			});
 
-			aaplSeries.setData(
-				nextChartData.aapl.map((candle) => ({ time: candle.time, value: candle.close }))
-			);
-			nvdaSeries.setData(
-				nextChartData.nvda.map((candle) => ({ time: candle.time, value: candle.close }))
-			);
+			aaplSeries.setData(seededAapl.map((candle) => ({ time: candle.time, value: candle.close })));
+			nvdaSeries.setData(seededNvda.map((candle) => ({ time: candle.time, value: candle.close })));
 
 			mainChart.timeScale().fitContent();
 			aaplChart.timeScale().fitContent();
 			nvdaChart.timeScale().fitContent();
-			chartData = nextChartData;
+
+			mainCandles = seededMain;
+			miniCloses = {
+				aapl: seededAapl.at(-1)?.close ?? 232.3,
+				nvda: seededNvda.at(-1)?.close ?? 1475.2
+			};
 			chartsReady = true;
 		} catch (error) {
 			if (mounted && initGeneration === chartInitGeneration) {
@@ -1140,38 +1122,134 @@
 		});
 	}
 
-	function updateCandle(key: ChartKey, amplitude: number) {
-		const candles = chartData[key];
-		const last = candles.at(-1);
-		if (!last) return null;
+	/* The timeframe rail is a real control: switching regenerates the tape at
+	 * that granularity and re-fits the view — not a decorative row of chips. */
+	function setTimeframe(next: TimeframeId) {
+		if (next === activeTimeframe) return;
+		activeTimeframe = next;
+
+		if (!chartsReady || !mainSeries || !mainChart) return;
+		const timeframe = TIMEFRAMES[next];
+		const candles = recenter(
+			generateCandles(timeframe.seed, 5892.33, timeframe.count, timeframe.volatility),
+			5892.33,
+			0.35
+		);
+		mainSeries.setData(candles);
+		volumeSeries?.setData(volumeFor(candles));
+		mainChart.timeScale().applyOptions({ barSpacing: timeframe.barSpacing });
+		mainChart.timeScale().fitContent();
+		mainCandles = candles;
+	}
+
+	function rollMainCandle() {
+		const last = mainCandles.at(-1);
+		if (!last || !mainSeries) return;
 
 		const now = Math.floor(Date.now() / 1000) as UTCTimestamp;
-		const move = (Math.random() - 0.48) * amplitude;
+		const move = (Math.random() - 0.48) * 7.4;
+		let next: CandlestickData;
 
 		if (now - Number(last.time) > 45) {
-			const next: CandlestickData = {
+			next = {
 				time: now,
 				open: last.close,
 				high: Math.max(last.close, last.close + move),
 				low: Math.min(last.close, last.close + move),
 				close: Number((last.close + move).toFixed(2))
 			};
-			candles.push(next);
-			if (candles.length > 84) candles.shift();
-			return next;
+			mainCandles.push(next);
+			if (mainCandles.length > 96) mainCandles.shift();
+		} else {
+			last.close = Number((last.close + move).toFixed(2));
+			last.high = Math.max(last.high, last.close);
+			last.low = Math.min(last.low, last.close);
+			next = last;
 		}
 
-		last.close = Number((last.close + move).toFixed(2));
-		last.high = Math.max(last.high, last.close);
-		last.low = Math.min(last.low, last.close);
-		return last;
+		mainSeries.update(next);
+		volumeSeries?.update({
+			time: next.time,
+			value: Math.floor(520000 + Math.random() * 640000),
+			color: next.close >= next.open ? 'rgba(46, 156, 119, 0.28)' : 'rgba(194, 85, 85, 0.28)'
+		});
+	}
+
+	/* ── The desk, live: book, prints, sectors, scanner ────────────────────── */
+
+	function repriceBook() {
+		const mid = heroPrice;
+		const drift = () => Math.round((Math.random() - 0.5) * 380);
+
+		bookBids = bookBids.map((level, index) => ({
+			price: Number((mid - 0.02 - index * 0.02).toFixed(2)),
+			size: Math.max(120, Math.min(2600, level.size + drift()))
+		}));
+		bookAsks = bookAsks.map((level, index) => ({
+			price: Number((mid + 0.02 + index * 0.02).toFixed(2)),
+			size: Math.max(120, Math.min(2600, level.size + drift()))
+		}));
+	}
+
+	function printTime() {
+		return etClockFormatter?.format(new Date()) ?? '--:--:--';
+	}
+
+	function makePrint(): TapePrint {
+		printCounter += 1;
+		const side: 'buy' | 'sell' = Math.random() > 0.47 ? 'buy' : 'sell';
+		const offset = (Math.random() * bookSpread) / 2;
+		const price = Number((side === 'buy' ? heroPrice + offset : heroPrice - offset).toFixed(2));
+		const block = Math.random() > 0.93;
+		const size = block
+			? Math.floor(2400 + Math.random() * 7600)
+			: Math.floor(100 + Math.random() * 900);
+
+		return { id: printCounter, time: printTime(), price, size, side, block };
+	}
+
+	function seedPrints() {
+		const seeded: TapePrint[] = [];
+		for (let i = 0; i < 9; i += 1) seeded.push(makePrint());
+		prints = seeded;
+	}
+
+	function streamPrint() {
+		const burst = Math.random() > 0.72 ? 2 : 1;
+		const next = [...prints];
+		for (let i = 0; i < burst; i += 1) next.unshift(makePrint());
+		prints = next.slice(0, 12);
+	}
+
+	function driftSectors() {
+		sectors = sectors.map((sector) => ({
+			...sector,
+			change: Number(
+				Math.max(-2.8, Math.min(2.8, sector.change + (Math.random() - 0.5) * 0.14)).toFixed(2)
+			)
+		}));
+	}
+
+	function sectorHeat(change: number) {
+		// Interpolate panel color by signed magnitude; text stays ivory.
+		const magnitude = Math.min(1, Math.abs(change) / 2.2);
+		const alpha = 0.05 + magnitude * 0.34;
+		return change >= 0
+			? `rgba(46, 156, 119, ${alpha.toFixed(3)})`
+			: `rgba(194, 85, 85, ${alpha.toFixed(3)})`;
 	}
 
 	function startLiveSystems() {
 		const timers: number[] = [];
 
-		timers.push(window.setInterval(updateCountdown, 1000));
+		timers.push(window.setInterval(updateClocks, 1000));
 		timers.push(window.setInterval(refreshDailyContent, 3_600_000));
+
+		timers.push(
+			window.setInterval(() => {
+				feedLatency = 11 + Math.floor(Math.random() * 8);
+			}, 2200)
+		);
 
 		timers.push(
 			window.setInterval(() => {
@@ -1192,25 +1270,19 @@
 
 		timers.push(
 			window.setInterval(() => {
-				if (!chartsReady) return;
-
-				const main = updateCandle('main', 7.4);
-				const aapl = updateCandle('aapl', 0.72);
-				const nvda = updateCandle('nvda', 5.4);
-
-				if (main) {
-					mainSeries?.update(main);
-					volumeSeries?.update({
-						time: main.time,
-						value: Math.floor(520000 + Math.random() * 640000),
-						color: main.close >= main.open ? 'rgba(46, 156, 119, 0.28)' : 'rgba(194, 85, 85, 0.28)'
-					});
-				}
-
-				if (aapl) aaplSeries?.update({ time: aapl.time, value: aapl.close });
-				if (nvda) nvdaSeries?.update({ time: nvda.time, value: nvda.close });
+				if (chartsReady) rollMainCandle();
 			}, 1400)
 		);
+
+		if (!reducedMotion) {
+			timers.push(window.setInterval(repriceBook, 1100));
+			timers.push(window.setInterval(streamPrint, 850));
+			timers.push(window.setInterval(driftSectors, 3200));
+		} else {
+			// A single settle so reduced-motion readers still see live-shaped data.
+			repriceBook();
+			driftSectors();
+		}
 
 		timers.push(
 			window.setInterval(() => {
@@ -1292,6 +1364,259 @@
 		statsRaf = requestAnimationFrame(frame);
 	}
 
+	/* ── Reveal + scroll ───────────────────────────────────────────────────── */
+
+	function setupRevealObserver() {
+		if (!browser || !('IntersectionObserver' in window)) {
+			revealScenes.forEach((scene) => {
+				visible[scene] = true;
+			});
+			void initCharts();
+			playStats();
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					const id = entry.target.id as SceneId;
+					visible[id] = true;
+
+					if (id === 'charts') void initCharts();
+					if (id === 'scope') playStats();
+				}
+			},
+			{ root: shellEl, threshold: 0.22, rootMargin: '0px 0px -8% 0px' }
+		);
+
+		revealScenes.forEach((id) => {
+			const element = document.getElementById(id);
+			if (element) observer.observe(element);
+		});
+
+		return () => observer.disconnect();
+	}
+
+	function handleScroll() {
+		cancelAnimationFrame(raf);
+		raf = requestAnimationFrame(() => {
+			const max = shellEl.scrollHeight - shellEl.clientHeight;
+			scrollProgress = max > 0 ? shellEl.scrollTop / max : 0;
+		});
+	}
+
+	/* ── Motion: the title sequence ────────────────────────────────────────────
+	 * Shot like a cold open. The chrome slides in, the letterbox mattes close,
+	 * the backdrop resolves from a slow push-in, the title rises out of its
+	 * masks, the price figure pulls sharp, and the status slate lands last.
+	 * The mattes retract as the viewer scrolls past the title card. Loaded
+	 * dynamically; the prerendered page is complete without it, and
+	 * reduced-motion skips the entire layer.
+	 */
+	async function initMotion() {
+		try {
+			const [gsapModule, scrollTriggerModule] = await Promise.all([
+				import('gsap'),
+				import('gsap/ScrollTrigger')
+			]);
+			if (!mounted) return;
+
+			const gsap = gsapModule.gsap;
+			const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+			gsap.registerPlugin(ScrollTrigger);
+
+			gsapActive = true;
+			await tick();
+			if (!mounted) {
+				gsapActive = false;
+				return;
+			}
+
+			gsapContext = gsap.context(() => {
+				buildMotion(gsap, ScrollTrigger);
+			}, shellEl);
+		} catch (error) {
+			console.error('[Maintenance] Motion layer failed to load', error);
+			gsapActive = false;
+		}
+	}
+
+	function buildMotion(gsap: GsapCore, ScrollTrigger: ScrollTriggerStatic) {
+		ScrollTrigger.defaults({ scroller: shellEl });
+
+		const settle = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+
+		const master = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.7 } });
+		masterTimeline = master;
+
+		master
+			.addLabel('chrome', 0)
+			.fromTo(
+				'.chrome-top',
+				{ yPercent: -100 },
+				{ yPercent: 0, duration: 0.8, ease: 'power2.out' },
+				'chrome'
+			)
+			.fromTo(
+				'.hud',
+				{ yPercent: 100 },
+				{ yPercent: 0, duration: 0.8, ease: 'power2.out' },
+				'chrome'
+			)
+			.fromTo(
+				'.letterbox.top',
+				{ scaleY: 0 },
+				{ scaleY: 1, transformOrigin: 'top center', duration: 0.9, ease: 'power2.inOut' },
+				'chrome'
+			)
+			.fromTo(
+				'.letterbox.bottom',
+				{ scaleY: 0 },
+				{ scaleY: 1, transformOrigin: 'bottom center', duration: 0.9, ease: 'power2.inOut' },
+				'chrome'
+			)
+			.addLabel('backdrop', 0.25)
+			.fromTo(
+				'.hero-chart',
+				{ autoAlpha: 0, scale: 1.06, clipPath: 'inset(0% 0% 14% 0%)' },
+				{ autoAlpha: 1, scale: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 2.2, ease: 'expo.out' },
+				'backdrop'
+			)
+			.fromTo(
+				'.hero-flare',
+				{ autoAlpha: 0, xPercent: -18 },
+				{ autoAlpha: 1, xPercent: 0, duration: 2, ease: 'power2.out' },
+				'backdrop+=0.15'
+			)
+			.fromTo(
+				'.hero-watermark',
+				{ autoAlpha: 0, x: '-2%' },
+				{ autoAlpha: 0.9, x: '0%', duration: 1.8, ease: 'power2.out' },
+				'backdrop+=0.1'
+			)
+			.to('#hero .eyebrow', { ...settle, duration: 0.6 }, 0.45)
+			.addLabel('headline', 0.58)
+			.fromTo(
+				'#hero .hero-title .line-inner',
+				{ y: '108%', rotation: 0.4 },
+				{ y: '0%', rotation: 0, duration: 1.05, ease: 'expo.out', stagger: 0.16 },
+				'headline'
+			)
+			.addLabel('price', 0.95)
+			.to('#hero .hero-quote', { ...settle, duration: 0.9 }, 'price')
+			.addLabel('copy', 1.1)
+			.to('#hero .lede', { ...settle }, 'copy')
+			.to('#hero .hero-actions', { ...settle }, 'copy+=0.14')
+			.to('#hero .hero-note', { ...settle, duration: 0.6 }, 'copy+=0.26')
+			.to('#hero .drop-timer', { ...settle }, 'copy+=0.36')
+			.addLabel('card', 1.35)
+			.to('#hero .status-card', { ...settle, duration: 1.1 }, 'card')
+			.addLabel('cue', 2.2)
+			.to('#hero .scroll-cue', { autoAlpha: 1, duration: 0.5 }, 'cue')
+			.fromTo(
+				'#hero .scroll-cue i',
+				{ scaleX: 0 },
+				{ scaleX: 1, transformOrigin: 'left center', duration: 0.5, ease: 'power2.out' },
+				'cue+=0.1'
+			);
+
+		// The progress figure settles from its fallback to today's value.
+		const progressProxy = { value: Math.max(0, buildProgress - 6) };
+		progressDisplay = progressProxy.value;
+		master.to(
+			progressProxy,
+			{
+				value: buildProgress,
+				duration: 1.1,
+				ease: 'power1.out',
+				onUpdate: () => {
+					progressDisplay = Math.round(progressProxy.value);
+				}
+			},
+			1.1
+		);
+
+		// The mattes retract as the title card scrolls away — the film opens up.
+		gsap.to('.letterbox.top', {
+			scaleY: 0,
+			transformOrigin: 'top center',
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: '62% top', scrub: 0.6 }
+		});
+		gsap.to('.letterbox.bottom', {
+			scaleY: 0,
+			transformOrigin: 'bottom center',
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: '62% top', scrub: 0.6 }
+		});
+
+		// Depth: layered parallax as the hero leaves the frame.
+		gsap.to('.hero-chart', {
+			yPercent: -8,
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
+		});
+		gsap.to('.hero-watermark', {
+			y: -110,
+			ease: 'none',
+			scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
+		});
+		gsap.to('.note-card blockquote', {
+			yPercent: -3,
+			ease: 'none',
+			scrollTrigger: { trigger: '#note', start: 'top bottom', end: 'bottom top', scrub: 0.8 }
+		});
+
+		// Scene grammar: the slate rises, the heading wipes open on a clip-path,
+		// then content blocks stage in with a soft focus pull.
+		const scenes = gsap.utils.toArray<HTMLElement>('.page-shell section:not(#hero)');
+		scenes.forEach((scene) => {
+			const kicker = scene.querySelector('.scene-slate');
+			const heading = scene.querySelector('.scene-head h2');
+			const blocks = scene.querySelectorAll('[data-cine] > *, [data-cine-self]');
+
+			const timeline = gsap.timeline({
+				defaults: { ease: 'power4.out' },
+				scrollTrigger: { trigger: scene, start: 'top 80%', once: true }
+			});
+
+			if (kicker) {
+				timeline.from(kicker, { autoAlpha: 0, y: 12, duration: 0.55, ease: 'power3.out' });
+			}
+			if (heading) {
+				timeline.fromTo(
+					heading,
+					{ clipPath: 'inset(0% 0% 100% 0%)', y: 20 },
+					{ clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: 0.9 },
+					'<0.1'
+				);
+			}
+			if (blocks.length) {
+				timeline.from(
+					blocks,
+					{
+						autoAlpha: 0,
+						y: 18,
+						filter: 'blur(4px)',
+						duration: 0.7,
+						stagger: 0.08,
+						ease: 'power3.out'
+					},
+					'<0.2'
+				);
+			}
+		});
+
+		// If the settle deadline already passed while GSAP was still loading
+		// (slow network, throttled tab), jump straight to the final frame.
+		if (entranceDeadlinePassed) {
+			master.progress(1);
+		}
+	}
+
+	/* ── Access ────────────────────────────────────────────────────────────── */
+
 	async function handleNotifyMe() {
 		if (isSubmitting) return;
 
@@ -1334,6 +1659,10 @@
 	function formatNumber(value: number) {
 		return new Intl.NumberFormat('en-US').format(value);
 	}
+
+	function formatSize(value: number) {
+		return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(value);
+	}
 </script>
 
 <div
@@ -1343,12 +1672,13 @@
 	onscroll={handleScroll}
 >
 	<div class="grain" aria-hidden="true"></div>
+	<div class="vignette" aria-hidden="true"></div>
 
-	<div class="progress-rail" aria-hidden="true">
-		<span></span>
-	</div>
+	<div class="letterbox top" aria-hidden="true"></div>
+	<div class="letterbox bottom" aria-hidden="true"></div>
 
-	<header class="market-tape" aria-label="Market tape">
+	<header class="chrome-top" aria-label="Market tape">
+		<span class="chrome-brand">RTP<i>//</i>REBUILD</span>
 		<div class="tape-viewport">
 			<div class="tape-track" aria-hidden="true">
 				{#each [...liveTickers, ...liveTickers, ...liveTickers] as ticker, index (ticker.symbol + '-' + index)}
@@ -1366,42 +1696,75 @@
 	</header>
 
 	<main class="page-shell">
+		<!-- ═══ TITLE CARD ═══════════════════════════════════════════════════ -->
 		<section id="hero" class={{ hero: true, reveal: true, visible: visible.hero }}>
 			<span class="hero-watermark" aria-hidden="true">AAPL</span>
 
 			<div class="hero-chart" aria-hidden="true">
 				<div class="hero-chart-canvas" {@attach mountHeroChart}></div>
-				<div class="hero-chart-badge">
-					<span class="badge-symbol">AAPL</span>
-					<span class="badge-live"><i></i>Live</span>
-					<strong class={{ up: heroPriceDirection === 'up', down: heroPriceDirection === 'down' }}>
-						{heroPrice.toFixed(2)}
-					</strong>
-				</div>
 			</div>
+			<div class="hero-flare" aria-hidden="true"></div>
 
 			<div class="hero-copy">
-				<p class="eyebrow" data-entrance>Platform rebuild · Day {dayNumber || '—'}</p>
+				<p class="eyebrow" data-entrance>
+					<span class="eyebrow-presents">Revolution Trading Pros presents</span>
+					<span class="eyebrow-day">Rebuild · Day {dayNumber || '—'}</span>
+				</p>
+
+				<!-- The line-inner spans deliberately carry no data-entrance: that CSS
+				     gate hides via opacity, but their entrance tween animates only the
+				     masked translateY — an alpha gate would never be released and the
+				     headline would stay invisible. The .line overflow mask plus the
+				     .gsap-on transform gate hides them until the rise plays. -->
 				<h1 class="hero-title">
-					<span class="line"><span class="line-inner" data-entrance>We didn’t go quiet.</span></span
-					>
+					<span class="line"><span class="line-inner">The market didn’t wait.</span></span>
 					<span class="line"
-						><span class="line-inner" data-entrance
-							>We went to <em class="serif-accent">work.</em></span
-						></span
+						><span class="line-inner">Neither did <em class="serif-accent">we.</em></span></span
 					>
 				</h1>
+
 				<div class="hero-lower">
 					<div class="hero-lower-copy">
+						<div class="hero-quote" data-entrance aria-label="AAPL live quote">
+							<div class="quote-head">
+								<span class="quote-symbol">AAPL</span>
+								<span class="quote-live"><i></i>Live feed</span>
+							</div>
+							<div
+								class={{
+									'quote-figure': true,
+									up: heroPriceDirection === 'up',
+									down: heroPriceDirection === 'down',
+									'flash-up': heroPriceFlash === 'up',
+									'flash-down': heroPriceFlash === 'down'
+								}}
+							>
+								{heroPrice.toFixed(2)}
+							</div>
+							<div class="quote-meta">
+								<span class={{ up: heroChangePct >= 0, down: heroChangePct < 0 }}>
+									{heroChangePct >= 0 ? '+' : ''}{heroChangePct.toFixed(2)}%
+								</span>
+								<span class="quote-session">session</span>
+							</div>
+							<div class="range-meter" aria-hidden="true">
+								<span class="range-low">{heroSessionLow.toFixed(2)}</span>
+								<div class="range-track">
+									<i style:left={`${heroRangePosition}%`}></i>
+								</div>
+								<span class="range-high">{heroSessionHigh.toFixed(2)}</span>
+							</div>
+						</div>
+
 						<p class="lede" data-entrance>
 							Revolution Trading Pros is being rebuilt end to end — faster market data, more
-							rigorous scanners, and a trading curriculum run to an institutional standard. Progress
-							is posted on this page every trading day.
+							rigorous scanners, a live trading room, and two universities run to an institutional
+							standard. Progress is posted here every trading day.
 						</p>
 
 						<div class="hero-actions" data-entrance>
 							<a class="primary-link" href="#access">Request first access</a>
-							<a class="ghost-link" href="#operations">Review the work</a>
+							<a class="ghost-link" href="#desk">Watch the desk</a>
 						</div>
 						<p class="hero-note" data-entrance>
 							Founding-member pricing at launch · one email at reopening · no marketing sequence
@@ -1472,9 +1835,12 @@
 			</div>
 		</section>
 
+		<!-- ═══ SCENE 01 · DESK NOTE ═════════════════════════════════════════ -->
 		<section id="note" class={{ 'note-section': true, reveal: true, visible: visible.note }}>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">01</span>Daily desk note</p>
+			<div class="scene-head">
+				<p class="scene-slate">
+					<span class="slate-no">Scene 01</span><span class="slate-title">Daily desk note</span>
+				</p>
 				<h2>One disciplined idea, every trading day.</h2>
 			</div>
 
@@ -1488,51 +1854,136 @@
 			</figure>
 		</section>
 
-		<section
-			id="operations"
-			class={{ 'ops-section': true, reveal: true, visible: visible.operations }}
-		>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">02</span>Scope of work</p>
-				<h2>Every system, rebuilt to institutional spec.</h2>
+		<!-- ═══ SCENE 02 · THE DESK, LIVE ════════════════════════════════════ -->
+		<section id="desk" class={{ 'desk-section': true, reveal: true, visible: visible.desk }}>
+			<div class="scene-head">
+				<p class="scene-slate">
+					<span class="slate-no">Scene 02</span><span class="slate-title">The desk, live</span>
+				</p>
+				<h2>Live to the tick, even mid-rebuild.</h2>
+				<p class="scene-lede">
+					Order book, tape, sector map, and the scanner feed — the same instruments the rebuilt
+					platform ships with, running on this page right now.
+				</p>
 			</div>
 
-			<div class="ops-stage">
-				<div class="ops-grid" aria-label="Rebuild scope" data-cine>
-					{#each operationsChapters as chapter (chapter.number)}
-						<article class="ops-card panel">
-							<span class="ops-index">{chapter.number}</span>
-							<h3>{chapter.title}</h3>
-							<p>{chapter.copy}</p>
-							<span class="ops-metric">{chapter.metric}</span>
-						</article>
-					{/each}
-				</div>
-
-				<div class="systems-panel panel" aria-label="System status" data-cine-self>
-					<div class="card-topline">
-						<span>System status</span>
-						<span class="status-flag">Operational</span>
+			<div class="desk-grid" data-cine>
+				<article class="desk-module panel" aria-label="AAPL order book">
+					<div class="module-head">
+						<span class="module-title">Order book</span>
+						<span class="module-tag">AAPL · L2</span>
 					</div>
-					<dl class="status-list">
-						{#each systemStatus as item (item.label)}
-							<div class="status-row">
-								<dt>{item.label}</dt>
-								<dd>{item.state}</dd>
+					<div class="book-columns">
+						<div class="book-side bids">
+							<div class="book-legend"><span>Size</span><span>Bid</span></div>
+							{#each bookBids as level, levelIndex (levelIndex)}
+								<div class="book-row">
+									<i class="depth" style:width={`${(level.size / bookMaxSize) * 100}%`}></i>
+									<span class="book-size">{formatNumber(level.size)}</span>
+									<span class="book-price">{level.price.toFixed(2)}</span>
+								</div>
+							{/each}
+						</div>
+						<div class="book-side asks">
+							<div class="book-legend"><span>Ask</span><span>Size</span></div>
+							{#each bookAsks as level, levelIndex (levelIndex)}
+								<div class="book-row">
+									<i class="depth" style:width={`${(level.size / bookMaxSize) * 100}%`}></i>
+									<span class="book-price">{level.price.toFixed(2)}</span>
+									<span class="book-size">{formatNumber(level.size)}</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+					<div class="module-foot">
+						<span>Spread</span>
+						<strong>{bookSpread.toFixed(2)}</strong>
+					</div>
+				</article>
+
+				<article class="desk-module panel" aria-label="Time and sales">
+					<div class="module-head">
+						<span class="module-title">Time &amp; sales</span>
+						<span class="module-tag">Prints</span>
+					</div>
+					<div class="prints-stream" role="log" aria-live="off" aria-label="Recent prints">
+						{#each prints as print (print.id)}
+							<div
+								class={{
+									'print-row': true,
+									buy: print.side === 'buy',
+									sell: print.side === 'sell',
+									block: print.block
+								}}
+							>
+								<span class="print-time">{print.time}</span>
+								<span class="print-price">{print.price.toFixed(2)}</span>
+								<span class="print-size">{formatSize(print.size)}</span>
+								<span class="print-side">{print.side === 'buy' ? 'B' : 'S'}</span>
 							</div>
 						{/each}
-					</dl>
-					<div class="card-footline">
-						<span>Availability target</span>
-						<span>99.99%</span>
 					</div>
-				</div>
+					<div class="module-foot">
+						<span>Feed latency</span>
+						<strong>{feedLatency}ms</strong>
+					</div>
+				</article>
+
+				<article class="desk-module panel wide" aria-label="Sector heat map">
+					<div class="module-head">
+						<span class="module-title">Sector map</span>
+						<span class="module-tag">S&amp;P sectors · intraday</span>
+					</div>
+					<div class="sector-grid">
+						{#each sectors as sector (sector.code)}
+							<div class="sector-tile" style:background={sectorHeat(sector.change)}>
+								<span class="sector-code">{sector.code}</span>
+								<span class="sector-name">{sector.name}</span>
+								<strong class={{ up: sector.change >= 0, down: sector.change < 0 }}>
+									{sector.change >= 0 ? '+' : ''}{sector.change.toFixed(2)}%
+								</strong>
+							</div>
+						{/each}
+					</div>
+				</article>
+
+				<article class="desk-module panel wide" aria-label="Scanner feed">
+					<div class="module-head">
+						<span class="module-title">Scanner feed</span>
+						<span class="module-tag">{activeSignals} active · avg {averageConfidence}%</span>
+					</div>
+					<div class="signal-stream">
+						{#each scannerSignals as signal (signal.id)}
+							<div class={{ 'signal-row': true, cooling: signal.status === 'cooling' }}>
+								<div class="signal-id">
+									<strong>{signal.symbol}</strong>
+									<span>{signal.type}</span>
+								</div>
+								<div class="signal-figures">
+									<span>{signal.price.toFixed(2)}</span>
+									<small>{signal.age}s ago</small>
+								</div>
+								<div class="confidence">
+									<span style:--confidence={`${signal.confidence}%`}></span>
+									<small>{signal.confidence}%</small>
+								</div>
+							</div>
+						{/each}
+					</div>
+					<div class="module-foot">
+						<span>Symbols monitored</span>
+						<strong>12,847</strong>
+					</div>
+				</article>
 			</div>
 		</section>
 
+		<!-- ═══ SCENE 03 · MARKET DATA ═══════════════════════════════════════ -->
 		<section id="charts" class={{ 'charts-section': true, reveal: true, visible: visible.charts }}>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">03</span>Market data</p>
+			<div class="scene-head">
+				<p class="scene-slate">
+					<span class="slate-no">Scene 03</span><span class="slate-title">Market data</span>
+				</p>
 				<h2>The data engine never went dark.</h2>
 			</div>
 
@@ -1545,12 +1996,12 @@
 						</strong>
 					</div>
 					<div class="timeframe-control" aria-label="Chart timeframe">
-						{#each timeframes as timeframe (timeframe)}
+						{#each timeframeIds as timeframe (timeframe)}
 							<button
 								type="button"
 								class={{ active: activeTimeframe === timeframe }}
 								aria-pressed={activeTimeframe === timeframe}
-								onclick={() => (activeTimeframe = timeframe)}>{timeframe}</button
+								onclick={() => setTimeframe(timeframe)}>{timeframe}</button
 							>
 						{/each}
 					</div>
@@ -1559,9 +2010,8 @@
 				<div class="chart-canvas" {@attach mountMainChart}></div>
 
 				<div class="chart-metrics">
-					<div><span>Latency</span><strong>15ms</strong></div>
+					<div><span>Latency</span><strong>{feedLatency}ms</strong></div>
 					<div><span>Signals/min</span><strong>4.2M</strong></div>
-
 					<div>
 						<span>Avg. confidence</span>
 						<strong>{averageConfidence}%</strong>
@@ -1573,7 +2023,7 @@
 				<div class="mini-feed panel">
 					<div>
 						<span>AAPL</span>
-						<strong>{(chartData.aapl.at(-1)?.close ?? 232.3).toFixed(2)}</strong>
+						<strong>{miniCloses.aapl.toFixed(2)}</strong>
 					</div>
 					<div class="mini-chart" {@attach mountAaplChart}></div>
 				</div>
@@ -1581,80 +2031,104 @@
 				<div class="mini-feed panel">
 					<div>
 						<span>NVDA</span>
-						<strong>{(chartData.nvda.at(-1)?.close ?? 1475.2).toFixed(2)}</strong>
+						<strong>{miniCloses.nvda.toFixed(2)}</strong>
 					</div>
 					<div class="mini-chart" {@attach mountNvdaChart}></div>
 				</div>
 			</div>
 		</section>
 
-		<section
-			id="signals"
-			class={{ 'signals-section': true, reveal: true, visible: visible.signals }}
-		>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">04</span>Scanner engine</p>
-				<h2>Signal clarity, engineered under pressure.</h2>
+		<!-- ═══ SCENE 04 · SCOPE OF WORK ═════════════════════════════════════ -->
+		<section id="scope" class={{ 'scope-section': true, reveal: true, visible: visible.scope }}>
+			<div class="scene-head">
+				<p class="scene-slate">
+					<span class="slate-no">Scene 04</span><span class="slate-title">Scope of work</span>
+				</p>
+				<h2>Every system, rebuilt to institutional spec.</h2>
 			</div>
 
-			<div class="signals-layout">
-				<div class="coverage-panel panel" data-cine-self>
-					<div class="card-topline">
-						<span>Coverage</span>
-					</div>
-					<dl class="coverage-list">
-						<div>
-							<dt>Symbols monitored</dt>
-							<dd>12,847</dd>
-						</div>
-
-						<div>
-							<dt>Signals active now</dt>
-							<dd>{activeSignals}</dd>
-						</div>
-						<div>
-							<dt>Average confidence</dt>
-							<dd>{averageConfidence}%</dd>
-						</div>
-						<div>
-							<dt>Feed latency</dt>
-							<dd>15ms</dd>
-						</div>
-					</dl>
-				</div>
-
-				<div class="signals-table panel" data-cine-self>
-					<div class="table-head">
-						<span>Detected signals</span>
-						<span>Internal preview</span>
-					</div>
-					{#each scannerSignals as signal (signal.id)}
-						<article class={{ 'signal-row': true, cooling: signal.status === 'cooling' }}>
-							<div>
-								<strong>{signal.symbol}</strong>
-								<span>{signal.type}</span>
+			<div class="scope-stage">
+				<div class="scope-manifest" data-cine>
+					{#each scopeChapters as chapter (chapter.number)}
+						<article class="scope-row">
+							<span class="scope-index">{chapter.number}</span>
+							<div class="scope-body">
+								<h3>{chapter.title}</h3>
+								<p>{chapter.copy}</p>
 							</div>
-							<div class="signal-figures">
-								<span>{signal.price.toFixed(2)}</span>
-								<small>{signal.age}s ago</small>
-							</div>
-							<div class="confidence">
-								<span style:--confidence={`${signal.confidence}%`}></span>
-								<small>{signal.confidence}%</small>
-							</div>
+							<span class="scope-metric">{chapter.metric}</span>
 						</article>
 					{/each}
+				</div>
+
+				<div class="scope-rail">
+					<div class="systems-panel panel" aria-label="System status" data-cine-self>
+						<div class="card-topline">
+							<span>System status</span>
+							<span class="status-flag">Operational</span>
+						</div>
+						<dl class="status-list">
+							{#each systemStatus as item (item.label)}
+								<div class="status-row">
+									<dt>{item.label}</dt>
+									<dd>{item.state}</dd>
+								</div>
+							{/each}
+						</dl>
+						<div class="card-footline">
+							<span>Availability target</span>
+							<span>99.99%</span>
+						</div>
+					</div>
+
+					<div class="node-list panel" data-cine-self aria-label="Data-center load">
+						{#each nodes as node (node.id)}
+							<article class="node-row">
+								<div>
+									<strong>{node.id}</strong>
+									<span>{node.region}</span>
+								</div>
+								<div class="load-track" aria-label={`${node.id} load ${node.load}%`}>
+									<span style:width={`${node.load}%`}></span>
+								</div>
+								<small class={{ migrating: node.status === 'migrating' }}>{node.status}</small>
+							</article>
+						{/each}
+					</div>
+
+					<div class="stat-board panel" data-cine-self>
+						<div>
+							<strong>{formatNumber(stats.traders)}+</strong>
+							<span>Traders trained</span>
+						</div>
+						<div>
+							<strong>{formatNumber(stats.scanners)}</strong>
+							<span>Symbols scanned</span>
+						</div>
+						<div>
+							<strong>{stats.latency}ms</strong>
+							<span>Target latency</span>
+						</div>
+						<div>
+							<strong>{stats.uptime.toFixed(2)}%</strong>
+							<span>Target uptime</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
 
+		<!-- ═══ SCENE 05 · TRADING UNIVERSITIES ══════════════════════════════ -->
 		<section
 			id="academy"
 			class={{ 'academy-section': true, reveal: true, visible: visible.academy }}
 		>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">05</span>Trading university</p>
-				<h2>Stocks, options, and desk discipline in one curriculum.</h2>
+			<div class="scene-head">
+				<p class="scene-slate">
+					<span class="slate-no">Scene 05</span><span class="slate-title">Trading universities</span
+					>
+				</p>
+				<h2>Two universities. One standard.</h2>
 			</div>
 
 			<div class="academy-block">
@@ -1722,73 +2196,38 @@
 			</div>
 		</section>
 
-		<section
-			id="infrastructure"
-			class={{ 'infra-section': true, reveal: true, visible: visible.infrastructure }}
-		>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">06</span>Build telemetry</p>
-				<h2>Capacity, reliability, and speed — measured daily.</h2>
-			</div>
-
-			<div class="infra-grid">
-				<div class="node-list panel" data-cine-self>
-					{#each nodes as node (node.id)}
-						<article class="node-row">
-							<div>
-								<strong>{node.id}</strong>
-								<span>{node.region}</span>
-							</div>
-							<div class="load-track" aria-label={`${node.id} load ${node.load}%`}>
-								<span style:width={`${node.load}%`}></span>
-							</div>
-							<small class={{ migrating: node.status === 'migrating' }}>{node.status}</small>
-						</article>
-					{/each}
-				</div>
-
-				<div class="stat-board panel" data-cine-self>
-					<div>
-						<strong>{formatNumber(stats.traders)}+</strong>
-						<span>Traders trained</span>
-					</div>
-					<div>
-						<strong>{formatNumber(stats.scanners)}</strong>
-						<span>Symbols scanned</span>
-					</div>
-					<div>
-						<strong>{stats.latency}ms</strong>
-						<span>Target latency</span>
-					</div>
-					<div>
-						<strong>{stats.uptime.toFixed(2)}%</strong>
-						<span>Target uptime</span>
-					</div>
-				</div>
-			</div>
-		</section>
-
+		<!-- ═══ SCENE 06 · BUILD LOG ═════════════════════════════════════════ -->
 		<section
 			id="buildlog"
 			class={{ 'buildlog-section': true, reveal: true, visible: visible.buildlog }}
 		>
-			<div class="section-heading">
-				<p class="section-kicker"><span class="section-index">07</span>Build log</p>
-				<h2>Completed while you were away.</h2>
+			<div class="scene-head">
+				<p class="scene-slate">
+					<span class="slate-no">Scene 06</span><span class="slate-title">Build log</span>
+				</p>
+				<h2>Shipped while you were away.</h2>
 			</div>
 
-			<div class="log-panel panel" data-cine>
-				{#each buildLog as entry (entry.text)}
-					<article class="log-row">
-						<span class="log-date">{entry.date || '···'}</span>
-						<span class={`log-tag ${entry.tag.toLowerCase()}`}>{entry.tag}</span>
-						<p>{entry.text}</p>
-					</article>
-				{/each}
+			<div class="log-terminal panel" data-cine-self>
+				<div class="terminal-bar" aria-hidden="true">
+					<i></i><i></i><i></i>
+					<span>rebuild — log · updated at the open</span>
+				</div>
+				<div class="log-body" data-cine>
+					{#each buildLog as entry (entry.text)}
+						<article class="log-row">
+							<span class="log-date">{entry.date || '···'}</span>
+							<span class={`log-tag ${entry.tag.toLowerCase()}`}>{entry.tag}</span>
+							<p>{entry.text}</p>
+						</article>
+					{/each}
+					<p class="log-cursor" aria-hidden="true">▮</p>
+				</div>
 			</div>
 			<p class="log-note">Updated every trading day at the open.</p>
 		</section>
 
+		<!-- ═══ FINAL SCENE · FIRST ACCESS ═══════════════════════════════════ -->
 		<section id="access" class={{ 'access-section': true, reveal: true, visible: visible.access }}>
 			{#if isSubmitted}
 				<div class="success-panel panel panel-feature" role="status">
@@ -1816,8 +2255,10 @@
 					}}
 				>
 					<div>
-						<p class="section-kicker"><span class="section-index">08</span>First access</p>
-						<h2>Be notified when we reopen.</h2>
+						<p class="scene-slate">
+							<span class="slate-no">Final scene</span><span class="slate-title">First access</span>
+						</p>
+						<h2>Be first through the doors.</h2>
 						<p>
 							One email when the platform reopens — nothing else. Founding members receive launch
 							pricing, launch-week live sessions, and early access to the new scanner suite.
@@ -1863,25 +2304,46 @@
 			<span class="footer-legal">© 2026 Revolution Trading Pros</span>
 		</footer>
 	</main>
+
+	<!-- ═══ BOTTOM HUD — the persistent terminal chrome ═════════════════════ -->
+	<footer class="hud" aria-label="Session status">
+		<i class="hud-progress" style:width={`${scrollProgress * 100}%`} aria-hidden="true"></i>
+		<div class="hud-cluster">
+			<span class="hud-clock" aria-label="New York time">{etClock} ET</span>
+			<span class={{ 'hud-session': true, [sessionState]: true }}>
+				<i aria-hidden="true"></i>{sessionLabel}
+			</span>
+		</div>
+		<div class="hud-cluster hud-center">
+			<span class="hud-day">Rebuild day {dayNumber || '—'}</span>
+			<span class="hud-bar" aria-label={`Build progress ${progressDisplay}%`}>
+				<i style:width={`${progressDisplay}%`}></i>
+			</span>
+			<span class="hud-pct">{progressDisplay}%</span>
+		</div>
+		<div class="hud-cluster hud-right">
+			<span class="hud-latency">feed {feedLatency}ms</span>
+			<span class="hud-mark">{sessionShort}</span>
+		</div>
+	</footer>
 </div>
 
 <style>
 	:global(html:has(.maintenance-experience)),
 	:global(body:has(.maintenance-experience)) {
 		overflow: hidden;
-		background: #0a0b0e;
+		background: #06070a;
 	}
 
 	.maintenance-experience {
-		--bg: #0a0b0e;
+		--bg: #06070a;
 		--ivory: #eceae4;
 		--gold: #c6a15b;
 		--panel: rgba(255, 255, 255, 0.02);
-		--panel-1: rgba(255, 255, 255, 0.015);
-		--panel-2: rgba(255, 255, 255, 0.028);
-		--panel-solid: rgba(10, 11, 14, 0.72);
+		--panel-2: rgba(255, 255, 255, 0.03);
+		--panel-solid: rgba(6, 7, 10, 0.78);
 		--line: rgba(255, 255, 255, 0.07);
-		--line-strong: rgba(255, 255, 255, 0.12);
+		--line-strong: rgba(255, 255, 255, 0.13);
 		--hair-faint: rgba(255, 255, 255, 0.05);
 		--text: var(--ivory);
 		--muted: rgba(236, 234, 228, 0.66);
@@ -1893,17 +2355,21 @@
 		--gold-30: rgba(198, 161, 91, 0.3);
 		--up: #2e9c77;
 		--down: #c25555;
+		--up-soft: rgba(46, 156, 119, 0.16);
+		--down-soft: rgba(194, 85, 85, 0.16);
 		--edge-hairline: linear-gradient(
 			140deg,
 			rgba(236, 234, 228, 0.08),
 			var(--gold-25) 42%,
 			rgba(255, 255, 255, 0) 72%
 		);
-		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
 		--shadow-md: 0 12px 32px -18px rgba(0, 0, 0, 0.75);
 		--shadow-lg: 0 40px 80px -40px rgba(0, 0, 0, 0.85), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
+		--font-display: Montserrat, Inter, ui-sans-serif, system-ui, sans-serif;
 		--font-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
 		--font-mono: 'SF Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+		--chrome-h: 46px;
+		--hud-h: 42px;
 		position: fixed;
 		inset: 0;
 		z-index: 99999;
@@ -1925,6 +2391,7 @@
 		-webkit-font-smoothing: antialiased;
 	}
 
+	/* Film texture: hairline scanlines + grain + a graded vignette. */
 	.maintenance-experience::before {
 		content: '';
 		position: fixed;
@@ -1950,82 +2417,124 @@
 		background-size: 140px 140px;
 	}
 
+	.vignette {
+		position: fixed;
+		inset: 0;
+		z-index: 39;
+		pointer-events: none;
+		background: radial-gradient(120% 90% at 50% 42%, transparent 58%, rgba(0, 0, 0, 0.38) 100%);
+	}
+
+	/* Cinema mattes. Static hairline bars without the motion layer; GSAP
+	 * scales them in for the title sequence and retracts them on scroll. */
+	.letterbox {
+		position: fixed;
+		left: 0;
+		right: 0;
+		z-index: 38;
+		height: clamp(28px, 4.6vh, 52px);
+		background: #030406;
+		pointer-events: none;
+	}
+
+	.letterbox.top {
+		top: var(--chrome-h);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.letterbox.bottom {
+		bottom: var(--hud-h);
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.maintenance-experience:not(.gsap-on) .letterbox {
+		height: 10px;
+	}
+
 	.maintenance-experience::-webkit-scrollbar {
 		width: 8px;
 	}
 
 	.maintenance-experience::-webkit-scrollbar-thumb {
 		background: rgba(255, 255, 255, 0.16);
-		border: 2px solid #0a0b0e;
+		border: 2px solid #06070a;
 		border-radius: 999px;
 	}
 
-	.progress-rail {
-		position: fixed;
-		inset: 0 auto 0 0;
-		z-index: 30;
-		width: 2px;
-		background: rgba(255, 255, 255, 0.05);
-	}
+	/* ── Top chrome: brand + tape ─────────────────────────────────────────── */
 
-	.progress-rail span {
-		display: block;
-		width: 100%;
-		height: calc(var(--scroll-progress) * 100%);
-		background: var(--accent);
-	}
-
-	/* ── Tape ─────────────────────────────────────────────────────────────── */
-
-	.market-tape {
+	.chrome-top {
 		position: sticky;
 		top: 0;
-		z-index: 20;
+		z-index: 45;
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: 18px;
+		height: var(--chrome-h);
+		padding-left: clamp(16px, 3vw, 32px);
 		border-bottom: 1px solid var(--line);
-		background: rgba(10, 11, 14, 0.92);
+		background: rgba(6, 7, 10, 0.92);
 		backdrop-filter: blur(14px);
+	}
+
+	.chrome-brand {
+		flex: none;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		color: var(--text);
+		white-space: nowrap;
+	}
+
+	.chrome-brand i {
+		font-style: normal;
+		color: var(--accent);
+		padding: 0 2px;
 	}
 
 	.tape-viewport {
 		flex: 1;
-		min-width: 0;
 		overflow: hidden;
-		mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-	}
-
-	.market-tape:hover .tape-track {
-		animation-play-state: paused;
+		mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
 	}
 
 	.tape-track {
 		display: flex;
+		gap: 34px;
 		width: max-content;
-		padding: 11px 0;
-		animation: tape 56s linear infinite;
+		padding: 13px 0;
+		animation: tape-scroll 46s linear infinite;
+	}
+
+	@keyframes tape-scroll {
+		to {
+			transform: translateX(-33.333%);
+		}
 	}
 
 	.tape-item {
-		display: inline-flex;
+		display: flex;
+		gap: 9px;
 		align-items: baseline;
-		gap: 8px;
-		padding: 0 22px;
-		border-right: 1px solid var(--line);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
-		font-variant-numeric: tabular-nums;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.04em;
 		white-space: nowrap;
 	}
 
 	.tape-symbol {
-		color: var(--text);
-		font-weight: 600;
+		color: var(--muted);
+		font-weight: 700;
 	}
 
 	.tape-price {
-		color: var(--muted);
+		color: var(--text);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.tape-change {
+		font-variant-numeric: tabular-nums;
 	}
 
 	.tape-change.up {
@@ -2037,571 +2546,590 @@
 	}
 
 	.tape-cta {
-		flex-shrink: 0;
-		margin-right: 16px;
-		border: 1px solid var(--line-strong);
-		border-radius: 4px;
-		padding: 7px 14px;
-		color: var(--text);
-		font-size: 12px;
+		flex: none;
+		align-self: stretch;
+		display: inline-flex;
+		align-items: center;
+		padding: 0 clamp(16px, 2.4vw, 28px);
+		border-left: 1px solid var(--line);
+		font-size: 11px;
 		font-weight: 600;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
 		text-decoration: none;
+		color: var(--accent);
+		background: linear-gradient(180deg, rgba(198, 161, 91, 0.07), transparent);
 		transition:
-			border-color 160ms ease,
-			background 160ms ease;
+			background 0.25s ease,
+			color 0.25s ease;
 	}
 
-	.tape-cta:hover {
-		border-color: var(--accent);
-		background: rgba(198, 161, 91, 0.08);
+	.tape-cta:hover,
+	.tape-cta:focus-visible {
+		background: var(--accent);
+		color: #06070a;
 	}
 
-	/* ── Layout ───────────────────────────────────────────────────────────── */
+	/* ── Shell + scene grammar ────────────────────────────────────────────── */
 
 	.page-shell {
 		position: relative;
-		z-index: 2;
-		width: min(1180px, calc(100% - 40px));
-		margin: 0 auto;
-		padding: clamp(40px, 7vw, 88px) 0 40px;
-	}
-
-	.hero {
-		position: relative;
-		isolation: isolate;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		min-height: min(860px, calc(100vh - 96px));
-		padding-bottom: clamp(72px, 10vh, 132px);
-	}
-
-	.hero-title {
-		margin: 6px 0 0;
-		max-width: 15ch;
-		font-size: clamp(3.2rem, 6.5vw, 6rem);
-		font-weight: 600;
-		letter-spacing: -0.028em;
-		line-height: 0.98;
-		text-wrap: balance;
-	}
-
-	.hero-lower {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
-		gap: clamp(28px, 5vw, 72px);
-		align-items: start;
-		margin-top: clamp(32px, 5vh, 56px);
-	}
-
-	.hero-lower-copy {
-		min-width: 0;
-	}
-
-	.hero-watermark {
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		display: grid;
-		place-items: center;
-		margin: 0;
-		overflow: hidden;
-		font-size: clamp(12rem, 28vw, 24rem);
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		line-height: 0.8;
-		white-space: nowrap;
-		color: transparent;
-		-webkit-text-stroke: 1px rgba(236, 234, 228, 0.045);
-		user-select: none;
-		pointer-events: none;
-	}
-
-	.scroll-cue {
-		position: absolute;
-		bottom: clamp(18px, 4vh, 40px);
-		left: 0;
-		z-index: 4;
-		display: inline-flex;
-		align-items: center;
-		gap: 14px;
-		pointer-events: none;
-	}
-
-	.scroll-cue span {
-		color: var(--dim);
-		font-family: var(--font-mono);
-		font-size: 10.5px;
-		letter-spacing: 0.28em;
-		text-transform: uppercase;
-	}
-
-	.scroll-cue i {
-		position: relative;
-		display: block;
-		width: clamp(48px, 7vw, 96px);
-		height: 1px;
-		overflow: hidden;
-		background: linear-gradient(90deg, rgba(236, 234, 228, 0.32), rgba(236, 234, 228, 0.04));
-	}
-
-	.scroll-cue i::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		width: 34%;
-		background: linear-gradient(90deg, transparent, rgba(198, 161, 91, 0.9), transparent);
-		animation: cue-travel 2.8s ease-in-out infinite;
-	}
-
-	/* ── Hero backdrop chart ─────────────────────────────────────────────── */
-
-	.hero-chart {
-		position: absolute;
-		inset: -4% -1% 0 -6%;
 		z-index: 1;
-		overflow: hidden;
-		pointer-events: none;
-		opacity: 0.55;
-		mask-image: linear-gradient(
-			100deg,
-			transparent 0%,
-			rgba(0, 0, 0, 0.35) 26%,
-			#000 58%,
-			#000 100%
-		);
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 clamp(20px, 4vw, 48px) calc(var(--hud-h) + 40px);
 	}
 
-	.hero-chart-canvas {
-		position: absolute;
-		inset: 0;
-		mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 88%, transparent 100%);
+	section {
+		padding: clamp(72px, 11vh, 130px) 0;
+		border-bottom: 1px solid var(--hair-faint);
 	}
 
-	.hero-chart-badge {
-		position: absolute;
-		top: clamp(10px, 3%, 28px);
-		right: clamp(14px, 3vw, 34px);
-		display: inline-flex;
-		align-items: baseline;
-		gap: 11px;
-		padding: 7px 13px;
-		border: 1px solid var(--line);
-		border-radius: 999px;
-		background: rgba(10, 11, 14, 0.5);
-		backdrop-filter: blur(8px);
-		font-family: var(--font-mono);
-		font-size: 11px;
-		letter-spacing: 0.08em;
-		color: var(--dim);
-		box-shadow: 0 8px 30px -18px rgba(0, 0, 0, 0.9);
+	section:last-of-type {
+		border-bottom: 0;
 	}
 
-	.badge-symbol {
-		color: var(--muted);
-		font-weight: 600;
-		letter-spacing: 0.12em;
-	}
-
-	.badge-live {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 10px;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-	}
-
-	.badge-live i {
-		width: 5px;
-		height: 5px;
-		border-radius: 999px;
-		background: var(--accent);
-		box-shadow: 0 0 8px rgba(198, 161, 91, 0.6);
-		animation: live-dot 2.4s ease-in-out infinite;
-	}
-
-	.hero-chart-badge strong {
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
-		letter-spacing: 0.02em;
-	}
-
-	.hero-copy {
-		position: relative;
-		z-index: 3;
-		width: 100%;
-	}
-
-	.eyebrow,
-	.section-kicker {
-		display: block;
-		margin: 0 0 18px;
-		color: var(--accent);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.22em;
-		text-transform: uppercase;
-	}
-
-	.section-kicker {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		margin-bottom: 26px;
-	}
-
-	.section-index {
-		color: var(--gold);
-		font-family: var(--font-mono);
-		font-size: 12px;
-		letter-spacing: 0.16em;
-	}
-
-	.section-kicker::after {
-		content: '';
-		flex: 1;
-		height: 1px;
-		background: linear-gradient(90deg, var(--line-strong), transparent);
-	}
-
-	.serif-accent {
-		font-family: var(--font-serif);
-		font-style: italic;
-		font-weight: 400;
-		font-size: 1.06em;
-		letter-spacing: -0.01em;
-		padding-right: 0.04em;
-		color: var(--gold);
-	}
-
-	h1 {
-		margin: 0;
-		font-size: clamp(2.2rem, 3.9vw, 3.6rem);
-		font-weight: 640;
-		letter-spacing: -0.018em;
-		line-height: 1.08;
-		text-wrap: balance;
-	}
-
-	.hero-title .line {
-		display: block;
-		overflow: hidden;
-		padding-bottom: 0.09em;
-		margin-bottom: -0.09em;
-	}
-
-	.hero-title .line-inner {
-		display: block;
-	}
-
-	h2 {
-		margin: 0;
-		font-size: clamp(1.55rem, 2.8vw, 2.5rem);
-		font-weight: 620;
-		letter-spacing: -0.014em;
-		line-height: 1.12;
-		text-wrap: balance;
-	}
-
-	h3 {
-		letter-spacing: -0.01em;
-	}
-
-	.lede {
-		max-width: 620px;
-		margin: 22px 0 0;
-		color: var(--muted);
-		font-size: clamp(1rem, 1.3vw, 1.13rem);
-		line-height: 1.75;
-	}
-
-	.hero-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-		margin-top: 30px;
-	}
-
-	.hero-note {
-		margin: 14px 0 0;
-		color: var(--dim);
-		font-size: 12.5px;
-		letter-spacing: 0.01em;
-	}
-
-	.primary-link,
-	.ghost-link,
-	.email-row button {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 48px;
-		border-radius: 4px;
-		padding: 0 24px;
-		font-size: 14.5px;
-		font-weight: 600;
-		letter-spacing: 0.01em;
-		text-decoration: none;
+	.reveal {
+		opacity: 0;
+		transform: translateY(14px);
 		transition:
-			transform 200ms ease,
-			box-shadow 200ms ease,
-			color 160ms ease;
+			opacity 0.8s ease,
+			transform 0.8s ease;
 	}
 
-	.primary-link,
-	.email-row button {
-		overflow: hidden;
-		border: 0;
-		background: var(--ivory);
-		color: #0a0b0e;
-		box-shadow: var(--shadow-sm);
+	.reveal.visible {
+		opacity: 1;
+		transform: none;
 	}
 
-	.primary-link:hover,
-	.email-row button:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-md);
+	.scene-head {
+		max-width: 780px;
+		margin-bottom: clamp(32px, 5vh, 56px);
 	}
 
-	.primary-link::after,
-	.email-row button::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		background: linear-gradient(
-			100deg,
-			transparent 30%,
-			rgba(255, 255, 255, 0.55) 50%,
-			transparent 70%
-		);
-		transform: translateX(-120%);
-	}
-
-	.primary-link:hover::after,
-	.email-row button:hover:not(:disabled)::after {
-		animation: sheen 600ms ease-out 1;
-	}
-
-	.ghost-link {
-		background: transparent;
-		color: var(--text);
-	}
-
-	.ghost-link::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		padding: 1px;
-		border-radius: inherit;
-		pointer-events: none;
-		background: linear-gradient(120deg, var(--line-strong), var(--gold-25) 60%, transparent);
-		mask:
-			linear-gradient(#000 0 0) content-box,
-			linear-gradient(#000 0 0);
-		mask-composite: exclude;
-	}
-
-	.ghost-link:hover {
-		color: var(--gold);
-	}
-
-	/* ── Countdown ────────────────────────────────────────────────────────── */
-
-	.drop-timer {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 8px 16px;
-		margin: 28px 0 0;
-		border-top: 1px solid var(--line);
-		padding-top: 18px;
-	}
-
-	.timer-label {
-		color: var(--accent);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.22em;
+	.scene-slate {
+		display: inline-flex;
+		align-items: center;
+		gap: 12px;
+		margin: 0 0 18px;
+		padding: 6px 12px 6px 8px;
+		border: 1px solid var(--line);
+		border-left: 3px solid var(--accent);
+		background: var(--panel);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
 	}
 
-	.timer-clock {
-		color: var(--text);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 20px;
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
+	.slate-no {
+		color: var(--accent);
+		font-weight: 700;
 	}
 
-	.timer-meta {
+	.slate-title {
 		color: var(--dim);
-		font-size: 12.5px;
+	}
+
+	.scene-head h2 {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: clamp(30px, 4.6vw, 52px);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.04;
+		color: var(--text);
+	}
+
+	.scene-lede {
+		margin: 18px 0 0;
+		max-width: 620px;
+		font-size: 15px;
+		line-height: 1.7;
+		color: var(--muted);
 	}
 
 	/* ── Panels ───────────────────────────────────────────────────────────── */
 
 	.panel {
 		position: relative;
-		border-radius: 8px;
-		background: var(--panel-1);
-		backdrop-filter: blur(14px) saturate(1.05);
+		border: 1px solid var(--line);
+		background: linear-gradient(180deg, var(--panel-2), var(--panel));
 		box-shadow: var(--shadow-md);
 	}
 
 	.panel::before {
 		content: '';
 		position: absolute;
-		inset: 0;
-		z-index: 1;
-		padding: 1px;
-		border-radius: inherit;
+		inset: 0 auto auto 0;
+		width: 100%;
+		height: 1px;
 		background: var(--edge-hairline);
-		mask:
-			linear-gradient(#000 0 0) content-box,
-			linear-gradient(#000 0 0);
-		mask-composite: exclude;
 		pointer-events: none;
 	}
 
 	.panel-feature {
-		background: var(--panel-2);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.06),
-			var(--shadow-lg);
-	}
-
-	.panel-solid {
-		background: var(--panel-solid);
-		backdrop-filter: blur(12px);
-	}
-
-	.academy-selector button {
-		border: 1px solid var(--line);
-		border-radius: 6px;
-		background: var(--panel);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.card-topline,
-	.table-head {
+	.card-footline {
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
-		gap: 14px;
-		color: var(--dim);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.14em;
+		align-items: center;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
+		color: var(--dim);
 	}
 
 	.status-flag {
 		color: var(--accent);
 	}
 
-	.status-card {
+	/* ── Hero: the title card ─────────────────────────────────────────────── */
+
+	.hero {
 		position: relative;
-		z-index: 3;
-		align-self: start;
-		padding: 24px;
-		border-radius: 10px;
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 42%),
-			rgba(10, 11, 14, 0.62);
-		backdrop-filter: blur(18px) saturate(118%);
-		box-shadow:
-			inset 0 1px 0 rgba(236, 234, 228, 0.07),
-			0 2px 26px rgba(0, 0, 0, 0.35),
-			0 44px 90px -46px rgba(0, 0, 0, 0.85);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-height: calc(100dvh - var(--chrome-h) - var(--hud-h));
+		padding-top: clamp(48px, 8vh, 90px);
+		padding-bottom: clamp(60px, 9vh, 110px);
+		border-bottom: 1px solid var(--hair-faint);
+	}
+
+	.hero-watermark {
+		position: absolute;
+		top: 4%;
+		left: -2%;
+		z-index: 0;
+		font-family: var(--font-display);
+		font-size: clamp(150px, 26vw, 380px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1;
+		color: transparent;
+		-webkit-text-stroke: 1px rgba(236, 234, 228, 0.05);
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.hero-chart {
+		position: absolute;
+		inset: 0 calc(clamp(20px, 4vw, 48px) * -1);
+		z-index: 0;
+		opacity: 0.85;
+		mask-image: linear-gradient(to bottom, transparent 2%, #000 22%, #000 78%, transparent 98%);
+	}
+
+	.hero-chart-canvas {
+		position: absolute;
+		inset: 0;
+	}
+
+	.hero-flare {
+		position: absolute;
+		top: 30%;
+		left: -10%;
+		right: -10%;
+		height: 2px;
+		z-index: 0;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgba(198, 161, 91, 0.35) 30%,
+			rgba(236, 234, 228, 0.5) 50%,
+			rgba(198, 161, 91, 0.35) 70%,
+			transparent
+		);
+		filter: blur(1px);
+		opacity: 0.5;
+		pointer-events: none;
+		animation: flare-drift 14s ease-in-out infinite alternate;
+	}
+
+	@keyframes flare-drift {
+		from {
+			transform: translateY(-14px);
+			opacity: 0.32;
+		}
+		to {
+			transform: translateY(26px);
+			opacity: 0.6;
+		}
+	}
+
+	.hero-copy {
+		position: relative;
+		z-index: 2;
+	}
+
+	.eyebrow {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 22px;
+		margin: 0 0 26px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.24em;
+		text-transform: uppercase;
+	}
+
+	.eyebrow-presents {
+		color: var(--dim);
+	}
+
+	.eyebrow-day {
+		color: var(--accent);
+	}
+
+	.hero-title {
+		margin: 0 0 clamp(28px, 4.5vh, 48px);
+		font-family: var(--font-display);
+		font-size: clamp(46px, 8.6vw, 108px);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 0.98;
+		text-transform: uppercase;
+		color: var(--text);
+	}
+
+	.hero-title .line {
+		display: block;
+		overflow: hidden;
+		padding-bottom: 0.06em;
+	}
+
+	.hero-title .line-inner {
+		display: inline-block;
+		will-change: transform;
+	}
+
+	.serif-accent {
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-weight: 400;
+		letter-spacing: -0.01em;
+		text-transform: none;
+		color: var(--accent);
+	}
+
+	.hero-lower {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.95fr);
+		gap: clamp(28px, 4vw, 64px);
+		align-items: end;
+	}
+
+	/* The live quote block — the price is the co-star of the title card. */
+	.hero-quote {
+		margin-bottom: clamp(22px, 3.5vh, 34px);
+		max-width: 420px;
+	}
+
+	.quote-head {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 6px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.quote-symbol {
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.quote-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		color: var(--dim);
+	}
+
+	.quote-live i {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--up);
+		box-shadow: 0 0 0 0 rgba(46, 156, 119, 0.5);
+		animation: live-pulse 2.2s ease-out infinite;
+	}
+
+	@keyframes live-pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(46, 156, 119, 0.5);
+		}
+		70% {
+			box-shadow: 0 0 0 8px rgba(46, 156, 119, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(46, 156, 119, 0);
+		}
+	}
+
+	.quote-figure {
+		font-family: var(--font-mono);
+		font-size: clamp(44px, 6vw, 72px);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.02em;
+		line-height: 1;
+		color: var(--text);
+		transition:
+			color 0.4s ease,
+			text-shadow 0.4s ease;
+	}
+
+	.quote-figure.flash-up {
+		color: var(--up);
+		text-shadow: 0 0 34px rgba(46, 156, 119, 0.45);
+	}
+
+	.quote-figure.flash-down {
+		color: var(--down);
+		text-shadow: 0 0 34px rgba(194, 85, 85, 0.45);
+	}
+
+	.quote-meta {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		margin-top: 8px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.quote-meta .up {
+		color: var(--up);
+	}
+
+	.quote-meta .down {
+		color: var(--down);
+	}
+
+	.quote-session {
+		font-size: 10px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--faint);
+	}
+
+	.range-meter {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 14px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dim);
+	}
+
+	.range-track {
+		position: relative;
+		flex: 1;
+		height: 2px;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.range-track i {
+		position: absolute;
+		top: 50%;
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--accent);
+		transform: translate(-50%, -50%);
+		box-shadow: 0 0 12px rgba(198, 161, 91, 0.55);
+		transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.lede {
+		max-width: 520px;
+		margin: 0 0 26px;
+		font-size: clamp(15px, 1.35vw, 17px);
+		line-height: 1.7;
+		color: var(--muted);
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+		margin-bottom: 16px;
+	}
+
+	.primary-link {
+		display: inline-flex;
+		align-items: center;
+		padding: 14px 30px;
+		background: var(--accent);
+		color: #06070a;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		text-decoration: none;
+		transition:
+			transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+			box-shadow 0.25s ease;
+	}
+
+	.primary-link:hover,
+	.primary-link:focus-visible {
+		transform: translateY(-2px);
+		box-shadow: 0 14px 34px -14px rgba(198, 161, 91, 0.6);
+	}
+
+	.ghost-link {
+		display: inline-flex;
+		align-items: center;
+		padding: 14px 26px;
+		border: 1px solid var(--line-strong);
+		color: var(--text);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		text-decoration: none;
+		transition:
+			border-color 0.25s ease,
+			background 0.25s ease;
+	}
+
+	.ghost-link:hover,
+	.ghost-link:focus-visible {
+		border-color: var(--gold-30);
+		background: var(--gold-06);
+	}
+
+	.hero-note {
+		margin: 0 0 22px;
+		font-size: 12px;
+		letter-spacing: 0.02em;
+		color: var(--dim);
+	}
+
+	.drop-timer {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 14px;
+		margin: 0;
+		padding: 10px 16px;
+		border: 1px solid var(--line);
+		background: var(--panel);
+		font-family: var(--font-mono);
+	}
+
+	.timer-label {
+		font-size: 10px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--dim);
+	}
+
+	.timer-clock {
+		font-size: 18px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--accent);
+	}
+
+	.timer-meta {
+		font-size: 10px;
+		letter-spacing: 0.08em;
+		color: var(--faint);
+	}
+
+	/* Status card */
+	.status-card {
+		padding: 22px 24px;
+		background: var(--panel-solid);
+		backdrop-filter: blur(18px);
 	}
 
 	.progress-block {
-		margin: 26px 0 22px;
+		margin: 20px 0;
 	}
 
 	.progress-head {
 		display: flex;
-		align-items: baseline;
 		justify-content: space-between;
-		gap: 12px;
+		align-items: baseline;
 		margin-bottom: 10px;
-	}
-
-	.progress-head span {
+		font-size: 12px;
 		color: var(--muted);
-		font-size: 13px;
 	}
 
 	.progress-head strong {
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+		font-family: var(--font-mono);
 		font-size: 26px;
-		font-weight: 600;
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
+		color: var(--text);
 	}
 
 	.progress-track {
 		height: 3px;
-		overflow: hidden;
-		border-radius: 999px;
 		background: rgba(255, 255, 255, 0.08);
+		overflow: hidden;
 	}
 
 	.progress-track span {
 		display: block;
 		height: 100%;
-		border-radius: inherit;
-		background: var(--accent);
-		transition: width 400ms ease;
+		background: linear-gradient(90deg, rgba(198, 161, 91, 0.5), var(--accent));
+		transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.stage-list {
-		display: grid;
-		gap: 0;
-		margin: 0;
+		margin: 0 0 18px;
 		padding: 0;
 		list-style: none;
 	}
 
 	.stage-list li {
 		display: grid;
-		grid-template-columns: 34px 1fr auto;
-		gap: 12px;
+		grid-template-columns: 30px 1fr auto;
+		gap: 10px;
 		align-items: baseline;
-		padding: 11px 2px;
-	}
-
-	.stage-list li + li {
-		border-top: 1px solid var(--line);
+		padding: 9px 0;
+		border-top: 1px solid var(--hair-faint);
+		font-size: 13px;
 	}
 
 	.stage-index {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		color: var(--faint);
 	}
 
 	.stage-name {
 		color: var(--muted);
-		font-size: 14px;
 	}
 
 	.stage-state {
-		color: var(--dim);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.1em;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-	}
-
-	.stage-list li.complete .stage-name {
-		color: var(--text);
+		color: var(--faint);
 	}
 
 	.stage-list li.complete .stage-state {
 		color: var(--up);
+	}
+
+	.stage-list li.current .stage-name {
+		color: var(--text);
 	}
 
 	.stage-list li.current .stage-state {
@@ -2609,1200 +3137,1482 @@
 	}
 
 	.card-footline {
+		padding-top: 14px;
+		border-top: 1px solid var(--hair-faint);
+	}
+
+	.scroll-cue {
+		position: absolute;
+		bottom: clamp(18px, 3.5vh, 34px);
+		left: 0;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
 		gap: 12px;
-		margin-top: 16px;
-		border-top: 1px solid var(--line);
-		padding-top: 14px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
 		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 11.5px;
-		font-variant-numeric: tabular-nums;
 	}
 
-	/* ── Reveal (CSS fallback when the motion layer is absent) ────────────── */
-
-	.reveal {
-		transition:
-			opacity 600ms cubic-bezier(0.25, 0.1, 0.25, 1),
-			transform 600ms cubic-bezier(0.25, 0.1, 0.25, 1);
+	.scroll-cue i {
+		display: block;
+		width: 64px;
+		height: 1px;
+		background: linear-gradient(90deg, var(--accent), transparent);
 	}
 
-	.mounted .reveal {
-		opacity: 0;
-		transform: translateY(16px);
-	}
-
-	.reveal.visible {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	.gsap-on .reveal {
-		opacity: 1;
-		transform: none;
-		transition: none;
-	}
-
-	/* GSAP entrance initial states — applied only when the motion layer runs.
-	   Every rule here is settled by the master timeline; the load failsafe
-	   (masterTimeline.progress(1)) resolves all of them. */
-	.gsap-on .hero-chart {
-		opacity: 0;
-		transform: scale(1.03);
-		clip-path: inset(0% 0% 12% 0%);
-		will-change: transform, clip-path, opacity;
-	}
-
-	.gsap-on .hero-watermark {
-		opacity: 0;
-		transform: translateX(-2%);
-		will-change: transform, opacity;
-	}
-
-	.gsap-on #hero [data-entrance] {
-		opacity: 0;
-		transform: translateY(16px);
-		filter: blur(8px);
-		will-change: transform, opacity, filter;
-	}
-
-	.gsap-on #hero .hero-title .line-inner[data-entrance] {
-		opacity: 1;
-		filter: none;
-		transform: translateY(105%) rotate(0.4deg);
-		will-change: transform;
-	}
-
-	.gsap-on #hero .status-card[data-entrance] {
-		transform: translateY(24px);
-	}
-
-	.gsap-on #hero .scroll-cue[data-entrance] {
-		transform: none;
-		filter: none;
-	}
-
-	.gsap-on #hero .scroll-cue i {
-		transform: scaleX(0);
-		transform-origin: left center;
-	}
-
-	/* ── Sections ─────────────────────────────────────────────────────────── */
-
-	.note-section,
-	.ops-section,
-	.charts-section,
-	.signals-section,
-	.academy-section,
-	.infra-section,
-	.buildlog-section,
-	.access-section {
-		padding: clamp(48px, 8vw, 96px) 0;
-	}
-
-	.section-heading {
-		max-width: 720px;
-		margin-bottom: 30px;
-	}
-
-	/* ── Desk note ────────────────────────────────────────────────────────── */
-
-	.note-section {
-		padding-top: clamp(8px, 2vw, 24px);
-	}
+	/* ── Scene 01: desk note ──────────────────────────────────────────────── */
 
 	.note-card {
-		display: flex;
-		flex-direction: column;
-		max-width: 900px;
-		margin: 0;
-		padding: clamp(28px, 4.5vw, 48px);
+		padding: clamp(34px, 5vw, 60px);
 	}
 
 	.note-card blockquote {
-		position: relative;
-		max-width: 760px;
-		margin: 22px 0 0;
-		padding-left: 32px;
-		border-left: 2px solid var(--gold);
+		margin: 0 0 22px;
 		font-family: var(--font-serif);
-		font-size: clamp(1.5rem, 3vw, 2.4rem);
 		font-style: italic;
-		font-weight: 400;
-		line-height: 1.36;
-		letter-spacing: 0.002em;
+		font-size: clamp(24px, 3.2vw, 38px);
+		line-height: 1.35;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		text-wrap: balance;
 	}
 
 	.note-card blockquote::before {
-		content: '\201C';
-		position: absolute;
-		top: -0.12em;
-		left: 10px;
-		font-size: 2.4em;
+		content: '“';
+		display: block;
+		margin-bottom: -0.35em;
+		font-size: 2.2em;
 		line-height: 1;
-		color: var(--gold-25);
-		pointer-events: none;
+		color: var(--gold-30);
 	}
 
 	.note-foot {
-		margin: 22px 0 0;
+		margin: 0 0 18px;
+		font-size: 12px;
 		color: var(--dim);
-		font-size: 13px;
 	}
 
 	.note-meta {
-		order: -1;
 		display: flex;
-		align-items: baseline;
 		justify-content: space-between;
-		gap: 12px;
-		color: var(--dim);
-		font-size: 11px;
-		font-weight: 600;
+		align-items: baseline;
+		padding-top: 16px;
+		border-top: 1px solid var(--hair-faint);
+		font-family: var(--font-mono);
+		font-size: 10px;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
+		color: var(--dim);
 	}
 
 	.note-meta strong {
+		font-size: 13px;
 		color: var(--accent);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
-		font-weight: 600;
 	}
 
-	/* ── Scope of work ────────────────────────────────────────────────────── */
+	/* ── Scene 02: the desk, live ─────────────────────────────────────────── */
 
-	.ops-section {
-		padding-top: clamp(24px, 4vw, 56px);
-	}
-
-	.ops-stage {
-		display: grid;
-		grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.68fr);
-		gap: 14px;
-		align-items: start;
-	}
-
-	.ops-grid {
+	.desk-grid {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 14px;
+		gap: 18px;
 	}
 
-	.ops-card {
-		display: grid;
-		align-content: start;
-		gap: 14px;
-		min-height: 220px;
-		padding: 22px;
-	}
-
-	.ops-index {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
-	}
-
-	.ops-card h3 {
-		margin: 0;
-		font-size: 1.15rem;
-		font-weight: 620;
-	}
-
-	.ops-card p {
-		margin: 0;
-		color: var(--muted);
-		font-size: 14px;
-		line-height: 1.65;
-	}
-
-	.ops-metric {
-		color: var(--accent);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 11.5px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.systems-panel {
-		padding: 22px;
-	}
-
-	.status-list {
-		display: grid;
-		margin: 14px 0 0;
-	}
-
-	.status-row {
+	.desk-module {
 		display: flex;
-		align-items: baseline;
+		flex-direction: column;
+		padding: 18px 20px;
+		min-height: 320px;
+	}
+
+	.desk-module.wide {
+		grid-column: span 1;
+	}
+
+	.module-head {
+		display: flex;
 		justify-content: space-between;
-		gap: 14px;
-		padding: 11px 2px;
+		align-items: baseline;
+		margin-bottom: 14px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--hair-faint);
 	}
 
-	.status-row + .status-row {
-		border-top: 1px solid var(--line);
+	.module-title {
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--text);
 	}
 
-	.status-row dt {
-		color: var(--muted);
-		font-size: 14px;
-	}
-
-	.status-row dd {
-		margin: 0;
-		color: var(--up);
-		font-size: 11.5px;
-		font-weight: 600;
+	.module-tag {
+		font-family: var(--font-mono);
+		font-size: 10px;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
+		color: var(--dim);
 	}
 
-	/* ── Charts ───────────────────────────────────────────────────────────── */
+	.module-foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-top: auto;
+		padding-top: 12px;
+		border-top: 1px solid var(--hair-faint);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--dim);
+	}
+
+	.module-foot strong {
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+		color: var(--accent);
+	}
+
+	/* Order book */
+	.book-columns {
+		flex: 1;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 14px;
+	}
+
+	.book-side {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.book-legend {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 8px;
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--faint);
+	}
+
+	.book-row {
+		position: relative;
+		flex: 1;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 6px 8px;
+		margin-bottom: 3px;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-variant-numeric: tabular-nums;
+		overflow: hidden;
+	}
+
+	.book-row .depth {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.bids .book-row .depth {
+		right: 0;
+		background: var(--up-soft);
+	}
+
+	.asks .book-row .depth {
+		left: 0;
+		background: var(--down-soft);
+	}
+
+	.book-size {
+		position: relative;
+		color: var(--dim);
+	}
+
+	.book-price {
+		position: relative;
+		font-weight: 700;
+	}
+
+	.bids .book-price {
+		color: var(--up);
+	}
+
+	.asks .book-price {
+		color: var(--down);
+	}
+
+	/* Time & sales */
+	.prints-stream {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		overflow: hidden;
+	}
+
+	.print-row {
+		display: grid;
+		grid-template-columns: auto 1fr auto 18px;
+		gap: 12px;
+		align-items: baseline;
+		padding: 4px 8px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-variant-numeric: tabular-nums;
+		animation: print-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	@keyframes print-in {
+		from {
+			opacity: 0;
+			transform: translateY(-6px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	.print-time {
+		color: var(--faint);
+	}
+
+	.print-price {
+		font-weight: 700;
+	}
+
+	.print-row.buy .print-price,
+	.print-row.buy .print-side {
+		color: var(--up);
+	}
+
+	.print-row.sell .print-price,
+	.print-row.sell .print-side {
+		color: var(--down);
+	}
+
+	.print-size {
+		color: var(--dim);
+		text-align: right;
+	}
+
+	.print-row.block {
+		background: var(--gold-06);
+		outline: 1px solid var(--gold-25);
+	}
+
+	.print-row.block .print-size {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	/* Sector map */
+	.sector-grid {
+		flex: 1;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 6px;
+	}
+
+	.sector-tile {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 6px;
+		padding: 12px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		transition: background 1.2s ease;
+	}
+
+	.sector-code {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		color: var(--text);
+	}
+
+	.sector-name {
+		font-size: 10px;
+		color: var(--muted);
+	}
+
+	.sector-tile strong {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.sector-tile strong.up {
+		color: #7fd7b6;
+	}
+
+	.sector-tile strong.down {
+		color: #e59a9a;
+	}
+
+	/* Scanner feed */
+	.signal-stream {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.signal-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) auto minmax(120px, 0.8fr);
+		gap: 16px;
+		align-items: center;
+		padding: 11px 8px;
+		border-top: 1px solid var(--hair-faint);
+		transition: opacity 0.4s ease;
+	}
+
+	.signal-row:first-of-type {
+		border-top: 0;
+	}
+
+	.signal-row.cooling {
+		opacity: 0.45;
+	}
+
+	.signal-id {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.signal-id strong {
+		font-family: var(--font-mono);
+		font-size: 14px;
+		letter-spacing: 0.06em;
+		color: var(--text);
+	}
+
+	.signal-id span {
+		font-size: 11px;
+		color: var(--dim);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.signal-figures {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 2px;
+		font-family: var(--font-mono);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.signal-figures span {
+		font-size: 13px;
+		color: var(--text);
+	}
+
+	.signal-figures small {
+		font-size: 10px;
+		color: var(--faint);
+	}
+
+	.confidence {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.confidence span {
+		position: relative;
+		flex: 1;
+		height: 2px;
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.confidence span::after {
+		content: '';
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--confidence);
+		background: var(--accent);
+		transition: width 0.6s ease;
+	}
+
+	.confidence small {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-variant-numeric: tabular-nums;
+		color: var(--muted);
+	}
+
+	/* ── Scene 03: market data ────────────────────────────────────────────── */
 
 	.chart-stage {
-		overflow: hidden;
-		padding: 20px;
+		padding: 20px 22px;
+		margin-bottom: 18px;
 	}
 
 	.chart-toolbar {
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
-		gap: 14px;
+		align-items: center;
+		gap: 18px;
+		margin-bottom: 16px;
 	}
 
 	.market-label {
 		display: block;
-		margin-bottom: 6px;
-		color: var(--dim);
-		font-size: 11px;
-		letter-spacing: 0.12em;
+		margin-bottom: 4px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
+		color: var(--dim);
 	}
 
 	.chart-toolbar strong {
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: clamp(1.3rem, 2.4vw, 1.9rem);
-		font-weight: 600;
+		font-family: var(--font-mono);
+		font-size: 24px;
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 	}
 
-	.up {
+	.chart-toolbar strong.up {
 		color: var(--up);
 	}
 
-	.down {
+	.chart-toolbar strong.down {
 		color: var(--down);
 	}
 
 	.timeframe-control {
-		display: flex;
-		gap: 2px;
-		padding: 3px;
+		display: inline-flex;
 		border: 1px solid var(--line);
-		border-radius: 4px;
 	}
 
 	.timeframe-control button {
-		min-width: 42px;
-		height: 30px;
+		padding: 8px 16px;
 		border: 0;
-		border-radius: 3px;
+		border-right: 1px solid var(--line);
 		background: transparent;
-		color: var(--muted);
-		font: inherit;
-		font-size: 12.5px;
+		color: var(--dim);
+		font-family: var(--font-mono);
+		font-size: 11px;
 		cursor: pointer;
+		transition:
+			background 0.2s ease,
+			color 0.2s ease;
 	}
 
-	.timeframe-control button.active {
-		background: rgba(255, 255, 255, 0.07);
+	.timeframe-control button:last-child {
+		border-right: 0;
+	}
+
+	.timeframe-control button:hover {
 		color: var(--text);
 	}
 
+	.timeframe-control button.active {
+		background: var(--accent);
+		color: #06070a;
+		font-weight: 700;
+	}
+
 	.chart-canvas {
-		height: clamp(340px, 48vh, 520px);
-		margin-top: 16px;
+		height: clamp(300px, 44vh, 430px);
 	}
 
 	.chart-metrics {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 10px;
+		display: flex;
+		gap: clamp(24px, 4vw, 60px);
 		margin-top: 16px;
-	}
-
-	.chart-metrics div {
-		border-top: 1px solid var(--line);
-		padding: 12px 2px 0;
+		padding-top: 14px;
+		border-top: 1px solid var(--hair-faint);
 	}
 
 	.chart-metrics span {
 		display: block;
-		color: var(--dim);
-		font-size: 11.5px;
-		letter-spacing: 0.08em;
+		margin-bottom: 3px;
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
+		color: var(--faint);
 	}
 
 	.chart-metrics strong {
-		display: block;
-		margin-top: 4px;
-		color: var(--text);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 1.15rem;
-		font-weight: 600;
+		font-family: var(--font-mono);
+		font-size: 16px;
 		font-variant-numeric: tabular-nums;
+		color: var(--text);
 	}
 
 	.mini-feed-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 14px;
-		margin-top: 14px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 18px;
 	}
 
 	.mini-feed {
-		padding: 18px;
+		padding: 16px 18px;
 	}
 
 	.mini-feed > div:first-child {
 		display: flex;
 		justify-content: space-between;
-		gap: 14px;
+		align-items: baseline;
 		margin-bottom: 10px;
 	}
 
 	.mini-feed span {
-		color: var(--dim);
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0.08em;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		color: var(--muted);
 	}
 
 	.mini-feed strong {
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-weight: 600;
+		font-family: var(--font-mono);
+		font-size: 15px;
 		font-variant-numeric: tabular-nums;
+		color: var(--text);
 	}
 
 	.mini-chart {
-		height: 140px;
+		height: 130px;
 	}
 
-	/* ── Signals ──────────────────────────────────────────────────────────── */
+	/* ── Scene 04: scope of work ──────────────────────────────────────────── */
 
-	.signals-layout {
+	.scope-stage {
 		display: grid;
-		grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-		gap: 14px;
+		grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+		gap: clamp(24px, 3.5vw, 48px);
 		align-items: start;
 	}
 
-	.coverage-panel,
-	.signals-table {
-		padding: 20px;
-	}
-
-	.coverage-list {
-		display: grid;
-		margin: 12px 0 0;
-	}
-
-	.coverage-list > div {
+	.scope-manifest {
 		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 14px;
-		padding: 13px 2px;
+		flex-direction: column;
 	}
 
-	.coverage-list > div + div {
-		border-top: 1px solid var(--line);
-	}
-
-	.coverage-list dt {
-		color: var(--muted);
-		font-size: 14px;
-	}
-
-	.coverage-list dd {
-		margin: 0;
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 15px;
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.signals-table {
+	.scope-row {
 		display: grid;
-		align-content: start;
-		gap: 0;
+		grid-template-columns: 56px minmax(0, 1fr) auto;
+		gap: clamp(14px, 2vw, 28px);
+		align-items: start;
+		padding: 26px 0;
+		border-top: 1px solid var(--hair-faint);
 	}
 
-	.signal-row {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 110px 120px;
-		gap: 12px;
-		align-items: center;
-		padding: 13px 2px;
+	.scope-row:first-child {
+		border-top: 0;
+		padding-top: 0;
 	}
 
-	.signal-row + .signal-row {
-		border-top: 1px solid var(--line);
-	}
-
-	.table-head + .signal-row {
-		margin-top: 8px;
-		border-top: 1px solid var(--line);
-	}
-
-	.signal-row.cooling {
-		opacity: 0.55;
-	}
-
-	.signal-row strong {
-		display: block;
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 14px;
-		font-weight: 600;
-	}
-
-	.signal-row > div > span {
-		color: var(--dim);
-		font-size: 12.5px;
-	}
-
-	.signal-figures {
-		font-variant-numeric: tabular-nums;
-	}
-
-	.signal-figures span {
-		display: block;
-		color: var(--muted);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+	.scope-index {
+		font-family: var(--font-mono);
 		font-size: 13px;
+		font-weight: 700;
+		color: var(--accent);
 	}
 
-	.signal-figures small {
-		color: var(--dim);
-		font-size: 11px;
-	}
-
-	.confidence {
-		display: grid;
-		gap: 6px;
-	}
-
-	.confidence > span {
-		height: 2px;
-		overflow: hidden;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.confidence > span::before {
-		content: '';
-		display: block;
-		width: var(--confidence);
-		height: 100%;
-		background: var(--accent);
-	}
-
-	.confidence small {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 11px;
-		font-variant-numeric: tabular-nums;
-	}
-
-	/* ── Academy ──────────────────────────────────────────────────────────── */
-
-	.academy-block {
-		display: grid;
-		gap: 14px;
-	}
-
-	.academy-selector {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 14px;
-	}
-
-	.academy-selector button {
-		padding: 18px 20px;
+	.scope-body h3 {
+		margin: 0 0 8px;
+		font-family: var(--font-display);
+		font-size: 20px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		text-align: left;
-		cursor: pointer;
-		transition:
-			border-color 160ms ease,
-			background 160ms ease;
 	}
 
-	.academy-selector button:hover {
-		border-color: var(--line-strong);
+	.scope-body p {
+		margin: 0;
+		font-size: 13.5px;
+		line-height: 1.65;
+		color: var(--muted);
 	}
 
-	.academy-selector button.active {
-		border-color: var(--accent);
-		background: rgba(198, 161, 91, 0.05);
-	}
-
-	.academy-selector button > * {
-		display: block;
-	}
-
-	.track-index {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
-	}
-
-	.academy-selector button strong {
-		margin-top: 8px;
-		font-size: 1.05rem;
-		font-weight: 620;
-	}
-
-	.academy-selector button small {
-		margin-top: 5px;
-		color: var(--dim);
-		font-size: 11px;
+	.scope-metric {
+		padding: 5px 10px;
+		border: 1px solid var(--gold-25);
+		font-family: var(--font-mono);
+		font-size: 10px;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
-	}
-
-	.academy-feature {
-		display: grid;
-		grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-		gap: 0;
-	}
-
-	.academy-summary {
-		padding: 26px;
-		border-right: 1px solid var(--line);
-	}
-
-	.academy-summary h3 {
-		margin: 0 0 12px;
-		font-size: clamp(1.3rem, 2.2vw, 1.7rem);
-		font-weight: 620;
-	}
-
-	.academy-summary > p {
-		margin: 0;
-		color: var(--muted);
-		font-size: 14.5px;
-		line-height: 1.7;
-	}
-
-	.asset-lanes {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 12px;
-		margin-top: 24px;
-	}
-
-	.asset-lanes div {
-		display: grid;
-		gap: 7px;
-		align-content: start;
-		border-top: 1px solid var(--line);
-		padding-top: 12px;
-	}
-
-	.asset-lanes strong {
 		color: var(--accent);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
-	.asset-lanes span {
-		color: var(--muted);
-		font-size: 13px;
+	.scope-rail {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
 	}
 
-	.curriculum-panel {
-		display: grid;
-		align-content: start;
-		gap: 14px;
-		padding: 26px;
+	.systems-panel {
+		padding: 20px 22px;
 	}
 
-	.curriculum-list {
-		display: grid;
-		margin: 0;
-		padding: 0;
-		list-style: none;
+	.status-list {
+		margin: 16px 0;
 	}
 
-	.curriculum-list li {
-		display: grid;
-		grid-template-columns: 34px minmax(0, 1fr);
-		gap: 12px;
+	.status-row {
+		display: flex;
+		justify-content: space-between;
 		align-items: baseline;
-		padding: 12px 2px;
+		padding: 9px 0;
+		border-top: 1px solid var(--hair-faint);
 	}
 
-	.curriculum-list li + li {
-		border-top: 1px solid var(--line);
+	.status-row dt {
+		font-size: 12.5px;
+		color: var(--muted);
 	}
 
-	.curriculum-list li > span {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
-	}
-
-	.curriculum-list p {
+	.status-row dd {
 		margin: 0;
-		color: var(--muted);
-		font-size: 14px;
-		line-height: 1.6;
-	}
-
-	.academy-lab {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 14px;
-	}
-
-	.academy-lab div {
-		border-top: 1px solid var(--line);
-		padding-top: 12px;
-	}
-
-	.academy-lab span {
-		color: var(--accent);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.14em;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-	}
-
-	.academy-lab p {
-		margin: 7px 0 0;
-		color: var(--muted);
-		font-size: 13.5px;
-		line-height: 1.6;
-	}
-
-	/* ── Infrastructure ───────────────────────────────────────────────────── */
-
-	.infra-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-		gap: 14px;
-		align-items: start;
+		color: var(--up);
 	}
 
 	.node-list {
-		display: grid;
-		padding: 8px 20px;
+		padding: 18px 22px;
 	}
 
 	.node-row {
 		display: grid;
-		grid-template-columns: 120px 1fr 84px;
+		grid-template-columns: minmax(90px, auto) 1fr auto;
 		gap: 14px;
 		align-items: center;
-		padding: 14px 0;
+		padding: 10px 0;
+		border-top: 1px solid var(--hair-faint);
 	}
 
-	.node-row + .node-row {
-		border-top: 1px solid var(--line);
+	.node-row:first-child {
+		border-top: 0;
+		padding-top: 0;
 	}
 
 	.node-row strong {
 		display: block;
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 13px;
-		font-weight: 600;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		color: var(--text);
 	}
 
-	.node-row span {
-		display: block;
-		color: var(--dim);
-		font-size: 12px;
+	.node-row > div:first-child span {
+		font-size: 10.5px;
+		color: var(--faint);
+	}
+
+	.load-track {
+		position: relative;
+		height: 2px;
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.load-track span {
+		position: absolute;
+		inset: 0 auto 0 0;
+		background: var(--accent);
+		transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.node-row small {
-		color: var(--muted);
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-align: right;
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
+		color: var(--dim);
 	}
 
 	.node-row small.migrating {
 		color: var(--accent);
 	}
 
-	.load-track {
-		height: 2px;
-		overflow: hidden;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.load-track span {
-		display: block;
-		height: 100%;
-		background: rgba(236, 234, 228, 0.55);
-		transition: width 520ms ease;
-	}
-
 	.stat-board {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0;
-		padding: 8px 20px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.stat-board div {
-		padding: 16px 0;
+	.stat-board > div {
+		padding: 18px 20px;
+		border-top: 1px solid var(--hair-faint);
 	}
 
-	.stat-board div:nth-child(n + 3) {
-		border-top: 1px solid var(--line);
+	.stat-board > div:nth-child(-n + 2) {
+		border-top: 0;
 	}
 
-	.stat-board div:nth-child(2n) {
-		border-left: 1px solid var(--line);
-		padding-left: 20px;
+	.stat-board > div:nth-child(odd) {
+		border-right: 1px solid var(--hair-faint);
 	}
 
 	.stat-board strong {
 		display: block;
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: clamp(1.2rem, 2vw, 1.6rem);
-		font-weight: 600;
+		margin-bottom: 4px;
+		font-family: var(--font-mono);
+		font-size: clamp(18px, 2vw, 24px);
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
+		color: var(--text);
 	}
 
 	.stat-board span {
-		display: block;
-		margin-top: 4px;
+		font-size: 10.5px;
+		letter-spacing: 0.06em;
 		color: var(--dim);
-		font-size: 12px;
 	}
 
-	/* ── Build log ────────────────────────────────────────────────────────── */
+	/* ── Scene 05: universities ───────────────────────────────────────────── */
 
-	.buildlog-section {
-		padding-bottom: clamp(28px, 4vw, 52px);
-	}
-
-	.log-panel {
+	.academy-selector {
 		display: grid;
-		padding: 6px 20px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+		margin-bottom: 18px;
+	}
+
+	.academy-selector button {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 18px 22px;
+		border: 1px solid var(--line);
+		background: var(--panel);
+		color: var(--muted);
+		text-align: left;
+		cursor: pointer;
+		transition:
+			border-color 0.25s ease,
+			background 0.25s ease,
+			transform 0.25s ease;
+	}
+
+	.academy-selector button:hover {
+		border-color: var(--line-strong);
+		transform: translateY(-2px);
+	}
+
+	.academy-selector button.active {
+		border-color: var(--gold-30);
+		background: linear-gradient(180deg, var(--gold-06), transparent);
+	}
+
+	.track-index {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.2em;
+		color: var(--accent);
+	}
+
+	.academy-selector strong {
+		font-family: var(--font-display);
+		font-size: 17px;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.academy-selector small {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--dim);
+	}
+
+	.academy-feature {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: clamp(24px, 3vw, 44px);
+		padding: clamp(26px, 3.5vw, 44px);
+	}
+
+	.academy-summary h3 {
+		margin: 0 0 12px;
+		font-family: var(--font-display);
+		font-size: clamp(22px, 2.6vw, 30px);
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		color: var(--text);
+	}
+
+	.academy-summary > p {
+		margin: 0 0 22px;
+		font-size: 14px;
+		line-height: 1.7;
+		color: var(--muted);
+	}
+
+	.asset-lanes {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.asset-lanes > div {
+		display: flex;
+		flex-direction: column;
+		gap: 7px;
+	}
+
+	.asset-lanes strong {
+		margin-bottom: 4px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
+	.asset-lanes span {
+		padding: 6px 10px;
+		border: 1px solid var(--hair-faint);
+		background: var(--panel);
+		font-size: 12px;
+		color: var(--muted);
+	}
+
+	.table-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-bottom: 14px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--hair-faint);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--dim);
+	}
+
+	.curriculum-list {
+		margin: 0 0 20px;
+		padding: 0;
+		list-style: none;
+	}
+
+	.curriculum-list li {
+		display: grid;
+		grid-template-columns: 34px 1fr;
+		gap: 12px;
+		padding: 11px 0;
+		border-top: 1px solid var(--hair-faint);
+	}
+
+	.curriculum-list li:first-child {
+		border-top: 0;
+		padding-top: 0;
+	}
+
+	.curriculum-list span {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--accent);
+	}
+
+	.curriculum-list p {
+		margin: 0;
+		font-size: 13.5px;
+		line-height: 1.6;
+		color: var(--muted);
+	}
+
+	.academy-lab {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 18px;
+		padding-top: 18px;
+		border-top: 1px solid var(--hair-faint);
+	}
+
+	.academy-lab span {
+		display: block;
+		margin-bottom: 6px;
+		font-family: var(--font-mono);
+		font-size: 9px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
+	.academy-lab p {
+		margin: 0;
+		font-size: 12.5px;
+		line-height: 1.6;
+		color: var(--muted);
+	}
+
+	/* ── Scene 06: build log ──────────────────────────────────────────────── */
+
+	.log-terminal {
+		overflow: hidden;
+	}
+
+	.terminal-bar {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		padding: 12px 18px;
+		border-bottom: 1px solid var(--line);
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.terminal-bar i {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.terminal-bar i:first-child {
+		background: rgba(194, 85, 85, 0.55);
+	}
+
+	.terminal-bar i:nth-child(2) {
+		background: rgba(198, 161, 91, 0.55);
+	}
+
+	.terminal-bar i:nth-child(3) {
+		background: rgba(46, 156, 119, 0.55);
+	}
+
+	.terminal-bar span {
+		margin-left: 10px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.1em;
+		color: var(--dim);
+	}
+
+	.log-body {
+		padding: 20px 24px;
 	}
 
 	.log-row {
 		display: grid;
-		grid-template-columns: 68px 92px minmax(0, 1fr);
+		grid-template-columns: 64px 88px 1fr;
 		gap: 16px;
 		align-items: baseline;
-		padding: 15px 0;
+		padding: 12px 0;
+		border-top: 1px solid var(--hair-faint);
 	}
 
-	.log-row + .log-row {
-		border-top: 1px solid var(--line);
+	.log-row:first-child {
+		border-top: 0;
+		padding-top: 0;
 	}
 
 	.log-date {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 12px;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--faint);
 	}
 
 	.log-tag {
-		width: max-content;
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.12em;
+		justify-self: start;
+		padding: 3px 9px;
+		font-family: var(--font-mono);
+		font-size: 9px;
+		font-weight: 700;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 	}
 
 	.log-tag.shipped {
 		color: var(--up);
-	}
-
-	.log-tag.tuned {
-		color: var(--accent);
+		border: 1px solid rgba(46, 156, 119, 0.35);
 	}
 
 	.log-tag.hardened {
-		color: var(--muted);
+		color: var(--accent);
+		border: 1px solid var(--gold-25);
+	}
+
+	.log-tag.tuned {
+		color: rgba(143, 166, 184, 0.95);
+		border: 1px solid rgba(143, 166, 184, 0.3);
 	}
 
 	.log-row p {
 		margin: 0;
+		font-size: 13.5px;
+		line-height: 1.6;
 		color: var(--muted);
-		font-size: 14px;
-		line-height: 1.65;
+	}
+
+	.log-cursor {
+		margin: 14px 0 0;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		color: var(--accent);
+		animation: cursor-blink 1.1s steps(1) infinite;
+	}
+
+	@keyframes cursor-blink {
+		50% {
+			opacity: 0;
+		}
 	}
 
 	.log-note {
 		margin: 14px 0 0;
-		color: var(--dim);
-		font-size: 12.5px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--faint);
 	}
 
-	/* ── Access ───────────────────────────────────────────────────────────── */
-
-	.access-section {
-		padding-top: clamp(28px, 4vw, 52px);
-		padding-bottom: 7vh;
-	}
+	/* ── Final scene: access ──────────────────────────────────────────────── */
 
 	.access-panel,
 	.success-panel {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
-		gap: 28px;
-		align-items: end;
-		padding: clamp(24px, 4vw, 40px);
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+		gap: clamp(28px, 4vw, 56px);
+		align-items: center;
+		padding: clamp(32px, 5vw, 64px);
 	}
 
 	.access-panel h2,
 	.success-panel h2 {
-		max-width: 640px;
+		margin: 0 0 14px;
+		font-family: var(--font-display);
+		font-size: clamp(26px, 3.4vw, 40px);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.08;
+		color: var(--text);
 	}
 
 	.access-panel p,
 	.success-panel p {
-		max-width: 560px;
-		margin: 14px 0 0;
-		color: var(--muted);
-		font-size: 14.5px;
+		margin: 0 0 12px;
+		font-size: 14px;
 		line-height: 1.7;
+		color: var(--muted);
 	}
 
 	.perk-line {
-		color: var(--dim) !important;
-		font-size: 13px !important;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.04em;
+		color: var(--accent);
+	}
+
+	.email-block {
+		width: 100%;
 	}
 
 	.email-row {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 10px;
-		align-items: center;
+		display: flex;
+		border: 1px solid var(--line-strong);
+		background: rgba(0, 0, 0, 0.3);
+		transition:
+			border-color 0.25s ease,
+			box-shadow 0.25s ease;
+	}
+
+	.email-row:focus-within {
+		border-color: var(--gold-30);
+		box-shadow: 0 0 0 3px rgba(198, 161, 91, 0.12);
+	}
+
+	.email-row.has-error {
+		border-color: rgba(194, 85, 85, 0.6);
 	}
 
 	.email-row input {
-		width: 100%;
-		min-height: 54px;
-		border: 1px solid var(--line-strong);
-		border-radius: 4px;
-		padding: 0 16px;
-		background: rgba(0, 0, 0, 0.28);
+		flex: 1;
+		min-width: 0;
+		padding: 16px 18px;
+		border: 0;
+		background: transparent;
 		color: var(--text);
-		font: inherit;
-		font-size: 14.5px;
-		outline: none;
-		transition:
-			border-color 160ms ease,
-			box-shadow 160ms ease,
-			background 160ms ease;
+		font-size: 14px;
+		font-family: inherit;
 	}
 
 	.email-row input::placeholder {
 		color: var(--faint);
 	}
 
-	.email-row input:hover {
-		border-color: rgba(255, 255, 255, 0.2);
-	}
-
 	.email-row input:focus {
-		border-color: var(--gold);
-		background: rgba(0, 0, 0, 0.4);
-		box-shadow: 0 0 0 3px var(--gold-30);
-	}
-
-	.email-row.has-error input {
-		border-color: var(--down);
-	}
-
-	.email-row.has-error input:focus {
-		box-shadow: 0 0 0 3px rgba(194, 85, 85, 0.28);
+		outline: none;
 	}
 
 	.email-row button {
-		min-height: 54px;
+		flex: none;
+		padding: 0 26px;
+		border: 0;
+		background: var(--accent);
+		color: #06070a;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
 		cursor: pointer;
+		transition: opacity 0.25s ease;
 	}
 
-	.email-row button:disabled,
-	.email-row input:disabled {
+	.email-row button:disabled {
+		opacity: 0.45;
 		cursor: not-allowed;
-		opacity: 0.55;
 	}
 
 	.form-error {
-		margin: 8px 0 0;
-		color: var(--down) !important;
-		font-size: 13.5px;
-	}
-
-	.success-panel {
-		grid-template-columns: 72px minmax(0, 1fr);
-		align-items: center;
+		margin: 10px 0 0;
+		font-size: 12.5px;
+		color: #e59a9a;
 	}
 
 	.success-mark svg {
-		width: 56px;
-		height: 56px;
+		width: 72px;
+		height: 72px;
+		fill: none;
+		stroke: var(--up);
+		stroke-width: 2.4;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
-	.success-mark circle,
-	.success-mark path {
-		fill: none;
-		stroke: var(--accent);
-		stroke-width: 2.5;
+	.success-mark circle {
+		opacity: 0.35;
 	}
 
 	/* ── Footer ───────────────────────────────────────────────────────────── */
 
 	.floor-footer {
 		display: grid;
-		gap: 10px;
-		border-top: 1px solid var(--line);
-		padding: 28px 0 36px;
-	}
-
-	.footer-brand {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 12px;
+		gap: 16px;
+		padding: clamp(40px, 6vh, 64px) 0 26px;
+		border-top: 1px solid var(--hair-faint);
 	}
 
 	.footer-brand strong {
-		font-size: 14px;
-		font-weight: 620;
+		display: block;
+		margin-bottom: 4px;
+		font-family: var(--font-display);
+		font-size: 15px;
+		font-weight: 700;
 		letter-spacing: 0.01em;
+		color: var(--text);
 	}
 
 	.footer-brand span {
+		font-size: 12px;
 		color: var(--dim);
-		font-size: 13px;
 	}
 
 	.footer-risk {
-		max-width: 680px;
 		margin: 0;
-		color: var(--dim);
-		font-size: 12px;
+		max-width: 640px;
+		font-size: 11.5px;
 		line-height: 1.6;
+		color: var(--faint);
 	}
 
 	.footer-legal {
-		color: var(--dim);
-		font-family: 'SF Mono', ui-monospace, Menlo, monospace;
-		font-size: 11px;
-		letter-spacing: 0.04em;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.1em;
+		color: var(--faint);
 	}
+
+	/* ── Bottom HUD ───────────────────────────────────────────────────────── */
+
+	.hud {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 45;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 18px;
+		height: var(--hud-h);
+		padding: 0 clamp(16px, 3vw, 32px);
+		border-top: 1px solid var(--line);
+		background: rgba(6, 7, 10, 0.92);
+		backdrop-filter: blur(14px);
+		font-family: var(--font-mono);
+		font-size: 11px;
+	}
+
+	.hud-progress {
+		position: absolute;
+		top: -1px;
+		left: 0;
+		height: 1px;
+		background: var(--accent);
+		transition: width 0.15s linear;
+	}
+
+	.hud-cluster {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		min-width: 0;
+	}
+
+	.hud-clock {
+		font-variant-numeric: tabular-nums;
+		color: var(--text);
+		white-space: nowrap;
+	}
+
+	.hud-session {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		font-size: 10px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--dim);
+		white-space: nowrap;
+	}
+
+	.hud-session i {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--faint);
+	}
+
+	.hud-session.open i {
+		background: var(--up);
+	}
+
+	.hud-session.pre i,
+	.hud-session.after i {
+		background: var(--accent);
+	}
+
+	.hud-session.closed i {
+		background: var(--down);
+	}
+
+	.hud-center {
+		flex: 1;
+		justify-content: center;
+	}
+
+	.hud-day {
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--dim);
+		white-space: nowrap;
+	}
+
+	.hud-bar {
+		position: relative;
+		width: clamp(70px, 12vw, 160px);
+		height: 2px;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.hud-bar i {
+		position: absolute;
+		inset: 0 auto 0 0;
+		background: var(--accent);
+	}
+
+	.hud-pct {
+		font-variant-numeric: tabular-nums;
+		color: var(--accent);
+	}
+
+	.hud-latency {
+		color: var(--dim);
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	.hud-mark {
+		padding: 3px 8px;
+		border: 1px solid var(--line-strong);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: var(--text);
+	}
+
+	/* ── Entrance gating (motion layer only) ──────────────────────────────── */
+
+	.gsap-on [data-entrance] {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.gsap-on .hero-chart,
+	.gsap-on .hero-flare,
+	.gsap-on .hero-watermark {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.gsap-on .hero-title .line-inner {
+		transform: translateY(108%);
+	}
+
+	.gsap-on .scroll-cue {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	/* ── Utilities ────────────────────────────────────────────────────────── */
 
 	.sr-only {
 		position: absolute;
 		width: 1px;
 		height: 1px;
+		padding: 0;
+		margin: -1px;
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		white-space: nowrap;
-	}
-
-	@keyframes tape {
-		to {
-			transform: translateX(-33.33%);
-		}
-	}
-
-	@keyframes sheen {
-		to {
-			transform: translateX(120%);
-		}
-	}
-
-	@keyframes cue-travel {
-		0% {
-			transform: translateX(-120%);
-		}
-		60%,
-		100% {
-			transform: translateX(320%);
-		}
-	}
-
-	@keyframes live-dot {
-		50% {
-			opacity: 0.35;
-		}
+		border: 0;
 	}
 
 	/* ── Responsive ───────────────────────────────────────────────────────── */
 
-	@media (max-width: 960px) {
-		.ops-stage,
-		.signals-layout,
-		.infra-grid,
-		.academy-feature,
-		.access-panel {
-			grid-template-columns: 1fr;
-		}
-
-		.hero {
-			min-height: auto;
-			justify-content: flex-start;
-			padding-top: 40px;
-			padding-bottom: clamp(48px, 8vh, 80px);
-		}
-
+	@media (max-width: 1020px) {
 		.hero-lower {
 			grid-template-columns: 1fr;
-			gap: clamp(24px, 6vw, 40px);
 		}
 
-		.hero-title {
-			max-width: 18ch;
-			font-size: clamp(2.8rem, 11vw, 4.4rem);
+		.scope-stage {
+			grid-template-columns: 1fr;
 		}
 
-		.hero-watermark {
-			font-size: clamp(9rem, 40vw, 15rem);
-			opacity: 0.75;
+		.academy-feature {
+			grid-template-columns: 1fr;
 		}
 
-		.hero-chart {
-			inset: -3% -2% 0 -4%;
-			opacity: 0.22;
+		.access-panel,
+		.success-panel {
+			grid-template-columns: 1fr;
 		}
 
-		.status-card {
-			align-self: stretch;
-		}
-
-		.scroll-cue {
-			display: none;
-		}
-
-		.academy-summary {
-			border-right: 0;
-			border-bottom: 1px solid var(--line);
-		}
-
-		.tape-cta {
+		.hud-center {
 			display: none;
 		}
 	}
 
-	@media (max-width: 720px) {
-		.page-shell {
-			width: min(100% - 28px, 1180px);
-		}
-
-		h1 {
-			font-size: clamp(2.1rem, 9vw, 2.8rem);
-		}
-
-		.hero-title {
-			max-width: none;
-			font-size: clamp(2.6rem, 13vw, 3.6rem);
-			letter-spacing: -0.02em;
-			line-height: 1;
-		}
-
-		.hero-watermark {
-			font-size: clamp(7rem, 46vw, 12rem);
-		}
-
-		.chart-toolbar,
-		.email-row,
-		.ops-grid,
-		.mini-feed-grid,
-		.academy-selector,
-		.asset-lanes,
-		.academy-lab,
-		.chart-metrics {
+	@media (max-width: 760px) {
+		.desk-grid {
 			grid-template-columns: 1fr;
 		}
 
-		.chart-toolbar,
-		.email-row {
-			display: grid;
-			gap: 12px;
+		.desk-module {
+			min-height: 0;
 		}
 
-		.timeframe-control {
-			width: 100%;
-			justify-content: space-between;
+		.sector-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 
-		.timeframe-control button {
-			width: 100%;
-		}
-
-		.signal-row {
-			grid-template-columns: 1fr;
-			gap: 8px;
-		}
-
-		.node-row {
-			grid-template-columns: 1fr;
-			gap: 8px;
-		}
-
-		.node-row small {
-			text-align: left;
-		}
-
-		.stat-board {
+		.mini-feed-grid {
 			grid-template-columns: 1fr;
 		}
 
-		.stat-board div:nth-child(2n) {
-			border-left: 0;
-			padding-left: 0;
+		.chart-toolbar {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 
-		.stat-board div + div {
-			border-top: 1px solid var(--line);
+		.scope-row {
+			grid-template-columns: 40px 1fr;
+		}
+
+		.scope-metric {
+			grid-column: 2;
+			justify-self: start;
+		}
+
+		.academy-selector {
+			grid-template-columns: 1fr;
 		}
 
 		.log-row {
-			grid-template-columns: 1fr;
-			gap: 6px;
+			grid-template-columns: 56px 1fr;
 		}
 
-		.chart-canvas {
-			height: 320px;
+		.log-row p {
+			grid-column: 1 / -1;
+		}
+
+		.chrome-brand {
+			display: none;
+		}
+
+		.hud-latency {
+			display: none;
+		}
+
+		.email-row {
+			flex-direction: column;
+		}
+
+		.email-row button {
+			padding: 14px;
 		}
 	}
 
+	/* ── Reduced motion ───────────────────────────────────────────────────── */
+
 	@media (prefers-reduced-motion: reduce) {
-		*,
-		*::before,
-		*::after {
-			animation-duration: 0.001ms !important;
-			animation-delay: 0s !important;
-			animation-iteration-count: 1 !important;
-			scroll-behavior: auto !important;
-			transition-duration: 0.001ms !important;
+		.reveal {
+			opacity: 1;
+			transform: none;
+			transition: none;
+		}
+
+		.tape-track {
+			animation: none;
+		}
+
+		.hero-flare {
+			animation: none;
+			opacity: 0.35;
+		}
+
+		.quote-live i {
+			animation: none;
+		}
+
+		.print-row {
+			animation: none;
+		}
+
+		.log-cursor {
+			animation: none;
+		}
+
+		.range-track i,
+		.book-row .depth,
+		.progress-track span,
+		.load-track span,
+		.confidence span::after {
+			transition: none;
 		}
 	}
 </style>
