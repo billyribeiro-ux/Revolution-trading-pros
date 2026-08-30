@@ -18,10 +18,11 @@ pub mod crypto;
 pub mod errors;
 
 use anyhow::Result;
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-    Algorithm, Argon2, Params, Version,
-};
+// argon2 0.6 / password-hash 0.6: `SaltString` and the `rand_core` re-export are
+// gone, `PasswordHash` moved to the `phc` crate (re-exported at `argon2::PasswordHash`),
+// and `PasswordHasher::hash_password` now takes only the password and draws its own
+// 16-byte salt from the OS RNG (the same length `SaltString::generate` used).
+use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use chrono::{Duration, Utc};
 // FIX-2026-04-26: pin algorithm via Validation::new(JwtAlgorithm::HS256) — was Validation::default()
 // (aliased to avoid name conflict with argon2::Algorithm imported above)
@@ -173,8 +174,6 @@ pub fn validate_password(password: &str) -> Result<(), &'static str> {
 /// - Parallelism: 4
 /// - Output length: 32 bytes
 pub fn hash_password(password: &str) -> Result<String> {
-    let salt = SaltString::generate(&mut OsRng);
-
     // OWASP-recommended Argon2id parameters for financial applications
     let params = Params::new(
         65536,    // 64 MiB memory
@@ -186,8 +185,9 @@ pub fn hash_password(password: &str) -> Result<String> {
 
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
 
-    let hash = argon2
-        .hash_password(password.as_bytes(), &salt)
+    // A fresh 16-byte salt is generated from the OS RNG by `hash_password` itself.
+    let hash: PasswordHash = argon2
+        .hash_password(password.as_bytes())
         .map_err(|e| anyhow::anyhow!("Password hashing failed: {e}"))?;
     Ok(hash.to_string())
 }

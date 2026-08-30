@@ -1,0 +1,35 @@
+# clippy configuration for revolution-api
+#
+# Discovered from CARGO_MANIFEST_DIR (this crate's root), so it applies to
+# `cargo clippy` no matter which directory the gate is invoked from.
+
+# ────────────────────────────────────────────────────────────────────────
+# result_large_err — raised from the 128-byte default on 2026-08-30.
+#
+# WHY: `utils::errors::ApiError` is this crate's single, house-wide error
+# type and measures exactly 168 bytes:
+#
+#   message   String                              24
+#   status    String                              24
+#   code      Option<String>                      24
+#   errors    Option<HashMap<String, Vec<String>>> 48
+#   request_id Option<String>                     24
+#   timestamp String                              24
+#
+# Rust 1.98's clippy extended `result_large_err` to `async fn` (previously it
+# only inspected the return type of non-async fns), which turned ~150 route
+# handlers returning `Result<T, ApiError>` into hard errors under
+# `-D warnings` overnight. The lint's own remedy — boxing the error — would
+# mean reshaping the public JSON error contract and every construction site
+# across ~40 modules, for no measured win.
+#
+# 176 is 168 rounded up to the next 16-byte step: it accepts the house error
+# type as-is while STILL catching any new error type that is meaningfully
+# larger. Revisit if `ApiError` ever grows past 176 bytes — that growth is
+# exactly what this threshold is meant to surface.
+#
+# NOTE: this makes the ~12 pre-existing `#[allow(clippy::result_large_err)]`
+# attributes in src/ redundant. They are left in place rather than swept in a
+# dependency-upgrade change; removing them is a standalone cleanup.
+# ────────────────────────────────────────────────────────────────────────
+large-error-threshold = 176

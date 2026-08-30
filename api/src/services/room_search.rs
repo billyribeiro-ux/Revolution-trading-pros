@@ -310,9 +310,8 @@ impl RoomSearchService {
             "room_slug = $1".to_string(),
             "deleted_at IS NULL".to_string(),
             "is_published = true".to_string(),
-            format!(
-                "to_tsvector('english', COALESCE(ticker, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(message, '') || ' ' || COALESCE(notes, '')) @@ plainto_tsquery('english', $2)"
-            ),
+            "to_tsvector('english', COALESCE(ticker, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(message, '') || ' ' || COALESCE(notes, '')) @@ plainto_tsquery('english', $2)"
+                .to_string(),
         ];
 
         // Add date filters
@@ -396,9 +395,8 @@ impl RoomSearchService {
         let mut conditions = vec![
             "room_slug = $1".to_string(),
             "deleted_at IS NULL".to_string(),
-            format!(
-                "to_tsvector('english', COALESCE(ticker, '') || ' ' || COALESCE(notes, '')) @@ plainto_tsquery('english', $2)"
-            ),
+            "to_tsvector('english', COALESCE(ticker, '') || ' ' || COALESCE(notes, '')) @@ plainto_tsquery('english', $2)"
+                .to_string(),
         ];
 
         if filters.from_date.is_some() {
@@ -483,9 +481,8 @@ impl RoomSearchService {
         let mut conditions = vec![
             "room_slug = $1".to_string(),
             "deleted_at IS NULL".to_string(),
-            format!(
-                "to_tsvector('english', COALESCE(ticker, '') || ' ' || COALESCE(notes, '')) @@ plainto_tsquery('english', $2)"
-            ),
+            "to_tsvector('english', COALESCE(ticker, '') || ' ' || COALESCE(notes, '')) @@ plainto_tsquery('english', $2)"
+                .to_string(),
         ];
 
         if filters.from_date.is_some() {

@@ -24,11 +24,11 @@ sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "post
 rust_decimal = { version = "1.42.1", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "1.5.0", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "1.6.0", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
 # S3/R2 Storage (December 2025 versions)
-aws-sdk-s3 = "1.141.0"
-aws-config = "1.10.1"
+aws-sdk-s3 = "1.144.0"
+aws-config = "1.11.0"
 
 # Serialization
 serde = { version = "1.0.229", features = ["derive"] }
@@ -50,9 +50,9 @@ serde_json = "1.0.151"
 jsonwebtoken = { version = "11.0.0", features = ["aws_lc_rs"] }
 base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5.1"   # ICT 7: TOTP secret encoding
-argon2 = "0.5.3"
+argon2 = "0.6.0"
 bcrypt = "0.19.3"  # Laravel bcrypt compatibility
-aes-gcm = "0.11.0" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
+aes-gcm = "0.11.1" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
 rand = "0.10.2"
 hmac = "0.13.0"
 sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
@@ -65,7 +65,7 @@ md5 = "0.8.1"  # For Bunny.net signature generation
 csv = "1.4.0"
 
 # Utilities
-uuid = { version = "1.24.0", features = ["v4", "serde"] }
+uuid = { version = "1.26.0", features = ["v4", "serde"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 regex = "1.13.1"  # ICT 11+: SEO content analysis regex patterns
 dotenvy = "0.15.7"
@@ -97,9 +97,9 @@ validator = { version = "0.21.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
-axum-test = "21.0.0"
+axum-test = "21.1.0"
 tower = { version = "0.5.3", features = ["util"] }
-hyper = { version = "1.11.0", features = ["full"] }
+hyper = { version = "1.11.1", features = ["full"] }
 http-body-util = "0.1.5"
 
 [profile.release]

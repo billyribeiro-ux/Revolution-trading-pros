@@ -2,7 +2,7 @@
 //! ICT 7 Principal Engineer Grade - Secure Bootstrap System with Resilient Connection Retry
 
 use anyhow::Result;
-use argon2::password_hash::PasswordHash;
+use argon2::PasswordHash;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 use std::time::Duration;
 
@@ -176,7 +176,7 @@ impl Database {
         }
 
         // Validate hash can be parsed
-        if argon2::PasswordHash::new(&password_hash).is_err() {
+        if PasswordHash::new(&password_hash).is_err() {
             tracing::error!(
                 target: "security_audit",
                 event = "developer_bootstrap_malformed_hash",

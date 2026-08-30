@@ -188,3 +188,25 @@ fn hash_token_is_deterministic_and_not_identity() {
     assert_ne!(h1, "opaque-token", "must store a hash, not the token");
     assert_ne!(h1, utils::hash_token("different-token"));
 }
+
+/// Regression guard for argon2 crate upgrades.
+///
+/// This PHC string was produced by argon2 0.5.3 (the version in use before the
+/// 2026-08-30 bump to 0.6) with the same parameters the app hashes at today.
+/// Every stored user password predates that upgrade, so if a future argon2
+/// major stops verifying this string, the whole user base is locked out — this
+/// test fails first instead.
+#[test]
+fn verifies_password_hashed_by_argon2_0_5() {
+    const LEGACY_ARGON2_0_5_HASH: &str =
+        "$argon2id$v=19$m=19456,t=2,p=1$BSN5HJxZvPlL8BZnnIDxkg$Bzcoqqz5x2aWBUDZ5gSSd/C5JmD1PtTz1YEf8GsLNnU";
+
+    assert!(
+        utils::verify_password("correct horse battery staple", LEGACY_ARGON2_0_5_HASH).unwrap(),
+        "argon2 upgrade broke verification of pre-existing password hashes"
+    );
+    assert!(
+        !utils::verify_password("wrong password", LEGACY_ARGON2_0_5_HASH).unwrap(),
+        "verification must still reject an incorrect password"
+    );
+}
