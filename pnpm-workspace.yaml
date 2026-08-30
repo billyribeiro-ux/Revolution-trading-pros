@@ -23,11 +23,22 @@ allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
-# (Stale pins for versions no longer in the lockfile removed 2026-07-19.)
+# (Stale pins for versions no longer in the lockfile removed 2026-07-19;
+# re-pointed at the versions installed by the 2026-08-30 dependency sweep.)
 minimumReleaseAgeExclude:
-  - concurrently@10.0.4
-  - '@anthropic-ai/sdk@0.117.1'
+  - concurrently@10.0.5
+  - '@anthropic-ai/sdk@0.122.0'
 
 peerDependencyRules:
   allowedVersions:
     vite-plugin-devtools-json>vite: ^8.0.0
+    # runed (pulled in by bits-ui and svelte-toolbelt) still declares
+    # `@sveltejs/kit: ^2.21.0` as of runed 0.37.1 — there is no published
+    # runed that accepts the Kit 3 prerelease line this repo tracks, and
+    # bits-ui 2.19.0 (latest) pins `runed: ^0.35.1`. runed only imports
+    # `$app/environment`, `$app/navigation` and `$app/state`; all three still
+    # resolve on Kit 3 (`$app/environment` is a deprecated re-export of
+    # `$app/env`), so the mismatch is a stale range, not a real break.
+    # Remove this once runed widens the peer to `^2.21.0 || ^3.0.0`.
+    # (Added 2026-08-30.)
+    runed>@sveltejs/kit: ^3.0.0-next.0
