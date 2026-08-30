@@ -12,9 +12,9 @@ step), under 30 seconds on subsequent boots.
 | Tool           | Version                                                               | macOS install                                                |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
 | Docker Desktop | ≥ 4.30                                                                | `brew install --cask docker`                                 |
-| Node.js        | 24.19.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
-| pnpm           | 11.15.0 (pinned in `package.json#packageManager`)                     | `corepack enable && corepack prepare pnpm@11.15.0 --activate` |
-| Rust           | 1.97.1 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
+| Node.js        | 24.20.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
+| pnpm           | 11.24.0 (pinned in `package.json#packageManager`)                     | `corepack enable && corepack prepare pnpm@11.24.0 --activate` |
+| Rust           | 1.98.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
 
 You do **not** need `flyctl` for local dev. (You'll need it later if you
 deploy.)

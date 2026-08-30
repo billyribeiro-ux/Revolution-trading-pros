@@ -4,7 +4,7 @@
 # FIX-2026-04-26: pinned from rust:latest to explicit version (Phase 7.3)
 # FROM rust:latest AS builder
 # FIX-2026-06-08: keep Docker builder aligned with rust-toolchain.toml.
-FROM rust:1.96-bookworm AS builder
+FROM rust:1.98-bookworm AS builder
 
 # Install build dependencies (Debian-based image)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -32,7 +32,7 @@ ENV SQLX_OFFLINE=true
 RUN touch src/main.rs && cargo build --release
 
 # FIX-2026-04-26: switched from trixie-slim (unstable) to bookworm-slim (stable LTS) (Phase 7.3)
-# rust:1.87-bookworm builder uses GLIBC 2.36 (bookworm), so bookworm-slim is the correct match
+# the rust:1.98-bookworm builder uses GLIBC 2.36 (bookworm), so bookworm-slim is the correct match
 # FROM debian:trixie-slim AS runtime
 FROM debian:bookworm-slim AS runtime
 

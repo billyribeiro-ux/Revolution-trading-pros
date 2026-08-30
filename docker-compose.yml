@@ -13,7 +13,7 @@ services:
   # PostgreSQL 18
   # ──────────────────────────────────────────────────────────────────────
   db:
-    image: postgres:18.4-alpine
+    image: postgres:18.6-alpine
     container_name: rtp-db
     environment:
       POSTGRES_USER: rtp
@@ -35,7 +35,7 @@ services:
   # Redis 8
   # ──────────────────────────────────────────────────────────────────────
   redis:
-    image: redis:8.8.0-alpine
+    image: redis:8.8.2-alpine
     container_name: rtp-redis
     command: redis-server --appendonly yes
     volumes:
@@ -55,7 +55,7 @@ services:
   # Master key is dev-only; set MEILI_MASTER_KEY in api/.env for prod.
   # ──────────────────────────────────────────────────────────────────────
   meili:
-    image: getmeili/meilisearch:v1.46.0
+    image: getmeili/meilisearch:v1.53.1
     container_name: rtp-meili
     environment:
       MEILI_MASTER_KEY: dev-meili-master-key

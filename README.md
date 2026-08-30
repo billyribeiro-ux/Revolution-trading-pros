@@ -64,7 +64,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 | Layer | Technology | Where it runs |
 |-------|-----------|---------------|
 | Frontend | SvelteKit 3 / Svelte 5 / Vite 8 | Cloudflare Pages (prod), `pnpm dev` (local) |
-| Backend | Rust 1.97 + Axum 0.8 | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
+| Backend | Rust 1.98 + Axum 0.8 | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
 | Database | PostgreSQL 18 + sqlx 0.9 | prod target TBD, Docker (local) |
 | Cache / sessions / rate-limit / JWT blacklist | Redis 8 | Upstash (prod), Docker (local) |
 | Object storage | Cloudflare R2 (S3-compatible) | Cloudflare |
