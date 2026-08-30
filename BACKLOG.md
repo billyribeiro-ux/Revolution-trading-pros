@@ -9,6 +9,25 @@ a batch picks them up, it pulls them out of this file into a
 
 ## Batch 4 candidates
 
+### 0. Shrink or box `ApiError` instead of raising clippy's error-size bar
+**Severity:** P3 (code health; no runtime impact)
+
+Rust 1.98's clippy extended `result_large_err` to `async fn`, so ~150
+route handlers returning `Result<T, ApiError>` began failing the
+`-D warnings` gate on 2026-08-30. `ApiError` is 168 bytes (3×String,
+2×Option<String>, Option<HashMap>), over the 128-byte default. The
+dependency sweep unblocked CI with `api/clippy.toml`
+(`large-error-threshold = 176`) rather than reshaping ~40 modules
+mid-upgrade.
+
+The real fix is to make the error small: box it (`Result<T, Box<ApiError>>`
+serializes identically, so the JSON contract is unaffected) or collapse
+`status`/`code`/`timestamp` into cheaper representations (a status enum
+and a derived timestamp). Then drop `clippy.toml` back to the default and
+delete the ~12 now-redundant `#[allow(clippy::result_large_err)]`
+attributes still scattered through the routes.
+
+
 ### 1. Admin edit-coupon Stripe-coupon recreation flow
 **Severity:** P1 (operators can silently desync coupons)
 

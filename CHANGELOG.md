@@ -4,6 +4,72 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-08-30 — Full dependency, toolchain, and service top-up
+
+Everything the repo depends on moved to its latest release as of 2026-08-30,
+except Node, which is pinned to the latest **LTS**.
+
+### Runtime + toolchain
+- **Node 24.19.0 → 24.20.0 LTS** ("Krypton", released 2026-08-26) — `.nvmrc`,
+  `.node-version`, `engines.node` (root + frontend), and `NODE_VERSION` in both
+  workflows.
+- **pnpm 11.15.0 → 11.24.0** in `packageManager` (root + frontend), integrity
+  hash verified three ways; `engines.pnpm >= 11.24.0`.
+- **Rust 1.97.1 → 1.98.0** in `rust-toolchain.toml`, CI's `RUST_VERSION`, and
+  the `api/Dockerfile` builder — which had separately drifted to **1.96**
+  despite its comment claiming it tracked the toolchain file.
+
+### Services (latest within pinned majors)
+- postgres `18.4-alpine → 18.6-alpine`, redis `8.8.0-alpine → 8.8.2-alpine`,
+  meilisearch `v1.46.0 → v1.53.1`.
+
+### JavaScript
+Workspace-wide `pnpm up -r --latest`: svelte 5.57.0, vite 8.2.2, vitest 4.1.11,
+eslint 10.9.1, typescript-eslint 8.68.0, wrangler 4.127.1, @anthropic-ai/sdk
+0.122.0, bits-ui 2.19.0, @threlte/core 8.6.0, web-vitals 6.2.1, magic-string
+1.2.3, and the `@paypal/paypal-js` 10 → 11 major (type-only usage verified).
+
+Holds, each peer-verified rather than assumed:
+- **typescript stays 6.0.3** (latest 7.0.2) — `@sveltejs/kit@next` requires
+  `^6.0.0` and `typescript-eslint` requires `>=4.8.4 <6.1.0`.
+- **@types/node stays on 24.x** to match the Node 24 LTS runtime.
+- **@sveltejs/kit / adapter-cloudflare stay on their `next` lines** (the repo
+  tracks Kit 3) and are excluded from `--latest` so they cannot be downgraded
+  to the v2/v7 stable tags.
+
+`pnpm peers check` is clean for the first time: a `runed > @sveltejs/kit` rule
+resolves runed's stale `^2.21.0` range (its dist only uses `$app/environment`,
+`$app/navigation`, `$app/state`, all of which resolve on Kit 3).
+
+### Rust
+argon2 0.6.0, redis 1.6, aws-sdk-s3 1.144, aws-config 1.11, uuid 1.26,
+aes-gcm 0.11.1, axum-test 21.1, hyper 1.11.1, plus a full lockfile refresh
+(43 crates). Held: `base32` and `axum-test` majors are prerelease-only;
+`matchit` is pinned exactly by axum 0.8.9.
+
+**argon2 0.5 → 0.6 is a breaking change to password hashing.** `SaltString`
+and the `rand_core` re-export are gone, `PasswordHash` moved to the `phc`
+crate, and `hash_password` now draws its own 16-byte OS-RNG salt — the same
+length as before, so emitted PHC strings keep their shape. Because every
+stored password predates the upgrade, `tests/utils_test.rs` gained
+`verifies_password_hashed_by_argon2_0_5`: a PHC string minted by argon2 0.5.3
+at the app's real parameters (Argon2id, m=65536, t=3, p=4) that must still
+verify. It passes — existing logins are safe, and a future argon2 major that
+breaks stored hashes now fails a test instead of production.
+
+`api/clippy.toml` (new) raises `large-error-threshold` to 176: clippy 1.98
+extended `result_large_err` to `async fn`, which failed ~150 handlers
+returning the 168-byte house `ApiError`. Shrinking or boxing that type is
+tracked in BACKLOG.md rather than done mid-upgrade. `deny.toml`'s three
+RUSTSEC exemptions were re-verified against the new lockfile and re-dated.
+
+### Gates
+svelte-check 0 errors / 0 warnings (4,872 files), eslint 0 errors, 2,272 unit
+tests, frontend + click-to-source builds, `cargo fmt --check`, `cargo check`,
+`cargo clippy -D warnings`, and router-smoke / utils / stripe / crypto suites
+(43 backend tests) all pass. Note: this container only has Node 22, so the JS
+gates ran there — CI is the first execution on the pinned 24.20.0.
+
 ## [Unreleased] — 2026-08-23 (later) — Maintenance page: bespoke cinematic hero renderer
 
 The hero backdrop is no longer a charting library. `/maintenance` now renders

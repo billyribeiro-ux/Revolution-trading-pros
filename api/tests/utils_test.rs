@@ -192,14 +192,16 @@ fn hash_token_is_deterministic_and_not_identity() {
 /// Regression guard for argon2 crate upgrades.
 ///
 /// This PHC string was produced by argon2 0.5.3 (the version in use before the
-/// 2026-08-30 bump to 0.6) with the same parameters the app hashes at today.
+/// 2026-08-30 bump to 0.6) at `hash_password`'s real parameters
+/// (Argon2id, m=65536, t=3, p=4, 32-byte output), so it mirrors a hash
+/// actually sitting in the users table.
 /// Every stored user password predates that upgrade, so if a future argon2
 /// major stops verifying this string, the whole user base is locked out — this
 /// test fails first instead.
 #[test]
 fn verifies_password_hashed_by_argon2_0_5() {
     const LEGACY_ARGON2_0_5_HASH: &str =
-        "$argon2id$v=19$m=19456,t=2,p=1$BSN5HJxZvPlL8BZnnIDxkg$Bzcoqqz5x2aWBUDZ5gSSd/C5JmD1PtTz1YEf8GsLNnU";
+        "$argon2id$v=19$m=65536,t=3,p=4$CEoQaV7jsF2LZbHp3C/UBw$Exi2MqlY5D2/sLl+inv7tgWdMTgJH8FMuyzt1JsXzqY";
 
     assert!(
         utils::verify_password("correct horse battery staple", LEGACY_ARGON2_0_5_HASH).unwrap(),

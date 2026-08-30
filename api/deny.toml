@@ -38,21 +38,22 @@ yanked = "warn"
 # ─────────────────────────────────────────────────────────────────────────
 ignore = [
     # ── rustls-webpki 0.101.7 ────────────────────────────────────────────
-    # ROOT CAUSE re-verified 2026-06-08 (the prior "reqwest 0.11" note was
-    # STALE — reqwest 0.11 is no longer in the tree). webpki 0.101 now enters
-    # via the AWS SDK's HTTP client:
+    # ROOT CAUSE re-verified 2026-08-30 against the post-upgrade lockfile
+    # (aws-sdk-s3 1.144.0 / aws-config 1.11.0). Unchanged in shape since the
+    # 2026-06-08 check, only the smithy version moved: webpki 0.101 still
+    # enters via the AWS SDK's HTTP client:
     #   cargo tree -i rustls-webpki@0.101.7
-    #   → rustls 0.21.12 ← aws-smithy-http-client 1.1.13 (latest) + hyper-rustls 0.24.2
-    # The SDK's ACTIVE client TLS uses rustls-aws-lc (rustls 0.23 → webpki
-    # 0.103.13, patched); the 0.101 copy is a duplicate dragged in by
+    #   → rustls 0.21.12 ← aws-smithy-http-client 1.4.0 (latest) + hyper-rustls 0.24.2
+    # The SDK's ACTIVE client TLS uses rustls-aws-lc (rustls 0.23.43 → webpki
+    # 0.103.15, patched); the 0.101 copy is a duplicate dragged in by
     # hyper-rustls 0.24's server "acceptor" path, which a client never uses.
-    # No safe manifest fix: aws-smithy-http-client 1.1.13 hard-depends on
+    # No safe manifest fix: aws-smithy-http-client 1.4.0 still hard-depends on
     # hyper-rustls 0.24; a [patch] to a newer hyper-rustls breaks its API usage.
     # 0104 (CRL panic) is unreachable — we do not parse CRLs; 0098/0099 need a
     # name-constrained CA in the chain, not in our threat model for AWS/R2.
-    { id = "RUSTSEC-2026-0098", reason = "rustls-webpki 0.101.x URI name-constraint bug; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. Active SDK TLS uses patched webpki 0.103. Track upstream smithy-http-client dedup." },
-    { id = "RUSTSEC-2026-0099", reason = "rustls-webpki 0.101.x wildcard name-constraint bug; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. Active SDK TLS uses patched webpki 0.103. Track upstream smithy-http-client dedup." },
-    { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101.x CRL parser panic; transitive via aws-smithy-http-client 1.1.13 -> hyper-rustls 0.24. We do not parse CRLs. Track upstream smithy-http-client dedup." },
+    { id = "RUSTSEC-2026-0098", reason = "rustls-webpki 0.101.x URI name-constraint bug; transitive via aws-smithy-http-client 1.4.0 -> hyper-rustls 0.24. Active SDK TLS uses patched webpki 0.103. Re-verified 2026-08-30. Track upstream smithy-http-client dedup." },
+    { id = "RUSTSEC-2026-0099", reason = "rustls-webpki 0.101.x wildcard name-constraint bug; transitive via aws-smithy-http-client 1.4.0 -> hyper-rustls 0.24. Active SDK TLS uses patched webpki 0.103. Re-verified 2026-08-30. Track upstream smithy-http-client dedup." },
+    { id = "RUSTSEC-2026-0104", reason = "rustls-webpki 0.101.x CRL parser panic; transitive via aws-smithy-http-client 1.4.0 -> hyper-rustls 0.24. We do not parse CRLs. Re-verified 2026-08-30. Track upstream smithy-http-client dedup." },
 
     # ── unmaintained (build-time only) ───────────────────────────────────
     # The prior proc-macro-error (v1, RUSTSEC-2024-0370), rustls-pemfile
