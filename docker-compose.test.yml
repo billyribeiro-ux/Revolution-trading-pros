@@ -4,7 +4,7 @@
 # Rust integration tests at api/tests/ can connect without touching the dev DB.
 #
 # Usage:
-#   docker compose -f docker-compose.yml -f docker-compose.test.yml up postgres -d
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml up db -d
 #
 # Note: the base service is named `db` in docker-compose.yml.  This overlay
 # targets that same service name so the extra init script is injected at

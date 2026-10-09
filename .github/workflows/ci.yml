@@ -14,13 +14,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "24.20.0"
+  NODE_VERSION: "24.21.0"
   GIT_CONFIG_COUNT: "1"
   GIT_CONFIG_KEY_0: init.defaultBranch
   GIT_CONFIG_VALUE_0: main
   # Pinned (NOT "stable") for a reproducible backend gate — see the
   # rust-toolchain step note + rust-toolchain.toml.
-  RUST_VERSION: "1.98.0"
+  RUST_VERSION: "1.99.0"
 
 jobs:
   # ───────────────────────────────────────────────────────────────────────
@@ -40,9 +40,9 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=6144
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -54,6 +54,14 @@ jobs:
 
       - name: Install
         run: pnpm install --frozen-lockfile
+
+      # pnpm 12 records `packageManagerDependencies` (the pinned pnpm and its
+      # @pnpm/exe.* binaries) in a leading document of pnpm-lock.yaml on every
+      # command. A lockfile regenerated under a different pnpm would be
+      # rewritten here and still pass the frozen install, leaving the checkout
+      # dirty and the committed lockfile stale. Fail loudly instead.
+      - name: Lockfile is in sync with the pinned pnpm
+        run: git diff --exit-code -- pnpm-lock.yaml
 
       - name: Typecheck (svelte-kit sync && svelte-check)
         run: pnpm --filter revolution-svelte check
@@ -87,7 +95,7 @@ jobs:
         working-directory: api
 
     steps:
-      - uses: actions/checkout@v6.0.3
+      - uses: actions/checkout@v7.0.1
 
       # @master honors the `toolchain:` input; the `@stable` wrapper
       # ALWAYS installs stable and silently ignores `toolchain:`, which
