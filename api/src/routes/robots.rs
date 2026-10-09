@@ -23,9 +23,8 @@ struct RobotsCache {
     expires_at: Instant,
 }
 
-lazy_static::lazy_static! {
-    static ref ROBOTS_CACHE: Arc<RwLock<Option<RobotsCache>>> = Arc::new(RwLock::new(None));
-}
+static ROBOTS_CACHE: std::sync::LazyLock<Arc<RwLock<Option<RobotsCache>>>> =
+    std::sync::LazyLock::new(|| Arc::new(RwLock::new(None)));
 
 const CACHE_TTL: Duration = Duration::from_secs(3600); // 1 hour
 

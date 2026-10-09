@@ -27,7 +27,7 @@
 //!
 //! - `types.rs` — DTOs and enums (`SeoIssue`, `SeoValidationRequest`,
 //!   `SeoValidationResponse`, etc.)
-//! - `regex_patterns.rs` — `lazy_static!` regex blocks
+//! - `regex_patterns.rs` — `LazyLock<Regex>` statics
 //! - `text.rs` — block→text/HTML extraction + word / sentence /
 //!   syllable counts + Flesch-Kincaid + keyword density
 //! - `auth.rs` — `require_cms_editor` RBAC + Redis-backed rate limit
