@@ -7,7 +7,7 @@
 		if (!browser) return;
 
 		// replaceState so the back button doesn't trap users in a redirect loop.
-		goto('/admin/analytics/funnels?create=1', { replaceState: true });
+		goto('/admin/analytics/funnels?create=1', { replace: true });
 	});
 </script>
 

@@ -86,6 +86,11 @@ export const variables = defineEnvVars({
 		description: 'Anthropic API key — CMS AI content generation and media alt-text.',
 		schema: optionalString
 	},
+	RESEND_API_KEY: {
+		description:
+			'Resend API key — maintenance-page confirmation emails. Formerly read from `event.platform.env`, which adapter-cloudflare 8 removed.',
+		schema: optionalString
+	},
 	BUNNY_STREAM_LIBRARY_ID: {
 		description: 'Bunny.net Stream library id for video playback.',
 		schema: optionalString

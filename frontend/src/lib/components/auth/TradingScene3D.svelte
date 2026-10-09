@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/env';
 	import type { Canvas } from '@threlte/core';
+	import type { ShadowMapType } from 'three';
 	import type Scene3D from './Scene3D.svelte';
 
 	let mounted = $state(false);
@@ -20,25 +21,32 @@
 	// below renders them with the correct props.
 	let ThrelteCanvas: typeof Canvas | null = $state(null);
 	let Scene3DComponent: typeof Scene3D | null = $state(null);
+	// three r186 removed PCFSoftShadowMap (Threlte's default) and falls back to
+	// PCFShadowMap with a console warning on every scene init. Request PCF
+	// directly: identical rendering, no warning. Read from the same lazily
+	// loaded `three` chunk so nothing from three lands in the eager bundle.
+	let shadowMapType: ShadowMapType | null = $state(null);
 
 	onMount(async () => {
 		if (!browser) return;
 
 		// Dynamic import to prevent SSR issues and reduce initial bundle
-		const [threlte, scene] = await Promise.all([
+		const [threlte, scene, three] = await Promise.all([
 			import('@threlte/core'),
-			import('./Scene3D.svelte')
+			import('./Scene3D.svelte'),
+			import('three')
 		]);
 
 		ThrelteCanvas = threlte.Canvas;
 		Scene3DComponent = scene.default;
+		shadowMapType = three.PCFShadowMap;
 		mounted = true;
 	});
 </script>
 
-{#if mounted && ThrelteCanvas && Scene3DComponent}
+{#if mounted && ThrelteCanvas && Scene3DComponent && shadowMapType !== null}
 	<div class="scene-container">
-		<ThrelteCanvas>
+		<ThrelteCanvas shadows={shadowMapType}>
 			<Scene3DComponent />
 		</ThrelteCanvas>
 	</div>

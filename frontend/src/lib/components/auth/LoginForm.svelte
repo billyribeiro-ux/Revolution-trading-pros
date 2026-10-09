@@ -377,11 +377,11 @@
 			// on navigation failure below is kept.
 
 			// ICT 11+ Pattern: Use SvelteKit navigation with full invalidation
-			// invalidateAll ensures all load functions re-run with new auth state
-			// replaceState prevents back button from returning to login
+			// refreshAll ensures all load functions re-run with new auth state
+			// replace prevents back button from returning to login
 			await goto(validatedUrl, {
-				replaceState: true,
-				invalidateAll: true,
+				replace: true,
+				refreshAll: true,
 				reset: true // Allow natural scroll to top (was noScroll: false)
 			});
 		} catch (navigationError) {

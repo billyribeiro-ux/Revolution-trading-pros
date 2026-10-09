@@ -516,7 +516,7 @@
 		// Server auth is already validated, this is for client-side logout
 		if (!$isAuthenticated && !data.user) {
 			const currentPath = page.url.pathname;
-			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
+			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replace: true });
 		}
 	});
 

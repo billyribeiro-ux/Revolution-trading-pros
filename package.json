@@ -2,7 +2,7 @@
 	"name": "revolution-trading-pros-monorepo",
 	"version": "2.0.0",
 	"private": true,
-	"packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000",
+	"packageManager": "pnpm@12.10.1+sha512.ba40a37eb1a370d60fea8c4cf1d364c13bcccef518e98ad2bcee954f539d38da37458e58261a3fa55e06523450ea0ffff9f497b135be41f2c15c1642bacace6c",
 	"scripts": {
 		"dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
 		"dev:reset": "docker compose down -v && docker volume rm revolution-trading-pros_postgres_data revolution-trading-pros_meili_data 2>/dev/null || true && docker compose up -d db redis meili && echo '✅ Volumes wiped. Run pnpm dev:all to start fresh.'",
@@ -21,10 +21,10 @@
 		"api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
 	},
 	"engines": {
-		"node": ">=24.20.0",
-		"pnpm": ">=11.24.0"
+		"node": ">=24.21.0",
+		"pnpm": ">=12.10.1"
 	},
 	"devDependencies": {
-		"concurrently": "^10.0.5"
+		"concurrently": "^10.0.6"
 	}
 }

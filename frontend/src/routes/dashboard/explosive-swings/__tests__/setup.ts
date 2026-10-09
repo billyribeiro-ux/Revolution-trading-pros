@@ -202,6 +202,7 @@ vi.mock('$app/navigation', () => ({
 	goto: vi.fn(() => Promise.resolve()),
 	invalidate: vi.fn(() => Promise.resolve()),
 	invalidateAll: vi.fn(() => Promise.resolve()),
+	refreshAll: vi.fn(() => Promise.resolve()),
 	preloadCode: vi.fn(() => Promise.resolve()),
 	preloadData: vi.fn(() => Promise.resolve()),
 	beforeNavigate: vi.fn(),

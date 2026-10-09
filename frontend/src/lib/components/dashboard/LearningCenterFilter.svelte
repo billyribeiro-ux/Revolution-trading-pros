@@ -38,7 +38,7 @@
 			url.searchParams.set('category', categoryId);
 		}
 		url.searchParams.delete('page'); // Reset to page 1
-		goto(url.toString(), { replaceState: true });
+		goto(url.toString(), { replace: true });
 	}
 </script>
 

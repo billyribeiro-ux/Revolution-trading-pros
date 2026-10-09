@@ -72,7 +72,7 @@
 			});
 
 			setTimeout(() => {
-				goto('/dashboard', { replaceState: true });
+				goto('/dashboard', { replace: true });
 			}, 1000);
 		} catch (error) {
 			status = 'error';

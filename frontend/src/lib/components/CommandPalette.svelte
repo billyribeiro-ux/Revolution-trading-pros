@@ -187,7 +187,7 @@
 		{
 			id: 'new-post',
 			label: 'Create New Post',
-			action: () => goto('/admin/blog/new'),
+			action: () => goto('/admin/blog/create'),
 			icon: IconFileText,
 			category: 'Quick Actions'
 		},

@@ -58,7 +58,7 @@
 	// to the compiler-generated subscriber rune INSIDE a running $effect is the
 	// classic write-while-reading-tracked-dep pattern that trips
 	// effect_update_depth_exceeded on the post-login goto('/admin',
-	// { invalidateAll: true }) flush. Identical fix to dashboard/+layout.svelte:
+	// { refreshAll: true }) flush. Identical fix to dashboard/+layout.svelte:
 	// the dashboard layout converted its equivalent guard to onMount with the
 	// same reasoning. Admin was missed in that sweep (commit 01c4eecfe).
 	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
@@ -100,7 +100,7 @@
 			if (!checkIsAdmin(user.current)) {
 				// Not an admin → kick out. Use replaceState so back button doesn't
 				// trap the user in a redirect loop on /admin.
-				goto('/?error=admin_required', { replaceState: true });
+				goto('/?error=admin_required', { replace: true });
 				return true;
 			}
 			return true;

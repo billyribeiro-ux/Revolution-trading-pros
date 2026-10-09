@@ -1,4 +1,6 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
+import { RESEND_API_KEY } from '$app/env/private';
 
 /**
  * Maintenance Email Capture API
@@ -18,8 +20,7 @@ const subscribers = new Set<string>();
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const POST = async ({ request, platform }: { request: Request; platform: any }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body: NotifyRequest = await request.json();
 		const { email } = body;
@@ -34,7 +35,7 @@ export const POST = async ({ request, platform }: { request: Request; platform: 
 		// Check if already subscribed
 		if (subscribers.has(normalizedEmail)) {
 			// Still return success to not leak information
-			return json({
+			return Response.json({
 				success: true,
 				message: "You're already on the list! Check your email for confirmation."
 			});
@@ -43,18 +44,20 @@ export const POST = async ({ request, platform }: { request: Request; platform: 
 		// Add to subscribers
 		subscribers.add(normalizedEmail);
 
-		// Send confirmation email using platform's email service (e.g., Resend, SendGrid)
-
-		const resendKey = platform?.env?.RESEND_API_KEY as string | undefined;
-		if (resendKey) {
-			await sendConfirmationEmail(normalizedEmail, resendKey);
+		// Send confirmation email via Resend. The key used to arrive on
+		// `event.platform.env`, which adapter-cloudflare 8.0.0 removed (#16754)
+		// — reading it there now yields `undefined` and silently skips the
+		// email. Kit 3 exposes Cloudflare bindings/secrets through the declared
+		// env vars in src/env.ts instead.
+		if (RESEND_API_KEY) {
+			await sendConfirmationEmail(normalizedEmail, RESEND_API_KEY);
 		} else {
 			// Log for development - in production this should use a real email service
 
 			console.info(`[DEV] Would send confirmation email to: ${normalizedEmail}`);
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Welcome! Check your email for confirmation.'
 		});

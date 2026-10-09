@@ -4,17 +4,21 @@
 	 * Apple Principal Engineer ICT 11 Grade
 	 *
 	 * Google and Apple sign-in buttons with premium styling
-	 * Uses SvelteKit goto() for proper SPA navigation & error feedback
+	 *
+	 * The default flow is a FULL-PAGE navigation to the `/api/auth/{provider}`
+	 * endpoint (a `+server.ts` route that 302s to the identity provider). It
+	 * must not use `goto()`: SvelteKit 3 rejects `goto()` for any URL that
+	 * does not resolve to a page route (`navigation_route_missing`), so the
+	 * previous `goto('/api/auth/google')` surfaced an error instead of ever
+	 * starting the OAuth redirect.
 	 *
 	 * ICT 11+ Patterns:
-	 * - Async error handling with user-visible feedback
+	 * - Error handling with user-visible feedback
 	 * - Optional callback props for custom OAuth flows
-	 * - SvelteKit navigation preserves SPA context
 	 * - Accessible ARIA labels and loading states
 	 *
 	 * @version 2.0.0 - ICT 11 Grade
 	 */
-	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
 
 	interface Props {
@@ -34,7 +38,7 @@
 	let isAppleLoading = $state(false);
 	let error = $state('');
 
-	async function handleGoogleLogin() {
+	function handleGoogleLogin() {
 		if (disabled || isGoogleLoading) return;
 		isGoogleLoading = true;
 		error = '';
@@ -42,21 +46,22 @@
 		try {
 			if (onGoogleClick) {
 				onGoogleClick();
+				isGoogleLoading = false;
 			} else {
-				// ICT11+ Pattern: Use goto() for SPA navigation, preserves animation context
-				await goto('/api/auth/google', { replaceState: false });
+				// Full-page navigation to the OAuth start endpoint. The loading
+				// state is intentionally left on: the document unloads.
+				window.location.assign('/api/auth/google');
 			}
 		} catch (err) {
+			isGoogleLoading = false;
 			const message = err instanceof Error ? err.message : 'Failed to sign in with Google';
 			error = message;
 			onError?.(message);
 			console.error('[SocialLogin] Google login error:', err);
-		} finally {
-			isGoogleLoading = false;
 		}
 	}
 
-	async function handleAppleLogin() {
+	function handleAppleLogin() {
 		if (disabled || isAppleLoading) return;
 		isAppleLoading = true;
 		error = '';
@@ -64,17 +69,18 @@
 		try {
 			if (onAppleClick) {
 				onAppleClick();
+				isAppleLoading = false;
 			} else {
-				// ICT11+ Pattern: Use goto() for SPA navigation, preserves animation context
-				await goto('/api/auth/apple', { replaceState: false });
+				// Full-page navigation to the OAuth start endpoint. The loading
+				// state is intentionally left on: the document unloads.
+				window.location.assign('/api/auth/apple');
 			}
 		} catch (err) {
+			isAppleLoading = false;
 			const message = err instanceof Error ? err.message : 'Failed to sign in with Apple';
 			error = message;
 			onError?.(message);
 			console.error('[SocialLogin] Apple login error:', err);
-		} finally {
-			isAppleLoading = false;
 		}
 	}
 </script>

@@ -202,7 +202,7 @@
 			params.set('search', searchQuery.trim());
 		}
 		params.set('page', '1');
-		goto(`?${params.toString()}`, { replaceState: true, reset: false });
+		goto(`?${params.toString()}`, { replace: true, reset: false });
 	}
 
 	// Handle page change

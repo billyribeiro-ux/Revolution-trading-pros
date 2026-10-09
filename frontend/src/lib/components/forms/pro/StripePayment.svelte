@@ -5,13 +5,23 @@
 	 * Stripe payment integration with embedded checkout using @stripe/stripe-js.
 	 * Supports:
 	 * - Card Element (Stripe.js)
-	 * - Payment Request Button (Apple Pay, Google Pay)
+	 * - Express Checkout Element (Apple Pay, Google Pay)
 	 * - 3D Secure (SCA) authentication
 	 * - Subscription payments
 	 *
 	 * ICT 7 Fix: Added explicit 3D Secure/SCA handling with confirmPaymentIntent
 	 *
-	 * @version 2.2.0 - Svelte 5 + @stripe/stripe-js + 3D Secure + Responsive Design
+	 * Wallets (2026-10-09): @stripe/stripe-js 10 loads the `endive` Stripe.js
+	 * release train, which retired the Payment Request Button Element
+	 * (stripe-js #982) — `elements.create('paymentRequestButton')` no longer
+	 * exists. Its official successor is the Express Checkout Element. Because
+	 * this component hands a PaymentMethod id to its parent rather than
+	 * confirming an intent itself, the wallet group uses the deferred-intent
+	 * flow (`mode: 'payment'` + `paymentMethodCreation: 'manual'`) and creates
+	 * the PaymentMethod from the Elements group on `confirm`. The card flow keeps
+	 * its own, unchanged Elements group.
+	 *
+	 * @version 2.3.0 - Svelte 5 + @stripe/stripe-js 10 + 3D Secure + Responsive Design
 	 */
 
 	import { onMount } from 'svelte';
@@ -23,9 +33,10 @@
 		StripeElements,
 		StripeCardElement,
 		StripeCardElementChangeEvent,
-		StripePaymentRequestButtonElement,
-		PaymentRequestPaymentMethodEvent,
-		CanMakePaymentResult
+		StripeExpressCheckoutElement,
+		StripeExpressCheckoutElementClickEvent,
+		StripeExpressCheckoutElementConfirmEvent,
+		StripeExpressCheckoutElementReadyEvent
 	} from '@stripe/stripe-js';
 
 	interface Props {
@@ -85,7 +96,8 @@
 	let stripe: Stripe | null = null;
 	let elements: StripeElements | null = null;
 	let cardElement: StripeCardElement | null = null;
-	let paymentRequestButton: StripePaymentRequestButtonElement | null = null;
+	let walletElements: StripeElements | null = null;
+	let expressCheckoutElement: StripeExpressCheckoutElement | null = null;
 	let loading = $state(true);
 	let processing = $state(false);
 	let cardError = $state('');
@@ -103,8 +115,8 @@
 			if (cardElement) {
 				cardElement.destroy();
 			}
-			if (paymentRequestButton) {
-				paymentRequestButton.destroy();
+			if (expressCheckoutElement) {
+				expressCheckoutElement.destroy();
 			}
 		};
 	});
@@ -116,11 +128,23 @@
 		}
 	}
 
-	function mountPaymentRequestButton() {
-		if (paymentRequestNode && paymentRequestButton) {
-			paymentRequestButton.mount(paymentRequestNode);
+	function mountExpressCheckout() {
+		if (paymentRequestNode && expressCheckoutElement) {
+			expressCheckoutElement.mount(paymentRequestNode);
 		}
 	}
+
+	// Stripe amounts are integers in the currency's minor unit; currency codes
+	// are lower-case.
+	const walletAmount = $derived(Math.round(amount * 100));
+	const walletCurrency = $derived(currency.toLowerCase());
+
+	// Keep the wallet sheet's total in sync if the parent changes the price
+	// after mount (the deferred-intent Elements group owns amount/currency).
+	// This is a sync to an external system — the effect assigns no state.
+	$effect(() => {
+		walletElements?.update({ amount: walletAmount, currency: walletCurrency });
+	});
 
 	const attachCardElement: Attachment<HTMLDivElement> = (node) => {
 		cardElementNode = node;
@@ -133,7 +157,7 @@
 
 	const attachPaymentRequest: Attachment<HTMLDivElement> = (node) => {
 		paymentRequestNode = node;
-		mountPaymentRequestButton();
+		mountExpressCheckout();
 
 		return () => {
 			paymentRequestNode = null;
@@ -195,54 +219,96 @@
 				cardComplete = event.complete;
 			});
 
-			// Setup Payment Request Button (Apple Pay, Google Pay)
-			if (enablePaymentRequest && elements) {
-				const paymentRequest = stripe.paymentRequest({
-					country: 'US',
-					currency: currency.toLowerCase(),
-					total: {
-						label: description,
-						amount: Math.round(amount * 100)
-					},
-					requestPayerName: true,
-					requestPayerEmail: true
+			// Express Checkout Element (Apple Pay, Google Pay) — successor to the
+			// retired Payment Request Button. Same wallet scope as before: every
+			// other express method is explicitly switched off.
+			if (enablePaymentRequest) {
+				const wallets = stripe.elements({
+					mode: 'payment',
+					amount: walletAmount,
+					currency: walletCurrency,
+					paymentMethodCreation: 'manual'
 				});
+				walletElements = wallets;
 
-				paymentRequest.canMakePayment().then((result: CanMakePaymentResult | null) => {
-					if (result && elements) {
-						paymentRequestAvailable = true;
-						paymentRequestButton = elements.create('paymentRequestButton', {
-							paymentRequest
-						});
-						mountPaymentRequestButton();
+				expressCheckoutElement = wallets.create('expressCheckout', {
+					emailRequired: true,
+					paymentMethods: {
+						applePay: 'auto',
+						googlePay: 'auto',
+						link: 'never',
+						paypal: 'never',
+						amazonPay: 'never',
+						klarna: 'never'
 					}
 				});
 
-				paymentRequest.on('paymentmethod', async (event: PaymentRequestPaymentMethodEvent) => {
-					processing = true;
-					try {
-						const card = event.paymentMethod.card;
-						if (!card) {
-							event.complete('fail');
-							if (onerror) onerror('Payment failed');
+				// The old Payment Request labelled the sheet total with `description`;
+				// resolve it as the single line item at click time so the label and
+				// amount always reflect the current props. `resolve` must be called
+				// synchronously (within 1s) or Stripe aborts the sheet.
+				expressCheckoutElement.on('click', (event: StripeExpressCheckoutElementClickEvent) => {
+					event.resolve({
+						lineItems: [{ name: description, amount: walletAmount }]
+					});
+				});
+
+				expressCheckoutElement.on('ready', (event: StripeExpressCheckoutElementReadyEvent) => {
+					const available = event.availablePaymentMethods;
+					paymentRequestAvailable = Boolean(available?.applePay || available?.googlePay);
+				});
+
+				expressCheckoutElement.on(
+					'confirm',
+					async (event: StripeExpressCheckoutElementConfirmEvent) => {
+						if (!stripe) {
+							event.paymentFailed({ reason: 'fail' });
 							return;
 						}
-						const result: StripePaymentResult = {
-							paymentMethodId: event.paymentMethod.id,
-							last4: card.last4,
-							cardBrand: card.brand,
-							expiryMonth: card.exp_month,
-							expiryYear: card.exp_year
-						};
-						event.complete('success');
-						if (onpayment) onpayment(result);
-					} catch (_err) {
-						event.complete('fail');
-						if (onerror) onerror('Payment failed');
-					} finally {
-						processing = false;
+						processing = true;
+						try {
+							const { error: submitError } = await wallets.submit();
+							if (submitError) {
+								event.paymentFailed({ reason: 'fail', message: submitError.message });
+								if (onerror) onerror(submitError.message || 'Payment failed');
+								return;
+							}
+
+							const { paymentMethod, error: createError } = await stripe.createPaymentMethod({
+								elements: wallets,
+								params: {
+									billing_details: {
+										name: event.billingDetails?.name,
+										email: event.billingDetails?.email || customerEmail || undefined
+									}
+								}
+							});
+
+							const card = paymentMethod?.card;
+							if (createError || !paymentMethod || !card) {
+								event.paymentFailed({ reason: 'fail', message: createError?.message });
+								if (onerror) onerror(createError?.message || 'Payment failed');
+								return;
+							}
+
+							const result: StripePaymentResult = {
+								paymentMethodId: paymentMethod.id,
+								last4: card.last4,
+								cardBrand: card.brand,
+								expiryMonth: card.exp_month,
+								expiryYear: card.exp_year
+							};
+							if (onpayment) onpayment(result);
+						} catch (_err) {
+							event.paymentFailed({ reason: 'fail' });
+							if (onerror) onerror('Payment failed');
+						} finally {
+							processing = false;
+						}
 					}
-				});
+				);
+
+				mountExpressCheckout();
 			}
 
 			loading = false;
@@ -439,9 +505,16 @@
 			<span>Loading payment form...</span>
 		</div>
 	{:else}
+		{#if enablePaymentRequest}
+			<!-- Express Checkout Element (Apple Pay, Google Pay). Mounted before
+			     availability is known — Stripe reports it via the element's
+			     `ready` event and renders nothing when no wallet is available. -->
+			<div
+				{@attach attachPaymentRequest}
+				class={['payment-request-slot', paymentRequestAvailable && 'payment-request-slot--ready']}
+			></div>
+		{/if}
 		{#if paymentRequestAvailable}
-			<!-- Payment Request Button (Apple Pay, Google Pay) - Touch-friendly -->
-			<div {@attach attachPaymentRequest} class="payment-request-slot"></div>
 			<div class="payment-divider">
 				<span class="payment-divider__line"></span>
 				<span>Or pay with card</span>
@@ -541,7 +614,9 @@
 		animation: stripe-spin 0.8s linear infinite;
 	}
 
-	.payment-request-slot {
+	/* Space is reserved only once Stripe reports an available wallet, so
+	   browsers without Apple Pay / Google Pay get no blank gap. */
+	.payment-request-slot--ready {
 		min-height: 44px;
 		margin-bottom: 0.5rem;
 	}
@@ -688,7 +763,7 @@
 			height: 1.5rem;
 		}
 
-		.payment-request-slot {
+		.payment-request-slot--ready {
 			min-height: 48px;
 			margin-bottom: 0.75rem;
 		}

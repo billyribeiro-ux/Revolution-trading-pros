@@ -40,7 +40,7 @@
 		cartStore.addItem(productToCartItem(product));
 
 		// Redirect to main checkout page
-		goto('/checkout', { replaceState: true });
+		goto('/checkout', { replace: true });
 	});
 </script>
 

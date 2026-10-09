@@ -42,7 +42,7 @@
 	//
 	// 	// Auth guard - redirect if not authenticated (user interaction: page load)
 	// 	if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-	// 		goto('/login?redirect=/account/sessions', { replaceState: true });
+	// 		goto('/login?redirect=/account/sessions', { replace: true });
 	// 		return;
 	// 	}
 	// 	loadSessions();
@@ -50,7 +50,7 @@
 	onMount(() => {
 		if (!browser) return;
 		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-			void goto('/login?redirect=/account/sessions', { replaceState: true });
+			void goto('/login?redirect=/account/sessions', { replace: true });
 			return;
 		}
 		void loadSessions();
@@ -94,7 +94,7 @@
 			// If we revoked current session, redirect to login
 			if (session?.is_current) {
 				authStore.clearAuth();
-				goto('/login?reason=session_revoked', { replaceState: true });
+				goto('/login?reason=session_revoked', { replace: true });
 			}
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to revoke session';
@@ -114,7 +114,7 @@
 		try {
 			await authService.logoutAllDevices(false);
 			authStore.clearAuth();
-			goto('/login?reason=logged_out_all', { replaceState: true });
+			goto('/login?reason=logged_out_all', { replace: true });
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to logout from all devices';
 			revokingAll = false;
