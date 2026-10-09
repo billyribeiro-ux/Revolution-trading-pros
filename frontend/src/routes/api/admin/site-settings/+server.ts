@@ -9,7 +9,6 @@
  */
 
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
 import { API_BASE_URL as ENV_API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 const API_BASE_URL = ENV_API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
@@ -25,7 +24,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	});
 
 	const data = await res.json();
-	return json(data, { status: res.status });
+	return Response.json(data, { status: res.status });
 };
 
 export const PATCH: RequestHandler = async ({ request, locals }) => {
@@ -43,5 +42,5 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 	});
 
 	const data = await res.json();
-	return json(data, { status: res.status });
+	return Response.json(data, { status: res.status });
 };

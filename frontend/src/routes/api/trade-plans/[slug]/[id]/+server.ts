@@ -11,7 +11,7 @@
  * @version 1.0.0 - ICT 7 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
@@ -71,7 +71,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	if (backendData) {
 		// R19-A: extractBackendData() preserves "envelope.data === null"
 		// semantics (returns null, not the envelope) which `||` did not.
-		return json({
+		return Response.json({
 			success: true,
 			data: extractBackendData(backendData),
 			_source: 'backend'
@@ -147,7 +147,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: extractBackendData(backendData),
 			message: 'Trade plan entry updated',
@@ -199,7 +199,7 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			message: `Trade plan entry ${id} deleted`,
 			_source: 'backend'

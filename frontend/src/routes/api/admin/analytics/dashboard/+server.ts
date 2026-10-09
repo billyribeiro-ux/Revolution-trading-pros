@@ -7,7 +7,6 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { isValidPeriod } from '#lib/server/analytics-proxy.js';
@@ -85,7 +84,7 @@ export const GET: RequestHandler = async (event) => {
 	const isEnvelopeSuccess = hasSuccess(backendData) && backendData.success;
 	const hasKpis = isObject(backendData) && 'kpis' in backendData;
 	if (isEnvelopeSuccess || hasKpis) {
-		return json({
+		return Response.json({
 			success: true,
 			data: extractBackendData(backendData),
 			_source: 'backend'
@@ -95,7 +94,7 @@ export const GET: RequestHandler = async (event) => {
 	// Return built-in analytics structure
 	const builtInData = generateBuiltInAnalytics(period);
 
-	return json({
+	return Response.json({
 		success: true,
 		data: builtInData,
 		_source: 'builtin'

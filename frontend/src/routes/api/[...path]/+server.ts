@@ -16,7 +16,6 @@
  * @version 2.0.0
  * @author ICT 7 Principal Engineer
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler, Cookies } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -144,7 +143,7 @@ function createErrorResponse(
 		path,
 		retryable
 	};
-	return json(body, {
+	return Response.json(body, {
 		status,
 		headers: {
 			'X-Request-ID': requestId,
@@ -170,7 +169,7 @@ async function proxyRequest(
 	// ICT 7: Check circuit breaker
 	const circuitError = checkCircuitBreaker(requestId);
 	if (circuitError) {
-		return json(circuitError, { status: 503 });
+		return Response.json(circuitError, { status: 503 });
 	}
 
 	// Build target URL
@@ -249,7 +248,7 @@ async function proxyRequest(
 				const responseText = await response.text();
 				try {
 					const data = JSON.parse(responseText);
-					return json(data, {
+					return Response.json(data, {
 						status: response.status,
 						headers: {
 							'X-Request-ID': requestId,

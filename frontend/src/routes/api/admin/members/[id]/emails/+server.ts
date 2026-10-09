@@ -12,7 +12,6 @@
  * backend unreachable we surface 502 instead of faking an empty list.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdminToken } from '#lib/server/auth.js';
@@ -22,22 +21,22 @@ const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 async function relay(response: Response): Promise<Response> {
 	const text = await response.text();
 	if (!text) {
-		return json(
+		return Response.json(
 			{ error: 'Empty response from backend' },
 			{ status: response.status >= 400 ? response.status : 502 }
 		);
 	}
 	try {
 		const data = JSON.parse(text);
-		return json(data, { status: response.status });
+		return Response.json(data, { status: response.status });
 	} catch {
-		return json({ error: 'Invalid JSON from backend' }, { status: 502 });
+		return Response.json({ error: 'Invalid JSON from backend' }, { status: 502 });
 	}
 }
 
 export const GET: RequestHandler = async (event) => {
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing member id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing member id' }, { status: 400 });
 	const token = requireAdminToken(event);
 	try {
 		const response = await fetch(`${API_URL}/api/admin/members/${id}/emails`, {
@@ -51,6 +50,6 @@ export const GET: RequestHandler = async (event) => {
 		return relay(response);
 	} catch (err) {
 		console.error('[API Proxy] Get member emails error:', err);
-		return json({ error: 'Backend unreachable' }, { status: 502 });
+		return Response.json({ error: 'Backend unreachable' }, { status: 502 });
 	}
 };

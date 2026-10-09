@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -56,7 +55,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		// If still no token, return error
 		if (!body.refresh_token) {
 			console.warn(`[Refresh:${requestId}] No refresh token available`);
-			return json({ error: 'No refresh token', message: 'Please log in again' }, { status: 401 });
+			return Response.json(
+				{ error: 'No refresh token', message: 'Please log in again' },
+				{ status: 401 }
+			);
 		}
 
 		const response = await fetch(`${API_URL}/auth/refresh`, {
@@ -108,7 +110,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			console.debug(`[Refresh:${requestId}] Success (${duration}ms)`);
 
 			// Return normalized response with data wrapper for frontend compatibility
-			return json(
+			return Response.json(
 				{
 					data: {
 						access_token: accessToken,
@@ -120,13 +122,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			);
 		} else {
 			console.warn(`[Refresh:${requestId}] Backend returned ${response.status} (${duration}ms)`);
-			return json(rawData, { status: response.status });
+			return Response.json(rawData, { status: response.status });
 		}
 	} catch (error) {
 		const duration = Math.round(performance.now() - startTime);
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 		console.error(`[Refresh:${requestId}] Error: ${errorMessage} (${duration}ms)`);
-		return json(
+		return Response.json(
 			{ error: 'Token refresh failed', message: 'Unable to refresh authentication token' },
 			{ status: 500 }
 		);

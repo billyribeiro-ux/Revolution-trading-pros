@@ -6,7 +6,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Video interface (shared with parent)
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ params }) => {
 	video.view_count++;
 	videos.set(id ?? '', video);
 
-	return json({
+	return Response.json({
 		success: true,
 		data: video
 	});
@@ -98,7 +98,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
 		videos.set(id ?? '', updatedVideo);
 
-		return json({
+		return Response.json({
 			success: true,
 			data: updatedVideo
 		});
@@ -117,7 +117,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
 
 	videos.delete(id ?? '');
 
-	return json({
+	return Response.json({
 		success: true,
 		message: 'Video deleted successfully'
 	});

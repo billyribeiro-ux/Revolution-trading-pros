@@ -5,8 +5,6 @@
  * @version 2.0.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
-
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -28,7 +26,7 @@ export const GET: RequestHandler = async (event) => {
 
 		if (response.ok) {
 			const data = await response.json();
-			return json(data);
+			return Response.json(data);
 		}
 
 		console.warn(`Backend members stats returned ${response.status}`);
@@ -37,7 +35,7 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	// Return empty stats on error, not mock data
-	return json({
+	return Response.json({
 		overview: {
 			total_members: 0,
 			new_this_month: 0,

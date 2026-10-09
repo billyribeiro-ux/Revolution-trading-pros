@@ -11,7 +11,7 @@
  * Falls back to simulated prices when external API unavailable.
  */
 
-import { json, type RequestEvent } from '@sveltejs/kit';
+import { type RequestEvent } from '@sveltejs/kit';
 import { FMP_API_KEY, FINNHUB_API_KEY } from '$app/env/private';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -186,7 +186,7 @@ export const GET = async ({ url }: RequestEvent): Promise<Response> => {
 	const tickersParam = url.searchParams.get('tickers');
 
 	if (!tickersParam) {
-		return json({ success: false, error: 'Missing tickers parameter' }, { status: 400 });
+		return Response.json({ success: false, error: 'Missing tickers parameter' }, { status: 400 });
 	}
 
 	const tickers = tickersParam
@@ -196,7 +196,7 @@ export const GET = async ({ url }: RequestEvent): Promise<Response> => {
 		.slice(0, 50); // Limit to 50 tickers per request
 
 	if (tickers.length === 0) {
-		return json({ success: false, error: 'No valid tickers provided' }, { status: 400 });
+		return Response.json({ success: false, error: 'No valid tickers provided' }, { status: 400 });
 	}
 
 	// Check cache first
@@ -226,7 +226,7 @@ export const GET = async ({ url }: RequestEvent): Promise<Response> => {
 	// Combine cached and fresh prices
 	const allPrices = [...cachedPrices, ...freshPrices];
 
-	return json({
+	return Response.json({
 		success: true,
 		prices: allPrices,
 		cached: cachedPrices.length,

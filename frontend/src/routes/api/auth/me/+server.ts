@@ -6,14 +6,13 @@
  * Used by dashboard components to determine admin privileges.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 function anonymousResponse() {
-	return json({ user: null, authenticated: false }, { status: 200 });
+	return Response.json({ user: null, authenticated: false }, { status: 200 });
 }
 
 export const GET = async ({ cookies, url }: RequestEvent) => {
@@ -23,7 +22,7 @@ export const GET = async ({ cookies, url }: RequestEvent) => {
 
 		if (!accessToken) {
 			if (optionalProbe) return anonymousResponse();
-			return json({ user: null, error: 'Not authenticated' }, { status: 401 });
+			return Response.json({ user: null, error: 'Not authenticated' }, { status: 401 });
 		}
 
 		// Forward request to backend with auth token
@@ -42,16 +41,19 @@ export const GET = async ({ cookies, url }: RequestEvent) => {
 				// Clear invalid cookies
 				cookies.delete('rtp_access_token', { path: '/' });
 				if (optionalProbe) return anonymousResponse();
-				return json({ user: null, error: 'Session expired' }, { status: 401 });
+				return Response.json({ user: null, error: 'Session expired' }, { status: 401 });
 			}
-			return json({ user: null, error: 'Auth check failed' }, { status: response.status });
+			return Response.json({ user: null, error: 'Auth check failed' }, { status: response.status });
 		}
 
 		const data = await response.json();
 
-		return json(data, { status: 200 });
+		return Response.json(data, { status: 200 });
 	} catch (error) {
 		console.error('[Auth Me] Error:', error);
-		return json({ user: null, error: 'Authentication service unavailable' }, { status: 503 });
+		return Response.json(
+			{ user: null, error: 'Authentication service unavailable' },
+			{ status: 503 }
+		);
 	}
 };

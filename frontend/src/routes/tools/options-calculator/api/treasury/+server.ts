@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { FRED_API_KEY } from '$app/env/private';
 
@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const apiKey = FRED_API_KEY;
 
 		if (!apiKey) throw error(401, 'FRED API key not configured');
-		if (healthcheck) return json({ ok: true });
+		if (healthcheck) return Response.json({ ok: true });
 
 		try {
 			const results: Record<string, number> = {};
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			await Promise.all(fetches);
 
-			return json({
+			return Response.json({
 				rate1M: results.rate1M ?? 0.043,
 				rate3M: results.rate3M ?? 0.043,
 				rate6M: results.rate6M ?? 0.042,

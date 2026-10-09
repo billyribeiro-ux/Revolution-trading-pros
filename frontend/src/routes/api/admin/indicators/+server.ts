@@ -11,7 +11,6 @@
  * adminFetch('/api/admin/indicators...') call was returning a SvelteKit 404.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -46,7 +45,7 @@ export const GET: RequestHandler = async (event) => {
 
 		if (!response.ok) {
 			console.error(`[Indicators proxy] GET list error ${response.status}:`, text);
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: (payload as { error?: string })?.error || `Backend returned ${response.status}`
@@ -55,10 +54,10 @@ export const GET: RequestHandler = async (event) => {
 			);
 		}
 
-		return json(payload ?? { success: true, data: [] });
+		return Response.json(payload ?? { success: true, data: [] });
 	} catch (err) {
 		console.error('[Indicators proxy] GET list fetch failed:', err);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: err instanceof Error ? err.message : 'Failed to reach backend'
@@ -99,7 +98,7 @@ export const POST: RequestHandler = async (event) => {
 
 		if (!response.ok) {
 			console.error(`[Indicators proxy] POST create error ${response.status}:`, text);
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: (payload as { error?: string })?.error || `Backend returned ${response.status}`
@@ -108,10 +107,10 @@ export const POST: RequestHandler = async (event) => {
 			);
 		}
 
-		return json(payload ?? { success: true });
+		return Response.json(payload ?? { success: true });
 	} catch (err) {
 		console.error('[Indicators proxy] POST create fetch failed:', err);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: err instanceof Error ? err.message : 'Failed to reach backend'

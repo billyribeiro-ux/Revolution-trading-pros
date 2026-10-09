@@ -3,7 +3,7 @@
  * ICT 7 Grade - Routes requests to Rust API backend
  */
 
-import { json, isHttpError } from '@sveltejs/kit';
+import { isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -47,10 +47,10 @@ export const POST: RequestHandler = async (event) => {
 		});
 
 		const raw = await response.json().catch(() => null);
-		return json(envelope(raw, response.status), { status: response.status });
+		return Response.json(envelope(raw, response.status), { status: response.status });
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin course unpublish error:', err);
-		return json({ success: false, error: 'Failed to unpublish course' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to unpublish course' }, { status: 500 });
 	}
 };

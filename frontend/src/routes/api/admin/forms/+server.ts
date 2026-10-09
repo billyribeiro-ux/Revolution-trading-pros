@@ -16,7 +16,7 @@
  * @version 1.1.0 — 2026-05-20
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { requireAdmin } from '#lib/server/auth.js';
@@ -45,10 +45,10 @@ export const GET: RequestHandler = async (event) => {
 	if (status >= 400 || !data) {
 		// Return empty list with a flag so consumers can render gracefully
 		// instead of throwing. The popup builder uses `data.forms || data || []`.
-		return json({ success: false, forms: [], total: 0, error: 'Failed to fetch forms' });
+		return Response.json({ success: false, forms: [], total: 0, error: 'Failed to fetch forms' });
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 export const POST: RequestHandler = async (event) => {
@@ -76,7 +76,7 @@ export const POST: RequestHandler = async (event) => {
 		if (status >= 400) {
 			error(status, extractBackendErrorMessage(data, 'Failed to create form'));
 		}
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/forms error:', err);

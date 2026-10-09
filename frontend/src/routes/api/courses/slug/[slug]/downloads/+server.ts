@@ -12,7 +12,7 @@
  *   forward upstream non-2xx as 502, network failure as 500.
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { type RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback, localhost last.
@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		return json({ success: false, error: 'Course slug is required' }, { status: 400 });
+		return Response.json({ success: false, error: 'Course slug is required' }, { status: 400 });
 	}
 
 	try {
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 			console.error(
 				`[Course downloads proxy by slug] Backend ${response.status} for slug '${slug}'`
 			);
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: `Unable to load course downloads (backend ${response.status}).`
@@ -61,11 +61,11 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		// R22-A: was: silent `{ success: true, data: [] }` fallback. Now: 500.
 		console.error('[Course downloads proxy by slug] Backend fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: 'Course downloads backend unreachable.' },
 			{ status: 500 }
 		);

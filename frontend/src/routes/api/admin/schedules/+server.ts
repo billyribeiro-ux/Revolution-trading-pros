@@ -20,7 +20,7 @@
  * @version 2.0.0
  */
 
-import { json, error as kitError } from '@sveltejs/kit';
+import { error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -131,7 +131,7 @@ export const GET: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(result.data);
+		return Response.json(result.data);
 	}
 
 	// FIX-2026-04-26 (P0-1): if the backend is reachable but returned an error,
@@ -154,7 +154,7 @@ export const GET: RequestHandler = async (event) => {
 			: a.start_time.localeCompare(b.start_time)
 	);
 
-	return json(
+	return Response.json(
 		{
 			success: false,
 			data: filtered,
@@ -182,7 +182,7 @@ export const POST: RequestHandler = async (event) => {
 		!body.start_time ||
 		!body.end_time
 	) {
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: 'Missing required fields: room_id, title, day_of_week, start_time, end_time'
@@ -198,7 +198,7 @@ export const POST: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(result.data);
+		return Response.json(result.data);
 	}
 
 	if (result.reachable) {
@@ -207,7 +207,7 @@ export const POST: RequestHandler = async (event) => {
 	}
 
 	// Backend unreachable — refuse the write rather than fabricate success.
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Schedules backend is not reachable. Schedule was NOT created.',

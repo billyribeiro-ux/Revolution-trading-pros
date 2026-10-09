@@ -7,7 +7,7 @@
  * @version 2.0.0 - December 2025 - Connected to real backend
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -77,7 +77,7 @@ export const GET: RequestHandler = async (event) => {
 			const errorData = await response
 				.json()
 				.catch(() => ({ message: 'Failed to fetch contacts' }));
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: errorData.message || 'Failed to fetch contacts',
@@ -91,7 +91,7 @@ export const GET: RequestHandler = async (event) => {
 		const data = await response.json();
 
 		// Transform backend pagination response to match frontend expected format
-		return json({
+		return Response.json({
 			success: true,
 			data: data.data || [],
 			meta: {
@@ -103,7 +103,7 @@ export const GET: RequestHandler = async (event) => {
 		});
 	} catch (err) {
 		console.error('CRM Contacts API proxy error:', err);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: 'Failed to connect to backend',
@@ -152,7 +152,7 @@ export const POST: RequestHandler = async (event) => {
 				error(409, 'Contact with this email already exists');
 			}
 
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: errorData.message || 'Failed to create contact',
@@ -164,7 +164,7 @@ export const POST: RequestHandler = async (event) => {
 
 		const data = await response.json();
 
-		return json({ success: true, data }, { status: 201 });
+		return Response.json({ success: true, data }, { status: 201 });
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;

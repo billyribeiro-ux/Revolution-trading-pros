@@ -3,7 +3,7 @@
  */
 
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 // FIX-2026-04-26: was hardcoded zeros stub; now real proxy to backend
@@ -35,5 +35,5 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 		headers: { Authorization: `Bearer ${token}` }
 	});
 	if (!res.ok) error(res.status as Parameters<typeof error>[0], `Backend returned ${res.status}`);
-	return json(await res.json());
+	return Response.json(await res.json());
 };

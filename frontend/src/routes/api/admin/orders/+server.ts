@@ -12,7 +12,6 @@
  * Auth: canonical `rtp_access_token` cookie → `Bearer` header.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -38,7 +37,7 @@ export const GET: RequestHandler = async (event) => {
 		// Forward backend error verbatim where useful; provide an empty-shape
 		// fallback for 5xx so the page still renders without throwing.
 		if (upstream.status >= 500) {
-			return json(
+			return Response.json(
 				{
 					data: [],
 					stats: null,

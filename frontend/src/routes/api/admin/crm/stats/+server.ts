@@ -6,7 +6,7 @@
  * @version 2.0.0 - January 2026
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async (event) => {
 
 		if (response.ok) {
 			const data = await response.json();
-			return json({ success: true, data });
+			return Response.json({ success: true, data });
 		}
 
 		console.warn(`Backend CRM stats returned ${response.status}`);

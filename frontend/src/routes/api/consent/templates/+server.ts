@@ -10,7 +10,7 @@
  * @module api/consent/templates
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 /**
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		const config = templateStore.get(siteId) || DEFAULT_CONFIG;
 
-		return json({
+		return Response.json({
 			success: true,
 			config
 		});
@@ -78,7 +78,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
 		console.info(`[TemplatesAPI] Saved template config for site: ${siteId}`);
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Template configuration saved',
 			config
@@ -112,7 +112,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 
 		templateStore.set(siteId, updated);
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Template configuration updated',
 			config: updated
@@ -134,7 +134,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		console.info(`[TemplatesAPI] Reset template config for site: ${siteId}`);
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Template configuration reset to default'
 		});

@@ -15,7 +15,7 @@
  * can stop polling.
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -56,7 +56,7 @@ export const GET: RequestHandler = async (event) => {
 
 		if (!response.ok) {
 			console.error(`[Bunny video-status] Backend error ${response.status}:`, text);
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: (payload as { error?: string })?.error || `Backend returned ${response.status}`,
@@ -66,10 +66,10 @@ export const GET: RequestHandler = async (event) => {
 			);
 		}
 
-		return json(payload ?? { success: false, error: 'Empty response from backend' });
+		return Response.json(payload ?? { success: false, error: 'Empty response from backend' });
 	} catch (err) {
 		console.error('[Bunny video-status] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: err instanceof Error ? err.message : 'Failed to reach backend'

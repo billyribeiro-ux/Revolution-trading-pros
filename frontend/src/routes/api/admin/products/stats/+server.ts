@@ -9,8 +9,6 @@
  *   surfaces a real error and the admin can retry / page on-call.
  */
 
-import { json } from '@sveltejs/kit';
-
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -53,17 +51,20 @@ export const GET: RequestHandler = async (event) => {
 			console.error(
 				`[Products stats proxy] Backend error: ${response.status} ${response.statusText}`
 			);
-			return json(
+			return Response.json(
 				{ success: false, error: 'Unable to load products stats from backend.' },
 				{ status: 502 }
 			);
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		// R22-A: was: silent mock-zeros fallback. Now: 500 + log so an outage is visible.
 		console.error('[Products stats proxy] Backend fetch failed:', err);
-		return json({ success: false, error: 'Products stats backend unreachable.' }, { status: 500 });
+		return Response.json(
+			{ success: false, error: 'Products stats backend unreachable.' },
+			{ status: 500 }
+		);
 	}
 };

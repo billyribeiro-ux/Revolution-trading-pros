@@ -17,7 +17,7 @@
  * session down rather than leaving a dangling session identifier.
  */
 
-import { json, type RequestEvent } from '@sveltejs/kit';
+import { type RequestEvent } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 /** Every cookie the auth / OAuth flow sets (see CHANGELOG C-1). */
@@ -29,5 +29,5 @@ export const DELETE: RequestHandler = async ({ cookies }: RequestEvent) => {
 		// to actually drop it.
 		cookies.delete(name, { path: '/' });
 	}
-	return json({ success: true });
+	return Response.json({ success: true });
 };

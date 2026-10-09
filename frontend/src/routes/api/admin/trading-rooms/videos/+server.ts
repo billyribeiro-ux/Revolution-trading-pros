@@ -7,7 +7,6 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/auth.js';
 // R20-A: migrated off local `Promise<any | null>` helper to shared
@@ -189,14 +188,14 @@ export const GET: RequestHandler = async (event) => {
 	// R20-A: `hasSuccess` narrows `unknown` before reading `.success`
 	// (replaces the unsound `backendData?.success` pattern).
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// FIX-2026-04-26-audit (P1-11): surface backend failure instead of returning phantom
 	// mock videos. Admins were seeing fake data with no indication of a real failure.
 	// TODO(2026-04-26-audit): gate mock on env.ENABLE_MOCK_DATA if needed for local dev.
 	console.error('[Trading-rooms videos proxy] Backend unavailable or non-success:', backendData);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load videos from backend. Please check the API connection.',
@@ -215,7 +214,10 @@ export const POST: RequestHandler = async (event) => {
 	// of a 500 NPE downstream (R18-A Latent Bug §2 mitigation).
 	const rawBody: unknown = await event.request.json();
 	if (!isObject(rawBody)) {
-		return json({ success: false, error: 'Request body must be a JSON object' }, { status: 400 });
+		return Response.json(
+			{ success: false, error: 'Request body must be a JSON object' },
+			{ status: 400 }
+		);
 	}
 	const body = rawBody as VideoCreateBody;
 
@@ -231,7 +233,7 @@ export const POST: RequestHandler = async (event) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// FIX-2026-04-26-audit (P1-11): surface POST failure — a silent mock-create would
@@ -240,7 +242,7 @@ export const POST: RequestHandler = async (event) => {
 		'[Trading-rooms videos proxy POST] Backend unavailable or non-success:',
 		backendData
 	);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to create video — backend is unavailable. Please try again.'

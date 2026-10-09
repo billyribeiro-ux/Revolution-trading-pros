@@ -10,7 +10,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Trade, TradeCreateInput, TradeStatus } from '#lib/types/trading.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
@@ -130,7 +130,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 		const trades: Trade[] = backendData.data.filter(isTradeLike);
 		const stats = calculateStats(trades);
 
-		return json({
+		return Response.json({
 			success: true,
 			data: trades,
 			stats,
@@ -145,7 +145,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	// stats from it, return `_source: 'mock'`. Now: 502 so the trades page
 	// shows a real error rather than fake stats.
 	console.error(`[Trades API] Backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load trades — backend is unavailable.'
@@ -220,7 +220,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: backendData,
 			message: 'Trade created successfully',
@@ -232,7 +232,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	// return 200. Fake-success on a mutating endpoint — the trade was never
 	// persisted and the linked entry alert pointed nowhere. Now: 502.
 	console.error(`[Trades API] POST backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to create trade — backend is unavailable.'

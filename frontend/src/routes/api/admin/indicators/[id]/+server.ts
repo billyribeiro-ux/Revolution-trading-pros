@@ -17,7 +17,6 @@
  * Built 2026-04-26-audit (P0-8): this proxy was entirely absent.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -57,7 +56,7 @@ async function forwardToBackend(
 
 	if (!response.ok) {
 		console.error(`[Indicators/${method}] Backend error ${response.status}:`, text);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: (payload as { error?: string })?.error || `Backend returned ${response.status}`
@@ -66,7 +65,7 @@ async function forwardToBackend(
 		);
 	}
 
-	return json(payload ?? { success: true });
+	return Response.json(payload ?? { success: true });
 }
 
 // ── GET ──────────────────────────────────────────────────────────────────────
@@ -86,7 +85,7 @@ export const GET: RequestHandler = async (event) => {
 		);
 	} catch (err) {
 		console.error('[Indicators/GET] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -106,7 +105,7 @@ export const PUT: RequestHandler = async (event) => {
 		return await forwardToBackend('PUT', `/api/admin/indicators/${id}`, token, contentType, body);
 	} catch (err) {
 		console.error('[Indicators/PUT] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -129,7 +128,7 @@ export const DELETE: RequestHandler = async (event) => {
 		);
 	} catch (err) {
 		console.error('[Indicators/DELETE] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -149,7 +148,7 @@ export const PATCH: RequestHandler = async (event) => {
 		return await forwardToBackend('PATCH', `/api/admin/indicators/${id}`, token, contentType, body);
 	} catch (err) {
 		console.error('[Indicators/PATCH] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -169,7 +168,7 @@ export const POST: RequestHandler = async (event) => {
 		return await forwardToBackend('POST', `/api/admin/indicators/${id}`, token, contentType, body);
 	} catch (err) {
 		console.error('[Indicators/POST] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);

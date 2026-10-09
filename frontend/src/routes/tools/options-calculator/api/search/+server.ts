@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { POLYGON_API_KEY } from '$app/env/private';
 
@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				primaryExchange: r.primary_exchange
 			}));
 
-			return json(results);
+			return Response.json(results);
 		} catch (err) {
 			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}

@@ -11,7 +11,6 @@
  * as-is for backward compatibility.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -37,14 +36,14 @@ export const GET: RequestHandler = async (event) => {
 			} catch {
 				errorData = { error: response.statusText || 'Request failed' };
 			}
-			return json(errorData, { status: response.status });
+			return Response.json(errorData, { status: response.status });
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		console.error('[API Proxy] Failed to fetch membership plans:', err);
-		return json({ error: 'Failed to fetch membership plans' }, { status: 500 });
+		return Response.json({ error: 'Failed to fetch membership plans' }, { status: 500 });
 	}
 };
 
@@ -71,17 +70,20 @@ export const POST: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+			return Response.json(
+				{ error: 'Empty response from server' },
+				{ status: response.status || 500 }
+			);
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({ error: 'Invalid response from server' }, { status: 500 });
+			return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (err) {
 		console.error('[API Proxy] Failed to create membership plan:', err);
-		return json({ error: 'Failed to create membership plan' }, { status: 500 });
+		return Response.json({ error: 'Failed to create membership plan' }, { status: 500 });
 	}
 };

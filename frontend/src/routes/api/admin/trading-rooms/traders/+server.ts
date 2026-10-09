@@ -7,7 +7,6 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/auth.js';
 // R20-A: migrated off local `Promise<any | null>` helper to shared
@@ -126,7 +125,7 @@ export const GET: RequestHandler = async (event) => {
 	// The previous `backendData?.success` was unsound on a non-null primitive
 	// response (would NPE on `.success` access).
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// FIX-2026-04-26-audit (P1-11): surface backend failure instead of returning phantom
@@ -134,7 +133,7 @@ export const GET: RequestHandler = async (event) => {
 	// backend hiccup with no indication that real data was unavailable.
 	// TODO(2026-04-26-audit): gate mock on env.ENABLE_MOCK_DATA if needed for local dev.
 	console.error('[Trading-rooms traders proxy] Backend unavailable or non-success:', backendData);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load traders from backend. Please check the API connection.',
@@ -154,7 +153,10 @@ export const POST: RequestHandler = async (event) => {
 	// Bug §2 mitigation, applied uniformly across admin proxies).
 	const rawBody: unknown = await event.request.json();
 	if (!isObject(rawBody)) {
-		return json({ success: false, error: 'Request body must be a JSON object' }, { status: 400 });
+		return Response.json(
+			{ success: false, error: 'Request body must be a JSON object' },
+			{ status: 400 }
+		);
 	}
 	const body = rawBody as TraderCreateBody;
 
@@ -170,7 +172,7 @@ export const POST: RequestHandler = async (event) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// FIX-2026-04-26-audit (P1-11): surface backend failure on POST — a silent mock-create
@@ -179,7 +181,7 @@ export const POST: RequestHandler = async (event) => {
 		'[Trading-rooms traders proxy POST] Backend unavailable or non-success:',
 		backendData
 	);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to create trader — backend is unavailable. Please try again.'

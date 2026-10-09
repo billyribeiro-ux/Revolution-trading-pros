@@ -5,7 +5,6 @@
  * @version 2.1.0 - January 2026 - Cloudflare compatible
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -63,20 +62,20 @@ export const GET: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json(EMPTY_DATA);
+			return Response.json(EMPTY_DATA);
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data);
+			return Response.json(data);
 		} catch {
-			return json(EMPTY_DATA);
+			return Response.json(EMPTY_DATA);
 		}
 	} catch (error) {
 		// Network-level failure — surface 502 so the page knows the upstream
 		// is unreachable instead of treating it as "no coupons exist".
 		console.error('[API] List coupons error:', error);
-		return json({ message: 'Backend unavailable' }, { status: 502 });
+		return Response.json({ message: 'Backend unavailable' }, { status: 502 });
 	}
 };
 
@@ -100,17 +99,17 @@ export const POST: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json({ message: 'Empty response from server' }, { status: response.status });
+			return Response.json({ message: 'Empty response from server' }, { status: response.status });
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({ message: 'Invalid response from server' }, { status: 500 });
+			return Response.json({ message: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
 		console.error('[API] Create coupon error:', error);
-		return json({ message: 'Failed to create coupon' }, { status: 500 });
+		return Response.json({ message: 'Failed to create coupon' }, { status: 500 });
 	}
 };

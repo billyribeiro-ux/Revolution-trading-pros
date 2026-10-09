@@ -6,7 +6,6 @@
  * so we proxy through SvelteKit server routes instead.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -38,7 +37,7 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 			data = JSON.parse(responseText);
 		} catch {
 			console.error('[Auth Proxy] Non-JSON response:', responseText);
-			return json({ error: 'Invalid response from auth server' }, { status: 502 });
+			return Response.json({ error: 'Invalid response from auth server' }, { status: 502 });
 		}
 
 		// (audit 2026-05-17) Removed the temp "ICT 7 Debug" response log
@@ -72,9 +71,9 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 		}
 
 		// Return the response with proper status
-		return json(data, { status: response.status });
+		return Response.json(data, { status: response.status });
 	} catch (error) {
 		console.error('[Auth Proxy] Error:', error);
-		return json({ error: 'Authentication service unavailable' }, { status: 503 });
+		return Response.json({ error: 'Authentication service unavailable' }, { status: 503 });
 	}
 };

@@ -8,7 +8,6 @@
  * @version 1.0.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -208,7 +207,7 @@ export const GET: RequestHandler = async () => {
 			trading_rooms: getTradingRooms()
 		};
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				data: dashboardData
@@ -221,6 +220,9 @@ export const GET: RequestHandler = async () => {
 		);
 	} catch (error) {
 		console.error('[SPX API] Error:', error);
-		return json({ success: false, error: 'Failed to fetch dashboard data' }, { status: 500 });
+		return Response.json(
+			{ success: false, error: 'Failed to fetch dashboard data' },
+			{ status: 500 }
+		);
 	}
 };

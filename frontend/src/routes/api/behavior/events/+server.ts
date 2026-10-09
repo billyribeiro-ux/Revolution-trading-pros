@@ -5,7 +5,6 @@
  * This is a stub endpoint that accepts events but doesn't persist them.
  * In production, this would forward to an analytics service or database.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -14,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate basic structure
 		if (!batch || !batch.session_id || !Array.isArray(batch.events)) {
-			return json({ error: 'Invalid batch format' }, { status: 400 });
+			return Response.json({ error: 'Invalid batch format' }, { status: 400 });
 		}
 
 		// In development, just acknowledge receipt
@@ -31,14 +30,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			received: batch.events.length,
 			timestamp: Date.now()
 		});
 	} catch (_error) {
 		// Silently handle malformed requests
-		return json({ error: 'Failed to process events' }, { status: 400 });
+		return Response.json({ error: 'Failed to process events' }, { status: 400 });
 	}
 };
 

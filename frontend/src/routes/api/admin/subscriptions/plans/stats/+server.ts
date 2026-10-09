@@ -10,8 +10,6 @@
  *   status; network failure surfaces as 500.
  */
 
-import { json } from '@sveltejs/kit';
-
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -37,15 +35,15 @@ export const GET: RequestHandler = async (event) => {
 			// Now: always forward the upstream status so the admin UI can
 			// distinguish "no plans" (real 200 with empty array) from "outage."
 			const error = await response.json().catch(() => ({ message: 'Request failed' }));
-			return json(error, { status: response.status });
+			return Response.json(error, { status: response.status });
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (error) {
 		// R22-A: was: silent mock-zeros fallback. Now: 500 so an outage is visible.
 		console.error('[Subscriptions stats proxy] Backend fetch failed:', error);
-		return json(
+		return Response.json(
 			{ success: false, error: 'Subscriptions stats backend unreachable.' },
 			{ status: 500 }
 		);

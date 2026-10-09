@@ -7,7 +7,7 @@
  * @version 1.0.0 - January 2026
  */
 
-import { redirect, json } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// If not a redirect, return the response as-is
 		const data = await backendResponse.json();
-		return json(data, { status: backendResponse.status });
+		return Response.json(data, { status: backendResponse.status });
 	} catch (error) {
 		// Handle redirect errors (they're actually success cases)
 		if (error && typeof error === 'object' && 'status' in error && 'location' in error) {

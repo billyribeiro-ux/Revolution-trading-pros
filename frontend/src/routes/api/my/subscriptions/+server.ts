@@ -14,7 +14,6 @@
  * @see /api/subscriptions/my (backend endpoint)
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -47,7 +46,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	if (!token) {
 		// ICT 7: Structured logging with context
 		console.debug(`[Subscriptions:${requestId}] No auth token - returning empty`);
-		return json({
+		return Response.json({
 			subscriptions: [],
 			total: 0
 		} satisfies SubscriptionsResponse);
@@ -69,7 +68,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 			console.warn(
 				`[Subscriptions:${requestId}] Backend returned ${response.status} (${duration}ms)`
 			);
-			return json({
+			return Response.json({
 				subscriptions: [],
 				total: 0
 			} satisfies SubscriptionsResponse);
@@ -83,7 +82,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 
 		console.debug(`[Subscriptions:${requestId}] Success: ${total} subscriptions (${duration}ms)`);
 
-		return json({
+		return Response.json({
 			subscriptions,
 			total
 		} satisfies SubscriptionsResponse);
@@ -95,7 +94,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 		console.error(`[Subscriptions:${requestId}] Failed: ${errorMessage} (${duration}ms)`);
 
 		// ICT 7: Graceful degradation - never crash the UI
-		return json({
+		return Response.json({
 			subscriptions: [],
 			total: 0
 		} satisfies SubscriptionsResponse);

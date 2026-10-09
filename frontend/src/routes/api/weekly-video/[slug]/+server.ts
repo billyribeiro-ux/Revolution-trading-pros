@@ -10,7 +10,7 @@
  * @version 1.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
 // `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: extractBackendData(backendData),
 			_source: 'backend'
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	// `_source: 'mock'` — broken iframe URLs for matching slugs. Now: 502
 	// so the weekly-video card shows a real error.
 	console.error(`[Weekly Video API] GET backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to load weekly video — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -158,7 +158,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: backendData,
 			message: 'Weekly video published successfully',
@@ -171,7 +171,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	// mutating endpoint — admins saw "Published" while nothing persisted.
 	// Now: 502.
 	console.error(`[Weekly Video API] POST backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to publish weekly video — backend is unavailable.' },
 		{ status: 502 }
 	);

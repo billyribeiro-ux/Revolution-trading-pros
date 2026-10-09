@@ -7,7 +7,7 @@
  * backend test uses its stored credential instead of the masked placeholder.
  */
 
-import { json, error as kitError } from '@sveltejs/kit';
+import { error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireSuperadmin } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
@@ -44,7 +44,7 @@ export const POST: RequestHandler = async (event) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ success: false, message: 'Invalid JSON body' }, { status: 400 });
+		return Response.json({ success: false, message: 'Invalid JSON body' }, { status: 400 });
 	}
 
 	const sanitized = stripUnchangedSecrets(body);
@@ -71,11 +71,14 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		if (response.status >= 200 && response.status < 300) {
-			return json(data);
+			return Response.json(data);
 		}
 		kitError(response.status, extractErrorMessage(data, 'Storage connection test failed'));
 	} catch (err) {
 		console.warn('Storage test backend unreachable:', err);
-		return json({ success: false, message: 'Storage backend is not reachable.' }, { status: 503 });
+		return Response.json(
+			{ success: false, message: 'Storage backend is not reachable.' },
+			{ status: 503 }
+		);
 	}
 };

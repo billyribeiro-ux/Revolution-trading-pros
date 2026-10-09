@@ -7,7 +7,7 @@
  * @version 2.0.0 - January 2026
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async (event) => {
 
 		if (response.ok) {
 			const data = await response.json();
-			return json({ success: true, data: data.data || data });
+			return Response.json({ success: true, data: data.data || data });
 		}
 
 		console.warn(`Backend tags returned ${response.status}`);
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async (event) => {
 		console.warn('Backend tags not available:', err);
 	}
 
-	return json({
+	return Response.json({
 		success: false,
 		data: [],
 		error: 'Failed to fetch tags from backend'
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async (event) => {
 			error(upstream.status, message);
 		}
 
-		return json(data ?? { success: true });
+		return Response.json(data ?? { success: true });
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/tags error:', err);

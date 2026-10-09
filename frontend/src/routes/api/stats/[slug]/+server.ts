@@ -10,7 +10,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
 // (API_BASE_URL || BACKEND_URL || localhost) AND replaces the
@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 
 	// R19-A: hasData() narrowing instead of `backendData?.data`.
 	if (hasData(backendData)) {
-		return json({
+		return Response.json({
 			success: true,
 			data: backendData.data,
 			_source: 'backend'
@@ -71,7 +71,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	// for unknown slugs. Both lied silently. Now: 502 so the stats card shows
 	// a real error rather than fake "look how well your room is doing" numbers.
 	console.error(`[Stats API] Backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load room stats — backend is unavailable.'
@@ -120,7 +120,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		// (R18-A Latent Bug §3). Distinguishes "backend returned `data:
 		// null`" (no stats yet) from "envelope has no `data` key" (legacy
 		// non-wrapped endpoint). Both safe to forward.
-		return json({
+		return Response.json({
 			success: true,
 			data: extractBackendData(backendData),
 			message: 'Stats refreshed',
@@ -134,7 +134,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	// timestamp on stale numbers. Now: 502 so the admin retries on a real
 	// recalc path.
 	console.error(`[Stats API] POST refresh backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to refresh stats — backend is unavailable.'

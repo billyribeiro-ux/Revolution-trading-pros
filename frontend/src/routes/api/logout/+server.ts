@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -47,5 +46,5 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	cookies.delete('rtp_access_token', { path: '/' });
 	cookies.delete('rtp_refresh_token', { path: '/' });
 
-	return json({ success: true, message: 'Logged out successfully' });
+	return Response.json({ success: true, message: 'Logged out successfully' });
 };

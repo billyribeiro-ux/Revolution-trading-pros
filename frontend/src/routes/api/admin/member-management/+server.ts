@@ -9,7 +9,6 @@
  * @version 1.1.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -24,7 +23,7 @@ const PROD_BACKEND = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
  */
 export const GET: RequestHandler = async (event) => {
 	requireAdmin(event);
-	return json(
+	return Response.json(
 		{
 			error: 'Method not allowed. Use /api/admin/members for listing members.',
 			hint: 'GET /api/admin/member-management/:id is supported for individual members'
@@ -56,17 +55,20 @@ export const POST: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+			return Response.json(
+				{ error: 'Empty response from server' },
+				{ status: response.status || 500 }
+			);
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({ error: 'Invalid response from server' }, { status: 500 });
+			return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
 		console.error('[API] Create member error:', error);
-		return json({ error: 'Failed to create member' }, { status: 500 });
+		return Response.json({ error: 'Failed to create member' }, { status: 500 });
 	}
 };

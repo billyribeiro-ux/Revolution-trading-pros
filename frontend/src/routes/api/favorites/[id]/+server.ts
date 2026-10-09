@@ -7,7 +7,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
 // `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
@@ -35,7 +35,7 @@ export const DELETE: RequestHandler = async ({ params, cookies }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	error(401, 'Authentication required or favorite not found');

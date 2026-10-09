@@ -21,7 +21,7 @@
  * @version 2.0.0 - December 2025 - Added room targeting
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
 // `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
@@ -65,14 +65,14 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	const backendData = await fetchBackend(`/api/watchlist/${slug}`, { headers }, '[Watchlist API]');
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// R22-A: was: look up `slug` in the 3-row mock map (stale prev/next nav
 	// included), return `_mock: true`. Now: 502 so the watchlist detail
 	// page shows a real error.
 	console.error(`[Watchlist API] GET backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to load watchlist item — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -108,7 +108,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// R22-A: was: merge body fields into `mockWatchlistItems[slug]`, return
@@ -116,7 +116,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	// no DB row was touched — the next GET on the same slug showed the
 	// old values. Now: 502.
 	console.error(`[Watchlist API] PUT backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to update watchlist item — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -149,13 +149,13 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// R22-A: was: 404 if slug not in mock map, 200 `_mock: true` otherwise.
 	// No DB row was actually removed. Now: 502.
 	console.error(`[Watchlist API] DELETE backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to delete watchlist item — backend is unavailable.' },
 		{ status: 502 }
 	);

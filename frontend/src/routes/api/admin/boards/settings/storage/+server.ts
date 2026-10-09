@@ -20,7 +20,7 @@
  * @version 1.0.0
  */
 
-import { json, error as kitError } from '@sveltejs/kit';
+import { error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -122,14 +122,14 @@ export const GET: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(redactSecrets(result.data));
+		return Response.json(redactSecrets(result.data));
 	}
 
 	if (result.reachable) {
 		kitError(result.status, extractErrorMessage(result.data, 'Failed to load storage config'));
 	}
 
-	return json({ data: null, _degraded: true }, { status: 503 });
+	return Response.json({ data: null, _degraded: true }, { status: 503 });
 };
 
 export const PUT: RequestHandler = async (event) => {
@@ -140,7 +140,7 @@ export const PUT: RequestHandler = async (event) => {
 	try {
 		body = await request.json();
 	} catch {
-		return json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
+		return Response.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
 	}
 
 	// FIX-2026-04-26 (P0-3): drop unchanged-secret placeholders so a save with the
@@ -154,14 +154,14 @@ export const PUT: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(redactSecrets(result.data));
+		return Response.json(redactSecrets(result.data));
 	}
 
 	if (result.reachable) {
 		kitError(result.status, extractErrorMessage(result.data, 'Failed to save storage config'));
 	}
 
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Storage settings backend is not reachable. Config was NOT saved.',

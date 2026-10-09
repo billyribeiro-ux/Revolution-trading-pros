@@ -18,7 +18,7 @@
  * @version 2.0.0 - December 2025 - Added room targeting
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { ALL_ROOM_IDS } from '#lib/config/rooms.js';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
@@ -93,7 +93,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// Backend unavailable — return empty success so the component renders
@@ -101,7 +101,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	// R22-A context: the old mock list was removed to prevent phantom history
 	// navigation; an empty list is the correct honest response here.
 	console.warn('[Watchlist API] GET backend unavailable — returning empty list');
-	return json({ success: true, data: [] });
+	return Response.json({ success: true, data: [] });
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -136,7 +136,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData, { status: 201 });
+		return Response.json(backendData, { status: 201 });
 	}
 
 	// R22-A: was: build a new mock `WatchlistItem` from the body (computing
@@ -144,7 +144,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	// `_mock: true`. Fake-success on a mutating endpoint — admins saw
 	// "Published" but no row hit the DB. Now: 502.
 	console.error('[Watchlist API] POST backend unavailable');
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to create watchlist item — backend is unavailable.'

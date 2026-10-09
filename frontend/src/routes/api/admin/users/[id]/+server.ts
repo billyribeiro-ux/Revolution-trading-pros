@@ -20,11 +20,10 @@
  * @version 2.0.0 - April 2026 (audit hardening)
  */
 
-// `json` import commented out (audit 2026-05-16): traced end-to-end — every
-// response in this file goes through `forwardJson()` (raw `new Response`),
-// `json()` is never called. Left commented (not deleted) in case a future
-// handler needs it. `error` IS used.
-import { /* json, */ error } from '@sveltejs/kit';
+// Every response in this file goes through `forwardJson()` (raw
+// `new Response`). Kit's `json()` helper is deprecated in SvelteKit 3 in favour
+// of the standard `Response.json()` — use that if a future handler needs it.
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';

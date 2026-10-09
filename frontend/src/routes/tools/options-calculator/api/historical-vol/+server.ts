@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { POLYGON_API_KEY } from '$app/env/private';
 
@@ -56,7 +56,7 @@ export const GET: RequestHandler = async ({ url }) => {
 					volume: r.v
 				}));
 
-				return json(results);
+				return Response.json(results);
 			}
 
 			// Calculate historical volatility from daily prices
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				return Math.sqrt(variance * 252);
 			}
 
-			return json({
+			return Response.json({
 				ticker,
 				hv10: calcHV(logReturns, 10),
 				hv20: calcHV(logReturns, 20),
