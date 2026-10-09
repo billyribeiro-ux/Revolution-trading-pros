@@ -158,7 +158,7 @@ After you add API keys, everything works. No manual configuration needed.
 
 ### 4. Industry Standard
 - Svelte 5 runes (latest)
-- SvelteKit 3.x (currently the 3.0.0-next prerelease line)
+- SvelteKit 3.x (stable: 3.0.1)
 - Modern best practices
 - Enterprise-grade patterns
 

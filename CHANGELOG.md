@@ -4,6 +4,319 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-10-09 — SvelteKit 3 stable, pnpm 12, Vitest 5, Rust 1.99, and a full dependency/service top-up
+
+Everything the repo depends on moved to its latest release as of 2026-10-09,
+except Node, which is pinned to the latest **LTS**. Every bump was checked
+against its official changelog or migration guide (each researched finding was
+then re-checked by an independent adversarial pass), and every gate was run
+before and after on the same machine.
+
+### Runtime + toolchain
+
+| What | From | To | Where |
+|------|------|----|-------|
+| Node.js (latest LTS, "Krypton") | 24.20.0 | **24.21.0** | `.nvmrc`, `.node-version`, `engines.node` (root + frontend), `NODE_VERSION` in both workflows |
+| pnpm | 11.24.0 | **12.10.1** | `packageManager` (root + frontend, sha512 verified three ways: registry integrity, its hex form, and `sha512sum` of the tarball), `engines.pnpm` |
+| Rust | 1.98.0 | **1.99.0** | `rust-toolchain.toml`, CI `RUST_VERSION`, `api/Dockerfile` |
+| TypeScript | 6.0.3 | 6.0.3 (held) | see "Held, with evidence" |
+
+Node 26 becomes LTS only on 2026-10-28 (`nodejs/Release` `schedule.json`), so
+the 24.x line stays and `@types/node` stays on 24.x to match it.
+
+**pnpm 12** is a Rust rewrite that keeps pnpm 11's commands, settings and
+lockfile format. It now records `packageManagerDependencies` (pnpm and its
+`@pnpm/exe.*` binaries) in a leading YAML document of `pnpm-lock.yaml`, and it
+hard-fails on unknown `pnpm-workspace.yaml` keys (all of ours are recognised).
+CI gained a `git diff --exit-code -- pnpm-lock.yaml` step after the frozen
+install, so a lockfile regenerated under a different pnpm fails loudly instead
+of silently dirtying the checkout (a negative control with a mismatched pin
+showed the frozen install alone does not catch it). Corepack ≥ 0.34.5 is
+required to launch pnpm ≥ 11 (Node 24.21.0 bundles 0.36.0);
+`docs/development/LOCAL_DEV.md` says so. The Cloudflare Pages dashboard build,
+whose image ships pnpm 10.11.1, auto-switches to the pinned 12.10.1 and
+installs cleanly (simulated with pnpm 10.11.1 and 11.24.0).
+
+### SvelteKit 3 stable
+
+| Package | From | To |
+|---------|------|----|
+| `@sveltejs/kit` | 3.0.0-next.25 | **3.0.1** (stable) |
+| `@sveltejs/adapter-cloudflare` | 8.0.0-next.6 | **8.0.0** (stable) |
+| `@sveltejs/vite-plugin-svelte` | 7.3.0 | 7.3.1 |
+| `svelte` | 5.57.0 | 5.57.2 (Kit 3.0.1 peers `^5.57.1`) |
+| `svelte-check` | 4.7.6 | 4.7.6 (already latest) |
+
+Kit and the adapter must move together: Kit ≥ 3.0.0-next.27 replaced the
+adapter API `builder.generateManifest` (which adapter next.6 calls and Kit 3.0.1
+now throws on) with `builder.generateServerInstance`.
+
+- **`event.platform` is gone (adapter 8.0.0, #16754).** The maintenance-page
+  signup endpoint read `platform.env.RESEND_API_KEY`; after the bump that is
+  `undefined` and the confirmation email would have been silently skipped. The
+  key is now declared in `src/env.ts` and read from `$app/env/private`
+  (documented in `docs/development/ENV_VARS.md`).
+- **The service worker uses `version` from `$app/env` again**, per the official
+  service-worker docs. On 3.0.0-next.23 that export was `undefined` inside a
+  `ServiceWorkerGlobalScope`, which is why a Vite-`define`d `__APP_VERSION__`
+  workaround existed. Kit 3.0.1's worker build prepends
+  `globalThis.__sveltekit_<hash> = { base, env, version }` — verified in the
+  built `service-worker.js`, whose cache names now resolve to the same value as
+  `_app/version.json`. The `define`, `src/service-worker/globals.d.ts` and the
+  ESLint global were removed; `kit.version.name` stays pinned to the deploy
+  commit SHA.
+- **The "Reading `config.kit` inside adapters is deprecated" build warning is
+  gone** — it came from inside the prerelease adapter.
+- **Deprecated Kit APIs migrated (no deprecated Kit API remains in `src/`):**
+  - `json()` → `Response.json()`: **492 calls in 128 files**, rewritten by a
+    TypeScript-compiler-API codemod that resolves every call through the type
+    checker to the `@sveltejs/kit` import (so shadowed locals such as
+    `const json = await res.json()` were never touched). The two are not
+    identical on one input: `Response.json(undefined)` throws, where Kit's
+    `json(undefined)` returned an empty 200. Every call site was therefore
+    proven never to pass `undefined` — 401 by static type, 71 by provenance
+    (`await x.json()`, `JSON.parse(...)`, literals, and locals/helpers whose
+    every write is one of those), and the last 20 by reading the shared
+    backend helpers they call, all of which yield `null`, a parsed JSON value or
+    a literal object. The other difference is cosmetic: Kit set
+    `content-length` explicitly; workerd sets it for fixed-length bodies, and
+    the Node dev/preview server uses chunked encoding instead. Two leftover hacks
+    that kept an unused `json` import alive (`void json;` and a commented-out
+    specifier) were removed. There were no `text()` calls.
+  - `goto(…, { replaceState })` → `{ replace }` (26 call sites in 18 files) and
+    `goto(…, { invalidateAll })` → `{ refreshAll }` (3 call sites); comments
+    describing those calls were updated to match. Inside `goto` both
+    are exact aliases in 3.0.1 (`opts.replace ?? opts.replaceState`,
+    `opts.refreshAll ?? opts.invalidateAll`), so behaviour is unchanged and the
+    dev-console deprecation warnings stop.
+- **Fixed: social sign-in never started.** `SocialLoginButtons` called
+  `goto('/api/auth/google')`. Kit 3 rejects `goto()` for any URL that is not a
+  page route (`navigation_route_missing`), and `/api/auth/*` are `+server.ts`
+  endpoints — so both buttons showed an error instead of redirecting to the
+  identity provider. They now do a full-page navigation.
+- **Fixed: the command palette's "Create New Post" went nowhere** —
+  `goto('/admin/blog/new')`, but the route is `/admin/blog/create` (Kit 3
+  rejects `goto()` to a URL with no route). Three other pre-existing dead
+  `goto()` targets need a product decision and are listed in BACKLOG.md item H.
+- The prerender `concurrency: 1` comment was corrected: adapter 8.0.0 removed
+  the per-prerender workerd emulation it described (the platform proxy now
+  starts only for the dev/preview servers), and 1 is Kit 3's default.
+
+### Testing: Vitest 5
+
+`vitest`, `@vitest/coverage-v8`, `@vitest/browser-playwright` 4.1.11 → **5.0.3**
+(5.0.3 specifically: it carries the jsdom 30.1 Blob fix and the pnpm
+trust-downgrade pin). No test or config change was needed — the suite already
+sets `mockReset`/`restoreMocks`, so v5's `clearMocks: true` default is moot, and
+every `vi.mock` is already at module top level (v5 now throws otherwise).
+`jsdom` (^30.1.2) is now a declared devDependency: `environment: 'jsdom'` had
+only been working because `isomorphic-dompurify` happened to depend on it. The
+pairing matters: Vitest 4.1.11 read jsdom `Blob` bytes through an internal
+field (`_buffer`) that jsdom 30 renamed, so it already mis-serialised `Blob`s and
+throws outright on jsdom 30.1; Vitest 5.0.3 reads them through jsdom's own
+`implForWrapper` (#11379).
+Same results as Vitest 4 — 58/58 files, 2,272 passed, 32 skipped — in about
+half the wall time.
+
+### JavaScript — every other package to `latest`
+
+Majors and their migrations:
+
+- **`@stripe/stripe-js` 9.14.0 → 10.0.0.** v10 loads the Stripe.js `endive`
+  release train, which retired the Payment Request Button Element: its types
+  are deleted and `elements.create('paymentRequestButton')` throws at runtime.
+  `forms/pro/StripePayment.svelte` moved to its official successor, the
+  **Express Checkout Element** (Apple Pay / Google Pay only, the same scope as
+  before), on a separate deferred-intent Elements group
+  (`mode: 'payment'`, `paymentMethodCreation: 'manual'`) so the component still
+  hands its parent a PaymentMethod id via `createPaymentMethod({ elements })`.
+  The sheet's line item keeps the `description` label, amount/currency stay in
+  sync if props change, and the wallet slot reserves space only once Stripe
+  reports a wallet. The card flow is unchanged.
+- **`isomorphic-dompurify` 3.23.0 → 4.5.0** — a semver-correction major with no
+  code change (3.23.0 is deprecated on npm); `dompurify` 3.4.14 → 3.4.16 in
+  lockstep.
+- **`@anthropic-ai/sdk` 0.122.0 → 0.133.0.** Separately, the CMS generate
+  endpoint (`/api/cms/ai/generate`) called `claude-sonnet-4-20250514`, which
+  Anthropic **retired on 2026-06-15** (404), so that endpoint had been failing on
+  every call. It now uses the documented drop-in replacement
+  **`claude-sonnet-5-5`** at `low` effort (Anthropic's starting point for
+  content generation), sizes `max_tokens` for thinking plus the reply, reads
+  text blocks by type instead of `content[0]`, returns 422 with the category on
+  a `refusal` stop reason, opts into server-side refusal fallback
+  (`fallbacks: 'default'`), and maps upstream errors to 429/503/502 so a bad
+  server key is never reported to an editor as *their* 401.
+- **`three` 0.185.1 → 0.186.1** (+ `@types/three` 0.186.0). r186 removed
+  `PCFSoftShadowMap`, Threlte's default, and logs a fallback warning on every
+  scene init; `TradingScene3D` now requests `PCFShadowMap` explicitly (identical
+  rendering, read from the already-lazy `three` chunk).
+
+Minor/patch: `@internationalized/date` 3.12.4, `@paypal/paypal-js` 11.2.1,
+`@playwright/test` + `playwright` 1.64.0, `@square/web-payments-sdk-types`
+1.84.5, `@tabler/icons-svelte-runes` 3.49.0, `@threlte/core` 8.6.1,
+`@threlte/extras` 9.22.0, `@types/d3-selection` 3.0.12, `@types/node` 24.19.2,
+`typescript-eslint` + `@typescript-eslint/*` 8.71.1, `bits-ui` 2.19.5,
+`concurrently` 10.0.6, `eslint` 10.12.0, `eslint-plugin-svelte` 3.23.1,
+`globals` 17.13.0, `magic-string` 1.4.3, `prettier` 3.9.9, `valibot` 1.5.0,
+`vite` 8.3.4, `vite-plugin-devtools-json` 1.1.1, `web-vitals` 6.2.3,
+`wrangler` 4.149.0. `svelte-click-to-source` moved in lockstep (`magic-string`,
+`svelte`, `vite`, `@types/node`) and its committed `dist/` rebuilds
+byte-for-byte identical.
+
+Config hygiene from the same research: rolldown 1.2.10 renamed
+`checks.pluginTimings` → `bundlerTimings`; `esbuild` (^0.28.2) is declared
+because `build.cssMinify: 'esbuild'` depends on it (it was previously only
+reachable as an auto-installed peer). The lockfile was re-resolved from scratch,
+so transitive dependencies are current too: 220 packages changed version, 11
+were added and 14 dropped (699 entries). `pnpm peers check` reports no issues
+— the stale `vite-plugin-devtools-json>vite` peer rule was removed (1.1.1
+declares Vite 8 itself); the `runed>@sveltejs/kit` rule stays because runed
+0.37.1 still peers Kit `^2.21.0`. Packages published within pnpm's 24-hour
+`minimumReleaseAge` window are excluded by exact version only
+(`@anthropic-ai/sdk@0.133.0`, `@types/node@24.19.2`,
+`eslint-plugin-svelte@3.23.1`), and the stale 2026-08-30 exclusions were pruned.
+
+### Rust
+
+`aws-config` 1.12.0, `aws-sdk-s3` 1.152.0, `jsonwebtoken` 11.1.0,
+`lazy_static` 1.5.1, `rand` 0.10.3, `redis` 1.7.1, `reqwest` 0.13.5,
+`rust_decimal` 1.43.0, `thiserror` 2.0.21, `tokio` 1.53.2, `tower-http` 0.7.1,
+`uuid` 1.27.0, `hyper` (dev) 1.12.0, and the two majors **`utoipa` 5 → 6** and
+**`utoipa-swagger-ui` 9 → 10**. The utoipa majors needed no code change; to
+prove the API contract did not move, all four `#[derive(OpenApi)]` documents
+were serialised under both versions and compared — two are byte-identical and
+the other two differ only in the order of `oneOf` members for nullable
+references, which is semantically equivalent. Full `cargo update`: 103 crates
+changed version, 21 left the tree, 3 arrived (478 total). Held: `matchit`
+(pinned exactly by axum 0.8.9), `crypto-common` 0.1.6 (pinned by a dependent),
+and the `axum-test` / `base32` majors, which are release candidates only.
+
+**`cargo deny check` was failing on `main`** with two new advisories:
+RUSTSEC-2026-0285 (rustls 0.23.43 — fixed by the update to 0.23.45) and
+RUSTSEC-2026-0258 (h2 0.3.27 — no fixed 0.3.x exists). The h2 0.3 copy came
+from `aws-sdk-s3`'s **default** `rustls` feature, which opts into the AWS SDK's
+legacy hyper 0.14 connector (`aws-smithy-runtime/tls-rustls` →
+`legacy-rustls-ring` + `hyper-014`) — the same chain that carried rustls 0.21 and
+rustls-webpki 0.101, the subject of the three advisories `deny.toml` had been
+waiving since June. `StorageService` never selects that connector
+(`Config::builder()` without `.http_client()` uses `default-https-client`:
+hyper 1 + rustls on aws-lc), so `aws-sdk-s3` now sets `default-features = false`
+and lists every other default feature explicitly. hyper 0.14, h2 0.3,
+hyper-rustls 0.24, rustls 0.21 and rustls-webpki 0.101 are gone from the tree,
+the three waivers were deleted, and **`deny.toml`'s advisory ignore list is
+empty** — every advisory is fixed at the source. Duplicate-version warnings
+fell from 34 to 25.
+
+**`lazy_static` → `std::sync::LazyLock`.** `lazy_static` 1.5.1's own README
+now states it has been replaced by `LazyLock` (stable since Rust 1.80) and will
+no longer be updated, so the crate's three `lazy_static!` blocks (the sitemap
+and robots caches and the ten CMS-SEO regexes) became `LazyLock` statics and
+the direct dependency was dropped (it remains only as a transitive dependency
+of `tracing-subscriber`'s `sharded-slab`). `LazyLock<T>` derefs to `T` exactly
+like a `lazy_static` `static ref`, so no call site changed; the router-idempotency
+pins in `robots_test` / `sitemap_test` cover it.
+
+`api/clippy.toml` (`large-error-threshold = 176`) was re-verified on clippy
+1.99: removing it still produces exactly 150 `result_large_err` errors, so it
+stays until the `ApiError` refactor in BACKLOG.md lands.
+
+### CI, containers, services
+
+- `actions/checkout` v6.0.3 → **v7.0.1** (only change: fork-PR checkout is
+  blocked under `pull_request_target`/`workflow_run`, which these workflows do
+  not use); `actions/setup-node` v6.4.0 → **v7.1.0** (only change: no dummy
+  `NODE_AUTH_TOKEN` when `registry-url` is set, which these workflows do not
+  set); `cloudflare/wrangler-action` v4.0.0 → **v4.1.3** (additive).
+- `api/Dockerfile`: builder `rust:1.98-bookworm` → **`rust:1.99.0-trixie`**
+  (exact patch tag, so the image cannot drift from `rust-toolchain.toml`),
+  runtime `debian:bookworm-slim` → **`debian:trixie-slim`** — Debian 13 is the
+  current stable — with the OpenSSL runtime renamed `libssl3` → `libssl3t64`
+  (checked against the real image: `libssl3` has no install candidate on trixie).
+- `docker-compose.yml`: redis `8.8.2-alpine` → **`8.10.2-alpine`**, meilisearch
+  `v1.53.1` → **`v1.54.3`** with `MEILI_UPGRADE_DB=true` (without it v1.54 exits
+  on a v1.53 volume and `api`, which waits for a healthy `meili`, never starts).
+  postgres stays `18.6-alpine`, the newest 18.x (19 is beta).
+- **Fixed: `docker compose up db` could not start on a fresh volume.** The PG18
+  image keeps its data at `/var/lib/postgresql/18/docker` and declares
+  `VOLUME /var/lib/postgresql`; the compose file still mounted the pre-18 path
+  `/var/lib/postgresql/data`, which makes a fresh container exit 1. Reproduced
+  with the real image, then fixed by mounting at `/var/lib/postgresql`.
+  `LOCAL_DEV.md` explains what to do with a volume created under the old mount.
+- **Fixed: `docker compose up api` failed on a fresh clone** because
+  `api/.env` (gitignored) was a required `env_file`; it is now optional like
+  `api/.env.local`. `docker-compose.test.yml`'s usage line referenced a
+  nonexistent `postgres` service (it is `db`).
+
+### Held, with evidence
+
+- **TypeScript stays 6.0.3** (npm `latest` is 7.0.2): `@sveltejs/kit@3.0.1`
+  peers `typescript ^6.0.0`, `svelte-check@4.7.6` peers `^5 || ^6`, and
+  `typescript-eslint@8.71.1` peers `>=4.8.4 <6.1.0`.
+- **Rust edition stays 2021.** The edition is not a dependency version, and
+  2021 stays supported by every future compiler. Moving to 2024 would change
+  runtime drop order at 26 sites (in auth, websocket, queue and payment
+  reconciliation code) and needs per-site review, so the measured inventory is
+  in BACKLOG.md item F rather than hidden inside this diff.
+- `embla-carousel*` 9, `tus-js-client` 5, `axum-test` 22, `base32` 1.0 and
+  PostgreSQL 19 exist only as prereleases.
+
+### Gates
+
+Measured on this machine, before (`main` @ 5457181) and after, on Node
+24.21.0:
+
+| Gate | `main` | This change |
+|------|--------|-------------|
+| `pnpm check` (svelte-check) | 0 / 0 | 0 / 0 |
+| `check:strict`, `check:a11y` | — | 0 / 0, 0 / 0 |
+| eslint | 0 errors, 4 warnings | 0 errors, the same 4 warnings |
+| prettier (whole frontend) | — | clean |
+| vitest | 58 files, 2,272 passed, 32 skipped (71.7 s) | identical (33.6 s) |
+| `vite build` (+ prerender, service worker) | green, adapter `config.kit` warning | green, no warning |
+| `cargo fmt --check` / `clippy -D warnings` / `check` | clean | clean (Rust 1.99.0) |
+| `cargo deny check` | **FAILED** (RUSTSEC-2026-0258, -0285) | advisories / bans / licenses / sources ok, empty ignore list |
+| `cargo machete` | clean | clean |
+| no-DB tests (router smoke, utils, stripe) | 39/39 | 39/39 |
+
+**End to end on the real stack** (docker compose, fresh volumes):
+
+- Postgres 18.6, Redis 8.10.2 and Meilisearch 1.54.3 come up healthy with the
+  corrected compose file. The API image builds from `api/Dockerfile`
+  (`rust:1.99.0-trixie` → `debian:trixie-slim`, release + LTO); in the image
+  `ldd` resolves `libssl.so.3`/`libcrypto.so.3` from `libssl3t64`. The
+  container boots, applies all 30 migrations to Postgres 18.6 (160 tables) and
+  reports database, Redis and storage healthy on `/health/detailed`.
+- `/api-docs/openapi.json` (utoipa 6) and Swagger UI with its vendored
+  assets (utoipa-swagger-ui 10) are served; `/api/robots.txt` and
+  `/api/sitemap` (the new `LazyLock` caches) serve on first and repeat hits.
+- Auth end to end: register → Argon2id hash (`m=65536,t=3,p=4`) → login →
+  HS256 JWT (jsonwebtoken 11.1 on aws-lc) → `/api/auth/me` 200; a tampered
+  token gets 401.
+- The production Cloudflare worker (`wrangler pages dev .svelte-kit/cloudflare`,
+  i.e. workerd) against that API: login through the SvelteKit proxy sets the
+  `rtp_access_token`/`rtp_refresh_token` cookies (`Secure`), `/api/auth/me`
+  with them is 200, a non-admin hitting an admin proxy gets a JSON 403 with an
+  `errorId` (Kit 3 `handleError` status preserved), the maintenance signup
+  (now reading `RESEND_API_KEY` from `$app/env/private`) returns 200, the
+  service worker's cache version equals `_app/version.json`, and prerendered
+  pages carry the CSP `<meta>` tag.
+- DB-backed integration tests not in CI — `migrate_test`, `health_test`,
+  `auth_test`, `sitemap_test`, `robots_test` (28) — pass against Postgres 18.6.
+- Playwright a11y suite (axe-core): 9 passed, 2 skipped, 1 failed — the same
+  pre-existing "form inputs should have associated labels" failure as `main`
+  (run the same day, same harness). BACKLOG.md item 4 now explains that the
+  suite actually audits `/login`.
+
+**Found, not caused, by this change — BACKLOG.md P0:** in Cloudflare's own
+runtime, 18 server-rendered routes return 500 on `main` and on this branch
+alike (all 62 top-level routes return identical status codes on both). The
+root layout imports `isomorphic-dompurify`, whose browser build calls
+`DOMPurify.sanitize.bind` at import time and throws where there is no DOM.
+Production masks it behind maintenance mode. Fixing it is a server-side
+sanitisation design decision (recommended: `ammonia` in the Rust API), so it
+is written up with the evidence rather than patched inside a dependency
+upgrade.
+
 ## [Unreleased] — 2026-08-30 — Full dependency, toolchain, and service top-up
 
 Everything the repo depends on moved to its latest release as of 2026-08-30,

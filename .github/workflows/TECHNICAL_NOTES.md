@@ -5,12 +5,13 @@ two workflows in this repo. Read README.md first for the overview.
 
 ## Toolchain pinning
 
-- **Node 24.20.0** via `actions/setup-node`, in both workflows.
+- **Node 24.21.0** (latest LTS, "Krypton") via `actions/setup-node@v7.1.0`, in
+  both workflows; `actions/checkout@v7.0.1`.
 - **pnpm** is never installed by version number in the workflows.
-  Corepack activates it from `package.json#packageManager` (pnpm@11.24.0),
+  Corepack activates it from `package.json#packageManager` (pnpm@12.10.1),
   so CI, the deploy workflow, and local dev use the exact same pnpm. One
   source of truth, no drift.
-- **Rust 1.98.0**, pinned via `dtolnay/rust-toolchain@master` with an
+- **Rust 1.99.0**, pinned via `dtolnay/rust-toolchain@master` with an
   explicit `toolchain:` input. The `@stable` wrapper of that action
   ALWAYS installs stable and silently ignores `toolchain:` — that is why
   the backend gate previously floated on a moving toolchain and broke
@@ -65,7 +66,7 @@ so a new push cancels the superseded run for the same ref.
   deploy with a `::notice::` instead of failing the run.
 - Deploy command: `wrangler pages deploy .svelte-kit/cloudflare
   --project-name=revolution-trading-pros --branch=<resolved>` via
-  `cloudflare/wrangler-action@v4.0.0`, `workingDirectory: frontend`.
+  `cloudflare/wrangler-action@v4.1.3`, `workingDirectory: frontend`.
 
 ## History
 

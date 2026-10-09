@@ -12,9 +12,16 @@ step), under 30 seconds on subsequent boots.
 | Tool           | Version                                                               | macOS install                                                |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
 | Docker Desktop | ≥ 4.30                                                                | `brew install --cask docker`                                 |
-| Node.js        | 24.20.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
-| pnpm           | 11.24.0 (pinned in `package.json#packageManager`)                     | `corepack enable && corepack prepare pnpm@11.24.0 --activate` |
-| Rust           | 1.98.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
+| Node.js        | 24.21.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
+| pnpm           | 12.10.1 (pinned in `package.json#packageManager`)                     | `corepack enable && corepack prepare pnpm@12.10.1 --activate` |
+| Rust           | 1.99.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
+
+> **Corepack ≥ 0.34.5 is required for pnpm 12.** Node 24.21.0 bundles Corepack
+> 0.36.0. An older, globally installed Corepack (≤ 0.34.4) earlier on `PATH`
+> cannot launch pnpm ≥ 11 — it looks for a `bin/pnpm.cjs` that pnpm no longer
+> ships (fixed in Corepack 0.34.5, "fix bin path for v11"). Check with
+> `corepack --version`. Behind an HTTP proxy, Corepack ≥ 0.35 also needs
+> `NODE_USE_ENV_PROXY=1` to download pnpm.
 
 You do **not** need `flyctl` for local dev. (You'll need it later if you
 deploy.)
@@ -108,6 +115,18 @@ docker compose down -v      # removes volumes too
 ```
 
 …then re-run [step 1](#1-bring-up-postgres--redis--the-api-container) onward.
+
+### Volumes created before 2026-10-09
+
+- **Postgres:** `docker-compose.yml` now mounts `postgres_data` at
+  `/var/lib/postgresql` (the PG18 image's layout — `PGDATA` is
+  `/var/lib/postgresql/18/docker`). A volume created under the old
+  `/var/lib/postgresql/data` mount holds its data at the volume root, which the
+  new layout will not start from. Wipe it (`pnpm dev:reset` or
+  `docker compose down -v`) or `pg_upgrade` it into the new layout.
+- **Meilisearch:** the compose service sets `MEILI_UPGRADE_DB=true`, so an
+  existing v1.53 `meili_data` volume is upgraded in place on first start of
+  v1.54. The upgrade is one-way.
 
 ## Frontend env
 
