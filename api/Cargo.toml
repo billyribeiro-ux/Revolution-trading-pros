@@ -53,8 +53,9 @@ serde_json = "1.0.151"
 # available, and `cargo deny check` fails on it. This crate signs HS256 only, so
 # the RSA path would never execute — but shipping a known-vulnerable crate we
 # cannot patch is not worth a `deny.toml` exemption when a clean backend exists.
-# AWS-LC is constant-time and actively maintained; it needs cmake + a C compiler
-# at build time, which CI and the Docker image already provide.
+# AWS-LC is constant-time and actively maintained. It needs a C compiler at
+# build time; aws-lc-sys builds through its `cc` builder, so cmake is NOT
+# required (the rust:1.99.0-trixie Docker build installs no cmake and succeeds).
 jsonwebtoken = { version = "11.1.0", features = ["aws_lc_rs"] }
 base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5.1"   # ICT 7: TOTP secret encoding

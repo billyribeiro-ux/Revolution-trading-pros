@@ -24,6 +24,12 @@ before and after on the same machine.
 Node 26 becomes LTS only on 2026-10-28 (`nodejs/Release` `schedule.json`), so
 the 24.x line stays and `@types/node` stays on 24.x to match it.
 
+New `frontend/.node-version` (24.21.0): the Cloudflare Pages dashboard build
+runs from root directory `frontend/`, and Cloudflare's build image reads
+`.node-version`/`.nvmrc` from the project root directory only (it ignores
+`package.json#engines`), so the repo-root pin never reached it and the build
+could fall back to the image's default Node — below Kit 3.0.1's `>=22.17`.
+
 **pnpm 12** is a Rust rewrite that keeps pnpm 11's commands, settings and
 lockfile format. It now records `packageManagerDependencies` (pnpm and its
 `@pnpm/exe.*` binaries) in a leading YAML document of `pnpm-lock.yaml`, and it
@@ -151,7 +157,7 @@ Majors and their migrations:
   scene init; `TradingScene3D` now requests `PCFShadowMap` explicitly (identical
   rendering, read from the already-lazy `three` chunk).
 
-Minor/patch: `@internationalized/date` 3.12.4, `@paypal/paypal-js` 11.2.1,
+Minor/patch: `@internationalized/date` 3.12.4, `@paypal/paypal-js` 11.2.2,
 `@playwright/test` + `playwright` 1.64.0, `@square/web-payments-sdk-types`
 1.84.5, `@tabler/icons-svelte-runes` 3.49.0, `@threlte/core` 8.6.1,
 `@threlte/extras` 9.22.0, `@types/d3-selection` 3.0.12, `@types/node` 24.19.2,
@@ -174,7 +180,10 @@ declares Vite 8 itself); the `runed>@sveltejs/kit` rule stays because runed
 0.37.1 still peers Kit `^2.21.0`. Packages published within pnpm's 24-hour
 `minimumReleaseAge` window are excluded by exact version only
 (`@anthropic-ai/sdk@0.133.0`, `@types/node@24.19.2`,
-`eslint-plugin-svelte@3.23.1`), and the stale 2026-08-30 exclusions were pruned.
+`eslint-plugin-svelte@3.23.1`, `@paypal/paypal-js@11.2.2`), and the stale
+2026-08-30 exclusions were pruned. A final re-sweep at ~21:30 UTC found every
+declared package at npm `latest` except the two deliberate holds
+(`@types/node` on 24.x, `typescript` on 6.x).
 
 ### Rust
 
@@ -232,6 +241,12 @@ stays until the `ApiError` refactor in BACKLOG.md lands.
   runtime `debian:bookworm-slim` → **`debian:trixie-slim`** — Debian 13 is the
   current stable — with the OpenSSL runtime renamed `libssl3` → `libssl3t64`
   (checked against the real image: `libssl3` has no install candidate on trixie).
+- `api/scripts/seed-local-admin.sh`: `python:3.12-alpine` → **`3.14.8-alpine`**
+  (Docker's official 3.15 image is not published yet). Verified end to end: a
+  hash minted there with the script's parameters logs in through the API (200)
+  and a wrong password is rejected (401).
+- `api/Cargo.toml`'s comment no longer claims cmake is needed for AWS-LC — the
+  trixie Docker build has no cmake; `aws-lc-sys` builds with its `cc` builder.
 - `docker-compose.yml`: redis `8.8.2-alpine` → **`8.10.2-alpine`**, meilisearch
   `v1.53.1` → **`v1.54.3`** with `MEILI_UPGRADE_DB=true` (without it v1.54 exits
   on a v1.53 volume and `api`, which waits for a healthy `meili`, never starts).

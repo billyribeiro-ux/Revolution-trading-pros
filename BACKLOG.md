@@ -124,8 +124,14 @@ it was not folded into the dependency bump.
 
 Node 24.21.0 is the latest LTS on 2026-10-09; per `nodejs/Release`
 `schedule.json`, 24 enters maintenance on 2026-10-20 and 26 becomes Active LTS
-on 2026-10-28. Re-pin `.nvmrc`, `.node-version`, both `engines.node`, CI's
+on 2026-10-28. Re-pin `.nvmrc`, `.node-version`, `frontend/.node-version`
+(read by the Cloudflare Pages build), both `engines.node`, CI's
 `NODE_VERSION`, and `@types/node` (24.x → 26.x) together after that date.
+**Node ≥ 25 no longer bundles Corepack** (verified: the v26.11.1 tarball
+contains no `corepack`; v24.21.0 does), so the `corepack enable` steps in
+`ci.yml` and `deploy-cloudflare.yml` must first install it from npm
+(`npm install -g corepack@0.36.0`, which supports Node ≥ 26), and
+`LOCAL_DEV.md` must say the same.
 
 ### C. `@testing-library/jest-dom` types vs Vitest 5
 **Severity:** P3 (type-level only; hidden by `skipLibCheck`)

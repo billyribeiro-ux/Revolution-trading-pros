@@ -70,7 +70,7 @@
 		"@axe-core/playwright": "^4.13.0",
 		"@eslint/js": "^10.0.1",
 		"@internationalized/date": "^3.12.4",
-		"@paypal/paypal-js": "^11.2.1",
+		"@paypal/paypal-js": "^11.2.2",
 		"@playwright/test": "^1.64.0",
 		"@square/web-payments-sdk-types": "^1.84.5",
 		"@sveltejs/adapter-cloudflare": "^8.0.0",

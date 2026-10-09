@@ -34,6 +34,7 @@ allowBuilds:
 # release; prune entries once the lockfile no longer resolves them.
 minimumReleaseAgeExclude:
   - '@anthropic-ai/sdk@0.133.0'
+  - '@paypal/paypal-js@11.2.2'
   - '@types/node@24.19.2'
   - eslint-plugin-svelte@3.23.1
 
