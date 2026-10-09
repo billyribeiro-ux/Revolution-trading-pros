@@ -195,14 +195,19 @@ declared package at npm `latest` except the two deliberate holds
 prove the API contract did not move, all four `#[derive(OpenApi)]` documents
 were serialised under both versions and compared — two are byte-identical and
 the other two differ only in the order of `oneOf` members for nullable
-references, which is semantically equivalent. Full `cargo update`: 103 crates
+references, which is semantically equivalent. `rust_decimal` 1.43 also makes
+`from_str` stricter (it now rejects trailing garbage after the 29th significant
+digit) — that reaches coupon amounts parsed from client JSON, and rejecting
+malformed decimals is the desired behaviour. Full `cargo update`: 103 crates
 changed version, 21 left the tree, 3 arrived (478 total). Held: `matchit`
 (pinned exactly by axum 0.8.9), `crypto-common` 0.1.6 (pinned by a dependent),
 and the `axum-test` / `base32` majors, which are release candidates only.
 
-**`cargo deny check` was failing on `main`** with two new advisories:
-RUSTSEC-2026-0285 (rustls 0.23.43 — fixed by the update to 0.23.45) and
-RUSTSEC-2026-0258 (h2 0.3.27 — no fixed 0.3.x exists). The h2 0.3 copy came
+**`cargo deny check` was failing on `main`** (current advisory-db) with two
+advisories: RUSTSEC-2026-0285 (rustls 0.23.43, published 2026-09-14 — fixed by
+the update to 0.23.45) and RUSTSEC-2026-0258 (h2 0.3.27, published 2026-08-18
+— no fixed 0.3.x exists). CI does not run `cargo deny`, which is how the h2
+advisory went unnoticed; adding it is BACKLOG.md item G. The h2 0.3 copy came
 from `aws-sdk-s3`'s **default** `rustls` feature, which opts into the AWS SDK's
 legacy hyper 0.14 connector (`aws-smithy-runtime/tls-rustls` →
 `legacy-rustls-ring` + `hyper-014`) — the same chain that carried rustls 0.21 and

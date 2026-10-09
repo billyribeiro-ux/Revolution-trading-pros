@@ -50,9 +50,13 @@ serde_json = "1.0.151"
 #
 # `aws_lc_rs` and NOT `rust_crypto`: the pure-Rust backend pulls in `rsa`, which
 # carries RUSTSEC-2023-0071 (Marvin timing sidechannel) with no fixed release
-# available, and `cargo deny check` fails on it. This crate signs HS256 only, so
-# the RSA path would never execute — but shipping a known-vulnerable crate we
-# cannot patch is not worth a `deny.toml` exemption when a clean backend exists.
+# available, and `cargo deny check` fails on it. This crate signs/verifies its
+# own HS256 tokens and verifies Apple's RS256 ID tokens
+# (`routes/oauth/apple_jwt.rs`, `DecodingKey::from_rsa_components`) — RSA
+# public-key verification, which the Marvin private-key timing attack does not
+# reach. Even so, shipping a crate with an unpatchable advisory is not worth a
+# `deny.toml` exemption when a clean backend exists: with `aws_lc_rs`, HS256
+# and RS256 both run on AWS-LC.
 # AWS-LC is constant-time and actively maintained. It needs a C compiler at
 # build time; aws-lc-sys builds through its `cc` builder, so cmake is NOT
 # required (the rust:1.99.0-trixie Docker build installs no cmake and succeeds).

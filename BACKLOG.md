@@ -186,8 +186,12 @@ belongs in its own reviewed change with the DB-backed integration tests
 not hidden inside a version-bump diff.
 
 ### G. Backend dependency hygiene (optional, low risk)
-**Severity:** P3
+**Severity:** P3, except the first bullet (P2)
 
+- **CI runs no `cargo deny check`.** CLAUDE.md makes it a gate, but only
+  `pnpm api:lint` runs it locally; RUSTSEC-2026-0258 (published 2026-08-18) sat
+  unnoticed on `main` until the 2026-10-09 sweep. Add a `cargo deny check` step
+  to the backend job (e.g. `EmbarkStudios/cargo-deny-action`, pinned).
 - `aws-config` is used only for `BehaviorVersion`, which `aws-sdk-s3`
   re-exports (`aws_sdk_s3::config::BehaviorVersion`); dropping it removes five
   crates from the tree.
