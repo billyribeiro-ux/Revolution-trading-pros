@@ -212,3 +212,203 @@ fn verifies_password_hashed_by_argon2_0_5() {
         "verification must still reject an incorrect password"
     );
 }
+
+// ── HTML sanitization (utils::html) ─────────────────────────────────
+
+mod html_sanitization {
+    use revolution_api::utils::html::{
+        is_safe_url, sanitize_content_blocks, sanitize_form_fields, sanitize_html,
+    };
+    use serde_json::json;
+
+    #[test]
+    fn keeps_formatting_and_hardens_links() {
+        assert_eq!(
+            sanitize_html(
+                r#"<p>Q&amp;A <strong>bold</strong> <a href="https://x.com/?a=1&b=2">x</a></p>"#
+            ),
+            r#"<p>Q&amp;A <strong>bold</strong> <a href="https://x.com/?a=1&amp;b=2" rel="noopener noreferrer">x</a></p>"#
+        );
+    }
+
+    #[test]
+    fn removes_scripts_handlers_and_foreign_content() {
+        let out = sanitize_html(
+            r#"<script>alert(1)</script><style>p{}</style><svg onload=alert(1)><a>s</a></svg><math><mi>m</mi></math><noscript>n</noscript><select><option>o</option></select><object data="x">obj</object><img src="/i.png" onerror="alert(1)"><div onclick="x" class="c">d</div>"#,
+        );
+        assert_eq!(out, r#"<img src="/i.png"><div class="c">d</div>"#);
+    }
+
+    #[test]
+    fn drops_script_capable_urls_however_spelled() {
+        for href in [
+            "javascript:alert(1)",
+            "java&#x09;script:alert(1)",
+            " javascript:alert(1)",
+            "JaVaScRiPt:alert(1)",
+            "&#106;avascript:alert(1)",
+            "vbscript:x",
+            "data:text/html,x",
+        ] {
+            assert_eq!(
+                sanitize_html(&format!(r#"<a href="{href}">x</a>"#)),
+                r#"<a rel="noopener noreferrer">x</a>"#,
+                "href {href:?} must not survive"
+            );
+        }
+    }
+
+    #[test]
+    fn keeps_relative_and_allowed_scheme_urls() {
+        for href in [
+            "/p",
+            "#top",
+            "?q=1",
+            "mailto:a@b.c",
+            "tel:+1",
+            "https://example.com/",
+        ] {
+            assert_eq!(
+                sanitize_html(&format!(r#"<a href="{href}">x</a>"#)),
+                format!(r#"<a href="{href}" rel="noopener noreferrer">x</a>"#)
+            );
+        }
+    }
+
+    #[test]
+    fn allows_data_urls_only_as_media_sources() {
+        assert_eq!(
+            sanitize_html(
+                r#"<img src="data:image/png;base64,iVBORw0KGgo=" alt="px"><img src="data:text/html,x"><a href="data:image/png;base64,AA">a</a>"#
+            ),
+            r#"<img src="data:image/png;base64,iVBORw0KGgo=" alt="px"><img><a rel="noopener noreferrer">a</a>"#
+        );
+    }
+
+    #[test]
+    fn embeds_only_trusted_https_players() {
+        // An iframe's children are raw text to the HTML parser (they can never
+        // contain `</iframe>`), so the fallback text is inert and kept as-is.
+        assert_eq!(
+            sanitize_html(
+                r#"<iframe src="https://www.youtube.com/embed/abc" allowfullscreen="">fallback</iframe><iframe src="//player.vimeo.com/video/1"></iframe>"#
+            ),
+            r#"<iframe src="https://www.youtube.com/embed/abc" allowfullscreen="">fallback</iframe><iframe src="//player.vimeo.com/video/1"></iframe>"#
+        );
+        for src in [
+            "https://evil.tld/?youtube.com",
+            "https://youtube.com.evil.tld/",
+            "http://www.youtube.com/embed/a",
+            "/embed",
+            "javascript:alert(1)",
+        ] {
+            assert_eq!(
+                sanitize_html(&format!(r#"<iframe src="{src}"></iframe>"#)),
+                "<iframe></iframe>",
+                "iframe src {src:?} must not survive"
+            );
+        }
+    }
+
+    #[test]
+    fn mutation_xss_payloads_come_out_inert() {
+        for payload in [
+            "<math><mtext><table><mglyph><style><img src=x onerror=alert(1)>",
+            r#"<noscript><p title="</noscript><img src=x onerror=alert(1)>"></p></noscript>"#,
+            r#"<svg></p><style><a id="</style><img src=1 onerror=alert(1)>">"#,
+            r#"<form><math><mtext></form><form><mglyph><style></math><img src onerror=alert(1)>"#,
+            "<!--><img src=x onerror=alert(1)>-->",
+        ] {
+            let out = sanitize_html(payload);
+            assert!(!out.contains("onerror"), "{payload:?} -> {out:?}");
+            assert!(!out.contains("<script"), "{payload:?} -> {out:?}");
+            assert!(!out.contains("<style"), "{payload:?} -> {out:?}");
+        }
+    }
+
+    #[test]
+    fn classifies_bare_urls() {
+        for safe in [
+            "",
+            "/a",
+            "#x",
+            "?q",
+            "https://a.b/",
+            "HTTP://A.B/",
+            "mailto:a@b.c",
+            "tel:1",
+        ] {
+            assert!(is_safe_url(safe), "{safe:?} should be safe");
+        }
+        for unsafe_url in [
+            "javascript:alert(1)",
+            "java\tscript:alert(1)",
+            " JAVASCRIPT:alert(1)",
+            "vbscript:x",
+            "data:text/html,x",
+            "file:///etc/passwd",
+        ] {
+            assert!(
+                !is_safe_url(unsafe_url),
+                "{unsafe_url:?} should be rejected"
+            );
+        }
+    }
+
+    #[test]
+    fn sanitizes_html_block_fields_and_leaves_plain_text_alone() {
+        let mut blocks = json!([
+            {"type": "paragraph", "data": {"text": "a<img src=x onerror=alert(1)> &amp; b"}},
+            {"type": "heading", "content": {"text": "<b>T</b><script>x</script>", "level": 2}},
+            {"type": "code", "data": {"code": "<div>keep</div>", "text": "if (a < b && c) {}"}},
+            {"type": "button", "data": {"text": "Q&A", "url": "javascript:alert(1)"}},
+            {"type": "video", "data": {"url": "https://www.youtube.com/embed/x", "caption": "a & b"}},
+            {"type": "list", "data": {"items": ["<i>one</i><script>x</script>", {"content": "<u>two</u><img src=x onerror=y>", "children": ["<b>c</b><script>z</script>"]}]}},
+            {"type": "checklist", "data": {"checklistItems": [{"text": "<s>done</s><svg onload=x>", "checked": true}]}},
+            {"type": "callout", "data": {"title": "Note & tip", "content": "<p onclick=x>c</p>"}},
+            {"type": "html", "content": {"html": "<iframe src=\"https://evil.tld/\"></iframe><p>ok</p>"}, "settings": {"linkUrl": "vbscript:x", "backgroundImage": "/bg.png"}},
+            {"type": "columns", "content": {"columns": [{"blocks": [{"type": "quote", "data": {"text": "<q>q</q><script>x</script>"}}]}]}}
+        ]);
+        sanitize_content_blocks(&mut blocks);
+        assert_eq!(
+            blocks,
+            json!([
+                {"type": "paragraph", "data": {"text": "a<img src=\"x\"> &amp; b"}},
+                {"type": "heading", "content": {"text": "<b>T</b>", "level": 2}},
+                {"type": "code", "data": {"code": "<div>keep</div>", "text": "if (a < b && c) {}"}},
+                {"type": "button", "data": {"text": "Q&A"}},
+                {"type": "video", "data": {"url": "https://www.youtube.com/embed/x", "caption": "a & b"}},
+                {"type": "list", "data": {"items": ["<i>one</i>", {"content": "<u>two</u><img src=\"x\">", "children": ["<b>c</b>"]}]}},
+                {"type": "checklist", "data": {"checklistItems": [{"text": "<s>done</s>", "checked": true}]}},
+                {"type": "callout", "data": {"title": "Note & tip", "content": "<p>c</p>"}},
+                {"type": "html", "content": {"html": "<iframe></iframe><p>ok</p>"}, "settings": {"backgroundImage": "/bg.png"}},
+                {"type": "columns", "content": {"columns": [{"blocks": [{"type": "quote", "data": {"text": "q"}}]}]}}
+            ])
+        );
+    }
+
+    #[test]
+    fn sanitizes_form_markup_and_policy_links_only() {
+        let mut fields = json!([
+            {"field_type": "html", "placeholder": "<p>Intro</p><script>x</script>"},
+            {"field_type": "text", "placeholder": "Q&A <name>", "label": "<b>Name</b>"},
+            {"field_type": "gdpr", "attributes": {
+                "consent_text": "I agree <a href=\"javascript:x\">terms</a>",
+                "privacy_url": "javascript:alert(1)",
+                "terms_url": "https://example.com/terms"
+            }}
+        ]);
+        sanitize_form_fields(&mut fields);
+        assert_eq!(
+            fields,
+            json!([
+                {"field_type": "html", "placeholder": "<p>Intro</p>"},
+                {"field_type": "text", "placeholder": "Q&A <name>", "label": "<b>Name</b>"},
+                {"field_type": "gdpr", "attributes": {
+                    "consent_text": "I agree <a rel=\"noopener noreferrer\">terms</a>",
+                    "terms_url": "https://example.com/terms"
+                }}
+            ])
+        );
+    }
+}

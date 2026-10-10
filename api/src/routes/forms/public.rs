@@ -14,7 +14,7 @@ use axum::{
 use serde_json::json;
 
 use super::types::{FormListQuery, FormRow};
-use crate::AppState;
+use crate::{utils::html, AppState};
 
 /// List published forms (public) - GET /forms
 pub(super) async fn list_public_forms(
@@ -27,7 +27,7 @@ pub(super) async fn list_public_forms(
 
     let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
 
-    let forms: Vec<FormRow> = sqlx::query_as(
+    let mut forms: Vec<FormRow> = sqlx::query_as(
         r"
         SELECT id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
         FROM forms
@@ -43,6 +43,9 @@ pub(super) async fn list_public_forms(
     .fetch_all(&state.db.pool)
     .await
     .unwrap_or_default();
+    for form in &mut forms {
+        html::sanitize_form_fields(&mut form.fields);
+    }
 
     let total: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM forms WHERE is_published = true AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)"
@@ -86,7 +89,11 @@ pub(super) async fn get_public_form(
             .flatten()
     };
 
-    form.map(Json).ok_or_else(|| {
+    form.map(|mut form| {
+        html::sanitize_form_fields(&mut form.fields);
+        Json(form)
+    })
+    .ok_or_else(|| {
         (
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Form not found"})),

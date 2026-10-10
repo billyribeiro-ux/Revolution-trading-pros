@@ -14,6 +14,8 @@ axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
 tower-http = { version = "0.7.1", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
 html-escape = "0.2.15"
+# HTML sanitization of author content on public endpoints (utils/html.rs)
+ammonia = "4.2.1"
 
 # Async Runtime
 tokio = { version = "1.53.2", features = ["full"] }
