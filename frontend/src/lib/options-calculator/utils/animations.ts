@@ -77,14 +77,18 @@ export function pulseHighlight(
 	return tl;
 }
 
-/** Card entrance on mount */
+/**
+ * Card entrance on mount.
+ *
+ * `fromTo` with explicit end values, not `from`: a `from()` tween reads its end
+ * values from the element, and a ScrollTrigger refresh that lands during the
+ * tween's delay re-initializes it while the element sits at the hidden start
+ * state — the card then "animates" from opacity 0 to 0 and stays invisible.
+ */
 export function cardEntrance(element: HTMLElement, delay: number = 0): gsap.core.Tween {
-	return gsap.from(element, {
-		opacity: 0,
-		y: 30,
-		scale: 0.97,
-		duration: 0.6,
-		delay,
-		ease: 'power3.out'
-	});
+	return gsap.fromTo(
+		element,
+		{ opacity: 0, y: 30, scale: 0.97 },
+		{ opacity: 1, y: 0, scale: 1, duration: 0.6, delay, ease: 'power3.out' }
+	);
 }
