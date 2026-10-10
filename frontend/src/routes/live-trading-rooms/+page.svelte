@@ -42,59 +42,10 @@
 		up: boolean;
 	}
 
-	interface OpenGraphImage {
-		url: string;
-		width: number;
-		height: number;
-		alt: string;
-		type: string;
-	}
-
-	interface OpenGraphArticle {
-		author: string;
-		publishedTime: string;
-		modifiedTime: string;
-		section: string;
-		tag: string;
-	}
-
-	interface OpenGraphData {
-		title: string;
-		description: string;
-		type: string;
-		url: string;
-		images: OpenGraphImage[];
-		siteName: string;
-		locale: string;
-		article: OpenGraphArticle;
-	}
-
-	interface TwitterData {
-		card: string;
-		title: string;
-		description: string;
-		images: string[];
-		site: string;
-		creator: string;
-		domain: string;
-	}
-
-	interface SEOData {
-		title: string;
-		description: string;
-		keywords: string;
-		canonical: string;
-		author: string;
-		publisher: string;
-		openGraph: OpenGraphData;
-		twitter: TwitterData;
-	}
-
 	interface PageData {
 		rooms: TradingRoom[];
 		benefits: Benefit[];
 		symbols: TickerSymbol[];
-		seo: SEOData;
 	}
 
 	interface Props {
@@ -106,7 +57,6 @@
 	let rooms = $derived(data.rooms);
 	let benefits = $derived(data.benefits);
 	let symbols = $derived(data.symbols);
-	let seo = $derived(data.seo);
 	let tickerItems = $derived([...symbols, ...symbols, ...symbols, ...symbols]);
 
 	/**
@@ -374,31 +324,9 @@
 	<meta name="geo.region" content="US" />
 	<meta name="geo.placename" content="United States" />
 
-	<!-- Basic Meta Tags - Using server-loaded SEO data -->
-	<title>{seo.title}</title>
-	<meta name="description" content={seo.description} />
-	<meta name="keywords" content={seo.keywords} />
-	<meta name="author" content="Revolution Trading Pros" />
-	<meta name="robots" content="index, follow" />
-	<link rel="canonical" href={seo.canonical} />
-
-	<!-- Open Graph Meta Tags - Using server-loaded data -->
-	<meta property="og:title" content={seo.openGraph.title} />
-	<meta property="og:description" content={seo.openGraph.description} />
-	<meta property="og:type" content={seo.openGraph.type} />
-	<meta property="og:url" content={seo.openGraph.url} />
-	<meta property="og:site_name" content={seo.openGraph.siteName} />
-	<meta property="og:image" content={seo.openGraph.images[0].url} />
-	<meta property="og:image:width" content={String(seo.openGraph.images[0].width)} />
-	<meta property="og:image:height" content={String(seo.openGraph.images[0].height)} />
-	<meta property="og:image:alt" content={seo.openGraph.images[0].alt} />
-
-	<!-- Twitter Card Meta Tags - Using server-loaded data -->
-	<meta name="twitter:card" content={seo.twitter.card} />
-	<meta name="twitter:title" content={seo.twitter.title} />
-	<meta name="twitter:description" content={seo.twitter.description} />
-	<meta name="twitter:image" content={seo.twitter.images[0]} />
-	<meta name="twitter:site" content={seo.twitter.site} />
+	<!-- Title, description, canonical, Open Graph, Twitter and JSON-LD come from
+	     `data.seo` (SEOInput, built in +page.server.ts) and are rendered once by
+	     the root layout's unified Seo layer. -->
 
 	<!-- Additional Meta Tags -->
 	<meta name="theme-color" content="#050505" />
@@ -411,15 +339,6 @@
 	<!-- Performance & Security - Google December 2025 Requirements -->
 	<!-- Note: Security headers should be set via server config, not meta tags -->
 	<meta name="referrer" content="strict-origin-when-cross-origin" />
-
-	<!-- Google December 2025 E-E-A-T Signals -->
-	<meta name="author" content={seo.author} />
-	<meta name="publisher" content={seo.publisher} />
-	<meta name="article:author" content={seo.openGraph.article.author} />
-	<meta name="article:published_time" content={seo.openGraph.article.publishedTime} />
-	<meta name="article:modified_time" content={seo.openGraph.article.modifiedTime} />
-	<meta name="article:section" content={seo.openGraph.article.section} />
-	<meta name="article:tag" content={seo.openGraph.article.tag} />
 
 	<!-- Expertise Signals -->
 	<meta
