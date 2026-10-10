@@ -44,7 +44,7 @@
 	import { isAdminUser } from '#lib/stores/auth.svelte.js';
 	import { initializeAuth } from '#lib/api/auth.js';
 	import type { Snippet } from 'svelte';
-	import { initializeConsent } from '#lib/consent/index.js';
+	import { initializeConsent } from '#lib/consent/init.js';
 	import { trackPageView } from '#lib/consent/vendors/ga4.js';
 	import { logger } from '#lib/utils/logger.js';
 
