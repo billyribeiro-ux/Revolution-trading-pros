@@ -61,46 +61,95 @@ hasn't caught up yet.
 
 ---
 
-## P0 — every SSR route returns 500 on the Cloudflare runtime (pre-existing)
+## Resolved 2026-10-10 — P0: every SSR route returned 500 on the Cloudflare runtime
 
-**Severity:** P0 the moment maintenance mode is switched off.
-**Found:** 2026-10-09, during end-to-end verification of the dependency sweep.
+Fixed; see CHANGELOG.md "2026-10-10". `isomorphic-dompurify` (whose browser
+build throws at import time in workerd) is gone. A single sanitizer engine
+(`frontend/src/lib/utils/html-sanitizer/`) runs the same allowlist on the
+server (parse5) and in the browser (`DOMParser`). The root layout no longer
+imports the consent UI. The Rust API sanitizes author HTML with `ammonia` on
+its public read endpoints. The 62-route `wrangler pages dev` sweep that found
+the 18 500s is the regression check.
 
-Running the production build in Cloudflare's own runtime
-(`wrangler pages dev .svelte-kit/cloudflare`, workerd) and requesting all 62
-top-level routes: 38 prerendered pages return 200, 6 redirect, and **18
-server-rendered routes return 500** — `/blog`, `/login`, `/store`, `/tools`,
-`/learning-center`, `/live-trading-rooms`, `/my`, `/watchlist`,
-`/verify-email`, `/authors`, `/tutorials`, `/guides`, `/daily`, `/crm`,
-`/embed`, `/posts`, `/chatroom-archive`, and `/auth`. The same build of
-untouched `main` (5457181) produced **identical** status codes on all 62 routes,
-so this predates the upgrade. In production it is masked by maintenance mode
-(`hooks.server.ts` redirects everything to the prerendered `/maintenance`).
+## 2026-10-10 security follow-ups (found while fixing the P0)
 
-**Root cause.** `isomorphic-dompurify` has no Workers build: its package
-exports are `node` (jsdom) and `default` (browser), and the workerd bundle
-resolves `default` → `dist/browser.mjs`, which runs
-`DOMPurify.sanitize.bind(DOMPurify)` at import time. Without a `window`,
-DOMPurify (3.4.14 and 3.4.16 alike — verified) is created with
-`isSupported = false` and no `sanitize`, so the module throws
-`TypeError: Cannot read properties of undefined (reading 'bind')` during
-init. The root layout pulls it in (`+layout` → `consent` → `TemplateEditor` →
-`#lib/utils/sanitize` → `isomorphic-dompurify`), so every non-prerendered page
-fails before rendering.
+The API inventory behind the P0 fix turned up these. None blocks the fix;
+each is small and independent.
 
-**Why it was not patched inside the dependency sweep.** It is a security
-decision, not a version bump. DOMPurify needs a DOM; jsdom cannot run in
-workerd, DOMPurify's maintainers advise against other DOM shims for
-server-side sanitizing, and making `{@html}` content client-only would drop
-server-rendered blog HTML (SEO) and fight hydration.
+### I. Public `GET /api/posts` honours `?status=`
 
-**Recommended fix.** Sanitize at the trust boundary on the server: the Rust
-API sanitizes stored/served HTML with `ammonia` (html5ever-based allowlist —
-the Rust ecosystem's standard), using the same allowlists as
-`src/lib/utils/sanitize.ts`'s profiles, and the frontend keeps DOMPurify in the
-browser as defence in depth, imported so that server bundles never evaluate it
-(and `TemplateEditor` taken out of the root layout's import graph). Verify by
-re-running the 62-route sweep under `wrangler pages dev` — expect zero 5xx.
+`list_posts` (`api/src/routes/posts.rs`) takes `status` from the query string
+and defaults it to `published`, so `/api/posts?status=draft` lists unpublished
+posts to anonymous callers. Admins already have `admin_list_posts`. Fix: pin
+the public route to `published`. First check that no admin page calls the
+public route with `status=`.
+
+### J. Room search highlights do not escape the source text
+
+`api/src/services/room_search.rs` (`ts_headline` at :349, :436, :520) wraps
+matches in `<mark>` but leaves the rest of the alert/trade text raw, and the
+dashboard renders it with `{@html}`. The frontend sanitizer contains it today
+(standard profile). Fix at the source: HTML-escape the column before
+`ts_headline`, so the only markup in the result is the `<mark>` the server adds.
+
+### K. `GET /api/cms/settings` is public and returns the injected scripts
+
+`head_scripts`, `body_start_scripts`, `body_end_scripts` and `custom_css` are
+admin-entered and served to anyone (`api/src/routes/cms_v2.rs:605`). The
+frontend reads only `maintenance_mode`. Return a public projection of the
+settings instead.
+
+### L. Other public HTML endpoints with no renderer yet
+
+CMS v2 content (`/api/cms/content/{type}/{slug}`, `/api/delivery/content/…`),
+public reusable blocks and global components, and `/api/videos/{id_or_slug}`
+(`unified_videos.description`) all return author HTML unsanitized. No frontend
+page renders them with `{@html}` today. Route them through `utils::html`
+(`sanitize_html` / `sanitize_content_blocks`) when a renderer is added.
+
+### M. Field/route mismatches that leave sinks rendering nothing
+
+- Email template preview reads `body_html`; the API returns `data.html`.
+- CRM template preview reads `content`; the API field is `body`.
+- Popups: `PopupModal` expects `content.{type,data}`; the API sends a string.
+  None of the three popup components is mounted in a route.
+- The trading-room video pages call `/api/trading-rooms/{room}/videos/{slug}`,
+  which the Rust API does not have.
+- `/api/admin/invoice-settings` has a SvelteKit proxy but no Rust route.
+- The CMS revisions router is mounted at `/api/api/cms` (double prefix,
+  `api/src/routes/mod.rs:123`).
+- `cms_scheduling/cron.rs:195` writes `cms_content.data`, a column the
+  `CmsContent` struct does not have. Verify it against the schema.
+
+### N. Editor-side regex sanitizer
+
+`BlockEditor/validation.ts` exports a pattern-based `sanitizeHtml` /
+`sanitizeBlock`. Nothing outside the module calls them. Delete them, or route
+them through `#lib/utils/sanitize.js`, so there is one sanitizer.
+
+### O. Prerendering depends on the API being reachable at build time
+
+`hooks.server.ts` asks `GET /api/cms/settings` for `maintenance_mode` and fails
+closed: if the API is unreachable or errors, the result is "maintenance on".
+That also applies during `vite build`'s prerender. With no API, every
+prerendered page is written as a 102-byte redirect stub to `/maintenance`.
+This was reproduced on 2026-10-10, and it is what CI's build step produces,
+since CI has no API. Skip the maintenance gate while `building` (from
+`$app/env`), so static pages never depend on API state at build time; the
+runtime check still guards SSR. Related: a fresh database bootstrapped from
+`schema.sql` + `sqlx-seed.sql` has no `cms_site_settings` singleton row
+(migration 023 inserts it). `/api/cms/settings` then returns 500, which also
+trips the fail-closed path. Add the seed rows that migrations insert to the
+fresh-environment bootstrap.
+
+### P. Blog post bodies are not server-rendered
+
+`/blog/[slug]` loads the post in `+page.ts` (used only for SEO) and then
+fetches it again in the component, rendering the body inside
+`{#await postPromise}`. SSR therefore emits only the pending state. Render the
+body from `data` (sanitized on the server by both the API and the isomorphic
+sanitizer) and drop the second fetch. That brings back server-rendered article
+HTML for search engines.
 
 ## 2026-10-09 dependency-upgrade follow-ups
 

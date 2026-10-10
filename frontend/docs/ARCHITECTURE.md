@@ -173,11 +173,8 @@ npm run test:a11y
 
 ### From Old BlockRenderer
 
-1. Install new dependencies:
-
-```bash
-npm install isomorphic-dompurify
-```
+1. Sanitize any HTML you render with `{@html}` through `#lib/utils/sanitize.js`
+   (it runs identically during SSR and in the browser; no extra dependency).
 
 2. Update imports:
 

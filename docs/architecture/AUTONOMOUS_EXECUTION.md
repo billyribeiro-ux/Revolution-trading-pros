@@ -86,7 +86,7 @@ npx wrangler pages deploy .svelte-kit/cloudflare
 - Image optimization ✅
 
 ### Security
-- DOMPurify sanitization ✅
+- HTML sanitization (isomorphic allowlist engine + `ammonia` in the API) ✅
 - CSP headers ✅
 - File validation ✅
 - XSS prevention ✅
