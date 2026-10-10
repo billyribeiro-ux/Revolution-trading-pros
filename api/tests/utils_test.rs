@@ -347,6 +347,9 @@ mod html_sanitization {
             "vbscript:x",
             "data:text/html,x",
             "file:///etc/passwd",
+            "x\" onerror=\"alert(1)",
+            "/img.png\"><script>x</script>",
+            "/a`b",
         ] {
             assert!(
                 !is_safe_url(unsafe_url),
@@ -384,6 +387,59 @@ mod html_sanitization {
                 {"type": "html", "content": {"html": "<iframe></iframe><p>ok</p>"}, "settings": {"backgroundImage": "/bg.png"}},
                 {"type": "columns", "content": {"columns": [{"blocks": [{"type": "quote", "data": {"text": "q"}}]}]}}
             ])
+        );
+    }
+
+    #[test]
+    fn sanitizes_string_and_flat_blocks_as_the_feed_generators_read_them() {
+        // /feed.xml and /atom.xml interpolate these block-level fields as markup:
+        // a bare string block, `text`/`content`/`html`, `items`, `url`/`src`,
+        // and `<h{level}>`. Code blocks are escaped by the feeds, so left alone.
+        let mut blocks = json!([
+            "<img src=x onerror=alert(1)>",
+            {"type": "paragraph", "text": "<img src=x onerror=alert(2)>"},
+            {"type": "html", "html": "<script>alert(3)</script><b>ok</b>"},
+            {"type": "paragraph", "content": "<img src=x onerror=alert(4)>"},
+            {"type": "image", "url": "javascript:alert(5)", "src": "java\tscript:alert(6)", "alt": "a & b"},
+            {"type": "heading", "level": "2 onclick=alert(7)", "text": "T"},
+            {"type": "heading", "level": 3, "text": "T"},
+            {"type": "list", "items": ["<i>i</i><svg onload=alert(8)>"]},
+            {"type": "custom", "text": ["<img src=x onerror=alert(9)>", ["<script>x</script>"]]},
+            {"type": "code", "content": "if (a < b) { return '<div>'; }"},
+            {"type": "image", "url": ["x\" onerror=\"alert(10)"]},
+            {"type": "image", "url": "x\" onerror=\"alert(11)", "src": "/ok.png"}
+        ]);
+        sanitize_content_blocks(&mut blocks);
+        assert_eq!(
+            blocks,
+            json!([
+                "<img src=\"x\">",
+                {"type": "paragraph", "text": "<img src=\"x\">"},
+                {"type": "html", "html": "<b>ok</b>"},
+                {"type": "paragraph", "content": "<img src=\"x\">"},
+                {"type": "image", "alt": "a & b"},
+                {"type": "heading", "text": "T"},
+                {"type": "heading", "level": 3, "text": "T"},
+                {"type": "list", "items": ["<i>i</i>"]},
+                {"type": "custom", "text": ["<img src=\"x\">", [""]]},
+                {"type": "code", "content": "if (a < b) { return '<div>'; }"},
+                {"type": "image"},
+                {"type": "image", "src": "/ok.png"}
+            ])
+        );
+    }
+
+    #[test]
+    fn editor_shape_payload_object_is_left_to_the_nested_rules() {
+        // `content` as an object is the editor payload: walked by the
+        // blog-page rules (button text stays plain), not treated as markup.
+        let mut blocks = json!([
+            {"type": "button", "content": {"text": "Q&A", "url": "vbscript:x"}, "settings": {"linkUrl": "/ok"}}
+        ]);
+        sanitize_content_blocks(&mut blocks);
+        assert_eq!(
+            blocks,
+            json!([{"type": "button", "content": {"text": "Q&A"}, "settings": {"linkUrl": "/ok"}}])
         );
     }
 

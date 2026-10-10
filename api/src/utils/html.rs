@@ -203,7 +203,15 @@ pub fn sanitize_html(input: &str) -> String {
 /// Whether a bare URL is safe to place in an `href`/`src`: relative, or
 /// http(s)/mailto/tel. Parsing follows the WHATWG URL standard, so
 /// `java\tscript:` and ` JAVASCRIPT:` are recognized for what they are.
+///
+/// A valid URL never contains a raw `"`, `<`, `>` or backtick (they are
+/// percent-encoded), but a consumer that string-interpolates the value into
+/// markup — the RSS/Atom generators build `<img src="${url}">` — would let one
+/// break out of the attribute. Such values are rejected outright.
 pub fn is_safe_url(value: &str) -> bool {
+    if value.contains(['"', '<', '>', '`']) {
+        return false;
+    }
     match Url::parse(value) {
         Ok(url) => LINK_SCHEMES.contains(&url.scheme()),
         Err(ParseError::RelativeUrlWithoutBase) => true,
@@ -212,14 +220,31 @@ pub fn is_safe_url(value: &str) -> bool {
 }
 
 // ── Structured content ──────────────────────────────────────────────────
+//
+// Post blocks reach two kinds of public renderer, and each reads a different
+// part of a block:
+//
+// - The blog page reads the nested payload — `block.data` (legacy shape) or
+//   `block.content` (editor shape) — and renders `text` as HTML only for the
+//   types in `HTML_TEXT_BLOCKS`. Code and button text are shown as plain text.
+// - The RSS/Atom generators read fields on the block itself (`block.text`,
+//   `block.content`, `block.html`, `block.items`, `block.url`, `block.level`),
+//   and a bare string block, and emit all of it as markup except code blocks,
+//   which they escape.
+//
+// Each part is sanitized for the renderer that reads it: markup is cleaned
+// wherever it is rendered, and text shown as text is never escaped.
 
-/// Block types whose `text` the blog renders as HTML. Other types (code,
-/// button, …) render `text` as plain text, which escaping would corrupt.
+/// Block types whose nested `text` the blog page renders as HTML.
 const HTML_TEXT_BLOCKS: &[&str] = &["paragraph", "heading", "quote", "pullquote", "callout"];
 
-/// URL-valued keys in a block's data or settings.
+/// Block types every renderer shows as escaped plain text, never as markup.
+const PLAIN_TEXT_BLOCKS: &[&str] = &["code", "preformatted"];
+
+/// URL-valued keys in a block, its payload, or its settings.
 const URL_KEYS: &[&str] = &[
     "url",
+    "src",
     "href",
     "mediaUrl",
     "embedUrl",
@@ -228,9 +253,8 @@ const URL_KEYS: &[&str] = &[
 ];
 
 /// Sanitizes post content blocks in place: an array of blocks, or an object
-/// holding one under `blocks`. Accepts both block shapes the editor has
-/// written — `{type, data: {…}}` and `{type, content: {…}, settings: {…}}` —
-/// and recurses into nested blocks (columns, groups).
+/// holding one under `blocks`. Handles every block shape a public renderer
+/// reads (see above) and recurses into nested blocks (columns, groups).
 pub fn sanitize_content_blocks(blocks: &mut Value) {
     match blocks {
         Value::Array(items) => items.iter_mut().for_each(sanitize_block),
@@ -244,24 +268,30 @@ pub fn sanitize_content_blocks(blocks: &mut Value) {
 }
 
 fn sanitize_block(block: &mut Value) {
-    let Some(block) = block.as_object_mut() else {
-        return;
-    };
-    let block_type = block
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or_default()
-        .to_owned();
-    for key in ["data", "content"] {
-        if let Some(Value::Object(data)) = block.get_mut(key) {
-            sanitize_block_data(&block_type, data);
+    match block {
+        // The feed generators render a bare string block as `<p>{block}</p>`.
+        Value::String(html) => *html = sanitize_html(html),
+        Value::Object(block) => {
+            let block_type = block
+                .get("type")
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .to_owned();
+            for key in ["data", "content"] {
+                if let Some(Value::Object(data)) = block.get_mut(key) {
+                    sanitize_block_data(&block_type, data);
+                }
+            }
+            sanitize_flat_fields(&block_type, block);
+            if let Some(Value::Object(settings)) = block.get_mut("settings") {
+                drop_unsafe_urls(settings);
+            }
         }
-    }
-    if let Some(Value::Object(settings)) = block.get_mut("settings") {
-        drop_unsafe_urls(settings);
+        _ => {}
     }
 }
 
+/// The nested payload, as the blog page reads it.
 fn sanitize_block_data(block_type: &str, data: &mut Map<String, Value>) {
     if HTML_TEXT_BLOCKS.contains(&block_type) {
         sanitize_html_field(data, "text");
@@ -287,13 +317,45 @@ fn sanitize_block_data(block_type: &str, data: &mut Map<String, Value>) {
     }
 
     drop_unsafe_urls(data);
+    sanitize_nested_blocks(data);
+}
 
+/// Fields on the block itself, as the RSS/Atom generators read them.
+fn sanitize_flat_fields(block_type: &str, block: &mut Map<String, Value>) {
+    if !PLAIN_TEXT_BLOCKS.contains(&block_type) {
+        // A `content` object is the editor-shape payload, handled above; only
+        // markup values (strings, arrays of strings) are touched here.
+        for key in ["text", "content", "html"] {
+            sanitize_html_field(block, key);
+        }
+    }
+    sanitize_list_items(block.get_mut("items"));
+    drop_unsafe_urls(block);
+    // Interpolated as `<h{level}>`: anything but a heading level is markup.
+    if block
+        .get("level")
+        .is_some_and(|level| !is_heading_level(level))
+    {
+        block.remove("level");
+    }
+    sanitize_nested_blocks(block);
+}
+
+fn is_heading_level(level: &Value) -> bool {
+    match level {
+        Value::Number(number) => number.as_u64().is_some_and(|n| (1..=6).contains(&n)),
+        Value::String(text) => matches!(text.as_str(), "1" | "2" | "3" | "4" | "5" | "6"),
+        _ => false,
+    }
+}
+
+fn sanitize_nested_blocks(object: &mut Map<String, Value>) {
     for key in ["blocks", "children"] {
-        if let Some(nested) = data.get_mut(key) {
+        if let Some(nested) = object.get_mut(key) {
             sanitize_content_blocks(nested);
         }
     }
-    if let Some(Value::Array(columns)) = data.get_mut("columns") {
+    if let Some(Value::Array(columns)) = object.get_mut("columns") {
         for column in columns.iter_mut().filter_map(Value::as_object_mut) {
             if let Some(nested) = column.get_mut("blocks") {
                 sanitize_content_blocks(nested);
@@ -322,18 +384,33 @@ fn sanitize_list_items(items: Option<&mut Value>) {
 }
 
 fn sanitize_html_field(object: &mut Map<String, Value>, key: &str) {
-    if let Some(Value::String(html)) = object.get_mut(key) {
-        *html = sanitize_html(html);
+    if let Some(value) = object.get_mut(key) {
+        sanitize_markup_value(value);
     }
 }
 
+/// Sanitizes a value a renderer interpolates as markup. Renderers string-coerce
+/// arrays (`${["<img onerror=…>"]}` is markup), so their strings are cleaned
+/// too; other values stringify to inert text.
+fn sanitize_markup_value(value: &mut Value) {
+    match value {
+        Value::String(html) => *html = sanitize_html(html),
+        Value::Array(items) => items.iter_mut().for_each(sanitize_markup_value),
+        _ => {}
+    }
+}
+
+/// Removes URL fields that are not relative or http(s)/mailto/tel. An array or
+/// object in a URL field is malformed — string-coerced into an attribute it
+/// could break out of the quotes — and is removed too.
 fn drop_unsafe_urls(object: &mut Map<String, Value>) {
     for key in URL_KEYS {
-        if object
-            .get(*key)
-            .and_then(Value::as_str)
-            .is_some_and(|url| !is_safe_url(url))
-        {
+        let unsafe_value = match object.get(*key) {
+            Some(Value::String(url)) => !is_safe_url(url),
+            Some(Value::Array(_) | Value::Object(_)) => true,
+            _ => false,
+        };
+        if unsafe_value {
             object.remove(*key);
         }
     }
