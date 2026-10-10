@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { POLYGON_API_KEY } from '$app/env/private';
 
@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				}
 			}
 
-			return json({
+			return Response.json({
 				underlying: ticker,
 				expirations: [...expirationSet].sort(),
 				source: 'polygon'

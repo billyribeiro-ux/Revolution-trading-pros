@@ -145,7 +145,7 @@
 	// `fn(getSnapshot())` reads 7 $state runes inside a tracked reactive context
 	// and writes the synthetic mirror rune — that's the read-and-write
 	// self-loop that fires `effect_update_depth_exceeded` on the post-login
-	// `goto('/admin', { invalidateAll: true })` flush. `user.current` is a
+	// `goto('/admin', { refreshAll: true })` flush. `user.current` is a
 	// plain getter, no fan-out, no synthetic rune writes.
 	// Old: const u = $user;
 	let displayRole = $derived.by(() => {

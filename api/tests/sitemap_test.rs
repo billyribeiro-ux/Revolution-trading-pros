@@ -11,7 +11,7 @@
 //!
 //! `routes/sitemap.rs` is 481 LOC of dynamic XML sitemap generation
 //! over `posts`, `categories`, `tags` (all BIGSERIAL i64 PKs per
-//! schema.sql:8798, 3672, 10077) with a 1-hour `lazy_static`-backed
+//! schema.sql:8798, 3672, 10077) with a 1-hour `LazyLock`-backed
 //! in-memory cache. Every endpoint is publicly reachable (no auth
 //! extractor — crawlers consume sitemaps unauthenticated) and writes
 //! to `application/xml`. What we CAN pin in no-DB tests:
@@ -48,7 +48,7 @@
 //!    of `/sitemap/posts/:page` IS the public contract — the
 //!    compile-pin proves the page extractor and route exist.
 //!
-//! 4. **Cache is module-private `lazy_static` + `tokio::RwLock`.**
+//! 4. **Cache is a module-private `LazyLock` + `tokio::RwLock`.**
 //!    Per CLAUDE.md habit #3 (re-read your own diff): the cache is
 //!    `Arc<RwLock<HashMap<String, SitemapCache>>>`. A refactor that
 //!    extracted the cache into a `OnceLock` per-handler would
@@ -57,7 +57,7 @@
 //!    per-handler caches would let the sitemapindex's reference
 //!    to /sitemap/posts/N drift from the cached content at that URL).
 //!    We can't introspect private state from outside, but constructing
-//!    `router()` multiple times MUST NOT panic (lazy_static is
+//!    `router()` multiple times MUST NOT panic (`LazyLock` is
 //!    idempotent; a regression that wrapped it in a `OnceLock` whose
 //!    `set` panics on second call would fail here).
 //!
@@ -90,11 +90,11 @@ fn sitemap_router_builds_with_app_state() {
     let _r: axum::Router<revolution_api::AppState> = sitemap::router();
 }
 
-// ── 2. Router idempotent — cache + lazy_static survive re-construction ──
+// ── 2. Router idempotent — cache + LazyLock survive re-construction ──
 
 /// Per CLAUDE.md habit #3 ("Re-read your own diff before commit"):
-/// the sitemap cache is `lazy_static! { static ref SITEMAP_CACHE:
-/// Arc<RwLock<HashMap<String, SitemapCache>>> }`. A refactor that
+/// the sitemap cache is `static SITEMAP_CACHE:
+/// LazyLock<Arc<RwLock<HashMap<String, SitemapCache>>>>`. A refactor that
 /// extracted the cache into a `OnceLock` PER-HANDLER (one common
 /// AI-assisted refactor shape) would either:
 ///   a) panic on second `router()` construction (`OnceLock::set`

@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -25,11 +24,11 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({}, { status: 200 });
+			return Response.json({}, { status: 200 });
 		}
 	} catch {
-		return json({}, { status: 200 });
+		return Response.json({}, { status: 200 });
 	}
 };

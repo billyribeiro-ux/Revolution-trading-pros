@@ -18,7 +18,7 @@
  * @version 3.0.0 - April 2026 (audit hardening)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
@@ -83,7 +83,3 @@ export const POST: RequestHandler = async (event) => {
 
 	return forwardJson(upstream);
 };
-
-// Keep `json` import for parity with sibling proxies (returned by helpers
-// when needed). Suppress unused-warning at the type level.
-void json;

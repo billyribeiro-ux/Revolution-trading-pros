@@ -4,7 +4,10 @@
 # FIX-2026-04-26: pinned from rust:latest to explicit version (Phase 7.3)
 # FROM rust:latest AS builder
 # FIX-2026-06-08: keep Docker builder aligned with rust-toolchain.toml.
-FROM rust:1.98-bookworm AS builder
+# 2026-10-09: Rust 1.99, and both stages moved to Debian 13 "trixie" — the
+# current Debian stable (bookworm is now oldstable). Builder and runtime must
+# stay on the same Debian release so the binary's glibc/OpenSSL ABI matches.
+FROM rust:1.99.0-trixie AS builder
 
 # Install build dependencies (Debian-based image)
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -31,16 +34,19 @@ COPY .sqlx ./.sqlx
 ENV SQLX_OFFLINE=true
 RUN touch src/main.rs && cargo build --release
 
-# FIX-2026-04-26: switched from trixie-slim (unstable) to bookworm-slim (stable LTS) (Phase 7.3)
-# the rust:1.98-bookworm builder uses GLIBC 2.36 (bookworm), so bookworm-slim is the correct match
-# FROM debian:trixie-slim AS runtime
-FROM debian:bookworm-slim AS runtime
+# FIX-2026-04-26 moved this stage to bookworm-slim while trixie was still
+# Debian testing. Trixie has since become Debian 13 stable, so on 2026-10-09
+# the runtime returned to trixie-slim to match the rust:1.99.0-trixie builder.
+FROM debian:trixie-slim AS runtime
 
-# Install runtime dependencies (OpenSSL, CA certs, curl for health checks)
+# Install runtime dependencies (OpenSSL, CA certs, curl for health checks).
+# On trixie the OpenSSL 3 runtime package is `libssl3t64` (64-bit time_t
+# transition); `libssl3` is only a virtual name it Provides. Named explicitly
+# so the binary's runtime dependency (sqlx/redis native-tls) is documented.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
-    libssl3 \
+    libssl3t64 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user

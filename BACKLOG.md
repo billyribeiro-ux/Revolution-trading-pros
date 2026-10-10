@@ -14,7 +14,9 @@ a batch picks them up, it pulls them out of this file into a
 
 Rust 1.98's clippy extended `result_large_err` to `async fn`, so ~150
 route handlers returning `Result<T, ApiError>` began failing the
-`-D warnings` gate on 2026-08-30. `ApiError` is 168 bytes (3×String,
+`-D warnings` gate on 2026-08-30. Re-verified on Rust 1.99.0 (2026-10-09):
+removing `api/clippy.toml` still yields exactly 150 `result_large_err` errors,
+so the threshold stays until this item lands. `ApiError` is 168 bytes (3×String,
 2×Option<String>, Option<HashMap>), over the 128-byte default. The
 dependency sweep unblocked CI with `api/clippy.toml`
 (`large-error-threshold = 176`) rather than reshaping ~40 modules
@@ -59,57 +61,271 @@ hasn't caught up yet.
 
 ---
 
+## Resolved 2026-10-10 — P0: every SSR route returned 500 on the Cloudflare runtime
+
+Fixed; see CHANGELOG.md "2026-10-10". `isomorphic-dompurify` (whose browser
+build throws at import time in workerd) is gone. A single sanitizer engine
+(`frontend/src/lib/utils/html-sanitizer/`) runs the same allowlist on the
+server (parse5) and in the browser (`DOMParser`). The root layout no longer
+imports the consent UI. The Rust API sanitizes author HTML with `ammonia` on
+its public read endpoints. The 62-route `wrangler pages dev` sweep that found
+the 18 500s is the regression check, and `pnpm test:sanitizer:browser` checks
+server/browser output parity against real Chromium.
+
+## 2026-10-10 security follow-ups (found while fixing the P0)
+
+The API inventory behind the P0 fix turned up these. None blocks the fix;
+each is small and independent.
+
+### I. Public `GET /api/posts` honours `?status=`
+
+`list_posts` (`api/src/routes/posts.rs`) takes `status` from the query string
+and defaults it to `published`, so `/api/posts?status=draft` lists unpublished
+posts to anonymous callers. Admins already have `admin_list_posts`. Fix: pin
+the public route to `published`. First check that no admin page calls the
+public route with `status=`.
+
+### J. Room search highlights do not escape the source text
+
+`api/src/services/room_search.rs` (`ts_headline` at :349, :436, :520) wraps
+matches in `<mark>` but leaves the rest of the alert/trade text raw, and the
+dashboard renders it with `{@html}`. The frontend sanitizer contains it today
+(standard profile). Fix at the source: HTML-escape the column before
+`ts_headline`, so the only markup in the result is the `<mark>` the server adds.
+
+### K. `GET /api/cms/settings` is public and returns the injected scripts
+
+`head_scripts`, `body_start_scripts`, `body_end_scripts` and `custom_css` are
+admin-entered and served to anyone (`api/src/routes/cms_v2.rs:605`). The
+frontend reads only `maintenance_mode`. Return a public projection of the
+settings instead.
+
+### L. Other public HTML endpoints with no renderer yet
+
+CMS v2 content (`/api/cms/content/{type}/{slug}`, `/api/delivery/content/…`),
+public reusable blocks and global components, and `/api/videos/{id_or_slug}`
+(`unified_videos.description`) all return author HTML unsanitized. No frontend
+page renders them with `{@html}` today. Route them through `utils::html`
+(`sanitize_html` / `sanitize_content_blocks`) when a renderer is added.
+
+### M. Field/route mismatches that leave sinks rendering nothing
+
+- Email template preview reads `body_html`; the API returns `data.html`.
+- CRM template preview reads `content`; the API field is `body`.
+- Popups: `PopupModal` expects `content.{type,data}`; the API sends a string.
+  None of the three popup components is mounted in a route.
+- The trading-room video pages call `/api/trading-rooms/{room}/videos/{slug}`,
+  which the Rust API does not have.
+- `/api/admin/invoice-settings` has a SvelteKit proxy but no Rust route.
+- The CMS revisions router is mounted at `/api/api/cms` (double prefix,
+  `api/src/routes/mod.rs:123`).
+- `cms_scheduling/cron.rs:195` writes `cms_content.data`, a column the
+  `CmsContent` struct does not have. Verify it against the schema.
+
+### N. Editor-side regex sanitizer
+
+`BlockEditor/validation.ts` exports a pattern-based `sanitizeHtml` /
+`sanitizeBlock`. Nothing outside the module calls them. Delete them, or route
+them through `#lib/utils/sanitize.js`, so there is one sanitizer.
+
+### O. Prerendering depends on the API being reachable at build time
+
+`hooks.server.ts` asks `GET /api/cms/settings` for `maintenance_mode` and fails
+closed: if the API is unreachable or errors, the result is "maintenance on".
+That also applies during `vite build`'s prerender. With no API, every
+prerendered page is written as a 102-byte redirect stub to `/maintenance`.
+This was reproduced on 2026-10-10, and it is what CI's build step produces,
+since CI has no API. Skip the maintenance gate while `building` (from
+`$app/env`), so static pages never depend on API state at build time; the
+runtime check still guards SSR. Related: a fresh database bootstrapped from
+`schema.sql` + `sqlx-seed.sql` has no `cms_site_settings` singleton row
+(migration 023 inserts it). `/api/cms/settings` then returns 500, which also
+trips the fail-closed path. Add the seed rows that migrations insert to the
+fresh-environment bootstrap.
+
+### P. Blog post bodies are not server-rendered
+
+`/blog/[slug]` loads the post in `+page.ts` (used only for SEO) and then
+fetches it again in the component, rendering the body inside
+`{#await postPromise}`. SSR therefore emits only the pending state. Render the
+body from `data` (sanitized on the server by both the API and the isomorphic
+sanitizer) and drop the second fetch. That brings back server-rendered article
+HTML for search engines.
+
+### Q. Re-check `<select>` parity when parse5 adopts the relaxed select parser
+
+Chromium already parses arbitrary elements inside `<select>`/`<option>`
+(the WHATWG customizable-select parser change); parse5 8.0.1 does not. The
+sanitizer drops `select` with its content, but a *malformed* select can still
+end in a different place on the two parsers. Server and browser output then
+differ: both sanitized, with a dev-mode hydration warning at worst. When parse5
+ships the change, bump it, then delete the `<select>` exemption in
+`frontend/scripts/sanitizer-differential.js` and the caveat in
+`html-sanitizer/engine.ts`. `pnpm test:sanitizer:browser` must then report 0
+differences with 0 exempt.
+
+### R. The RSS/Atom feeds ignore the block shapes the editor writes
+
+`/feed.xml` and `/atom.xml` read only fields on the block itself (`block.text`,
+`block.content`, `block.url`, …). Posts saved by the editor nest their payload
+under `block.content` (an object) or `block.data`. For those posts the feeds
+emit empty paragraphs or `[object Object]`. The blog page handles both shapes
+through `blockData()`. Reuse that mapping in both feed generators (the output
+is sanitized either way).
+
+## 2026-10-09 dependency-upgrade follow-ups
+
+Surfaced while moving everything to its latest release (CHANGELOG.md
+2026-10-09). Each is either a decision that needs an owner or pre-existing debt
+that was out of scope for a dependency upgrade.
+
+### A. Align the backend Stripe API version with Stripe.js `endive`
+**Severity:** P2 (works today; Stripe recommends one release train)
+
+`@stripe/stripe-js` 10 loads Stripe.js `endive`, which makes client-side
+requests on API version `2026-09-30.endive`. The Rust API still pins
+`2024-12-18.acacia` (`api/src/services/stripe.rs`) and sends
+`payment_method_types[0]=card`, a parameter `endive` deletes from
+PaymentIntents. Mixed versions are supported, but moving the backend is a
+payment-flow change that must be validated end to end in Stripe test mode, so
+it was not folded into the dependency bump.
+
+### B. Re-pin Node when 26 becomes LTS (2026-10-28)
+**Severity:** P3
+
+Node 24.21.0 is the latest LTS on 2026-10-09; per `nodejs/Release`
+`schedule.json`, 24 enters maintenance on 2026-10-20 and 26 becomes Active LTS
+on 2026-10-28. Re-pin `.nvmrc`, `.node-version`, `frontend/.node-version`
+(read by the Cloudflare Pages build), both `engines.node`, CI's
+`NODE_VERSION`, and `@types/node` (24.x → 26.x) together after that date.
+**Node ≥ 25 no longer bundles Corepack** (verified: the v26.11.1 tarball
+contains no `corepack`; v24.21.0 does), so the `corepack enable` steps in
+`ci.yml` and `deploy-cloudflare.yml` must first install it from npm
+(`npm install -g corepack@0.36.0`, which supports Node ≥ 26), and
+`LOCAL_DEV.md` must say the same.
+
+### C. `@testing-library/jest-dom` types vs Vitest 5
+**Severity:** P3 (type-level only; hidden by `skipLibCheck`)
+
+jest-dom 7.0.1 (latest) augments `vitest`'s `Assertion<T>`; Vitest 5 declares
+`Assertion<R, T>`, which is a TS2428 conflict that only `skipLibCheck: true`
+(Kit's default) hides. Runtime matchers work. Re-check when jest-dom ships a
+Vitest 5-aware release.
+
+### D. Test-suite hygiene (pre-existing)
+**Severity:** P3
+
+- `pnpm test:coverage` fails its 80/80/75/80 thresholds at ~7% coverage on
+  both Vitest 4 and 5. It is not a CI gate; either raise coverage or set
+  realistic thresholds.
+- `frontend/tests/unit/WeeklyHero.test.ts` imports vitest but sits outside
+  `test.include` (`src/**/*.{test,spec}.{js,ts}`), so it never runs.
+- `@vitest/browser-playwright` is declared (and kept current at 5.0.3) but has
+  zero usages — there is no `test.browser` config. Remove it, or adopt browser
+  mode deliberately.
+
+### E. `AIGeneratedBlock.svelte` is a placeholder
+**Severity:** P3 (pre-existing)
+
+It simulates output client-side and offers a stale model list (GPT-4,
+GPT-3.5, Claude 3, Claude 2). It does not call `/api/cms/ai/generate`, which
+was the only live Claude integration and now runs on `claude-sonnet-5-5`.
+
+### F. Rust edition 2021 → 2024 (deliberately not folded into the toolchain bump)
+**Severity:** P3 (2021 stays fully supported by every future compiler)
+
+Measured 2026-10-09 on Rust 1.99.0 with
+`RUSTFLAGS="-W rust-2024-compatibility" cargo check --all-targets`:
+
+| Lint | Sites | Where | Auto-fixable |
+|------|-------|-------|--------------|
+| `tail_expr_drop_order` | 26 | `db/mod.rs`, `jobs/{email_reminders,reconcile_stripe}.rs`, `queue/worker.rs` (×7), `routes/{admin_videos/crud,analytics,cms_ai_assist,cms_datasources/import_export,forms/public,media/bulk (×4),media/uploads,subscriptions_admin/price_changes,user/avatar,websocket}.rs`, `services/{mod,redis}.rs` | **No** — temporaries in tail expressions drop earlier; each site needs a semantic review |
+| `if_let_rescope` | 5 | `routes/auth/{login,session}.rs`, `routes/forms/public.rs`, `routes/media/crud.rs`, `routes/newsletter.rs` | Yes (`cargo fix` rewrites to `match`) |
+| `deprecated_safe_2024` | 8 | `tests/common/mod.rs`, `tests/explosive_swings/fixtures.rs` (`std::env::set_var`) | Wraps in `unsafe {}` — prefer passing config explicitly over mutating process env in multi-threaded tests |
+| `edition_2024_expr_fragment_specifier` | 1 | `routes/admin_courses/crud.rs` | Yes |
+| `rust_2024_incompatible_pat` | 1 | `routes/websocket.rs` | Yes |
+
+A scratch-copy migration (2026-10-09) compiles and passes clippy
+`-D warnings` plus the no-DB tests, but it also needs `cargo clippy --fix` to
+collapse 86 nested `if`/`if let` sites into let-chains (clippy's
+`collapsible_if` fires on them under 2024), and a decision on rustfmt: pin
+`style_edition = "2021"` in `api/rustfmt.toml` or accept a ~280-file
+reformat. The drop-order sites sit in auth, websocket, queue and
+payment-reconciliation paths, which the no-DB tests do not exercise, so this
+belongs in its own reviewed change with the DB-backed integration tests
+(`integration_tests`, `explosive_swings_tests`) run against a real Postgres —
+not hidden inside a version-bump diff.
+
+### G. Backend dependency hygiene (optional, low risk)
+**Severity:** P3, except the first bullet (P2)
+
+- **CI runs no `cargo deny check`.** CLAUDE.md makes it a gate, but only
+  `pnpm api:lint` runs it locally; RUSTSEC-2026-0258 (published 2026-08-18) sat
+  unnoticed on `main` until the 2026-10-09 sweep. Add a `cargo deny check` step
+  to the backend job (e.g. `EmbarkStudios/cargo-deny-action`, pinned).
+- `aws-config` is used only for `BehaviorVersion`, which `aws-sdk-s3`
+  re-exports (`aws_sdk_s3::config::BehaviorVersion`); dropping it removes five
+  crates from the tree.
+- `api/clippy.toml` could use clippy's type-specific `large-error-ignored`
+  (available since 1.93) instead of the crate-wide `large-error-threshold`,
+  until item 0 lands.
+- `deny.toml` allow-lists `Unicode-DFS-2016`, `MPL-2.0` and `OpenSSL`, which no
+  crate in the tree uses any more (`license-not-encountered`).
+- Rust 1.99's Cargo turns incremental compilation off by default when `CI` is
+  set; `api/.cargo/config.toml` forces `incremental = true`. Decide whether that
+  is still wanted for CI cache size and speed.
+- AWS SDK for Rust 2.x is announced for November 2026. With
+  `default-features = false` the crate already uses the post-2.x default
+  client, but the major bump will be its own upgrade.
+
+### H. `goto()` to routes that do not exist (pre-existing)
+**Severity:** P3
+
+Kit 3 rejects `goto()` for URLs that resolve to no page
+(`navigation_route_missing`) instead of rendering a 404. These targets have no
+route: `goto('/workflows/new')` (`routes/workflows/+page.svelte`),
+`goto('/posts')` (`routes/posts/[slug]/edit/+page.svelte`), and
+`/admin/page-builder?course=…` (a `goto` in `routes/admin/courses/+page.svelte`
+plus three `<a href>` links). Each needs a product decision — build the page or
+remove the entry point. (`CommandPalette`'s `/admin/blog/new` and
+`SocialLoginButtons`' `/api/auth/*` were fixed on 2026-10-09.)
+
 ## SvelteKit 3 follow-ups
 
-Deferred from the SvelteKit 3 migration. Everything **removed** in Kit 3
-was migrated; the items below are **deprecated-but-working** APIs and
-advisory findings from `sv migrate`'s generated task list. None of them
-block the build, typecheck, lint, or tests.
+The repo is on SvelteKit 3 stable (`@sveltejs/kit` 3.0.1,
+`@sveltejs/adapter-cloudflare` 8.0.0) as of 2026-10-09. That upgrade shipped
+the former items 1 (`invalidateAll` → `refreshAll`), 2 (`json()` →
+`Response.json()`; there were no `text()` calls), 3 (`replaceState` →
+`replace`), 6 (re-pin off the prerelease line), 8 (the adapter's
+"Reading `config.kit`" build warning — gone in adapter 8.0.0) and 9 (`version`
+from `$app/env` now works in the service worker), so they are removed here.
+See CHANGELOG.md 2026-10-09.
 
-### 1. `invalidateAll` → `refreshAll`
-**Severity:** P2 (deprecated, still functional)
-
-~110 call sites still use `invalidateAll()` / `goto(..., { invalidateAll: true })`.
-The Kit 3 replacement is `refreshAll()`, but it is **not** a pure rename:
-`refreshAll()` preserves `page.state` where `invalidateAll()` reset it.
-Each call site needs a look at whether retained page state changes
-behaviour, so this was deliberately kept out of the dependency-bump
-change rather than sed-replaced.
-
-### 2. `json()` / `text()` → `Response.json()` / `new Response()`
-**Severity:** P3 (deprecated, still functional)
-
-~200 `+server.ts` handlers import `json` from `@sveltejs/kit`. Mechanical,
-but large and touches every API proxy, so it belongs in its own pass.
-
-### 3. `replaceState` → `replace` in `goto` options
-**Severity:** P3 (deprecated, still functional)
-
-Small rename, safe to fold into whichever pass touches navigation next.
-
-### 4. Pre-existing a11y failure: form inputs without labels
+### 4. Pre-existing a11y failure: form inputs without labels — and the suite audits the wrong page
 **Severity:** P2 (pre-existing, not a migration regression)
 
 `tests/accessibility/a11y-audit.spec.ts` → "form inputs should have
-associated labels" fails on `/admin/blog/new`. Verified failing
-identically on the pre-migration baseline (`e5cf441`), so it predates the
-Kit 3 work — but it is a real WCAG gap worth closing.
+associated labels" fails identically on `main` and on the 2026-10-09 upgrade
+(both run the same day: upgraded 9 passed / 1 failed / 2 skipped). The
+"CMS Editor" tests navigate to `/admin/blog/new`, which is not a route (the
+editor is `/admin/blog/create`); unauthenticated, the request lands on
+`/login`, so the whole "CMS Editor" block actually audits the **login page**,
+and the unlabelled input is there. Fix the input on `/login`, then point the
+suite at `/admin/blog/create` with an authenticated fixture so it audits the
+editor it is named after. (On `main` the "color contrast" test also failed
+that day, but as a `waitForLoadState` timeout on a cold dev server, not a
+contrast violation.)
 
 ### 5. TypeScript 7
 **Severity:** P2 (blocked upstream)
 
-TypeScript 7.0.2 is released but unusable here: `svelte-check@4.7.6` peers
-on `^5 || ^6`, and `@sveltejs/kit@3.0.0-next.23` requires `typescript ^6`.
-Revisit once the Svelte toolchain supports 7.
-
-### 6. SvelteKit 3 is a prerelease
-**Severity:** P1 (track to stable)
-
-The branch pins `@sveltejs/kit@3.0.0-next.23` and
-`@sveltejs/adapter-cloudflare@8.0.0-next.6`. There is no `3.0.0` stable and
-no `rc` dist-tag on npm yet. Re-pin to the stable releases when they land.
-Known upstream rough edge: adapter-cloudflare 8 prints
-"Reading `config.kit` inside adapters is deprecated" on every build.
+TypeScript 7.0.2 is npm `latest` but cannot be the project's `typescript`:
+`@sveltejs/kit@3.0.1` peers `typescript ^6.0.0`, `svelte-check@4.7.6` peers
+`^5.0.0 || ^6.0.0`, and `typescript-eslint@8.71.1` peers `>=4.8.4 <6.1.0`
+(re-verified against the registry 2026-10-09). The only documented TS 7 route
+today is side-by-side — keep `typescript@~6` and add
+`@typescript/native@npm:typescript@7`, then `svelte-check --tsgo` — which is
+opt-in and experimental. Revisit when the Svelte toolchain peers on 7.
 
 ### 7. Remaining Svelte-5 modernisation surface
 **Severity:** P3 (all currently supported; no warnings fired)
@@ -129,34 +345,5 @@ What is left, in full:
 | `use:tilt` action | 1 | `{@attach ...}` | The other two `use:` directives are not legacy: `use:enhance` is SvelteKit's own API and `use:emblaCarouselSvelte` is the library's public interface. |
 
 None of these emit warnings — `pnpm check:strict` and `pnpm check:a11y` are both
-clean at 0 errors / 0 warnings across 4,847 files — so this is voluntary
-modernisation, not remediation.
-
-### 8. adapter-cloudflare 8.0.0-next.6 reads deprecated `config.kit`
-**Severity:** P3 (warning only, no behavioural effect)
-
-Every production build prints:
-
-```
-Reading `config.kit` inside adapters is deprecated — it should access
-configuration on the `config` object directly. You may need to update your adapter
-```
-
-This comes from inside the prerelease adapter, not from repo code, so there is
-nothing to fix here — it clears when adapter-cloudflare ships a build that reads
-`config` directly. Re-check when the SvelteKit 3 pins are moved off the
-`next` line (item 1).
-
-### 9. `$app/env`'s `version` is unusable in service workers
-**Severity:** P3 (worked around; upstream issue)
-
-`@sveltejs/kit@3.0.0-next.23` defines it as
-`BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and `payload` is only
-ever populated by the client app boot — so in a `ServiceWorkerGlobalScope` it is
-`undefined`. `$service-worker` supplied a real string in SvelteKit 2 and nothing
-in `$app/*` replaces it today.
-
-Worked around by injecting `__APP_VERSION__` via Vite's `define` and pinning
-`kit.version.name` to the same value (see `frontend/vite.config.ts`). If a later
-Kit 3 build fixes the export, that indirection can be dropped and the import
-restored. Worth reporting upstream if it is still present at 3.0.0 stable.
+clean at 0 errors / 0 warnings (re-verified 2026-10-09 on Kit 3.0.1 /
+Svelte 5.57.2) — so this is voluntary modernisation, not remediation.

@@ -128,6 +128,7 @@ Declared in `src/env.ts` and read via `$app/env/private` from `+server.ts`, `+pa
 |-----|---------|
 | `API_BASE_URL` | Server-side API URL (the backend the proxies hit) |
 | `BACKEND_URL` | Same. Both names exist; `API_BASE_URL` wins. |
+| `RESEND_API_KEY` | Resend key for `/api/maintenance/notify` confirmation emails. Set it as a Cloudflare Pages secret; it is read through `$app/env/private`. (adapter-cloudflare 8 removed `event.platform`, where this used to be read — see CHANGELOG 2026-10-09.) Without it the endpoint logs `[DEV] Would send …` and skips the email. |
 
 ## Local docker-compose
 

@@ -128,7 +128,7 @@ frontend/src/
 │   │                        analytics, audit log, widgets, …)
 │   ├── server/             code that only runs server-side (token utils,
 │   │                        backend HTTP client)
-│   └── utils/              sanitization (DOMPurify), validation, formatting
+│   └── utils/              sanitization (html-sanitizer), validation, formatting
 └── hooks.server.ts         protected-route gate, security headers, CORS
 ```
 
@@ -398,11 +398,18 @@ but means a custom local API needs `API_BASE_URL` set in
     repo's `npm ci` workflow files are stale; see follow-ups in
     [`REPO_STATE_2026-04-25.md`](REPO_STATE_2026-04-25.md))
   - Build output directory: `.svelte-kit/cloudflare`
+  - Node version: read from `frontend/.node-version` (Cloudflare's build
+    image looks for `.node-version`/`.nvmrc` in the project **root
+    directory**, i.e. `frontend/`, not the repo root, and ignores
+    `package.json#engines`). Keep it equal to the repo-root `.nvmrc`; Kit 3
+    requires Node ≥ 22.17. pnpm 10.x in the build image self-switches to the
+    pinned `packageManager` version.
 - **Adapter:** `@sveltejs/adapter-cloudflare` (configured via the `sveltekit()` plugin options in `vite.config.ts`).
 - A **parallel** GitHub Actions workflow exists at
   [`.github/workflows/deploy-cloudflare.yml`](.github/workflows/deploy-cloudflare.yml).
-  It still uses `npm ci` + `npm run build` and will fail until migrated to
-  pnpm. The Cloudflare dashboard integration deploys independently of this
+  It installs with pnpm (activated by Corepack from `packageManager`) and
+  builds with `pnpm --filter revolution-svelte build`. The Cloudflare
+  dashboard integration deploys independently of this
   workflow.
 
 ### Backend (Fly.io)
@@ -438,7 +445,11 @@ but means a custom local API needs `API_BASE_URL` set in
   `frontend/static/_headers` for static assets. Allowlists Stripe, Google
   OAuth/GA4, Bunny, PayPal, R2 CDN, Iconify.
 - **Sanitization:** any user-supplied HTML rendered via `{@html}` goes through
-  `frontend/src/lib/utils/sanitization.ts` (DOMPurify with a strict policy).
+  `frontend/src/lib/utils/sanitize.ts` / `sanitization.ts`, both backed by one
+  allowlist engine (`frontend/src/lib/utils/html-sanitizer/`) that runs the same
+  policy during SSR (parse5, also in Cloudflare workerd) and in the browser
+  (`DOMParser`). The Rust API additionally sanitizes author HTML with `ammonia`
+  on its public read endpoints (`api/src/utils/html.rs`).
 - **Audit log:** every admin write goes through `services::cms_audit` and is
   also persisted in PostgreSQL `audit_log`.
 

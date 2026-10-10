@@ -14,7 +14,6 @@
  * land.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireSuperadmin } from '#lib/server/auth.js';
@@ -24,22 +23,22 @@ const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 async function relay(response: Response): Promise<Response> {
 	const text = await response.text();
 	if (!text) {
-		return json(
+		return Response.json(
 			{ error: 'Empty response from backend' },
 			{ status: response.status >= 400 ? response.status : 502 }
 		);
 	}
 	try {
 		const data = JSON.parse(text);
-		return json(data, { status: response.status });
+		return Response.json(data, { status: response.status });
 	} catch {
-		return json({ error: 'Invalid JSON from backend' }, { status: 502 });
+		return Response.json({ error: 'Invalid JSON from backend' }, { status: 502 });
 	}
 }
 
 export const PUT: RequestHandler = async (event) => {
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing membership id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing membership id' }, { status: 400 });
 	const { token } = requireSuperadmin(event);
 	try {
 		const body = await event.request.json();
@@ -55,13 +54,13 @@ export const PUT: RequestHandler = async (event) => {
 		return relay(response);
 	} catch (err) {
 		console.error('[API Proxy] Update user-membership error:', err);
-		return json({ error: 'Backend unreachable' }, { status: 502 });
+		return Response.json({ error: 'Backend unreachable' }, { status: 502 });
 	}
 };
 
 export const DELETE: RequestHandler = async (event) => {
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing membership id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing membership id' }, { status: 400 });
 	const { token } = requireSuperadmin(event);
 	try {
 		const response = await fetch(`${API_URL}/api/admin/user-memberships/${id}`, {
@@ -75,6 +74,6 @@ export const DELETE: RequestHandler = async (event) => {
 		return relay(response);
 	} catch (err) {
 		console.error('[API Proxy] Revoke user-membership error:', err);
-		return json({ error: 'Backend unreachable' }, { status: 502 });
+		return Response.json({ error: 'Backend unreachable' }, { status: 502 });
 	}
 };

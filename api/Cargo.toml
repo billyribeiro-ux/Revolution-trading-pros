@@ -12,23 +12,33 @@ publish = false
 axum = { version = "0.8.9", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
-tower-http = { version = "0.7.0", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
-lazy_static = "1.5.0"
+tower-http = { version = "0.7.1", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
 html-escape = "0.2.15"
+# HTML sanitization of author content on public endpoints (utils/html.rs)
+ammonia = "4.2.1"
 
 # Async Runtime
-tokio = { version = "1.53.1", features = ["full"] }
+tokio = { version = "1.53.2", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
 sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
-rust_decimal = { version = "1.42.1", features = ["serde", "serde-with-str"] }
+rust_decimal = { version = "1.43.0", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "1.6.0", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "1.7.1", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
-# S3/R2 Storage (December 2025 versions)
-aws-sdk-s3 = "1.144.0"
-aws-config = "1.11.0"
+# S3/R2 Storage
+# `default-features = false` drops ONLY the crate's `rustls` feature, which maps
+# to `aws-smithy-runtime/tls-rustls` -> the legacy hyper 0.14 connector
+# (`hyper-014` + `legacy-rustls-ring`): hyper 0.14, h2 0.3, hyper-rustls 0.24,
+# rustls 0.21 and rustls-webpki 0.101. StorageService never selects that
+# connector — `aws_sdk_s3::Config::builder()` without `.http_client(..)` uses
+# the `default-https-client` (hyper 1 + rustls on aws-lc) — so it was dead
+# weight that carried RUSTSEC-2026-0258 (h2 0.3 has no fixed 0.3.x release)
+# plus the three rustls-webpki 0.101 advisories previously exempted in
+# deny.toml. Every other default feature is re-listed explicitly.
+aws-sdk-s3 = { version = "1.152.0", default-features = false, features = ["sigv4a", "http-1x", "default-https-client", "rt-tokio"] }
+aws-config = "1.12.0"
 
 # Serialization
 serde = { version = "1.0.229", features = ["derive"] }
@@ -42,18 +52,23 @@ serde_json = "1.0.151"
 #
 # `aws_lc_rs` and NOT `rust_crypto`: the pure-Rust backend pulls in `rsa`, which
 # carries RUSTSEC-2023-0071 (Marvin timing sidechannel) with no fixed release
-# available, and `cargo deny check` fails on it. This crate signs HS256 only, so
-# the RSA path would never execute — but shipping a known-vulnerable crate we
-# cannot patch is not worth a `deny.toml` exemption when a clean backend exists.
-# AWS-LC is constant-time and actively maintained; it needs cmake + a C compiler
-# at build time, which CI and the Docker image already provide.
-jsonwebtoken = { version = "11.0.0", features = ["aws_lc_rs"] }
+# available, and `cargo deny check` fails on it. This crate signs/verifies its
+# own HS256 tokens and verifies Apple's RS256 ID tokens
+# (`routes/oauth/apple_jwt.rs`, `DecodingKey::from_rsa_components`) — RSA
+# public-key verification, which the Marvin private-key timing attack does not
+# reach. Even so, shipping a crate with an unpatchable advisory is not worth a
+# `deny.toml` exemption when a clean backend exists: with `aws_lc_rs`, HS256
+# and RS256 both run on AWS-LC.
+# AWS-LC is constant-time and actively maintained. It needs a C compiler at
+# build time; aws-lc-sys builds through its `cc` builder, so cmake is NOT
+# required (the rust:1.99.0-trixie Docker build installs no cmake and succeeds).
+jsonwebtoken = { version = "11.1.0", features = ["aws_lc_rs"] }
 base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
 base32 = "0.5.1"   # ICT 7: TOTP secret encoding
 argon2 = "0.6.0"
 bcrypt = "0.19.3"  # Laravel bcrypt compatibility
 aes-gcm = "0.11.1" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
-rand = "0.10.2"
+rand = "0.10.3"
 hmac = "0.13.0"
 sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
 sha2 = "0.11.0"
@@ -65,11 +80,11 @@ md5 = "0.8.1"  # For Bunny.net signature generation
 csv = "1.4.0"
 
 # Utilities
-uuid = { version = "1.26.0", features = ["v4", "serde"] }
+uuid = { version = "1.27.0", features = ["v4", "serde"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 regex = "1.13.1"  # ICT 11+: SEO content analysis regex patterns
 dotenvy = "0.15.7"
-thiserror = "2.0.20"
+thiserror = "2.0.21"
 anyhow = "1.0.104"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
@@ -85,21 +100,21 @@ async-trait = "0.1.92"
 # HTTP Client (for external APIs)
 # NOTE: this repo calls Stripe directly via reqwest (see services/stripe.rs);
 # the `async-stripe` crate is intentionally NOT a dep.
-reqwest = { version = "0.13.4", features = ["json", "rustls", "stream", "form", "query"], default-features = false }
+reqwest = { version = "0.13.5", features = ["json", "rustls", "stream", "form", "query"], default-features = false }
 
 # Search (Meilisearch) - Use updated SDK to avoid unmaintained dependencies
 meilisearch-sdk = "0.33.0"
 
 # OpenAPI Documentation
-utoipa = { version = "5.5.0", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "vendored"] }
+utoipa = { version = "6.0.0", features = ["axum_extras", "uuid", "chrono"] }
+utoipa-swagger-ui = { version = "10.0.1", features = ["axum", "vendored"] }
 validator = { version = "0.21.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
 axum-test = "21.1.0"
 tower = { version = "0.5.3", features = ["util"] }
-hyper = { version = "1.11.1", features = ["full"] }
+hyper = { version = "1.12.0", features = ["full"] }
 http-body-util = "0.1.5"
 
 [profile.release]

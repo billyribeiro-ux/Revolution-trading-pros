@@ -13,7 +13,7 @@
  *   the upstream non-2xx status, and surface network failure as 500.
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { type RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback, localhost last.
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 	const { id } = params;
 
 	if (!id) {
-		return json({ success: false, error: 'Course ID is required' }, { status: 400 });
+		return Response.json({ success: false, error: 'Course ID is required' }, { status: 400 });
 	}
 
 	try {
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 			// upstream status as the body's `error.message` so the UI can render
 			// a real error and the student can retry.
 			console.error(`[Course downloads proxy] Backend ${response.status} for course '${id}'`);
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: `Unable to load course downloads (backend ${response.status}).`
@@ -61,12 +61,12 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		// R22-A: was: silent `{ success: true, data: [] }` fallback. Now: 500
 		// so an outage surfaces in the UI and the SRE channel.
 		console.error('[Course downloads proxy] Backend fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: 'Course downloads backend unreachable.' },
 			{ status: 500 }
 		);

@@ -7,7 +7,6 @@
  * @version 1.0.0 - ICT 7 Principal Engineer Grade
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to the shared
 // `#lib/server/proxy-fetch` primitives (R19-A's extraction). The shared
@@ -45,7 +44,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	// Guard against undefined or invalid item_id
 	if (!itemType || !itemId || itemId === 'undefined' || itemId === 'null') {
-		return json({
+		return Response.json({
 			success: true,
 			is_favorited: false,
 			data: null
@@ -70,7 +69,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	// is present (even if false). Narrow `unknown` via `hasSuccess` instead
 	// of `backendData?.success` (which was unsound on a non-null primitive).
 	if (hasSuccess(backendData) && backendData.success !== undefined) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// Fallback: fetch all favorites and check locally
@@ -98,7 +97,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 			.filter(isFavoriteRecord)
 			.find((f) => f.item_type === itemType && f.item_id === numericId);
 
-		return json({
+		return Response.json({
 			success: true,
 			is_favorited: !!favorite,
 			data: favorite || null
@@ -106,7 +105,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	}
 
 	// Not authenticated or no favorites
-	return json({
+	return Response.json({
 		success: true,
 		is_favorited: false,
 		data: null

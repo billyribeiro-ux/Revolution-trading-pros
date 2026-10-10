@@ -106,7 +106,8 @@ export function containsXSS(html: string): boolean {
 
 /**
  * Sanitizes HTML by removing dangerous patterns
- * Note: For production, use DOMPurify for comprehensive sanitization
+ * Note: pattern-based, for editor-side validation only. Anything rendered with
+ * {@html} must go through `#lib/utils/sanitize.js`, which parses the HTML.
  */
 export function sanitizeHtml(html: string): string {
 	if (!html || typeof html !== 'string') return '';

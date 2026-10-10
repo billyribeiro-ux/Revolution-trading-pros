@@ -17,7 +17,7 @@
 	import SocialShare from '#lib/components/blog/SocialShare.svelte';
 	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 	import type { Post } from '#lib/types/post.js';
-	import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
+	import { safeUrl, sanitizeBlogContent } from '#lib/utils/sanitize.js';
 	import {
 		initReadingAnalytics,
 		calculateReadingTime,
@@ -329,10 +329,14 @@
 										{/if}
 									</figure>
 								{:else if block.type === 'video' || block.type === 'embed'}
-									{#if d['url']}
+									<!-- Block URLs are author input: only relative and http(s)/mailto/tel
+									     URLs reach an attribute (a javascript: src or href would run in
+									     this origin). -->
+									{@const embedUrl = safeUrl(String(d['url'] ?? ''))}
+									{#if embedUrl}
 										<div class="video-embed">
 											<iframe
-												src={d['url'] as string}
+												src={embedUrl}
 												title={(d['caption'] as string) || 'Embedded video'}
 												frameborder="0"
 												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -360,8 +364,9 @@
 								{:else if block.type === 'spacer'}
 									<div style:height={getSpacerHeight(d['height'])}></div>
 								{:else if block.type === 'button'}
-									{#if d['url']}
-										<a class="block-button" href={d['url'] as string}
+									{@const buttonUrl = safeUrl(String(d['url'] ?? ''))}
+									{#if buttonUrl}
+										<a class="block-button" href={buttonUrl}
 											>{(d['text'] as string) || (d['label'] as string) || 'Learn more'}</a
 										>
 									{/if}

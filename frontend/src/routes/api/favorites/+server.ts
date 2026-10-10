@@ -9,7 +9,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 // R20-A: migrated off local `fetchFromBackend` helper to shared
 // `#lib/server/proxy-fetch.js` (CLAUDE.md URL-fallback pinned once,
@@ -40,11 +40,11 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// Return empty if not authenticated or backend unavailable
-	return json({
+	return Response.json({
 		success: true,
 		data: [],
 		meta: { total: 0 }
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	error(401, 'Authentication required');

@@ -14,7 +14,6 @@
  * adminFetch('/api/admin/indicators/{id}/files', ...) returned a SvelteKit 404.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -52,7 +51,7 @@ async function proxy(method: string, backendPath: string, token: string, request
 
 	if (!response.ok) {
 		console.error(`[Indicators sub-resource ${method}] Backend ${response.status}:`, text);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: (payload as { error?: string })?.error || `Backend returned ${response.status}`
@@ -61,7 +60,7 @@ async function proxy(method: string, backendPath: string, token: string, request
 		);
 	}
 
-	return json(payload ?? { success: true });
+	return Response.json(payload ?? { success: true });
 }
 
 // Derive the full backend path from params
@@ -78,7 +77,7 @@ export const GET: RequestHandler = async (event) => {
 		return await proxy('GET', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource GET] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -94,7 +93,7 @@ export const POST: RequestHandler = async (event) => {
 		return await proxy('POST', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource POST] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -110,7 +109,7 @@ export const PUT: RequestHandler = async (event) => {
 		return await proxy('PUT', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource PUT] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -126,7 +125,7 @@ export const PATCH: RequestHandler = async (event) => {
 		return await proxy('PATCH', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource PATCH] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);
@@ -142,7 +141,7 @@ export const DELETE: RequestHandler = async (event) => {
 		return await proxy('DELETE', path, token, request);
 	} catch (err) {
 		console.error('[Indicators sub-resource DELETE] Fetch failed:', err);
-		return json(
+		return Response.json(
 			{ success: false, error: err instanceof Error ? err.message : 'Failed to reach backend' },
 			{ status: 502 }
 		);

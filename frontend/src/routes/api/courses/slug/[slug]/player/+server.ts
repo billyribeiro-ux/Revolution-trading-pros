@@ -10,7 +10,7 @@
  * Returns: Course + Modules + Lessons (with bunny_video_guid and thumbnail_url)
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { type RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // FIX-2026-04-26: env.API_URL → canonical pattern
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
 
 	if (!slug) {
-		return json({ success: false, error: 'Course slug is required' }, { status: 400 });
+		return Response.json({ success: false, error: 'Course slug is required' }, { status: 400 });
 	}
 
 	try {
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 			console.warn(`[API Proxy] Backend returned ${response.status} for course player: ${slug}`);
 
 			// Return structured empty response
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: 'Course not found or not accessible',
@@ -59,11 +59,11 @@ export const GET: RequestHandler = async ({ params, cookies, fetch }) => {
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (error) {
 		console.error('[API Proxy] Error fetching course player:', error);
 
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: 'Failed to load course data',

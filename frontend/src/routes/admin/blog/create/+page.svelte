@@ -205,7 +205,7 @@
 
 	// Convert blocks to HTML for backward compatibility.
 	// FIX-2026-04-26 (P2-4): user-controlled `html` blocks are now passed through
-	// sanitizeBlogContent (DOMPurify, rich profile) so an admin compromise cannot
+	// sanitizeBlogContent (rich profile) so an admin compromise cannot
 	// inject `<script>` etc. into the public blog. Defense-in-depth — server
 	// should also sanitize.
 	function blocksToHtml(blocks: Block[]): string {

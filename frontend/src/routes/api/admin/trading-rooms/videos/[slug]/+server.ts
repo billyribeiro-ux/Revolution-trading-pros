@@ -16,7 +16,6 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/auth.js';
 // R20-A: migrated off local `Promise<any | null>` helper to shared
@@ -43,7 +42,7 @@ export const GET: RequestHandler = async (event) => {
 	// R20-A: `hasSuccess` narrows `unknown` before reading `.success`
 	// (replaces the unsound `backendData?.success` pattern).
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// R22-A: was: filter/sort/paginate hardcoded `mockVideos` and return with
@@ -53,7 +52,7 @@ export const GET: RequestHandler = async (event) => {
 		`[Trading-rooms videos by slug proxy] Backend unavailable for slug '${slug}':`,
 		backendData
 	);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load videos from backend. Please check the API connection.'

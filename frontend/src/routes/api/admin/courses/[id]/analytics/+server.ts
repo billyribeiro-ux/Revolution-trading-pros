@@ -4,7 +4,7 @@
  * Forwards to GET /api/admin/courses/:id/analytics on the Rust API.
  */
 
-import { json, isHttpError } from '@sveltejs/kit';
+import { isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -30,14 +30,17 @@ export const GET: RequestHandler = async (event) => {
 			const errorBody = await response
 				.json()
 				.catch(() => ({ error: 'Failed to load course analytics' }));
-			return json({ success: false, ...errorBody }, { status: response.status });
+			return Response.json({ success: false, ...errorBody }, { status: response.status });
 		}
 
 		const data = await response.json();
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin course analytics error:', err);
-		return json({ success: false, error: 'Failed to load course analytics' }, { status: 500 });
+		return Response.json(
+			{ success: false, error: 'Failed to load course analytics' },
+			{ status: 500 }
+		);
 	}
 };

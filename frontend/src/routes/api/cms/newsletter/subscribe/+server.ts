@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 // FIX-2026-04-26: '#lib/config.js' reads import.meta.env.VITE_API_URL (client env) — replaced with canonical private env pattern
 // import { API_URL } from '#lib/config.js';
@@ -26,7 +25,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 
 		// Validate email
 		if (!body.email || typeof body.email !== 'string') {
-			return json({ success: false, error: 'Email is required' } as SubscribeResponse, {
+			return Response.json({ success: false, error: 'Email is required' } as SubscribeResponse, {
 				status: 400
 			});
 		}
@@ -34,7 +33,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 		const email = body.email.trim().toLowerCase();
 
 		if (!EMAIL_REGEX.test(email)) {
-			return json({ success: false, error: 'Invalid email format' } as SubscribeResponse, {
+			return Response.json({ success: false, error: 'Invalid email format' } as SubscribeResponse, {
 				status: 400
 			});
 		}
@@ -60,7 +59,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({}));
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: errorData.message || 'Subscription failed'
@@ -69,13 +68,13 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 			);
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Successfully subscribed to newsletter!'
 		} as SubscribeResponse);
 	} catch (error) {
 		console.error('[Newsletter Subscribe] Error:', error);
-		return json({ success: false, error: 'Internal server error' } as SubscribeResponse, {
+		return Response.json({ success: false, error: 'Internal server error' } as SubscribeResponse, {
 			status: 500
 		});
 	}

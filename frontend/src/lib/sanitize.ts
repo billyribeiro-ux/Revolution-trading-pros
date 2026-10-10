@@ -16,6 +16,7 @@ export {
 	sanitizePopupContent,
 	sanitizeVideoOverlay,
 	stripHtml,
+	safeUrl,
 	containsDangerousHtml,
 	default
 } from '#lib/utils/sanitize.js';

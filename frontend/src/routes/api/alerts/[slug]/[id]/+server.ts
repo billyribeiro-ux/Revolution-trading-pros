@@ -11,7 +11,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RoomAlert, AlertUpdateInput } from '#lib/types/trading.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	if (hasData(backendData) && Array.isArray(backendData.data)) {
 		const alert = backendData.data.filter(isAlertWithId).find((a) => a.id === alertId);
 		if (alert) {
-			return json({
+			return Response.json({
 				success: true,
 				data: alert,
 				_source: 'backend'
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	// R22-A: was: look up alertId in `mockAlerts[slug]` and return `_source: 'mock'`.
 	// Now: surface backend failure as 502 — the alert genuinely cannot be retrieved.
 	console.error(`[Alert API] GET backend unavailable for slug '${slug}' id '${id}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to load alert — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -151,7 +151,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: backendData,
 			message: 'Alert updated successfully',
@@ -164,7 +164,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	// and never broadcast to room members — a silent fake-success on a
 	// mutating endpoint. Surface the failure as 502 so the admin retries.
 	console.error(`[Alert API] PUT backend unavailable for slug '${slug}' id '${id}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to update alert — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -211,7 +211,7 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			message: `Alert ${id} deleted successfully`,
 			_source: 'backend'
@@ -221,7 +221,7 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	// R22-A: was: splice the in-memory `mockAlerts[slug]` and return 200.
 	// Now: surface backend failure as 502 — the DB row is still there.
 	console.error(`[Alert API] DELETE backend unavailable for slug '${slug}' id '${id}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to delete alert — backend is unavailable.' },
 		{ status: 502 }
 	);

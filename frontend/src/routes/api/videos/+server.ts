@@ -7,7 +7,7 @@
  * @version 2.0.0 - December 2025 - Connected to real backend
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		if (!response.ok) {
 			// If backend returns error, return appropriate error response
 			const errorData = await response.json().catch(() => ({ message: 'Failed to fetch videos' }));
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: errorData.message || 'Failed to fetch videos',
@@ -91,7 +91,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		const data = await response.json();
 
 		// Transform backend pagination response to match frontend expected format
-		return json({
+		return Response.json({
 			success: true,
 			data: {
 				videos: data.data || [],
@@ -105,7 +105,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		});
 	} catch (err) {
 		console.error('Videos API proxy error:', err);
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: 'Failed to connect to backend',
@@ -152,7 +152,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({ message: 'Failed to create video' }));
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: errorData.message || 'Failed to create video',
@@ -164,7 +164,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const data = await response.json();
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				data: data.video || data

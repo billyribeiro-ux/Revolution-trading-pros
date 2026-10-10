@@ -25,7 +25,7 @@
  * @version 3.1.0 — 2026-05-20
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
@@ -50,7 +50,7 @@ export const GET: RequestHandler = async (event) => {
 	if (status === 401 || status === 403) error(status, 'Unauthorized');
 	if (status >= 400 || !data) {
 		// Default empty settings on backend error so the form can still render.
-		return json({
+		return Response.json({
 			provider: 'smtp',
 			host: '',
 			port: 587,
@@ -71,10 +71,10 @@ export const GET: RequestHandler = async (event) => {
 		const hadPwd = typeof safe.password === 'string' && safe.password.length > 0;
 		delete safe.password;
 		if (!('has_password' in safe)) safe.has_password = hadPwd;
-		return json(safe);
+		return Response.json(safe);
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 export const POST: RequestHandler = async (event) => {
@@ -86,12 +86,12 @@ export const POST: RequestHandler = async (event) => {
 		const body: unknown = await request.json();
 
 		if (!isObject(body)) {
-			return json({ success: false, error: 'Invalid request body' }, { status: 400 });
+			return Response.json({ success: false, error: 'Invalid request body' }, { status: 400 });
 		}
 
 		// Validate required fields client-side as a fast-fail.
 		if (!body.host || !body.port || !body.from_address || !body.from_name) {
-			return json({ success: false, error: 'Missing required fields' }, { status: 400 });
+			return Response.json({ success: false, error: 'Missing required fields' }, { status: 400 });
 		}
 
 		// Strip the masked-password sentinel before forwarding so the backend
@@ -122,7 +122,7 @@ export const POST: RequestHandler = async (event) => {
 			error(status, extractBackendErrorMessage(data, 'Failed to save settings'));
 		}
 
-		return json(data ?? { success: true, message: 'Settings saved successfully!' });
+		return Response.json(data ?? { success: true, message: 'Settings saved successfully!' });
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/email/settings error:', err);

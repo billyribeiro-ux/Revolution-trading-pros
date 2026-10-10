@@ -64,7 +64,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 | Layer | Technology | Where it runs |
 |-------|-----------|---------------|
 | Frontend | SvelteKit 3 / Svelte 5 / Vite 8 | Cloudflare Pages (prod), `pnpm dev` (local) |
-| Backend | Rust 1.98 + Axum 0.8 | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
+| Backend | Rust 1.99 + Axum 0.8 | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
 | Database | PostgreSQL 18 + sqlx 0.9 | prod target TBD, Docker (local) |
 | Cache / sessions / rate-limit / JWT blacklist | Redis 8 | Upstash (prod), Docker (local) |
 | Object storage | Cloudflare R2 (S3-compatible) | Cloudflare |
@@ -103,25 +103,28 @@ cd api && cargo test --test utils_test \
                      --test stripe_test  # run no-DB tests
 ```
 
-## Status of the system (2026-08-14, post SvelteKit 3 migration)
+## Status of the system (2026-10-09, SvelteKit 3.0.1 stable + full dependency sweep)
 
 | Gate | Status |
 |------|--------|
-| Frontend typecheck (svelte-check) | ✅ 4,847 files / 0 errors / 0 warnings |
+| Frontend typecheck (svelte-check) | ✅ 0 errors / 0 warnings |
 | Frontend strict typecheck (`check:strict`, `--fail-on-warnings`) | ✅ 0 / 0 |
 | Frontend a11y compiler gate (`check:a11y`) | ✅ 0 / 0 |
 | Frontend lint (eslint) | ✅ 0 errors (4 pre-existing `no-useless-escape` warnings) |
 | Frontend format (prettier) | ✅ clean |
-| Frontend unit (vitest) | ✅ 2,272 passed / 32 skipped |
+| Frontend unit (vitest 5) | ✅ 2,272 passed / 32 skipped |
 | Frontend production build + prerender + service worker | ✅ |
-| Frontend a11y suite (playwright) | ⚠️ 1 pre-existing failure — see BACKLOG.md |
-| Backend `cargo fmt` + `clippy -D warnings` | ✅ clean |
-| Backend `cargo deny check` + `cargo machete` | ✅ clean / no unused deps |
-| Backend no-DB tests (router smoke, utils, stripe, crypto) | ✅ 38 pass |
-| Production deploy | ⚠️ target TBD (Fly.io stripped 2026-04-28) |
+| Frontend a11y suite (playwright) | ⚠️ 1 pre-existing failure — see BACKLOG.md item 4 |
+| Backend `cargo fmt` + `clippy -D warnings` (Rust 1.99) | ✅ clean |
+| Backend `cargo deny check` + `cargo machete` | ✅ clean, no advisory exemptions / no unused deps |
+| Backend no-DB tests (router smoke, utils, stripe) | ✅ 39 pass |
+| SSR on the Cloudflare runtime | ❌ 18 dynamic routes 500 (pre-existing, masked by maintenance mode) — see BACKLOG.md P0 |
+| Production deploy | ⚠️ backend target TBD (Fly.io stripped 2026-04-28) |
 
-> SvelteKit 3 is pinned to the `3.0.0-next` prerelease line — there is no stable
-> 3.0.0 release yet. See [BACKLOG.md](BACKLOG.md) "SvelteKit 3 follow-ups".
+> SvelteKit 3 is on the stable release line (`@sveltejs/kit` 3.0.1,
+> `@sveltejs/adapter-cloudflare` 8.0.0) and no deprecated Kit API remains in
+> `src/`. Open follow-ups (TypeScript 7, optional Svelte 5 modernisation) are
+> tracked in [BACKLOG.md](BACKLOG.md) "SvelteKit 3 follow-ups".
 
 Current priorities live in
 [`docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md`](docs/audits/PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md)

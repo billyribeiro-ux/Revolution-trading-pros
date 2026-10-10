@@ -7,7 +7,7 @@
  * @version 2.0.0 - Serverless Compatible (Cloudflare)
  */
 
-import { json, error, type RequestEvent } from '@sveltejs/kit';
+import { error, type RequestEvent } from '@sveltejs/kit';
 
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 // FIX-2026-04-26: process.env.VITE_API_URL → canonical private env pattern
@@ -71,7 +71,7 @@ export const GET = async ({ url }: RequestEvent) => {
 		if (!session) {
 			error(404, 'Upload session not found');
 		}
-		return json({
+		return Response.json({
 			success: true,
 			data: session
 		});
@@ -82,7 +82,7 @@ export const GET = async ({ url }: RequestEvent) => {
 		.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 		.slice(0, 20);
 
-	return json({
+	return Response.json({
 		success: true,
 		data: sessions
 	});
@@ -132,7 +132,7 @@ async function handlePresignRequest(request: Request, token?: string) {
 		};
 		uploadSessions.set(uploadId, session);
 
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
@@ -176,7 +176,7 @@ async function handleUploadInit(request: Request) {
 		};
 		uploadSessions.set(uploadId, session);
 
-		return json({
+		return Response.json({
 			success: true,
 			data: {
 				upload_id: uploadId,
@@ -271,7 +271,7 @@ async function handleDirectUpload(request: Request, token?: string) {
 			}
 		}
 
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;

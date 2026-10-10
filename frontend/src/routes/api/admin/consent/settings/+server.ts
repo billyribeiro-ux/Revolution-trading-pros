@@ -11,7 +11,6 @@
  * (`./bulk/+server.ts`, `./reset/+server.ts`) to dodge the SvelteKit
  * POST-405 cliff documented in `frontend/src/lib/utils/createProxyShim.ts`.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -38,5 +37,5 @@ export const GET: RequestHandler = async (event) => {
 		body = { success: false, error: 'Invalid JSON from backend' };
 	}
 
-	return json(body, { status: upstream.status });
+	return Response.json(body, { status: upstream.status });
 };

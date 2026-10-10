@@ -12,7 +12,7 @@
 	onMount(async () => {
 		// Auth guard - redirect if not authenticated (user interaction: page load)
 		if (!$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-			goto('/login?redirect=/account', { replaceState: true });
+			goto('/login?redirect=/account', { replace: true });
 			return;
 		}
 
@@ -38,7 +38,7 @@
 	async function handleLogout() {
 		await authStore.logout();
 		// Use replaceState so back button doesn't return to protected page
-		goto('/', { replaceState: true });
+		goto('/', { replace: true });
 	}
 </script>
 

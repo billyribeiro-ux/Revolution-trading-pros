@@ -8,7 +8,7 @@
  * @standards Apple Principal Engineer ICT 7+ | Svelte 5 + Testing Library
  *
  * Tests cover:
- * - HTML sanitization with DOMPurify
+ * - HTML sanitization (sanitizeHTML, custom mode)
  * - XSS prevention
  * - Editor visibility in edit mode
  * - Preview toggle functionality

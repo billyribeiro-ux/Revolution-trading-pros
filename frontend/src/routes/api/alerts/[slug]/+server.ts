@@ -10,7 +10,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RoomAlert, AlertCreateInput } from '#lib/types/trading.js';
 import { buildTosString, validateTosParams } from '#lib/utils/tos-builder.js';
@@ -104,7 +104,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 			alerts = alerts.filter((a) => a.ticker.toUpperCase() === ticker.toUpperCase());
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			data: alerts,
 			total: extractMetaTotal(backendData, alerts.length),
@@ -119,7 +119,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	// failure as 502 so the alerts UI shows a real error rather than the
 	// same single NVDA placeholder row forever.
 	console.error(`[Alerts API] Backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load alerts from backend. Please check the API connection.'
@@ -226,7 +226,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: backendData,
 			message: 'Alert created successfully',
@@ -242,7 +242,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	// at IDs that vanished on the next dyno cycle. Now: 502 so the form
 	// surfaces a real failure.
 	console.error(`[Alerts API] POST backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to create alert — backend is unavailable. Please try again.'

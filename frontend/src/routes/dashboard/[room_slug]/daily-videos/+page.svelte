@@ -99,14 +99,14 @@
 			url.searchParams.delete('search');
 		}
 		url.searchParams.set('page', '1');
-		goto(url.toString(), { invalidateAll: true });
+		goto(url.toString(), { refreshAll: true });
 	}
 
 	function goToPage(pageNum: number) {
 		if (pageNum >= 1 && pageNum <= totalPages) {
 			const url = new URL(window.location.href);
 			url.searchParams.set('page', pageNum.toString());
-			goto(url.toString(), { invalidateAll: true });
+			goto(url.toString(), { refreshAll: true });
 			// Scroll to top
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}

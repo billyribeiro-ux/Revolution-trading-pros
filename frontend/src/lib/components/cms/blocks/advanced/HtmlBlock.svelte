@@ -2,7 +2,7 @@
 /**
  * HTML Block Component
  * ═══════════════════════════════════════════════════════════════════════════
- * Raw HTML editor with DOMPurify sanitization and preview toggle
+ * Raw HTML editor with sanitization and preview toggle
  * Production-ready with XSS protection, accessibility, and dark mode
  *
  * @version 1.0.0
@@ -57,7 +57,7 @@
 	let editorHeight = $derived((props.block.settings.htmlEditorHeight as EditorHeight) || 'medium');
 	let showWarning = $derived(props.block.settings.htmlShowWarning !== false);
 
-	// Sanitize HTML using DOMPurify with custom mode for extended tags
+	// Sanitize HTML in custom mode, which adds media and embed elements
 	let safeHtml = $derived(sanitizeHTML(rawHtml || '', { mode: 'custom' }));
 
 	// Check if HTML was modified during sanitization

@@ -6,7 +6,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 interface ConsentRecord {
@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		// 2. Associate with user ID if logged in
 		// 3. Maintain audit trail for compliance
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				data: {
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		error(404, 'Consent record not found');
 	}
 
-	return json({
+	return Response.json({
 		success: true,
 		data: record
 	});

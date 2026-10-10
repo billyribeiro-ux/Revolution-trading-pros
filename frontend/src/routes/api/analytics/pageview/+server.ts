@@ -2,7 +2,6 @@
  * Same-origin proxy for analytics pageview tracking
  * ICT 11+ CORB Fix: Routes client-side analytics calls through SvelteKit server
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -29,13 +28,13 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 		});
 
 		if (!response.ok) {
-			return json({ success: false }, { status: response.status });
+			return Response.json({ success: false }, { status: response.status });
 		}
 
 		const data = await response.json();
-		return json(data, { status: 200 });
+		return Response.json(data, { status: 200 });
 	} catch (error) {
 		console.error('[Analytics Pageview Proxy] Error:', error);
-		return json({ success: false }, { status: 200 });
+		return Response.json({ success: false }, { status: 200 });
 	}
 };

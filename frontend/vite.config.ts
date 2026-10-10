@@ -12,25 +12,18 @@ import tailwindcss from '@tailwindcss/vite';
 // `pnpm dev`, and the `dev:fast` alias.
 const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('dev');
 
-// Build-unique app version, shared by Kit and the service worker.
-//
-// The service worker CANNOT get this from `$app/env`. In SvelteKit 3 that
-// export is `BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and
-// `payload` is only ever populated by the client app boot — never in a
-// ServiceWorkerGlobalScope. So inside the worker it resolves to `undefined`,
-// which silently pins every cache name to `cache-undefined` for all time and
-// makes the `activate` purge a permanent no-op (it can never distinguish the
-// previous deploy's cache from its own). `$service-worker` used to supply a
-// real string in SvelteKit 2; nothing in `$app/*` replaces it today.
-//
-// Vite's `define` replacements ARE applied to the service-worker bundle, per
-// the official service-workers docs, so that is the supported channel. Feeding
-// the same value to `kit.version.name` keeps Kit's own version polling and the
-// worker's cache names on one identifier.
+// Build-unique app version (`kit.version.name`). Kit's update polling, the
+// `_app/version.json` file, and the service worker's cache names (via
+// `version` from `$app/env`) all read this one identifier.
 //
 // Prefer the deploy commit SHA (Cloudflare Pages and GitHub Actions both
-// provide one) and fall back to a timestamp, which is what Kit itself defaults
-// to.
+// provide one) so the version is traceable to a commit; fall back to a
+// timestamp, which is what Kit itself defaults to.
+//
+// (Until 2026-10-09 this was also injected into the worker as a Vite-`define`d
+// `__APP_VERSION__`, because `$app/env`'s `version` was `undefined` in a
+// ServiceWorkerGlobalScope on 3.0.0-next.23. Kit 3.0.1 fixed that; see
+// src/service-worker/index.ts.)
 const APP_VERSION =
 	process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString();
 
@@ -84,11 +77,13 @@ export default defineConfig(({ mode }) => ({
 				},
 				handleMissingId: 'ignore',
 				handleUnseenRoutes: 'ignore',
-				// Serialized: adapter-cloudflare spins an emulated Miniflare/
-				// workerd per prerender worker; concurrent workerd instances
-				// contend on workerd's internal SQLite lock and crash the build
-				// with `SQLITE_BUSY`/ERR_RUNTIME_FAILURE (CI-only; the real
-				// Cloudflare runtime is unaffected). Build-time cost only.
+				// 1 is Kit 3's default; kept explicit so a future bump is a
+				// deliberate, measured change. It was originally pinned because
+				// adapter-cloudflare <=8.0.0-next.6 emulated Miniflare/workerd per
+				// prerender worker, and concurrent workerd instances crashed the
+				// build with SQLITE_BUSY. Adapter 8.0.0 removed that `emulate()`
+				// hook: the workerd platform proxy now starts only for the dev and
+				// preview servers, never during prerender.
 				concurrency: 1,
 				crawl: true,
 				entries: ['*', '/robots.txt']
@@ -164,9 +159,7 @@ export default defineConfig(({ mode }) => ({
 				}
 			},
 			serviceWorker: { register: process.env.NODE_ENV !== 'development' },
-			// Pinned so the worker's `__APP_VERSION__` and Kit's version polling
-			// agree on one identifier. Kit would otherwise default to its own
-			// timestamp, which the worker has no way to read.
+			// Pinned to the deploy commit SHA when available (see APP_VERSION).
 			version: { name: APP_VERSION }
 			// `env.publicPrefix` and `output.preloadStrategy` are both gone in
 			// SvelteKit 3. Client exposure is now declared per-variable in
@@ -175,11 +168,6 @@ export default defineConfig(({ mode }) => ({
 		}),
 		...(mode === 'development' ? [devtoolsJson()] : [])
 	],
-	// Applied to the service-worker bundle as well as client/server — the only
-	// way to get a real version string into the worker. See APP_VERSION above.
-	define: {
-		__APP_VERSION__: JSON.stringify(APP_VERSION)
-	},
 	resolve: {
 		// Force Svelte client bundle in tests (default resolves to server bundle
 		// which doesn't have mount/unmount needed by @testing-library/svelte)
@@ -236,7 +224,9 @@ export default defineConfig(({ mode }) => ({
 		cssMinify: 'esbuild',
 		rolldownOptions: {
 			checks: {
-				pluginTimings: false
+				// Renamed from `pluginTimings` in rolldown 1.2.10 (the old name is a
+				// deprecated alias; rolldown prefers `bundlerTimings` when both are set).
+				bundlerTimings: false
 			}
 		}
 	}

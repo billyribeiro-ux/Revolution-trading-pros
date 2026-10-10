@@ -7,7 +7,7 @@
  * Auth: reads rtp_access_token cookie (standard user session, not admin).
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 	});
 
 	if (!upstream) {
-		return json({ error: 'Payment service unreachable' }, { status: 502 });
+		return Response.json({ error: 'Payment service unreachable' }, { status: 502 });
 	}
 
 	const text = await upstream.text();
@@ -46,8 +46,8 @@ export const POST: RequestHandler = async ({ cookies, request }) => {
 	try {
 		data = JSON.parse(text);
 	} catch {
-		return json({ error: 'Invalid response from payment service' }, { status: 502 });
+		return Response.json({ error: 'Invalid response from payment service' }, { status: 502 });
 	}
 
-	return json(data, { status: upstream.status });
+	return Response.json(data, { status: upstream.status });
 };

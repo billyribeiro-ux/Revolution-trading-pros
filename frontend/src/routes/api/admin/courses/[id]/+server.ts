@@ -3,7 +3,7 @@
  * ICT 7 Grade - Routes requests to Rust API backend
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -57,13 +57,13 @@ export const GET: RequestHandler = async (event) => {
 		const wrapped = envelope(raw, response.status);
 		if (!response.ok) {
 			if (response.status === 401) error(401, wrapped.error || 'Unauthorized');
-			return json(wrapped, { status: response.status });
+			return Response.json(wrapped, { status: response.status });
 		}
-		return json(wrapped);
+		return Response.json(wrapped);
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin course get error:', err);
-		return json({ success: false, error: 'Failed to fetch course' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to fetch course' }, { status: 500 });
 	}
 };
 
@@ -85,11 +85,11 @@ export const PUT: RequestHandler = async (event) => {
 
 		const raw = await response.json().catch(() => null);
 		const wrapped = envelope(raw, response.status);
-		return json(wrapped, { status: response.status });
+		return Response.json(wrapped, { status: response.status });
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin course update error:', err);
-		return json({ success: false, error: 'Failed to update course' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to update course' }, { status: 500 });
 	}
 };
 
@@ -109,10 +109,10 @@ export const DELETE: RequestHandler = async (event) => {
 
 		const raw = await response.json().catch(() => null);
 		const wrapped = envelope(raw, response.status);
-		return json(wrapped, { status: response.status });
+		return Response.json(wrapped, { status: response.status });
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin course delete error:', err);
-		return json({ success: false, error: 'Failed to delete course' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to delete course' }, { status: 500 });
 	}
 };

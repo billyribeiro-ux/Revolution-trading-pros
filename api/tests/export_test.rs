@@ -364,7 +364,7 @@ fn export_router_builds_with_app_state() {
 // ── 6. Idempotent router construction (no module-local state) ────────
 
 /// Per CLAUDE.md habit #3: routes/export.rs has NO module-level
-/// `lazy_static` / `OnceLock` (verified by grep: no `static` keyword
+/// `LazyLock` / `OnceLock` (verified by grep: no `static` keyword
 /// in the file). The `ExportService::new()` call lives PER-REQUEST
 /// inside each handler, NOT cached at module level — this is
 /// correct, because each export creates an in-memory `csv::Writer`

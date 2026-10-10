@@ -8,7 +8,6 @@
  * page hits a single, fixed sub-path. Forwards body unchanged with the
  * canonical `rtp_access_token` Bearer.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireSuperadmin } from '#lib/server/auth.js';
@@ -39,5 +38,5 @@ export const POST: RequestHandler = async (event) => {
 		parsed = { success: false, error: 'Invalid JSON from backend' };
 	}
 
-	return json(parsed, { status: upstream.status });
+	return Response.json(parsed, { status: upstream.status });
 };

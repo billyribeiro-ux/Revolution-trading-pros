@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { POLYGON_API_KEY } from '$app/env/private';
 
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const apiKey = POLYGON_API_KEY;
 
 		if (!apiKey) throw error(401, 'Polygon API key not configured');
-		if (healthcheck) return json({ ok: true });
+		if (healthcheck) return Response.json({ ok: true });
 
 		if (!ticker) throw error(400, 'Missing ticker parameter');
 
@@ -54,7 +54,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				source: 'polygon'
 			};
 
-			return json(quote);
+			return Response.json(quote);
 		} catch (err) {
 			throw error(502, `Polygon request failed: ${err instanceof Error ? err.message : 'Unknown'}`);
 		}

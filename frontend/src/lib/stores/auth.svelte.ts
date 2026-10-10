@@ -665,7 +665,7 @@ class AuthStoreClass {
 		}
 
 		if (browser && redirectTo) {
-			await goto(redirectTo, { replaceState: true });
+			await goto(redirectTo, { replace: true });
 		}
 	}
 }

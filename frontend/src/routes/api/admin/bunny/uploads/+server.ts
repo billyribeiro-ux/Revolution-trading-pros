@@ -16,7 +16,6 @@
  *   on failure — admins were seeing an empty list whenever the backend hiccuped.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -50,7 +49,7 @@ export const GET: RequestHandler = async (event) => {
 
 		if (!response.ok) {
 			console.error(`[Bunny Uploads] Backend error ${response.status}:`, text);
-			return json(
+			return Response.json(
 				{
 					success: false,
 					error: (payload as { error?: string })?.error || `Backend returned ${response.status}`
@@ -59,11 +58,11 @@ export const GET: RequestHandler = async (event) => {
 			);
 		}
 
-		return json(payload ?? { success: true, data: [] });
+		return Response.json(payload ?? { success: true, data: [] });
 	} catch (err) {
 		console.error('[Bunny Uploads] Fetch failed:', err);
 		// FIX-2026-04-26-audit (P2-9): no more lying success — surface the failure.
-		return json(
+		return Response.json(
 			{
 				success: false,
 				error: err instanceof Error ? err.message : 'Failed to reach backend'

@@ -286,7 +286,7 @@
 
 		// Clear auth and redirect - use replaceState to prevent history pollution
 		authStore.clearAuth();
-		await goto('/login?redirect=/admin', { replaceState: true });
+		await goto('/login?redirect=/admin', { replace: true });
 	}
 
 	// Event Handlers with Error Handling
@@ -311,13 +311,13 @@
 			localStorage.removeItem('admin_preferences');
 
 			// Redirect with success message - use replaceState to prevent history pollution
-			await goto('/?message=logged_out', { replaceState: true });
+			await goto('/?message=logged_out', { replace: true });
 		} catch (error) {
 			logger.error('[AdminToolbar] Logout failed', { error });
 
 			// Force logout even on error
 			authStore.clearAuth();
-			await goto('/', { replaceState: true });
+			await goto('/', { replace: true });
 		} finally {
 			isLoading = false;
 			const duration = performance.now() - startTime;

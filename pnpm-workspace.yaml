@@ -2,12 +2,15 @@ packages:
   - frontend
   - svelte-click-to-source
 
-# pnpm 11 escalates ERR_PNPM_IGNORED_BUILDS to a FATAL non-zero exit by
+# pnpm 11+ escalates ERR_PNPM_IGNORED_BUILDS to a FATAL non-zero exit by
 # default, so a clean `pnpm install --frozen-lockfile` (CI, fresh clone)
 # exits 1 even though esbuild/sharp/workerd ship prebuilt platform
 # binaries whose postinstall is effectively a no-op. The explicit
-# allowlist above is kept for intent/audit; this stops the fatal
+# allowlist below is kept for intent/audit; this stops the fatal
 # escalation so the install (and every frontend CI job) succeeds.
+# (Re-verified on pnpm 12.10.1, 2026-10-09: every key in this file is a
+# recognized setting — pnpm 12 hard-fails on unknown workspace keys with
+# ERR_PNPM_UNRECOGNIZED_WORKSPACE_SETTINGS.)
 strictDepBuilds: false
 
 # Before every `pnpm run <script>` pnpm re-verifies installed deps and,
@@ -23,22 +26,30 @@ allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
-# (Stale pins for versions no longer in the lockfile removed 2026-07-19;
-# re-pointed at the versions installed by the 2026-08-30 dependency sweep.)
+
+# pnpm's default `minimumReleaseAge` (24h) refuses versions published in the
+# last day. The 2026-10-09 sweep targets the npm `latest` of every package as
+# of that date, and these were all published inside that window. Each entry is
+# an exact version (never a range) so the exemption cannot widen to a future
+# release; prune entries once the lockfile no longer resolves them.
 minimumReleaseAgeExclude:
-  - concurrently@10.0.5
-  - '@anthropic-ai/sdk@0.122.0'
+  - '@anthropic-ai/sdk@0.133.0'
+  - '@paypal/paypal-js@11.2.2'
+  - '@types/node@24.19.2'
+  - eslint-plugin-svelte@3.23.1
 
 peerDependencyRules:
   allowedVersions:
-    vite-plugin-devtools-json>vite: ^8.0.0
     # runed (pulled in by bits-ui and svelte-toolbelt) still declares
     # `@sveltejs/kit: ^2.21.0` as of runed 0.37.1 — there is no published
-    # runed that accepts the Kit 3 prerelease line this repo tracks, and
-    # bits-ui 2.19.0 (latest) pins `runed: ^0.35.1`. runed only imports
-    # `$app/environment`, `$app/navigation` and `$app/state`; all three still
-    # resolve on Kit 3 (`$app/environment` is a deprecated re-export of
-    # `$app/env`), so the mismatch is a stale range, not a real break.
-    # Remove this once runed widens the peer to `^2.21.0 || ^3.0.0`.
-    # (Added 2026-08-30.)
-    runed>@sveltejs/kit: ^3.0.0-next.0
+    # runed that accepts Kit 3, and bits-ui 2.19.5 (latest) still depends on
+    # `runed: ^0.35.1`. runed only imports `$app/environment`,
+    # `$app/navigation` and `$app/state`; all three resolve on Kit 3.0.1
+    # (`$app/environment` is a deprecated re-export of `$app/env`), so the
+    # mismatch is a stale range, not a real break. Remove this once runed
+    # widens the peer to `^2.21.0 || ^3.0.0`.
+    # (Added 2026-08-30; re-verified against Kit 3.0.1 stable 2026-10-09.)
+    runed>@sveltejs/kit: ^3.0.0
+    # The former `vite-plugin-devtools-json>vite: ^8.0.0` rule is gone:
+    # vite-plugin-devtools-json 1.1.1 declares `vite: ^5 || ^6 || ^7 || ^8`
+    # itself.

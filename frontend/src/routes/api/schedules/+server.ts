@@ -7,7 +7,6 @@
  * Returns empty schedule on failure to prevent UI breakage.
  * Single retry for transient failures.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -57,7 +56,7 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
 
 			if (response.ok) {
 				const data = await response.json();
-				return json(data, {
+				return Response.json(data, {
 					status: 200,
 					headers: {
 						'X-Request-ID': requestId,
@@ -71,7 +70,7 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
 	}
 
 	// ICT 7: Graceful degradation - return empty schedule
-	return json(
+	return Response.json(
 		{ events: [], requestId, degraded: true },
 		{
 			status: 200,

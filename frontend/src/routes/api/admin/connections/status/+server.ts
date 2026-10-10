@@ -20,7 +20,6 @@
  * @version 1.1.0 - April 2026 (audit hardening)
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/auth.js';
 
@@ -203,7 +202,7 @@ export const GET: RequestHandler = async (event) => {
 	const connected = connections.filter((c) => c.is_connected);
 	const errors = connections.filter((c) => c.status === 'error');
 
-	return json({
+	return Response.json({
 		success: true,
 		connections,
 		summary: {

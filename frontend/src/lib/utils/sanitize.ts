@@ -1,156 +1,28 @@
 /**
  * HTML Sanitization Utility
  * =========================
- * Provides secure HTML sanitization using DOMPurify to prevent XSS attacks.
- * Use this for ALL user-generated or external HTML content before rendering with {@html}.
+ * Sanitizes HTML before it is rendered with {@html}. Use this for ALL
+ * user-generated or external HTML content.
  *
- * @version 1.0.0
+ * Runs identically during SSR (Node, Cloudflare workerd) and in the browser —
+ * see `#lib/utils/html-sanitizer/engine.ts` — so server-rendered output
+ * hydrates without a mismatch. The profiles are defined in
+ * `#lib/utils/html-sanitizer/policy.ts`.
+ *
  * @security Critical - prevents XSS vulnerabilities
  */
 
-import DOMPurify from 'isomorphic-dompurify';
+import { extractText, isSafeUrl, sanitizeWithPolicy } from '#lib/utils/html-sanitizer/engine.js';
+import { PROFILES } from '#lib/utils/html-sanitizer/policy.js';
 
-/**
- * Sanitization profiles for different use cases
- */
-const SANITIZE_PROFILES = {
-	// Strict: Only basic formatting, no links or images
-	strict: {
-		ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'u', 's', 'br', 'p', 'span'],
-		ALLOWED_ATTR: ['class']
-	},
-
-	// Standard: Common HTML elements for blog content
-	standard: {
-		ALLOWED_TAGS: [
-			'b',
-			'i',
-			'em',
-			'strong',
-			'u',
-			's',
-			'br',
-			'p',
-			'span',
-			'div',
-			'h1',
-			'h2',
-			'h3',
-			'h4',
-			'h5',
-			'h6',
-			'ul',
-			'ol',
-			'li',
-			'blockquote',
-			'pre',
-			'code',
-			'a',
-			'img',
-			'figure',
-			'figcaption',
-			'table',
-			'thead',
-			'tbody',
-			'tr',
-			'th',
-			'td'
-		],
-		ALLOWED_ATTR: [
-			'class',
-			'id',
-			'href',
-			'target',
-			'rel',
-			'src',
-			'alt',
-			'title',
-			'width',
-			'height',
-			'loading'
-		],
-		// Force all links to open in new tab with security attributes
-		ADD_ATTR: ['target', 'rel'],
-		FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
-		FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
-	},
-
-	// Rich: Full HTML support for admin-created content
-	rich: {
-		ALLOWED_TAGS: [
-			'b',
-			'i',
-			'em',
-			'strong',
-			'u',
-			's',
-			'br',
-			'p',
-			'span',
-			'div',
-			'h1',
-			'h2',
-			'h3',
-			'h4',
-			'h5',
-			'h6',
-			'ul',
-			'ol',
-			'li',
-			'blockquote',
-			'pre',
-			'code',
-			'a',
-			'img',
-			'figure',
-			'figcaption',
-			'table',
-			'thead',
-			'tbody',
-			'tr',
-			'th',
-			'td',
-			'video',
-			'source',
-			'audio',
-			'iframe'
-		],
-		ALLOWED_ATTR: [
-			'class',
-			'id',
-			'href',
-			'target',
-			'rel',
-			'src',
-			'alt',
-			'title',
-			'width',
-			'height',
-			'loading',
-			'controls',
-			'autoplay',
-			'muted',
-			'loop',
-			'poster',
-			'frameborder',
-			'allowfullscreen',
-			'allow'
-		],
-		// Only allow iframes from trusted sources
-		ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i
-	},
-
-	// Minimal: Text only with basic formatting
-	minimal: {
-		ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'br'],
-		ALLOWED_ATTR: []
-	}
-};
-
-export type SanitizeProfile = keyof typeof SANITIZE_PROFILES;
+export type SanitizeProfile = keyof typeof PROFILES;
 
 /**
  * Sanitize HTML content to prevent XSS attacks.
+ *
+ * Every link gets `rel="noopener noreferrer"` (and `target="_blank"` when it
+ * points at an http(s) URL); iframes survive only in the `rich` profile and
+ * only when they embed a trusted player host over https.
  *
  * @param html - The HTML string to sanitize
  * @param profile - The sanitization profile to use (default: 'standard')
@@ -170,44 +42,7 @@ export function sanitizeHtml(
 	profile: SanitizeProfile = 'standard'
 ): string {
 	if (!html) return '';
-
-	const config = SANITIZE_PROFILES[profile];
-
-	// Configure DOMPurify hooks for additional security
-	DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-		// Add rel="noopener noreferrer" to all links for security
-		if (node.tagName === 'A') {
-			node.setAttribute('rel', 'noopener noreferrer');
-			// Open external links in new tab
-			if (node.getAttribute('href')?.startsWith('http')) {
-				node.setAttribute('target', '_blank');
-			}
-		}
-
-		// Only allow iframes from trusted domains
-		if (node.tagName === 'IFRAME') {
-			const src = node.getAttribute('src') || '';
-			const trustedDomains = [
-				'youtube.com',
-				'www.youtube.com',
-				'youtube-nocookie.com',
-				'www.youtube-nocookie.com',
-				'player.vimeo.com',
-				'vimeo.com'
-			];
-			const isTrusted = trustedDomains.some((domain) => src.includes(domain));
-			if (!isTrusted) {
-				node.remove();
-			}
-		}
-	});
-
-	const sanitized = DOMPurify.sanitize(html, config);
-
-	// Clean up hooks after sanitization
-	DOMPurify.removeHook('afterSanitizeAttributes');
-
-	return sanitized;
+	return sanitizeWithPolicy(html, PROFILES[profile]);
 }
 
 /**
@@ -244,11 +79,27 @@ export function sanitizeVideoOverlay(html: string | null | undefined): string {
 
 /**
  * Strip all HTML tags and return plain text.
- * Use when you need text-only content.
+ * Use when you need text-only content. The result is text, not HTML: render it
+ * with `{text}`, never with `{@html}`.
  */
 export function stripHtml(html: string | null | undefined): string {
 	if (!html) return '';
-	return DOMPurify.sanitize(html, { ALLOWED_TAGS: [] });
+	return extractText(html);
+}
+
+/** Schemes a bare link may use; relative URLs are always allowed. */
+const LINK_SCHEMES = ['http', 'https', 'mailto', 'tel'] as const;
+
+/**
+ * Validate a URL that goes straight into an `href` or `src` attribute (not
+ * through the HTML sanitizer). Returns the URL unchanged when it is relative —
+ * `/path`, `#anchor`, `../up`, `?query` — or uses http(s), mailto or tel, and
+ * an empty string otherwise (so `javascript:` in any spelling never reaches
+ * the attribute).
+ */
+export function safeUrl(url: string | null | undefined): string {
+	if (!url) return '';
+	return isSafeUrl(url, LINK_SCHEMES) ? url : '';
 }
 
 /**

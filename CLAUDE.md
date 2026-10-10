@@ -85,8 +85,9 @@ The repo's typecheck must stay at 0 errors / 0 warnings.
 
 ### SvelteKit 3
 
-The repo is on SvelteKit 3 (currently the `3.0.0-next` prerelease line — see
-BACKLOG.md "SvelteKit 3 follow-ups"). Two structural consequences:
+The repo is on SvelteKit 3 stable (`@sveltejs/kit` 3.0.1 with
+`@sveltejs/adapter-cloudflare` 8.0.0 — see BACKLOG.md "SvelteKit 3
+follow-ups"). Two structural consequences:
 
 - **There is no `svelte.config.js`.** All Kit config is passed as options to
   the `sveltekit()` plugin in `frontend/vite.config.ts`.
@@ -156,6 +157,12 @@ cd api && cargo test --test router_smoke_test --test utils_test --test stripe_te
 
 All must pass before committing. `pnpm api:lint` bundles the three backend
 lint gates; it needs `cargo install cargo-machete cargo-deny` once per machine.
+
+When you touch `frontend/src/lib/utils/html-sanitizer/` (or its policies), also
+run `cd frontend && pnpm test:sanitizer:browser` (`CHROMIUM_PATH=…` to pick a
+browser). It checks that the server (parse5) and real-Chromium outputs stay
+byte-identical, and that nothing executable survives. CI has no browser, so it
+does not run this.
 
 Two frontend checks are worth running on anything UI-facing, since CI's
 `check` does not escalate warnings: `pnpm check:strict` (`--fail-on-warnings`)

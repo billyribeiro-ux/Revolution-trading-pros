@@ -9,7 +9,7 @@
  * @version 1.0.0 - ICT 7 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -62,7 +62,7 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		if (backendData?.success) {
-			return json(backendData);
+			return Response.json(backendData);
 		}
 
 		error(500, 'Failed to create video on Bunny.net');

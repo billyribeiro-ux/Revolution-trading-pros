@@ -6,7 +6,6 @@
  * bridges the path mismatch documented in the audit.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -36,40 +35,43 @@ async function forward(
 async function handleResponse(response: Response): Promise<Response> {
 	const text = await response.text();
 	if (!text) {
-		return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+		return Response.json(
+			{ error: 'Empty response from server' },
+			{ status: response.status || 500 }
+		);
 	}
 	try {
 		const data = JSON.parse(text);
-		return json(data, { status: response.status });
+		return Response.json(data, { status: response.status });
 	} catch {
-		return json({ error: 'Invalid response from server' }, { status: 500 });
+		return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 	}
 }
 
 export const GET: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing plan id' }, { status: 400 });
 	const auth = `Bearer ${token}`;
 	try {
 		return handleResponse(await forward('GET', id, auth));
 	} catch (err) {
 		console.error('[API Proxy] Get membership plan error:', err);
-		return json({ error: 'Failed to get membership plan' }, { status: 500 });
+		return Response.json({ error: 'Failed to get membership plan' }, { status: 500 });
 	}
 };
 
 export const PUT: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing plan id' }, { status: 400 });
 	const auth = `Bearer ${token}`;
 	try {
 		const body = await event.request.json();
 		return handleResponse(await forward('PUT', id, auth, body));
 	} catch (err) {
 		console.error('[API Proxy] Update membership plan error:', err);
-		return json({ error: 'Failed to update membership plan' }, { status: 500 });
+		return Response.json({ error: 'Failed to update membership plan' }, { status: 500 });
 	}
 };
 
@@ -81,26 +83,26 @@ export const PUT: RequestHandler = async (event) => {
 export const PATCH: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing plan id' }, { status: 400 });
 	const auth = `Bearer ${token}`;
 	try {
 		const body = await event.request.json();
 		return handleResponse(await forward('PUT', id, auth, body));
 	} catch (err) {
 		console.error('[API Proxy] Patch membership plan error:', err);
-		return json({ error: 'Failed to patch membership plan' }, { status: 500 });
+		return Response.json({ error: 'Failed to patch membership plan' }, { status: 500 });
 	}
 };
 
 export const DELETE: RequestHandler = async (event) => {
 	const { token } = requireAdmin(event);
 	const id = event.params.id;
-	if (!id) return json({ error: 'Missing plan id' }, { status: 400 });
+	if (!id) return Response.json({ error: 'Missing plan id' }, { status: 400 });
 	const auth = `Bearer ${token}`;
 	try {
 		return handleResponse(await forward('DELETE', id, auth));
 	} catch (err) {
 		console.error('[API Proxy] Delete membership plan error:', err);
-		return json({ error: 'Failed to delete membership plan' }, { status: 500 });
+		return Response.json({ error: 'Failed to delete membership plan' }, { status: 500 });
 	}
 };

@@ -14,7 +14,6 @@
  * 502 (Bad Gateway) — never fake success and never silently empty-array.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdminToken, requireSuperadmin } from '#lib/server/auth.js';
@@ -25,16 +24,16 @@ async function relay(response: Response): Promise<Response> {
 	const text = await response.text();
 	if (!text) {
 		// Treat truly empty body as a backend hand-off failure rather than a 200.
-		return json(
+		return Response.json(
 			{ error: 'Empty response from backend' },
 			{ status: response.status >= 400 ? response.status : 502 }
 		);
 	}
 	try {
 		const data = JSON.parse(text);
-		return json(data, { status: response.status });
+		return Response.json(data, { status: response.status });
 	} catch {
-		return json({ error: 'Invalid JSON from backend' }, { status: 502 });
+		return Response.json({ error: 'Invalid JSON from backend' }, { status: 502 });
 	}
 }
 
@@ -53,7 +52,7 @@ export const GET: RequestHandler = async (event) => {
 		return relay(response);
 	} catch (err) {
 		console.error('[API Proxy] List user-memberships error:', err);
-		return json({ error: 'Backend unreachable' }, { status: 502 });
+		return Response.json({ error: 'Backend unreachable' }, { status: 502 });
 	}
 };
 
@@ -78,6 +77,6 @@ export const POST: RequestHandler = async (event) => {
 		return relay(response);
 	} catch (err) {
 		console.error('[API Proxy] Grant membership error:', err);
-		return json({ error: 'Backend unreachable' }, { status: 502 });
+		return Response.json({ error: 'Backend unreachable' }, { status: 502 });
 	}
 };

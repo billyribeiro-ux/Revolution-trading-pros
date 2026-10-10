@@ -15,11 +15,10 @@
  * TODO(R22-A): wire to a real backend endpoint when popups are implemented.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async () => {
-	return json(
+	return Response.json(
 		{ success: false, error: 'Active popups endpoint not implemented on backend.' },
 		{ status: 501 }
 	);

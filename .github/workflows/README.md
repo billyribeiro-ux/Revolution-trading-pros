@@ -10,17 +10,20 @@ production.
 **Triggers:** push and pull_request to `main` / `develop`, plus manual
 `workflow_dispatch`. Concurrency cancels in-progress runs per ref.
 
-**Job `frontend`** (Node 24.20.0, pnpm activated by Corepack from
+**Job `frontend`** (Node 24.21.0, pnpm 12.10.1 activated by Corepack from
 `package.json#packageManager`):
 
 1. `pnpm install --frozen-lockfile`
-2. Typecheck — `pnpm --filter revolution-svelte check`
-3. Lint — eslint, blocking, 0 errors required
-4. Unit tests — vitest
-5. Production build (with `API_BASE_URL` / `BACKEND_URL` set to
+2. Lockfile drift guard — `git diff --exit-code -- pnpm-lock.yaml` (pnpm 12
+   rewrites the lockfile's `packageManagerDependencies` document on every
+   command; a lockfile regenerated under another pnpm fails here)
+3. Typecheck — `pnpm --filter revolution-svelte check`
+4. Lint — eslint, blocking, 0 errors required
+5. Unit tests — vitest
+6. Production build (with `API_BASE_URL` / `BACKEND_URL` set to
    `http://localhost:8080` for build-time SSR/prerender fetches)
 
-**Job `backend`** (Rust 1.98.0, pinned via `dtolnay/rust-toolchain@master`
+**Job `backend`** (Rust 1.99.0, pinned via `dtolnay/rust-toolchain@master`
 and `rust-toolchain.toml`; runs in `api/` with `SQLX_OFFLINE=true`):
 
 1. `cargo fmt --all --check`
@@ -41,7 +44,7 @@ ci.yml references no secrets.
   this workflow file, and `pnpm-lock.yaml` — deploys a `pr-N` preview
 
 **Job `build-and-deploy`:** same Node/pnpm setup and production build as
-CI, then `cloudflare/wrangler-action@v4.0.0` runs
+CI, then `cloudflare/wrangler-action@v4.1.3` runs
 `pages deploy .svelte-kit/cloudflare` against project
 `revolution-trading-pros` with the resolved branch (`pr-N` for PRs,
 otherwise the dispatch input or `preview`).

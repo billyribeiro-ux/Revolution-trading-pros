@@ -34,13 +34,13 @@
 		"vite": "^5.0.0 || ^6.0.0 || ^8.0.0"
 	},
 	"devDependencies": {
-		"@types/node": "^24.13.3",
-		"svelte": "^5.57.0",
+		"@types/node": "^24.19.2",
+		"svelte": "^5.57.2",
 		"tsup": "^8.5.1",
 		"typescript": "^6.0.3",
-		"vite": "^8.2.2"
+		"vite": "^8.3.4"
 	},
 	"dependencies": {
-		"magic-string": "^1.2.3"
+		"magic-string": "^1.4.3"
 	}
 }

@@ -5,8 +5,8 @@
  * input validation, and Content Security Policy management.
  */
 
-import DOMPurify from 'isomorphic-dompurify';
-import type { Config } from 'dompurify';
+import { extractText, sanitizeWithPolicy } from '#lib/utils/html-sanitizer/engine.js';
+import { MODES } from '#lib/utils/html-sanitizer/policy.js';
 import { logger } from '#lib/utils/logger.js';
 
 // ============================================================================
@@ -23,11 +23,6 @@ export interface SanitizeOptions {
 	 * - 'custom': Allow custom HTML (iframes, etc.) - use with caution
 	 */
 	mode?: SanitizationMode;
-
-	/**
-	 * Custom DOMPurify config to merge with defaults
-	 */
-	config?: Partial<Config>;
 
 	/**
 	 * Whether to add noopener/noreferrer to links
@@ -123,148 +118,25 @@ const XSS_PATTERNS = [
 	/vbscript\s*:/gi
 ] as const;
 
-/** Default DOMPurify configuration for standard content */
-const DEFAULT_CONFIG: Config = {
-	ALLOWED_TAGS: [
-		'p',
-		'br',
-		'strong',
-		'em',
-		'u',
-		's',
-		'a',
-		'ul',
-		'ol',
-		'li',
-		'h1',
-		'h2',
-		'h3',
-		'h4',
-		'h5',
-		'h6',
-		'blockquote',
-		'code',
-		'pre',
-		'div',
-		'span',
-		'img',
-		'table',
-		'thead',
-		'tbody',
-		'tfoot',
-		'tr',
-		'th',
-		'td',
-		'figure',
-		'figcaption',
-		'hr',
-		'sub',
-		'sup',
-		'mark',
-		'abbr',
-		'cite',
-		'del',
-		'ins',
-		'kbd',
-		'samp',
-		'var',
-		'details',
-		'summary'
-	],
-	ALLOWED_ATTR: [
-		'href',
-		'title',
-		'target',
-		'rel',
-		'class',
-		'id',
-		'src',
-		'alt',
-		'width',
-		'height',
-		'style',
-		'colspan',
-		'rowspan',
-		'scope',
-		'datetime',
-		'cite',
-		'lang',
-		'dir',
-		'open'
-	],
-	ALLOWED_URI_REGEXP:
-		/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
-	ALLOW_DATA_ATTR: false,
-	ALLOW_UNKNOWN_PROTOCOLS: false,
-	SAFE_FOR_TEMPLATES: true,
-	RETURN_TRUSTED_TYPE: false
-};
-
-/** Strict DOMPurify configuration - text only with basic formatting */
-const STRICT_CONFIG: Config = {
-	ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 's', 'sub', 'sup'],
-	ALLOWED_ATTR: [],
-	ALLOW_DATA_ATTR: false,
-	ALLOW_UNKNOWN_PROTOCOLS: false,
-	SAFE_FOR_TEMPLATES: true,
-	KEEP_CONTENT: true
-};
-
-/** Custom HTML configuration - allows embeds with security restrictions */
-const CUSTOM_HTML_CONFIG: Config = {
-	...DEFAULT_CONFIG,
-	ALLOWED_TAGS: [
-		...(DEFAULT_CONFIG.ALLOWED_TAGS as string[]),
-		'iframe',
-		'video',
-		'audio',
-		'source',
-		'track',
-		'picture',
-		'canvas'
-	],
-	ALLOWED_ATTR: [
-		...(DEFAULT_CONFIG.ALLOWED_ATTR as string[]),
-		'frameborder',
-		'allowfullscreen',
-		'controls',
-		'autoplay',
-		'muted',
-		'loop',
-		'playsinline',
-		'poster',
-		'preload',
-		'srcset',
-		'sizes',
-		'media',
-		'type',
-		'kind',
-		'srclang',
-		'label',
-		'default',
-		'loading',
-		'decoding',
-		'crossorigin',
-		'referrerpolicy',
-		'sandbox',
-		'allow'
-	],
-	ADD_TAGS: ['iframe', 'video', 'audio'],
-	ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'sandbox']
-};
-
 // ============================================================================
 // HTML Sanitization Functions
 // ============================================================================
 
 /**
- * Sanitize HTML content using DOMPurify with configurable security levels
+ * Sanitize HTML content with a configurable allowlist.
+ *
+ * Runs identically during SSR and in the browser (see
+ * `#lib/utils/html-sanitizer/engine.ts`). The modes are defined in
+ * `#lib/utils/html-sanitizer/policy.ts`: `default` for rich text, `strict` for
+ * inline formatting only, `custom` for admin-authored HTML blocks (adds media
+ * and iframes).
+ *
  * @param html - The HTML string to sanitize
  * @param options - Sanitization options
  * @returns Sanitized HTML string
  */
 export function sanitizeHTML(html: string, options: SanitizeOptions = {}): string {
-	const { mode = 'default', config = {}, secureLinks = true, maxLength } = options;
+	const { mode = 'default', secureLinks = true, maxLength } = options;
 
 	if (!html || typeof html !== 'string') {
 		return '';
@@ -272,42 +144,19 @@ export function sanitizeHTML(html: string, options: SanitizeOptions = {}): strin
 
 	// Truncate if needed
 	const content = maxLength ? html.slice(0, maxLength) : html;
+	const policy = MODES[mode];
 
-	// Select base config based on mode
-	let baseConfig: Config;
-	switch (mode) {
-		case 'strict':
-			baseConfig = STRICT_CONFIG;
-			break;
-		case 'custom':
-			baseConfig = CUSTOM_HTML_CONFIG;
-			break;
-		default:
-			baseConfig = DEFAULT_CONFIG;
-	}
-
-	// Merge configs
-	const finalConfig: Config = {
-		...baseConfig,
-		...config
-	};
-
-	// Sanitize
-	let sanitized = DOMPurify.sanitize(content, finalConfig) as unknown as string;
-
-	// Add security attributes to links
-	if (secureLinks && mode !== 'strict') {
-		sanitized = addSecureLinkAttributes(sanitized);
-	}
-
-	return sanitized;
+	// `secureLinks` (default on) adds noopener/noreferrer to target=_blank
+	// links — the policy's link hardening. Opting out keeps `rel` as authored.
+	return sanitizeWithPolicy(content, secureLinks ? policy : { ...policy, links: 'none' });
 }
 
 /**
  * Sanitize plain text by stripping all HTML tags
  * @param text - The text to sanitize
  * @param maxLength - Optional maximum length
- * @returns Plain text with all HTML removed
+ * @returns Plain text with all HTML removed. It is text, not HTML: render it
+ *   with `{text}`, never with `{@html}`.
  */
 export function sanitizeText(text: string, maxLength?: number): string {
 	if (!text || typeof text !== 'string') {
@@ -315,37 +164,9 @@ export function sanitizeText(text: string, maxLength?: number): string {
 	}
 
 	// Strip all HTML tags while keeping content
-	const stripped = DOMPurify.sanitize(text, {
-		ALLOWED_TAGS: [],
-		ALLOWED_ATTR: [],
-		KEEP_CONTENT: true
-	}) as string;
+	const stripped = extractText(text);
 
 	return maxLength ? stripped.slice(0, maxLength) : stripped;
-}
-
-/**
- * Add secure attributes (noopener, noreferrer) to links with target="_blank"
- */
-function addSecureLinkAttributes(html: string): string {
-	return html.replace(/<a\s+([^>]*href=["'][^"']*["'][^>]*)>/gi, (match, attributes) => {
-		// Check if target="_blank" exists
-		if (attributes.includes('target="_blank"') || attributes.includes("target='_blank'")) {
-			// Add rel if not present
-			if (!attributes.includes('rel=')) {
-				return `<a ${attributes} rel="noopener noreferrer">`;
-			} else if (!attributes.includes('noopener') || !attributes.includes('noreferrer')) {
-				// Update existing rel attribute
-				return match.replace(/rel=["']([^"']*)["']/i, (_: string, relValue: string) => {
-					const parts = new Set(relValue.split(/\s+/).filter(Boolean));
-					parts.add('noopener');
-					parts.add('noreferrer');
-					return `rel="${Array.from(parts).join(' ')}"`;
-				});
-			}
-		}
-		return match;
-	});
 }
 
 // ============================================================================
@@ -1088,11 +909,4 @@ export function parseJSONSafe<T = unknown>(jsonString: string): T | null {
 // Export all utilities
 // ============================================================================
 
-export {
-	DEFAULT_CONFIG as defaultSanitizationConfig,
-	STRICT_CONFIG as strictSanitizationConfig,
-	CUSTOM_HTML_CONFIG as customHTMLConfig,
-	SAFE_PROTOCOLS,
-	DANGEROUS_CSS_PATTERNS,
-	XSS_PATTERNS
-};
+export { MODES as sanitizationModes, SAFE_PROTOCOLS, DANGEROUS_CSS_PATTERNS, XSS_PATTERNS };

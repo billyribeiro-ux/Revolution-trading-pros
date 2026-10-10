@@ -25,10 +25,9 @@ struct SitemapCache {
     expires_at: Instant,
 }
 
-lazy_static::lazy_static! {
-    static ref SITEMAP_CACHE: Arc<RwLock<std::collections::HashMap<String, SitemapCache>>> =
-        Arc::new(RwLock::new(std::collections::HashMap::new()));
-}
+static SITEMAP_CACHE: std::sync::LazyLock<
+    Arc<RwLock<std::collections::HashMap<String, SitemapCache>>>,
+> = std::sync::LazyLock::new(|| Arc::new(RwLock::new(std::collections::HashMap::new())));
 
 const CACHE_TTL: Duration = Duration::from_secs(3600); // 1 hour
 const MAX_URLS_PER_SITEMAP: i64 = 50000;

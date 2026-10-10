@@ -12,7 +12,7 @@
  * @version 3.0.0 — 2026-05-20
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { requireAdmin } from '#lib/server/auth.js';
@@ -29,7 +29,7 @@ export const GET: RequestHandler = async (event) => {
 	);
 
 	if (status >= 400 || !data) {
-		return json({
+		return Response.json({
 			success: false,
 			data: [],
 			total: 0,
@@ -37,7 +37,7 @@ export const GET: RequestHandler = async (event) => {
 		});
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 export const POST: RequestHandler = async (event) => {
@@ -49,7 +49,10 @@ export const POST: RequestHandler = async (event) => {
 		const body: unknown = await request.json();
 
 		if (!isObject(body) || typeof body.name !== 'string' || typeof body.subject !== 'string') {
-			return json({ success: false, error: 'Name and subject are required' }, { status: 400 });
+			return Response.json(
+				{ success: false, error: 'Name and subject are required' },
+				{ status: 400 }
+			);
 		}
 
 		const { data, status } = await fetchBackendWithStatus(
@@ -66,7 +69,7 @@ export const POST: RequestHandler = async (event) => {
 			error(status, 'Failed to create template');
 		}
 
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/email/templates error:', err);

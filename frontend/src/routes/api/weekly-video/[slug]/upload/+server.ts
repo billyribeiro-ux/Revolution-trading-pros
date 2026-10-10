@@ -11,7 +11,7 @@
  * @version 1.0.0 - ICT 7 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import {
 	API_BASE_URL,
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		const backendData = await response.json();
 
 		if (backendData?.success) {
-			return json({
+			return Response.json({
 				...backendData,
 				room_slug: slug,
 				library_id: libraryId
@@ -152,7 +152,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		}
 
 		const result = await response.json();
-		return json({
+		return Response.json({
 			...result,
 			room_slug: slug
 		});

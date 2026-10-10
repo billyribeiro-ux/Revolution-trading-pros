@@ -7,7 +7,6 @@
  * Analytics errors must NEVER affect user experience.
  * Returns success even on backend failure - data loss acceptable.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -50,13 +49,13 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
 
 		if (!response.ok) {
 			// Silent failure - return success anyway
-			return json({ success: true, requestId }, { status: 200 });
+			return Response.json({ success: true, requestId }, { status: 200 });
 		}
 
 		const data = await response.json();
-		return json({ ...data, requestId }, { status: 200 });
+		return Response.json({ ...data, requestId }, { status: 200 });
 	} catch (_error) {
 		// ICT 7: Silent failure - analytics errors never affect UX
-		return json({ success: true, requestId }, { status: 200 });
+		return Response.json({ success: true, requestId }, { status: 200 });
 	}
 };

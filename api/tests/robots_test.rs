@@ -11,7 +11,7 @@
 //!
 //! `routes/robots.rs` is 205 LOC of dynamic robots.txt generation
 //! gated by the `ENVIRONMENT` env var, with a 1-hour
-//! `lazy_static`-backed in-memory cache. The endpoint is PUBLIC (no
+//! `LazyLock`-backed in-memory cache. The endpoint is PUBLIC (no
 //! auth extractor — crawlers consume robots.txt unauthenticated) and
 //! writes `text/plain`. What we CAN pin in no-DB tests:
 //!
@@ -56,12 +56,12 @@
 //!    that are NOT propagated to prod — Google indexing a staging
 //!    URL pointing at admin would be a security leak.
 //!
-//! 5. **Cache is module-private `lazy_static`** (lines 26-28). Per
+//! 5. **Cache is a module-private `LazyLock`** (lines 26-27). Per
 //!    CLAUDE.md habit #3 (re-read your own diff: "does any `static`
 //!    / `OnceLock` / lazy init survive the refactor?"), the cache
 //!    is `Arc<RwLock<Option<RobotsCache>>>`. We can't introspect
 //!    private state from outside, but constructing `router()`
-//!    multiple times MUST NOT panic (lazy_static is idempotent;
+//!    multiple times MUST NOT panic (`LazyLock` is idempotent;
 //!    a regression that wrapped it in a `OnceLock` whose `set`
 //!    panics on second call would fail here).
 //!
@@ -102,12 +102,12 @@ fn robots_router_builds_with_app_state() {
     let _r: axum::Router<revolution_api::AppState> = robots::router();
 }
 
-// ── 2. Router idempotency — lazy_static cache survives repeat builds ─
+// ── 2. Router idempotency — LazyLock cache survives repeat builds ──
 
 /// Constructing `router()` repeatedly MUST NOT panic. Per CLAUDE.md
 /// habit #3 ("does any `static` / `OnceLock` / lazy init survive the
-/// refactor?"), the module uses `lazy_static!` for the cache (lines
-/// 26-28). `lazy_static` is idempotent by design — first access
+/// refactor?"), the module uses `std::sync::LazyLock` for the cache (lines
+/// 26-27). `LazyLock` is idempotent by design — first access
 /// initializes, subsequent accesses return the same `Arc`. A
 /// regression that flipped the cache to `OnceLock::set(...)`
 /// (which panics on second `.set()`) would NOT panic here at
@@ -171,7 +171,7 @@ fn robots_txt_handler_is_pub_and_callable() {
 ///
 /// Per CLAUDE.md habit #3 ("comment-vs-code drift"): the module
 /// header claims "Generates robots.txt based on environment with
-/// caching" — the caching uses module-static `lazy_static`, NOT
+/// caching" — the caching uses a module-static `LazyLock`, NOT
 /// state-attached cache. If a future refactor moved the cache to
 /// `state.cache` (which DOES exist per AppState), the pin would
 /// stay valid (still Router<AppState>) but the implementation would

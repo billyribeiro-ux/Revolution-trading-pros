@@ -10,7 +10,7 @@
  * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { TradePlanEntry, TradePlanCreateInput } from '#lib/types/trading.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
@@ -99,7 +99,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 		// Sort by sort_order
 		plans.sort((a, b) => a.sort_order - b.sort_order);
 
-		return json({
+		return Response.json({
 			success: true,
 			data: plans,
 			week_of: plans[0]?.week_of || null,
@@ -112,7 +112,7 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	// filter by week/active, sort, return `_source: 'mock'`. Now: 502 so the
 	// trade-plans UI shows a real error rather than the same NVDA placeholder.
 	console.error(`[Trade Plans API] Backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to load trade plans — backend is unavailable.'
@@ -186,7 +186,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (backendData) {
-		return json({
+		return Response.json({
 			success: true,
 			data: backendData,
 			message: 'Trade plan entry created',
@@ -198,7 +198,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	// Fake-success on a mutating endpoint — the entry was never persisted
 	// and room members never saw it. Now: 502 so the admin retries.
 	console.error(`[Trade Plans API] POST backend unavailable for slug '${slug}'`);
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Unable to create trade plan — backend is unavailable.'

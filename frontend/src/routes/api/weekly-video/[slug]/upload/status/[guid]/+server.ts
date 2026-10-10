@@ -9,7 +9,7 @@
  * @version 1.0.0 - ICT 7 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
 
@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 
 		if (!response.ok) {
 			console.error(`[Weekly Video Status] Backend error: ${response.status}`);
-			return json({
+			return Response.json({
 				success: true,
 				room_slug: slug,
 				status: 'processing',
@@ -62,13 +62,13 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 		const backendData = await response.json();
 
 		if (backendData?.success) {
-			return json({
+			return Response.json({
 				...backendData,
 				room_slug: slug
 			});
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			room_slug: slug,
 			status: 'processing',
@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
 		});
 	} catch (err) {
 		console.error('[Weekly Video Status] Error:', err);
-		return json({
+		return Response.json({
 			success: true,
 			room_slug: slug,
 			status: 'processing',

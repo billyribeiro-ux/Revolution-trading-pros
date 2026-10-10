@@ -7,7 +7,6 @@
  * The page sends an empty POST; we still forward whatever body is present so
  * future enhancements (e.g. partial reset) work without a proxy change.
  */
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireSuperadmin } from '#lib/server/auth.js';
@@ -38,5 +37,5 @@ export const POST: RequestHandler = async (event) => {
 		parsed = { success: false, error: 'Invalid JSON from backend' };
 	}
 
-	return json(parsed, { status: upstream.status });
+	return Response.json(parsed, { status: upstream.status });
 };

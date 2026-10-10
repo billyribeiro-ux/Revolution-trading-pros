@@ -9,7 +9,7 @@
  * @version 2.1.0 — 2026-05-20
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { requireAdmin } from '#lib/server/auth.js';
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async (event) => {
 	);
 
 	if (status >= 400 || !data) {
-		return json({
+		return Response.json({
 			success: false,
 			data: [],
 			meta: { total: 0 },
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async (event) => {
 		});
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 // POST - Create new category
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async (event) => {
 			error(status, extractBackendErrorMessage(data, 'Failed to create category'));
 		}
 
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		// FIX-2026-04-26 (P0-1): rethrow HttpError so backend status/message reach the client.
 		if (isHttpError(err)) throw err;

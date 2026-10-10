@@ -8,7 +8,7 @@
  * @version 2.0.0
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireSuperadmin } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -65,11 +65,17 @@ export const POST: RequestHandler = async (event) => {
 	const { ids, data } = body;
 
 	if (!ids || !Array.isArray(ids) || ids.length === 0) {
-		return json({ success: false, error: 'Missing or invalid ids array' }, { status: 400 });
+		return Response.json(
+			{ success: false, error: 'Missing or invalid ids array' },
+			{ status: 400 }
+		);
 	}
 
 	if (!data || typeof data !== 'object') {
-		return json({ success: false, error: 'Missing or invalid data object' }, { status: 400 });
+		return Response.json(
+			{ success: false, error: 'Missing or invalid data object' },
+			{ status: 400 }
+		);
 	}
 
 	const result = await callBackend('/api/admin/schedules/bulk-update', {
@@ -81,14 +87,14 @@ export const POST: RequestHandler = async (event) => {
 	// FIX-2026-04-26 (P0-2): Forward upstream {updated_count, updated_ids, failed_ids}
 	// without fabricating counts in the proxy.
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(result.data);
+		return Response.json(result.data);
 	}
 
 	if (result.reachable) {
 		error(result.status, extractErrorMessage(result.data, 'Failed to update schedules'));
 	}
 
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Schedules backend is not reachable. No schedules were updated.',

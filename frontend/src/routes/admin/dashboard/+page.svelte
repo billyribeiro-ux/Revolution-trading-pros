@@ -31,7 +31,7 @@
 	onMount(() => {
 		if (!browser) return;
 		// replaceState so the back button doesn't trap users in a redirect loop.
-		goto('/admin', { replaceState: true });
+		goto('/admin', { replace: true });
 	});
 </script>
 

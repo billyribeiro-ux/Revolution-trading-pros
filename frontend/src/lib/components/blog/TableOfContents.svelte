@@ -7,6 +7,9 @@
 	import { browser } from '$app/env';
 	import { onMount, untrack } from 'svelte';
 	import Icon from '#lib/components/Icon.svelte';
+	// Parses without executing anything and returns the same text during SSR
+	// and in the browser, so heading ids hydrate unchanged.
+	import { stripHtml } from '#lib/utils/sanitize.js';
 
 	interface ContentBlock {
 		type: string;
@@ -94,14 +97,6 @@
 			'toc-item-grandchild': variant === 'grandchild',
 			active: isActive
 		};
-	}
-
-	// Extract text from potentially HTML content
-	function stripHtml(html: string): string {
-		if (!browser) return html;
-		const tmp = document.createElement('div');
-		tmp.innerHTML = html;
-		return tmp.textContent || tmp.innerText || '';
 	}
 
 	// Generate slug from text

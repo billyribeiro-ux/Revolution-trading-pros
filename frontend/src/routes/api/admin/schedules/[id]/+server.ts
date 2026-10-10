@@ -10,7 +10,7 @@
  * @version 2.0.0
  */
 
-import { json, error as kitError } from '@sveltejs/kit';
+import { error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -80,14 +80,14 @@ export const GET: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(result.data);
+		return Response.json(result.data);
 	}
 
 	if (result.reachable) {
 		kitError(result.status, extractErrorMessage(result.data, 'Schedule not found'));
 	}
 
-	return json(
+	return Response.json(
 		{ success: false, error: 'Schedules backend is not reachable.', _degraded: true },
 		{ status: 503 }
 	);
@@ -109,14 +109,14 @@ export const PUT: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(result.data);
+		return Response.json(result.data);
 	}
 
 	if (result.reachable) {
 		kitError(result.status, extractErrorMessage(result.data, 'Failed to update schedule'));
 	}
 
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Schedules backend is not reachable. Schedule was NOT updated.',
@@ -140,14 +140,14 @@ export const DELETE: RequestHandler = async (event) => {
 	});
 
 	if (result.reachable && result.status >= 200 && result.status < 300) {
-		return json(result.data);
+		return Response.json(result.data);
 	}
 
 	if (result.reachable) {
 		kitError(result.status, extractErrorMessage(result.data, 'Failed to delete schedule'));
 	}
 
-	return json(
+	return Response.json(
 		{
 			success: false,
 			error: 'Schedules backend is not reachable. Schedule was NOT deleted.',

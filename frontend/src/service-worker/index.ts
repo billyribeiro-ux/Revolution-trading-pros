@@ -44,17 +44,16 @@
 // arrays are `immutable` and `assets`, each an array of `{ path }` objects
 // rather than bare strings.
 //
-// `version` deliberately does NOT come from `$app/env`. That export is
-// `BROWSER ? payload.version : __SVELTEKIT_APP_VERSION__`, and `payload` is
-// only populated by the client app boot, never in a ServiceWorkerGlobalScope —
-// so inside this file it is `undefined`, which would pin every cache name to
-// `cache-undefined` on every deploy and turn the `activate` purge below into a
-// permanent no-op. `__APP_VERSION__` is injected by Vite's `define` (see
-// vite.config.ts), which the service-workers docs specify is applied to the
-// worker bundle, and is fed from the same value as `kit.version.name`.
+// `version` comes from `$app/env`, as in the official service-workers docs.
+// Under 3.0.0-next.23 that export was `undefined` inside a
+// ServiceWorkerGlobalScope (it read a payload only the client boot populated),
+// so this file used a Vite-`define`d `__APP_VERSION__` instead. SvelteKit
+// 3.0.1's worker build prepends `globalThis.__sveltekit_<hash> = { base, env,
+// version }` and defines `__SVELTEKIT_PAYLOAD__` as that global, so the export
+// is now the real `config.version.name` — verified in the built
+// `service-worker.js` against `_app/version.json` on 2026-10-09.
+import { version } from '$app/env';
 import { immutable, assets } from '$app/manifest';
-
-const version = __APP_VERSION__;
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 

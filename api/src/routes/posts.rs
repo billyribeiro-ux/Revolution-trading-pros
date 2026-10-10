@@ -15,7 +15,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{middleware::admin::AdminUser, utils::html, AppState};
 
 /// Post list query
 #[derive(Debug, Deserialize)]
@@ -193,6 +193,15 @@ async fn sync_post_tags(
     Ok(())
 }
 
+/// Public responses carry author-written HTML in `content_blocks`; it is
+/// sanitized on the way out (see `utils::html`). Admin endpoints return it as
+/// stored so the editor round-trips exactly what was written.
+fn sanitize_for_public(post: &mut PostRow) {
+    if let Some(blocks) = post.content_blocks.as_mut() {
+        html::sanitize_content_blocks(blocks);
+    }
+}
+
 /// List published posts (public)
 async fn list_posts(
     State(state): State<AppState>,
@@ -211,7 +220,7 @@ async fn list_posts(
         .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
 
     // Fetch posts with proper parameterized query
-    let posts: Vec<PostRow> = if let Some(ref pattern) = search_pattern {
+    let mut posts: Vec<PostRow> = if let Some(ref pattern) = search_pattern {
         if let Some(author_id) = query.author_id {
             sqlx::query_as(
                 "SELECT * FROM posts WHERE status = $1 AND author_id = $2 AND (title ILIKE $3 OR excerpt ILIKE $3) ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT $4 OFFSET $5"
@@ -254,6 +263,7 @@ async fn list_posts(
         .fetch_all(&state.db.pool)
         .await
     }.map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    posts.iter_mut().for_each(sanitize_for_public);
 
     // Count total with same filters
     let total: (i64,) = if let Some(ref pattern) = search_pattern {
@@ -332,7 +342,7 @@ async fn get_post(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let post: PostRow =
+    let mut post: PostRow =
         sqlx::query_as("SELECT * FROM posts WHERE slug = $1 AND status = 'published'")
             .bind(&slug)
             .fetch_optional(&state.db.pool)
@@ -350,6 +360,7 @@ async fn get_post(
                 )
             })?;
 
+    sanitize_for_public(&mut post);
     let (categories, tags) = load_post_taxonomy(&state.db.pool, post.id)
         .await
         .unwrap_or_default();
@@ -916,7 +927,7 @@ async fn get_related_posts(
     })?;
 
     // If no related posts found via tags/category, fall back to recent posts.
-    let final_related = if related.is_empty() {
+    let mut final_related: Vec<PostRow> = if related.is_empty() {
         sqlx::query_as(
             r"
             SELECT * FROM posts
@@ -938,6 +949,7 @@ async fn get_related_posts(
         related
     };
 
+    final_related.iter_mut().for_each(sanitize_for_public);
     Ok(Json(json!({ "data": final_related })))
 }
 

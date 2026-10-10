@@ -4,7 +4,6 @@
  * This ensures the PWA manifest is always available regardless of static file serving
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const manifest = {
@@ -126,7 +125,7 @@ const manifest = {
 };
 
 export const GET: RequestHandler = async () => {
-	return json(manifest, {
+	return Response.json(manifest, {
 		headers: {
 			'Content-Type': 'application/manifest+json',
 			'Cache-Control': 'public, max-age=86400'

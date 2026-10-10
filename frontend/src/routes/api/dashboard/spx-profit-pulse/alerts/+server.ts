@@ -8,7 +8,6 @@
  * @version 1.0.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -165,7 +164,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const start = (page - 1) * perPage;
 		const items = alerts.slice(start, start + perPage);
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				data: {
@@ -184,6 +183,6 @@ export const GET: RequestHandler = async ({ url }) => {
 		);
 	} catch (error) {
 		console.error('[SPX Alerts API] Error:', error);
-		return json({ success: false, error: 'Failed to fetch alerts' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to fetch alerts' }, { status: 500 });
 	}
 };

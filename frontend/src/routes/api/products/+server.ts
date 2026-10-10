@@ -3,7 +3,7 @@
  * Forwards requests to backend /api/products endpoint
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -32,10 +32,10 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		const data = await response.json();
 
 		if (!response.ok) {
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		}
 
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		console.error('[API Proxy] Failed to fetch products:', err);
 		return error(500, 'Failed to fetch products');

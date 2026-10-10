@@ -121,7 +121,7 @@ fn users_router_builds_with_app_state() {
 
 /// Constructing `router()` repeatedly MUST NOT panic. Per CLAUDE.md
 /// habit #3 ("does any `static` / `OnceLock` / lazy init survive
-/// the refactor?"), this module has NO `lazy_static` / `OnceLock`
+/// the refactor?"), this module has NO `LazyLock` / `OnceLock`
 /// at all — it's purely a routing surface over SQL handlers.
 ///
 /// A regression that introduced a module-cached `OnceLock<Vec<i64>>`

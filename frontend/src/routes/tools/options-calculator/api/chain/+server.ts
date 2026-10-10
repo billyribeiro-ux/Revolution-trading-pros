@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { POLYGON_API_KEY } from '$app/env/private';
 
@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 			const underlyingPrice = results[0]?.underlying_asset?.price ?? 0;
 
-			return json({
+			return Response.json({
 				underlying: ticker,
 				underlyingPrice,
 				expiration,

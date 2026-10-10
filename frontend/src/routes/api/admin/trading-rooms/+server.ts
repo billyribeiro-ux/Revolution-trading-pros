@@ -12,7 +12,7 @@
  * @version 2.1.0 — 2026-05-20
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { requireAdmin } from '#lib/server/auth.js';
@@ -37,14 +37,14 @@ export const GET: RequestHandler = async (event) => {
 	);
 
 	if (status >= 400 || !data) {
-		return json({
+		return Response.json({
 			success: false,
 			data: [],
 			error: 'Failed to fetch trading rooms from backend'
 		});
 	}
 
-	return json(data);
+	return Response.json(data);
 };
 
 // POST - Create trading room
@@ -74,7 +74,7 @@ export const POST: RequestHandler = async (event) => {
 			error(status, extractBackendErrorMessage(data, 'Failed to create trading room'));
 		}
 
-		return json(data);
+		return Response.json(data);
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('POST /api/admin/trading-rooms error:', err);

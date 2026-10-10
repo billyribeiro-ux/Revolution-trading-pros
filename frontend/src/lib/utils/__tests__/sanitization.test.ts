@@ -236,9 +236,8 @@ describe('sanitizeText', () => {
 		const input = 'Before<script>evil()</script>After';
 		const result = sanitizeText(input);
 		expect(result).not.toMatch(/<script/i);
-		// DOMPurify with KEEP_CONTENT keeps script text — source uses DOMPurify
-		// which for ALLOWED_TAGS:[] with KEEP_CONTENT keeps text node content
-		// The important thing: no HTML tags remain
+		// Script bodies are dropped with the element; no HTML tags remain.
+		expect(result).toBe('BeforeAfter');
 		expect(result).not.toMatch(/<[^>]+>/);
 	});
 

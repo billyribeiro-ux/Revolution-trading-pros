@@ -10,7 +10,7 @@
  * @module api/consent/sync
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 /**
@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		console.info(`[ConsentAPI] Saved consent: ${consentId} for user: ${userId || 'anonymous'}`);
 
-		return json({
+		return Response.json({
 			success: true,
 			consentId,
 			serverTimestamp: now,
@@ -115,7 +115,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			error(404, 'Consent not found');
 		}
 
-		return json({
+		return Response.json({
 			success: true,
 			consent: {
 				consentId: record.consentId,
@@ -167,7 +167,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		console.info(`[ConsentAPI] Deleted consent for: ${userId || consentId}`);
 
-		return json({
+		return Response.json({
 			success: true,
 			message: 'Consent deleted successfully'
 		});

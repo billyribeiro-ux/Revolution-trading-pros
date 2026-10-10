@@ -64,7 +64,7 @@
 	import { getCartItemCount } from '#lib/stores/cart.svelte.js';
 	import { logout as logoutApi } from '#lib/api/auth.js';
 
-	// FIX-2026-05-19 (maint-round1): replaced 10 legacy `$user`/`$isAuthenticated` autosubscribes across 8 sites with `.current` rune-getters — mirrors AdminSidebar FIX-2026-04-26 to prevent `effect_update_depth_exceeded` on post-login `goto({ invalidateAll: true })` flush.
+	// FIX-2026-05-19 (maint-round1): replaced 10 legacy `$user`/`$isAuthenticated` autosubscribes across 8 sites with `.current` rune-getters — mirrors AdminSidebar FIX-2026-04-26 to prevent `effect_update_depth_exceeded` on post-login `goto({ refreshAll: true })` flush.
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DEFAULT CONFIGURATION (Must be before Props destructuring)

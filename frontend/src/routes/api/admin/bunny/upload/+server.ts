@@ -11,7 +11,7 @@
  * @version 1.0.0 - ICT 7 Principal Engineer Grade
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import {
 	API_BASE_URL,
@@ -70,7 +70,7 @@ export const PUT: RequestHandler = async (event) => {
 		}
 
 		const result = await response.json();
-		return json(result);
+		return Response.json(result);
 	} catch (err) {
 		console.error('[Bunny Upload] Error:', err);
 		if (err instanceof Error && 'status' in err) {

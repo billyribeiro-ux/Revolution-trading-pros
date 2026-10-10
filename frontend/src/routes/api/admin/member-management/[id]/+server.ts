@@ -5,7 +5,6 @@
  * @version 1.0.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -34,18 +33,21 @@ export const DELETE: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+			return Response.json(
+				{ error: 'Empty response from server' },
+				{ status: response.status || 500 }
+			);
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({ error: 'Invalid response from server' }, { status: 500 });
+			return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
 		console.error('[API] Delete member error:', error);
-		return json({ error: 'Failed to delete member' }, { status: 500 });
+		return Response.json({ error: 'Failed to delete member' }, { status: 500 });
 	}
 };
 
@@ -70,18 +72,21 @@ export const GET: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+			return Response.json(
+				{ error: 'Empty response from server' },
+				{ status: response.status || 500 }
+			);
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({ error: 'Invalid response from server' }, { status: 500 });
+			return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
 		console.error('[API] Get member error:', error);
-		return json({ error: 'Failed to get member' }, { status: 500 });
+		return Response.json({ error: 'Failed to get member' }, { status: 500 });
 	}
 };
 
@@ -108,17 +113,20 @@ export const PUT: RequestHandler = async (event) => {
 
 		const text = await response.text();
 		if (!text) {
-			return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+			return Response.json(
+				{ error: 'Empty response from server' },
+				{ status: response.status || 500 }
+			);
 		}
 
 		try {
 			const data = JSON.parse(text);
-			return json(data, { status: response.status });
+			return Response.json(data, { status: response.status });
 		} catch {
-			return json({ error: 'Invalid response from server' }, { status: 500 });
+			return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 		}
 	} catch (error) {
 		console.error('[API] Update member error:', error);
-		return json({ error: 'Failed to update member' }, { status: 500 });
+		return Response.json({ error: 'Failed to update member' }, { status: 500 });
 	}
 };

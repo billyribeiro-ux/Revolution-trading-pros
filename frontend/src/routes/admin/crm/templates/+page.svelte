@@ -781,7 +781,7 @@
 						<h3>Email Content</h3>
 						<!--
 							Stored XSS guard (audit P1 #8): admin-authored HTML is run through
-							DOMPurify ('rich' profile) before {@html} so an attacker who edits a
+							sanitizeHtml ('rich' profile) before {@html} so an attacker who edits a
 							template can't inject script that runs in another admin's session.
 						-->
 						<div class="preview-frame">

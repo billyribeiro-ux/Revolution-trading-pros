@@ -3,6 +3,7 @@
 //!
 //! Modules:
 //! - errors: Standardized error response utilities
+//! - html: HTML sanitization for author content served by public endpoints
 //!
 //! Authentication utilities:
 //! - Password hashing with Argon2id (OWASP recommended parameters)
@@ -16,6 +17,7 @@
 
 pub mod crypto;
 pub mod errors;
+pub mod html;
 
 use anyhow::Result;
 // argon2 0.6 / password-hash 0.6: `SaltString` and the `rand_core` re-export are

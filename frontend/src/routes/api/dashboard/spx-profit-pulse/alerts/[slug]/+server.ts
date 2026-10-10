@@ -8,7 +8,6 @@
  * @version 1.0.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -176,13 +175,13 @@ export const GET: RequestHandler = async ({ params }) => {
 		const { slug } = params;
 
 		if (!slug) {
-			return json({ success: false, error: 'Slug is required' }, { status: 400 });
+			return Response.json({ success: false, error: 'Slug is required' }, { status: 400 });
 		}
 
 		const date = parseSlugToDate(slug);
 
 		if (!date) {
-			return json({ success: false, error: 'Invalid alert slug' }, { status: 404 });
+			return Response.json({ success: false, error: 'Invalid alert slug' }, { status: 404 });
 		}
 
 		const dateStr = date.toLocaleDateString('en-US', {
@@ -227,7 +226,7 @@ export const GET: RequestHandler = async ({ params }) => {
 			updated_at: date.toISOString()
 		};
 
-		return json(
+		return Response.json(
 			{
 				success: true,
 				data: alert
@@ -240,6 +239,6 @@ export const GET: RequestHandler = async ({ params }) => {
 		);
 	} catch (error) {
 		console.error('[SPX Alert API] Error:', error);
-		return json({ success: false, error: 'Failed to fetch alert' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to fetch alert' }, { status: 500 });
 	}
 };

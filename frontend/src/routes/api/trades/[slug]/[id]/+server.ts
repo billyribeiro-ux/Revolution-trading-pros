@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { TradeUpdateInput } from '#lib/types/trading.js';
 // R19-A: shared proxy helper — pins CLAUDE.md URL-fallback chain
@@ -69,13 +69,13 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	// R19-A: hasSuccess() narrowing instead of `backendData?.success`
 	// (which would throw on a non-null primitive backend response).
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// R22-A: was: look up `tradeId` in `mockTrades[slug]` and return
 	// `_mock: true`. Now: 502 so the trade detail page shows a real error.
 	console.error(`[Trade API] GET backend unavailable for slug '${slug}' id '${id}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to load trade — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -141,7 +141,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		);
 
 		if (backendData) {
-			return json({
+			return Response.json({
 				success: true,
 				data: backendData,
 				message: 'Trade closed successfully',
@@ -161,7 +161,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		);
 
 		if (hasSuccess(backendData) && backendData.success) {
-			return json(backendData);
+			return Response.json(backendData);
 		}
 	}
 
@@ -171,7 +171,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	// P&L. Worst class of mock fallback because the fake P&L numbers
 	// anchored downstream stats rollups. Now: 502.
 	console.error(`[Trade API] PUT backend unavailable for slug '${slug}' id '${id}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to update trade — backend is unavailable.' },
 		{ status: 502 }
 	);
@@ -218,14 +218,14 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	);
 
 	if (hasSuccess(backendData) && backendData.success) {
-		return json(backendData);
+		return Response.json(backendData);
 	}
 
 	// R22-A: was: splice `mockTrades[slug]` and return 200. The DB row was
 	// untouched — admins saw "Trade deleted" but the row was still live on
 	// the trades page in the next request. Now: 502.
 	console.error(`[Trade API] DELETE backend unavailable for slug '${slug}' id '${id}'`);
-	return json(
+	return Response.json(
 		{ success: false, error: 'Unable to delete trade — backend is unavailable.' },
 		{ status: 502 }
 	);

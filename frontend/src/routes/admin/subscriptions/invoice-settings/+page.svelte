@@ -15,7 +15,7 @@
 	// FIX-2026-04-26 (audit 02 §P3-8): the invoice preview HTML is generated
 	// from a server template that interpolates Stripe webhook payloads and
 	// admin-uploaded company info. Trust boundary is "our own backend" but
-	// not zero, so route through DOMPurify (`sanitizeHtml`, profile `rich`)
+	// not zero, so route through `sanitizeHtml` (profile `rich`)
 	// before `{@html}`.
 	import { sanitizeHtml } from '#lib/utils/sanitize.js';
 
@@ -817,7 +817,7 @@
 				</div>
 				<div class="preview-modal-body">
 					<div class="preview-document">
-						<!-- FIX-2026-04-26 (audit 02 §P3-8): DOMPurify sanitization. -->
+						<!-- FIX-2026-04-26 (audit 02 §P3-8): sanitized with sanitizeHtml. -->
 						{@html sanitizeHtml(previewHtml, 'rich')}
 					</div>
 				</div>

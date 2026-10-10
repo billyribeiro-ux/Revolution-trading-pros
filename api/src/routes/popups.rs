@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::models::popup::{DisplayRules, FrequencyRules, PopupDesign, TriggerRules};
-use crate::AppState;
+use crate::{utils::html, AppState};
 
 /// Query params for active popups
 #[derive(Debug, Deserialize)]
@@ -208,9 +208,9 @@ async fn get_active_popups(
                 name: popup.name.clone(),
                 popup_type: popup.popup_type.clone(),
                 title: popup.title.clone(),
-                content: popup.content.clone(),
+                content: popup.content.as_deref().map(html::sanitize_html),
                 cta_text: popup.cta_text.clone(),
-                cta_url: popup.cta_url.clone(),
+                cta_url: popup.cta_url.clone().filter(|url| html::is_safe_url(url)),
                 cta_new_tab: popup.cta_new_tab,
                 position: popup.position.clone(),
                 size: popup.size.clone(),

@@ -3,7 +3,7 @@
  * ICT 7 Grade - Routes requests to Rust API backend
  */
 
-import { json, error, isHttpError } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdminToken } from '#lib/server/auth.js';
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
@@ -65,13 +65,16 @@ export const GET: RequestHandler = async (event) => {
 			// FIX-2026-04-26 (P1-1): propagate 401 so the page can prompt re-login
 			// instead of rendering "0 courses" forever.
 			if (response.status === 401) error(401, wrapped.error || 'Unauthorized');
-			return json(wrapped, { status: response.status });
+			return Response.json(wrapped, { status: response.status });
 		}
-		return json(wrapped);
+		return Response.json(wrapped);
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin courses list error:', err);
-		return json({ success: false, error: 'Failed to fetch courses', data: null }, { status: 500 });
+		return Response.json(
+			{ success: false, error: 'Failed to fetch courses', data: null },
+			{ status: 500 }
+		);
 	}
 };
 
@@ -93,10 +96,10 @@ export const POST: RequestHandler = async (event) => {
 
 		const raw = await response.json().catch(() => null);
 		const wrapped = envelope(raw, response.status);
-		return json(wrapped, { status: response.status });
+		return Response.json(wrapped, { status: response.status });
 	} catch (err) {
 		if (isHttpError(err)) throw err;
 		console.error('[API] Admin courses create error:', err);
-		return json({ success: false, error: 'Failed to create course' }, { status: 500 });
+		return Response.json({ success: false, error: 'Failed to create course' }, { status: 500 });
 	}
 };

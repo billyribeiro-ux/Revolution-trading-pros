@@ -60,7 +60,7 @@
 			url.searchParams.set('category', categoryId);
 		}
 		url.searchParams.delete('page'); // Reset to page 1
-		goto(url.toString(), { replaceState: true });
+		goto(url.toString(), { replace: true });
 	}
 
 	// Navigate to page
@@ -72,7 +72,7 @@
 			} else {
 				url.searchParams.set('page', pageNum.toString());
 			}
-			goto(url.toString(), { replaceState: true });
+			goto(url.toString(), { replace: true });
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}

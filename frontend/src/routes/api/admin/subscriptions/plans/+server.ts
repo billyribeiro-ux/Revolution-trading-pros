@@ -7,7 +7,6 @@
  * `/admin/subscriptions/plans`. The proxy was missing entirely.
  */
 
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from '#lib/server/auth.js';
@@ -17,13 +16,16 @@ const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 async function relayResponse(response: Response): Promise<Response> {
 	const text = await response.text();
 	if (!text) {
-		return json({ error: 'Empty response from server' }, { status: response.status || 500 });
+		return Response.json(
+			{ error: 'Empty response from server' },
+			{ status: response.status || 500 }
+		);
 	}
 	try {
 		const data = JSON.parse(text);
-		return json(data, { status: response.status });
+		return Response.json(data, { status: response.status });
 	} catch {
-		return json({ error: 'Invalid response from server' }, { status: 500 });
+		return Response.json({ error: 'Invalid response from server' }, { status: 500 });
 	}
 }
 
@@ -44,7 +46,7 @@ export const GET: RequestHandler = async (event) => {
 		return relayResponse(response);
 	} catch (err) {
 		console.error('[API Proxy] List subscription plans error:', err);
-		return json({ error: 'Failed to load subscription plans' }, { status: 500 });
+		return Response.json({ error: 'Failed to load subscription plans' }, { status: 500 });
 	}
 };
 
@@ -65,6 +67,6 @@ export const POST: RequestHandler = async (event) => {
 		return relayResponse(response);
 	} catch (err) {
 		console.error('[API Proxy] Create subscription plan error:', err);
-		return json({ error: 'Failed to create subscription plan' }, { status: 500 });
+		return Response.json({ error: 'Failed to create subscription plan' }, { status: 500 });
 	}
 };
