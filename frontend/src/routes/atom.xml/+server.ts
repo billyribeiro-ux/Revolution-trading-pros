@@ -20,6 +20,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL } from '#lib/api/config.js';
 import type { Post, PaginatedPosts } from '#lib/types/post.js';
+import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -112,7 +113,7 @@ function contentBlocksToHtml(blocks: unknown[] | null): string {
 		return '';
 	}
 
-	return blocks
+	const html = blocks
 		.map((rawBlock) => {
 			if (typeof rawBlock === 'string') {
 				return `<p>${rawBlock}</p>`;
@@ -162,6 +163,10 @@ function contentBlocksToHtml(blocks: unknown[] | null): string {
 		})
 		.filter(Boolean)
 		.join('\n');
+
+	// Blocks are author input interpolated as raw markup above. The assembled HTML
+	// goes through the same sanitizer as the blog page before any feed reader sees it.
+	return sanitizeBlogContent(html);
 }
 
 /**

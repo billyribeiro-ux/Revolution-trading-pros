@@ -21,6 +21,7 @@
 import type { RequestHandler } from './$types';
 import { API_BASE_URL } from '#lib/api/config.js';
 import type { Post, PaginatedPosts } from '#lib/types/post.js';
+import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -135,7 +136,7 @@ function contentBlocksToHtml(blocks: Array<string | ContentBlock> | null): strin
 		return '';
 	}
 
-	return blocks
+	const html = blocks
 		.map((block) => {
 			if (typeof block === 'string') {
 				return `<p>${block}</p>`;
@@ -178,6 +179,10 @@ function contentBlocksToHtml(blocks: Array<string | ContentBlock> | null): strin
 		})
 		.filter(Boolean)
 		.join('\n');
+
+	// Blocks are author input interpolated as raw markup above. The assembled HTML
+	// goes through the same sanitizer as the blog page before any feed reader sees it.
+	return sanitizeBlogContent(html);
 }
 
 /**
