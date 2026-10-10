@@ -139,7 +139,7 @@ export const CASES: readonly SanitizeCase[] = [
 		expected: '<p>Text <sub>1</sub>l</p>'
 	},
 	{
-		name: 'custom mode allows embeds from any https origin and validates srcset',
+		name: 'custom mode allows embeds from any host with an allowed scheme and validates srcset',
 		policy: 'modeCustom',
 		html: '<iframe src="https://any.example/e" sandbox="allow-scripts" allow="fullscreen">f</iframe><iframe src="javascript:alert(1)"></iframe><img src="/a.png" srcset="/a.png 1x, javascript:alert(1) 2x"><picture><source srcset="/a.webp 1x, /b.webp 2x" type="image/webp"><img src="/a.png"></picture>',
 		expected:

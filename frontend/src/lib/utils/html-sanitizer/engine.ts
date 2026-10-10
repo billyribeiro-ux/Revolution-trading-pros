@@ -17,7 +17,12 @@
  *
  * Because every step after parsing is the same code on both sides, a page's
  * server-rendered `{@html}` content is byte-identical to what the client
- * computes during hydration.
+ * computes during hydration — for any input both parsers build the same tree
+ * from. They do for all content markup. The known exception is `<select>`:
+ * Chromium already implements the relaxed select parsing that parse5 8 does
+ * not, which can change where a malformed select ends. Both outputs are still
+ * sanitized; the worst case is a dev-mode `hydration_html_changed` warning.
+ * `pnpm test:sanitizer:browser` re-checks parity against real Chromium.
  *
  * This replaces `isomorphic-dompurify`, whose browser build — the one
  * Cloudflare's workerd resolves — throws at import time without a DOM and took
@@ -109,6 +114,23 @@ function normalizeUrl(value: string): string {
 	return result;
 }
 
+/** The lowercased scheme of a URL, or `null` for a relative URL. */
+function urlScheme(url: string): string | null {
+	const match = SCHEME.exec(url);
+	return match ? match[1].toLowerCase() : null;
+}
+
+/**
+ * Whether a bare URL (one going straight into an `href` or `src`, not through
+ * the HTML sanitizer) is relative or uses one of `schemes`. The scheme is read
+ * after WHATWG normalization, so `java\tscript:` and ` JAVASCRIPT:` are seen
+ * for what they are.
+ */
+export function isSafeUrl(value: string, schemes: readonly string[]): boolean {
+	const scheme = urlScheme(normalizeUrl(value));
+	return scheme === null || schemes.includes(scheme);
+}
+
 function isAllowedUrl(
 	value: string,
 	tagName: string,
@@ -116,9 +138,8 @@ function isAllowedUrl(
 	policy: HtmlSanitizePolicy
 ): boolean {
 	const url = normalizeUrl(value);
-	const match = SCHEME.exec(url);
-	if (!match) return true; // relative URL
-	const scheme = match[1].toLowerCase();
+	const scheme = urlScheme(url);
+	if (scheme === null) return true; // relative URL
 	if (policy.urlSchemes.includes(scheme)) return true;
 	if (scheme === 'data' && property === 'src') {
 		const media = DATA_URL_MEDIA[tagName];
@@ -225,12 +246,29 @@ function toRoot(tree: ReturnType<typeof sanitize>): Root {
 	return { type: 'root', children: [tree] };
 }
 
+/**
+ * The tree walks recurse once per nesting level. The server parser caps depth
+ * the way Chromium's does, but a browser whose parser does not could hand over
+ * a tree deep enough to exhaust the stack. Fail closed — render nothing — rather
+ * than throw: a throw during SSR is a 500 for the whole page.
+ */
+function failClosedOnStackOverflow(run: () => string): string {
+	try {
+		return run();
+	} catch (error) {
+		if (error instanceof RangeError) return '';
+		throw error;
+	}
+}
+
 /** Sanitizes an HTML fragment under `policy` and returns safe HTML. */
 export function sanitizeWithPolicy(html: string, policy: HtmlSanitizePolicy): string {
 	if (!html) return '';
-	const tree = toRoot(sanitize(parseHtmlFragment(html), schemaFor(policy)));
-	tree.children = hardenChildren(tree.children, policy);
-	return toHtml(tree, { characterReferences: { useNamedReferences: true } });
+	return failClosedOnStackOverflow(() => {
+		const tree = toRoot(sanitize(parseHtmlFragment(html), schemaFor(policy)));
+		tree.children = hardenChildren(tree.children, policy);
+		return toHtml(tree, { characterReferences: { useNamedReferences: true } });
+	});
 }
 
 /**
@@ -241,6 +279,8 @@ export function sanitizeWithPolicy(html: string, policy: HtmlSanitizePolicy): st
  */
 export function extractText(html: string): string {
 	if (!html) return '';
-	const tree = toRoot(sanitize(parseHtmlFragment(html), schemaFor(TEXT_ONLY)));
-	return tree.children.map((child) => (child.type === 'text' ? child.value : '')).join('');
+	return failClosedOnStackOverflow(() => {
+		const tree = toRoot(sanitize(parseHtmlFragment(html), schemaFor(TEXT_ONLY)));
+		return tree.children.map((child) => (child.type === 'text' ? child.value : '')).join('');
+	});
 }

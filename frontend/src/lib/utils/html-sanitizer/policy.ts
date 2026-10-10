@@ -58,9 +58,11 @@ export interface HtmlSanitizePolicy {
  * style bodies, foreign SVG/MathML content, raw-text and template-like
  * elements, media fallback content), plus:
  * - plugin elements (`object`, `embed`, `applet`), whose content is fallback;
- * - `select`, whose content model browsers are relaxing ahead of parse5
- *   (Chromium already parses arbitrary elements inside `<option>`), so the
- *   server and browser parsers can disagree about what is inside it.
+ * - `select`, whose parsing browsers are relaxing ahead of parse5 (Chromium
+ *   already parses arbitrary elements inside `<option>`). Dropping it removes
+ *   the disagreement about what is inside a select, but not about where a
+ *   malformed one ends, so `<select>` input is the one known case where the
+ *   server and browser outputs can differ (both still sanitized).
  */
 export const DROP_WITH_CONTENT: readonly string[] = [
 	'annotation-xml',
@@ -339,7 +341,7 @@ export const MODES = {
 		links: 'secure-blank-targets',
 		iframeHosts: null
 	},
-	/** Admin-authored raw HTML blocks: adds media and embeds from any https host. */
+	/** Admin-authored raw HTML blocks: adds media, and embeds from any host whose URL passes `urlSchemes`. */
 	custom: {
 		elements: [
 			...DOCUMENT_ELEMENTS,

@@ -12,7 +12,7 @@
  * @security Critical - prevents XSS vulnerabilities
  */
 
-import { extractText, sanitizeWithPolicy } from '#lib/utils/html-sanitizer/engine.js';
+import { extractText, isSafeUrl, sanitizeWithPolicy } from '#lib/utils/html-sanitizer/engine.js';
 import { PROFILES } from '#lib/utils/html-sanitizer/policy.js';
 
 export type SanitizeProfile = keyof typeof PROFILES;
@@ -85,6 +85,21 @@ export function sanitizeVideoOverlay(html: string | null | undefined): string {
 export function stripHtml(html: string | null | undefined): string {
 	if (!html) return '';
 	return extractText(html);
+}
+
+/** Schemes a bare link may use; relative URLs are always allowed. */
+const LINK_SCHEMES = ['http', 'https', 'mailto', 'tel'] as const;
+
+/**
+ * Validate a URL that goes straight into an `href` or `src` attribute (not
+ * through the HTML sanitizer). Returns the URL unchanged when it is relative —
+ * `/path`, `#anchor`, `../up`, `?query` — or uses http(s), mailto or tel, and
+ * an empty string otherwise (so `javascript:` in any spelling never reaches
+ * the attribute).
+ */
+export function safeUrl(url: string | null | undefined): string {
+	if (!url) return '';
+	return isSafeUrl(url, LINK_SCHEMES) ? url : '';
 }
 
 /**

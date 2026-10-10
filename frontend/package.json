@@ -33,6 +33,7 @@
 		"test:unit:watch": "vitest watch",
 		"test:coverage": "vitest run --coverage",
 		"test:a11y": "playwright test tests/accessibility --project=chromium",
+		"test:sanitizer:browser": "node scripts/sanitizer-differential.js",
 		"test:ci": "npm run test:unit",
 		"analyze": "vite-bundle-visualizer",
 		"deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy .svelte-kit/cloudflare",

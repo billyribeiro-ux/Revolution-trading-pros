@@ -74,6 +74,14 @@ describe('html sanitizer — browser parser', () => {
 		});
 	});
 
+	it('never throws on pathologically deep input', () => {
+		// jsdom's parser, unlike Chromium's, does not cap depth; the engine must
+		// fail closed rather than throw out of a render.
+		const html = '<span>'.repeat(2000) + 'x';
+		expect(() => sanitizeWithPolicy(html, POLICIES.standard)).not.toThrow();
+		expect(typeof extractText(html)).toBe('string');
+	});
+
 	describe('parsers agree', () => {
 		const inputs = [...CASES.map(({ html }) => html), ...XSS_PAYLOADS];
 		it.each(inputs)('builds the same tree on server and browser for %s', (html) => {
