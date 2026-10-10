@@ -16,8 +16,9 @@ on the upgrade branch alike. Production hid this behind maintenance mode.
 export, `dist/browser.mjs`, which calls `DOMPurify.sanitize.bind(…)` at import
 time. Without a DOM, DOMPurify has no `sanitize`, so that call throws while the
 module initializes. The root layout reached the module through
-`#lib/consent/index.js` → `templates` barrel → `TemplateEditor` →
-`#lib/utils/sanitize.js`, so every non-prerendered page failed before it rendered.
+`#lib/consent/index.js` → `templates` barrel → `BannerRenderer.svelte` →
+`#lib/sanitize.js` → `#lib/utils/sanitize.js`, so every non-prerendered page
+failed before it rendered.
 
 ### Frontend: one sanitizer engine for SSR and the browser
 
@@ -37,11 +38,30 @@ module initializes. The root layout reached the module through
   - **Bundle routing:** a conditional subpath import in `frontend/package.json`
     (`#lib/utils/html-sanitizer/parse-fragment.js`, with `browser`/`default`
     conditions) keeps parse5 out of the client bundle. Client cost versus
-    DOMPurify: +4.1 KB gzipped (15.8 vs 11.7 KB).
+    DOMPurify: +8.8 KB gzipped (20.4 vs 11.7 KB). Both are esbuild-minified
+    browser bundles compressed with gzip -9; the generated clobber-name set is
+    about 2.7 KB of it.
+  - **Depth capped like Chromium.** parse5 has no nesting limit, and every tree
+    walk recurses once per level, so a few thousand nested tags exhausted the
+    stack on the server. The server parser now applies Chromium/WebKit's
+    `kMaximumHTMLParserDOMTreeDepth` rule (512) through a parse5 tree adapter:
+    past the limit, an element attaches to its parent's parent, and text stays
+    on the current node. The server tree is therefore bounded and identical to
+    the one `DOMParser` builds. As a backstop, the engine fails closed (returns
+    an empty string) on a `RangeError`, for browsers whose parser does not cap
+    depth.
 - **Byte-identical output, so `{@html}` hydrates cleanly.** Pairing DOMPurify in
   the browser with a different server sanitizer would serialize differently and
   trip Svelte's dev-mode `hydration_html_changed` on every sanitized block. So
-  both sides run the same code after parsing.
+  both sides run the same code after parsing. There is one known exception:
+  input containing `<select>`. Chromium already implements the relaxed select
+  parsing that parse5 8 does not, and that can change where a malformed select
+  *ends*, not only what it contains. Both outputs are still sanitized; the worst
+  case is a dev-mode hydration warning. **`pnpm test:sanitizer:browser`**
+  (`frontend/scripts/sanitizer-differential.js`) re-checks parity against real
+  Chromium. It bundles the shipped engine both ways and compares a committed
+  corpus (`differential-corpus.json`) plus the Vitest fixtures across every
+  policy, then audits the live DOM.
 - **Policies** (`policy.ts`) mirror the existing DOMPurify configs: profiles
   `strict` / `standard` / `rich` / `minimal`, and `sanitizeHTML` modes
   `default` / `strict` / `custom`. They keep DOMPurify's defaults: ARIA
@@ -61,13 +81,25 @@ module initializes. The root layout reached the module through
   - **More elements dropped with their content:** `select` and
     `object`/`embed`/`applet`. Chromium already parses arbitrary content inside
     `<option>`; parse5 does not yet.
+  - **`SAFE_FOR_TEMPLATES` not carried over.** The three `sanitizeHTML` modes
+    used to blank `{{…}}`, `${…}` and `<%…%>` template expressions in text and
+    attributes. That guards against client-side template engines (Angular, Vue
+    in-DOM templates) evaluating sanitized markup. Svelte's `{@html}` never
+    evaluates templates, and nothing else here processes this markup, so the
+    setting protected nothing while destroying legitimate content such as a
+    `${price}` code sample.
   - **`stripHtml` / `sanitizeText` return plain text.** Previously they returned
     HTML-escaped text, which double-escaped `&` wherever it was interpolated.
   - **DOMPurify-typed `config` option removed** from `sanitizeHTML`. Nothing
     passed it.
-- **Public API unchanged.** `#lib/utils/sanitize.js` and
-  `#lib/utils/sanitization.js` keep their exports, so none of the 45 call sites
-  changed.
+- **Public functions unchanged.** Every sanitizing function of
+  `#lib/utils/sanitize.js` and `#lib/utils/sanitization.js` keeps its name and
+  signature, so none of the 47 modules that imported them at the base commit
+  had to change how it calls them. The exception is the DOMPurify `Config`
+  objects that `sanitization.ts` exported (`defaultSanitizationConfig`,
+  `strictSanitizationConfig`, `customHTMLConfig`). They are replaced by
+  `sanitizationModes`, the new policy objects; nothing imported the old names.
+  `sanitize.ts` gains `safeUrl` (below).
 - **Removed:** `isomorphic-dompurify` and `dompurify`, which also takes `jsdom`
   out of production dependencies. Added `@types/hast` 3.0.5 and
   `property-information` 7.2.0.
@@ -83,9 +115,17 @@ module initializes. The root layout reached the module through
     Before, SSR returned the raw markup, so the server and the client computed
     different ids.
   - `video`/`embed` blocks put `data.url` straight into `<iframe src>`;
-    `button` blocks put it into `<a href>`. Both now go through `sanitizeURL`.
-    CSP `script-src` (no `'unsafe-inline'`) already blocked `javascript:` URLs
-    in production.
+    `button` blocks put it into `<a href>`. Both now go through the new
+    `safeUrl`. It keeps every relative URL (`#section`, `../x`, `?q=`) and
+    http(s)/mailto/tel, and returns `''` for anything else, reading the scheme
+    after WHATWG normalization so `java\tscript:` is caught. CSP `script-src`
+    (no `'unsafe-inline'`) already blocked `javascript:` URLs in production.
+- **RSS/Atom feeds sanitized.** `/feed.xml` and `/atom.xml` interpolate block
+  fields straight into markup: `<p>${block.text}</p>`,
+  `<img src="${block.url}">`, `<h${block.level}>`, and raw `html` blocks. The
+  assembled HTML now goes through `sanitizeBlogContent` before any feed reader
+  sees it. Both routes render dynamically in workerd, where the sanitizer now
+  runs.
 - **Vitest setup split.** DOM mocks moved to `src/test/setup-dom.ts`, loaded
   only when a DOM exists. That lets `// @vitest-environment node` suites run
   server code with no `document` or `window`.
@@ -103,12 +143,21 @@ module initializes. The root layout reached the module through
 - **Sanitized on read, not on write.** Stored content stays exactly as authored
   (the editor round-trips it). Every existing row is covered immediately, and
   the policy can change without a data migration.
-- **Content blocks are sanitized by block type.** `text` is sanitized only
-  where the blog renders it as HTML (paragraph, heading, quote, pullquote,
-  callout). Code and button blocks render `text` as plain text, and escaping it
-  would corrupt it. Nested `blocks`/`children`/`columns` are walked. URL fields
-  (`url`, `href`, `mediaUrl`, `embedUrl`, `linkUrl`, `backgroundImage`) are
-  dropped unless they are relative or http(s)/mailto/tel.
+- **Content blocks are sanitized for the renderer that reads them.**
+  - The blog page reads the nested payload (`block.data` or `block.content`).
+    There, `text` is sanitized only for the types the blog renders as HTML
+    (paragraph, heading, quote, pullquote, callout). Code and button blocks
+    render `text` as plain text, and escaping it would corrupt it.
+  - The RSS/Atom generators read fields on the block itself and a bare string
+    block. There, `text`/`content`/`html`/`items` are sanitized for every type
+    except code, which the feeds escape. A `level` that is not 1–6 is
+    removed, since it is interpolated into `<h{level}>`.
+  - Arrays in markup fields have their strings cleaned too, because renderers
+    string-coerce them.
+  - Nested `blocks`/`children`/`columns` are walked.
+  - URL fields (`url`, `src`, `href`, `mediaUrl`, `embedUrl`, `linkUrl`,
+    `backgroundImage`) are dropped unless they are relative or
+    http(s)/mailto/tel; an array or object in a URL field is dropped too.
 - Admin endpoints are unchanged.
 
 ### Evidence
@@ -126,33 +175,72 @@ module initializes. The root layout reached the module through
     (`seo.openGraph.title`) that `+page.server.ts` no longer returns; it now
     returns the unified `SEOInput`, which the root layout's `Seo` layer renders.
     The page's duplicate meta tags and stale local SEO types were removed.
-- **Server vs. real browser:** 92 inputs × 8 policies = **736 comparisons**,
-  each comparing parse5 on Node with `DOMParser` in Chromium 141. Inputs cover
-  OWASP vectors and mutation-XSS (MathML/SVG namespace confusion, `noscript`,
-  raw-text elements, comments, table foster-parenting). **0 differences.**
-  Every output was then inserted into a live Chromium document and audited:
-  **0 event handlers, 0 script URLs, 0 forbidden elements, 0 dialogs fired.**
-- **API end to end:** a published post seeded with hostile blocks comes back
-  sanitized from `GET /api/posts/{slug}`. `onerror`/`<script>`/`<svg onload>`
-  and the MathML payload are stripped; `javascript:` and `java\tscript:` URLs
-  are removed; the untrusted iframe loses its `src`. The code block's `text`,
-  the button label and the trusted YouTube embed are untouched.
+- **Server vs. real browser** (`pnpm test:sanitizer:browser`, Chromium 141):
+  121 inputs × 8 policies, each comparing parse5 on Node with `DOMParser` in
+  Chromium. Inputs cover OWASP vectors, mutation-XSS (MathML/SVG namespace
+  confusion, `noscript`, raw-text elements, comments, table foster-parenting)
+  and 600/700/3,000-deep nesting.
+  - **920 compared, 0 different.** 48 are exempt: the 6 `<select>` inputs.
+  - Every output was then inserted into a live Chromium document and audited:
+    **0 event handlers, 0 script URLs, 0 forbidden elements, 0 dialogs.**
+- **RSS/Atom in workerd:** with the hostile post published, `/feed.xml` and
+  `/atom.xml` return 200 with no event handler, `<script>`, `javascript:` or
+  `alert(` anywhere. The bare string block, flat `text`/`html`/`items`, the
+  forged heading `level` and the quote-breaking image URL all come out inert.
+- **API end to end:** a published post seeded with hostile blocks, in both the
+  nested (editor/legacy) shape and the flat/string shapes the feeds read, comes
+  back sanitized from `GET /api/posts/{slug}`.
+  - Removed: `onerror`, `<script>`, `<svg onload>` and the MathML payload;
+    `javascript:` and `java\tscript:` URLs; a quote-breaking
+    `x" onerror="…` image URL; a forged `level`. The untrusted iframe loses its
+    `src`.
+  - Untouched: the code block's text, the button label, the relative `#section`
+    link and the trusted YouTube embed.
 - **Frontend gates:**
   - `check`, `check:strict` and `check:a11y`: 0 errors / 0 warnings (4,898
     files).
   - eslint: 0 errors (the same 4 baseline warnings).
-  - Vitest: **60/60 files, 2,739 passed, 32 skipped** (+467 tests, from the
+  - Vitest: **60/60 files, 2,758 passed, 32 skipped** (+486 tests, from the
     two new sanitizer suites).
   - Production build: green. parse5 appears only in the server output; the
     client bundle has no parse5 and no DOMPurify.
 - **Backend gates:**
   - `cargo fmt --check`, `clippy --all-targets -D warnings`, `cargo deny check`
     (advisories, bans, licenses, sources) and `cargo machete`: all clean.
-  - No-DB suites: **49 passed** (`utils_test` 29, including the 10 new
+  - No-DB suites: **51 passed** (`utils_test` 31, including the 12 new
     `html_sanitization` tests; `stripe_test` 19; `router_smoke_test` 1).
 
+### Pre-merge adversarial review
+
+Before merging, four independent reviewers covered the sanitizer's security,
+the SSR/build integration, the Rust API, and the accuracy of every claim here.
+Each finding then went to three skeptics with different lenses (reproduce it,
+weigh its real impact, hunt for the false positive) and counted only if two of
+the three confirmed it. 12 findings were raised; 7 were confirmed and fixed:
+
+- **Server stack overflow on deep nesting** (≈2,000+ levels). Fixed with the
+  Chromium-equivalent depth cap and the fail-closed `RangeError` backstop
+  above.
+- **"Byte-identical" was overstated for malformed `<select>`.** The exception
+  is now documented, and the real-Chromium differential script is committed.
+- **The Rust walker skipped string and flat-shape blocks**, which the RSS/Atom
+  feeds publish as HTML. The walker now covers every shape a renderer reads,
+  and the feeds sanitize their own output as well.
+- **Four documentation inaccuracies** in this entry: the bundle cost (was
+  "+4.1 KB", from a prototype), the root-cause import chain (it went through
+  `BannerRenderer`, not `TemplateEditor`), the "exports unchanged" claim and
+  call-site count, and the unmentioned `SAFE_FOR_TEMPLATES` removal.
+
+Two refuted findings were fixed anyway, because they were real regressions or
+inaccuracies of this change:
+
+- `sanitizeURL` dropped ordinary relative button links such as `#section`;
+  `safeUrl` replaced it.
+- A policy comment claimed custom-mode embeds were https-only, which the code
+  does not enforce.
+
 Follow-ups found during the API inventory are in BACKLOG.md
-"2026-10-10 security follow-ups" (I–P). They include a public `?status=` draft
+"2026-10-10 security follow-ups" (I–R). They include a public `?status=` draft
 listing, unescaped room-search highlights, the public `GET /api/cms/settings`
 returning injected scripts, and the build's dependence on a reachable API.
 

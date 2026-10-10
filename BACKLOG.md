@@ -69,7 +69,8 @@ build throws at import time in workerd) is gone. A single sanitizer engine
 server (parse5) and in the browser (`DOMParser`). The root layout no longer
 imports the consent UI. The Rust API sanitizes author HTML with `ammonia` on
 its public read endpoints. The 62-route `wrangler pages dev` sweep that found
-the 18 500s is the regression check.
+the 18 500s is the regression check, and `pnpm test:sanitizer:browser` checks
+server/browser output parity against real Chromium.
 
 ## 2026-10-10 security follow-ups (found while fixing the P0)
 
@@ -150,6 +151,27 @@ fetches it again in the component, rendering the body inside
 body from `data` (sanitized on the server by both the API and the isomorphic
 sanitizer) and drop the second fetch. That brings back server-rendered article
 HTML for search engines.
+
+### Q. Re-check `<select>` parity when parse5 adopts the relaxed select parser
+
+Chromium already parses arbitrary elements inside `<select>`/`<option>`
+(the WHATWG customizable-select parser change); parse5 8.0.1 does not. The
+sanitizer drops `select` with its content, but a *malformed* select can still
+end in a different place on the two parsers. Server and browser output then
+differ: both sanitized, with a dev-mode hydration warning at worst. When parse5
+ships the change, bump it, then delete the `<select>` exemption in
+`frontend/scripts/sanitizer-differential.js` and the caveat in
+`html-sanitizer/engine.ts`. `pnpm test:sanitizer:browser` must then report 0
+differences with 0 exempt.
+
+### R. The RSS/Atom feeds ignore the block shapes the editor writes
+
+`/feed.xml` and `/atom.xml` read only fields on the block itself (`block.text`,
+`block.content`, `block.url`, …). Posts saved by the editor nest their payload
+under `block.content` (an object) or `block.data`. For those posts the feeds
+emit empty paragraphs or `[object Object]`. The blog page handles both shapes
+through `blockData()`. Reuse that mapping in both feed generators (the output
+is sanitized either way).
 
 ## 2026-10-09 dependency-upgrade follow-ups
 

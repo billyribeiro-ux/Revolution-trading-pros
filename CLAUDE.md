@@ -158,6 +158,12 @@ cd api && cargo test --test router_smoke_test --test utils_test --test stripe_te
 All must pass before committing. `pnpm api:lint` bundles the three backend
 lint gates; it needs `cargo install cargo-machete cargo-deny` once per machine.
 
+When you touch `frontend/src/lib/utils/html-sanitizer/` (or its policies), also
+run `cd frontend && pnpm test:sanitizer:browser` (`CHROMIUM_PATH=…` to pick a
+browser). It checks that the server (parse5) and real-Chromium outputs stay
+byte-identical, and that nothing executable survives. CI has no browser, so it
+does not run this.
+
 Two frontend checks are worth running on anything UI-facing, since CI's
 `check` does not escalate warnings: `pnpm check:strict` (`--fail-on-warnings`)
 and `pnpm check:a11y` (promotes Svelte's a11y compiler warnings to errors).
