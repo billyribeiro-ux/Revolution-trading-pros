@@ -12,7 +12,7 @@
 
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { logger } from '#lib/utils/logger.js';
-import { createCalculatorState } from '../calculator.svelte.js';
+import { CalculatorState } from '../calculator.svelte.js';
 import type {
 	MonteCarloWorkerRequest,
 	MonteCarloWorkerResponse
@@ -97,7 +97,7 @@ afterEach(() => {
 describe('runMC', () => {
 	it('simulates in a module worker with cloneable data', async () => {
 		vi.stubGlobal('Worker', FakeWorker);
-		const calc = createCalculatorState();
+		const calc = new CalculatorState();
 		// Assigning makes the config a deep $state proxy, which postMessage cannot clone.
 		calc.monteCarloConfig = { numPaths: 200, numSteps: 20, seed: 7 };
 
@@ -114,15 +114,28 @@ describe('runMC', () => {
 		expect(calc.isMonteCarloRunning).toBe(false);
 	});
 
+	it('works when passed around detached, as in onclick={calc.runMC}', async () => {
+		vi.stubGlobal('Worker', FakeWorker);
+		const calc = new CalculatorState();
+		calc.monteCarloConfig = { numPaths: 100, numSteps: 10, seed: 3 };
+		const { runMC } = calc;
+
+		await runMC();
+
+		expect(FakeWorker.answered).toBe(1);
+		expect(calc.monteCarloResult?.paths.length).toBe(100);
+		expect(calc.isMonteCarloRunning).toBe(false);
+	});
+
 	it('produces the same result as the main thread for a seeded run', async () => {
 		vi.stubGlobal('Worker', FakeWorker);
-		const viaWorker = createCalculatorState();
+		const viaWorker = new CalculatorState();
 		viaWorker.monteCarloConfig = { numPaths: 100, numSteps: 10, seed: 42 };
 		await viaWorker.runMC();
 		expect(FakeWorker.answered).toBe(1);
 
 		vi.stubGlobal('Worker', undefined);
-		const mainThread = createCalculatorState();
+		const mainThread = new CalculatorState();
 		mainThread.monteCarloConfig = { numPaths: 100, numSteps: 10, seed: 42 };
 		await mainThread.runMC();
 
@@ -131,7 +144,7 @@ describe('runMC', () => {
 
 	it('falls back to the main thread when workers are unavailable', async () => {
 		vi.stubGlobal('Worker', undefined);
-		const calc = createCalculatorState();
+		const calc = new CalculatorState();
 		calc.monteCarloConfig = { numPaths: 100, numSteps: 10 };
 
 		await calc.runMC();
@@ -144,7 +157,7 @@ describe('runMC', () => {
 	it('falls back to the main thread when the worker fails to load', async () => {
 		vi.stubGlobal('Worker', FakeWorker);
 		FakeWorker.behaviour = 'load-error';
-		const calc = createCalculatorState();
+		const calc = new CalculatorState();
 		calc.monteCarloConfig = { numPaths: 100, numSteps: 10 };
 
 		await calc.runMC();
@@ -159,7 +172,7 @@ describe('runMC', () => {
 	it('keeps the newest run when an older one finishes last', async () => {
 		vi.stubGlobal('Worker', FakeWorker);
 		FakeWorker.behaviour = 'hold';
-		const calc = createCalculatorState();
+		const calc = new CalculatorState();
 
 		calc.monteCarloConfig = { numPaths: 100, numSteps: 10, seed: 1 };
 		const first = calc.runMC();

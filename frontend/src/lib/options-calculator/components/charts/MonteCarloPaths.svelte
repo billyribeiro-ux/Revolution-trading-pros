@@ -1,66 +1,41 @@
 <script lang="ts">
 	import { select } from 'd3-selection';
 	import { scaleLinear } from 'd3-scale';
-	import { line as d3line, curveMonotoneX } from 'd3-shape';
+	import { curveMonotoneX, line } from 'd3-shape';
 	import { axisBottom, axisLeft } from 'd3-axis';
+	import type { Axis, AxisDomain } from 'd3-axis';
+	import type { Attachment } from 'svelte/attachments';
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import { formatCurrency, formatPercent } from '../../utils/formatters.js';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
-	import type { MonteCarloPath } from '../../engine/types.js';
+	import { getCalculator } from '../../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
+	const uid = $props.id();
 
-	let { calc }: Props = $props();
-
-	let containerEl: HTMLDivElement | undefined = $state();
-	let svgEl: SVGSVGElement | undefined = $state();
-	let width = $state(600);
-	let height = $state(350);
-	let pathCount = $state(2000);
-
+	/** Chart height in px; the width follows the container (`bind:clientWidth`). */
+	const HEIGHT = 350;
 	const margin = { top: 20, right: 100, bottom: 40, left: 60 };
+	const innerH = HEIGHT - margin.top - margin.bottom;
+	/** SVG stays responsive with at most this many sample paths drawn. */
+	const MAX_DRAWN_PATHS = 200;
+	const HIST_BINS = 30;
+	const HIST_WIDTH = 50;
 
-	$effect(() => {
-		if (!containerEl) return;
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				height = Math.max(300, Math.min(420, entry.contentRect.height));
-			}
-		});
-		observer.observe(containerEl);
-		return () => observer.disconnect();
-	});
+	let width = $state(0);
 
-	function handleRun() {
-		calc.monteCarloConfig = { numPaths: pathCount, numSteps: 100 };
-		calc.runMC();
-	}
+	const stats = $derived(calc.monteCarloResult?.stats);
 
-	$effect(() => {
+	/** Scales and path geometry for the latest run; `null` until there is one and it can be drawn. */
+	const chart = $derived.by(() => {
 		const result = calc.monteCarloResult;
-		if (!svgEl || !result || result.paths.length === 0) return;
-
 		const innerW = width - margin.left - margin.right;
-		const innerH = height - margin.top - margin.bottom;
-		if (innerW <= 0 || innerH <= 0) return;
+		const lastTime = result?.timePoints.at(-1);
+		if (!result || result.paths.length === 0 || lastTime === undefined || innerW <= 0) {
+			return null;
+		}
 
-		const svg = select(svgEl);
-		svg.selectAll('*').remove();
-
-		const g = svg
-			.attr('width', width)
-			.attr('height', height)
-			.append('g')
-			.attr('transform', `translate(${margin.left},${margin.top})`);
-
-		const timePoints = result.timePoints;
-		const paths = result.paths;
-
-		// Find price range across all paths
+		const { paths, timePoints } = result;
 		let minPrice = Infinity;
 		let maxPrice = -Infinity;
 		for (const path of paths) {
@@ -68,144 +43,110 @@
 			maxPrice = Math.max(maxPrice, path.maxPrice);
 		}
 		const yPad = (maxPrice - minPrice) * 0.05;
+		const yLow = minPrice - yPad;
+		const yHigh = maxPrice + yPad;
 
-		const x = scaleLinear()
-			.domain([0, timePoints[timePoints.length - 1]])
-			.range([0, innerW]);
-		const y = scaleLinear()
-			.domain([minPrice - yPad, maxPrice + yPad])
-			.range([innerH, 0]);
-
-		// Draw paths (limit to 200 for SVG performance)
-		const displayPaths = paths.slice(0, Math.min(200, paths.length));
-		const pathGen = d3line<number>()
+		const x = scaleLinear().domain([0, lastTime]).range([0, innerW]);
+		const y = scaleLinear().domain([yLow, yHigh]).range([innerH, 0]);
+		const pathLine = line<number>()
 			.x((_, i) => x(timePoints[i]))
 			.y((d) => y(d))
 			.curve(curveMonotoneX);
 
-		for (const path of displayPaths) {
-			g.append('path')
-				.datum(path.prices)
-				.attr('d', pathGen)
-				.attr('fill', 'none')
-				.attr('stroke', path.finalPrice > calc.strikePrice ? 'var(--calc-call)' : 'var(--calc-put)')
-				.attr('stroke-width', 0.6)
-				.attr('opacity', 0.08);
-		}
-
-		// Highlight percentile paths
-		const sortedByFinal = [...paths].sort((a, b) => a.finalPrice - b.finalPrice);
-		const p5Path = sortedByFinal[Math.floor(paths.length * 0.05)];
-		const medianPath = sortedByFinal[Math.floor(paths.length * 0.5)];
-		const p95Path = sortedByFinal[Math.floor(paths.length * 0.95)];
-
-		const highlights: { path: MonteCarloPath; color: string; label: string }[] = [
-			{ path: p5Path, color: 'var(--calc-put)', label: '5th %ile' },
-			{ path: medianPath, color: 'var(--calc-accent)', label: 'Median' },
-			{ path: p95Path, color: 'var(--calc-call)', label: '95th %ile' }
+		// Percentile paths by final price.
+		const sorted = [...paths].sort((a, b) => a.finalPrice - b.finalPrice);
+		const percentiles = [
+			{
+				label: '5th %ile',
+				color: 'var(--calc-put)',
+				path: sorted[Math.floor(paths.length * 0.05)]
+			},
+			{
+				label: 'Median',
+				color: 'var(--calc-accent)',
+				path: sorted[Math.floor(paths.length * 0.5)]
+			},
+			{
+				label: '95th %ile',
+				color: 'var(--calc-call)',
+				path: sorted[Math.floor(paths.length * 0.95)]
+			}
 		];
 
-		for (const hl of highlights) {
-			g.append('path')
-				.datum(hl.path.prices)
-				.attr('d', pathGen)
-				.attr('fill', 'none')
-				.attr('stroke', hl.color)
-				.attr('stroke-width', 2)
-				.attr('opacity', 0.9);
-
-			g.append('text')
-				.attr('x', innerW + 4)
-				.attr('y', y(hl.path.finalPrice))
-				.attr('fill', hl.color)
-				.attr('font-size', '9px')
-				.attr('font-family', 'var(--calc-font-mono)')
-				.attr('dominant-baseline', 'middle')
-				.text(`${hl.label} $${hl.path.finalPrice.toFixed(1)}`);
+		// Final-price histogram along the right edge.
+		const binSize = (yHigh - yLow) / HIST_BINS;
+		const counts = Array.from({ length: HIST_BINS }, () => 0);
+		for (const path of paths) {
+			const bin = Math.min(Math.floor((path.finalPrice - yLow) / binSize), HIST_BINS - 1);
+			if (bin >= 0) counts[bin]++;
 		}
+		const histX = scaleLinear()
+			.domain([0, Math.max(...counts)])
+			.range([0, HIST_WIDTH]);
 
-		// Strike price line
-		g.append('line')
-			.attr('x1', 0)
-			.attr('x2', innerW)
-			.attr('y1', y(calc.strikePrice))
-			.attr('y2', y(calc.strikePrice))
-			.attr('stroke', 'var(--calc-warning)')
-			.attr('stroke-width', 1)
-			.attr('stroke-dasharray', '6,3')
-			.attr('opacity', 0.7);
-
-		g.append('text')
-			.attr('x', innerW + 4)
-			.attr('y', y(calc.strikePrice))
-			.attr('fill', 'var(--calc-warning)')
-			.attr('font-size', '9px')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('dominant-baseline', 'middle')
-			.text(`K=$${calc.strikePrice.toFixed(0)}`);
-
-		// Spot price starting dot
-		g.append('circle')
-			.attr('cx', x(0))
-			.attr('cy', y(calc.spotPrice))
-			.attr('r', 4)
-			.attr('fill', 'var(--calc-text)');
-
-		// Axes
-		const xAxisGen = axisBottom(x)
-			.ticks(6)
-			.tickFormat((d) => `${(Number(d) * 365).toFixed(0)}d`);
-		const yAxisGen = axisLeft(y)
-			.ticks(6)
-			.tickFormat((d) => `$${Number(d).toFixed(0)}`);
-
-		g.append('g')
-			.attr('transform', `translate(0,${innerH})`)
-			.call(xAxisGen)
-			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('font-size', '10px');
-
-		g.append('g')
-			.call(yAxisGen)
-			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('font-size', '10px');
-
-		// Final price histogram on right edge
-		const histBins = 30;
-		const histW = 50;
-		const binSize = (maxPrice + yPad - (minPrice - yPad)) / histBins;
-		const bins = new Array(histBins).fill(0);
-		for (const fp of paths.map((p) => p.finalPrice)) {
-			const idx = Math.min(Math.floor((fp - (minPrice - yPad)) / binSize), histBins - 1);
-			if (idx >= 0) bins[idx]++;
-		}
-		const maxBin = Math.max(...bins);
-		const histX = scaleLinear().domain([0, maxBin]).range([0, histW]);
-
-		for (let i = 0; i < histBins; i++) {
-			const binY = minPrice - yPad + i * binSize;
-			const barW = histX(bins[i]);
-			g.append('rect')
-				.attr('x', innerW + 2)
-				.attr('y', y(binY + binSize))
-				.attr('width', barW)
-				.attr('height', Math.max(1, y(binY) - y(binY + binSize)))
-				.attr(
-					'fill',
-					binY + binSize / 2 > calc.strikePrice ? 'var(--calc-call)' : 'var(--calc-put)'
-				)
-				.attr('opacity', 0.4);
-		}
+		return {
+			innerW,
+			x,
+			y,
+			samples: paths.slice(0, MAX_DRAWN_PATHS).map((path) => ({
+				id: path.id,
+				finalPrice: path.finalPrice,
+				d: pathLine(path.prices)
+			})),
+			highlights: percentiles.map(({ label, color, path }) => ({
+				label,
+				color,
+				finalPrice: path.finalPrice,
+				d: pathLine(path.prices)
+			})),
+			histogram: counts.map((count, bin) => {
+				const binLow = yLow + bin * binSize;
+				return {
+					bin,
+					mid: binLow + binSize / 2,
+					y: y(binLow + binSize),
+					width: histX(count),
+					height: Math.max(1, y(binLow) - y(binLow + binSize))
+				};
+			})
+		};
 	});
+
+	/** Colour by where a price ends relative to the strike. */
+	const sideColor = (price: number) =>
+		price > calc.strikePrice ? 'var(--calc-call)' : 'var(--calc-put)';
+
+	/** Lets d3 draw an axis into the `<g>`; re-runs whenever the generator (its scale) changes. */
+	function axis<Domain extends AxisDomain>(generator: Axis<Domain>): Attachment<SVGGElement> {
+		return (g) => {
+			select(g).call(generator);
+		};
+	}
 </script>
+
+{#snippet stat(label: string, value: string, color: string, note = '')}
+	<div
+		class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
+		style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
+	>
+		<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
+			>{label}</span
+		>
+		<span class="text-sm font-semibold" style:color style:font-family="var(--calc-font-mono)"
+			>{value}</span
+		>
+		{#if note}
+			<span class="text-[9px]" style="color: var(--calc-text-muted);">{note}</span>
+		{/if}
+	</div>
+{/snippet}
 
 <div class="flex flex-col gap-3">
 	<!-- Controls -->
 	<div class="flex items-center gap-3 flex-wrap">
 		<button
-			onclick={handleRun}
+			type="button"
+			onclick={() => calc.runMC()}
 			disabled={calc.isMonteCarloRunning}
 			class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
 			style="background: var(--calc-accent); color: white;"
@@ -220,22 +161,28 @@
 		</button>
 
 		<div class="flex items-center gap-2">
-			<span
+			<label
+				for="{uid}-paths"
 				class="text-[10px]"
-				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Paths:</span
+				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Paths:</label
 			>
+			<!-- The path count is the next run's config; `calc.runMC()` reads it when it starts. -->
 			<input
+				id="{uid}-paths"
 				type="range"
 				min="100"
 				max="10000"
 				step="100"
-				bind:value={pathCount}
+				bind:value={
+					() => calc.monteCarloConfig.numPaths,
+					(numPaths) => (calc.monteCarloConfig = { ...calc.monteCarloConfig, numPaths })
+				}
 				class="calc-slider w-24"
 			/>
 			<span
 				class="text-xs"
 				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
-				>{pathCount.toLocaleString()}</span
+				>{calc.monteCarloConfig.numPaths.toLocaleString()}</span
 			>
 		</div>
 
@@ -250,75 +197,135 @@
 	</div>
 
 	<!-- Chart -->
-	<div bind:this={containerEl} class="relative w-full" style="min-height: 300px;">
+	<div class="relative w-full" style="min-height: 300px;" bind:clientWidth={width}>
 		{#if !calc.monteCarloResult}
 			<div class="flex items-center justify-center h-64" style="color: var(--calc-text-muted);">
 				<p class="text-sm">Click "Run Simulation" to generate Monte Carlo paths</p>
 			</div>
 		{:else}
-			<svg aria-hidden="true" bind:this={svgEl}></svg>
+			<svg
+				{width}
+				height={HEIGHT}
+				role="img"
+				aria-label="Monte Carlo simulation: {calc.monteCarloResult.paths.length.toLocaleString()} simulated price paths to expiration"
+			>
+				{#if chart}
+					<g transform="translate({margin.left},{margin.top})">
+						<!-- Sample paths -->
+						{#each chart.samples as sample (sample.id)}
+							<path
+								d={sample.d}
+								fill="none"
+								stroke={sideColor(sample.finalPrice)}
+								stroke-width="0.6"
+								opacity="0.08"
+							/>
+						{/each}
+
+						<!-- Percentile paths -->
+						{#each chart.highlights as highlight (highlight.label)}
+							<path
+								d={highlight.d}
+								fill="none"
+								stroke={highlight.color}
+								stroke-width="2"
+								opacity="0.9"
+							/>
+							<text
+								x={chart.innerW + 4}
+								y={chart.y(highlight.finalPrice)}
+								fill={highlight.color}
+								font-size="9px"
+								font-family="var(--calc-font-mono)"
+								dominant-baseline="middle"
+								>{highlight.label} ${highlight.finalPrice.toFixed(1)}</text
+							>
+						{/each}
+
+						<!-- Strike price line -->
+						<line
+							x1="0"
+							x2={chart.innerW}
+							y1={chart.y(calc.strikePrice)}
+							y2={chart.y(calc.strikePrice)}
+							stroke="var(--calc-warning)"
+							stroke-width="1"
+							stroke-dasharray="6,3"
+							opacity="0.7"
+						/>
+						<text
+							x={chart.innerW + 4}
+							y={chart.y(calc.strikePrice)}
+							fill="var(--calc-warning)"
+							font-size="9px"
+							font-family="var(--calc-font-mono)"
+							dominant-baseline="middle">K=${calc.strikePrice.toFixed(0)}</text
+						>
+
+						<!-- Spot price starting dot -->
+						<circle cx={chart.x(0)} cy={chart.y(calc.spotPrice)} r="4" fill="var(--calc-text)" />
+
+						<!-- Axes -->
+						<g
+							class="axis"
+							transform="translate(0,{innerH})"
+							{@attach axis(
+								axisBottom(chart.x)
+									.ticks(6)
+									.tickFormat((d) => `${(Number(d) * 365).toFixed(0)}d`)
+							)}
+						></g>
+						<g
+							class="axis"
+							{@attach axis(
+								axisLeft(chart.y)
+									.ticks(6)
+									.tickFormat((d) => `$${Number(d).toFixed(0)}`)
+							)}
+						></g>
+
+						<!-- Final price histogram on the right edge -->
+						{#each chart.histogram as bar (bar.bin)}
+							<rect
+								x={chart.innerW + 2}
+								y={bar.y}
+								width={bar.width}
+								height={bar.height}
+								fill={sideColor(bar.mid)}
+								opacity="0.4"
+							/>
+						{/each}
+					</g>
+				{/if}
+			</svg>
 		{/if}
 	</div>
 
 	<!-- Stats -->
-	{#if calc.monteCarloResult}
-		{@const s = calc.monteCarloResult.stats}
+	{#if stats}
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-			<div
-				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
-				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-			>
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
-					>Mean Price</span
-				>
-				<span
-					class="text-sm font-semibold"
-					style="color: var(--calc-text); font-family: var(--calc-font-mono);"
-					>{formatCurrency(s.meanFinalPrice)}</span
-				>
-			</div>
-			<div
-				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
-				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-			>
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
-					>Std Dev</span
-				>
-				<span
-					class="text-sm font-semibold"
-					style="color: var(--calc-text); font-family: var(--calc-font-mono);"
-					>{formatCurrency(s.stdDev)}</span
-				>
-			</div>
-			<div
-				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
-				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-			>
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
-					>MC Call</span
-				>
-				<span
-					class="text-sm font-semibold"
-					style="color: var(--calc-call); font-family: var(--calc-font-mono);"
-					>{formatCurrency(s.expectedPayoffCall)}</span
-				>
-				<span class="text-[9px]" style="color: var(--calc-text-muted);"
-					>BS: {formatCurrency(s.bsCallPrice)}</span
-				>
-			</div>
-			<div
-				class="flex flex-col gap-0.5 rounded-lg px-3 py-2"
-				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-			>
-				<span class="text-[10px] uppercase tracking-wider" style="color: var(--calc-text-muted);"
-					>P(Above K)</span
-				>
-				<span
-					class="text-sm font-semibold"
-					style="color: var(--calc-accent); font-family: var(--calc-font-mono);"
-					>{formatPercent(s.probabilityAboveStrike)}</span
-				>
-			</div>
+			{@render stat('Mean Price', formatCurrency(stats.meanFinalPrice), 'var(--calc-text)')}
+			{@render stat('Std Dev', formatCurrency(stats.stdDev), 'var(--calc-text)')}
+			{@render stat(
+				'MC Call',
+				formatCurrency(stats.expectedPayoffCall),
+				'var(--calc-call)',
+				`BS: ${formatCurrency(stats.bsCallPrice)}`
+			)}
+			{@render stat(
+				'P(Above K)',
+				formatPercent(stats.probabilityAboveStrike),
+				'var(--calc-accent)'
+			)}
 		</div>
 	{/if}
 </div>
+
+<style>
+	/* d3-axis writes `font-size`/`font-family` presentation attributes; CSS takes precedence. */
+	.axis {
+		color: var(--calc-text-muted);
+		font-family: var(--calc-font-mono);
+		font-size: 10px;
+	}
+</style>

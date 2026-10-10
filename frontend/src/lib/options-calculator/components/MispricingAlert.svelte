@@ -2,135 +2,88 @@
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
-	import gsap from 'gsap';
+	import { cubicOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { Attachment } from 'svelte/attachments';
-	import { price as bsPrice } from '../engine/black-scholes.js';
-	import type { MarketDataService } from '../data/market-data-service.svelte.js';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
+	import { fly, type FlyParams } from 'svelte/transition';
+	import { SIGNIFICANT_MISPRICING_PCT, detectMispricing } from '../engine/mispricing.js';
+	import { getCalculator, getMarketData } from '../state/context.js';
 	import type { MispricingResult } from '../data/types.js';
-	import type { BSInputs } from '../engine/types.js';
 
-	interface Props {
-		marketData: MarketDataService;
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
+	const marketData = getMarketData();
 
-	let { marketData, calc }: Props = $props();
+	const MAX_ALERTS = 5;
 
-	let dismissed = new SvelteSet<string>();
+	/** Contracts the user dismissed; reactive, so dismissing recomputes the list. */
+	const dismissed = new SvelteSet<string>();
 
-	let mispricings = $derived.by<MispricingResult[]>(() => {
+	const mispricings = $derived.by((): MispricingResult[] => {
 		const chain = marketData.currentChain;
 		if (!chain) return [];
 
-		const results: MispricingResult[] = [];
-		const allOptions = [...chain.calls, ...chain.puts];
+		const now = Date.now();
+		const market = {
+			spotPrice: chain.underlyingPrice,
+			volatility: calc.volatility,
+			riskFreeRate: calc.riskFreeRate,
+			dividendYield: calc.dividendYield
+		};
 
-		for (const option of allOptions) {
-			if (option.mid <= 0.01 || dismissed.has(option.symbol)) continue;
-
-			const today = new Date();
-			const expiryDate = new Date(option.expiration);
-			const daysToExpiry = Math.max(
-				1,
-				Math.round((expiryDate.getTime() - today.getTime()) / 86_400_000)
-			);
-
-			const inputs: BSInputs = {
-				spotPrice: chain.underlyingPrice,
-				strikePrice: option.strike,
-				volatility: option.impliedVolatility > 0 ? option.impliedVolatility : calc.volatility,
-				timeToExpiry: daysToExpiry / 365,
-				riskFreeRate: calc.riskFreeRate,
-				dividendYield: calc.dividendYield
-			};
-
-			const pricing = bsPrice(inputs);
-			const theoretical = option.type === 'call' ? pricing.callPrice : pricing.putPrice;
-			if (theoretical <= 0.01) continue;
-
-			const diff = option.mid - theoretical;
-			const diffPct = (diff / theoretical) * 100;
-
-			if (Math.abs(diffPct) >= 5) {
-				results.push({
-					option,
-					theoreticalPrice: theoretical,
-					marketPrice: option.mid,
-					priceDifference: diff,
-					priceDifferencePct: diffPct,
-					direction: diff > 0 ? 'overpriced' : 'underpriced',
-					significance: Math.abs(diffPct) > 15 ? 'significant' : 'moderate'
-				});
-			}
-		}
-
-		return results
+		return [...chain.calls, ...chain.puts]
+			.filter((option) => !dismissed.has(option.symbol))
+			.flatMap((option) => detectMispricing(option, market, now) ?? [])
 			.sort((a, b) => Math.abs(b.priceDifferencePct) - Math.abs(a.priceDifferencePct))
-			.slice(0, 5);
+			.slice(0, MAX_ALERTS);
 	});
 
-	function dismiss(symbol: string) {
-		dismissed.add(symbol);
-	}
-
-	function mispricingCardClass(direction: MispricingResult['direction']) {
-		return ['mispricing-card', `mispricing-card--${direction}`];
-	}
-
-	function differenceClass(direction: MispricingResult['direction']) {
-		return ['difference-value', `difference-value--${direction}`];
-	}
-
-	function animateAlerts(count: number): Attachment<HTMLDivElement> {
-		return (node) => {
-			if (count === 0) return;
-
-			const cards = node.querySelectorAll('.mispricing-card');
-			gsap.fromTo(
-				cards,
-				{ x: 30, opacity: 0 },
-				{ x: 0, opacity: 1, duration: 0.3, stagger: 0.06, ease: 'power2.out' }
-			);
-		};
+	/** Staggered slide-in for each alert as it appears; instant under reduced motion. */
+	function alertIntro(index: number): FlyParams {
+		if (prefersReducedMotion.current) return { duration: 0 };
+		return { x: 30, duration: 300, delay: index * 60, easing: cubicOut };
 	}
 </script>
 
 {#if mispricings.length > 0}
-	<div {@attach animateAlerts(mispricings.length)} class="mispricing-list">
+	<div class="mispricing-list">
 		<span class="mispricing-heading">
 			Mispricing Detected ({mispricings.length})
 		</span>
-		{#each mispricings as mp (mp.option.symbol)}
-			<div class={mispricingCardClass(mp.direction)}>
+		{#each mispricings as mp, i (mp.option.symbol)}
+			{const contract = $derived(`${mp.option.type === 'call' ? 'C' : 'P'}${mp.option.strike}`)}
+			<div
+				in:fly|global={alertIntro(i)}
+				class={['mispricing-card', `mispricing-card--${mp.direction}`]}
+			>
 				{#if mp.direction === 'underpriced'}
-					<IconTrendingUp size={12} style="color: var(--calc-call);" />
+					<IconTrendingUp size={12} style="color: var(--calc-call);" aria-hidden="true" />
 				{:else}
-					<IconTrendingDown size={12} style="color: var(--calc-put);" />
+					<IconTrendingDown size={12} style="color: var(--calc-put);" aria-hidden="true" />
 				{/if}
 
 				<div class="mispricing-content">
-					<span class="option-symbol">
-						{mp.option.type === 'call' ? 'C' : 'P'}{mp.option.strike}
-					</span>
+					<span class="option-symbol">{contract}</span>
 					<span class="price-comparison">
 						Mkt: ${mp.marketPrice.toFixed(2)} · Theo: ${mp.theoreticalPrice.toFixed(2)}
 					</span>
-					<span class={differenceClass(mp.direction)}>
+					<span class={['difference-value', `difference-value--${mp.direction}`]}>
 						{mp.priceDifferencePct > 0 ? '+' : ''}{mp.priceDifferencePct.toFixed(1)}%
 					</span>
 					{#if mp.significance === 'significant'}
-						<span class="significance-badge">!</span>
+						<span
+							class="significance-badge"
+							title="Significant (over {SIGNIFICANT_MISPRICING_PCT}%)">!</span
+						>
 					{/if}
 				</div>
 
 				<button
-					onclick={() => dismiss(mp.option.symbol)}
+					type="button"
+					onclick={() => dismissed.add(mp.option.symbol)}
 					class="dismiss-button"
-					aria-label="Dismiss"
+					aria-label="Dismiss {contract} alert"
 				>
-					<IconX size={10} />
+					<IconX size={10} aria-hidden="true" />
 				</button>
 			</div>
 		{/each}

@@ -1,12 +1,27 @@
 // ============================================================
 // CALCULATOR STATE — Svelte 5 Runes
-// Single source of truth for all calculator state
+// Single source of truth for all calculator state.
+//
+// A class with `$state` / `$derived` fields (Svelte docs: "$state → Classes").
+// Methods are arrow-function fields so they keep `this` when passed as
+// callbacks (`onclick={calc.resetInputs}`). State that consumers may only read
+// lives in a private `#field` behind a getter; derived values and the reactive
+// `liveOverrides` set are `readonly` fields.
+// Construct one per calculator and share it through `setCalculator()` in
+// `./context.ts` — never as a module-level singleton (SSR would leak it).
 // ============================================================
 
-import { price, intrinsicValue, moneyness, breakeven } from '../engine/black-scholes.js';
+import {
+	price,
+	priceOption,
+	intrinsicValue,
+	moneyness,
+	breakeven
+} from '../engine/black-scholes.js';
 import { allGreeks } from '../engine/greeks.js';
 import { calculateProbabilities } from '../engine/probability.js';
 import {
+	calculateStrategyGreeks,
 	calculateStrategyPayoff,
 	findBreakevens,
 	findMaxProfitLoss,
@@ -36,6 +51,7 @@ import type {
 	MonteCarloResult,
 	Scenario,
 	ScenarioResult,
+	ShareableState,
 	TimeMachineSnapshot,
 	SensitivityData,
 	ToastItem,
@@ -46,7 +62,16 @@ import type {
 	MonteCarloWorkerResponse
 } from '../engine/monte-carlo.worker.js';
 import type { DataMode, MarketSnapshot } from '../data/types.js';
+import { SvelteSet } from 'svelte/reactivity';
 import { logger } from '#lib/utils/logger.js';
+
+/** Inputs a market snapshot fills in (see `applyMarketSnapshot`). */
+const LIVE_INPUT_KEYS = [
+	'spotPrice',
+	'volatility',
+	'dividendYield',
+	'riskFreeRate'
+] as const satisfies readonly (keyof BSInputs)[];
 
 /**
  * Run one Monte Carlo simulation in a dedicated Web Worker, terminating it
@@ -77,197 +102,272 @@ function simulateInWorker(request: MonteCarloWorkerRequest): Promise<MonteCarloR
 }
 
 /**
- * Create the calculator state store.
- * Call this once in the root Calculator component.
+ * Reactive state for one options calculator instance.
+ * Create it once in the root Calculator component (`new CalculatorState()`).
  */
-export function createCalculatorState() {
+export class CalculatorState {
 	// ── Core Inputs ──────────────────────────────────────
-	let spotPrice = $state(DEFAULT_INPUTS.spotPrice);
-	let strikePrice = $state(DEFAULT_INPUTS.strikePrice);
-	let volatility = $state(DEFAULT_INPUTS.volatility);
-	let timeToExpiry = $state(DEFAULT_INPUTS.timeToExpiry);
-	let riskFreeRate = $state(DEFAULT_INPUTS.riskFreeRate);
-	let dividendYield = $state(DEFAULT_INPUTS.dividendYield);
+	spotPrice = $state(DEFAULT_INPUTS.spotPrice);
+	strikePrice = $state(DEFAULT_INPUTS.strikePrice);
+	volatility = $state(DEFAULT_INPUTS.volatility);
+	timeToExpiry = $state(DEFAULT_INPUTS.timeToExpiry);
+	riskFreeRate = $state(DEFAULT_INPUTS.riskFreeRate);
+	dividendYield = $state(DEFAULT_INPUTS.dividendYield);
 
 	// ── UI State ─────────────────────────────────────────
-	let optionType = $state<OptionType>('call');
-	let theme = $state<ThemeMode>('dark');
-	let activeTab = $state<ChartTab>('payoff');
-	let heatmapGreek = $state<HeatmapGreek>('delta');
-	let calculatorMode = $state<CalculatorMode>('single');
-	let showAdvancedGreeks = $state(false);
-	let showProbabilities = $state(true);
-	let isInputPanelOpen = $state(true);
+	optionType = $state<OptionType>('call');
+	#theme = $state<ThemeMode>('dark');
+	activeTab = $state<ChartTab>('payoff');
+	heatmapGreek = $state<HeatmapGreek>('delta');
+	calculatorMode = $state<CalculatorMode>('single');
+	showAdvancedGreeks = $state(false);
+	showProbabilities = $state(true);
+	isInputPanelOpen = $state(true);
+
+	/** Read-only; change it with `toggleTheme()`. */
+	get theme(): ThemeMode {
+		return this.#theme;
+	}
 
 	// ── Strategy State ───────────────────────────────────
-	let strategyLegs = $state<StrategyLeg[]>([]);
+	// Raw: legs are replaced, never mutated in place, so a deep proxy buys nothing.
+	#strategyLegs = $state.raw<StrategyLeg[]>([]);
+
+	get strategyLegs(): StrategyLeg[] {
+		return this.#strategyLegs;
+	}
 
 	// ── Derived: Assembled Inputs ────────────────────────
-	let inputs = $derived<BSInputs>({
-		spotPrice,
-		strikePrice,
-		volatility,
-		timeToExpiry,
-		riskFreeRate,
-		dividendYield
+	readonly inputs = $derived<BSInputs>({
+		spotPrice: this.spotPrice,
+		strikePrice: this.strikePrice,
+		volatility: this.volatility,
+		timeToExpiry: this.timeToExpiry,
+		riskFreeRate: this.riskFreeRate,
+		dividendYield: this.dividendYield
 	});
 
 	// ── Derived: Pricing ─────────────────────────────────
-	let pricing = $derived<BSPricingResult>(price(inputs));
+	readonly pricing = $derived<BSPricingResult>(price(this.inputs));
 
-	let currentPrice = $derived(optionType === 'call' ? pricing.callPrice : pricing.putPrice);
+	readonly currentPrice = $derived(
+		this.optionType === 'call' ? this.pricing.callPrice : this.pricing.putPrice
+	);
 
-	let currentIntrinsic = $derived(intrinsicValue(spotPrice, strikePrice, optionType));
+	readonly currentIntrinsic = $derived(
+		intrinsicValue(this.spotPrice, this.strikePrice, this.optionType)
+	);
 
-	let currentExtrinsic = $derived(Math.max(currentPrice - currentIntrinsic, 0));
+	readonly currentExtrinsic = $derived(Math.max(this.currentPrice - this.currentIntrinsic, 0));
 
-	let currentMoneyness = $derived(moneyness(spotPrice, strikePrice, optionType));
+	readonly currentMoneyness = $derived(
+		moneyness(this.spotPrice, this.strikePrice, this.optionType)
+	);
 
-	let currentBreakeven = $derived(breakeven(strikePrice, currentPrice, optionType));
+	readonly currentBreakeven = $derived(
+		breakeven(this.strikePrice, this.currentPrice, this.optionType)
+	);
 
 	// ── Derived: Greeks ──────────────────────────────────
-	let callGreeks = $derived<AllGreeks>(allGreeks(inputs, 'call'));
-	let putGreeks = $derived<AllGreeks>(allGreeks(inputs, 'put'));
-	let currentGreeks = $derived<AllGreeks>(optionType === 'call' ? callGreeks : putGreeks);
+	readonly callGreeks = $derived<AllGreeks>(allGreeks(this.inputs, 'call'));
+	readonly putGreeks = $derived<AllGreeks>(allGreeks(this.inputs, 'put'));
+	readonly currentGreeks = $derived<AllGreeks>(
+		this.optionType === 'call' ? this.callGreeks : this.putGreeks
+	);
 
 	// ── Derived: Probabilities ───────────────────────────
-	let probabilities = $derived<ProbabilityResult>(calculateProbabilities(inputs, optionType));
+	readonly probabilities = $derived<ProbabilityResult>(
+		calculateProbabilities(this.inputs, this.optionType)
+	);
+
+	// ── Derived: Strategy Pricing ────────────────────────
+	/**
+	 * The strategy's legs priced at the current inputs: each leg's `premium` is the cash flow
+	 * of buying one unit at its Black-Scholes value (negative: paid), the convention of the
+	 * payoff engine and of the single-option payoff below. Pricing live (rather than trusting
+	 * a stored premium) keeps shared links and saved configs, which carry no prices, exact.
+	 */
+	readonly pricedStrategyLegs = $derived<StrategyLeg[]>(
+		this.#strategyLegs.map((leg) => ({
+			...leg,
+			premium: -priceOption(
+				{ ...this.inputs, strikePrice: leg.strike, timeToExpiry: leg.expiry },
+				leg.type
+			)
+		}))
+	);
+
+	/** Net premium of the strategy: positive is a credit received, negative a debit paid. */
+	readonly strategyNetPremium = $derived(
+		this.pricedStrategyLegs.reduce((sum, leg) => sum + leg.premium * leg.position * leg.quantity, 0)
+	);
+
+	/** Position-weighted first-order Greeks of the whole strategy. */
+	readonly strategyGreeks = $derived(calculateStrategyGreeks(this.#strategyLegs, this.inputs));
 
 	// ── Derived: Payoff Diagram ──────────────────────────
-	let payoffData = $derived.by<PayoffPoint[]>(() => {
-		if (calculatorMode === 'single' || strategyLegs.length === 0) {
-			const strikes = [strikePrice];
-			const priceRange = generatePriceRange(spotPrice, strikes);
+	readonly payoffData = $derived.by<PayoffPoint[]>(() => {
+		if (this.calculatorMode === 'single' || this.#strategyLegs.length === 0) {
+			const priceRange = generatePriceRange(this.spotPrice, [this.strikePrice]);
 			const singleLeg: StrategyLeg = {
 				id: 'single',
-				type: optionType,
-				strike: strikePrice,
-				expiry: timeToExpiry,
+				type: this.optionType,
+				strike: this.strikePrice,
+				expiry: this.timeToExpiry,
 				position: 1,
 				quantity: 1,
-				premium: -currentPrice
+				premium: -this.currentPrice
 			};
 			return calculateStrategyPayoff([singleLeg], priceRange);
-		} else {
-			const strikes = strategyLegs.map((l) => l.strike);
-			const priceRange = generatePriceRange(spotPrice, strikes);
-			return calculateStrategyPayoff(strategyLegs, priceRange);
 		}
+		const legs = this.pricedStrategyLegs;
+		const priceRange = generatePriceRange(
+			this.spotPrice,
+			legs.map((l) => l.strike)
+		);
+		return calculateStrategyPayoff(legs, priceRange);
 	});
 
 	// ── Derived: Strategy Metrics ────────────────────────
-	let strategyMaxProfitLoss = $derived(findMaxProfitLoss(payoffData));
-	let strategyBreakevens = $derived(findBreakevens(payoffData));
+	readonly strategyMaxProfitLoss = $derived(findMaxProfitLoss(this.payoffData));
+	readonly strategyBreakevens = $derived(findBreakevens(this.payoffData));
 
 	// ── Phase 2: Monte Carlo State ──────────────────────
-	let monteCarloConfig = $state<MonteCarloConfig>({ numPaths: 2000, numSteps: 100 });
-	let monteCarloResult = $state<MonteCarloResult | null>(null);
-	let isMonteCarloRunning = $state(false);
+	monteCarloConfig = $state<MonteCarloConfig>({ numPaths: 2000, numSteps: 100 });
+	// Raw: thousands of paths, only ever replaced wholesale.
+	#monteCarloResult = $state.raw<MonteCarloResult | null>(null);
+	#isMonteCarloRunning = $state(false);
+	/** Incremented per run so a slower, superseded run never overwrites a newer result. */
+	#monteCarloRun = 0;
+
+	get monteCarloResult(): MonteCarloResult | null {
+		return this.#monteCarloResult;
+	}
+
+	get isMonteCarloRunning(): boolean {
+		return this.#isMonteCarloRunning;
+	}
 
 	// ── Phase 2: Scenario State ─────────────────────────
-	let activeScenarios = $state<Scenario[]>([]);
-	let scenarioResults = $derived<ScenarioResult[]>(
-		activeScenarios.length > 0 ? calculateScenarios(inputs, activeScenarios, optionType) : []
+	#activeScenarios = $state.raw<Scenario[]>([]);
+	readonly scenarioPresets: Scenario[] = SCENARIO_PRESETS;
+	isScenarioPanelOpen = $state(false);
+
+	get activeScenarios(): Scenario[] {
+		return this.#activeScenarios;
+	}
+
+	readonly scenarioResults = $derived<ScenarioResult[]>(
+		this.#activeScenarios.length > 0
+			? calculateScenarios(this.inputs, this.#activeScenarios, this.optionType)
+			: []
 	);
 
 	// ── Phase 2: Time Machine State ─────────────────────
-	let timeMachineDay = $state(0);
-	let timeMachineMaxDays = $derived(Math.max(1, Math.round(timeToExpiry * 365)));
-	let timeMachineSnapshots = $derived<TimeMachineSnapshot[]>(
-		generateTimeMachineSnapshots(inputs, optionType, 100)
+	timeMachineDay = $state(0);
+	readonly timeMachineMaxDays = $derived(Math.max(1, Math.round(this.timeToExpiry * 365)));
+	readonly timeMachineSnapshots = $derived<TimeMachineSnapshot[]>(
+		generateTimeMachineSnapshots(this.inputs, this.optionType, 100)
 	);
-	let currentTimeMachineSnapshot = $derived.by<TimeMachineSnapshot | null>(() => {
-		if (timeMachineSnapshots.length === 0) return null;
+	readonly currentTimeMachineSnapshot = $derived.by<TimeMachineSnapshot | null>(() => {
+		const snapshots = this.timeMachineSnapshots;
+		if (snapshots.length === 0) return null;
 		const idx = Math.min(
-			Math.round((timeMachineDay / timeMachineMaxDays) * (timeMachineSnapshots.length - 1)),
-			timeMachineSnapshots.length - 1
+			Math.round((this.timeMachineDay / this.timeMachineMaxDays) * (snapshots.length - 1)),
+			snapshots.length - 1
 		);
-		return timeMachineSnapshots[Math.max(0, idx)];
+		return snapshots[Math.max(0, idx)];
 	});
 
 	// ── Phase 2: Sensitivity Data ───────────────────────
-	let sensitivityData = $derived<SensitivityData[]>(generateSensitivityData(inputs));
-
-	// ── Phase 2: Scenario Panel Visibility ───────────────
-	let isScenarioPanelOpen = $state(false);
+	readonly sensitivityData = $derived<SensitivityData[]>(generateSensitivityData(this.inputs));
 
 	// ── Phase 3: Market Data State ──────────────────────
-	let dataMode = $state<DataMode>('manual');
-	let activeTicker = $state('');
-	let liveOverrides = $state<Set<keyof BSInputs>>(new Set());
+	dataMode = $state<DataMode>('manual');
+	activeTicker = $state('');
+	/** Inputs last filled from live market data (a reactive set: `.has(key)` is tracked per key). */
+	readonly liveOverrides = new SvelteSet<keyof BSInputs>();
 
 	// ── Phase 4: Education, Export, UI State ───────────
-	let educationMode = $state(false);
-	let toasts = $state<ToastItem[]>([]);
-	let showCommandPalette = $state(false);
-	let showShortcutsHelp = $state(false);
-	let showSaveModal = $state(false);
-	let showSavedConfigs = $state(false);
-	let showExportPNG = $state(false);
-	let showShareLink = $state(false);
-	let showEmbedCode = $state(false);
+	educationMode = $state(false);
+	#toasts = $state.raw<ToastItem[]>([]);
+	showCommandPalette = $state(false);
+	showShortcutsHelp = $state(false);
+	showSaveModal = $state(false);
+	showSavedConfigs = $state(false);
+	showExportPNG = $state(false);
+	showShareLink = $state(false);
+	showEmbedCode = $state(false);
+
+	get toasts(): ToastItem[] {
+		return this.#toasts;
+	}
 
 	// ── Methods ──────────────────────────────────────────
-	function updateInput(key: keyof BSInputs, value: number) {
-		switch (key) {
-			case 'spotPrice':
-				spotPrice = value;
-				break;
-			case 'strikePrice':
-				strikePrice = value;
-				break;
-			case 'volatility':
-				volatility = value;
-				break;
-			case 'timeToExpiry':
-				timeToExpiry = value;
-				break;
-			case 'riskFreeRate':
-				riskFreeRate = value;
-				break;
-			case 'dividendYield':
-				dividendYield = value;
-				break;
+	updateInput = (key: keyof BSInputs, value: number): void => {
+		this[key] = value;
+	};
+
+	resetInputs = (): void => {
+		this.spotPrice = DEFAULT_INPUTS.spotPrice;
+		this.strikePrice = DEFAULT_INPUTS.strikePrice;
+		this.volatility = DEFAULT_INPUTS.volatility;
+		this.timeToExpiry = DEFAULT_INPUTS.timeToExpiry;
+		this.riskFreeRate = DEFAULT_INPUTS.riskFreeRate;
+		this.dividendYield = DEFAULT_INPUTS.dividendYield;
+	};
+
+	toggleTheme = (): void => {
+		this.#theme = this.#theme === 'dark' ? 'light' : 'dark';
+	};
+
+	addStrategyLeg = (leg: Omit<StrategyLeg, 'id'>): void => {
+		this.#strategyLegs = [...this.#strategyLegs, { ...leg, id: crypto.randomUUID() }];
+	};
+
+	/** Replace the leg with the same `id` in place, so its row keeps its place, colour and focus. */
+	updateStrategyLeg = (leg: StrategyLeg): void => {
+		this.#strategyLegs = this.#strategyLegs.map((l) => (l.id === leg.id ? leg : l));
+	};
+
+	removeStrategyLeg = (id: string): void => {
+		this.#strategyLegs = this.#strategyLegs.filter((l) => l.id !== id);
+	};
+
+	clearStrategy = (): void => {
+		this.#strategyLegs = [];
+	};
+
+	/**
+	 * Apply a shared setup (a share link, an embed URL, a saved configuration). Only the
+	 * fields present are applied; strategy legs are replaced only when some are given.
+	 */
+	applyShareableState = (state: Partial<ShareableState>): void => {
+		if (state.inputs) {
+			this.spotPrice = state.inputs.spotPrice;
+			this.strikePrice = state.inputs.strikePrice;
+			this.volatility = state.inputs.volatility;
+			this.timeToExpiry = state.inputs.timeToExpiry;
+			this.riskFreeRate = state.inputs.riskFreeRate;
+			this.dividendYield = state.inputs.dividendYield;
 		}
-	}
-
-	function resetInputs() {
-		spotPrice = DEFAULT_INPUTS.spotPrice;
-		strikePrice = DEFAULT_INPUTS.strikePrice;
-		volatility = DEFAULT_INPUTS.volatility;
-		timeToExpiry = DEFAULT_INPUTS.timeToExpiry;
-		riskFreeRate = DEFAULT_INPUTS.riskFreeRate;
-		dividendYield = DEFAULT_INPUTS.dividendYield;
-	}
-
-	function toggleTheme() {
-		theme = theme === 'dark' ? 'light' : 'dark';
-	}
-
-	function addStrategyLeg(leg: Omit<StrategyLeg, 'id'>) {
-		const id = crypto.randomUUID();
-		strategyLegs = [...strategyLegs, { ...leg, id }];
-	}
-
-	function removeStrategyLeg(id: string) {
-		strategyLegs = strategyLegs.filter((l) => l.id !== id);
-	}
-
-	function clearStrategy() {
-		strategyLegs = [];
-	}
+		if (state.optionType) this.optionType = state.optionType;
+		if (state.mode) this.calculatorMode = state.mode;
+		if (state.activeTab) this.activeTab = state.activeTab;
+		if (state.ticker) this.activeTicker = state.ticker;
+		if (state.strategyLegs?.length) {
+			this.#strategyLegs = state.strategyLegs.map((leg) => ({ ...leg, id: crypto.randomUUID() }));
+		}
+	};
 
 	// ── Phase 2: Monte Carlo Methods ────────────────────
-	/** Incremented per run so a slower, superseded run never overwrites a newer result. */
-	let monteCarloRun = 0;
-
-	async function runMC() {
-		const run = ++monteCarloRun;
-		isMonteCarloRunning = true;
-		// Plain copies: `monteCarloConfig` is a $state proxy, which postMessage cannot clone.
+	runMC = async (): Promise<void> => {
+		const run = ++this.#monteCarloRun;
+		this.#isMonteCarloRunning = true;
+		// Plain copies: `monteCarloConfig` is a deep $state proxy, which postMessage cannot clone.
 		const request: MonteCarloWorkerRequest = {
-			inputs: $state.snapshot(inputs),
-			config: $state.snapshot(monteCarloConfig)
+			inputs: $state.snapshot(this.inputs),
+			config: $state.snapshot(this.monteCarloConfig)
 		};
 
 		let result: MonteCarloResult;
@@ -280,328 +380,55 @@ export function createCalculatorState() {
 			result = runMonteCarlo(request.inputs, request.config);
 		}
 
-		if (run !== monteCarloRun) return;
-		monteCarloResult = result;
-		isMonteCarloRunning = false;
-	}
+		if (run !== this.#monteCarloRun) return;
+		this.#monteCarloResult = result;
+		this.#isMonteCarloRunning = false;
+	};
 
-	function runLightMC() {
-		monteCarloResult = runLightMonteCarlo(inputs, 200, 50);
-	}
+	runLightMC = (): void => {
+		this.#monteCarloResult = runLightMonteCarlo(this.inputs, 200, 50);
+	};
 
 	// ── Phase 2: Scenario Methods ───────────────────────
-	function toggleScenario(scenario: Scenario) {
-		const exists = activeScenarios.find((s) => s.id === scenario.id);
-		if (exists) {
-			activeScenarios = activeScenarios.filter((s) => s.id !== scenario.id);
-		} else {
-			activeScenarios = [...activeScenarios, scenario];
-		}
-	}
+	toggleScenario = (scenario: Scenario): void => {
+		const active = this.#activeScenarios;
+		this.#activeScenarios = active.some((s) => s.id === scenario.id)
+			? active.filter((s) => s.id !== scenario.id)
+			: [...active, scenario];
+	};
 
-	function clearScenarios() {
-		activeScenarios = [];
-	}
+	clearScenarios = (): void => {
+		this.#activeScenarios = [];
+	};
 
 	// ── Phase 4: Toast Methods ───────────────────────
-	function addToast(type: ToastType, message: string, duration?: number): string {
+	addToast = (type: ToastType, message: string, duration?: number): string => {
 		const id = crypto.randomUUID();
-		toasts = [...toasts, { id, type, message, duration }];
+		this.#toasts = [...this.#toasts, { id, type, message, duration }];
 		return id;
-	}
+	};
 
-	function removeToast(id: string): void {
-		toasts = toasts.filter((t) => t.id !== id);
-	}
+	removeToast = (id: string): void => {
+		this.#toasts = this.#toasts.filter((t) => t.id !== id);
+	};
 
 	// ── Phase 3: Market Data Methods ───────────────────
-	function applyMarketSnapshot(snapshot: MarketSnapshot) {
-		spotPrice = snapshot.suggestedInputs.spotPrice;
-		volatility = snapshot.suggestedInputs.volatility;
-		dividendYield = snapshot.suggestedInputs.dividendYield;
-		riskFreeRate = snapshot.suggestedInputs.riskFreeRate;
-		activeTicker = snapshot.quote.ticker;
-		liveOverrides = new Set(['spotPrice', 'volatility', 'dividendYield', 'riskFreeRate']);
-	}
+	applyMarketSnapshot = (snapshot: MarketSnapshot): void => {
+		const { suggestedInputs } = snapshot;
+		this.spotPrice = suggestedInputs.spotPrice;
+		this.volatility = suggestedInputs.volatility;
+		this.dividendYield = suggestedInputs.dividendYield;
+		this.riskFreeRate = suggestedInputs.riskFreeRate;
+		this.activeTicker = snapshot.quote.ticker;
+		this.liveOverrides.clear();
+		for (const key of LIVE_INPUT_KEYS) this.liveOverrides.add(key);
+	};
 
-	function clearLiveOverride(key: keyof BSInputs) {
-		liveOverrides = new Set([...liveOverrides].filter((k) => k !== key));
-	}
+	clearLiveOverride = (key: keyof BSInputs): void => {
+		this.liveOverrides.delete(key);
+	};
 
-	function isLivePopulated(key: keyof BSInputs): boolean {
-		return dataMode === 'live' && liveOverrides.has(key);
-	}
-
-	// ── Return Public API ────────────────────────────────
-	return {
-		get spotPrice() {
-			return spotPrice;
-		},
-		set spotPrice(v: number) {
-			spotPrice = v;
-		},
-		get strikePrice() {
-			return strikePrice;
-		},
-		set strikePrice(v: number) {
-			strikePrice = v;
-		},
-		get volatility() {
-			return volatility;
-		},
-		set volatility(v: number) {
-			volatility = v;
-		},
-		get timeToExpiry() {
-			return timeToExpiry;
-		},
-		set timeToExpiry(v: number) {
-			timeToExpiry = v;
-		},
-		get riskFreeRate() {
-			return riskFreeRate;
-		},
-		set riskFreeRate(v: number) {
-			riskFreeRate = v;
-		},
-		get dividendYield() {
-			return dividendYield;
-		},
-		set dividendYield(v: number) {
-			dividendYield = v;
-		},
-		get optionType() {
-			return optionType;
-		},
-		set optionType(v: OptionType) {
-			optionType = v;
-		},
-		get theme() {
-			return theme;
-		},
-		get activeTab() {
-			return activeTab;
-		},
-		set activeTab(v: ChartTab) {
-			activeTab = v;
-		},
-		get heatmapGreek() {
-			return heatmapGreek;
-		},
-		set heatmapGreek(v: HeatmapGreek) {
-			heatmapGreek = v;
-		},
-		get calculatorMode() {
-			return calculatorMode;
-		},
-		set calculatorMode(v: CalculatorMode) {
-			calculatorMode = v;
-		},
-		get showAdvancedGreeks() {
-			return showAdvancedGreeks;
-		},
-		set showAdvancedGreeks(v: boolean) {
-			showAdvancedGreeks = v;
-		},
-		get showProbabilities() {
-			return showProbabilities;
-		},
-		set showProbabilities(v: boolean) {
-			showProbabilities = v;
-		},
-		get isInputPanelOpen() {
-			return isInputPanelOpen;
-		},
-		set isInputPanelOpen(v: boolean) {
-			isInputPanelOpen = v;
-		},
-
-		get inputs() {
-			return inputs;
-		},
-		get pricing() {
-			return pricing;
-		},
-		get currentPrice() {
-			return currentPrice;
-		},
-		get currentIntrinsic() {
-			return currentIntrinsic;
-		},
-		get currentExtrinsic() {
-			return currentExtrinsic;
-		},
-		get currentMoneyness() {
-			return currentMoneyness;
-		},
-		get currentBreakeven() {
-			return currentBreakeven;
-		},
-		get callGreeks() {
-			return callGreeks;
-		},
-		get putGreeks() {
-			return putGreeks;
-		},
-		get currentGreeks() {
-			return currentGreeks;
-		},
-		get probabilities() {
-			return probabilities;
-		},
-		get payoffData() {
-			return payoffData;
-		},
-		get strategyMaxProfitLoss() {
-			return strategyMaxProfitLoss;
-		},
-		get strategyBreakevens() {
-			return strategyBreakevens;
-		},
-		get strategyLegs() {
-			return strategyLegs;
-		},
-
-		// Phase 2: Monte Carlo
-		get monteCarloConfig() {
-			return monteCarloConfig;
-		},
-		set monteCarloConfig(v: MonteCarloConfig) {
-			monteCarloConfig = v;
-		},
-		get monteCarloResult() {
-			return monteCarloResult;
-		},
-		get isMonteCarloRunning() {
-			return isMonteCarloRunning;
-		},
-		runMC,
-		runLightMC,
-
-		// Phase 2: Scenarios
-		get activeScenarios() {
-			return activeScenarios;
-		},
-		get scenarioResults() {
-			return scenarioResults;
-		},
-		get scenarioPresets() {
-			return SCENARIO_PRESETS;
-		},
-		toggleScenario,
-		clearScenarios,
-		get isScenarioPanelOpen() {
-			return isScenarioPanelOpen;
-		},
-		set isScenarioPanelOpen(v: boolean) {
-			isScenarioPanelOpen = v;
-		},
-
-		// Phase 2: Time Machine
-		get timeMachineDay() {
-			return timeMachineDay;
-		},
-		set timeMachineDay(v: number) {
-			timeMachineDay = v;
-		},
-		get timeMachineMaxDays() {
-			return timeMachineMaxDays;
-		},
-		get timeMachineSnapshots() {
-			return timeMachineSnapshots;
-		},
-		get currentTimeMachineSnapshot() {
-			return currentTimeMachineSnapshot;
-		},
-
-		// Phase 2: Sensitivity
-		get sensitivityData() {
-			return sensitivityData;
-		},
-
-		// Phase 3: Market Data
-		get dataMode() {
-			return dataMode;
-		},
-		set dataMode(v: DataMode) {
-			dataMode = v;
-		},
-		get activeTicker() {
-			return activeTicker;
-		},
-		set activeTicker(v: string) {
-			activeTicker = v;
-		},
-		get liveOverrides() {
-			return liveOverrides;
-		},
-		applyMarketSnapshot,
-		clearLiveOverride,
-		isLivePopulated,
-
-		// Phase 4: Education, Export, UI
-		get educationMode() {
-			return educationMode;
-		},
-		set educationMode(v: boolean) {
-			educationMode = v;
-		},
-		get toasts() {
-			return toasts;
-		},
-		addToast,
-		removeToast,
-		get showCommandPalette() {
-			return showCommandPalette;
-		},
-		set showCommandPalette(v: boolean) {
-			showCommandPalette = v;
-		},
-		get showShortcutsHelp() {
-			return showShortcutsHelp;
-		},
-		set showShortcutsHelp(v: boolean) {
-			showShortcutsHelp = v;
-		},
-		get showSaveModal() {
-			return showSaveModal;
-		},
-		set showSaveModal(v: boolean) {
-			showSaveModal = v;
-		},
-		get showSavedConfigs() {
-			return showSavedConfigs;
-		},
-		set showSavedConfigs(v: boolean) {
-			showSavedConfigs = v;
-		},
-		get showExportPNG() {
-			return showExportPNG;
-		},
-		set showExportPNG(v: boolean) {
-			showExportPNG = v;
-		},
-		get showShareLink() {
-			return showShareLink;
-		},
-		set showShareLink(v: boolean) {
-			showShareLink = v;
-		},
-		get showEmbedCode() {
-			return showEmbedCode;
-		},
-		set showEmbedCode(v: boolean) {
-			showEmbedCode = v;
-		},
-
-		updateInput,
-		resetInputs,
-		toggleTheme,
-		addStrategyLeg,
-		removeStrategyLeg,
-		clearStrategy
+	isLivePopulated = (key: keyof BSInputs): boolean => {
+		return this.dataMode === 'live' && this.liveOverrides.has(key);
 	};
 }
-
-/** Type for the calculator state */
-export type CalculatorState = ReturnType<typeof createCalculatorState>;

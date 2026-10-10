@@ -173,6 +173,13 @@
 	cursor: pointer;
 }
 
+/* `outline: none` above also beats the site-wide :focus-visible ring (same specificity,
+   later sheet), so keyboard focus gets its own ring here. */
+.calc-slider:focus-visible {
+	outline: 2px solid var(--calc-accent-hover);
+	outline-offset: 3px;
+}
+
 .calc-slider::-webkit-slider-thumb {
 	appearance: none;
 	-webkit-appearance: none;
@@ -218,17 +225,6 @@
 	box-shadow: 0 0 15px var(--calc-put-glow);
 }
 
-/* ── Tab Indicator ─────────────────────────────────────────── */
-.tab-indicator {
-	position: absolute;
-	bottom: 0;
-	height: 2px;
-	background: var(--calc-accent);
-	border-radius: 1px;
-	box-shadow: 0 0 8px var(--calc-accent-glow);
-	transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* ── Scrollbar Styling ─────────────────────────────────────── */
 .calc-scrollbar::-webkit-scrollbar {
 	width: 6px;
@@ -247,34 +243,13 @@
 	background: var(--calc-text-muted);
 }
 
-/* ── Keyframe Animations ───────────────────────────────────── */
-@keyframes calc-fade-in {
-	from {
-		opacity: 0;
-		transform: translateY(8px);
+/* Browsers without ::-webkit-scrollbar (Firefox) get the standard properties. They are
+   kept out of the others: in Chromium, setting them switches the pseudo-elements off. */
+@supports not selector(::-webkit-scrollbar) {
+	.calc-scrollbar {
+		scrollbar-width: thin;
+		scrollbar-color: var(--calc-border-accent) transparent;
 	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@keyframes calc-pulse {
-	0%,
-	100% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0.6;
-	}
-}
-
-.animate-fade-in {
-	animation: calc-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.animate-pulse-soft {
-	animation: calc-pulse 2s ease-in-out infinite;
 }
 
 /* ── Responsive Grid Layout ────────────────────────────────── */
@@ -303,17 +278,9 @@
 	}
 }
 
-/* ── Animated Card Border ─────────────────────────────────── */
-/* Registered so the conic-gradient angle on GlassCard's hover border can
-   interpolate; unregistered custom properties only flip between values. */
-@property --calc-border-angle {
-	syntax: '<angle>';
-	initial-value: 0deg;
-	inherits: false;
-}
-
-@keyframes calc-border-rotate {
-	to {
-		--calc-border-angle: 360deg;
+/* ── Reduced Motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	.calc-slider::-webkit-slider-thumb {
+		transition: none;
 	}
 }

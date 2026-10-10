@@ -4,8 +4,13 @@
 // All other methods throw CapabilityNotSupportedError
 // ============================================================
 
-import type { MarketDataProvider } from '../provider-interface.js';
-import { CapabilityNotSupportedError, AuthenticationError } from '../provider-interface.js';
+import type { MarketDataProvider, RequestOptions } from '../provider-interface.js';
+import {
+	CapabilityNotSupportedError,
+	fetchProviderJSON,
+	probeProvider
+} from '../provider-interface.js';
+import { riskFreeRateSchema } from '../schemas.js';
 import type {
 	ProviderCapabilities,
 	ProviderStatus,
@@ -21,7 +26,7 @@ import type {
 } from '../types.js';
 
 export function createFREDAdapter(): MarketDataProvider {
-	const BASE = '/tools/options-calculator/api';
+	const NAME = 'fred';
 
 	const capabilities: ProviderCapabilities = {
 		quotes: false,
@@ -35,24 +40,21 @@ export function createFREDAdapter(): MarketDataProvider {
 		streaming: false
 	};
 
+	function isAvailable(options?: RequestOptions): Promise<boolean> {
+		return probeProvider(NAME, 'treasury', {}, options);
+	}
+
 	return {
-		name: 'fred',
+		name: NAME,
 		displayName: 'FRED (Federal Reserve)',
 		capabilities,
 
-		async isAvailable(): Promise<boolean> {
-			try {
-				const res = await fetch(`${BASE}/treasury?provider=fred&healthcheck=true`);
-				return res.ok;
-			} catch {
-				return false;
-			}
-		},
+		isAvailable,
 
-		async getStatus(): Promise<ProviderStatus> {
-			const available = await this.isAvailable();
+		async getStatus(options?: RequestOptions): Promise<ProviderStatus> {
+			const available = await isAvailable(options);
 			return {
-				name: 'fred',
+				name: NAME,
 				displayName: 'FRED (Federal Reserve)',
 				isAvailable: available,
 				isConfigured: available
@@ -60,42 +62,39 @@ export function createFREDAdapter(): MarketDataProvider {
 		},
 
 		async getQuote(_ticker: string): Promise<StockQuote> {
-			throw new CapabilityNotSupportedError('fred', 'quotes');
+			throw new CapabilityNotSupportedError(NAME, 'quotes');
 		},
 
 		async getHistoricalPrices(_ticker: string, _from: string, _to: string): Promise<OHLCV[]> {
-			throw new CapabilityNotSupportedError('fred', 'historicalPrices');
+			throw new CapabilityNotSupportedError(NAME, 'historicalPrices');
 		},
 
 		async getOptionsChain(_ticker: string, _expiration: string): Promise<OptionsChain> {
-			throw new CapabilityNotSupportedError('fred', 'optionsChain');
+			throw new CapabilityNotSupportedError(NAME, 'optionsChain');
 		},
 
 		async getExpirations(_ticker: string): Promise<ExpirationList> {
-			throw new CapabilityNotSupportedError('fred', 'expirations');
+			throw new CapabilityNotSupportedError(NAME, 'expirations');
 		},
 
 		async getHistoricalVol(_ticker: string): Promise<HistoricalVolData> {
-			throw new CapabilityNotSupportedError('fred', 'historicalVol');
+			throw new CapabilityNotSupportedError(NAME, 'historicalVol');
 		},
 
 		async getDividendInfo(_ticker: string): Promise<DividendInfo> {
-			throw new CapabilityNotSupportedError('fred', 'dividends');
+			throw new CapabilityNotSupportedError(NAME, 'dividends');
 		},
 
 		async getEarningsInfo(_ticker: string): Promise<EarningsInfo> {
-			throw new CapabilityNotSupportedError('fred', 'earnings');
+			throw new CapabilityNotSupportedError(NAME, 'earnings');
 		},
 
-		async getRiskFreeRate(): Promise<RiskFreeRateData> {
-			const response = await fetch(`${BASE}/treasury?provider=fred`);
-			if (response.status === 401) throw new AuthenticationError('fred');
-			if (!response.ok) throw new Error(`FRED API error: ${response.status}`);
-			return response.json();
+		getRiskFreeRate(options?: RequestOptions): Promise<RiskFreeRateData> {
+			return fetchProviderJSON(NAME, 'FRED', 'treasury', {}, riskFreeRateSchema, options);
 		},
 
 		async searchTickers(_query: string, _limit?: number): Promise<TickerSearchResult[]> {
-			throw new CapabilityNotSupportedError('fred', 'tickerSearch');
+			throw new CapabilityNotSupportedError(NAME, 'tickerSearch');
 		}
 	};
 }

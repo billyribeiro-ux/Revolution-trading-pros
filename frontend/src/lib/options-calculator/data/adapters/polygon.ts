@@ -4,12 +4,19 @@
 // All requests go through SvelteKit API routes to keep keys secure
 // ============================================================
 
-import type { MarketDataProvider } from '../provider-interface.js';
+import type { MarketDataProvider, RequestOptions } from '../provider-interface.js';
 import {
 	CapabilityNotSupportedError,
-	AuthenticationError,
-	RateLimitExceededError
+	fetchProviderJSON,
+	probeProvider
 } from '../provider-interface.js';
+import {
+	expirationListSchema,
+	ohlcvListSchema,
+	optionsChainSchema,
+	stockQuoteSchema,
+	tickerSearchResultsSchema
+} from '../schemas.js';
 import type {
 	ProviderCapabilities,
 	ProviderStatus,
@@ -25,99 +32,119 @@ import type {
 } from '../types.js';
 
 export function createPolygonAdapter(): MarketDataProvider {
-	const BASE = '/tools/options-calculator/api';
-
-	async function fetchAPI<T>(path: string, params: Record<string, string> = {}): Promise<T> {
-		const url = new URL(path, window.location.origin);
-		url.searchParams.set('provider', 'polygon');
-		for (const [key, value] of Object.entries(params)) {
-			url.searchParams.set(key, value);
-		}
-
-		const response = await fetch(url.toString());
-
-		if (response.status === 401) throw new AuthenticationError('polygon');
-		if (response.status === 429) {
-			const resetAt = response.headers.get('X-RateLimit-Reset') ?? undefined;
-			throw new RateLimitExceededError('polygon', resetAt);
-		}
-		if (!response.ok) {
-			throw new Error(`Polygon API error: ${response.status} ${response.statusText}`);
-		}
-
-		return response.json();
-	}
+	const NAME = 'polygon';
+	const LABEL = 'Polygon';
 
 	const capabilities: ProviderCapabilities = {
 		quotes: true,
 		optionsChain: true,
 		historicalPrices: true,
 		historicalVol: false,
-		dividends: true,
+		// The quote proxy route has no dividends lookup (it ignores `include=dividends` and
+		// returns a quote), so dividend data comes from the next provider.
+		dividends: false,
 		earnings: false,
 		riskFreeRate: false,
 		tickerSearch: true,
 		streaming: true
 	};
 
+	function isAvailable(options?: RequestOptions): Promise<boolean> {
+		return probeProvider(NAME, 'quote', { ticker: 'AAPL' }, options);
+	}
+
 	return {
-		name: 'polygon',
+		name: NAME,
 		displayName: 'Polygon.io',
 		capabilities,
 
-		async isAvailable(): Promise<boolean> {
-			try {
-				const res = await fetch(`${BASE}/quote?provider=polygon&ticker=AAPL&healthcheck=true`);
-				return res.ok;
-			} catch {
-				return false;
-			}
-		},
+		isAvailable,
 
-		async getStatus(): Promise<ProviderStatus> {
-			const available = await this.isAvailable();
+		async getStatus(options?: RequestOptions): Promise<ProviderStatus> {
+			const available = await isAvailable(options);
 			return {
-				name: 'polygon',
+				name: NAME,
 				displayName: 'Polygon.io',
 				isAvailable: available,
 				isConfigured: available
 			};
 		},
 
-		async getQuote(ticker: string): Promise<StockQuote> {
-			return fetchAPI<StockQuote>(`${BASE}/quote`, { ticker });
+		getQuote(ticker: string, options?: RequestOptions): Promise<StockQuote> {
+			return fetchProviderJSON(NAME, LABEL, 'quote', { ticker }, stockQuoteSchema, options);
 		},
 
-		async getHistoricalPrices(ticker: string, from: string, to: string): Promise<OHLCV[]> {
-			return fetchAPI<OHLCV[]>(`${BASE}/historical-vol`, { ticker, from, to, type: 'prices' });
+		getHistoricalPrices(
+			ticker: string,
+			from: string,
+			to: string,
+			options?: RequestOptions
+		): Promise<OHLCV[]> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'historical-vol',
+				{ ticker, from, to, type: 'prices' },
+				ohlcvListSchema,
+				options
+			);
 		},
 
-		async getOptionsChain(ticker: string, expiration: string): Promise<OptionsChain> {
-			return fetchAPI<OptionsChain>(`${BASE}/chain`, { ticker, expiration });
+		getOptionsChain(
+			ticker: string,
+			expiration: string,
+			options?: RequestOptions
+		): Promise<OptionsChain> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'chain',
+				{ ticker, expiration },
+				optionsChainSchema,
+				options
+			);
 		},
 
-		async getExpirations(ticker: string): Promise<ExpirationList> {
-			return fetchAPI<ExpirationList>(`${BASE}/expirations`, { ticker });
+		getExpirations(ticker: string, options?: RequestOptions): Promise<ExpirationList> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'expirations',
+				{ ticker },
+				expirationListSchema,
+				options
+			);
 		},
 
 		async getHistoricalVol(_ticker: string): Promise<HistoricalVolData> {
-			throw new CapabilityNotSupportedError('polygon', 'historicalVol');
+			throw new CapabilityNotSupportedError(NAME, 'historicalVol');
 		},
 
-		async getDividendInfo(ticker: string): Promise<DividendInfo> {
-			return fetchAPI<DividendInfo>(`${BASE}/quote`, { ticker, include: 'dividends' });
+		async getDividendInfo(_ticker: string): Promise<DividendInfo> {
+			throw new CapabilityNotSupportedError(NAME, 'dividends');
 		},
 
 		async getEarningsInfo(_ticker: string): Promise<EarningsInfo> {
-			throw new CapabilityNotSupportedError('polygon', 'earnings');
+			throw new CapabilityNotSupportedError(NAME, 'earnings');
 		},
 
 		async getRiskFreeRate(): Promise<RiskFreeRateData> {
-			throw new CapabilityNotSupportedError('polygon', 'riskFreeRate');
+			throw new CapabilityNotSupportedError(NAME, 'riskFreeRate');
 		},
 
-		async searchTickers(query: string, limit: number = 10): Promise<TickerSearchResult[]> {
-			return fetchAPI<TickerSearchResult[]>(`${BASE}/search`, { q: query, limit: String(limit) });
+		searchTickers(
+			query: string,
+			limit: number = 10,
+			options?: RequestOptions
+		): Promise<TickerSearchResult[]> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'search',
+				{ q: query, limit: String(limit) },
+				tickerSearchResultsSchema,
+				options
+			);
 		}
 	};
 }

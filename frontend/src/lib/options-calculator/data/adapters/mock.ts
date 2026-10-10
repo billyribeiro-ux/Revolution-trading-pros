@@ -5,7 +5,6 @@
 
 import type { MarketDataProvider } from '../provider-interface.js';
 import type {
-	DataProviderName,
 	ProviderCapabilities,
 	ProviderStatus,
 	StockQuote,
@@ -23,10 +22,14 @@ import { price as bsPrice } from '../../engine/black-scholes.js';
 import { firstOrderGreeks } from '../../engine/greeks.js';
 import type { BSInputs } from '../../engine/types.js';
 
-const MOCK_STOCKS: Record<
-	string,
-	{ name: string; price: number; div: number; type: 'stock' | 'etf' }
-> = {
+interface MockStock {
+	name: string;
+	price: number;
+	div: number;
+	type: 'stock' | 'etf';
+}
+
+const MOCK_STOCKS: Record<string, MockStock> = {
 	AAPL: { name: 'Apple Inc.', price: 237.42, div: 0.0044, type: 'stock' },
 	MSFT: { name: 'Microsoft Corporation', price: 441.28, div: 0.0072, type: 'stock' },
 	GOOGL: { name: 'Alphabet Inc.', price: 192.15, div: 0.0, type: 'stock' },
@@ -44,8 +47,24 @@ const MOCK_STOCKS: Record<
 	BA: { name: 'Boeing Company', price: 178.32, div: 0.0, type: 'stock' }
 };
 
+/** Case-insensitive lookup; `undefined` for tickers the mock does not know. */
+function findStock(ticker: string): MockStock | undefined {
+	return MOCK_STOCKS[ticker.toUpperCase()];
+}
+
 function addNoise(base: number, pct: number = 0.002): number {
 	return base * (1 + (Math.random() - 0.5) * 2 * pct);
+}
+
+/**
+ * `YYYY-MM-DD` of a date in the user's own calendar. `toISOString()` would
+ * give the UTC date, which is the previous day east of UTC for any local
+ * midnight (so every monthly "Friday" expiry came out as a Thursday).
+ */
+function localISODate(date: Date): string {
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, '0');
+	return `${date.getFullYear()}-${month}-${day}`;
 }
 
 function generateExpirations(count: number = 12): string[] {
@@ -56,7 +75,7 @@ function generateExpirations(count: number = 12): string[] {
 	current.setDate(current.getDate() + ((5 - current.getDay() + 7) % 7 || 7));
 
 	for (let i = 0; i < count; i++) {
-		expirations.push(current.toISOString().split('T')[0]);
+		expirations.push(localISODate(current));
 		current.setDate(current.getDate() + 7);
 	}
 
@@ -65,7 +84,7 @@ function generateExpirations(count: number = 12): string[] {
 		const firstDay = date.getDay();
 		const firstFriday = firstDay <= 5 ? 5 - firstDay : 12 - firstDay;
 		date.setDate(firstFriday + 14 + 1);
-		const dateStr = date.toISOString().split('T')[0];
+		const dateStr = localISODate(date);
 		if (!expirations.includes(dateStr)) {
 			expirations.push(dateStr);
 		}
@@ -145,7 +164,7 @@ function generateMockChain(
 			vega: callGreeks.vega,
 			rho: callGreeks.rho,
 			inTheMoney: spotPrice > strike,
-			source: 'mock' as DataProviderName
+			source: 'mock'
 		});
 
 		puts.push({
@@ -167,7 +186,7 @@ function generateMockChain(
 			vega: putGreeks.vega,
 			rho: putGreeks.rho,
 			inTheMoney: spotPrice < strike,
-			source: 'mock' as DataProviderName
+			source: 'mock'
 		});
 	}
 
@@ -215,7 +234,7 @@ export function createMockAdapter(): MarketDataProvider {
 		},
 
 		async getQuote(ticker: string): Promise<StockQuote> {
-			const stock = MOCK_STOCKS[ticker.toUpperCase()];
+			const stock = findStock(ticker);
 			if (!stock) throw new Error(`Unknown ticker: ${ticker}`);
 			const p = addNoise(stock.price);
 			const prevClose = addNoise(stock.price, 0.01);
@@ -236,7 +255,7 @@ export function createMockAdapter(): MarketDataProvider {
 		},
 
 		async getHistoricalPrices(ticker: string, from: string, to: string): Promise<OHLCV[]> {
-			const stock = MOCK_STOCKS[ticker.toUpperCase()];
+			const stock = findStock(ticker);
 			if (!stock) throw new Error(`Unknown ticker: ${ticker}`);
 
 			const startDate = new Date(from);
@@ -246,9 +265,10 @@ export function createMockAdapter(): MarketDataProvider {
 
 			let currentPrice = stock.price * 0.9;
 			for (let i = 0; i < days; i++) {
+				// `from`/`to` parse as UTC midnights, so step and test weekdays in UTC too.
 				const date = new Date(startDate);
-				date.setDate(date.getDate() + i);
-				if (date.getDay() === 0 || date.getDay() === 6) continue;
+				date.setUTCDate(date.getUTCDate() + i);
+				if (date.getUTCDay() === 0 || date.getUTCDay() === 6) continue;
 
 				const dailyReturn = (Math.random() - 0.48) * 0.03;
 				currentPrice *= 1 + dailyReturn;
@@ -268,7 +288,7 @@ export function createMockAdapter(): MarketDataProvider {
 		},
 
 		async getOptionsChain(ticker: string, expiration: string): Promise<OptionsChain> {
-			const stock = MOCK_STOCKS[ticker.toUpperCase()];
+			const stock = findStock(ticker);
 			if (!stock) throw new Error(`Unknown ticker: ${ticker}`);
 			return generateMockChain(ticker.toUpperCase(), stock.price, expiration, stock.div);
 		},
@@ -297,13 +317,17 @@ export function createMockAdapter(): MarketDataProvider {
 		},
 
 		async getDividendInfo(ticker: string): Promise<DividendInfo> {
-			const stock = MOCK_STOCKS[ticker.toUpperCase()];
-			if (!stock) throw new Error(`Unknown ticker: ${ticker}`);
+			// Unknown tickers report no dividend (the same default the service
+			// applies) instead of failing the whole capability: as the last
+			// fallback, a throw here would surface "Unable to fetch" for a
+			// ticker whose live quote loaded fine.
+			const stock = findStock(ticker);
+			const div = stock?.div ?? 0;
 			return {
 				ticker: ticker.toUpperCase(),
-				annualDividend: stock.price * stock.div,
-				dividendYield: stock.div,
-				frequency: stock.div > 0 ? 'quarterly' : 'none',
+				annualDividend: stock ? stock.price * div : 0,
+				dividendYield: div,
+				frequency: div > 0 ? 'quarterly' : 'none',
 				source: 'mock'
 			};
 		},
@@ -314,7 +338,7 @@ export function createMockAdapter(): MarketDataProvider {
 			nextDate.setDate(nextDate.getDate() + daysToEarnings);
 			return {
 				ticker: ticker.toUpperCase(),
-				nextEarningsDate: nextDate.toISOString().split('T')[0],
+				nextEarningsDate: localISODate(nextDate),
 				daysToEarnings,
 				expectedMovePercent: 4 + Math.random() * 6,
 				source: 'mock'
@@ -329,7 +353,7 @@ export function createMockAdapter(): MarketDataProvider {
 				rate1Y: 0.0398,
 				rate2Y: 0.0385,
 				rate10Y: 0.0395,
-				date: new Date().toISOString().split('T')[0],
+				date: localISODate(new Date()),
 				source: 'mock'
 			};
 		},

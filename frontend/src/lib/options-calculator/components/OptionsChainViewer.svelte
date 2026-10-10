@@ -1,145 +1,217 @@
 <script lang="ts">
 	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
-	import gsap from 'gsap';
-	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
-	import type { Attachment } from 'svelte/attachments';
-	import { price as bsPrice } from '../engine/black-scholes.js';
-	import type { MarketDataService } from '../data/market-data-service.svelte.js';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
+	import { cubicOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { fly, type FlyParams } from 'svelte/transition';
+	import { logger } from '#lib/utils/logger.js';
+	import {
+		MISPRICING_THRESHOLD_PCT,
+		daysUntilExpiration,
+		detectMispricing
+	} from '../engine/mispricing.js';
+	import { getCalculator, getMarketData } from '../state/context.js';
 	import type { OptionQuote, MispricingResult } from '../data/types.js';
-	import type { BSInputs } from '../engine/types.js';
 
 	interface Props {
-		marketData: MarketDataService;
-		calc: CalculatorState;
+		/**
+		 * Called when a bid / ask / last cell is chosen. Without it, the contract is
+		 * loaded into the calculator (the behaviour the legend promises).
+		 */
 		onSelectContract?: (option: OptionQuote) => void;
 	}
 
-	let { marketData, calc, onSelectContract }: Props = $props();
+	let { onSelectContract }: Props = $props();
+
+	const calc = getCalculator();
+	const marketData = getMarketData();
+
+	interface ChainSide {
+		quote: OptionQuote;
+		mispricing: MispricingResult | null;
+	}
+
+	interface ChainRow {
+		strike: number;
+		call?: ChainSide;
+		put?: ChainSide;
+	}
+
+	/** Expiration chips shown in the header. */
+	const MAX_EXPIRATIONS = 8;
+	const QUOTE_COLUMNS = ['Bid', 'Ask', 'Last', 'Vol', 'OI', 'IV'];
+	const MISPRICING_BACKGROUND: Record<MispricingResult['direction'], string> = {
+		underpriced: 'rgba(0,212,170,0.08)',
+		overpriced: 'rgba(255,68,119,0.08)'
+	};
+
+	const expiryFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
 
 	let selectedExpirationOverride = $state<string | null>(null);
 	let isLoadingChain = $state(false);
+	/** Id of the newest `loadChain` call, so a superseded load cannot hide the spinner early. */
+	let latestLoad = 0;
 
-	let chain = $derived(marketData.currentChain);
-	let expirations = $derived(marketData.currentExpirations?.expirations ?? []);
-	let ticker = $derived(marketData.activeTicker);
-	let selectedExpiration = $derived(
+	const chain = $derived(marketData.currentChain);
+	const expirations = $derived(marketData.currentExpirations?.expirations ?? []);
+	const visibleExpirations = $derived(expirations.slice(0, MAX_EXPIRATIONS));
+	const ticker = $derived(marketData.activeTicker);
+	const selectedExpiration = $derived(
 		selectedExpirationOverride && expirations.includes(selectedExpirationOverride)
 			? selectedExpirationOverride
 			: (expirations[0] ?? '')
 	);
 
-	function animateRows(currentChain: typeof chain): Attachment<HTMLDivElement> {
-		return (node) => {
-			if (!currentChain) return;
+	function formatExpiry(expiration: string): string {
+		return expiryFormat.format(new Date(`${expiration}T12:00:00`));
+	}
 
-			const rows = node.querySelectorAll('tr');
-			if (rows.length === 0) return;
+	function formatStrike(strike: number): string {
+		return strike.toFixed(strike % 1 === 0 ? 0 : 2);
+	}
 
-			const tween = gsap.fromTo(
-				rows,
-				{ opacity: 0, y: 4 },
-				{ opacity: 1, y: 0, duration: 0.2, stagger: 0.008, ease: 'power2.out' }
-			);
-
-			return () => tween.kill();
+	/** One row per strike, calls and puts side by side, each priced once against Black-Scholes. */
+	const rows = $derived.by((): ChainRow[] => {
+		if (!chain) return [];
+		const now = Date.now();
+		const market = {
+			spotPrice: chain.underlyingPrice,
+			volatility: calc.volatility,
+			riskFreeRate: calc.riskFreeRate,
+			dividendYield: calc.dividendYield
 		};
+		const side = (quote: OptionQuote | undefined): ChainSide | undefined =>
+			quote && { quote, mispricing: detectMispricing(quote, market, now) };
+		const calls = new Map<number, OptionQuote>(chain.calls.map((quote) => [quote.strike, quote]));
+		const puts = new Map<number, OptionQuote>(chain.puts.map((quote) => [quote.strike, quote]));
+		const strikes = [...new Set([...calls.keys(), ...puts.keys()])].sort((a, b) => a - b);
+		return strikes.map((strike) => ({
+			strike,
+			call: side(calls.get(strike)),
+			put: side(puts.get(strike))
+		}));
+	});
+
+	const atmStrike = $derived.by(() => {
+		if (!chain || rows.length === 0) return 0;
+		const spot = chain.underlyingPrice;
+		return rows.reduce(
+			(closest, { strike }) =>
+				Math.abs(strike - spot) < Math.abs(closest - spot) ? strike : closest,
+			rows[0].strike
+		);
+	});
+
+	function isAbortError(error: unknown): boolean {
+		return error instanceof Error && error.name === 'AbortError';
 	}
 
 	async function loadChain(expiration: string) {
 		if (!ticker || !expiration) return;
 		selectedExpirationOverride = expiration;
+		const load = ++latestLoad;
 		isLoadingChain = true;
 		try {
 			await marketData.fetchOptionsChain(ticker, expiration);
+		} catch (error) {
+			// A newer chain (or ticker) request aborts this one: that is not a failure.
+			if (!isAbortError(error)) logger.error('[OptionsChain] Failed to load chain:', error);
 		} finally {
-			isLoadingChain = false;
+			if (load === latestLoad) isLoadingChain = false;
 		}
 	}
 
-	function computeTheoreticalPrice(option: OptionQuote): number {
-		const today = new Date();
-		const expiryDate = new Date(option.expiration);
-		const daysToExpiry = Math.max(
-			1,
-			Math.round((expiryDate.getTime() - today.getTime()) / 86_400_000)
+	function loadIntoCalculator(option: OptionQuote) {
+		calc.optionType = option.type;
+		calc.strikePrice = option.strike;
+		calc.timeToExpiry = daysUntilExpiration(option.expiration, Date.now()) / 365;
+		if (option.impliedVolatility > 0) calc.volatility = option.impliedVolatility;
+		if (chain) calc.spotPrice = chain.underlyingPrice;
+		calc.addToast(
+			'success',
+			`Loaded the ${formatStrike(option.strike)} ${option.type} (${formatExpiry(option.expiration)}) into the calculator`
 		);
-		const inputs: BSInputs = {
-			spotPrice: chain?.underlyingPrice ?? calc.spotPrice,
-			strikePrice: option.strike,
-			volatility: option.impliedVolatility > 0 ? option.impliedVolatility : calc.volatility,
-			timeToExpiry: daysToExpiry / 365,
-			riskFreeRate: calc.riskFreeRate,
-			dividendYield: calc.dividendYield
-		};
-		const pricing = bsPrice(inputs);
-		return option.type === 'call' ? pricing.callPrice : pricing.putPrice;
 	}
 
-	function detectMispricing(option: OptionQuote): MispricingResult | null {
-		if (option.mid <= 0.01) return null;
-		const theoretical = computeTheoreticalPrice(option);
-		if (theoretical <= 0.01) return null;
-		const diff = option.mid - theoretical;
-		const diffPct = (diff / theoretical) * 100;
-		if (Math.abs(diffPct) < 5) return null;
-		return {
-			option,
-			theoreticalPrice: theoretical,
-			marketPrice: option.mid,
-			priceDifference: diff,
-			priceDifferencePct: diffPct,
-			direction: diff > 0 ? 'overpriced' : 'underpriced',
-			significance: Math.abs(diffPct) > 15 ? 'significant' : 'moderate'
-		};
-	}
-
-	function handleSelectContract(option: OptionQuote) {
+	function selectContract(option: OptionQuote) {
 		if (onSelectContract) onSelectContract(option);
+		else loadIntoCalculator(option);
 	}
 
-	let strikes = $derived.by(() => {
-		if (!chain) return [];
-		const strikeSet = new SvelteSet<number>();
-		for (const c of chain.calls) strikeSet.add(c.strike);
-		for (const p of chain.puts) strikeSet.add(p.strike);
-		return [...strikeSet].sort((a, b) => a - b);
-	});
-
-	let callsByStrike = $derived.by(() => {
-		const map = new SvelteMap<number, OptionQuote>();
-		if (chain) for (const c of chain.calls) map.set(c.strike, c);
-		return map;
-	});
-
-	let putsByStrike = $derived.by(() => {
-		const map = new SvelteMap<number, OptionQuote>();
-		if (chain) for (const p of chain.puts) map.set(p.strike, p);
-		return map;
-	});
-
-	let atmStrike = $derived.by(() => {
-		if (!chain || strikes.length === 0) return 0;
-		const spot = chain.underlyingPrice;
-		return strikes.reduce((closest, s) =>
-			Math.abs(s - spot) < Math.abs(closest - spot) ? s : closest
-		);
-	});
-
-	function mispricingColor(option: OptionQuote): string {
-		const mp = detectMispricing(option);
-		if (!mp) return '';
-		if (mp.direction === 'underpriced') return 'rgba(0,212,170,0.08)';
-		return 'rgba(255,68,119,0.08)';
+	function mispricingBadge(mispricing: MispricingResult): string {
+		const sign = mispricing.direction === 'underpriced' ? '' : '+';
+		return `${sign}${mispricing.priceDifferencePct.toFixed(1)}%`;
 	}
 
-	function mispricingBadge(option: OptionQuote): string {
-		const mp = detectMispricing(option);
-		if (!mp) return '';
-		const sign = mp.direction === 'underpriced' ? '' : '+';
-		return `${sign}${mp.priceDifferencePct.toFixed(1)}%`;
+	/** Staggered fade-up for the chain rows; instant under reduced motion. */
+	function rowIntro(index: number): FlyParams {
+		if (prefersReducedMotion.current) return { duration: 0 };
+		return { y: 4, duration: 200, delay: index * 8, easing: cubicOut };
 	}
 </script>
+
+{#snippet priceCell(
+	quote: OptionQuote,
+	field: string,
+	value: number,
+	color: string,
+	background: string | undefined,
+	borderLeft = false
+)}
+	<td
+		class={['p-0', borderLeft && 'border-l']}
+		style="border-color: var(--calc-border);"
+		style:background
+		style:color
+	>
+		<button
+			type="button"
+			class="quote-button"
+			aria-label="{value.toFixed(2)} {field}, {formatStrike(quote.strike)} {quote.type}"
+			onclick={() => selectContract(quote)}>{value.toFixed(2)}</button
+		>
+	</td>
+{/snippet}
+
+{#snippet chainSide(side: ChainSide | undefined, kind: 'call' | 'put')}
+	{#if side}
+		{const itmColor = $derived(kind === 'call' ? 'var(--calc-call)' : 'var(--calc-put)')}
+		{const priceColor = $derived(side.quote.inTheMoney ? itmColor : 'var(--calc-text-secondary)')}
+		{const background = $derived(
+			side.mispricing ? MISPRICING_BACKGROUND[side.mispricing.direction] : undefined
+		)}
+		{@render priceCell(side.quote, 'bid', side.quote.bid, priceColor, background, kind === 'put')}
+		{@render priceCell(side.quote, 'ask', side.quote.ask, priceColor, background)}
+		{@render priceCell(side.quote, 'last', side.quote.lastPrice, 'var(--calc-text)', background)}
+		<td class="text-right px-2 py-1" style="color: var(--calc-text-muted);"
+			>{side.quote.volume.toLocaleString()}</td
+		>
+		<td class="text-right px-2 py-1" style="color: var(--calc-text-muted);"
+			>{side.quote.openInterest.toLocaleString()}</td
+		>
+		<td
+			class={['text-right px-2 py-1', kind === 'call' && 'border-r']}
+			style="color: var(--calc-accent); border-color: var(--calc-border);"
+		>
+			{(side.quote.impliedVolatility * 100).toFixed(1)}%
+			{#if side.mispricing}
+				<span
+					class="ml-0.5 text-[8px]"
+					style:color={side.mispricing.direction === 'underpriced'
+						? 'var(--calc-call)'
+						: 'var(--calc-put)'}
+				>
+					{mispricingBadge(side.mispricing)}
+				</span>
+			{/if}
+		</td>
+	{:else}
+		<td
+			colspan="6"
+			class={kind === 'call' ? 'border-r' : 'border-l'}
+			style="border-color: var(--calc-border);"
+		></td>
+	{/if}
+{/snippet}
 
 <div class="flex flex-col gap-3">
 	<!-- Header -->
@@ -166,26 +238,20 @@
 			{/if}
 		</div>
 
-		{#if expirations.length > 0}
-			<div class="flex items-center gap-1.5 overflow-x-auto">
-				{#each expirations.slice(0, 8) as exp (exp)}
+		{#if visibleExpirations.length > 0}
+			<div class="flex items-center gap-1.5 overflow-x-auto" role="group" aria-label="Expiration">
+				{#each visibleExpirations as exp (exp)}
+					{const selected = $derived(selectedExpiration === exp)}
 					<button
+						type="button"
 						onclick={() => loadChain(exp)}
-						class="text-[10px] px-2 py-1 rounded-lg whitespace-nowrap transition-colors cursor-pointer"
-						style:background={selectedExpiration === exp
-							? 'var(--calc-accent-glow)'
-							: 'var(--calc-surface)'}
-						style:color={selectedExpiration === exp
-							? 'var(--calc-accent)'
-							: 'var(--calc-text-muted)'}
-						style:border={selectedExpiration === exp
-							? '1px solid var(--calc-accent)'
-							: '1px solid var(--calc-border)'}
+						aria-pressed={selected}
+						class="text-[10px] px-2 py-1 rounded-lg whitespace-nowrap transition-colors motion-reduce:transition-none cursor-pointer"
+						style:background={selected ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
+						style:color={selected ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
+						style:border="1px solid {selected ? 'var(--calc-accent)' : 'var(--calc-border)'}"
 					>
-						{new Date(exp + 'T12:00:00').toLocaleDateString('en-US', {
-							month: 'short',
-							day: 'numeric'
-						})}
+						{formatExpiry(exp)}
 					</button>
 				{/each}
 			</div>
@@ -198,234 +264,87 @@
 			<p class="text-sm">Search for a ticker to view its options chain</p>
 		</div>
 	{:else if isLoadingChain}
-		<div class="flex items-center justify-center py-12">
-			<IconLoader2 size={20} class="animate-spin" style="color: var(--calc-accent);" />
+		<div class="flex items-center justify-center py-12" role="status">
+			<IconLoader2
+				size={20}
+				class="animate-spin motion-reduce:animate-none"
+				style="color: var(--calc-accent);"
+				aria-hidden="true"
+			/>
 			<span class="ml-2 text-xs" style="color: var(--calc-text-muted);">Loading chain...</span>
 		</div>
-	{:else if chain && strikes.length > 0}
+	{:else if chain && rows.length > 0}
 		<!-- Chain Table -->
-		<div
-			{@attach animateRows(chain)}
-			class="overflow-x-auto rounded-xl"
-			style="border: 1px solid var(--calc-border);"
-		>
+		<div class="overflow-x-auto rounded-xl" style="border: 1px solid var(--calc-border);">
 			<table class="w-full text-[10px]" style="font-family: var(--calc-font-mono);">
+				<caption class="sr-only">
+					{ticker} options chain, expiring {formatExpiry(chain.expiration)}
+				</caption>
 				<thead>
 					<tr style="background: var(--calc-surface);">
 						<th
+							scope="colgroup"
 							colspan="6"
 							class="text-center py-1.5 font-semibold border-b border-r"
 							style="color: var(--calc-call); border-color: var(--calc-border);">CALLS</th
 						>
 						<th
+							scope="col"
 							class="text-center py-1.5 font-semibold border-b px-3"
 							style="color: var(--calc-text);">STRIKE</th
 						>
 						<th
+							scope="colgroup"
 							colspan="6"
 							class="text-center py-1.5 font-semibold border-b border-l"
 							style="color: var(--calc-put); border-color: var(--calc-border);">PUTS</th
 						>
 					</tr>
 					<tr style="background: var(--calc-surface);">
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Bid</th
+						{#each QUOTE_COLUMNS as column, i (column)}
+							<th
+								scope="col"
+								class={[
+									'text-right px-2 py-1 font-medium',
+									i === QUOTE_COLUMNS.length - 1 && 'border-r'
+								]}
+								style="color: var(--calc-text-muted); border-color: var(--calc-border);"
+								>{column}</th
+							>
+						{/each}
+						<th scope="col" class="text-center px-3 py-1 font-bold" style="color: var(--calc-text);"
+							>K</th
 						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Ask</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Last</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Vol</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>OI</th
-						>
-						<th
-							class="text-right px-2 py-1 font-medium border-r"
-							style="color: var(--calc-text-muted); border-color: var(--calc-border);">IV</th
-						>
-						<th class="text-center px-3 py-1 font-bold" style="color: var(--calc-text);">K</th>
-						<th
-							class="text-right px-2 py-1 font-medium border-l"
-							style="color: var(--calc-text-muted); border-color: var(--calc-border);">Bid</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Ask</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Last</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>Vol</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>OI</th
-						>
-						<th class="text-right px-2 py-1 font-medium" style="color: var(--calc-text-muted);"
-							>IV</th
-						>
+						{#each QUOTE_COLUMNS as column, i (column)}
+							<th
+								scope="col"
+								class={['text-right px-2 py-1 font-medium', i === 0 && 'border-l']}
+								style="color: var(--calc-text-muted); border-color: var(--calc-border);"
+								>{column}</th
+							>
+						{/each}
 					</tr>
 				</thead>
 				<tbody>
-					{#each strikes as strike (strike)}
-						{@const call = callsByStrike.get(strike)}
-						{@const put = putsByStrike.get(strike)}
-						{@const isATM = strike === atmStrike}
-						{@const callBg = call ? mispricingColor(call) : ''}
-						{@const putBg = put ? mispricingColor(put) : ''}
+					{#each rows as row, i (row.strike)}
+						{const isATM = $derived(row.strike === atmStrike)}
 						<tr
-							class="transition-colors"
-							style:border-top="1px solid var(--calc-border)"
+							in:fly|global={rowIntro(i)}
+							class="transition-colors motion-reduce:transition-none"
+							style="border-top: 1px solid var(--calc-border);"
 							style:background={isATM ? 'var(--calc-accent-glow)' : undefined}
 						>
-							<!-- Call side -->
-							{#if call}
-								<td
-									class="text-right px-2 py-1 cursor-pointer"
-									role="button"
-									tabindex={0}
-									style:background={callBg || undefined}
-									style:color={call.inTheMoney ? 'var(--calc-call)' : 'var(--calc-text-secondary)'}
-									onclick={() => handleSelectContract(call)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											handleSelectContract(call);
-										}
-									}}>{call.bid.toFixed(2)}</td
-								>
-								<td
-									class="text-right px-2 py-1 cursor-pointer"
-									role="button"
-									tabindex={0}
-									style:background={callBg || undefined}
-									style:color={call.inTheMoney ? 'var(--calc-call)' : 'var(--calc-text-secondary)'}
-									onclick={() => handleSelectContract(call)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											handleSelectContract(call);
-										}
-									}}>{call.ask.toFixed(2)}</td
-								>
-								<td
-									class="text-right px-2 py-1 cursor-pointer"
-									role="button"
-									tabindex={0}
-									style:background={callBg || undefined}
-									style:color="var(--calc-text)"
-									onclick={() => handleSelectContract(call)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											handleSelectContract(call);
-										}
-									}}>{call.lastPrice.toFixed(2)}</td
-								>
-								<td class="text-right px-2 py-1" style="color: var(--calc-text-muted);"
-									>{call.volume.toLocaleString()}</td
-								>
-								<td class="text-right px-2 py-1" style="color: var(--calc-text-muted);"
-									>{call.openInterest.toLocaleString()}</td
-								>
-								<td
-									class="text-right px-2 py-1 border-r"
-									style="color: var(--calc-accent); border-color: var(--calc-border);"
-								>
-									{(call.impliedVolatility * 100).toFixed(1)}%
-									{#if mispricingBadge(call)}
-										<span
-											class="ml-0.5 text-[8px]"
-											style:color={detectMispricing(call)?.direction === 'underpriced'
-												? 'var(--calc-call)'
-												: 'var(--calc-put)'}
-										>
-											{mispricingBadge(call)}
-										</span>
-									{/if}
-								</td>
-							{:else}
-								<td colspan="6" class="border-r" style="border-color: var(--calc-border);"></td>
-							{/if}
+							{@render chainSide(row.call, 'call')}
 
-							<!-- Strike -->
-							<td
+							<th
+								scope="row"
 								class="text-center px-3 py-1 font-bold"
 								style:color={isATM ? 'var(--calc-accent)' : 'var(--calc-text)'}
 							>
-								{strike.toFixed(strike % 1 === 0 ? 0 : 2)}
-							</td>
+								{formatStrike(row.strike)}
+							</th>
 
-							<!-- Put side -->
-							{#if put}
-								<td
-									class="text-right px-2 py-1 border-l cursor-pointer"
-									role="button"
-									tabindex={0}
-									style:background={putBg || undefined}
-									style:border-color="var(--calc-border)"
-									style:color={put.inTheMoney ? 'var(--calc-put)' : 'var(--calc-text-secondary)'}
-									onclick={() => handleSelectContract(put)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											handleSelectContract(put);
-										}
-									}}>{put.bid.toFixed(2)}</td
-								>
-								<td
-									class="text-right px-2 py-1 cursor-pointer"
-									role="button"
-									tabindex={0}
-									style:background={putBg || undefined}
-									style:color={put.inTheMoney ? 'var(--calc-put)' : 'var(--calc-text-secondary)'}
-									onclick={() => handleSelectContract(put)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											handleSelectContract(put);
-										}
-									}}>{put.ask.toFixed(2)}</td
-								>
-								<td
-									class="text-right px-2 py-1 cursor-pointer"
-									role="button"
-									tabindex={0}
-									style:background={putBg || undefined}
-									style:color="var(--calc-text)"
-									onclick={() => handleSelectContract(put)}
-									onkeydown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											handleSelectContract(put);
-										}
-									}}>{put.lastPrice.toFixed(2)}</td
-								>
-								<td class="text-right px-2 py-1" style="color: var(--calc-text-muted);"
-									>{put.volume.toLocaleString()}</td
-								>
-								<td class="text-right px-2 py-1" style="color: var(--calc-text-muted);"
-									>{put.openInterest.toLocaleString()}</td
-								>
-								<td class="text-right px-2 py-1" style="color: var(--calc-accent);">
-									{(put.impliedVolatility * 100).toFixed(1)}%
-									{#if mispricingBadge(put)}
-										<span
-											class="ml-0.5 text-[8px]"
-											style:color={detectMispricing(put)?.direction === 'underpriced'
-												? 'var(--calc-call)'
-												: 'var(--calc-put)'}
-										>
-											{mispricingBadge(put)}
-										</span>
-									{/if}
-								</td>
-							{:else}
-								<td colspan="6" class="border-l" style="border-color: var(--calc-border);"></td>
-							{/if}
+							{@render chainSide(row.put, 'put')}
 						</tr>
 					{/each}
 				</tbody>
@@ -435,25 +354,54 @@
 		<!-- Legend -->
 		<div class="flex items-center gap-4 text-[9px]" style="color: var(--calc-text-muted);">
 			<div class="flex items-center gap-1">
-				<div class="w-2.5 h-2.5 rounded-sm" style="background: rgba(0,212,170,0.15);"></div>
-				Underpriced (&gt;5%)
+				<div
+					class="w-2.5 h-2.5 rounded-sm"
+					style="background: rgba(0,212,170,0.15);"
+					aria-hidden="true"
+				></div>
+				Underpriced (&gt;{MISPRICING_THRESHOLD_PCT}%)
 			</div>
 			<div class="flex items-center gap-1">
-				<div class="w-2.5 h-2.5 rounded-sm" style="background: rgba(255,68,119,0.15);"></div>
-				Overpriced (&gt;5%)
+				<div
+					class="w-2.5 h-2.5 rounded-sm"
+					style="background: rgba(255,68,119,0.15);"
+					aria-hidden="true"
+				></div>
+				Overpriced (&gt;{MISPRICING_THRESHOLD_PCT}%)
 			</div>
 			<div class="flex items-center gap-1">
-				<div class="w-2.5 h-2.5 rounded-sm" style="background: var(--calc-accent-glow);"></div>
+				<div
+					class="w-2.5 h-2.5 rounded-sm"
+					style="background: var(--calc-accent-glow);"
+					aria-hidden="true"
+				></div>
 				ATM Strike
 			</div>
 			<span>Click any row to populate calculator</span>
+		</div>
+	{:else if visibleExpirations.length > 0}
+		<div class="flex items-center justify-center py-12" style="color: var(--calc-text-muted);">
+			<p class="text-sm">Pick an expiration to load its options chain</p>
 		</div>
 	{/if}
 </div>
 
 <style>
-	/* Keyboard focus outline for clickable table cells */
-	td[role='button']:focus-visible {
+	/* Bid / ask / last cells: a full-cell button keeps the table semantics and gives
+	   native keyboard activation (Enter / Space). */
+	.quote-button {
+		display: block;
+		width: 100%;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		font: inherit;
+		padding: 0.25rem 0.5rem;
+		text-align: right;
+	}
+
+	.quote-button:focus-visible {
 		outline: 2px solid var(--calc-accent, #6366f1);
 		outline-offset: -2px;
 	}

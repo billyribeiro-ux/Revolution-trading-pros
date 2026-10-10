@@ -1,85 +1,70 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
 	import { formatCurrency } from '../utils/formatters.js';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
+	import { getCalculator } from '../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
+	const SPEEDS = [1, 2, 5, 10];
+	/** Days-to-expiry milestones marked on the timeline. */
+	const KEY_DTES = [30, 14, 7, 1];
+	/** Playback advances `speed` days every tick. */
+	const TICK_MS = 50;
 
 	let isPlaying = $state(false);
 	let speed = $state(1);
-	let intervalId: ReturnType<typeof setInterval> | null = null;
 
-	const SPEEDS = [1, 2, 5, 10];
+	/** One playback step: advance by `speed` days, stopping at expiration. */
+	function tick() {
+		if (calc.timeMachineDay >= calc.timeMachineMaxDays) {
+			isPlaying = false;
+			return;
+		}
+		calc.timeMachineDay = Math.min(calc.timeMachineDay + speed, calc.timeMachineMaxDays);
+	}
+
+	// Playback timer: it exists only while playing, and pausing or unmounting runs
+	// the cleanup. `tick` reads `speed` and the day when it fires (outside the
+	// effect), so the effect depends on `isPlaying` alone.
+	$effect(() => {
+		if (!isPlaying) return;
+		const timer = setInterval(tick, TICK_MS);
+		return () => clearInterval(timer);
+	});
 
 	function togglePlay() {
-		if (isPlaying) {
-			stopPlayback();
-		} else {
-			startPlayback();
-		}
-	}
-
-	function startPlayback() {
-		isPlaying = true;
-		if (calc.timeMachineDay >= calc.timeMachineMaxDays) {
+		// Replay from the start once the timeline has reached expiration.
+		if (!isPlaying && calc.timeMachineDay >= calc.timeMachineMaxDays) {
 			calc.timeMachineDay = 0;
 		}
-		intervalId = setInterval(() => {
-			if (calc.timeMachineDay >= calc.timeMachineMaxDays) {
-				stopPlayback();
-				return;
-			}
-			calc.timeMachineDay = Math.min(calc.timeMachineDay + speed, calc.timeMachineMaxDays);
-		}, 50);
-	}
-
-	function stopPlayback() {
-		isPlaying = false;
-		if (intervalId !== null) {
-			clearInterval(intervalId);
-			intervalId = null;
-		}
-	}
-
-	function handleSliderInput(e: Event) {
-		const val = parseInt((e.currentTarget as HTMLInputElement).value, 10);
-		calc.timeMachineDay = val;
-		if (isPlaying) stopPlayback();
+		isPlaying = !isPlaying;
 	}
 
 	function cycleSpeed() {
-		const idx = SPEEDS.indexOf(speed);
-		speed = SPEEDS[(idx + 1) % SPEEDS.length];
+		speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length];
 	}
 
-	let remainingDTE = $derived(Math.max(0, calc.timeMachineMaxDays - calc.timeMachineDay));
+	/** Scrubbing the slider takes over from playback. */
+	function scrubTo(day: number) {
+		calc.timeMachineDay = day;
+		isPlaying = false;
+	}
 
-	let snapshot = $derived(calc.currentTimeMachineSnapshot);
+	const remainingDTE = $derived(Math.max(0, calc.timeMachineMaxDays - calc.timeMachineDay));
 
-	let sliderPercent = $derived(
+	const snapshot = $derived(calc.currentTimeMachineSnapshot);
+
+	const sliderPercent = $derived(
 		calc.timeMachineMaxDays > 0 ? (calc.timeMachineDay / calc.timeMachineMaxDays) * 100 : 0
 	);
 
-	// Key DTE markers
-	let markers = $derived.by(() => {
+	const markers = $derived.by(() => {
 		const max = calc.timeMachineMaxDays;
-		const keyDTEs = [30, 14, 7, 1];
-		return keyDTEs
-			.filter((dte) => dte < max)
-			.map((dte) => ({
-				dte,
-				position: ((max - dte) / max) * 100
-			}));
-	});
-
-	onDestroy(() => {
-		stopPlayback();
+		return KEY_DTES.filter((dte) => dte < max).map((dte) => ({
+			dte,
+			position: ((max - dte) / max) * 100
+		}));
 	});
 </script>
 
@@ -88,20 +73,23 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
 			<button
+				type="button"
 				onclick={togglePlay}
-				class="flex items-center justify-center w-7 h-7 rounded-lg transition-colors cursor-pointer"
+				class="flex items-center justify-center w-7 h-7 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 				style="background: var(--calc-accent); color: white;"
 				aria-label={isPlaying ? 'Pause' : 'Play'}
 			>
 				{#if isPlaying}
-					<IconPlayerPause size={14} />
+					<IconPlayerPause size={14} aria-hidden="true" />
 				{:else}
-					<IconPlayerPlay size={14} />
+					<IconPlayerPlay size={14} aria-hidden="true" />
 				{/if}
 			</button>
 
 			<button
+				type="button"
 				onclick={cycleSpeed}
+				aria-label="Playback speed {speed}x"
 				class="text-[10px] font-bold px-2 py-1 rounded-lg cursor-pointer"
 				style="background: var(--calc-surface); color: var(--calc-accent); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
 			>
@@ -158,12 +146,13 @@
 		<div
 			class="absolute top-3 left-0 right-0 h-2 rounded-full"
 			style="background: var(--calc-surface-hover);"
+			aria-hidden="true"
 		>
 			<!-- Filled track -->
 			<div
-				class="absolute top-0 left-0 h-full rounded-full transition-all"
-				style:width={`${sliderPercent}%`}
-				style:background="linear-gradient(90deg, var(--calc-accent), var(--calc-warning))"
+				class="absolute top-0 left-0 h-full rounded-full transition-all motion-reduce:transition-none"
+				style="background: linear-gradient(90deg, var(--calc-accent), var(--calc-warning));"
+				style:width="{sliderPercent}%"
 			></div>
 		</div>
 
@@ -171,8 +160,9 @@
 		{#each markers as marker (marker.dte)}
 			<div
 				class="absolute top-0 flex flex-col items-center"
-				style:left={`${marker.position}%`}
-				style:transform="translateX(-50%)"
+				style="transform: translateX(-50%);"
+				style:left="{marker.position}%"
+				aria-hidden="true"
 			>
 				<span
 					class="text-[7px] font-medium"
@@ -189,19 +179,18 @@
 			type="range"
 			min="0"
 			max={calc.timeMachineMaxDays}
-			value={calc.timeMachineDay}
-			oninput={handleSliderInput}
+			bind:value={() => calc.timeMachineDay, scrubTo}
 			aria-label="Time machine day selector"
-			class="absolute top-1.5 left-0 w-full h-5 opacity-0 cursor-pointer z-10"
+			aria-valuetext="Day {calc.timeMachineDay}, {remainingDTE} DTE remaining"
+			class="time-slider absolute top-1.5 left-0 w-full h-5 opacity-0 cursor-pointer z-10"
 		/>
 
-		<!-- Custom thumb -->
+		<!-- Custom thumb (shows the range input's keyboard focus) -->
 		<div
-			class="absolute top-1.5 w-4 h-4 rounded-full pointer-events-none"
-			style:left={`calc(${sliderPercent}% - 8px)`}
-			style:background="var(--calc-accent)"
-			style:box-shadow="0 0 8px var(--calc-accent-glow)"
-			style:border="2px solid var(--calc-bg)"
+			class="slider-thumb absolute top-1.5 w-4 h-4 rounded-full pointer-events-none"
+			style="background: var(--calc-accent); box-shadow: 0 0 8px var(--calc-accent-glow); border: 2px solid var(--calc-bg);"
+			style:left="calc({sliderPercent}% - 8px)"
+			aria-hidden="true"
 		></div>
 	</div>
 
@@ -218,3 +207,10 @@
 		>
 	</div>
 </div>
+
+<style>
+	.time-slider:focus-visible + .slider-thumb {
+		outline: 2px solid var(--calc-accent);
+		outline-offset: 2px;
+	}
+</style>

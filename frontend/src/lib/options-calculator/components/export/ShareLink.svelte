@@ -3,78 +3,88 @@
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import gsap from 'gsap';
+	import { page } from '$app/state';
+	import { backOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { scale } from 'svelte/transition';
+	import type { Attachment } from 'svelte/attachments';
 	import { generateShareURL, copyToClipboard } from '../../utils/share-utils.js';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
+	import { getCalculator } from '../../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
+	/** How long the copy button reads "Copied!". */
+	const COPIED_FEEDBACK_MS = 2500;
 
-	let modalEl: HTMLDivElement | undefined = $state();
 	let copied = $state(false);
+	let copiedTimer: ReturnType<typeof setTimeout> | undefined;
 
-	let shareURL = $derived(
-		generateShareURL({
-			inputs: calc.inputs,
-			optionType: calc.optionType,
-			mode: calc.calculatorMode,
-			activeTab: calc.activeTab,
-			ticker: calc.activeTicker || undefined,
-			strategyLegs: calc.strategyLegs.length > 0 ? calc.strategyLegs : undefined
-		})
+	// Built from `page.url` rather than `window.location`, so it is safe to evaluate anywhere.
+	const shareURL = $derived(
+		generateShareURL(
+			{
+				inputs: calc.inputs,
+				optionType: calc.optionType,
+				mode: calc.calculatorMode,
+				activeTab: calc.activeTab,
+				ticker: calc.activeTicker || undefined,
+				strategyLegs: calc.strategyLegs.length > 0 ? calc.strategyLegs : undefined
+			},
+			`${page.url.origin}/tools/options-calculator`
+		)
 	);
 
-	let displayURL = $derived(shareURL.length > 80 ? shareURL.slice(0, 77) + '\u2026' : shareURL);
-
-	$effect(() => {
-		if (calc.showShareLink && modalEl) {
-			copied = false;
-			gsap.fromTo(
-				modalEl,
-				{ scale: 0.92, opacity: 0 },
-				{ scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.5)' }
-			);
-		}
-	});
+	const displayURL = $derived(shareURL.length > 80 ? `${shareURL.slice(0, 77)}…` : shareURL);
 
 	async function handleCopy(): Promise<void> {
 		const success = await copyToClipboard(shareURL);
 		if (success) {
 			copied = true;
+			clearTimeout(copiedTimer);
+			copiedTimer = setTimeout(() => (copied = false), COPIED_FEEDBACK_MS);
 			calc.addToast('success', 'Link copied to clipboard!');
-			setTimeout(() => (copied = false), 2500);
 		} else {
 			calc.addToast('error', 'Failed to copy link.');
 		}
 	}
 
-	function openInNewTab(): void {
-		window.open(shareURL, '_blank', 'noopener');
-	}
-
+	/**
+	 * The only way the dialog closes (backdrop, close button, Escape), so every opening starts
+	 * with the plain "Copy Link" label.
+	 */
 	function handleClose(): void {
 		calc.showShareLink = false;
+		clearTimeout(copiedTimer);
+		copied = false;
 	}
 
-	function handleKeydown(e: KeyboardEvent): void {
-		if (!calc.showShareLink) return;
-		if (e.key === 'Escape') handleClose();
+	function handleKeydown(event: KeyboardEvent): void {
+		if (calc.showShareLink && event.key === 'Escape') handleClose();
 	}
+
+	/** Moves focus into the dialog when it opens and hands it back to the opener when it closes. */
+	const focusDialog: Attachment<HTMLElement> = (dialog) => {
+		const opener = document.activeElement;
+		dialog.focus();
+		return () => {
+			if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+		};
+	};
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
 {#if calc.showShareLink}
 	<div
-		class="fixed inset-0 z-[9995] flex items-center justify-center p-4"
+		{@attach focusDialog}
+		class="fixed inset-0 z-[9995] flex items-center justify-center p-4 outline-none"
 		role="dialog"
 		aria-modal="true"
 		aria-label="Share Calculator Link"
+		tabindex="-1"
 	>
 		<button
+			type="button"
 			class="absolute inset-0 cursor-default"
 			style="background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);"
 			onclick={handleClose}
@@ -83,7 +93,11 @@
 		></button>
 
 		<div
-			bind:this={modalEl}
+			in:scale={{
+				start: 0.92,
+				duration: prefersReducedMotion.current ? 0 : 250,
+				easing: backOut
+			}}
 			class="relative z-10 w-full max-w-md rounded-2xl p-5 flex flex-col gap-4"
 			style="
 				background: var(--calc-surface);
@@ -94,7 +108,7 @@
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2">
-					<IconLink size={16} style="color: var(--calc-accent);" />
+					<IconLink size={16} style="color: var(--calc-accent);" aria-hidden="true" />
 					<h3
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
@@ -103,12 +117,13 @@
 					</h3>
 				</div>
 				<button
+					type="button"
 					onclick={handleClose}
 					class="cursor-pointer p-1 rounded-md"
 					style="color: var(--calc-text-muted);"
 					aria-label="Close"
 				>
-					<IconX size={16} />
+					<IconX size={16} aria-hidden="true" />
 				</button>
 			</div>
 
@@ -132,21 +147,25 @@
 			<!-- Actions -->
 			<div class="flex gap-2">
 				<button
+					type="button"
 					onclick={handleCopy}
 					class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
 					style="background: var(--calc-accent); color: white;"
 				>
-					<IconCopy size={13} />
+					<IconCopy size={13} aria-hidden="true" />
 					{copied ? 'Copied!' : 'Copy Link'}
 				</button>
-				<button
-					onclick={openInNewTab}
+				<!-- A real link: it navigates, so it also supports middle-click, copy-link, etc. -->
+				<a
+					href={shareURL}
+					target="_blank"
+					rel="noopener"
 					class="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-medium cursor-pointer"
 					style="background: var(--calc-surface-hover); color: var(--calc-text-secondary); border: 1px solid var(--calc-border);"
 				>
-					<IconExternalLink size={13} />
+					<IconExternalLink size={13} aria-hidden="true" />
 					Open
-				</button>
+				</a>
 			</div>
 		</div>
 	</div>

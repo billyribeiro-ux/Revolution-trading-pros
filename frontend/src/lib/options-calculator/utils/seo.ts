@@ -3,13 +3,28 @@
 // JSON-LD, Open Graph, FAQ schema for search engines.
 // ============================================================
 
+import type { JsonLdNode } from '#lib/seo/types.js';
 import type { BSInputs } from '../engine/types.js';
+
+/** Open Graph / Twitter Card tags for the calculator, keyed by their `property` / `name`. */
+export interface OGMeta {
+	'og:title': string;
+	'og:description': string;
+	'og:type': 'website';
+	'og:url': string;
+	'og:image': string;
+	'og:site_name': string;
+	'twitter:card': 'summary_large_image';
+	'twitter:title': string;
+	'twitter:description': string;
+	'twitter:image': string;
+}
 
 /**
  * Generate JSON-LD WebApplication structured data.
- * Place inside <script type="application/ld+json"> in <svelte:head>.
+ * Pass it to the route's `seo.jsonld` (see `#lib/seo`); the root layout's `<Seo>` renders it.
  */
-export function generateStructuredData(): object {
+export function generateStructuredData(): JsonLdNode {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'WebApplication',
@@ -55,7 +70,7 @@ export function generateStructuredData(): object {
  * Generate Open Graph meta tag key-value pairs.
  * Optionally personalizes description with current inputs.
  */
-export function generateOGMeta(inputs?: BSInputs): Record<string, string> {
+export function generateOGMeta(inputs?: BSInputs): OGMeta {
 	const description = inputs
 		? `Analyze ${inputs.spotPrice > 0 ? `$${inputs.spotPrice.toFixed(0)}` : ''} options with real-time Greeks and interactive charts. Free professional-grade calculator by Revolution Trading Pros.`
 		: 'The most advanced free Black-Scholes options calculator. Real-time Greeks, payoff diagrams, strategy builder, Monte Carlo simulation, and live market data.';
@@ -82,7 +97,7 @@ export function generateOGMeta(inputs?: BSInputs): Record<string, string> {
  * health sites; do not use this helper for Google SEO on marketing/tool pages.
  * See: frontend/src/lib/seo/README.md §May 2026 SEO updates.
  */
-export function generateFAQStructuredData(): object {
+export function generateFAQStructuredData(): JsonLdNode {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'FAQPage',

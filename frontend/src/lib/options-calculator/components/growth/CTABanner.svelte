@@ -1,58 +1,58 @@
 <script lang="ts">
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
-	import gsap from 'gsap';
-
-	let bannerEl: HTMLDivElement | undefined = $state();
-	let dismissed = $state(false);
+	import { quadIn, quadOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { fly } from 'svelte/transition';
 
 	const DISMISS_KEY = 'rtp:calc:cta-dismissed';
 	const DISMISS_DAYS = 7;
+	const DAY_MS = 24 * 60 * 60 * 1000;
+	/** The banner waits this long before sliding in, so it never competes with first paint. */
+	const REVEAL_DELAY_MS = 2000;
 
+	/**
+	 * Hidden until storage has been checked: the dismissal lives in localStorage, which the
+	 * server cannot see, so the server renders no banner.
+	 */
+	let visible = $state(false);
+
+	/** True when the visitor dismissed the banner within the last `DISMISS_DAYS` days. */
+	function dismissedRecently(): boolean {
+		try {
+			const dismissedAt = Number(localStorage.getItem(DISMISS_KEY));
+			return dismissedAt > 0 && Date.now() - dismissedAt < DISMISS_DAYS * DAY_MS;
+		} catch {
+			// Storage blocked (private mode, sandboxed embed): treat as never dismissed.
+			return false;
+		}
+	}
+
+	// Storage is I/O: read it once after mount, never during render.
 	$effect(() => {
-		if (typeof window === 'undefined') return;
-		const raw = localStorage.getItem(DISMISS_KEY);
-		if (raw) {
-			const dismissedAt = parseInt(raw, 10);
-			const daysSince = (Date.now() - dismissedAt) / (1000 * 60 * 60 * 24);
-			if (daysSince < DISMISS_DAYS) {
-				dismissed = true;
-				return;
-			}
-		}
-		// Animate in after a short delay
-		if (bannerEl && !dismissed) {
-			gsap.fromTo(
-				bannerEl,
-				{ y: 20, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', delay: 2 }
-			);
-		}
+		visible = !dismissedRecently();
 	});
 
 	function handleDismiss(): void {
-		if (bannerEl) {
-			gsap.to(bannerEl, {
-				y: 20,
-				opacity: 0,
-				duration: 0.2,
-				ease: 'power2.in',
-				onComplete: () => {
-					dismissed = true;
-					localStorage.setItem(DISMISS_KEY, Date.now().toString());
-				}
-			});
-		} else {
-			dismissed = true;
+		visible = false;
+		try {
 			localStorage.setItem(DISMISS_KEY, Date.now().toString());
+		} catch {
+			// Not persisted; the banner simply returns on the next visit.
 		}
 	}
 </script>
 
-{#if !dismissed}
+{#if visible}
 	<div
-		bind:this={bannerEl}
-		class="w-full rounded-xl px-4 py-3 flex items-center gap-3 opacity-0"
+		in:fly={{
+			y: 20,
+			delay: REVEAL_DELAY_MS,
+			duration: prefersReducedMotion.current ? 0 : 400,
+			easing: quadOut
+		}}
+		out:fly={{ y: 20, duration: prefersReducedMotion.current ? 0 : 200, easing: quadIn }}
+		class="w-full rounded-xl px-4 py-3 flex items-center gap-3"
 		style="
 			background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(0,212,170,0.06));
 			border: 1px solid rgba(99,102,241,0.15);
@@ -77,17 +77,18 @@
 			style="background: var(--calc-accent); color: white;"
 		>
 			Learn More
-			<IconArrowRight size={10} />
+			<IconArrowRight size={10} aria-hidden="true" />
 		</a>
 
 		<!-- Dismiss -->
 		<button
+			type="button"
 			onclick={handleDismiss}
 			class="shrink-0 cursor-pointer p-1 rounded-md transition-colors"
 			style="color: var(--calc-text-muted);"
 			aria-label="Dismiss banner"
 		>
-			<IconX size={12} />
+			<IconX size={12} aria-hidden="true" />
 		</button>
 	</div>
 {/if}

@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { on } from 'svelte/events';
 	import { prefersReducedMotion } from 'svelte/motion';
+	import { devicePixelRatio, innerHeight, innerWidth } from 'svelte/reactivity/window';
 	import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
 	import { BufferAttribute } from 'three/src/core/BufferAttribute.js';
 	import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
@@ -18,6 +20,8 @@
 
 	const SHAPE_COUNT = 25;
 	const PARTICLE_COUNT = 200;
+	/** Past 2× the extra fill rate buys nothing visible on a soft, fogged background. */
+	const MAX_PIXEL_RATIO = 2;
 
 	interface FloatingShape {
 		mesh: Mesh;
@@ -28,6 +32,10 @@
 		spin: readonly [number, number, number];
 	}
 
+	// The canvas's CSS size, kept current by the (ResizeObserver-backed) dimension bindings.
+	let width = $state(0);
+	let height = $state(0);
+
 	const initScene: Attachment<HTMLCanvasElement> = (canvas) => {
 		let renderer: WebGLRenderer;
 		try {
@@ -36,7 +44,6 @@
 			// Decorative background: without WebGL the hero gradient stands alone.
 			return;
 		}
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 		renderer.setClearColor(0x000000, 0);
 
 		const scene = new Scene();
@@ -44,14 +51,6 @@
 
 		const camera = new PerspectiveCamera(60, 16 / 9, 0.1, 200);
 		camera.position.set(0, 0, 30);
-
-		const resize = (width: number, height: number) => {
-			if (width <= 0 || height <= 0) return;
-			camera.aspect = width / height;
-			camera.updateProjectionMatrix();
-			renderer.setSize(width, height, false);
-		};
-		resize(canvas.clientWidth, canvas.clientHeight);
 
 		// ── Floating wireframe shapes ──
 		const materials = [
@@ -105,10 +104,12 @@
 		scene.add(grid);
 
 		const gridPositions = gridGeometry.attributes.position;
+		const gridBaseX = new Float32Array(gridPositions.count);
 		const gridBaseZ = new Float32Array(gridPositions.count);
 		for (let i = 0; i < gridPositions.count; i++) {
 			const x = gridPositions.getX(i);
 			const y = gridPositions.getY(i);
+			gridBaseX[i] = x;
 			gridBaseZ[i] = Math.sin(x * 0.15) * Math.cos(y * 0.2) * 3 + Math.sin(x * 0.08 + y * 0.1) * 2;
 			gridPositions.setZ(i, gridBaseZ[i]);
 		}
@@ -136,78 +137,89 @@
 		});
 		scene.add(new Points(particleGeometry, particleMaterial));
 
-		// ── Pointer parallax ──
+		// ── Pointer parallax (mouse only; touch drags scroll the page) ──
 		let pointerX = 0;
 		let pointerY = 0;
-		const onPointerMove = (event: PointerEvent) => {
-			if (event.pointerType !== 'mouse') return;
-			pointerX = (event.clientX / window.innerWidth) * 2 - 1;
-			pointerY = -(event.clientY / window.innerHeight) * 2 + 1;
-		};
-		window.addEventListener('pointermove', onPointerMove, { passive: true });
+		const offPointer = on(
+			window,
+			'pointermove',
+			(event) => {
+				if (event.pointerType !== 'mouse') return;
+				pointerX = (event.clientX / (innerWidth.current ?? 1)) * 2 - 1;
+				pointerY = -(event.clientY / (innerHeight.current ?? 1)) * 2 + 1;
+			},
+			{ passive: true }
+		);
 
-		let motion = true;
-		let animId = 0;
 		const start = performance.now();
 
-		const frame = () => {
-			animId = requestAnimationFrame(frame);
-			if (motion) {
-				const t = (performance.now() - start) / 1000;
-				for (const shape of shapes) {
-					const { mesh } = shape;
-					mesh.position.y = shape.baseY + Math.sin(t * shape.floatSpeed) * shape.floatAmp;
-					// Ease towards a pointer-offset rest position (bounded, never drifts away).
-					mesh.position.x += (shape.baseX + pointerX * 0.3 - mesh.position.x) * 0.02;
-					mesh.rotation.x += shape.spin[0];
-					mesh.rotation.y += shape.spin[1];
-					mesh.rotation.z += shape.spin[2];
-				}
-
-				grid.rotation.z = Math.sin(t * 0.1) * 0.05;
-				for (let i = 0; i < gridPositions.count; i++) {
-					gridPositions.setZ(
-						i,
-						gridBaseZ[i] + Math.sin(t * 0.5 + gridPositions.getX(i) * 0.1) * 0.3
-					);
-				}
-				gridPositions.needsUpdate = true;
-
-				for (let i = 0; i < PARTICLE_COUNT; i++) {
-					const y = i * 3 + 1;
-					particlePositions[y] += particleSpeeds[i];
-					if (particlePositions[y] > 20) particlePositions[y] = -20;
-				}
-				particleAttribute.needsUpdate = true;
-
-				camera.position.x += (pointerX * 2 - camera.position.x) * 0.02;
-				camera.position.y += (pointerY * 1.5 - camera.position.y) * 0.02;
-				camera.lookAt(0, 0, 0);
+		/** Advances the scene to `now` (a rAF timestamp, same clock as `performance.now()`). */
+		const advance = (now: number) => {
+			const t = (now - start) / 1000;
+			for (const shape of shapes) {
+				const { mesh } = shape;
+				mesh.position.y = shape.baseY + Math.sin(t * shape.floatSpeed) * shape.floatAmp;
+				// Ease towards a pointer-offset rest position (bounded, never drifts away).
+				mesh.position.x += (shape.baseX + pointerX * 0.3 - mesh.position.x) * 0.02;
+				mesh.rotation.x += shape.spin[0];
+				mesh.rotation.y += shape.spin[1];
+				mesh.rotation.z += shape.spin[2];
 			}
-			renderer.render(scene, camera);
+
+			grid.rotation.z = Math.sin(t * 0.1) * 0.05;
+			for (let i = 0; i < gridPositions.count; i++) {
+				gridPositions.setZ(i, gridBaseZ[i] + Math.sin(t * 0.5 + gridBaseX[i] * 0.1) * 0.3);
+			}
+			gridPositions.needsUpdate = true;
+
+			for (let i = 0; i < PARTICLE_COUNT; i++) {
+				const y = i * 3 + 1;
+				particlePositions[y] += particleSpeeds[i];
+				if (particlePositions[y] > 20) particlePositions[y] = -20;
+			}
+			particleAttribute.needsUpdate = true;
+
+			camera.position.x += (pointerX * 2 - camera.position.x) * 0.02;
+			camera.position.y += (pointerY * 1.5 - camera.position.y) * 0.02;
+			camera.lookAt(0, 0, 0);
 		};
 
-		// Stop rendering once the hero has scrolled out of view.
-		const visibility = new IntersectionObserver(([entry]) => {
-			cancelAnimationFrame(animId);
-			if (entry?.isIntersecting) frame();
+		// Whether the canvas is on screen. A callback can carry several queued entries for
+		// this one canvas, oldest first: only the last one is the current state.
+		let visible = $state(false);
+		const visibility = new IntersectionObserver((entries) => {
+			const latest = entries.at(-1);
+			if (latest) visible = latest.isIntersecting;
 		});
 		visibility.observe(canvas);
 
-		const sizeObserver = new ResizeObserver(([entry]) => {
-			if (entry) resize(entry.contentRect.width, entry.contentRect.height);
-		});
-		sizeObserver.observe(canvas);
-
+		// Drawing buffer: follows the bound CSS size and the device pixel ratio (zoom, or a
+		// move to another screen). Resizing clears the canvas, so repaint the still frame at
+		// once — while paused there is no next frame to do it.
 		$effect(() => {
-			motion = !prefersReducedMotion.current;
+			if (width <= 0 || height <= 0) return;
+			renderer.setPixelRatio(Math.min(devicePixelRatio.current ?? 1, MAX_PIXEL_RATIO));
+			renderer.setSize(width, height, false);
+			camera.aspect = width / height;
+			camera.updateProjectionMatrix();
+			renderer.render(scene, camera);
 		});
 
+		// Animate only while on screen and motion is allowed; otherwise the last frame stands.
+		$effect(() => {
+			if (!visible || prefersReducedMotion.current) return;
+			let frameId = requestAnimationFrame(function frame(now) {
+				advance(now);
+				renderer.render(scene, camera);
+				frameId = requestAnimationFrame(frame);
+			});
+			return () => cancelAnimationFrame(frameId);
+		});
+
+		// The nested effects above (and their rAF) are torn down before this runs.
 		return () => {
-			cancelAnimationFrame(animId);
+			offPointer();
 			visibility.disconnect();
-			sizeObserver.disconnect();
-			window.removeEventListener('pointermove', onPointerMove);
 			for (const geometry of geometries) geometry.dispose();
 			for (const material of materials) material.dispose();
 			gridMaterial.dispose();
@@ -218,4 +230,10 @@
 	};
 </script>
 
-<canvas {@attach initScene} class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
+<canvas
+	{@attach initScene}
+	bind:clientWidth={width}
+	bind:clientHeight={height}
+	class="absolute inset-0 h-full w-full"
+	aria-hidden="true"
+></canvas>

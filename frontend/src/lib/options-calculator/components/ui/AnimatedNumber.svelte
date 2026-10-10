@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import type { Attachment } from 'svelte/attachments';
+	import type { ClassValue } from 'svelte/elements';
 
 	interface Props {
 		value: number;
 		decimals?: number;
 		prefix?: string;
 		suffix?: string;
-		duration?: number;
 		colorize?: boolean;
-		class?: string;
+		class?: ClassValue;
 	}
 
 	let {
@@ -18,20 +18,18 @@
 		prefix = '',
 		suffix = '',
 		colorize = false,
-		class: className = ''
+		class: className
 	}: Props = $props();
 
-	let colorClass = $derived(
-		colorize ? (value > 0.0001 ? 'text-call' : value < -0.0001 ? 'text-put' : '') : ''
-	);
-	let displayText = $derived(`${prefix}${value.toFixed(decimals)}${suffix}`);
-
+	/** Values within ±EPSILON read as zero and stay uncoloured. */
+	const EPSILON = 0.0001;
 	const FLASH_FALLBACK = { up: '#22c55e', down: '#ef4444' } as const;
 
 	/**
-	 * Flashes the number green when it rises and red when it falls, fading back
-	 * to its resting colour. A Web Animation restarts cleanly on every change,
-	 * so rapid updates (a slider drag) never leave a stale flash behind.
+	 * The number itself always shows the exact current value (no count-up tween): it is
+	 * read while a slider drags. Instead it flashes green when it rises and red when it
+	 * falls, fading back to its resting colour. A Web Animation restarts cleanly on every
+	 * change, so rapid updates never leave a stale flash behind.
 	 */
 	const directionFlash: Attachment<HTMLSpanElement> = (element) => {
 		let previous: number | undefined;
@@ -59,6 +57,13 @@
 	};
 </script>
 
-<span {@attach directionFlash} class={['number-display', colorClass, className]}>
-	{displayText}
+<span
+	{@attach directionFlash}
+	class={[
+		'number-display',
+		colorize && { 'text-call': value > EPSILON, 'text-put': value < -EPSILON },
+		className
+	]}
+>
+	{prefix}{value.toFixed(decimals)}{suffix}
 </span>

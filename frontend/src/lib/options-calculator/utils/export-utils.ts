@@ -8,9 +8,48 @@ import type {
 	OptionType,
 	AllGreeks,
 	ProbabilityResult,
+	CaptureZone,
 	ScreenshotConfig
 } from '../engine/types.js';
 import { formatCurrency, formatGreek } from './formatters.js';
+import { logger } from '#lib/utils/logger.js';
+
+/** How long the footer waits for the logo image before drawing the text fallback. */
+const LOGO_TIMEOUT_MS = 2000;
+
+/**
+ * How long a download's object URL stays alive. Revoking it right after `click()` can abort
+ * the download in some Safari versions; FileSaver.js waits 40 s for the same reason.
+ */
+const OBJECT_URL_LIFETIME_MS = 40_000;
+
+/** Save a blob as a file through a temporary object URL (browser only; call from an event). */
+export function downloadBlob(blob: Blob, filename: string): void {
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = filename;
+	a.click();
+	setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_LIFETIME_MS);
+}
+
+/** Load an image for canvas drawing; rejects on error or after `timeoutMs`. */
+function loadImage(src: string, timeoutMs: number): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		const timer = setTimeout(() => reject(new Error(`Timed out loading ${src}`)), timeoutMs);
+		img.crossOrigin = 'anonymous';
+		img.onload = () => {
+			clearTimeout(timer);
+			resolve(img);
+		};
+		img.onerror = () => {
+			clearTimeout(timer);
+			reject(new Error(`Could not load ${src}`));
+		};
+		img.src = src;
+	});
+}
 
 /** Default screenshot configuration */
 export const DEFAULT_SCREENSHOT_CONFIG: ScreenshotConfig = {
@@ -27,8 +66,96 @@ export const DEFAULT_SCREENSHOT_CONFIG: ScreenshotConfig = {
 // PNG SCREENSHOT ENGINE
 // ────────────────────────────────────────────────────────────
 
+/** Marks the calculator regions a capture zone selects (set in Calculator.svelte). */
+const CAPTURE_REGION_ATTRIBUTE = 'data-capture-region';
+
+interface CaptureTarget {
+	element: HTMLElement;
+	/** Elements left out of html2canvas's copy of the page. */
+	ignoreElements?: (element: Element) => boolean;
+	/** Adjusts html2canvas's copy of `element` before it is measured and rendered. */
+	prepareClone?: (clone: HTMLElement) => void;
+}
+
 /**
- * Capture a DOM element as a branded PNG screenshot.
+ * What to render for `zone` inside the calculator `root`. A missing region (a page that
+ * renders the calculator without the markers) falls back to the whole calculator.
+ */
+function resolveCaptureTarget(root: HTMLElement, zone: CaptureZone): CaptureTarget {
+	const region = (name: string) =>
+		root.querySelector<HTMLElement>(`[${CAPTURE_REGION_ATTRIBUTE}="${name}"]`);
+
+	switch (zone) {
+		case 'results-only':
+			return { element: region('results') ?? root };
+		case 'chart-only':
+			return { element: region('chart') ?? root };
+		case 'results-chart': {
+			const column = region('main');
+			const results = region('results');
+			const chart = region('chart');
+			if (!column || !results || !chart) return { element: root };
+			// The main column, with every card between the two left out of the copy. The grid
+			// stretches the column to the input panel's height; unstretched, the copy ends
+			// right below the chart.
+			return {
+				element: column,
+				ignoreElements: (element) =>
+					element.parentElement === column && element !== results && element !== chart,
+				prepareClone: (clone) => clone.style.setProperty('align-self', 'start')
+			};
+		}
+		case 'full-calculator':
+			return { element: root };
+	}
+}
+
+/**
+ * Browsers report a computed `color-mix(in srgb, …)` (the moneyness badge, the strategy
+ * presets) as `color(srgb r g b / a)`, which html2canvas 1.x cannot parse: it aborts the
+ * whole capture. Such colours are rewritten as `rgba()` in its copy of the page.
+ */
+const SRGB_COLOR = /color\(srgb ([\d.e+-]+) ([\d.e+-]+) ([\d.e+-]+)(?: \/ ([\d.e+-]+))?\)/g;
+
+const COLOR_PROPERTIES = [
+	'color',
+	'background-color',
+	'background-image',
+	'border-top-color',
+	'border-right-color',
+	'border-bottom-color',
+	'border-left-color',
+	'outline-color',
+	'box-shadow',
+	'text-shadow',
+	'text-decoration-color',
+	'fill',
+	'stroke'
+] as const;
+
+function srgbToRgba(value: string): string {
+	return value.replace(SRGB_COLOR, (_match, r: string, g: string, b: string, alpha = '1') => {
+		const channel = (c: string) => Math.round(Number(c) * 255);
+		return `rgba(${channel(r)}, ${channel(g)}, ${channel(b)}, ${alpha})`;
+	});
+}
+
+/** Inline an `rgba()` equivalent for every `color(srgb …)` colour under `root` (in place). */
+function inlineParsableColors(root: HTMLElement): void {
+	const view = root.ownerDocument.defaultView;
+	if (!view) return;
+	for (const element of [root, ...root.querySelectorAll<HTMLElement | SVGElement>('*')]) {
+		const style = view.getComputedStyle(element);
+		for (const property of COLOR_PROPERTIES) {
+			const value = style.getPropertyValue(property);
+			if (value.includes('color(srgb')) element.style.setProperty(property, srgbToRgba(value));
+		}
+	}
+}
+
+/**
+ * Capture the calculator (or the part of it `config.zone` selects) as a branded PNG
+ * screenshot.
  *
  * Composites a professional frame around the captured content:
  * - Top info bar: ticker, price summary, date/time
@@ -37,8 +164,9 @@ export const DEFAULT_SCREENSHOT_CONFIG: ScreenshotConfig = {
  * - Aspect ratio cropping for social media
  * - 2x/3x resolution for crisp sharing
  *
- * Returns the Blob (also triggers download automatically).
- * Returns null on failure.
+ * Returns the PNG Blob, or null on failure. It does not download anything: the caller
+ * offers "Copy to Clipboard" / "Save to Device" (an automatic download here made capture
+ * save a file the user had not asked for, and "Save" then saved it a second time).
  */
 export async function captureScreenshot(
 	element: HTMLElement,
@@ -52,14 +180,22 @@ export async function captureScreenshot(
 	try {
 		const html2canvas = (await import('html2canvas')).default;
 
-		// Step 1: Capture the raw element
-		const rawCanvas = await html2canvas(element, {
+		// Step 1: Capture the raw zone. The window size stays the whole calculator's, so the
+		// copy keeps the calculator's responsive layout whatever part of it is rendered.
+		const target = resolveCaptureTarget(element, opts.zone);
+		const rawCanvas = await html2canvas(target.element, {
 			scale,
 			backgroundColor: bgColor,
 			useCORS: true,
 			logging: false,
 			windowWidth: element.scrollWidth,
-			windowHeight: element.scrollHeight
+			windowHeight: element.scrollHeight,
+			ignoreElements: target.ignoreElements,
+			// `clonedTarget` is html2canvas's copy of `target.element`, about to be rendered.
+			onclone: (_clonedDocument, clonedTarget) => {
+				target.prepareClone?.(clonedTarget);
+				inlineParsableColors(clonedTarget);
+			}
 		});
 
 		// Step 2: Calculate branded frame dimensions
@@ -191,14 +327,7 @@ export async function captureScreenshot(
 			// Try loading logo image, fall back to text
 			let logoLoaded = false;
 			try {
-				const logoImg = new Image();
-				logoImg.crossOrigin = 'anonymous';
-				await new Promise<void>((resolve, reject) => {
-					logoImg.onload = () => resolve();
-					logoImg.onerror = () => reject(new Error('Logo not found'));
-					logoImg.src = '/images/rtp-logo.png';
-					setTimeout(() => reject(new Error('Logo timeout')), 2000);
-				});
+				const logoImg = await loadImage('/images/rtp-logo.png', LOGO_TIMEOUT_MS);
 
 				const logoH = (footH - 16 * scale) * 0.6;
 				const logoW = logoH * (logoImg.naturalWidth / logoImg.naturalHeight);
@@ -245,29 +374,9 @@ export async function captureScreenshot(
 		}
 
 		// Step 5: Export as blob
-		const filename = opts.filename ?? 'options-analysis';
-		const tickerSuffix = opts.ticker ? `-${opts.ticker}` : '';
-		const fullFilename = `${filename}${tickerSuffix}-${Date.now()}`;
-
-		return new Promise((resolve) => {
-			canvas.toBlob(
-				(blob) => {
-					if (blob) {
-						const url = URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.href = url;
-						a.download = `${fullFilename}.png`;
-						a.click();
-						URL.revokeObjectURL(url);
-					}
-					resolve(blob);
-				},
-				'image/png',
-				1.0
-			);
-		});
-	} catch (error) {
-		console.error('[ExportUtils] PNG capture failed:', error);
+		return await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png', 1.0));
+	} catch (err) {
+		logger.error('[ExportUtils] PNG capture failed:', err);
 		return null;
 	}
 }
@@ -331,13 +440,7 @@ export function generateGreeksCSV(
  * Trigger a CSV file download in the browser.
  */
 export function downloadCSV(content: string, filename: string = 'greeks-export'): void {
-	const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-	const url = URL.createObjectURL(blob);
-	const a = document.createElement('a');
-	a.href = url;
-	a.download = `${filename}.csv`;
-	a.click();
-	URL.revokeObjectURL(url);
+	downloadBlob(new Blob([content], { type: 'text/csv;charset=utf-8;' }), `${filename}.csv`);
 }
 
 // ────────────────────────────────────────────────────────────

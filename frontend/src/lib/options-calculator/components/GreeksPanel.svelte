@@ -1,35 +1,22 @@
 <script lang="ts">
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { quartIn, quartOut } from 'svelte/easing';
+	import { slide } from 'svelte/transition';
+	import type { SlideParams, TransitionConfig } from 'svelte/transition';
 	import MetricCard from './ui/MetricCard.svelte';
-	import gsap from 'gsap';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
+	import { getCalculator } from '../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
+	const secondOrderId = $props.id();
 
-	let { calc }: Props = $props();
-
-	let expandEl: HTMLDivElement | undefined = $state();
 	let is3DView = $state(false);
 
-	// Three.js is only fetched the first time the 3D view is opened.
-	const greeksOrbit3DModule = $derived(is3DView ? import('./charts/GreeksOrbit3D.svelte') : null);
-
-	$effect(() => {
-		const show = calc.showAdvancedGreeks;
-		if (expandEl) {
-			if (show) {
-				gsap.fromTo(
-					expandEl,
-					{ height: 0, opacity: 0 },
-					{ height: 'auto', opacity: 1, duration: 0.4, ease: 'power3.out' }
-				);
-			} else {
-				gsap.to(expandEl, { height: 0, opacity: 0, duration: 0.3, ease: 'power3.in' });
-			}
-		}
-	});
+	/** `slide` with a fade over its whole duration: height and opacity animate together. */
+	function expand(node: Element, params: SlideParams): TransitionConfig {
+		const config = slide(node, params);
+		return { ...config, css: (t, u) => `${config.css?.(t, u) ?? ''}; opacity: ${t}` };
+	}
 
 	const FIRST_ORDER = [
 		{
@@ -64,30 +51,45 @@
 		>
 			First-Order Greeks
 		</h3>
-		<button
-			type="button"
-			onclick={() => (is3DView = !is3DView)}
-			aria-pressed={is3DView}
-			aria-label="3D view"
-			class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider rounded-md px-2 py-1 transition-colors cursor-pointer"
+		<!-- One pill, two buttons: each one's accessible name is its visible label. -->
+		<div
+			class="flex items-center text-[10px] font-semibold uppercase tracking-wider rounded-md"
 			style="background: var(--calc-surface); border: 1px solid var(--calc-border); color: var(--calc-text-muted);"
+			role="group"
+			aria-label="Greeks view"
 		>
-			<span style:opacity={is3DView ? '0.5' : '1'}>2D</span>
+			<button
+				type="button"
+				onclick={() => (is3DView = false)}
+				aria-pressed={!is3DView}
+				class="pl-2 pr-1 py-1 cursor-pointer"
+				style:opacity={is3DView ? 0.5 : 1}
+			>
+				2D
+			</button>
 			<span style="opacity: 0.3;" aria-hidden="true">|</span>
-			<span style:opacity={is3DView ? '1' : '0.5'}>3D</span>
-		</button>
+			<button
+				type="button"
+				onclick={() => (is3DView = true)}
+				aria-pressed={is3DView}
+				class="pl-1 pr-2 py-1 cursor-pointer"
+				style:opacity={is3DView ? 1 : 0.5}
+			>
+				3D
+			</button>
+		</div>
 	</div>
 
 	{#if is3DView}
-		{#await greeksOrbit3DModule}
+		<!-- Three.js is only fetched the first time the 3D view is opened. -->
+		{#await import('./charts/GreeksOrbit3D.svelte')}
 			<div
 				class="flex h-[300px] items-center justify-center rounded-xl border text-xs"
 				style="border-color: var(--calc-border); color: var(--calc-text-muted);"
 			>
 				Loading 3D view...
 			</div>
-		{:then module}
-			{const GreeksOrbit3D = module?.default}
+		{:then { default: GreeksOrbit3D }}
 			<GreeksOrbit3D
 				delta={calc.currentGreeks.first.delta}
 				gamma={calc.currentGreeks.first.gamma}
@@ -120,39 +122,49 @@
 
 	<!-- Toggle Advanced -->
 	<button
+		type="button"
 		onclick={() => (calc.showAdvancedGreeks = !calc.showAdvancedGreeks)}
+		aria-expanded={calc.showAdvancedGreeks}
+		aria-controls={secondOrderId}
 		class="flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg transition-colors cursor-pointer"
 		style="color: var(--calc-text-muted); background: var(--calc-surface); border: 1px solid var(--calc-border);"
 	>
 		{calc.showAdvancedGreeks ? 'Hide' : 'Show'} Second-Order Greeks
 		<span
-			class="inline-flex transition-transform"
+			class="inline-flex transition-transform motion-reduce:transition-none"
 			style:transform={calc.showAdvancedGreeks ? 'rotate(180deg)' : 'rotate(0deg)'}
 		>
 			<IconChevronDown size={14} />
 		</span>
 	</button>
 
-	<!-- Second Order Greeks (expandable) -->
-	<div bind:this={expandEl} class="overflow-hidden" style="height: 0; opacity: 0;">
-		<div class="flex flex-col gap-3 pt-1">
-			<h3
-				class="text-xs font-semibold uppercase tracking-wider"
-				style="color: var(--calc-text-secondary); font-family: var(--calc-font-display);"
+	<!-- Second Order Greeks (expandable). The wrapper stays mounted as the aria-controls target. -->
+	<div id={secondOrderId}>
+		{#if calc.showAdvancedGreeks}
+			<div
+				in:expand={{ duration: prefersReducedMotion.current ? 0 : 400, easing: quartOut }}
+				out:expand={{ duration: prefersReducedMotion.current ? 0 : 300, easing: quartIn }}
 			>
-				Second-Order Greeks
-			</h3>
-			<div class="grid grid-cols-4 gap-2">
-				{#each SECOND_ORDER as greek (greek.key)}
-					<MetricCard
-						label={greek.label}
-						value={calc.currentGreeks.second[greek.key]}
-						decimals={greek.decimals}
-						tooltip={greek.desc}
-						colorize
-					/>
-				{/each}
+				<div class="flex flex-col gap-3 pt-1">
+					<h3
+						class="text-xs font-semibold uppercase tracking-wider"
+						style="color: var(--calc-text-secondary); font-family: var(--calc-font-display);"
+					>
+						Second-Order Greeks
+					</h3>
+					<div class="grid grid-cols-4 gap-2">
+						{#each SECOND_ORDER as greek (greek.key)}
+							<MetricCard
+								label={greek.label}
+								value={calc.currentGreeks.second[greek.key]}
+								decimals={greek.decimals}
+								tooltip={greek.desc}
+								colorize
+							/>
+						{/each}
+					</div>
+				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
 </div>

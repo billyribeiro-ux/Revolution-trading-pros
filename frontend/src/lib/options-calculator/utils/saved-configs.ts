@@ -3,25 +3,92 @@
 // CRUD operations for saved calculator configurations.
 // Storage key: rtp:calc:saved-configs
 // Limit: 50 configs max.
+//
+// Reads never throw: on the server, with storage blocked, or on corrupt data they return
+// what can be trusted (every entry is validated against `savedConfigSchema`). Writes throw
+// when storage is full or unavailable, so callers can tell the user the save failed.
 // ============================================================
 
+import * as v from 'valibot';
+import { browser } from '$app/env';
 import type { SavedConfig } from '../engine/types.js';
 
 const STORAGE_KEY = 'rtp:calc:saved-configs';
 const MAX_CONFIGS = 50;
 
+const finiteNumber = v.pipe(v.number(), v.finite());
+const optionTypeSchema = v.picklist(['call', 'put']);
+
+/**
+ * An optional field as `SavedConfig` declares it (`field?: T`). A `null` (hand-edited or
+ * foreign export files) is accepted and normalised away, as in `data/schemas.ts`.
+ */
+function optionalField<T>(schema: v.GenericSchema<T>) {
+	return v.optional(
+		v.pipe(
+			v.nullable(schema),
+			v.transform((value) => value ?? undefined)
+		)
+	);
+}
+
+/** A saved configuration as stored (and as accepted from an imported file). */
+const savedConfigSchema = v.object({
+	id: v.pipe(v.string(), v.minLength(1)),
+	name: v.string(),
+	description: optionalField(v.string()),
+	createdAt: v.string(),
+	updatedAt: v.string(),
+	inputs: v.object({
+		spotPrice: finiteNumber,
+		strikePrice: finiteNumber,
+		volatility: finiteNumber,
+		timeToExpiry: finiteNumber,
+		riskFreeRate: finiteNumber,
+		dividendYield: finiteNumber
+	}),
+	optionType: optionTypeSchema,
+	mode: v.picklist(['single', 'strategy', 'compare']),
+	ticker: optionalField(v.string()),
+	strategyLegs: optionalField(
+		v.array(
+			v.object({
+				id: v.string(),
+				type: optionTypeSchema,
+				strike: finiteNumber,
+				expiry: finiteNumber,
+				position: v.picklist([1, -1]),
+				quantity: finiteNumber,
+				premium: finiteNumber
+			})
+		)
+	),
+	tags: optionalField(v.array(v.string()))
+}) satisfies v.GenericSchema<unknown, SavedConfig>;
+
+/** The valid configurations in an untrusted value; anything malformed is dropped. */
+function validConfigs(value: unknown): SavedConfig[] {
+	if (!Array.isArray(value)) return [];
+	return value.flatMap((entry: unknown) => {
+		const result = v.safeParse(savedConfigSchema, entry);
+		return result.success ? [result.output] : [];
+	});
+}
+
+/** Throws when storage is full or unavailable (private mode). */
+function writeConfigs(configs: SavedConfig[]): void {
+	localStorage.setItem(STORAGE_KEY, JSON.stringify(configs));
+}
+
 /**
  * Get all saved configurations, newest first.
- * Returns empty array on SSR or parse failure.
+ * Returns an empty array on the server, when storage is unavailable, or on corrupt data.
  */
 export function getSavedConfigs(): SavedConfig[] {
-	if (typeof window === 'undefined') return [];
+	if (!browser) return [];
 	try {
 		const raw = localStorage.getItem(STORAGE_KEY);
-		if (!raw) return [];
-		const parsed: unknown = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return [];
-		return parsed as SavedConfig[];
+		return raw ? validConfigs(JSON.parse(raw)) : [];
 	} catch {
 		return [];
 	}
@@ -31,11 +98,11 @@ export function getSavedConfigs(): SavedConfig[] {
  * Save a new configuration.
  * Auto-generates id, createdAt, updatedAt.
  * Prepends to list (newest first) and trims to MAX_CONFIGS.
+ * @throws when storage is full or unavailable.
  */
 export function saveConfig(
 	config: Omit<SavedConfig, 'id' | 'createdAt' | 'updatedAt'>
 ): SavedConfig {
-	const configs = getSavedConfigs();
 	const now = new Date().toISOString();
 	const newConfig: SavedConfig = {
 		...config,
@@ -44,45 +111,39 @@ export function saveConfig(
 		updatedAt: now
 	};
 
-	configs.unshift(newConfig);
-	const trimmed = configs.slice(0, MAX_CONFIGS);
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-
+	writeConfigs([newConfig, ...getSavedConfigs()].slice(0, MAX_CONFIGS));
 	return newConfig;
 }
 
 /**
  * Update an existing configuration by ID.
  * Returns the updated config, or null if not found.
+ * @throws when storage is full or unavailable.
  */
 export function updateConfig(
 	id: string,
 	updates: Partial<Omit<SavedConfig, 'id' | 'createdAt'>>
 ): SavedConfig | null {
 	const configs = getSavedConfigs();
-	const idx = configs.findIndex((c) => c.id === id);
-	if (idx === -1) return null;
+	const existing = configs.find((c) => c.id === id);
+	if (!existing) return null;
 
-	configs[idx] = {
-		...configs[idx],
-		...updates,
-		updatedAt: new Date().toISOString()
-	};
-
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(configs));
-	return configs[idx];
+	const updated: SavedConfig = { ...existing, ...updates, updatedAt: new Date().toISOString() };
+	writeConfigs(configs.map((c) => (c.id === id ? updated : c)));
+	return updated;
 }
 
 /**
  * Delete a saved configuration by ID.
  * Returns true if deleted, false if not found.
+ * @throws when storage is full or unavailable.
  */
 export function deleteConfig(id: string): boolean {
 	const configs = getSavedConfigs();
-	const filtered = configs.filter((c) => c.id !== id);
-	if (filtered.length === configs.length) return false;
+	const remaining = configs.filter((c) => c.id !== id);
+	if (remaining.length === configs.length) return false;
 
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+	writeConfigs(remaining);
 	return true;
 }
 
@@ -96,28 +157,22 @@ export function exportConfigs(): string {
 
 /**
  * Import configs from a JSON string.
- * Merges with existing configs (skips duplicates by ID).
- * Returns the number of newly added configs.
+ * Merges valid entries with existing configs (skips duplicates by ID), keeping MAX_CONFIGS.
+ * Returns the number of newly added configs (0 for invalid JSON or a failed write).
  */
 export function importConfigs(json: string): number {
 	try {
-		const imported: unknown = JSON.parse(json);
-		if (!Array.isArray(imported)) return 0;
-
 		const existing = getSavedConfigs();
-		const existingIds = new Set(existing.map((c) => c.id));
+		const seen = new Set(existing.map((c) => c.id));
+		const additions = validConfigs(JSON.parse(json)).filter((config) => {
+			if (seen.has(config.id)) return false;
+			seen.add(config.id);
+			return true;
+		});
 
-		let added = 0;
-		for (const config of imported as SavedConfig[]) {
-			if (config.id && !existingIds.has(config.id)) {
-				existing.push(config);
-				existingIds.add(config.id);
-				added++;
-			}
-		}
-
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(existing.slice(0, MAX_CONFIGS)));
-		return added;
+		const merged = [...existing, ...additions].slice(0, MAX_CONFIGS);
+		writeConfigs(merged);
+		return Math.max(merged.length - existing.length, 0);
 	} catch {
 		return 0;
 	}
@@ -125,6 +180,7 @@ export function importConfigs(json: string): number {
 
 /**
  * Clear all saved configurations.
+ * @throws when storage is unavailable.
  */
 export function clearAllConfigs(): void {
 	localStorage.removeItem(STORAGE_KEY);

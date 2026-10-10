@@ -1,14 +1,15 @@
 <script lang="ts">
-	import gsap from 'gsap';
+	import { untrack, type Snippet } from 'svelte';
+	import { on } from 'svelte/events';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import type { Attachment } from 'svelte/attachments';
+	import type { HTMLAttributes } from 'svelte/elements';
 	import { cardEntrance } from '../../utils/animations.js';
-	import type { Snippet } from 'svelte';
 
 	type Glow = 'call' | 'put' | 'accent' | 'none';
 
-	interface Props {
-		class?: string;
+	/** Other attributes (`data-*`, `aria-*`, …) are forwarded to the card's element. */
+	interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
 		glow?: Glow;
 		animate?: boolean;
 		delay?: number;
@@ -17,89 +18,121 @@
 	}
 
 	let {
-		class: className = '',
+		class: className,
 		glow = 'none',
 		animate = true,
 		delay = 0,
 		header,
-		children
+		children,
+		...rest
 	}: Props = $props();
 
-	let entranceTween: gsap.core.Tween | undefined;
+	/** The entrance tween. The tilt leaves `transform` alone while it plays. */
+	let entrance: ReturnType<typeof cardEntrance> | undefined;
 
-	let glowClass = $derived(
-		glow === 'call'
-			? 'glow-call'
-			: glow === 'put'
-				? 'glow-put'
-				: glow === 'accent'
-					? 'shadow-[0_0_20px_var(--calc-accent-glow)]'
-					: ''
-	);
-
-	const setupCard: Attachment<HTMLDivElement> = (element) => {
-		entranceTween = animate ? cardEntrance(element, delay) : undefined;
-		return () => {
-			entranceTween?.kill();
-			entranceTween = undefined;
-		};
-	};
-
-	// ── Glow pulse ──────────────────────────────────────
-	const GLOW_PULSE: Record<Exclude<Glow, 'none'>, string> = {
-		call: '0 0 30px rgba(34, 197, 94, 0.25), 0 0 60px rgba(34, 197, 94, 0.10)',
-		put: '0 0 30px rgba(239, 68, 68, 0.25), 0 0 60px rgba(239, 68, 68, 0.10)',
-		accent: '0 0 30px rgba(99, 102, 241, 0.25), 0 0 60px rgba(99, 102, 241, 0.10)'
-	};
-
-	const glowPulse: Attachment<HTMLDivElement> = (element) => {
-		if (glow === 'none' || prefersReducedMotion.current) return;
-		const tween = gsap.to(element, {
-			boxShadow: GLOW_PULSE[glow],
-			duration: 1.2,
-			repeat: -1,
-			yoyo: true,
-			ease: 'sine.inOut'
+	/**
+	 * Entrance on mount. The props are read untracked: a later change must neither replay
+	 * the entrance nor kill it midway (which would strand the card half-faded).
+	 */
+	const enter: Attachment<HTMLDivElement> = (element) => {
+		untrack(() => {
+			if (animate && !prefersReducedMotion.current) entrance = cardEntrance(element, delay);
 		});
-		return () => {
-			tween.kill();
-			gsap.set(element, { clearProps: 'boxShadow' });
-		};
+		return () => entrance?.kill();
 	};
 
-	// ── Parallax tilt (decorative; mouse only, never while the entrance tween owns transform) ──
+	// ── Parallax tilt ────────────────────────────────────
+	// Decorative and mouse-only. It must never move a control under the cursor:
+	//  • the angle is capped so an edge lifts at most MAX_EDGE_LIFT_PX towards the viewer
+	//    (a fixed 2.5° lifted the ends of the tall InputPanel ~20px and warped its sliders);
+	//  • the tilt holds still while a button is pressed (a slider drag, a text selection)
+	//    and while the pointer is over a control or a chart, and a drag that leaves the
+	//    card keeps the tilt until the button is released.
 	const MAX_TILT_DEG = 2.5;
+	const MAX_EDGE_LIFT_PX = 10;
+	const PERSPECTIVE_PX = 800;
+	const HOLD_OVER =
+		'a[href], button, input, select, textarea, label, [role="slider"], [contenteditable], canvas, svg';
+
+	/** Largest angle (deg) that keeps an edge `halfSize` px from the centre within the lift cap. */
+	function maxTilt(halfSize: number): number {
+		return Math.min(MAX_TILT_DEG, (Math.atan(MAX_EDGE_LIFT_PX / halfSize) * 180) / Math.PI);
+	}
+
+	const clampUnit = (n: number) => Math.max(-1, Math.min(1, n));
 
 	const parallaxTilt: Attachment<HTMLDivElement> = (element) => {
 		if (prefersReducedMotion.current) return;
 
-		const onPointerMove = (event: PointerEvent) => {
-			if (event.pointerType !== 'mouse' || entranceTween?.isActive()) return;
-			const rect = element.getBoundingClientRect();
-			const dx = (event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-			const dy = (event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-			element.style.transform = `perspective(800px) rotateX(${-dy * MAX_TILT_DEG}deg) rotateY(${dx * MAX_TILT_DEG}deg)`;
-		};
-		const onPointerLeave = () => {
-			if (!entranceTween?.isActive()) element.style.transform = '';
+		let frame = 0;
+		let pointerX = 0;
+		let pointerY = 0;
+		let flattenOnRelease = false;
+
+		const holds = (target: EventTarget | null) => {
+			const match = target instanceof Element ? target.closest(HOLD_OVER) : null;
+			return match !== null && element.contains(match);
 		};
 
-		element.addEventListener('pointermove', onPointerMove);
-		element.addEventListener('pointerleave', onPointerLeave);
+		const apply = () => {
+			frame = 0;
+			if (entrance?.isActive()) return;
+			// Layout size, not the (tilted) bounding box, sets the angle cap.
+			const halfWidth = element.offsetWidth / 2;
+			const halfHeight = element.offsetHeight / 2;
+			if (halfWidth === 0 || halfHeight === 0) return;
+			const rect = element.getBoundingClientRect();
+			const dx = clampUnit((pointerX - (rect.left + rect.width / 2)) / halfWidth);
+			const dy = clampUnit((pointerY - (rect.top + rect.height / 2)) / halfHeight);
+			element.style.transform = `perspective(${PERSPECTIVE_PX}px) rotateX(${-dy * maxTilt(halfHeight)}deg) rotateY(${dx * maxTilt(halfWidth)}deg)`;
+		};
+
+		const flatten = () => {
+			cancelAnimationFrame(frame);
+			frame = 0;
+			flattenOnRelease = false;
+			if (!entrance?.isActive()) element.style.transform = '';
+		};
+
+		const stop = [
+			on(element, 'pointermove', (event) => {
+				if (event.pointerType !== 'mouse' || event.buttons !== 0 || holds(event.target)) return;
+				pointerX = event.clientX;
+				pointerY = event.clientY;
+				frame ||= requestAnimationFrame(apply);
+			}),
+			on(element, 'pointerenter', () => (flattenOnRelease = false)),
+			on(element, 'pointerleave', (event) => {
+				if (event.buttons === 0) flatten();
+				else flattenOnRelease = true;
+			}),
+			on(window, 'pointerup', () => {
+				if (flattenOnRelease) flatten();
+			})
+		];
+
 		return () => {
-			element.removeEventListener('pointermove', onPointerMove);
-			element.removeEventListener('pointerleave', onPointerLeave);
-			onPointerLeave();
+			for (const off of stop) off();
+			flatten();
 		};
 	};
 </script>
 
 <div
-	{@attach setupCard}
-	{@attach glowPulse}
+	{...rest}
+	{@attach enter}
 	{@attach parallaxTilt}
-	class={['glass-card', 'glass-card--interactive', glowClass, className]}
+	class={[
+		'glass-card glass-card--interactive',
+		{
+			'glow-call glow-pulse-call': glow === 'call',
+			'glow-put glow-pulse-put': glow === 'put',
+			'shadow-[0_0_20px_var(--calc-accent-glow)] glow-pulse-accent': glow === 'accent'
+		},
+		className
+	]}
 >
+	<span class="border-ring" aria-hidden="true"><span class="border-ring-spin"></span></span>
 	{#if header}
 		<div class="border-b border-[var(--calc-glass-border)] px-5 py-3">
 			{@render header()}
@@ -115,21 +148,20 @@
 		position: relative;
 	}
 
-	/* Rotating gradient border on hover. A masked pseudo-element instead of
-	   border-image, which would square off the card's rounded corners. */
-	.glass-card--interactive::before {
-		content: '';
+	/* Rotating gradient border on hover: a 1px ring (masked, so it keeps the card's
+	   rounded corners) over an oversized conic-gradient square that spins with a
+	   transform. A transform animation runs on the compositor, so the card is not
+	   repainted every frame — animating the gradient's angle (a custom property)
+	   repainted the whole card, slider drags included. A conic gradient depends only
+	   on the angle from its centre, so spinning the square looks the same as rotating
+	   the gradient's start angle. */
+	.border-ring {
 		position: absolute;
 		inset: -1px;
 		padding: 1px;
 		border-radius: inherit;
-		background: conic-gradient(
-			from var(--calc-border-angle),
-			rgba(99, 102, 241, 0.6),
-			rgba(34, 197, 94, 0.4),
-			rgba(239, 68, 68, 0.4),
-			rgba(99, 102, 241, 0.6)
-		);
+		overflow: clip;
+		container-type: size;
 		mask:
 			linear-gradient(#000 0 0) content-box exclude,
 			linear-gradient(#000 0 0);
@@ -138,16 +170,90 @@
 		pointer-events: none;
 	}
 
+	.border-ring-spin {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		/* √2 × the longer side covers the card's diagonal at every angle. */
+		width: 142cqmax;
+		aspect-ratio: 1;
+		translate: -50% -50%;
+		background: conic-gradient(
+			rgba(99, 102, 241, 0.6),
+			rgba(34, 197, 94, 0.4),
+			rgba(239, 68, 68, 0.4),
+			rgba(99, 102, 241, 0.6)
+		);
+	}
+
 	@media (hover: hover) {
-		.glass-card--interactive:hover::before {
+		.glass-card--interactive:hover > .border-ring {
 			opacity: 1;
-			animation: calc-border-rotate 3s linear infinite;
 		}
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.glass-card--interactive:hover::before {
-			animation: none;
+	@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+		.glass-card--interactive:hover .border-ring-spin {
+			animation: border-spin 3s linear infinite;
+		}
+	}
+
+	@keyframes border-spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+
+	/* Glow pulse: a decorative loop, so a CSS animation rather than a JS tween. It starts
+	   from the static glow class's shadow and eases (sine in-out) to a wider glow and back. */
+	@media (prefers-reduced-motion: no-preference) {
+		.glow-pulse-call {
+			animation: glow-pulse-call 1.2s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+		}
+
+		.glow-pulse-put {
+			animation: glow-pulse-put 1.2s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+		}
+
+		.glow-pulse-accent {
+			animation: glow-pulse-accent 1.2s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+		}
+	}
+
+	@keyframes glow-pulse-call {
+		from {
+			box-shadow:
+				0 0 20px var(--calc-call-glow),
+				0 0 40px var(--calc-call-glow);
+		}
+		to {
+			box-shadow:
+				0 0 30px rgba(34, 197, 94, 0.25),
+				0 0 60px rgba(34, 197, 94, 0.1);
+		}
+	}
+
+	@keyframes glow-pulse-put {
+		from {
+			box-shadow:
+				0 0 20px var(--calc-put-glow),
+				0 0 40px var(--calc-put-glow);
+		}
+		to {
+			box-shadow:
+				0 0 30px rgba(239, 68, 68, 0.25),
+				0 0 60px rgba(239, 68, 68, 0.1);
+		}
+	}
+
+	@keyframes glow-pulse-accent {
+		from {
+			box-shadow: 0 0 20px var(--calc-accent-glow);
+		}
+		to {
+			box-shadow:
+				0 0 30px rgba(99, 102, 241, 0.25),
+				0 0 60px rgba(99, 102, 241, 0.1);
 		}
 	}
 </style>

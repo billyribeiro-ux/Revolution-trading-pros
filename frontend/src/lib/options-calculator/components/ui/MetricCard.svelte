@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import type { Attachment } from 'svelte/attachments';
+	import type { ClassValue } from 'svelte/elements';
 	import AnimatedNumber from './AnimatedNumber.svelte';
 
 	interface Props {
@@ -11,7 +12,7 @@
 		suffix?: string;
 		tooltip?: string;
 		colorize?: boolean;
-		class?: string;
+		class?: ClassValue;
 	}
 
 	let {
@@ -22,20 +23,21 @@
 		suffix = '',
 		tooltip = '',
 		colorize = true,
-		class: className = ''
+		class: className
 	}: Props = $props();
 
-	let glowClass = $derived(
-		colorize ? (value > 0.0001 ? 'metric-positive' : value < -0.0001 ? 'metric-negative' : '') : ''
-	);
+	/** Values within ±EPSILON read as zero and get no glow. */
+	const EPSILON = 0.0001;
 
 	// ── Sparkline: the last SPARKLINE_POINTS distinct values ──
 	const SPARKLINE_POINTS = 10;
 	const SPARKLINE_WIDTH = 60;
 	const SPARKLINE_HEIGHT = 20;
 
-	// Plain buffer: recomputed only when `value` changes, so each distinct value
-	// is appended exactly once (and the first point is already there on SSR).
+	// A history is memory over time, which a pure derivation cannot hold, so the derived
+	// keeps a private buffer. It re-runs only when `value` changes, appending each distinct
+	// value exactly once — no effect writing state, no extra render pass, and the first
+	// point is already there on the server.
 	let buffer: number[] = [];
 	const history = $derived.by(() => {
 		const current = value;
@@ -45,7 +47,7 @@
 		return buffer;
 	});
 
-	let sparklinePoints = $derived.by(() => {
+	const sparklinePoints = $derived.by(() => {
 		if (history.length < 2) return '';
 		const min = Math.min(...history);
 		const max = Math.max(...history);
@@ -56,7 +58,7 @@
 			.join(' ');
 	});
 
-	let sparklineColor = $derived(
+	const sparklineColor = $derived(
 		history.length >= 2
 			? history[history.length - 1] >= history[0]
 				? 'var(--calc-call)'
@@ -90,11 +92,11 @@
 	{@attach bounceOnChange}
 	class={[
 		'relative flex flex-col gap-1 rounded-xl px-3 py-2.5 transition-all',
-		glowClass,
+		colorize && { 'metric-positive': value > EPSILON, 'metric-negative': value < -EPSILON },
 		className
 	]}
 	style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-	title={tooltip}
+	title={tooltip || undefined}
 >
 	<span
 		class="text-[10px] font-medium uppercase tracking-wider"

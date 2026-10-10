@@ -2,23 +2,18 @@
 	import AnimatedNumber from './ui/AnimatedNumber.svelte';
 	import MetricCard from './ui/MetricCard.svelte';
 	import { formatCurrency, formatPercent } from '../utils/formatters.js';
+	import { getCalculator } from '../state/context.js';
 	import type { CalculatorState } from '../state/calculator.svelte.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
+	const MONEYNESS_COLORS = {
+		ITM: 'var(--calc-call)',
+		ATM: 'var(--calc-accent)',
+		OTM: 'var(--calc-put)'
+	} satisfies Record<CalculatorState['currentMoneyness'], string>;
 
-	let moneynessColor = $derived(
-		calc.currentMoneyness === 'ITM'
-			? 'var(--calc-call)'
-			: calc.currentMoneyness === 'OTM'
-				? 'var(--calc-put)'
-				: 'var(--calc-accent)'
-	);
-	let callBorder = $derived(calc.optionType === 'call' ? 'var(--calc-call)' : 'transparent');
-	let putBorder = $derived(calc.optionType === 'put' ? 'var(--calc-put)' : 'transparent');
+	const moneynessColor = $derived(MONEYNESS_COLORS[calc.currentMoneyness]);
 </script>
 
 <div class="flex flex-col gap-4">
@@ -28,7 +23,7 @@
 		<div
 			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
 			style:background="var(--calc-call-bg)"
-			style:border={`1px solid ${callBorder}`}
+			style:border="1px solid {calc.optionType === 'call' ? 'var(--calc-call)' : 'transparent'}"
 		>
 			<span
 				class="text-[10px] font-medium uppercase tracking-wider"
@@ -49,7 +44,7 @@
 		<div
 			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
 			style:background="var(--calc-put-bg)"
-			style:border={`1px solid ${putBorder}`}
+			style:border="1px solid {calc.optionType === 'put' ? 'var(--calc-put)' : 'transparent'}"
 		>
 			<span
 				class="text-[10px] font-medium uppercase tracking-wider"
@@ -69,12 +64,12 @@
 
 	<!-- Key Metrics Row -->
 	<div class="flex flex-wrap items-center gap-2">
-		<!-- Moneyness Badge -->
+		<!-- Moneyness Badge: a tint and outline of the moneyness colour (≈ #RRGGBB22 / #RRGGBB44) -->
 		<span
 			class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
-			style:background={`${moneynessColor}22`}
+			style:background="color-mix(in srgb, {moneynessColor} 13%, transparent)"
 			style:color={moneynessColor}
-			style:border={`1px solid ${moneynessColor}44`}
+			style:border="1px solid color-mix(in srgb, {moneynessColor} 27%, transparent)"
 		>
 			{calc.currentMoneyness}
 		</span>
@@ -86,14 +81,14 @@
 		>
 			Intrinsic: {formatCurrency(calc.currentIntrinsic)}
 		</span>
-		<span class="text-xs" style="color: var(--calc-text-muted);">|</span>
+		<span class="text-xs" style="color: var(--calc-text-muted);" aria-hidden="true">|</span>
 		<span
 			class="text-xs"
 			style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
 		>
 			Extrinsic: {formatCurrency(calc.currentExtrinsic)}
 		</span>
-		<span class="text-xs" style="color: var(--calc-text-muted);">|</span>
+		<span class="text-xs" style="color: var(--calc-text-muted);" aria-hidden="true">|</span>
 		<span
 			class="text-xs"
 			style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"

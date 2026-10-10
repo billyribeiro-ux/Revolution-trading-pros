@@ -16,8 +16,8 @@
 	}: Props = $props();
 </script>
 
-<div class="flex flex-col" style:gap aria-busy="true" aria-label="Loading">
-	{#each Array(count) as _, i (i)}
+<div class="flex flex-col" style:gap role="status" aria-busy="true" aria-label="Loading">
+	{#each { length: count }}
 		<div class="skeleton-shimmer" style:width style:height style:border-radius={borderRadius}></div>
 	{/each}
 </div>
@@ -32,6 +32,12 @@
 		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s ease-in-out infinite;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.skeleton-shimmer {
+			animation: none;
+		}
 	}
 
 	@keyframes shimmer {

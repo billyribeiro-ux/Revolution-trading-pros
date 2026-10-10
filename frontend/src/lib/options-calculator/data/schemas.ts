@@ -1,8 +1,44 @@
 // ============================================================
 // VALIBOT VALIDATION SCHEMAS — API Response Validation
+// Upstream schemas describe raw third-party payloads; the internal
+// schemas below describe what our proxy routes return and what the
+// cache persists. Each internal schema is checked against its type
+// with `satisfies`, so the two cannot drift apart.
 // ============================================================
 
 import * as v from 'valibot';
+import { DATA_PROVIDER_NAMES } from './types.js';
+import type {
+	DividendInfo,
+	EarningsInfo,
+	ExpirationList,
+	HistoricalVolData,
+	OHLCV,
+	OptionQuote,
+	OptionsChain,
+	RiskFreeRateData,
+	StockQuote,
+	TickerSearchResult
+} from './types.js';
+
+/** A provider name (`DataProviderName`). */
+export const providerNameSchema = v.picklist(DATA_PROVIDER_NAMES);
+
+/**
+ * An optional field as our types declare it (`field?: T`). JSON has no
+ * `undefined`, so an upstream `null` is accepted and normalised away.
+ */
+function optionalField<T>(schema: v.GenericSchema<T>) {
+	return v.optional(
+		v.pipe(
+			v.nullable(schema),
+			v.transform((value) => value ?? undefined)
+		)
+	);
+}
+
+const optionalNumber = optionalField(v.number());
+const optionalString = optionalField(v.string());
 
 /** Polygon.io snapshot quote response */
 export const polygonSnapshotSchema = v.looseObject({
@@ -144,7 +180,12 @@ export const fredSeriesSchema = v.looseObject({
 	)
 });
 
-/** Validated stock quote (our internal format) */
+// ── Internal formats (proxy route responses + cache entries) ──
+
+/**
+ * Validated stock quote (our internal format). A non-positive price is
+ * rejected: it would turn every Black-Scholes output into NaN.
+ */
 export const stockQuoteSchema = v.object({
 	ticker: v.pipe(v.string(), v.minLength(1), v.maxLength(10)),
 	price: v.pipe(v.number(), v.gtValue(0)),
@@ -156,6 +197,117 @@ export const stockQuoteSchema = v.object({
 	volume: v.pipe(v.number(), v.minValue(0)),
 	change: v.number(),
 	changePercent: v.number(),
+	marketCap: optionalNumber,
 	timestamp: v.string(),
-	source: v.string()
-});
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, StockQuote>;
+
+/** Single option contract quote */
+export const optionQuoteSchema = v.object({
+	symbol: v.string(),
+	underlying: v.string(),
+	type: v.picklist(['call', 'put']),
+	strike: v.number(),
+	expiration: v.string(),
+	lastPrice: v.number(),
+	bid: v.number(),
+	ask: v.number(),
+	mid: v.number(),
+	volume: v.number(),
+	openInterest: v.number(),
+	impliedVolatility: v.number(),
+	delta: optionalNumber,
+	gamma: optionalNumber,
+	theta: optionalNumber,
+	vega: optionalNumber,
+	rho: optionalNumber,
+	inTheMoney: v.boolean(),
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, OptionQuote>;
+
+/** Full options chain for a ticker + expiration */
+export const optionsChainSchema = v.object({
+	underlying: v.string(),
+	underlyingPrice: v.number(),
+	expiration: v.string(),
+	calls: v.array(optionQuoteSchema),
+	puts: v.array(optionQuoteSchema),
+	timestamp: v.string(),
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, OptionsChain>;
+
+/** Available expirations for a ticker */
+export const expirationListSchema = v.object({
+	underlying: v.string(),
+	expirations: v.array(v.string()),
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, ExpirationList>;
+
+/** Historical OHLCV series */
+export const ohlcvListSchema = v.array(
+	v.object({
+		date: v.string(),
+		open: v.number(),
+		high: v.number(),
+		low: v.number(),
+		close: v.number(),
+		volume: v.number()
+	})
+) satisfies v.GenericSchema<unknown, OHLCV[]>;
+
+/** Ticker search results */
+export const tickerSearchResultsSchema = v.array(
+	v.object({
+		ticker: v.string(),
+		name: v.string(),
+		type: v.picklist(['stock', 'etf', 'index', 'forex', 'crypto']),
+		exchange: v.string(),
+		primaryExchange: optionalString
+	})
+) satisfies v.GenericSchema<unknown, TickerSearchResult[]>;
+
+/** Treasury yield curve */
+export const riskFreeRateSchema = v.object({
+	rate1M: v.number(),
+	rate3M: v.number(),
+	rate6M: v.number(),
+	rate1Y: v.number(),
+	rate2Y: v.number(),
+	rate10Y: v.number(),
+	date: v.string(),
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, RiskFreeRateData>;
+
+/** Dividend info */
+export const dividendInfoSchema = v.object({
+	ticker: v.string(),
+	annualDividend: v.number(),
+	dividendYield: v.number(),
+	exDividendDate: optionalString,
+	paymentDate: optionalString,
+	frequency: v.picklist(['annual', 'semi-annual', 'quarterly', 'monthly', 'none']),
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, DividendInfo>;
+
+/** Earnings info */
+export const earningsInfoSchema = v.object({
+	ticker: v.string(),
+	nextEarningsDate: optionalString,
+	daysToEarnings: optionalNumber,
+	expectedMove: optionalNumber,
+	expectedMovePercent: optionalNumber,
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, EarningsInfo>;
+
+/** Historical volatility data */
+export const historicalVolSchema = v.object({
+	ticker: v.string(),
+	hv10: v.number(),
+	hv20: v.number(),
+	hv30: v.number(),
+	hv60: v.number(),
+	hv90: v.number(),
+	ivPercentile: optionalNumber,
+	ivRank: optionalNumber,
+	source: providerNameSchema
+}) satisfies v.GenericSchema<unknown, HistoricalVolData>;

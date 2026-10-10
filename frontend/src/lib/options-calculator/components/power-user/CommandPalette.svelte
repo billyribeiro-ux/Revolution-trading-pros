@@ -1,32 +1,45 @@
 <script lang="ts">
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
-	import gsap from 'gsap';
+	import { quadOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { fly } from 'svelte/transition';
 	import type { Attachment } from 'svelte/attachments';
-	import { SvelteMap } from 'svelte/reactivity';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
-
-	interface Props {
-		calc: CalculatorState;
-	}
-
-	let { calc }: Props = $props();
-
-	let query = $state('');
-	let selectedIndex = $state(0);
+	import { shortcutDisplay } from './shortcuts.js';
+	import { getCalculator } from '../../state/context.js';
+	import type { ChartTab } from '../../engine/types.js';
 
 	interface CommandItem {
 		id: string;
 		label: string;
+		/** Key label shown beside the command; empty when it has no shortcut. */
 		shortcut: string;
 		category: string;
 		action: () => void;
 	}
 
-	let commands = $derived.by<CommandItem[]>(() => [
+	interface CommandGroup {
+		category: string;
+		commands: CommandItem[];
+	}
+
+	const calc = getCalculator();
+	const uid = $props.id();
+
+	function showTab(tab: ChartTab): () => void {
+		return () => {
+			calc.activeTab = tab;
+		};
+	}
+
+	/**
+	 * A static list: every action reads `calc` when it runs, so nothing here is reactive.
+	 * Shortcut labels come from `shortcuts.ts`, the same table the key handler uses.
+	 */
+	const COMMANDS: readonly CommandItem[] = [
 		{
 			id: 'toggle-call',
 			label: 'Toggle Call/Put',
-			shortcut: 'C',
+			shortcut: shortcutDisplay('toggle-call-put'),
 			category: 'Input',
 			action: () => {
 				calc.optionType = calc.optionType === 'call' ? 'put' : 'call';
@@ -35,7 +48,7 @@
 		{
 			id: 'reset',
 			label: 'Reset Inputs',
-			shortcut: '\u2318R',
+			shortcut: shortcutDisplay('reset-inputs'),
 			category: 'Input',
 			action: () => calc.resetInputs()
 		},
@@ -51,14 +64,14 @@
 		{
 			id: 'toggle-theme',
 			label: 'Toggle Theme',
-			shortcut: '\u2318\u21e7T',
+			shortcut: shortcutDisplay('toggle-theme'),
 			category: 'View',
 			action: () => calc.toggleTheme()
 		},
 		{
 			id: 'toggle-education',
 			label: 'Toggle Education Mode',
-			shortcut: 'E',
+			shortcut: shortcutDisplay('toggle-education'),
 			category: 'View',
 			action: () => {
 				calc.educationMode = !calc.educationMode;
@@ -67,7 +80,7 @@
 		{
 			id: 'toggle-greeks',
 			label: 'Toggle Advanced Greeks',
-			shortcut: 'G',
+			shortcut: shortcutDisplay('toggle-advanced-greeks'),
 			category: 'View',
 			action: () => {
 				calc.showAdvancedGreeks = !calc.showAdvancedGreeks;
@@ -76,7 +89,7 @@
 		{
 			id: 'toggle-panel',
 			label: 'Toggle Input Panel',
-			shortcut: '\u2318B',
+			shortcut: shortcutDisplay('toggle-panel'),
 			category: 'View',
 			action: () => {
 				calc.isInputPanelOpen = !calc.isInputPanelOpen;
@@ -85,79 +98,63 @@
 		{
 			id: 'tab-payoff',
 			label: 'Payoff Diagram',
-			shortcut: '1',
+			shortcut: shortcutDisplay('tab-payoff'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'payoff';
-			}
+			action: showTab('payoff')
 		},
 		{
 			id: 'tab-heatmap',
 			label: 'Greeks Heatmap',
-			shortcut: '2',
+			shortcut: shortcutDisplay('tab-heatmap'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'heatmap';
-			}
+			action: showTab('heatmap')
 		},
 		{
 			id: 'tab-surface',
 			label: '3D Surface',
-			shortcut: '3',
+			shortcut: shortcutDisplay('tab-surface'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'surface';
-			}
+			action: showTab('surface')
 		},
 		{
 			id: 'tab-mc',
 			label: 'Monte Carlo',
-			shortcut: '4',
+			shortcut: shortcutDisplay('tab-montecarlo'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'montecarlo';
-			}
+			action: showTab('montecarlo')
 		},
 		{
 			id: 'tab-vol',
 			label: 'Vol Smile',
-			shortcut: '5',
+			shortcut: shortcutDisplay('tab-volsmile'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'volsmile';
-			}
+			action: showTab('volsmile')
 		},
 		{
 			id: 'tab-theta',
 			label: 'Theta Decay',
-			shortcut: '6',
+			shortcut: shortcutDisplay('tab-theta'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'theta';
-			}
+			action: showTab('theta')
 		},
 		{
 			id: 'tab-sens',
 			label: 'Sensitivity',
-			shortcut: '7',
+			shortcut: shortcutDisplay('tab-sensitivity'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'sensitivity';
-			}
+			action: showTab('sensitivity')
 		},
 		{
 			id: 'tab-chain',
 			label: 'Options Chain',
-			shortcut: '8',
+			shortcut: shortcutDisplay('tab-chain'),
 			category: 'Navigation',
-			action: () => {
-				calc.activeTab = 'chain';
-			}
+			action: showTab('chain')
 		},
 		{
 			id: 'save-config',
 			label: 'Save Configuration',
-			shortcut: '\u2318S',
+			shortcut: shortcutDisplay('save-config'),
 			category: 'Export',
 			action: () => {
 				calc.showSaveModal = true;
@@ -175,7 +172,7 @@
 		{
 			id: 'export-png',
 			label: 'Export as PNG',
-			shortcut: '\u2318\u21e7S',
+			shortcut: shortcutDisplay('export-png'),
 			category: 'Export',
 			action: () => {
 				calc.showExportPNG = true;
@@ -184,7 +181,7 @@
 		{
 			id: 'share-link',
 			label: 'Copy Shareable Link',
-			shortcut: '\u2318\u21e7L',
+			shortcut: shortcutDisplay('share-link'),
 			category: 'Export',
 			action: () => {
 				calc.showShareLink = true;
@@ -202,93 +199,101 @@
 		{
 			id: 'shortcuts',
 			label: 'Show Keyboard Shortcuts',
-			shortcut: '?',
+			shortcut: shortcutDisplay('help'),
 			category: 'Help',
 			action: () => {
 				calc.showShortcutsHelp = true;
 			}
 		}
-	]);
+	];
 
-	let filtered = $derived(
-		query.trim()
-			? commands.filter(
-					(cmd) =>
-						cmd.label.toLowerCase().includes(query.toLowerCase()) ||
-						cmd.category.toLowerCase().includes(query.toLowerCase())
-				)
-			: commands
-	);
+	let query = $state('');
+	let selectedIndex = $state(0);
 
-	// Build a flat index map for keyboard navigation
-	let flatIndexMap = $derived.by(() => {
-		const map = new SvelteMap<string, number>();
-		let i = 0;
-		for (const cmd of filtered) {
-			map.set(cmd.id, i++);
+	/** Matching commands grouped by category, in the order they are listed. */
+	const groups = $derived.by<CommandGroup[]>(() => {
+		const needle = query.trim().toLowerCase();
+		const result: CommandGroup[] = [];
+		for (const command of COMMANDS) {
+			const matches =
+				!needle ||
+				command.label.toLowerCase().includes(needle) ||
+				command.category.toLowerCase().includes(needle);
+			if (!matches) continue;
+			const group = result.find((candidate) => candidate.category === command.category);
+			if (group) group.commands.push(command);
+			else result.push({ category: command.category, commands: [command] });
 		}
-		return map;
+		return result;
 	});
 
-	let activeIndex = $derived(
-		filtered.length === 0 ? -1 : Math.min(selectedIndex, filtered.length - 1)
+	/** Matches in on-screen order: the arrow keys walk this list. */
+	const ordered = $derived(groups.flatMap((group) => group.commands));
+	const activeIndex = $derived(
+		ordered.length === 0 ? -1 : Math.min(selectedIndex, ordered.length - 1)
 	);
+	/** `undefined` when nothing matches (`activeIndex` is then -1 on an empty list). */
+	const activeCommand = $derived(ordered.at(activeIndex));
 
-	const focusSearchInput: Attachment<HTMLInputElement> = (element) => {
+	function optionId(command: CommandItem): string {
+		return `${uid}-option-${command.id}`;
+	}
+
+	/** Every way the palette closes goes through here, so each opening starts blank. */
+	function close(): void {
+		calc.showCommandPalette = false;
 		query = '';
 		selectedIndex = 0;
-		const frame = requestAnimationFrame(() => {
-			element.focus();
-		});
-
-		return () => cancelAnimationFrame(frame);
-	};
-
-	const animatePalette: Attachment<HTMLDivElement> = (element) => {
-		const tween = gsap.fromTo(
-			element,
-			{ y: -20, opacity: 0 },
-			{ y: 0, opacity: 1, duration: 0.2, ease: 'power2.out' }
-		);
-
-		return () => tween.kill();
-	};
-
-	function execute(cmd: CommandItem): void {
-		calc.showCommandPalette = false;
-		cmd.action();
 	}
 
-	function handleKeydown(e: KeyboardEvent): void {
+	function execute(command: CommandItem): void {
+		close();
+		command.action();
+	}
+
+	/** Enter/Space on an option that holds focus (after a click) runs that option. */
+	function handleOptionKeydown(event: KeyboardEvent, command: CommandItem): void {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		event.preventDefault();
+		execute(command);
+	}
+
+	function handleKeydown(event: KeyboardEvent): void {
 		if (!calc.showCommandPalette) return;
 
-		if (e.key === 'Escape') {
-			e.preventDefault();
-			calc.showCommandPalette = false;
-			return;
-		}
-		if (e.key === 'ArrowDown') {
-			e.preventDefault();
-			selectedIndex = Math.min(activeIndex + 1, filtered.length - 1);
-		} else if (e.key === 'ArrowUp') {
-			e.preventDefault();
-			selectedIndex = Math.max(activeIndex - 1, 0);
-		} else if (e.key === 'Enter') {
-			e.preventDefault();
-			const cmd = filtered[activeIndex];
-			if (cmd) execute(cmd);
+		switch (event.key) {
+			case 'Escape':
+				event.preventDefault();
+				close();
+				break;
+			case 'ArrowDown':
+				event.preventDefault();
+				selectedIndex = Math.min(activeIndex + 1, ordered.length - 1);
+				break;
+			case 'ArrowUp':
+				event.preventDefault();
+				selectedIndex = Math.max(activeIndex - 1, 0);
+				break;
+			case 'Enter':
+				event.preventDefault();
+				if (activeCommand) execute(activeCommand);
+				break;
 		}
 	}
 
-	// Group filtered commands by category for display
-	let grouped = $derived.by(() => {
-		const groups: Record<string, CommandItem[]> = {};
-		for (const cmd of filtered) {
-			if (!groups[cmd.category]) groups[cmd.category] = [];
-			groups[cmd.category].push(cmd);
-		}
-		return groups;
-	});
+	/** Keeps the highlighted option visible while the arrow keys walk a long list. */
+	const keepInView: Attachment<HTMLElement> = (option) => {
+		option.scrollIntoView({ block: 'nearest' });
+	};
+
+	/** Focuses the search field on open and hands focus back to the opener on close. */
+	const focusSearch: Attachment<HTMLInputElement> = (input) => {
+		const opener = document.activeElement;
+		input.focus();
+		return () => {
+			if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+		};
+	};
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -302,16 +307,17 @@
 	>
 		<!-- Backdrop -->
 		<button
+			type="button"
 			class="absolute inset-0 cursor-default"
 			style="background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);"
-			onclick={() => (calc.showCommandPalette = false)}
+			onclick={close}
 			aria-label="Close"
 			tabindex={-1}
 		></button>
 
 		<!-- Palette -->
 		<div
-			{@attach animatePalette}
+			in:fly={{ y: -20, duration: prefersReducedMotion.current ? 0 : 200, easing: quadOut }}
 			class="relative z-10 w-full max-w-lg rounded-2xl overflow-hidden"
 			style="
 				background: var(--calc-surface);
@@ -324,11 +330,20 @@
 				class="flex items-center gap-2.5 px-4 py-3"
 				style="border-bottom: 1px solid var(--calc-border);"
 			>
-				<IconSearch size={14} style="color: var(--calc-text-muted);" />
+				<IconSearch size={14} style="color: var(--calc-text-muted);" aria-hidden="true" />
 				<input
-					{@attach focusSearchInput}
+					{@attach focusSearch}
 					bind:value={query}
+					oninput={() => (selectedIndex = 0)}
 					type="text"
+					role="combobox"
+					aria-label="Search commands"
+					aria-autocomplete="list"
+					aria-expanded={ordered.length > 0}
+					aria-controls="{uid}-listbox"
+					aria-activedescendant={activeCommand ? optionId(activeCommand) : undefined}
+					autocomplete="off"
+					spellcheck="false"
 					placeholder="Type a command..."
 					class="flex-1 text-sm bg-transparent outline-none"
 					style="color: var(--calc-text);"
@@ -342,38 +357,48 @@
 
 			<!-- Results -->
 			<div class="max-h-80 overflow-y-auto calc-scrollbar">
-				{#each Object.entries(grouped) as [category, cmds] (category)}
-					<div class="px-3 pt-2.5 pb-1">
-						<span
-							class="text-[9px] uppercase tracking-wider font-medium"
-							style="color: var(--calc-text-muted);">{category}</span
-						>
-					</div>
-					{#each cmds as cmd (cmd.id)}
-						{@const idx = flatIndexMap.get(cmd.id) ?? -1}
-						<button
-							onclick={() => execute(cmd)}
-							class="w-full flex items-center gap-2.5 px-4 py-2 text-xs cursor-pointer transition-colors"
-							style:color="var(--calc-text-secondary)"
-							style:background={idx === activeIndex ? 'var(--calc-accent-glow)' : 'transparent'}
-						>
-							<span class="flex-1 text-left">{cmd.label}</span>
-							{#if cmd.shortcut}
-								<kbd
-									class="text-[9px] px-1.5 py-0.5 rounded"
-									style="
-										background: var(--calc-surface-hover);
-										color: var(--calc-text-muted);
-										border: 1px solid var(--calc-border);
-										font-family: var(--calc-font-mono);
-									">{cmd.shortcut}</kbd
+				<div id="{uid}-listbox" role="listbox" aria-label="Commands">
+					{#each groups as group (group.category)}
+						<div role="group" aria-labelledby="{uid}-group-{group.category}">
+							<div id="{uid}-group-{group.category}" role="presentation" class="px-3 pt-2.5 pb-1">
+								<span
+									class="text-[9px] uppercase tracking-wider font-medium"
+									style="color: var(--calc-text-muted);">{group.category}</span
 								>
-							{/if}
-						</button>
+							</div>
+							{#each group.commands as command (command.id)}
+								{const active = $derived(command === activeCommand)}
+								<div
+									{@attach active && keepInView}
+									id={optionId(command)}
+									role="option"
+									aria-selected={active}
+									tabindex="-1"
+									onclick={() => execute(command)}
+									onkeydown={(event) => handleOptionKeydown(event, command)}
+									class="w-full flex items-center gap-2.5 px-4 py-2 text-xs cursor-pointer transition-colors"
+									style:color="var(--calc-text-secondary)"
+									style:background={active ? 'var(--calc-accent-glow)' : 'transparent'}
+								>
+									<span class="flex-1 text-left">{command.label}</span>
+									{#if command.shortcut}
+										<kbd
+											class="text-[9px] px-1.5 py-0.5 rounded"
+											style="
+												background: var(--calc-surface-hover);
+												color: var(--calc-text-muted);
+												border: 1px solid var(--calc-border);
+												font-family: var(--calc-font-mono);
+											">{command.shortcut}</kbd
+										>
+									{/if}
+								</div>
+							{/each}
+						</div>
 					{/each}
-				{/each}
+				</div>
 
-				{#if filtered.length === 0}
+				{#if ordered.length === 0}
 					<div class="px-4 py-8 text-center">
 						<p class="text-xs" style="color: var(--calc-text-muted);">No commands found</p>
 					</div>

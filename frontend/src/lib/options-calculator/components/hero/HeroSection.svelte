@@ -1,6 +1,8 @@
 <script lang="ts">
 	import gsap from 'gsap';
+	import { browser } from '$app/env';
 	import { prefersReducedMotion } from 'svelte/motion';
+	import { MediaQuery } from 'svelte/reactivity';
 	import type { Attachment } from 'svelte/attachments';
 	import type { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import IconCalculator from '@tabler/icons-svelte-runes/icons/calculator';
@@ -22,14 +24,18 @@
 
 	// ── Background: WebGL scene on desktop, 2D particles on small or touch
 	//    screens and for reduced motion, nothing at all under Save-Data. ──
-	let background = $state<'3d' | '2d' | null>(null);
+	const compact = new MediaQuery('(max-width: 767px), (pointer: coarse)');
 
-	$effect(() => {
-		const connection = (navigator as Navigator & { connection?: { saveData?: boolean } })
-			.connection;
-		if (connection?.saveData) return;
-		const compact = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
-		background = compact || prefersReducedMotion.current ? '2d' : '3d';
+	/**
+	 * Decided in the browser only: the server renders the gradient alone and never loads a
+	 * scene module. It follows the media queries live (a rotated tablet, a resized window,
+	 * a reduced-motion toggle). Save-Data is fixed for the page's lifetime.
+	 */
+	const background = $derived.by((): '3d' | '2d' | null => {
+		if (!browser) return null;
+		const { connection } = navigator as Navigator & { connection?: { saveData?: boolean } };
+		if (connection?.saveData) return null;
+		return compact.current || prefersReducedMotion.current ? '2d' : '3d';
 	});
 
 	const backgroundModule = $derived(
@@ -76,14 +82,13 @@
 
 <section
 	{@attach scrollFade}
-	class="isolate relative flex min-h-screen w-full items-center justify-center overflow-hidden"
+	class="calc-hero isolate relative flex w-full items-center justify-center overflow-hidden"
 	aria-labelledby="calc-hero-title"
 >
 	<div class="hero-gradient absolute inset-0 -z-20" aria-hidden="true"></div>
 
 	{#if backgroundModule}
-		{#await backgroundModule then module}
-			{const Background = module.default}
+		{#await backgroundModule then { default: Background }}
 			<div class="absolute inset-0 -z-10" aria-hidden="true">
 				<Background />
 			</div>
@@ -96,7 +101,7 @@
 		class="hero-card relative z-10 mx-4 flex max-w-2xl flex-col items-center px-8 py-12 text-center sm:mx-8 sm:px-12 sm:py-16"
 	>
 		<div class="hero-icon mb-6 flex h-16 w-16 items-center justify-center rounded-2xl">
-			<IconCalculator size={32} />
+			<IconCalculator size={32} aria-hidden="true" />
 		</div>
 
 		<h1
@@ -153,6 +158,48 @@
 </section>
 
 <style>
+	/* The site navbar is sticky and sits in flow above the hero (plus the admin toolbar
+	   when it shows), so a full-viewport hero would push its scroll cue below the fold.
+	   The hero takes the viewport minus that chrome. The heights mirror --nav-height in
+	   NavBar.svelte; svh is the viewport with mobile browser bars shown, so the cue is
+	   visible on first paint there too (vh is the fallback for older browsers). */
+	.calc-hero {
+		--calc-hero-nav-height: 80px;
+		--calc-hero-chrome: calc(var(--calc-hero-nav-height) + var(--admin-toolbar-height, 0px));
+		min-height: calc(100vh - var(--calc-hero-chrome));
+		min-height: calc(100svh - var(--calc-hero-chrome));
+	}
+
+	@media (max-width: 767px) {
+		.calc-hero {
+			--calc-hero-nav-height: 74px;
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 1023px) {
+		.calc-hero {
+			--calc-hero-nav-height: 84px;
+		}
+	}
+
+	@media (min-width: 1152px) {
+		.calc-hero {
+			--calc-hero-nav-height: 88px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.calc-hero {
+			--calc-hero-nav-height: 94px;
+		}
+	}
+
+	@media (min-width: 1536px) {
+		.calc-hero {
+			--calc-hero-nav-height: 104px;
+		}
+	}
+
 	.hero-gradient {
 		background: linear-gradient(165deg, #0a0f1a 0%, #0d1b2a 40%, #143e59 100%);
 	}

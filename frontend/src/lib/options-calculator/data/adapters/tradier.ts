@@ -4,12 +4,19 @@
 // All requests go through SvelteKit API routes
 // ============================================================
 
-import type { MarketDataProvider } from '../provider-interface.js';
+import type { MarketDataProvider, RequestOptions } from '../provider-interface.js';
 import {
 	CapabilityNotSupportedError,
-	AuthenticationError,
-	RateLimitExceededError
+	fetchProviderJSON,
+	probeProvider
 } from '../provider-interface.js';
+import {
+	expirationListSchema,
+	ohlcvListSchema,
+	optionsChainSchema,
+	stockQuoteSchema,
+	tickerSearchResultsSchema
+} from '../schemas.js';
 import type {
 	ProviderCapabilities,
 	ProviderStatus,
@@ -25,20 +32,8 @@ import type {
 } from '../types.js';
 
 export function createTradierAdapter(): MarketDataProvider {
-	const BASE = '/tools/options-calculator/api';
-
-	async function fetchAPI<T>(path: string, params: Record<string, string> = {}): Promise<T> {
-		const url = new URL(path, window.location.origin);
-		url.searchParams.set('provider', 'tradier');
-		for (const [key, value] of Object.entries(params)) {
-			url.searchParams.set(key, value);
-		}
-		const response = await fetch(url.toString());
-		if (response.status === 401) throw new AuthenticationError('tradier');
-		if (response.status === 429) throw new RateLimitExceededError('tradier');
-		if (!response.ok) throw new Error(`Tradier API error: ${response.status}`);
-		return response.json();
-	}
+	const NAME = 'tradier';
+	const LABEL = 'Tradier';
 
 	const capabilities: ProviderCapabilities = {
 		quotes: true,
@@ -52,64 +47,102 @@ export function createTradierAdapter(): MarketDataProvider {
 		streaming: true
 	};
 
+	function isAvailable(options?: RequestOptions): Promise<boolean> {
+		return probeProvider(NAME, 'quote', { ticker: 'AAPL' }, options);
+	}
+
 	return {
-		name: 'tradier',
+		name: NAME,
 		displayName: 'Tradier',
 		capabilities,
 
-		async isAvailable(): Promise<boolean> {
-			try {
-				const res = await fetch(`${BASE}/quote?provider=tradier&ticker=AAPL&healthcheck=true`);
-				return res.ok;
-			} catch {
-				return false;
-			}
-		},
+		isAvailable,
 
-		async getStatus(): Promise<ProviderStatus> {
-			const available = await this.isAvailable();
+		async getStatus(options?: RequestOptions): Promise<ProviderStatus> {
+			const available = await isAvailable(options);
 			return {
-				name: 'tradier',
+				name: NAME,
 				displayName: 'Tradier',
 				isAvailable: available,
 				isConfigured: available
 			};
 		},
 
-		async getQuote(ticker: string): Promise<StockQuote> {
-			return fetchAPI<StockQuote>(`${BASE}/quote`, { ticker });
+		getQuote(ticker: string, options?: RequestOptions): Promise<StockQuote> {
+			return fetchProviderJSON(NAME, LABEL, 'quote', { ticker }, stockQuoteSchema, options);
 		},
 
-		async getHistoricalPrices(ticker: string, from: string, to: string): Promise<OHLCV[]> {
-			return fetchAPI<OHLCV[]>(`${BASE}/historical-vol`, { ticker, from, to, type: 'prices' });
+		getHistoricalPrices(
+			ticker: string,
+			from: string,
+			to: string,
+			options?: RequestOptions
+		): Promise<OHLCV[]> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'historical-vol',
+				{ ticker, from, to, type: 'prices' },
+				ohlcvListSchema,
+				options
+			);
 		},
 
-		async getOptionsChain(ticker: string, expiration: string): Promise<OptionsChain> {
-			return fetchAPI<OptionsChain>(`${BASE}/chain`, { ticker, expiration });
+		getOptionsChain(
+			ticker: string,
+			expiration: string,
+			options?: RequestOptions
+		): Promise<OptionsChain> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'chain',
+				{ ticker, expiration },
+				optionsChainSchema,
+				options
+			);
 		},
 
-		async getExpirations(ticker: string): Promise<ExpirationList> {
-			return fetchAPI<ExpirationList>(`${BASE}/expirations`, { ticker });
+		getExpirations(ticker: string, options?: RequestOptions): Promise<ExpirationList> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'expirations',
+				{ ticker },
+				expirationListSchema,
+				options
+			);
 		},
 
 		async getHistoricalVol(_ticker: string): Promise<HistoricalVolData> {
-			throw new CapabilityNotSupportedError('tradier', 'historicalVol');
+			throw new CapabilityNotSupportedError(NAME, 'historicalVol');
 		},
 
 		async getDividendInfo(_ticker: string): Promise<DividendInfo> {
-			throw new CapabilityNotSupportedError('tradier', 'dividends');
+			throw new CapabilityNotSupportedError(NAME, 'dividends');
 		},
 
 		async getEarningsInfo(_ticker: string): Promise<EarningsInfo> {
-			throw new CapabilityNotSupportedError('tradier', 'earnings');
+			throw new CapabilityNotSupportedError(NAME, 'earnings');
 		},
 
 		async getRiskFreeRate(): Promise<RiskFreeRateData> {
-			throw new CapabilityNotSupportedError('tradier', 'riskFreeRate');
+			throw new CapabilityNotSupportedError(NAME, 'riskFreeRate');
 		},
 
-		async searchTickers(query: string, limit: number = 10): Promise<TickerSearchResult[]> {
-			return fetchAPI<TickerSearchResult[]>(`${BASE}/search`, { q: query, limit: String(limit) });
+		searchTickers(
+			query: string,
+			limit: number = 10,
+			options?: RequestOptions
+		): Promise<TickerSearchResult[]> {
+			return fetchProviderJSON(
+				NAME,
+				LABEL,
+				'search',
+				{ q: query, limit: String(limit) },
+				tickerSearchResultsSchema,
+				options
+			);
 		}
 	};
 }

@@ -51,17 +51,17 @@ export interface FirstOrderGreeks {
 
 /** Second-order Greeks */
 export interface SecondOrderGreeks {
-	/** Rate of change of delta w.r.t. time (∂Δ/∂t) — aka delta decay */
+	/** Rate of change of delta w.r.t. time (∂Δ/∂t) — aka delta decay, per day */
 	charm: number;
 	/** Rate of change of delta w.r.t. volatility (∂Δ/∂σ) — aka DdeltaDvol */
 	vanna: number;
-	/** Rate of change of vega w.r.t. volatility (∂V²/∂σ²) — aka vega convexity */
+	/** Rate of change of vega w.r.t. volatility (∂²V/∂σ²) — aka vomma, vega convexity */
 	volga: number;
-	/** Rate of change of vega w.r.t. underlying (∂vega/∂S) — same as vanna */
+	/** Rate of change of vega w.r.t. time (∂vega/∂t) — per day */
 	veta: number;
 	/** Rate of change of gamma w.r.t. underlying (∂Γ/∂S) — aka DgammaDspot */
 	speed: number;
-	/** Rate of change of gamma w.r.t. time (∂Γ/∂t) */
+	/** Rate of change of gamma w.r.t. time (∂Γ/∂t) — per day */
 	color: number;
 	/** Rate of change of gamma w.r.t. volatility (∂Γ/∂σ) */
 	zomma: number;
@@ -97,7 +97,11 @@ export interface StrategyLeg {
 	position: 1 | -1;
 	/** Number of contracts */
 	quantity: number;
-	/** Premium paid/received per contract */
+	/**
+	 * Cash flow of buying one unit (negative: paid); the payoff engine multiplies it by
+	 * `position` and `quantity`. The calculator reprices every leg at the current inputs
+	 * (`CalculatorState.pricedStrategyLegs`), so a stored value is not used for pricing.
+	 */
 	premium: number;
 }
 
@@ -287,7 +291,7 @@ export interface VolSmilePoint {
 
 /** Sensitivity analysis data */
 export interface SensitivityData {
-	parameter: string;
+	parameter: keyof BSInputs;
 	label: string;
 	baseValue: number;
 	range: number[];

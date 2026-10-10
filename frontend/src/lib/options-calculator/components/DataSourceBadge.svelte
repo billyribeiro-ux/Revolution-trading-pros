@@ -2,55 +2,60 @@
 	import IconWifi from '@tabler/icons-svelte-runes/icons/wifi';
 	import IconWifiOff from '@tabler/icons-svelte-runes/icons/wifi-off';
 	import IconDatabase from '@tabler/icons-svelte-runes/icons/database';
-	import type { MarketDataService } from '../data/market-data-service.svelte.js';
+	import { getMarketData } from '../state/context.js';
+	import type { DataProviderName } from '../data/types.js';
 
-	interface Props {
-		marketData: MarketDataService;
-	}
+	const marketData = getMarketData();
+	const panelId = $props.id();
 
-	let { marketData }: Props = $props();
+	const PROVIDER_LABELS = {
+		polygon: 'Polygon.io',
+		'theta-data': 'Theta Data',
+		tradier: 'Tradier',
+		fred: 'FRED',
+		yahoo: 'Yahoo',
+		mock: 'Mock Data'
+	} satisfies Record<DataProviderName, string>;
 
 	let expanded = $state(false);
 
-	let source = $derived(marketData.currentQuote?.source ?? null);
-	let isLive = $derived(source !== null && source !== 'mock');
-	let label = $derived.by(() => {
-		if (!source) return 'No Data';
-		switch (source) {
-			case 'polygon':
-				return 'Polygon.io';
-			case 'theta-data':
-				return 'Theta Data';
-			case 'tradier':
-				return 'Tradier';
-			case 'fred':
-				return 'FRED';
-			case 'yahoo':
-				return 'Yahoo';
-			case 'mock':
-				return 'Mock Data';
-			default:
-				return source;
-		}
-	});
+	const source = $derived(marketData.currentQuote?.source ?? null);
+	const isLive = $derived(source !== null && source !== 'mock');
+	const label = $derived(source ? PROVIDER_LABELS[source] : 'No Data');
 
-	let dotColor = $derived.by(() => {
+	const dotColor = $derived.by(() => {
 		if (!source) return 'var(--calc-text-muted)';
 		if (marketData.lastError) return 'var(--calc-put)';
 		if (source === 'mock') return 'var(--calc-warning)';
 		return 'var(--calc-call)';
 	});
 
-	let cacheStats = $derived(marketData.cache.getStats());
+	const status = $derived.by(() => {
+		if (marketData.lastError) return 'Error';
+		if (isLive) return 'Live';
+		if (source === 'mock') return 'Mock';
+		return 'Offline';
+	});
+
+	// Reactive: the cache notifies readers whenever entries are written or removed.
+	const cacheStats = $derived(marketData.cache.getStats());
+
+	function clearCache() {
+		marketData.cache.clearAll();
+		expanded = false;
+	}
 </script>
 
 <div class="relative">
 	<button
+		type="button"
 		onclick={() => (expanded = !expanded)}
+		aria-expanded={expanded}
+		aria-controls={panelId}
 		class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg transition-colors cursor-pointer"
 		style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 	>
-		<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor}></span>
+		<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor} aria-hidden="true"></span>
 		{#if isLive}
 			<IconWifi size={10} />
 		{:else if source === 'mock'}
@@ -58,11 +63,13 @@
 		{:else}
 			<IconWifiOff size={10} />
 		{/if}
+		<span class="sr-only">Data source:</span>
 		<span style="font-family: var(--calc-font-mono);">{label}</span>
 	</button>
 
 	{#if expanded}
 		<div
+			id={panelId}
 			class="absolute top-full right-0 mt-1 w-56 rounded-xl p-3 z-50 flex flex-col gap-2"
 			style="background: var(--calc-surface); border: 1px solid var(--calc-border); box-shadow: 0 8px 32px rgba(0,0,0,0.3);"
 		>
@@ -80,14 +87,9 @@
 			<div class="flex items-center justify-between">
 				<span class="text-[10px]" style="color: var(--calc-text-muted);">Status:</span>
 				<span class="flex items-center gap-1 text-[10px]" style:color={dotColor}>
-					<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor}></span>
-					{marketData.lastError
-						? 'Error'
-						: isLive
-							? 'Live'
-							: source === 'mock'
-								? 'Mock'
-								: 'Offline'}
+					<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor} aria-hidden="true"
+					></span>
+					{status}
 				</span>
 			</div>
 
@@ -119,10 +121,8 @@
 			{/if}
 
 			<button
-				onclick={() => {
-					marketData.cache.clearAll();
-					expanded = false;
-				}}
+				type="button"
+				onclick={clearCache}
 				class="text-[10px] px-2 py-1 rounded-lg cursor-pointer mt-1"
 				style="background: var(--calc-surface-hover); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 			>

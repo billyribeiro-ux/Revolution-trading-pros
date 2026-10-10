@@ -244,6 +244,8 @@ export function generateSensitivityData(inputs: BSInputs): SensitivityData[] {
 		{ key: 'dividendYield', label: 'Dividend Yield', rangePct: 1.0, steps: 40 }
 	];
 
+	const basePricing = price(inputs);
+
 	return parameters.map(({ key, label, rangePct, steps }) => {
 		const baseValue = inputs[key];
 		const low = Math.max(0.001, baseValue * (1 - rangePct));
@@ -263,7 +265,6 @@ export function generateSensitivityData(inputs: BSInputs): SensitivityData[] {
 			putPrices.push(pricing.putPrice);
 		}
 
-		const basePricing = price(inputs);
 		const bumpedInputs: BSInputs = { ...inputs, [key]: baseValue * 1.01 };
 		const bumpedPricing = price(bumpedInputs);
 

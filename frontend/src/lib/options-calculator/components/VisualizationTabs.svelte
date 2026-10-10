@@ -6,20 +6,16 @@
 	import ThetaDecay from './charts/ThetaDecay.svelte';
 	import SensitivityRadar from './charts/SensitivityRadar.svelte';
 	import OptionsChainViewer from './OptionsChainViewer.svelte';
-	import { untrack } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
-	import type { Attachment } from 'svelte/attachments';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
-	import type { MarketDataService } from '../data/market-data-service.svelte.js';
+	import { getCalculator } from '../state/context.js';
 	import type { ChartTab } from '../engine/types.js';
 
-	interface Props {
-		calc: CalculatorState;
-		marketData: MarketDataService;
-	}
+	const calc = getCalculator();
 
-	let { calc, marketData }: Props = $props();
+	const uid = $props.id();
+	const panelId = `${uid}-panel`;
+	const tabId = (id: ChartTab) => `${uid}-tab-${id}`;
 
 	const TABS: { id: ChartTab; label: string }[] = [
 		{ id: 'payoff', label: 'Payoff' },
@@ -32,49 +28,83 @@
 		{ id: 'chain', label: 'Options Chain' }
 	];
 
-	const surface3DModule = $derived(
-		calc.activeTab === 'surface' ? import('./charts/Surface3D.svelte') : null
-	);
+	/** Each tab's rendered (sub-pixel) width, kept current by its dimension binding. */
+	const tabWidths = $state<Partial<Record<ChartTab, number>>>({});
 
-	// Sliding active-tab indicator. Until the tab bar has been measured (SSR,
-	// first paint) the active tab draws its own underline instead.
-	let indicator = $state<{ left: number; width: number } | null>(null);
-
-	const trackActiveTab: Attachment<HTMLDivElement> = (tabBar) => {
-		const measure = () => {
-			const active = tabBar.querySelector<HTMLButtonElement>(`[data-tab-id="${calc.activeTab}"]`);
-			indicator = active ? { left: active.offsetLeft, width: active.offsetWidth } : null;
-		};
-
-		$effect(measure);
-
-		// Web-font swaps and viewport changes resize tabs without a tab change.
-		const observer = new ResizeObserver(() => untrack(measure));
-		for (const button of tabBar.querySelectorAll('button')) observer.observe(button);
-		return () => observer.disconnect();
+	/** Setter for a tab's `bind:borderBoxSize` function binding (readonly, so no getter). */
+	const measureTab = (id: ChartTab) => (size: ResizeObserverSize[]) => {
+		tabWidths[id] = size[0]?.inlineSize;
 	};
+
+	// Sliding active-tab indicator. The tabs sit edge to edge, so the active tab starts where
+	// the widths before it end. Until those tabs have been measured (SSR, first paint) the
+	// active tab draws its own underline instead.
+	const indicator = $derived.by(() => {
+		let left = 0;
+		for (const { id } of TABS) {
+			const width = tabWidths[id];
+			if (width === undefined) return null;
+			if (id === calc.activeTab) return { left, width };
+			left += width;
+		}
+		return null;
+	});
+
+	/** WAI-ARIA tabs keyboard model (automatic activation): arrows wrap, Home/End jump. */
+	function handleTabKeydown(event: KeyboardEvent, index: number) {
+		let next: number;
+		switch (event.key) {
+			case 'ArrowRight':
+				next = (index + 1) % TABS.length;
+				break;
+			case 'ArrowLeft':
+				next = (index - 1 + TABS.length) % TABS.length;
+				break;
+			case 'Home':
+				next = 0;
+				break;
+			case 'End':
+				next = TABS.length - 1;
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
+		const { id } = TABS[next];
+		calc.activeTab = id;
+		document.getElementById(tabId(id))?.focus();
+	}
 </script>
 
 <div class="flex flex-col gap-0">
 	<!-- Tab bar -->
 	<div
-		{@attach trackActiveTab}
 		class="relative flex border-b"
 		style="border-color: var(--calc-border);"
+		role="tablist"
+		aria-label="Charts"
 	>
-		{#each TABS as tab (tab.id)}
+		{#each TABS as tab, index (tab.id)}
+			{const selected = $derived(calc.activeTab === tab.id)}
 			<button
-				data-tab-id={tab.id}
+				type="button"
+				role="tab"
+				id={tabId(tab.id)}
+				aria-selected={selected}
+				aria-controls={panelId}
+				tabindex={selected ? 0 : -1}
 				onclick={() => (calc.activeTab = tab.id)}
+				onkeydown={(event) => handleTabKeydown(event, index)}
+				bind:borderBoxSize={null, measureTab(tab.id)}
 				class="relative px-3 py-2.5 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
-				style:color={calc.activeTab === tab.id ? 'var(--calc-text)' : 'var(--calc-text-muted)'}
+				style:color={selected ? 'var(--calc-text)' : 'var(--calc-text-muted)'}
 			>
 				{tab.label}
-				{#if calc.activeTab === tab.id && !indicator}
-					<div
+				{#if selected && !indicator}
+					<span
 						class="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
 						style="background: var(--calc-accent); box-shadow: 0 0 8px var(--calc-accent-glow);"
-					></div>
+					></span>
 				{/if}
 			</button>
 		{/each}
@@ -89,24 +119,30 @@
 	</div>
 
 	<!-- Tab content: each newly selected chart fades in -->
-	<div class="pt-4">
+	<div
+		class="pt-4"
+		role="tabpanel"
+		id={panelId}
+		aria-labelledby={tabId(calc.activeTab)}
+		tabindex="0"
+	>
 		{#key calc.activeTab}
 			<div in:fade={{ duration: prefersReducedMotion.current ? 0 : 200 }}>
 				{#if calc.activeTab === 'payoff'}
-					<PayoffDiagram {calc} />
+					<PayoffDiagram />
 				{:else if calc.activeTab === 'heatmap'}
-					<GreeksHeatmap {calc} />
+					<GreeksHeatmap />
 				{:else if calc.activeTab === 'surface'}
-					{#await surface3DModule}
+					<!-- Three.js is only fetched the first time the 3D surface is opened. -->
+					{#await import('./charts/Surface3D.svelte')}
 						<div
 							class="flex min-h-80 items-center justify-center rounded-xl border text-xs"
 							style="border-color: var(--calc-border); color: var(--calc-text-muted);"
 						>
 							Loading 3D surface...
 						</div>
-					{:then module}
-						{const Surface3D = module?.default}
-						<Surface3D {calc} />
+					{:then { default: Surface3D }}
+						<Surface3D />
 					{:catch}
 						<div
 							class="rounded-xl border p-6 text-center text-xs"
@@ -116,15 +152,15 @@
 						</div>
 					{/await}
 				{:else if calc.activeTab === 'montecarlo'}
-					<MonteCarloPaths {calc} />
+					<MonteCarloPaths />
 				{:else if calc.activeTab === 'volsmile'}
-					<VolSmile {calc} />
+					<VolSmile />
 				{:else if calc.activeTab === 'theta'}
-					<ThetaDecay {calc} />
+					<ThetaDecay />
 				{:else if calc.activeTab === 'sensitivity'}
-					<SensitivityRadar {calc} />
+					<SensitivityRadar />
 				{:else if calc.activeTab === 'chain'}
-					<OptionsChainViewer {marketData} {calc} />
+					<OptionsChainViewer />
 				{/if}
 			</div>
 		{/key}
