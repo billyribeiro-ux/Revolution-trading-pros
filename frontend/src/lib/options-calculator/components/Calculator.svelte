@@ -1,4 +1,9 @@
 <script lang="ts">
+	import gsap from 'gsap';
+	import { untrack } from 'svelte';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import type { Attachment } from 'svelte/attachments';
+	import type { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { createCalculatorState } from '../state/calculator.svelte.js';
 	import { createMarketDataService } from '../data/market-data-service.svelte.js';
 	import InputPanel from './InputPanel.svelte';
@@ -32,6 +37,13 @@
 	import IconFolderOpen from '@tabler/icons-svelte-runes/icons/folder-open';
 	import type { MarketSnapshot } from '../data/types.js';
 
+	interface Props {
+		/** Level of the calculator's title; 2 when the page already has an <h1> (the hero). */
+		headingLevel?: 1 | 2;
+	}
+
+	let { headingLevel = 1 }: Props = $props();
+
 	const calc = createCalculatorState();
 	const marketData = createMarketDataService();
 
@@ -42,12 +54,59 @@
 		calc.applyMarketSnapshot(snapshot);
 	}
 
+	let themeApplied = false;
+
 	$effect(() => {
 		const t = calc.theme;
 		if (typeof document !== 'undefined') {
 			document.documentElement.setAttribute('data-calc-theme', t);
 		}
+		// Soften the swap with a brief fade on toggles (not on the initial apply).
+		if (!themeApplied) {
+			themeApplied = true;
+			return;
+		}
+		untrack(() => {
+			if (calculatorEl && !prefersReducedMotion.current) {
+				calculatorEl.animate([{ opacity: 0.85 }, { opacity: 1 }], {
+					duration: 400,
+					easing: 'ease-out'
+				});
+			}
+		});
 	});
+
+	/** Fixed bar along the top edge tracking how far through the calculator the reader is. */
+	const scrollProgress: Attachment<HTMLDivElement> = (bar) => {
+		const trigger = calculatorEl;
+		if (!trigger) return;
+		let disposed = false;
+		let progressTrigger: ScrollTrigger | undefined;
+		void import('gsap/ScrollTrigger').then(({ ScrollTrigger: plugin }) => {
+			if (disposed) return;
+			gsap.registerPlugin(plugin);
+			progressTrigger = plugin.create({
+				trigger,
+				start: 'top top',
+				end: 'bottom bottom',
+				onUpdate: (self) => {
+					bar.style.transform = `scaleX(${self.progress})`;
+				}
+			});
+		});
+		return () => {
+			disposed = true;
+			progressTrigger?.kill();
+		};
+	};
+
+	/** Hover ripple: centres the button's highlight on the pointer. */
+	function handleRippleMove(event: PointerEvent & { currentTarget: HTMLButtonElement }) {
+		const target = event.currentTarget;
+		const rect = target.getBoundingClientRect();
+		target.style.setProperty('--ripple-x', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+		target.style.setProperty('--ripple-y', `${((event.clientY - rect.top) / rect.height) * 100}%`);
+	}
 
 	function handleExportCSV(): void {
 		exportCSVRef?.exportCSV();
@@ -58,7 +117,9 @@
 	}
 </script>
 
-<div class="calc-layout">
+<div class="calc-scroll-progress" {@attach scrollProgress} aria-hidden="true"></div>
+
+<div class="calc-layout" bind:this={calculatorEl}>
 	<!-- Header -->
 	<div class="col-span-full flex items-center justify-between px-1">
 		<div class="flex items-center gap-3">
@@ -69,12 +130,13 @@
 				<IconCalculator size={20} />
 			</div>
 			<div>
-				<h1
+				<svelte:element
+					this={headingLevel === 1 ? 'h1' : 'h2'}
 					class="text-lg font-bold tracking-tight"
 					style="color: var(--calc-text); font-family: var(--calc-font-display);"
 				>
 					Black-Scholes Calculator
-				</h1>
+				</svelte:element>
 				<p class="text-xs" style="color: var(--calc-text-muted);">
 					Institutional-grade options pricing
 				</p>
@@ -93,14 +155,16 @@
 			<div class="flex rounded-lg overflow-hidden" style="border: 1px solid var(--calc-border);">
 				<button
 					onclick={() => (calc.calculatorMode = 'single')}
-					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
+					onpointermove={handleRippleMove}
+					class="calc-ripple text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'single'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
 						: 'color: var(--calc-text-muted);'}>Single</button
 				>
 				<button
 					onclick={() => (calc.calculatorMode = 'strategy')}
-					class="text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
+					onpointermove={handleRippleMove}
+					class="calc-ripple text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
 					style={calc.calculatorMode === 'strategy'
 						? 'background: var(--calc-accent-glow); color: var(--calc-accent);'
 						: 'color: var(--calc-text-muted);'}>Strategy</button
@@ -110,7 +174,8 @@
 			<!-- Scenario Toggle -->
 			<button
 				onclick={() => (calc.isScenarioPanelOpen = !calc.isScenarioPanelOpen)}
-				class="flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg transition-colors cursor-pointer"
+				onpointermove={handleRippleMove}
+				class="calc-ripple flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg transition-colors cursor-pointer"
 				style={calc.isScenarioPanelOpen
 					? 'background: var(--calc-warning); color: white;'
 					: 'background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
@@ -232,3 +297,43 @@
 <SaveConfigModal {calc} onSaved={handleSavedConfigsRefresh} />
 <SavedConfigs {calc} />
 <LeadCaptureModal />
+
+<style>
+	.calc-scroll-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		/* Above the sticky site navbar (z-index 1000). */
+		z-index: 1001;
+		background: var(--calc-accent);
+		transform: scaleX(0);
+		transform-origin: left;
+		border-radius: 0 2px 2px 0;
+		pointer-events: none;
+	}
+
+	.calc-ripple {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.calc-ripple::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(
+			circle at var(--ripple-x, 50%) var(--ripple-y, 50%),
+			rgba(255, 255, 255, 0.15) 0%,
+			transparent 60%
+		);
+		opacity: 0;
+		transition: opacity 0.3s;
+		pointer-events: none;
+	}
+
+	.calc-ripple:hover::after {
+		opacity: 1;
+	}
+</style>

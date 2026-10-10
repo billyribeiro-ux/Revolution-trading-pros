@@ -302,3 +302,18 @@
 		gap: 8px;
 	}
 }
+
+/* ── Animated Card Border ─────────────────────────────────── */
+/* Registered so the conic-gradient angle on GlassCard's hover border can
+   interpolate; unregistered custom properties only flip between values. */
+@property --calc-border-angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+
+@keyframes calc-border-rotate {
+	to {
+		--calc-border-angle: 360deg;
+	}
+}

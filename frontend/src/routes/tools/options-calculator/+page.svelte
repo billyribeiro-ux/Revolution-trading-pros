@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Calculator from '#lib/options-calculator/components/Calculator.svelte';
+	import HeroSection from '#lib/options-calculator/components/hero/HeroSection.svelte';
 	import '#lib/options-calculator/styles/calculator-theme.css';
 	import {
 		generateStructuredData,
@@ -54,4 +55,16 @@
 	/>
 </svelte:head>
 
-<Calculator />
+<HeroSection targetId="calculator" />
+
+<div id="calculator" class="calculator-anchor">
+	<!-- The hero's title is the page's <h1>. -->
+	<Calculator headingLevel={2} />
+</div>
+
+<style>
+	.calculator-anchor {
+		/* Clear the sticky site navbar when the hero's CTA scrolls here. */
+		scroll-margin-top: 5rem;
+	}
+</style>

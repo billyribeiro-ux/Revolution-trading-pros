@@ -41,7 +41,40 @@ import type {
 	ToastItem,
 	ToastType
 } from '../engine/types.js';
+import type {
+	MonteCarloWorkerRequest,
+	MonteCarloWorkerResponse
+} from '../engine/monte-carlo.worker.js';
 import type { DataMode, MarketSnapshot } from '../data/types.js';
+import { logger } from '#lib/utils/logger.js';
+
+/**
+ * Run one Monte Carlo simulation in a dedicated Web Worker, terminating it
+ * once it answers. Rejects where workers are unavailable (SSR, a blocked
+ * worker script) so the caller can fall back to the main thread.
+ */
+function simulateInWorker(request: MonteCarloWorkerRequest): Promise<MonteCarloResult> {
+	return new Promise((resolve, reject) => {
+		const worker = new Worker(new URL('../engine/monte-carlo.worker.ts', import.meta.url), {
+			type: 'module'
+		});
+		worker.onmessage = (event: MessageEvent<MonteCarloWorkerResponse>) => {
+			worker.terminate();
+			if (event.data.ok) resolve(event.data.result);
+			else reject(new Error(event.data.error));
+		};
+		worker.onerror = (event) => {
+			worker.terminate();
+			reject(new Error(event.message || 'Monte Carlo worker failed to load'));
+		};
+		try {
+			worker.postMessage(request);
+		} catch (err) {
+			worker.terminate();
+			reject(err);
+		}
+	});
+}
 
 /**
  * Create the calculator state store.
@@ -225,10 +258,30 @@ export function createCalculatorState() {
 	}
 
 	// ── Phase 2: Monte Carlo Methods ────────────────────
+	/** Incremented per run so a slower, superseded run never overwrites a newer result. */
+	let monteCarloRun = 0;
+
 	async function runMC() {
+		const run = ++monteCarloRun;
 		isMonteCarloRunning = true;
-		await new Promise((resolve) => setTimeout(resolve, 10));
-		monteCarloResult = runMonteCarlo(inputs, monteCarloConfig);
+		// Plain copies: `monteCarloConfig` is a $state proxy, which postMessage cannot clone.
+		const request: MonteCarloWorkerRequest = {
+			inputs: $state.snapshot(inputs),
+			config: $state.snapshot(monteCarloConfig)
+		};
+
+		let result: MonteCarloResult;
+		try {
+			result = await simulateInWorker(request);
+		} catch (err) {
+			logger.warn('[MonteCarlo] Worker unavailable, simulating on the main thread:', err);
+			// Yield a frame so the running state paints before the blocking simulation.
+			await new Promise((resolve) => setTimeout(resolve, 10));
+			result = runMonteCarlo(request.inputs, request.config);
+		}
+
+		if (run !== monteCarloRun) return;
+		monteCarloResult = result;
 		isMonteCarloRunning = false;
 	}
 

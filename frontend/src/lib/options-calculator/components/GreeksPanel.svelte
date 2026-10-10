@@ -11,6 +11,10 @@
 	let { calc }: Props = $props();
 
 	let expandEl: HTMLDivElement | undefined = $state();
+	let is3DView = $state(false);
+
+	// Three.js is only fetched the first time the 3D view is opened.
+	const greeksOrbit3DModule = $derived(is3DView ? import('./charts/GreeksOrbit3D.svelte') : null);
 
 	$effect(() => {
 		const show = calc.showAdvancedGreeks;
@@ -60,19 +64,59 @@
 		>
 			First-Order Greeks
 		</h3>
+		<button
+			type="button"
+			onclick={() => (is3DView = !is3DView)}
+			aria-pressed={is3DView}
+			aria-label="3D view"
+			class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider rounded-md px-2 py-1 transition-colors cursor-pointer"
+			style="background: var(--calc-surface); border: 1px solid var(--calc-border); color: var(--calc-text-muted);"
+		>
+			<span style:opacity={is3DView ? '0.5' : '1'}>2D</span>
+			<span style="opacity: 0.3;" aria-hidden="true">|</span>
+			<span style:opacity={is3DView ? '1' : '0.5'}>3D</span>
+		</button>
 	</div>
 
-	<div class="grid grid-cols-5 gap-2">
-		{#each FIRST_ORDER as greek (greek.key)}
-			<MetricCard
-				label={greek.label}
-				value={calc.currentGreeks.first[greek.key]}
-				decimals={greek.decimals}
-				tooltip={greek.desc}
-				colorize
+	{#if is3DView}
+		{#await greeksOrbit3DModule}
+			<div
+				class="flex h-[300px] items-center justify-center rounded-xl border text-xs"
+				style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+			>
+				Loading 3D view...
+			</div>
+		{:then module}
+			{const GreeksOrbit3D = module?.default}
+			<GreeksOrbit3D
+				delta={calc.currentGreeks.first.delta}
+				gamma={calc.currentGreeks.first.gamma}
+				theta={calc.currentGreeks.first.theta}
+				vega={calc.currentGreeks.first.vega}
+				rho={calc.currentGreeks.first.rho}
+				theme={calc.theme}
 			/>
-		{/each}
-	</div>
+		{:catch}
+			<div
+				class="rounded-xl border p-6 text-center text-xs"
+				style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+			>
+				3D view failed to load.
+			</div>
+		{/await}
+	{:else}
+		<div class="grid grid-cols-5 gap-2">
+			{#each FIRST_ORDER as greek (greek.key)}
+				<MetricCard
+					label={greek.label}
+					value={calc.currentGreeks.first[greek.key]}
+					decimals={greek.decimals}
+					tooltip={greek.desc}
+					colorize
+				/>
+			{/each}
+		</div>
+	{/if}
 
 	<!-- Toggle Advanced -->
 	<button
