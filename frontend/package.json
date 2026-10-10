@@ -52,14 +52,18 @@
 		"canvas-confetti": "^1.9.4",
 		"d3": "^7.9.0",
 		"diff-match-patch": "^1.0.5",
-		"dompurify": "^3.4.16",
 		"embla-carousel": "^8.6.0",
 		"embla-carousel-autoplay": "^8.6.0",
 		"embla-carousel-svelte": "^8.6.0",
 		"gsap": "^3.15.0",
+		"hast-util-from-dom": "^5.0.1",
+		"hast-util-from-parse5": "^8.0.3",
+		"hast-util-sanitize": "^5.0.2",
+		"hast-util-to-html": "^9.0.5",
 		"html2canvas": "^1.4.1",
-		"isomorphic-dompurify": "^4.5.0",
 		"lightweight-charts": "^5.2.1",
+		"parse5": "^8.0.1",
+		"property-information": "^7.2.0",
 		"three": "^0.186.1",
 		"tus-js-client": "^4.3.1",
 		"typed.js": "^3.0.0",
@@ -88,6 +92,7 @@
 		"@types/d3-selection": "^3.0.12",
 		"@types/d3-shape": "^3.2.0",
 		"@types/diff-match-patch": "^1.0.36",
+		"@types/hast": "^3.0.5",
 		"@types/node": "^24.19.2",
 		"@types/three": "^0.186.0",
 		"@typescript-eslint/eslint-plugin": "^8.71.1",
@@ -127,6 +132,10 @@
 		"wrangler": "^4.149.0"
 	},
 	"imports": {
+		"#lib/utils/html-sanitizer/parse-fragment.js": {
+			"browser": "./src/lib/utils/html-sanitizer/parse-fragment.browser.js",
+			"default": "./src/lib/utils/html-sanitizer/parse-fragment.server.js"
+		},
 		"#lib/*": "./src/lib/*"
 	}
 }

@@ -7,7 +7,7 @@
 	 * @version 1.1.0 - Security hardened
 	 * @author Revolution Trading Pros
 	 * @level L8 Principal Engineer
-	 * @security XSS protection via DOMPurify sanitization
+	 * @security XSS protection via #lib/utils/sanitize.js
 	 */
 	import { onMount } from 'svelte';
 	import Icon from '#lib/components/Icon.svelte';
@@ -111,7 +111,7 @@
 
 	/**
 	 * Get sanitized value for display - prevents XSS attacks
-	 * @security All output is sanitized through DOMPurify
+	 * @security All output is sanitized through #lib/utils/sanitize.js
 	 */
 	function getValue(row: Record<string, unknown>, column: Column): string {
 		const value = row[column.key];

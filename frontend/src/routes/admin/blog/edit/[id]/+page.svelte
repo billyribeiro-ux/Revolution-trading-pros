@@ -292,7 +292,7 @@
 					case 'separator':
 						return '<hr />';
 					case 'html':
-						// FIX-2026-04-26 (P2-4): sanitize raw-HTML blocks (DOMPurify).
+						// FIX-2026-04-26 (P2-4): sanitize raw-HTML blocks (sanitizeBlogContent).
 						return sanitizeBlogContent(String(content.html || ''));
 					default:
 						return content.text ? `<p>${content.text}</p>` : '';
