@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconLink from '@tabler/icons-svelte-runes/icons/link';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconExternalLink from '@tabler/icons-svelte-runes/icons/external-link';
@@ -12,6 +13,7 @@
 	import { getCalculator } from '../../state/context.js';
 
 	const calc = getCalculator();
+	const uid = $props.id();
 
 	/** How long the copy button reads "Copied!". */
 	const COPIED_FEEDBACK_MS = 2500;
@@ -76,11 +78,12 @@
 
 {#if calc.showShareLink}
 	<div
+		{@attach trapFocus}
 		{@attach focusDialog}
 		class="fixed inset-0 z-[9995] flex items-center justify-center p-4 outline-none"
 		role="dialog"
 		aria-modal="true"
-		aria-label="Share Calculator Link"
+		aria-labelledby="{uid}-title"
 		tabindex="-1"
 	>
 		<button
@@ -110,6 +113,7 @@
 				<div class="flex items-center gap-2">
 					<IconLink size={16} style="color: var(--calc-accent);" aria-hidden="true" />
 					<h3
+						id="{uid}-title"
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
 					>
@@ -149,7 +153,7 @@
 				<button
 					type="button"
 					onclick={handleCopy}
-					class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200"
+					class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold cursor-pointer transition-all motion-reduce:transition-none duration-200"
 					style="background: var(--calc-accent); color: white;"
 				>
 					<IconCopy size={13} aria-hidden="true" />

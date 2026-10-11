@@ -105,11 +105,18 @@
 		return key === undefined ? undefined : matrix.cells.find((cell) => cell.key === key);
 	});
 
+	/** The selected Greek at the calculator's current inputs (for the text alternative). */
+	const currentValue = $derived(
+		calc.heatmapGreek === 'charm' || calc.heatmapGreek === 'vanna' || calc.heatmapGreek === 'volga'
+			? calc.currentGreeks.second[calc.heatmapGreek]
+			: calc.currentGreeks.first[calc.heatmapGreek]
+	);
+
 	const greekLabel = $derived(
 		GREEK_OPTIONS.find((opt) => opt.value === calc.heatmapGreek)?.label ?? calc.heatmapGreek
 	);
 
-	function showCell(key: string, event: MouseEvent) {
+	function showCell(key: string, event: PointerEvent) {
 		const [px, py] = pointer(event);
 		hover = { key, left: px + margin.left + 12, top: py + margin.top - 40 };
 	}
@@ -131,7 +138,7 @@
 				type="button"
 				onclick={() => (calc.heatmapGreek = opt.value)}
 				aria-pressed={selected}
-				class="text-xs px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+				class="text-xs px-2.5 py-1 rounded-lg transition-all motion-reduce:transition-none cursor-pointer"
 				style:background={selected ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
 				style:color={selected ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 				style:border="1px solid {selected ? 'var(--calc-accent)' : 'var(--calc-border)'}"
@@ -164,8 +171,8 @@
 							stroke={active ? 'var(--calc-text)' : undefined}
 							stroke-width={active ? 2 : undefined}
 							aria-hidden="true"
-							onmouseenter={(event) => showCell(cell.key, event)}
-							onmouseleave={() => (hover = null)}
+							onpointerenter={(event) => showCell(cell.key, event)}
+							onpointerleave={() => (hover = null)}
 						/>
 					{/each}
 
@@ -247,6 +254,15 @@
 				</g>
 			{/if}
 		</svg>
+
+		<!-- Text alternative for the colour grid: the range and the current position. -->
+		<p class="sr-only">
+			{greekLabel} ranges from {(-matrix.absMax).toFixed(4)} to {matrix.absMax.toFixed(4)} across strikes
+			${matrix.strikeLow.toFixed(0)} to ${matrix.strikeHigh.toFixed(0)} and up to {(
+				matrix.expiryMax * 365
+			).toFixed(0)}
+			days to expiry; at the current strike and expiry it is {currentValue.toFixed(4)}.
+		</p>
 
 		{#if hover && hoveredCell}
 			<div

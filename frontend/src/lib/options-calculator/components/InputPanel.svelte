@@ -55,7 +55,7 @@
 			class="reset-button"
 			aria-label="Reset all inputs"
 		>
-			<IconRotate2 size={12} />
+			<IconRotate2 size={12} aria-hidden="true" />
 			Reset
 		</button>
 	</div>
@@ -257,11 +257,13 @@
 		position: relative;
 	}
 
+	/* Sits in the 1rem gap above its row, clear of the slider's stepper buttons. */
 	.live-badge {
 		position: absolute;
-		top: -0.25rem;
+		top: -0.95rem;
 		right: 0;
 		z-index: 10;
+		pointer-events: none;
 		border-radius: 0.25rem;
 		background: var(--calc-call-bg);
 		color: var(--calc-call);

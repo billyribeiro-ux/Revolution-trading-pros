@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconKeyboard from '@tabler/icons-svelte-runes/icons/keyboard';
 	import { backOut } from 'svelte/easing';
@@ -115,6 +116,7 @@
 <!-- Keyboard Shortcuts Help Overlay -->
 {#if calc.showShortcutsHelp}
 	<div
+		{@attach trapFocus}
 		{@attach focusDialog}
 		class="fixed inset-0 z-[9998] flex items-center justify-center p-4 outline-none"
 		role="dialog"

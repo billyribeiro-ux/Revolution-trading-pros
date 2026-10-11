@@ -221,7 +221,7 @@
 			type="button"
 			onclick={() => (autoRotate = !autoRotate)}
 			aria-pressed={autoRotate}
-			class="text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer"
+			class="text-xs px-2.5 py-1 rounded-lg border transition-all motion-reduce:transition-none cursor-pointer"
 			style:background={autoRotate ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
 			style:color={autoRotate ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 			style:border-color={autoRotate ? 'var(--calc-accent)' : 'var(--calc-border)'}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import { quadOut } from 'svelte/easing';
 	import { prefersReducedMotion } from 'svelte/motion';
@@ -300,6 +301,7 @@
 
 {#if calc.showCommandPalette}
 	<div
+		{@attach trapFocus}
 		class="fixed inset-0 z-[9999] flex items-start justify-center pt-[15vh]"
 		role="dialog"
 		aria-modal="true"
@@ -376,7 +378,7 @@
 									tabindex="-1"
 									onclick={() => execute(command)}
 									onkeydown={(event) => handleOptionKeydown(event, command)}
-									class="w-full flex items-center gap-2.5 px-4 py-2 text-xs cursor-pointer transition-colors"
+									class="w-full flex items-center gap-2.5 px-4 py-2 text-xs cursor-pointer transition-colors motion-reduce:transition-none"
 									style:color="var(--calc-text-secondary)"
 									style:background={active ? 'var(--calc-accent-glow)' : 'transparent'}
 								>

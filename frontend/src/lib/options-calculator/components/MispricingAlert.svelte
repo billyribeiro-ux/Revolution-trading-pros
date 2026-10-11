@@ -72,7 +72,10 @@
 					{#if mp.significance === 'significant'}
 						<span
 							class="significance-badge"
-							title="Significant (over {SIGNIFICANT_MISPRICING_PCT}%)">!</span
+							title="Significant (over {SIGNIFICANT_MISPRICING_PCT}%)"
+							><span aria-hidden="true">!</span><span class="sr-only"
+								>Significant (over {SIGNIFICANT_MISPRICING_PCT}%)</span
+							></span
 						>
 					{/if}
 				</div>

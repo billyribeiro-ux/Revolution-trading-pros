@@ -215,7 +215,7 @@
 							type="submit"
 							disabled={!isValidEmail || isSubmitting}
 							class={[
-								'text-xs font-semibold px-4 py-2.5 rounded-lg transition-all duration-200 flex-shrink-0',
+								'text-xs font-semibold px-4 py-2.5 rounded-lg transition-all motion-reduce:transition-none duration-200 flex-shrink-0',
 								isValidEmail && !isSubmitting ? 'cursor-pointer' : 'cursor-not-allowed'
 							]}
 							style:background="var(--calc-accent)"

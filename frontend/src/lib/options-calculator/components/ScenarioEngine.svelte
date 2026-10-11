@@ -116,7 +116,7 @@
 					id="{uid}-spot"
 					type="number"
 					bind:value={customSpotPct}
-					step="1"
+					step="any"
 					class="text-xs px-2 py-1 rounded outline-none"
 					style="background: var(--calc-surface-hover); color: var(--calc-text); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
 				/>
@@ -129,7 +129,7 @@
 					id="{uid}-vol"
 					type="number"
 					bind:value={customVolPct}
-					step="1"
+					step="any"
 					class="text-xs px-2 py-1 rounded outline-none"
 					style="background: var(--calc-surface-hover); color: var(--calc-text); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
 				/>
@@ -142,7 +142,7 @@
 					id="{uid}-days"
 					type="number"
 					bind:value={customTimeDays}
-					step="1"
+					step="any"
 					class="text-xs px-2 py-1 rounded outline-none"
 					style="background: var(--calc-surface-hover); color: var(--calc-text); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
 				/>
@@ -156,7 +156,7 @@
 						id="{uid}-rate"
 						type="number"
 						bind:value={customRateBp}
-						step="1"
+						step="any"
 						class="flex-1 text-xs px-2 py-1 rounded outline-none"
 						style="background: var(--calc-surface-hover); color: var(--calc-text); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
 					/>
@@ -181,7 +181,7 @@
 				aria-pressed={active}
 				class="scenario-card flex flex-col gap-1 rounded-xl px-3 py-2 text-left transition-all motion-reduce:transition-none cursor-pointer"
 				style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
-				style:border-color={active ? preset.color : undefined}
+				style:border-color={active ? preset.color : 'var(--calc-border)'}
 				style:box-shadow={active ? `0 0 12px ${preset.color}33` : undefined}
 			>
 				<span

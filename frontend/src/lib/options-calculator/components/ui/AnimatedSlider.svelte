@@ -61,6 +61,9 @@
 
 	function handleEditKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter') {
+			// Cancel the keypress: focus returns to the value button during this keydown,
+			// and an uncancelled Enter would click it and reopen the editor.
+			event.preventDefault();
 			refocusValue = true;
 			commitEdit();
 		} else if (event.key === 'Escape') {
@@ -112,7 +115,7 @@
 			<button
 				type="button"
 				onclick={decrement}
-				class="w-5 h-5 flex items-center justify-center rounded text-xs transition-colors cursor-pointer"
+				class="w-5 h-5 flex items-center justify-center rounded text-xs transition-colors motion-reduce:transition-none cursor-pointer"
 				style="background: var(--calc-surface-hover); color: var(--calc-text-secondary);"
 				aria-label="Decrease {label}">−</button
 			>
@@ -134,7 +137,7 @@
 					{@attach restoreFocus}
 					type="button"
 					onclick={startEdit}
-					class="text-xs text-right px-1 py-0.5 rounded cursor-text transition-colors min-w-[3.5rem]"
+					class="text-xs text-right px-1 py-0.5 rounded cursor-text transition-colors motion-reduce:transition-none min-w-[3.5rem]"
 					style="color: var(--calc-text); font-family: var(--calc-font-mono);"
 				>
 					<span class="sr-only">Edit {label}:</span>
@@ -145,7 +148,7 @@
 			<button
 				type="button"
 				onclick={increment}
-				class="w-5 h-5 flex items-center justify-center rounded text-xs transition-colors cursor-pointer"
+				class="w-5 h-5 flex items-center justify-center rounded text-xs transition-colors motion-reduce:transition-none cursor-pointer"
 				style="background: var(--calc-surface-hover); color: var(--calc-text-secondary);"
 				aria-label="Increase {label}">+</button
 			>

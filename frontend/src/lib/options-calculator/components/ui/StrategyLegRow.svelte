@@ -100,7 +100,7 @@
 <div
 	in:fly|global={{ x: 40, duration: prefersReducedMotion.current ? 0 : 350, easing: cubicOut }}
 	out:collapseOut
-	class="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all"
+	class="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all motion-reduce:transition-none"
 	style:background="var(--calc-surface)"
 	style:border="1px solid var(--calc-border)"
 	style:border-left="3px solid {color}"
@@ -110,7 +110,7 @@
 		<button
 			type="button"
 			onclick={() => updateType('call')}
-			class="text-[10px] font-bold px-2 py-1 transition-colors cursor-pointer"
+			class="text-[10px] font-bold px-2 py-1 transition-colors motion-reduce:transition-none cursor-pointer"
 			style:background={leg.type === 'call' ? 'var(--calc-call-bg)' : undefined}
 			style:color={leg.type === 'call' ? 'var(--calc-call)' : 'var(--calc-text-muted)'}
 			aria-label="Call"
@@ -119,7 +119,7 @@
 		<button
 			type="button"
 			onclick={() => updateType('put')}
-			class="text-[10px] font-bold px-2 py-1 transition-colors cursor-pointer"
+			class="text-[10px] font-bold px-2 py-1 transition-colors motion-reduce:transition-none cursor-pointer"
 			style:background={leg.type === 'put' ? 'var(--calc-put-bg)' : undefined}
 			style:color={leg.type === 'put' ? 'var(--calc-put)' : 'var(--calc-text-muted)'}
 			aria-label="Put"
@@ -168,7 +168,7 @@
 	<button
 		type="button"
 		onclick={togglePosition}
-		class="text-[10px] font-bold px-2 py-1 rounded-lg transition-colors cursor-pointer"
+		class="text-[10px] font-bold px-2 py-1 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 		style:background={isLong ? 'rgba(0,212,170,0.15)' : 'rgba(255,68,119,0.15)'}
 		style:color={isLong ? '#00d4aa' : '#ff4477'}
 		style:border="1px solid {isLong ? 'rgba(0,212,170,0.3)' : 'rgba(255,68,119,0.3)'}"
@@ -218,7 +218,7 @@
 	<button
 		type="button"
 		onclick={handleRemove}
-		class="w-5 h-5 flex items-center justify-center rounded-full transition-colors cursor-pointer ml-auto"
+		class="w-5 h-5 flex items-center justify-center rounded-full transition-colors motion-reduce:transition-none cursor-pointer ml-auto"
 		style="color: var(--calc-text-muted);"
 		aria-label="Remove leg"
 	>

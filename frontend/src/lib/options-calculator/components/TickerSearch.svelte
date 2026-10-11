@@ -29,6 +29,8 @@
 	const results = $derived(marketData.searchResults);
 	const quote = $derived(marketData.currentQuote);
 	const showDropdown = $derived(isOpen && (results.length > 0 || marketData.isSearching));
+	/** The listbox itself renders only once there are results (the spinner shows before). */
+	const listboxShown = $derived(showDropdown && results.length > 0);
 
 	function handleInput(event: Event & { currentTarget: HTMLInputElement }) {
 		query = event.currentTarget.value;
@@ -101,6 +103,7 @@
 			size={14}
 			class="absolute left-2.5 pointer-events-none"
 			style="color: var(--calc-text-muted);"
+			aria-hidden="true"
 		/>
 		<input
 			bind:this={inputEl}
@@ -112,7 +115,7 @@
 			onblur={() => (isOpen = false)}
 			placeholder="Search ticker..."
 			aria-label="Search ticker"
-			class="w-full text-xs pl-8 pr-8 py-1.5 rounded-lg outline-none transition-all"
+			class="w-full text-xs pl-8 pr-8 py-1.5 rounded-lg outline-none transition-all motion-reduce:transition-none"
 			style:background="var(--calc-surface)"
 			style:color="var(--calc-text)"
 			style:border="1px solid {isOpen ? 'var(--calc-accent)' : 'var(--calc-border)'}"
@@ -120,11 +123,11 @@
 			autocomplete="off"
 			spellcheck="false"
 			role="combobox"
-			aria-expanded={showDropdown}
+			aria-expanded={listboxShown}
 			aria-haspopup="listbox"
 			aria-autocomplete="list"
 			aria-controls={listboxId}
-			aria-activedescendant={showDropdown && selectedIndex >= 0
+			aria-activedescendant={listboxShown && selectedIndex >= 0
 				? optionId(selectedIndex)
 				: undefined}
 		/>
@@ -134,6 +137,7 @@
 				size={12}
 				class="absolute right-2.5 motion-safe:animate-spin"
 				style="color: var(--calc-accent);"
+				aria-hidden="true"
 			/>
 		{:else if marketData.activeTicker}
 			<button
@@ -143,7 +147,7 @@
 				style="color: var(--calc-text-muted);"
 				aria-label="Clear ticker"
 			>
-				<IconX size={12} />
+				<IconX size={12} aria-hidden="true" />
 			</button>
 		{/if}
 	</div>
@@ -187,6 +191,7 @@
 						size={16}
 						class="motion-safe:animate-spin"
 						style="color: var(--calc-accent);"
+						aria-hidden="true"
 					/>
 					<span class="ml-2 text-xs" style="color: var(--calc-text-muted);">Searching...</span>
 				</div>
@@ -202,7 +207,7 @@
 							tabindex="-1"
 							onmousedown={keepInputFocus}
 							onclick={() => selectResult(result.ticker)}
-							class="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors cursor-pointer"
+							class="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors motion-reduce:transition-none cursor-pointer"
 							style:background={selected ? 'var(--calc-surface-hover)' : 'transparent'}
 						>
 							<span

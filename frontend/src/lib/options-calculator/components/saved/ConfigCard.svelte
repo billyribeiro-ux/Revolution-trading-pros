@@ -28,7 +28,7 @@
 </script>
 
 <div
-	class="rounded-xl p-3 flex flex-col gap-2 transition-colors"
+	class="rounded-xl p-3 flex flex-col gap-2 transition-colors motion-reduce:transition-none"
 	style="background: var(--calc-surface); border: 1px solid var(--calc-border);"
 >
 	<!-- Header: name + date -->
@@ -93,7 +93,7 @@
 			type="button"
 			onclick={() => onLoad(config)}
 			aria-describedby="{uid}-name"
-			class="flex-1 flex items-center justify-center gap-1 text-[10px] font-semibold py-1.5 rounded-lg cursor-pointer transition-all duration-150"
+			class="flex-1 flex items-center justify-center gap-1 text-[10px] font-semibold py-1.5 rounded-lg cursor-pointer transition-all motion-reduce:transition-none duration-150"
 			style="background: var(--calc-accent); color: white;"
 		>
 			<IconPlayerPlay size={10} aria-hidden="true" />
@@ -104,7 +104,7 @@
 			onclick={() => onDelete(config.id)}
 			aria-label="Delete configuration"
 			aria-describedby="{uid}-name"
-			class="flex items-center justify-center p-1.5 rounded-lg cursor-pointer transition-colors"
+			class="flex items-center justify-center p-1.5 rounded-lg cursor-pointer transition-colors motion-reduce:transition-none"
 			style="color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 		>
 			<IconTrash size={11} aria-hidden="true" />

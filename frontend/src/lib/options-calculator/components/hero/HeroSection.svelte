@@ -143,7 +143,7 @@
 		>
 			<span class="relative z-10">Explore Calculator</span>
 			<span
-				class="relative z-10 inline-flex transition-transform duration-300 group-hover:translate-y-0.5"
+				class="relative z-10 inline-flex transition-transform motion-reduce:transition-none duration-300 group-hover:translate-y-0.5"
 			>
 				<IconArrowDown size={18} aria-hidden="true" />
 			</span>
@@ -153,7 +153,7 @@
 
 	<div class="hero-scroll-indicator" aria-hidden="true">
 		<span class="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
-		<IconChevronDown size={20} />
+		<IconChevronDown size={20} aria-hidden="true" />
 	</div>
 </section>
 
