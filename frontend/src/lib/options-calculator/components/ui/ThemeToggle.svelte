@@ -25,15 +25,19 @@
 <button
 	type="button"
 	onclick={onToggle}
-	class="relative flex items-center justify-center w-9 h-9 rounded-lg transition-colors cursor-pointer"
+	class="relative flex items-center justify-center w-9 h-9 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 	style="background: var(--calc-surface-hover); border: 1px solid var(--calc-border); color: var(--calc-text-secondary);"
 	aria-label="Dark mode"
 	aria-pressed={theme === 'dark'}
 >
 	<!-- The branch swap mounts a fresh icon, so its intro plays on every toggle. -->
 	{#if theme === 'dark'}
-		<span class="flex items-center justify-center" in:spinIn><IconSun size={16} /></span>
+		<span class="flex items-center justify-center" in:spinIn
+			><IconSun size={16} aria-hidden="true" /></span
+		>
 	{:else}
-		<span class="flex items-center justify-center" in:spinIn><IconMoon size={16} /></span>
+		<span class="flex items-center justify-center" in:spinIn
+			><IconMoon size={16} aria-hidden="true" /></span
+		>
 	{/if}
 </button>

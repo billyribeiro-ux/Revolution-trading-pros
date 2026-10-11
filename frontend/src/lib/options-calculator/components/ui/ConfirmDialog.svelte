@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import { backOut } from 'svelte/easing';
 	import { prefersReducedMotion } from 'svelte/motion';
@@ -67,6 +68,7 @@
 
 		<!-- Dialog -->
 		<div
+			{@attach trapFocus}
 			in:scale|global={{
 				start: 0.9,
 				duration: prefersReducedMotion.current ? 0 : 250,
@@ -112,7 +114,7 @@
 				<button
 					type="button"
 					onclick={onCancel}
-					class="px-4 py-2 text-xs font-medium rounded-lg cursor-pointer transition-colors"
+					class="px-4 py-2 text-xs font-medium rounded-lg cursor-pointer transition-colors motion-reduce:transition-none"
 					style="color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 				>
 					{cancelText}
@@ -121,7 +123,7 @@
 					{@attach takeFocus}
 					type="button"
 					onclick={onConfirm}
-					class="px-4 py-2 text-xs font-semibold rounded-lg cursor-pointer transition-colors"
+					class="px-4 py-2 text-xs font-semibold rounded-lg cursor-pointer transition-colors motion-reduce:transition-none"
 					style:background={variant === 'danger' ? 'var(--calc-put)' : 'var(--calc-accent)'}
 					style:color="white"
 				>

@@ -140,7 +140,7 @@
 		id={triggerId}
 		type="button"
 		onclick={() => (isOpen = !isOpen)}
-		class="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+		class="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 		style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 		aria-haspopup="menu"
 		aria-expanded={isOpen}
@@ -151,7 +151,9 @@
 		<!-- The icon's `class` prop is a plain string, so no clsx array here. -->
 		<IconChevronDown
 			size={9}
-			class={isOpen ? 'transition-transform rotate-180' : 'transition-transform'}
+			class={isOpen
+				? 'transition-transform motion-reduce:transition-none rotate-180'
+				: 'transition-transform motion-reduce:transition-none'}
 			aria-hidden="true"
 		/>
 	</button>
@@ -178,7 +180,7 @@
 				<button
 					type="button"
 					onclick={() => choose(item)}
-					class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs transition-colors cursor-pointer"
+					class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs transition-colors motion-reduce:transition-none cursor-pointer"
 					style="color: var(--calc-text-secondary);"
 					role="menuitem"
 					tabindex="-1"

@@ -150,7 +150,7 @@
 				class="flex items-center justify-center w-9 h-9 rounded-xl"
 				style="background: var(--calc-accent-glow); color: var(--calc-accent);"
 			>
-				<IconCalculator size={20} />
+				<IconCalculator size={20} aria-hidden="true" />
 			</div>
 			<div>
 				<svelte:element
@@ -188,7 +188,7 @@
 						onclick={() => (calc.calculatorMode = mode.id)}
 						onpointermove={handleRippleMove}
 						aria-pressed={active}
-						class="calc-ripple text-[10px] font-medium px-2.5 py-1 transition-colors cursor-pointer"
+						class="calc-ripple text-[10px] font-medium px-2.5 py-1 transition-colors motion-reduce:transition-none cursor-pointer"
 						style:background={active ? 'var(--calc-accent-glow)' : undefined}
 						style:color={active ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 					>
@@ -203,12 +203,12 @@
 				onclick={() => (calc.isScenarioPanelOpen = !calc.isScenarioPanelOpen)}
 				onpointermove={handleRippleMove}
 				aria-pressed={calc.isScenarioPanelOpen}
-				class="calc-ripple flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg transition-colors cursor-pointer"
+				class="calc-ripple flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 				style:background={calc.isScenarioPanelOpen ? 'var(--calc-warning)' : 'var(--calc-surface)'}
 				style:color={calc.isScenarioPanelOpen ? 'white' : 'var(--calc-text-muted)'}
 				style:border={calc.isScenarioPanelOpen ? undefined : '1px solid var(--calc-border)'}
 			>
-				<IconBolt size={10} />
+				<IconBolt size={10} aria-hidden="true" />
 				Scenarios
 			</button>
 
@@ -230,12 +230,12 @@
 			<button
 				type="button"
 				onclick={() => (calc.showSavedConfigs = true)}
-				class="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+				class="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 				style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 				title="Saved configurations"
 				aria-label="Saved configurations"
 			>
-				<IconFolderOpen size={11} />
+				<IconFolderOpen size={11} aria-hidden="true" />
 				<span class="hidden sm:inline">Saved</span>
 			</button>
 
@@ -257,7 +257,7 @@
 			onclick={() => (calc.isInputPanelOpen = !calc.isInputPanelOpen)}
 			aria-expanded={calc.isInputPanelOpen}
 			aria-controls={inputPanelId}
-			class="w-full text-sm font-medium py-2.5 rounded-xl transition-colors cursor-pointer"
+			class="w-full text-sm font-medium py-2.5 rounded-xl transition-colors motion-reduce:transition-none cursor-pointer"
 			style="background: var(--calc-surface); color: var(--calc-text-secondary); border: 1px solid var(--calc-border);"
 		>
 			{calc.isInputPanelOpen ? 'Hide' : 'Show'} Parameters

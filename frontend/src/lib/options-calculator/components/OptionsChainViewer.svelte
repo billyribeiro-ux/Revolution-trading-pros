@@ -46,7 +46,6 @@
 
 	const expiryFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
 
-	let selectedExpirationOverride = $state<string | null>(null);
 	let isLoadingChain = $state(false);
 	/** Id of the newest `loadChain` call, so a superseded load cannot hide the spinner early. */
 	let latestLoad = 0;
@@ -55,11 +54,10 @@
 	const expirations = $derived(marketData.currentExpirations?.expirations ?? []);
 	const visibleExpirations = $derived(expirations.slice(0, MAX_EXPIRATIONS));
 	const ticker = $derived(marketData.activeTicker);
-	const selectedExpiration = $derived(
-		selectedExpirationOverride && expirations.includes(selectedExpirationOverride)
-			? selectedExpirationOverride
-			: (expirations[0] ?? '')
-	);
+	// Derived from the chain on screen (the source of truth) and overridden optimistically
+	// while a newly picked expiration loads, so the highlighted chip always matches the
+	// table — including after a remount or a failed load.
+	let selectedExpiration = $derived(chain?.expiration ?? '');
 
 	function formatExpiry(expiration: string): string {
 		return expiryFormat.format(new Date(`${expiration}T12:00:00`));
@@ -107,14 +105,18 @@
 
 	async function loadChain(expiration: string) {
 		if (!ticker || !expiration) return;
-		selectedExpirationOverride = expiration;
+		const previous = selectedExpiration;
+		selectedExpiration = expiration;
 		const load = ++latestLoad;
 		isLoadingChain = true;
 		try {
 			await marketData.fetchOptionsChain(ticker, expiration);
 		} catch (error) {
 			// A newer chain (or ticker) request aborts this one: that is not a failure.
-			if (!isAbortError(error)) logger.error('[OptionsChain] Failed to load chain:', error);
+			if (!isAbortError(error)) {
+				logger.error('[OptionsChain] Failed to load chain:', error);
+				if (load === latestLoad) selectedExpiration = previous;
+			}
 		} finally {
 			if (load === latestLoad) isLoadingChain = false;
 		}
@@ -283,7 +285,7 @@
 				<thead>
 					<tr style="background: var(--calc-surface);">
 						<th
-							scope="colgroup"
+							scope="col"
 							colspan="6"
 							class="text-center py-1.5 font-semibold border-b border-r"
 							style="color: var(--calc-call); border-color: var(--calc-border);">CALLS</th
@@ -294,7 +296,7 @@
 							style="color: var(--calc-text);">STRIKE</th
 						>
 						<th
-							scope="colgroup"
+							scope="col"
 							colspan="6"
 							class="text-center py-1.5 font-semibold border-b border-l"
 							style="color: var(--calc-put); border-color: var(--calc-border);">PUTS</th

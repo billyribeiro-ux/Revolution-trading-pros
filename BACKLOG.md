@@ -61,6 +61,111 @@ hasn't caught up yet.
 
 ---
 
+## 2026-10-11 options-calculator follow-ups
+
+These are findings from the adversarial review of the Svelte 5 / SvelteKit 3
+migration that were judged real but not worth folding into it. All are LOW, and
+none is user-visible today unless noted. Paths are relative to
+`frontend/src/lib/options-calculator/`.
+
+### S. Cache: notifier misses read-path mutations; `schema` is optional
+
+- **Stale stats:** `data/cache.ts` mutates the memory tier on two read paths
+  without calling `notifyChange`:
+  - promoting a localStorage hit (`getStorage`);
+  - evicting an expired entry (`getMemory`).
+
+  As a result, `DataSourceBadge`'s `getStats()` can under-count until the next
+  `set()`.
+  - **Fix:** route every memory-tier mutation through one helper.
+  - **Constraint:** on read paths, notify with `queueMicrotask`. `get()` runs
+    inside awaited `$derived`s, so a synchronous write there would throw
+    `state_unsafe_mutation`.
+- **Optional schema:** `get` and `getStorage` still accept no schema and return
+  `envelope.output.data as T`. Every caller passes one today. Make the parameter
+  required and delete the unchecked branch.
+
+### T. Chain loading state belongs in `MarketDataService`
+
+`OptionsChainViewer`'s `isLoadingChain` / `latestLoad` duplicate the service's
+latest-wins `#chain` slot. The panel unmounts on tab change, so switching away
+and back while a slow chain is in flight shows no spinner. Instead, expose a
+reactive `isLoadingChain` from the service and set it in `fetchOptionsChain`.
+
+### U. 3D charts: boundary instead of hand-caught WebGL errors; keyboard orbit
+
+- **Error handling:** `charts/Surface3D.svelte` and
+  `charts/GreeksOrbit3D.svelte` catch the `WebGLRenderer` constructor error
+  and write `$state` from inside the attachment's effect. Instead, let it throw
+  into a `<svelte:boundary>`. `GreeksPanel` already wraps the orbit in one.
+- **Pointer-only controls:** both canvases are `aria-hidden` and not
+  focusable, and `OrbitControls.listenToKeyEvents` is never called, so
+  rotate/zoom works only with a pointer. To fix:
+  - make the canvas the focus target (`tabindex="0"`, `role="application"`,
+    the label moved off the `role="img"` wrapper);
+  - call `controls.listenToKeyEvents(canvas)`;
+  - mention Shift+arrows in the hint.
+
+### V. `MetricCard`: impure `$derived`; description is `title`-only
+
+- **Impure derived:** the `history` `$derived.by` appends to an outer
+  `buffer`, which is a side effect. It is latent under `experimental.async`,
+  since a derived can be recomputed per batch. To fix, move the buffer into the
+  `bounceOnChange` attachment's nested `$effect` and draw the polyline there.
+- **`title`-only description:** each Greek's description is only a `title` on
+  a non-focusable div, so keyboard and touch users never see it. Render
+  `InfoTooltip` beside the label, or use `aria-describedby` with an `sr-only`
+  span.
+
+### W. `InfoTooltip`: WCAG 1.4.13
+
+A tooltip opened by hover cannot be dismissed with Escape, because the handler
+is on the button. Moving the pointer onto the tooltip also hides it, because of
+`pointer-events-none` and `mouseleave` on the button. To fix:
+
+- move the Escape handler to `<svelte:window>`;
+- put hover handling on the wrapper and drop `pointer-events-none`.
+
+### X. Dialogs nothing opens yet
+
+- **`ui/ConfirmDialog.svelte`** (no importers): it now traps Tab, but its
+  `danger` variant still focuses the destructive button first. Use
+  `{@attach variant === 'danger' && takeFocus}` on Cancel.
+- **`education/ConceptTooltip.svelte`** (`EducationOverlay.showEntry` has no
+  callers): it is presented modally but has `role="tooltip"` with focusable
+  buttons and never takes focus. Make it a `role="dialog"` with
+  `aria-labelledby`, the focus-on-attach pattern and `trapFocus`, like the
+  export dialogs.
+
+### Y. Smaller accessibility gaps
+
+- **`export/ExportPNG.svelte`:** the "Capture Zone", "Aspect Ratio" and
+  "Branding" headings are not tied to their controls. Add
+  `role="group" aria-labelledby` with `$props.id()` ids.
+- **`charts/GreeksHeatmap.svelte`:** cell values are still hover-only. A
+  screen-reader summary (range and current value) was added; a full ARIA grid
+  with arrow-key navigation was not.
+
+### Z. Not yet reviewed
+
+The adversarial review covered these clusters:
+
+- data;
+- core;
+- strategy;
+- 2D and 3D charts;
+- `ui/`;
+- education/export.
+
+It did not cover:
+
+- `saved/`, `growth/` and `power-user/`;
+- `hero/`, the styles and `utils/animations.ts`;
+- the route files and the other `utils/`.
+
+They passed the same gates and the Chromium run, but nobody has read them
+adversarially.
+
 ## Resolved 2026-10-10 — P0: every SSR route returned 500 on the Cloudflare runtime
 
 Fixed; see CHANGELOG.md "2026-10-10". `isomorphic-dompurify` (whose browser

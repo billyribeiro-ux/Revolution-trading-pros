@@ -21,7 +21,7 @@
 	<div class="grid grid-cols-2 gap-3">
 		<!-- Call Price -->
 		<div
-			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
+			class="flex flex-col gap-1 rounded-xl p-4 transition-all motion-reduce:transition-none"
 			style:background="var(--calc-call-bg)"
 			style:border="1px solid {calc.optionType === 'call' ? 'var(--calc-call)' : 'transparent'}"
 		>
@@ -42,7 +42,7 @@
 
 		<!-- Put Price -->
 		<div
-			class="flex flex-col gap-1 rounded-xl p-4 transition-all"
+			class="flex flex-col gap-1 rounded-xl p-4 transition-all motion-reduce:transition-none"
 			style:background="var(--calc-put-bg)"
 			style:border="1px solid {calc.optionType === 'put' ? 'var(--calc-put)' : 'transparent'}"
 		>

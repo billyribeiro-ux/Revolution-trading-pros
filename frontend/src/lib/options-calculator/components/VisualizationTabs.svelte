@@ -96,7 +96,7 @@
 				onclick={() => (calc.activeTab = tab.id)}
 				onkeydown={(event) => handleTabKeydown(event, index)}
 				bind:borderBoxSize={null, measureTab(tab.id)}
-				class="relative px-3 py-2.5 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap"
+				class="relative px-3 py-2.5 text-xs font-medium transition-colors motion-reduce:transition-none cursor-pointer whitespace-nowrap"
 				style:color={selected ? 'var(--calc-text)' : 'var(--calc-text-muted)'}
 			>
 				{tab.label}
@@ -128,40 +128,60 @@
 	>
 		{#key calc.activeTab}
 			<div in:fade={{ duration: prefersReducedMotion.current ? 0 : 200 }}>
-				{#if calc.activeTab === 'payoff'}
-					<PayoffDiagram />
-				{:else if calc.activeTab === 'heatmap'}
-					<GreeksHeatmap />
-				{:else if calc.activeTab === 'surface'}
-					<!-- Three.js is only fetched the first time the 3D surface is opened. -->
-					{#await import('./charts/Surface3D.svelte')}
+				<!-- One chart failing (a NaN domain, a WebGL error) stays inside this panel;
+				     switching tabs re-creates the boundary through the {#key} above. -->
+				<svelte:boundary>
+					{#if calc.activeTab === 'payoff'}
+						<PayoffDiagram />
+					{:else if calc.activeTab === 'heatmap'}
+						<GreeksHeatmap />
+					{:else if calc.activeTab === 'surface'}
+						<!-- Three.js is only fetched the first time the 3D surface is opened. -->
+						{#await import('./charts/Surface3D.svelte')}
+							<div
+								class="flex min-h-80 items-center justify-center rounded-xl border text-xs"
+								style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+							>
+								Loading 3D surface...
+							</div>
+						{:then { default: Surface3D }}
+							<Surface3D />
+						{:catch}
+							<div
+								class="rounded-xl border p-6 text-center text-xs"
+								style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+							>
+								3D surface failed to load.
+							</div>
+						{/await}
+					{:else if calc.activeTab === 'montecarlo'}
+						<MonteCarloPaths />
+					{:else if calc.activeTab === 'volsmile'}
+						<VolSmile />
+					{:else if calc.activeTab === 'theta'}
+						<ThetaDecay />
+					{:else if calc.activeTab === 'sensitivity'}
+						<SensitivityRadar />
+					{:else if calc.activeTab === 'chain'}
+						<OptionsChainViewer />
+					{/if}
+					{#snippet failed(_error, reset)}
 						<div
-							class="flex min-h-80 items-center justify-center rounded-xl border text-xs"
+							class="flex flex-col items-center gap-2 rounded-xl border p-6 text-center text-xs"
 							style="border-color: var(--calc-border); color: var(--calc-text-muted);"
 						>
-							Loading 3D surface...
+							This chart failed to render.
+							<button
+								type="button"
+								onclick={reset}
+								class="rounded-lg px-3 py-1 font-medium cursor-pointer"
+								style="background: var(--calc-surface); color: var(--calc-text); border: 1px solid var(--calc-border);"
+							>
+								Try again
+							</button>
 						</div>
-					{:then { default: Surface3D }}
-						<Surface3D />
-					{:catch}
-						<div
-							class="rounded-xl border p-6 text-center text-xs"
-							style="border-color: var(--calc-border); color: var(--calc-text-muted);"
-						>
-							3D surface failed to load.
-						</div>
-					{/await}
-				{:else if calc.activeTab === 'montecarlo'}
-					<MonteCarloPaths />
-				{:else if calc.activeTab === 'volsmile'}
-					<VolSmile />
-				{:else if calc.activeTab === 'theta'}
-					<ThetaDecay />
-				{:else if calc.activeTab === 'sensitivity'}
-					<SensitivityRadar />
-				{:else if calc.activeTab === 'chain'}
-					<OptionsChainViewer />
-				{/if}
+					{/snippet}
+				</svelte:boundary>
 			</div>
 		{/key}
 	</div>

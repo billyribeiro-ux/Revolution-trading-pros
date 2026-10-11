@@ -14,7 +14,7 @@
 	const uid = $props.id();
 
 	/** Chart height in px; the width follows the container (`bind:clientWidth`). */
-	const HEIGHT = 350;
+	const HEIGHT = 300;
 	const margin = { top: 20, right: 100, bottom: 40, left: 60 };
 	const innerH = HEIGHT - margin.top - margin.bottom;
 	/** SVG stays responsive with at most this many sample paths drawn. */
@@ -148,14 +148,14 @@
 			type="button"
 			onclick={() => calc.runMC()}
 			disabled={calc.isMonteCarloRunning}
-			class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+			class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer disabled:opacity-50"
 			style="background: var(--calc-accent); color: white;"
 		>
 			{#if calc.isMonteCarloRunning}
-				<IconLoader2 size={12} class="animate-spin" />
+				<IconLoader2 size={12} class="motion-safe:animate-spin" aria-hidden="true" />
 				Running...
 			{:else}
-				<IconPlayerPlay size={12} />
+				<IconPlayerPlay size={12} aria-hidden="true" />
 				Run Simulation
 			{/if}
 		</button>
@@ -173,10 +173,7 @@
 				min="100"
 				max="10000"
 				step="100"
-				bind:value={
-					() => calc.monteCarloConfig.numPaths,
-					(numPaths) => (calc.monteCarloConfig = { ...calc.monteCarloConfig, numPaths })
-				}
+				bind:value={calc.monteCarloConfig.numPaths}
 				class="calc-slider w-24"
 			/>
 			<span

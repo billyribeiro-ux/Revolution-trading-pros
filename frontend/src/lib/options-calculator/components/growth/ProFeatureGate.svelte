@@ -47,7 +47,7 @@
 				href="https://revolutiontradingpros.com"
 				target="_blank"
 				rel="noopener"
-				class="text-[10px] font-semibold px-4 py-1.5 rounded-lg transition-all duration-200"
+				class="text-[10px] font-semibold px-4 py-1.5 rounded-lg transition-all motion-reduce:transition-none duration-200"
 				style="background: var(--calc-accent); color: white;"
 			>
 				Learn More

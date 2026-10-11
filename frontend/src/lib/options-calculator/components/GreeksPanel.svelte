@@ -1,9 +1,5 @@
 <script lang="ts">
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
-	import { prefersReducedMotion } from 'svelte/motion';
-	import { quartIn, quartOut } from 'svelte/easing';
-	import { slide } from 'svelte/transition';
-	import type { SlideParams, TransitionConfig } from 'svelte/transition';
 	import MetricCard from './ui/MetricCard.svelte';
 	import { getCalculator } from '../state/context.js';
 
@@ -11,12 +7,6 @@
 	const secondOrderId = $props.id();
 
 	let is3DView = $state(false);
-
-	/** `slide` with a fade over its whole duration: height and opacity animate together. */
-	function expand(node: Element, params: SlideParams): TransitionConfig {
-		const config = slide(node, params);
-		return { ...config, css: (t, u) => `${config.css?.(t, u) ?? ''}; opacity: ${t}` };
-	}
 
 	const FIRST_ORDER = [
 		{
@@ -90,14 +80,25 @@
 				Loading 3D view...
 			</div>
 		{:then { default: GreeksOrbit3D }}
-			<GreeksOrbit3D
-				delta={calc.currentGreeks.first.delta}
-				gamma={calc.currentGreeks.first.gamma}
-				theta={calc.currentGreeks.first.theta}
-				vega={calc.currentGreeks.first.vega}
-				rho={calc.currentGreeks.first.rho}
-				theme={calc.theme}
-			/>
+			<!-- A WebGL/runtime failure stays inside the panel instead of failing the page. -->
+			<svelte:boundary>
+				<GreeksOrbit3D
+					delta={calc.currentGreeks.first.delta}
+					gamma={calc.currentGreeks.first.gamma}
+					theta={calc.currentGreeks.first.theta}
+					vega={calc.currentGreeks.first.vega}
+					rho={calc.currentGreeks.first.rho}
+					theme={calc.theme}
+				/>
+				{#snippet failed()}
+					<div
+						class="rounded-xl border p-6 text-center text-xs"
+						style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+					>
+						3D view failed to render.
+					</div>
+				{/snippet}
+			</svelte:boundary>
 		{:catch}
 			<div
 				class="rounded-xl border p-6 text-center text-xs"
@@ -126,7 +127,7 @@
 		onclick={() => (calc.showAdvancedGreeks = !calc.showAdvancedGreeks)}
 		aria-expanded={calc.showAdvancedGreeks}
 		aria-controls={secondOrderId}
-		class="flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg transition-colors cursor-pointer"
+		class="flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 		style="color: var(--calc-text-muted); background: var(--calc-surface); border: 1px solid var(--calc-border);"
 	>
 		{calc.showAdvancedGreeks ? 'Hide' : 'Show'} Second-Order Greeks
@@ -134,17 +135,20 @@
 			class="inline-flex transition-transform motion-reduce:transition-none"
 			style:transform={calc.showAdvancedGreeks ? 'rotate(180deg)' : 'rotate(0deg)'}
 		>
-			<IconChevronDown size={14} />
+			<IconChevronDown size={14} aria-hidden="true" />
 		</span>
 	</button>
 
-	<!-- Second Order Greeks (expandable). The wrapper stays mounted as the aria-controls target. -->
-	<div id={secondOrderId}>
-		{#if calc.showAdvancedGreeks}
-			<div
-				in:expand={{ duration: prefersReducedMotion.current ? 0 : 400, easing: quartOut }}
-				out:expand={{ duration: prefersReducedMotion.current ? 0 : 300, easing: quartIn }}
-			>
+	<!-- Second Order Greeks (expandable). The cards stay mounted while collapsed so their
+	     sparklines keep tracking the trend; `inert` takes the closed section out of the
+	     focus order and the accessibility tree. -->
+	<div
+		id={secondOrderId}
+		class={['second-order', calc.showAdvancedGreeks && 'second-order--open']}
+		inert={!calc.showAdvancedGreeks}
+	>
+		<div class="second-order-inner">
+			<div>
 				<div class="flex flex-col gap-3 pt-1">
 					<h3
 						class="text-xs font-semibold uppercase tracking-wider"
@@ -165,6 +169,34 @@
 					</div>
 				</div>
 			</div>
-		{/if}
+		</div>
 	</div>
 </div>
+
+<style>
+	/* Height animates from 0 to the content's size via grid rows; opacity fades with it. */
+	.second-order {
+		display: grid;
+		grid-template-rows: 0fr;
+		opacity: 0;
+		transition:
+			grid-template-rows 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+			opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+	}
+
+	.second-order--open {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+
+	.second-order-inner {
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.second-order {
+			transition: none;
+		}
+	}
+</style>

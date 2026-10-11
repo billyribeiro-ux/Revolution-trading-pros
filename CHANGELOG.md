@@ -4,6 +4,98 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-10-11 — Options calculator: ported, navbar entry, idiomatic Svelte 5 / SvelteKit 3
+
+### Ported from the `options-calculator` branch (calculator only)
+
+Only the calculator work from `06d439d13` and its audit fix `68b02e68b` (PR #560,
+never merged) was brought over, adapted to SvelteKit 3. Nothing else from that
+branch came with it.
+
+- **`/tools/options-calculator`** gets a hero section (server-rendered CSS
+  entrance, WebGL background on desktop, 2D particles on small or touch screens
+  and under reduced motion, none under Save-Data), a 2D/3D Greeks toggle with a
+  lazily loaded three.js orbit, sparklines on the Greek cards, a sliding tab
+  indicator, a scroll-progress bar, and Monte Carlo in a module Web Worker.
+- **Fixed while porting** (broken on the branch): the worker never ran, because
+  `postMessage` threw `DataCloneError` on the `$state` proxy and every run fell
+  back to the main thread. Requests are now `$state.snapshot()`ed. Also fixed:
+  the progress bar broke the layout grid, the hero cleanup killed every
+  ScrollTrigger on the page, and the hero title overflowed on phones.
+- **Navbar:** "Options Calculator" is the first entry of the Resources dropdown,
+  on desktop and mobile, with `aria-current="page"` on the calculator.
+
+### Every calculator file moved to the patterns the official docs prescribe
+
+Covers `lib/options-calculator/` and `routes/tools/options-calculator/`. Each
+pattern was checked against the Svelte MCP docs, and `svelte-autofixer` is clean
+on every component.
+
+- **State:**
+  - `CalculatorState` and `MarketDataService` are classes with
+    `$state` / `$derived` / `$state.raw` fields.
+  - The tree gets them from a typed `createContext` (`state/context.ts`), so the
+    `calc` prop is no longer drilled through about 30 components.
+  - Optimistic values (selected expiration) are writable `$derived`s.
+- **DOM work:**
+  - Runs in `{@attach}` attachments.
+  - Listeners use `<svelte:window>` or `on()` from `svelte/events`.
+  - Sizes come from dimension bindings; reduced motion from `prefersReducedMotion`.
+- **Templates:**
+  - Declaration tags replace `{@const}`.
+  - Classes use clsx arrays.
+  - `$props.id()` provides ARIA ids.
+- **Failure isolation:** `<svelte:boundary>` wraps each chart and the 3D Greeks
+  view, so a failing chart shows an inline error with "Try again" instead of
+  taking down the page.
+- **GSAP** remains only where Svelte has no equivalent. It always uses `fromTo`
+  with explicit end values. A `from` tween re-initialized by a ScrollTrigger
+  refresh left cards stuck at opacity 0 in 5 of 7 loads in Chromium.
+- **Server routes:** `+server.ts` handlers use bare `error()` and `Response.json`.
+- **Engine:** mispricing detection was extracted to `engine/mispricing.ts`.
+  New unit tests cover the engine and `CalculatorState`.
+
+### Review fixes
+
+These came from an adversarial review of the migration.
+
+- **Behaviour:**
+  - Enter in a slider's value editor no longer reopens it.
+  - LIVE badges no longer cover the sliders' "+" buttons.
+  - Custom scenarios accept fractional values (`step="any"`).
+  - A deactivated scenario keeps its theme border.
+  - The Monte Carlo chart is back to 300px, so the page no longer jumps on the
+    first run.
+  - Second-order Greek sparklines keep their history while the section is
+    collapsed: the section stays mounted and is `inert` when closed.
+  - Re-selecting the current ticker keeps its loaded chain.
+  - Live mode no longer takes the dividend yield from the mock table.
+- **Accessibility:**
+  - The payoff chart is a keyboard `role="slider"` (arrows, Home/End, Escape)
+    with a P&L `aria-valuetext`.
+  - The heatmap has a screen-reader summary.
+  - Every `aria-modal` dialog traps Tab (`utils/focus-trap.ts`).
+  - The export dialogs are named by their visible title through
+    `aria-labelledby`.
+  - Toggles have stable names and `aria-pressed`.
+  - Combobox `aria-expanded` and `aria-activedescendant` follow the rendered
+    listbox.
+  - The "significant" badge has text for screen readers.
+  - Every decorative icon is `aria-hidden`.
+  - `motion-reduce` opt-outs were added to the 48 remaining transitions.
+
+### Verification
+
+- **Gates:** `pnpm check` 0 errors / 0 warnings, eslint clean on the calculator,
+  vitest 19/19, production build OK.
+- **Real Chromium:** 36/36 checks against the production build under
+  `wrangler pages dev`. Covered: SSR heading structure, hero on desktop, mobile
+  and reduced motion, cards visible, tab ARIA, payoff keyboard, worker, slider
+  Enter, 3D orbit pixels, sparkline history, scenario border, LIVE-badge hit
+  testing, navbar on desktop and mobile, and no console errors or warnings.
+- **Deferred findings:** recorded in BACKLOG.md under "2026-10-11
+  options-calculator follow-ups".
+
 ## [Unreleased] — 2026-10-10 — P0 fix: server-rendered routes on Cloudflare, one sanitizer for server and browser
 
 Closes the BACKLOG P0 recorded on 2026-10-09. Under `wrangler pages dev`

@@ -103,6 +103,12 @@ function buildSnapshot(
 	}
 ): MarketSnapshot {
 	const { quote, dividend, earnings, historicalVol, riskFreeRate } = data;
+	// A live quote must not be priced with the mock adapter's illustrative dividend
+	// (the fallback when a live provider lacks dividend data): treat it as no dividend.
+	const dividendYield =
+		dividend && (dividend.source !== 'mock' || quote.source === 'mock')
+			? dividend.dividendYield
+			: 0;
 	return {
 		quote,
 		dividends: dividend ?? {
@@ -138,7 +144,7 @@ function buildSnapshot(
 		suggestedInputs: {
 			spotPrice: quote.price,
 			volatility: historicalVol?.hv30 ?? 0.25,
-			dividendYield: dividend?.dividendYield ?? 0,
+			dividendYield,
 			riskFreeRate: riskFreeRate?.rate3M ?? 0.043
 		}
 	};
@@ -279,9 +285,13 @@ export class MarketDataService {
 	selectTicker = async (ticker: string): Promise<MarketSnapshot | null> => {
 		const symbol = ticker.toUpperCase();
 
+		// Re-selecting the current symbol (e.g. to refresh its quote) keeps the loaded
+		// chain on screen; only a different symbol invalidates it.
+		const tickerChanged = symbol !== this.#activeTicker;
+
 		// A selection supersedes a pending search and the previous ticker's requests.
 		this.#cancelSearch();
-		this.#chain.abort();
+		if (tickerChanged) this.#chain.abort();
 		const controller = this.#selection.start();
 		const { signal } = controller;
 
@@ -292,8 +302,10 @@ export class MarketDataService {
 		this.#searchResults = [];
 		// The previous ticker's chain and expirations must not show (or drive mispricing
 		// alerts) under the new ticker's badge while its data loads.
-		this.#currentChain = null;
-		this.#currentExpirations = null;
+		if (tickerChanged) {
+			this.#currentChain = null;
+			this.#currentExpirations = null;
+		}
 
 		try {
 			const [quote, dividend, earnings, historicalVol, riskFreeRate] = await Promise.allSettled([

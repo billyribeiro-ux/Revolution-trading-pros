@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
@@ -130,7 +131,13 @@
 	{let searchQuery = $state('')}
 	{const filtered = $derived(configs.filter((config) => matchesQuery(config, searchQuery)))}
 
-	<div class="fixed inset-0 z-[9994]" role="dialog" aria-modal="true" aria-labelledby="{uid}-title">
+	<div
+		{@attach trapFocus}
+		class="fixed inset-0 z-[9994]"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="{uid}-title"
+	>
 		<!-- Backdrop -->
 		<button
 			type="button"

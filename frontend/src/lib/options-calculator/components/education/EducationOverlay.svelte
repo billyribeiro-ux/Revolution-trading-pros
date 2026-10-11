@@ -52,7 +52,7 @@
 <button
 	type="button"
 	onclick={() => (calc.educationMode = !calc.educationMode)}
-	class="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer"
+	class="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-1.5 rounded-lg transition-all motion-reduce:transition-none duration-200 cursor-pointer"
 	style:background={calc.educationMode ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
 	style:color={calc.educationMode ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 	style:border="1px solid {calc.educationMode ? 'var(--calc-accent)' : 'var(--calc-border)'}"
@@ -61,5 +61,5 @@
 	title="Toggle education mode (E)"
 >
 	<IconSchool size={12} aria-hidden="true" />
-	{calc.educationMode ? 'Learning' : 'Learn'}
+	Learn
 </button>

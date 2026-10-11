@@ -91,7 +91,7 @@
 <div
 	{@attach bounceOnChange}
 	class={[
-		'relative flex flex-col gap-1 rounded-xl px-3 py-2.5 transition-all',
+		'relative flex flex-col gap-1 rounded-xl px-3 py-2.5 transition-all motion-reduce:transition-none',
 		colorize && { 'metric-positive': value > EPSILON, 'metric-negative': value < -EPSILON },
 		className
 	]}

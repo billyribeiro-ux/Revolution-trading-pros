@@ -82,12 +82,13 @@
 		<button
 			type="button"
 			onclick={() => (showBoth = !showBoth)}
-			class="text-xs px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+			aria-pressed={showBoth}
+			class="text-xs px-2.5 py-1 rounded-lg transition-all motion-reduce:transition-none cursor-pointer"
 			style:background={showBoth ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
 			style:color={showBoth ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 			style:border="1px solid {showBoth ? 'var(--calc-accent)' : 'var(--calc-border)'}"
 		>
-			{showBoth ? 'Both' : isCall ? 'Call Only' : 'Put Only'}
+			Show call and put
 		</button>
 
 		{#if calc.currentTimeMachineSnapshot}

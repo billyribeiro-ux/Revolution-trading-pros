@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconDeviceFloppy from '@tabler/icons-svelte-runes/icons/device-floppy';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import { backOut } from 'svelte/easing';
@@ -98,6 +99,7 @@
 	{const canSave = $derived(name.trim().length > 0)}
 
 	<div
+		{@attach trapFocus}
 		class="fixed inset-0 z-[9996] flex items-center justify-center p-4"
 		role="dialog"
 		aria-modal="true"
@@ -227,7 +229,7 @@
 					type="submit"
 					disabled={!canSave}
 					class={[
-						'flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-lg transition-all duration-150',
+						'flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-lg transition-all motion-reduce:transition-none duration-150',
 						canSave ? 'cursor-pointer' : 'cursor-not-allowed'
 					]}
 					style:background="var(--calc-accent)"

@@ -101,10 +101,44 @@
 			: 'Payoff diagram: profit and loss at expiration by underlying price.'
 	);
 
-	function trackPointer(event: MouseEvent) {
+	function trackPointer(event: PointerEvent) {
 		if (!chart) return;
 		const [mx] = pointer(event);
 		hoverPrice = chart.x.invert(mx);
+	}
+
+	/** Keyboard parity for the crosshair: step sample by sample along the curve. */
+	function moveTo(index: number) {
+		if (!chart) return;
+		const { data } = chart;
+		hoverPrice = data[Math.max(0, Math.min(data.length - 1, index))].underlyingPrice;
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (!chart) return;
+		const current = hovered
+			? chart.data.indexOf(hovered.point)
+			: bisectPrice(chart.data, calc.spotPrice);
+		switch (event.key) {
+			case 'ArrowLeft':
+				moveTo(current - 1);
+				break;
+			case 'ArrowRight':
+				moveTo(current + 1);
+				break;
+			case 'Home':
+				moveTo(0);
+				break;
+			case 'End':
+				moveTo(chart.data.length - 1);
+				break;
+			case 'Escape':
+				hoverPrice = null;
+				break;
+			default:
+				return;
+		}
+		event.preventDefault();
 	}
 
 	/** Lets d3 draw an axis into the `<g>`; re-runs whenever the generator (its scale) changes. */
@@ -115,7 +149,23 @@
 	}
 </script>
 
-<div class="relative w-full" style="min-height: 280px;" bind:clientWidth={width}>
+<div
+	class="relative w-full rounded-lg"
+	style="min-height: 280px;"
+	bind:clientWidth={width}
+	role="slider"
+	tabindex="0"
+	aria-label="Payoff at expiration by underlying price"
+	aria-valuemin={chart?.data.at(0)?.underlyingPrice ?? 0}
+	aria-valuemax={chart?.data.at(-1)?.underlyingPrice ?? 0}
+	aria-valuenow={hovered?.point.underlyingPrice ?? calc.spotPrice}
+	aria-valuetext={hovered
+		? `Price $${hovered.point.underlyingPrice.toFixed(2)}, profit and loss ${hovered.point.profit >= 0 ? '+' : ''}$${hovered.point.profit.toFixed(2)}`
+		: description}
+	onfocus={() => (hoverPrice ??= calc.spotPrice)}
+	onblur={() => (hoverPrice = null)}
+	onkeydown={handleKeydown}
+>
 	<svg {width} height={HEIGHT} role="img" aria-label={description}>
 		{#if chart}
 			<g transform="translate({margin.left},{margin.top})">
@@ -271,8 +321,8 @@
 					height={innerH}
 					fill="transparent"
 					aria-hidden="true"
-					onmousemove={trackPointer}
-					onmouseleave={() => (hoverPrice = null)}
+					onpointermove={trackPointer}
+					onpointerleave={() => (hoverPrice = null)}
 				/>
 			</g>
 		{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconCode from '@tabler/icons-svelte-runes/icons/code';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
@@ -11,6 +12,7 @@
 	import { getCalculator } from '../../state/context.js';
 
 	const calc = getCalculator();
+	const uid = $props.id();
 
 	/** How long the copy button reads "Copied!". */
 	const COPIED_FEEDBACK_MS = 2500;
@@ -75,11 +77,12 @@
 
 {#if calc.showEmbedCode}
 	<div
+		{@attach trapFocus}
 		{@attach focusDialog}
 		class="fixed inset-0 z-9995 flex items-center justify-center p-4 outline-none"
 		role="dialog"
 		aria-modal="true"
-		aria-label="Embed Code Generator"
+		aria-labelledby="{uid}-title"
 		tabindex="-1"
 	>
 		<button
@@ -109,6 +112,7 @@
 				<div class="flex items-center gap-2">
 					<IconCode size={16} style="color: var(--calc-accent);" aria-hidden="true" />
 					<h3
+						id="{uid}-title"
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
 					>
@@ -183,7 +187,7 @@
 			<button
 				type="button"
 				onclick={handleCopy}
-				class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200"
+				class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all motion-reduce:transition-none duration-200"
 				style="background: var(--calc-accent); color: white;"
 			>
 				<IconCopy size={13} aria-hidden="true" />

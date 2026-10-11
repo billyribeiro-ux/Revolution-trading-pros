@@ -82,7 +82,7 @@
 			<button
 				type="button"
 				onclick={() => calc.removeToast(toast.id)}
-				class="flex-shrink-0 cursor-pointer rounded-md p-0.5 transition-colors"
+				class="flex-shrink-0 cursor-pointer rounded-md p-0.5 transition-colors motion-reduce:transition-none"
 				style="color: var(--calc-text-muted);"
 				aria-label="Dismiss notification"
 			>

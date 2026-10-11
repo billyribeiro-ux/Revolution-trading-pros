@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../../utils/focus-trap.js';
 	import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
@@ -20,6 +21,7 @@
 	}
 
 	let { captureElement = null }: Props = $props();
+	const uid = $props.id();
 
 	const calc = getCalculator();
 
@@ -157,11 +159,12 @@
 
 {#if calc.showExportPNG}
 	<div
+		{@attach trapFocus}
 		{@attach focusDialog}
 		class="fixed inset-0 z-[9995] flex items-center justify-center p-4 outline-none"
 		role="dialog"
 		aria-modal="true"
-		aria-label="Export PNG Screenshot"
+		aria-labelledby="{uid}-title"
 		tabindex="-1"
 	>
 		<!-- Backdrop -->
@@ -193,6 +196,7 @@
 				<div class="flex items-center gap-2">
 					<IconCamera size={16} style="color: var(--calc-accent);" aria-hidden="true" />
 					<h3
+						id="{uid}-title"
 						class="text-sm font-semibold"
 						style="color: var(--calc-text); font-family: var(--calc-font-display);"
 					>
@@ -224,7 +228,7 @@
 							<button
 								type="button"
 								onclick={() => (zone = z.id)}
-								class="flex flex-col items-center gap-1 py-2.5 rounded-lg text-[10px] font-medium cursor-pointer transition-all duration-150"
+								class="flex flex-col items-center gap-1 py-2.5 rounded-lg text-[10px] font-medium cursor-pointer transition-all motion-reduce:transition-none duration-150"
 								style:background={selected
 									? 'var(--calc-accent-glow)'
 									: 'var(--calc-surface-hover)'}
@@ -251,7 +255,7 @@
 							<button
 								type="button"
 								onclick={() => (aspectRatio = r.id)}
-								class="py-2 rounded-lg text-[10px] font-medium cursor-pointer transition-all duration-150"
+								class="py-2 rounded-lg text-[10px] font-medium cursor-pointer transition-all motion-reduce:transition-none duration-150"
 								style:background={selected
 									? 'var(--calc-accent-glow)'
 									: 'var(--calc-surface-hover)'}
@@ -300,14 +304,14 @@
 					onclick={handleCapture}
 					disabled={isCapturing}
 					aria-busy={isCapturing}
-					class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-200"
+					class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all motion-reduce:transition-none duration-200"
 					style:background="var(--calc-accent)"
 					style:color="white"
 					style:opacity={isCapturing ? 0.6 : 1}
 				>
 					{#if isCapturing}
 						<div
-							class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+							class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full motion-safe:animate-spin"
 							aria-hidden="true"
 						></div>
 						Capturing...

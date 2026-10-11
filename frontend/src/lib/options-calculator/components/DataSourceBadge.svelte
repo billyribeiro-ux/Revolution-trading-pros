@@ -52,16 +52,16 @@
 		onclick={() => (expanded = !expanded)}
 		aria-expanded={expanded}
 		aria-controls={panelId}
-		class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg transition-colors cursor-pointer"
+		class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg transition-colors motion-reduce:transition-none cursor-pointer"
 		style="background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);"
 	>
 		<span class="w-1.5 h-1.5 rounded-full" style:background={dotColor} aria-hidden="true"></span>
 		{#if isLive}
-			<IconWifi size={10} />
+			<IconWifi size={10} aria-hidden="true" />
 		{:else if source === 'mock'}
-			<IconDatabase size={10} />
+			<IconDatabase size={10} aria-hidden="true" />
 		{:else}
-			<IconWifiOff size={10} />
+			<IconWifiOff size={10} aria-hidden="true" />
 		{/if}
 		<span class="sr-only">Data source:</span>
 		<span style="font-family: var(--calc-font-mono);">{label}</span>

@@ -33,7 +33,7 @@
 			type="button"
 			onclick={() => setMode('manual')}
 			aria-pressed={!isLive}
-			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors cursor-pointer"
+			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors motion-reduce:transition-none cursor-pointer"
 			style:color={isLive ? 'var(--calc-text-muted)' : 'var(--calc-text)'}
 		>
 			Manual
@@ -42,7 +42,7 @@
 			type="button"
 			onclick={() => setMode('live')}
 			aria-pressed={isLive}
-			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors cursor-pointer"
+			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors motion-reduce:transition-none cursor-pointer"
 			style:color={isLive ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 		>
 			Live Data
