@@ -1,53 +1,37 @@
 <script lang="ts">
 	import { select } from 'd3-selection';
 	import { scaleLinear } from 'd3-scale';
-	import { line as d3line, area as d3area, curveMonotoneX } from 'd3-shape';
+	import { area, curveMonotoneX, line } from 'd3-shape';
 	import { axisBottom, axisLeft } from 'd3-axis';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
+	import type { Axis, AxisDomain } from 'd3-axis';
+	import type { Attachment } from 'svelte/attachments';
+	import { getCalculator } from '../../state/context.js';
 	import type { VolSmilePoint } from '../../engine/types.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
+	const uid = $props.id();
 
-	let { calc }: Props = $props();
+	/** Chart height in px; the width follows the container (`bind:clientWidth`). */
+	const HEIGHT = 350;
+	const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+	const innerH = HEIGHT - margin.top - margin.bottom;
 
-	let containerEl: HTMLDivElement | undefined = $state();
-	let svgEl: SVGSVGElement | undefined = $state();
-	let width = $state(600);
-	let height = $state(350);
+	let width = $state(0);
 	let skew = $state(-0.15);
 	let kurtosis = $state(0.1);
 
-	const margin = { top: 20, right: 30, bottom: 50, left: 60 };
-
-	$effect(() => {
-		if (!containerEl) return;
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				height = Math.max(280, Math.min(400, entry.contentRect.height));
-			}
-		});
-		observer.observe(containerEl);
-		return () => observer.disconnect();
-	});
-
-	let smileData = $derived.by<VolSmilePoint[]>(() => {
+	/** Synthetic smile: IV(K) = ATM + skew·m + kurtosis·m², m = K/S − 1, over 70%–130% of spot. */
+	const smileData = $derived.by<VolSmilePoint[]>(() => {
 		const spot = calc.spotPrice;
 		const atmVol = calc.volatility;
-		const sk = skew;
-		const kurt = kurtosis;
 		const points: VolSmilePoint[] = [];
 
 		for (let i = 0; i <= 40; i++) {
 			const ratio = 0.7 + (i / 40) * 0.6;
-			const strike = spot * ratio;
 			const m = ratio - 1;
-			const iv = atmVol + sk * m + kurt * m * m;
 			points.push({
-				strike,
-				impliedVol: Math.max(0.01, iv),
+				strike: spot * ratio,
+				impliedVol: Math.max(0.01, atmVol + skew * m + kurtosis * m * m),
 				moneyness: m,
 				strikeRatio: ratio
 			});
@@ -55,162 +39,68 @@
 		return points;
 	});
 
-	$effect(() => {
-		if (!svgEl || smileData.length === 0) return;
-
+	/** Scales and path geometry; `null` until the container has been measured. */
+	const chart = $derived.by(() => {
 		const data = smileData;
-		const spot = calc.spotPrice;
-		const atmVol = calc.volatility;
-
+		const first = data.at(0);
+		const last = data.at(-1);
 		const innerW = width - margin.left - margin.right;
-		const innerH = height - margin.top - margin.bottom;
-		if (innerW <= 0 || innerH <= 0) return;
+		if (!first || !last || innerW <= 0) return null;
 
-		const svg = select(svgEl);
-		svg.selectAll('*').remove();
+		const vols = data.map((d) => d.impliedVol);
+		const x = scaleLinear().domain([first.strike, last.strike]).range([0, innerW]);
+		const y = scaleLinear()
+			.domain([Math.min(...vols) * 0.9, Math.max(...vols) * 1.1])
+			.range([innerH, 0]);
 
-		const g = svg
-			.attr('width', width)
-			.attr('height', height)
-			.append('g')
-			.attr('transform', `translate(${margin.left},${margin.top})`);
+		// The current strike sits on the smile at its nearest sampled strike.
+		const strike = calc.strikePrice;
+		const nearest = data.reduce((closest, d) =>
+			Math.abs(d.strike - strike) < Math.abs(closest.strike - strike) ? d : closest
+		);
 
-		const xDomain = [data[0].strike, data[data.length - 1].strike];
-		const yMin = Math.min(...data.map((d) => d.impliedVol)) * 0.9;
-		const yMax = Math.max(...data.map((d) => d.impliedVol)) * 1.1;
-
-		const x = scaleLinear().domain(xDomain).range([0, innerW]);
-		const y = scaleLinear().domain([yMin, yMax]).range([innerH, 0]);
-
-		// Shaded area under the smile
-		const areaGen = d3area<VolSmilePoint>()
-			.x((d) => x(d.strike))
-			.y0(innerH)
-			.y1((d) => y(d.impliedVol))
-			.curve(curveMonotoneX);
-
-		g.append('path')
-			.datum(data)
-			.attr('d', areaGen)
-			.attr('fill', 'var(--calc-accent)')
-			.attr('opacity', 0.06);
-
-		// Vol smile line
-		const lineGen = d3line<VolSmilePoint>()
-			.x((d) => x(d.strike))
-			.y((d) => y(d.impliedVol))
-			.curve(curveMonotoneX);
-
-		g.append('path')
-			.datum(data)
-			.attr('d', lineGen)
-			.attr('fill', 'none')
-			.attr('stroke', 'var(--calc-accent)')
-			.attr('stroke-width', 2.5);
-
-		// ATM marker
-		g.append('line')
-			.attr('x1', x(spot))
-			.attr('x2', x(spot))
-			.attr('y1', 0)
-			.attr('y2', innerH)
-			.attr('stroke', 'var(--calc-text-muted)')
-			.attr('stroke-width', 1)
-			.attr('stroke-dasharray', '4,4')
-			.attr('opacity', 0.5);
-
-		g.append('circle')
-			.attr('cx', x(spot))
-			.attr('cy', y(atmVol))
-			.attr('r', 5)
-			.attr('fill', 'var(--calc-accent)')
-			.attr('stroke', 'var(--calc-bg)')
-			.attr('stroke-width', 2);
-
-		g.append('text')
-			.attr('x', x(spot) + 8)
-			.attr('y', y(atmVol) - 8)
-			.attr('fill', 'var(--calc-accent)')
-			.attr('font-size', '10px')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.text(`ATM ${(atmVol * 100).toFixed(1)}%`);
-
-		// Current strike marker
-		const currentStrike = calc.strikePrice;
-		if (currentStrike >= xDomain[0] && currentStrike <= xDomain[1]) {
-			const currentIV = data.reduce((closest, d) =>
-				Math.abs(d.strike - currentStrike) < Math.abs(closest.strike - currentStrike) ? d : closest
-			).impliedVol;
-
-			g.append('circle')
-				.attr('cx', x(currentStrike))
-				.attr('cy', y(currentIV))
-				.attr('r', 6)
-				.attr('fill', 'none')
-				.attr('stroke', 'var(--calc-warning)')
-				.attr('stroke-width', 2);
-
-			g.append('text')
-				.attr('x', x(currentStrike) + 8)
-				.attr('y', y(currentIV) + 4)
-				.attr('fill', 'var(--calc-warning)')
-				.attr('font-size', '9px')
-				.attr('font-family', 'var(--calc-font-mono)')
-				.text(`K=$${currentStrike.toFixed(0)} IV=${(currentIV * 100).toFixed(1)}%`);
-		}
-
-		// Axes
-		const xAxisGen = axisBottom(x)
-			.ticks(8)
-			.tickFormat((d) => `$${Number(d).toFixed(0)}`);
-		const yAxisGen = axisLeft(y)
-			.ticks(6)
-			.tickFormat((d) => `${(Number(d) * 100).toFixed(0)}%`);
-
-		g.append('g')
-			.attr('transform', `translate(0,${innerH})`)
-			.call(xAxisGen)
-			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('font-size', '10px');
-
-		g.append('g')
-			.call(yAxisGen)
-			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('font-size', '10px');
-
-		// Axis labels
-		g.append('text')
-			.attr('x', innerW / 2)
-			.attr('y', innerH + 38)
-			.attr('text-anchor', 'middle')
-			.attr('fill', 'var(--calc-text-muted)')
-			.attr('font-size', '11px')
-			.attr('font-family', 'var(--calc-font-body)')
-			.text('Strike Price');
-
-		g.append('text')
-			.attr('transform', 'rotate(-90)')
-			.attr('x', -innerH / 2)
-			.attr('y', -45)
-			.attr('text-anchor', 'middle')
-			.attr('fill', 'var(--calc-text-muted)')
-			.attr('font-size', '11px')
-			.attr('font-family', 'var(--calc-font-body)')
-			.text('Implied Volatility');
+		return {
+			innerW,
+			x,
+			y,
+			smileArea: area<VolSmilePoint>()
+				.x((d) => x(d.strike))
+				.y0(innerH)
+				.y1((d) => y(d.impliedVol))
+				.curve(curveMonotoneX)(data),
+			smileLine: line<VolSmilePoint>()
+				.x((d) => x(d.strike))
+				.y((d) => y(d.impliedVol))
+				.curve(curveMonotoneX)(data),
+			atm: { x: x(calc.spotPrice), y: y(calc.volatility) },
+			current:
+				strike >= first.strike && strike <= last.strike
+					? { x: x(strike), y: y(nearest.impliedVol), iv: nearest.impliedVol }
+					: null
+		};
 	});
+
+	const atmLabel = $derived(`${(calc.volatility * 100).toFixed(1)}%`);
+
+	/** Lets d3 draw an axis into the `<g>`; re-runs whenever the generator (its scale) changes. */
+	function axis<Domain extends AxisDomain>(generator: Axis<Domain>): Attachment<SVGGElement> {
+		return (g) => {
+			select(g).call(generator);
+		};
+	}
 </script>
 
 <div class="flex flex-col gap-3">
 	<!-- Controls -->
 	<div class="flex items-center gap-4 flex-wrap">
 		<div class="flex items-center gap-2">
-			<span
+			<label
+				for="{uid}-skew"
 				class="text-[10px]"
-				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Skew:</span
+				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Skew:</label
 			>
 			<input
+				id="{uid}-skew"
 				type="range"
 				min="-0.5"
 				max="0.2"
@@ -226,11 +116,13 @@
 			>
 		</div>
 		<div class="flex items-center gap-2">
-			<span
+			<label
+				for="{uid}-kurtosis"
 				class="text-[10px]"
-				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Kurtosis:</span
+				style="color: var(--calc-text-muted); font-family: var(--calc-font-body);">Kurtosis:</label
 			>
 			<input
+				id="{uid}-kurtosis"
 				type="range"
 				min="0"
 				max="0.5"
@@ -251,7 +143,116 @@
 	</div>
 
 	<!-- Chart -->
-	<div bind:this={containerEl} class="relative w-full" style="min-height: 280px;">
-		<svg aria-hidden="true" bind:this={svgEl}></svg>
+	<div class="relative w-full" style="min-height: 280px;" bind:clientWidth={width}>
+		<svg
+			{width}
+			height={HEIGHT}
+			role="img"
+			aria-label="Volatility smile: implied volatility by strike price, at-the-money {atmLabel}"
+		>
+			{#if chart}
+				<g transform="translate({margin.left},{margin.top})">
+					<!-- Shaded area under the smile -->
+					<path d={chart.smileArea} fill="var(--calc-accent)" opacity="0.06" />
+
+					<!-- Vol smile line -->
+					<path d={chart.smileLine} fill="none" stroke="var(--calc-accent)" stroke-width="2.5" />
+
+					<!-- ATM marker -->
+					<line
+						x1={chart.atm.x}
+						x2={chart.atm.x}
+						y1="0"
+						y2={innerH}
+						stroke="var(--calc-text-muted)"
+						stroke-width="1"
+						stroke-dasharray="4,4"
+						opacity="0.5"
+					/>
+					<circle
+						cx={chart.atm.x}
+						cy={chart.atm.y}
+						r="5"
+						fill="var(--calc-accent)"
+						stroke="var(--calc-bg)"
+						stroke-width="2"
+					/>
+					<text
+						x={chart.atm.x + 8}
+						y={chart.atm.y - 8}
+						fill="var(--calc-accent)"
+						font-size="10px"
+						font-family="var(--calc-font-mono)">ATM {atmLabel}</text
+					>
+
+					<!-- Current strike marker -->
+					{#if chart.current}
+						<circle
+							cx={chart.current.x}
+							cy={chart.current.y}
+							r="6"
+							fill="none"
+							stroke="var(--calc-warning)"
+							stroke-width="2"
+						/>
+						<text
+							x={chart.current.x + 8}
+							y={chart.current.y + 4}
+							fill="var(--calc-warning)"
+							font-size="9px"
+							font-family="var(--calc-font-mono)"
+							>K=${calc.strikePrice.toFixed(0)} IV={(chart.current.iv * 100).toFixed(1)}%</text
+						>
+					{/if}
+
+					<!-- Axes -->
+					<g
+						class="axis"
+						transform="translate(0,{innerH})"
+						{@attach axis(
+							axisBottom(chart.x)
+								.ticks(8)
+								.tickFormat((d) => `$${Number(d).toFixed(0)}`)
+						)}
+					></g>
+					<g
+						class="axis"
+						{@attach axis(
+							axisLeft(chart.y)
+								.ticks(6)
+								.tickFormat((d) => `${(Number(d) * 100).toFixed(0)}%`)
+						)}
+					></g>
+
+					<!-- Axis labels -->
+					<text
+						x={chart.innerW / 2}
+						y={innerH + 38}
+						text-anchor="middle"
+						fill="var(--calc-text-muted)"
+						font-size="11px"
+						font-family="var(--calc-font-body)">Strike Price</text
+					>
+					<text
+						transform="rotate(-90)"
+						x={-innerH / 2}
+						y="-45"
+						text-anchor="middle"
+						fill="var(--calc-text-muted)"
+						font-size="11px"
+						font-family="var(--calc-font-body)">Implied Volatility</text
+					>
+				</g>
+			{/if}
+		</svg>
 	</div>
 </div>
+
+<style>
+	/* d3-axis writes `font-size`/`font-family` presentation attributes; CSS takes precedence. */
+	.axis {
+		color: var(--calc-text-muted);
+		font-family: var(--calc-font-mono);
+		font-size: 10px;
+	}
+</style>

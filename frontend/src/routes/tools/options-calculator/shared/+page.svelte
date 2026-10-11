@@ -1,20 +1,16 @@
 <script lang="ts">
-	import { generateOGMeta } from '#lib/options-calculator/utils/seo.js';
 	import Calculator from '#lib/options-calculator/components/Calculator.svelte';
-
-	const ogMeta = generateOGMeta();
+	import '#lib/options-calculator/styles/calculator-theme.css';
 </script>
 
+<!-- Title, description and Open Graph tags come from +page.ts (`data.seo`). -->
 <svelte:head>
-	<title>Shared Options Analysis | Revolution Trading Pros</title>
-	<meta name="description" content={ogMeta['og:description']} />
-	<meta property="og:title" content="Shared Options Analysis | Revolution Trading Pros" />
-	<meta property="og:description" content={ogMeta['og:description']} />
-	<meta property="og:type" content="website" />
-	<meta property="og:image" content={ogMeta['og:image']} />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Shared Options Analysis" />
-	<meta name="twitter:description" content={ogMeta['og:description']} />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
 <!-- Shared Banner -->

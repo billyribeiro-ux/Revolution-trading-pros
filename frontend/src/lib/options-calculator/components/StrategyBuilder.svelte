@@ -2,35 +2,24 @@
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import gsap from 'gsap';
-	import type { Attachment } from 'svelte/attachments';
+	import { backOut } from 'svelte/easing';
+	import { Tween, prefersReducedMotion } from 'svelte/motion';
 	import StrategyLegRow from './ui/StrategyLegRow.svelte';
 	import StrategyPresets from './StrategyPresets.svelte';
 	import MetricCard from './ui/MetricCard.svelte';
 	import { formatCurrency } from '../utils/formatters.js';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
-	import type { StrategyLeg } from '../engine/types.js';
+	import { getCalculator } from '../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
-
-	let { calc }: Props = $props();
-
-	let showPresets = $state(false);
-	let addButtonElement: HTMLButtonElement | undefined = $state();
+	const calc = getCalculator();
 
 	const LEG_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+	/** Shown in place of an unbounded max profit / max loss. */
+	const UNLIMITED = 99999;
 
-	const attachAddButton: Attachment<HTMLButtonElement> = (element) => {
-		addButtonElement = element;
+	let showPresets = $state(false);
 
-		return () => {
-			if (addButtonElement === element) {
-				addButtonElement = undefined;
-			}
-		};
-	};
+	/** Press feedback for the Add Leg button: snaps to 0.9 and springs back to 1. */
+	const addButtonScale = new Tween(1, { duration: 300, easing: backOut });
 
 	function addLeg() {
 		calc.addStrategyLeg({
@@ -41,67 +30,50 @@
 			quantity: 1,
 			premium: 0
 		});
-		if (addButtonElement) {
-			gsap.fromTo(
-				addButtonElement,
-				{ scale: 0.9 },
-				{ scale: 1, duration: 0.3, ease: 'back.out(2)' }
-			);
-		}
+		if (prefersReducedMotion.current) return;
+		addButtonScale.set(0.9, { duration: 0 });
+		addButtonScale.target = 1;
 	}
 
-	function updateLeg(updated: StrategyLeg) {
-		calc.removeStrategyLeg(updated.id);
-		calc.addStrategyLeg({
-			type: updated.type,
-			strike: updated.strike,
-			expiry: updated.expiry,
-			position: updated.position,
-			quantity: updated.quantity,
-			premium: updated.premium
-		});
-	}
-
-	function removeLeg(id: string) {
-		calc.removeStrategyLeg(id);
-	}
-
-	let netPremium = $derived.by(() => {
-		const legs = calc.strategyLegs;
-		if (legs.length === 0) return 0;
-		return legs.reduce((sum, l) => sum + l.premium, 0);
+	const maxProfit = $derived.by(() => {
+		const profit = calc.strategyMaxProfitLoss.maxProfit;
+		return typeof profit === 'number' ? profit : UNLIMITED;
 	});
 
-	const premiumVariant = $derived(netPremium >= 0 ? 'credit' : 'debit');
-	const premiumTextColor = $derived(
-		premiumVariant === 'credit' ? 'var(--calc-call)' : 'var(--calc-put)'
-	);
-	const premiumBackground = $derived(
-		premiumVariant === 'credit' ? 'var(--calc-call-bg)' : 'var(--calc-put-bg)'
-	);
-
-	let netDelta = $derived.by(() => {
-		return calc.currentGreeks.first.delta;
+	// Signed like Max Profit (the lowest P&L on the payoff curve), so a loss reads negative
+	// and red whether it is bounded or not.
+	const maxLoss = $derived.by(() => {
+		const loss = calc.strategyMaxProfitLoss.maxLoss;
+		return typeof loss === 'number' ? loss : -UNLIMITED;
 	});
+
+	// A payoff that touches zero at a grid point yields the same breakeven twice;
+	// de-duplicate so the keyed list below never sees a repeated key.
+	const breakevens = $derived([...new Set(calc.strategyBreakevens)]);
 </script>
 
 <div class="strategy-builder">
 	<!-- Header -->
 	<div class="builder-header">
 		<div class="title-group">
-			<IconChartBar size={16} style="color: var(--calc-accent);" />
+			<IconChartBar size={16} style="color: var(--calc-accent);" aria-hidden="true" />
 			<h3 class="builder-title">Strategy Builder</h3>
 			<span class="leg-count">
 				{calc.strategyLegs.length} legs
 			</span>
 		</div>
 		<div class="header-actions">
-			<button onclick={() => (showPresets = !showPresets)} class="preset-toggle">
+			<button
+				type="button"
+				onclick={() => (showPresets = !showPresets)}
+				aria-expanded={showPresets}
+				class="preset-toggle"
+			>
 				{showPresets ? 'Hide' : 'Show'} Presets
 			</button>
 			{#if calc.strategyLegs.length > 0}
-				<button onclick={() => calc.clearStrategy()} class="clear-button">
-					<IconTrash size={10} />
+				<button type="button" onclick={calc.clearStrategy} class="clear-button">
+					<IconTrash size={10} aria-hidden="true" />
 					Clear
 				</button>
 			{/if}
@@ -110,7 +82,7 @@
 
 	<!-- Presets Panel -->
 	{#if showPresets}
-		<StrategyPresets {calc} onSelect={() => (showPresets = false)} />
+		<StrategyPresets onSelect={() => (showPresets = false)} />
 	{/if}
 
 	<!-- Legs -->
@@ -123,15 +95,20 @@
 				riskFreeRate={calc.riskFreeRate}
 				dividendYield={calc.dividendYield}
 				color={LEG_COLORS[i % LEG_COLORS.length]}
-				onUpdate={updateLeg}
-				onRemove={removeLeg}
+				onUpdate={calc.updateStrategyLeg}
+				onRemove={calc.removeStrategyLeg}
 			/>
 		{/each}
 	</div>
 
 	<!-- Add Leg Button -->
-	<button {@attach attachAddButton} onclick={addLeg} class="add-leg-button">
-		<IconPlus size={14} />
+	<button
+		type="button"
+		onclick={addLeg}
+		class="add-leg-button"
+		style:scale={addButtonScale.current}
+	>
+		<IconPlus size={14} aria-hidden="true" />
 		Add Leg
 	</button>
 
@@ -140,48 +117,23 @@
 		<div class="summary-panel">
 			<div class="summary-header">
 				<span class="summary-title">Strategy Summary</span>
-				<span
-					class="premium-badge"
-					style:color={premiumTextColor}
-					style:background={premiumBackground}
-				>
-					{netPremium >= 0 ? 'Credit' : 'Debit'}
-					{formatCurrency(Math.abs(netPremium))}
+				<span class={['premium-badge', calc.strategyNetPremium >= 0 ? 'credit' : 'debit']}>
+					{calc.strategyNetPremium >= 0 ? 'Credit' : 'Debit'}
+					{formatCurrency(Math.abs(calc.strategyNetPremium))}
 				</span>
 			</div>
 
 			<div class="metrics-grid">
-				<MetricCard
-					label="Max Profit"
-					value={typeof calc.strategyMaxProfitLoss.maxProfit === 'number'
-						? calc.strategyMaxProfitLoss.maxProfit
-						: 99999}
-					decimals={2}
-					prefix="$"
-					colorize
-				/>
-				<MetricCard
-					label="Max Loss"
-					value={typeof calc.strategyMaxProfitLoss.maxLoss === 'number'
-						? -calc.strategyMaxProfitLoss.maxLoss
-						: -99999}
-					decimals={2}
-					prefix="$"
-					colorize
-				/>
-				<MetricCard
-					label="Breakevens"
-					value={calc.strategyBreakevens.length}
-					decimals={0}
-					colorize={false}
-				/>
-				<MetricCard label="Net Delta" value={netDelta} decimals={3} colorize />
+				<MetricCard label="Max Profit" value={maxProfit} decimals={2} prefix="$" colorize />
+				<MetricCard label="Max Loss" value={maxLoss} decimals={2} prefix="$" colorize />
+				<MetricCard label="Breakevens" value={breakevens.length} decimals={0} colorize={false} />
+				<MetricCard label="Net Delta" value={calc.strategyGreeks.netDelta} decimals={3} colorize />
 			</div>
 
-			{#if calc.strategyBreakevens.length > 0}
+			{#if breakevens.length > 0}
 				<div class="breakeven-list">
 					<span class="breakeven-label">B/E:</span>
-					{#each calc.strategyBreakevens as be (be)}
+					{#each breakevens as be (be)}
 						<span class="breakeven-value">
 							{formatCurrency(be)}
 						</span>
@@ -336,6 +288,16 @@
 		padding: 0.125rem 0.5rem;
 	}
 
+	.premium-badge.credit {
+		background: var(--calc-call-bg);
+		color: var(--calc-call);
+	}
+
+	.premium-badge.debit {
+		background: var(--calc-put-bg);
+		color: var(--calc-put);
+	}
+
 	.metrics-grid {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -358,5 +320,13 @@
 		font-family: var(--calc-font-mono);
 		font-size: 0.75rem;
 		line-height: 1.2;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.preset-toggle,
+		.clear-button,
+		.add-leg-button {
+			transition: none;
+		}
 	}
 </style>

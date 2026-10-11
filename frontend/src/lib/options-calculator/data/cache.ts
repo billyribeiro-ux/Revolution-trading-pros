@@ -4,6 +4,10 @@
 // Tier 2: localStorage with TTL (persists across reloads)
 // ============================================================
 
+import * as v from 'valibot';
+import { browser } from '$app/env';
+import { createSubscriber } from 'svelte/reactivity';
+import { providerNameSchema } from './schemas.js';
 import type { DataProviderName } from './types.js';
 
 /** TTL values in milliseconds */
@@ -20,6 +24,25 @@ export const CACHE_TTL = {
 	HISTORICAL_PRICES: 3_600_000
 } as const;
 
+/**
+ * Every cache key starts with this. It must stay distinct from the other
+ * `rtp:calc:*` keys (CTA / lead-modal dismissals) so `clearAll()` only ever
+ * removes cached market data.
+ */
+const KEY_PREFIX = 'rtp:calc:cache:';
+
+/** Namespaces written under `rtp:calc:<ns>:` before the dedicated prefix existed. */
+const LEGACY_PREFIXES = [
+	'search',
+	'quote',
+	'expirations',
+	'chain',
+	'riskfree',
+	'dividend',
+	'earnings',
+	'hv'
+].map((namespace) => `rtp:calc:${namespace}:`);
+
 interface CacheItem<T> {
 	data: T;
 	timestamp: number;
@@ -27,95 +50,162 @@ interface CacheItem<T> {
 	source: DataProviderName;
 }
 
+/** Envelope of a persisted entry; `data` is validated separately per caller. */
+const storedItemSchema = v.object({
+	data: v.unknown(),
+	timestamp: v.number(),
+	ttl: v.number(),
+	source: providerNameSchema
+});
+
 /**
  * Create a cache instance.
+ * `getStats()` is reactive: read it in a `$derived` / template and it updates
+ * whenever entries are written or removed.
  */
 export function createCache() {
 	const memoryCache = new Map<string, CacheItem<unknown>>();
 
+	let notifyChange: (() => void) | undefined;
+	const trackChanges = createSubscriber((update) => {
+		notifyChange = update;
+		return () => {
+			notifyChange = undefined;
+		};
+	});
+
 	function makeKey(namespace: string, ...parts: string[]): string {
-		return `rtp:calc:${namespace}:${parts.join(':')}`;
+		return `${KEY_PREFIX}${namespace}:${parts.join(':')}`;
 	}
 
-	function isValid<T>(item: CacheItem<T> | null | undefined): item is CacheItem<T> {
-		if (!item) return false;
+	function isFresh(item: { timestamp: number; ttl: number }): boolean {
 		return Date.now() - item.timestamp < item.ttl;
 	}
 
 	function getMemory<T>(key: string): T | null {
 		const item = memoryCache.get(key) as CacheItem<T> | undefined;
-		if (isValid(item)) return item.data;
-		if (item) memoryCache.delete(key);
+		if (!item) return null;
+		if (isFresh(item)) return item.data;
+		memoryCache.delete(key);
 		return null;
 	}
 
-	function getStorage<T>(key: string): T | null {
-		if (typeof window === 'undefined') return null;
+	function getStorage<T>(key: string, schema?: v.GenericSchema<unknown, T>): T | null {
+		if (!browser) return null;
 		try {
 			const raw = localStorage.getItem(key);
 			if (!raw) return null;
-			const item: CacheItem<T> = JSON.parse(raw);
-			if (isValid(item)) {
-				memoryCache.set(key, item);
-				return item.data;
+
+			const envelope = v.safeParse(storedItemSchema, JSON.parse(raw));
+			if (!envelope.success || !isFresh(envelope.output)) {
+				localStorage.removeItem(key);
+				return null;
 			}
-			localStorage.removeItem(key);
-			return null;
+
+			// Without a schema the caller vouches for the payload's shape.
+			const data = schema ? v.safeParse(schema, envelope.output.data) : null;
+			if (data && !data.success) {
+				localStorage.removeItem(key);
+				return null;
+			}
+
+			const item: CacheItem<T> = {
+				...envelope.output,
+				data: data ? data.output : (envelope.output.data as T)
+			};
+			memoryCache.set(key, item);
+			return item.data;
 		} catch {
+			// Blocked storage, malformed JSON, …: treat as a miss.
 			return null;
 		}
 	}
 
-	function get<T>(key: string): T | null {
+	/**
+	 * Read a fresh entry: memory first, then localStorage. Pass `schema` to
+	 * validate a persisted payload before it is trusted (it may be stale-shaped
+	 * from an older release or edited by hand); invalid entries are dropped.
+	 */
+	function get<T>(key: string, schema?: v.GenericSchema<unknown, T>): T | null {
 		const memResult = getMemory<T>(key);
 		if (memResult !== null) return memResult;
-		return getStorage<T>(key);
+		return getStorage(key, schema);
+	}
+
+	/** Drop every expired cache entry from localStorage; returns how many went. */
+	function pruneExpiredStorage(): number {
+		let removed = 0;
+		for (let i = localStorage.length - 1; i >= 0; i--) {
+			const key = localStorage.key(i);
+			if (!key?.startsWith(KEY_PREFIX)) continue;
+			try {
+				const envelope = v.safeParse(storedItemSchema, JSON.parse(localStorage.getItem(key) ?? ''));
+				if (envelope.success && isFresh(envelope.output)) continue;
+			} catch {
+				// Unparseable: fall through and remove it.
+			}
+			localStorage.removeItem(key);
+			removed++;
+		}
+		return removed;
 	}
 
 	function set<T>(key: string, data: T, ttl: number, source: DataProviderName): void {
 		const item: CacheItem<T> = { data, timestamp: Date.now(), ttl, source };
-		memoryCache.set(key, item as CacheItem<unknown>);
-		if (typeof window !== 'undefined') {
+		memoryCache.set(key, item);
+		notifyChange?.();
+		if (!browser) return;
+
+		const serialized = JSON.stringify(item);
+		try {
+			localStorage.setItem(key, serialized);
+		} catch {
+			// Usually the quota: expired entries are never read back, so they pile
+			// up. Prune them and retry once; the memory tier works regardless.
 			try {
-				localStorage.setItem(key, JSON.stringify(item));
+				if (pruneExpiredStorage() > 0) localStorage.setItem(key, serialized);
 			} catch {
-				// localStorage full — memory cache still works
+				/* storage unavailable or still full */
 			}
 		}
 	}
 
 	function invalidate(key: string): void {
 		memoryCache.delete(key);
-		if (typeof window !== 'undefined') {
-			try {
-				localStorage.removeItem(key);
-			} catch {
-				/* ignore */
-			}
+		notifyChange?.();
+		if (!browser) return;
+		try {
+			localStorage.removeItem(key);
+		} catch {
+			/* ignore */
 		}
 	}
 
-	function invalidateByPrefix(prefix: string): void {
+	function invalidateByPrefix(...prefixes: string[]): void {
+		const matches = (key: string) => prefixes.some((prefix) => key.startsWith(prefix));
+
 		for (const key of memoryCache.keys()) {
-			if (key.startsWith(prefix)) memoryCache.delete(key);
+			if (matches(key)) memoryCache.delete(key);
 		}
-		if (typeof window !== 'undefined') {
-			try {
-				for (let i = localStorage.length - 1; i >= 0; i--) {
-					const key = localStorage.key(i);
-					if (key?.startsWith(prefix)) localStorage.removeItem(key);
-				}
-			} catch {
-				/* ignore */
+		notifyChange?.();
+		if (!browser) return;
+		try {
+			for (let i = localStorage.length - 1; i >= 0; i--) {
+				const key = localStorage.key(i);
+				if (key && matches(key)) localStorage.removeItem(key);
 			}
+		} catch {
+			/* ignore */
 		}
 	}
 
+	/** Remove every cached market-data entry (and entries from the old key layout). */
 	function clearAll(): void {
-		invalidateByPrefix('rtp:calc:');
+		invalidateByPrefix(KEY_PREFIX, ...LEGACY_PREFIXES);
 	}
 
 	function getStats(): { memoryEntries: number; memoryBytes: number } {
+		trackChanges();
 		let bytes = 0;
 		for (const [key, value] of memoryCache.entries()) {
 			bytes += key.length * 2 + JSON.stringify(value).length * 2;

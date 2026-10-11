@@ -3,7 +3,9 @@
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import gsap from 'gsap';
+	import { backOut, cubicIn } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import type { EasingFunction, TransitionConfig } from 'svelte/transition';
 	import type { EducationEntry } from '../../engine/types.js';
 
 	interface Props {
@@ -14,45 +16,45 @@
 
 	let { entry, visible, onClose }: Props = $props();
 
-	let cardEl: HTMLDivElement | undefined = $state();
-	let isExpanded = $state(false);
+	/** Explanations longer than this are clipped behind "Read more". */
+	const PREVIEW_LENGTH = 200;
 
-	$effect(() => {
-		if (visible && cardEl) {
-			isExpanded = false;
-			gsap.fromTo(
-				cardEl,
-				{ scale: 0.85, opacity: 0, y: 8 },
-				{ scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(2)' }
-			);
-		}
-	});
+	const isLong = $derived(entry.fullExplanation.length > PREVIEW_LENGTH);
 
-	function handleClose() {
-		if (!cardEl) {
-			onClose();
-			return;
-		}
-		gsap.to(cardEl, {
-			scale: 0.85,
-			opacity: 0,
-			y: 8,
-			duration: 0.15,
-			ease: 'power2.in',
-			onComplete: onClose
-		});
+	interface PopParams {
+		duration?: number;
+		easing?: EasingFunction;
 	}
 
-	let truncatedExplanation = $derived(
-		entry.fullExplanation.length > 200 && !isExpanded
-			? entry.fullExplanation.slice(0, 200) + '...'
-			: entry.fullExplanation
-	);
+	/**
+	 * Pops the card in from 85% scale, 8px low and transparent, and back out the same way.
+	 * Instant under reduced motion.
+	 */
+	function pop(
+		_node: Element,
+		{ duration = 300, easing = backOut }: PopParams = {}
+	): TransitionConfig {
+		return {
+			duration: prefersReducedMotion.current ? 0 : duration,
+			easing,
+			css: (t, u) => `transform: translateY(${u * 8}px) scale(${0.85 + t * 0.15}); opacity: ${t};`
+		};
+	}
 </script>
 
 {#if visible}
+	<!-- Scoped to this block, so every showing starts collapsed. -->
+	{let isExpanded = $state(false)}
+	{const explanation = $derived(
+		isLong && !isExpanded
+			? `${entry.fullExplanation.slice(0, PREVIEW_LENGTH)}...`
+			: entry.fullExplanation
+	)}
+
+	<!-- Global: the card usually enters and leaves with its parent's block (EducationOverlay). -->
 	<div
-		bind:this={cardEl}
+		in:pop|global
+		out:pop|global={{ duration: 150, easing: cubicIn }}
 		class="w-[360px] max-w-[90vw] rounded-2xl p-4 flex flex-col gap-3"
 		style="
 			background: var(--calc-surface);
@@ -83,12 +85,13 @@
 				</h4>
 			</div>
 			<button
-				onclick={handleClose}
+				type="button"
+				onclick={onClose}
 				class="cursor-pointer rounded-md p-0.5"
 				style="color: var(--calc-text-muted);"
 				aria-label="Close tooltip"
 			>
-				<IconX size={14} />
+				<IconX size={14} aria-hidden="true" />
 			</button>
 		</div>
 
@@ -99,9 +102,10 @@
 
 		<!-- Full explanation (expandable) -->
 		<div class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
-			<p>{truncatedExplanation}</p>
-			{#if entry.fullExplanation.length > 200 && !isExpanded}
+			<p>{explanation}</p>
+			{#if isLong && !isExpanded}
 				<button
+					type="button"
 					onclick={() => (isExpanded = true)}
 					class="text-[10px] font-medium cursor-pointer mt-1"
 					style="color: var(--calc-accent);"
@@ -119,6 +123,7 @@
 						<IconTrendingUp
 							size={11}
 							style="color: var(--calc-call); flex-shrink: 0; margin-top: 1px;"
+							aria-hidden="true"
 						/>
 						<span class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
 							{entry.whenIncreases}
@@ -130,6 +135,7 @@
 						<IconTrendingDown
 							size={11}
 							style="color: var(--calc-put); flex-shrink: 0; margin-top: 1px;"
+							aria-hidden="true"
 						/>
 						<span class="text-[10px] leading-relaxed" style="color: var(--calc-text-muted);">
 							{entry.whenDecreases}
@@ -144,7 +150,11 @@
 			class="flex items-start gap-2 rounded-lg px-3 py-2"
 			style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12);"
 		>
-			<IconBulb size={12} style="color: #f59e0b; flex-shrink: 0; margin-top: 1px;" />
+			<IconBulb
+				size={12}
+				style="color: #f59e0b; flex-shrink: 0; margin-top: 1px;"
+				aria-hidden="true"
+			/>
 			<p class="text-[10px] leading-relaxed" style="color: var(--calc-text-secondary);">
 				<span class="font-semibold" style="color: #f59e0b;">Pro Tip:</span>
 				{entry.proTip}

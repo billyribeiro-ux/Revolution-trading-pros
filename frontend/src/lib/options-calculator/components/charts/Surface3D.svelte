@@ -1,8 +1,11 @@
 <script lang="ts">
-	import { price as bsPrice } from '../../engine/black-scholes.js';
-	import gsap from 'gsap';
+	import { cubicOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { devicePixelRatio } from 'svelte/reactivity/window';
+	import { fade } from 'svelte/transition';
+	import type { Attachment } from 'svelte/attachments';
 	import { DoubleSide } from 'three/src/constants.js';
-	import { Float32BufferAttribute } from 'three/src/core/BufferAttribute.js';
+	import { BufferAttribute } from 'three/src/core/BufferAttribute.js';
 	import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
 	import { PlaneGeometry } from 'three/src/geometries/PlaneGeometry.js';
 	import { GridHelper } from 'three/src/helpers/GridHelper.js';
@@ -16,212 +19,197 @@
 	import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
 	import { Scene } from 'three/src/scenes/Scene.js';
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-	import type { Attachment } from 'svelte/attachments';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
-	import type { BSInputs } from '../../engine/types.js';
+	import { price as bsPrice } from '../../engine/black-scholes.js';
+	import { getCalculator } from '../../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
+	/** The surface is a SEGMENTS × SEGMENTS plane, SIZE world units on a side. */
+	const SEGMENTS = 30;
+	const SIZE = 4;
+	/** World-space height between the largest loss and the largest profit. */
+	const HEIGHT_SCALE = 1.5;
 
-	let isLoading = $state(true);
-	let autoRotate = $state(true);
-	let width = $state(600);
-	let height = $state(400);
+	// Auto-rotation follows the reduced-motion preference until the viewer toggles it.
+	let autoRotate = $derived(!prefersReducedMotion.current);
+	let width = $state(0);
+	let height = $state(0);
+	let webglUnavailable = $state(false);
 
-	const surfaceKey = $derived(
-		[
-			width,
-			height,
-			calc.spotPrice,
-			calc.strikePrice,
-			calc.volatility,
-			calc.timeToExpiry,
-			calc.riskFreeRate,
-			calc.dividendYield,
-			calc.optionType
-		].join(':')
-	);
+	/** Axis ranges: strikes ±30% around spot, expiries from ~4 days to the current expiry. */
+	const strikeRange = $derived([calc.spotPrice * 0.7, calc.spotPrice * 1.3] as const);
+	const expiryRange = $derived([0.01, Math.max(calc.timeToExpiry, 0.02)] as const);
 
-	const observeContainer: Attachment<HTMLDivElement> = (node) => {
-		const updateSize = () => {
-			const rect = node.getBoundingClientRect();
-			width = rect.width || 600;
-			height = Math.max(320, Math.min(450, rect.height || 400));
-		};
-
-		updateSize();
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				height = Math.max(320, Math.min(450, entry.contentRect.height));
+	/**
+	 * The option re-priced at every grid point (strike along u, expiry along v; index
+	 * `v * (SEGMENTS + 1) + u`), minus the current premium, scaled to 0 (largest loss) … 1
+	 * (largest profit).
+	 */
+	const plLevels = $derived.by(() => {
+		const inputs = calc.inputs;
+		const premium = calc.currentPrice;
+		const isCall = calc.optionType === 'call';
+		const [strikeLow, strikeHigh] = strikeRange;
+		const [timeLow, timeHigh] = expiryRange;
+		const side = SEGMENTS + 1;
+		const pl = new Float64Array(side * side);
+		let min = Infinity;
+		let max = -Infinity;
+		for (let v = 0; v < side; v++) {
+			for (let u = 0; u < side; u++) {
+				const pricing = bsPrice({
+					...inputs,
+					strikePrice: strikeLow + (u / SEGMENTS) * (strikeHigh - strikeLow),
+					timeToExpiry: timeLow + (v / SEGMENTS) * (timeHigh - timeLow)
+				});
+				const value = (isCall ? pricing.callPrice : pricing.putPrice) - premium;
+				pl[v * side + u] = value;
+				min = Math.min(min, value);
+				max = Math.max(max, value);
 			}
-		});
-		observer.observe(node);
-		return () => observer.disconnect();
-	};
+		}
+		const range = Math.max(max - min, 0.01);
+		return pl.map((value) => (value - min) / range);
+	});
 
-	const initCanvas: Attachment<HTMLCanvasElement> = (canvas) => {
-		if (typeof window === 'undefined') return;
+	const description = $derived.by(() => {
+		const usd = (value: number) => `$${value.toFixed(2)}`;
+		const days = (years: number) => Math.round(years * 365);
+		return (
+			`3D surface of the ${calc.optionType}'s profit or loss against its current premium, ` +
+			`for strikes from ${usd(strikeRange[0])} to ${usd(strikeRange[1])} ` +
+			`and ${days(expiryRange[0])} to ${days(expiryRange[1])} days to expiry`
+		);
+	});
 
-		let disposed = false;
-		let animId = 0;
-
-		isLoading = false;
+	const surface: Attachment<HTMLCanvasElement> = (canvas) => {
+		let renderer: WebGLRenderer;
+		try {
+			renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
+		} catch {
+			webglUnavailable = true;
+			return;
+		}
 
 		const scene = new Scene();
 		scene.background = new Color(0x0a0e1a);
 
-		const camera = new PerspectiveCamera(50, width / height, 0.1, 1000);
+		const camera = new PerspectiveCamera(50, 1.5, 0.1, 1000);
 		camera.position.set(3, 2.5, 3);
 		camera.lookAt(0, 0, 0);
 
-		const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
-		renderer.setSize(width, height);
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-		const controls = new OrbitControls(camera, renderer.domElement);
+		const controls = new OrbitControls(camera, canvas);
 		controls.enableDamping = true;
 		controls.dampingFactor = 0.05;
-		controls.autoRotate = autoRotate;
 		controls.autoRotateSpeed = 0.5;
 
-		// Lighting
 		const ambientLight = new AmbientLight(0x404060, 0.6);
-		scene.add(ambientLight);
 		const dirLight = new DirectionalLight(0xffffff, 0.8);
 		dirLight.position.set(5, 5, 5);
-		scene.add(dirLight);
 		const pointLight = new PointLight(0x00d4aa, 0.4, 20);
 		pointLight.position.set(0, -2, 0);
-		scene.add(pointLight);
+		scene.add(ambientLight, dirLight, pointLight);
 
-		// Build surface
-		function buildSurface() {
-			const existingMesh = scene.getObjectByName('plSurface');
-			if (existingMesh) scene.remove(existingMesh);
-			const existingWire = scene.getObjectByName('plWireframe');
-			if (existingWire) scene.remove(existingWire);
+		// One geometry for the canvas's lifetime, shared by the shaded surface and its wireframe;
+		// input changes rewrite its vertices in place instead of rebuilding the scene.
+		const geometry = new PlaneGeometry(SIZE, SIZE, SEGMENTS, SEGMENTS);
+		const positions = geometry.attributes.position;
+		const colors = new BufferAttribute(new Float32Array(positions.count * 3), 3);
+		geometry.setAttribute('color', colors);
 
-			const inputs = calc.inputs;
-			const optType = calc.optionType;
-			const gridSize = 30;
+		const surfaceMaterial = new MeshPhongMaterial({
+			vertexColors: true,
+			side: DoubleSide,
+			shininess: 40,
+			transparent: true,
+			opacity: 0.92
+		});
+		const wireMaterial = new MeshBasicMaterial({
+			color: 0xffffff,
+			wireframe: true,
+			transparent: true,
+			opacity: 0.06
+		});
+		const surfaceMesh = new Mesh(geometry, surfaceMaterial);
+		surfaceMesh.rotation.x = -Math.PI / 2;
+		const wireMesh = new Mesh(geometry, wireMaterial);
+		wireMesh.rotation.x = -Math.PI / 2;
 
-			const strikeLow = inputs.spotPrice * 0.7;
-			const strikeHigh = inputs.spotPrice * 1.3;
-			const timeLow = 0.01;
-			const timeHigh = Math.max(inputs.timeToExpiry, 0.02);
+		const grid = new GridHelper(4, 20, 0x1a1e2e, 0x1a1e2e);
+		grid.position.y = -HEIGHT_SCALE / 2 - 0.1;
+		scene.add(surfaceMesh, wireMesh, grid);
 
-			const geometry = new PlaneGeometry(4, 4, gridSize, gridSize);
-			const positions = geometry.attributes.position;
-			const colors: number[] = [];
-
-			let minPL = Infinity;
-			let maxPL = -Infinity;
-			const plValues: number[] = [];
-
+		// Nested effects push the P/L levels, size and settings into the live scene, while this
+		// outer attachment (renderer, scene, controls) runs once per canvas.
+		$effect(() => {
+			const levels = plLevels;
 			for (let i = 0; i < positions.count; i++) {
-				const u = (positions.getX(i) + 2) / 4;
-				const v = (positions.getY(i) + 2) / 4;
+				// Plane vertices span ±SIZE/2 in x and y: map each back to its grid point.
+				const u = Math.round(((positions.getX(i) + SIZE / 2) / SIZE) * SEGMENTS);
+				const v = Math.round(((positions.getY(i) + SIZE / 2) / SIZE) * SEGMENTS);
+				const t = levels[v * (SEGMENTS + 1) + u];
+				positions.setZ(i, (t - 0.5) * HEIGHT_SCALE);
 
-				const strike = strikeLow + u * (strikeHigh - strikeLow);
-				const tte = timeLow + v * (timeHigh - timeLow);
-
-				const testInputs: BSInputs = { ...inputs, strikePrice: strike, timeToExpiry: tte };
-				const pricing = bsPrice(testInputs);
-				const optionPrice = optType === 'call' ? pricing.callPrice : pricing.putPrice;
-				const currentPremium =
-					optType === 'call' ? bsPrice(inputs).callPrice : bsPrice(inputs).putPrice;
-				const pl = optionPrice - currentPremium;
-
-				plValues.push(pl);
-				minPL = Math.min(minPL, pl);
-				maxPL = Math.max(maxPL, pl);
-			}
-
-			const plRange = Math.max(maxPL - minPL, 0.01);
-			const heightScale = 1.5;
-
-			for (let i = 0; i < positions.count; i++) {
-				const normalizedPL = (plValues[i] - minPL) / plRange;
-				const yPos = (normalizedPL - 0.5) * heightScale;
-				positions.setZ(i, yPos);
-
-				// Color: red (loss) -> dark (breakeven) -> green (profit)
-				const t = normalizedPL;
-				let r: number, g: number, b: number;
+				// Red (loss) → dark (breakeven) → green (profit).
 				if (t < 0.5) {
 					const s = t / 0.5;
-					r = 1.0 - s * 0.7;
-					g = s * 0.3;
-					b = s * 0.3;
+					colors.setXYZ(i, 1 - s * 0.7, s * 0.3, s * 0.3);
 				} else {
 					const s = (t - 0.5) / 0.5;
-					r = 0.3 - s * 0.3;
-					g = 0.3 + s * 0.53;
-					b = 0.3 + s * 0.37;
+					colors.setXYZ(i, 0.3 - s * 0.3, 0.3 + s * 0.53, 0.3 + s * 0.37);
 				}
-				colors.push(r, g, b);
 			}
 
-			geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+			positions.needsUpdate = true;
+			colors.needsUpdate = true;
 			geometry.computeVertexNormals();
+			geometry.computeBoundingSphere();
+		});
 
-			const material = new MeshPhongMaterial({
-				vertexColors: true,
-				side: DoubleSide,
-				shininess: 40,
-				transparent: true,
-				opacity: 0.92
-			});
+		$effect(() => {
+			renderer.setPixelRatio(Math.min(devicePixelRatio.current ?? 1, 2));
+		});
 
-			const mesh = new Mesh(geometry, material);
-			mesh.name = 'plSurface';
-			mesh.rotation.x = -Math.PI / 2;
-			scene.add(mesh);
+		$effect(() => {
+			if (width <= 0 || height <= 0) return;
+			camera.aspect = width / height;
+			camera.updateProjectionMatrix();
+			renderer.setSize(width, height, false);
+		});
 
-			// Wireframe overlay
-			const wireMat = new MeshBasicMaterial({
-				color: 0xffffff,
-				wireframe: true,
-				transparent: true,
-				opacity: 0.06
-			});
-			const wireMesh = new Mesh(geometry.clone(), wireMat);
-			wireMesh.name = 'plWireframe';
-			wireMesh.rotation.x = -Math.PI / 2;
-			scene.add(wireMesh);
-
-			// Grid helper
-			const existingGrid = scene.getObjectByName('gridHelper');
-			if (!existingGrid) {
-				const gridHelper = new GridHelper(4, 20, 0x1a1e2e, 0x1a1e2e);
-				gridHelper.name = 'gridHelper';
-				gridHelper.position.y = -heightScale / 2 - 0.1;
-				scene.add(gridHelper);
-			}
-		}
-
-		buildSurface();
-
-		gsap.fromTo(canvas, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power2.out' });
-
-		function animate() {
-			if (disposed) return;
-			animId = requestAnimationFrame(animate);
+		$effect(() => {
 			controls.autoRotate = autoRotate;
+		});
+
+		let animId = 0;
+		const frame = () => {
+			animId = requestAnimationFrame(frame);
 			controls.update();
 			renderer.render(scene, camera);
-		}
-		animate();
+		};
+
+		// Render only while on screen. Entries arrive oldest first, so the last one is current.
+		const visibility = new IntersectionObserver((entries) => {
+			cancelAnimationFrame(animId);
+			if (entries.at(-1)?.isIntersecting) frame();
+		});
+		visibility.observe(canvas);
 
 		return () => {
-			disposed = true;
 			cancelAnimationFrame(animId);
-			renderer.dispose();
+			visibility.disconnect();
 			controls.dispose();
+			geometry.dispose();
+			surfaceMaterial.dispose();
+			wireMaterial.dispose();
+			grid.dispose();
+			ambientLight.dispose();
+			dirLight.dispose();
+			pointLight.dispose();
+			renderer.dispose();
+			// Release the context now rather than at GC: reopening the tab repeatedly would
+			// otherwise run into the browser's live-context limit.
+			renderer.forceContextLoss();
 		};
 	};
 </script>
@@ -230,13 +218,16 @@
 	<!-- Controls -->
 	<div class="flex items-center gap-3">
 		<button
+			type="button"
 			onclick={() => (autoRotate = !autoRotate)}
-			class="text-xs px-2.5 py-1 rounded-lg transition-all cursor-pointer"
-			style={autoRotate
-				? 'background: var(--calc-accent-glow); color: var(--calc-accent); border: 1px solid var(--calc-accent);'
-				: 'background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
+			aria-pressed={autoRotate}
+			class="text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer"
+			style:background={autoRotate ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
+			style:color={autoRotate ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
+			style:border-color={autoRotate ? 'var(--calc-accent)' : 'var(--calc-border)'}
 		>
-			{autoRotate ? 'Auto-Rotate: ON' : 'Auto-Rotate: OFF'}
+			<!-- The name stays "Auto-Rotate"; aria-pressed carries the on/off state. -->
+			Auto-Rotate<span aria-hidden="true">: {autoRotate ? 'ON' : 'OFF'}</span>
 		</button>
 		<span
 			class="text-[10px]"
@@ -247,28 +238,30 @@
 	</div>
 
 	<!-- 3D Canvas -->
-	<div
-		{@attach observeContainer}
-		class="relative w-full rounded-xl overflow-hidden"
-		style="min-height: 320px; background: #0a0e1a;"
-	>
-		{#if isLoading}
-			<div
-				class="absolute inset-0 flex items-center justify-center"
-				style="color: var(--calc-text-muted);"
-			>
-				<div class="flex flex-col items-center gap-2">
-					<div
-						class="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin"
-					></div>
-					<span class="text-xs">Loading 3D surface...</span>
-				</div>
-			</div>
-		{/if}
-		{#key surfaceKey}
-			<canvas {@attach initCanvas} style:width={`${width}px`} style:height={`${height}px`}></canvas>
-		{/key}
-	</div>
+	{#if webglUnavailable}
+		<div
+			class="flex h-100 items-center justify-center rounded-xl border px-6 text-center text-xs"
+			style="border-color: var(--calc-border); color: var(--calc-text-muted);"
+		>
+			The 3D surface needs WebGL, which this browser has disabled.
+		</div>
+	{:else}
+		<div
+			class="w-full rounded-xl overflow-hidden"
+			style="background: #0a0e1a;"
+			role="img"
+			aria-label={description}
+		>
+			<canvas
+				{@attach surface}
+				bind:clientWidth={width}
+				bind:clientHeight={height}
+				in:fade|global={{ duration: prefersReducedMotion.current ? 0 : 600, easing: cubicOut }}
+				class="block h-100 w-full"
+				aria-hidden="true"
+			></canvas>
+		</div>
+	{/if}
 
 	<!-- Legend -->
 	<div class="flex items-center justify-center gap-4">

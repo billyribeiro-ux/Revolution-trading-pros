@@ -1,31 +1,35 @@
 <script lang="ts">
 	import { allGreeks } from '../../engine/greeks.js';
 	import { generateGreeksCSV, downloadCSV } from '../../utils/export-utils.js';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
+	import { getCalculator } from '../../state/context.js';
+	import type { AllGreeks } from '../../engine/types.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
+	/** Number of strikes in the export, spread evenly across ±30% of spot. */
+	const STRIKE_COUNT = 51;
+	const STRIKE_SPAN = 0.3;
 
 	/**
 	 * Generate and download a CSV file containing Greeks
 	 * across 51 strikes centered on the current spot price.
+	 * This component renders nothing: the parent calls this through `bind:this`.
 	 */
 	export function exportCSV(): void {
 		const spot = calc.spotPrice;
-		const numStrikes = 51;
-		const range = spot * 0.3;
-		const step = (range * 2) / (numStrikes - 1);
+		const range = spot * STRIKE_SPAN;
+		const step = (range * 2) / (STRIKE_COUNT - 1);
 
-		const greeksData: { strike: number; greeks: ReturnType<typeof allGreeks> }[] = [];
-		for (let i = 0; i < numStrikes; i++) {
-			const strike = spot - range + i * step;
-			const strikeInputs = { ...calc.inputs, strikePrice: strike };
-			const greeks = allGreeks(strikeInputs, calc.optionType);
-			greeksData.push({ strike, greeks });
-		}
+		const greeksData: { strike: number; greeks: AllGreeks }[] = Array.from(
+			{ length: STRIKE_COUNT },
+			(_, i) => {
+				const strike = spot - range + i * step;
+				return {
+					strike,
+					greeks: allGreeks({ ...calc.inputs, strikePrice: strike }, calc.optionType)
+				};
+			}
+		);
 
 		const csv = generateGreeksCSV(calc.inputs, calc.optionType, greeksData);
 		const ticker = calc.activeTicker || 'custom';

@@ -1,15 +1,47 @@
 // ============================================================
 // KEYBOARD SHORTCUTS — Definitions & Matching Utilities
+// Pure data and helpers shared by KeyboardShortcuts (dispatch + help
+// overlay) and CommandPalette (shortcut labels). No DOM access at import.
 // ============================================================
 
-import type { ShortcutDef } from '../../engine/types.js';
+import type { ChartTab, ShortcutDef } from '../../engine/types.js';
 
-export const SHORTCUTS: ShortcutDef[] = [
+/** Every calculator shortcut id, so dispatch tables can be checked for completeness. */
+export type ShortcutId =
+	| 'command-palette'
+	| 'tab-payoff'
+	| 'tab-heatmap'
+	| 'tab-surface'
+	| 'tab-montecarlo'
+	| 'tab-volsmile'
+	| 'tab-theta'
+	| 'tab-sensitivity'
+	| 'tab-chain'
+	| 'toggle-call-put'
+	| 'reset-inputs'
+	| 'export-png'
+	| 'export-csv'
+	| 'share-link'
+	| 'save-config'
+	| 'toggle-theme'
+	| 'toggle-panel'
+	| 'toggle-advanced-greeks'
+	| 'toggle-education'
+	| 'help';
+
+/** A `ShortcutDef` whose id is one of the calculator's known shortcuts. */
+export interface CalculatorShortcut extends ShortcutDef {
+	id: ShortcutId;
+}
+
+export type ShortcutCategory = ShortcutDef['category'];
+
+export const SHORTCUTS: readonly CalculatorShortcut[] = [
 	// ── Navigation ──────────────────────────────────────
 	{
 		id: 'command-palette',
 		keys: ['ctrl+k', 'meta+k'],
-		display: '\u2318K',
+		display: '⌘K',
 		description: 'Open command palette',
 		category: 'navigation'
 	},
@@ -81,7 +113,7 @@ export const SHORTCUTS: ShortcutDef[] = [
 	{
 		id: 'reset-inputs',
 		keys: ['ctrl+r', 'meta+r'],
-		display: '\u2318R',
+		display: '⌘R',
 		description: 'Reset all inputs',
 		category: 'input'
 	},
@@ -90,28 +122,28 @@ export const SHORTCUTS: ShortcutDef[] = [
 	{
 		id: 'export-png',
 		keys: ['ctrl+shift+s', 'meta+shift+s'],
-		display: '\u2318\u21e7S',
+		display: '⌘⇧S',
 		description: 'Export as PNG',
 		category: 'export'
 	},
 	{
 		id: 'export-csv',
 		keys: ['ctrl+shift+e', 'meta+shift+e'],
-		display: '\u2318\u21e7E',
+		display: '⌘⇧E',
 		description: 'Export Greeks CSV',
 		category: 'export'
 	},
 	{
 		id: 'share-link',
 		keys: ['ctrl+shift+l', 'meta+shift+l'],
-		display: '\u2318\u21e7L',
+		display: '⌘⇧L',
 		description: 'Copy shareable link',
 		category: 'export'
 	},
 	{
 		id: 'save-config',
 		keys: ['ctrl+s', 'meta+s'],
-		display: '\u2318S',
+		display: '⌘S',
 		description: 'Save configuration',
 		category: 'export'
 	},
@@ -120,14 +152,14 @@ export const SHORTCUTS: ShortcutDef[] = [
 	{
 		id: 'toggle-theme',
 		keys: ['ctrl+shift+t', 'meta+shift+t'],
-		display: '\u2318\u21e7T',
+		display: '⌘⇧T',
 		description: 'Toggle theme',
 		category: 'view'
 	},
 	{
 		id: 'toggle-panel',
 		keys: ['ctrl+b', 'meta+b'],
-		display: '\u2318B',
+		display: '⌘B',
 		description: 'Toggle input panel',
 		category: 'view'
 	},
@@ -149,12 +181,67 @@ export const SHORTCUTS: ShortcutDef[] = [
 	},
 	{
 		id: 'help',
-		keys: ['shift+/'],
+		// `KeyboardEvent.key` is already the shifted character ("?", not "/"), so Shift+/
+		// normalises to "shift+?"; the bare "?" covers layouts that type it unshifted.
+		keys: ['shift+?', '?'],
 		display: '?',
 		description: 'Show keyboard shortcuts',
 		category: 'general'
 	}
 ];
+
+/** The chart tab each navigation shortcut switches to. */
+export const TAB_SHORTCUTS = {
+	'tab-payoff': 'payoff',
+	'tab-heatmap': 'heatmap',
+	'tab-surface': 'surface',
+	'tab-montecarlo': 'montecarlo',
+	'tab-volsmile': 'volsmile',
+	'tab-theta': 'theta',
+	'tab-sensitivity': 'sensitivity',
+	'tab-chain': 'chain'
+} as const satisfies Partial<Record<ShortcutId, ChartTab>>;
+
+export type TabShortcutId = keyof typeof TAB_SHORTCUTS;
+
+export function isTabShortcut(id: ShortcutId): id is TabShortcutId {
+	return id in TAB_SHORTCUTS;
+}
+
+/** Category display names for the help overlay */
+export const CATEGORY_LABELS: Record<ShortcutCategory, string> = {
+	navigation: 'Navigation',
+	input: 'Input',
+	export: 'Export',
+	view: 'View',
+	general: 'General'
+};
+
+const CATEGORY_ORDER: readonly ShortcutCategory[] = [
+	'navigation',
+	'input',
+	'export',
+	'view',
+	'general'
+];
+
+export interface ShortcutGroup {
+	category: ShortcutCategory;
+	label: string;
+	shortcuts: CalculatorShortcut[];
+}
+
+/** Shortcuts grouped by category, in display order, for the help overlay. */
+export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = CATEGORY_ORDER.map((category) => ({
+	category,
+	label: CATEGORY_LABELS[category],
+	shortcuts: SHORTCUTS.filter((shortcut) => shortcut.category === category)
+})).filter((group) => group.shortcuts.length > 0);
+
+/** The key label shown for a shortcut (e.g. "⌘⇧T"), for menus that mirror the shortcuts. */
+export function shortcutDisplay(id: ShortcutId): string {
+	return SHORTCUTS.find((shortcut) => shortcut.id === id)?.display ?? '';
+}
 
 /**
  * Convert a KeyboardEvent into a normalized key string.
@@ -179,8 +266,7 @@ export function eventToKey(event: KeyboardEvent): string {
  * Check if a keyboard event matches a shortcut definition.
  */
 export function matchesShortcut(event: KeyboardEvent, shortcut: ShortcutDef): boolean {
-	const pressed = eventToKey(event);
-	return shortcut.keys.includes(pressed);
+	return shortcut.keys.includes(eventToKey(event));
 }
 
 /**
@@ -188,17 +274,12 @@ export function matchesShortcut(event: KeyboardEvent, shortcut: ShortcutDef): bo
  * (where we should NOT fire single-key shortcuts).
  */
 export function isInputFocused(event: KeyboardEvent): boolean {
-	const target = event.target as HTMLElement | null;
-	if (!target) return false;
-	const tag = target.tagName.toLowerCase();
-	return tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable;
+	const target = event.target;
+	if (!(target instanceof HTMLElement)) return false;
+	return (
+		target instanceof HTMLInputElement ||
+		target instanceof HTMLTextAreaElement ||
+		target instanceof HTMLSelectElement ||
+		target.isContentEditable
+	);
 }
-
-/** Category display names for the help overlay */
-export const CATEGORY_LABELS: Record<ShortcutDef['category'], string> = {
-	navigation: 'Navigation',
-	input: 'Input',
-	export: 'Export',
-	view: 'View',
-	general: 'General'
-};

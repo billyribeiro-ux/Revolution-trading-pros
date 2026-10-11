@@ -339,15 +339,31 @@ export const CONCEPT_EDUCATION: Record<string, EducationEntry> = {
 };
 
 /**
+ * Own-property lookup, so ids that collide with `Object.prototype` members
+ * (`constructor`, `toString`, …) never resolve to something that is not an entry.
+ */
+function lookup(table: Record<string, EducationEntry>, id: string): EducationEntry | undefined {
+	return Object.hasOwn(table, id) ? table[id] : undefined;
+}
+
+/**
+ * Look up a Greek's education entry by ID (`delta`, `gamma`, …).
+ * Returns undefined if not found.
+ */
+export function getGreekEducation(id: string): EducationEntry | undefined {
+	return lookup(GREEK_EDUCATION, id);
+}
+
+/**
  * Look up an education entry by ID from any category.
  * Returns null if not found.
  */
 export function getEducation(id: string): EducationEntry | null {
 	return (
-		GREEK_EDUCATION[id] ??
-		INPUT_EDUCATION[id] ??
-		STRATEGY_EDUCATION[id] ??
-		CONCEPT_EDUCATION[id] ??
+		lookup(GREEK_EDUCATION, id) ??
+		lookup(INPUT_EDUCATION, id) ??
+		lookup(STRATEGY_EDUCATION, id) ??
+		lookup(CONCEPT_EDUCATION, id) ??
 		null
 	);
 }

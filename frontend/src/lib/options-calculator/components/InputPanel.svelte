@@ -5,17 +5,12 @@
 	import { INPUT_FIELDS } from '../engine/constants.js';
 	import { solveImpliedVolatility } from '../engine/implied-volatility.js';
 	import { formatDaysToExpiry } from '../utils/formatters.js';
-	import type { CalculatorState } from '../state/calculator.svelte.js';
+	import { getCalculator } from '../state/context.js';
 	import type { OptionType, BSInputs } from '../engine/types.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
-
-	let marketPriceInput = $state('');
-	let ivResult = $state<{ iv: number; converged: boolean } | null>(null);
+	const OPTION_TYPES: OptionType[] = ['call', 'put'];
 
 	const SYMBOLS: Record<keyof BSInputs, string> = {
 		spotPrice: 'S',
@@ -26,17 +21,20 @@
 		dividendYield: 'q'
 	};
 
-	function handleOptionTypeChange(type: OptionType) {
-		calc.optionType = type;
-	}
+	/** `bind:value` on a number input yields a number, or `null` while the field is empty. */
+	let marketPrice = $state<number | null>(null);
+	let ivResult = $state<{ iv: number; converged: boolean } | null>(null);
+
+	const daysDisplay = $derived(formatDaysToExpiry(calc.timeToExpiry));
 
 	function handleInputChange(key: keyof BSInputs, value: number) {
 		calc.updateInput(key, value);
+		// A hand-edited value is no longer the live market value.
+		calc.clearLiveOverride(key);
 	}
 
 	function solveIV() {
-		const marketPrice = parseFloat(marketPriceInput);
-		if (isNaN(marketPrice) || marketPrice <= 0) return;
+		if (typeof marketPrice !== 'number' || !(marketPrice > 0)) return;
 
 		const result = solveImpliedVolatility(marketPrice, calc.inputs, calc.optionType);
 		ivResult = { iv: result.impliedVolatility, converged: result.converged };
@@ -45,37 +43,36 @@
 			calc.volatility = result.impliedVolatility;
 		}
 	}
-
-	let daysDisplay = $derived(formatDaysToExpiry(calc.timeToExpiry));
-	const ivResultClass = $derived(ivResult?.converged ? 'iv-result--success' : 'iv-result--warning');
-
-	function optionButtonClass(type: OptionType) {
-		return [
-			'option-button',
-			`option-button--${type}`,
-			calc.optionType === type && 'option-button--active'
-		];
-	}
 </script>
 
 <div class="input-panel calc-scrollbar">
 	<!-- Header -->
 	<div class="panel-header">
 		<h2 class="panel-title">Parameters</h2>
-		<button onclick={() => calc.resetInputs()} class="reset-button" aria-label="Reset all inputs">
+		<button
+			type="button"
+			onclick={calc.resetInputs}
+			class="reset-button"
+			aria-label="Reset all inputs"
+		>
 			<IconRotate2 size={12} />
 			Reset
 		</button>
 	</div>
 
 	<!-- Option Type Toggle -->
-	<div class="option-toggle">
-		<button onclick={() => handleOptionTypeChange('call')} class={optionButtonClass('call')}>
-			CALL
-		</button>
-		<button onclick={() => handleOptionTypeChange('put')} class={optionButtonClass('put')}>
-			PUT
-		</button>
+	<div class="option-toggle" role="group" aria-label="Option type">
+		{#each OPTION_TYPES as type (type)}
+			{const active = $derived(calc.optionType === type)}
+			<button
+				type="button"
+				onclick={() => (calc.optionType = type)}
+				aria-pressed={active}
+				class={['option-button', `option-button--${type}`, active && 'option-button--active']}
+			>
+				{type.toUpperCase()}
+			</button>
+		{/each}
 	</div>
 
 	<!-- Input Sliders -->
@@ -86,7 +83,7 @@
 					<span class="live-badge">LIVE</span>
 				{/if}
 				<AnimatedSlider
-					value={calc[field.key] as number}
+					value={calc[field.key]}
 					min={field.min}
 					max={field.max}
 					step={field.step}
@@ -95,12 +92,7 @@
 					displayMultiplier={field.displayMultiplier ?? 1}
 					displayDecimals={field.displayDecimals ?? 2}
 					symbol={SYMBOLS[field.key]}
-					onchange={(v) => {
-						handleInputChange(field.key, v);
-						if (calc.isLivePopulated(field.key)) {
-							calc.clearLiveOverride(field.key);
-						}
-					}}
+					onchange={(value) => handleInputChange(field.key, value)}
 				/>
 				{#if field.key === 'timeToExpiry'}
 					<div class="days-display">
@@ -122,14 +114,15 @@
 		<div class="iv-controls">
 			<input
 				type="number"
-				bind:value={marketPriceInput}
+				bind:value={marketPrice}
 				placeholder="Market price"
+				aria-label="Market price"
 				class="market-price-input"
 			/>
-			<button onclick={solveIV} class="solve-button"> Solve </button>
+			<button type="button" onclick={solveIV} class="solve-button">Solve</button>
 		</div>
 		{#if ivResult}
-			<div class={['iv-result', ivResultClass]}>
+			<div class={['iv-result', ivResult.converged ? 'iv-result--success' : 'iv-result--warning']}>
 				{#if ivResult.converged}
 					IV = {(ivResult.iv * 100).toFixed(2)}% ✓
 				{:else}
@@ -347,5 +340,13 @@
 
 	.iv-result--warning {
 		color: var(--calc-warning);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.reset-button,
+		.option-button,
+		.solve-button {
+			transition: none;
+		}
 	}
 </style>

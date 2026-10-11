@@ -1,51 +1,11 @@
 <script lang="ts">
 	import Calculator from '#lib/options-calculator/components/Calculator.svelte';
+	import HeroSection from '#lib/options-calculator/components/hero/HeroSection.svelte';
 	import '#lib/options-calculator/styles/calculator-theme.css';
-	import {
-		generateStructuredData,
-		generateFAQStructuredData,
-		generateOGMeta
-	} from '#lib/options-calculator/utils/seo.js';
-	import { serializeJsonLd } from '#lib/seo/serializeJsonLd.js';
-
-	const structuredData = generateStructuredData();
-	const faqData = generateFAQStructuredData();
-	const ogMeta = generateOGMeta();
 </script>
 
+<!-- Title, description, canonical, Open Graph and JSON-LD come from +page.ts (`data.seo`). -->
 <svelte:head>
-	<title>Black-Scholes Options Calculator | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="The most advanced free Black-Scholes options calculator. Real-time Greeks (Delta, Gamma, Theta, Vega, Rho + second-order), payoff diagrams, strategy builder, Monte Carlo simulation, and live market data."
-	/>
-	<link rel="canonical" href="https://revolutiontradingpros.com/tools/options-calculator" />
-
-	<!-- Open Graph -->
-	<meta property="og:title" content={ogMeta['og:title']} />
-	<meta property="og:description" content={ogMeta['og:description']} />
-	<meta property="og:type" content={ogMeta['og:type']} />
-	<meta property="og:url" content={ogMeta['og:url']} />
-	<meta property="og:image" content={ogMeta['og:image']} />
-	<meta property="og:site_name" content={ogMeta['og:site_name']} />
-
-	<!-- Twitter Card -->
-	<meta name="twitter:card" content={ogMeta['twitter:card']} />
-	<meta name="twitter:title" content={ogMeta['twitter:title']} />
-	<meta name="twitter:description" content={ogMeta['twitter:description']} />
-	<meta name="twitter:image" content={ogMeta['twitter:image']} />
-
-	<!-- Structured Data -->
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html '<scr' +
-		'ipt type="application/ld+json">' +
-		serializeJsonLd(structuredData) +
-		'</scr' +
-		'ipt>'}
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html '<scr' + 'ipt type="application/ld+json">' + serializeJsonLd(faqData) + '</scr' + 'ipt>'}
-
-	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
@@ -54,4 +14,49 @@
 	/>
 </svelte:head>
 
-<Calculator />
+<HeroSection targetId="calculator" />
+
+<div id="calculator" class="calculator-anchor">
+	<!-- The hero's title is the page's <h1>. -->
+	<Calculator headingLevel={2} />
+</div>
+
+<style>
+	/* Clear the sticky site navbar (plus the admin toolbar when it shows) when the hero's
+	   CTA scrolls here. The heights mirror --nav-height in NavBar.svelte, which grows to
+	   104px on wide screens, so a fixed 5rem left the calculator header under the nav. */
+	.calculator-anchor {
+		--calc-anchor-nav-height: 80px;
+		scroll-margin-top: calc(var(--calc-anchor-nav-height) + var(--admin-toolbar-height, 0px));
+	}
+
+	@media (max-width: 767px) {
+		.calculator-anchor {
+			--calc-anchor-nav-height: 74px;
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 1023px) {
+		.calculator-anchor {
+			--calc-anchor-nav-height: 84px;
+		}
+	}
+
+	@media (min-width: 1152px) {
+		.calculator-anchor {
+			--calc-anchor-nav-height: 88px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.calculator-anchor {
+			--calc-anchor-nav-height: 94px;
+		}
+	}
+
+	@media (min-width: 1536px) {
+		.calculator-anchor {
+			--calc-anchor-nav-height: 104px;
+		}
+	}
+</style>

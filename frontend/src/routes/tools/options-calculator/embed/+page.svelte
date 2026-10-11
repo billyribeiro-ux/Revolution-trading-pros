@@ -1,51 +1,45 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { createCalculatorState } from '#lib/options-calculator/state/calculator.svelte.js';
+	import { CalculatorState } from '#lib/options-calculator/state/calculator.svelte.js';
+	import { setCalculator } from '#lib/options-calculator/state/context.js';
 	import { decodeState } from '#lib/options-calculator/utils/share-utils.js';
 	import InputPanel from '#lib/options-calculator/components/InputPanel.svelte';
 	import ResultsBar from '#lib/options-calculator/components/ResultsBar.svelte';
+	import '#lib/options-calculator/styles/calculator-theme.css';
 
-	const calc = $state(createCalculatorState());
+	// The widget owns its calculator; InputPanel and ResultsBar read it from context.
+	const calc = setCalculator(new CalculatorState());
 
-	onMount(() => {
-		// page.url.searchParams is readonly in SvelteKit 3; take a mutable copy so
-		// it still satisfies decodeState's URLSearchParams parameter.
-		const params = new URL(page.url.href).searchParams;
+	// `ssr = false` (+page.ts): this script runs once, in the browser, before the first
+	// render, so the embed URL's state is in place when the widget first paints.
+	applyURLState(page.url.searchParams);
 
-		// Apply theme from URL
+	function applyURLState(params: Pick<URLSearchParams, 'get'>): void {
 		const theme = params.get('theme');
-		if (theme === 'light' && calc.theme === 'dark') calc.toggleTheme();
-		if (theme === 'dark' && calc.theme === 'light') calc.toggleTheme();
-
-		// Apply shared state from URL
-		const shared = decodeState(params);
-		if (shared.inputs) {
-			calc.updateInput('spotPrice', shared.inputs.spotPrice);
-			calc.updateInput('strikePrice', shared.inputs.strikePrice);
-			calc.updateInput('volatility', shared.inputs.volatility);
-			calc.updateInput('timeToExpiry', shared.inputs.timeToExpiry);
-			calc.updateInput('riskFreeRate', shared.inputs.riskFreeRate);
-			calc.updateInput('dividendYield', shared.inputs.dividendYield);
-		}
-		if (shared.optionType) calc.optionType = shared.optionType;
-	});
+		if ((theme === 'light' || theme === 'dark') && theme !== calc.theme) calc.toggleTheme();
+		calc.applyShareableState(decodeState(params));
+	}
 </script>
 
 <svelte:head>
-	<title>Options Calculator | Revolution Trading Pros</title>
-	<meta name="robots" content="noindex" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
+<!-- calculator-theme.css keys its light tokens off [data-calc-theme]. -->
 <div
 	class="min-h-screen flex flex-col"
 	style="background: var(--calc-bg); color: var(--calc-text);"
-	data-theme={calc.theme}
+	data-calc-theme={calc.theme}
 >
 	<!-- Compact Calculator -->
 	<div class="flex-1 p-3 flex flex-col gap-3 max-w-4xl mx-auto w-full">
-		<InputPanel {calc} />
-		<ResultsBar {calc} />
+		<InputPanel />
+		<ResultsBar />
 	</div>
 
 	<!-- Powered By Footer -->

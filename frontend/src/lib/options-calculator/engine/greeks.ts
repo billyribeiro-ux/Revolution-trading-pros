@@ -162,6 +162,21 @@ export function allGreeks(inputs: BSInputs, type: OptionType): AllGreeks {
 	};
 }
 
+/** Narrows `name` to an own key of `obj` (unlike `in`, never matches `toString` & co.). */
+function isOwnKey<T extends object>(obj: T, name: string): name is Extract<keyof T, string> {
+	return Object.hasOwn(obj, name);
+}
+
+/**
+ * Read a first- or second-order Greek by name (e.g. 'delta', 'vanna').
+ * Unknown names read as 0.
+ */
+function greekValue(greeks: AllGreeks, greekName: string): number {
+	if (isOwnKey(greeks.first, greekName)) return greeks.first[greekName];
+	if (isOwnKey(greeks.second, greekName)) return greeks.second[greekName];
+	return 0;
+}
+
 /**
  * Calculate a specific Greek value across a range of strikes.
  */
@@ -173,16 +188,7 @@ export function greekAcrossStrikes(
 ): { strike: number; value: number }[] {
 	return strikes.map((strike) => {
 		const modifiedInputs = { ...inputs, strikePrice: strike };
-		const greeks = allGreeks(modifiedInputs, type);
-
-		let value = 0;
-		if (greekName in greeks.first) {
-			value = greeks.first[greekName as keyof FirstOrderGreeks];
-		} else if (greekName in greeks.second) {
-			value = greeks.second[greekName as keyof SecondOrderGreeks];
-		}
-
-		return { strike, value };
+		return { strike, value: greekValue(allGreeks(modifiedInputs, type), greekName) };
 	});
 }
 
@@ -201,15 +207,7 @@ export function greeksMatrix(
 	for (const strike of strikes) {
 		for (const expiry of expiries) {
 			const modifiedInputs = { ...inputs, strikePrice: strike, timeToExpiry: expiry };
-			const greeks = allGreeks(modifiedInputs, type);
-
-			let value = 0;
-			if (greekName in greeks.first) {
-				value = greeks.first[greekName as keyof FirstOrderGreeks];
-			} else if (greekName in greeks.second) {
-				value = greeks.second[greekName as keyof SecondOrderGreeks];
-			}
-
+			const value = greekValue(allGreeks(modifiedInputs, type), greekName);
 			results.push({ strike, expiry, value });
 		}
 	}

@@ -1,181 +1,99 @@
 <script lang="ts">
-	import { select } from 'd3-selection';
-	import { scaleLinear } from 'd3-scale';
-	import { lineRadial, curveLinearClosed } from 'd3-shape';
-	import gsap from 'gsap';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
+	import { curveLinearClosed, lineRadial } from 'd3-shape';
+	import { Tween, prefersReducedMotion } from 'svelte/motion';
+	import { scale } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
+	import { getCalculator } from '../../state/context.js';
 
-	interface Props {
-		calc: CalculatorState;
+	const calc = getCalculator();
+
+	const MAX_SIZE = 420;
+	const GRID_LEVELS = [0.2, 0.4, 0.6, 0.8, 1.0];
+	const ICONS = ['S', 'σ', 'T', 'r', 'q'];
+
+	/** GSAP's `back.out(1.4)`: overshoots a little, then settles. */
+	function backOut(t: number) {
+		const u = t - 1;
+		return u * u * (2.4 * u + 1.4) + 1;
 	}
 
-	let { calc }: Props = $props();
+	let containerWidth = $state(0);
+	/** The radar is square: as wide as the container, up to `MAX_SIZE`. */
+	const size = $derived(Math.min(containerWidth, MAX_SIZE));
 
-	let containerEl: HTMLDivElement | undefined = $state();
-	let svgEl: SVGSVGElement | undefined = $state();
-	let size = $state(350);
+	const maxSens = $derived(Math.max(...calc.sensitivityData.map((d) => d.sensitivity), 0.01));
 
-	$effect(() => {
-		if (!containerEl) return;
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				size = Math.min(entry.contentRect.width, 420);
-			}
-		});
-		observer.observe(containerEl);
-		return () => observer.disconnect();
+	/** Each axis' sensitivity as a fraction of the largest, tweened so the polygon morphs. */
+	const reach = Tween.of(() => calc.sensitivityData.map((d) => d.sensitivity / maxSens), {
+		duration: () => (prefersReducedMotion.current ? 0 : 400),
+		easing: cubicOut
 	});
 
-	$effect(() => {
+	/** Grid and axis geometry; `null` until the container has been measured. */
+	const chart = $derived.by(() => {
 		const data = calc.sensitivityData;
-		if (!svgEl || data.length === 0) return;
-
-		const svg = select(svgEl);
-		svg.selectAll('*').remove();
-
-		const cx = size / 2;
-		const cy = size / 2;
 		const radius = size / 2 - 60;
-		const numAxes = data.length;
-		const angleSlice = (2 * Math.PI) / numAxes;
+		if (data.length === 0 || radius <= 0) return null;
 
-		const g = svg
-			.attr('width', size)
-			.attr('height', size)
-			.append('g')
-			.attr('transform', `translate(${cx},${cy})`);
+		const angleSlice = (2 * Math.PI) / data.length;
+		const angleOf = (i: number) => i * angleSlice - Math.PI / 2;
 
-		// Max sensitivity for scale
-		const maxSens = Math.max(...data.map((d) => d.sensitivity), 0.01);
-		const rScale = scaleLinear().domain([0, maxSens]).range([0, radius]);
-
-		// Grid circles
-		const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
-		for (const level of gridLevels) {
-			const r = radius * level;
-			const points: string[] = [];
-			for (let i = 0; i <= numAxes; i++) {
-				const angle = i * angleSlice - Math.PI / 2;
-				points.push(`${r * Math.cos(angle)},${r * Math.sin(angle)}`);
-			}
-			g.append('polygon')
-				.attr('points', points.join(' '))
-				.attr('fill', 'none')
-				.attr('stroke', 'var(--calc-border)')
-				.attr('stroke-width', 0.5)
-				.attr('opacity', 0.5);
-
-			g.append('text')
-				.attr('x', 4)
-				.attr('y', -r - 2)
-				.attr('fill', 'var(--calc-text-muted)')
-				.attr('font-size', '8px')
-				.attr('font-family', 'var(--calc-font-mono)')
-				.text((maxSens * level).toFixed(2));
-		}
-
-		// Axis lines and labels
-		const ICONS = ['S', 'σ', 'T', 'r', 'q'];
-		for (let i = 0; i < numAxes; i++) {
-			const angle = i * angleSlice - Math.PI / 2;
-			const lineX = radius * Math.cos(angle);
-			const lineY = radius * Math.sin(angle);
-
-			g.append('line')
-				.attr('x1', 0)
-				.attr('y1', 0)
-				.attr('x2', lineX)
-				.attr('y2', lineY)
-				.attr('stroke', 'var(--calc-border)')
-				.attr('stroke-width', 1)
-				.attr('opacity', 0.4);
-
-			const labelR = radius + 20;
-			const labelX = labelR * Math.cos(angle);
-			const labelY = labelR * Math.sin(angle);
-
-			g.append('text')
-				.attr('x', labelX)
-				.attr('y', labelY)
-				.attr('text-anchor', 'middle')
-				.attr('dominant-baseline', 'middle')
-				.attr('fill', 'var(--calc-text-secondary)')
-				.attr('font-size', '10px')
-				.attr('font-family', 'var(--calc-font-body)')
-				.text(data[i].label);
-
-			g.append('text')
-				.attr('x', labelX)
-				.attr('y', labelY + 14)
-				.attr('text-anchor', 'middle')
-				.attr('fill', 'var(--calc-accent)')
-				.attr('font-size', '11px')
-				.attr('font-family', 'var(--calc-font-mono)')
-				.attr('font-weight', '600')
-				.text(ICONS[i] ?? '');
-		}
-
-		// Sensitivity polygon
-		const radarLine = lineRadial<number>()
-			.angle((_, i) => i * angleSlice)
-			.radius((d) => rScale(d))
-			.curve(curveLinearClosed);
-
-		const sensValues = data.map((d) => d.sensitivity);
-
-		// Filled polygon
-		g.append('path')
-			.datum(sensValues)
-			.attr('d', radarLine)
-			.attr('fill', 'var(--calc-accent)')
-			.attr('fill-opacity', 0.15)
-			.attr('stroke', 'var(--calc-accent)')
-			.attr('stroke-width', 2)
-			.attr('opacity', 0);
-
-		// Animate polygon entrance
-		const polygonPath = g.select('path:last-child');
-		gsap.fromTo(
-			polygonPath.node(),
-			{ opacity: 0, scale: 0, transformOrigin: 'center center' },
-			{ opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' }
-		);
-
-		// Data points
-		for (let i = 0; i < numAxes; i++) {
-			const angle = i * angleSlice - Math.PI / 2;
-			const r = rScale(data[i].sensitivity);
-			const dotX = r * Math.cos(angle);
-			const dotY = r * Math.sin(angle);
-
-			g.append('circle')
-				.attr('cx', dotX)
-				.attr('cy', dotY)
-				.attr('r', 4)
-				.attr('fill', 'var(--calc-accent)')
-				.attr('stroke', 'var(--calc-bg)')
-				.attr('stroke-width', 2);
-		}
-
-		// Hover areas for tooltips
-		for (let i = 0; i < numAxes; i++) {
-			const angle = i * angleSlice - Math.PI / 2;
-			const r = rScale(data[i].sensitivity);
-			const dotX = r * Math.cos(angle);
-			const dotY = r * Math.sin(angle);
-
-			g.append('circle')
-				.attr('cx', dotX)
-				.attr('cy', dotY)
-				.attr('r', 16)
-				.attr('fill', 'transparent')
-				.attr('cursor', 'pointer')
-				.append('title')
-				.text(
-					`${data[i].label}: A 1% change causes a ${(data[i].sensitivity * 100).toFixed(1)}% change in option price`
-				);
-		}
+		return {
+			radius,
+			angleSlice,
+			grid: GRID_LEVELS.map((level) => {
+				const r = radius * level;
+				return {
+					level,
+					r,
+					points: Array.from({ length: data.length + 1 }, (_, i) => {
+						const angle = angleOf(i);
+						return `${r * Math.cos(angle)},${r * Math.sin(angle)}`;
+					}).join(' ')
+				};
+			}),
+			axes: data.map((d, i) => {
+				const angle = angleOf(i);
+				const labelR = radius + 20;
+				return {
+					parameter: d.parameter,
+					label: d.label,
+					icon: ICONS[i] ?? '',
+					title: `${d.label}: A 1% change causes a ${(d.sensitivity * 100).toFixed(1)}% change in option price`,
+					cos: Math.cos(angle),
+					sin: Math.sin(angle),
+					labelX: labelR * Math.cos(angle),
+					labelY: labelR * Math.sin(angle)
+				};
+			})
+		};
 	});
+
+	/** The (tweened) sensitivity polygon. */
+	const polygon = $derived.by(() => {
+		if (!chart) return null;
+		const { radius, angleSlice } = chart;
+		return lineRadial<number>()
+			.angle((_, i) => i * angleSlice)
+			.radius((d) => d * radius)
+			.curve(curveLinearClosed)(reach.current);
+	});
+
+	/** Where each (tweened) value sits on its axis. */
+	const vertices = $derived.by(() => {
+		if (!chart) return [];
+		const { axes, radius } = chart;
+		return axes.map((axis, i) => {
+			const r = (reach.current[i] ?? 0) * radius;
+			return { parameter: axis.parameter, title: axis.title, x: r * axis.cos, y: r * axis.sin };
+		});
+	});
+
+	const description = $derived(
+		`Sensitivity radar: ${calc.sensitivityData
+			.map((d) => `${d.label} ${d.sensitivity.toFixed(3)}`)
+			.join(', ')}`
+	);
 </script>
 
 <div class="flex flex-col gap-3">
@@ -184,11 +102,97 @@
 	</div>
 
 	<div
-		bind:this={containerEl}
 		class="relative w-full flex justify-center"
 		style="min-height: 300px;"
+		bind:clientWidth={containerWidth}
 	>
-		<svg aria-hidden="true" bind:this={svgEl}></svg>
+		<svg width={size} height={size} role="img" aria-label={description}>
+			{#if chart}
+				<g transform="translate({size / 2},{size / 2})">
+					<!-- Grid rings -->
+					{#each chart.grid as ring (ring.level)}
+						<polygon
+							points={ring.points}
+							fill="none"
+							stroke="var(--calc-border)"
+							stroke-width="0.5"
+							opacity="0.5"
+						/>
+						<text
+							x="4"
+							y={-ring.r - 2}
+							fill="var(--calc-text-muted)"
+							font-size="8px"
+							font-family="var(--calc-font-mono)">{(maxSens * ring.level).toFixed(2)}</text
+						>
+					{/each}
+
+					<!-- Axis lines and labels -->
+					{#each chart.axes as axis (axis.parameter)}
+						<line
+							x1="0"
+							y1="0"
+							x2={chart.radius * axis.cos}
+							y2={chart.radius * axis.sin}
+							stroke="var(--calc-border)"
+							stroke-width="1"
+							opacity="0.4"
+						/>
+						<text
+							x={axis.labelX}
+							y={axis.labelY}
+							text-anchor="middle"
+							dominant-baseline="middle"
+							fill="var(--calc-text-secondary)"
+							font-size="10px"
+							font-family="var(--calc-font-body)">{axis.label}</text
+						>
+						<text
+							x={axis.labelX}
+							y={axis.labelY + 14}
+							text-anchor="middle"
+							fill="var(--calc-accent)"
+							font-size="11px"
+							font-family="var(--calc-font-mono)"
+							font-weight="600">{axis.icon}</text
+						>
+					{/each}
+
+					<!-- Sensitivity polygon: grows in on mount, then morphs between inputs -->
+					<path
+						class="radar-shape"
+						d={polygon}
+						fill="var(--calc-accent)"
+						fill-opacity="0.15"
+						stroke="var(--calc-accent)"
+						stroke-width="2"
+						in:scale={{
+							duration: prefersReducedMotion.current ? 0 : 800,
+							easing: backOut,
+							start: 0,
+							opacity: 0
+						}}
+					/>
+
+					<!-- Data points, each with a native tooltip on a wider hover target -->
+					{#each vertices as vertex (vertex.parameter)}
+						<circle
+							cx={vertex.x}
+							cy={vertex.y}
+							r="4"
+							fill="var(--calc-accent)"
+							stroke="var(--calc-bg)"
+							stroke-width="2"
+						/>
+					{/each}
+					{#each vertices as vertex (vertex.parameter)}
+						<circle cx={vertex.x} cy={vertex.y} r="16" fill="transparent" cursor="pointer">
+							<title>{vertex.title}</title>
+						</circle>
+					{/each}
+				</g>
+			{/if}
+		</svg>
 	</div>
 
 	<!-- Legend -->
@@ -204,3 +208,11 @@
 		{/each}
 	</div>
 </div>
+
+<style>
+	/* Scale about the polygon's own centre, as the entrance animation always has. */
+	.radar-shape {
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+</style>

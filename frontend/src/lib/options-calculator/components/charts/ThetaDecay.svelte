@@ -1,242 +1,93 @@
 <script lang="ts">
 	import { select } from 'd3-selection';
 	import { scaleLinear } from 'd3-scale';
-	import { line as d3line, area as d3area, curveMonotoneX } from 'd3-shape';
+	import { area, curveMonotoneX, line } from 'd3-shape';
 	import { axisBottom, axisLeft } from 'd3-axis';
+	import type { Axis, AxisDomain } from 'd3-axis';
+	import type { Attachment } from 'svelte/attachments';
 	import { formatCurrency } from '../../utils/formatters.js';
-	import type { CalculatorState } from '../../state/calculator.svelte.js';
+	import { getCalculator } from '../../state/context.js';
+	import type { TimeMachineSnapshot } from '../../engine/types.js';
 
-	interface Props {
-		calc: CalculatorState;
-	}
+	const calc = getCalculator();
 
-	let { calc }: Props = $props();
+	/** Chart height in px; the width follows the container (`bind:clientWidth`). */
+	const HEIGHT = 350;
+	const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+	const innerH = HEIGHT - margin.top - margin.bottom;
+	/** Days-to-expiry milestones marked on the chart. */
+	const KEY_DTES = [45, 30, 21, 14, 7, 1];
 
-	let containerEl: HTMLDivElement | undefined = $state();
-	let svgEl: SVGSVGElement | undefined = $state();
-	let width = $state(600);
-	let height = $state(350);
+	let width = $state(0);
 	let showBoth = $state(true);
 
-	const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+	const isCall = $derived(calc.optionType === 'call');
 
-	$effect(() => {
-		if (!containerEl) return;
-		const observer = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				width = entry.contentRect.width;
-				height = Math.max(280, Math.min(400, entry.contentRect.height));
-			}
-		});
-		observer.observe(containerEl);
-		return () => observer.disconnect();
-	});
-
-	$effect(() => {
+	/** Scales and path geometry; `null` until the container has been measured. */
+	const chart = $derived.by(() => {
 		const snapshots = calc.timeMachineSnapshots;
-		if (!svgEl || snapshots.length === 0) return;
-
-		const optionType = calc.optionType;
-		const currentDay = calc.timeMachineDay;
-		const intrinsicVal = calc.currentIntrinsic;
-
+		const last = snapshots.at(-1);
 		const innerW = width - margin.left - margin.right;
-		const innerH = height - margin.top - margin.bottom;
-		if (innerW <= 0 || innerH <= 0) return;
+		if (!last || innerW <= 0) return null;
 
-		const svg = select(svgEl);
-		svg.selectAll('*').remove();
-
-		const g = svg
-			.attr('width', width)
-			.attr('height', height)
-			.append('g')
-			.attr('transform', `translate(${margin.left},${margin.top})`);
-
-		const totalDays = snapshots[snapshots.length - 1].daysFromNow;
+		const totalDays = last.daysFromNow;
 		const maxPrice = Math.max(...snapshots.map((s) => Math.max(s.callPrice, s.putPrice))) * 1.1;
-
 		const x = scaleLinear().domain([0, totalDays]).range([0, innerW]);
 		const y = scaleLinear().domain([0, maxPrice]).range([innerH, 0]);
 
-		// Extrinsic value shading for current option type
-		const priceAccessor = (s: (typeof snapshots)[0]) =>
-			optionType === 'call' ? s.callPrice : s.putPrice;
-
-		const extrinsicArea = d3area<(typeof snapshots)[0]>()
-			.x((d) => x(d.daysFromNow))
-			.y0(y(intrinsicVal))
-			.y1((d) => y(Math.max(priceAccessor(d), intrinsicVal)))
-			.curve(curveMonotoneX);
-
-		g.append('path')
-			.datum(snapshots)
-			.attr('d', extrinsicArea)
-			.attr('fill', optionType === 'call' ? 'var(--calc-call)' : 'var(--calc-put)')
-			.attr('opacity', 0.08);
-
-		// Intrinsic value line
-		g.append('line')
-			.attr('x1', 0)
-			.attr('x2', innerW)
-			.attr('y1', y(intrinsicVal))
-			.attr('y2', y(intrinsicVal))
-			.attr('stroke', 'var(--calc-text-muted)')
-			.attr('stroke-width', 1)
-			.attr('stroke-dasharray', '4,4')
-			.attr('opacity', 0.5);
-
-		g.append('text')
-			.attr('x', innerW - 4)
-			.attr('y', y(intrinsicVal) - 6)
-			.attr('text-anchor', 'end')
-			.attr('fill', 'var(--calc-text-muted)')
-			.attr('font-size', '9px')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.text(`Intrinsic $${intrinsicVal.toFixed(2)}`);
-
-		// Call decay line
-		const callLine = d3line<(typeof snapshots)[0]>()
-			.x((d) => x(d.daysFromNow))
-			.y((d) => y(d.callPrice))
-			.curve(curveMonotoneX);
-
-		if (showBoth || optionType === 'call') {
-			g.append('path')
-				.datum(snapshots)
-				.attr('d', callLine)
-				.attr('fill', 'none')
-				.attr('stroke', 'var(--calc-call)')
-				.attr('stroke-width', optionType === 'call' ? 2.5 : 1.5)
-				.attr('opacity', optionType === 'call' ? 1 : 0.5);
-		}
-
-		// Put decay line
-		const putLine = d3line<(typeof snapshots)[0]>()
-			.x((d) => x(d.daysFromNow))
-			.y((d) => y(d.putPrice))
-			.curve(curveMonotoneX);
-
-		if (showBoth || optionType === 'put') {
-			g.append('path')
-				.datum(snapshots)
-				.attr('d', putLine)
-				.attr('fill', 'none')
-				.attr('stroke', 'var(--calc-put)')
-				.attr('stroke-width', optionType === 'put' ? 2.5 : 1.5)
-				.attr('opacity', optionType === 'put' ? 1 : 0.5);
-		}
-
-		// Key DTE markers
-		const keyDTEs = [45, 30, 21, 14, 7, 1];
-		for (const dte of keyDTEs) {
-			const dayFromNow = totalDays - dte;
-			if (dayFromNow > 0 && dayFromNow < totalDays) {
-				g.append('line')
-					.attr('x1', x(dayFromNow))
-					.attr('x2', x(dayFromNow))
-					.attr('y1', 0)
-					.attr('y2', innerH)
-					.attr('stroke', 'var(--calc-border)')
-					.attr('stroke-width', 1)
-					.attr('stroke-dasharray', '2,4')
-					.attr('opacity', 0.4);
-
-				g.append('text')
-					.attr('x', x(dayFromNow))
-					.attr('y', -6)
-					.attr('text-anchor', 'middle')
-					.attr('fill', 'var(--calc-text-muted)')
-					.attr('font-size', '8px')
-					.attr('font-family', 'var(--calc-font-mono)')
-					.text(`${dte}d`);
-			}
-		}
-
-		// Theta acceleration zone annotation (~45 DTE)
+		const intrinsic = calc.currentIntrinsic;
+		const intrinsicY = y(intrinsic);
 		const accelDay = totalDays - 45;
-		if (accelDay > 0 && accelDay < totalDays * 0.8) {
-			g.append('rect')
-				.attr('x', x(accelDay))
-				.attr('y', 0)
-				.attr('width', innerW - x(accelDay))
-				.attr('height', innerH)
-				.attr('fill', 'var(--calc-warning)')
-				.attr('opacity', 0.03);
 
-			g.append('text')
-				.attr('x', x(accelDay) + 4)
-				.attr('y', 14)
-				.attr('fill', 'var(--calc-warning)')
-				.attr('font-size', '9px')
-				.attr('font-family', 'var(--calc-font-body)')
-				.attr('opacity', 0.7)
-				.text('Theta acceleration zone');
-		}
-
-		// Current time machine position
-		if (currentDay > 0) {
-			g.append('line')
-				.attr('x1', x(currentDay))
-				.attr('x2', x(currentDay))
-				.attr('y1', 0)
-				.attr('y2', innerH)
-				.attr('stroke', 'var(--calc-accent)')
-				.attr('stroke-width', 2)
-				.attr('opacity', 0.8);
-
-			g.append('text')
-				.attr('x', x(currentDay) + 4)
-				.attr('y', innerH - 4)
-				.attr('fill', 'var(--calc-accent)')
-				.attr('font-size', '9px')
-				.attr('font-family', 'var(--calc-font-mono)')
-				.text(`Day ${currentDay}`);
-		}
-
-		// Axes
-		const xAxisGen = axisBottom(x)
-			.ticks(8)
-			.tickFormat((d) => `${Number(d).toFixed(0)}d`);
-		const yAxisGen = axisLeft(y)
-			.ticks(6)
-			.tickFormat((d) => `$${Number(d).toFixed(1)}`);
-
-		g.append('g')
-			.attr('transform', `translate(0,${innerH})`)
-			.call(xAxisGen)
-			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('font-size', '10px');
-
-		g.append('g')
-			.call(yAxisGen)
-			.attr('color', 'var(--calc-text-muted)')
-			.attr('font-family', 'var(--calc-font-mono)')
-			.attr('font-size', '10px');
-
-		g.append('text')
-			.attr('x', innerW / 2)
-			.attr('y', innerH + 38)
-			.attr('text-anchor', 'middle')
-			.attr('fill', 'var(--calc-text-muted)')
-			.attr('font-size', '11px')
-			.attr('font-family', 'var(--calc-font-body)')
-			.text('Days from Now');
+		return {
+			innerW,
+			x,
+			y,
+			intrinsic,
+			intrinsicY,
+			// Extrinsic value of the selected option type, shaded above its intrinsic value.
+			extrinsicArea: area<TimeMachineSnapshot>()
+				.x((d) => x(d.daysFromNow))
+				.y0(intrinsicY)
+				.y1((d) => y(Math.max(isCall ? d.callPrice : d.putPrice, intrinsic)))
+				.curve(curveMonotoneX)(snapshots),
+			callLine: line<TimeMachineSnapshot>()
+				.x((d) => x(d.daysFromNow))
+				.y((d) => y(d.callPrice))
+				.curve(curveMonotoneX)(snapshots),
+			putLine: line<TimeMachineSnapshot>()
+				.x((d) => x(d.daysFromNow))
+				.y((d) => y(d.putPrice))
+				.curve(curveMonotoneX)(snapshots),
+			dteMarkers: KEY_DTES.filter((dte) => dte > 0 && dte < totalDays).map((dte) => ({
+				dte,
+				x: x(totalDays - dte)
+			})),
+			// The theta acceleration zone starts ~45 DTE.
+			accelX: accelDay > 0 && accelDay < totalDays * 0.8 ? x(accelDay) : null
+		};
 	});
+
+	/** Lets d3 draw an axis into the `<g>`; re-runs whenever the generator (its scale) changes. */
+	function axis<Domain extends AxisDomain>(generator: Axis<Domain>): Attachment<SVGGElement> {
+		return (g) => {
+			select(g).call(generator);
+		};
+	}
 </script>
 
 <div class="flex flex-col gap-3">
 	<!-- Controls -->
 	<div class="flex items-center gap-3">
 		<button
+			type="button"
 			onclick={() => (showBoth = !showBoth)}
 			class="text-xs px-2.5 py-1 rounded-lg transition-all cursor-pointer"
-			style={showBoth
-				? 'background: var(--calc-accent-glow); color: var(--calc-accent); border: 1px solid var(--calc-accent);'
-				: 'background: var(--calc-surface); color: var(--calc-text-muted); border: 1px solid var(--calc-border);'}
+			style:background={showBoth ? 'var(--calc-accent-glow)' : 'var(--calc-surface)'}
+			style:color={showBoth ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
+			style:border="1px solid {showBoth ? 'var(--calc-accent)' : 'var(--calc-border)'}"
 		>
-			{showBoth ? 'Both' : calc.optionType === 'call' ? 'Call Only' : 'Put Only'}
+			{showBoth ? 'Both' : isCall ? 'Call Only' : 'Put Only'}
 		</button>
 
 		{#if calc.currentTimeMachineSnapshot}
@@ -244,13 +95,168 @@
 				class="text-xs"
 				style="color: var(--calc-text-secondary); font-family: var(--calc-font-mono);"
 			>
-				Daily \u03b8: {formatCurrency(calc.currentGreeks.first.theta)}
+				Daily θ: {formatCurrency(calc.currentGreeks.first.theta)}
 			</span>
 		{/if}
 	</div>
 
 	<!-- Chart -->
-	<div bind:this={containerEl} class="relative w-full" style="min-height: 280px;">
-		<svg aria-hidden="true" bind:this={svgEl}></svg>
+	<div class="relative w-full" style="min-height: 280px;" bind:clientWidth={width}>
+		<svg
+			{width}
+			height={HEIGHT}
+			role="img"
+			aria-label="Theta decay: call and put value from today to expiration"
+		>
+			{#if chart}
+				<g transform="translate({margin.left},{margin.top})">
+					<path
+						d={chart.extrinsicArea}
+						fill={isCall ? 'var(--calc-call)' : 'var(--calc-put)'}
+						opacity="0.08"
+					/>
+
+					<!-- Intrinsic value line -->
+					<line
+						x1="0"
+						x2={chart.innerW}
+						y1={chart.intrinsicY}
+						y2={chart.intrinsicY}
+						stroke="var(--calc-text-muted)"
+						stroke-width="1"
+						stroke-dasharray="4,4"
+						opacity="0.5"
+					/>
+					<text
+						x={chart.innerW - 4}
+						y={chart.intrinsicY - 6}
+						text-anchor="end"
+						fill="var(--calc-text-muted)"
+						font-size="9px"
+						font-family="var(--calc-font-mono)">Intrinsic ${chart.intrinsic.toFixed(2)}</text
+					>
+
+					<!-- Call / put decay lines -->
+					{#if showBoth || isCall}
+						<path
+							d={chart.callLine}
+							fill="none"
+							stroke="var(--calc-call)"
+							stroke-width={isCall ? 2.5 : 1.5}
+							opacity={isCall ? 1 : 0.5}
+						/>
+					{/if}
+					{#if showBoth || !isCall}
+						<path
+							d={chart.putLine}
+							fill="none"
+							stroke="var(--calc-put)"
+							stroke-width={isCall ? 1.5 : 2.5}
+							opacity={isCall ? 0.5 : 1}
+						/>
+					{/if}
+
+					<!-- Key DTE markers -->
+					{#each chart.dteMarkers as marker (marker.dte)}
+						<line
+							x1={marker.x}
+							x2={marker.x}
+							y1="0"
+							y2={innerH}
+							stroke="var(--calc-border)"
+							stroke-width="1"
+							stroke-dasharray="2,4"
+							opacity="0.4"
+						/>
+						<text
+							x={marker.x}
+							y="-6"
+							text-anchor="middle"
+							fill="var(--calc-text-muted)"
+							font-size="8px"
+							font-family="var(--calc-font-mono)">{marker.dte}d</text
+						>
+					{/each}
+
+					<!-- Theta acceleration zone -->
+					{#if chart.accelX !== null}
+						<rect
+							x={chart.accelX}
+							y="0"
+							width={chart.innerW - chart.accelX}
+							height={innerH}
+							fill="var(--calc-warning)"
+							opacity="0.03"
+						/>
+						<text
+							x={chart.accelX + 4}
+							y="14"
+							fill="var(--calc-warning)"
+							font-size="9px"
+							font-family="var(--calc-font-body)"
+							opacity="0.7">Theta acceleration zone</text
+						>
+					{/if}
+
+					<!-- Current time machine position -->
+					{#if calc.timeMachineDay > 0}
+						{const dayX = $derived(chart.x(calc.timeMachineDay))}
+						<line
+							x1={dayX}
+							x2={dayX}
+							y1="0"
+							y2={innerH}
+							stroke="var(--calc-accent)"
+							stroke-width="2"
+							opacity="0.8"
+						/>
+						<text
+							x={dayX + 4}
+							y={innerH - 4}
+							fill="var(--calc-accent)"
+							font-size="9px"
+							font-family="var(--calc-font-mono)">Day {calc.timeMachineDay}</text
+						>
+					{/if}
+
+					<!-- Axes -->
+					<g
+						class="axis"
+						transform="translate(0,{innerH})"
+						{@attach axis(
+							axisBottom(chart.x)
+								.ticks(8)
+								.tickFormat((d) => `${Number(d).toFixed(0)}d`)
+						)}
+					></g>
+					<g
+						class="axis"
+						{@attach axis(
+							axisLeft(chart.y)
+								.ticks(6)
+								.tickFormat((d) => `$${Number(d).toFixed(1)}`)
+						)}
+					></g>
+
+					<text
+						x={chart.innerW / 2}
+						y={innerH + 38}
+						text-anchor="middle"
+						fill="var(--calc-text-muted)"
+						font-size="11px"
+						font-family="var(--calc-font-body)">Days from Now</text
+					>
+				</g>
+			{/if}
+		</svg>
 	</div>
 </div>
+
+<style>
+	/* d3-axis writes `font-size`/`font-family` presentation attributes; CSS takes precedence. */
+	.axis {
+		color: var(--calc-text-muted);
+		font-family: var(--calc-font-mono);
+		font-size: 10px;
+	}
+</style>

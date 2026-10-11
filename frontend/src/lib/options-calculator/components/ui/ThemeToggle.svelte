@@ -1,7 +1,9 @@
 <script lang="ts">
 	import IconSun from '@tabler/icons-svelte-runes/icons/sun';
 	import IconMoon from '@tabler/icons-svelte-runes/icons/moon';
-	import gsap from 'gsap';
+	import { backOut } from 'svelte/easing';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import type { TransitionConfig } from 'svelte/transition';
 
 	interface Props {
 		theme: 'dark' | 'light';
@@ -10,31 +12,28 @@
 
 	let { theme, onToggle }: Props = $props();
 
-	let iconEl: HTMLSpanElement | undefined = $state();
-
-	$effect(() => {
-		void theme;
-		if (iconEl) {
-			gsap.fromTo(
-				iconEl,
-				{ rotate: -90, scale: 0.5, opacity: 0 },
-				{ rotate: 0, scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(1.7)' }
-			);
-		}
-	});
+	/** The incoming icon spins and grows into place, with a slight overshoot. */
+	function spinIn(_node: Element): TransitionConfig {
+		return {
+			duration: prefersReducedMotion.current ? 0 : 350,
+			easing: backOut,
+			css: (t, u) => `transform: rotate(${-90 * u}deg) scale(${0.5 + 0.5 * t}); opacity: ${t};`
+		};
+	}
 </script>
 
 <button
+	type="button"
 	onclick={onToggle}
 	class="relative flex items-center justify-center w-9 h-9 rounded-lg transition-colors cursor-pointer"
 	style="background: var(--calc-surface-hover); border: 1px solid var(--calc-border); color: var(--calc-text-secondary);"
-	aria-label="Toggle {theme === 'dark' ? 'light' : 'dark'} mode"
+	aria-label="Dark mode"
+	aria-pressed={theme === 'dark'}
 >
-	<span bind:this={iconEl} class="flex items-center justify-center">
-		{#if theme === 'dark'}
-			<IconSun size={16} />
-		{:else}
-			<IconMoon size={16} />
-		{/if}
-	</span>
+	<!-- The branch swap mounts a fresh icon, so its intro plays on every toggle. -->
+	{#if theme === 'dark'}
+		<span class="flex items-center justify-center" in:spinIn><IconSun size={16} /></span>
+	{:else}
+		<span class="flex items-center justify-center" in:spinIn><IconMoon size={16} /></span>
+	{/if}
 </button>

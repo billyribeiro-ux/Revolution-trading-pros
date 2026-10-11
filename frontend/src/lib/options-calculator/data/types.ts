@@ -136,8 +136,21 @@ export interface MispricingResult {
 	significance: 'minor' | 'moderate' | 'significant';
 }
 
+/**
+ * Every data provider the calculator knows about. The runtime list is the single
+ * source of truth for `DataProviderName` and for response validation (`schemas.ts`).
+ */
+export const DATA_PROVIDER_NAMES = [
+	'polygon',
+	'theta-data',
+	'tradier',
+	'fred',
+	'yahoo',
+	'mock'
+] as const;
+
 /** Data provider names */
-export type DataProviderName = 'polygon' | 'theta-data' | 'tradier' | 'fred' | 'yahoo' | 'mock';
+export type DataProviderName = (typeof DATA_PROVIDER_NAMES)[number];
 
 /** Provider status */
 export interface ProviderStatus {

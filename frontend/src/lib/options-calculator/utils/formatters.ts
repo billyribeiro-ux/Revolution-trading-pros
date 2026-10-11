@@ -48,44 +48,34 @@ export function formatPrecisePercent(value: number): string {
 	return precisionPercentFormatter.format(value);
 }
 
+/** Decimal places per Greek; anything not listed uses `DEFAULT_GREEK_DECIMALS`. */
+const GREEK_DECIMALS: Readonly<Record<string, number>> = {
+	delta: 4,
+	gamma: 6,
+	theta: 4,
+	vega: 4,
+	rho: 4,
+	charm: 6,
+	vanna: 6,
+	volga: 4,
+	speed: 8,
+	color: 8,
+	zomma: 6
+};
+
+const DEFAULT_GREEK_DECIMALS = 4;
+
 /** Format a Greek value with appropriate precision */
 export function formatGreek(value: number, greekName: string): string {
-	const decimals = getGreekDecimals(greekName);
+	const decimals = Object.hasOwn(GREEK_DECIMALS, greekName)
+		? GREEK_DECIMALS[greekName]
+		: DEFAULT_GREEK_DECIMALS;
 	const formatted = value.toFixed(decimals);
 
 	if (value > 0 && !formatted.startsWith('-')) {
 		return `+${formatted}`;
 	}
 	return formatted;
-}
-
-function getGreekDecimals(greekName: string): number {
-	switch (greekName) {
-		case 'delta':
-			return 4;
-		case 'gamma':
-			return 6;
-		case 'theta':
-			return 4;
-		case 'vega':
-			return 4;
-		case 'rho':
-			return 4;
-		case 'charm':
-			return 6;
-		case 'vanna':
-			return 6;
-		case 'volga':
-			return 4;
-		case 'speed':
-			return 8;
-		case 'color':
-			return 8;
-		case 'zomma':
-			return 6;
-		default:
-			return 4;
-	}
 }
 
 /** Format days to expiry from years */
@@ -101,7 +91,11 @@ export function formatTimeToExpiry(years: number): string {
 	const totalDays = years * 365;
 	if (totalDays < 1) return `${Math.round(totalDays * 24)}h`;
 	if (totalDays < 7) return `${Math.round(totalDays)}d`;
-	if (totalDays < 30) return `${Math.round(totalDays / 7)}w ${Math.round(totalDays % 7)}d`;
+	if (totalDays < 30) {
+		// Split whole days, so 13 days reads "1w 6d" (rounding the weeks gave "2w 6d").
+		const days = Math.round(totalDays);
+		return `${Math.floor(days / 7)}w ${days % 7}d`;
+	}
 	if (totalDays < 365) return `${Math.round(totalDays / 30)}mo`;
 	return `${(totalDays / 365).toFixed(1)}yr`;
 }

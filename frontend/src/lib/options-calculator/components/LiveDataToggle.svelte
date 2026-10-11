@@ -1,43 +1,16 @@
 <script lang="ts">
-	import gsap from 'gsap';
-	import type { MarketDataService } from '../data/market-data-service.svelte.js';
+	import { getCalculator, getMarketData } from '../state/context.js';
 	import type { DataMode } from '../data/types.js';
 
-	interface Props {
-		marketData: MarketDataService;
-	}
+	const calc = getCalculator();
+	const marketData = getMarketData();
 
-	let { marketData }: Props = $props();
-
-	let indicatorEl: HTMLDivElement | undefined;
+	const isLive = $derived(marketData.dataMode === 'live');
 
 	function setMode(mode: DataMode) {
 		marketData.setDataMode(mode);
-		if (indicatorEl) {
-			gsap.to(indicatorEl, {
-				x: mode === 'live' ? '100%' : '0%',
-				duration: 0.25,
-				ease: 'power2.out'
-			});
-		}
-	}
-
-	let isLive = $derived(marketData.dataMode === 'live');
-	let indicatorBackground = $derived(
-		isLive ? 'var(--calc-accent-glow)' : 'var(--calc-surface-hover)'
-	);
-	let indicatorTransform = $derived(`translateX(${isLive ? '100%' : '0%'})`);
-	let manualColor = $derived(!isLive ? 'var(--calc-text)' : 'var(--calc-text-muted)');
-	let liveColor = $derived(isLive ? 'var(--calc-accent)' : 'var(--calc-text-muted)');
-
-	function trackIndicator(element: HTMLDivElement) {
-		indicatorEl = element;
-
-		return () => {
-			if (indicatorEl === element) {
-				indicatorEl = undefined;
-			}
-		};
+		// The calculator keeps its own copy: it gates the LIVE badges on market-filled inputs.
+		calc.dataMode = mode;
 	}
 </script>
 
@@ -45,33 +18,42 @@
 	<div
 		class="relative flex rounded-lg overflow-hidden"
 		style="border: 1px solid var(--calc-border);"
+		role="group"
+		aria-label="Data mode"
 	>
 		<!-- Sliding indicator -->
 		<div
-			{@attach trackIndicator}
-			class="absolute top-0 left-0 w-1/2 h-full rounded-lg pointer-events-none transition-transform"
-			style:background={indicatorBackground}
-			style:transform={indicatorTransform}
+			class="absolute top-0 left-0 w-1/2 h-full rounded-lg pointer-events-none transition-transform duration-250 ease-out motion-reduce:transition-none"
+			style:background={isLive ? 'var(--calc-accent-glow)' : 'var(--calc-surface-hover)'}
+			style:transform="translateX({isLive ? '100%' : '0%'})"
+			aria-hidden="true"
 		></div>
 
 		<button
+			type="button"
 			onclick={() => setMode('manual')}
+			aria-pressed={!isLive}
 			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors cursor-pointer"
-			style:color={manualColor}
+			style:color={isLive ? 'var(--calc-text-muted)' : 'var(--calc-text)'}
 		>
 			Manual
 		</button>
 		<button
+			type="button"
 			onclick={() => setMode('live')}
+			aria-pressed={isLive}
 			class="relative z-10 text-[10px] font-medium px-3 py-1 transition-colors cursor-pointer"
-			style:color={liveColor}
+			style:color={isLive ? 'var(--calc-accent)' : 'var(--calc-text-muted)'}
 		>
 			Live Data
 		</button>
 	</div>
 
 	{#if isLive}
-		<span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--calc-call);"
+		<span
+			class="w-1.5 h-1.5 rounded-full motion-safe:animate-pulse"
+			style="background: var(--calc-call);"
+			aria-hidden="true"
 		></span>
 	{/if}
 </div>
