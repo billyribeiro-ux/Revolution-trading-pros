@@ -1,0 +1,278 @@
+# Program-level metadata. Single source of truth for tiers, milestones,
+# career tracks and the Atlas build. Rendered by tools/render_curriculum.py.
+
+program:
+  name: "Doctoral-Track Major in Finance, Economics & Quantitative Markets"
+  version: "2.0"
+  date: "2026-10-10"
+
+tiers:
+  - code: F
+    rank: 1
+    name: Foundations
+    standard: "Rigorous first-two-years university mathematics, computing, statistics and economics."
+  - code: U
+    rank: 2
+    name: Major
+    standard: "Complete undergraduate finance major at a top program, plus the quantitative depth most majors skip."
+  - code: M
+    rank: 3
+    name: "Master's"
+    standard: "MFE / MSF / MSc Economics level: continuous-time finance, econometrics, and production research."
+  - code: D
+    rank: 4
+    name: Doctoral
+    standard: "First-year PhD coursework in asset pricing, econometrics and macro, then original research."
+
+milestones:
+  - id: MAJOR
+    name: "Major Complete"
+    tiers: [F, U]
+    exclude: []
+    rule: "Every F and U module project passed, plus every studio of tier F or U."
+  - id: MASTERS
+    name: "Master's-Equivalent"
+    tiers: [F, U, M]
+    exclude: []
+    rule: "MAJOR, plus every M module project and every M studio."
+  - id: CANDIDATE
+    name: "Doctoral Candidate"
+    tiers: [F, U, M, D]
+    exclude: [CAP4]
+    rule: "MASTERS, plus every D module and studio, including the CAP3 qualifying exam."
+  - id: DOCTORAL
+    name: "Doctoral"
+    tiers: [F, U, M, D]
+    exclude: []
+    rule: "CANDIDATE, plus the CAP4 thesis defended against the rubric."
+
+# Credentials are named, content-equivalent degrees: explicit views over the
+# DAG. The validator checks each one:
+#   - every listed module and studio exists
+#   - every module in the prerequisite closure sits at or below max_tier
+#   - every studio's required modules are inside the closure
+#   - every course-map entry points at modules inside the closure
+# Hours are computed, never typed. These are not accredited degrees: only an
+# accredited, state-authorized institution can award a degree.
+credentials:
+  - id: BS-FIN
+    name: "Finance Degree — Bachelor's Level"
+    level: bachelor
+    max_tier: U
+    requires: [CAP0, FC1, FC2, FC3, FC4, AC1, AC2, AC4, CF1, CF2, CF3, CF4, CF7, CF8, CF9,
+               BK1, BK2, BK4, BK5, FI1, FI4, AP2, E1, E2, E5, S2, LX1, LX2, PC1, PC2, PC3]
+    studios: [STUDIO-FC, STUDIO-AC, STUDIO-BK, STUDIO-LX, STUDIO-PC]
+    course_map:
+      - {group: "Quantitative & business core", course: "Calculus", modules: [M1, M2]}
+      - {group: "Quantitative & business core", course: "Statistics for Finance", modules: [S0, S1]}
+      - {group: "Quantitative & business core", course: "Regression & Econometrics", modules: [S2]}
+      - {group: "Quantitative & business core", course: "Programming for Finance", modules: [CS1]}
+      - {group: "Quantitative & business core", course: "Microeconomics", modules: [E1]}
+      - {group: "Quantitative & business core", course: "Macroeconomics", modules: [E5]}
+      - {group: "Quantitative & business core", course: "Financial Accounting", modules: [AC1]}
+      - {group: "Quantitative & business core", course: "Managerial Accounting", modules: [AC4]}
+      - {group: "Quantitative & business core", course: "Business Law & Professional Ethics", modules: [LX2]}
+      - {group: "Quantitative & business core", course: "Business Communication", modules: [PC1]}
+      - {group: "Finance major", course: "Principles of Finance / Corporate Finance I", modules: [CF1, CF2]}
+      - {group: "Finance major", course: "Corporate Finance II: Payout & Governance", modules: [CF3, E2]}
+      - {group: "Finance major", course: "Investments", modules: [AP2, FC3, FC4]}
+      - {group: "Finance major", course: "Financial Markets & Institutions", modules: [FC1, BK1, FI4, BK4]}
+      - {group: "Finance major", course: "Financial Statement Analysis", modules: [AC2]}
+      - {group: "Finance major", course: "Valuation", modules: [CF4]}
+      - {group: "Finance major", course: "Financial Modeling", modules: [CF7]}
+      - {group: "Finance major", course: "Short-Term Financial Management", modules: [CF8]}
+      - {group: "Finance major", course: "Fixed Income", modules: [FI1]}
+      - {group: "Finance major", course: "Derivatives", modules: [FC2]}
+      - {group: "Finance major", course: "Risk Management & International Finance", modules: [CF9]}
+      - {group: "Finance major", course: "Asset Management", modules: [BK2]}
+      - {group: "Finance major", course: "Personal Finance & Wealth Management", modules: [BK5]}
+      - {group: "Finance major", course: "Financial History", modules: [LX1]}
+      - {group: "Finance major", course: "Investment Memos & Pitches", modules: [PC2]}
+      - {group: "Finance major", course: "Careers & Technical Interviews", modules: [PC3]}
+      - {group: "Finance major", course: "Senior Capstone", modules: [CAP0]}
+  - id: MS-FIN
+    name: "Master's in Finance / Financial Engineering"
+    level: master
+    max_tier: M
+    requires: [AP1, AP5, DV1, DV2, DV4, DV5, DV6, FI2, FI3, FI5, FI6, CR1, CR2, CR3, CR4,
+               F1, F2, F3, F7, PR1, PR2, PR3, PR4, MS1, MS3, QR1, QR2, QR3, S3, S4, S7,
+               SC4, SC6, CF5, CF6, PM1, PM4, X1, X2, X3]
+    studios: [STUDIO-SC, STUDIO-DV, STUDIO-FI, STUDIO-CR, STUDIO-F, STUDIO-PR, STUDIO-CF, STUDIO-QR]
+    course_map:
+      - {group: "Core", course: "Stochastic Calculus for Finance", modules: [SC1, SC2, SC3]}
+      - {group: "Core", course: "Derivatives Pricing", modules: [DV1, DV2]}
+      - {group: "Core", course: "Computational Finance", modules: [M8, SC4, DV4]}
+      - {group: "Core", course: "Financial Econometrics", modules: [S3, S4, S7]}
+      - {group: "Core", course: "Asset Pricing", modules: [AP1, AP5]}
+      - {group: "Core", course: "Portfolio Management", modules: [PR1, PR2, PR3]}
+      - {group: "Core", course: "Risk Management", modules: [PR4]}
+      - {group: "Electives", course: "Fixed Income & Interest-Rate Models", modules: [FI2, FI3, FI5, FI6]}
+      - {group: "Electives", course: "Credit Risk", modules: [CR1, CR2, CR3, CR4]}
+      - {group: "Electives", course: "Factor Investing & Performance Evaluation", modules: [F1, F2, F3, F7]}
+      - {group: "Electives", course: "Market Microstructure & Trading", modules: [MS1, MS3]}
+      - {group: "Electives", course: "Machine Learning for Finance", modules: [QR3]}
+      - {group: "Electives", course: "Quantitative Research & Backtesting", modules: [QR1, QR2]}
+      - {group: "Electives", course: "Advanced Corporate Finance: M&A, LBOs, Capital Raising", modules: [CF5, CF6]}
+      - {group: "Electives", course: "Alternative Investments & Real Estate", modules: [PM1, PM4]}
+      - {group: "Electives", course: "International Finance & Commodities", modules: [X1, X2, X3]}
+      - {group: "Electives", course: "Volatility & Structured Products", modules: [DV5, DV6]}
+  - id: PHD-FIN
+    name: "PhD in Finance"
+    level: doctorate
+    max_tier: D
+    requires: [CAP1, CAP2, CAP3, CAP4, AP3, AP4, AP6, AP7, AP8, F5, F6, S5, S6, E4, E6, E7,
+               SC5, DV3, PR6, SR1, SR2, QR5, MS1, MS2, CF3, CF5]
+    studios: [STUDIO-S, STUDIO-E, STUDIO-AP, STUDIO-F]
+    course_map:
+      - {group: "First-year sequence", course: "Asset Pricing Theory I–II", modules: [AP1, AP3, AP4]}
+      - {group: "First-year sequence", course: "Empirical Asset Pricing", modules: [AP5, F1, F2, F5]}
+      - {group: "First-year sequence", course: "Continuous-Time Finance", modules: [SC1, SC2, SC3, SC5, SC6]}
+      - {group: "First-year sequence", course: "Corporate Finance Theory", modules: [CF2, CF3, CF5, E2, E4]}
+      - {group: "First-year sequence", course: "Econometrics I–II", modules: [S1, S2, S3, S5, S6]}
+      - {group: "First-year sequence", course: "Microeconomic Theory", modules: [E1, E2, E3, E4]}
+      - {group: "First-year sequence", course: "Macroeconomic Theory", modules: [E5, E6, E7]}
+      - {group: "Field courses", course: "Intermediation & Macro-Finance", modules: [AP6, SR1, SR2]}
+      - {group: "Field courses", course: "Behavioral Finance & Market Efficiency", modules: [AP7, AP8]}
+      - {group: "Field courses", course: "Market Microstructure", modules: [MS1, MS2]}
+      - {group: "Field courses", course: "Machine Learning in Asset Pricing", modules: [F6]}
+      - {group: "Field courses", course: "Derivatives & Volatility Theory", modules: [DV3]}
+      - {group: "Field courses", course: "Dynamic Portfolio Choice", modules: [PR6]}
+      - {group: "Field courses", course: "Learning & Control in Trading", modules: [QR5]}
+      - {group: "Milestones", course: "Qualifying Examination", modules: [CAP3]}
+      - {group: "Milestones", course: "Replication & Refereeing", modules: [CAP1]}
+      - {group: "Milestones", course: "The Great Debates", modules: [CAP2]}
+      - {group: "Milestones", course: "Dissertation & Defense", modules: [CAP4]}
+
+# External body-of-knowledge coverage: an independent check that the finance
+# content is complete. Topic list per the CFA Program curriculum [V] (verified
+# against CFA Institute's current topic outline in Phase 0).
+bodies_of_knowledge:
+  - id: CFA
+    name: "CFA Program curriculum topic areas [V]"
+    topics:
+      - {topic: "Ethical and Professional Standards", modules: [LX2]}
+      - {topic: "Quantitative Methods", modules: [M4, S1, S2, S3, QR3]}
+      - {topic: "Economics", modules: [E1, E5, E7, E8]}
+      - {topic: "Financial Statement Analysis", modules: [AC1, AC2, AC3]}
+      - {topic: "Corporate Issuers", modules: [CF2, CF3, CF5, CF8]}
+      - {topic: "Equity Investments", modules: [FC3, FC4, CF4]}
+      - {topic: "Fixed Income", modules: [FI1, FI3, CR1, PM4]}
+      - {topic: "Derivatives", modules: [FC2, DV1]}
+      - {topic: "Alternative Investments", modules: [PM1, PM2, PM3, PM4, X3, X4]}
+      - {topic: "Portfolio Management and Wealth Planning", modules: [PR1, PR2, PR4, BK2, BK5]}
+
+# Career tracks are views over the DAG, not separate content. The required set
+# for a track is the transitive prerequisite closure of its targets. The render
+# script computes each track's hours, so the job-ready path is a measured
+# number, not a promise.
+tracks:
+  - id: QR
+    name: "Quantitative Researcher"
+    targets: [F6, QR2, PR4, MS4, S7, CAP1]
+  - id: GMPM
+    name: "Global Macro Portfolio Manager"
+    targets: [GM5, FI3, X2, DV5, PR3, PC2]
+  - id: VOL
+    name: "Derivatives & Volatility"
+    targets: [DV3, DV4, DV5, DV6, FI6]
+  - id: CORP
+    name: "Corporate Finance / Investment Banking / Private Equity"
+    targets: [CF5, CF6, CF7, CF9, PM1, PM2, AC3, PC2]
+  - id: EQR
+    name: "Equity Research / Asset Management"
+    targets: [FC4, CF7, F7, BK2, PR2, PC2]
+  - id: QDEV
+    name: "Quant Developer"
+    targets: [CS6, QR2, MS2, DV4]
+  - id: RISK
+    name: "Risk & Financial Stability"
+    targets: [PR4, SR3, SR4, BK3]
+  - id: PHD
+    name: "Research doctorate (minimum prerequisite path to thesis)"
+    targets: [CAP4]
+
+# Atlas: one production-grade research and trading platform that the student
+# builds across the whole program. Each milestone is the project of the named
+# module. Later milestones import earlier ones, so earlier work compounds
+# rather than being thrown away.
+atlas:
+  - id: A1
+    module: CS1
+    title: "Repository skeleton"
+    delivers: "Typed Python package, CLI entry point, test harness, pre-commit, CI config."
+  - id: A2
+    module: CS3
+    title: "Data layer"
+    delivers: "DuckDB store, point-in-time schema, ingestion for FRED / French / Shiller / Treasury / EDGAR, data manifest with hashes."
+  - id: A3
+    module: S0
+    title: "Data-quality and EDA reports"
+    delivers: "Automated profiling (gaps, outliers, stale prints, splits) on any Atlas dataset."
+  - id: A4
+    module: S4
+    title: "Time-series toolkit"
+    delivers: "ARMA, GARCH, HAR and Kalman estimators with forecast-evaluation tests."
+  - id: A5
+    module: FI1
+    title: "Curve engine"
+    delivers: "Bootstrapping plus Nelson–Siegel and Svensson fitting, with day-count conventions."
+  - id: A6
+    module: DV4
+    title: "Pricing library"
+    delivers: "BSM, binomial, finite differences, Monte Carlo and LSMC with Greeks; C++ kernel behind a Python API."
+  - id: A7
+    module: F1
+    title: "Cross-sectional engine"
+    delivers: "Portfolio sorts, Fama–MacBeth with Shanken correction, GRS test."
+  - id: A8
+    module: S7
+    title: "Research-integrity module"
+    delivers: "Deflated Sharpe, PBO, Romano–Wolf and BH adjustments, applied automatically to every backtest."
+  - id: A9
+    module: QR2
+    title: "Backtester"
+    delivers: "Event-driven engine with signal/execution lags, cost hooks, walk-forward and purged CV."
+  - id: A10
+    module: MS3
+    title: "Execution and cost models"
+    delivers: "Square-root impact, Almgren–Chriss scheduler, implementation-shortfall accounting."
+  - id: A11
+    module: PR2
+    title: "Portfolio construction"
+    delivers: "Shrinkage covariance, MV / risk-parity / vol-target allocators with constraint handling."
+  - id: A12
+    module: PR4
+    title: "Risk engine"
+    delivers: "VaR / ES (historical, parametric, EVT), VaR backtests, scenario and stress engine."
+  - id: A13
+    module: FI3
+    title: "Term-premium and rates-RV module"
+    delivers: "Affine-model term premium, carry and roll-down, curve-trade P&L attribution."
+  - id: A14
+    module: CR1
+    title: "Credit module"
+    delivers: "Merton / Black–Cox / reduced-form pricers, distance to default, spread decomposition."
+  - id: A15
+    module: AC2
+    title: "Fundamentals engine"
+    delivers: "EDGAR XBRL ingestion, standardized statements, ratio and accrual-quality library."
+  - id: A16
+    module: CF4
+    title: "Valuation engine"
+    delivers: "DCF, residual income and multiples, with scenario and sensitivity grids driven by A15."
+  - id: A17
+    module: QR3
+    title: "ML pipeline"
+    delivers: "Feature store, purged/embargoed CV, model registry, SHAP reports, plugged into A8 and A9."
+  - id: A18
+    module: GM1
+    title: "Nowcasting and regime dashboard"
+    delivers: "Real-time-vintage dynamic factor nowcast, regime classifier, cross-asset monitor."
+  - id: A19
+    module: SR3
+    title: "Systemic-risk monitor"
+    delivers: "CoVaR, SRISK and MES on open data, with alert thresholds."
+  - id: A20
+    module: GM4
+    title: "Macro trade-construction engine"
+    delivers: "View → expression → sizing → scenario P&L, reusing A5, A6, A11, A12."
