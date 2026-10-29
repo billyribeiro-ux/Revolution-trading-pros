@@ -161,24 +161,24 @@ export const load: PageServerLoad = async ({
 		'@graph': [
 			{
 				'@type': 'WebPage',
-				'@id': 'https://revolution-trading-pros.com/live-trading-rooms',
-				url: 'https://revolution-trading-pros.com/live-trading-rooms',
+				'@id': 'https://revolutiontradingpros.com/live-trading-rooms',
+				url: 'https://revolutiontradingpros.com/live-trading-rooms',
 				name: 'Live Trading Rooms | Professional Trading Mentorship',
 				description:
 					'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
 				inLanguage: 'en-US',
 				isPartOf: {
 					'@type': 'WebSite',
-					'@id': 'https://revolution-trading-pros.com',
+					'@id': 'https://revolutiontradingpros.com',
 					name: 'Revolution Trading Pros',
 					publisher: {
 						'@type': 'Organization',
-						'@id': 'https://revolution-trading-pros.com#organization',
+						'@id': 'https://revolutiontradingpros.com#organization',
 						name: 'Revolution Trading Pros',
-						url: 'https://revolution-trading-pros.com',
+						url: 'https://revolutiontradingpros.com',
 						logo: {
 							'@type': 'ImageObject',
-							url: 'https://revolution-trading-pros.com/logo.png',
+							url: 'https://revolutiontradingpros.com/logo.png',
 							width: 512,
 							height: 512
 						},
@@ -190,7 +190,7 @@ export const load: PageServerLoad = async ({
 				},
 				primaryImageOfPage: {
 					'@type': 'ImageObject',
-					url: 'https://revolution-trading-pros.com/images/live-trading-rooms-hero.jpg',
+					url: 'https://revolutiontradingpros.com/images/live-trading-rooms-hero.jpg',
 					width: 1920,
 					height: 1080
 				},
@@ -199,7 +199,7 @@ export const load: PageServerLoad = async ({
 				author: {
 					'@type': 'Organization',
 					name: 'Revolution Trading Pros',
-					url: 'https://revolution-trading-pros.com'
+					url: 'https://revolutiontradingpros.com'
 				},
 				breadcrumb: {
 					'@type': 'BreadcrumbList',
@@ -208,13 +208,13 @@ export const load: PageServerLoad = async ({
 							'@type': 'ListItem',
 							position: 1,
 							name: 'Home',
-							item: 'https://revolution-trading-pros.com'
+							item: 'https://revolutiontradingpros.com'
 						},
 						{
 							'@type': 'ListItem',
 							position: 2,
 							name: 'Live Trading Rooms',
-							item: 'https://revolution-trading-pros.com/live-trading-rooms'
+							item: 'https://revolutiontradingpros.com/live-trading-rooms'
 						}
 					]
 				},
@@ -235,24 +235,24 @@ export const load: PageServerLoad = async ({
 			},
 			{
 				'@type': 'Service',
-				'@id': 'https://revolution-trading-pros.com/live-trading-rooms#service',
+				'@id': 'https://revolutiontradingpros.com/live-trading-rooms#service',
 				name: 'Live Trading Rooms',
 				description:
 					'Professional live trading rooms with real-time alerts and mentorship from institutional traders',
 				provider: {
 					'@type': 'Organization',
-					'@id': 'https://revolution-trading-pros.com#organization',
+					'@id': 'https://revolutiontradingpros.com#organization',
 					name: 'Revolution Trading Pros'
 				},
 				areaServed: 'Worldwide',
 				availableChannel: {
 					'@type': 'ServiceChannel',
-					serviceUrl: 'https://revolution-trading-pros.com/live-trading-rooms',
+					serviceUrl: 'https://revolutiontradingpros.com/live-trading-rooms',
 					availableLanguage: ['English']
 				},
 				offers: tradingRoomsData.map((room) => ({
 					'@type': 'Offer',
-					'@id': `https://revolution-trading-pros.com/live-trading-rooms#${room.id}`,
+					'@id': `https://revolutiontradingpros.com/live-trading-rooms#${room.id}`,
 					name: room.name,
 					description: room.description,
 					price: room.price.monthly,
@@ -262,7 +262,7 @@ export const load: PageServerLoad = async ({
 					eligibleRegion: 'US',
 					seller: {
 						'@type': 'Organization',
-						'@id': 'https://revolution-trading-pros.com#organization',
+						'@id': 'https://revolutiontradingpros.com#organization',
 						name: 'Revolution Trading Pros'
 					}
 				})),
@@ -281,11 +281,11 @@ export const load: PageServerLoad = async ({
 			},
 			{
 				'@type': 'EducationalOrganization',
-				'@id': 'https://revolution-trading-pros.com#organization',
+				'@id': 'https://revolutiontradingpros.com#organization',
 				name: 'Revolution Trading Pros',
 				description:
 					'Professional trading education and mentorship platform with institutional expertise',
-				url: 'https://revolution-trading-pros.com',
+				url: 'https://revolutiontradingpros.com',
 				foundingDate: '2020',
 				address: {
 					'@type': 'PostalAddress',
@@ -314,7 +314,7 @@ export const load: PageServerLoad = async ({
 					'Comprehensive live trading education with real-time mentorship from professional traders',
 				provider: {
 					'@type': 'Organization',
-					'@id': 'https://revolution-trading-pros.com#organization',
+					'@id': 'https://revolutiontradingpros.com#organization',
 					name: 'Revolution Trading Pros'
 				},
 				educationalLevel: 'Intermediate to Advanced',

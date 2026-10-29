@@ -18,7 +18,8 @@ import {
 	buildPerson,
 	buildItemList,
 	buildService,
-	buildWebPage
+	buildWebPage,
+	buildVideoObject
 } from '../schemas';
 
 describe('buildBreadcrumb', () => {
@@ -250,5 +251,32 @@ describe('buildWebPage', () => {
 			pageType: 'ContactPage'
 		});
 		expect(node['@type']).toBe('ContactPage');
+	});
+});
+
+describe('buildVideoObject', () => {
+	it('emits VideoObject with Sept 2026 creator property and default publisher', () => {
+		const node = buildVideoObject({
+			name: 'Quickstart To Precision Trading',
+			description: 'Full class recording',
+			thumbnailUrl: 'https://revolutiontradingpros.com/revolution-trading-pros.png',
+			uploadDate: '2026-10-28T00:00:00Z',
+			contentUrl: 'https://example.com/video.mp4',
+			creator: {
+				name: 'Revolution Trading Pros',
+				url: 'https://revolutiontradingpros.com',
+				type: 'Organization'
+			}
+		});
+		expect(node['@type']).toBe('VideoObject');
+		expect(node.thumbnailUrl).toEqual([
+			'https://revolutiontradingpros.com/revolution-trading-pros.png'
+		]);
+		expect(node.creator).toEqual({
+			'@type': 'Organization',
+			name: 'Revolution Trading Pros',
+			url: 'https://revolutiontradingpros.com'
+		});
+		expect(node.publisher?.name).toBe('Revolution Trading Pros');
 	});
 });

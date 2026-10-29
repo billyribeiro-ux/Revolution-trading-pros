@@ -118,10 +118,10 @@
 	let replayInterval: ReturnType<typeof setInterval> | null = null;
 	let slideInterval: ReturnType<typeof setInterval> | null = null;
 	let currentSlide = $state(0);
-	let previousSlide = $state(-1);
 	let isLooping = $state(false);
 	let gsapLib: typeof gsap | null = null;
 	let timeline: gsap.core.Timeline | null = null;
+	let exitTimeline: gsap.core.Timeline | null = null;
 	let gsapLoaded = $state(false);
 	let isTransitioning = $state(false);
 
@@ -343,15 +343,23 @@
 				return;
 			}
 
-			const h1 = slide.querySelector('h1');
-			const h2 = slide.querySelector('h2');
-			const p = slide.querySelector('p');
+			const h1 = slide.querySelector('.slide__title');
+			const h2 = slide.querySelector('.slide__subtitle');
+			const p = slide.querySelector('.slide__description');
 			const buttons = slide.querySelectorAll('.cta');
 
-			const exitTL = gsapLib.timeline({ onComplete: resolve });
+			if (exitTimeline) exitTimeline.kill();
+			isAnimating = true;
+
+			exitTimeline = gsapLib.timeline({
+				onComplete: () => {
+					exitTimeline = null;
+					resolve();
+				}
+			});
 
 			// Cinematic exit - elements scatter/dissolve
-			exitTL
+			exitTimeline
 				.to(
 					buttons,
 					{
@@ -411,9 +419,9 @@
 		const slide = document.querySelector(`[data-slide="${slideIndex}"]`);
 		if (!slide) return;
 
-		const h1 = slide.querySelector('h1');
-		const h2 = slide.querySelector('h2');
-		const p = slide.querySelector('p');
+		const h1 = slide.querySelector('.slide__title');
+		const h2 = slide.querySelector('.slide__subtitle');
+		const p = slide.querySelector('.slide__description');
 		const buttons = slide.querySelectorAll('.cta');
 
 		// Fallback: If no GSAP, just make everything visible
@@ -437,6 +445,9 @@
 
 		timeline = gsapLib.timeline({
 			onComplete: () => {
+				if (gsapLib) {
+					gsapLib.set(buttons, { clearProps: 'transform,filter,boxShadow' });
+				}
 				isAnimating = false;
 				// Ensure buttons are visible after animation completes
 				buttons.forEach((btn) => {
@@ -600,16 +611,28 @@
 		}
 	}
 
-	async function showSlide(index: number): Promise<void> {
-		if (isTransitioning) return;
-		isTransitioning = true;
-
-		// Animate out previous slide
-		if (previousSlide >= 0 && gsapLoaded) {
-			await animateSlideOut(previousSlide);
+	async function showSlide(index: number, force: boolean = false): Promise<void> {
+		if (index === currentSlide && !force) return;
+		if (isTransitioning) {
+			if (!force) return;
+			if (exitTimeline) {
+				exitTimeline.kill();
+				exitTimeline = null;
+			}
+			if (timeline) {
+				timeline.kill();
+				timeline = null;
+			}
 		}
 
-		previousSlide = currentSlide;
+		isTransitioning = true;
+		const outgoingSlide = currentSlide;
+
+		// Animate out the currently visible slide before switching
+		if (!force && outgoingSlide >= 0 && outgoingSlide !== index && gsapLoaded) {
+			await animateSlideOut(outgoingSlide);
+		}
+
 		currentSlide = index;
 
 		await tick();
@@ -635,7 +658,8 @@
 			if (slideInterval) {
 				clearInterval(slideInterval);
 			}
-			showSlide(index);
+			showSlide(index, true);
+			startProgressTimer();
 			// Restart interval
 			slideInterval = setInterval(nextSlide, 7000);
 		}
@@ -684,7 +708,6 @@
 		if (!browser) return;
 
 		currentSlide = 0;
-		previousSlide = -1;
 
 		// PE7: Schedule async initialization
 		tick().then(() => {
@@ -756,6 +779,7 @@
 		if (slideInterval) clearInterval(slideInterval);
 		if (replayInterval) clearInterval(replayInterval);
 		if (progressInterval) clearInterval(progressInterval);
+		if (exitTimeline) exitTimeline.kill();
 		if (timeline) timeline.kill();
 		if (chart) chart.remove();
 		if (resizeObserver) resizeObserver.disconnect();
@@ -763,6 +787,7 @@
 
 		chart = null;
 		series = null;
+		exitTimeline = null;
 		timeline = null;
 	});
 </script>
@@ -770,6 +795,7 @@
 <section
 	{@attach captureHeroSection}
 	id="hero"
+	aria-label="Revolution Trading Pros hero"
 	class={['hero-section', { 'hero-animating': isAnimating }]}
 >
 	<!-- Ambient Background Layers -->
@@ -803,8 +829,12 @@
 					]}
 					aria-hidden={i !== currentSlide}
 				>
-					<h1 class="slide__title">{slide.title}</h1>
-					<h2 class="slide__subtitle">{slide.subtitle}</h2>
+					{#if i === 0}
+						<h1 class="slide__title">{slide.title}</h1>
+					{:else}
+						<h2 class="slide__title">{slide.title}</h2>
+					{/if}
+					<p class="slide__subtitle">{slide.subtitle}</p>
 					<p class="slide__description">{slide.description}</p>
 					<div class="slide__actions">
 						<a href={slide.primaryCTA.href} class="cta cta--primary">
@@ -958,8 +988,22 @@
 	}
 
 	.hero-animating .hero-chart,
-	.hero-animating .slide {
+	.hero-animating .slide,
+	.hero-animating .cta {
 		will-change: transform, opacity, filter;
+	}
+
+	/* Disable CSS transform keyframe & transition overrides during GSAP slide entrance/exit */
+	.hero-animating .cta {
+		transition: none !important;
+	}
+
+	.hero-animating .cta--primary {
+		animation: goldenShimmer 3s ease-in-out infinite;
+	}
+
+	.hero-animating .cta--secondary {
+		animation: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -1098,6 +1142,39 @@
 		}
 	}
 
+	/* 4K / 5K display scaling — hero content should not look stranded on ultra-wide monitors */
+	@media (min-width: 1920px) {
+		.hero-content {
+			max-width: 112.5rem;
+			padding-inline: 4rem;
+			padding-block: 6rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.hero-content {
+			max-width: 137.5rem;
+			padding-inline: 5rem;
+			padding-block: 7rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.hero-content {
+			max-width: 162.5rem;
+			padding-inline: 6rem;
+			padding-block: 8rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.hero-content {
+			max-width: 200rem;
+			padding-inline: 8rem;
+			padding-block: 10rem;
+		}
+	}
+
 	.hero-slides {
 		position: relative;
 		min-height: 22rem;
@@ -1115,6 +1192,31 @@
 		transform: translateZ(0);
 	}
 
+	/* 4K / 5K display scaling for slide content width */
+	@media (min-width: 1920px) {
+		.slide {
+			max-width: 72rem;
+		}
+	}
+
+	@media (min-width: 2560px) {
+		.slide {
+			max-width: 88rem;
+		}
+	}
+
+	@media (min-width: 3840px) {
+		.slide {
+			max-width: 104rem;
+		}
+	}
+
+	@media (min-width: 5120px) {
+		.slide {
+			max-width: 120rem;
+		}
+	}
+
 	.slide--hidden {
 		display: none;
 		pointer-events: none;
@@ -1130,10 +1232,11 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.slide__title {
 		font-family: var(--font-heading, system-ui);
-		font-size: clamp(2.75rem, 9vw, 5.5rem);
+		font-size: clamp(2.25rem, 8vw, 5.5rem);
 		font-weight: 800;
 		line-height: 1;
 		color: white;
+		margin-block-start: 0;
 		margin-block-end: 0.75rem;
 		letter-spacing: -0.03em;
 		text-shadow:
@@ -1143,6 +1246,27 @@
 		transform: translateZ(0);
 		transform-style: preserve-3d;
 		perspective: 1000px;
+	}
+
+	@media (min-width: 1920px) {
+		.slide__title {
+			font-size: clamp(5.5rem, 7vw, 7.5rem);
+		}
+	}
+	@media (min-width: 2560px) {
+		.slide__title {
+			font-size: clamp(7rem, 6.5vw, 9rem);
+		}
+	}
+	@media (min-width: 3840px) {
+		.slide__title {
+			font-size: clamp(8.5rem, 6vw, 11rem);
+		}
+	}
+	@media (min-width: 5120px) {
+		.slide__title {
+			font-size: clamp(10rem, 5.5vw, 13rem);
+		}
 	}
 
 	.slide__subtitle {
@@ -1162,6 +1286,7 @@
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		animation: shimmer 3s ease-in-out infinite;
+		margin-block-start: 0;
 		margin-block-end: 1.5rem;
 		transform: translateZ(0);
 		filter: drop-shadow(0 2px 10px rgba(250, 204, 21, 0.3));
@@ -1183,9 +1308,47 @@
 		color: rgba(255, 255, 255, 0.85);
 		max-width: 44rem;
 		margin-inline: auto;
+		margin-block-start: 0;
 		margin-block-end: 2.5rem;
 		transform: translateZ(0);
 		text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	@media (min-width: 1920px) {
+		.slide__subtitle {
+			font-size: clamp(2.25rem, 3.5vw, 3rem);
+		}
+		.slide__description {
+			font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+			max-width: 56rem;
+		}
+	}
+	@media (min-width: 2560px) {
+		.slide__subtitle {
+			font-size: clamp(2.75rem, 3vw, 3.5rem);
+		}
+		.slide__description {
+			font-size: clamp(1.55rem, 1.5vw, 1.85rem);
+			max-width: 68rem;
+		}
+	}
+	@media (min-width: 3840px) {
+		.slide__subtitle {
+			font-size: clamp(3.25rem, 2.5vw, 4rem);
+		}
+		.slide__description {
+			font-size: clamp(1.8rem, 1.2vw, 2.1rem);
+			max-width: 80rem;
+		}
+	}
+	@media (min-width: 5120px) {
+		.slide__subtitle {
+			font-size: clamp(3.75rem, 2.2vw, 4.5rem);
+		}
+		.slide__description {
+			font-size: clamp(2.05rem, 1.1vw, 2.4rem);
+			max-width: 96rem;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════

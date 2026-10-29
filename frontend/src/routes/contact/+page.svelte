@@ -16,7 +16,7 @@
 		</p>
 		<p>
 			Email:
-			<a href="mailto:support@revolution-trading-pros.com"> support@revolution-trading-pros.com </a>
+			<a href="mailto:support@revolutiontradingpros.com"> support@revolutiontradingpros.com </a>
 		</p>
 	</section>
 

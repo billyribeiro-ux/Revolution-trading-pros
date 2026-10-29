@@ -13,6 +13,8 @@ truth.
 | [README.md](README.md) | First time in the repo |
 | [docs/development/LOCAL_DEV.md](docs/development/LOCAL_DEV.md) | Booting the local stack |
 | [docs/development/ENV_VARS.md](docs/development/ENV_VARS.md) | Setting any env var |
+| [docs/audits/SEO_AND_SVELTE_AUDIT_2026-10-28.md](docs/audits/SEO_AND_SVELTE_AUDIT_2026-10-28.md) | Full SEO architecture (`src/lib/seo/`), Google Oct 2026 compliance, and Svelte 5.57 / SvelteKit 3.1 conventions |
+| [frontend/src/lib/seo/README.md](frontend/src/lib/seo/README.md) | Adding or editing route SEO metadata (`page.data.seo`), JSON-LD schemas, canonicals, or sitemaps |
 | [docs/audits/FORENSIC_AUDIT_2026-05-24.md](docs/audits/FORENSIC_AUDIT_2026-05-24.md) | Quick "what's the state of this codebase?" |
 | [docs/audits/FULL_REPO_AUDIT_2026-05-17.md](docs/audits/FULL_REPO_AUDIT_2026-05-17.md) | Picking the next thing to fix (P0/P1 findings + the prior audit's backlog still apply for P2/P3 work) |
 | [docs/audits/REPO_STATE_2026-04-25.md](docs/audits/REPO_STATE_2026-04-25.md) | Stale (~30 days, 13 PRs out of date) but useful for "why is this branch shaped this way?" history |

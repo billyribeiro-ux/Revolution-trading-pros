@@ -10,8 +10,8 @@ import { buildBreadcrumb, buildWebPage } from '#lib/seo/schemas.js';
 
 const SITE = 'https://revolutiontradingpros.com';
 
-export const prerender = false;
-export const ssr = false;
+export const prerender = true;
+export const ssr = true;
 
 export const load = () => ({
 	seo: {

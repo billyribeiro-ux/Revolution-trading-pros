@@ -86,14 +86,6 @@
 	];
 </script>
 
-<svelte:head>
-	<title>Pricing | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Simple, transparent pricing for every level of trader. Start with Starter, grow with Pro, or unlock everything with Elite."
-	/>
-</svelte:head>
-
 <div class="pricing-page">
 	<!-- Hero -->
 	<section class="pricing-hero">

@@ -54,7 +54,7 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 |-------|------|
 | [`docs/development/LOCAL_DEV.md`](docs/development/LOCAL_DEV.md) | Boot the stack from a fresh clone in 10 min |
 | [`docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md`](docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md) | Stack reference, public URLs, full auth flow |
-| [`docs/audits/`](docs/audits/) | All audits, newest first — start with `PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md` |
+| [`docs/audits/`](docs/audits/) | All audits, newest first — start with `SEO_AND_SVELTE_AUDIT_2026-10-28.md` and `PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md` |
 | [`docs/setup/`](docs/setup/) | Production deployment + Stripe + R2 setup |
 | [`docs/frontend/`](docs/frontend/) | Frontend-specific guides (admin responsive, footer audit, remote-functions migration) |
 | [`docs/audits/`](docs/audits/) (incident/forensic reports) | Older incident and forensic reports also live in `docs/audits/` — there is no separate `docs/forensics/` directory |
@@ -112,8 +112,9 @@ cd api && cargo test --test utils_test \
 | Frontend a11y compiler gate (`check:a11y`) | ✅ 0 / 0 |
 | Frontend lint (eslint 10.13.0) | ✅ 0 errors (4 pre-existing `no-useless-escape` warnings) |
 | Frontend format (prettier 3.9.10) | ✅ clean |
-| Frontend unit (vitest 5.0.5) | ✅ 2,777 passed / 32 skipped (63 files) |
+| Frontend unit (vitest 5.0.5) | ✅ 2,778 passed / 32 skipped (63 files) |
 | Frontend production build + prerender + service worker | ✅ |
+| Post-build HTML SEO audit (`node scripts/seo-audit.ts`) | ✅ 76/76 prerendered pages passed, 0 errors / 0 warnings |
 | Frontend a11y suite (playwright) | ⚠️ 1 pre-existing failure — see BACKLOG.md item 4 |
 | Backend `cargo fmt` + `clippy -D warnings` (Rust 1.99.1) | ✅ clean |
 | Backend `cargo deny check` + `cargo machete` | ✅ clean, no advisory exemptions / no unused deps |

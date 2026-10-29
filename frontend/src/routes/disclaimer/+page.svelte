@@ -5,14 +5,6 @@
 	const lastUpdated = 'June 1, 2026';
 </script>
 
-<svelte:head>
-	<title>Risk Disclaimer | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Important risk disclaimer and disclosure information for Revolution Trading Pros members and visitors."
-	/>
-</svelte:head>
-
 <div class="legal-page">
 	<div class="legal-inner">
 		<div class="legal-header">

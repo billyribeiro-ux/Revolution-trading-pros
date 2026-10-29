@@ -304,10 +304,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Verify Email - Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="verification-page">
 	<div class="verification-shell">
 		<!-- Logo -->

@@ -21,7 +21,8 @@ import type {
 	JsonLdBreadcrumbItem,
 	JsonLdArticle,
 	JsonLdFAQPage,
-	JsonLdFAQQuestion
+	JsonLdFAQQuestion,
+	JsonLdVideoObject
 } from './types';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -460,5 +461,71 @@ export function buildWebPage(input: WebPageInput): JsonLdNode {
 		description: input.description,
 		datePublished: input.datePublished,
 		dateModified: input.dateModified
+	};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VideoObject (Google Search Central Sept 2026 Video structured data update)
+// Supports `creator` property alongside `author` and `publisher`
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface VideoObjectInput {
+	name: string;
+	description: string;
+	thumbnailUrl: string | string[];
+	uploadDate: string;
+	duration?: string;
+	contentUrl?: string;
+	embedUrl?: string;
+	expires?: string;
+	creator?: {
+		name: string;
+		url?: string;
+		type?: 'Person' | 'Organization';
+	};
+	author?: {
+		name: string;
+		url?: string;
+		type?: 'Person' | 'Organization';
+	};
+	publisher?: {
+		name: string;
+		logoUrl?: string;
+		url?: string;
+	};
+}
+
+export function buildVideoObject(input: VideoObjectInput): JsonLdVideoObject {
+	const publisher = input.publisher ?? DEFAULT_PUBLISHER;
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'VideoObject',
+		name: input.name,
+		description: input.description,
+		thumbnailUrl: Array.isArray(input.thumbnailUrl) ? input.thumbnailUrl : [input.thumbnailUrl],
+		uploadDate: input.uploadDate,
+		duration: input.duration,
+		contentUrl: input.contentUrl,
+		embedUrl: input.embedUrl,
+		expires: input.expires,
+		creator: input.creator
+			? {
+					'@type': input.creator.type ?? 'Person',
+					name: input.creator.name,
+					url: input.creator.url
+				}
+			: undefined,
+		author: input.author
+			? {
+					'@type': input.author.type ?? 'Person',
+					name: input.author.name,
+					url: input.author.url
+				}
+			: undefined,
+		publisher: {
+			'@type': 'Organization',
+			name: publisher.name,
+			logo: publisher.logoUrl ? { '@type': 'ImageObject', url: publisher.logoUrl } : undefined
+		}
 	};
 }

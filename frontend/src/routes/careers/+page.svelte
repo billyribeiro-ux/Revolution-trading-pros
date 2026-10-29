@@ -55,14 +55,6 @@
 	];
 </script>
 
-<svelte:head>
-	<title>Careers | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Join the Revolution Trading Pros team. We're building the best trading education platform in the world — come help us do it."
-	/>
-</svelte:head>
-
 <div class="careers-page">
 	<!-- Hero -->
 	<section class="careers-hero">

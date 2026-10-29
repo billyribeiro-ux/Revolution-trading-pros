@@ -44,13 +44,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title
-		>{product ? `Checkout - ${product.name}` : 'Product Not Found'} | Revolution Trading Pros</title
-	>
-	<meta name="robots" content="noindex, nofollow" />
-</svelte:head>
-
 <div class="checkout-redirect">
 	{#if isLoading && product}
 		<div class="loading-container">

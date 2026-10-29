@@ -279,8 +279,8 @@
 		<!-- Welcome Section -->
 		<section class="typ-welcome">
 			<div class="typ-welcome__content">
-				<h2 class="typ-welcome__pretitle">WELCOME TO</h2>
-				<h1 class="typ-welcome__title">Revolution Trading Pros</h1>
+				<p class="typ-welcome__pretitle">WELCOME TO</p>
+				<h2 class="typ-welcome__title">Revolution Trading Pros</h2>
 				<p class="typ-welcome__description">
 					We're thrilled to have you join our trading community! You now have access to expert-led
 					training, real-time trading insights, and a supportive community of traders.

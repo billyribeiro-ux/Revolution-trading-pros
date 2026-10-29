@@ -3,12 +3,19 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * Strict TypeScript interfaces for the unified SEO ownership layer.
+ * Integrates `svelte-meta-tags` v5.0.3 and `schema-dts` v2.1.0 types
+ * and complies with Google Search Central updates through October 28, 2026.
  * Nullable semantics: undefined = inherit, null = explicitly remove inherited value.
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
- * @since February 2026
+ * @since October 2026
  */
+
+import type { Thing, WithContext } from 'schema-dts';
+import type { MetaTagsProps, JsonLdProps } from 'svelte-meta-tags';
+
+export type { Thing, WithContext, MetaTagsProps, JsonLdProps };
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // OPEN GRAPH
@@ -208,6 +215,54 @@ export interface JsonLdSpeakable extends JsonLdBase {
 	name?: string;
 }
 
+/**
+ * VideoObject — updated per Google Search Central Sept 2026 Video structured data
+ * update (`creator` property support alongside `author` / `publisher`).
+ * See: https://developers.google.com/search/docs/appearance/structured-data/video
+ */
+export interface JsonLdVideoObject extends JsonLdBase {
+	'@type': 'VideoObject';
+	name: string;
+	description: string;
+	thumbnailUrl: string | string[];
+	uploadDate: string;
+	duration?: string;
+	contentUrl?: string;
+	embedUrl?: string;
+	expires?: string;
+	creator?: {
+		'@type': 'Person' | 'Organization';
+		name: string;
+		url?: string;
+	};
+	author?: {
+		'@type': 'Person' | 'Organization';
+		name: string;
+		url?: string;
+	};
+	publisher?: {
+		'@type': 'Organization';
+		name: string;
+		url?: string;
+		logo?: {
+			'@type': 'ImageObject';
+			url: string;
+		};
+	};
+	hasPart?: Array<{
+		'@type': 'Clip';
+		name: string;
+		startOffset: number;
+		endOffset: number;
+		url: string;
+	}>;
+	potentialAction?: {
+		'@type': 'SeekToAction';
+		target: string;
+		'startOffset-input': string;
+	};
+}
+
 export type JsonLdNode =
 	| JsonLdOrganization
 	| JsonLdWebSite
@@ -215,6 +270,7 @@ export type JsonLdNode =
 	| JsonLdArticle
 	| JsonLdFAQPage
 	| JsonLdSpeakable
+	| JsonLdVideoObject
 	| (JsonLdBase & Record<string, unknown>);
 
 // ═══════════════════════════════════════════════════════════════════════════════

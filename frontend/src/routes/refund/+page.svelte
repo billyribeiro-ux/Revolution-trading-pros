@@ -5,14 +5,6 @@
 	const lastUpdated = 'June 1, 2026';
 </script>
 
-<svelte:head>
-	<title>Refund Policy | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Revolution Trading Pros refund and cancellation policy. Understand your rights and our commitment to your satisfaction."
-	/>
-</svelte:head>
-
 <div class="legal-page">
 	<div class="legal-inner">
 		<div class="legal-header">

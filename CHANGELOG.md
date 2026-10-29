@@ -14,12 +14,12 @@ registry metadata, release notes and passing quality gates.
 
 ### Runtime + toolchain
 
-| What | From | To | Where |
-|------|------|----|-------|
-| Node.js (latest Active LTS, "Lithium") | 24.21.0 | **26.13.0** | `.nvmrc`, `.node-version`, `frontend/.node-version`, `engines.node` (root + frontend `>=26.13.0`), `NODE_VERSION` in both workflows |
-| pnpm | 12.10.1 | **12.16.1** | `packageManager` (root + frontend, sha512 `091d1dee…56d1` verified three ways: registry integrity, base64→hex, and downloaded tarball sha512), `engines.pnpm` (`>=12.16.1`) |
-| Rust | 1.99.0 | **1.99.1** | `rust-toolchain.toml`, CI `RUST_VERSION`, `api/Dockerfile` (`rust:1.99.1-trixie`) |
-| TypeScript | 6.0.3 | **6.0.3** (held) | see "Held, with evidence" |
+| What                                   | From    | To               | Where                                                                                                                                                                       |
+| -------------------------------------- | ------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Node.js (latest Active LTS, "Lithium") | 24.21.0 | **26.13.0**      | `.nvmrc`, `.node-version`, `frontend/.node-version`, `engines.node` (root + frontend `>=26.13.0`), `NODE_VERSION` in both workflows                                         |
+| pnpm                                   | 12.10.1 | **12.16.1**      | `packageManager` (root + frontend, sha512 `091d1dee…56d1` verified three ways: registry integrity, base64→hex, and downloaded tarball sha512), `engines.pnpm` (`>=12.16.1`) |
+| Rust                                   | 1.99.0  | **1.99.1**       | `rust-toolchain.toml`, CI `RUST_VERSION`, `api/Dockerfile` (`rust:1.99.1-trixie`)                                                                                           |
+| TypeScript                             | 6.0.3   | **6.0.3** (held) | see "Held, with evidence"                                                                                                                                                   |
 
 - **Node 26.13.0 became Active LTS on 2026-10-28** per `nodejs/Release`
   `schedule.json` and `nodejs.org/dist/index.json` (`"version":"v26.13.0"`,
@@ -98,6 +98,43 @@ registry metadata, release notes and passing quality gates.
   `tus-js-client` (`5.0.0-alpha.2`), `base32` (`1.0.0-rc.1`), `axum-test`
   (`22.0.0-rc.1`), `postgres` (`19beta3`), `matchit` `0.8.4` (pinned `=0.8.4` by
   `axum 0.8.9`), and `crypto-common` `0.1.6` (pinned by `cipher 0.4.4`).
+
+### Gates (verified on Node `26.13.0` LTS, `pnpm` `12.16.1`, Rust `1.99.1`)
+
+| Gate                                                                                                        | Result                                                                     |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile` + `git diff --exit-code -- pnpm-lock.yaml`                                 | ✅ clean (0 lockfile drift)                                                |
+| `pnpm peers check`                                                                                          | ✅ 0 peer dependency issues                                                |
+| `pnpm check` (`svelte-check` 4.7.7)                                                                         | ✅ 0 errors / 0 warnings                                                   |
+| `pnpm check:strict`, `pnpm check:a11y`                                                                      | ✅ 0 / 0, 0 / 0                                                            |
+| `pnpm lint` (`eslint` 10.13.0)                                                                              | ✅ 0 errors / 0 warnings                                                   |
+| `pnpm format:check` (`prettier` 3.9.10)                                                                     | ✅ clean                                                                   |
+| `pnpm test:unit` (`vitest` 5.0.5)                                                                           | ✅ 63/63 files, 2,778 passed, 32 skipped                                   |
+| `pnpm build` (`vite` 8.3.5 + prerender + service worker + `@sveltejs/adapter-cloudflare` 8.0.1)             | ✅ clean                                                                   |
+| `cd frontend && node scripts/seo-audit.ts`                                                                  | ✅ 76/76 prerendered pages passed, 0 errors, 0 warnings                    |
+| `cargo fmt --all --check` / `clippy --locked --all-targets -- -D warnings` / `check --locked --all-targets` | ✅ clean                                                                   |
+| `cargo deny check`                                                                                          | ✅ advisories / bans / licenses / sources ok                               |
+| `cargo machete`                                                                                             | ✅ 0 unused dependencies                                                   |
+| `cargo test --locked --test router_smoke_test --test utils_test --test stripe_test`                         | ✅ 51/51 passed (`router_smoke_test` 1, `stripe_test` 19, `utils_test` 31) |
+
+### SEO Architecture, Google Search Central (Oct 28, 2026) Alignment, & Hero Restoration
+
+- **Best-in-Class Svelte SEO Stack (`src/lib/seo/`):**
+  - Installed and integrated `svelte-meta-tags@5.0.3` and `schema-dts@2.1.0` alongside `super-sitemap@2.0.6` in `frontend/package.json` and `frontend/src/lib/seo/index.ts`.
+  - Migrated `frontend/src/lib/seo/page-seo-context.svelte.ts` from untyped `getContext`/`setContext` to Svelte 5.57's type-safe `createContext()`.
+  - Added `JsonLdVideoObject` and `buildVideoObject()` (with `creator` property support per Google Search Central's September 2026 Video structured data update) in `src/lib/seo/types.ts`, `src/lib/seo/schemas.ts`, and `src/lib/seo/video-schema.ts`, with unit test coverage in `src/lib/seo/__tests__/schemas.test.ts`.
+  - Updated `src/routes/+layout.server.ts` and `src/routes/+layout.svelte` so `isSearchPage` matches query parameters (`url.pathname + url.search`, guarded by `building` from `$app/env` during prerendering), `seoContext` updates reactively on client-side navigation via `$derived.by(...)`, and the duplicate `<meta name="theme-color" content="#FFFFFF" />` tag is removed.
+  - Fixed `src/hooks.server.ts` `maintenanceHandler` so build-time prerendering (`building` / `sveltekit-prerender`) always bypasses maintenance mode instead of redirecting prerendered static pages to `/maintenance` when the backend API is offline.
+- **33 Marketing, Guide, & Utility Routes Unified onto `page.data.seo`:**
+  - Eliminated all duplicate page-level `<svelte:head>` SEO blocks across 33 routes (`analytics`, `behavior`, `career`, `chatroom-rules`, `compare`, `cookie-policy`, `courses`, `crm`, `disclaimer`, `faq`, `free-trading-room-archive`, `guides/exit-strategies`, `guides/position-sizing`, `guides/risk-management`, `guides/swing-entry`, `indicators`, `learning-center`, `my/indicators/history`, `my-story`, `our-services`, `preferred-partners`, `privacy-policy`, `refund-policy`, `resources/etf-stocks-list`, `resources/Long-Indexes-For-Each-Basket`, `resources/market-indexes`, `resources/stock-indexes-list`, `scanner`, `swing-trading-room-archive`, `terms-of-service`, `tools/options-calculator`, `tutorials`, `video-library`, plus auth/utility routes).
+  - Removed 4 competitor brand leaks (`"Simpler Trading"`) and 6 hyphenated domain leaks (`revolution-trading-pros.com`).
+  - Removed conflicting `export const trailingSlash = 'always';` from `alerts/explosive-swings/+page.ts`, `alerts/spx-profit-pulse/+page.ts`, and `store/scanners/+page.ts`.
+  - Enabled public indexing on `mentorship/+page.ts` and enabled `ssr = true; prerender = true;` on `cookie-policy/+page.ts`.
+  - Fixed duplicate `<h1>` headings in `app.html` (`<noscript>`), `TradingRoomHeader.svelte` / `guides/*/+page.svelte`, `blog/[slug]/+page.svelte`, and `checkout/thank-you/+page.svelte`.
+  - Updated `sitemap.xml/+server.ts`, `robots.txt/+server.ts` (including AI crawler rules for `GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`), and `scripts/seo-audit.ts` (`76/76` prerendered pages pass with `0 errors / 0 warnings`).
+- **Homepage Hero Multi-Angle GSAP Animations Restored (`Hero.svelte`):**
+  - Traced the 4-slide multi-directional GSAP hero animations (`EPIC REVEAL`, `METEOR DROP`, `CINEMATIC ZOOM`, `MATRIX SLIDE`) to commits `f0f6dfdc4` (`2025-11-29`) and `b85212de6` (`2025-11-30`).
+  - Fixed the two regressions in `frontend/src/lib/components/sections/Hero.svelte`: removed conflicting infinite CSS `@keyframes primaryFloat` / `secondaryFloat` `transform` animations on `.cta--primary` and `.cta--secondary` that overrode GSAP's directional entrance transforms (`x: -100` / `x: 100`), and fixed `showSlide(index)` passing `previousSlide` (`-1`) instead of `currentSlide` to `animateSlideOut()`.
 
 ## [Unreleased] — 2026-10-11 — Options calculator: ported, navbar entry, idiomatic Svelte 5 / SvelteKit 3
 
@@ -243,7 +280,7 @@ failed before it rendered.
   both sides run the same code after parsing. There is one known exception:
   input containing `<select>`. Chromium already implements the relaxed select
   parsing that parse5 8 does not, and that can change where a malformed select
-  *ends*, not only what it contains. Both outputs are still sanitized; the worst
+  _ends_, not only what it contains. Both outputs are still sanitized; the worst
   case is a dev-mode hydration warning. **`pnpm test:sanitizer:browser`**
   (`frontend/scripts/sanitizer-differential.js`) re-checks parity against real
   Chromium. It bundles the shipped engine both ways and compares a committed
@@ -292,7 +329,7 @@ failed before it rendered.
   `property-information` 7.2.0.
 - **Root layout no longer imports consent UI.** `initializeConsent`,
   `onPageNavigation` and `exportConsentData` moved to `#lib/consent/init.js`,
-  which imports the template *store* rather than the `templates` barrel. The
+  which imports the template _store_ rather than the `templates` barrel. The
   barrel still re-exports them. The banner and `TemplateEditor` components are
   no longer in every page's server and client graph.
 - **Blog sinks closed:**
@@ -441,12 +478,12 @@ before and after on the same machine.
 
 ### Runtime + toolchain
 
-| What | From | To | Where |
-|------|------|----|-------|
-| Node.js (latest LTS, "Krypton") | 24.20.0 | **24.21.0** | `.nvmrc`, `.node-version`, `engines.node` (root + frontend), `NODE_VERSION` in both workflows |
-| pnpm | 11.24.0 | **12.10.1** | `packageManager` (root + frontend, sha512 verified three ways: registry integrity, its hex form, and `sha512sum` of the tarball), `engines.pnpm` |
-| Rust | 1.98.0 | **1.99.0** | `rust-toolchain.toml`, CI `RUST_VERSION`, `api/Dockerfile` |
-| TypeScript | 6.0.3 | 6.0.3 (held) | see "Held, with evidence" |
+| What                            | From    | To           | Where                                                                                                                                            |
+| ------------------------------- | ------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Node.js (latest LTS, "Krypton") | 24.20.0 | **24.21.0**  | `.nvmrc`, `.node-version`, `engines.node` (root + frontend), `NODE_VERSION` in both workflows                                                    |
+| pnpm                            | 11.24.0 | **12.10.1**  | `packageManager` (root + frontend, sha512 verified three ways: registry integrity, its hex form, and `sha512sum` of the tarball), `engines.pnpm` |
+| Rust                            | 1.98.0  | **1.99.0**   | `rust-toolchain.toml`, CI `RUST_VERSION`, `api/Dockerfile`                                                                                       |
+| TypeScript                      | 6.0.3   | 6.0.3 (held) | see "Held, with evidence"                                                                                                                        |
 
 Node 26 becomes LTS only on 2026-10-28 (`nodejs/Release` `schedule.json`), so
 the 24.x line stays and `@types/node` stays on 24.x to match it.
@@ -472,13 +509,13 @@ installs cleanly (simulated with pnpm 10.11.1 and 11.24.0).
 
 ### SvelteKit 3 stable
 
-| Package | From | To |
-|---------|------|----|
-| `@sveltejs/kit` | 3.0.0-next.25 | **3.0.1** (stable) |
-| `@sveltejs/adapter-cloudflare` | 8.0.0-next.6 | **8.0.0** (stable) |
-| `@sveltejs/vite-plugin-svelte` | 7.3.0 | 7.3.1 |
-| `svelte` | 5.57.0 | 5.57.2 (Kit 3.0.1 peers `^5.57.1`) |
-| `svelte-check` | 4.7.6 | 4.7.6 (already latest) |
+| Package                        | From          | To                                 |
+| ------------------------------ | ------------- | ---------------------------------- |
+| `@sveltejs/kit`                | 3.0.0-next.25 | **3.0.1** (stable)                 |
+| `@sveltejs/adapter-cloudflare` | 8.0.0-next.6  | **8.0.0** (stable)                 |
+| `@sveltejs/vite-plugin-svelte` | 7.3.0         | 7.3.1                              |
+| `svelte`                       | 5.57.0        | 5.57.2 (Kit 3.0.1 peers `^5.57.1`) |
+| `svelte-check`                 | 4.7.6         | 4.7.6 (already latest)             |
 
 Kit and the adapter must move together: Kit ≥ 3.0.0-next.27 replaced the
 adapter API `builder.generateManifest` (which adapter next.6 calls and Kit 3.0.1
@@ -578,7 +615,7 @@ Majors and their migrations:
   text blocks by type instead of `content[0]`, returns 422 with the category on
   a `refusal` stop reason, opts into server-side refusal fallback
   (`fallbacks: 'default'`), and maps upstream errors to 429/503/502 so a bad
-  server key is never reported to an editor as *their* 401.
+  server key is never reported to an editor as _their_ 401.
 - **`three` 0.185.1 → 0.186.1** (+ `@types/three` 0.186.0). r186 removed
   `PCFSoftShadowMap`, Threlte's default, and logs a fallback warning on every
   scene init; `TradingScene3D` now requests `PCFShadowMap` explicitly (identical
@@ -712,18 +749,18 @@ stays until the `ApiError` refactor in BACKLOG.md lands.
 Measured on this machine, before (`main` @ 5457181) and after, on Node
 24.21.0:
 
-| Gate | `main` | This change |
-|------|--------|-------------|
-| `pnpm check` (svelte-check) | 0 / 0 | 0 / 0 |
-| `check:strict`, `check:a11y` | — | 0 / 0, 0 / 0 |
-| eslint | 0 errors, 4 warnings | 0 errors, the same 4 warnings |
-| prettier (whole frontend) | — | clean |
-| vitest | 58 files, 2,272 passed, 32 skipped (71.7 s) | identical (33.6 s) |
-| `vite build` (+ prerender, service worker) | green, adapter `config.kit` warning | green, no warning |
-| `cargo fmt --check` / `clippy -D warnings` / `check` | clean | clean (Rust 1.99.0) |
-| `cargo deny check` | **FAILED** (RUSTSEC-2026-0258, -0285) | advisories / bans / licenses / sources ok, empty ignore list |
-| `cargo machete` | clean | clean |
-| no-DB tests (router smoke, utils, stripe) | 39/39 | 39/39 |
+| Gate                                                 | `main`                                      | This change                                                  |
+| ---------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| `pnpm check` (svelte-check)                          | 0 / 0                                       | 0 / 0                                                        |
+| `check:strict`, `check:a11y`                         | —                                           | 0 / 0, 0 / 0                                                 |
+| eslint                                               | 0 errors, 4 warnings                        | 0 errors, the same 4 warnings                                |
+| prettier (whole frontend)                            | —                                           | clean                                                        |
+| vitest                                               | 58 files, 2,272 passed, 32 skipped (71.7 s) | identical (33.6 s)                                           |
+| `vite build` (+ prerender, service worker)           | green, adapter `config.kit` warning         | green, no warning                                            |
+| `cargo fmt --check` / `clippy -D warnings` / `check` | clean                                       | clean (Rust 1.99.0)                                          |
+| `cargo deny check`                                   | **FAILED** (RUSTSEC-2026-0258, -0285)       | advisories / bans / licenses / sources ok, empty ignore list |
+| `cargo machete`                                      | clean                                       | clean                                                        |
+| no-DB tests (router smoke, utils, stripe)            | 39/39                                       | 39/39                                                        |
 
 **End to end on the real stack** (docker compose, fresh volumes):
 
@@ -771,6 +808,7 @@ Everything the repo depends on moved to its latest release as of 2026-08-30,
 except Node, which is pinned to the latest **LTS**.
 
 ### Runtime + toolchain
+
 - **Node 24.19.0 → 24.20.0 LTS** ("Krypton", released 2026-08-26) — `.nvmrc`,
   `.node-version`, `engines.node` (root + frontend), and `NODE_VERSION` in both
   workflows.
@@ -781,16 +819,19 @@ except Node, which is pinned to the latest **LTS**.
   despite its comment claiming it tracked the toolchain file.
 
 ### Services (latest within pinned majors)
+
 - postgres `18.4-alpine → 18.6-alpine`, redis `8.8.0-alpine → 8.8.2-alpine`,
   meilisearch `v1.46.0 → v1.53.1`.
 
 ### JavaScript
+
 Workspace-wide `pnpm up -r --latest`: svelte 5.57.0, vite 8.2.2, vitest 4.1.11,
 eslint 10.9.1, typescript-eslint 8.68.0, wrangler 4.127.1, @anthropic-ai/sdk
 0.122.0, bits-ui 2.19.0, @threlte/core 8.6.0, web-vitals 6.2.1, magic-string
 1.2.3, and the `@paypal/paypal-js` 10 → 11 major (type-only usage verified).
 
 Holds, each peer-verified rather than assumed:
+
 - **typescript stays 6.0.3** (latest 7.0.2) — `@sveltejs/kit@next` requires
   `^6.0.0` and `typescript-eslint` requires `>=4.8.4 <6.1.0`.
 - **@types/node stays on 24.x** to match the Node 24 LTS runtime.
@@ -803,6 +844,7 @@ resolves runed's stale `^2.21.0` range (its dist only uses `$app/environment`,
 `$app/navigation`, `$app/state`, all of which resolve on Kit 3).
 
 ### Rust
+
 argon2 0.6.0, redis 1.6, aws-sdk-s3 1.144, aws-config 1.11, uuid 1.26,
 aes-gcm 0.11.1, axum-test 21.1, hyper 1.11.1, plus a full lockfile refresh
 (43 crates). Held: `base32` and `axum-test` majors are prerelease-only;
@@ -825,6 +867,7 @@ tracked in BACKLOG.md rather than done mid-upgrade. `deny.toml`'s three
 RUSTSEC exemptions were re-verified against the new lockfile and re-dated.
 
 ### Gates
+
 svelte-check 0 errors / 0 warnings (4,872 files), eslint 0 errors, 2,272 unit
 tests, frontend + click-to-source builds, `cargo fmt --check`, `cargo check`,
 `cargo clippy -D warnings`, and router-smoke / utils / stripe / crypto suites
@@ -1033,7 +1076,7 @@ Kit 3 migration itself: SvelteKit 2 never routed expected errors through
   resolved with `new URL(path, location.href).pathname`, which is how the
   browser resolves the same relative string passed to `cache.add()`.
 - **Every `error(404, ...)` rendered as HTTP 500 "Internal error".** In
-  SvelteKit 3 a `status`/`message` returned from `handleError` is an *override*,
+  SvelteKit 3 a `status`/`message` returned from `handleError` is an _override_,
   and omitted properties are inherited from the caught error. The migrated hook
   returned a hardcoded `{ message: 'Internal error', status: 500 }`, which
   clobbered the status and message of every app error. Both hooks now return

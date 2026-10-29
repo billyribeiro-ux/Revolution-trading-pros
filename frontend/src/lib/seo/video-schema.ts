@@ -54,6 +54,11 @@ export interface VideoInput {
 		endDate?: string;
 	};
 	transcript?: string;
+	creator?: {
+		name: string;
+		url?: string;
+		type?: 'Person' | 'Organization';
+	};
 	author?: {
 		name: string;
 		url?: string;
@@ -328,6 +333,19 @@ export function generateVideoSchema(
 	// Add transcript
 	if (video.transcript) {
 		schema['transcript'] = video.transcript;
+	}
+
+	// Add creator (Google Search Central Sept 2026 VideoObject structured data update)
+	const creatorInfo = video.creator || video.author;
+	if (creatorInfo) {
+		const creator: Record<string, unknown> = {
+			'@type': video.creator?.type ?? 'Person',
+			name: creatorInfo.name
+		};
+		if (creatorInfo.url) {
+			creator['url'] = creatorInfo.url;
+		}
+		schema['creator'] = creator;
 	}
 
 	// Add author

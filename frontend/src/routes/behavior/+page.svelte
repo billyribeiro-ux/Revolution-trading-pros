@@ -51,11 +51,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Behavior Analytics | Revolution Trading Pros</title>
-	<meta name="description" content="Enterprise behavioral analytics dashboard" />
-</svelte:head>
-
 <div class="behavior-dashboard">
 	<!-- Header -->
 	<div class="dashboard-header">

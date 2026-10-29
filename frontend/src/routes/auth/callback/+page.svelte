@@ -89,10 +89,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Authenticating... | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="callback-container">
 	<div class="callback-card" transition:fade={{ duration: 300 }}>
 		{#if status === 'processing'}

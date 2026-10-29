@@ -96,11 +96,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Subscribe to {roomName || 'Trading Room'} | Revolution Trading Pros</title>
-	<meta name="robots" content="noindex, nofollow" />
-</svelte:head>
-
 <div class="checkout-page">
 	<div class="checkout-container">
 		<!-- Header -->

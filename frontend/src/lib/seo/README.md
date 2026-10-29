@@ -1,98 +1,120 @@
 # SEO Plugin Layer — Revolution Trading Pros
 
-Production-grade, unified SEO ownership layer for SvelteKit 2 + Svelte 5.
+Production-grade, unified SEO ownership layer for **SvelteKit 3.1.0 + Svelte 5.57.3** (as of **October 28, 2026**).
 
 ## Architecture
 
 ```
 src/lib/seo/
-├── types.ts          # All TypeScript interfaces (SEOInput, SEOResolved, etc.)
-├── defaults.ts       # Site-wide default values
-├── merge.ts          # Deterministic deep merge engine
-├── canonical.ts      # URL normalization engine
-├── robots.ts         # Environment-aware robots directive builder
-├── jsonld.ts         # Type-safe JSON-LD schema builders
-├── dedupe.ts         # Head tag deduplication engine
-├── resolve.ts        # Full resolution pipeline
-├── Seo.svelte        # Single <svelte:head> renderer
-├── index.ts          # Barrel exports
-└── README.md         # This file
+├── types.ts                    # All TypeScript interfaces (SEOInput, SEOResolved, JsonLdVideoObject, etc.) + svelte-meta-tags / schema-dts re-exports
+├── defaults.ts                 # Site-wide default values, canonical policy, private/search path prefixes
+├── merge.ts                    # Deterministic deep merge engine with nullable override semantics
+├── canonical.ts                # URL normalization engine (HTTPS, lowercase host, query param allow/denylist, trailingSlash: 'never')
+├── robots.ts                   # Environment-aware robots directive builder + Google preview controls
+├── jsonld.ts                   # Core JSON-LD schema builders, XSS-safe serializer, @graph wrapper
+├── schemas.ts                  # Rich result schema builders (Article, Breadcrumb, Course, Product, VideoObject, SoftwareApplication, WebPage)
+├── video-schema.ts             # VideoObject + ItemList schema generator for video library pages (with Sept 2026 creator support)
+├── dedupe.ts                   # Head tag & JSON-LD @id deduplication engine
+├── resolve.ts                  # Full resolution pipeline (resolveSEO, createSEOContext)
+├── page-seo-context.svelte.ts  # Svelte 5.57 type-safe createContext() reactive SEO override channel
+├── Seo.svelte                  # Single <svelte:head> renderer
+├── index.ts                    # Barrel exports (unified layer + svelte-meta-tags@5.0.3 + schema-dts@2.1.0)
+└── README.md                   # This file
 
-__tests__/
+src/lib/seo/__tests__/
 ├── seo.merge.test.ts
 ├── seo.canonical.test.ts
 ├── seo.robots.test.ts
 ├── seo.dedupe.test.ts
-└── seo.resolve.test.ts
+├── seo.resolve.test.ts
+└── schemas.test.ts
 
 scripts/
-└── seo-audit.ts      # Post-build HTML audit
+└── seo-audit.ts                # Post-build HTML + prerendered route SEO audit
 ```
+
+### Best-in-Class Svelte SEO Stack (October 28, 2026)
+
+| Package / Layer                             | Version  | Role                                                                                                                                                              |
+| ------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/seo/` (`<Seo />` + `resolveSEO()`) | Built-in | Primary unified `<svelte:head>` owner, canonical normalizer, environment-aware robots guard, and XSS-safe JSON-LD `@graph` serializer                             |
+| `svelte-meta-tags`                          | `5.0.3`  | Official Svelte 5 runes meta/JSON-LD library (`MetaTags`, `JsonLd`, `defineBaseMetaTags`, `definePageMetaTags`, `deepMerge`) re-exported from `#lib/seo/index.js` |
+| `super-sitemap`                             | `2.0.6`  | Automated SvelteKit route discovery and XML sitemap generation (`src/routes/sitemap.xml/+server.ts`)                                                              |
+| `schema-dts`                                | `2.1.0`  | Google's official TypeScript definitions for Schema.org (`Thing`, `WithContext`) integrated with `#lib/seo/types.js`                                              |
 
 ### Ownership Model
 
-**One layer owns all `<head>` SEO output.** The `<Seo>` component renders once in the root `+layout.svelte`. Per-route overrides flow through `page.data.seo` from load functions. No other component should emit SEO-related `<svelte:head>` tags.
+**One layer owns all `<head>` SEO output.** The `<Seo>` component renders once in the root `+layout.svelte`. Per-route overrides flow through `page.data.seo` from load functions (or via `setPageSeo` from `page-seo-context.svelte.ts`, which uses Svelte 5.57's type-safe `createContext()`). No page or child component should emit `<title>`, `<meta name="description">`, `<link rel="canonical">`, `<meta name="robots">`, `<meta property="og:*">`, or `<meta name="twitter:*">` inside its own `<svelte:head>`.
 
 ```
-┌─────────────────────────────────────────────────┐
-│  +layout.server.ts  →  seoContext + seoDefaults │
-│  +page.server.ts    →  page-level SEOInput      │
-│  +layout.svelte     →  resolveSEO() → <Seo />  │
-└─────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────┐
+│  +layout.server.ts           →  seoContext + seoDefaults       │
+│  +page.ts / +page.server.ts  →  page-level SEOInput            │
+│  page-seo-context.svelte.ts  →  createContext() reactive state │
+│  +layout.svelte              →  resolveSEO() → <Seo />         │
+└────────────────────────────────────────────────────────────────┘
 ```
 
-**Data flow:** `defaults → layout overrides → page overrides → resolveSEO() → <Seo />`
+**Data flow:** `defaults → layout overrides → page.data.seo → context overrides → resolveSEO() → <Seo />`
+
+**Client-side navigation reactivity:** In `src/routes/+layout.svelte`, `seoContext` derives `pathname`, `isPrivate`, `isSearchPage`, and `isErrorPage` reactively from `page.url.pathname + page.url.search` and `page.status` via `$derived.by(...)`, ensuring SPA navigations always recompute canonical URLs and `noindex` guards accurately.
 
 ## Quick Start
 
-### 1. No additional install needed
+### 1. Dependencies
 
-All dependencies are already in the project:
+All dependencies are installed in `frontend/package.json` under `pnpm`:
 
-- `super-sitemap` (sitemap generation)
-- `vitest` + `@vitest/coverage-v8` (testing)
-- `zod` (available for runtime validation if needed)
+- `svelte-meta-tags@5.0.3` (Svelte 5 runes meta/JSON-LD components & utilities)
+- `super-sitemap@2.0.6` (sitemap generation)
+- `schema-dts@2.1.0` (Schema.org TypeScript definitions)
+- `vitest@5.0.5` + `@vitest/coverage-v8@5.0.5` (unit testing)
 
-### 2. Root layout already integrated
+### 2. Root layout integration
 
 The root `+layout.server.ts` provides `seoContext` and `seoDefaults` to all pages.
-The root `+layout.svelte` renders `<Seo seo={resolvedSeo} />`.
+The root `+layout.svelte` computes `resolvedSeo` via `$derived.by(...)` and renders `<Seo seo={resolvedSeo} />`.
 
 ### 3. Add per-route SEO overrides
 
-In any `+page.server.ts` or `+page.ts`:
+In any `+page.ts` or `+page.server.ts`:
 
 ```typescript
+import type { Load } from '@sveltejs/kit';
 import type { SEOInput } from '#lib/seo/types.js';
 
-export const load = async () => {
+export const load: Load = () => {
 	const seo: SEOInput = {
 		title: 'About Us',
-		description: 'Learn about Revolution Trading Pros.'
+		description: 'Learn about Revolution Trading Pros.',
+		og: { type: 'website' }
 	};
 	return { seo };
 };
 ```
 
-That's it. The layout picks up `page.data.seo` and resolves everything.
+That's it. The root layout picks up `page.data.seo` and resolves `<title>`, `<meta name="description">`, `<link rel="canonical">`, OpenGraph, Twitter Card, robots directives, and JSON-LD `@graph`.
 
 ## API Reference
 
-### Types
+### Types (`#lib/seo/types.js`)
 
-| Type               | Purpose                                 |
-| ------------------ | --------------------------------------- |
-| `SEOInput`         | What routes provide (partial, nullable) |
-| `SEOResolved`      | Final output ready for rendering        |
-| `SEODefaults`      | Site-wide configuration                 |
-| `OpenGraph`        | OG meta fields                          |
-| `TwitterCard`      | Twitter Card fields                     |
-| `RobotsDirectives` | Robots meta directives                  |
-| `AlternateLink`    | hreflang alternate link                 |
-| `VerificationTags` | Search engine verification codes        |
-| `JsonLdNode`       | Union of all JSON-LD schema types       |
-| `RouteSEOContext`  | Route context (pathname, env, flags)    |
-| `CanonicalConfig`  | Canonical URL normalization config      |
+| Type                           | Purpose                                                                                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SEOInput`                     | What routes provide (partial, nullable)                                                                                                                                         |
+| `SEOResolved`                  | Final output ready for rendering                                                                                                                                                |
+| `SEODefaults`                  | Site-wide configuration                                                                                                                                                         |
+| `OpenGraph`                    | OG meta fields                                                                                                                                                                  |
+| `TwitterCard`                  | Twitter Card fields                                                                                                                                                             |
+| `RobotsDirectives`             | Robots meta directives (`index`, `follow`, `max-snippet`, `max-image-preview`, `max-video-preview`)                                                                             |
+| `AlternateLink`                | `hreflang` alternate link                                                                                                                                                       |
+| `VerificationTags`             | Search engine verification codes (`google`, `bing`, `yandex`, `other`)                                                                                                          |
+| `JsonLdNode`                   | Union of all JSON-LD schema types (Organization, WebSite, WebPage, Article, BreadcrumbList, FAQPage, Course, Product, SoftwareApplication, VideoObject, SpeakableSpecification) |
+| `JsonLdVideoObject`            | Schema.org `VideoObject` with `creator` support (Google Sept 2026 update)                                                                                                       |
+| `RouteSEOContext`              | Route context (`pathname`, `env`, `isPrivate`, `isSearchPage`, `isErrorPage`, `statusCode`)                                                                                     |
+| `CanonicalConfig`              | Canonical URL normalization config                                                                                                                                              |
+| `MetaTagsProps`, `JsonLdProps` | Re-exported from `svelte-meta-tags`                                                                                                                                             |
+| `Thing`, `WithContext`         | Re-exported from `schema-dts`                                                                                                                                                   |
 
 ### Nullable Semantics
 
@@ -100,437 +122,131 @@ That's it. The layout picks up `page.data.seo` and resolves everything.
 - `null` = explicitly remove inherited value
 - any value = override
 
-### Functions
+### Functions & Builders
 
-#### `resolveSEO(context, defaults, ...overrides)`
+#### Resolution & Context
 
-Full resolution pipeline. Returns `SEOResolved`.
+- `resolveSEO(context, defaults, ...overrides)` — Full resolution pipeline returning `SEOResolved`.
+- `createSEOContext(opts)` — Create a `RouteSEOContext` from SvelteKit route data.
+- `mergeSEO(...layers)` — Deterministic deep merge of `SEOInput` layers.
+- `normalizeCanonical(input, config)` — Normalize a URL: force HTTPS, lowercase host, strip tracking params, enforce `trailingSlash: 'never'`.
+- `buildRobots(context, overrides, defaults)` — Environment-aware robots directive builder returning `{ directives, content }`.
+- `initPageSeo()` / `setPageSeo(seo)` — Svelte 5.57 `createContext()` reactive page SEO state in `#lib/seo/page-seo-context.svelte.js`.
 
-#### `createSEOContext(opts)`
-
-Create a `RouteSEOContext` from common SvelteKit data.
-
-#### `mergeSEO(...layers)`
-
-Deterministic deep merge of SEOInput layers.
-
-#### `normalizeCanonical(input, config)`
-
-Normalize a URL: force HTTPS, lowercase host, strip tracking params, enforce trailing slash.
-
-#### `buildRobots(context, overrides, defaults)`
-
-Environment-aware robots directive builder. Returns `{ directives, content }`.
-
-#### JSON-LD Builders
+#### JSON-LD Builders (`#lib/seo/jsonld.js` & `#lib/seo/schemas.js`)
 
 - `organizationSchema(opts)` → `JsonLdOrganization`
 - `websiteSchema(opts)` → `JsonLdWebSite`
-- `breadcrumbSchema(items, id?)` → `JsonLdBreadcrumbList`
-- `articleSchema(opts)` → `JsonLdArticle`
-- `faqSchema(questions, id?)` → `JsonLdFAQPage` _(deprecated for Google SEO — see §May 2026 SEO updates)_
-- `speakableSchema(opts)` → `JsonLdSpeakable` _(specialized voice markup; not a generative-AI ranking requirement)_
+- `breadcrumbSchema(items, id?)` / `buildBreadcrumb(items, pageUrl)` → `JsonLdBreadcrumbList`
+- `articleSchema(opts)` / `buildArticle(config)` → `JsonLdArticle`
+- `buildCourse(config)` → `JsonLdCourse`
+- `buildProduct(config)` → `JsonLdProduct` (defaults `hasAdultConsideration: 'no'` per Google May 2026 update)
+- `buildVideoObject(config)` → `JsonLdVideoObject` (supports `creator`, `author`, `publisher`, `thumbnailUrl`, `uploadDate`, `contentUrl`, `embedUrl`, `duration` per Google Sept 2026 update)
+- `generateVideoSchema(video)` / `generateVideoListSchema(videos, listMeta)` (`#lib/seo/video-schema.js`) → `VideoObject` / `ItemList` with `creator` support
+- `buildSoftwareApplication(config)` → `JsonLdSoftwareApplication`
+- `buildWebPage(config)` → `JsonLdWebPage`
+- `faqSchema(questions, id?)` / `buildFAQ(items, pageUrl)` → `JsonLdFAQPage` _(deprecated for Google Search rich results — see §Google Search Central 2026 Updates)_
+- `speakableSchema(opts)` / `buildSpeakable(cssSelectors, pageUrl)` → `JsonLdSpeakable` _(specialized voice/Assistant markup; not required for AI Overviews)_
 
-#### Utilities
+#### Serialization & Deduplication Utilities
 
-- `safeJsonLdSerialize(node)` — XSS-safe JSON-LD serialization
-- `toGraph(nodes)` — Wrap nodes in `@graph` structure
+- `safeJsonLdSerialize(node)` — XSS-safe JSON-LD serialization (escapes `<`, `>`, `&`, `\u2028`, `\u2029`)
+- `toGraph(nodes)` — Wrap nodes in a single `@graph` structure
 - `dedupeJsonLd(nodes)` — Deduplicate by `@id` or stable hash
-- `directivesToString(directives)` — Convert to meta content string
-- `parseRobotsString(content)` — Parse content string back to directives
-
-## Examples
-
-### Marketing Page (Indexable)
-
-```typescript
-// src/routes/about/+page.server.ts
-import type { SEOInput } from '#lib/seo/types.js';
-
-export const load = async () => {
-	const seo: SEOInput = {
-		title: 'About Us',
-		description: 'Revolution Trading Pros: 18,000+ traders trust our education.',
-		og: { type: 'website' }
-	};
-	return { seo };
-};
-```
-
-### Blog Article with JSON-LD
-
-```typescript
-// src/routes/blog/[slug]/+page.ts
-import type { SEOInput } from '#lib/seo/types.js';
-import { articleSchema, breadcrumbSchema } from '#lib/seo/jsonld.js';
-
-export const load = async ({ params, url }) => {
-	const post = await fetchPost(params.slug);
-	const seo: SEOInput = {
-		title: post.title,
-		description: post.excerpt,
-		canonical: `https://revolutiontradingpros.com${url.pathname}`,
-		og: {
-			type: 'article',
-			image: post.image,
-			article: {
-				publishedTime: post.publishedAt,
-				author: post.author
-			}
-		},
-		jsonld: [
-			articleSchema({
-				headline: post.title,
-				url: `https://revolutiontradingpros.com${url.pathname}`,
-				datePublished: post.publishedAt,
-				authorName: post.author,
-				publisherName: 'Revolution Trading Pros',
-				type: 'BlogPosting'
-			}),
-			breadcrumbSchema([
-				{ name: 'Home', url: 'https://revolutiontradingpros.com' },
-				{ name: 'Blog', url: 'https://revolutiontradingpros.com/blog' },
-				{ name: post.title, url: `https://revolutiontradingpros.com${url.pathname}` }
-			])
-		]
-	};
-	return { post, seo };
-};
-```
-
-### Private Page (NoIndex)
-
-```typescript
-// src/routes/account/+page.server.ts
-import type { SEOInput } from '#lib/seo/types.js';
-
-export const load = async () => {
-	const seo: SEOInput = {
-		title: 'My Account',
-		description: 'Manage your account.',
-		robots: { index: false, follow: false }
-	};
-	return { seo };
-};
-```
-
-Note: `/account` is in `privatePathPrefixes` so it's automatically noindex even without the explicit override. The explicit setting is defense-in-depth.
+- `directivesToString(directives)` / `parseRobotsString(content)` — Robots directive string conversion
 
 ## Canonical Policy Tuning
 
-Edit `src/lib/seo/defaults.ts` → `canonical`:
+Configured in `src/lib/seo/defaults.ts` → `canonical`:
 
 ```typescript
 canonical: {
-  siteUrl: 'https://your-domain.com',
-  forceHttps: true,
-  trailingSlash: 'never',       // 'always' | 'never' | 'ignore'
-  queryParamAllowlist: ['page'], // preserved in canonical
-  queryParamDenylist: [          // stripped from canonical
-    'utm_source', 'utm_medium', 'gclid', 'fbclid', ...
-  ],
+	siteUrl: 'https://revolutiontradingpros.com',
+	forceHttps: true,
+	trailingSlash: 'never', // 'always' | 'never' | 'ignore'
+	queryParamAllowlist: ['page'], // preserved in canonical
+	queryParamDenylist: [
+		'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
+		'gclid', 'fbclid', 'msclkid', 'twclid', 'li_fat_id', 'mc_cid', 'mc_eid',
+		'ref', 'source', 'affiliate', 'session_id', 'sid', '_ga', '_gl'
+	]
 }
 ```
 
-## Robots Policy Tuning
+> **Important:** Do NOT set `export const trailingSlash = 'always';` in individual route `+page.ts` files. All routes follow the global `trailingSlash: 'never'` canonical policy so prerendered URLs, `sitemap.xml`, and `<link rel="canonical">` never conflict.
 
-Edit `src/lib/seo/defaults.ts`:
+## Robots Policy & Automatic NoIndex Guards
+
+Configured in `src/lib/seo/defaults.ts`:
 
 ```typescript
 robots: {
-  index: true,
-  follow: true,
-  'max-snippet': -1,
-  'max-image-preview': 'large',
-  'max-video-preview': -1,
+	index: true,
+	follow: true,
+	'max-snippet': -1,
+	'max-image-preview': 'large',
+	'max-video-preview': -1
 }
 ```
 
-**Automatic noindex rules:**
+**Automatic `noindex` rules (`privatePathPrefixes` & `searchPathPrefixes`):**
 
-- Non-production environments (dev/staging)
-- Paths matching `privatePathPrefixes`
-- Paths matching `searchPathPrefixes`
-- Pages with `isErrorPage: true`
+- Non-production environments (`dev`, `staging`, `preview`, `test`)
+- Private/transactional/utility prefixes in `privatePathPrefixes`:
+  `/account`, `/admin`, `/api`, `/APP`, `/auth`, `/cart`, `/checkout`, `/cms`, `/crm`, `/dashboard`, `/debug`, `/embed`, `/forgot-password`, `/login`, `/logout`, `/maintenance`, `/media`, `/members`, `/my`, `/onboarding`, `/order`, `/posts`, `/profile`, `/register`, `/reset-password`, `/ robots`, `/settings`, `/signup`, `/thank-you`, `/tools/options-calculator/embed`, `/tools/options-calculator/shared`, `/unauthorized`, `/user`, `/verify`, `/verify-email`, `/webhook`, `/watchlist`
+- Search query routes matching `searchPathPrefixes` (`/search`, `/?s=`, `/?q=`, `/blog?search=`, `/courses?search=`) — matched against `url.pathname + url.search`
+- Error pages (`isErrorPage: true` or HTTP status `>= 400`)
 
-**Safety guards:**
+## Sitemap & `robots.txt` Strategy
 
-- `index: true` override is ignored on non-production environments
-- `index: true` override is ignored on private/error pages
+### `src/routes/sitemap.xml/+server.ts`
 
-## JSON-LD Recipes
+- Powered by **super-sitemap 2.0.6**.
+- Auto-discovers all public indexable routes from `src/routes/`.
+- Excludes all private, auth, checkout, admin, API, embed, and internal routes via `excludeRoutePatterns`.
+- Populates `paramValues` for dynamic public routes (`/alerts/[slug]`, `/blog/[slug]`, `/classes/[slug]`, `/courses/[slug]`, `/indicators/[slug]`, `/learn/[slug]`, `/live-trading-rooms/[slug]`, `/ scanner/[slug]`, `/ trading-rooms/[slug]`).
 
-### FAQ Page
+### `src/routes/robots.txt/+server.ts`
 
-```typescript
-import { faqSchema } from '#lib/seo/jsonld.js';
+- Environment-aware: blocks all crawling (`Disallow: /`) on staging/preview/dev environments; allows public indexing on production while disallowing private/admin/checkout/API prefixes.
+- Explicitly configures AI search and training user-agents (`GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `ClaudeBot`, `Claude-Web`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Bytespider`) to allow public marketing pages while blocking private/member/admin/API paths.
+- Points crawlers to `Sitemap: https://revolutiontradingpros.com/sitemap.xml`.
 
-const seo: SEOInput = {
-	jsonld: [
-		faqSchema([
-			{ question: 'What is day trading?', answer: 'Day trading is...' },
-			{ question: 'How do I start?', answer: 'Start by...' }
-		])
-	]
-};
-```
+## Google Search Central 2026 Updates (Verified through October 28, 2026)
 
-Do not add `FAQPage` markup to this site's marketing routes for Google SEO.
-Google's May 2026 documentation says FAQ rich results no longer appear in
-Search and remaining eligibility is limited to well-known government/health
-sites. Keep visible FAQ copy as normal page content.
+All Google Search Central documentation and algorithm updates through **October 28, 2026** are reflected in this SEO layer:
 
-### Course Page
+| Date           | Google Search Central Update                                                                                                                                  | Implementation in Revolution Trading Pros                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **2026-02**    | **February 2026 Discover Core Update**                                                                                                                        | Large OG images (`1200×630`) + `max-image-preview: 'large'` enabled across all indexable marketing and blog routes.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **2026-03**    | **March 2026 Core Update & Spam Update**                                                                                                                      | Eliminated competitor brand leaks ("Simpler Trading") and hyphenated domain typos (`revolution-trading-pros.com`) across all routes; enforced single `<h1>` hierarchy and unique route metadata.                                                                                                                                                                                                                                                                                                                                                                     |
+| **2026-05-07** | **FAQPage Rich Results Deprecation** (Rich Results Test support removed June 2026; GSC API removed Aug 2026; restricted to government/health authority sites) | `FAQPage` JSON-LD removed from commercial marketing routes; `faqSchema` / `buildFAQ` marked `@deprecated` in code; visible FAQ accordions preserved in semantic HTML for users.                                                                                                                                                                                                                                                                                                                                                                                      |
+| **2026-05-15** | **AI Overviews & AI Mode Guidance** (`SpeakableSpecification` clarified as voice/Assistant-only; standard SSR HTML + preview controls drive AI Overviews)     | Full SSR HTML on all public pages (including `cookie-policy` fixed from `ssr = false` to `ssr = true; prerender = true`), `max-snippet: -1`, `max-image-preview: 'large'`, `max-video-preview: -1`, and explicit AI crawler rules in `robots.txt`.                                                                                                                                                                                                                                                                                                                   |
+| **2026-05-20** | **Merchant Listing / Product `hasAdultConsideration`**                                                                                                        | `buildProduct()` in `src/lib/seo/schemas.ts` includes `hasAdultConsideration: 'no'` by default for all courses, indicators, and alert subscriptions.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **2026-05-21** | **May 2026 Core Update** (completed June 2, 2026)                                                                                                             | Every public marketing route (`about`, `blog`, `career`, `chatroom-rules`, `compare`, `contact`, `cookie-policy`, `courses`, `crm`, `disclaimer`, `faq`, `free-trading-room-archive`, `indicators`, `learning-center`, `live-trading-rooms`, `mentorship`, `my-story`, `our-services`, `preferred-partners`, `privacy-policy`, `refund-policy`, `resources/*`, `scanner`, `store/scanners`, `swing-trading-room-archive`, `terms-of-service`, `tools/options-calculator`, `tutorials`, `video-library`) has dedicated `SEOInput` via `+page.ts` / `+page.server.ts`. |
+| **2026-08**    | **August 2026 Discover Core Update**                                                                                                                          | Enforced strict content-to-metadata alignment, clickbait-free titles (`50–60` chars), and high-resolution OpenGraph/Twitter summary_large_image cards.                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **2026-09**    | **Video Structured Data (`VideoObject.creator`) Update**                                                                                                      | Added `JsonLdVideoObject` with `creator` (`Person` or `Organization`) in `src/lib/seo/types.ts`, `buildVideoObject()` in `src/lib/seo/schemas.ts`, and `creator` support in `src/lib/seo/video-schema.ts`.                                                                                                                                                                                                                                                                                                                                                           |
+| **2026-10**    | **Search Console API `search_type: 'ai_overview'` & Core Web Vitals INP ≤ 200ms**                                                                             | SSR + prerendering enabled on static marketing pages, zero duplicate `<svelte:head>` tags, and clean hydration on Svelte 5.57.3 / SvelteKit 3.1.0.                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
-```typescript
-import type { JsonLdNode } from '#lib/seo/types.js';
+## Verification & Audit Commands
 
-const courseNode: JsonLdNode = {
-	'@context': 'https://schema.org',
-	'@type': 'Course',
-	'@id': 'https://example.com/courses/trading-101#course',
-	name: 'Trading 101',
-	description: 'Learn the fundamentals.',
-	provider: { '@type': 'Organization', name: 'Revolution Trading Pros' }
-};
-
-const seo: SEOInput = { jsonld: [courseNode] };
-```
-
-## Sitemap Strategy
-
-**super-sitemap** is the sole sitemap owner.
-
-- **Location:** `src/routes/sitemap.xml/+server.ts`
-- **Auto-discovers** routes from `src/routes/`
-- **Excludes** all private/admin/auth/technical routes via `excludeRoutePatterns`
-- **Supports** sitemap index for >50K URLs automatically
-- **Constraints:** 50,000 URLs max OR 50MB uncompressed per file (Google limit)
-
-### Adding dynamic routes to sitemap
-
-For routes like `/blog/[slug]`, provide `paramValues`:
-
-```typescript
-paramValues: {
-  '/blog/[slug]': slugs.map(s => s.slug),
-}
-```
-
-### robots.txt reference
-
-The `robots.txt` at `src/routes/robots.txt/+server.ts` already references:
-
-```
-Sitemap: https://revolutiontradingpros.com/sitemap.xml
-```
-
-## Google Search Console Verification
-
-1. Get your verification code from [Google Search Console](https://search.google.com/search-console)
-2. Update `src/lib/seo/defaults.ts`:
-   ```typescript
-   verification: {
-     google: 'YOUR_VERIFICATION_CODE',
-   }
-   ```
-3. Deploy and verify in GSC
-
-## Deployment Checklist
-
-- [ ] `npm run check` — 0 errors, 0 warnings
-- [ ] `npm run test` — all tests pass
-- [ ] `npm run build` — successful build
-- [ ] `npx tsx scripts/seo-audit.ts` — 0 errors in audit
-- [ ] Verify `robots.txt` at `/robots.txt`
-- [ ] Verify `sitemap.xml` at `/sitemap.xml`
-- [ ] Test OG tags with [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
-- [ ] Test Twitter cards with [Twitter Card Validator](https://cards-dev.twitter.com/validator)
-- [ ] Validate JSON-LD with [Google Rich Results Test](https://search.google.com/test/rich-results)
-- [ ] Submit sitemap in Google Search Console
-- [ ] Submit sitemap in Bing Webmaster Tools
-
-## Google-Aligned Compliance
-
-### Sitemap Constraints
-
-- Max 50,000 URLs per sitemap file
-- Max 50MB uncompressed per file
-- super-sitemap auto-segments when exceeded
-
-### Robots Meta / X-Robots-Tag
-
-- Full support for all standard directives
-- Environment-aware defaults prevent accidental indexing
-
-### Structured Data Quality
-
-- Type-safe builders prevent invalid schemas
-- XSS-safe serialization for script injection context
-- Deduplicated by `@id` or stable hash
-
-### Snippet/Preview Controls
-
-- `max-snippet`, `max-image-preview`, `max-video-preview` supported
-- Defaults: `-1` (unlimited), `large`, `-1`
-
-### Core Update Resilience
-
-- Intent-match: per-route title/description customization
-- Originality: unique canonical URLs, no duplicate content
-- Trust signals: Organization + WebSite JSON-LD on every page
-- Content quality: structured data validates required fields
-
-### Google Discover Monitoring (February 2026)
-
-- **Context:** February 2026 Discover update awareness
-- **Action:** Monitor Discover traffic in GSC Performance → Discover tab
-- **Note:** This is a Discover-specific volatility event, NOT a broad Search core update
-- Track: impressions, CTR, and traffic changes weekly
-- Document any significant drops with date + affected URLs
-
-### May 2026 SEO updates
-
-Concrete changes from Google's May 2026 updates are wired into this library.
-See the original Google documentation updates at
-[developers.google.com/search/updates](https://developers.google.com/search/updates/)
-and the official
-[Search Status Dashboard](https://status.search.google.com/products/rGHU1u87FJnkP6W2GwMi/history).
-
-| Date       | Change                                                                                                                                     | This repo                                                                                                                                                                                 |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-05-07 | FAQ rich results no longer appear in Google Search; Rich Results Test loses support June; Search Console API support is removed in August. | `FAQPage` JSON-LD was removed from non-eligible marketing route metadata. The builders remain deprecated for legacy/non-Google consumers and explicitly eligible government/health pages. |
-| 2026-05-15 | Google's generative AI guide says foundational SEO still applies; there is no special AI schema or machine-readable file requirement.      | Technical SEO remains standard: SSR route metadata, crawlable textual content, canonical URLs, structured data matching visible content, and robots preview controls.                     |
-| 2026-05-20 | `hasAdultConsideration` added to Merchant-listing / Product structured data.                                                               | `ProductConfig.hasAdultConsideration` added; `generateProduct()` defaults to `'no'` for our trading-education catalogue.                                                                  |
-| 2026-05-21 | Official May 2026 core update began May 21 and completed June 2.                                                                           | No route-code action; content quality and traffic monitoring are operational responsibilities. See `Core Update Resilience` above for our checklist.                                      |
-
-**FAQ rule:** keep FAQ content visible when it helps users, but do not emit
-`FAQPage` JSON-LD on this site's marketing routes for Google rich-result
-purposes.
-
-## Operations Checklist
-
-- [ ] Weekly: Check GSC for crawl errors
-- [ ] Weekly: Monitor Discover traffic (Feb 2026 update context)
-- [ ] Monthly: Run `npx tsx scripts/seo-audit.ts` post-build
-- [ ] Monthly: Validate JSON-LD with Rich Results Test
-- [ ] Quarterly: Review and update sitemap exclusion patterns
-- [ ] On deploy: Verify robots.txt and sitemap.xml are accessible
-- [ ] On new routes: Add SEOInput to load function
-
-## Troubleshooting Matrix
-
-| Symptom                           | Cause                                          | Fix                                                                                           |
-| --------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Duplicate `<title>` tags          | Multiple components emit `<svelte:head>` title | Remove all `<title>` from page-level `<svelte:head>` blocks; use `seo.title` in load function |
-| Page indexed when it shouldn't be | Missing from `privatePathPrefixes`             | Add path prefix to `defaults.ts` → `privatePathPrefixes`                                      |
-| OG image not showing              | Missing `og.image` in SEOInput                 | Set `og.image` in page load or update `defaultImage` in defaults                              |
-| JSON-LD validation errors         | Missing required fields                        | Use type-safe builders (`articleSchema`, etc.) which enforce required fields                  |
-| Canonical has tracking params     | Param not in denylist                          | Add param to `canonical.queryParamDenylist` in defaults                                       |
-| Staging site indexed by Google    | `env` not set correctly                        | Ensure `import.meta.env.MODE` returns correct value; check `detectEnv()` in layout server     |
-| Sitemap missing routes            | Route matches exclusion pattern                | Check `excludeRoutePatterns` in sitemap.xml server                                            |
-| Duplicate meta tags in audit      | Legacy `<svelte:head>` in page components      | Remove SEO tags from page `<svelte:head>` blocks; use load function `seo` instead             |
-
-## Migration Guide
-
-### From Mixed Libraries to Unified Layer
-
-**Before (scattered SEO):**
-
-```svelte
-<!-- In every page component -->
-<svelte:head>
-	<title>My Page | Brand</title>
-	<meta name="description" content="..." />
-	<meta property="og:title" content="..." />
-	<link rel="canonical" href="..." />
-	{@html `<script type="application/ld+json">...</script>`}
-</svelte:head>
-```
-
-**After (unified layer):**
-
-```typescript
-// In +page.server.ts or +page.ts
-export const load = async () => {
-	const seo: SEOInput = {
-		title: 'My Page',
-		description: '...'
-	};
-	return { seo };
-};
-// No <svelte:head> SEO tags in the component!
-```
-
-### Migration Steps
-
-1. **Remove SEO `<svelte:head>` blocks** from all page components
-   - Remove `<title>`, `<meta name="description">`, `<meta property="og:*">`, `<meta name="twitter:*">`, `<link rel="canonical">`, JSON-LD scripts
-   - Keep non-SEO tags (theme-color, RSS feeds, etc.)
-
-2. **Add `seo` to load functions** for each page that had custom SEO
-   - Import `SEOInput` from `#lib/seo/types.js`
-   - Return `{ seo: { title, description, ... } }` from load
-
-3. **Remove duplicate meta from `app.html`**
-   - The `<Seo>` component now owns robots, OG, and Twitter meta
-   - Remove any `<meta name="robots">`, `<meta property="og:*">`, `<meta name="twitter:*">` from `app.html`
-
-4. **Update sitemap** to use super-sitemap (already done)
-
-5. **Run verification:**
-   ```bash
-   npm run check          # 0 errors
-   npm run test           # all pass
-   npm run build          # success
-   npx tsx scripts/seo-audit.ts  # 0 errors
-   ```
-
-### What to Keep in `app.html`
-
-These tags stay in `app.html` because they're static and not route-specific:
-
-- `<meta charset="utf-8" />`
-- `<meta name="viewport" ...>`
-- `<link rel="icon" ...>`
-- `<link rel="manifest" ...>`
-- `<meta name="theme-color" ...>`
-- PWA/mobile meta tags
-- Font loading
-- `%sveltekit.head%`
-
-### What Moves to the SEO Layer
-
-These are now exclusively managed by `<Seo>`:
-
-- `<title>`
-- `<meta name="description">`
-- `<meta name="robots">`
-- `<link rel="canonical">`
-- `<meta property="og:*">`
-- `<meta name="twitter:*">`
-- `<link rel="alternate" hreflang="...">`
-- Verification meta tags
-- JSON-LD `<script>` blocks
-
-## Commands
+Always use `pnpm` (never `npm`):
 
 ```bash
-# Typecheck
-npm run check
+# Typecheck (0 errors, 0 warnings)
+pnpm --filter revolution-svelte check
+pnpm --filter revolution-svelte check:strict
+pnpm --filter revolution-svelte check:a11y
 
-# Run SEO tests
-npx vitest run src/lib/seo/__tests__/
+# Run SEO unit tests
+pnpm --filter revolution-svelte test:unit src/lib/seo/__tests__/
 
-# Run all tests
-npm run test
+# Run full unit test suite
+pnpm --filter revolution-svelte test:unit
 
-# Build
-npm run build
+# Build production bundle & prerender pages
+pnpm --filter revolution-svelte build
 
-# Post-build SEO audit
-npx tsx scripts/seo-audit.ts
-
-# Post-build SEO audit (custom dir)
-npx tsx scripts/seo-audit.ts .svelte-kit/output/prerendered/pages
+# Run post-build HTML SEO audit (verifies <title>, description, canonical, robots, OG, Twitter, JSON-LD, single <h1>)
+cd frontend && node scripts/seo-audit.ts
 ```

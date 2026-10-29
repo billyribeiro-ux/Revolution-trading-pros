@@ -6,6 +6,7 @@ document header (≈ marks dates inferred from branch/session context).
 
 | Date | Doc | Summary |
 |------|-----|---------|
+| 2026-10-28 | [SEO_AND_SVELTE_AUDIT_2026-10-28.md](SEO_AND_SVELTE_AUDIT_2026-10-28.md) | Full Google Search Central (through Oct 28, 2026) + Svelte Sept/Oct 2026 blog audit: integrated `svelte-meta-tags@5.0.3` + `schema-dts@2.1.0` + `super-sitemap@2.0.6`, added `VideoObject.creator` schema, migrated 33 routes to unified `SEOInput` (0 duplicate head tags, 0 brand/domain leaks), fixed `hooks.server.ts` prerender maintenance redirect, restored 4-slide multi-angle Hero GSAP animations, and verified 76/76 prerendered pages pass `seo-audit.ts` with 0 errors/0 warnings. |
 | 2026-07-19 | [PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md](PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md) | Whole-repo principal-engineer audit (gates re-run, six parallel subsystem auditors, every P0/P1 hand-verified); verdict B− — excellent bones, two production-blocking defects. |
 | 2026-06-07 | [RUST_DEEP_AUDIT_2026-06-07.md](RUST_DEEP_AUDIT_2026-06-07.md) | Rust backend deep audit (~110k LOC): money path, auth/secrets, SQL safety, async/concurrency, error handling; core judged well-engineered, `panic = "abort"` makes reachable handler panics high severity. |
 | 2026-06-05 | [TAILWIND_TO_SCOPED_CSS_BASELINE_2026-06-05.md](TAILWIND_TO_SCOPED_CSS_BASELINE_2026-06-05.md) | Baseline for migrating the frontend from Tailwind to plain Svelte-scoped page/component CSS, grounded in official Svelte docs. |

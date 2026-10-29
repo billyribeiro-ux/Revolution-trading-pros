@@ -122,6 +122,14 @@ function auditFile(filePath: string, relativePath: string): AuditIssue[] {
 		return issues;
 	}
 
+	// Skip SvelteKit HTTP redirect stubs (<meta http-equiv="refresh" ...>) and XML feed files
+	if (
+		/^<script>location\.href=.*<\/script><meta http-equiv="refresh"/i.test(html.trim()) ||
+		relativePath.endsWith('.xml.html')
+	) {
+		return issues;
+	}
+
 	// Check for duplicate titles
 	const titles = extractTitles(html);
 	if (titles.length > 1) {
@@ -244,6 +252,24 @@ function auditFile(filePath: string, relativePath: string): AuditIssue[] {
 				file: relativePath,
 				message: `JSON-LD parse failure in block ${i + 1}`,
 				details: (e as Error).message
+			});
+		}
+	}
+
+	// Check semantic <h1> hierarchy on indexable pages
+	if (!isNoindex(html)) {
+		const h1Matches = extractTagsByRegex(html, /<h1[\s>][\s\S]*?<\/h1>/gi);
+		if (h1Matches.length === 0) {
+			issues.push({
+				severity: 'warning',
+				file: relativePath,
+				message: 'Missing <h1> tag on indexable page'
+			});
+		} else if (h1Matches.length > 1) {
+			issues.push({
+				severity: 'error',
+				file: relativePath,
+				message: `Multiple <h1> tags on indexable page: ${h1Matches.length}`
 			});
 		}
 	}

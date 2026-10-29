@@ -2,13 +2,10 @@
 	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
 </script>
 
-<svelte:head>
-	<title>Exit Strategies Guide | Explosive Swings</title>
-</svelte:head>
-
 <TradingRoomHeader
 	roomName="Explosive Swings"
 	startHereUrl="/dashboard/explosive-swings/start-here"
+	headingLevel="h2"
 />
 
 <div class="guide-page">

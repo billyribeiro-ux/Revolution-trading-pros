@@ -26,6 +26,7 @@
 		roomName: string;
 		startHereUrl: string;
 		pageTitle?: string;
+		headingLevel?: 'h1' | 'h2';
 		tradingRooms?: TradingRoom[];
 		showTradingRoomControls?: boolean;
 	}
@@ -34,6 +35,7 @@
 		roomName,
 		startHereUrl,
 		pageTitle,
+		headingLevel = 'h1',
 		tradingRooms = [],
 		showTradingRoomControls = true
 	}: Props = $props();
@@ -97,7 +99,11 @@
 <!-- Dashboard Header - Matching Member Dashboard -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">{displayTitle}</h1>
+		{#if headingLevel === 'h2'}
+			<h2 class="dashboard__page-title">{displayTitle}</h2>
+		{:else}
+			<h1 class="dashboard__page-title">{displayTitle}</h1>
+		{/if}
 		<a href={startHereUrl} class="btn btn-xs btn-default"> New? Start Here </a>
 	</div>
 	{#if showTradingRoomControls}

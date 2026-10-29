@@ -32,7 +32,7 @@ export const load = () => ({
 				contactPoint: {
 					'@type': 'ContactPoint',
 					contactType: 'customer support',
-					email: 'support@revolution-trading-pros.com',
+					email: 'support@revolutiontradingpros.com',
 					availableLanguage: ['en']
 				}
 			}

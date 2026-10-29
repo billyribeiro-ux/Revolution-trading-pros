@@ -4,49 +4,7 @@
 	import HaveQuestionsSection from '#lib/components/sections/HaveQuestionsSection.svelte';
 	import ClassDownloads from '#lib/components/ClassDownloads.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// SVELTE 5 RUNES - Reactive State Management
-	// ═══════════════════════════════════════════════════════════════════════════
-	let viewportWidth = $state(0);
-	let _prefersReducedMotion = $state(false);
-	let isClient = $state(false);
-
-	const _breakpoint: string = $derived.by(() => {
-		if (viewportWidth === 0) return 'mobile';
-		if (viewportWidth < 428) return 'mobile-small';
-		if (viewportWidth < 744) return 'mobile';
-		if (viewportWidth < 1024) return 'tablet';
-		if (viewportWidth < 1366) return 'desktop';
-		return 'desktop-large';
-	});
-
-	$effect(() => {
-		if (!isClient) return;
-
-		const updateViewport = () => {
-			viewportWidth = window.innerWidth;
-		};
-
-		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-		_prefersReducedMotion = mediaQuery.matches;
-
-		const handleMotionChange = (e: MediaQueryListEvent) => {
-			_prefersReducedMotion = e.matches;
-		};
-
-		updateViewport();
-		window.addEventListener('resize', updateViewport, { passive: true });
-		mediaQuery.addEventListener('change', handleMotionChange);
-
-		return () => {
-			window.removeEventListener('resize', updateViewport);
-			mediaQuery.removeEventListener('change', handleMotionChange);
-		};
-	});
-
 	onMount(() => {
-		isClient = true;
-
 		if (
 			typeof window !== 'undefined' &&
 			(window as unknown as { richpanel?: { track: (event: string, data: unknown) => void } })
@@ -74,15 +32,6 @@
 		}
 	});
 </script>
-
-<svelte:head>
-	<title>Quickstart To Precision Trading - Revolution Trading Pros</title>
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Quickstart To Precision Trading" />
-	<meta property="og:site_name" content="Simpler Trading" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-</svelte:head>
 
 <!-- Breadcrumbs -->
 <DashboardBreadcrumbs />

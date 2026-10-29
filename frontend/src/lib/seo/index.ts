@@ -31,11 +31,39 @@ export type {
 	JsonLdFAQPage,
 	JsonLdSpeakable,
 	JsonLdSpeakableSpec,
+	JsonLdVideoObject,
 	RouteSEOContext,
 	CanonicalConfig,
 	TrailingSlashPolicy,
-	Environment
+	Environment,
+	Thing,
+	WithContext,
+	MetaTagsProps,
+	JsonLdProps
 } from './types';
+
+export {
+	MetaTags,
+	JsonLd,
+	defineBaseMetaTags,
+	definePageMetaTags,
+	deepMerge
+} from 'svelte-meta-tags';
+
+export {
+	buildBreadcrumb,
+	buildArticle,
+	buildCourse,
+	buildHowTo,
+	buildEvent,
+	buildSoftwareApplication,
+	buildFAQPage,
+	buildPerson,
+	buildItemList,
+	buildService,
+	buildWebPage,
+	buildVideoObject
+} from './schemas';
 
 export { seoDefaults } from './defaults';
 export { mergeSEO, defaultsToInput } from './merge';

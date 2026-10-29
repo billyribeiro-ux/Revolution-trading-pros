@@ -25,6 +25,11 @@
 // TYPES - Explicit typing without ./$types (Svelte 5 pattern)
 // ═══════════════════════════════════════════════════════════════════════════
 
+import type { SEOInput } from '#lib/seo/types.js';
+import { buildBreadcrumb, buildSoftwareApplication } from '#lib/seo/schemas.js';
+
+const SITE = 'https://revolutiontradingpros.com';
+
 interface Scanner {
 	id: string;
 	name: string;
@@ -43,16 +48,6 @@ interface Scanner {
 	brand: string;
 }
 
-interface SEO {
-	title: string;
-	description: string;
-	canonical: string;
-	keywords: string[];
-	ogImage: string;
-	ogType: string;
-	twitterCard: string;
-}
-
 interface Breadcrumb {
 	name: string;
 	url: string;
@@ -60,46 +55,17 @@ interface Breadcrumb {
 
 export interface PageData {
 	scanners: Scanner[];
-	seo: SEO;
+	seo: SEOInput;
 	breadcrumbs: Breadcrumb[];
 	loadedAt: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// SSR/SSG CONFIGURATION
-// ═══════════════════════════════════════════════════════════════════════════
-
-/**
- * Enable prerendering (SSG) for this page
- * Google Dec 2025: Static pages rank higher and load faster
- */
 export const prerender = true;
-
-/**
- * Enable SSR for dynamic content fallback
- * Ensures page works even if prerendering fails
- */
 export const ssr = true;
-
-/**
- * Client-side routing for SPA navigation
- * Maintains fast navigation after initial load
- */
 export const csr = true;
 
-/**
- * Trailing slash handling for consistent URLs
- * Google Dec 2025: URL consistency is a ranking factor
- */
-export const trailingSlash = 'always';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// DATA LOADING - Svelte 5 universal load function
-// ═══════════════════════════════════════════════════════════════════════════
-
 export const load = async ({ url }: { url: URL }): Promise<PageData> => {
-	// Structured data for SEO
-	const scanners = [
+	const scanners: Scanner[] = [
 		{
 			id: 'high-octane-scanner',
 			name: 'High Octane Scanner',
@@ -127,38 +93,50 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 		}
 	];
 
-	// SEO metadata
-	const seo = {
-		title: 'Trading Scanners - Professional Options & Stock Analysis Tools',
+	const breadcrumbs: Breadcrumb[] = [
+		{ name: 'Home', url: `${SITE}/` },
+		{ name: 'Store', url: `${SITE}/store/scanners` },
+		{ name: 'Scanners', url: `${SITE}/store/scanners` }
+	];
+
+	const seo: SEOInput = {
+		title: 'Trading Scanners — Professional Options & Stock Analysis Tools',
 		description:
 			'Professional trading scanners for options and stock analysis. Real-time scanning, advanced filters, and smart alerts. Starting at $119/month.',
-		canonical: `${url.origin}/store/scanners/`,
-		keywords: [
-			'options scanner',
-			'stock scanner',
-			'trading scanner',
-			'high octane scanner',
-			'real-time scanner',
-			'options trading tools',
-			'stock analysis software'
-		],
-		ogImage: `${url.origin}/images/og/scanners-landing.jpg`,
-		ogType: 'website',
-		twitterCard: 'summary_large_image'
+		canonical: `${SITE}/store/scanners`,
+		og: {
+			type: 'website',
+			image: `${SITE}/images/og/scanners-landing.jpg`,
+			imageAlt: 'Revolution Trading Pros — Trading Scanners'
+		},
+		jsonld: [
+			buildBreadcrumb(breadcrumbs),
+			...scanners.map((scanner) =>
+				buildSoftwareApplication({
+					name: scanner.name,
+					description: scanner.description,
+					url: `${SITE}/store/scanners/${scanner.slug}`,
+					applicationCategory: 'FinanceApplication',
+					operatingSystem: 'Web',
+					image: `${SITE}${scanner.image}`,
+					offers: {
+						price: scanner.price,
+						priceCurrency: scanner.currency,
+						url: `${SITE}/store/scanners/${scanner.slug}`
+					},
+					aggregateRating: {
+						ratingValue: scanner.rating,
+						ratingCount: scanner.reviewCount
+					}
+				})
+			)
+		]
 	};
-
-	// Breadcrumb data for structured markup
-	const breadcrumbs = [
-		{ name: 'Home', url: url.origin },
-		{ name: 'Store', url: `${url.origin}/store` },
-		{ name: 'Scanners', url: `${url.origin}/store/scanners/` }
-	];
 
 	return {
 		scanners,
 		seo,
 		breadcrumbs,
-		// Timestamp for cache validation
-		loadedAt: new Date().toISOString()
+		loadedAt: url ? new Date().toISOString() : new Date().toISOString()
 	};
 };

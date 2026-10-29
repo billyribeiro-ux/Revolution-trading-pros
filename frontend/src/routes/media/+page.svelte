@@ -109,10 +109,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Media Library | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="media-dashboard">
 	<!-- Header -->
 	<div class="dashboard-header">

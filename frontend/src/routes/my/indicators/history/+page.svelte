@@ -95,11 +95,6 @@
 	onMount(fetchHistory);
 </script>
 
-<svelte:head>
-	<title>Download History - My Indicators</title>
-	<meta name="description" content="View your indicator download history" />
-</svelte:head>
-
 <div class="history-page">
 	<header class="page-header">
 		<div class="header-left">

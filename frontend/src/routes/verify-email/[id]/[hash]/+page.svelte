@@ -59,30 +59,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Verify Email | Revolution Trading</title>
-	<meta
-		name="description"
-		content="Verify your email address to complete your Revolution Trading registration."
-	/>
-
-	<meta property="og:title" content="Verify Email | Revolution Trading" />
-
-	<meta
-		property="og:description"
-		content="Verify your email address to complete your Revolution Trading registration."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary_large_image" />
-
-	<meta name="twitter:title" content="Verify Email | Revolution Trading" />
-
-	<meta
-		name="twitter:description"
-		content="Verify your email address to complete your Revolution Trading registration."
-	/>
-</svelte:head>
-
 <div class="verify-container">
 	<div class="verify-card">
 		<div class="verify-icon">

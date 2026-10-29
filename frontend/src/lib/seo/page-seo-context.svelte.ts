@@ -30,10 +30,8 @@
  * @since May 2026
  */
 
-import { getContext, setContext } from 'svelte';
+import { createContext } from 'svelte';
 import type { SEOInput } from './types';
-
-const KEY = Symbol('rtp.page-seo-state');
 
 export interface PageSeoState {
 	/**
@@ -44,14 +42,15 @@ export interface PageSeoState {
 	value: (() => SEOInput) | null;
 }
 
+const [getSeoCtx, setSeoCtx, hasSeoCtx] = createContext<PageSeoState>();
+
 /**
  * Create the page-SEO context. Call this ONCE in the root layout BEFORE
  * rendering children. Returns the reactive state container.
  */
 export function createPageSeoContext(): PageSeoState {
 	const state = $state<PageSeoState>({ value: null });
-	setContext(KEY, state);
-	return state;
+	return setSeoCtx(state);
 }
 
 /**
@@ -60,5 +59,5 @@ export function createPageSeoContext(): PageSeoState {
  * MUST tolerate this case (no-op gracefully).
  */
 export function getPageSeoContext(): PageSeoState | undefined {
-	return getContext<PageSeoState | undefined>(KEY);
+	return hasSeoCtx() ? getSeoCtx() : undefined;
 }

@@ -11,7 +11,6 @@ export const load = () => {
 		title: 'Institutional Strategy Audit — $25,000 Consultation',
 		description:
 			'A high-velocity, forensic deconstruction of your trading business. Designed strictly for Portfolio Managers and Proprietary Traders deploying 7-8 figure capital.',
-		robots: { index: false, follow: false },
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },

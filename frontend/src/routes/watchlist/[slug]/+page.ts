@@ -9,6 +9,7 @@
  */
 
 import type { WatchlistItem } from '#lib/api/watchlist.js';
+import type { SEOInput } from '#lib/seo/types.js';
 
 export const load = async ({
 	params,
@@ -17,6 +18,11 @@ export const load = async ({
 	params: { slug: string };
 	fetch: typeof globalThis.fetch;
 }) => {
+	const fallbackSeo: SEOInput = {
+		title: 'Weekly Watchlist',
+		description: 'Weekly institutional stock and options watchlist from Revolution Trading Pros.',
+		robots: { index: false, follow: false }
+	};
 	try {
 		// Fetch all watchlist entries
 		const response = await fetch('/api/watchlist?status=published');
@@ -27,7 +33,8 @@ export const load = async ({
 				entries: [],
 				currentEntry: null,
 				previousEntry: null,
-				nextEntry: null
+				nextEntry: null,
+				seo: fallbackSeo
 			};
 		}
 
@@ -47,7 +54,8 @@ export const load = async ({
 				entries,
 				currentEntry: null,
 				previousEntry: null,
-				nextEntry: null
+				nextEntry: null,
+				seo: fallbackSeo
 			};
 		}
 
@@ -63,7 +71,13 @@ export const load = async ({
 			entries,
 			currentEntry,
 			previousEntry,
-			nextEntry
+			nextEntry,
+			seo: {
+				title: currentEntry?.title || 'Weekly Watchlist',
+				description:
+					'Weekly institutional stock and options watchlist from Revolution Trading Pros.',
+				robots: { index: false, follow: false }
+			} satisfies SEOInput
 		};
 	} catch (error) {
 		console.error('Failed to load watchlist data:', error);
@@ -71,7 +85,8 @@ export const load = async ({
 			entries: [],
 			currentEntry: null,
 			previousEntry: null,
-			nextEntry: null
+			nextEntry: null,
+			seo: fallbackSeo
 		};
 	}
 };

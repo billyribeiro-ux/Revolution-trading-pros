@@ -57,14 +57,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Analytics Dashboard | Revolution Trading Pros</title>
-	<meta
-		name="description"
-		content="Enterprise analytics dashboard with real-time metrics, funnels, cohorts, and AI insights"
-	/>
-</svelte:head>
-
 <div class="analytics-dashboard">
 	<!-- Header -->
 	<div class="dashboard-header">

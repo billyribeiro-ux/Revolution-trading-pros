@@ -164,10 +164,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{currentEntry?.title || 'Weekly Watchlist'} - Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="watchlist-page">
 	<!-- Breadcrumb - WordPress Match -->
 	<nav class="breadcrumbs">

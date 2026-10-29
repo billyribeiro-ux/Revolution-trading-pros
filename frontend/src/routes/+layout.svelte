@@ -37,6 +37,7 @@
 	import MarketingFooter from '#lib/components/sections/MarketingFooter.svelte';
 	import { NavBar } from '#lib/components/nav/index.js';
 	import { onMount } from 'svelte';
+	import { building } from '$app/env';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { registerServiceWorker } from '#lib/utils/registerServiceWorker.js';
@@ -89,14 +90,30 @@
 	// mutation during child <script> evaluation; see page-seo-context.svelte.ts).
 	const pageSeoCtx = createPageSeoContext();
 
-	const resolvedSeo = $derived(
-		resolveSEO(
-			{ ...props.data.seoContext, pathname: page.url.pathname },
+	const resolvedSeo = $derived.by(() => {
+		const currentPath = page.url.pathname;
+		const search = building ? '' : page.url.search;
+		const fullPath = currentPath + search;
+		const isPrivate = props.data.seoDefaults.privatePathPrefixes.some((p) =>
+			currentPath.startsWith(p)
+		);
+		const isSearchPage =
+			props.data.seoDefaults.searchPathPrefixes.some((p) => fullPath.startsWith(p)) ||
+			(!building && (page.url.searchParams.has('q') || page.url.searchParams.has('search')));
+
+		return resolveSEO(
+			{
+				...props.data.seoContext,
+				pathname: currentPath,
+				isPrivate,
+				isSearchPage,
+				isErrorPage: page.status >= 400
+			},
 			props.data.seoDefaults,
 			pageSeo,
 			pageSeoCtx.value ? pageSeoCtx.value() : null
-		)
-	);
+		);
+	});
 
 	// ICT Level 7: Hydration-safe — mounted guard prevents class mismatch on SSR
 	let mounted = $state(false);
@@ -149,9 +166,6 @@
 </script>
 
 <svelte:head>
-	<!-- Non-SEO head tags (theme-color, RSS feeds) stay here -->
-	<meta name="theme-color" content="#FFFFFF" />
-
 	<!-- RSS/Atom Feed Discovery Links (SEO: Auto-discovery for feed readers) -->
 	<link
 		rel="alternate"

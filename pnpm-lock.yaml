@@ -238,6 +238,12 @@ importers:
       property-information:
         specifier: ^7.2.0
         version: 7.2.0
+      schema-dts:
+        specifier: 2.1.0
+        version: 2.1.0
+      svelte-meta-tags:
+        specifier: 5.0.3
+        version: 5.0.3(svelte@5.57.3(@typescript-eslint/types@8.72.1))
       three:
         specifier: ^0.186.1
         version: 0.186.1
@@ -3117,6 +3123,13 @@ packages:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
 
+  schema-dts-lib@1.1.0:
+    resolution: {integrity: sha512-Nx00FDPHDimSENMznVpADeYUJDsqlMiO9wcs2S+giggNTm5+ruNkM4m9z9qCk6xUJT+ThDM3NxxpwfHfFk1G+Q==}
+    engines: {node: '>=14.0.0'}
+
+  schema-dts@2.1.0:
+    resolution: {integrity: sha512-Y/NvOvuJUZwrm+EmNqJF3M+bRufERJs1h5GJPLilUuK5D5b53ttU+XZgIjEFaAVRToh+ib+cQawFmxKC5Jt9ow==}
+
   semver@7.8.5:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
@@ -3226,6 +3239,11 @@ packages:
     resolution: {integrity: sha512-GOti16wXHT60iaf/ls8485Vd1moiR333jKq5X6kMrOuaAAVSdpKoipevmXk7rMKEDIqPh1u9RRP7xYwqxGNMUg==}
     peerDependencies:
       svelte: ^5.29.0
+
+  svelte-meta-tags@5.0.3:
+    resolution: {integrity: sha512-vdJXLnx0u6sXznzy3DSnQTMnBXiqL0YywM4HulrveKMEmQXhusJv5nzqaa6hxmz6BS4UYewon/UeI7qmxtW4pw==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte-toolbelt@0.10.6:
     resolution: {integrity: sha512-YWuX+RE+CnWYx09yseAe4ZVMM7e7GRFZM6OYWpBKOb++s+SQ8RBIMMe+Bs/CznBMc0QPLjr+vDBxTAkozXsFXQ==}
@@ -6108,6 +6126,12 @@ snapshots:
     dependencies:
       xmlchars: 2.2.0
 
+  schema-dts-lib@1.1.0: {}
+
+  schema-dts@2.1.0:
+    dependencies:
+      schema-dts-lib: 1.1.0
+
   semver@7.8.5: {}
 
   sharp@0.35.5(@types/node@26.6.6):
@@ -6251,6 +6275,11 @@ snapshots:
       highlight.js: 11.12.0
       many-keys-map: 2.0.1
       memoize: 10.2.0
+      svelte: 5.57.3(@typescript-eslint/types@8.72.1)
+
+  svelte-meta-tags@5.0.3(svelte@5.57.3(@typescript-eslint/types@8.72.1)):
+    dependencies:
+      schema-dts: 2.1.0
       svelte: 5.57.3(@typescript-eslint/types@8.72.1)
 
   svelte-toolbelt@0.10.6(@sveltejs/kit@3.1.0(@opentelemetry/api@1.10.0)(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.1))(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1)):

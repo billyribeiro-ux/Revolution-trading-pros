@@ -1,4 +1,5 @@
 import { redirect, isRedirect } from '@sveltejs/kit';
+import { building } from '$app/env';
 
 /**
  * SvelteKit Server Hooks - Auth, Security Headers & Performance
@@ -70,8 +71,12 @@ async function isMaintenanceModeEnabled(): Promise<boolean> {
 const maintenanceHandler: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 
-	// Localhost always bypasses maintenance mode
-	const isLocalhost = event.url.hostname === 'localhost' || event.url.hostname === '127.0.0.1';
+	// Localhost and build-time prerendering always bypass maintenance mode
+	const isLocalhost =
+		building ||
+		event.url.hostname === 'localhost' ||
+		event.url.hostname === '127.0.0.1' ||
+		event.url.hostname === 'sveltekit-prerender';
 
 	const maintenanceMode = isLocalhost ? false : await isMaintenanceModeEnabled();
 

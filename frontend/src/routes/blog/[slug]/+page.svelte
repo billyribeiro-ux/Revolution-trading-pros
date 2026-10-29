@@ -276,9 +276,7 @@
 								{#if block.type === 'paragraph'}
 									<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
 								{:else if block.type === 'heading'}
-									{#if d['level'] === 1}
-										<h1>{@html sanitizeBlogContent((d['text'] as string) || '')}</h1>
-									{:else if d['level'] === 2}
+									{#if d['level'] === 1 || d['level'] === 2}
 										<h2>{@html sanitizeBlogContent((d['text'] as string) || '')}</h2>
 									{:else if d['level'] === 3}
 										<h3>{@html sanitizeBlogContent((d['text'] as string) || '')}</h3>

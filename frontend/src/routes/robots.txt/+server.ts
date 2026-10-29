@@ -1,16 +1,16 @@
 /**
  * Dynamic robots.txt Generator for Revolution Trading Pros
- * Following Google January 2026 crawling guidelines
+ * Following Google October 2026 crawling guidelines
  *
- * Updates for January 2026:
+ * Updates for October 2026:
  * - Comprehensive AI training bot blocking (all known 2025-2026 AI crawlers)
- * - Google Search Generative Experience (SGE) compatibility
+ * - Google AI Overviews / AI Mode compatibility
  * - Enhanced crawl directives for modern search engines
  * - Sitemap index support
  * - New AI agents and research crawlers blocked
  * - Image/video AI training bots blocked
  *
- * @version 3.0.0 - January 2026 SEO Standards
+ * @version 4.0.0 - October 2026 SEO Standards
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
@@ -23,7 +23,7 @@ const robotsTxt = `# ═══════════════════�
 # Revolution Trading Pros - robots.txt
 # ${SITE_URL}
 # Last Updated: ${LAST_UPDATED}
-# Compliant with Google January 2026 Standards
+# Compliant with Google October 2026 Standards
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # =============================================================================

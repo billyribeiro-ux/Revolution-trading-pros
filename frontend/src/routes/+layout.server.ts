@@ -12,6 +12,7 @@
  */
 
 import type { LayoutServerLoad } from './$types';
+import { building } from '$app/env';
 import { seoDefaults } from '#lib/seo/defaults.js';
 import { createSEOContext } from '#lib/seo/resolve.js';
 import type { Environment } from '#lib/seo/types.js';
@@ -23,14 +24,33 @@ function detectEnv(): Environment {
 	return 'development';
 }
 
+/**
+ * Kit throws on `url.search` for prerendered routes (build and dev alike);
+ * those routes can't carry a query, so treat that one error as "no search".
+ */
+function readSearch(url: URL): string {
+	if (building) return '';
+	try {
+		return url.search;
+	} catch (err) {
+		if (String(err).includes('url_search_unavailable_prerender')) return '';
+		throw err;
+	}
+}
+
 export const load: LayoutServerLoad = async ({ locals, url }) => {
 	const env = detectEnv();
+	const search = readSearch(url);
+	const fullPath = url.pathname + search;
 
 	const seoContext = createSEOContext({
 		pathname: url.pathname,
 		env,
 		isPrivate: seoDefaults.privatePathPrefixes.some((p) => url.pathname.startsWith(p)),
-		isSearchPage: seoDefaults.searchPathPrefixes.some((p) => url.pathname.startsWith(p)),
+		isSearchPage:
+			seoDefaults.searchPathPrefixes.some((p) => fullPath.startsWith(p)) ||
+			new URLSearchParams(search).has('q') ||
+			new URLSearchParams(search).has('search'),
 		isErrorPage: false
 	});
 

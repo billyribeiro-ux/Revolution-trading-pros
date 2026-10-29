@@ -26,13 +26,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import type { PageData } from './+page';
-	import { serializeJsonLd } from '#lib/seo/serializeJsonLd.js';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// PROPS - Svelte 5 $props() rune with explicit typing
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface Props {
 		data: PageData;
@@ -40,167 +34,13 @@
 
 	let { data }: Props = $props();
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE - Svelte 5 $derived() for reactive destructuring
-	// ═══════════════════════════════════════════════════════════════════════════
-
 	const scanners = $derived(data.scanners);
-	const seo = $derived(data.seo);
 	const breadcrumbs = $derived(data.breadcrumbs);
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// STRUCTURED DATA - JSON-LD for Google Rich Snippets
-	// Google Dec 2025: Required for product listings
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Svelte 5 $derived.by() for complex computations - Apple ICT 11+ pattern
-	const structuredData = $derived.by(() => ({
-		'@context': 'https://schema.org',
-		'@graph': [
-			// BreadcrumbList Schema
-			{
-				'@type': 'BreadcrumbList',
-				itemListElement: breadcrumbs.map((crumb: { name: string; url: string }, index: number) => ({
-					'@type': 'ListItem',
-					position: index + 1,
-					name: crumb.name,
-					item: crumb.url
-				}))
-			},
-			// ItemList Schema for product collection
-			{
-				'@type': 'ItemList',
-				itemListElement: scanners.map((scanner: PageData['scanners'][number], index: number) => ({
-					'@type': 'ListItem',
-					position: index + 1,
-					url: `${page.url.origin}/store/scanners/${scanner.slug}/`,
-					item: {
-						'@type': 'SoftwareApplication',
-						name: scanner.name,
-						description: scanner.description,
-						applicationCategory: scanner.category,
-						operatingSystem: 'Web Browser',
-						offers: {
-							'@type': 'Offer',
-							price: scanner.price,
-							priceCurrency: scanner.currency,
-							availability: `https://schema.org/${scanner.availability}`,
-							priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-								.toISOString()
-								.split('T')[0]
-						},
-						aggregateRating: {
-							'@type': 'AggregateRating',
-							ratingValue: scanner.rating,
-							reviewCount: scanner.reviewCount
-						},
-						brand: {
-							'@type': 'Brand',
-							name: scanner.brand
-						}
-					}
-				}))
-			},
-			// Organization Schema
-			{
-				'@type': 'Organization',
-				name: 'Revolution Trading Pros',
-				url: page.url.origin,
-				logo: `${page.url.origin}/revolution-trading-pros.png`,
-				sameAs: [
-					'https://twitter.com/revolutiontrading',
-					'https://facebook.com/revolutiontrading',
-					'https://linkedin.com/company/revolutiontrading'
-				]
-			},
-			// WebPage Schema
-			{
-				'@type': 'WebPage',
-				name: seo.title,
-				description: seo.description,
-				url: seo.canonical,
-				inLanguage: 'en-US',
-				isPartOf: {
-					'@type': 'WebSite',
-					name: 'Revolution Trading Pros',
-					url: page.url.origin
-				}
-			}
-		]
-	}));
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NAVIGATION
-	// ═══════════════════════════════════════════════════════════════════════════
-
 	function viewScanner(slug: string) {
-		goto(`/store/scanners/${slug}/`);
+		goto(`/store/scanners/${slug}`);
 	}
 </script>
-
-<svelte:head>
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     PRIMARY META TAGS - Google Dec 2025 Standards
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<title>{seo.title}</title>
-	<meta name="description" content={seo.description} />
-	<meta name="keywords" content={seo.keywords.join(', ')} />
-	<link rel="canonical" href={seo.canonical} />
-
-	<!-- Robots Meta -->
-	<meta
-		name="robots"
-		content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-	/>
-	<meta name="googlebot" content="index, follow" />
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     OPEN GRAPH - Social Media Sharing
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<meta property="og:type" content={seo.ogType} />
-	<meta property="og:title" content={seo.title} />
-	<meta property="og:description" content={seo.description} />
-	<meta property="og:url" content={seo.canonical} />
-	<meta property="og:image" content={seo.ogImage} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Revolution Trading Pros - Trading Scanners" />
-	<meta property="og:site_name" content="Revolution Trading Pros" />
-	<meta property="og:locale" content="en_US" />
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     TWITTER CARD - Twitter Sharing
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<meta name="twitter:card" content={seo.twitterCard} />
-	<meta name="twitter:title" content={seo.title} />
-	<meta name="twitter:description" content={seo.description} />
-	<meta name="twitter:image" content={seo.ogImage} />
-	<meta name="twitter:image:alt" content="Revolution Trading Pros - Trading Scanners" />
-	<meta name="twitter:site" content="@revolutiontrading" />
-	<meta name="twitter:creator" content="@revolutiontrading" />
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     STRUCTURED DATA - JSON-LD for Google Rich Snippets
-	     Google Dec 2025: Critical for product listings
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html '<scr' +
-		'ipt type="application/ld+json">' +
-		serializeJsonLd(structuredData) +
-		'</scr' +
-		'ipt>'}
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     PERFORMANCE HINTS - Core Web Vitals Optimization
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
-
-	<!-- Preload critical assets -->
-	<link rel="preload" as="image" href="/revolution-trading-pros.png" fetchpriority="high" />
-</svelte:head>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SEMANTIC HTML5 - Proper heading hierarchy for SEO

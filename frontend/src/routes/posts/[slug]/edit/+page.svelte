@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { setBlockStateManager, BlockStateManager } from '#lib/stores/blockState.svelte.js';
@@ -21,8 +22,8 @@
 	let isSaving = $state(false);
 
 	// Load post data (in production, fetch from API)
-	$effect(() => {
-		loadPost();
+	onMount(() => {
+		void loadPost();
 	});
 
 	async function loadPost(): Promise<void> {
@@ -136,10 +137,6 @@
 </script>
 
 <svelte:window onkeydown={handleKeyDown} />
-
-<svelte:head>
-	<title>Edit: {title || 'Untitled'}</title>
-</svelte:head>
 
 <div class="editor-layout">
 	<!-- Toolbar -->
