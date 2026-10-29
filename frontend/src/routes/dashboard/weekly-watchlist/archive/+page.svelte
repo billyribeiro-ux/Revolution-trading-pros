@@ -13,7 +13,9 @@
 -->
 <script lang="ts">
 	// Svelte 5 $props destructuring
-	const { data } = $props<{
+	let {
+		data
+	}: {
 		data: {
 			archiveEntries: Array<{
 				slug: string;
@@ -30,7 +32,7 @@
 			totalPages: number;
 			currentPage: number;
 		};
-	}>();
+	} = $props();
 
 	// Svelte 5 $derived for computed values
 	const hasMorePages = $derived(data.currentPage < data.totalPages);

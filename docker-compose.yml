@@ -42,7 +42,7 @@ services:
   # Redis 8
   # ──────────────────────────────────────────────────────────────────────
   redis:
-    image: redis:8.10.2-alpine
+    image: redis:8.10.3-alpine
     container_name: rtp-redis
     command: redis-server --appendonly yes
     volumes:
@@ -62,15 +62,15 @@ services:
   # Master key is dev-only; set MEILI_MASTER_KEY in api/.env for prod.
   # ──────────────────────────────────────────────────────────────────────
   meili:
-    image: getmeili/meilisearch:v1.54.3
+    image: getmeili/meilisearch:v1.56.0
     container_name: rtp-meili
     environment:
       MEILI_MASTER_KEY: dev-meili-master-key
       MEILI_ENV: development
       # Dumpless in-place upgrade of an existing meili_data volume on a minor
-      # bump (v1.53 -> v1.54). Without it Meilisearch exits 1 on a volume
+      # bump (v1.53+ -> v1.56). Without it Meilisearch exits 1 on a volume
       # written by an older minor and `api` (depends_on: service_healthy) never
-      # starts. One-way: the upgraded volume cannot be reopened by v1.53.
+      # starts. One-way: the upgraded volume cannot be reopened by an older minor.
       MEILI_UPGRADE_DB: "true"
     volumes:
       - meili_data:/meili_data

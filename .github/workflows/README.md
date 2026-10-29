@@ -10,8 +10,8 @@ production.
 **Triggers:** push and pull_request to `main` / `develop`, plus manual
 `workflow_dispatch`. Concurrency cancels in-progress runs per ref.
 
-**Job `frontend`** (Node 24.21.0, pnpm 12.10.1 activated by Corepack from
-`package.json#packageManager`):
+**Job `frontend`** (Node 26.13.0 LTS, pnpm 12.16.1 activated by Corepack
+(`corepack@0.36.0`) from `package.json#packageManager`):
 
 1. `pnpm install --frozen-lockfile`
 2. Lockfile drift guard — `git diff --exit-code -- pnpm-lock.yaml` (pnpm 12
@@ -23,7 +23,7 @@ production.
 6. Production build (with `API_BASE_URL` / `BACKEND_URL` set to
    `http://localhost:8080` for build-time SSR/prerender fetches)
 
-**Job `backend`** (Rust 1.99.0, pinned via `dtolnay/rust-toolchain@master`
+**Job `backend`** (Rust 1.99.1, pinned via `dtolnay/rust-toolchain@master`
 and `rust-toolchain.toml`; runs in `api/` with `SQLX_OFFLINE=true`):
 
 1. `cargo fmt --all --check`

@@ -7,7 +7,8 @@
 # 2026-10-09: Rust 1.99, and both stages moved to Debian 13 "trixie" — the
 # current Debian stable (bookworm is now oldstable). Builder and runtime must
 # stay on the same Debian release so the binary's glibc/OpenSSL ABI matches.
-FROM rust:1.99.0-trixie AS builder
+# 2026-10-28: Rust 1.99.1-trixie.
+FROM rust:1.99.1-trixie AS builder
 
 # Install build dependencies (Debian-based image)
 RUN apt-get update && apt-get install -y --no-install-recommends \

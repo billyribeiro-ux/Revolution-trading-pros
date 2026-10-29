@@ -295,19 +295,13 @@ PaymentIntents. Mixed versions are supported, but moving the backend is a
 payment-flow change that must be validated end to end in Stripe test mode, so
 it was not folded into the dependency bump.
 
-### B. Re-pin Node when 26 becomes LTS (2026-10-28)
-**Severity:** P3
+### B. (Resolved 2026-10-28) Re-pinned Node to 26.13.0 Active LTS ("Lithium")
 
-Node 24.21.0 is the latest LTS on 2026-10-09; per `nodejs/Release`
-`schedule.json`, 24 enters maintenance on 2026-10-20 and 26 becomes Active LTS
-on 2026-10-28. Re-pin `.nvmrc`, `.node-version`, `frontend/.node-version`
-(read by the Cloudflare Pages build), both `engines.node`, CI's
-`NODE_VERSION`, and `@types/node` (24.x → 26.x) together after that date.
-**Node ≥ 25 no longer bundles Corepack** (verified: the v26.11.1 tarball
-contains no `corepack`; v24.21.0 does), so the `corepack enable` steps in
-`ci.yml` and `deploy-cloudflare.yml` must first install it from npm
-(`npm install -g corepack@0.36.0`, which supports Node ≥ 26), and
-`LOCAL_DEV.md` must say the same.
+Completed on 2026-10-28 (`v26.13.0`, promoted to Active LTS on 2026-10-28):
+`.nvmrc`, `.node-version`, `frontend/.node-version`, both `engines.node`
+(`>=26.13.0`), CI and Cloudflare deploy workflows (`NODE_VERSION: '26.13.0'`
+plus `npm install -g corepack@0.36.0` before `corepack enable`), `LOCAL_DEV.md`,
+and `@types/node` (`26.6.6`). See CHANGELOG.md 2026-10-28.
 
 ### C. `@testing-library/jest-dom` types vs Vitest 5
 **Severity:** P3 (type-level only; hidden by `skipLibCheck`)
@@ -325,7 +319,7 @@ Vitest 5-aware release.
   realistic thresholds.
 - `frontend/tests/unit/WeeklyHero.test.ts` imports vitest but sits outside
   `test.include` (`src/**/*.{test,spec}.{js,ts}`), so it never runs.
-- `@vitest/browser-playwright` is declared (and kept current at 5.0.3) but has
+- `@vitest/browser-playwright` is declared (and kept current at 5.0.5) but has
   zero usages — there is no `test.browser` config. Remove it, or adopt browser
   mode deliberately.
 
@@ -397,14 +391,14 @@ remove the entry point. (`CommandPalette`'s `/admin/blog/new` and
 
 ## SvelteKit 3 follow-ups
 
-The repo is on SvelteKit 3 stable (`@sveltejs/kit` 3.0.1,
-`@sveltejs/adapter-cloudflare` 8.0.0) as of 2026-10-09. That upgrade shipped
-the former items 1 (`invalidateAll` → `refreshAll`), 2 (`json()` →
+The repo is on SvelteKit 3 stable (`@sveltejs/kit` 3.1.0,
+`@sveltejs/adapter-cloudflare` 8.0.1) as of 2026-10-28. The 2026-10-09 upgrade
+shipped the former items 1 (`invalidateAll` → `refreshAll`), 2 (`json()` →
 `Response.json()`; there were no `text()` calls), 3 (`replaceState` →
 `replace`), 6 (re-pin off the prerelease line), 8 (the adapter's
 "Reading `config.kit`" build warning — gone in adapter 8.0.0) and 9 (`version`
 from `$app/env` now works in the service worker), so they are removed here.
-See CHANGELOG.md 2026-10-09.
+See CHANGELOG.md 2026-10-09 and 2026-10-28.
 
 ### 4. Pre-existing a11y failure: form inputs without labels — and the suite audits the wrong page
 **Severity:** P2 (pre-existing, not a migration regression)
@@ -424,13 +418,13 @@ contrast violation.)
 ### 5. TypeScript 7
 **Severity:** P2 (blocked upstream)
 
-TypeScript 7.0.2 is npm `latest` but cannot be the project's `typescript`:
-`@sveltejs/kit@3.0.1` peers `typescript ^6.0.0`, `svelte-check@4.7.6` peers
-`^5.0.0 || ^6.0.0`, and `typescript-eslint@8.71.1` peers `>=4.8.4 <6.1.0`
-(re-verified against the registry 2026-10-09). The only documented TS 7 route
-today is side-by-side — keep `typescript@~6` and add
-`@typescript/native@npm:typescript@7`, then `svelte-check --tsgo` — which is
-opt-in and experimental. Revisit when the Svelte toolchain peers on 7.
+TypeScript 7.0.2 is npm `latest` (`6.0.3` is the latest 6.x release) but cannot
+be the project's `typescript`: `@sveltejs/kit@3.1.0` peers `typescript ^6.0.0`,
+`svelte-check@4.7.7` peers `^5.0.0 || ^6.0.0`, and `typescript-eslint@8.72.1`
+peers `>=4.8.4 <6.1.0` (re-verified against the registry 2026-10-28). The only
+documented TS 7 route today is side-by-side — keep `typescript@~6` (`6.0.3`)
+and add `@typescript/native@npm:typescript@7`, then `svelte-check --tsgo` —
+which is opt-in and experimental. Revisit when the Svelte toolchain peers on 7.
 
 ### 7. Remaining Svelte-5 modernisation surface
 **Severity:** P3 (all currently supported; no warnings fired)
@@ -450,5 +444,5 @@ What is left, in full:
 | `use:tilt` action | 1 | `{@attach ...}` | The other two `use:` directives are not legacy: `use:enhance` is SvelteKit's own API and `use:emblaCarouselSvelte` is the library's public interface. |
 
 None of these emit warnings — `pnpm check:strict` and `pnpm check:a11y` are both
-clean at 0 errors / 0 warnings (re-verified 2026-10-09 on Kit 3.0.1 /
-Svelte 5.57.2) — so this is voluntary modernisation, not remediation.
+clean at 0 errors / 0 warnings (re-verified 2026-10-28 on Kit 3.1.0 /
+Svelte 5.57.3 / svelte-check 4.7.7) — so this is voluntary modernisation, not remediation.

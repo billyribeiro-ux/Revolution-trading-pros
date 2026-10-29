@@ -5,13 +5,14 @@ two workflows in this repo. Read README.md first for the overview.
 
 ## Toolchain pinning
 
-- **Node 24.21.0** (latest LTS, "Krypton") via `actions/setup-node@v7.1.0`, in
-  both workflows; `actions/checkout@v7.0.1`.
-- **pnpm** is never installed by version number in the workflows.
-  Corepack activates it from `package.json#packageManager` (pnpm@12.10.1),
-  so CI, the deploy workflow, and local dev use the exact same pnpm. One
-  source of truth, no drift.
-- **Rust 1.99.0**, pinned via `dtolnay/rust-toolchain@master` with an
+- **Node 26.13.0** (latest Active LTS, "Lithium", promoted 2026-10-28) via
+  `actions/setup-node@v7.1.0`, in both workflows; `actions/checkout@v7.0.1`.
+- **pnpm** is never installed by version number in the workflows. Because
+  Node ≥ 25 unbundled Corepack, the workflow installs `corepack@0.36.0` first,
+  then Corepack activates pnpm from `package.json#packageManager`
+  (pnpm@12.16.1), so CI, the deploy workflow, and local dev use the exact same
+  pnpm. One source of truth, no drift.
+- **Rust 1.99.1**, pinned via `dtolnay/rust-toolchain@master` with an
   explicit `toolchain:` input. The `@stable` wrapper of that action
   ALWAYS installs stable and silently ignores `toolchain:` — that is why
   the backend gate previously floated on a moving toolchain and broke

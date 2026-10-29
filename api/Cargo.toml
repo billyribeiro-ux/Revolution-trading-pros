@@ -13,19 +13,19 @@ axum = { version = "0.8.9", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
 tower-http = { version = "0.7.1", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
-html-escape = "0.2.15"
+html-escape = "0.3.0"
 # HTML sanitization of author content on public endpoints (utils/html.rs)
-ammonia = "4.2.1"
+ammonia = "4.2.4"
 
 # Async Runtime
-tokio = { version = "1.53.2", features = ["full"] }
+tokio = { version = "1.54.1", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
 sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
 rust_decimal = { version = "1.43.0", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "1.7.1", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "1.8.0", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
 # S3/R2 Storage
 # `default-features = false` drops ONLY the crate's `rustls` feature, which maps
@@ -37,12 +37,12 @@ redis = { version = "1.7.1", features = ["tokio-comp", "connection-manager", "tl
 # weight that carried RUSTSEC-2026-0258 (h2 0.3 has no fixed 0.3.x release)
 # plus the three rustls-webpki 0.101 advisories previously exempted in
 # deny.toml. Every other default feature is re-listed explicitly.
-aws-sdk-s3 = { version = "1.152.0", default-features = false, features = ["sigv4a", "http-1x", "default-https-client", "rt-tokio"] }
-aws-config = "1.12.0"
+aws-sdk-s3 = { version = "1.156.0", default-features = false, features = ["sigv4a", "http-1x", "default-https-client", "rt-tokio"] }
+aws-config = "1.13.0"
 
 # Serialization
 serde = { version = "1.0.229", features = ["derive"] }
-serde_json = "1.0.151"
+serde_json = "1.0.154"
 
 # Authentication & Crypto
 # jsonwebtoken 11 made the crypto backend pluggable and ships NO provider by
@@ -71,7 +71,7 @@ aes-gcm = "0.11.1" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials a
 rand = "0.10.3"
 hmac = "0.13.0"
 sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
-sha2 = "0.11.0"
+sha2 = "0.11.1"
 hex = "0.4.3"
 subtle = "2.6.1"  # ICT L11+ Security: Constant-time comparison
 md5 = "0.8.1"  # For Bunny.net signature generation
@@ -80,7 +80,7 @@ md5 = "0.8.1"  # For Bunny.net signature generation
 csv = "1.4.0"
 
 # Utilities
-uuid = { version = "1.27.0", features = ["v4", "serde"] }
+uuid = { version = "1.29.0", features = ["v4", "serde"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 regex = "1.13.1"  # ICT 11+: SEO content analysis regex patterns
 dotenvy = "0.15.7"
@@ -107,7 +107,7 @@ meilisearch-sdk = "0.33.0"
 
 # OpenAPI Documentation
 utoipa = { version = "6.0.0", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "10.0.1", features = ["axum", "vendored"] }
+utoipa-swagger-ui = { version = "10.0.2", features = ["axum", "vendored"] }
 validator = { version = "0.21.0", features = ["derive"] }
 
 [dev-dependencies]

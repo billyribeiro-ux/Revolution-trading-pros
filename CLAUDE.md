@@ -79,14 +79,17 @@ patterns:
 - ❌ `let foo = $state(props.foo ?? null); $effect(...)` (the shadow-state
   pattern that emits `state_referenced_locally` warnings)
 - ✅ `let { foo = $bindable(null) } = $props();`
+- ❌ `const { data } = $props<{ data: ... }>();` (`$props<T>()` generic type
+  arguments are rejected by `svelte-check` ≥ 4.7.7)
+- ✅ `let { data }: { data: ... } = $props();`
 
 41 components were migrated off the legacy pattern in commit `05acf3231`.
 The repo's typecheck must stay at 0 errors / 0 warnings.
 
 ### SvelteKit 3
 
-The repo is on SvelteKit 3 stable (`@sveltejs/kit` 3.0.1 with
-`@sveltejs/adapter-cloudflare` 8.0.0 — see BACKLOG.md "SvelteKit 3
+The repo is on SvelteKit 3 stable (`@sveltejs/kit` 3.1.0 with
+`@sveltejs/adapter-cloudflare` 8.0.1 — see BACKLOG.md "SvelteKit 3
 follow-ups"). Two structural consequences:
 
 - **There is no `svelte.config.js`.** All Kit config is passed as options to

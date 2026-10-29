@@ -12,16 +12,18 @@ step), under 30 seconds on subsequent boots.
 | Tool           | Version                                                               | macOS install                                                |
 | -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
 | Docker Desktop | ≥ 4.30                                                                | `brew install --cask docker`                                 |
-| Node.js        | 24.21.0 LTS (latest LTS "Krypton")                                    | `nvm install 24 && nvm use 24`                               |
-| pnpm           | 12.10.1 (pinned in `package.json#packageManager`)                     | `corepack enable && corepack prepare pnpm@12.10.1 --activate` |
-| Rust           | 1.99.0 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
+| Node.js        | 26.13.0 LTS (latest Active LTS "Lithium")                             | `nvm install 26 && nvm use 26`                               |
+| pnpm           | 12.16.1 (pinned in `package.json#packageManager`)                     | `npm install -g corepack@0.36.0 && corepack enable && corepack prepare pnpm@12.16.1 --activate` |
+| Rust           | 1.99.1 (only for native cargo dev, not needed if you only use Docker) | `rustup install stable`                                      |
 
-> **Corepack ≥ 0.34.5 is required for pnpm 12.** Node 24.21.0 bundles Corepack
-> 0.36.0. An older, globally installed Corepack (≤ 0.34.4) earlier on `PATH`
-> cannot launch pnpm ≥ 11 — it looks for a `bin/pnpm.cjs` that pnpm no longer
-> ships (fixed in Corepack 0.34.5, "fix bin path for v11"). Check with
-> `corepack --version`. Behind an HTTP proxy, Corepack ≥ 0.35 also needs
-> `NODE_USE_ENV_PROXY=1` to download pnpm.
+> **Node 26 does not bundle Corepack, and Corepack ≥ 0.34.5 is required for
+> pnpm 12.** Node ≥ 25 unbundled Corepack, so install `corepack@0.36.0`
+> (`npm install -g corepack@0.36.0`) before `corepack enable`. An older,
+> globally installed Corepack (≤ 0.34.4) earlier on `PATH` cannot launch
+> pnpm ≥ 11 — it looks for a `bin/pnpm.cjs` that pnpm no longer ships (fixed in
+> Corepack 0.34.5, "fix bin path for v11"). Check with `corepack --version`.
+> Behind an HTTP proxy, Corepack ≥ 0.35 also needs `NODE_USE_ENV_PROXY=1` to
+> download pnpm.
 
 You do **not** need `flyctl` for local dev. (You'll need it later if you
 deploy.)

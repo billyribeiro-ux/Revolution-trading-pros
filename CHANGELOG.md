@@ -4,6 +4,101 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-10-28 — Node 26.13.0 LTS ("Lithium"), SvelteKit 3.1.0, pnpm 12.16.1, Rust 1.99.1, and full dependency/service top-up
+
+Every package, runtime, toolchain and service pin in the repository moved to its
+latest release as of **2026-10-28**, except **Node.js**, which is pinned to the
+latest **Active LTS (`26.13.0`)**, and **TypeScript**, which stays on **`6.0.3`**
+(the version compatible with SvelteKit 3.1). Every bump and hold is backed by
+registry metadata, release notes and passing quality gates.
+
+### Runtime + toolchain
+
+| What | From | To | Where |
+|------|------|----|-------|
+| Node.js (latest Active LTS, "Lithium") | 24.21.0 | **26.13.0** | `.nvmrc`, `.node-version`, `frontend/.node-version`, `engines.node` (root + frontend `>=26.13.0`), `NODE_VERSION` in both workflows |
+| pnpm | 12.10.1 | **12.16.1** | `packageManager` (root + frontend, sha512 `091d1dee…56d1` verified three ways: registry integrity, base64→hex, and downloaded tarball sha512), `engines.pnpm` (`>=12.16.1`) |
+| Rust | 1.99.0 | **1.99.1** | `rust-toolchain.toml`, CI `RUST_VERSION`, `api/Dockerfile` (`rust:1.99.1-trixie`) |
+| TypeScript | 6.0.3 | **6.0.3** (held) | see "Held, with evidence" |
+
+- **Node 26.13.0 became Active LTS on 2026-10-28** per `nodejs/Release`
+  `schedule.json` and `nodejs.org/dist/index.json` (`"version":"v26.13.0"`,
+  `"date":"2026-10-28"`, `"lts":"Lithium"`; Node 24 "Krypton" entered
+  maintenance on 2026-10-20). `@types/node` moved in lockstep (`24.19.2` →
+  **`26.6.6`**) in `frontend` and `svelte-click-to-source`.
+- **Node 26 unbundled Corepack** (verified in the `v26.13.0` distribution:
+  `bin/` contains only `node`, `npm`, `npx`). Both GitHub Actions workflows
+  (`ci.yml` and `deploy-cloudflare.yml`) now run `npm install -g corepack@0.36.0`
+  before `corepack enable`, and `docs/development/LOCAL_DEV.md` documents the
+  same requirement. Resolves BACKLOG.md item B.
+- **Standardized remaining scripts on `pnpm`:** replaced the last `npm run`
+  invocations in `frontend/package.json` (`test:ci`, `deploy:cloudflare`,
+  `deploy:preview`) and `svelte-click-to-source/package.json`
+  (`prepublishOnly`) with `pnpm run`.
+
+### Frontend + workspace npm dependencies (all to `latest` as of 2026-10-28)
+
+- **Svelte / SvelteKit:** `@sveltejs/kit` `3.0.1` → **`3.1.0`**,
+  `@sveltejs/adapter-cloudflare` `8.0.0` → **`8.0.1`**, `svelte` `5.57.2` →
+  **`5.57.3`** (frontend + `svelte-click-to-source`), `svelte-check` `4.7.6` →
+  **`4.7.7`**.
+  - `svelte-check` 4.7.7 removed the legacy generic type argument on
+    `$props<T>()`. The single file in the repo still using it
+    (`frontend/src/routes/dashboard/weekly-watchlist/archive/+page.svelte`) was
+    migrated to variable type annotation (`let { data }: { data: … } = $props();`)
+    and verified clean with `svelte-autofixer`.
+- **Majors:**
+  - **`@anthropic-ai/sdk` `0.133.0` → `1.3.0`** (v1.0.0 targets API version
+    `2026-10-21`, switches default auth header to `Authorization: Bearer`, drops
+    legacy `completions` and `temperature`/`top_k`/`top_p` on messages, and
+    relicenses to `Apache-2.0`; `routes/api/cms/ai/generate/+server.ts` needed
+    no code changes).
+  - **`tsup` `8.5.1` → `9.0.0`** in `svelte-click-to-source` (rebuilt `dist/`
+    cleanly).
+- **Minors & patches:** `@axe-core/playwright` `4.14.0`, `@paypal/paypal-js`
+  `11.3.0`, `@playwright/test` + `playwright` `1.64.1`,
+  `@square/web-payments-sdk-types` `1.87.2`, `@stripe/stripe-js` `10.2.0`,
+  `@tabler/icons-svelte-runes` `3.50.0`, `@threlte/extras` `9.22.4`,
+  `@types/node` `26.6.6`, `typescript-eslint` + `@typescript-eslint/*` `8.72.1`,
+  `vitest` + `@vitest/browser-playwright` + `@vitest/coverage-v8` `5.0.5`,
+  `bits-ui` `2.20.2`, `eslint` `10.13.0`, `jsdom` `30.1.3`, `magic-string`
+  `1.4.5`, `prettier` `3.9.10`, `vite` `8.3.5`, `vite-plugin-devtools-json`
+  `1.1.2`, `wrangler` `4.155.0`.
+- **Lockfile & workspace hygiene:** `pnpm-lock.yaml` was re-resolved from
+  scratch under `pnpm@12.16.1` (709 entries). `pnpm peers check` reports 0
+  issues (`runed>@sveltejs/kit: ^3.0.0` remains because `bits-ui@2.20.2`
+  depends on `runed: ^0.35.1`). `minimumReleaseAgeExclude` in
+  `pnpm-workspace.yaml` was updated to the four packages published within 24h of
+  2026-10-28 (`@threlte/extras@9.22.4`, `@types/node@26.6.6`,
+  `miniflare@5.20261023.2-beta`, `wrangler@4.155.0`) and the stale 2026-10-09
+  entries were pruned.
+
+### Rust + services
+
+- **`api/Cargo.toml` & `api/Cargo.lock`:** `ammonia` `4.2.4`, `aws-config`
+  `1.13.0`, `aws-sdk-s3` `1.156.0`, `html-escape` `0.3.0`, `redis` `1.8.0`,
+  `serde_json` `1.0.154`, `sha2` `0.11.1`, `tokio` `1.54.1`,
+  `utoipa-swagger-ui` `10.0.2`, `uuid` `1.29.0`, plus a full `cargo update`
+  across 92 transitive crates.
+- **Containers & services:** `docker-compose.yml` updated `redis`
+  `8.10.2-alpine` → **`8.10.3-alpine`** and `getmeili/meilisearch` `v1.54.3` →
+  **`v1.56.0`** (`postgres:18.6-alpine` remains the latest stable 18.x).
+  `api/scripts/seed-local-admin.sh` updated `python:3.14.8-alpine` →
+  **`python:3.15.2-alpine`** (official Python 3.15 Alpine image is now
+  published).
+
+### Held, with evidence
+
+- **TypeScript stays `6.0.3`** (npm `latest` is `7.0.2`; only two 6.x versions
+  exist on npm: `6.0.2` and `6.0.3`): `@sveltejs/kit@3.1.0` peers
+  `typescript: "^6.0.0"`, `svelte-check@4.7.7` peers `"^5.0.0 || ^6.0.0"`, and
+  `typescript-eslint@8.72.1` peers `">=4.8.4 <6.1.0"`.
+- **Rust edition stays 2021** (BACKLOG.md item F).
+- **Prereleases / upstream constraints held:** `embla-carousel*` (`9.0.0-rc12`),
+  `tus-js-client` (`5.0.0-alpha.2`), `base32` (`1.0.0-rc.1`), `axum-test`
+  (`22.0.0-rc.1`), `postgres` (`19beta3`), `matchit` `0.8.4` (pinned `=0.8.4` by
+  `axum 0.8.9`), and `crypto-common` `0.1.6` (pinned by `cipher 0.4.4`).
+
 ## [Unreleased] — 2026-10-11 — Options calculator: ported, navbar entry, idiomatic Svelte 5 / SvelteKit 3
 
 ### Ported from the `options-calculator` branch (calculator only)

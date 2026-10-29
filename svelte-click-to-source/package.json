@@ -20,7 +20,7 @@
 	"scripts": {
 		"build": "tsup src/index.ts --format esm --dts --clean",
 		"dev": "tsup src/index.ts --format esm --dts --watch",
-		"prepublishOnly": "npm run build"
+		"prepublishOnly": "pnpm run build"
 	},
 	"keywords": [
 		"svelte",
@@ -34,13 +34,13 @@
 		"vite": "^5.0.0 || ^6.0.0 || ^8.0.0"
 	},
 	"devDependencies": {
-		"@types/node": "^24.19.2",
-		"svelte": "^5.57.2",
-		"tsup": "^8.5.1",
+		"@types/node": "^26.6.6",
+		"svelte": "^5.57.3",
+		"tsup": "^9.0.0",
 		"typescript": "^6.0.3",
-		"vite": "^8.3.4"
+		"vite": "^8.3.5"
 	},
 	"dependencies": {
-		"magic-string": "^1.4.3"
+		"magic-string": "^1.4.5"
 	}
 }

@@ -44,7 +44,7 @@ fi
 
 HASH=$(docker run --rm \
   -e RTP_PWD="$PASSWORD" \
-  python:3.14.8-alpine sh -c '
+  python:3.15.2-alpine sh -c '
     pip install --quiet argon2-cffi >/dev/null 2>&1
     python - <<EOF
 import os

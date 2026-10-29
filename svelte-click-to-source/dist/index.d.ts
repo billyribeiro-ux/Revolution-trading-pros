@@ -36,4 +36,5 @@ interface ClickToSourceOptions {
 }
 declare function clickToSource(options?: ClickToSourceOptions): Plugin;
 
-export { type ClickToSourceOptions, clickToSource, createPreprocessor, clickToSource as default };
+export { clickToSource, createPreprocessor, clickToSource as default };
+export type { ClickToSourceOptions };
