@@ -23,21 +23,7 @@ export const load = () => ({
 				description: 'Get in touch with sales, support, and partnerships.',
 				dateModified: '2026-05-25',
 				pageType: 'ContactPage'
-			}),
-			{
-				'@context': 'https://schema.org',
-				'@type': 'Organization',
-				'@id': `${SITE}/#organization`,
-				name: 'Revolution Trading Pros',
-				url: SITE,
-				// TODO: replace with verified contact details before launch
-				contactPoint: {
-					'@type': 'ContactPoint',
-					contactType: 'customer support',
-					email: 'support@revolutiontradingpros.com',
-					availableLanguage: ['en']
-				}
-			}
+			})
 		]
 	} satisfies SEOInput
 });

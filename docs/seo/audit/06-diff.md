@@ -48,7 +48,7 @@
 | `IDX-06` | P0 | `ALL` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/signup -> 308 Location: /register] [CODE frontend/src/routes/signup/+page.server.ts:19] |
 | `IDX-07` | P0 | `ALL` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/robots.txt -> 200 text/plain] [CODE frontend/src/routes/robots.txt/+server.ts:1-95] |
 | `IDX-08` | P1 | `ALL` | **FAIL** → **PASS** | [CODE frontend/src/lib/seo/config.ts:15-43] [CODE frontend/src/routes/robots.txt/+server.ts:52-77] |
-| `IDX-09` | P0 | `ALL` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/ -> x-robots-tag="noindex, nofollow"] [CODE frontend/src/hooks.server.ts:472-484] |
+| `IDX-09` | P0 | `ALL` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/blog -> x-robots-tag="noindex, nofollow"] [CODE frontend/src/hooks.server.ts:463-468] |
 | `URL-02` | P0 | `home` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/ -> canonical="https://revolutiontradingpros.com/"] [CODE frontend/src/lib/seo/config.ts:9] |
 | `URL-02` | P0 | `static` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/config.ts:9] |
 | `URL-02` | P0 | `listing` | **FAIL** → **PASS** | [HTTP http://127.0.0.1:4173/alerts -> canonical="https://revolutiontradingpros.com/alerts"] [CODE frontend/src/lib/seo/config.ts:9] |

@@ -76,7 +76,13 @@ export const seoDefaults: SEODefaults = {
 				'https://twitter.com/RevTradingPros',
 				'https://facebook.com/RevTradingPros',
 				'https://youtube.com/RevTradingPros'
-			]
+			],
+			contactPoint: {
+				'@type': 'ContactPoint',
+				contactType: 'customer support',
+				email: 'support@revolutiontradingpros.com',
+				availableLanguage: ['en']
+			}
 		},
 		{
 			'@context': 'https://schema.org',

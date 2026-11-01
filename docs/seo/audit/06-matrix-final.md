@@ -29,7 +29,7 @@
 | `IDX-06` | P0 | `ALL` | **PASS** | None (/signup returns 308 permanent redirect to /register in 1 hop) | [HTTP http://127.0.0.1:4173/signup -> 308 Location: /register] [CODE frontend/src/routes/signup/+page.server.ts:19] |
 | `IDX-07` | P0 | `ALL` | **PASS** | None (/robots.txt allows /_app/, uses valid User-agent tokens, and points Sitemap to https://revolutiontradingpros.com/sitemap.xml) | [HTTP http://127.0.0.1:4173/robots.txt -> 200 text/plain] [CODE frontend/src/routes/robots.txt/+server.ts:1-95] |
 | `IDX-08` | P1 | `ALL` | **PASS** | None (AI_SEARCH_OPT_OUT config separates AI search bots OAI-SearchBot/PerplexityBot/ChatGPT-User from AI training bots GPTBot/Google-Extended/ClaudeBot) | [CODE frontend/src/lib/seo/config.ts:15-43] [CODE frontend/src/routes/robots.txt/+server.ts:52-77] |
-| `IDX-09` | P0 | `ALL` | **PASS** | None (hooks.server.ts sets X-Robots-Tag: noindex, nofollow on non-production origins, NOINDEX_PREFIXES, and status >= 400) | [HTTP http://127.0.0.1:4173/ -> x-robots-tag="noindex, nofollow"] [CODE frontend/src/hooks.server.ts:472-484] |
+| `IDX-09` | P0 | `ALL` | **PASS** | None (hooks.server.ts sets X-Robots-Tag: noindex, nofollow on non-production origins, NOINDEX_PREFIXES, and status >= 400) | [HTTP http://127.0.0.1:4173/blog -> x-robots-tag="noindex, nofollow"] [CODE frontend/src/hooks.server.ts:463-468] |
 | `URL-01` | P1 | `ALL` | **PASS** | None (all 50 indexable URLs use lowercase ASCII hyphen-separated slugs) | [CODE docs/seo/audit/02-inventory.json:1] |
 | `URL-02` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> canonical="https://revolutiontradingpros.com/"] [CODE frontend/src/lib/seo/config.ts:9] |
 | `URL-02` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/config.ts:9] |
@@ -159,7 +159,7 @@
 | `PERF-01` | P0 | `course` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /courses/day-trading-masterclass: LCP=60ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0003 (<=0.1)] |
 | `PERF-01` | P0 | `article` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /guides/risk-management: LCP=60ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0035 (<=0.1)] |
 | `PERF-01` | P0 | `software` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /indicators/rsi: LCP=56ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0003 (<=0.1)] |
-| `PERF-02` | P1 | `ALL` | **PASS** | None (@sveltejs/enhanced-img v1.0.0 installed, enhancedImages() wired in vite.config.ts, <enhanced:img> active in PlatformDownloads.svelte, explicit width/height on all images) | [CODE frontend/package.json:84] [CODE frontend/vite.config.ts:3,37] [CODE frontend/src/lib/components/indicators/PlatformDownloads.svelte:10-49] |
+| `PERF-02` | P1 | `ALL` | **PASS** | None (@sveltejs/enhanced-img v0.10.2 installed, enhancedImages() wired in vite.config.ts, <enhanced:img> active in PlatformDownloads.svelte, explicit width/height on all images) | [CODE frontend/package.json:84] [CODE frontend/vite.config.ts:3,37] [CODE frontend/src/lib/components/indicators/PlatformDownloads.svelte:10-49] |
 | `PERF-03` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> first main img loading!=lazy] |
 | `PERF-03` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> first main img loading!=lazy] |
 | `PERF-03` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> first main img loading!=lazy] |
