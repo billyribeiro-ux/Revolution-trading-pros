@@ -573,11 +573,13 @@
 								room on your Day Trading Room Member Dashboard:
 							</p>
 							<p>
-								<!-- TODO(cls): width/height needed — schedule screenshot intrinsic dims unknown (CDN-hosted PNG, not in repo). Inspect the asset and set dims. -->
 								<img
 									src="https://cdn.simplertrading.com/2025/05/01151648/SCR-20250501-mrti.png"
 									alt="Trading Room Schedule"
 									class="schedule-screenshot"
+									width="3210"
+									height="1448"
+									style="aspect-ratio: 3210 / 1448;"
 									loading="lazy"
 								/>
 							</p>
@@ -1158,6 +1160,7 @@
 	.schedule-screenshot {
 		max-width: 100%;
 		height: auto;
+		aspect-ratio: 3210 / 1448;
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}

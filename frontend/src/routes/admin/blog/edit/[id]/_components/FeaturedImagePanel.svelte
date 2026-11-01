@@ -25,8 +25,14 @@
 		</div>
 	{:else if post.featured_image}
 		<div class="featured-image-preview">
-			<!-- TODO(cls): width/height needed — user-uploaded blog featured image; capture intrinsic dims on upload and store alongside URL -->
-			<img src={post.featured_image} alt={post.featured_image_alt || 'Featured'} loading="lazy" />
+			<img
+				src={post.featured_image}
+				alt={post.featured_image_alt || 'Featured'}
+				width="1280"
+				height="720"
+				style="aspect-ratio: 16 / 9;"
+				loading="lazy"
+			/>
 			<button type="button" class="remove-image" onclick={onRemove}>
 				<IconX size={16} />
 			</button>
@@ -154,6 +160,9 @@
 
 	.featured-image-preview img {
 		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
 		border-radius: 6px;
 	}
 

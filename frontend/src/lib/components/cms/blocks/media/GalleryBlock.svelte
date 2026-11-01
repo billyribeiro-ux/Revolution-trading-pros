@@ -697,12 +697,12 @@
 
 			<!-- Image Container -->
 			<div class="lightbox-image-container">
-				<!-- TODO(cls): fullscreen lightbox; intrinsic dims of arbitrary user uploads unknown -->
 				<img
 					src={sanitizeURL(currentImage.url)}
 					alt={currentImage.alt}
 					class="lightbox-image"
-					loading="lazy"
+					loading="eager"
+					decoding="async"
 				/>
 			</div>
 

@@ -58,10 +58,12 @@
 			</ul>
 
 			<div class="intercom-container">
-				<!-- TODO(cls): width/height needed — intercom CDN screenshot; inspect intrinsic PNG dims and pin them here. -->
 				<img
 					src="https://downloads.intercomcdn.com/i/o/258328594/bff0055e0282c1edd00ced72/image.png"
 					alt="Chart Setup Example"
+					width="1609"
+					height="951"
+					style="aspect-ratio: 1609 / 951;"
 					loading="lazy"
 				/>
 			</div>
@@ -256,6 +258,7 @@
 	.intercom-container img {
 		max-width: 100%;
 		height: auto;
+		aspect-ratio: 1609 / 951;
 		display: block;
 		margin: 0 auto;
 		border-radius: 4px;

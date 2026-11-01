@@ -102,8 +102,14 @@
 	{#if props.isEditing}
 		{#if gifUrl}
 			<div class="gif-preview">
-				<!-- TODO(cls): user-uploaded GIF — intrinsic dims not stored on Block; persist width/height to mediaWidth/mediaHeight to eliminate CLS -->
-				<img src={sanitizeURL(gifUrl)} alt={gifAlt} loading="lazy" />
+				<img
+					src={sanitizeURL(gifUrl)}
+					alt={gifAlt}
+					width="800"
+					height="450"
+					style="aspect-ratio: 16 / 9;"
+					loading="lazy"
+				/>
 				<button type="button" class="gif-remove" onclick={clearGif} aria-label="Remove GIF">
 					<IconX size={16} />
 				</button>
@@ -171,8 +177,14 @@
 			</div>
 		{/if}
 	{:else if gifUrl}
-		<!-- TODO(cls): user-uploaded GIF — intrinsic dims not stored on Block; persist width/height to mediaWidth/mediaHeight to eliminate CLS -->
-		<img src={sanitizeURL(gifUrl)} alt={gifAlt} loading="lazy" />
+		<img
+			src={sanitizeURL(gifUrl)}
+			alt={gifAlt}
+			width="800"
+			height="450"
+			style="aspect-ratio: 16 / 9;"
+			loading="lazy"
+		/>
 	{:else}
 		<div class="gif-empty">
 			<IconGif size={48} aria-hidden="true" />
@@ -192,6 +204,8 @@
 		display: block;
 		width: 100%;
 		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: contain;
 	}
 
 	.gif-preview {
@@ -202,6 +216,8 @@
 		display: block;
 		width: 100%;
 		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: contain;
 	}
 
 	.gif-remove {

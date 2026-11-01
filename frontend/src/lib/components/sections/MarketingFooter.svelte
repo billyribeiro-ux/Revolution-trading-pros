@@ -105,6 +105,7 @@
 							height="40"
 							loading="lazy"
 							decoding="async"
+							style="aspect-ratio: 160 / 40;"
 						/>
 					</a>
 
@@ -256,8 +257,9 @@
 	}
 
 	.footer-logo img {
+		width: 160px;
 		height: 40px;
-		width: auto;
+		aspect-ratio: 160 / 40;
 		max-width: 100%;
 		margin-bottom: 1rem;
 		display: block;

@@ -381,12 +381,14 @@
 
 			<!-- Responsive Image -->
 			{#if props.isEditing}
-				<!-- TODO(cls): user-uploaded image — intrinsic dims not stored on Block; persist width/height to mediaWidth/mediaHeight to eliminate CLS -->
 				<img
 					src={sanitizedURL}
 					{srcset}
 					sizes="(max-width: 479.98px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
 					alt={imageAlt}
+					width="1200"
+					height="675"
+					style="aspect-ratio: 16 / 9;"
 					loading="lazy"
 					decoding="async"
 					class={[
@@ -409,12 +411,14 @@
 					onkeydown={handleImageKeyDown}
 					aria-label={`View ${imageAlt || 'image'} in lightbox`}
 				>
-					<!-- TODO(cls): user-uploaded image — intrinsic dims not stored on Block; persist width/height to mediaWidth/mediaHeight to eliminate CLS -->
 					<img
 						src={sanitizedURL}
 						{srcset}
 						sizes="(max-width: 479.98px) 100vw, (max-width: 767.98px) 90vw, (max-width: 1199.98px) 80vw, 1200px"
 						alt={imageAlt}
+						width="1200"
+						height="675"
+						style="aspect-ratio: 16 / 9;"
 						loading="lazy"
 						decoding="async"
 						class={[
@@ -586,7 +590,7 @@
 		>
 			<IconX size={24} aria-hidden="true" />
 		</button>
-		<img src={sanitizedURL} alt={imageAlt} class="image-block__lightbox-image" loading="lazy" />
+		<img src={sanitizedURL} alt={imageAlt} class="image-block__lightbox-image" loading="eager" decoding="async" />
 		{#if caption}
 			<p class="image-block__lightbox-caption">{caption}</p>
 		{/if}
@@ -622,6 +626,7 @@
 		display: block;
 		width: 100%;
 		height: auto;
+		aspect-ratio: 16 / 9;
 		max-height: 70vh;
 		opacity: 0;
 		transition:
