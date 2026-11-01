@@ -5,7 +5,9 @@
 
 use axum::{
     http::{header, HeaderName, HeaderValue, Method},
-    middleware as axum_middleware, Router,
+    middleware as axum_middleware,
+    routing::get,
+    Router,
 };
 use std::net::SocketAddr;
 use tower_http::{
@@ -271,6 +273,15 @@ async fn main() -> anyhow::Result<()> {
             "/monitoring",
             monitoring::router().with_state(metrics.clone()),
         )
+        // Root and top-level WebSocket aliases for frontend services
+        .route("/", get(routes::websocket::root_ws_handler))
+        .route("/ws", get(routes::websocket::ws_handler))
+        .route("/subscriptions", get(routes::websocket::ws_handler))
+        .route("/popups", get(routes::websocket::ws_handler))
+        .route("/forms", get(routes::websocket::ws_handler))
+        .route("/posts", get(routes::websocket::ws_handler))
+        .route("/banned-emails", get(routes::websocket::ws_handler))
+        .route("/seo", get(routes::websocket::ws_handler))
         .layer(axum_middleware::from_fn_with_state(
             metrics.clone(),
             monitoring::metrics_middleware,

@@ -47,7 +47,11 @@
 	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
 	import type { Block as CMSBlock } from '#lib/components/cms/blocks/types.js';
 
+	import { setBlockStateManager, BlockStateManager } from '#lib/stores/blockState.svelte.js';
 	import { BLOCK_DEFINITIONS } from './types';
+
+	const blockStateManager = new BlockStateManager();
+	setBlockStateManager(blockStateManager);
 
 	// Import sub-components (we'll create these)
 	import BlockInserter from './BlockInserter.svelte';

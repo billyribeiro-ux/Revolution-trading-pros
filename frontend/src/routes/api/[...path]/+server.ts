@@ -192,8 +192,11 @@ async function proxyRequest(
 		headers['Content-Type'] = contentType;
 	}
 
+	const authHeader = request.headers.get('authorization');
 	if (token) {
 		headers.Authorization = `Bearer ${token}`;
+	} else if (authHeader) {
+		headers.Authorization = authHeader;
 	}
 
 	// Get body for non-GET requests

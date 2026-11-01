@@ -84,7 +84,7 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 				'Multi-timeframe analysis',
 				'Mobile app access'
 			],
-			image: '/images/scanners/high-octane-scanner.jpg',
+			image: '/revolution-trading-pros.png',
 			rating: 4.8,
 			reviewCount: 127,
 			availability: 'InStock' as const,

@@ -453,11 +453,14 @@ export function setBlockStateManager(manager: BlockStateManager): void {
 }
 
 export function getBlockStateManager(): BlockStateManager {
-	const manager = getContext<BlockStateManager | undefined>(BLOCK_STATE_KEY);
+	let manager = getContext<BlockStateManager | undefined>(BLOCK_STATE_KEY);
 	if (!manager) {
-		throw new Error(
-			'BlockStateManager not found in context. Did you forget to call setBlockStateManager?'
-		);
+		manager = new BlockStateManager();
+		try {
+			setContext(BLOCK_STATE_KEY, manager);
+		} catch {
+			// In case getBlockStateManager is called outside component initialization
+		}
 	}
 	return manager;
 }

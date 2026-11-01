@@ -13,7 +13,7 @@
 
 use axum::{
     extract::{
-        ws::{Message, WebSocket, WebSocketUpgrade},
+        ws::{rejection::WebSocketUpgradeRejection, Message, WebSocket, WebSocketUpgrade},
         Query, State,
     },
     http::StatusCode,
@@ -358,116 +358,139 @@ pub struct WsParams {
     pub token: Option<String>,
 }
 
+/// Root handler supporting both HTTP GET (status check) and WebSocket upgrade
+pub async fn root_ws_handler(
+    ws_opt: Result<WebSocketUpgrade, WebSocketUpgradeRejection>,
+    State(state): State<AppState>,
+    Query(params): Query<WsParams>,
+) -> impl IntoResponse {
+    match ws_opt {
+        Ok(ws) => ws_handler_inner(ws, state, params).await.into_response(),
+        Err(_) => (
+            StatusCode::OK,
+            Json(json!({
+                "service": "Revolution Trading Pros API",
+                "version": env!("CARGO_PKG_VERSION"),
+                "status": "online"
+            })),
+        )
+            .into_response(),
+    }
+}
+
 /// WebSocket upgrade handler
 ///
 /// If a `token` query parameter is present it is validated against the configured
-/// `jwt_secret`.  An invalid or expired token causes the connection to be refused
-/// with HTTP 401 **before** the WebSocket handshake is completed.  Missing token is
-/// allowed so that public (unauthenticated) room subscriptions keep working.
+/// `jwt_secret`. An invalid or expired token causes the connection to be refused
+/// with HTTP 401 **before** the WebSocket handshake is completed. Missing token is
+/// allowed so that public (unauthenticated) room subscriptions and service connections keep working.
 pub async fn ws_handler(
     ws: WebSocketUpgrade,
     State(state): State<AppState>,
     Query(params): Query<WsParams>,
-) -> impl IntoResponse {
+) -> axum::response::Response {
+    ws_handler_inner(ws, state, params).await
+}
+
+async fn ws_handler_inner(
+    ws: WebSocketUpgrade,
+    state: AppState,
+    params: WsParams,
+) -> axum::response::Response {
     let has_room_request = params
         .rooms
         .as_ref()
         .map(|r| r.split(',').any(|s| !s.trim().is_empty()))
         .unwrap_or(false);
 
-    let Some(ref token) = params.token else {
-        warn!("WebSocket connection rejected: missing JWT token");
-        return (
-            StatusCode::UNAUTHORIZED,
-            Json(json!({"error": "Unauthorized", "code": 4001, "reason": "authentication token required"})),
-        )
-            .into_response();
-    };
+    let has_room_access = if let Some(ref token) = params.token {
+        let claims = match verify_jwt(token, &state.config.jwt_secret, "access") {
+            Ok(c) => c,
+            Err(err) => {
+                warn!(error = %err, "WebSocket connection rejected: invalid JWT token");
+                return (
+                    StatusCode::UNAUTHORIZED,
+                    Json(json!({"error": "Unauthorized", "code": 4001})),
+                )
+                    .into_response();
+            }
+        };
 
-    let claims = match verify_jwt(token, &state.config.jwt_secret, "access") {
-        Ok(c) => c,
-        Err(err) => {
-            warn!(error = %err, "WebSocket connection rejected: invalid JWT token");
+        // Enforce Redis token_version epoch check so revoked/banned tokens cannot connect
+        if let Some(ref redis) = state.services.redis {
+            match redis.get_token_version(claims.sub).await {
+                Ok(current_version) if claims.token_version < current_version => {
+                    warn!(
+                        user_id = %claims.sub,
+                        token_version = %claims.token_version,
+                        current_version = %current_version,
+                        "WebSocket connection rejected: stale token_version"
+                    );
+                    return (
+                        StatusCode::UNAUTHORIZED,
+                        Json(json!({"error": "Token has been revoked", "code": 4001})),
+                    )
+                        .into_response();
+                }
+                Ok(_) => {}
+                Err(e) => {
+                    error!(user_id = %claims.sub, error = %e, "Redis token_version check failed on WebSocket upgrade");
+                    return (
+                        StatusCode::UNAUTHORIZED,
+                        Json(json!({"error": "Authentication temporarily unavailable", "code": 4001})),
+                    )
+                        .into_response();
+                }
+            }
+        }
+
+        // Verify user is active and check role / active membership for room access
+        let user_row: Option<(Option<String>, bool)> =
+            sqlx::query_as("SELECT role, is_active FROM users WHERE id = $1")
+                .bind(claims.sub)
+                .fetch_optional(&state.db.pool)
+                .await
+                .ok()
+                .flatten();
+
+        let Some((role_opt, is_active)) = user_row else {
             return (
                 StatusCode::UNAUTHORIZED,
                 Json(json!({"error": "Unauthorized", "code": 4001})),
             )
                 .into_response();
-        }
-    };
+        };
 
-    // Enforce Redis token_version epoch check so revoked/banned tokens cannot connect
-    if let Some(ref redis) = state.services.redis {
-        match redis.get_token_version(claims.sub).await {
-            Ok(current_version) if claims.token_version < current_version => {
-                warn!(
-                    user_id = %claims.sub,
-                    token_version = %claims.token_version,
-                    current_version = %current_version,
-                    "WebSocket connection rejected: stale token_version"
-                );
-                return (
-                    StatusCode::UNAUTHORIZED,
-                    Json(json!({"error": "Token has been revoked", "code": 4001})),
-                )
-                    .into_response();
-            }
-            Ok(_) => {}
-            Err(e) => {
-                error!(user_id = %claims.sub, error = %e, "Redis token_version check failed on WebSocket upgrade");
-                return (
-                    StatusCode::UNAUTHORIZED,
-                    Json(json!({"error": "Authentication temporarily unavailable", "code": 4001})),
-                )
-                    .into_response();
-            }
+        if !is_active {
+            return (
+                StatusCode::FORBIDDEN,
+                Json(json!({"error": "Account is disabled", "code": 4003})),
+            )
+                .into_response();
         }
-    }
 
-    // Verify user is active and check role / active membership for room access
-    let user_row: Option<(Option<String>, bool)> =
-        sqlx::query_as("SELECT role, is_active FROM users WHERE id = $1")
+        let role = role_opt.as_deref().unwrap_or("");
+        let is_staff = matches!(role, "admin" | "super_admin" | "super-admin" | "developer");
+        if is_staff {
+            true
+        } else {
+            let membership: Option<(i64,)> = sqlx::query_as(
+                "SELECT id FROM user_memberships \
+                 WHERE user_id = $1 AND status IN ('active', 'trial', 'trialing') LIMIT 1",
+            )
             .bind(claims.sub)
             .fetch_optional(&state.db.pool)
             .await
             .ok()
             .flatten();
-
-    let Some((role_opt, is_active)) = user_row else {
-        return (
-            StatusCode::UNAUTHORIZED,
-            Json(json!({"error": "Unauthorized", "code": 4001})),
-        )
-            .into_response();
-    };
-
-    if !is_active {
-        return (
-            StatusCode::FORBIDDEN,
-            Json(json!({"error": "Account is disabled", "code": 4003})),
-        )
-            .into_response();
-    }
-
-    let role = role_opt.as_deref().unwrap_or("");
-    let is_staff = matches!(role, "admin" | "super_admin" | "super-admin" | "developer");
-    let has_room_access = if is_staff {
-        true
+            membership.is_some()
+        }
     } else {
-        let membership: Option<(i64,)> = sqlx::query_as(
-            "SELECT id FROM user_memberships \
-             WHERE user_id = $1 AND status IN ('active', 'trial', 'trialing') LIMIT 1",
-        )
-        .bind(claims.sub)
-        .fetch_optional(&state.db.pool)
-        .await
-        .ok()
-        .flatten();
-        membership.is_some()
+        false
     };
 
     if has_room_request && !has_room_access {
-        warn!(user_id = %claims.sub, "WebSocket room subscription rejected: no active membership");
+        warn!("WebSocket room subscription rejected: active membership required or unauthenticated");
         return (
             StatusCode::FORBIDDEN,
             Json(json!({"error": "Active membership required", "code": 4003})),
@@ -609,22 +632,24 @@ async fn handle_socket(
         while let Some(result) = receiver.next().await {
             match result {
                 Ok(Message::Text(text)) => {
-                    if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&text) {
-                        match client_msg {
-                            ClientMessage::Subscribe { room } => {
-                                if !has_room_access {
-                                    let _ = tx_for_receive
-                                        .send(WsMessage::Error {
-                                            code: "FORBIDDEN".to_string(),
-                                            message:
-                                                "Active membership required to subscribe to rooms"
-                                                    .to_string(),
-                                        })
-                                        .await;
-                                    continue;
-                                }
+                    if let Ok(v) = serde_json::from_str::<serde_json::Value>(&text) {
+                        let action = v
+                            .get("action")
+                            .and_then(|a| a.as_str())
+                            .or_else(|| v.get("type").and_then(|t| t.as_str()))
+                            .unwrap_or("");
+
+                        if action.eq_ignore_ascii_case("subscribe") {
+                            let room = v
+                                .get("channel")
+                                .or_else(|| v.get("room"))
+                                .or_else(|| v.get("data").and_then(|d| d.get("room")))
+                                .and_then(|r| r.as_str())
+                                .unwrap_or("");
+
+                            if !room.is_empty() {
                                 let mut rooms = subscribed_rooms_for_receive.write().await;
-                                if !rooms.contains(&room) {
+                                if !rooms.contains(room) {
                                     if rooms.len() >= MAX_ROOMS_PER_CONNECTION {
                                         drop(rooms);
                                         let _ = tx_for_receive
@@ -637,11 +662,11 @@ async fn handle_socket(
                                             .await;
                                         continue;
                                     }
-                                    rooms.insert(room.clone());
+                                    rooms.insert(room.to_string());
                                     drop(rooms);
 
                                     // Spawn task to forward messages from this room
-                                    let room_clone = room.clone();
+                                    let room_clone = room.to_string();
                                     let tx_clone = tx_for_receive.clone();
                                     let ws_manager_clone = ws_manager_for_receive.clone();
 
@@ -657,38 +682,53 @@ async fn handle_socket(
                                     });
                                     forwarders_for_receive.lock().await.push(handle);
 
-                                    let _ =
-                                        tx_for_receive.send(WsMessage::Subscribed { room }).await;
+                                    let _ = tx_for_receive
+                                        .send(WsMessage::Subscribed {
+                                            room: room.to_string(),
+                                        })
+                                        .await;
                                 }
                             }
-                            ClientMessage::Unsubscribe { room } => {
-                                let mut rooms = subscribed_rooms_for_receive.write().await;
-                                if rooms.remove(&room) {
-                                    ws_manager_for_receive.unsubscribe_room(&room).await;
+                        } else if action.eq_ignore_ascii_case("unsubscribe") {
+                            let room = v
+                                .get("channel")
+                                .or_else(|| v.get("room"))
+                                .or_else(|| v.get("data").and_then(|d| d.get("room")))
+                                .and_then(|r| r.as_str())
+                                .unwrap_or("");
 
-                                    let _ =
-                                        tx_for_receive.send(WsMessage::Unsubscribed { room }).await;
+                            if !room.is_empty() {
+                                let mut rooms = subscribed_rooms_for_receive.write().await;
+                                if rooms.remove(room) {
+                                    ws_manager_for_receive.unsubscribe_room(room).await;
+
+                                    let _ = tx_for_receive
+                                        .send(WsMessage::Unsubscribed {
+                                            room: room.to_string(),
+                                        })
+                                        .await;
                                 }
                             }
-                            ClientMessage::Ping { timestamp } => {
-                                debug!(
-                                    connection_id = %connection_id_for_receive,
-                                    timestamp = timestamp,
-                                    "Received ping"
-                                );
-                                // Respond with heartbeat
-                                let _ = tx_for_receive
-                                    .send(WsMessage::Heartbeat {
-                                        timestamp: Utc::now().timestamp(),
-                                    })
-                                    .await;
-                            }
-                            ClientMessage::Pong { timestamp: _ } => {
-                                debug!(
-                                    connection_id = %connection_id_for_receive,
-                                    "Received pong"
-                                );
-                            }
+                        } else if action.eq_ignore_ascii_case("ping") {
+                            debug!(
+                                connection_id = %connection_id_for_receive,
+                                "Received ping"
+                            );
+                            let _ = tx_for_receive
+                                .send(WsMessage::Heartbeat {
+                                    timestamp: Utc::now().timestamp(),
+                                })
+                                .await;
+                        } else if action.eq_ignore_ascii_case("pong") {
+                            debug!(
+                                connection_id = %connection_id_for_receive,
+                                "Received pong"
+                            );
+                        } else if action.eq_ignore_ascii_case("auth") {
+                            debug!(
+                                connection_id = %connection_id_for_receive,
+                                "Client authenticated over WebSocket"
+                            );
                         }
                     }
                 }
@@ -809,6 +849,7 @@ async fn test_broadcast(
 
 pub fn router() -> Router<AppState> {
     Router::new()
+        .route("/", get(ws_handler))
         .route("/ws", get(ws_handler))
         .route("/stats", get(ws_stats))
         .route("/test", axum::routing::post(test_broadcast))

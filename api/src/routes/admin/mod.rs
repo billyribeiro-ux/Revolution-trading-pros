@@ -26,6 +26,7 @@ use axum::{
 
 use crate::AppState;
 
+mod abandoned_carts;
 mod campaigns_stats;
 mod coupons;
 mod memberships;
@@ -34,6 +35,8 @@ mod users;
 
 pub fn router() -> Router<AppState> {
     Router::new()
+        // Abandoned Carts
+        .nest("/abandoned-carts", abandoned_carts::router())
         // Dashboard
         .route("/dashboard", get(campaigns_stats::dashboard_overview))
         // Analytics Dashboard - ICT 7 FIX
