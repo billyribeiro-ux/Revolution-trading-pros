@@ -25,13 +25,13 @@
 //! `/cms/presets/public`) keep compiling unchanged.
 //!
 //! - [`dto`]       — request/response/data structs (re-exported publicly)
-//! - [`helpers`]   — RBAC checks, slug generation, slug uniqueness,
+//! - `helpers`     — RBAC checks, slug generation, slug uniqueness,
 //!   shared `ApiResult` type aliases
-//! - [`listing`]   — list + group-by-block-type + block-types index
-//! - [`retrieval`] — single-preset reads (by id, by slug)
-//! - [`crud`]      — create / update / soft-delete
-//! - [`actions`]   — duplicate, apply, save-from-block
-//! - [`public`]    — unauthenticated read-only endpoint
+//! - `listing`     — list + group-by-block-type + block-types index
+//! - `retrieval`   — single-preset reads (by id, by slug)
+//! - `crud`        — create / update / soft-delete
+//! - `actions`     — duplicate, apply, save-from-block
+//! - `public`      — unauthenticated read-only endpoint
 
 use axum::{
     routing::{get, post},

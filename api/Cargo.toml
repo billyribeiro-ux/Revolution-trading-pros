@@ -25,7 +25,7 @@ sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "post
 rust_decimal = { version = "1.43.0", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "1.8.0", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "1.8.1", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
 
 # S3/R2 Storage
 # `default-features = false` drops ONLY the crate's `rustls` feature, which maps
@@ -37,7 +37,7 @@ redis = { version = "1.8.0", features = ["tokio-comp", "connection-manager", "tl
 # weight that carried RUSTSEC-2026-0258 (h2 0.3 has no fixed 0.3.x release)
 # plus the three rustls-webpki 0.101 advisories previously exempted in
 # deny.toml. Every other default feature is re-listed explicitly.
-aws-sdk-s3 = { version = "1.156.0", default-features = false, features = ["sigv4a", "http-1x", "default-https-client", "rt-tokio"] }
+aws-sdk-s3 = { version = "1.157.0", default-features = false, features = ["sigv4a", "http-1x", "default-https-client", "rt-tokio"] }
 aws-config = "1.13.0"
 
 # Serialization
@@ -112,9 +112,7 @@ validator = { version = "0.21.0", features = ["derive"] }
 
 [dev-dependencies]
 # Testing
-axum-test = "21.1.0"
 tower = { version = "0.5.3", features = ["util"] }
-hyper = { version = "1.12.0", features = ["full"] }
 http-body-util = "0.1.5"
 
 [profile.release]

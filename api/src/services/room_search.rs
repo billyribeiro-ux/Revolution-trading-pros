@@ -145,7 +145,7 @@ pub struct AlertSearchResult {
     pub published_at: DateTime<Utc>,
     /// Relevance score from ts_rank_cd (0.0 - 1.0+)
     pub relevance_score: f32,
-    /// Highlighted snippet with matched terms in <b> tags
+    /// Highlighted snippet with matched terms in `<b>` tags
     pub highlight: String,
 }
 

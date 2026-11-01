@@ -243,7 +243,7 @@ async fn require_monitoring_token(
 /// Create monitoring router
 ///
 /// All three routes are sensitive (counters / uptime / version recon) and are
-/// gated by [`require_monitoring_token`]. There is no basic-liveness route in
+/// gated by `require_monitoring_token`. There is no basic-liveness route in
 /// this module — the public `/health` and load-balancer `/ready` probes live
 /// in `routes::health` and are unaffected — so nothing here is left public.
 pub fn router() -> Router<Metrics> {

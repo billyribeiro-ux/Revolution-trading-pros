@@ -10,12 +10,12 @@
 //! `admin_indicators.rs` (1,104 LOC). Sub-modules:
 //!
 //! - [`types`]      — Public DTOs (re-exported from this module)
-//! - [`helpers`]    — `slugify()` (internal)
-//! - [`crud`]       — indicator CRUD: list / get / create / update / delete / toggle
-//! - [`files`]      — multi-platform file management endpoints
-//! - [`videos`]     — Bunny-backed video management endpoints
-//! - [`analytics`]  — download-count rollup endpoint
-//! - [`pricing`]    — Stripe-synchronised price change (BEGIN/COMMIT + audit row)
+//! - `helpers`      — `slugify()` (internal)
+//! - `crud`         — indicator CRUD: list / get / create / update / delete / toggle
+//! - `files`        — multi-platform file management endpoints
+//! - `videos`       — Bunny-backed video management endpoints
+//! - `analytics`    — download-count rollup endpoint
+//! - `pricing`      — Stripe-synchronised price change (BEGIN/COMMIT + audit row)
 //!
 //! ## Public API
 //!

@@ -79,8 +79,8 @@ pub struct StripeSubscription {
     pub id: String,
     pub status: String,
     pub customer: String,
-    /// Stripe 2026 API: period timestamps moved to items.data[0].
-    /// These top-level fields are kept as #[serde(default)] fallback for older fixtures/mocks.
+    /// Stripe 2026 API: period timestamps moved to `items.data[0]`.
+    /// These top-level fields are kept as `#[serde(default)]` fallback for older fixtures/mocks.
     #[serde(default)]
     pub current_period_start: i64,
     #[serde(default)]
@@ -94,7 +94,7 @@ pub struct StripeSubscription {
 
 impl StripeSubscription {
     /// Returns (current_period_start, current_period_end) as Unix timestamps.
-    /// Reads from items.data[0] first (Stripe 2026+), falls back to top-level fields.
+    /// Reads from `items.data[0]` first (Stripe 2026+), falls back to top-level fields.
     pub fn get_current_period(&self) -> (i64, i64) {
         if let Some(item) = self.items.as_ref().and_then(|l| l.data.first()) {
             if item.current_period_start != 0 || item.current_period_end != 0 {

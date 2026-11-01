@@ -22,13 +22,13 @@
 //! `routes/mod.rs` nest call (`/cms/assets`) keep compiling unchanged.
 //!
 //! - [`dto`]     — request/response/data structs (re-exported publicly)
-//! - [`helpers`] — `slugify`, `format_bytes`, `get_cms_user_id`
-//! - [`folders`] — folder hierarchy CRUD
-//! - [`listing`] — list / recent / get-by-id
-//! - [`crud`]    — single-asset CRUD + restore + replace
-//! - [`bulk`]    — bulk move / delete / tag
-//! - [`usage`]   — usage tracking
-//! - [`stats`]   — library statistics + tag aggregation
+//! - `helpers`   — `slugify`, `format_bytes`, `get_cms_user_id`
+//! - `folders`   — folder hierarchy CRUD
+//! - `listing`   — list / recent / get-by-id
+//! - `crud`      — single-asset CRUD + restore + replace
+//! - `bulk`      — bulk move / delete / tag
+//! - `usage`     — usage tracking
+//! - `stats`     — library statistics + tag aggregation
 
 use axum::{
     routing::{get, post, put},

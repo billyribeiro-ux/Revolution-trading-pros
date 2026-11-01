@@ -6,7 +6,7 @@
 //! URL.
 //!
 //! Why: previously the OAuth callbacks redirected to
-//!   /auth/callback?provider=google&token=<JWT>&refresh_token=<JWT>&session_id=...
+//!   `/auth/callback?provider=google&token=<JWT>&refresh_token=<JWT>&session_id=...`
 //! which leaked full JWTs into Cloudflare access logs, browser history,
 //! and any third-party Referer headers. Cookies set on the redirect
 //! Response are sent with the immediately-following GET to /auth/callback
