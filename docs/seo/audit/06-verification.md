@@ -1,0 +1,201 @@
+# Phase 6 Step 4 — Independent Verification Audit (`06-verification.md`)
+
+- **Verified At:** 2026-11-01T17:34:45.000Z
+- **Role:** Independent SEO Verification Auditor (Zero-Context Clean-Room Re-derivation)
+- **Standard:** `docs/seo/SEO_STANDARD.md`
+- **Target Preview Server:** `http://127.0.0.1:4173`
+- **Overall Verdict:** **PASS — ZERO DISAGREEMENTS**
+
+---
+
+## 1. Executive Summary & Global Invariant Checks
+
+| Check | Expected | Independent Observation | Verdict | Evidence |
+| --- | --- | --- | --- | --- |
+| `06-matrix-final.md` row distribution | `169 PASS`, `0 FAIL`, `6 N-A`, `1 REQUIRES-PRODUCTION` (176 total) | `169 PASS`, `0 FAIL`, `6 N-A`, `1 REQUIRES-PRODUCTION` (176 total) | **CONFIRMED** | `[CODE docs/seo/audit/06-matrix-final.md:6-11]` |
+| Baseline `FAIL` rows re-verified | All 94 baseline `FAIL` rows transitioned to `PASS` | 94 / 94 re-derived from raw JSON, source code, and live HTTP requests | **CONFIRMED** | See Section 3 Table (Rows 1–94) |
+| Non-`FAIL` baseline sample (≥20%) | ≥17 of 82 non-`FAIL` rows re-verified | 18 / 82 rows (21.95%) selected via LCG `seed = 20261101` | **CONFIRMED** | See Section 4 Table (Rows 1–18) |
+| Indexable URLs HTTP status | 50 / 50 return HTTP `200` | 50 / 50 URLs have `rawHttp.finalStatus === 200` and live `curl` `200 OK` | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:4-19]` `[HTTP http://127.0.0.1:4173/ -> 200]` |
+| `canonicalMismatchCount` | `0` | `0` (all 50 pages emit `https://revolutiontradingpros.com<path>` matching `sitemap.xml` byte-for-byte) | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:7]` |
+| `duplicateTitleGroups` | `0` | `0` (all 50 pages emit 1 unique `<title>` within 15–60 decoded chars) | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:8]` |
+| `duplicateDescriptionGroups` | `0` | `0` (all 50 pages emit 1 unique `<meta name="description">` within 50–160 decoded chars) | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:9]` |
+| `orphanIndexablePageCount` | `0` | `0` (all 50 indexable URLs reachable within ≤3 clicks from `/`) | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:11]` |
+| `brokenInternalLinkCount` | `0` | `0` broken 4xx/5xx internal links; `0` 3xx redirecting internal links | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:12]` |
+| `soft404FailureCount` | `0` | `0` (`/indicators/__nonexistent_slug_seo_test__` and `/classes/__nonexistent_slug_seo_test__` return HTTP `404` with `x-robots-tag: noindex, nofollow`) | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:13]` `[HTTP http://127.0.0.1:4173/indicators/__nonexistent_slug_seo_test__ -> 404, x-robots-tag: noindex, nofollow]` |
+| `pagesWithSelfServingAggregateRating` | `[]` (`length === 0`) | `[]` (`0` pages emit hardcoded/self-serving `AggregateRating`) | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:18]` `[CODE docs/seo/audit/06-static.md:149-152]` |
+| Axe serious/critical violations | `0` across all 8 templates | `0` violations on `/`, `/about`, `/courses`, `/alerts/explosive-swings`, `/authors/billy-ribeiro`, `/courses/day-trading-masterclass`, `/guides/risk-management`, `/indicators/rsi` | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/axe-summary.json:1-50]` |
+| Lighthouse / CWV lab thresholds | LCP ≤ 2500ms, TBT ≤ 200ms, CLS ≤ 0.1, SEO = 100, A11y = 100 | Max LCP = 184ms, Max TBT = 0ms, Max CLS = 0.006, SEO = 100/100, A11y = 100/100 across all 8 templates | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/lhci-summary.json:1-258]` |
+| `AGENTS.md` & `CLAUDE.md` verification | Both exist at repo root; `CLAUDE.md` line 1 is `@AGENTS.md`; all cited file paths exist | `CLAUDE.md` line 1 is `@AGENTS.md`; all 20 file paths cited in `AGENTS.md` exist on disk | **CONFIRMED** | `[CODE CLAUDE.md:1]` `[CODE AGENTS.md:1-108]` `[CMD test -e <path> -> exit 0]` |
+
+---
+
+## 2. `AGENTS.md` & `CLAUDE.md` Path Existence Verification
+
+- **`CLAUDE.md` Line 1:** `@AGENTS.md` (`[CODE CLAUDE.md:1]`) — **CONFIRMED**
+- **File paths cited in `AGENTS.md` verified via `fs.existsSync` / `test -e`:**
+  1. `frontend/package.json` — **EXISTS**
+  2. `pnpm-lock.yaml` — **EXISTS**
+  3. `docs/seo/SEO_STANDARD.md` — **EXISTS**
+  4. `frontend/src/lib/seo/config.ts` — **EXISTS**
+  5. `frontend/src/lib/seo/types.ts` — **EXISTS**
+  6. `frontend/src/app.d.ts` — **EXISTS**
+  7. `frontend/src/lib/seo/Seo.svelte` — **EXISTS**
+  8. `frontend/src/routes/+layout.svelte` — **EXISTS**
+  9. `frontend/src/lib/seo/resolve.ts` — **EXISTS**
+  10. `frontend/src/lib/seo/jsonld.ts` — **EXISTS**
+  11. `frontend/src/lib/seo/schemas.ts` — **EXISTS**
+  12. `frontend/src/lib/components/seo/Breadcrumbs.svelte` — **EXISTS**
+  13. `frontend/src/lib/seo/robots.ts` — **EXISTS**
+  14. `frontend/src/hooks.server.ts` — **EXISTS**
+  15. `frontend/src/routes/robots.txt/+server.ts` — **EXISTS**
+  16. `frontend/src/routes/sitemap.xml/+server.ts` — **EXISTS**
+  17. `frontend/vite.config.ts` — **EXISTS**
+  18. `frontend/src/routes/authors/[slug]/+page.ts` — **EXISTS**
+  19. `frontend/src/routes/indicators/[id]/+page.ts` — **EXISTS**
+  20. `frontend/src/routes/blog/[slug]/+page.svelte` — **EXISTS**
+
+---
+
+## 3. Re-Verification of All 94 Baseline-`FAIL` Rows
+
+Every row below was `FAIL` in `03-matrix-baseline.md` and reported as `PASS` in `06-matrix-final.md`. Each row has been independently re-derived from `06-final.json`, `06-lab/*.json`, `06-static.md`, live HTTP requests against `http://127.0.0.1:4173`, and direct source-code inspection.
+
+| # | Matrix Row | ID | Sev | Template | Baseline → Final | Auditor Verdict | Independent Verification Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Row 10 | `IDX-03` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/authors/[slug]/+page.ts:10-14]` `[CODE frontend/src/routes/indicators/[id]/+page.ts:9-19]` `[CMD pnpm --filter revolution-svelte build -> prerendered /authors/* and /indicators/*]` |
+| 2 | Row 11 | `IDX-04` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/vite.config.ts:64-68]` `[CODE docs/seo/audit/06-static.md:33-36]` |
+| 3 | Row 12 | `IDX-05` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/__nonexistent_slug_seo_test__ -> 404, x-robots-tag="noindex, nofollow"]` `[CODE frontend/src/routes/indicators/[id]/+page.ts:24]` `[CODE frontend/src/routes/classes/[slug]/+page.server.ts:112]` |
+| 4 | Row 13 | `IDX-06` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/signup -> 308 Location: /register]` `[CODE frontend/src/routes/signup/+page.server.ts:19]` |
+| 5 | Row 14 | `IDX-07` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/robots.txt -> 200 text/plain, Allow: /_app/immutable/, Sitemap: https://revolutiontradingpros.com/sitemap.xml]` `[CODE frontend/src/routes/robots.txt/+server.ts:1-95]` |
+| 6 | Row 15 | `IDX-08` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/config.ts:15-43]` `[CODE frontend/src/routes/robots.txt/+server.ts:52-77]` |
+| 7 | Row 16 | `IDX-09` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/blog -> x-robots-tag="noindex, nofollow"]` `[CODE frontend/src/hooks.server.ts:472-484]` |
+| 8 | Row 18 | `URL-02` | P0 | `home` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/ -> canonical="https://revolutiontradingpros.com/"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 9 | Row 19 | `URL-02` | P0 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 10 | Row 20 | `URL-02` | P0 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts -> canonical="https://revolutiontradingpros.com/alerts"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 11 | Row 21 | `URL-02` | P0 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> canonical="https://revolutiontradingpros.com/alerts/explosive-swings"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 12 | Row 22 | `URL-02` | P0 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> canonical="https://revolutiontradingpros.com/authors/billy-ribeiro"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 13 | Row 23 | `URL-02` | P0 | `course` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> canonical="https://revolutiontradingpros.com/classes/quickstart-precision-trading-c"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 14 | Row 24 | `URL-02` | P0 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/exit-strategies -> canonical="https://revolutiontradingpros.com/guides/exit-strategies"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 15 | Row 25 | `URL-02` | P0 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> canonical="https://revolutiontradingpros.com/indicators/bollinger-bands"]` `[CODE frontend/src/lib/seo/config.ts:9]` |
+| 16 | Row 26 | `URL-03` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"]` `[CODE frontend/src/lib/seo/canonical.ts:126]` |
+| 17 | Row 27 | `URL-04` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about?utm_source=x&fbclid=y -> canonical="https://revolutiontradingpros.com/about"]` `[CODE frontend/src/lib/seo/canonical.ts:43-82]` |
+| 18 | Row 29 | `REND-01` | P0 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/cookie-policy -> ssrWords=307, domWords=307, delta=0]` `[CODE docs/seo/audit/06-final.json:424-434]` |
+| 19 | Row 30 | `REND-01` | P0 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/blog -> ssrWords=128, domWords=128, delta=0]` `[HTTP http://127.0.0.1:4173/classes -> ssrWords=124, domWords=124, delta=0]` |
+| 20 | Row 45 | `REND-04` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/+error.svelte:1-95]` `[CODE frontend/src/routes/+layout.svelte:122-146]` |
+| 21 | Row 46 | `META-01` | P0 | `home` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/ -> title="Revolution Trading Pros — Live Trading Rooms & Education" (56ch, tagCount=1)]` |
+| 22 | Row 48 | `META-03` | P1 | `home` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/ -> og:url="https://revolutiontradingpros.com/", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 23 | Row 49 | `META-01` | P0 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> title="About Our Trading Desk & Educators \| Revolution Trading Pros" (60ch decoded, tagCount=1)]` |
+| 24 | Row 50 | `META-02` | P1 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/our-mission -> description (118ch, tagCount=1)]` `[HTTP http://127.0.0.1:4173/about -> description (153ch, tagCount=1)]` |
+| 25 | Row 51 | `META-03` | P1 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> og:url="https://revolutiontradingpros.com/about", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 26 | Row 52 | `META-01` | P0 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts -> title="Trading Alert Services \| Revolution Trading Pros" (48ch, tagCount=1)]` `[HTTP http://127.0.0.1:4173/blog -> title (41ch)]` |
+| 27 | Row 53 | `META-02` | P1 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/live-trading-rooms -> description (154ch)]` `[HTTP http://127.0.0.1:4173/resources -> description (135ch)]` |
+| 28 | Row 54 | `META-03` | P1 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts -> og:url="https://revolutiontradingpros.com/alerts", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 29 | Row 55 | `META-01` | P0 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> title="Explosive Swings Trading Alerts \| Revolution Trading Pros" (57ch, tagCount=1)]` |
+| 30 | Row 56 | `META-02` | P1 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> description (130ch, tagCount=1)]` |
+| 31 | Row 57 | `META-03` | P1 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> og:url="https://revolutiontradingpros.com/alerts/explosive-swings", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 32 | Row 58 | `META-01` | P0 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> title="Billy Ribeiro — Founder & Head Trader \| RTP" (43ch decoded, tagCount=1)]` |
+| 33 | Row 59 | `META-02` | P1 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> description (157ch decoded, tagCount=1)]` |
+| 34 | Row 60 | `META-03` | P1 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> og:url="https://revolutiontradingpros.com/authors/billy-ribeiro", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 35 | Row 63 | `META-03` | P1 | `course` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> og:url="https://revolutiontradingpros.com/classes/quickstart-precision-trading-c", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 36 | Row 64 | `META-01` | P0 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/exit-strategies -> title="Swing Trading Exit Strategies \| Revolution Trading Pros" (55ch, tagCount=1)]` |
+| 37 | Row 65 | `META-02` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/resources/stock-indexes-list -> description (150ch, tagCount=1)]` |
+| 38 | Row 66 | `META-03` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/exit-strategies -> og:url="https://revolutiontradingpros.com/guides/exit-strategies", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 39 | Row 67 | `META-01` | P0 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> title="Bollinger Bands \| Revolution Trading Pros" (41ch, tagCount=1)]` |
+| 40 | Row 68 | `META-02` | P1 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/tools/options-calculator -> description (135ch, tagCount=1)]` `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> description (129ch)]` |
+| 41 | Row 69 | `META-03` | P1 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> og:url="https://revolutiontradingpros.com/indicators/bollinger-bands", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"]` |
+| 42 | Row 71 | `META-05` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/Seo.svelte:1-135]` `[CODE docs/seo/audit/06-static.md:49-53]` `[HTTP http://127.0.0.1:4173/ -> title.tagCount=1, description.tagCount=1, canonical.tagCount=1]` |
+| 43 | Row 74 | `SEM-02` | P1 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/our-mission -> 1 H1, 0 heading level skips]` `[HTTP http://127.0.0.1:4173/about -> 1 H1, 0 heading level skips]` |
+| 44 | Row 75 | `SEM-02` | P1 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/resources -> 1 H1, 0 heading level skips]` `[HTTP http://127.0.0.1:4173/alerts -> 1 H1, 0 heading level skips]` |
+| 45 | Row 76 | `SEM-02` | P1 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> 1 H1, 0 heading level skips]` |
+| 46 | Row 78 | `SEM-02` | P1 | `course` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> 1 H1, 0 heading level skips]` |
+| 47 | Row 79 | `SEM-02` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/exit-strategies -> 1 H1, 0 heading level skips]` |
+| 48 | Row 81 | `SEM-03` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/app.html:4]` `[CODE frontend/src/hooks.server.ts:461-466]` `[HTTP http://127.0.0.1:4173/ -> html[lang]="en", html[dir]="ltr"]` |
+| 49 | Row 84 | `SEM-05` | P1 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/axe-summary.json:8-13 -> /about violationCount=0]` |
+| 50 | Row 85 | `SEM-05` | P1 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/axe-summary.json:14-19 -> /courses violationCount=0]` |
+| 51 | Row 86 | `SEM-05` | P1 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/axe-summary.json:20-25 -> /alerts/explosive-swings violationCount=0]` |
+| 52 | Row 89 | `SEM-05` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/axe-summary.json:38-43 -> /guides/risk-management violationCount=0]` |
+| 53 | Row 101 | `SD-03` | P0 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=2]` |
+| 54 | Row 102 | `SD-03` | P0 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=2]` |
+| 55 | Row 103 | `SD-03` | P0 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3]` |
+| 56 | Row 104 | `SD-03` | P0 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3]` |
+| 57 | Row 105 | `SD-03` | P0 | `course` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3]` |
+| 58 | Row 106 | `SD-03` | P0 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/exit-strategies -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3]` |
+| 59 | Row 107 | `SD-03` | P0 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3]` |
+| 60 | Row 108 | `SD-04` | P1 | `home` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/defaults.ts:87-116]` `[CODE frontend/src/lib/seo/resolve.ts:264-281]` |
+| 61 | Row 109 | `SD-05` | P1 | `static` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (2 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 62 | Row 110 | `SD-05` | P1 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (2 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 63 | Row 111 | `SD-05` | P1 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 64 | Row 112 | `SD-05` | P1 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 65 | Row 113 | `SD-05` | P1 | `course` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 66 | Row 114 | `SD-05` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/exit-strategies -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 67 | Row 115 | `SD-05` | P1 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)]` `[CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1]` |
+| 68 | Row 116 | `SD-06` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/risk-management -> Article JSON-LD with headline, image[], datePublished, dateModified, author.url]` `[CODE frontend/src/routes/guides/risk-management/+page.ts:20-34]` |
+| 69 | Row 118 | `SD-08` | P1 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> Product JSON-LD with image and Offer matching DOM price]` `[CODE frontend/src/routes/pricing/+page.ts:17-58]` |
+| 70 | Row 119 | `SD-09` | P1 | `profile` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> ProfilePage JSON-LD with mainEntity: Person]` `[CODE frontend/src/routes/authors/[slug]/+page.ts:34-46]` |
+| 71 | Row 120 | `SD-10` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/store/scanners/high-octane-scanner -> hasAggregateRating=false]` `[CODE frontend/src/routes/store/scanners/high-octane-scanner/+page.ts:20-45]` |
+| 72 | Row 121 | `SD-11` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/defaults.ts:87-116]` `[HTTP http://127.0.0.1:4173/ -> 0 retired schema types]` |
+| 73 | Row 123 | `SD-12` | P2 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/rsi -> SoftwareApplication with applicationCategory, operatingSystem, offers]` `[CODE frontend/src/routes/indicators/[id]/+page.ts:43-50]` |
+| 74 | Row 125 | `MAP-01` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/sitemap.xml -> 50 URLs, all HTTP 200, includes /authors/*, excludes /login, /register, /signup]` `[CODE frontend/src/routes/sitemap.xml/+server.ts:60-160]` |
+| 75 | Row 126 | `MAP-02` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/sitemap.xml -> 100% canonical parity across all 50 indexable URLs]` |
+| 76 | Row 128 | `MAP-04` | P2 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/news-sitemap.xml/+server.ts:1-25]` `[CODE frontend/src/routes/video-sitemap.xml/+server.ts:1-25]` |
+| 77 | Row 129 | `LINK-01` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/blog/+page.svelte:370-416]` `[HTTP http://127.0.0.1:4173/blog -> <a href="/blog?page=2">]` |
+| 78 | Row 130 | `LINK-02` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:11 -> orphanIndexablePageCount=0]` |
+| 79 | Row 131 | `LINK-03` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-final.json:12 -> brokenInternalLinkCount=0]` |
+| 80 | Row 132 | `LINK-04` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/blog/+page.svelte:342-346]` |
+| 81 | Row 133 | `LINK-05` | P1 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/blog/+page.svelte:370-416]` `[CODE frontend/src/lib/seo/resolve.ts:123-128]` |
+| 82 | Row 146 | `PERF-02` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/package.json:84]` `[CODE frontend/vite.config.ts:3,37]` `[CODE frontend/src/lib/components/indicators/PlatformDownloads.svelte:10-49]` |
+| 83 | Row 149 | `PERF-03` | P0 | `listing` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/store/scanners -> first main img loading!=lazy]` `[HTTP http://127.0.0.1:4173/alerts -> first main img loading!=lazy]` |
+| 84 | Row 150 | `PERF-03` | P0 | `product` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/live-trading-rooms/swing-trading -> first main img loading!=lazy]` `[HTTP http://127.0.0.1:4173/alerts/explosive-swings -> first main img loading!=lazy]` |
+| 85 | Row 154 | `PERF-03` | P0 | `software` | `FAIL` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> first main img loading!=lazy]` |
+| 86 | Row 155 | `PERF-04` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/hooks.server.ts:531]` `[CODE docs/seo/audit/06-static.md:126-136]` |
+| 87 | Row 157 | `MEDIA-01` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/store/scanners/+page.ts:15]` `[HTTP http://127.0.0.1:4173/revolution-trading-pros.png -> 200]` |
+| 88 | Row 160 | `YMYL-01` | P1 | `article` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/guides/risk-management/+page.svelte:5-8]` `[CODE frontend/src/routes/resources/etf-stocks-list/+page.svelte:302-305]` |
+| 89 | Row 161 | `YMYL-02` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/authors/authors.ts:18-48]` `[CODE frontend/src/routes/guides/risk-management/+page.svelte:100-117]` |
+| 90 | Row 164 | `SPAM-02` | P0 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/store/scanners/+page.ts:1-130]` `[CODE frontend/src/routes/live-trading-rooms/+page.server.ts:210-235]` `[CODE docs/seo/audit/06-final.json:18]` |
+| 91 | Row 171 | `OPS-03` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/package.json:36]` `[CMD pnpm test:seo -> 100% pass]` |
+| 92 | Row 174 | `TOOL-02` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/Seo.svelte:1-135]` `[CMD pnpm --filter revolution-svelte check -> 0 errors, 0 warnings]` |
+| 93 | Row 175 | `TOOL-03` | P1 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/sitemap.xml/+server.ts:1-160]` |
+| 94 | Row 176 | `TOOL-04` | P2 | `ALL` | `FAIL` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/schemas.ts:15-35]` |
+
+---
+
+## 4. Re-Verification of 20% Random Sample of Non-`FAIL` Baseline Rows (18 of 82 Rows = 21.95%)
+
+- **Selection Method:** Deterministic Linear Congruential Generator (`seed = 20261101`, $s_{n+1} = (1664525 \cdot s_n + 1013904223) \bmod 2^{32}$) sampling without replacement from the 82 rows in `03-matrix-baseline.md` whose baseline status was not `FAIL` (`75 PASS`, `6 N-A`, `1 REQUIRES-PRODUCTION`).
+- **Sampled Matrix Row Numbers:** 2, 35, 37, 42, 43, 61, 62, 73, 83, 91, 98, 136, 152, 159, 165, 166, 170, 173.
+
+| # | Matrix Row | ID | Sev | Template | Baseline → Final | Auditor Verdict | Independent Verification Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Row 2 | `IDX-01` | P0 | `static` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/about -> 200, ssrTitle="About Our Trading Desk & Educators ...", ssrWords=737]` `[CODE frontend/src/routes/+layout.js:1]` |
+| 2 | Row 35 | `REND-01` | P0 | `software` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> ssrWords=225, domWords=225, delta=0]` |
+| 3 | Row 37 | `REND-03` | P0 | `home` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/ -> desktopWords=529, mobileWords=529, h1="Live Trading Rooms"]` |
+| 4 | Row 42 | `REND-03` | P0 | `course` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/courses/day-trading-masterclass -> desktopWords=461, mobileWords=461, h1="Day Trading Masterclass"]` |
+| 5 | Row 43 | `REND-03` | P0 | `article` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/guides/risk-management -> desktopWords=320, mobileWords=320, h1="🛡️ Risk Management for Swing Trading"]` |
+| 6 | Row 61 | `META-01` | P0 | `course` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> title="Quickstart To Precision Trading \| Revolution Trading Pros" (57ch, tagCount=1)]` |
+| 7 | Row 62 | `META-02` | P1 | `course` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> description (138ch, tagCount=1)]` |
+| 8 | Row 73 | `SEM-02` | P1 | `home` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/ -> 1 H1, 0 heading level skips]` |
+| 9 | Row 83 | `SEM-05` | P1 | `home` | `PASS` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/06-lab/axe-summary.json:2-7 -> / violationCount=0]` |
+| 10 | Row 91 | `SD-01` | P0 | `home` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/ -> 1 valid JSON-LD @graph block, parseError=null]` |
+| 11 | Row 98 | `SD-01` | P0 | `software` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> 1 valid JSON-LD @graph block, parseError=null]` |
+| 12 | Row 136 | `I18N-03` | P0 | `ALL` | `N-A` → **`N-A`** | **CONFIRMED** | `[CODE frontend/src/lib/seo/defaults.ts:30]` (single-locale `en` site) |
+| 13 | Row 152 | `PERF-03` | P0 | `course` | `PASS` → **`PASS`** | **CONFIRMED** | `[HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> first main img loading!=lazy]` |
+| 14 | Row 159 | `MEDIA-03` | P1 | `ALL` | `PASS` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/app.html:7,29]` `[HTTP http://127.0.0.1:4173/favicon.png -> 200 image/png]` |
+| 15 | Row 165 | `SPAM-03` | P0 | `ALL` | `PASS` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/02-inventory.json:1]` (0 doorway pages) |
+| 16 | Row 166 | `SPAM-04` | P0 | `ALL` | `PASS` → **`PASS`** | **CONFIRMED** | `[CODE docs/seo/audit/02-inventory.json:1]` (0 parasite sections) |
+| 17 | Row 170 | `OPS-02` | P1 | `ALL` | `PASS` → **`PASS`** | **CONFIRMED** | `[CODE frontend/src/routes/+layout.svelte:44,155]` (`web-vitals` initialized) |
+| 18 | Row 173 | `TOOL-01` | P0 | `ALL` | `PASS` → **`PASS`** | **CONFIRMED** | `[CODE AGENTS.md:1-23]` (Svelte MCP `svelte-autofixer` verified) |
+
+---
+
+## 5. Minor Evidence Path Note (Non-Disagreement)
+
+- In `06-matrix-final.md` Row 162 (`YMYL-03`, `PASS` at both baseline and final), the evidence column cites `[CODE frontend/src/lib/components/layout/MarketingFooter.svelte:1]`; the actual file path in the repository is `[CODE frontend/src/lib/components/sections/MarketingFooter.svelte:1]`. All 6 policy links (`/about`, `/contact`, `/privacy`, `/terms`, `/disclaimer`, `/refund`) are confirmed present in `MarketingFooter.svelte` and return HTTP `200` on `http://127.0.0.1:4173`. Status `PASS` is **CONFIRMED**.
+
+---
+
+## 6. Final Auditor Conclusion
+
+- **Total Baseline `FAIL` Rows Re-Verified:** 94 / 94 (**100% CONFIRMED**)
+- **Total Non-`FAIL` Sample Rows Re-Verified:** 18 / 18 (**100% CONFIRMED**)
+- **Disagreements Found:** **0**
+- **Final Audit Verdict:** **PASS — ZERO DISAGREEMENTS**
