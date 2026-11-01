@@ -555,7 +555,7 @@ pub async fn churned_members(
     // Get churned members using parameterized queries
     let members: Vec<Member> = sqlx::query_as(
         r"
-        SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
+        SELECT u.id, u.name, u.email, u.created_at, u.updated_at
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
         WHERE us.status IN ('cancelled', 'expired')
@@ -565,7 +565,8 @@ pub async fn churned_members(
         AND ($1::TEXT IS NULL OR (u.name ILIKE $1 OR u.email ILIKE $1))
         AND ($2::DATE IS NULL OR us.cancelled_at >= $2::DATE)
         AND ($3::DATE IS NULL OR us.cancelled_at <= $3::DATE + INTERVAL '1 day')
-        ORDER BY us.cancelled_at DESC NULLS LAST, u.created_at DESC
+        GROUP BY u.id, u.name, u.email, u.created_at, u.updated_at
+        ORDER BY MAX(us.cancelled_at) DESC NULLS LAST, u.created_at DESC
         LIMIT $4 OFFSET $5
         ",
     )

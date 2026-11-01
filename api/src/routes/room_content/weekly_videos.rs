@@ -186,14 +186,29 @@ pub(super) async fn create_weekly_video(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     // Create new current video
-    // room_id references trading_rooms.id, NOT membership_plans.id
+    // room_id resolves from trading_rooms or membership_plans with 0 fallback
     let video: WeeklyVideo = sqlx::query_as(
         r"INSERT INTO room_weekly_videos
            (room_id, room_slug, week_of, week_title, video_title, video_url, video_platform, thumbnail_url, duration, description, is_current, is_published)
            VALUES (
-               (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
+               COALESCE(
+                   (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
+                   (SELECT id FROM membership_plans WHERE slug = $1 LIMIT 1),
+                   0
+               ),
                $1, $2, $3, $4, $5, $6, $7, $8, $9, true, true
            )
+           ON CONFLICT (room_slug, week_of) DO UPDATE SET
+               week_title = EXCLUDED.week_title,
+               video_title = EXCLUDED.video_title,
+               video_url = EXCLUDED.video_url,
+               video_platform = EXCLUDED.video_platform,
+               thumbnail_url = EXCLUDED.thumbnail_url,
+               duration = EXCLUDED.duration,
+               description = EXCLUDED.description,
+               is_current = true,
+               is_published = true,
+               updated_at = NOW()
            RETURNING *"
     )
     .bind(&input.room_slug)

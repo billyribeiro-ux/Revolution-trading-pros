@@ -196,6 +196,10 @@ pub fn api_router() -> Router<AppState> {
             admin_member_management::router(),
         )
         // Organization - Teams & Departments - ICT 7 Grade
+        .nest(
+            "/admin/organization/profile",
+            organization::profile_router(),
+        )
         .nest("/admin/organization/teams", organization::teams_router())
         .nest(
             "/admin/organization/departments",

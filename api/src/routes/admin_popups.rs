@@ -79,7 +79,7 @@ async fn list_popups(
     // names. LIMIT and OFFSET are bound through `param_idx` placeholders.
     let sql = format!(
         r"
-        SELECT id, name, type as popup_type, status, priority, title, content,
+        SELECT id, name, type, status, priority, title, content,
                cta_text, cta_url, cta_new_tab, position, size, animation,
                show_close_button, close_on_overlay_click, close_on_escape,
                auto_close_after, has_form, form_id,
@@ -168,7 +168,7 @@ async fn get_popup(
 ) -> Result<Json<PopupResponse>, (StatusCode, Json<serde_json::Value>)> {
     let popup: crate::models::popup::Popup = sqlx::query_as(
         r"
-        SELECT id, name, type as popup_type, status, priority, title, content,
+        SELECT id, name, type, status, priority, title, content,
                cta_text, cta_url, cta_new_tab, position, size, animation,
                show_close_button, close_on_overlay_click, close_on_escape,
                auto_close_after, has_form, form_id,

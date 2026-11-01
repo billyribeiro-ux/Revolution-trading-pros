@@ -135,11 +135,10 @@ pub(super) async fn list_schedules(
             s.status, s.executed_at, s.error_message, s.notes,
             s.created_by, s.created_at,
             c.title as content_title, c.slug as content_slug,
-            ct.name as content_type_name,
-            u.display_name as created_by_name
+            c.content_type::text as content_type_name,
+            u.name as created_by_name
         FROM cms_schedules s
         LEFT JOIN cms_content c ON s.content_id = c.id
-        LEFT JOIN cms_content_types ct ON c.content_type_id = ct.id
         LEFT JOIN users u ON s.created_by = u.id
         WHERE 1=1
         ",
@@ -241,11 +240,10 @@ pub(super) async fn get_schedule(
             s.status, s.executed_at, s.error_message, s.notes,
             s.created_by, s.created_at,
             c.title as content_title, c.slug as content_slug,
-            ct.name as content_type_name,
-            u.display_name as created_by_name
+            c.content_type::text as content_type_name,
+            u.name as created_by_name
         FROM cms_schedules s
         LEFT JOIN cms_content c ON s.content_id = c.id
-        LEFT JOIN cms_content_types ct ON c.content_type_id = ct.id
         LEFT JOIN users u ON s.created_by = u.id
         WHERE s.id = $1
         ",

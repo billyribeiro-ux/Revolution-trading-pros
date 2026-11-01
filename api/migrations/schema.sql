@@ -21872,6 +21872,57 @@ CREATE TABLE IF NOT EXISTS public.cms_global_component_usage (
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS public.campaigns (
+    id bigserial PRIMARY KEY,
+    name character varying(255) NOT NULL,
+    description text,
+    campaign_type character varying(50) NOT NULL DEFAULT 'email',
+    status character varying(50) NOT NULL DEFAULT 'draft',
+    start_date timestamp without time zone,
+    end_date timestamp without time zone,
+    subject character varying(500),
+    body text,
+    target_audience jsonb,
+    metrics jsonb DEFAULT '{}'::jsonb,
+    scheduled_at timestamp without time zone,
+    sent_at timestamp without time zone,
+    total_recipients integer NOT NULL DEFAULT 0,
+    sent_count integer NOT NULL DEFAULT 0,
+    open_count integer NOT NULL DEFAULT 0,
+    click_count integer NOT NULL DEFAULT 0,
+    created_by bigint,
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    updated_at timestamp without time zone NOT NULL DEFAULT now()
+);
+
+DROP MATERIALIZED VIEW IF EXISTS public.mv_resource_analytics;
+ALTER TABLE public.room_resources ALTER COLUMN room_id DROP NOT NULL;
+ALTER TABLE public.room_resources ALTER COLUMN room_slug DROP NOT NULL;
+ALTER TABLE public.room_resources ALTER COLUMN published_at TYPE timestamp without time zone;
+ALTER TABLE public.room_resources ALTER COLUMN scheduled_at TYPE timestamp without time zone;
+ALTER TABLE public.room_resources ALTER COLUMN secure_token_expires TYPE timestamp without time zone;
+ALTER TABLE public.room_resources ALTER COLUMN created_at TYPE timestamp without time zone;
+ALTER TABLE public.room_resources ALTER COLUMN updated_at TYPE timestamp without time zone;
+ALTER TABLE public.room_resources ALTER COLUMN deleted_at TYPE timestamp without time zone;
+CREATE MATERIALIZED VIEW public.mv_resource_analytics AS
+ SELECT r.trading_room_id,
+    r.resource_type,
+    COALESCE(r.access_level, 'premium'::character varying) AS access_level,
+    count(*) AS resource_count,
+    COALESCE(sum(r.views_count), (0)::bigint) AS total_views,
+    COALESCE(sum(r.downloads_count), (0)::bigint) AS total_downloads,
+    count(DISTINCT f.user_id) AS unique_favorites,
+    max(r.created_at) AS latest_upload
+   FROM (public.room_resources r
+     LEFT JOIN public.resource_favorites f ON ((r.id = f.resource_id)))
+  WHERE (r.deleted_at IS NULL)
+  GROUP BY r.trading_room_id, r.resource_type, (COALESCE(r.access_level, 'premium'::character varying))
+  WITH NO DATA;
+
+ALTER TABLE public.security_events ALTER COLUMN ip_address TYPE text USING ip_address::text;
+ALTER TABLE public.security_events ADD COLUMN IF NOT EXISTS metadata jsonb;
+ALTER TABLE public.security_events ALTER COLUMN created_at TYPE timestamp without time zone;
+
 
 --
 -- PostgreSQL database dump complete

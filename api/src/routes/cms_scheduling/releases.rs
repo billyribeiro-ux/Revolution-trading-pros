@@ -203,10 +203,9 @@ pub(super) async fn get_release(
             ri.id, ri.release_id, ri.content_id, ri.action, ri.order_index,
             ri.status, ri.executed_at, ri.error_message,
             c.title as content_title, c.slug as content_slug,
-            ct.name as content_type_name
+            c.content_type::text as content_type_name
         FROM cms_release_items ri
         LEFT JOIN cms_content c ON ri.content_id = c.id
-        LEFT JOIN cms_content_types ct ON c.content_type_id = ct.id
         WHERE ri.release_id = $1
         ORDER BY ri.order_index ASC
         ",
@@ -218,7 +217,7 @@ pub(super) async fn get_release(
 
     // Get creator name
     let created_by_name: Option<(String,)> = if let Some(created_by) = release.created_by {
-        sqlx::query_as("SELECT display_name FROM users WHERE id = $1")
+        sqlx::query_as("SELECT name FROM users WHERE id = $1")
             .bind(created_by)
             .fetch_optional(&state.db.pool)
             .await
