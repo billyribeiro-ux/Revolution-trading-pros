@@ -214,13 +214,13 @@ impl RoomAnalyticsService {
                 COUNT(*) as total_trades,
                 COUNT(*) FILTER (WHERE result = 'WIN') as wins,
                 COUNT(*) FILTER (WHERE result = 'LOSS') as losses,
-                COALESCE(SUM(pnl) FILTER (WHERE result = 'WIN'), 0) as total_wins_pnl,
-                COALESCE(ABS(SUM(pnl) FILTER (WHERE result = 'LOSS')), 0) as total_losses_pnl,
-                COALESCE(AVG(pnl) FILTER (WHERE result = 'WIN'), 0) as avg_win,
-                COALESCE(ABS(AVG(pnl) FILTER (WHERE result = 'LOSS')), 0) as avg_loss,
-                COALESCE(MAX(pnl), 0) as largest_win,
-                COALESCE(MIN(pnl), 0) as largest_loss,
-                COALESCE(AVG(holding_days), 0) as avg_holding_days
+                COALESCE(SUM(pnl) FILTER (WHERE result = 'WIN'), 0)::float8 as total_wins_pnl,
+                COALESCE(ABS(SUM(pnl) FILTER (WHERE result = 'LOSS')), 0)::float8 as total_losses_pnl,
+                COALESCE(AVG(pnl) FILTER (WHERE result = 'WIN'), 0)::float8 as avg_win,
+                COALESCE(ABS(AVG(pnl) FILTER (WHERE result = 'LOSS')), 0)::float8 as avg_loss,
+                COALESCE(MAX(pnl), 0)::float8 as largest_win,
+                COALESCE(MIN(pnl), 0)::float8 as largest_loss,
+                COALESCE(AVG(holding_days), 0)::float8 as avg_holding_days
             FROM room_trades
             WHERE room_slug = $1
             AND status = 'closed'
@@ -357,7 +357,7 @@ impl RoomAnalyticsService {
                     cumulative_pnl - running_peak as drawdown
                 FROM peaks
             )
-            SELECT COALESCE(MIN(drawdown), 0) as max_drawdown
+            SELECT COALESCE(MIN(drawdown), 0)::float8 as max_drawdown
             FROM drawdowns
             "
         );
@@ -395,9 +395,9 @@ impl RoomAnalyticsService {
                 COALESCE(
                     ROUND(100.0 * COUNT(*) FILTER (WHERE result = 'WIN') / NULLIF(COUNT(*), 0), 2),
                     0
-                ) as win_rate,
-                COALESCE(SUM(pnl), 0) as total_pnl,
-                COALESCE(AVG(pnl), 0) as avg_pnl
+                )::float8 as win_rate,
+                COALESCE(SUM(pnl), 0)::float8 as total_pnl,
+                COALESCE(AVG(pnl), 0)::float8 as avg_pnl
             FROM room_trades
             WHERE room_slug = $1
             AND status = 'closed'
@@ -441,9 +441,9 @@ impl RoomAnalyticsService {
                 COALESCE(
                     ROUND(100.0 * COUNT(*) FILTER (WHERE result = 'WIN') / NULLIF(COUNT(*), 0), 2),
                     0
-                ) as win_rate,
-                COALESCE(SUM(pnl), 0) as total_pnl,
-                COALESCE(AVG(pnl), 0) as avg_pnl
+                )::float8 as win_rate,
+                COALESCE(SUM(pnl), 0)::float8 as total_pnl,
+                COALESCE(AVG(pnl), 0)::float8 as avg_pnl
             FROM room_trades
             WHERE room_slug = $1
             AND status = 'closed'
@@ -481,7 +481,7 @@ impl RoomAnalyticsService {
             r"
             SELECT
                 TO_CHAR(exit_date, 'YYYY-MM') as month,
-                COALESCE(SUM(pnl), 0) as pnl,
+                COALESCE(SUM(pnl), 0)::float8 as pnl,
                 COUNT(*)::BIGINT as trades,
                 COUNT(*) FILTER (WHERE result = 'WIN')::BIGINT as wins
             FROM room_trades
@@ -541,7 +541,7 @@ impl RoomAnalyticsService {
             r"
             SELECT
                 exit_date,
-                SUM(pnl) OVER (ORDER BY exit_date, id) as cumulative_pnl,
+                (SUM(pnl) OVER (ORDER BY exit_date, id))::float8 as cumulative_pnl,
                 id
             FROM room_trades
             WHERE room_slug = $1
@@ -633,11 +633,11 @@ impl RoomAnalyticsService {
             SELECT
                 start_date,
                 end_date,
-                max_drawdown as drawdown_amount,
-                CASE WHEN peak_value > 0
+                max_drawdown::float8 as drawdown_amount,
+                (CASE WHEN peak_value > 0
                      THEN ROUND((max_drawdown / peak_value) * 100, 2)
                      ELSE 0
-                END as drawdown_percent,
+                END)::float8 as drawdown_percent,
                 (end_date - start_date)::INT as recovery_days
             FROM drawdown_summary
             ORDER BY start_date DESC
@@ -694,9 +694,9 @@ impl RoomAnalyticsService {
                 COALESCE(
                     ROUND(100.0 * COUNT(*) FILTER (WHERE result = 'WIN') / NULLIF(COUNT(*), 0), 2),
                     0
-                ) as win_rate,
-                COALESCE(SUM(pnl), 0) as total_pnl,
-                COALESCE(AVG(pnl), 0) as avg_pnl
+                )::float8 as win_rate,
+                COALESCE(SUM(pnl), 0)::float8 as total_pnl,
+                COALESCE(AVG(pnl), 0)::float8 as avg_pnl
             FROM room_trades
             WHERE room_slug = $1
             AND UPPER(ticker) = UPPER($2)

@@ -91,6 +91,7 @@ pub async fn setup_test_app() -> Router {
     Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
+        .layer(tower_http::cors::CorsLayer::permissive())
         .with_state(state)
 }
 
@@ -144,14 +145,16 @@ async fn seeding_pool() -> sqlx::PgPool {
         .expect("failed to open seeding pool")
 }
 
-/// Setup test app + a seeded verified non-admin user (in-memory struct
-/// for tests that only need credentials, not a live row).
+/// Setup test app + a seeded verified non-admin user.
 pub async fn setup_test_app_with_user() -> (Router, TestUser, String) {
     let app = setup_test_app().await;
+    let pool = seeding_pool().await;
     let password = "TestPassword123!@#";
+    let email = format!("test_{}@example.com", uuid::Uuid::new_v4());
+    let id = seed_user(&pool, &email, "Test User", "user").await;
     let user = TestUser {
-        id: 1,
-        email: format!("test_{}@example.com", uuid::Uuid::new_v4()),
+        id,
+        email,
         name: "Test User".to_string(),
         role: Some("user".to_string()),
     };

@@ -21,6 +21,15 @@ use super::{
 use crate::cache::{cache_keys, cache_ttl};
 use crate::{middleware::admin::AdminUser, models::User, AppState};
 
+macro_rules! room_alert_cols {
+    () => {
+        "id, COALESCE(room_id, 0) AS room_id, room_slug, alert_type, ticker, title, message, notes, \
+         trade_type, action, quantity, option_type, strike::float8 AS strike, expiration, contract_type, \
+         order_type, limit_price::float8 AS limit_price, fill_price::float8 AS fill_price, tos_string, \
+         entry_alert_id, trade_plan_id, is_new, is_published, is_pinned, published_at, created_at, updated_at"
+    };
+}
+
 /// Cached response for alerts list
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct AlertsResponse {
@@ -49,12 +58,14 @@ pub(super) async fn list_alerts(
         .services
         .cache
         .get_or_fetch(&cache_key, cache_ttl::ALERTS, || async {
-            let alerts: Vec<RoomAlert> = sqlx::query_as(
-                r"SELECT * FROM room_alerts
+            let alerts: Vec<RoomAlert> = sqlx::query_as(concat!(
+                "SELECT ",
+                room_alert_cols!(),
+                " FROM room_alerts
                    WHERE room_slug = $1 AND deleted_at IS NULL AND is_published = true
                    ORDER BY is_pinned DESC, published_at DESC
-                   LIMIT $2 OFFSET $3",
-            )
+                   LIMIT $2 OFFSET $3"
+            ))
             .bind(&room_slug)
             .bind(per_page)
             .bind(offset)
@@ -62,7 +73,7 @@ pub(super) async fn list_alerts(
             .await?;
 
             let total: (i64,) = sqlx::query_as(
-                "SELECT COUNT(*) FROM room_alerts WHERE room_slug = $1 AND deleted_at IS NULL",
+                "SELECT COUNT(*) FROM room_alerts WHERE room_slug = $1 AND deleted_at IS NULL AND is_published = true",
             )
             .bind(&room_slug)
             .fetch_one(&state.db.pool)
@@ -113,21 +124,22 @@ pub(super) async fn create_alert(
         .as_ref()
         .and_then(|e| NaiveDate::parse_from_str(e, "%Y-%m-%d").ok());
 
-    let alert: RoomAlert = sqlx::query_as(
-        r"INSERT INTO room_alerts
+    let alert: RoomAlert = sqlx::query_as(concat!(
+        "INSERT INTO room_alerts
            (room_id, room_slug, alert_type, ticker, title, message, notes,
             trade_type, action, quantity, option_type, strike, expiration, contract_type,
             order_type, limit_price, fill_price, tos_string, entry_alert_id, trade_plan_id,
             is_new, is_published, is_pinned)
            VALUES (
-               (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
+               COALESCE((SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1), 0),
                $1, $2, $3, $4, $5, $6,
                $7, $8, $9, $10, $11, $12, $13,
                $14, $15, $16, $17, $18, $19,
                $20, $21, $22
            )
-           RETURNING *",
-    )
+           RETURNING ",
+        room_alert_cols!()
+    ))
     .bind(&input.room_slug)
     .bind(input.alert_type.to_uppercase())
     .bind(input.ticker.to_uppercase())
@@ -210,8 +222,8 @@ pub(super) async fn update_alert(
         .as_ref()
         .and_then(|e| NaiveDate::parse_from_str(e, "%Y-%m-%d").ok());
 
-    let alert: RoomAlert = sqlx::query_as(
-        r"UPDATE room_alerts SET
+    let alert: RoomAlert = sqlx::query_as(concat!(
+        "UPDATE room_alerts SET
            alert_type = COALESCE($2, alert_type),
            ticker = COALESCE($3, ticker),
            title = COALESCE($4, title),
@@ -235,8 +247,9 @@ pub(super) async fn update_alert(
            is_pinned = COALESCE($22, is_pinned),
            updated_at = NOW()
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *",
-    )
+           RETURNING ",
+        room_alert_cols!()
+    ))
     .bind(id)
     .bind(input.alert_type.map(|t| t.to_uppercase()))
     .bind(input.ticker.map(|t| t.to_uppercase()))
@@ -357,11 +370,12 @@ pub(super) async fn delete_alert(
 pub(super) async fn mark_alert_read(
     State(state): State<AppState>,
     user: User,
-    Path(id): Path<i64>,
+    Path((room_slug, id)): Path<(String, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     ensure_room_access(&state, &user).await?;
-    sqlx::query("UPDATE room_alerts SET is_new = false WHERE id = $1")
+    sqlx::query("UPDATE room_alerts SET is_new = false WHERE id = $1 AND room_slug = $2")
         .bind(id)
+        .bind(&room_slug)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {

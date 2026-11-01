@@ -21749,6 +21749,129 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_user_memberships_one_live_per_user
 ALTER TABLE public.user_mfa_secrets
     ADD COLUMN IF NOT EXISTS last_totp_timestep BIGINT;
 
+--
+-- Live E2E baseline additions (CRM contacts score, UUID page_layouts,
+-- Weekly Watchlist columns, and CMS Global Components Library)
+--
+
+ALTER TABLE public.contacts
+    ADD COLUMN IF NOT EXISTS score INTEGER DEFAULT 0;
+
+DROP TABLE IF EXISTS public.page_layout_versions CASCADE;
+DROP TABLE IF EXISTS public.page_layouts CASCADE;
+DROP SEQUENCE IF EXISTS public.page_layout_versions_id_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.page_layouts_id_seq CASCADE;
+
+CREATE TABLE public.page_layouts (
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    course_id uuid,
+    title character varying(255) NOT NULL,
+    slug character varying(255) UNIQUE,
+    description text,
+    status character varying(50) DEFAULT 'draft'::character varying,
+    version integer DEFAULT 1,
+    blocks jsonb DEFAULT '[]'::jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    published_at timestamp with time zone,
+    created_by uuid,
+    updated_by uuid
+);
+
+CREATE TABLE public.page_layout_versions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    layout_id uuid NOT NULL REFERENCES public.page_layouts(id) ON DELETE CASCADE,
+    version integer NOT NULL,
+    blocks jsonb NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    created_by uuid,
+    UNIQUE (layout_id, version)
+);
+
+ALTER TABLE public.watchlist_entries
+    ALTER COLUMN room_id DROP NOT NULL,
+    ALTER COLUMN room_slug DROP NOT NULL,
+    ALTER COLUMN ticker DROP NOT NULL,
+    ADD COLUMN IF NOT EXISTS slug character varying(255) DEFAULT ''::character varying NOT NULL,
+    ADD COLUMN IF NOT EXISTS title character varying(255) DEFAULT ''::character varying NOT NULL,
+    ADD COLUMN IF NOT EXISTS subtitle text,
+    ADD COLUMN IF NOT EXISTS trader character varying(255) DEFAULT ''::character varying NOT NULL,
+    ADD COLUMN IF NOT EXISTS trader_image text,
+    ADD COLUMN IF NOT EXISTS date_posted character varying(100) DEFAULT ''::character varying NOT NULL,
+    ADD COLUMN IF NOT EXISTS video_url text DEFAULT ''::text NOT NULL,
+    ADD COLUMN IF NOT EXISTS video_poster text,
+    ADD COLUMN IF NOT EXISTS video_title character varying(255) DEFAULT ''::character varying NOT NULL,
+    ADD COLUMN IF NOT EXISTS spreadsheet_url text DEFAULT ''::text NOT NULL,
+    ADD COLUMN IF NOT EXISTS watchlist_dates jsonb,
+    ADD COLUMN IF NOT EXISTS description text,
+    ADD COLUMN IF NOT EXISTS status character varying(50) DEFAULT 'published'::character varying NOT NULL,
+    ADD COLUMN IF NOT EXISTS rooms jsonb DEFAULT '[]'::jsonb,
+    ADD COLUMN IF NOT EXISTS deleted_at timestamp with time zone;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_watchlist_entries_slug_unique
+    ON public.watchlist_entries (slug)
+    WHERE slug <> '' AND deleted_at IS NULL;
+
+DO $$ BEGIN
+    CREATE TYPE public.cms_global_component_category AS ENUM (
+        'header',
+        'footer',
+        'cta',
+        'form',
+        'navigation',
+        'sidebar',
+        'banner',
+        'modal',
+        'card',
+        'section'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE TABLE IF NOT EXISTS public.cms_global_components (
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    name character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    description text,
+    component_data jsonb DEFAULT '[]'::jsonb NOT NULL,
+    category public.cms_global_component_category DEFAULT 'section'::public.cms_global_component_category NOT NULL,
+    tags text[],
+    thumbnail_url text,
+    usage_count integer DEFAULT 0 NOT NULL,
+    is_global boolean DEFAULT true NOT NULL,
+    is_locked boolean DEFAULT false NOT NULL,
+    version integer DEFAULT 1 NOT NULL,
+    deleted_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_by uuid,
+    updated_by uuid
+);
+
+CREATE TABLE IF NOT EXISTS public.cms_global_component_versions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    component_id uuid NOT NULL REFERENCES public.cms_global_components(id) ON DELETE CASCADE,
+    version integer NOT NULL,
+    component_data jsonb DEFAULT '[]'::jsonb NOT NULL,
+    change_message text,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    UNIQUE (component_id, version)
+);
+
+CREATE TABLE IF NOT EXISTS public.cms_global_component_usage (
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    component_id uuid NOT NULL REFERENCES public.cms_global_components(id) ON DELETE CASCADE,
+    content_id uuid NOT NULL REFERENCES public.cms_content(id) ON DELETE CASCADE,
+    instance_id character varying(255) NOT NULL,
+    is_synced boolean DEFAULT true NOT NULL,
+    synced_version integer DEFAULT 1 NOT NULL,
+    detached_at timestamp with time zone,
+    detached_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
 
 --
 -- PostgreSQL database dump complete

@@ -32,6 +32,7 @@ use super::fixtures::{
 async fn test_list_alerts_empty_room() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
@@ -42,6 +43,7 @@ async fn test_list_alerts_empty_room() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/alerts", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -94,6 +96,7 @@ async fn test_list_alerts_with_pagination() {
                     "/api/room-content/rooms/{}/alerts?page=1&per_page=10",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -118,6 +121,7 @@ async fn test_list_alerts_with_pagination() {
                     "/api/room-content/rooms/{}/alerts?page=2&per_page=10",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -134,6 +138,7 @@ async fn test_list_alerts_with_pagination() {
 async fn test_list_alerts_respects_per_page_limit() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // Act - Request more than max per_page (100)
@@ -146,6 +151,7 @@ async fn test_list_alerts_respects_per_page_limit() {
                     "/api/room-content/rooms/{}/alerts?per_page=200",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -210,6 +216,7 @@ async fn test_list_alerts_only_published() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/alerts", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -279,6 +286,7 @@ async fn test_list_alerts_pinned_first() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/alerts", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -884,6 +892,7 @@ async fn test_delete_alert_soft_delete() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/alerts", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -1071,10 +1080,11 @@ async fn test_delete_alert_requires_admin() {
 async fn test_list_alerts_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    // Act - Access without authentication
-    let response = ctx
+    // Act - Access without authentication is rejected per NF-1
+    let unauth_response = ctx
         .app
         .clone()
         .oneshot(
@@ -1085,8 +1095,23 @@ async fn test_list_alerts_public_access() {
         )
         .await
         .unwrap();
+    assert_eq!(unauth_response.status(), StatusCode::UNAUTHORIZED);
 
-    // Assert - Public endpoint should be accessible
+    // Act - Authenticated access succeeds
+    let response = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(format!("/api/room-content/rooms/{}/alerts", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Assert
     assert_eq!(response.status(), StatusCode::OK);
 }
 
@@ -1362,6 +1387,7 @@ async fn test_mark_alert_read_endpoint() {
                     "/api/room-content/rooms/{}/alerts/{}/read",
                     room.slug, alert_id
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )

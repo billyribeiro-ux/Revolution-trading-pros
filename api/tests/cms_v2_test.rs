@@ -119,7 +119,7 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/folders/:id",
+            "/folders/{id}",
             axum::routing::get(|| async { "ok" })
                 .put(|| async { "ok" })
                 .delete(|| async { "ok" }),
@@ -130,7 +130,7 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/assets/:id",
+            "/assets/{id}",
             axum::routing::get(|| async { "ok" })
                 .put(|| async { "ok" })
                 .delete(|| async { "ok" }),
@@ -141,37 +141,37 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/content/:id",
+            "/content/{id}",
             axum::routing::get(|| async { "ok" })
                 .put(|| async { "ok" })
                 .delete(|| async { "ok" }),
         )
         .route(
-            "/content/:id/status",
+            "/content/{id}/status",
             axum::routing::post(|| async { "ok" }),
         )
         .route(
-            "/content/:id/revisions",
+            "/content/{id}/revisions",
             axum::routing::get(|| async { "ok" }),
         )
         .route(
-            "/content/:content_id/revisions/:revision_number/restore",
+            "/content/{content_id}/revisions/{revision_number}/restore",
             axum::routing::post(|| async { "ok" }),
         )
         .route(
-            "/content/:content_id/tags",
+            "/content/{content_id}/tags",
             axum::routing::get(|| async { "ok" }),
         )
         .route(
-            "/content/:content_id/tags/:tag_id",
+            "/content/{content_id}/tags/{tag_id}",
             axum::routing::post(|| async { "ok" }).delete(|| async { "ok" }),
         )
         .route(
-            "/content/:content_id/comments",
+            "/content/{content_id}/comments",
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/comments/:comment_id/resolve",
+            "/comments/{comment_id}/resolve",
             axum::routing::post(|| async { "ok" }),
         )
         // Tags
@@ -190,7 +190,7 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/menus/:id",
+            "/menus/{id}",
             axum::routing::get(|| async { "ok" }).put(|| async { "ok" }),
         )
         // Redirects
@@ -198,7 +198,7 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
             "/redirects",
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
-        .route("/redirects/:id", axum::routing::delete(|| async { "ok" }));
+        .route("/redirects/{id}", axum::routing::delete(|| async { "ok" }));
 
     // Sanity: unmounted path is 404.
     let resp = probe
@@ -292,12 +292,12 @@ async fn public_router_mounts_all_documented_public_cms_routes() {
     //   GET /menus/:slug
     let probe: axum::Router = axum::Router::new()
         .route(
-            "/content/:content_type/:slug",
+            "/content/{content_type}/{slug}",
             axum::routing::get(|| async { "ok" }),
         )
         .route("/settings", axum::routing::get(|| async { "ok" }))
         .route("/menus", axum::routing::get(|| async { "ok" }))
-        .route("/menus/:slug", axum::routing::get(|| async { "ok" }));
+        .route("/menus/{slug}", axum::routing::get(|| async { "ok" }));
 
     // Sanity: a wrong-shape public URL is 404.
     let resp = probe
@@ -363,7 +363,7 @@ async fn content_status_route_is_post_only() {
 
     // Shape-equivalent probe.
     let probe: axum::Router = axum::Router::new().route(
-        "/content/:id/status",
+        "/content/{id}/status",
         axum::routing::post(|| async { "ok" }),
     );
 
@@ -424,7 +424,7 @@ async fn redirects_id_route_is_delete_only() {
     use tower::ServiceExt;
 
     let probe: axum::Router =
-        axum::Router::new().route("/redirects/:id", axum::routing::delete(|| async { "ok" }));
+        axum::Router::new().route("/redirects/{id}", axum::routing::delete(|| async { "ok" }));
 
     let id = "00000000-0000-0000-0000-000000000000";
 

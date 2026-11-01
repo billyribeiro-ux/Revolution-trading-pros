@@ -461,7 +461,7 @@ impl ExportService {
                 r"
                 SELECT
                     id, alert_type, ticker, title, message, notes,
-                    action, strike, expiration, tos_string, is_pinned, published_at
+                    action, strike::float8 as strike, expiration, tos_string, is_pinned, published_at
                 FROM room_alerts
                 WHERE room_slug = $1
                     AND deleted_at IS NULL
@@ -486,7 +486,7 @@ impl ExportService {
                 r"
                 SELECT
                     id, alert_type, ticker, title, message, notes,
-                    action, strike, expiration, tos_string, is_pinned, published_at
+                    action, strike::float8 as strike, expiration, tos_string, is_pinned, published_at
                 FROM room_alerts
                 WHERE room_slug = $1 AND deleted_at IS NULL
                 ORDER BY published_at DESC
@@ -525,10 +525,10 @@ impl ExportService {
                 r"
                 SELECT
                     id, ticker, trade_type, direction, quantity,
-                    option_type, strike, expiration,
-                    entry_price, entry_date, entry_tos_string,
-                    exit_price, exit_date, exit_tos_string,
-                    setup, status, result, pnl, pnl_percent,
+                    option_type, strike::float8 as strike, expiration,
+                    entry_price::float8 as entry_price, entry_date, entry_tos_string,
+                    exit_price::float8 as exit_price, exit_date, exit_tos_string,
+                    setup, status, result, pnl::float8 as pnl, pnl_percent::float8 as pnl_percent,
                     holding_days, notes
                 FROM room_trades
                 WHERE room_slug = $1
@@ -556,10 +556,10 @@ impl ExportService {
                 r"
                 SELECT
                     id, ticker, trade_type, direction, quantity,
-                    option_type, strike, expiration,
-                    entry_price, entry_date, entry_tos_string,
-                    exit_price, exit_date, exit_tos_string,
-                    setup, status, result, pnl, pnl_percent,
+                    option_type, strike::float8 as strike, expiration,
+                    entry_price::float8 as entry_price, entry_date, entry_tos_string,
+                    exit_price::float8 as exit_price, exit_date, exit_tos_string,
+                    setup, status, result, pnl::float8 as pnl, pnl_percent::float8 as pnl_percent,
                     holding_days, notes
                 FROM room_trades
                 WHERE room_slug = $1 AND deleted_at IS NULL
@@ -606,12 +606,12 @@ impl ExportService {
                 COUNT(*) FILTER (WHERE status = 'closed') as total_trades,
                 COUNT(*) FILTER (WHERE result = 'WIN') as wins,
                 COUNT(*) FILTER (WHERE result = 'LOSS') as losses,
-                SUM(pnl) FILTER (WHERE status = 'closed') as total_pnl,
-                AVG(pnl) FILTER (WHERE result = 'WIN') as avg_win,
-                ABS(AVG(pnl) FILTER (WHERE result = 'LOSS')) as avg_loss,
-                AVG(holding_days) FILTER (WHERE status = 'closed') as avg_holding_days,
-                MAX(pnl) FILTER (WHERE status = 'closed') as largest_win,
-                MIN(pnl) FILTER (WHERE status = 'closed') as largest_loss
+                (SUM(pnl) FILTER (WHERE status = 'closed'))::float8 as total_pnl,
+                (AVG(pnl) FILTER (WHERE result = 'WIN'))::float8 as avg_win,
+                (ABS(AVG(pnl) FILTER (WHERE result = 'LOSS')))::float8 as avg_loss,
+                (AVG(holding_days) FILTER (WHERE status = 'closed'))::float8 as avg_holding_days,
+                (MAX(pnl) FILTER (WHERE status = 'closed'))::float8 as largest_win,
+                (MIN(pnl) FILTER (WHERE status = 'closed'))::float8 as largest_loss
             FROM room_trades
             WHERE room_slug = $1
                 AND deleted_at IS NULL
@@ -748,7 +748,8 @@ impl ExportService {
             r"
             SELECT
                 id, ticker, direction, entry_date, exit_date,
-                entry_price, exit_price, pnl, pnl_percent, result
+                entry_price::float8 as entry_price, exit_price::float8 as exit_price,
+                pnl::float8 as pnl, pnl_percent::float8 as pnl_percent, result
             FROM room_trades
             WHERE room_slug = $1
                 AND deleted_at IS NULL

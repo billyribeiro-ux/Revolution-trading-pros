@@ -227,11 +227,11 @@ async fn test_admin_list_users_with_search() {
 async fn test_admin_list_users_sql_injection_attempt() {
     let (app, admin_token) = setup_test_app_with_admin().await;
 
-    // Try SQL injection in search parameter
+    // Try SQL injection in search parameter (spaces URL-encoded for valid HTTP URI)
     let response = app
         .oneshot(
             Request::builder()
-                .uri("/api/admin/users?search=' OR '1'='1")
+                .uri("/api/admin/users?search='%20OR%20'1'='1")
                 .header(header::AUTHORIZATION, format!("Bearer {admin_token}"))
                 .body(Body::empty())
                 .unwrap(),

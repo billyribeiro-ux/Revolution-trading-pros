@@ -304,10 +304,10 @@ async fn user_orders_router_mounts_documented_routes() {
     let probe: axum::Router = axum::Router::new()
         .route("/api/my/orders", axum::routing::get(|| async { "ok" }))
         .route(
-            "/api/my/orders/by-number/:order_number",
+            "/api/my/orders/by-number/{order_number}",
             axum::routing::get(|| async { "ok" }),
         )
-        .route("/api/my/orders/:id", axum::routing::get(|| async { "ok" }));
+        .route("/api/my/orders/{id}", axum::routing::get(|| async { "ok" }));
 
     // Unknown path → 404.
     let resp = probe
@@ -384,27 +384,27 @@ async fn admin_orders_router_mounts_documented_routes() {
     let probe: axum::Router = axum::Router::new()
         .route("/api/admin/orders", axum::routing::get(|| async { "ok" }))
         .route(
-            "/api/admin/orders/:id",
+            "/api/admin/orders/{id}",
             axum::routing::get(|| async { "ok" }),
         )
         .route(
-            "/api/admin/orders/:id/status",
+            "/api/admin/orders/{id}/status",
             axum::routing::post(|| async { "ok" }),
         )
         .route(
-            "/api/admin/orders/:id/refund",
+            "/api/admin/orders/{id}/refund",
             axum::routing::post(|| async { "ok" }),
         )
         .route(
-            "/api/admin/orders/:id/cancel",
+            "/api/admin/orders/{id}/cancel",
             axum::routing::post(|| async { "ok" }),
         )
         .route(
-            "/api/admin/orders/:id/fulfill",
+            "/api/admin/orders/{id}/fulfill",
             axum::routing::post(|| async { "ok" }),
         )
         .route(
-            "/api/admin/orders/:id/resend-confirmation",
+            "/api/admin/orders/{id}/resend-confirmation",
             axum::routing::post(|| async { "ok" }),
         );
 

@@ -31,6 +31,7 @@ use super::fixtures::{
 async fn test_list_trades_empty_room() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
@@ -41,6 +42,7 @@ async fn test_list_trades_empty_room() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trades", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -93,6 +95,7 @@ async fn test_list_trades_with_pagination() {
                     "/api/room-content/rooms/{}/trades?page=1&per_page=10",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -182,6 +185,7 @@ async fn test_list_trades_filter_by_status_open() {
                     "/api/room-content/rooms/{}/trades?status=open",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -253,6 +257,7 @@ async fn test_list_trades_filter_by_status_closed() {
                     "/api/room-content/rooms/{}/trades?status=closed",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -305,6 +310,7 @@ async fn test_list_trades_filter_by_ticker() {
                     "/api/room-content/rooms/{}/trades?ticker=SPY",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -1032,6 +1038,7 @@ async fn test_invalidated_trade_not_counted_in_stats() {
                     "/api/room-content/rooms/{}/trades?status=closed",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -1303,10 +1310,11 @@ async fn test_close_trade_requires_admin() {
 async fn test_list_trades_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    // Act - Access without authentication
-    let response = ctx
+    // Act - Access without authentication is rejected per NF-1
+    let unauth_response = ctx
         .app
         .clone()
         .oneshot(
@@ -1317,8 +1325,23 @@ async fn test_list_trades_public_access() {
         )
         .await
         .unwrap();
+    assert_eq!(unauth_response.status(), StatusCode::UNAUTHORIZED);
 
-    // Assert - Public endpoint should be accessible
+    // Act - Authenticated access succeeds
+    let response = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(format!("/api/room-content/rooms/{}/trades", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Assert
     assert_eq!(response.status(), StatusCode::OK);
 }
 

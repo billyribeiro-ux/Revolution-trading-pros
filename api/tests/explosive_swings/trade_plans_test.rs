@@ -31,6 +31,7 @@ use super::fixtures::{
 async fn test_list_trade_plans_empty_room() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
@@ -41,6 +42,7 @@ async fn test_list_trade_plans_empty_room() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -92,6 +94,7 @@ async fn test_list_trade_plans_with_pagination() {
                     "/api/room-content/rooms/{}/trade-plan?page=1&per_page=10",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -169,6 +172,7 @@ async fn test_list_trade_plans_filter_by_week() {
                     room.slug,
                     last_monday.format("%Y-%m-%d")
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -246,6 +250,7 @@ async fn test_list_trade_plans_returns_most_recent_week_by_default() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -304,6 +309,7 @@ async fn test_list_trade_plans_sorted_by_sort_order() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -922,6 +928,7 @@ async fn test_delete_trade_plan_soft_delete() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -1085,10 +1092,11 @@ async fn test_delete_trade_plan_requires_admin() {
 async fn test_list_trade_plans_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    // Act - Access without authentication
-    let response = ctx
+    // Act - Access without authentication is rejected per NF-1
+    let unauth_response = ctx
         .app
         .clone()
         .oneshot(
@@ -1099,8 +1107,23 @@ async fn test_list_trade_plans_public_access() {
         )
         .await
         .unwrap();
+    assert_eq!(unauth_response.status(), StatusCode::UNAUTHORIZED);
 
-    // Assert - Public endpoint should be accessible
+    // Act - Authenticated access succeeds
+    let response = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Assert
     assert_eq!(response.status(), StatusCode::OK);
 }
 
@@ -1340,6 +1363,7 @@ async fn test_reorder_trade_plans() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -1424,6 +1448,7 @@ async fn test_only_active_plans_returned() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/trade-plan", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )

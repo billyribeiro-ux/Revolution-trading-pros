@@ -28,6 +28,7 @@ use super::fixtures::{
 async fn test_get_room_stats_empty() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
@@ -38,6 +39,7 @@ async fn test_get_room_stats_empty() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/stats", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -54,10 +56,11 @@ async fn test_get_room_stats_empty() {
 async fn test_get_room_stats_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
-    // Act - Access without authentication
-    let response = ctx
+    // Act - Access without authentication is rejected per NF-1
+    let unauth_response = ctx
         .app
         .clone()
         .oneshot(
@@ -68,8 +71,23 @@ async fn test_get_room_stats_public_access() {
         )
         .await
         .unwrap();
+    assert_eq!(unauth_response.status(), StatusCode::UNAUTHORIZED);
 
-    // Assert - Public endpoint should be accessible
+    // Act - Authenticated access succeeds
+    let response = ctx
+        .app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri(format!("/api/room-content/rooms/{}/stats", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Assert
     assert_eq!(response.status(), StatusCode::OK);
 }
 
@@ -77,6 +95,7 @@ async fn test_get_room_stats_public_access() {
 async fn test_get_room_stats_nonexistent_room() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
 
     // Act
     let response = ctx
@@ -85,6 +104,7 @@ async fn test_get_room_stats_nonexistent_room() {
         .oneshot(
             Request::builder()
                 .uri("/api/room-content/rooms/nonexistent-room-12345/stats")
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -195,6 +215,7 @@ async fn test_win_rate_70_percent() {
                     "/api/room-content/rooms/{}/trades?status=closed",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -269,6 +290,7 @@ async fn test_win_rate_100_percent() {
                     "/api/room-content/rooms/{}/trades?status=closed",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -337,6 +359,7 @@ async fn test_win_rate_0_percent() {
                     "/api/room-content/rooms/{}/trades?status=closed",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -821,6 +844,7 @@ async fn test_average_loss_calculation() {
 async fn test_stats_structure() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::explosive_swings(&ctx).await;
 
     // Manually insert stats cache for testing
@@ -853,6 +877,7 @@ async fn test_stats_structure() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/stats", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -879,6 +904,7 @@ async fn test_stats_structure() {
 async fn test_stats_win_rate_value() {
     // Arrange
     let ctx = TestContext::new().await;
+    let admin = TestUser::admin(&ctx).await;
     let room = TestTradingRoom::create(&ctx, "Stats Value Test", "stats-value-test").await;
 
     // Insert specific win rate
@@ -904,6 +930,7 @@ async fn test_stats_win_rate_value() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/stats", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -954,6 +981,7 @@ async fn test_stats_with_only_open_trades() {
         .oneshot(
             Request::builder()
                 .uri(format!("/api/room-content/rooms/{}/stats", room.slug))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -1049,6 +1077,7 @@ async fn test_stats_with_invalidated_trades_excluded() {
                     "/api/room-content/rooms/{}/trades?status=closed",
                     room.slug
                 ))
+                .header(header::AUTHORIZATION, admin.auth_header())
                 .body(Body::empty())
                 .unwrap(),
         )

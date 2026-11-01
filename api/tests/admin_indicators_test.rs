@@ -96,30 +96,30 @@ async fn router_mounts_all_documented_indicator_routes_with_correct_methods() {
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/:id",
+            "/{id}",
             axum::routing::get(|| async { "ok" })
                 .put(|| async { "ok" })
                 .delete(|| async { "ok" }),
         )
-        .route("/:id/toggle", axum::routing::post(|| async { "ok" }))
-        .route("/:id/change-price", axum::routing::post(|| async { "ok" }))
+        .route("/{id}/toggle", axum::routing::post(|| async { "ok" }))
+        .route("/{id}/change-price", axum::routing::post(|| async { "ok" }))
         .route(
-            "/:id/files",
+            "/{id}/files",
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/:id/files/:file_id",
+            "/{id}/files/{file_id}",
             axum::routing::put(|| async { "ok" }).delete(|| async { "ok" }),
         )
         .route(
-            "/:id/videos",
+            "/{id}/videos",
             axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
         )
         .route(
-            "/:id/videos/:video_id",
+            "/{id}/videos/{video_id}",
             axum::routing::delete(|| async { "ok" }),
         )
-        .route("/:id/analytics", axum::routing::get(|| async { "ok" }));
+        .route("/{id}/analytics", axum::routing::get(|| async { "ok" }));
 
     // Sanity: an unmounted path is 404.
     let resp = probe
@@ -194,7 +194,7 @@ async fn change_price_route_is_post_only_not_get() {
 
     // Shape-equivalent probe of the actual mount table — POST only.
     let probe: axum::Router =
-        axum::Router::new().route("/:id/change-price", axum::routing::post(|| async { "ok" }));
+        axum::Router::new().route("/{id}/change-price", axum::routing::post(|| async { "ok" }));
 
     // POST is allowed (NOT 404, NOT 405).
     let resp = probe

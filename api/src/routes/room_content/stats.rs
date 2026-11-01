@@ -37,11 +37,33 @@ pub(super) async fn get_room_stats(
         .services
         .cache
         .get_or_fetch(&cache_key, cache_ttl::STATS, || async {
-            let stats: Option<RoomStats> =
-                sqlx::query_as("SELECT * FROM room_stats_cache WHERE room_slug = $1")
-                    .bind(&room_slug)
-                    .fetch_optional(&state.db.pool)
-                    .await?;
+            let stats: Option<RoomStats> = sqlx::query_as(
+                r"SELECT
+                    id,
+                    COALESCE(room_id, (SELECT id FROM trading_rooms WHERE slug = room_stats_cache.room_slug LIMIT 1), 0) AS room_id,
+                    room_slug,
+                    win_rate::float8 AS win_rate,
+                    weekly_profit,
+                    monthly_profit,
+                    active_trades,
+                    closed_this_week,
+                    total_trades,
+                    wins,
+                    losses,
+                    avg_win::float8 AS avg_win,
+                    avg_loss::float8 AS avg_loss,
+                    profit_factor::float8 AS profit_factor,
+                    avg_holding_days::float8 AS avg_holding_days,
+                    largest_win::float8 AS largest_win,
+                    largest_loss::float8 AS largest_loss,
+                    current_streak,
+                    calculated_at
+                  FROM room_stats_cache
+                  WHERE room_slug = $1",
+            )
+            .bind(&room_slug)
+            .fetch_optional(&state.db.pool)
+            .await?;
 
             Ok(StatsResponse { data: stats })
         })
