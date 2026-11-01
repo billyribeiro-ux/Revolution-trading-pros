@@ -6,6 +6,7 @@
 	 *
 	 */
 
+	import { untrack } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import {
@@ -36,11 +37,15 @@
 	// Show "back online" notification briefly
 	$effect(() => {
 		if (isOnline && hasPendingActions) {
-			justCameOnline = true;
-			setTimeout(() => {
+			untrack(() => {
+				justCameOnline = true;
+			});
+			const timer = setTimeout(() => {
 				justCameOnline = false;
 			}, 3000);
+			return () => clearTimeout(timer);
 		}
+		return undefined;
 	});
 </script>
 

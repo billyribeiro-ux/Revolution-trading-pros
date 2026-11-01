@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import { quadIn, quadOut } from 'svelte/easing';
@@ -29,7 +30,7 @@
 	}
 
 	// Storage is I/O: read it once after mount, never during render.
-	$effect(() => {
+	onMount(() => {
 		visible = !dismissedRecently();
 	});
 

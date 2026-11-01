@@ -17,6 +17,7 @@
  */
 
 import { browser } from '$app/env';
+import { SvelteSet, SvelteMap } from 'svelte/reactivity';
 import {
 	createWebSocketService,
 	type AlertPayload,
@@ -220,7 +221,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	let state = $state<RealtimeState>({
 		isConnected: false,
 		isReconnecting: false,
-		realtimeAlertIds: new Set(),
+		realtimeAlertIds: new SvelteSet(),
 		error: null,
 		unreadCount: 0,
 		latestAlert: null,
@@ -237,7 +238,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	let syncIntervalId: ReturnType<typeof setInterval> | null = null;
 
 	// Timer for clearing "new" indicators
-	const newAlertTimers = new Map<number, ReturnType<typeof setTimeout>>();
+	const newAlertTimers = new SvelteMap<number, ReturnType<typeof setTimeout>>();
 
 	// External callbacks for integration
 	let onAlertReceived: ((alert: AlertPayload) => void) | null = null;

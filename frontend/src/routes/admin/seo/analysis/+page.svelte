@@ -22,11 +22,28 @@
 	];
 
 	let currentContentKey = $derived(contentId ? `${contentType}:${contentId}` : '');
-	let savedAnalysis = $derived(
-		currentContentKey
-			? await seoApi.getAnalysis(contentType, parseInt(contentId, 10)).catch(() => null)
-			: null
-	);
+	let savedAnalysis = $state<Partial<SeoAnalysis> | null>(null);
+
+	$effect(() => {
+		const key = currentContentKey;
+		if (!key) {
+			savedAnalysis = null;
+			return;
+		}
+		let cancelled = false;
+		seoApi
+			.getAnalysis(contentType, parseInt(contentId, 10))
+			.then((res) => {
+				if (!cancelled) savedAnalysis = res;
+			})
+			.catch(() => {
+				if (!cancelled) savedAnalysis = null;
+			});
+		return () => {
+			cancelled = true;
+		};
+	});
+
 	let analysis = $derived(
 		analyzedResult?.key === currentContentKey ? analyzedResult.analysis : savedAnalysis
 	);
