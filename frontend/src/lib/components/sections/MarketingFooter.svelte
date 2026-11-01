@@ -49,20 +49,30 @@
 
 	const footerLinks = {
 		products: [
-			{ href: '/indicators', label: 'Indicators' },
-			{ href: '/classes', label: 'Classes' },
-			{ href: '/dashboard', label: 'Dashboard' },
-			{ href: '/pricing', label: 'Pricing' }
+			{ href: '/live-trading-rooms', label: 'Live Trading Rooms' },
+			{ href: '/alerts', label: 'Trading Alerts' },
+			{ href: '/courses', label: 'Trading Courses' },
+			{ href: '/classes', label: 'Trading Classes' },
+			{ href: '/indicators', label: 'Custom Indicators' },
+			{ href: '/store/scanners', label: 'Market Scanners' },
+			{ href: '/tools/options-calculator', label: 'Options Calculator' },
+			{ href: '/mentorship', label: '1-on-1 Mentorship' },
+			{ href: '/pricing', label: 'Pricing Plans' }
 		],
 		company: [
 			{ href: '/about', label: 'About Us' },
-			{ href: '/blog', label: 'Blog' },
-			{ href: '/contact', label: 'Contact' },
+			{ href: '/our-mission', label: 'Our Mission' },
+			{ href: '/team', label: 'Our Team' },
+			{ href: '/resources', label: 'Free Resources' },
+			{ href: '/tutorials', label: 'Video Tutorials' },
+			{ href: '/blog', label: 'Trading Blog' },
+			{ href: '/contact', label: 'Contact Us' },
 			{ href: '/careers', label: 'Careers' }
 		],
 		legal: [
 			{ href: '/terms', label: 'Terms of Service' },
 			{ href: '/privacy', label: 'Privacy Policy' },
+			{ href: '/cookie-policy', label: 'Cookie Policy' },
 			{ href: '/disclaimer', label: 'Risk Disclaimer' },
 			{ href: '/refund', label: 'Refund Policy' }
 		]
@@ -103,7 +113,6 @@
 							alt="Revolution Trading Pros"
 							width="160"
 							height="40"
-							loading="lazy"
 							decoding="async"
 						/>
 					</a>

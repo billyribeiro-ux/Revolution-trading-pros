@@ -1,9 +1,13 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+/// <reference types="@sveltejs/enhanced-img" />
 
 import type { PayPalNamespace } from '@paypal/paypal-js';
 import type { StripeConstructor } from '@stripe/stripe-js';
 import type { Square } from '@square/web-payments-sdk-types';
+import type { SEOInput } from '#lib/seo/types.js';
+
+export type SeoData = SEOInput;
 
 /**
  * Consent State interface for server-side access.
@@ -56,7 +60,9 @@ declare global {
 				user: { id: number; email: string; name?: string; role?: string } | null;
 			} | null>;
 		}
-		// interface PageData {}
+		interface PageData {
+			seo?: SeoData;
+		}
 		// interface PageState {}
 		// interface Platform {}
 	}

@@ -204,7 +204,7 @@
 							</div>
 
 							<a
-								href="/signup"
+								href="/register"
 								class="flex items-center justify-between w-full bg-amber-700 hover:bg-amber-600 text-white px-6 py-4 transition-all duration-200 group/btn shadow-[0_4px_20px_rgba(180,83,9,0.2)]"
 							>
 								<div class="flex flex-col">

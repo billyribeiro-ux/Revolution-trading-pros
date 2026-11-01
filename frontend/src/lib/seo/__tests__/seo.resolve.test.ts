@@ -50,11 +50,13 @@ describe('resolveSEO', () => {
 		const ctx = makeContext({ pathname: '/blog/my-post' });
 		const seo: SEOInput = {
 			title: 'My Blog Post',
-			description: 'A great post about trading'
+			description: 'A great post about institutional swing trading and risk management.'
 		};
 		const result = resolveSEO(ctx, seoDefaults, seo);
 		expect(result.title).toContain('My Blog Post');
-		expect(result.description).toBe('A great post about trading');
+		expect(result.description).toBe(
+			'A great post about institutional swing trading and risk management.'
+		);
 	});
 
 	it('canonical is normalized from pathname', () => {
@@ -95,10 +97,15 @@ describe('resolveSEO', () => {
 
 	it('OG inherits from resolved title/description', () => {
 		const ctx = makeContext({ pathname: '/about' });
-		const seo: SEOInput = { title: 'About', description: 'About page' };
+		const seo: SEOInput = {
+			title: 'About',
+			description: 'About Revolution Trading Pros institutional trading education and mentorship.'
+		};
 		const result = resolveSEO(ctx, seoDefaults, seo);
 		expect(result.og.title).toBe('About | Revolution Trading Pros');
-		expect(result.og.description).toBe('About page');
+		expect(result.og.description).toBe(
+			'About Revolution Trading Pros institutional trading education and mentorship.'
+		);
 		expect(result.og.url).toBe(result.canonical);
 	});
 
@@ -114,14 +121,19 @@ describe('resolveSEO', () => {
 
 	it('Twitter inherits from resolved title/description', () => {
 		const ctx = makeContext({ pathname: '/about' });
-		const seo: SEOInput = { title: 'About', description: 'About page' };
+		const seo: SEOInput = {
+			title: 'About',
+			description: 'About Revolution Trading Pros institutional trading education and mentorship.'
+		};
 		const result = resolveSEO(ctx, seoDefaults, seo);
 		expect(result.twitter.title).toBe('About | Revolution Trading Pros');
-		expect(result.twitter.description).toBe('About page');
+		expect(result.twitter.description).toBe(
+			'About Revolution Trading Pros institutional trading education and mentorship.'
+		);
 	});
 
-	it('JSON-LD includes defaults when no override', () => {
-		const ctx = makeContext();
+	it('JSON-LD includes defaults on home page / when no override', () => {
+		const ctx = makeContext({ pathname: '/' });
 		const result = resolveSEO(ctx, seoDefaults);
 		expect(result.jsonld.length).toBeGreaterThan(0);
 		const types = result.jsonld.map((n) => n['@type']);
@@ -129,7 +141,7 @@ describe('resolveSEO', () => {
 		expect(types).toContain('WebSite');
 	});
 
-	it('JSON-LD merges page-level nodes with defaults', () => {
+	it('JSON-LD omits Organization/WebSite on non-home pages and adds BreadcrumbList', () => {
 		const ctx = makeContext({ pathname: '/blog/post' });
 		const seo: SEOInput = {
 			jsonld: [
@@ -145,9 +157,10 @@ describe('resolveSEO', () => {
 		};
 		const result = resolveSEO(ctx, seoDefaults, seo);
 		const types = result.jsonld.map((n) => n['@type']);
-		expect(types).toContain('Organization');
-		expect(types).toContain('WebSite');
+		expect(types).not.toContain('Organization');
+		expect(types).not.toContain('WebSite');
 		expect(types).toContain('Article');
+		expect(types).toContain('BreadcrumbList');
 	});
 
 	it('alternates are preserved', () => {
@@ -174,10 +187,15 @@ describe('resolveSEO', () => {
 	it('multi-layer merge: defaults → layout → page', () => {
 		const ctx = makeContext({ pathname: '/blog/post' });
 		const layout: SEOInput = { titleTemplate: '%s — Blog' };
-		const page: SEOInput = { title: 'My Post', description: 'Post desc' };
+		const page: SEOInput = {
+			title: 'My Post',
+			description: 'Post description with at least fifty characters for valid SEO metadata.'
+		};
 		const result = resolveSEO(ctx, seoDefaults, layout, page);
 		expect(result.title).toBe('My Post — Blog');
-		expect(result.description).toBe('Post desc');
+		expect(result.description).toBe(
+			'Post description with at least fifty characters for valid SEO metadata.'
+		);
 	});
 });
 

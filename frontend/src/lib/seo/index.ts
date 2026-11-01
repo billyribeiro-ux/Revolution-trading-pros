@@ -62,6 +62,8 @@ export {
 	buildItemList,
 	buildService,
 	buildWebPage,
+	buildProfilePage,
+	buildProduct,
 	buildVideoObject
 } from './schemas';
 

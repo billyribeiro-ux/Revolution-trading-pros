@@ -5,6 +5,7 @@
 	import { decodeState } from '#lib/options-calculator/utils/share-utils.js';
 	import InputPanel from '#lib/options-calculator/components/InputPanel.svelte';
 	import ResultsBar from '#lib/options-calculator/components/ResultsBar.svelte';
+	import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 	import '#lib/options-calculator/styles/calculator-theme.css';
 
 	// The widget owns its calculator; InputPanel and ResultsBar read it from context.
@@ -48,7 +49,7 @@
 		style="border-top: 1px solid var(--calc-border);"
 	>
 		<a
-			href="https://revolutiontradingpros.com/tools/options-calculator"
+			href={`${PRODUCTION_ORIGIN}/tools/options-calculator`}
 			target="_blank"
 			rel="noopener"
 			class="text-[10px] transition-colors"

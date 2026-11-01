@@ -246,9 +246,9 @@
 								framework to survive variance.
 							</p>
 							<div class="reality__callout">
-								<h4 class="reality__callout-title">
+								<h3 class="reality__callout-title">
 									<IconBrain size={16} stroke={1.5} /> The Cognitive Gap
-								</h4>
+								</h3>
 								<p class="reality__callout-body">
 									Retail traders seek dopamine hits (action). Institutional traders seek boredom
 									(execution). The market is designed to transfer wealth from the impatient to the
@@ -430,7 +430,7 @@
 				<div class="lexicon__grid">
 					{#each filteredGlossary as item (item.term)}
 						<div class="lex-card">
-							<h4 class="lex-card__term">{item.term}</h4>
+							<h3 class="lex-card__term">{item.term}</h3>
 							<p class="lex-card__def">{item.def}</p>
 						</div>
 					{/each}
@@ -497,7 +497,7 @@
 							<IconArrowRight size={20} stroke={2} />
 						</span>
 					</a>
-					<a href="/methodology" class="btn btn--ghost">Explore Our Methodology</a>
+					<a href="/about" class="btn btn--ghost">Explore Our Methodology</a>
 				</div>
 
 				<p class="cta-final__fine-print">30-Day Money Back Guarantee • Cancel Anytime</p>

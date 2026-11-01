@@ -100,8 +100,15 @@ export function normalizeCanonical(input: string, config: CanonicalConfig): stri
 		if (denySet.has(lowerKey) && !allowSet.has(lowerKey)) {
 			continue;
 		}
+		// If allowlist is configured, only preserve allowlisted params
+		if (allowSet.size > 0 && !allowSet.has(lowerKey)) {
+			continue;
+		}
 		const val = url.searchParams.get(key);
 		if (val !== null) {
+			if (lowerKey === 'page' && val === '1') {
+				continue;
+			}
 			filteredParams.set(key, val);
 		}
 	}

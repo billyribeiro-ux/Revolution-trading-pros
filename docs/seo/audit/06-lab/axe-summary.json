@@ -1,0 +1,50 @@
+[
+  {
+    "template": "home",
+    "path": "/",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "static",
+    "path": "/about",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "listing",
+    "path": "/courses",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "product",
+    "path": "/alerts/explosive-swings",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "profile",
+    "path": "/authors/billy-ribeiro",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "course",
+    "path": "/courses/day-trading-masterclass",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "article",
+    "path": "/guides/risk-management",
+    "violationCount": 0,
+    "violations": []
+  },
+  {
+    "template": "software",
+    "path": "/indicators/rsi",
+    "violationCount": 0,
+    "violations": []
+  }
+]

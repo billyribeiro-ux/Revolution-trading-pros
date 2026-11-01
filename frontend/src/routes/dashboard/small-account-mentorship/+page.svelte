@@ -217,7 +217,7 @@
 
 <svelte:head>
 	<title>Small Account Mentorship | Revolution Trading Pros</title>
-	<script src="https://apis.google.com/js/api.js"></script>
+	<script src="https://apis.google.com/js/api.js" async defer></script>
 </svelte:head>
 
 <TradingRoomHeader

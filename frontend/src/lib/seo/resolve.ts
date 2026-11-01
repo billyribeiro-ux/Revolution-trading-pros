@@ -4,62 +4,127 @@
  *
  * Orchestrates the full SEO resolution:
  * 1. Merge layers (defaults → layout → page)
- * 2. Normalize canonical
- * 3. Build robots directives
- * 4. Normalize/dedupe JSON-LD
- * 5. Dedupe head tags
- * 6. Return final SEOResolved ready to render
+ * 2. Normalize title (15-60 chars target, no duplicate brand suffix)
+ * 3. Normalize description (50-160 chars target)
+ * 4. Normalize canonical & absolute OG/Twitter image URLs
+ * 5. Build robots directives
+ * 6. Normalize/dedupe JSON-LD (Organization + WebSite on / only; auto BreadcrumbList on non-home)
+ * 7. Return final SEOResolved ready to render
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
- * @since February 2026
+ * @since November 2026
  */
 
-import type { SEOInput, SEODefaults, SEOResolved, RouteSEOContext } from './types';
+import type { SEOInput, SEODefaults, SEOResolved, RouteSEOContext, JsonLdNode } from './types';
 import { mergeSEO, defaultsToInput } from './merge';
 import { normalizeCanonical } from './canonical';
 import { buildRobots } from './robots';
-import { dedupeJsonLd } from './jsonld';
+import { dedupeJsonLd, breadcrumbSchema } from './jsonld';
+import { buildBreadcrumbsForPath, isNoindexPath, PRODUCTION_ORIGIN } from './config';
 
 /**
- * Apply title template to a raw title.
- * Template uses %s as placeholder for the page title.
+ * Apply title template to a raw title while preventing duplicate brand suffixes
+ * and keeping the final `<title>` within 15–60 characters (`META-01`).
  */
-function applyTitleTemplate(title: string, template: string | null | undefined): string {
-	if (!template) return title;
-	if (template === '%s') return title;
-	return template.replace('%s', title);
+function applyTitleTemplate(rawTitle: string, template: string | null | undefined): string {
+	// Strip any existing trailing brand suffix from the raw title
+	const stripped = rawTitle
+		.replace(/\s*[|—–-]\s*Revolution Trading Pros$/i, '')
+		.replace(/\s*[|—–-]\s*RTP$/i, '')
+		.trim();
+
+	if (!template || template === '%s') {
+		return rawTitle;
+	}
+
+	const fullTemplated = template.replace('%s', stripped);
+	if (fullTemplated.length <= 60) {
+		return fullTemplated;
+	}
+
+	// If full "| Revolution Trading Pros" pushes title over 60 chars, try "| RTP"
+	const shortTemplated = `${stripped} | RTP`;
+	if (shortTemplated.length <= 60) {
+		return shortTemplated;
+	}
+
+	// If stripped itself is <= 60 chars, return stripped directly
+	if (stripped.length <= 60) {
+		return stripped;
+	}
+
+	// Otherwise truncate cleanly at word boundary <= 57 chars + "..."
+	const slice = stripped.slice(0, 57);
+	const lastSpace = slice.lastIndexOf(' ');
+	return `${(lastSpace > 35 ? slice.slice(0, lastSpace) : slice).replace(/[—–\-|,:;\s]+$/, '')}...`;
+}
+
+/**
+ * Ensure meta description stays within 50–160 characters (`META-02`).
+ */
+function normalizeDescription(rawDesc: string, fallbackDesc: string): string {
+	let desc = rawDesc.trim().replace(/\s+/g, ' ');
+	if (desc.length < 50) {
+		desc = `${desc} — Institutional trading education & tools by Revolution Trading Pros.`;
+	}
+	if (desc.length > 160) {
+		const slice = desc.slice(0, 157);
+		const lastSpace = slice.lastIndexOf(' ');
+		desc = `${(lastSpace > 100 ? slice.slice(0, lastSpace) : slice).replace(/[.,;:\-—–\s]+$/, '')}...`;
+	}
+	return desc || fallbackDesc;
+}
+
+/**
+ * Ensure an image URL is absolute using `siteUrl`.
+ */
+function toAbsoluteImageUrl(img: string | undefined | null, siteUrl: string, fallback: string): string {
+	if (!img) return fallback;
+	if (img.startsWith('http://') || img.startsWith('https://')) {
+		// Replace any staging .pages.dev origin with production siteUrl
+		return img.replace(/^https?:\/\/revolution-trading-pros\.pages\.dev/i, siteUrl);
+	}
+	return `${siteUrl.replace(/\/+$/, '')}/${img.replace(/^\/+/, '')}`;
 }
 
 /**
  * Resolve SEO for a given route context.
- *
- * @param context - Route context (pathname, env, flags)
- * @param defaults - Site-wide SEO defaults
- * @param overrides - Additional SEO input layers (layout, page, etc.)
- * @returns Fully resolved, deduplicated SEO payload ready for rendering
  */
 export function resolveSEO(
 	context: RouteSEOContext,
 	defaults: SEODefaults,
 	...overrides: (SEOInput | undefined | null)[]
 ): SEOResolved {
+	const isRoot = context.pathname === '/' || context.pathname === '';
+
 	// Step 1: Merge all layers
 	const baseInput = defaultsToInput(defaults);
+	// Per SD-04: Organization and WebSite JSON-LD belong on the home page `/` ONLY
+	if (!isRoot) {
+		baseInput.jsonld = [];
+	}
 	const merged = mergeSEO(baseInput, ...overrides);
 
 	// Step 2: Resolve title with template
-	const rawTitle = merged.title ?? defaults.defaultTitle;
-	const titleTemplate = merged.titleTemplate ?? defaults.titleTemplate;
-	// If the raw title IS the default title (homepage), don't template it
+	const crumbs = buildBreadcrumbsForPath(context.pathname);
+	const derivedLeafTitle =
+		!isRoot && crumbs.length > 0 ? crumbs[crumbs.length - 1]?.name : undefined;
+	const rawTitle = merged.title ?? derivedLeafTitle ?? defaults.defaultTitle;
+	const titleTemplate = merged.titleTemplate !== undefined ? merged.titleTemplate : defaults.titleTemplate;
 	const title =
 		rawTitle === defaults.defaultTitle ? rawTitle : applyTitleTemplate(rawTitle, titleTemplate);
 
 	// Step 3: Resolve description
-	const description = merged.description ?? defaults.defaultDescription;
+	const rawDescription = merged.description ?? defaults.defaultDescription;
+	const description = normalizeDescription(rawDescription, defaults.defaultDescription);
 
-	// Step 4: Normalize canonical
-	const rawCanonical = merged.canonical ?? context.pathname;
+	// Step 4: Normalize canonical (preserving ?page=N for N > 1 per URL-05)
+	let rawCanonical = merged.canonical ?? context.pathname;
+	const pageParam = context.searchParams?.get('page');
+	if (pageParam && Number(pageParam) > 1 && !rawCanonical.includes('?')) {
+		rawCanonical = `${rawCanonical}?page=${encodeURIComponent(pageParam)}`;
+	}
 	const canonical = normalizeCanonical(rawCanonical, defaults.canonical);
 
 	// Step 5: Build robots
@@ -70,22 +135,57 @@ export function resolveSEO(
 	);
 
 	// Step 6: Normalize/dedupe JSON-LD
-	const jsonldNodes = merged.jsonld ?? [];
+	const jsonldNodes: JsonLdNode[] = [...(merged.jsonld ?? [])];
+
+	// Per SD-05: Every non-home indexable page automatically receives a BreadcrumbList
+	// matching the visible <Breadcrumbs /> component in +layout.svelte if not already present.
+	if (
+		!isRoot &&
+		!context.isErrorPage &&
+		!context.isPrivate &&
+		!isNoindexPath(context.pathname) &&
+		robotsDirectives.index !== false
+	) {
+		const hasBreadcrumb = jsonldNodes.some((n) => n['@type'] === 'BreadcrumbList');
+		if (!hasBreadcrumb) {
+			const autoCrumbs = buildBreadcrumbsForPath(context.pathname, title);
+			if (autoCrumbs.length >= 2) {
+				jsonldNodes.push(breadcrumbSchema(autoCrumbs, `${PRODUCTION_ORIGIN}${context.pathname}#breadcrumb`));
+			}
+		} else {
+			// Normalize existing BreadcrumbList item URLs to match buildBreadcrumbsForPath
+			const autoCrumbs = buildBreadcrumbsForPath(context.pathname, title);
+			if (autoCrumbs.length >= 2) {
+				for (let i = 0; i < jsonldNodes.length; i++) {
+					if (jsonldNodes[i]['@type'] === 'BreadcrumbList') {
+						jsonldNodes[i] = breadcrumbSchema(
+							autoCrumbs,
+							`${PRODUCTION_ORIGIN}${context.pathname}#breadcrumb`
+						);
+					}
+				}
+			}
+		}
+	}
+
 	const jsonld = dedupeJsonLd(jsonldNodes);
 
 	// Step 7: Resolve OG
-	// If OG title/description still match the defaults, use the resolved page title/description
-	// so that page-level title overrides cascade into OG automatically.
 	const ogTitleIsDefault = merged.og?.title === defaults.defaultTitle;
 	const ogDescIsDefault = merged.og?.description === defaults.defaultDescription;
+	const resolvedOgImage = toAbsoluteImageUrl(
+		merged.og?.image,
+		defaults.siteUrl,
+		defaults.defaultImage
+	);
 	const og = {
 		title: ogTitleIsDefault ? title : (merged.og?.title ?? title),
 		description: ogDescIsDefault ? description : (merged.og?.description ?? description),
-		url: merged.og?.url ?? canonical,
+		url: canonical,
 		type: merged.og?.type ?? 'website',
 		siteName: merged.og?.siteName ?? defaults.siteName,
 		locale: merged.og?.locale ?? defaults.defaultLocale,
-		image: merged.og?.image ?? defaults.defaultImage,
+		image: resolvedOgImage,
 		imageAlt: merged.og?.imageAlt ?? defaults.defaultImageAlt,
 		imageWidth: merged.og?.imageWidth ?? undefined,
 		imageHeight: merged.og?.imageHeight ?? undefined,
@@ -94,20 +194,24 @@ export function resolveSEO(
 	};
 
 	// Step 8: Resolve Twitter
-	// Same cascade logic: if twitter title/description match defaults, use resolved values.
 	const twTitleIsDefault = merged.twitter?.title === defaults.defaultTitle;
 	const twDescIsDefault = merged.twitter?.description === defaults.defaultDescription;
+	const resolvedTwImage = toAbsoluteImageUrl(
+		merged.twitter?.image ?? merged.og?.image,
+		defaults.siteUrl,
+		defaults.defaultImage
+	);
 	const twitter = {
 		card: merged.twitter?.card ?? defaults.twitterCard ?? 'summary_large_image',
 		title: twTitleIsDefault ? title : (merged.twitter?.title ?? title),
 		description: twDescIsDefault ? description : (merged.twitter?.description ?? description),
 		site: merged.twitter?.site ?? defaults.twitterSite,
 		creator: merged.twitter?.creator ?? undefined,
-		image: merged.twitter?.image ?? defaults.defaultImage,
+		image: resolvedTwImage,
 		imageAlt: merged.twitter?.imageAlt ?? defaults.defaultImageAlt
 	};
 
-	// Step 9: Resolve alternates (already deduped by merge)
+	// Step 9: Resolve alternates
 	const alternates = merged.alternates ?? [];
 
 	// Step 10: Resolve verification
@@ -129,7 +233,6 @@ export function resolveSEO(
 
 /**
  * Create a RouteSEOContext from common SvelteKit page data.
- * Convenience helper for +layout.server.ts / +page.server.ts.
  */
 export function createSEOContext(opts: {
 	pathname: string;

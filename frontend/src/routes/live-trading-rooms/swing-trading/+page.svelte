@@ -237,7 +237,7 @@
 				<div class="hero__alert-card">
 					<div class="hero__alert-head">
 						<div>
-							<h3 class="hero__alert-title">Swing Alert &#x1f680;</h3>
+							<h2 class="hero__alert-title">Swing Alert &#x1f680;</h2>
 							<p class="hero__alert-sub">High Probability Setup</p>
 						</div>
 						<div class="hero__alert-time">Sent: 10:30 AM</div>
@@ -473,8 +473,8 @@
 					<p class="recent__lede">Real trades. Real timestamps. Verified community results.</p>
 				</div>
 				<div>
-					<a href="/performance" class="recent__link">
-						View Full Performance Log
+					<a href="/alerts/explosive-swings" class="recent__link">
+						Explore Explosive Swings Alerts
 						<IconArrowRight size={16} stroke={2} aria-hidden="true" />
 					</a>
 				</div>
@@ -497,7 +497,6 @@
 							class="recent__logo"
 							width="20"
 							height="20"
-							loading="lazy"
 						/>
 						NVDA
 					</div>

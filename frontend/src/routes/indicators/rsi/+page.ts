@@ -1,7 +1,8 @@
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildSoftwareApplication } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
 export const prerender = true;
 
@@ -13,15 +14,22 @@ export const load = () => ({
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
-				{ name: 'Indicators', url: `${SITE}/indicators` },
-				{ name: 'RSI', url: `${SITE}/indicators/rsi` }
+				{ name: 'Trading Indicators', url: `${SITE}/indicators` },
+				{ name: 'RSI Indicator', url: `${SITE}/indicators/rsi` }
 			]),
 			buildSoftwareApplication({
 				name: 'RSI — Relative Strength Index',
 				description:
 					'A custom RSI indicator implementation used by Revolution Trading Pros traders for spotting divergence and momentum exhaustion.',
 				url: `${SITE}/indicators/rsi`,
-				applicationCategory: 'FinanceApplication'
+				applicationCategory: 'FinanceApplication',
+				operatingSystem: 'Web, ThinkorSwim, TradingView',
+				image: `${SITE}/revolution-trading-pros.png`,
+				offers: {
+					price: 0,
+					priceCurrency: 'USD',
+					url: `${SITE}/indicators/rsi`
+				}
 			})
 		]
 	} satisfies SEOInput

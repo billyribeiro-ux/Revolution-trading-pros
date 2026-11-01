@@ -5,7 +5,7 @@
 	 * Pricing is per-room (data.rooms[*].price), distinct for each service.
 	 * Extracted from /live-trading-rooms/+page.svelte (Cascade audit, May 2026).
 	 */
-	import { Spring } from 'svelte/motion';
+	import type { Attachment } from 'svelte/attachments';
 
 	interface PricePlan {
 		monthly: number;
@@ -31,40 +31,29 @@
 	}
 	let { rooms }: Props = $props();
 
-	/** Action: 3D Tilt Effect (mouse-tracking parallax) — Svelte 5 Spring class */
-	function tilt(node: HTMLElement) {
-		const x = new Spring(0, { stiffness: 0.05, damping: 0.25 });
-		const y = new Spring(0, { stiffness: 0.05, damping: 0.25 });
-
-		const stopEffect = $effect.root(() => {
-			$effect(() => {
-				node.style.setProperty('--rotX', `${x.current}deg`);
-				node.style.setProperty('--rotY', `${y.current}deg`);
-			});
-		});
-
+	/** Attachment: 3D Tilt Effect (mouse-tracking parallax) */
+	const tilt: Attachment<HTMLElement> = (node) => {
 		function handleMove(e: MouseEvent) {
 			const rect = node.getBoundingClientRect();
-			x.target = ((e.clientY - rect.top - rect.height / 2) / rect.height) * -3;
-			y.target = ((e.clientX - rect.left - rect.width / 2) / rect.width) * 3;
+			const rotX = ((e.clientY - rect.top - rect.height / 2) / rect.height) * -3;
+			const rotY = ((e.clientX - rect.left - rect.width / 2) / rect.width) * 3;
+			node.style.setProperty('--rotX', `${rotX}deg`);
+			node.style.setProperty('--rotY', `${rotY}deg`);
 		}
 
 		function handleLeave() {
-			x.target = 0;
-			y.target = 0;
+			node.style.setProperty('--rotX', '0deg');
+			node.style.setProperty('--rotY', '0deg');
 		}
 
 		node.addEventListener('mousemove', handleMove);
 		node.addEventListener('mouseleave', handleLeave);
 
-		return {
-			destroy() {
-				node.removeEventListener('mousemove', handleMove);
-				node.removeEventListener('mouseleave', handleLeave);
-				stopEffect();
-			}
+		return () => {
+			node.removeEventListener('mousemove', handleMove);
+			node.removeEventListener('mouseleave', handleLeave);
 		};
-	}
+	};
 </script>
 
 <div
@@ -72,7 +61,7 @@
 	class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32"
 >
 	{#each rooms as room (room.id)}
-		<article use:tilt class="group relative h-full card-3d" role="region" aria-label={room.name}>
+		<article {@attach tilt} class="group relative h-full card-3d" role="region" aria-label={room.name}>
 			<div
 				class={`absolute -inset-px rounded-3xl bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
                     ${room.accent === 'cyan' ? 'from-cyan-500/50' : ''}
@@ -247,7 +236,7 @@
                                     hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]
                                 `}
 						>
-							<span class="relative z-10">Access Room</span>
+							<span class="relative z-10">Explore {room.name}</span>
 							<svg
 								class="w-4 h-4 relative z-10 transition-transform group-hover/btn:translate-x-1"
 								viewBox="0 0 24 24"

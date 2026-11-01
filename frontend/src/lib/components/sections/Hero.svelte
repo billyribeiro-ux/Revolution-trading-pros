@@ -80,7 +80,7 @@
 			description:
 				'Join structured sessions with clear levels, real-time execution, and disciplined risk management.',
 			primaryCTA: { text: 'Explore Rooms', href: '/live-trading-rooms/day-trading' },
-			secondaryCTA: { text: 'Create Free Account', href: '/signup' },
+			secondaryCTA: { text: 'Create Free Account', href: '/register' },
 			accentColor: 'rgba(99, 102, 241, 0.5)'
 		},
 		{
@@ -89,7 +89,7 @@
 			description:
 				'Receive SPX alerts with entry context, invalidation, and sizing guidance (not lottery tickets).',
 			primaryCTA: { text: 'Get Alerts', href: '/alerts/spx-profit-pulse' },
-			secondaryCTA: { text: 'Learn More', href: '/alerts/explosive-swings' },
+			secondaryCTA: { text: 'Explore Swing Alerts', href: '/alerts/explosive-swings' },
 			accentColor: 'rgba(250, 204, 21, 0.5)'
 		},
 		{

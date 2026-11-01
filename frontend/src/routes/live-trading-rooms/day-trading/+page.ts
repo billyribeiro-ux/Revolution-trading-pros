@@ -1,34 +1,34 @@
 import type { SEOInput } from '#lib/seo/types.js';
-import { buildBreadcrumb, buildEvent, buildService } from '#lib/seo/schemas.js';
+import { buildBreadcrumb, buildEvent, buildProduct } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
-// +page.ts
 export const prerender = true;
 
 export const load = () => ({
 	seo: {
-		title: 'Live SPX 0DTE Trading Room — Real-Time Voice & Screen Share',
+		title: 'Live SPX 0DTE Day Trading Room',
 		description:
-			'Join the #1 live options trading room. Watch professional traders execute SPX 0DTE strategies with live voice commentary, 1080p screen sharing, and real-time mentorship.',
+			'Join our live options trading room. Watch professional traders execute SPX 0DTE strategies with live voice commentary and 1080p screen share.',
 		og: {
 			type: 'website',
-			image: `${SITE}/images/og-live-room.jpg`,
+			image: `${SITE}/revolution-trading-pros.png`,
 			imageAlt: 'Live SPX Day Trading Room — Trade with Professional Traders'
 		},
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
 				{ name: 'Live Trading Rooms', url: `${SITE}/live-trading-rooms` },
-				{ name: 'Day Trading', url: `${SITE}/live-trading-rooms/day-trading` }
+				{ name: 'Day Trading Room', url: `${SITE}/live-trading-rooms/day-trading` }
 			]),
-			buildService({
+			buildProduct({
 				name: 'Live SPX Day Trading Room',
 				description:
-					'Professional day trading community specializing in SPX 0DTE options. Live voice commentary, 1080p screen sharing, and real-time trade alerts.',
+					'Professional day trading community specializing in SPX 0DTE options with live voice commentary, 1080p screen sharing, and real-time trade alerts.',
 				url: `${SITE}/live-trading-rooms/day-trading`,
-				provider: { name: 'Revolution Trading Pros', url: SITE },
-				serviceType: 'Live Trading Room'
+				image: `${SITE}/revolution-trading-pros.png`,
+				offers: { price: 197, priceCurrency: 'USD' }
 			}),
 			buildEvent({
 				name: 'Live SPX 0DTE Trading Room — Daily Session',

@@ -6,10 +6,16 @@
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
 	import { preloadData } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import BlurHashImage from '#lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 	import type { Post } from '#lib/types/post.js';
+	import type { PageData } from './$types';
+
+	interface Props {
+		data: PageData;
+	}
+
+	let props: Props = $props();
 
 	// ============================================================================
 	// TypeScript Interfaces
@@ -43,16 +49,20 @@
 	}
 
 	// ============================================================================
-	// State Management - Svelte 5 Runes
+	// State Management - Svelte 5 Runes (SSR initialized from load data)
 	// ============================================================================
 
-	let posts = $state<BlogPost[]>([]);
-	let currentPage = $state(1);
-	let lastPage = $state(1);
-	let loading = $state(true);
+	let clientPosts = $state<BlogPost[] | null>(null);
+	let clientPage = $state<number | null>(null);
+	let clientLastPage = $state<number | null>(null);
+	let loading = $state(false);
 	let error = $state('');
 	let abortController = $state<AbortController | null>(null);
 	let prefetchedSlugs = $state(new Set<string>());
+
+	const posts = $derived<BlogPost[]>(clientPosts ?? (props.data?.posts as BlogPost[]) ?? []);
+	const currentPage = $derived(clientPage ?? props.data?.pagination?.currentPage ?? 1);
+	const lastPage = $derived(clientLastPage ?? props.data?.pagination?.lastPage ?? 1);
 
 	const MAX_RETRIES = 3;
 	const RETRY_DELAY = 2000;
@@ -75,7 +85,6 @@
 			loading = true;
 			error = '';
 
-			// Cancel any existing requests
 			if (abortController) {
 				abortController.abort();
 			}
@@ -94,8 +103,7 @@
 					throw new Error('Invalid response format from server');
 				}
 
-				// Sanitize and validate post data
-				posts = response.data.map((post) => ({
+				clientPosts = response.data.map((post) => ({
 					...post,
 					title: sanitizeText(post.title),
 					excerpt: sanitizeText(post.excerpt || ''),
@@ -103,8 +111,8 @@
 					tags: post.tags || []
 				}));
 
-				currentPage = response.current_page || 1;
-				lastPage = response.last_page || 1;
+				clientPage = response.current_page || 1;
+				clientLastPage = response.last_page || 1;
 			} catch (fetchError) {
 				clearTimeout(timeoutId);
 
@@ -153,57 +161,17 @@
 		});
 	}
 
-	function nextPage() {
-		if (hasNextPage) {
-			loadPosts(currentPage + 1);
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		}
-	}
-
-	function prevPage() {
-		if (hasPrevPage) {
-			loadPosts(currentPage - 1);
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		}
-	}
-
 	function retryLoad() {
 		loadPosts(currentPage);
 	}
 
-	// ============================================================================
-	// Link Prefetching - Preload post data on hover
-	// ============================================================================
-
 	function prefetchPost(slug: string) {
 		if (prefetchedSlugs.has(slug)) return;
-
-		// Mark as prefetched to avoid duplicates
 		prefetchedSlugs.add(slug);
-
-		// Use SvelteKit's preloadData for route prefetching
 		preloadData(`/blog/${slug}`).catch(() => {
 			// Silently fail - prefetching is optional
 		});
 	}
-
-	// ============================================================================
-	// Lifecycle - Use onMount for one-time data loading (prevents infinite loops)
-	// ============================================================================
-
-	// ICT11+ Fix: Use onMount instead of $effect to prevent effect_update_depth_exceeded
-	// $effect tracks reactive state changes and can cause infinite loops when async
-	// functions modify state. onMount runs once and doesn't re-trigger on state changes.
-	onMount(() => {
-		loadPosts();
-
-		return () => {
-			// Cleanup: abort any pending requests on unmount
-			if (abortController) {
-				abortController.abort();
-			}
-		};
-	});
 </script>
 
 <svelte:head>
@@ -265,7 +233,24 @@
 		</div>
 	{:else if isEmpty}
 		<div class="empty">
-			<p>No blog posts published yet.</p>
+			<h2>Featured Trading Guides &amp; Market Research</h2>
+			<p>
+				Explore our foundational trading research, institutional risk-management frameworks, and
+				market reference guides written by the Revolution Trading Pros desk while new daily market
+				commentary is being published. Every article covers actionable rules for position sizing,
+				multi-timeframe entry validation, disciplined trade exits, and index composition across
+				equities, SPX options, and futures markets. Our senior analysts document repeatable trade
+				setups, volatility regime checklists, and portfolio risk controls so active traders can
+				execute with institutional discipline in every market cycle.
+			</p>
+			<div class="empty-guides-links">
+				<a href="/guides/risk-management">Risk Management &amp; Capital Preservation Guide</a>
+				<a href="/guides/position-sizing">Position Sizing &amp; Portfolio Heat Formulas</a>
+				<a href="/guides/swing-entry">High-Probability Swing Entry Setups</a>
+				<a href="/guides/exit-strategies">Systematic Trade Exit &amp; Profit-Taking Strategies</a>
+				<a href="/resources/etf-stocks-list">Institutional ETF &amp; Sector Components Directory</a>
+				<a href="/resources/stock-indexes-list">Global Stock Market Indexes Reference Guide</a>
+			</div>
 		</div>
 	{:else}
 		<div class="posts-grid">
@@ -340,7 +325,7 @@
 
 						<div class="read-more-wrapper">
 							<span class="read-more-btn">
-								<span class="btn-text">Read More</span>
+								<span class="btn-text">Read {post.title}</span>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="18"
@@ -365,53 +350,55 @@
 
 		{#if showPagination}
 			<nav class="pagination" aria-label="Blog pagination">
-				<button
-					class="btn-pagination"
-					onclick={prevPage}
-					disabled={!hasPrevPage}
-					aria-label="Previous page"
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
+				{#if hasPrevPage}
+					<a
+						class="btn-pagination"
+						href={currentPage - 1 <= 1 ? '/blog' : `/blog?page=${currentPage - 1}`}
+						aria-label="Previous page"
 					>
-						<polyline points="15 18 9 12 15 6"></polyline>
-					</svg>
-					Previous
-				</button>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<polyline points="15 18 9 12 15 6"></polyline>
+						</svg>
+						Previous
+					</a>
+				{/if}
 
 				<span class="page-info" aria-live="polite">
 					Page {currentPage} of {lastPage}
 				</span>
 
-				<button
-					class="btn-pagination"
-					onclick={nextPage}
-					disabled={!hasNextPage}
-					aria-label="Next page"
-				>
-					Next
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
+				{#if hasNextPage}
+					<a
+						class="btn-pagination"
+						href="/blog?page={currentPage + 1}"
+						aria-label="Next page"
 					>
-						<polyline points="9 18 15 12 9 6"></polyline>
-					</svg>
-				</button>
+						Next
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</a>
+				{/if}
 			</nav>
 		{/if}
 	{/if}

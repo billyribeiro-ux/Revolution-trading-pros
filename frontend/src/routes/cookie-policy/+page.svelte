@@ -26,8 +26,8 @@
 	import type { CookieScanResult } from '#lib/consent/index.js';
 	import type { SupportedLanguage } from '#lib/consent/i18n.js';
 
-	let cookieScan: CookieScanResult | null = $state(null);
-	let vendorList: ReturnType<typeof getVendorInfo> = $state([]);
+	let cookieScan: CookieScanResult | null = $state(scanCookies());
+	let vendorList: ReturnType<typeof getVendorInfo> = $state(getVendorInfo());
 	let versionInfo = getVersionInfo();
 
 	const languageNames: Record<SupportedLanguage, string> = {
@@ -107,7 +107,12 @@
 		<header class="header">
 			<div class="header-top">
 				<h1>{$t.cookiePolicyTitle}</h1>
-				<select class="language-select" value={$currentLanguage} onchange={handleLanguageChange}>
+				<select
+					class="language-select"
+					aria-label="Select policy language"
+					value={$currentLanguage}
+					onchange={handleLanguageChange}
+				>
 					{#each getSupportedLanguages().slice(0, 7) as lang (lang)}
 						<option value={lang}>{languageNames[lang]}</option>
 					{/each}

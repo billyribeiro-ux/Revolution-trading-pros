@@ -2,10 +2,6 @@
 	import { page } from '$app/state';
 </script>
 
-<svelte:head>
-	<title>{page.status} — Checkout: Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="error-page">
 	<div class="error-card">
 		<h1 class="error-status">{page.status}</h1>

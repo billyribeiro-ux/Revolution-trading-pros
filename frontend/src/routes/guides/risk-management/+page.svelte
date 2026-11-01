@@ -1,17 +1,11 @@
-<script lang="ts">
-	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
-</script>
-
-<TradingRoomHeader
-	roomName="Explosive Swings"
-	startHereUrl="/dashboard/explosive-swings/start-here"
-	headingLevel="h2"
-/>
-
 <div class="guide-page">
 	<div class="guide-header">
 		<h1>🛡️ Risk Management for Swing Trading</h1>
 		<p>Protect your capital and trade with confidence</p>
+		<p class="guide-byline">
+			By <a href="/authors/billy-ribeiro">Billy Ribeiro</a> · Updated
+			<time datetime="2026-05-25">May 25, 2026</time>
+		</p>
 	</div>
 
 	<div class="guide-content">
@@ -59,7 +53,7 @@
 			<h2>Risk/Reward Ratios</h2>
 			<p>Always aim for minimum 2:1 risk/reward. Preferably 3:1 or higher.</p>
 			<div class="example-box">
-				<h4>Example:</h4>
+				<h3>Example:</h3>
 				<p>Entry: $142.50 | Stop: $136.00 | Risk: $6.50</p>
 				<p>Target 1: $148.00 | Reward: $5.50 | R/R: 0.85:1 ❌</p>
 				<p>Target 2: $152.00 | Reward: $9.50 | R/R: 1.46:1 ⚠️</p>
@@ -102,6 +96,25 @@
 				<div class="checklist-item">✓ No emotional attachment to position</div>
 			</div>
 		</section>
+
+		<section class="guide-section">
+			<h2>Regulatory & Market References</h2>
+			<p>
+				Active trading carries substantial risk of loss. Review investor risk disclosures and
+				margin/day-trading rules published by the
+				<a
+					href="https://www.sec.gov/investor/pubs/daytips.htm"
+					target="_blank"
+					rel="noopener noreferrer">U.S. Securities and Exchange Commission (SEC)</a
+				>
+				and
+				<a
+					href="https://www.finra.org/investors/investing/investing-basics/risk"
+					target="_blank"
+					rel="noopener noreferrer">FINRA Investment Risk Guidance</a
+				>.
+			</p>
+		</section>
 	</div>
 </div>
 
@@ -127,8 +140,20 @@
 
 	.guide-header p {
 		font-size: 18px;
-		color: #666;
+		color: #555;
 		margin: 0;
+	}
+
+	.guide-header .guide-byline {
+		font-size: 14px;
+		color: #555;
+		margin-top: 8px;
+	}
+
+	.guide-header .guide-byline a {
+		color: #143e59;
+		font-weight: 600;
+		text-decoration: underline;
 	}
 
 	.guide-content {
@@ -218,7 +243,7 @@
 		margin: 20px 0;
 	}
 
-	.example-box h4 {
+	.example-box h3 {
 		font-size: 16px;
 		font-weight: 700;
 		color: #166534;

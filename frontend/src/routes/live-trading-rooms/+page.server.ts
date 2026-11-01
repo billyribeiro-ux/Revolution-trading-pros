@@ -14,8 +14,9 @@
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildItemList } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
 // Static data that can be generated at build time
 const tradingRoomsData = [
@@ -128,15 +129,14 @@ export const load: PageServerLoad = async ({
 	});
 
 	// SEO payload — shape must match SEOInput so the unified layer renders it.
-	// Detailed JSON-LD graph below is included as a structured-data node.
 	const seoMetadata: SEOInput = {
-		title: 'Live Trading Rooms — Professional Trading Mentorship',
+		title: 'Live Trading Rooms — Real-Time Mentorship',
 		description:
-			'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals with 15+ years experience.',
+			'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time execution and voice guidance.',
 		og: {
 			type: 'website',
-			title: 'Live Trading Rooms — Professional Trading Mentorship',
-			image: `${SITE}/images/live-trading-rooms-og.jpg`,
+			title: 'Live Trading Rooms — Real-Time Mentorship',
+			image: `${SITE}/revolution-trading-pros.png`,
 			imageAlt: 'Professional Live Trading Rooms with Expert Mentors'
 		},
 		jsonld: [
@@ -155,198 +155,6 @@ export const load: PageServerLoad = async ({
 		]
 	};
 
-	// Generate comprehensive structured data for Google December 2025
-	const structuredData = {
-		'@context': ['https://schema.org', 'https://schema.org/EducationEvent'],
-		'@graph': [
-			{
-				'@type': 'WebPage',
-				'@id': 'https://revolutiontradingpros.com/live-trading-rooms',
-				url: 'https://revolutiontradingpros.com/live-trading-rooms',
-				name: 'Live Trading Rooms | Professional Trading Mentorship',
-				description:
-					'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
-				inLanguage: 'en-US',
-				isPartOf: {
-					'@type': 'WebSite',
-					'@id': 'https://revolutiontradingpros.com',
-					name: 'Revolution Trading Pros',
-					publisher: {
-						'@type': 'Organization',
-						'@id': 'https://revolutiontradingpros.com#organization',
-						name: 'Revolution Trading Pros',
-						url: 'https://revolutiontradingpros.com',
-						logo: {
-							'@type': 'ImageObject',
-							url: 'https://revolutiontradingpros.com/logo.png',
-							width: 512,
-							height: 512
-						},
-						sameAs: [
-							'https://twitter.com/revolutiontrading',
-							'https://linkedin.com/company/revolution-trading-pros'
-						]
-					}
-				},
-				primaryImageOfPage: {
-					'@type': 'ImageObject',
-					url: 'https://revolutiontradingpros.com/images/live-trading-rooms-hero.jpg',
-					width: 1920,
-					height: 1080
-				},
-				datePublished: '2025-12-16T00:00:00Z',
-				dateModified: new Date().toISOString(),
-				author: {
-					'@type': 'Organization',
-					name: 'Revolution Trading Pros',
-					url: 'https://revolutiontradingpros.com'
-				},
-				breadcrumb: {
-					'@type': 'BreadcrumbList',
-					itemListElement: [
-						{
-							'@type': 'ListItem',
-							position: 1,
-							name: 'Home',
-							item: 'https://revolutiontradingpros.com'
-						},
-						{
-							'@type': 'ListItem',
-							position: 2,
-							name: 'Live Trading Rooms',
-							item: 'https://revolutiontradingpros.com/live-trading-rooms'
-						}
-					]
-				},
-				review: {
-					'@type': 'Review',
-					itemReviewed: 'Live Trading Rooms Service',
-					reviewRating: {
-						'@type': 'Rating',
-						ratingValue: 4.8,
-						bestRating: 5,
-						worstRating: 1
-					},
-					author: {
-						'@type': 'Person',
-						name: 'Professional Trader Community'
-					}
-				}
-			},
-			{
-				'@type': 'Service',
-				'@id': 'https://revolutiontradingpros.com/live-trading-rooms#service',
-				name: 'Live Trading Rooms',
-				description:
-					'Professional live trading rooms with real-time alerts and mentorship from institutional traders',
-				provider: {
-					'@type': 'Organization',
-					'@id': 'https://revolutiontradingpros.com#organization',
-					name: 'Revolution Trading Pros'
-				},
-				areaServed: 'Worldwide',
-				availableChannel: {
-					'@type': 'ServiceChannel',
-					serviceUrl: 'https://revolutiontradingpros.com/live-trading-rooms',
-					availableLanguage: ['English']
-				},
-				offers: tradingRoomsData.map((room) => ({
-					'@type': 'Offer',
-					'@id': `https://revolutiontradingpros.com/live-trading-rooms#${room.id}`,
-					name: room.name,
-					description: room.description,
-					price: room.price.monthly,
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock',
-					validThrough: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-					eligibleRegion: 'US',
-					seller: {
-						'@type': 'Organization',
-						'@id': 'https://revolutiontradingpros.com#organization',
-						name: 'Revolution Trading Pros'
-					}
-				})),
-				hasOfferCatalog: {
-					'@type': 'OfferCatalog',
-					name: 'Trading Room Services',
-					itemListElement: tradingRoomsData.map((room) => ({
-						'@type': 'Offer',
-						itemOffered: {
-							'@type': 'Service',
-							name: room.name,
-							description: room.description
-						}
-					}))
-				}
-			},
-			{
-				'@type': 'EducationalOrganization',
-				'@id': 'https://revolutiontradingpros.com#organization',
-				name: 'Revolution Trading Pros',
-				description:
-					'Professional trading education and mentorship platform with institutional expertise',
-				url: 'https://revolutiontradingpros.com',
-				foundingDate: '2020',
-				address: {
-					'@type': 'PostalAddress',
-					addressCountry: 'US'
-				},
-				contactPoint: {
-					'@type': 'ContactPoint',
-					telephone: '+1-555-TRADING',
-					contactType: 'customer service',
-					availableLanguage: 'English'
-				},
-				alumni: [
-					{
-						'@type': 'Person',
-						name: 'Professional Traders',
-						jobTitle: 'Professional Trader',
-						knowsAbout: ['Day Trading', 'Swing Trading', 'Risk Management', 'Technical Analysis']
-					}
-				],
-				award: ['Best Trading Education Platform 2024', 'Top Mentorship Program 2023']
-			},
-			{
-				'@type': 'Course',
-				name: 'Live Trading Mentorship Program',
-				description:
-					'Comprehensive live trading education with real-time mentorship from professional traders',
-				provider: {
-					'@type': 'Organization',
-					'@id': 'https://revolutiontradingpros.com#organization',
-					name: 'Revolution Trading Pros'
-				},
-				educationalLevel: 'Intermediate to Advanced',
-				inLanguage: 'English',
-				about: [
-					'Day Trading',
-					'Swing Trading',
-					'Risk Management',
-					'Technical Analysis',
-					'Market Psychology'
-				],
-				teaches: [
-					'Professional trading strategies',
-					'Real-time market analysis',
-					'Risk management techniques',
-					'Institutional trading methods'
-				],
-				timeRequired: 'PT40H', // 40 hours of content
-				coursePrerequisites: 'Basic understanding of financial markets',
-				learningResourceType: 'Live Interactive Sessions',
-				interactivityType: 'high',
-				isAccessibleForFree: false,
-				offers: {
-					'@type': 'Offer',
-					price: '247',
-					priceCurrency: 'USD',
-					availability: 'https://schema.org/InStock'
-				}
-			}
-		]
-	};
-
 	return {
 		// Static data for SSR/SSG
 		rooms: tradingRoomsData,
@@ -355,9 +163,6 @@ export const load: PageServerLoad = async ({
 
 		// SEO metadata (consumed by root +layout.svelte via page.data.seo)
 		seo: seoMetadata,
-		// Legacy structured-data graph kept for now in case any component reads it.
-		// It is NOT emitted to <head>; the unified Seo layer renders only seo.jsonld.
-		structuredData,
 
 		// Performance metrics
 		generatedAt: new Date().toISOString(),

@@ -25,6 +25,7 @@
 		type Location,
 		type BusinessType
 	} from '#lib/seo/index.js';
+	import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 
@@ -89,7 +90,7 @@
 				{ type: 'phone', value: '+1 (555) 123-4567', isPrimary: true },
 				{ type: 'email', value: 'info@revolutiontradingpros.com', isPrimary: true }
 			],
-			website: 'https://revolutiontradingpros.com',
+			website: PRODUCTION_ORIGIN,
 			hours: [
 				{ dayOfWeek: 'Monday', opens: '09:00', closes: '17:00' },
 				{ dayOfWeek: 'Tuesday', opens: '09:00', closes: '17:00' },

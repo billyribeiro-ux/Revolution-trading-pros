@@ -15,6 +15,7 @@
 	import FloatingTocWidget from '#lib/components/blog/FloatingTocWidget.svelte';
 	import ReadingProgress from '#lib/components/blog/ReadingProgress.svelte';
 	import SocialShare from '#lib/components/blog/SocialShare.svelte';
+	import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 	import type { Post } from '#lib/types/post.js';
 	import { safeUrl, sanitizeBlogContent } from '#lib/utils/sanitize.js';
@@ -390,7 +391,7 @@
 					<!-- Social Share Section -->
 					<div class="share-section">
 						<SocialShare
-							url={`https://revolutiontradingpros.com/blog/${post.slug}`}
+							url={`${PRODUCTION_ORIGIN}/blog/${post.slug}`}
 							title={post.title}
 							description={post.excerpt || post.meta_description || ''}
 							hashtags="trading,forex,stocks"

@@ -1,17 +1,11 @@
-<script lang="ts">
-	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
-</script>
-
-<TradingRoomHeader
-	roomName="Explosive Swings"
-	startHereUrl="/dashboard/explosive-swings/start-here"
-	headingLevel="h2"
-/>
-
 <div class="guide-page">
 	<div class="guide-header">
 		<h1>📖 Entry Strategies for Swing Trading</h1>
 		<p>Master the art of timing your entries for maximum profit potential</p>
+		<p class="guide-byline">
+			By <a href="/authors/billy-ribeiro">Billy Ribeiro</a> · Updated
+			<time datetime="2026-05-25">May 25, 2026</time>
+		</p>
 	</div>
 
 	<div class="guide-content">
@@ -114,6 +108,24 @@
 				</ul>
 			</div>
 		</section>
+
+		<section class="guide-section">
+			<h2>Regulatory & Market References</h2>
+			<p>
+				Order routing, bid-ask spread execution, and options disclosure rules are governed by the
+				<a
+					href="https://www.sec.gov/investor/pubs/tradexec.htm"
+					target="_blank"
+					rel="noopener noreferrer">U.S. Securities and Exchange Commission (SEC)</a
+				>
+				and
+				<a
+					href="https://www.finra.org/investors/insights/order-types"
+					target="_blank"
+					rel="noopener noreferrer">FINRA Order Execution Standards</a
+				>.
+			</p>
+		</section>
 	</div>
 </div>
 
@@ -139,8 +151,20 @@
 
 	.guide-header p {
 		font-size: 18px;
-		color: #666;
+		color: #555;
 		margin: 0;
+	}
+
+	.guide-header .guide-byline {
+		font-size: 14px;
+		color: #555;
+		margin-top: 8px;
+	}
+
+	.guide-header .guide-byline a {
+		color: #143e59;
+		font-weight: 600;
+		text-decoration: underline;
 	}
 
 	.guide-content {

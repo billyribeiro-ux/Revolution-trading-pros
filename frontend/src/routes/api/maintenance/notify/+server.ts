@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { RESEND_API_KEY } from '$app/env/private';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
 /**
  * Maintenance Email Capture API
@@ -206,7 +207,7 @@ async function sendConfirmationEmail(email: string, apiKey: string): Promise<voi
             <p>Progress is posted on the site every trading day if you would like to follow the rebuild.</p>
 
             <center>
-                <a href="https://revolutiontradingpros.com" class="cta-button">Visit Our Website</a>
+                <a href="${PRODUCTION_ORIGIN}" class="cta-button">Visit Our Website</a>
             </center>
         </div>
 

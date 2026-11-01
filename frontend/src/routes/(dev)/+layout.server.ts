@@ -14,6 +14,8 @@
 import { error } from '@sveltejs/kit';
 import { dev } from '$app/env';
 
+export const prerender = false;
+
 export const load = async () => {
 	// Block access in production - return 404 as if route doesn't exist
 	if (!dev) {

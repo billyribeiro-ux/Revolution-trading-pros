@@ -15,11 +15,14 @@
 import type { RobotsDirectives, RouteSEOContext, SEODefaults } from './types';
 
 /**
- * Determine if a pathname matches any prefix in the given list.
+ * Determine if a pathname matches any prefix in the given list on a segment boundary.
  */
 function matchesPrefix(pathname: string, prefixes: string[]): boolean {
 	const normalized = pathname.toLowerCase();
-	return prefixes.some((prefix) => normalized.startsWith(prefix.toLowerCase()));
+	return prefixes.some((prefix) => {
+		const p = prefix.toLowerCase();
+		return normalized === p || normalized.startsWith(`${p}/`) || normalized.startsWith(`${p}?`);
+	});
 }
 
 /**

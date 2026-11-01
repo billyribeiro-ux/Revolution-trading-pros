@@ -1,69 +1,53 @@
-import type { Load } from '@sveltejs/kit';
-import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
-import type { PaginatedPosts } from '#lib/types/post.js';
+import type { PageLoad } from './$types';
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
-export const prerender = false; // Disable prerendering - dynamic content
-// SSR enabled for SEO - blog content should be server-rendered
+export const prerender = false;
 
-const blogSeo: SEOInput = {
-	title: 'Blog — Trading Insights & Tutorials',
-	description:
-		'Expert trading insights, tutorials, and market analysis from Revolution Trading Pros. Learn day trading, swing trading, options strategies, and more.',
-	jsonld: [
-		buildBreadcrumb([
-			{ name: 'Home', url: `${SITE}/` },
-			{ name: 'Blog', url: `${SITE}/blog` }
-		]),
-		{
-			'@context': 'https://schema.org',
-			'@type': 'Blog',
-			'@id': `${SITE}/blog#blog`,
-			name: 'Revolution Trading Pros Blog',
-			description: 'Expert trading insights, tutorials, and market analysis',
-			url: `${SITE}/blog`,
-			publisher: {
-				'@type': 'Organization',
-				name: 'Revolution Trading Pros',
-				logo: {
-					'@type': 'ImageObject',
-					url: `${SITE}/icon-512.png`
+export const load: PageLoad = ({ data, url }) => {
+	const pageParam = Number(url.searchParams.get('page') ?? '1');
+	const pageNum = Number.isFinite(pageParam) && pageParam > 1 ? Math.floor(pageParam) : 1;
+	const canonicalUrl = pageNum > 1 ? `${SITE}/blog?page=${pageNum}` : `${SITE}/blog`;
+
+	const blogSeo: SEOInput = {
+		title: pageNum > 1 ? `Trading Blog — Page ${pageNum}` : 'Trading Blog — Insights & Tutorials',
+		description:
+			'Expert trading insights, tutorials, and market analysis from Revolution Trading Pros. Learn day trading, swing trading, options strategies, and more.',
+		canonical: canonicalUrl,
+		jsonld: [
+			buildBreadcrumb([
+				{ name: 'Home', url: `${SITE}/` },
+				{ name: 'Trading Blog', url: `${SITE}/blog` }
+			]),
+			{
+				'@context': 'https://schema.org',
+				'@type': 'Blog',
+				'@id': `${SITE}/blog#blog`,
+				name: 'Revolution Trading Pros Blog',
+				description: 'Expert trading insights, tutorials, and market analysis',
+				url: `${SITE}/blog`,
+				publisher: {
+					'@type': 'Organization',
+					name: 'Revolution Trading Pros',
+					logo: {
+						'@type': 'ImageObject',
+						url: `${SITE}/icon-512.png`
+					}
 				}
 			}
-		}
-	]
-};
+		]
+	};
 
-export const load: Load = async ({ fetch: svelteKitFetch }) => {
-	try {
-		// Pass SvelteKit's fetch to apiFetch for proper SSR support
-		const posts = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list, {
-			fetch: svelteKitFetch
-		});
-
-		return {
-			posts: posts.data,
-			pagination: {
-				currentPage: posts.current_page,
-				lastPage: posts.last_page,
-				total: posts.total
-			},
-			seo: blogSeo
-		};
-	} catch (error) {
-		console.error('Failed to load posts:', error);
-		return {
-			posts: [],
-			pagination: {
-				currentPage: 1,
-				lastPage: 1,
-				total: 0
-			},
-			error: error instanceof Error ? error.message : 'Failed to fetch posts',
-			seo: blogSeo
-		};
-	}
+	return {
+		posts: data?.posts ?? [],
+		pagination: data?.pagination ?? {
+			currentPage: pageNum,
+			lastPage: 1,
+			total: 0
+		},
+		seo: blogSeo
+	};
 };

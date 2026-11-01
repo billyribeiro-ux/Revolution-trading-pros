@@ -46,9 +46,13 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	const seoContext = createSEOContext({
 		pathname: url.pathname,
 		env,
-		isPrivate: seoDefaults.privatePathPrefixes.some((p) => url.pathname.startsWith(p)),
+		isPrivate: seoDefaults.privatePathPrefixes.some(
+			(p) => url.pathname === p || url.pathname.startsWith(`${p}/`)
+		),
 		isSearchPage:
-			seoDefaults.searchPathPrefixes.some((p) => fullPath.startsWith(p)) ||
+			seoDefaults.searchPathPrefixes.some(
+				(p) => fullPath === p || fullPath.startsWith(`${p}/`) || fullPath.startsWith(`${p}?`)
+			) ||
 			new URLSearchParams(search).has('q') ||
 			new URLSearchParams(search).has('search'),
 		isErrorPage: false

@@ -528,6 +528,8 @@ export function generateVideoGallerySchema(
 	};
 }
 
+import { serializeJsonLd } from './serializeJsonLd';
+
 // ═══════════════════════════════════════════════════════════════════════════
 // HTML Generation
 // ═══════════════════════════════════════════════════════════════════════════
@@ -536,7 +538,7 @@ export function generateVideoGallerySchema(
  * Generate JSON-LD script tag
  */
 export function generateJsonLdScript(schema: Record<string, unknown>): string {
-	return `<script type="application/ld+json">\n${JSON.stringify(schema, null, 2)}\n</script>`;
+	return `<script type="application/ld+json">\n${serializeJsonLd(schema)}\n</script>`;
 }
 
 /**

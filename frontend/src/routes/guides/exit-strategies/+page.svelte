@@ -1,17 +1,11 @@
-<script lang="ts">
-	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
-</script>
-
-<TradingRoomHeader
-	roomName="Explosive Swings"
-	startHereUrl="/dashboard/explosive-swings/start-here"
-	headingLevel="h2"
-/>
-
 <div class="guide-page">
 	<div class="guide-header">
 		<h1>🎯 Exit Strategies for Swing Trading</h1>
 		<p>Know when to take profits and protect gains</p>
+		<p class="guide-byline">
+			By <a href="/authors/billy-ribeiro">Billy Ribeiro</a> · Updated
+			<time datetime="2026-05-25">May 25, 2026</time>
+		</p>
 	</div>
 
 	<div class="guide-content">
@@ -89,7 +83,7 @@
 			<p>For exceptional setups, let a small portion run for outsized gains.</p>
 
 			<div class="example-box">
-				<h4>Runner Rules:</h4>
+				<h3>Runner Rules:</h3>
 				<p>• Only use 10-20% of position for runner</p>
 				<p>• Must have already taken profits at T1 and T2</p>
 				<p>• Trail stop aggressively (below each swing low)</p>
@@ -121,6 +115,25 @@
 				<div class="flow-step">5. Time exceeded? → Yes: Evaluate and consider exit</div>
 			</div>
 		</section>
+
+		<section class="guide-section">
+			<h2>Regulatory & Market References</h2>
+			<p>
+				Order execution mechanics (stop orders, limit orders, and trailing stops) are governed by
+				exchange rules and investor guidance from the
+				<a
+					href="https://www.sec.gov/investor/pubs/tradexec.htm"
+					target="_blank"
+					rel="noopener noreferrer">U.S. Securities and Exchange Commission (SEC)</a
+				>
+				and
+				<a
+					href="https://www.finra.org/investors/insights/order-types"
+					target="_blank"
+					rel="noopener noreferrer">FINRA Order Types Guidance</a
+				>.
+			</p>
+		</section>
 	</div>
 </div>
 
@@ -146,8 +159,20 @@
 
 	.guide-header p {
 		font-size: 18px;
-		color: #666;
+		color: #555;
 		margin: 0;
+	}
+
+	.guide-header .guide-byline {
+		font-size: 14px;
+		color: #555;
+		margin-top: 8px;
+	}
+
+	.guide-header .guide-byline a {
+		color: #143e59;
+		font-weight: 600;
+		text-decoration: underline;
 	}
 
 	.guide-content {
@@ -221,6 +246,7 @@
 		margin: 20px 0;
 	}
 
+	.example-box h3,
 	.example-box h4 {
 		font-size: 16px;
 		font-weight: 700;

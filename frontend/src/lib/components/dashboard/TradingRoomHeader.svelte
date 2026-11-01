@@ -358,7 +358,7 @@
 		gap: 8px;
 		min-height: 48px;
 		padding: 12px 20px;
-		background-color: #f69532;
+		background-color: #b45309;
 		color: #fff;
 		font-size: 14px;
 		font-weight: 600;

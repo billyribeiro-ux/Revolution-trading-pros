@@ -8,6 +8,8 @@
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import DownloadButton from './DownloadButton.svelte';
 	import { sanitizeHtml } from '#lib/sanitize.js';
+	import thinkorswimLogo from '#lib/assets/platforms/thinkorswim.png?enhanced';
+	import tradingviewLogo from '#lib/assets/platforms/tradingview.png?enhanced';
 
 	interface DownloadFile {
 		name: string;
@@ -22,11 +24,34 @@
 	}
 
 	let { platform, logo, files, notes }: Props = $props();
+
+	let enhancedLogo = $derived(
+		logo.endsWith('thinkorswim.png')
+			? thinkorswimLogo
+			: logo.endsWith('tradingview.png')
+				? tradingviewLogo
+				: null
+	);
 </script>
 
 <div class={['st_box', platform.toLowerCase()]}>
-	<!-- TODO(cls): logo aspect ratio is per-platform; height needed but intrinsic dims unknown -->
-	<img width="250" height="100" src={logo} alt={platform} loading="lazy" />
+	{#if enhancedLogo}
+		<enhanced:img
+			src={enhancedLogo}
+			alt={platform}
+			sizes="250px"
+			loading={platform.toLowerCase() === 'thinkorswim' ? 'eager' : 'lazy'}
+		/>
+	{:else}
+		<!-- TODO(cls): logo aspect ratio is per-platform; height needed but intrinsic dims unknown -->
+		<img
+			width="250"
+			height="100"
+			src={logo}
+			alt={platform}
+			loading={platform.toLowerCase() === 'thinkorswim' ? 'eager' : 'lazy'}
+		/>
+	{/if}
 
 	{#if files.length > 0}
 		<table>

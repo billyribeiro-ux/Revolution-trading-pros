@@ -1,34 +1,33 @@
 import type { SEOInput } from '#lib/seo/types.js';
-import { buildBreadcrumb, buildEvent, buildService } from '#lib/seo/schemas.js';
+import { buildBreadcrumb, buildEvent, buildProduct } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
-// +page.ts
 export const prerender = true;
 
 export const load = () => ({
 	seo: {
-		title: 'Small Account Options Room — PDT-Free SPX Strategy for Accounts Under $25k',
+		title: 'Small Account Options Trading Room',
 		description:
-			'A dedicated small-account options room focused on cash-account execution, PDT-free routines, SPX 0DTE risk control, and account-preservation habits.',
+			'Dedicated small-account options room focused on cash-account execution, PDT-free routines, SPX 0DTE risk control, and account preservation.',
 		og: {
 			type: 'website',
-			image: `${SITE}/images/day-trading-og.jpg`,
+			image: `${SITE}/revolution-trading-pros.png`,
 			imageAlt: 'Small Account Options Room — PDT-Free SPX Strategies'
 		},
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
 				{ name: 'Live Trading Rooms', url: `${SITE}/live-trading-rooms` },
-				{ name: 'Small Accounts', url: `${SITE}/live-trading-rooms/small-accounts` }
+				{ name: 'Small Accounts Mentorship', url: `${SITE}/live-trading-rooms/small-accounts` }
 			]),
-			buildService({
+			buildProduct({
 				name: 'Small Account Options Room',
 				description:
 					'Live trading room designed for growing small accounts (under $25k) using PDT-free cash-account routines and SPX 0DTE risk control.',
 				url: `${SITE}/live-trading-rooms/small-accounts`,
-				provider: { name: 'Revolution Trading Pros', url: SITE },
-				serviceType: 'Live Trading Room',
+				image: `${SITE}/revolution-trading-pros.png`,
 				offers: { price: 197, priceCurrency: 'USD' }
 			}),
 			buildEvent({

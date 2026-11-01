@@ -314,6 +314,15 @@
 				Your comprehensive guide to Exchange-Traded Funds. Explore top ETFs, understand their
 				benefits, and discover sector-specific opportunities for portfolio diversification.
 			</p>
+			<p class="hero__byline">
+				By <a href="/authors/billy-ribeiro">Billy Ribeiro</a> · Updated
+				<time datetime="2026-05-25">May 25, 2026</time> · Reference:
+				<a
+					href="https://www.sec.gov/investor/alerts/etfs.pdf"
+					target="_blank"
+					rel="noopener noreferrer">SEC ETF Investor Bulletin</a
+				>
+			</p>
 		</div>
 	</section>
 
@@ -494,13 +503,13 @@
 
 			<div class="comparison-summary">
 				<div class="comparison-summary__item">
-					<h4>ETFs are ideal for:</h4>
+					<h3>ETFs are ideal for:</h3>
 					<p>
 						Cost-conscious investors who want to trade throughout the day and seek tax efficiency.
 					</p>
 				</div>
 				<div class="comparison-summary__item">
-					<h4>Mutual Funds are better for:</h4>
+					<h3>Mutual Funds are better for:</h3>
 					<p>
 						Those looking for professional management and who are comfortable with end-of-day
 						trading.
@@ -612,6 +621,17 @@
 		line-height: 1.7;
 		max-width: 700px;
 		margin: 0 auto;
+	}
+
+	.hero__byline {
+		font-size: 0.9rem;
+		color: #cbd5e1;
+		margin-top: 1rem;
+	}
+
+	.hero__byline a {
+		color: #10b981;
+		text-decoration: underline;
 	}
 
 	/* Sections */
@@ -971,7 +991,7 @@
 		padding: 1.5rem;
 	}
 
-	.comparison-summary__item h4 {
+	.comparison-summary__item h3 {
 		font-size: 1rem;
 		font-weight: 600;
 		color: #10b981;

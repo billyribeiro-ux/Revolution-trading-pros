@@ -1,0 +1,115 @@
+# Phase 1 — Evidence Fetch & Live Source Verification
+
+**Fetch Date:** 2026-11-01
+
+---
+
+## 1. Google Search Central & Web Standards (`G:*`, `†`)
+
+Every requirement ID in `docs/seo/SEO_STANDARD.md` marked **†** or sourced from `G:*` was fetched and verified on `2026-11-01`:
+
+| Requirement ID | Source URL | Fetch Date | Governing Rule (≤2-Sentence Paraphrase) | Status vs Standard |
+| :--- | :--- | :--- | :--- | :--- |
+| **IDX-04** | `https://svelte.dev/docs/kit/@sveltejs-kit-vite#prerender` (`[DOC svelte:kit/@sveltejs-kit-vite#prerender]`) | 2026-11-01 | In SvelteKit 3.1.0 (`@sveltejs/kit/vite`), `prerender.handleHttpError`, `prerender.handleMissingId`, `prerender.handleUnseenRoutes`, `prerender.handleEntryGeneratorMismatch`, and `prerender.handleInvalidUrl` all default to `'fail'`. Setting them to `'ignore'` or `'warn'` masks broken links, missing anchor targets, and unprerendered routes during build (`[CODE frontend/node_modules/@sveltejs/kit/types/index.d.ts:1986-2040]`). | Matches standard (Note: config lives in `vite.config.ts` in SvelteKit 3.1.0, not `svelte.config.*`). |
+| **IDX-05** | `https://developers.google.com/search/docs/crawling-indexing/http-network-errors` (`[DOC https://developers.google.com/search/docs/crawling-indexing/http-network-errors]`) | 2026-11-01 | Google drops URLs returning 404/410 from the index and transfers indexing signals across permanent redirects (301/308), whereas returning 200 OK for missing content creates a soft 404. In SvelteKit, `error(404)`, `error(410)`, and `redirect(308, url)` from `@sveltejs/kit` set the exact HTTP status code (`[DOC svelte:kit/errors]`). | Matches standard |
+| **IDX-07** | `https://developers.google.com/search/docs/crawling-indexing/robots/intro` (`[DOC https://developers.google.com/search/docs/crawling-indexing/robots/intro]`) | 2026-11-01 | `/robots.txt` must be served at the root as `text/plain` with HTTP 200 and controls crawler traffic, not indexing. It must not block JS, CSS, or image paths (such as `/_app/`) required for Googlebot to render the page and see its content. | Matches standard |
+| **IDX-08, IDX-09** | `https://developers.google.com/search/docs/crawling-indexing/block-indexing` (`[DOC https://developers.google.com/search/docs/crawling-indexing/block-indexing]`) | 2026-11-01 | To prevent a page from appearing in Google Search, serve `<meta name="robots" content="noindex">` or the `X-Robots-Tag: noindex` HTTP header. Do not disallow `noindex` pages in `robots.txt`, because Googlebot must crawl the page to read the `noindex` directive. | Matches standard |
+| **IDX-10, HTML-04** | `https://developers.google.com/search/docs/crawling-indexing/links-crawlable` (`[DOC https://developers.google.com/search/docs/crawling-indexing/links-crawlable]`) | 2026-11-01 | Google can reliably crawl links only when they are standard `<a href="...">` HTML elements with resolvable URLs, not `onclick` handlers or `href="#"`. Anchor text should be descriptive and specific to the target page rather than generic phrases like "click here" or "read more". | Matches standard |
+| **IDX-12** | `https://developers.google.com/search/docs/crawling-indexing/https` (`[DOC https://developers.google.com/search/docs/crawling-indexing/https]`) | 2026-11-01 | All pages and assets should be served over HTTPS, with HTTP and non-preferred host variants permanently redirecting (301/308) to the canonical HTTPS host and Strict-Transport-Security (HSTS) enabled. | Matches standard |
+| **URL-02, URL-03** | `https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls` (`[DOC https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls]`) | 2026-11-01 | Every indexable page should declare a single absolute `<link rel="canonical">` URL pointing to the clean, preferred URL, and matching the URL listed in the sitemap. Tracking, sort, and non-content query parameters must canonicalize to the clean URL to consolidate ranking signals and preserve crawl budget. | Matches standard |
+| **URL-04** | `https://developers.google.com/search/docs/crawling-indexing/redirects-overview` (`[DOC https://developers.google.com/search/docs/crawling-indexing/redirects-overview]`) | 2026-11-01 | Server-side permanent redirects (301 or 308) are the strongest signal for URL changes and transfer indexing and ranking signals to the destination URL. | Matches standard |
+| **URL-05** | `https://developers.google.com/search/docs/crawling-indexing/pagination-incremental-page-loading` (`[DOC https://developers.google.com/search/docs/crawling-indexing/pagination-incremental-page-loading]`) | 2026-11-01 | Give each paginated page a unique URL (`?page=n` or `/page/n`) with a self-referencing canonical tag; never canonicalize page 2+ to page 1. Link sequential pages with crawlable `<a href>` tags. | Matches standard |
+| **META-06** | `https://ogp.me/` & X Cards Docs (`[DOC https://ogp.me/]`) | 2026-11-01 | Every Open Graph object requires `og:title`, `og:type`, `og:image` (absolute URL returning 200 `image/*`), and `og:url`, supplemented by `og:description`, `og:site_name`, `og:locale`, and `og:image:alt`. For X large image previews, include `<meta name="twitter:card" content="summary_large_image">`. | Matches standard |
+| **META-07** | `https://developers.google.com/search/docs/appearance/favicon-in-search` (`[DOC https://developers.google.com/search/docs/appearance/favicon-in-search]`) | 2026-11-01 | A site's favicon must be declared via `<link rel="icon">` in the homepage head, be square with dimensions a multiple of 48px (or SVG), and live at a stable URL crawlable by Googlebot-Image. | Matches standard |
+| **META-08** | `https://developers.google.com/search/docs/appearance/site-names` (`[DOC https://developers.google.com/search/docs/appearance/site-names]`) | 2026-11-01 | Provide `WebSite` structured data on the homepage with `name`, `alternateName` (optional), and `url` so Google Search can display the preferred site name in search results. | Matches standard |
+| **META-10, META-11** | `https://developers.google.com/search/docs/appearance/title-link` (`[DOC https://developers.google.com/search/docs/appearance/title-link]`) | 2026-11-01 | Every page must have a single concise, descriptive, unique `<title>` element free of keyword stuffing or boilerplate repetition, branding once via delimiter. Google imposes no character limit and truncates by pixel width. | Matches standard |
+| **META-12, META-13, META-14** | `https://developers.google.com/search/docs/appearance/snippet` & `https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag` & `https://developers.google.com/search/docs/appearance/google-discover` (`[DOC https://developers.google.com/search/docs/appearance/snippet]`, `[DOC https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag]`, `[DOC https://developers.google.com/search/docs/appearance/google-discover]`) | 2026-11-01 | Meta descriptions must be unique, page-specific summaries without keyword lists; `nosnippet`, `max-snippet`, and `data-nosnippet` restrict both classic snippets and AI features. Setting `max-image-preview:large` in the `robots` meta tag enables large image previews in Search and Google Discover. | Matches standard |
+| **SD-01, SD-03** | `https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data` & `https://developers.google.com/search/docs/appearance/structured-data/sd-policies` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/sd-policies]`) | 2026-11-01 | Google recommends JSON-LD structured data and strictly requires that structured data accurately represent visible page content. Marking up hidden, fabricated, or misleading reviews, ratings, prices, or credentials violates spam/structured data policies and risks manual action. | Matches standard |
+| **SD-04** | `https://developers.google.com/search/docs/appearance/structured-data/organization` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/organization]`) | 2026-11-01 | Place `Organization` structured data (`name`, `url`, `logo`, `sameAs`, `contactPoint`) on the homepage or about page to disambiguate your organization in Search and Knowledge Graph panels. | Matches standard |
+| **SD-05** | `https://developers.google.com/search/docs/appearance/structured-data/breadcrumb` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/breadcrumb]`) | 2026-11-01 | `BreadcrumbList` requires `itemListElement` with `ListItem` entries (`position`, `name`, `item` URL, optional on final item) matching the visible breadcrumb trail. | Matches standard |
+| **SD-06** | `https://developers.google.com/search/docs/appearance/structured-data/article` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/article]`) | 2026-11-01 | `Article`, `NewsArticle`, or `BlogPosting` should include `headline`, `image`, `datePublished`, `dateModified` (ISO 8601 with timezone), and `author` (`Person` with `name` and profile `url`) matching visible page metadata. | Matches standard |
+| **SD-07** | `https://developers.google.com/search/docs/appearance/structured-data/video` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/video]`) | 2026-11-01 | `VideoObject` requires `name`, `thumbnailUrl`, and `uploadDate`, and recommends `description`, `duration` (ISO 8601), and `contentUrl` or `embedUrl`. | Matches standard |
+| **SD-08** | `https://developers.google.com/search/docs/appearance/structured-data/product` & `https://developers.google.com/search/docs/appearance/structured-data/review-snippet` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/product]`, `[DOC https://developers.google.com/search/docs/appearance/structured-data/review-snippet]`) | 2026-11-01 | `Product` markup requires `name` and `offers` (`Offer` with `price`, `priceCurrency`, `availability`) or genuine reviews; self-serving reviews on `Organization`/`LocalBusiness` are ineligible and forbidden. | Matches standard |
+| **SD-09** | `https://developers.google.com/search/docs/appearance/structured-data/discussion-forum` & `https://developers.google.com/search/docs/appearance/structured-data/profile-page` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/discussion-forum]`, `[DOC https://developers.google.com/search/docs/appearance/structured-data/profile-page]`) | 2026-11-01 | Community threads use `DiscussionForumPosting` (`author`, `datePublished`, `text`/`headline`) and author/member pages use `ProfilePage` with `mainEntity` (`Person` or `Organization`). | Matches standard |
+| **SD-10, SD-12** | `https://developers.google.com/search/docs/appearance/structured-data/search-gallery` & `https://developers.google.com/search/blog/2025/06/simplifying-search-results` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/search-gallery]`) | 2026-11-01 | Only implement schema types actively supported in Google's Search Gallery or for entity disambiguation (`WebSite`, `Organization`); retired rich result types (Course Info, Claim Review, Estimated Salary, Learning Video, Special Announcement, Vehicle Listing, Practice Problem, HowTo, and non-gov/health FAQPage) produce no Google rich results. | Matches standard |
+| **SD-11, SPAM-11** | `https://developers.google.com/search/docs/appearance/ai-features` & `https://developers.google.com/search/docs/essentials/spam-policies` (`[DOC https://developers.google.com/search/docs/appearance/ai-features]`, `[DOC https://developers.google.com/search/docs/essentials/spam-policies]`) | 2026-11-01 | AI Overviews and AI Mode require no special schema or AI-only tags and rely on standard indexing and core SEO signals. Manipulating generative AI responses (e.g., hidden prompts or scaled low-value AI content) violates Google's spam policies. | Matches standard |
+| **SD-13** | `https://developers.google.com/search/docs/appearance/structured-data/paywalled-content` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/paywalled-content]`) | 2026-11-01 | Subscription or paywalled pages must set `isAccessibleForFree: false` and `hasPart` (`WebPageElement` with `isAccessibleForFree: false` and a `.class` `cssSelector` matching the gated DOM container) to distinguish paywalls from cloaking. | Matches standard |
+| **MAP-01, MAP-03, MAP-04, MAP-06** | `https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap` & `https://developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping` (`[DOC https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap]`) | 2026-11-01 | Sitemaps must list only canonical, indexable 200 URLs (≤50,000 URLs / 50MB per file) and use `<lastmod>` only when verifiably accurate; Google ignores `<changefreq>`, `<priority>`, and the deprecated sitemap ping endpoint. | Matches standard |
+| **MAP-05, I18N-02, I18N-03, I18N-04** | `https://developers.google.com/search/docs/specialty/international/localized-versions` & `https://developers.google.com/search/docs/specialty/international/locale-adaptive-pages` (`[DOC https://developers.google.com/search/docs/specialty/international/localized-versions]`, `[DOC https://developers.google.com/search/docs/specialty/international/locale-adaptive-pages]`) | 2026-11-01 | Distinct URLs must be used for each locale (never serving different languages on the same URL via `Accept-Language` or cookies), with self-referencing canonicals and reciprocal `hreflang` annotations including `x-default`. | Matches standard |
+| **PERF-01, PERF-05, PERF-06, PERF-08** | `https://web.dev/articles/vitals`, `https://web.dev/articles/cls`, `https://web.dev/articles/inp`, `https://web.dev/articles/font-best-practices` (`[DOC https://web.dev/articles/vitals]`, `[DOC https://web.dev/articles/cls]`, `[DOC https://web.dev/articles/inp]`, `[DOC https://web.dev/articles/font-best-practices]`) | 2026-11-01 | Core Web Vitals pass thresholds at p75 field data are LCP ≤ 2.5s, INP ≤ 200ms, and CLS ≤ 0.1. Prevent CLS with explicit image dimensions and font metric overrides (`font-display: swap`), preload critical WOFF2 fonts, and keep main-thread interaction callbacks under 50ms. | Matches standard |
+| **HTML-05** | `https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing` & `https://developers.google.com/search/docs/appearance/page-experience` (`[DOC https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing]`) | 2026-11-01 | Google indexes the mobile version of every page first; mobile and desktop viewports must serve the same primary content, structured data, and metadata without intrusive interstitials blocking content. | Matches standard |
+| **HTML-06, YMYL-01..08** | `https://developers.google.com/search/docs/fundamentals/creating-helpful-content` (`[DOC https://developers.google.com/search/docs/fundamentals/creating-helpful-content]`) | 2026-11-01 | For YMYL (finance/trading) topics, Google places heightened weight on E-E-A-T and trust: pages must clearly show Who created the content (verifiable author profiles), How it was produced, Why (people-first, not search-engine-first), honest dates, and clear financial risk disclosures. | Matches standard |
+| **SPAM-01..10** | `https://developers.google.com/search/docs/essentials/spam-policies` & `https://developers.google.com/search/docs/crawling-indexing/qualify-outbound-links` (`[DOC https://developers.google.com/search/docs/essentials/spam-policies]`, `[DOC https://developers.google.com/search/docs/crawling-indexing/qualify-outbound-links]`) | 2026-11-01 | Google's spam policies prohibit cloaking, doorway pages, scaled content abuse, hidden text/links, keyword stuffing, sneaky redirects, back-button hijacking, site reputation abuse, and AI-response manipulation. Affiliate/paid links require `rel="sponsored"` and user-submitted links require `rel="ugc"`. | Matches standard |
+| **MON-03** | `https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers` (`[DOC https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers]`) | 2026-11-01 | `Google-Extended` is a standalone product token in `robots.txt` that controls whether site content is used to train Gemini models and Vertex AI generative APIs; it does not impact inclusion in Google Search or AI Overviews. | Matches standard |
+
+---
+
+## 2. Live Google Search Gallery (`SD-10` Governing List)
+
+Fetched from `https://developers.google.com/search/docs/appearance/structured-data/search-gallery` on `2026-11-01` (`[DOC https://developers.google.com/search/docs/appearance/structured-data/search-gallery]`):
+
+### Active Supported Rich Result Feature Types (as of 2026-11-01):
+1. **Article** (`Article`, `NewsArticle`, `BlogPosting`)
+2. **Book actions** (`Book`)
+3. **Breadcrumb** (`BreadcrumbList`)
+4. **Carousel** (`ItemList` with supported summary/detail types)
+5. **Course list** (`ItemList` of `Course` items — note: `CourseInfo` was retired in June 2025)
+6. **Dataset** (`Dataset` — scoped to Google Dataset Search)
+7. **Discussion forum** (`DiscussionForumPosting`, `SocialMediaPosting`)
+8. **Education Q&A** (`Quiz` / `Question` flashcard carousel)
+9. **Employer aggregate rating** (`EmployerAggregateRating`)
+10. **Event** (`Event`)
+11. **Fact check** (`ClaimReview` — note: retired in June 2025 phase-out)
+12. **Image metadata** (`ImageObject`)
+13. **Job posting** (`JobPosting`)
+14. **Local business** (`LocalBusiness`)
+15. **Math solver** (`MathSolver`)
+16. **Movie carousel** (`Movie`)
+17. **Organization** (`Organization` — administrative details, logo, `contactPoint`, `sameAs`)
+18. **Product** (`Product`, `Offer`, `AggregateOffer` — Product Snippets, Merchant Listings, Product Variants, `MemberProgram` Loyalty Program, `MerchantReturnPolicy`, `ShippingService`)
+19. **Profile page** (`ProfilePage` with `Person` or `Organization`)
+20. **Q&A** (`QAPage`)
+21. **Recipe** (`Recipe`)
+22. **Review snippet** (`Review`, `AggregateRating`)
+23. **Site names** (`WebSite` on homepage — documented under Appearance > Site names)
+24. **Software app** (`SoftwareApplication`)
+25. **Speakable** (`SpeakableSpecification`)
+26. **Subscription and paywalled content** (`CreativeWork` / `Article` with `hasPart` + `isAccessibleForFree: false`)
+27. **Vacation rental** (`VacationRental`)
+28. **Video** (`VideoObject`, `Clip`, `SeekToAction`)
+
+### Retired / Restricted Types (Forbidden for Rich Results per `SD-10`):
+- `Course` (`CourseInfo` details — retired June 2025; only basic `Course` inside `ItemList` Course list remains)
+- `ClaimReview` (retired June 2025)
+- `EstimatedSalary` (retired June 2025)
+- `LearningVideo` (retired June 2025)
+- `SpecialAnnouncement` (retired June 2025)
+- `Vehicle` listing (retired June 2025)
+- `PracticeProblem` (retired January 2026)
+- `FAQPage` (restricted strictly to authoritative government and health websites)
+- `HowTo` (retired)
+- `SearchAction` sitelinks search box on `WebSite` (retired November 2024)
+
+---
+
+## 3. Svelte MCP Documentation Fetched (`SK:*`)
+
+All required Svelte 5 / SvelteKit 3.1.0 sections were fetched in this session via `call_mcp_tool` (`svelte` -> `get-documentation`):
+- `kit/seo` (`[DOC svelte:kit/seo]`)
+- `svelte/svelte-head` (`[DOC svelte:svelte/svelte-head]`)
+- `kit/page-options` (`[DOC svelte:kit/page-options]`)
+- `kit/performance` (`[DOC svelte:kit/performance]`)
+- `kit/images` (`[DOC svelte:kit/images]`)
+- `kit/accessibility` (`[DOC svelte:kit/accessibility]`)
+- `cli/paraglide` (`[DOC svelte:cli/paraglide]`)
+- `cli/enhanced-img` (`[DOC svelte:cli/enhanced-img]`)
+- `kit/@sveltejs-kit-vite` (SvelteKit 3 configuration equivalent of `kit/configuration`) (`[DOC svelte:kit/@sveltejs-kit-vite]`)
+- `kit/hooks` (`[DOC svelte:kit/hooks]`)
+- `kit/load` (`[DOC svelte:kit/load]`)
+- `kit/routing` (`[DOC svelte:kit/routing]`)
+- `kit/errors` (`[DOC svelte:kit/errors]`)
+- `kit/$app-state` (`[DOC svelte:kit/$app-state]`)
+- `kit/$app-env`, `kit/$app-env-public`, `kit/$app-env-private` (`[DOC svelte:kit/$app-env]`)
+- `kit/$app-paths` (`[DOC svelte:kit/$app-paths]`)
+- `kit/adapter-cloudflare` (`[DOC svelte:kit/adapter-cloudflare]`)
+

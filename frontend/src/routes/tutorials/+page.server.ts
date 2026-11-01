@@ -15,8 +15,9 @@
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true;
@@ -207,9 +208,13 @@ export const load: PageServerLoad = async ({ url }) => {
 	const paginatedTosTutorials = tosTutorials.slice(startIndex, endIndex);
 
 	const seo: SEOInput = {
-		title: 'Platform Tutorials — ThinkorSwim & TradeStation',
+		title:
+			page > 1
+				? `Platform Tutorials — ThinkorSwim & TradeStation (Page ${page})`
+				: 'Platform Tutorials — ThinkorSwim & TradeStation',
 		description:
 			'Tutorials, tips, and platform features for ThinkorSwim and TradeStation trading platforms. Step-by-step guides for traders of all levels.',
+		canonical: page > 1 ? `${SITE}/tutorials?page=${page}` : `${SITE}/tutorials`,
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },

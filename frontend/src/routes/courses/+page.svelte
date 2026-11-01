@@ -305,21 +305,17 @@
 		(async () => {
 			const { gsap } = await import('gsap');
 
-			// GSAP Entrance Timeline
+			// GSAP Entrance Timeline (transform-only so text contrast is 100% from initial paint)
 			const tl = gsap.timeline();
-			tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+			tl.from('.hero-badge', { y: 20, duration: 0.8, ease: 'power3.out' })
 				.from(
 					'.hero-title-line',
-					{ y: 50, opacity: 0, duration: 1, stagger: 0.15, ease: 'power4.out' },
+					{ y: 50, duration: 1, stagger: 0.15, ease: 'power4.out' },
 					'-=0.4'
 				)
-				.from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.6')
-				.from(
-					'.hero-stats',
-					{ scale: 0.95, opacity: 0, duration: 0.8, ease: 'back.out(1.7)' },
-					'-=0.6'
-				)
-				.from('.ticker-bar', { opacity: 0, y: 100, duration: 1 }, '-=0.8');
+				.from('.hero-desc', { y: 20, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+				.from('.hero-stats', { scale: 0.95, duration: 0.8, ease: 'back.out(1.7)' }, '-=0.6')
+				.from('.ticker-bar', { y: 100, duration: 1 }, '-=0.8');
 		})();
 	});
 

@@ -1,24 +1,18 @@
 /**
  * Class Detail Page - SSR Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * Apple ICT 11+ Principal Engineer Grade - January 2026
- *
- * Features:
- * - Server-side rendering for SEO
- * - Pre-fetches course data from API
- * - Generates meta tags for social sharing
- * - Hydration-ready data structure
- *
- * @version 1.0.0
  */
 
 import { API_URL as ENV_API_URL } from '$app/env/private';
+import { error as svelteError } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildCourse } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+export const prerender = false;
 
+const SITE = PRODUCTION_ORIGIN;
 const API_URL = ENV_API_URL || 'http://localhost:8080';
 
 interface Lesson {
@@ -64,10 +58,26 @@ interface CourseData {
 	enrollment?: unknown;
 }
 
+const KNOWN_PUBLIC_CLASSES: Record<
+	string,
+	{ title: string; description: string; instructorName: string }
+> = {
+	'quickstart-precision-trading-c': {
+		title: 'Quickstart to Precision Trading',
+		description:
+			'Master institutional market structure, multi-timeframe alignment, and high-precision order execution in this foundational trading class.',
+		instructorName: 'Billy Ribeiro'
+	},
+	'tax-loss-harvest-c': {
+		title: 'Tax-Loss Harvesting Mastery for Traders',
+		description:
+			'Learn year-end tax-loss harvesting strategies, wash-sale rules, and capital-efficiency techniques for active equity and options traders.',
+		instructorName: 'Billy Ribeiro'
+	}
+};
+
 export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
-
-	// Get auth token for API request
 	const accessToken = cookies.get('access_token');
 
 	const headers: Record<string, string> = {
@@ -79,10 +89,9 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	}
 
 	let courseData: CourseData | null = null;
-	let error: string | null = null;
+	let loadError: string | null = null;
 
 	try {
-		// Fetch course player data from API
 		const response = await fetch(`${API_URL}/api/my/courses/${slug}/player`, {
 			method: 'GET',
 			headers
@@ -94,26 +103,30 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 				courseData = data.data;
 			}
 		}
-	} catch (err) {
-		console.error('[SSR] Failed to fetch course data:', err);
-		error = 'Failed to load course data';
+	} catch {
+		loadError = 'Failed to load course data';
 	}
 
-	// Format slug to title as fallback
-	const formatTitle = (str: string) =>
-		str
-			.split('-')
-			.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(' ');
+	const staticFallback = KNOWN_PUBLIC_CLASSES[slug];
 
-	// Build SEO metadata
-	const title = courseData?.course?.meta_title || courseData?.course?.title || formatTitle(slug);
+	if (!courseData && !staticFallback) {
+		svelteError(404, 'Class not found');
+	}
+
+	const title =
+		courseData?.course?.meta_title ||
+		courseData?.course?.title ||
+		staticFallback?.title ||
+		slug;
 	const description =
 		courseData?.course?.meta_description ||
 		courseData?.course?.description ||
-		`Learn ${formatTitle(slug)} trading strategies`;
+		staticFallback?.description ||
+		`Learn ${title} trading strategies with Revolution Trading Pros.`;
 	const ogImage =
-		courseData?.course?.og_image_url || courseData?.course?.card_image_url || '/logos/rtp-logo.png';
+		courseData?.course?.og_image_url ||
+		courseData?.course?.card_image_url ||
+		`${SITE}/revolution-trading-pros.png`;
 
 	const classUrl = `${SITE}/classes/${slug}`;
 	const seo: SEOInput = {
@@ -128,7 +141,7 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
-				{ name: 'Classes', url: `${SITE}/classes` },
+				{ name: 'Trading Classes', url: `${SITE}/classes` },
 				{ name: title, url: classUrl }
 			]),
 			buildCourse({
@@ -138,9 +151,12 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 				provider: { name: 'Revolution Trading Pros', url: SITE },
 				hasCourseInstance: {
 					courseMode: 'Online',
-					instructor: courseData?.course?.instructor_name
-						? { name: courseData.course.instructor_name }
-						: undefined
+					instructor: {
+						name:
+							courseData?.course?.instructor_name ||
+							staticFallback?.instructorName ||
+							'Billy Ribeiro'
+					}
 				}
 			})
 		]
@@ -149,15 +165,14 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	return {
 		slug,
 		courseData,
-		error,
+		error: loadError,
 		seo,
-		// Legacy support for existing page structure
 		classData: courseData
 			? {
 					id: courseData.course.id,
 					title: courseData.course.title,
 					slug: courseData.course.slug,
-					description: courseData.course.description || '',
+					description: courseData.course.description || description,
 					videoUrl: '',
 					sections:
 						courseData.modules?.map((m) => ({
@@ -176,14 +191,14 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 				}
 			: {
 					id: 0,
-					title: formatTitle(slug),
+					title,
 					slug,
-					description: `Learn ${formatTitle(slug)} strategies`,
+					description,
 					videoUrl: '',
 					sections: [],
 					metadata: {
 						pageType: 'article',
-						contentTitle: formatTitle(slug)
+						contentTitle: title
 					}
 				}
 	};

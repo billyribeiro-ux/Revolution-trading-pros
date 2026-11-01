@@ -1,13 +1,14 @@
 import type { SEOInput } from '#lib/seo/types.js';
-import { buildBreadcrumb, buildItemList, buildWebPage } from '#lib/seo/schemas.js';
+import { buildBreadcrumb, buildItemList, buildProduct } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
 export const prerender = true;
 
 export const load = () => ({
 	seo: {
-		title: 'Pricing — Simple, Transparent Membership Plans',
+		title: 'Pricing — Membership Plans',
 		description:
 			'Simple, transparent pricing for every level of trader. Start with Starter ($97/mo), grow with Pro ($197/mo), or unlock everything with Elite ($397/mo).',
 		jsonld: [
@@ -15,12 +16,13 @@ export const load = () => ({
 				{ name: 'Home', url: `${SITE}/` },
 				{ name: 'Pricing', url: `${SITE}/pricing` }
 			]),
-			buildWebPage({
-				url: `${SITE}/pricing`,
-				name: 'Pricing — Revolution Trading Pros',
+			buildProduct({
+				name: 'Revolution Trading Pros Pro Membership',
 				description:
-					'Simple, transparent pricing for every level of trader. Start with Starter, grow with Pro, or unlock everything with Elite.',
-				dateModified: '2026-10-28'
+					'Full access to live trading rooms, real-time swing & day trading alerts, and institutional trading education.',
+				url: `${SITE}/pricing`,
+				image: `${SITE}/revolution-trading-pros.png`,
+				offers: { price: 197, priceCurrency: 'USD' }
 			}),
 			buildItemList('Revolution Trading Pros Membership Plans', [
 				{

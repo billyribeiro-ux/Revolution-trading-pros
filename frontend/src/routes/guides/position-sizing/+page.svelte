@@ -1,17 +1,11 @@
-<script lang="ts">
-	import TradingRoomHeader from '#lib/components/dashboard/TradingRoomHeader.svelte';
-</script>
-
-<TradingRoomHeader
-	roomName="Explosive Swings"
-	startHereUrl="/dashboard/explosive-swings/start-here"
-	headingLevel="h2"
-/>
-
 <div class="guide-page">
 	<div class="guide-header">
 		<h1>💰 Position Sizing for Swing Trading</h1>
 		<p>Calculate the perfect position size for every trade</p>
+		<p class="guide-byline">
+			By <a href="/authors/billy-ribeiro">Billy Ribeiro</a> · Updated
+			<time datetime="2026-05-25">May 25, 2026</time>
+		</p>
 	</div>
 
 	<div class="guide-content">
@@ -48,7 +42,7 @@
 
 			<div class="tier-grid">
 				<div class="tier-card">
-					<h4>Small Account ($5,000 - $25,000)</h4>
+					<h3>Small Account ($5,000 - $25,000)</h3>
 					<ul>
 						<li>Risk: 1-2% per trade</li>
 						<li>Max Positions: 3-4</li>
@@ -57,7 +51,7 @@
 					</ul>
 				</div>
 				<div class="tier-card">
-					<h4>Medium Account ($25,000 - $100,000)</h4>
+					<h3>Medium Account ($25,000 - $100,000)</h3>
 					<ul>
 						<li>Risk: 1.5-2% per trade</li>
 						<li>Max Positions: 5-6</li>
@@ -66,7 +60,7 @@
 					</ul>
 				</div>
 				<div class="tier-card">
-					<h4>Large Account ($100,000+)</h4>
+					<h3>Large Account ($100,000+)</h3>
 					<ul>
 						<li>Risk: 1-2% per trade</li>
 						<li>Max Positions: 6-8</li>
@@ -186,6 +180,25 @@
 				</ul>
 			</div>
 		</section>
+
+		<section class="guide-section">
+			<h2>Regulatory & Market References</h2>
+			<p>
+				Margin requirements, options contract multipliers (100 shares per standard equity option),
+				and portfolio risk disclosures are standardized by
+				<a
+					href="https://www.finra.org/rules-guidance/rulebooks/finra-rules/4210"
+					target="_blank"
+					rel="noopener noreferrer">FINRA Rule 4210 (Margin Requirements)</a
+				>
+				and
+				<a
+					href="https://www.cboe.com/tradable_products/equity_indices/equity_options/"
+					target="_blank"
+					rel="noopener noreferrer">Cboe Equity Options Specifications</a
+				>.
+			</p>
+		</section>
 	</div>
 </div>
 
@@ -211,8 +224,20 @@
 
 	.guide-header p {
 		font-size: 18px;
-		color: #666;
+		color: #555;
 		margin: 0;
+	}
+
+	.guide-header .guide-byline {
+		font-size: 14px;
+		color: #555;
+		margin-top: 8px;
+	}
+
+	.guide-header .guide-byline a {
+		color: #143e59;
+		font-weight: 600;
+		text-decoration: underline;
 	}
 
 	.guide-content {
@@ -328,7 +353,7 @@
 		padding: 20px;
 	}
 
-	.tier-card h4 {
+	.tier-card h3 {
 		font-size: 16px;
 		font-weight: 700;
 		color: #143e59;

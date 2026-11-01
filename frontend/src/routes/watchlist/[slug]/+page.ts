@@ -11,6 +11,8 @@
 import type { WatchlistItem } from '#lib/api/watchlist.js';
 import type { SEOInput } from '#lib/seo/types.js';
 
+export const prerender = false;
+
 export const load = async ({
 	params,
 	fetch

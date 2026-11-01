@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { enhancedImages } from '@sveltejs/enhanced-img';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
@@ -33,6 +34,7 @@ const APP_VERSION =
 export default defineConfig(({ mode }) => ({
 	plugins: [
 		tailwindcss(),
+		enhancedImages(),
 		sveltekit({
 			preprocess: vitePreprocess(),
 			// Remote functions require BOTH `kit.experimental.remoteFunctions` AND
@@ -60,23 +62,9 @@ export default defineConfig(({ mode }) => ({
 			// the `#lib/*` subpath import declared in package.json#imports, and
 			// $components/$stores/$utils/$api had zero usages left in src/.
 			prerender: {
-				handleHttpError: ({ status, path }) => {
-					if (status === 404) {
-						return;
-					}
-
-					if (status === 500 && path.startsWith('/dashboard')) {
-						return;
-					}
-
-					if (status === 500 && path.startsWith('/tools/options-calculator')) {
-						return;
-					}
-
-					throw new Error(`${status} ${path}`);
-				},
-				handleMissingId: 'ignore',
-				handleUnseenRoutes: 'ignore',
+				handleHttpError: 'fail',
+				handleMissingId: 'fail',
+				handleUnseenRoutes: 'fail',
 				// 1 is Kit 3's default; kept explicit so a future bump is a
 				// deliberate, measured change. It was originally pinned because
 				// adapter-cloudflare <=8.0.0-next.6 emulated Miniflare/workerd per

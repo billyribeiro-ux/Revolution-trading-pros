@@ -3,69 +3,45 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * Single source of truth for all default SEO values.
- * Override per-route via +page.server.ts load functions.
+ * Override per-route via +page.ts / +page.server.ts load functions.
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author Revolution Trading Pros
- * @since February 2026
+ * @since November 2026
  */
 
 import type { SEODefaults } from './types';
+import {
+	PRODUCTION_ORIGIN,
+	SITE_NAME,
+	DEFAULT_OG_LOCALE,
+	TRAILING_SLASH,
+	QUERY_PARAM_ALLOWLIST,
+	TRACKING_PARAM_DENYLIST,
+	NOINDEX_PREFIXES
+} from './config';
 
-// Canonical site origin. Override with VITE_SITE_URL per environment (the
-// house pattern the feed endpoints already use — e.g. a .pages.dev
-// preview); the default is the production apex so canonicals, OG URLs,
-// sitemaps, and feeds never point at a staging host.
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
+const SITE_URL = PRODUCTION_ORIGIN;
 
 export const seoDefaults: SEODefaults = {
 	siteUrl: SITE_URL,
-	siteName: 'Revolution Trading Pros',
+	siteName: SITE_NAME,
 	titleTemplate: '%s | Revolution Trading Pros',
-	defaultTitle: 'Revolution Trading Pros — Professional Trading Education & Tools',
+	defaultTitle: 'Revolution Trading Pros — Live Trading Rooms & Education',
 	defaultDescription:
 		'Institutional-grade trading education, live trading rooms, custom indicators, and professional tools for 18,000+ active traders.',
 	defaultImage: `${SITE_URL}/revolution-trading-pros.png`,
 	defaultImageAlt: 'Revolution Trading Pros — Professional Trading Education',
-	defaultLocale: 'en_US',
+	defaultLocale: DEFAULT_OG_LOCALE,
 	twitterSite: '@RevTradingPros',
 	twitterCard: 'summary_large_image',
 
 	canonical: {
 		siteUrl: SITE_URL,
 		forceHttps: true,
-		trailingSlash: 'never',
-		queryParamAllowlist: ['page'],
-		queryParamDenylist: [
-			'utm_source',
-			'utm_medium',
-			'utm_campaign',
-			'utm_term',
-			'utm_content',
-			'gclid',
-			'fbclid',
-			'msclkid',
-			'dclid',
-			'twclid',
-			'li_fat_id',
-			'mc_cid',
-			'mc_eid',
-			'ref',
-			'_ga',
-			'_gl',
-			'_hsenc',
-			'_hsmi',
-			'hsa_acc',
-			'hsa_cam',
-			'hsa_grp',
-			'hsa_ad',
-			'hsa_src',
-			'hsa_tgt',
-			'hsa_kw',
-			'hsa_mt',
-			'hsa_net',
-			'hsa_ver'
-		]
+		trailingSlash: TRAILING_SLASH,
+		queryParamAllowlist: [...QUERY_PARAM_ALLOWLIST],
+		queryParamDenylist: [...TRACKING_PARAM_DENYLIST]
 	},
 
 	robots: {
@@ -88,8 +64,8 @@ export const seoDefaults: SEODefaults = {
 			'@context': 'https://schema.org',
 			'@type': 'Organization',
 			'@id': `${SITE_URL}/#organization`,
-			name: 'Revolution Trading Pros',
-			url: SITE_URL,
+			name: SITE_NAME,
+			url: `${SITE_URL}/`,
 			logo: {
 				'@type': 'ImageObject',
 				url: `${SITE_URL}/icon-512.png`
@@ -106,50 +82,12 @@ export const seoDefaults: SEODefaults = {
 			'@context': 'https://schema.org',
 			'@type': 'WebSite',
 			'@id': `${SITE_URL}/#website`,
-			name: 'Revolution Trading Pros',
-			url: SITE_URL,
-			potentialAction: {
-				'@type': 'SearchAction',
-				target: {
-					'@type': 'EntryPoint',
-					urlTemplate: `${SITE_URL}/search?q={search_term_string}`
-				},
-				'query-input': 'required name=search_term_string'
-			}
+			name: SITE_NAME,
+			url: `${SITE_URL}/`
 		}
 	],
 
-	privatePathPrefixes: [
-		'/account',
-		'/admin',
-		'/analytics',
-		'/auth',
-		'/behavior',
-		'/checkout',
-		'/cart',
-		'/chatroom-archive',
-		'/cms',
-		'/crm',
-		'/dashboard',
-		'/email',
-		'/embed',
-		'/forgot-password',
-		'/reset-password',
-		'/verify-email',
-		'/logout',
-		'/maintenance',
-		'/media',
-		'/my',
-		'/popup-advanced-demo',
-		'/popup-demo',
-		'/posts',
-		'/test-backend',
-		'/tools/options-calculator/embed',
-		'/tools/options-calculator/shared',
-		'/workbench',
-		'/workflows',
-		'/api'
-	],
+	privatePathPrefixes: [...NOINDEX_PREFIXES],
 
 	searchPathPrefixes: ['/search', '/blog?', '/courses?']
 };

@@ -12,7 +12,9 @@ import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildItemList } from '#lib/seo/schemas.js';
 import { indicators } from './data';
 
-const SITE = 'https://revolutiontradingpros.com';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
+
+const SITE = PRODUCTION_ORIGIN;
 
 // Enable static site generation for SEO
 export const prerender = true;

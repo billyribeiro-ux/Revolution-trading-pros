@@ -16,5 +16,5 @@ import type { PageServerLoad } from './$types';
  */
 export const load: PageServerLoad = async ({ url }) => {
 	const target = `/register${url.search}`;
-	throw redirect(301, target);
+	throw redirect(308, target);
 };

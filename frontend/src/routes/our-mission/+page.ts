@@ -1,7 +1,9 @@
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildWebPage } from '#lib/seo/schemas.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
+
+const SITE = PRODUCTION_ORIGIN;
 
 export const prerender = true;
 
@@ -9,7 +11,7 @@ export const load = () => {
 	const seo: SEOInput = {
 		title: 'Our Mission — The Institutional Bridge',
 		description:
-			'Dismantling the retail trader stereotype. We bridge the gap between gambling and institutional risk management through data, discipline, and transparency. Join the 1% of traders who treat this as a business.',
+			'We bridge the gap between retail trading and institutional risk management through data, discipline, and transparency.',
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },

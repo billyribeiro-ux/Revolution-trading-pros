@@ -14,6 +14,8 @@ import { API_URL as ENV_API_URL } from '$app/env/private';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
+export const prerender = false;
+
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; archiveUrl: string }> = {
 	'day-trading-room': {

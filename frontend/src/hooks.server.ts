@@ -24,6 +24,11 @@ import {
 	BACKEND_URL,
 	VITE_ERROR_TRACKING_URL
 } from '$app/env/private';
+import {
+	PRODUCTION_ORIGIN,
+	DEFAULT_LOCALE,
+	isNoindexPath
+} from '#lib/seo/config.js';
 
 // API URL for server-side token validation. Precedence matches every
 // +server.ts proxy and lib/server/axum/client.ts.
@@ -452,36 +457,19 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// X-Robots-Tag for fine-grained control (complements meta robots)
-	// This is particularly useful for non-HTML resources
+	// Enforce IDX-09: Non-production origins (localhost, 127.0.0.1, *.pages.dev) and
+	// private/auth/dashboard/admin/API routes MUST carry X-Robots-Tag: noindex, nofollow.
 	const pathname = event.url.pathname;
+	const isNonProdOrigin = !building && event.url.origin !== PRODUCTION_ORIGIN;
 
-	// Don't add X-Robots-Tag for sitemap and robots.txt
 	if (!pathname.includes('sitemap') && !pathname.includes('robots')) {
-		// Allow indexing with full snippets for public pages
-		if (
-			pathname.startsWith('/blog') ||
-			pathname.startsWith('/courses') ||
-			pathname.startsWith('/indicators') ||
-			pathname.startsWith('/alerts') ||
-			pathname.startsWith('/live-trading-rooms') ||
-			pathname.startsWith('/resources') ||
-			pathname === '/' ||
-			pathname === '/about' ||
-			pathname === '/our-mission'
-		) {
+		if (isNonProdOrigin || isNoindexPath(pathname) || response.status >= 400) {
+			headers.set('X-Robots-Tag', 'noindex, nofollow');
+		} else {
 			headers.set(
 				'X-Robots-Tag',
 				'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
 			);
-		} else // Prevent indexing for private areas
-		if (
-			pathname.startsWith('/admin') ||
-			pathname.startsWith('/account') ||
-			pathname.startsWith('/cart') ||
-			pathname.startsWith('/checkout') ||
-			pathname.startsWith('/api')
-		) {
-			headers.set('X-Robots-Tag', 'noindex, nofollow');
 		}
 	}
 
@@ -539,22 +527,17 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
  */
 const performanceHandler: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event, {
-		// SvelteKit 2.x preload callback - control what gets preloaded in <head>
-		// By default, js and css are preloaded. We disable CSS preloading to prevent
-		// "preloaded but not used" browser warnings on pages with conditional rendering.
-		preload: ({ type }) => {
-			// Only preload JS modules, not CSS
-			// CSS will still load via stylesheet links, just without preload hints
-			return type === 'js';
-		},
-		// Transform HTML for performance optimizations
+		// PERF-04: Preload critical fonts, JS modules, and CSS stylesheets
+		preload: ({ type }) => type === 'font' || type === 'js' || type === 'css',
+		// SEM-03: Transform %lang% and %dir% in app.html
 		transformPageChunk: ({ html }) => {
-			// Light minification: collapse whitespace between tags only
-			// Preserves whitespace inside <pre>, <code>, <textarea>, <script>
+			const withLocale = html
+				.replace('%lang%', DEFAULT_LOCALE)
+				.replace('%dir%', 'ltr');
 			if (import.meta.env.PROD) {
-				return html.replace(/>\s+</g, '> <');
+				return withLocale.replace(/>\s+</g, '> <');
 			}
-			return html;
+			return withLocale;
 		}
 	});
 

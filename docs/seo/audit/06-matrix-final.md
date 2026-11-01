@@ -1,0 +1,192 @@
+# Phase 6 — Final Compliance Matrix (`06-matrix-final.md`)
+
+- **Generated At:** 2026-11-01T17:20:59.941Z
+- **Generator:** `[CODE frontend/tests/seo/generate-final-matrix.ts:1]`
+- **Total Matrix Rows:** 176 (covering all 72 requirement IDs across all 8 active indexable templates)
+- **Status Summary:**
+  - **PASS:** 169
+  - **FAIL:** 0 (P0: 0, P1: 0, P2: 0)
+  - **N-A:** 6
+  - **REQUIRES-HUMAN:** 0
+  - **REQUIRES-PRODUCTION:** 1
+
+---
+
+| ID | Sev | Template | Status | Failing URLs / Files | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| `IDX-01` | P0 | `home` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/ -> 200, ssrTitle="Revolution Trading Pros — Live Trad...", ssrWords=528] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `static` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/about -> 200, ssrTitle="About Our Trading Desk & Educators ...", ssrWords=737] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `listing` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/alerts -> 200, ssrTitle="Trading Alert Services \| Revolution...", ssrWords=334] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `product` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> 200, ssrTitle="Explosive Swings Trading Alerts \| R...", ssrWords=790] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `profile` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> 200, ssrTitle="Billy Ribeiro — Founder & Head Trad...", ssrWords=112] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `course` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> 200, ssrTitle="Quickstart To Precision Trading \| R...", ssrWords=83] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `article` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> 200, ssrTitle="Swing Trading Exit Strategies \| Rev...", ssrWords=457] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-01` | P0 | `software` | **PASS** | None (0/50 indexable URLs have ssr=false) | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> 200, ssrTitle="Bollinger Bands \| Revolution Tradin...", ssrWords=225] [CODE frontend/src/routes/+layout.js:1] |
+| `IDX-02` | P1 | `ALL` | **PASS** | None (all static marketing, author, and indicator routes prerendered via +layout.js and entries()) | [CODE frontend/src/routes/+layout.js:1] [CMD pnpm --filter revolution-svelte build -> exit 0] |
+| `IDX-03` | P1 | `ALL` | **PASS** | None (authors/[slug] and indicators/[id] export prerender = true and entries()) | [CODE frontend/src/routes/authors/[slug]/+page.ts:10-14] [CODE frontend/src/routes/indicators/[id]/+page.ts:9-19] [CMD pnpm --filter revolution-svelte build -> prerendered /authors/* and /indicators/*] |
+| `IDX-04` | P0 | `ALL` | **PASS** | None (handleHttpError: "fail", handleMissingId: "fail", handleUnseenRoutes: "fail") | [CODE frontend/vite.config.ts:64-68] [CMD pnpm --filter revolution-svelte build -> exit 0] |
+| `IDX-05` | P0 | `ALL` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/__nonexistent_slug_seo_test__ -> 404, x-robots-tag="noindex, nofollow"] [HTTP http://127.0.0.1:4173/classes/__nonexistent_slug_seo_test__ -> 404] [CODE frontend/src/routes/indicators/[id]/+page.ts:24] [CODE frontend/src/routes/classes/[slug]/+page.server.ts:112] |
+| `IDX-06` | P0 | `ALL` | **PASS** | None (/signup returns 308 permanent redirect to /register in 1 hop) | [HTTP http://127.0.0.1:4173/signup -> 308 Location: /register] [CODE frontend/src/routes/signup/+page.server.ts:19] |
+| `IDX-07` | P0 | `ALL` | **PASS** | None (/robots.txt allows /_app/, uses valid User-agent tokens, and points Sitemap to https://revolutiontradingpros.com/sitemap.xml) | [HTTP http://127.0.0.1:4173/robots.txt -> 200 text/plain] [CODE frontend/src/routes/robots.txt/+server.ts:1-95] |
+| `IDX-08` | P1 | `ALL` | **PASS** | None (AI_SEARCH_OPT_OUT config separates AI search bots OAI-SearchBot/PerplexityBot/ChatGPT-User from AI training bots GPTBot/Google-Extended/ClaudeBot) | [CODE frontend/src/lib/seo/config.ts:15-43] [CODE frontend/src/routes/robots.txt/+server.ts:52-77] |
+| `IDX-09` | P0 | `ALL` | **PASS** | None (hooks.server.ts sets X-Robots-Tag: noindex, nofollow on non-production origins, NOINDEX_PREFIXES, and status >= 400) | [HTTP http://127.0.0.1:4173/ -> x-robots-tag="noindex, nofollow"] [CODE frontend/src/hooks.server.ts:472-484] |
+| `URL-01` | P1 | `ALL` | **PASS** | None (all 50 indexable URLs use lowercase ASCII hyphen-separated slugs) | [CODE docs/seo/audit/02-inventory.json:1] |
+| `URL-02` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> canonical="https://revolutiontradingpros.com/"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> canonical="https://revolutiontradingpros.com/alerts"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> canonical="https://revolutiontradingpros.com/alerts/explosive-swings"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> canonical="https://revolutiontradingpros.com/authors/billy-ribeiro"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> canonical="https://revolutiontradingpros.com/classes/quickstart-precision-trading-c"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> canonical="https://revolutiontradingpros.com/guides/exit-strategies"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-02` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> canonical="https://revolutiontradingpros.com/indicators/bollinger-bands"] [CODE frontend/src/lib/seo/config.ts:9] |
+| `URL-03` | P1 | `ALL` | **PASS** | None (TRAILING_SLASH = "never" enforced consistently across canonicals, internal links, JSON-LD, and sitemap) | [HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/canonical.ts:126] |
+| `URL-04` | P1 | `ALL` | **PASS** | None | [HTTP http://127.0.0.1:4173/about?utm_source=x&fbclid=y -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/canonical.ts:43-82] |
+| `REND-01` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> ssrWords=528, domWords=529, delta=1] |
+| `REND-01` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> ssrWords=737, domWords=737, delta=0] |
+| `REND-01` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> ssrWords=334, domWords=334, delta=0] |
+| `REND-01` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> ssrWords=790, domWords=790, delta=0] |
+| `REND-01` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> ssrWords=112, domWords=112, delta=0] |
+| `REND-01` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> ssrWords=83, domWords=86, delta=3] |
+| `REND-01` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> ssrWords=457, domWords=457, delta=0] |
+| `REND-01` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> ssrWords=225, domWords=225, delta=0] |
+| `REND-02` | P1 | `ALL` | **PASS** | None (all indexable routes export csr=true and hydrate links as <a href>) | [CODE docs/seo/audit/02-inventory.json:1] |
+| `REND-03` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> desktopWords=529, mobileWords=529, h1="Live Trading Rooms"] |
+| `REND-03` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> desktopWords=737, mobileWords=737, h1="Trade Real Capital. Real Mentors. Real Time."] |
+| `REND-03` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/courses -> desktopWords=301, mobileWords=301, h1="EXECUTION OVER OPINION"] |
+| `REND-03` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> desktopWords=790, mobileWords=790, h1="Catch the  Institutional Moves."] |
+| `REND-03` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> desktopWords=112, mobileWords=112, h1="Billy Ribeiro"] |
+| `REND-03` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/courses/day-trading-masterclass -> desktopWords=461, mobileWords=461, h1="Day Trading Masterclass"] |
+| `REND-03` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/risk-management -> desktopWords=320, mobileWords=320, h1="🛡️ Risk Management for Swing Trading"] |
+| `REND-03` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/rsi -> desktopWords=221, mobileWords=221, h1="RSI - Relative Strength Index"] |
+| `REND-04` | P0 | `ALL` | **PASS** | None (+error.svelte delegates head tags to root <Seo> which sets robots noindex, nofollow when page.status >= 400) | [CODE frontend/src/routes/+error.svelte:1-95] [CODE frontend/src/routes/+layout.svelte:122-146] |
+| `META-01` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> title="Revolution Trading Pros — Live Trading Rooms & Education" (56ch, tagCount=1)] |
+| `META-02` | P1 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> description (128ch, tagCount=1)] |
+| `META-03` | P1 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> og:url="https://revolutiontradingpros.com/", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> title="About Our Trading Desk & Educators \| Revolution Trading Pros" (60ch, tagCount=1)] |
+| `META-02` | P1 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> description (153ch, tagCount=1)] |
+| `META-03` | P1 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> og:url="https://revolutiontradingpros.com/about", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> title="Trading Alert Services \| Revolution Trading Pros" (48ch, tagCount=1)] |
+| `META-02` | P1 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> description (138ch, tagCount=1)] |
+| `META-03` | P1 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> og:url="https://revolutiontradingpros.com/alerts", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> title="Explosive Swings Trading Alerts \| Revolution Trading Pros" (57ch, tagCount=1)] |
+| `META-02` | P1 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> description (130ch, tagCount=1)] |
+| `META-03` | P1 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> og:url="https://revolutiontradingpros.com/alerts/explosive-swings", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> title="Billy Ribeiro — Founder & Head Trader \| RTP" (43ch, tagCount=1)] |
+| `META-02` | P1 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> description (157ch, tagCount=1)] |
+| `META-03` | P1 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> og:url="https://revolutiontradingpros.com/authors/billy-ribeiro", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> title="Quickstart To Precision Trading \| Revolution Trading Pros" (57ch, tagCount=1)] |
+| `META-02` | P1 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> description (138ch, tagCount=1)] |
+| `META-03` | P1 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> og:url="https://revolutiontradingpros.com/classes/quickstart-precision-trading-c", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> title="Swing Trading Exit Strategies \| Revolution Trading Pros" (55ch, tagCount=1)] |
+| `META-02` | P1 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> description (148ch, tagCount=1)] |
+| `META-03` | P1 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> og:url="https://revolutiontradingpros.com/guides/exit-strategies", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-01` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> title="Bollinger Bands \| Revolution Trading Pros" (41ch, tagCount=1)] |
+| `META-02` | P1 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> description (129ch, tagCount=1)] |
+| `META-03` | P1 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> og:url="https://revolutiontradingpros.com/indicators/bollinger-bands", og:image="https://revolutiontradingpros.com/revolution-trading-pros.png", twitter:card="summary_large_image"] |
+| `META-04` | P1 | `ALL` | **PASS** | None (indexable pages emit index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1) | [HTTP http://127.0.0.1:4173/ -> meta[name="robots"]="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"] |
+| `META-05` | P0 | `ALL` | **PASS** | None (deleted legacy SEOHead.svelte and SeoHead.svelte; removed competing <svelte:head> from error pages and Breadcrumbs.svelte; all 50 indexable pages emit 1 title, 1 description, 1 canonical via Seo.svelte) | [CODE frontend/src/lib/seo/Seo.svelte:1-135] [HTTP http://127.0.0.1:4173/ -> title.tagCount=1, description.tagCount=1, canonical.tagCount=1] |
+| `SEM-01` | P1 | `ALL` | **PASS** | None (<header>, <nav>, <main id="main-content">, <footer> present on all marketing layouts) | [CODE frontend/src/routes/+layout.svelte:215-232] |
+| `SEM-02` | P1 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> 1 H1, 0 heading level skips] |
+| `SEM-02` | P1 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> 1 H1, 0 heading level skips] |
+| `SEM-03` | P0 | `ALL` | **PASS** | None (<html lang="%lang%" dir="%dir%"> in app.html transformed in hooks.server.ts) | [CODE frontend/src/app.html:4] [CODE frontend/src/hooks.server.ts:461-466] [HTTP http://127.0.0.1:4173/ -> html[lang]="en", html[dir]="ltr"] |
+| `SEM-04` | P0 | `ALL` | **PASS** | None (<meta charset="utf-8">, <meta name="viewport" content="width=device-width, initial-scale=1">, <link rel="icon" href="/favicon.png"> in app.html) | [CODE frontend/src/app.html:5-7,29] |
+| `SEM-05` | P1 | `home` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: / violations=0] |
+| `SEM-05` | P1 | `static` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /about violations=0] |
+| `SEM-05` | P1 | `listing` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /courses violations=0] |
+| `SEM-05` | P1 | `product` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /alerts/explosive-swings violations=0] |
+| `SEM-05` | P1 | `profile` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /authors/billy-ribeiro violations=0] |
+| `SEM-05` | P1 | `course` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /courses/day-trading-masterclass violations=0] |
+| `SEM-05` | P1 | `article` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /guides/risk-management violations=0] |
+| `SEM-05` | P1 | `software` | **PASS** | None | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-lab/axe-summary.json: /indicators/rsi violations=0] |
+| `SD-01` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-01` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> 1 valid JSON-LD @graph block, parseError=null] |
+| `SD-02` | P0 | `ALL` | **PASS** | None (serializeJsonLd escapes <, >, & as \u003c, \u003e, \u0026 + U+2028/U+2029 across all JSON-LD paths) | [CODE frontend/src/lib/seo/serializeJsonLd.ts:150-169] [CODE frontend/src/lib/seo/structured-data.ts:625] [CODE frontend/src/lib/seo/video-schema.ts:541] |
+| `SD-03` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=0] |
+| `SD-03` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=2] |
+| `SD-03` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=2] |
+| `SD-03` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3] |
+| `SD-03` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3] |
+| `SD-03` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3] |
+| `SD-03` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3] |
+| `SD-03` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> JSON-LD matches visible DOM, hasAggregateRating=false, domCrumbs=3] |
+| `SD-04` | P1 | `home` | **PASS** | None (Organization + WebSite JSON-LD emitted on / without retired SearchAction) | [CODE frontend/src/lib/seo/defaults.ts:87-116] [CODE frontend/src/lib/seo/resolve.ts:264-281] |
+| `SD-05` | P1 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (2 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-05` | P1 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (2 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-05` | P1 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-05` | P1 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-05` | P1 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-05` | P1 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-05` | P1 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> BreadcrumbList JSON-LD + visible <nav aria-label="Breadcrumb"> (3 items)] [CODE frontend/src/lib/components/seo/Breadcrumbs.svelte:1] |
+| `SD-06` | P1 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/risk-management -> Article JSON-LD with headline, image[], datePublished, dateModified, author.url] [CODE frontend/src/routes/guides/risk-management/+page.ts:20-34] |
+| `SD-07` | P1 | `ALL` | **N-A** | None (0 indexable dedicated video watch pages) | [CODE docs/seo/audit/02-inventory.json:1] |
+| `SD-08` | P1 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> Product JSON-LD with image and Offer matching DOM price] [CODE frontend/src/routes/pricing/+page.ts:17-58] |
+| `SD-09` | P1 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> ProfilePage JSON-LD with mainEntity: Person] [CODE frontend/src/routes/authors/[slug]/+page.ts:34-46] |
+| `SD-10` | P1 | `ALL` | **PASS** | None | [HTTP http://127.0.0.1:4173/store/scanners/high-octane-scanner -> hasAggregateRating=false] [CODE frontend/src/routes/store/scanners/high-octane-scanner/+page.ts:20-45] |
+| `SD-11` | P0 | `ALL` | **PASS** | None (0 indexable pages emit retired FAQPage, HowTo, SitelinksSearchBox, SpecialAnnouncement, CourseInfo, etc.) | [CODE frontend/src/lib/seo/defaults.ts:87-116] [HTTP http://127.0.0.1:4173/ -> 0 retired schema types] |
+| `SD-12` | P2 | `course` | **PASS** | None (/courses/* and /classes/* emit Course with name, description, provider, hasCourseInstance) | [CODE frontend/src/routes/courses/day-trading-masterclass/+page.ts:25-39] |
+| `SD-12` | P2 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/rsi -> SoftwareApplication with applicationCategory, operatingSystem, offers] [CODE frontend/src/routes/indicators/[id]/+page.ts:43-50] |
+| `SD-13` | P1 | `ALL` | **N-A** | None (gated member content is noindex; public marketing pages are not paywalled) | [CODE frontend/src/lib/seo/config.ts:62-97] |
+| `MAP-01` | P0 | `ALL` | **PASS** | None | [HTTP http://127.0.0.1:4173/sitemap.xml -> 50 URLs, all HTTP 200, includes /authors/*, excludes /login, /register, /signup] [CODE frontend/src/routes/sitemap.xml/+server.ts:60-160] |
+| `MAP-02` | P0 | `ALL` | **PASS** | None (every sitemap <loc> matches the page <link rel="canonical"> byte-for-byte) | [HTTP http://127.0.0.1:4173/sitemap.xml -> 100% canonical parity across all 50 indexable URLs] |
+| `MAP-03` | P1 | `ALL` | **PASS** | None (sitemap.xml omits <changefreq> and <priority>) | [HTTP http://127.0.0.1:4173/sitemap.xml -> hasPriority=false, hasChangefreq=false] |
+| `MAP-04` | P2 | `ALL` | **PASS** | None (removed fabricated URLs/video IDs from news-sitemap.xml and video-sitemap.xml and added X-Robots-Tag: noindex) | [CODE frontend/src/routes/news-sitemap.xml/+server.ts:1-25] [CODE frontend/src/routes/video-sitemap.xml/+server.ts:1-25] |
+| `LINK-01` | P0 | `ALL` | **PASS** | None (all navigation and pagination links use <a href="...">) | [CODE frontend/src/routes/blog/+page.svelte:370-416] [HTTP http://127.0.0.1:4173/blog -> <a href="/blog?page=2">] |
+| `LINK-02` | P1 | `ALL` | **PASS** | None (0 orphan indexable pages; all 50 indexable URLs reachable within <=3 clicks from /) | [CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-final.json: orphanIndexablePages=0] |
+| `LINK-03` | P0 | `ALL` | **PASS** | None (0 broken 4xx/5xx or 3xx redirecting internal links on indexable pages) | [CMD node frontend/tests/seo/crawl.ts -> brokenInternalLinks=0, redirectInternalLinks=0] |
+| `LINK-04` | P1 | `ALL` | **PASS** | None (replaced generic "Read More" on /blog with descriptive post title anchor text) | [CODE frontend/src/routes/blog/+page.svelte:342-346] |
+| `LINK-05` | P1 | `listing` | **PASS** | None (paginated /blog uses crawlable <a href="/blog?page=N"> and self-referential canonical for page > 1) | [CODE frontend/src/routes/blog/+page.svelte:370-416] [CODE frontend/src/lib/seo/resolve.ts:123-128] |
+| `I18N-01` | P0 | `ALL` | **N-A** | None (single-locale en site) | [CODE frontend/src/lib/seo/defaults.ts:30] |
+| `I18N-02` | P1 | `ALL` | **N-A** | None (single-locale en site) | [CODE frontend/package.json:45-136] |
+| `I18N-03` | P0 | `ALL` | **N-A** | None (single-locale en site) | [CODE frontend/src/lib/seo/defaults.ts:30] |
+| `I18N-04` | P0 | `ALL` | **PASS** | None (requests with Accept-Language: fr, en, es-MX all return 200 with 0 redirects) | [HTTP http://127.0.0.1:4173/ (Accept-Language: fr) -> 200, redirectCount=0] |
+| `PERF-01` | P0 | `home` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /: LCP=184ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.003 (<=0.1)] |
+| `PERF-01` | P0 | `static` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /about: LCP=132ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0007 (<=0.1)] |
+| `PERF-01` | P0 | `listing` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /courses: LCP=76ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.006 (<=0.1)] |
+| `PERF-01` | P0 | `product` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /alerts/explosive-swings: LCP=96ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0036 (<=0.1)] |
+| `PERF-01` | P0 | `profile` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /authors/billy-ribeiro: LCP=56ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0025 (<=0.1)] |
+| `PERF-01` | P0 | `course` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /courses/day-trading-masterclass: LCP=60ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0003 (<=0.1)] |
+| `PERF-01` | P0 | `article` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /guides/risk-management: LCP=60ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0035 (<=0.1)] |
+| `PERF-01` | P0 | `software` | **PASS** | None | [CMD node frontend/tests/seo/lab-perf.ts -> /indicators/rsi: LCP=56ms (<=2500ms), TBT=0ms (<=200ms), CLS=0.0003 (<=0.1)] |
+| `PERF-02` | P1 | `ALL` | **PASS** | None (@sveltejs/enhanced-img v1.0.0 installed, enhancedImages() wired in vite.config.ts, <enhanced:img> active in PlatformDownloads.svelte, explicit width/height on all images) | [CODE frontend/package.json:84] [CODE frontend/vite.config.ts:3,37] [CODE frontend/src/lib/components/indicators/PlatformDownloads.svelte:10-49] |
+| `PERF-03` | P0 | `home` | **PASS** | None | [HTTP http://127.0.0.1:4173/ -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `static` | **PASS** | None | [HTTP http://127.0.0.1:4173/about -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `listing` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `product` | **PASS** | None | [HTTP http://127.0.0.1:4173/alerts/explosive-swings -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `profile` | **PASS** | None | [HTTP http://127.0.0.1:4173/authors/billy-ribeiro -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `course` | **PASS** | None | [HTTP http://127.0.0.1:4173/classes/quickstart-precision-trading-c -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `article` | **PASS** | None | [HTTP http://127.0.0.1:4173/guides/exit-strategies -> first main img loading!=lazy] |
+| `PERF-03` | P0 | `software` | **PASS** | None | [HTTP http://127.0.0.1:4173/indicators/bollinger-bands -> first main img loading!=lazy] |
+| `PERF-04` | P1 | `ALL` | **PASS** | None (hooks.server.ts preloads js, css, and font; third-party scripts use async defer) | [CODE frontend/src/hooks.server.ts:557-560] [CODE frontend/src/routes/dashboard/day-trading-room/video/[slug]/+page.svelte:198] |
+| `PERF-05` | P1 | `ALL` | **PASS** | None (data-sveltekit-preload-data="hover" set on <body> in app.html) | [CODE frontend/src/app.html:47] |
+| `MEDIA-01` | P1 | `ALL` | **PASS** | None (all og:image and schema image URLs return HTTP 200) | [CODE frontend/src/routes/store/scanners/+page.ts:15] [HTTP http://127.0.0.1:4173/revolution-trading-pros.png -> 200] |
+| `MEDIA-02` | P1 | `ALL` | **N-A** | None (0 indexable video watch pages) | [CODE docs/seo/audit/02-inventory.json:1] |
+| `MEDIA-03` | P1 | `ALL` | **PASS** | None (favicon.png is 32x32+ PNG referenced in app.html) | [CODE frontend/src/app.html:7,29] |
+| `YMYL-01` | P1 | `article` | **PASS** | None (all 6 article pages display visible author byline linking to /authors/billy-ribeiro and <time datetime="2026-05-25">) | [CODE frontend/src/routes/guides/risk-management/+page.svelte:5-8] [CODE frontend/src/routes/resources/etf-stocks-list/+page.svelte:302-305] |
+| `YMYL-02` | P1 | `ALL` | **PASS** | None (factual author bios populated in authors.ts; SEC/FINRA/Cboe primary-source citations added to all 6 YMYL articles) | [CODE frontend/src/lib/authors/authors.ts:18-48] [CODE frontend/src/routes/guides/risk-management/+page.svelte:100-117] |
+| `YMYL-03` | P1 | `ALL` | **PASS** | None (/about, /contact, /privacy, /terms, /disclaimer, /refund all return 200 and are linked in MarketingFooter) | [CODE frontend/src/lib/components/layout/MarketingFooter.svelte:1] |
+| `SPAM-01` | P0 | `ALL` | **PASS** | None (0 user-agent cloaking conditionals) | [CODE frontend/src/hooks.server.ts:1-690] |
+| `SPAM-02` | P0 | `ALL` | **PASS** | None (removed all hardcoded AggregateRating / reviewCount from JSON-LD and DOM) | [CODE frontend/src/routes/store/scanners/+page.ts:1-130] [CODE frontend/src/routes/live-trading-rooms/+page.server.ts:210-235] |
+| `SPAM-03` | P0 | `ALL` | **PASS** | None (0 doorway pages) | [CODE docs/seo/audit/02-inventory.json:1] |
+| `SPAM-04` | P0 | `ALL` | **PASS** | None (0 parasite sections) | [CODE docs/seo/audit/02-inventory.json:1] |
+| `SPAM-05` | P0 | `ALL` | **PASS** | None (0 hidden text blocks or keyword stuffing) | [CODE docs/seo/audit/06-final.json:1] |
+| `SPAM-06` | P1 | `ALL` | **PASS** | None (0 untagged affiliate/UGC outbound links) | [CODE docs/seo/audit/06-final.json:1] |
+| `OPS-01` | P1 | `ALL` | **REQUIRES-PRODUCTION** | Google Search Console property verification & sitemap submission | [CODE frontend/src/lib/seo/defaults.ts:79-84] (requires production DNS/GSC owner action) |
+| `OPS-02` | P1 | `ALL` | **PASS** | None (web-vitals v6.2.3 initialized in +layout.svelte) | [CODE frontend/src/routes/+layout.svelte:44,155] |
+| `OPS-03` | P1 | `ALL` | **PASS** | None (11 Playwright SEO spec files in frontend/tests/seo/*.spec.ts wired to pnpm test:seo) | [CODE frontend/package.json:36] [CMD pnpm test:seo -> 100% pass] |
+| `OPS-04` | P1 | `ALL` | **PASS** | None (Cache-Control s-maxage active on sitemaps/robots) | [CODE frontend/src/routes/sitemap.xml/+server.ts:154] |
+| `TOOL-01` | P0 | `ALL` | **PASS** | None (all modified .svelte files passed svelte-autofixer with 0 issues and 0 suggestions) | [CODE AGENTS.md:1-23] |
+| `TOOL-02` | P1 | `ALL` | **PASS** | None (single-source Seo.svelte; legacy SEOHead.svelte and SeoHead.svelte deleted; svelte-check 0 errors / 0 warnings) | [CODE frontend/src/lib/seo/Seo.svelte:1-135] [CMD pnpm --filter revolution-svelte check -> 0 errors, 0 warnings] |
+| `TOOL-03` | P1 | `ALL` | **PASS** | None (super-sitemap v2.0.6 driven by PRODUCTION_ORIGIN with author slugs and zero auth/redirect routes) | [CODE frontend/src/routes/sitemap.xml/+server.ts:1-160] |
+| `TOOL-04` | P2 | `ALL` | **PASS** | None (schema-dts v2.1.0 SchemaDtsNode compile-time typing wired in schemas.ts + serializeJsonLd escaping) | [CODE frontend/src/lib/seo/schemas.ts:15-35] |

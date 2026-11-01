@@ -39,7 +39,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title">Beginner Guides</h3>
+				<h2 class="resource-card__title">Beginner Guides</h2>
 				<ul class="resource-card__list">
 					<li class="resource-card__item">
 						<svg
@@ -54,7 +54,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Complete Beginner's Guide to Trading</span>
+						<a href="/guides/swing-entry" class="resource-card__link">Swing Trading Entry Timing Guide</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -69,7 +69,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>How to Set Up Your Trading Account</span>
+						<a href="/guides/exit-strategies" class="resource-card__link">Trade Exit Strategies & Profit Taking</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -84,7 +84,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Understanding Options Basics</span>
+						<a href="/guides/position-sizing" class="resource-card__link">Position Sizing & Capital Allocation Guide</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -99,7 +99,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Risk Management for New Traders</span>
+						<a href="/guides/risk-management" class="resource-card__link">Risk Management for Active Traders</a>
 					</li>
 				</ul>
 			</div>
@@ -122,7 +122,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title">Free Tools</h3>
+				<h2 class="resource-card__title">Free Tools</h2>
 				<ul class="resource-card__list">
 					<li class="resource-card__item">
 						<svg
@@ -137,7 +137,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Position Size Calculator</span>
+						<a href="/guides/position-sizing" class="resource-card__link">Position Size & Risk Calculator Guide</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -152,7 +152,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Risk/Reward Calculator</span>
+						<a href="/store/scanners" class="resource-card__link">Market Scanners & Screening Tools</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -167,7 +167,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Options Profit Calculator</span>
+						<a href="/tools/options-calculator" class="resource-card__link">Black-Scholes Options Profit Calculator</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -182,7 +182,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Trading Journal Template</span>
+						<a href="/indicators" class="resource-card__link">Custom Trading Indicators Suite</a>
 					</li>
 				</ul>
 			</div>
@@ -205,7 +205,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title">Video Tutorials</h3>
+				<h2 class="resource-card__title">Video Tutorials</h2>
 				<ul class="resource-card__list">
 					<li class="resource-card__item">
 						<svg
@@ -220,7 +220,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Platform Setup Walkthrough</span>
+						<a href="/tutorials" class="resource-card__link">Platform Setup & Video Walkthroughs</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -235,7 +235,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Reading Charts for Beginners</span>
+						<a href="/classes" class="resource-card__link">Free Trading Classes & Workshops</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -250,7 +250,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Your First Option Trade</span>
+						<a href="/courses" class="resource-card__link">Structured Trading Courses</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -265,7 +265,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Live Trade Walkthrough</span>
+						<a href="/live-trading-rooms" class="resource-card__link">Live Trade Walkthroughs in Our Rooms</a>
 					</li>
 				</ul>
 			</div>
@@ -288,7 +288,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title">Market Analysis</h3>
+				<h2 class="resource-card__title">Market Analysis</h2>
 				<ul class="resource-card__list">
 					<li class="resource-card__item">
 						<svg
@@ -303,7 +303,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Weekly Market Recap</span>
+						<a href="/blog" class="resource-card__link">Weekly Market Recap & Insights Blog</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -318,7 +318,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Economic Calendar Explained</span>
+						<a href="/resources/etf-stocks-list" class="resource-card__link">Top ETF & Stocks Watchlist Directory</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -333,7 +333,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Key Levels to Watch</span>
+						<a href="/resources/stock-indexes-list" class="resource-card__link">Major Stock Market Indexes Directory</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -348,7 +348,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Sector Rotation Analysis</span>
+						<a href="/alerts" class="resource-card__link">Real-Time Trade Alerts & Sector Analysis</a>
 					</li>
 				</ul>
 			</div>
@@ -371,7 +371,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title">Trading Psychology</h3>
+				<h2 class="resource-card__title">Trading Psychology</h2>
 				<ul class="resource-card__list">
 					<li class="resource-card__item">
 						<svg
@@ -431,7 +431,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Building Confidence</span>
+						<a href="/mentorship" class="resource-card__link">1-on-1 Trading Psychology Mentorship</a>
 					</li>
 				</ul>
 			</div>
@@ -454,7 +454,7 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="resource-card__title">FAQ & Support</h3>
+				<h2 class="resource-card__title">FAQ & Support</h2>
 				<ul class="resource-card__list">
 					<li class="resource-card__item">
 						<svg
@@ -469,7 +469,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Frequently Asked Questions</span>
+						<a href="/pricing" class="resource-card__link">Membership Plans & Frequently Asked Questions</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -484,7 +484,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Glossary of Trading Terms</span>
+						<a href="/disclaimer" class="resource-card__link">Risk Disclosure & Regulatory Disclaimer</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -499,7 +499,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Community Guidelines</span>
+						<a href="/team" class="resource-card__link">Meet Our Trading Mentors & Analysts</a>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -514,7 +514,7 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>Contact Support</span>
+						<a href="/contact" class="resource-card__link">Contact Member Support</a>
 					</li>
 				</ul>
 			</div>
@@ -529,7 +529,7 @@
 		<p class="resources-cta__text">
 			Join our community and get access to professional trading rooms, courses, and indicators.
 		</p>
-		<a href="/signup" class="resources-cta__btn"> Get Started Free </a>
+		<a href="/register" class="resources-cta__btn"> Get Started Free </a>
 	</div>
 </section>
 
@@ -726,6 +726,17 @@
 		display: flex;
 		align-items: flex-start;
 		gap: 0.5rem;
+	}
+
+	.resource-card__link {
+		color: inherit;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.resource-card__link:hover {
+		color: var(--rtp-text);
+		text-decoration: underline;
 	}
 
 	.resource-card__check {

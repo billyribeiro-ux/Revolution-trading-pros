@@ -1,34 +1,33 @@
 import type { SEOInput } from '#lib/seo/types.js';
-import { buildBreadcrumb, buildEvent, buildService } from '#lib/seo/schemas.js';
+import { buildBreadcrumb, buildEvent, buildProduct } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
-// +page.ts
 export const prerender = true;
 
 export const load = () => ({
 	seo: {
-		title: 'Swing Trading Alerts — Multi-Day Stock & Options Signals',
+		title: 'Swing Trading Room — Multi-Day Signals',
 		description:
-			'The #1 swing trading room for part-time traders. Get high-precision stock and options alerts (3-7 day holds) sent via SMS & Push. 82% historical win rate.',
+			'Swing trading room for part-time traders. Get high-precision stock and options alerts (3-7 day holds) sent via SMS and push notifications.',
 		og: {
 			type: 'website',
-			image: `${SITE}/images/og-swings.jpg`,
+			image: `${SITE}/revolution-trading-pros.png`,
 			imageAlt: 'Swing Trading Room — Multi-Day Trading Opportunities'
 		},
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
 				{ name: 'Live Trading Rooms', url: `${SITE}/live-trading-rooms` },
-				{ name: 'Swing Trading', url: `${SITE}/live-trading-rooms/swing-trading` }
+				{ name: 'Swing Trading Room', url: `${SITE}/live-trading-rooms/swing-trading` }
 			]),
-			buildService({
+			buildProduct({
 				name: 'Swing Trading Room',
 				description:
 					'Premium multi-day swing trading room. 3-7 day stock and options signals delivered via SMS and push notification.',
 				url: `${SITE}/live-trading-rooms/swing-trading`,
-				provider: { name: 'Revolution Trading Pros', url: SITE },
-				serviceType: 'Live Trading Room',
+				image: `${SITE}/revolution-trading-pros.png`,
 				offers: { price: 97, priceCurrency: 'USD' }
 			}),
 			buildEvent({

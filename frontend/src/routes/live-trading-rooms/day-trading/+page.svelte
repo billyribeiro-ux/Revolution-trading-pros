@@ -476,7 +476,7 @@
 						<li class="why__item" data-gsap>
 							<div class="why__check">&#x2713;</div>
 							<div>
-								<h4 class="why__item-title">Favorable Tax Treatment</h4>
+								<h3 class="why__item-title">Favorable Tax Treatment</h3>
 								<p class="why__item-desc">
 									SPX options fall under Section 1256, meaning 60% of gains are taxed at the lower
 									long-term capital gains rate, regardless of holding period.
@@ -486,7 +486,7 @@
 						<li class="why__item" data-gsap>
 							<div class="why__check">&#x2713;</div>
 							<div>
-								<h4 class="why__item-title">Cash Settled &amp; No Early Assignment</h4>
+								<h3 class="why__item-title">Cash Settled &amp; No Early Assignment</h3>
 								<p class="why__item-desc">
 									You can never be assigned shares. The index settles to cash, eliminating the risk
 									of overnight gap risk in physical shares.
@@ -496,7 +496,7 @@
 						<li class="why__item" data-gsap>
 							<div class="why__check">&#x2713;</div>
 							<div>
-								<h4 class="why__item-title">Institutional Liquidity</h4>
+								<h3 class="why__item-title">Institutional Liquidity</h3>
 								<p class="why__item-desc">
 									Massive volume ensures tight bid/ask spreads, allowing for rapid entries and exits
 									even with large position sizes.
@@ -1011,12 +1011,12 @@
 		transition: all 0.2s var(--rtp-ease-out);
 	}
 	.hero__cta--primary {
-		background: var(--rtp-primary);
+		background: #2563eb;
 		color: #fff;
 		box-shadow: 0 10px 15px -3px color-mix(in oklab, #000 30%, transparent);
 	}
 	.hero__cta--primary:hover {
-		background: #2563eb;
+		background: #1d4ed8;
 		box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--rtp-primary) 25%, transparent);
 		transform: translateY(-0.25rem);
 	}
@@ -1163,7 +1163,7 @@
 		background: color-mix(in oklab, var(--rtp-red) 20%, transparent);
 		padding: 0.25rem 0.75rem;
 		border-radius: var(--rtp-radius-sm);
-		color: var(--rtp-red-soft);
+		color: #fca5a5;
 		font-size: 0.75rem;
 		font-weight: 700;
 	}
@@ -1204,7 +1204,7 @@
 		top: 1rem;
 		left: 1rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: #9ca3af;
 		font-family: var(--rtp-font-mono);
 	}
 	.hero__chart-svg {
@@ -1253,7 +1253,7 @@
 	}
 	.hero__chat-heading {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: #9ca3af;
 		font-weight: 700;
 		margin-block-end: 0.5rem;
 		text-transform: uppercase;
@@ -1954,7 +1954,7 @@
 		position: absolute;
 		top: 0.375rem;
 		bottom: 0.375rem;
-		background: var(--rtp-primary);
+		background: #2563eb;
 		border-radius: var(--rtp-radius-sm);
 		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 		transition: all 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -1980,7 +1980,7 @@
 		border-radius: 1rem;
 		border: 1px solid var(--rtp-border);
 		transition: all 0.3s;
-		opacity: 0.7;
+		opacity: 1;
 		position: relative;
 	}
 	.plan:hover {
@@ -1992,7 +1992,7 @@
 		border-width: 2px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 		z-index: 10;
-		opacity: 0.7;
+		opacity: 1;
 	}
 	.plan--simple.plan--active {
 		border-color: var(--rtp-primary);
@@ -2033,10 +2033,10 @@
 		white-space: nowrap;
 	}
 	.plan__ribbon--primary {
-		background: var(--rtp-primary);
+		background: #2563eb;
 	}
 	.plan__ribbon--emerald {
-		background: var(--rtp-emerald);
+		background: #047857;
 		top: -0.75rem;
 		transform: translateX(-50%);
 		z-index: 10;
@@ -2138,13 +2138,13 @@
 	}
 	.plan__cta--primary {
 		padding-block: 1rem;
-		background: var(--rtp-primary);
+		background: #2563eb;
 		color: #fff;
 		border-radius: var(--rtp-radius-md);
 		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 	}
 	.plan__cta--primary:hover {
-		background: #2563eb;
+		background: #1d4ed8;
 		box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--rtp-primary) 50%, transparent);
 	}
 	.plan__cta--emerald {
@@ -2326,7 +2326,7 @@
 	}
 	.bell-cta__btn {
 		background: #fff;
-		color: var(--rtp-primary);
+		color: #1d4ed8;
 		padding: 1rem 2.5rem;
 		border-radius: var(--rtp-radius-md);
 		font-weight: 700;
