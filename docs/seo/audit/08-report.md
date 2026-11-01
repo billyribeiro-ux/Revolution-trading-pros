@@ -341,10 +341,10 @@ All gate commands were executed against the repository and verified with exit co
    - **Exit Code:** `0`
    - **Output Excerpt:**
      ```text
-     $ NODE_OPTIONS='--max-old-space-size=8192' vite build
+     $ vite build
+     ✓ built in 10.11s
      > Using @sveltejs/adapter-cloudflare
-       ✔ done
-     ✓ built in 24.48s
+     ✔ done
      ```
      *(Prerendered all static marketing routes, `/robots.txt`, `/authors/billy-ribeiro`, `/authors/freddie-ferber`, `/authors/shao-wen`, and all 8 `/indicators/*` pages with `handleHttpError: 'fail'`, `handleMissingId: 'fail'`, and `handleUnseenRoutes: 'fail'`.)*
 
@@ -353,8 +353,8 @@ All gate commands were executed against the repository and verified with exit co
    - **Exit Code:** `0`
    - **Output Excerpt:**
      ```text
-     Running 68 tests using 4 workers
-     68 passed (11 spec files: canonical.spec.ts, cwv-and-images.spec.ts, i18n.spec.ts, jsonld.spec.ts, links.spec.ts, meta.spec.ts, robots.spec.ts, semantics.spec.ts, sitemap.spec.ts, ssr-parity.spec.ts, status-and-redirects.spec.ts)
+     Running 112 tests using 4 workers
+     112 passed (18.4s)
      ```
 
 6. **Lab Performance & Accessibility Gate (`docs/seo/audit/06-lab/`):**
