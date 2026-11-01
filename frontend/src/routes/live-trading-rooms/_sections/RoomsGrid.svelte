@@ -31,16 +31,14 @@
 	}
 	let { rooms }: Props = $props();
 
-	/** Action: 3D Tilt Effect (mouse-tracking parallax) — Svelte 5 Spring class */
+	/** Attachment: 3D Tilt Effect (mouse-tracking parallax) — Svelte 5 Spring + {@attach} */
 	function tilt(node: HTMLElement) {
 		const x = new Spring(0, { stiffness: 0.05, damping: 0.25 });
 		const y = new Spring(0, { stiffness: 0.05, damping: 0.25 });
 
-		const stopEffect = $effect.root(() => {
-			$effect(() => {
-				node.style.setProperty('--rotX', `${x.current}deg`);
-				node.style.setProperty('--rotY', `${y.current}deg`);
-			});
+		$effect(() => {
+			node.style.setProperty('--rotX', `${x.current}deg`);
+			node.style.setProperty('--rotY', `${y.current}deg`);
 		});
 
 		function handleMove(e: MouseEvent) {
@@ -57,12 +55,9 @@
 		node.addEventListener('mousemove', handleMove);
 		node.addEventListener('mouseleave', handleLeave);
 
-		return {
-			destroy() {
-				node.removeEventListener('mousemove', handleMove);
-				node.removeEventListener('mouseleave', handleLeave);
-				stopEffect();
-			}
+		return () => {
+			node.removeEventListener('mousemove', handleMove);
+			node.removeEventListener('mouseleave', handleLeave);
 		};
 	}
 </script>
@@ -72,7 +67,7 @@
 	class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 perspective-container mb-32"
 >
 	{#each rooms as room (room.id)}
-		<article use:tilt class="group relative h-full card-3d" role="region" aria-label={room.name}>
+		<article {@attach tilt} class="group relative h-full card-3d" role="region" aria-label={room.name}>
 			<div
 				class={`absolute -inset-px rounded-3xl bg-linear-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm 
                     ${room.accent === 'cyan' ? 'from-cyan-500/50' : ''}

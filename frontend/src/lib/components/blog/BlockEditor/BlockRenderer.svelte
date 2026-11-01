@@ -84,14 +84,21 @@
 	import AISummaryBlock from '../../cms/blocks/ai/AISummaryBlock.svelte';
 	import AITranslationBlock from '../../cms/blocks/ai/AITranslationBlock.svelte';
 
+	interface BlockComponentProps {
+		block: Block;
+		blockId: BlockId;
+		isSelected: boolean;
+		isEditing: boolean;
+		onUpdate: (updates: Partial<Block>) => void;
+		onError?: (error: Error) => void;
+	}
+
 	// ============================================
 	// COMPONENT MAP - ALL BLOCK TYPES
 	// ============================================
 	// Heterogeneous block registry: each block component declares its own Props,
-	// so no single concrete prop type fits. Rendered via <svelte:component> with
-	// the block narrowed at runtime by `props.block.type`.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const blockComponentMap: Record<string, Component<any>> = {
+	// so no single concrete prop type fits. Narrowed at runtime by `props.block.type`.
+	const blockComponentMap = {
 		// Content
 		paragraph: ParagraphBlock,
 		heading: HeadingBlock,
@@ -148,7 +155,7 @@
 		aiGenerated: AIGeneratedBlock,
 		aiSummary: AISummaryBlock,
 		aiTranslation: AITranslationBlock
-	};
+	} as unknown as Record<string, Component<BlockComponentProps>>;
 
 	// ============================================
 	// PROPS

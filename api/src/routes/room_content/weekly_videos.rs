@@ -113,7 +113,7 @@ pub(super) async fn list_weekly_videos(
         .get_or_fetch(&cache_key, cache_ttl::WEEKLY_VIDEOS, || async {
             let videos: Vec<WeeklyVideo> = sqlx::query_as(
                 r"SELECT * FROM room_weekly_videos
-                   WHERE room_slug = $1
+                   WHERE room_slug = $1 AND is_published = true
                    ORDER BY week_of DESC
                    LIMIT $2 OFFSET $3",
             )
@@ -123,11 +123,12 @@ pub(super) async fn list_weekly_videos(
             .fetch_all(&state.db.pool)
             .await?;
 
-            let total: (i64,) =
-                sqlx::query_as("SELECT COUNT(*) FROM room_weekly_videos WHERE room_slug = $1")
-                    .bind(&room_slug)
-                    .fetch_one(&state.db.pool)
-                    .await?;
+            let total: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM room_weekly_videos WHERE room_slug = $1 AND is_published = true",
+            )
+            .bind(&room_slug)
+            .fetch_one(&state.db.pool)
+            .await?;
 
             Ok(WeeklyVideosResponse {
                 data: videos,
@@ -168,12 +169,19 @@ pub(super) async fn create_weekly_video(
         )
     })?;
 
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
     // Archive existing current video for this room
     sqlx::query(
         "UPDATE room_weekly_videos SET is_current = false, archived_at = NOW() WHERE room_slug = $1 AND is_current = true"
     )
     .bind(&input.room_slug)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
@@ -197,11 +205,18 @@ pub(super) async fn create_weekly_video(
     .bind(&input.thumbnail_url)
     .bind(&input.duration)
     .bind(&input.description)
-    .fetch_one(&state.db.pool)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| {
         error!("Failed to create weekly video: {}", e);
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+    })?;
+
+    tx.commit().await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     // Invalidate weekly video cache

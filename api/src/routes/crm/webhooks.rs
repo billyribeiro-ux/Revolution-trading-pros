@@ -84,6 +84,13 @@ async fn create_webhook(
     _admin: AdminUser,
     Json(input): Json<CreateWebhookInput>,
 ) -> Result<Json<Webhook>, (StatusCode, Json<serde_json::Value>)> {
+    if let Err(e) = crate::services::cms_webhooks::validate_webhook_url(&input.url) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": e.to_string()})),
+        ));
+    }
+
     let webhook: Webhook = sqlx::query_as(
         r"
         INSERT INTO crm_webhooks (name, url, events, is_active, trigger_count, failure_count, created_at, updated_at)

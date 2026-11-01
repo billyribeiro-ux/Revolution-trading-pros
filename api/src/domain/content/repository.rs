@@ -199,10 +199,14 @@ impl ContentRepository for PgContentRepository {
     async fn list(&self, query: ContentListQuery) -> Result<PaginatedResponse<CmsContentSummary>> {
         let limit = query.limit.unwrap_or(20).min(100);
         let offset = query.offset.unwrap_or(0);
-        let sort_by = query
-            .sort_by
-            .clone()
-            .unwrap_or_else(|| "updated_at".to_string());
+        let sort_by = match query.sort_by.as_deref() {
+            Some("created_at") => "created_at",
+            Some("published_at") => "published_at",
+            Some("title") => "title",
+            Some("slug") => "slug",
+            Some("status") => "status",
+            _ => "updated_at",
+        };
         let sort_order = query
             .sort_order
             .clone()
@@ -244,6 +248,7 @@ impl ContentRepository for PgContentRepository {
 
         let cms_type: Option<CmsContentType> = query.content_type;
         let cms_status: Option<CmsContentStatus> = query.status;
+        let escaped_search = query.search.as_deref().map(crate::utils::escape_like);
 
         let items =
             sqlx::query_as::<_, CmsContentSummary>(sqlx::AssertSqlSafe(base_query.as_str()))
@@ -251,7 +256,7 @@ impl ContentRepository for PgContentRepository {
                 .bind(&cms_status)
                 .bind(query.author_id)
                 .bind(&query.locale)
-                .bind(&query.search)
+                .bind(&escaped_search)
                 .bind(limit)
                 .bind(offset)
                 .fetch_all(&self.pool)
@@ -262,7 +267,7 @@ impl ContentRepository for PgContentRepository {
             .bind(&cms_status)
             .bind(query.author_id)
             .bind(&query.locale)
-            .bind(&query.search)
+            .bind(&escaped_search)
             .fetch_one(&self.pool)
             .await?;
 
@@ -491,6 +496,8 @@ impl ContentRepository for PgContentRepository {
             None
         };
 
+        let mut tx = self.pool.begin().await?;
+
         let result = sqlx::query_as::<_, CmsContent>(
             r"
             UPDATE cms_content
@@ -507,7 +514,7 @@ impl ContentRepository for PgContentRepository {
         .bind(cms_status)
         .bind(published_at)
         .bind(user_id)
-        .fetch_optional(&self.pool)
+        .fetch_optional(&mut *tx)
         .await?;
 
         match result {
@@ -526,10 +533,11 @@ impl ContentRepository for PgContentRepository {
                         "new_status": new_status,
                         "comment": comment
                     }))
-                    .execute(&self.pool)
+                    .execute(&mut *tx)
                     .await?;
                 }
 
+                tx.commit().await?;
                 Ok(Self::to_domain(cms))
             }
             None => Err(ContentError::NotFound(id).into()),
@@ -541,11 +549,13 @@ impl ContentRepository for PgContentRepository {
         content: &Content,
         user_id: Option<Uuid>,
     ) -> Result<CmsRevision> {
+        let mut tx = self.pool.begin().await?;
+
         // Get next revision number
         let max_revision: Option<(i32,)> =
             sqlx::query_as("SELECT MAX(revision_number) FROM cms_revisions WHERE content_id = $1")
                 .bind(content.id)
-                .fetch_optional(&self.pool)
+                .fetch_optional(&mut *tx)
                 .await?;
 
         let next_revision = max_revision.and_then(|r| r.0.into()).unwrap_or(0) + 1;
@@ -564,7 +574,7 @@ impl ContentRepository for PgContentRepository {
         .bind(next_revision)
         .bind(&data)
         .bind(user_id)
-        .fetch_one(&self.pool)
+        .fetch_one(&mut *tx)
         .await?;
 
         // Mark previous revisions as not current
@@ -573,9 +583,10 @@ impl ContentRepository for PgContentRepository {
         )
         .bind(content.id)
         .bind(revision.id)
-        .execute(&self.pool)
+        .execute(&mut *tx)
         .await?;
 
+        tx.commit().await?;
         Ok(revision)
     }
 
@@ -618,6 +629,7 @@ impl ContentRepository for PgContentRepository {
     ) -> Result<Vec<CmsContentSummary>> {
         let cms_types: Option<Vec<CmsContentType>> =
             content_types.map(|types| types.into_iter().map(|t| t.into()).collect());
+        let escaped_query = crate::utils::escape_like(query);
 
         let results = sqlx::query_as::<_, CmsContentSummary>(
             r"
@@ -641,7 +653,7 @@ impl ContentRepository for PgContentRepository {
             LIMIT $3
             ",
         )
-        .bind(query)
+        .bind(&escaped_query)
         .bind(&cms_types)
         .bind(limit)
         .fetch_all(&self.pool)

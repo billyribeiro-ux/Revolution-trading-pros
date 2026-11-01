@@ -10,7 +10,6 @@ use crate::{models::User, utils::errors::ApiError};
 // ============================================================================
 
 /// Check if user has CMS admin privileges
-#[allow(clippy::result_large_err)]
 pub(super) fn require_cms_admin(user: &User) -> Result<(), ApiError> {
     let role = user.role.as_deref().unwrap_or("user");
     if matches!(role, "admin" | "super-admin" | "super_admin" | "developer") {
@@ -21,7 +20,6 @@ pub(super) fn require_cms_admin(user: &User) -> Result<(), ApiError> {
 }
 
 /// Check if user has CMS editor privileges
-#[allow(clippy::result_large_err)]
 pub(super) fn require_cms_editor(user: &User) -> Result<(), ApiError> {
     let role = user.role.as_deref().unwrap_or("user");
     if matches!(

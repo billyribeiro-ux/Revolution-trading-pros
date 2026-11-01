@@ -10,11 +10,22 @@
 //! `apple_nonce_mismatch`, `apple_token_validated`) are emitted verbatim
 //! against `target: "security_audit"` and MUST NOT be reworded.
 
+use std::sync::LazyLock;
+use std::time::Duration;
+
 use axum::{http::StatusCode, Json};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
+
+static APPLE_HTTP_CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| {
+    reqwest::Client::builder()
+        .timeout(Duration::from_secs(10))
+        .connect_timeout(Duration::from_secs(5))
+        .build()
+        .unwrap_or_else(|_| reqwest::Client::new())
+});
 
 /// Apple ID token claims
 #[derive(Debug, Deserialize)]
@@ -53,9 +64,8 @@ struct AppleJwks {
 /// Fetch Apple's public keys from JWKS endpoint
 /// ICT 7 SECURITY: Proper cryptographic validation of Apple ID tokens
 async fn fetch_apple_public_keys() -> Result<AppleJwks, (StatusCode, Json<serde_json::Value>)> {
-    let response = reqwest::Client::new()
+    let response = APPLE_HTTP_CLIENT
         .get("https://appleid.apple.com/auth/keys")
-        .timeout(std::time::Duration::from_secs(10))
         .send()
         .await
         .map_err(|e| {
@@ -143,16 +153,17 @@ pub(super) async fn validate_apple_id_token(
 
     let claims = token_data.claims;
 
-    // ICT 7 SECURITY: Validate nonce to prevent replay attacks
-    if let Some(ref token_nonce) = claims.nonce {
-        // Hash the stored nonce the same way we did when sending it
-        let expected_nonce_hash = {
-            let mut hasher = Sha256::new();
-            hasher.update(stored_nonce.as_bytes());
-            URL_SAFE_NO_PAD.encode(hasher.finalize())
-        };
+    // ICT 7 SECURITY: Validate nonce to prevent replay attacks (fail-closed if missing)
+    let expected_nonce_hash = {
+        let mut hasher = Sha256::new();
+        hasher.update(stored_nonce.as_bytes());
+        URL_SAFE_NO_PAD.encode(hasher.finalize())
+    };
 
-        if token_nonce != &expected_nonce_hash {
+    match claims.nonce.as_deref() {
+        Some(token_nonce)
+            if crate::utils::constant_time_compare(token_nonce, &expected_nonce_hash) => {}
+        _ => {
             tracing::error!(
                 target: "security_audit",
                 event = "apple_nonce_mismatch",

@@ -26,6 +26,45 @@ pub(super) async fn cancel_subscription(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     tracing::info!(target: "security", event = "subscription_cancel", admin_id = %user.id, subscription_id = %id, "Cancelling subscription");
 
+    let existing_stripe_sub_id: Option<Option<String>> =
+        sqlx::query_scalar("SELECT stripe_subscription_id FROM user_memberships WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+
+    let stripe_sub_id = existing_stripe_sub_id.ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Subscription not found"})),
+        )
+    })?;
+
+    if let Some(ref sub_id) = stripe_sub_id {
+        if !sub_id.is_empty() {
+            let env_scope = state.config.environment.clone();
+            let stripe_client = state
+                .services
+                .credentials
+                .stripe_client(&state.db.pool, &env_scope)
+                .await;
+            stripe_client
+                .cancel_subscription(sub_id, true)
+                .await
+                .map_err(|e| {
+                    (
+                        StatusCode::BAD_GATEWAY,
+                        Json(json!({"error": format!("Stripe error: {}", e)})),
+                    )
+                })?;
+        }
+    }
+
     let subscription: SubscriptionRow = sqlx::query_as(
         r"
         UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()

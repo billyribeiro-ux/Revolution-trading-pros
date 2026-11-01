@@ -32,7 +32,7 @@ pub enum JobType {
     },
     ProcessPayment {
         user_id: Uuid,
-        amount_cents: i32,
+        amount_cents: i64,
     },
     GenerateReport {
         report_type: String,

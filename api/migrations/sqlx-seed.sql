@@ -189,3 +189,12 @@ ON CONFLICT (version) DO NOTHING;
 INSERT INTO _sqlx_migrations (version, description, success, checksum, execution_time)
 VALUES (68, 'complete_money_cents_bigint', true, '\x9d0a7695dd094c58fd76791afa612905e8c278970f33fae1c2c62ddc39b266855987aa6fabe08d4504d641ad9d2c27b7'::bytea, 0)
 ON CONFLICT (version) DO NOTHING;
+INSERT INTO _sqlx_migrations (version, description, success, checksum, execution_time)
+VALUES (69, 'widen_money_cents_to_bigint', true, '\x878880dcf4c4bcb320fd276a63b84acada5bfae84b975602f0127539503e743874e93f48ba270ef54e48a92b32780989'::bytea, 0)
+ON CONFLICT (version) DO NOTHING;
+INSERT INTO _sqlx_migrations (version, description, success, checksum, execution_time)
+VALUES (70, 'user_memberships_one_live_per_user', true, '\x62c39646a79293c7e7ecc0521a4d327b2cceeafed666b054008ce50e226b7b0d4ab89fd3a23a8aff43db7f3f813ff922'::bytea, 0)
+ON CONFLICT (version) DO NOTHING;
+INSERT INTO _sqlx_migrations (version, description, success, checksum, execution_time)
+VALUES (71, 'mfa_totp_replay_protection', true, '\x559dc6d4f29cd36db89d6848dbb1f7c7920e5039815a918c2396fba83553c9b817b610a7f17b9acea2260f639712808d'::bytea, 0)
+ON CONFLICT (version) DO NOTHING;

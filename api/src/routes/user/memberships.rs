@@ -151,6 +151,42 @@ pub(super) async fn cancel_membership(
         ));
     }
 
+    // Fetch Stripe subscription ID if linked and cancel on Stripe first
+    let stripe_sub_id: Option<String> = sqlx::query_scalar(
+        "SELECT stripe_subscription_id FROM user_memberships WHERE id = $1 AND user_id = $2",
+    )
+    .bind(membership_id)
+    .bind(user.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .flatten();
+
+    if let Some(ref sub_id) = stripe_sub_id {
+        if !sub_id.is_empty() {
+            let env_scope = state.config.environment.clone();
+            let stripe_client = state
+                .services
+                .credentials
+                .stripe_client(&state.db.pool, &env_scope)
+                .await;
+            stripe_client
+                .cancel_subscription(sub_id, input.cancel_immediately)
+                .await
+                .map_err(|e| {
+                    (
+                        StatusCode::BAD_GATEWAY,
+                        Json(json!({"error": format!("Stripe error: {}", e)})),
+                    )
+                })?;
+        }
+    }
+
     if input.cancel_immediately {
         // Cancel immediately
         sqlx::query(

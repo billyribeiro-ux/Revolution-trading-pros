@@ -17,6 +17,29 @@ pub(super) async fn create_portal(
     user: User,
     Json(input): Json<CreatePortalRequest>,
 ) -> Result<Json<PortalResponse>, (StatusCode, Json<serde_json::Value>)> {
+    let app_url = state.config.app_url.trim_end_matches('/');
+    let is_safe_relative = input.return_url.starts_with('/') && !input.return_url.starts_with("//");
+    let is_same_origin = input.return_url == app_url
+        || input
+            .return_url
+            .strip_prefix(app_url)
+            .is_some_and(|rest| rest.is_empty() || rest.starts_with('/') || rest.starts_with('?'));
+
+    if !is_safe_relative && !is_same_origin {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(
+                json!({"error": "Invalid return_url: must be a relative path or match application origin"}),
+            ),
+        ));
+    }
+
+    let resolved_return_url = if is_safe_relative {
+        format!("{}{}", app_url, input.return_url)
+    } else {
+        input.return_url.clone()
+    };
+
     // Get user's Stripe customer ID
     let customer_id: Option<String> = sqlx::query_scalar(
         "SELECT stripe_customer_id FROM user_memberships WHERE user_id = $1 AND stripe_customer_id IS NOT NULL LIMIT 1"
@@ -37,7 +60,7 @@ pub(super) async fn create_portal(
     let url = state
         .services
         .stripe
-        .create_portal_session(&customer_id, &input.return_url)
+        .create_portal_session(&customer_id, &resolved_return_url)
         .await
         .map_err(|e| {
             tracing::error!("Stripe portal error: {}", e);

@@ -89,6 +89,12 @@ fn forbidden_egress_cidrs() -> &'static [IpCidr] {
             "192.168.0.0/16",
             // ── Carrier-grade NAT (shared address space, RFC 6598) ──
             "100.64.0.0/10",
+            // ── Benchmarking (RFC 2544) ──
+            "198.18.0.0/15",
+            // ── Multicast & Reserved ──
+            "224.0.0.0/4",
+            "240.0.0.0/4",
+            "ff00::/8",
             // ── IPv6 unique-local (fc00::/7 covers fc00:: and fd00::) ──
             "fc00::/7",
         ];

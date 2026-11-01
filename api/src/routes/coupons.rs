@@ -74,6 +74,48 @@ pub struct UserCoupon {
     pub used_at: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+pub struct CouponRow {
+    pub id: i64,
+    pub code: String,
+    #[sqlx(rename = "type")]
+    pub coupon_type: String,
+    pub value: Decimal,
+    pub max_uses: i32,
+    pub current_uses: i32,
+    pub expiry_date: Option<chrono::NaiveDateTime>,
+    pub is_active: bool,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CouponResponse {
+    pub id: i64,
+    pub code: String,
+    pub discount_type: String,
+    pub discount_value: Decimal,
+    pub max_uses: i32,
+    pub current_uses: i32,
+    pub expires_at: Option<String>,
+    pub is_active: bool,
+}
+
+impl From<CouponRow> for CouponResponse {
+    fn from(row: CouponRow) -> Self {
+        Self {
+            id: row.id,
+            code: row.code,
+            discount_type: row.coupon_type,
+            discount_value: row.value,
+            max_uses: row.max_uses,
+            current_uses: row.current_uses,
+            expires_at: row.expiry_date.map(|d| d.to_string()),
+            is_active: row.is_active,
+        }
+    }
+}
+
 #[derive(Deserialize)]
 pub struct CreateCouponRequest {
     pub code: String,
@@ -235,6 +277,7 @@ async fn validate_coupon(
         } else {
             coupon_value_cents
         };
+        let discount_cents = discount_cents.clamp(0, subtotal_cents.max(0));
         Some(discount_cents)
     } else {
         None
@@ -262,21 +305,23 @@ async fn get_user_coupons(
     user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get coupons assigned to user or public coupons
-    let coupons: Vec<UserCoupon> = sqlx::query_as::<_, UserCoupon>(
+    let rows: Vec<CouponRow> = sqlx::query_as::<_, CouponRow>(
         r"SELECT
             c.id,
             c.code,
-            c.description,
-            c.discount_type,
-            c.discount_value,
-            c.expires_at::text as expires_at,
-            CASE WHEN uc.used_at IS NOT NULL THEN true ELSE false END as is_used,
-            uc.used_at::text as used_at
+            c.type,
+            c.value,
+            c.max_uses,
+            c.current_uses,
+            c.expiry_date,
+            c.is_active,
+            c.created_at,
+            c.updated_at
         FROM coupons c
         LEFT JOIN user_coupons uc ON uc.coupon_id = c.id AND uc.user_id = $1
         WHERE c.is_active = true
-        AND (c.expires_at IS NULL OR c.expires_at > NOW())
-        AND (c.usage_limit IS NULL OR c.usage_count < c.usage_limit)
+        AND (c.expiry_date IS NULL OR c.expiry_date > NOW())
+        AND (c.max_uses <= 0 OR c.current_uses < c.max_uses)
         AND (
             -- Public coupons (no user assignment table entry required)
             NOT EXISTS (SELECT 1 FROM user_coupons WHERE coupon_id = c.id)
@@ -284,7 +329,7 @@ async fn get_user_coupons(
             -- User-specific coupons
             uc.user_id = $1
         )
-        ORDER BY c.expires_at ASC NULLS LAST, c.created_at DESC",
+        ORDER BY c.expiry_date ASC NULLS LAST, c.created_at DESC",
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
@@ -296,6 +341,8 @@ async fn get_user_coupons(
             Json(json!({"error": "Failed to load coupons"})),
         )
     })?;
+
+    let coupons: Vec<CouponResponse> = rows.into_iter().map(CouponResponse::from).collect();
 
     Ok(Json(json!({
         "coupons": coupons,
@@ -489,7 +536,7 @@ async fn update_coupon(
             type = COALESCE($2, type),
             value = COALESCE($3, value),
             max_uses = COALESCE($4, max_uses),
-            expiry_date = $5,
+            expiry_date = COALESCE($5, expiry_date),
             applicable_products = COALESCE($6, applicable_products),
             min_purchase_amount = COALESCE($7, min_purchase_amount),
             is_active = COALESCE($8, is_active),

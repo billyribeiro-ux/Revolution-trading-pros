@@ -23,14 +23,10 @@
 
 	let isSaving = $state(false);
 	let showEmailModal = $state(false);
-	let saveEmail = $state('');
+	let saveEmail = $derived(email);
 	let savedHash = $state<string | null>(null);
 	let saveError = $state<string | null>(null);
 	let copySuccess = $state(false);
-
-	$effect(() => {
-		saveEmail = email;
-	});
 
 	async function saveProgress() {
 		if (!saveEmail && !email) {

@@ -10,8 +10,11 @@ use axum::{
 };
 use serde::Serialize;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
+use std::time::Instant;
 use subtle::ConstantTimeEq;
+
+static PROCESS_START: LazyLock<Instant> = LazyLock::new(Instant::now);
 
 /// Application metrics
 #[derive(Clone)]
@@ -140,11 +143,7 @@ async fn metrics_json(State(metrics): State<Metrics>) -> Json<MetricsSnapshot> {
 /// Health check with detailed status
 /// GET /health/detailed
 async fn health_detailed() -> (StatusCode, Json<serde_json::Value>) {
-    // ICT 11+ Fix: Use unwrap_or_default to prevent panic on system clock issues
-    let uptime = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
+    let uptime = PROCESS_START.elapsed().as_secs();
 
     (
         StatusCode::OK,

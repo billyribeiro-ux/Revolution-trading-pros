@@ -215,6 +215,12 @@ impl BunnyClient {
 
     /// Upload thumbnail to Bunny Storage
     pub async fn upload_thumbnail(&self, path: &str, data: Vec<u8>) -> Result<String, BunnyError> {
+        if path.contains("..") {
+            return Err(BunnyError::Request(
+                "Invalid path: path traversal not allowed".to_string(),
+            ));
+        }
+
         let url = format!(
             "https://{}/{}/{}",
             self.storage_hostname, self.storage_zone, path
@@ -244,6 +250,12 @@ impl BunnyClient {
 
     /// Delete thumbnail from Bunny Storage
     pub async fn delete_thumbnail(&self, path: &str) -> Result<(), BunnyError> {
+        if path.contains("..") {
+            return Err(BunnyError::Request(
+                "Invalid path: path traversal not allowed".to_string(),
+            ));
+        }
+
         let url = format!(
             "https://{}/{}/{}",
             self.storage_hostname, self.storage_zone, path
@@ -270,12 +282,21 @@ impl BunnyClient {
         source_url: &str,
         path: &str,
     ) -> Result<String, BunnyError> {
+        if path.contains("..") {
+            return Err(BunnyError::Request(
+                "Invalid path: path traversal not allowed".to_string(),
+            ));
+        }
+
+        let validated_url = crate::services::cms_webhooks::validate_webhook_url(source_url)
+            .map_err(|e| BunnyError::Request(format!("Blocked source_url: {e}")))?;
+
         // Download image. Per-request timeout on the caller-supplied URL so a
         // slow/hostile source can't hold the connection (and worker) open
         // indefinitely — shorter than the client-wide default above.
         let response = self
             .http
-            .get(source_url)
+            .get(validated_url)
             .timeout(std::time::Duration::from_secs(20))
             .send()
             .await

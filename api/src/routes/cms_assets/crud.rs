@@ -28,7 +28,11 @@ pub(super) async fn create_asset(
     Json(payload): Json<UploadConfirmRequest>,
 ) -> Result<Json<Asset>, ApiError> {
     // Validate file key
-    if payload.file_key.contains("..") || payload.file_key.contains("//") {
+    if payload.file_key.contains("..")
+        || payload.file_key.contains("//")
+        || payload.file_key.starts_with('/')
+        || payload.file_key.contains('\0')
+    {
         return Err(ApiError::validation_error("Invalid file key"));
     }
 
@@ -281,6 +285,14 @@ pub(super) async fn replace_asset(
     Path(id): Path<Uuid>,
     Json(payload): Json<ReplaceAssetRequest>,
 ) -> Result<Json<Asset>, ApiError> {
+    if payload.file_key.contains("..")
+        || payload.file_key.contains("//")
+        || payload.file_key.starts_with('/')
+        || payload.file_key.contains('\0')
+    {
+        return Err(ApiError::validation_error("Invalid file_key"));
+    }
+
     // Get old storage key
     let old_key: Option<(String,)> =
         sqlx::query_as("SELECT storage_key FROM cms_assets WHERE id = $1")

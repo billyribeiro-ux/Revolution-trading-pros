@@ -154,6 +154,7 @@ async fn search_room(
     Query(params): Query<SearchParams>,
     _user: User,
 ) -> Result<Json<SearchApiResponse>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     // Validate query
     let query = params.q.trim();
     if query.is_empty() {
@@ -221,6 +222,7 @@ async fn search_alerts(
     Query(params): Query<SearchParams>,
     _user: User,
 ) -> Result<Json<AlertsSearchResponse>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     let query = params.q.trim();
     if query.is_empty() {
         return Err((
@@ -277,6 +279,7 @@ async fn search_trades(
     Query(params): Query<SearchParams>,
     _user: User,
 ) -> Result<Json<TradesSearchResponse>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     let query = params.q.trim();
     if query.is_empty() {
         return Err((
@@ -333,6 +336,7 @@ async fn search_trade_plans(
     Query(params): Query<SearchParams>,
     _user: User,
 ) -> Result<Json<TradePlansSearchResponse>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     let query = params.q.trim();
     if query.is_empty() {
         return Err((
@@ -389,6 +393,7 @@ async fn get_suggestions(
     Query(params): Query<SuggestionParams>,
     _user: User,
 ) -> Result<Json<SuggestionsResponse>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     let prefix = params.q.trim();
     if prefix.is_empty() {
         return Ok(Json(SuggestionsResponse {

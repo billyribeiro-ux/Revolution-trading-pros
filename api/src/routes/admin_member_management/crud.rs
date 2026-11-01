@@ -134,7 +134,13 @@ pub(super) async fn get_member_full(
     .unwrap_or(None);
 
     // Calculate stats
-    let total_spent_cents: i64 = subscriptions.iter().filter_map(|s| s.price_cents).sum();
+    let total_spent_cents: i64 = sqlx::query_scalar(
+        "SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT FROM orders WHERE user_id = $1 AND status = 'completed'",
+    )
+    .bind(id)
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(0);
     let active_subs = subscriptions
         .iter()
         .filter(|s| s.status == "active")
@@ -323,14 +329,30 @@ pub(super) async fn create_member(
         ));
     }
 
+    // Privilege escalation guard: only super_admin can grant developer/super_admin
+    let target_role = input.role.as_deref().unwrap_or("user");
+    if matches!(target_role, "super_admin" | "super-admin" | "developer") {
+        let actor_role = admin.0.role.as_deref().unwrap_or("user");
+        if actor_role != "super_admin" && actor_role != "super-admin" {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(json!({"error": "Only super_admin can grant developer or super_admin roles"})),
+            ));
+        }
+    }
+
     // Generate password hash
     let password_was_generated = input.password.is_none();
     let password = input.password.unwrap_or_else(|| {
         use rand::distr::Alphanumeric;
         use rand::RngExt;
         let mut rng = rand::rng();
-        (0..16).map(|_| rng.sample(Alphanumeric) as char).collect()
+        let rand_part: String = (0..12).map(|_| rng.sample(Alphanumeric) as char).collect();
+        format!("Aa1!{rand_part}")
     });
+
+    crate::utils::validate_password(&password)
+        .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
     // FIX-2026-04-26 (Priority 7): use Argon2id (crate::utils::hash_password) instead of
     // bcrypt to standardize on the same hashing algorithm as auth.rs::register.
@@ -416,9 +438,9 @@ pub(super) async fn update_member(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let _ = &admin; // Admin authorization handled by extractor
 
-    // Check member exists
-    let existing: Option<(i64, String)> =
-        sqlx::query_as("SELECT id, email FROM users WHERE id = $1")
+    // Check member exists and inspect current role
+    let existing: Option<(i64, String, Option<String>)> =
+        sqlx::query_as("SELECT id, email, role FROM users WHERE id = $1")
             .bind(id)
             .fetch_optional(&state.db.pool)
             .await
@@ -429,11 +451,42 @@ pub(super) async fn update_member(
                 )
             })?;
 
-    if existing.is_none() {
+    let Some((_, _, existing_role)) = existing else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Member not found"})),
         ));
+    };
+
+    let actor_role = admin.0.role.as_deref().unwrap_or("user");
+    let actor_is_super = actor_role == "super_admin" || actor_role == "super-admin";
+    if matches!(
+        existing_role.as_deref().unwrap_or("user"),
+        "super_admin" | "super-admin" | "developer"
+    ) && !actor_is_super
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only super_admin can modify developer or super_admin accounts"})),
+        ));
+    }
+
+    if let Some(ref new_role) = input.role {
+        if matches!(
+            new_role.as_str(),
+            "super_admin" | "super-admin" | "developer"
+        ) && !actor_is_super
+        {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(json!({"error": "Only super_admin can grant developer or super_admin roles"})),
+            ));
+        }
+    }
+
+    if let Some(ref password) = input.password {
+        crate::utils::validate_password(password)
+            .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
     }
 
     // Check email uniqueness if changing
@@ -570,9 +623,9 @@ pub(super) async fn delete_member(
         ));
     }
 
-    // Check member exists
-    let existing: Option<(i64, String)> =
-        sqlx::query_as("SELECT id, email FROM users WHERE id = $1")
+    // Check member exists and inspect current role
+    let existing: Option<(i64, String, Option<String>)> =
+        sqlx::query_as("SELECT id, email, role FROM users WHERE id = $1")
             .bind(id)
             .fetch_optional(&state.db.pool)
             .await
@@ -583,14 +636,27 @@ pub(super) async fn delete_member(
                 )
             })?;
 
-    if existing.is_none() {
+    let Some((_, _, existing_role)) = existing else {
         return Err((
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Member not found"})),
         ));
+    };
+
+    let actor_role = admin.0.role.as_deref().unwrap_or("user");
+    let actor_is_super = actor_role == "super_admin" || actor_role == "super-admin";
+    if matches!(
+        existing_role.as_deref().unwrap_or("user"),
+        "super_admin" | "super-admin" | "developer"
+    ) && !actor_is_super
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only super_admin can delete developer or super_admin accounts"})),
+        ));
     }
 
-    // Soft delete: anonymize data but keep record for audit
+    // Soft delete: anonymize data, mark inactive, and keep record for audit
     let deleted_email = format!("deleted_{id}@removed.local");
     let result = sqlx::query(
         r"
@@ -599,6 +665,7 @@ pub(super) async fn delete_member(
             name = 'Deleted User',
             password_hash = 'DELETED',
             role = 'deleted',
+            is_active = false,
             avatar_url = NULL,
             updated_at = NOW()
         WHERE id = $1
@@ -640,6 +707,12 @@ pub(super) async fn delete_member(
     .bind(id)
     .execute(&state.db.pool)
     .await;
+
+    if let Some(ref redis) = state.services.redis {
+        let _ = redis.bump_token_version(id).await;
+        let _ = redis.invalidate_all_user_sessions(id).await;
+        let _ = redis.invalidate_user_cache(id).await;
+    }
 
     Ok(Json(json!({
         "message": "Member deleted successfully"

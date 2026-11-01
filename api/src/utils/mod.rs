@@ -232,7 +232,7 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
         // Unknown hash format
         tracing::error!(
             "Unknown password hash format: {}",
-            &hash[..hash.len().min(10)]
+            &hash[..hash.floor_char_boundary(10)]
         );
         Err(anyhow::anyhow!("Unknown password hash format"))
     }
@@ -651,19 +651,21 @@ mod token_version_tests {
     }
 }
 
+/// Escape SQL LIKE/ILIKE wildcards (`\`, `%`, `_`) so user search terms are
+/// matched literally.
+pub fn escape_like(s: &str) -> String {
+    s.replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_")
+}
+
 // FIX-2026-04-26 (Priority 1): unit tests confirming the LIKE-wildcard escape used
 // in the videos.rs `search` filter neutralizes wildcard injection. The escape policy
 // is local to the SQL builder; this test pins the expected behavior so a future
 // refactor of the helper can't silently regress.
 #[cfg(test)]
 mod like_escape_tests {
-    /// Mirrors the escape policy used in `routes/videos.rs::list_videos` for the
-    /// search ILIKE filter. Kept in sync with the rebuild_count_args helper there.
-    fn escape_like(s: &str) -> String {
-        s.replace('\\', "\\\\")
-            .replace('%', "\\%")
-            .replace('_', "\\_")
-    }
+    use super::escape_like;
 
     #[test]
     fn escapes_percent_wildcard() {

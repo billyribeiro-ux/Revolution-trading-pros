@@ -3,8 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 async function runMigrations() {
+    if (!process.env.DATABASE_URL) {
+        console.error('Error: DATABASE_URL environment variable is required');
+        process.exit(1);
+    }
+
     const client = new Client({
-        connectionString: process.env.DATABASE_URL || 'postgres://revolution_trading_pros:iSovKZXmJMYAQzm@localhost:5433/revolution_trading_pros'
+        connectionString: process.env.DATABASE_URL
     });
 
     try {

@@ -86,33 +86,51 @@ pub(super) fn require_cms_admin(user: &User) -> Result<(), (StatusCode, Json<Jso
 /// Schedule status enum matching database
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, ToSchema)]
 #[sqlx(type_name = "cms_schedule_status", rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum ScheduleStatus {
+    #[serde(alias = "Pending")]
     Pending,
+    #[serde(alias = "Processing")]
     Processing,
+    #[serde(alias = "Completed")]
     Completed,
+    #[serde(alias = "Failed")]
     Failed,
+    #[serde(alias = "Cancelled")]
     Cancelled,
 }
 
 /// Schedule action enum matching database
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, ToSchema)]
 #[sqlx(type_name = "cms_schedule_action", rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum ScheduleAction {
+    #[serde(alias = "Publish")]
     Publish,
+    #[serde(alias = "Unpublish")]
     Unpublish,
+    #[serde(alias = "Archive")]
     Archive,
+    #[serde(alias = "Update")]
     Update,
 }
 
 /// Release status enum matching database
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, ToSchema)]
 #[sqlx(type_name = "cms_release_status", rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum ReleaseStatus {
+    #[serde(alias = "Draft")]
     Draft,
+    #[serde(alias = "Scheduled")]
     Scheduled,
+    #[serde(alias = "Processing")]
     Processing,
+    #[serde(alias = "Completed")]
     Completed,
+    #[serde(alias = "Failed")]
     Failed,
+    #[serde(alias = "Cancelled")]
     Cancelled,
 }
 

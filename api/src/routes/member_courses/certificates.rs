@@ -91,17 +91,16 @@ pub(super) async fn get_certificate(
     }
 
     // Get user info for certificate (name and email)
-    let user_info: (String, String) =
-        sqlx::query_as("SELECT COALESCE(name, username), email FROM users WHERE id = $1")
-            .bind(user_id)
-            .fetch_one(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": format!("Failed to get user info: {}", e)})),
-                )
-            })?;
+    let user_info: (String, String) = sqlx::query_as("SELECT name, email FROM users WHERE id = $1")
+        .bind(user_id)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to get user info: {}", e)})),
+            )
+        })?;
 
     // Generate certificate ID
     let cert_id = format!(
@@ -120,7 +119,7 @@ pub(super) async fn get_certificate(
     // In production, this would generate a PDF using a template
     // For now, we store certificate data and return a verification URL
     let certificate_url =
-        format!("https://revolution-trading-pros.com/certificates/verify/{cert_id}");
+        format!("https://revolutiontradingpros.com/certificates/verify/{cert_id}");
 
     // Update enrollment with certificate info
     sqlx::query(

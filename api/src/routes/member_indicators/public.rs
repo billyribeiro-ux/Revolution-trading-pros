@@ -62,7 +62,7 @@ pub(super) async fn list_public_indicators(
         SELECT id, name, slug, description, price_cents, is_active, platform, thumbnail, created_at
         FROM indicators
         WHERE is_active = true
-        AND ($1::BOOLEAN IS NULL OR is_active = $1)
+        AND ($1::BOOLEAN IS NULL OR ($1 = true AND COALESCE(price_cents, 0) = 0) OR ($1 = false AND COALESCE(price_cents, 0) > 0))
         AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
         ORDER BY created_at DESC
@@ -88,7 +88,7 @@ pub(super) async fn list_public_indicators(
         r"
         SELECT COUNT(*) FROM indicators
         WHERE is_active = true
-        AND ($1::BOOLEAN IS NULL OR is_active = $1)
+        AND ($1::BOOLEAN IS NULL OR ($1 = true AND COALESCE(price_cents, 0) = 0) OR ($1 = false AND COALESCE(price_cents, 0) > 0))
         AND ($2::TEXT IS NULL OR LOWER(platform) = $2)
         AND ($3::TEXT IS NULL OR name ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
         ",

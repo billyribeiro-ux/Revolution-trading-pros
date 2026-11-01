@@ -277,6 +277,7 @@ impl std::fmt::Debug for Config {
             )
             .field("from_email", &self.from_email)
             .field("app_url", &self.app_url)
+            .field("admin_notification_email", &self.admin_notification_email)
             // Sensitive: Meilisearch
             .field("meilisearch_host", &self.meilisearch_host)
             .field("meilisearch_api_key", &"[REDACTED]")
@@ -611,7 +612,13 @@ impl Config {
                 &self.credentials_encryption_key,
             ),
         ] {
-            if value.len() < 32 || value.to_ascii_lowercase().contains("placeholder") {
+            let lower = value.to_ascii_lowercase();
+            if value.len() < 32
+                || lower.contains("placeholder")
+                || lower.contains("replace-me")
+                || lower.contains("changeme")
+                || lower.contains("your-secret-here")
+            {
                 panic!(
                     "FATAL: ENVIRONMENT=production but {name} is unset, < 32 chars, or a \
                      placeholder. It keys the HMAC for member download/license tokens; a weak \

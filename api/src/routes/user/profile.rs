@@ -42,6 +42,15 @@ pub(super) async fn update_profile(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Pre-tx: validate password change inputs (no DB writes here so we can fail
     // fast without opening a transaction).
+    if input.new_password.is_some() != input.current_password.is_some() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "error": "Both currentPassword and newPassword are required to change your password"
+            })),
+        ));
+    }
+
     let new_password_hash: Option<String> = if let (Some(current_password), Some(new_password)) =
         (&input.current_password, &input.new_password)
     {
@@ -218,6 +227,14 @@ pub(super) async fn update_profile(
             Json(json!({"error": "Database error"})),
         )
     })?;
+
+    if let Some(redis) = &state.services.redis {
+        if new_password_hash.is_some() || email_changed {
+            let _ = redis.bump_token_version(user.id).await;
+            let _ = redis.invalidate_all_user_sessions(user.id).await;
+        }
+        let _ = redis.invalidate_user_cache(user.id).await;
+    }
 
     if new_password_hash.is_some() {
         tracing::info!(

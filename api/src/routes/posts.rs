@@ -125,24 +125,25 @@ async fn sync_post_categories(
     post_id: i64,
     slugs: &[String],
 ) -> Result<(), sqlx::Error> {
+    let mut tx = pool.begin().await?;
     sqlx::query("DELETE FROM post_categories WHERE post_id = $1")
         .bind(post_id)
-        .execute(pool)
+        .execute(&mut *tx)
         .await?;
-    if slugs.is_empty() {
-        return Ok(());
-    }
-    let ids: Vec<i64> = sqlx::query_scalar("SELECT id FROM categories WHERE slug = ANY($1)")
-        .bind(slugs)
-        .fetch_all(pool)
-        .await?;
-    for cid in ids {
-        sqlx::query("INSERT INTO post_categories (post_id, category_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
-            .bind(post_id)
-            .bind(cid)
-            .execute(pool)
+    if !slugs.is_empty() {
+        let ids: Vec<i64> = sqlx::query_scalar("SELECT id FROM categories WHERE slug = ANY($1)")
+            .bind(slugs)
+            .fetch_all(&mut *tx)
             .await?;
+        for cid in ids {
+            sqlx::query("INSERT INTO post_categories (post_id, category_id) VALUES ($1, $2) ON CONFLICT DO NOTHING")
+                .bind(post_id)
+                .bind(cid)
+                .execute(&mut *tx)
+                .await?;
+        }
     }
+    tx.commit().await?;
     Ok(())
 }
 
@@ -152,44 +153,47 @@ async fn sync_post_tags(
     post_id: i64,
     names: &[String],
 ) -> Result<(), sqlx::Error> {
+    let mut tx = pool.begin().await?;
     sqlx::query("DELETE FROM post_tags WHERE post_id = $1")
         .bind(post_id)
-        .execute(pool)
+        .execute(&mut *tx)
         .await?;
-    if names.is_empty() {
-        return Ok(());
-    }
-    let mut ids: Vec<i64> = Vec::with_capacity(names.len());
-    for name in names {
-        let trimmed = name.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
-        let tag_slug = slug::slugify(trimmed);
-        // Upsert (create-if-missing). RETURNING from ON CONFLICT skips on no-op,
-        // so do an explicit second SELECT to resolve the id either way.
-        sqlx::query("INSERT INTO tags (name, slug) VALUES ($1, $2) ON CONFLICT (slug) DO NOTHING")
+    if !names.is_empty() {
+        let mut ids: Vec<i64> = Vec::with_capacity(names.len());
+        for name in names {
+            let trimmed = name.trim();
+            if trimmed.is_empty() {
+                continue;
+            }
+            let tag_slug = slug::slugify(trimmed);
+            // Upsert (create-if-missing). RETURNING from ON CONFLICT skips on no-op,
+            // so do an explicit second SELECT to resolve the id either way.
+            sqlx::query(
+                "INSERT INTO tags (name, slug) VALUES ($1, $2) ON CONFLICT (slug) DO NOTHING",
+            )
             .bind(trimmed)
             .bind(&tag_slug)
-            .execute(pool)
+            .execute(&mut *tx)
             .await?;
-        let id: Option<i64> = sqlx::query_scalar("SELECT id FROM tags WHERE slug = $1")
-            .bind(&tag_slug)
-            .fetch_optional(pool)
+            let id: Option<i64> = sqlx::query_scalar("SELECT id FROM tags WHERE slug = $1")
+                .bind(&tag_slug)
+                .fetch_optional(&mut *tx)
+                .await?;
+            if let Some(id) = id {
+                ids.push(id);
+            }
+        }
+        for tid in ids {
+            sqlx::query(
+                "INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+            )
+            .bind(post_id)
+            .bind(tid)
+            .execute(&mut *tx)
             .await?;
-        if let Some(id) = id {
-            ids.push(id);
         }
     }
-    for tid in ids {
-        sqlx::query(
-            "INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-        )
-        .bind(post_id)
-        .bind(tid)
-        .execute(pool)
-        .await?;
-    }
+    tx.commit().await?;
     Ok(())
 }
 
@@ -211,7 +215,8 @@ async fn list_posts(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let status = query.status.unwrap_or_else(|| "published".to_string());
+    // Public route always filters to published posts only
+    let status = "published".to_string();
 
     // Build query with parameterized bindings for security (ICT 11+ SQL injection prevention)
     let search_pattern = query

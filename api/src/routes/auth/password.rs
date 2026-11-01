@@ -180,7 +180,7 @@ pub(super) async fn reset_password(
     // Hash the token and find it in the database
     let hashed_token = hash_token(&input.token);
 
-    let reset_record: Option<(uuid::Uuid, String)> = sqlx::query_as(
+    let reset_record: Option<(i64, String)> = sqlx::query_as(
         r"
         SELECT id, email FROM password_resets
         WHERE token = $1 AND email = $2 AND expires_at > NOW()
@@ -219,22 +219,31 @@ pub(super) async fn reset_password(
         )
     })?;
 
-    // Update user's password
-    let result =
-        sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE email = $2")
-            .bind(&password_hash)
-            .bind(&input.email)
-            .execute(&state.db.pool)
-            .await
-            .map_err(|e| {
-                tracing::error!("Database error: {}", e);
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": "Database error"})),
-                )
-            })?;
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("Failed to begin transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
-    if result.rows_affected() == 0 {
+    // Update user's password and fetch user id atomically
+    let updated_user_id: Option<i64> = sqlx::query_scalar(
+        "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE email = $2 RETURNING id",
+    )
+    .bind(&password_hash)
+    .bind(&input.email)
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
+    let Some(uid) = updated_user_id else {
         return Err((
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(json!({
@@ -244,39 +253,35 @@ pub(super) async fn reset_password(
                 }
             })),
         ));
-    }
+    };
 
-    // Delete the used reset token
+    // Delete the used reset token in the same transaction
     sqlx::query("DELETE FROM password_resets WHERE id = $1")
         .bind(reset_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .ok();
+        .map_err(|e| {
+            tracing::error!("Failed to delete used password reset token: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Database error"})),
+            )
+        })?;
+
+    tx.commit().await.map_err(|e| {
+        tracing::error!("Failed to commit reset-password transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     // FIX-H-2 (2026-04-29): a successful password reset MUST invalidate every
     // active session and bust the user cache. Without this, a thief who
     // already holds a valid access or refresh token continues to have access
     // for up to 1h (access) or 7d (refresh) — exactly the window the reset
     // was supposed to close.
-    //
-    // We need user_id; the handler so far has only used `email`. Look it up
-    // here (best-effort: a missing row at this stage means the password
-    // update we just did affected zero rows, which we already returned 422
-    // for — so this fetch should succeed).
-    let user_id_for_invalidate: Option<i64> =
-        sqlx::query_scalar("SELECT id FROM users WHERE email = $1")
-            .bind(&input.email)
-            .fetch_optional(&state.db.pool)
-            .await
-            .unwrap_or_else(|e| {
-                tracing::error!(
-                    target: "security_audit",
-                    event = "password_reset_user_lookup_failed",
-                    error = %e,
-                    "Could not look up user_id after password reset (sessions NOT invalidated)"
-                );
-                None
-            });
+    let user_id_for_invalidate = Some(uid);
 
     if let Some(uid) = user_id_for_invalidate {
         if let Some(redis) = &state.services.redis {

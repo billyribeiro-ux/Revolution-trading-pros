@@ -84,8 +84,6 @@ async fn list_indicators(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let is_active = query.is_active.unwrap_or(true);
-
     // ICT 7: Validate platform against allowlist
     let valid_platforms = ["tradingview", "thinkorswim", "metatrader", "ninjatrader", "all"];
     let platform = query.platform.as_ref().and_then(|p| {
@@ -97,20 +95,19 @@ async fn list_indicators(
     });
 
     // ICT 7: Use fully parameterized queries; project explicit columns so
-    // FromRow matches IndicatorRow.
+    // FromRow matches IndicatorRow. Enforce is_active = true unconditionally on public listing.
     let list_sql = format!(
         r#"
         SELECT {cols}
         FROM indicators
-        WHERE ($1::BOOLEAN IS FALSE OR is_active = true)
-        AND ($2::TEXT IS NULL OR platform = $2)
+        WHERE is_active = true
+        AND ($1::TEXT IS NULL OR platform = $1)
         ORDER BY created_at DESC
-        LIMIT $3 OFFSET $4
+        LIMIT $2 OFFSET $3
         "#,
         cols = INDICATOR_SELECT_COLS
     );
-    let indicators: Vec<IndicatorRow> = sqlx::query_as(sqlx::AssertSqlSafe(list_sql.as_str()))
-    .bind(is_active)
+    let mut indicators: Vec<IndicatorRow> = sqlx::query_as(sqlx::AssertSqlSafe(list_sql.as_str()))
     .bind(&platform)
     .bind(per_page)
     .bind(offset)
@@ -118,14 +115,17 @@ async fn list_indicators(
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
+    for indicator in &mut indicators {
+        indicator.download_url = None;
+    }
+
     let total: (i64,) = sqlx::query_as(
         r#"
         SELECT COUNT(*) FROM indicators
-        WHERE ($1::BOOLEAN IS FALSE OR is_active = true)
-        AND ($2::TEXT IS NULL OR platform = $2)
+        WHERE is_active = true
+        AND ($1::TEXT IS NULL OR platform = $1)
         "#,
     )
-    .bind(is_active)
     .bind(&platform)
     .fetch_one(&state.db.pool)
     .await
@@ -148,15 +148,17 @@ async fn get_indicator(
     Path(slug): Path<String>,
 ) -> Result<Json<IndicatorRow>, (StatusCode, Json<serde_json::Value>)> {
     let by_slug_sql = format!(
-        "SELECT {cols} FROM indicators WHERE slug = $1",
+        "SELECT {cols} FROM indicators WHERE slug = $1 AND is_active = true",
         cols = INDICATOR_SELECT_COLS
     );
-    let indicator: IndicatorRow = sqlx::query_as(sqlx::AssertSqlSafe(by_slug_sql.as_str()))
+    let mut indicator: IndicatorRow = sqlx::query_as(sqlx::AssertSqlSafe(by_slug_sql.as_str()))
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
         .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Indicator not found"}))))?;
+
+    indicator.download_url = None;
 
     Ok(Json(indicator))
 }

@@ -97,7 +97,7 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
     let mut stripe_subs: HashMap<String, crate::services::stripe::StripeSubscription> =
         HashMap::new();
 
-    for status in &["active", "trialing", "past_due"] {
+    for status in &["active", "trialing", "past_due", "paused"] {
         match stripe.list_subscriptions(status).await {
             Ok(subs) => {
                 tracing::info!(
@@ -152,6 +152,7 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
                     "active" => "active",
                     "trialing" => "trial",
                     "past_due" => "past_due",
+                    "paused" => "paused",
                     "canceled" | "cancelled" => "cancelled",
                     "unpaid" => "unpaid",
                     _ => "active",

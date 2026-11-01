@@ -25,7 +25,7 @@ pub(super) async fn change_plan(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current subscription
     let subscription: UserSubscriptionRow = sqlx::query_as(
-        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status IN ('active', 'trial')"
+        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2 AND status IN ('active', 'trial', 'trialing')"
     )
     .bind(subscription_id)
     .bind(user.id)

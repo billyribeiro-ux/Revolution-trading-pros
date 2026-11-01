@@ -29,7 +29,7 @@ pub async fn admin_index(
     // Build query with filters
     let mut sql = String::from(
         r"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
-                  u.email as user_email, u.name as user_name, o.payment_provider,
+                  COALESCE(u.email, o.billing_email, 'unknown') as user_email, u.name as user_name, o.payment_provider,
                   o.created_at, o.completed_at,
                   COUNT(oi.id)::INT as item_count
            FROM orders o
@@ -100,7 +100,7 @@ pub async fn admin_index(
         _ => {
             sqlx::query_as::<_, AdminOrderRow>(
                 r"SELECT o.id, o.order_number, o.status, (o.total * 100)::BIGINT AS total_cents, o.currency,
-                          u.email as user_email, u.name as user_name, o.payment_provider,
+                          COALESCE(u.email, o.billing_email, 'unknown') as user_email, u.name as user_name, o.payment_provider,
                           o.created_at, o.completed_at,
                           COUNT(oi.id)::INT as item_count
                    FROM orders o

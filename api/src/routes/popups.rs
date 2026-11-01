@@ -483,6 +483,13 @@ async fn track_events_batch(
     State(state): State<AppState>,
     Json(body): Json<BatchEventsBody>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    if body.events.len() > 50 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "error": "Maximum 50 events per batch" })),
+        ));
+    }
+
     let event_count = body.events.len();
     for event in body.events {
         let _ = sqlx::query(

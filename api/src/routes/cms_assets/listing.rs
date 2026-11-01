@@ -33,7 +33,7 @@ pub(super) async fn list_assets(
 
     // Folder filter
     if let Some(folder_id) = params.folder_id {
-        conditions.push(format!("folder_id = ${param_idx}"));
+        conditions.push(format!("folder_id = ${param_idx}::uuid"));
         bind_values.push(folder_id.to_string());
         param_idx += 1;
     }
@@ -77,7 +77,7 @@ pub(super) async fn list_assets(
     if let Some(ref tags_str) = params.tags {
         let tags: Vec<&str> = tags_str.split(',').map(|s| s.trim()).collect();
         if !tags.is_empty() {
-            conditions.push(format!("tags && ${param_idx}"));
+            conditions.push(format!("tags && ${param_idx}::text[]"));
             bind_values.push(format!("{{{}}}", tags.join(",")));
             param_idx += 1;
         }
@@ -85,12 +85,12 @@ pub(super) async fn list_assets(
 
     // Dimension filters
     if let Some(min_w) = params.min_width {
-        conditions.push(format!("width >= ${param_idx}"));
+        conditions.push(format!("width >= ${param_idx}::int4"));
         bind_values.push(min_w.to_string());
         param_idx += 1;
     }
     if let Some(max_w) = params.max_width {
-        conditions.push(format!("width <= ${param_idx}"));
+        conditions.push(format!("width <= ${param_idx}::int4"));
         bind_values.push(max_w.to_string());
         #[allow(unused_assignments)]
         {

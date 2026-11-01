@@ -4,12 +4,13 @@
 
 use axum::{
     extract::{Query, State},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
+use super::helpers::{client_ip, enforce_ip_rate_limit_strict, ClientAddr};
 use crate::{
     models::{MessageResponse, User},
     utils::{generate_verification_token, hash_token},
@@ -76,10 +77,18 @@ pub(super) async fn verify_email(
             )
         })?;
 
+    let mut tx = state.db.pool.begin().await.map_err(|e| {
+        tracing::error!("Failed to begin transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
     // ICT 11+ SECURITY: Update user's email_verified_at with audit trail
     sqlx::query("UPDATE users SET email_verified_at = NOW(), updated_at = NOW() WHERE id = $1")
         .bind(user_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
         .map_err(|e| {
             tracing::error!(
@@ -98,9 +107,33 @@ pub(super) async fn verify_email(
     // ICT 11+ SECURITY: Delete the used verification token (one-time use)
     sqlx::query("DELETE FROM email_verification_tokens WHERE id = $1")
         .bind(token_id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .ok(); // Ignore errors on cleanup
+        .map_err(|e| {
+            tracing::error!(
+                target: "security_audit",
+                event = "email_verification_token_delete_failed",
+                user_id = %user_id,
+                error = %e,
+                "Failed to delete used verification token"
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to verify email"})),
+            )
+        })?;
+
+    tx.commit().await.map_err(|e| {
+        tracing::error!("Failed to commit email verification transaction: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
+
+    if let Some(redis) = &state.services.redis {
+        let _ = redis.invalidate_user_cache(user_id).await;
+    }
 
     // ICT 11+ AUDIT: Log successful email verification
     tracing::info!(
@@ -151,8 +184,12 @@ pub(super) async fn verify_email(
 /// POST /api/auth/resend-verification
 pub(super) async fn resend_verification(
     State(state): State<AppState>,
+    peer: ClientAddr,
+    headers: HeaderMap,
     Json(input): Json<ResendVerificationRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
+    let ip = client_ip(peer.0, &headers, &state.config.trusted_proxy_cidrs);
+    enforce_ip_rate_limit_strict(&state, &ip, "resend_verify", 3, 3600).await?;
     // Find user by email
     let user: Option<User> = sqlx::query_as(
         "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"

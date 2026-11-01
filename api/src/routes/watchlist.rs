@@ -44,6 +44,7 @@ async fn list_watchlist(
     _user: User, // ICT 7: Require authenticated user for watchlist access
     Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
@@ -160,6 +161,7 @@ async fn get_watchlist(
     _user: User, // ICT 7: Require authenticated user for watchlist access
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     let result = sqlx::query_as::<_, WatchlistEntry>(
         "SELECT * FROM watchlist_entries WHERE slug = $1 AND deleted_at IS NULL",
     )

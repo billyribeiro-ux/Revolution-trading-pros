@@ -296,6 +296,10 @@ async fn sse_events(
     Query(query): Query<SseQuery>,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
     let user_id = user.id;
+    let is_cms_staff = matches!(
+        user.role.as_deref().unwrap_or(""),
+        "admin" | "super_admin" | "super-admin" | "developer" | "editor"
+    );
 
     // Parse filter options
     let content_type_filter: Option<Vec<String>> = query
@@ -337,7 +341,10 @@ async fn sse_events(
                         CmsEvent::WorkflowTransition { content_type, .. } |
                         CmsEvent::ReviewAssigned { content_type, .. } |
                         CmsEvent::ScheduledPublish { content_type, .. } => {
-                            content_type_filter.as_ref().map_or(true, |f| f.contains(content_type))
+                            is_cms_staff
+                                && content_type_filter
+                                    .as_ref()
+                                    .map_or(true, |f| f.contains(content_type))
                         }
                         CmsEvent::Notification { user_id: target_user, .. } => {
                             // Only send notifications to the target user

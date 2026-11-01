@@ -150,12 +150,14 @@ pub(super) async fn list_schedules(
     let mut bind_values: Vec<String> = Vec::new();
 
     if let Some(ref status) = query.status {
-        sql.push_str(&format!(" AND s.status = ${param_idx}"));
+        sql.push_str(&format!(
+            " AND s.status = ${param_idx}::cms_schedule_status"
+        ));
         bind_values.push(status.clone());
         param_idx += 1;
     }
     if let Some(content_id) = query.content_id {
-        sql.push_str(&format!(" AND s.content_id = ${param_idx}"));
+        sql.push_str(&format!(" AND s.content_id = ${param_idx}::uuid"));
         bind_values.push(content_id.to_string());
         param_idx += 1;
     }
@@ -185,12 +187,14 @@ pub(super) async fn list_schedules(
     let mut count_bind_values: Vec<String> = Vec::new();
 
     if let Some(ref status) = query.status {
-        count_sql.push_str(&format!(" AND s.status = ${count_param_idx}"));
+        count_sql.push_str(&format!(
+            " AND s.status = ${count_param_idx}::cms_schedule_status"
+        ));
         count_bind_values.push(status.clone());
         count_param_idx += 1;
     }
     if let Some(content_id) = query.content_id {
-        count_sql.push_str(&format!(" AND s.content_id = ${count_param_idx}"));
+        count_sql.push_str(&format!(" AND s.content_id = ${count_param_idx}::uuid"));
         count_bind_values.push(content_id.to_string());
     }
 

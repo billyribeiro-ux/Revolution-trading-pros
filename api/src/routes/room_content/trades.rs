@@ -306,13 +306,18 @@ pub(super) async fn close_trade(
             })?;
 
     // Calculate P&L
-    let pnl = if existing.direction == "long" {
-        (input.exit_price - existing.entry_price) * existing.quantity as f64
+    let price_delta = if existing.direction == "long" {
+        input.exit_price - existing.entry_price
     } else {
-        (existing.entry_price - input.exit_price) * existing.quantity as f64
+        existing.entry_price - input.exit_price
     };
+    let pnl = price_delta * existing.quantity as f64;
 
-    let pnl_percent = ((input.exit_price - existing.entry_price) / existing.entry_price) * 100.0;
+    let pnl_percent = if existing.entry_price > 0.0 {
+        (price_delta / existing.entry_price) * 100.0
+    } else {
+        0.0
+    };
     let holding_days = (exit_date - existing.entry_date).num_days() as i32;
     let result = if pnl > 0.0 { "WIN" } else { "LOSS" };
 

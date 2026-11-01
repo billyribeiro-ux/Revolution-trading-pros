@@ -405,6 +405,14 @@ async fn check_redirect(
 
     match redirect {
         Some((target, status_code)) => {
+            let is_safe_target = (target.starts_with('/')
+                && !target.starts_with("//")
+                && !target.starts_with("/\\"))
+                || (!state.config.app_url.is_empty() && target.starts_with(&state.config.app_url));
+            if !is_safe_target {
+                return Err(api_error(StatusCode::BAD_REQUEST, "Unsafe redirect target"));
+            }
+
             // Increment hit count
             let _ = sqlx::query(
                 "UPDATE cms_redirects SET hit_count = hit_count + 1, last_hit_at = NOW() WHERE source_path = $1",

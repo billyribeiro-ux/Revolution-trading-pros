@@ -147,7 +147,7 @@ pub(super) async fn get_course_detail(
     .await
     .unwrap_or_default();
 
-    let lessons: Vec<LessonListItem> = sqlx::query_as(
+    let mut lessons: Vec<LessonListItem> = sqlx::query_as(
         r"
         SELECT id, course_id, module_id, title, slug, description, duration_minutes,
                position, sort_order, is_free, is_preview, is_published,
@@ -161,6 +161,13 @@ pub(super) async fn get_course_detail(
     .fetch_all(&state.db.pool)
     .await
     .unwrap_or_default();
+
+    let course_is_free = course.is_free == Some(true);
+    for lesson in &mut lessons {
+        if !(course_is_free || lesson.is_free || lesson.is_preview == Some(true)) {
+            lesson.bunny_video_guid = None;
+        }
+    }
 
     let modules_with_lessons: Vec<ModuleWithLessons> = modules
         .into_iter()

@@ -32,11 +32,7 @@
 	let isLoading = $state(false);
 	let previewUrl = $state<string | null>(null);
 	let error = $state<string | null>(null);
-	let pdfList = $state<PdfFile[]>([]);
-
-	$effect(() => {
-		pdfList = pdfs;
-	});
+	let pdfList = $derived(pdfs);
 
 	async function generatePdf() {
 		isGenerating = true;
@@ -84,7 +80,9 @@
 			// Update download count
 			const index = pdfList.findIndex((p) => p.id === pdf.id);
 			if (index !== -1) {
-				pdfList[index] = { ...pdfList[index], download_count: pdfList[index].download_count + 1 };
+				pdfList = pdfList.map((item, i) =>
+					i === index ? { ...item, download_count: item.download_count + 1 } : item
+				);
 			}
 		} catch {
 			error = 'Failed to download PDF. Please try again.';

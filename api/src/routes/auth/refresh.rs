@@ -52,9 +52,11 @@ pub(super) async fn refresh(
                     user_id = %claims.sub,
                     "Refresh-token reuse detected — invalidating all sessions for user"
                 );
-                // Best-effort: invalidate every active session for the subject. This forces
-                // re-auth across all devices and breaks the attacker's chain.
+                // Best-effort: bump token epoch, invalidate every active session, and bust user cache
+                // so rotated access/refresh tokens are immediately rejected across all devices.
+                let _ = redis.bump_token_version(claims.sub).await;
                 let _ = redis.invalidate_all_user_sessions(claims.sub).await;
+                let _ = redis.invalidate_user_cache(claims.sub).await;
                 return Err((
                     StatusCode::UNAUTHORIZED,
                     Json(json!({
@@ -67,32 +69,40 @@ pub(super) async fn refresh(
                 // Not previously seen — proceed with rotation.
             }
             Err(e) => {
-                // Redis transient failure — log but continue (fail-open) to preserve
-                // refresh availability. The audit explicitly accepts this trade-off
-                // for non-write-side rate-limit checks.
-                tracing::warn!(
+                // Fail-closed: a Redis transient failure during blacklist check must not allow
+                // a potentially revoked/replayed refresh token to mint new tokens.
+                tracing::error!(
                     target: "security",
                     event = "refresh_blacklist_check_failed",
                     user_id = %claims.sub,
                     error = %e,
-                    "Refresh-token blacklist check failed; continuing"
+                    "Refresh-token blacklist check failed; rejecting (fail-closed)"
                 );
+                return Err((
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    Json(json!({
+                        "error": "Authentication service temporarily unavailable",
+                        "code": "AUTH_UNAVAILABLE",
+                    })),
+                ));
             }
         }
     }
 
-    // Verify user still exists
-    let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
-        .bind(claims.sub)
-        .fetch_optional(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Database error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Database error"})),
-            )
-        })?;
+    // Verify user still exists and is active
+    let user_exists: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM users WHERE id = $1 AND (is_active IS NULL OR is_active = true)",
+    )
+    .bind(claims.sub)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     if user_exists.is_none() {
         return Err((

@@ -184,6 +184,16 @@ impl FromRequestParts<AppState> for User {
             if let Some(ref redis) = state.services.redis {
                 if let Ok(Some(cached_json)) = redis.get_cached_user(claims.sub).await {
                     if let Ok(user) = serde_json::from_str::<User>(&cached_json) {
+                        if user.is_active == Some(false) {
+                            tracing::warn!(
+                                target: "security_audit",
+                                event = "banned_user_request_rejected",
+                                user_id = %user.id,
+                                email = %user.email,
+                                "Rejected request from cached banned/deactivated user"
+                            );
+                            return Err((StatusCode::FORBIDDEN, "Account has been deactivated"));
+                        }
                         tracing::debug!(
                             target: "performance",
                             event = "auth_cache_hit",

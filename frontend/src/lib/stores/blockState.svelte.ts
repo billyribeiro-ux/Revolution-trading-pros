@@ -4,6 +4,7 @@
  */
 
 import { getContext, setContext } from 'svelte';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 // Types
 export type BlockId = string & { readonly __brand: 'BlockId' };
@@ -85,8 +86,7 @@ export interface SocialShareState {
 }
 
 export interface ReusableComponentState {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- heterogeneous reusable-component payload indexed by callers; unknown[] cascades into its own read sites
-	data: any[] | null;
+	data: unknown[] | null;
 	loading: boolean;
 	error: string | null;
 	version: number;
@@ -107,50 +107,50 @@ export interface BlockStateData {
 // State Manager Class
 export class BlockStateManager {
 	private state = $state<BlockStateData>(this.createInitialState());
-	private cleanupCallbacks = new Map<BlockId, Array<() => void>>();
+	private cleanupCallbacks = new SvelteMap<BlockId, Array<() => void>>();
 
 	private createInitialState(): BlockStateData {
 		return {
 			interactive: {
-				accordion: new Map(),
-				tabs: new Map(),
-				toggles: new Map(),
-				toc: new Map()
+				accordion: new SvelteMap(),
+				tabs: new SvelteMap(),
+				toggles: new SvelteMap(),
+				toc: new SvelteMap()
 			},
 			media: {
-				audio: new Map(),
+				audio: new SvelteMap(),
 				lightbox: {
 					open: false,
 					blockId: null,
 					index: 0,
 					totalImages: 0
 				},
-				gifs: new Map()
+				gifs: new SvelteMap()
 			},
 			forms: {
-				newsletter: new Map()
+				newsletter: new SvelteMap()
 			},
 			ai: {
-				generated: new Map(),
-				summary: new Map(),
-				translation: new Map()
+				generated: new SvelteMap(),
+				summary: new SvelteMap(),
+				translation: new SvelteMap()
 			},
 			social: {
-				linkCopied: new Map()
+				linkCopied: new SvelteMap()
 			},
-			countdown: new Map(),
-			reusable: new Map()
+			countdown: new SvelteMap(),
+			reusable: new SvelteMap()
 		};
 	}
 
 	// Interactive Blocks
 	getAccordionState(blockId: BlockId): Set<string> {
-		return this.state.interactive.accordion.get(blockId) ?? new Set();
+		return this.state.interactive.accordion.get(blockId) ?? new SvelteSet();
 	}
 
 	toggleAccordionItem(blockId: BlockId, itemId: string, allowMultiple: boolean): void {
 		const current = this.getAccordionState(blockId);
-		const newSet = new Set(current);
+		const newSet = new SvelteSet(current);
 
 		if (newSet.has(itemId)) {
 			newSet.delete(itemId);
@@ -346,8 +346,8 @@ export class BlockStateManager {
 		}
 
 		const updateCountdown = () => {
-			const target = new Date(targetDate).getTime();
-			const now = new Date().getTime();
+			const target = Date.parse(targetDate);
+			const now = Date.now();
 			const diff = target - now;
 
 			if (diff <= 0) {

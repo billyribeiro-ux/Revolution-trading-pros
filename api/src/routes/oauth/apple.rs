@@ -239,15 +239,15 @@ pub(super) async fn apple_callback(
     .await?;
 
     // Create session in Redis
+    let session_id = generate_session_id();
     if let Some(redis) = &state.services.redis {
-        let session_id = generate_session_id();
         let _ = redis
             .create_session(&session_id, user.id, &user.email, None, None)
             .await;
     }
 
     // Create auth tokens
-    let auth_response = create_oauth_auth_response(user, &state).await?;
+    let auth_response = create_oauth_auth_response(user, &state, &session_id).await?;
 
     tracing::info!(
         target: "security_audit",

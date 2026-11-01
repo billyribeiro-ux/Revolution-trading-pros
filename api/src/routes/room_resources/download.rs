@@ -29,6 +29,7 @@ pub(super) async fn generate_secure_download(
     _user: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     // Generate a secure token
     let token: String = sqlx::query_scalar("SELECT generate_secure_download_token($1, 24)")
         .bind(id)
@@ -91,6 +92,7 @@ pub(super) async fn download_resource(
     Path(id): Path<i64>,
     Query(params): Query<std::collections::HashMap<String, String>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    crate::routes::room_content::ensure_room_access(&state, &_user).await?;
     // Get the resource
     let resource: RoomResource = sqlx::query_as(
         "SELECT * FROM room_resources WHERE id = $1 AND is_published = true AND deleted_at IS NULL",

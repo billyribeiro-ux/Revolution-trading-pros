@@ -65,42 +65,41 @@ use uuid::Uuid;
 
 // ── Enum wire format ─────────────────────────────────────────────────
 
-/// `ScheduleStatus` variants are serialized in PascalCase by serde's
-/// default. The handler converts DB rows where the sqlx type is
-/// lowercase, but the JSON the calendar UI reads is the serde-default
-/// PascalCase. Pin both so a refactor that adds
-/// `#[serde(rename_all = "lowercase")]` is caught here, not by a
-/// silently-broken calendar.
+/// `ScheduleStatus` variants are serialized in lowercase by
+/// `#[serde(rename_all = "lowercase")]`. The handler converts DB rows
+/// where the sqlx type is lowercase, and the JSON the calendar UI
+/// reads is lowercase as well (while still accepting PascalCase on
+/// deserialization via serde aliases).
 #[test]
-fn schedule_status_round_trip_uses_pascal_case_on_wire() {
+fn schedule_status_round_trip_uses_lowercase_on_wire() {
     let wire = serde_json::to_string(&ScheduleStatus::Pending).expect("serialize ScheduleStatus");
     assert_eq!(
-        wire, "\"Pending\"",
-        "ScheduleStatus serializes as PascalCase — calendar UI reads this verbatim"
+        wire, "\"pending\"",
+        "ScheduleStatus serializes as lowercase — calendar UI reads this verbatim"
     );
 
-    let back: ScheduleStatus = serde_json::from_str("\"Failed\"").expect("deserialize");
+    let back: ScheduleStatus = serde_json::from_str("\"failed\"").expect("deserialize");
     assert!(
         matches!(back, ScheduleStatus::Failed),
-        "PascalCase round-trip must hit the Failed variant"
+        "lowercase round-trip must hit the Failed variant"
     );
 }
 
 #[test]
-fn schedule_action_round_trip_uses_pascal_case_on_wire() {
+fn schedule_action_round_trip_uses_lowercase_on_wire() {
     let wire = serde_json::to_string(&ScheduleAction::Publish).expect("serialize ScheduleAction");
-    assert_eq!(wire, "\"Publish\"");
+    assert_eq!(wire, "\"publish\"");
 
-    let back: ScheduleAction = serde_json::from_str("\"Unpublish\"").expect("deserialize");
+    let back: ScheduleAction = serde_json::from_str("\"unpublish\"").expect("deserialize");
     assert!(matches!(back, ScheduleAction::Unpublish));
 }
 
 #[test]
-fn release_status_round_trip_uses_pascal_case_on_wire() {
+fn release_status_round_trip_uses_lowercase_on_wire() {
     let wire = serde_json::to_string(&ReleaseStatus::Scheduled).expect("serialize ReleaseStatus");
-    assert_eq!(wire, "\"Scheduled\"");
+    assert_eq!(wire, "\"scheduled\"");
 
-    let back: ReleaseStatus = serde_json::from_str("\"Completed\"").expect("deserialize");
+    let back: ReleaseStatus = serde_json::from_str("\"completed\"").expect("deserialize");
     assert!(matches!(back, ReleaseStatus::Completed));
 }
 

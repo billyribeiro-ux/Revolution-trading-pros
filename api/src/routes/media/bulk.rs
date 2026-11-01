@@ -105,38 +105,31 @@ pub(super) async fn bulk_update(
 
     let mut updated_count = 0;
 
+    if payload.collection.is_none() && payload.title.is_none() && payload.alt_text.is_none() {
+        return Ok(Json(serde_json::json!({
+            "success": true,
+            "data": {
+                "updated": 0
+            },
+            "message": "0 item(s) updated"
+        })));
+    }
+
     for id in &payload.ids {
-        let mut updates = Vec::new();
-
-        if payload.collection.is_some() {
-            updates.push("collection = $2");
-        }
-        if payload.title.is_some() {
-            updates.push("title = $3");
-        }
-        if payload.alt_text.is_some() {
-            updates.push("alt_text = $4");
-        }
-
-        if updates.is_empty() {
-            continue;
-        }
-
-        updates.push("updated_at = NOW()");
-
-        let query = format!("UPDATE media SET {} WHERE id = $1", updates.join(", "));
-
-        let mut q = sqlx::query(sqlx::AssertSqlSafe(query.as_str())).bind(id);
-
-        if let Some(ref collection) = payload.collection {
-            q = q.bind(collection);
-        }
-        if let Some(ref title) = payload.title {
-            q = q.bind(title);
-        }
-        if let Some(ref alt_text) = payload.alt_text {
-            q = q.bind(alt_text);
-        }
+        let q = sqlx::query(
+            r"
+            UPDATE media SET
+                collection = COALESCE($2, collection),
+                title = COALESCE($3, title),
+                alt_text = COALESCE($4, alt_text),
+                updated_at = NOW()
+            WHERE id = $1
+            ",
+        )
+        .bind(id)
+        .bind(&payload.collection)
+        .bind(&payload.title)
+        .bind(&payload.alt_text);
 
         if q.execute(state.db.pool()).await.is_ok() {
             updated_count += 1;

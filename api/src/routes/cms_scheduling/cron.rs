@@ -44,15 +44,19 @@ pub(super) async fn process_pending_schedules(
     let mut failed = 0;
     let mut errors = Vec::new();
 
-    // Get pending schedules that are due
+    // Claim pending schedules that are due atomically so concurrent workers cannot double-process
     let pending: Vec<(Uuid, Uuid, ScheduleAction, Option<JsonValue>)> = sqlx::query_as(
         r"
-        SELECT id, content_id, action, staged_data
-        FROM cms_schedules
-        WHERE status = 'pending' AND scheduled_at <= NOW()
-        ORDER BY scheduled_at ASC
-        LIMIT 100
-        FOR UPDATE SKIP LOCKED
+        UPDATE cms_schedules
+        SET status = 'processing'::cms_schedule_status, updated_at = NOW()
+        WHERE id IN (
+            SELECT id FROM cms_schedules
+            WHERE status = 'pending'::cms_schedule_status AND scheduled_at <= NOW()
+            ORDER BY scheduled_at ASC
+            LIMIT 50
+            FOR UPDATE SKIP LOCKED
+        )
+        RETURNING id, content_id, action, staged_data
         ",
     )
     .fetch_all(&state.db.pool)
@@ -61,12 +65,6 @@ pub(super) async fn process_pending_schedules(
 
     for (schedule_id, content_id, action, staged_data) in pending {
         processed += 1;
-
-        // Mark as processing
-        let _ = sqlx::query("UPDATE cms_schedules SET status = 'processing' WHERE id = $1")
-            .bind(schedule_id)
-            .execute(&state.db.pool)
-            .await;
 
         // Execute the action
         let result =
@@ -233,15 +231,19 @@ pub(super) async fn process_pending_releases(
     let mut failed = 0;
     let mut errors = Vec::new();
 
-    // Get pending releases
+    // Claim pending releases atomically so concurrent workers cannot double-process
     let pending: Vec<(Uuid, bool)> = sqlx::query_as(
         r"
-        SELECT id, stop_on_error
-        FROM cms_releases
-        WHERE status = 'scheduled' AND scheduled_at <= NOW()
-        ORDER BY scheduled_at ASC
-        LIMIT 10
-        FOR UPDATE SKIP LOCKED
+        UPDATE cms_releases
+        SET status = 'processing'::cms_release_status, updated_at = NOW()
+        WHERE id IN (
+            SELECT id FROM cms_releases
+            WHERE status = 'scheduled'::cms_release_status AND scheduled_at <= NOW()
+            ORDER BY scheduled_at ASC
+            LIMIT 10
+            FOR UPDATE SKIP LOCKED
+        )
+        RETURNING id, stop_on_error
         ",
     )
     .fetch_all(&state.db.pool)
@@ -250,12 +252,6 @@ pub(super) async fn process_pending_releases(
 
     for (release_id, stop_on_error) in pending {
         processed += 1;
-
-        // Mark as processing
-        let _ = sqlx::query("UPDATE cms_releases SET status = 'processing' WHERE id = $1")
-            .bind(release_id)
-            .execute(&state.db.pool)
-            .await;
 
         // Get release items
         let items: Vec<(Uuid, Uuid, ScheduleAction, Option<JsonValue>)> = sqlx::query_as(

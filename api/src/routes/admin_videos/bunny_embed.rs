@@ -14,12 +14,39 @@ use serde_json::json;
 use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
+#[derive(Debug, Deserialize, Default)]
+pub(super) struct BunnyWebhookQuery {
+    pub(super) secret: Option<String>,
+}
+
 /// POST /video-advanced/bunny/webhook - Handle Bunny.net transcoding webhook
 /// ICT 7 ADDITION: Transcoding status tracking
 pub(super) async fn bunny_webhook(
     State(state): State<AppState>,
+    headers: axum::http::HeaderMap,
+    Query(query): Query<BunnyWebhookQuery>,
     Json(payload): Json<serde_json::Value>,
-) -> Json<serde_json::Value> {
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let expected_secret = std::env::var("BUNNY_WEBHOOK_SECRET")
+        .or_else(|_| std::env::var("BUNNY_STREAM_API_KEY"))
+        .map(|s| s.trim().to_string())
+        .unwrap_or_default();
+
+    let provided_secret = headers
+        .get("X-Bunny-Webhook-Secret")
+        .and_then(|v| v.to_str().ok())
+        .or(query.secret.as_deref())
+        .unwrap_or("");
+
+    if expected_secret.is_empty()
+        || provided_secret.is_empty()
+        || !crate::utils::constant_time_compare(provided_secret, &expected_secret)
+    {
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error": "Invalid or missing Bunny webhook secret"})),
+        ));
+    }
     // Extract webhook data from Bunny.net
     let video_guid = payload
         .get("VideoGuid")
@@ -94,12 +121,12 @@ pub(super) async fn bunny_webhook(
         let _ = sqlx_query.execute(&state.db.pool).await;
     }
 
-    Json(json!({
+    Ok(Json(json!({
         "success": true,
         "message": "Webhook processed",
         "video_guid": video_guid,
         "encoding_status": encoding_status
-    }))
+    })))
 }
 
 /// GET /video-advanced/videos/:id/transcoding-status

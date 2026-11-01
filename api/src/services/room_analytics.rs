@@ -720,7 +720,7 @@ impl RoomAnalyticsService {
         to: Option<NaiveDate>,
     ) -> String {
         let mut filters = Vec::new();
-        let mut param_num = 2; // $1 is room_slug
+        let mut param_num = 1; // $1 is room_slug
 
         if from.is_some() {
             param_num += 1;
@@ -781,7 +781,7 @@ mod tests {
     fn test_build_date_filter_from_only() {
         let from = NaiveDate::from_ymd_opt(2026, 1, 1);
         let filter = RoomAnalyticsService::build_date_filter("exit_date", from, None);
-        assert_eq!(filter, "AND exit_date >= $3");
+        assert_eq!(filter, "AND exit_date >= $2");
     }
 
     #[test]
@@ -789,7 +789,7 @@ mod tests {
         let from = NaiveDate::from_ymd_opt(2026, 1, 1);
         let to = NaiveDate::from_ymd_opt(2026, 12, 31);
         let filter = RoomAnalyticsService::build_date_filter("exit_date", from, to);
-        assert_eq!(filter, "AND exit_date >= $3 AND exit_date <= $4");
+        assert_eq!(filter, "AND exit_date >= $2 AND exit_date <= $3");
     }
 
     #[test]

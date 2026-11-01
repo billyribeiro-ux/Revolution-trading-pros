@@ -47,11 +47,13 @@ pub async fn validate_request(
                 .get(header::CONTENT_TYPE)
                 .and_then(|v| v.to_str().ok())
                 .unwrap_or("");
+            let ct_lower = content_type.to_ascii_lowercase();
 
-            // Allow JSON and form data
-            if !content_type.contains("application/json")
-                && !content_type.contains("multipart/form-data")
-                && !content_type.contains("application/x-www-form-urlencoded")
+            // Allow JSON (including +json vendor types) and form data
+            if !ct_lower.contains("application/json")
+                && !ct_lower.contains("+json")
+                && !ct_lower.contains("multipart/form-data")
+                && !ct_lower.contains("application/x-www-form-urlencoded")
             {
                 return Err((
                     StatusCode::UNSUPPORTED_MEDIA_TYPE,
@@ -142,9 +144,11 @@ pub fn truncate(input: &str, max_length: usize) -> String {
     if input.len() <= max_length {
         input.to_string()
     } else if max_length <= 3 {
-        input[..max_length].to_string()
+        let end = input.floor_char_boundary(max_length);
+        input[..end].to_string()
     } else {
-        format!("{}...", &input[..max_length - 3])
+        let end = input.floor_char_boundary(max_length - 3);
+        format!("{}...", &input[..end])
     }
 }
 

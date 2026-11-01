@@ -115,6 +115,13 @@ pub(super) async fn create_subscription(
         })));
     }
 
+    if plan.price_cents > 0 && plan.stripe_price_id.is_none() {
+        return Err((
+            StatusCode::CONFLICT,
+            Json(json!({"error": "Paid plan is not linked to a Stripe price yet"})),
+        ));
+    }
+
     // ICT 7+ Enterprise: Calculate trial period and billing periods
     let now = chrono::Utc::now().naive_utc();
     let trial_days = plan.trial_days.unwrap_or(0);

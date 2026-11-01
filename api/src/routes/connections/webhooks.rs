@@ -89,11 +89,11 @@ pub(super) async fn create_webhook(
     Path(key): Path<String>,
     Json(input): Json<CreateWebhookRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Validate URL
-    if !input.url.starts_with("https://") {
+    // Validate URL against SSRF egress guard
+    if let Err(e) = crate::services::cms_webhooks::validate_webhook_url(&input.url) {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(json!({"error": "Webhook URL must use HTTPS"})),
+            Json(json!({"error": e.to_string()})),
         ));
     }
 

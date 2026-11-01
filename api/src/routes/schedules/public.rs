@@ -160,7 +160,7 @@ pub(super) async fn get_upcoming_events(
     Path(plan_slug): Path<String>,
     Query(query): Query<ScheduleQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let days = query.days.unwrap_or(7);
+    let days = query.days.unwrap_or(7).clamp(1, 90);
 
     tracing::info!(
         target: "security_audit",

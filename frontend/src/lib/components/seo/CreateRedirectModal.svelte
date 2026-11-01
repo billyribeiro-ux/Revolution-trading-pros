@@ -10,16 +10,9 @@
 	let { url404 = '', oncreated, oncancel }: Props = $props();
 
 	// Form state initialized with defaults
-	let form = $state({
-		destination_url: '',
-		redirect_type: '301',
-		notes: ''
-	});
-
-	// Sync url404 prop to form.notes
-	$effect(() => {
-		form.notes = `Redirect created from 404: ${url404 || ''}`;
-	});
+	let destinationUrl = $state('');
+	let redirectType = $state('301');
+	let notes = $derived(`Redirect created from 404: ${url404 || ''}`);
 
 	let saving = $state(false);
 	let error = $state('');
@@ -35,11 +28,11 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					source_url: url404,
-					destination_url: form.destination_url,
-					redirect_type: form.redirect_type,
+					destination_url: destinationUrl,
+					redirect_type: redirectType,
 					is_active: true,
 					is_regex: false,
-					notes: form.notes
+					notes
 				})
 			});
 
@@ -104,7 +97,7 @@
 					<input
 						id="destination-url"
 						type="text"
-						bind:value={form.destination_url}
+						bind:value={destinationUrl}
 						placeholder="/new-page"
 						required
 					/>
@@ -113,7 +106,7 @@
 
 				<div class="form-group">
 					<label for="redirect-type">Redirect Type</label>
-					<select id="redirect-type" bind:value={form.redirect_type}>
+					<select id="redirect-type" bind:value={redirectType}>
 						<option value="301">301 - Moved Permanently</option>
 						<option value="302">302 - Found (Temporary)</option>
 						<option value="307">307 - Temporary Redirect</option>
@@ -123,7 +116,7 @@
 
 				<div class="form-group">
 					<label for="notes">Notes</label>
-					<textarea id="notes" bind:value={form.notes} rows="2"></textarea>
+					<textarea id="notes" bind:value={notes} rows="2"></textarea>
 				</div>
 			</div>
 

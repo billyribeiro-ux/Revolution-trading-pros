@@ -58,8 +58,8 @@ async fn list_products(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    // Build query with parameterized conditions to prevent SQL injection
-    let is_active = query.is_active.unwrap_or(true);
+    // Public route always filters to active products only
+    let is_active = true;
 
     let (products, total) = if let Some(ref product_type) = query.product_type {
         if let Some(ref search) = query.search {
@@ -182,7 +182,7 @@ async fn get_product(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<ProductRow>, (StatusCode, Json<serde_json::Value>)> {
-    let product: ProductRow = sqlx::query_as("SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE slug = $1")
+    let product: ProductRow = sqlx::query_as("SELECT id, name, slug, type, description, long_description, (price * 100)::BIGINT AS price_cents, is_active, metadata, thumbnail, meta_title, meta_description, indexable, canonical_url, created_at, updated_at FROM products WHERE slug = $1 AND is_active = true")
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await

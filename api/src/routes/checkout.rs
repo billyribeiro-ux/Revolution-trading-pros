@@ -100,6 +100,12 @@ async fn create_checkout(
             })?;
 
             let qty = item.quantity.unwrap_or(1);
+            if !(1..=100).contains(&qty) {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({"error": "Item quantity must be between 1 and 100"})),
+                ));
+            }
             let line_total_cents: i64 = product.price_cents.saturating_mul(qty as i64);
             subtotal_cents = subtotal_cents.saturating_add(line_total_cents);
 

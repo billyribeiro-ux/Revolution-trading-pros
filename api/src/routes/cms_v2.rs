@@ -302,7 +302,7 @@ async fn get_content_by_slug(
 ) -> ApiResult<CmsContent> {
     let content_type = parse_content_type(&content_type)?;
 
-    let content = cms_content::get_content_by_slug(
+    let mut content = cms_content::get_content_by_slug(
         &state.db.pool,
         content_type,
         &slug,
@@ -315,6 +315,10 @@ async fn get_content_by_slug(
     // Only return published content for public endpoint
     if content.status != CmsContentStatus::Published {
         return Err(api_error(StatusCode::NOT_FOUND, "Content not found"));
+    }
+
+    if let Some(blocks) = content.content_blocks.as_mut() {
+        crate::utils::html::sanitize_content_blocks(blocks);
     }
 
     Ok(Json(content))

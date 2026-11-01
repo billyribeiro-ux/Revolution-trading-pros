@@ -56,9 +56,9 @@ fn verify_secure_token(token: &str, action: &str, secret: &[u8]) -> Option<(i64,
     let subscriber_id: i64 = payload_parts[0].parse().ok()?;
     let email = payload_parts[1].to_string();
 
-    // Verify HMAC
+    // Verify HMAC using constant-time comparison
     let expected_token = generate_secure_token(subscriber_id, &email, action, secret);
-    if token != expected_token {
+    if !crate::utils::constant_time_compare(token, &expected_token) {
         return None;
     }
 
@@ -68,6 +68,7 @@ fn verify_secure_token(token: &str, action: &str, secret: &[u8]) -> Option<(i64,
 /// Get the HMAC secret from environment or use fallback (in production, this must be configured)
 fn get_token_secret() -> Vec<u8> {
     std::env::var("NEWSLETTER_TOKEN_SECRET")
+        .or_else(|_| std::env::var("JWT_SECRET"))
         .unwrap_or_else(|_| "revolution-trading-newsletter-secret-change-in-production".to_string())
         .into_bytes()
 }

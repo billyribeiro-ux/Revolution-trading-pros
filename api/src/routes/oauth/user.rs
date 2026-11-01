@@ -23,7 +23,7 @@ use super::crypto::generate_random_string;
 use super::types::OAuthProvider;
 use crate::{
     models::{AuthResponse, User},
-    utils::{create_jwt_versioned, create_refresh_token_versioned, generate_session_id},
+    utils::{create_jwt_versioned, create_refresh_token_versioned},
     AppState,
 };
 
@@ -46,7 +46,7 @@ pub(super) async fn create_or_get_oauth_user(
     };
 
     let existing_oauth_user: Option<User> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
+        "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
          FROM users WHERE {provider_column} = $1"
     )))
     .bind(provider_id)
@@ -61,6 +61,13 @@ pub(super) async fn create_or_get_oauth_user(
     })?;
 
     if let Some(user) = existing_oauth_user {
+        if user.is_active == Some(false) {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(serde_json::json!({"error": "Account has been deactivated"})),
+            ));
+        }
+
         // ICT 7 AUDIT: Log OAuth login
         log_oauth_action(
             state,
@@ -77,7 +84,7 @@ pub(super) async fn create_or_get_oauth_user(
 
     // ICT 7: Check if user exists with this email
     let existing_email_user: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
+        "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
          FROM users WHERE email = $1"
     )
     .bind(email)
@@ -92,9 +99,16 @@ pub(super) async fn create_or_get_oauth_user(
     })?;
 
     if let Some(user) = existing_email_user {
+        if user.is_active == Some(false) {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(serde_json::json!({"error": "Account has been deactivated"})),
+            ));
+        }
+
         // ICT 7: Link OAuth to existing account
         let update_query = format!(
-            "UPDATE users SET {provider_column} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), updated_at = NOW() WHERE id = $2"
+            "UPDATE users SET {provider_column} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), email_verified_at = COALESCE(email_verified_at, NOW()), updated_at = NOW() WHERE id = $2"
         );
 
         sqlx::query(sqlx::AssertSqlSafe(update_query.as_str()))
@@ -132,7 +146,7 @@ pub(super) async fn create_or_get_oauth_user(
 
         // Refresh user data
         let updated_user: User = sqlx::query_as(
-            "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
+            "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
              FROM users WHERE id = $1"
         )
         .bind(user.id)
@@ -250,6 +264,7 @@ async fn log_oauth_action(
 pub(super) async fn create_oauth_auth_response(
     user: User,
     state: &AppState,
+    session_id: &str,
 ) -> Result<AuthResponse, (StatusCode, Json<serde_json::Value>)> {
     let token_version = match state.services.redis.as_ref() {
         Some(redis) => redis.get_token_version(user.id).await.map_err(|e| {
@@ -295,14 +310,11 @@ pub(super) async fn create_oauth_auth_response(
             },
         )?;
 
-    // Generate session ID
-    let session_id = generate_session_id();
-
     Ok(AuthResponse {
         token: token.clone(),
         access_token: token,
         refresh_token,
-        session_id,
+        session_id: session_id.to_string(),
         user: user.into(),
         expires_in: state.config.jwt_expires_in * 3600,
     })

@@ -21739,6 +21739,18 @@ CREATE POLICY cms_user_prefs_own ON public.cms_user_editor_preferences USING ((u
 
 
 --
+-- Migrations 070 & 071 baseline additions
+--
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_user_memberships_one_live_per_user
+    ON public.user_memberships (user_id)
+    WHERE status IN ('active', 'trialing');
+
+ALTER TABLE public.user_mfa_secrets
+    ADD COLUMN IF NOT EXISTS last_totp_timestep BIGINT;
+
+
+--
 -- PostgreSQL database dump complete
 --
 

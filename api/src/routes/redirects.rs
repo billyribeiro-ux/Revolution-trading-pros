@@ -154,6 +154,13 @@ pub async fn store(
         return Err(ApiError::validation_error("from_path must start with /"));
     }
 
+    let to_lower = payload.to_path.trim().to_ascii_lowercase();
+    if to_lower.starts_with("javascript:") || to_lower.starts_with("data:") {
+        return Err(ApiError::validation_error(
+            "to_path cannot use javascript: or data: scheme",
+        ));
+    }
+
     // Check if from_path already exists
     let exists: bool =
         sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM redirects WHERE from_path = $1)")
@@ -239,6 +246,15 @@ pub async fn update(
         if path_exists {
             return Err(ApiError::validation_error(
                 "Redirect from this path already exists",
+            ));
+        }
+    }
+
+    if let Some(ref to_path) = payload.to_path {
+        let to_lower = to_path.trim().to_ascii_lowercase();
+        if to_lower.starts_with("javascript:") || to_lower.starts_with("data:") {
+            return Err(ApiError::validation_error(
+                "to_path cannot use javascript: or data: scheme",
             ));
         }
     }
@@ -330,8 +346,9 @@ pub async fn destroy(
 }
 
 /// POST /admin/redirects/:id/hit - Increment hit count (for redirect tracking)
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip(state, _admin))]
 pub async fn increment_hit(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {

@@ -167,6 +167,31 @@ pub(super) async fn create_user(
     })?;
 
     let role = input.role.unwrap_or_else(|| "user".to_string());
+    const VALID_ROLES: &[&str] = &[
+        "user",
+        "member",
+        "moderator",
+        "admin",
+        "developer",
+        "super_admin",
+    ];
+    if !VALID_ROLES.contains(&role.as_str()) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid role"})),
+        ));
+    }
+    if role == "developer" || role == "super_admin" {
+        let actor_role = user.role.as_deref().unwrap_or("user");
+        if actor_role != "super_admin" && actor_role != "super-admin" {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(
+                    json!({"error": "Only super_admin can create developer or super_admin accounts"}),
+                ),
+            ));
+        }
+    }
 
     let user: AdminUserRow = sqlx::query_as(
         r"
@@ -222,7 +247,7 @@ pub(super) async fn update_user(
         }
     }
 
-    // Fetch old role for the audit log before the update
+    // Fetch old role for the audit log and privilege checks before the update
     let old_role: Option<(Option<String>,)> =
         sqlx::query_as("SELECT role FROM users WHERE id = $1")
             .bind(id)
@@ -235,6 +260,23 @@ pub(super) async fn update_user(
                     Json(json!({"error": "Database error"})),
                 )
             })?;
+
+    let target_existing_role = old_role
+        .as_ref()
+        .and_then(|(r,)| r.as_deref())
+        .unwrap_or("user");
+    let actor_role = user.role.as_deref().unwrap_or("user");
+    let actor_is_super = actor_role == "super_admin" || actor_role == "super-admin";
+    if matches!(
+        target_existing_role,
+        "super_admin" | "super-admin" | "developer"
+    ) && !actor_is_super
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only super_admin can modify developer or super_admin accounts"})),
+        ));
+    }
 
     // Build UPDATE query with parameterized values
     let mut set_clauses = Vec::new();
@@ -328,6 +370,14 @@ pub(super) async fn update_user(
         }
     }
 
+    if input.role.is_some() || input.is_active == Some(false) {
+        if let Some(ref redis) = state.services.redis {
+            let _ = redis.bump_token_version(id).await;
+            let _ = redis.invalidate_all_user_sessions(id).await;
+            let _ = redis.invalidate_user_cache(id).await;
+        }
+    }
+
     Ok(Json(updated))
 }
 
@@ -338,6 +388,38 @@ pub(super) async fn delete_user(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    if id == user.id {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Cannot delete or ban your own account"})),
+        ));
+    }
+
+    let existing_role: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT role FROM users WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+
+    let target_role = existing_role
+        .as_ref()
+        .and_then(|(r,)| r.as_deref())
+        .unwrap_or("user");
+    let actor_role = user.role.as_deref().unwrap_or("user");
+    let actor_is_super = actor_role == "super_admin" || actor_role == "super-admin";
+    if matches!(target_role, "super_admin" | "super-admin" | "developer") && !actor_is_super {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only super_admin can delete developer or super_admin accounts"})),
+        ));
+    }
+
     sqlx::query("DELETE FROM users WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -349,6 +431,12 @@ pub(super) async fn delete_user(
             )
         })?;
 
+    if let Some(ref redis) = state.services.redis {
+        let _ = redis.bump_token_version(id).await;
+        let _ = redis.invalidate_all_user_sessions(id).await;
+        let _ = redis.invalidate_user_cache(id).await;
+    }
+
     Ok(Json(json!({"message": "User deleted successfully"})))
 }
 
@@ -359,6 +447,38 @@ pub(super) async fn ban_user(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    if id == user.id {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Cannot delete or ban your own account"})),
+        ));
+    }
+
+    let existing_role: Option<(Option<String>,)> =
+        sqlx::query_as("SELECT role FROM users WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+
+    let target_role = existing_role
+        .as_ref()
+        .and_then(|(r,)| r.as_deref())
+        .unwrap_or("user");
+    let actor_role = user.role.as_deref().unwrap_or("user");
+    let actor_is_super = actor_role == "super_admin" || actor_role == "super-admin";
+    if matches!(target_role, "super_admin" | "super-admin" | "developer") && !actor_is_super {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only super_admin can ban developer or super_admin accounts"})),
+        ));
+    }
+
     sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)

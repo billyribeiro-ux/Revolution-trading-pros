@@ -270,58 +270,68 @@ pub(super) async fn submit_form(
         // ICT 7 Fix: Webhook integration
         if let Some(webhook_url) = settings.get("webhook_url").and_then(|v| v.as_str()) {
             if !webhook_url.is_empty() {
-                let webhook_payload = json!({
-                    "event": "form_submission",
-                    "form_id": form.id,
-                    "form_name": form.name,
-                    "form_slug": form.slug,
-                    "submission_id": submission_result.0,
-                    "data": clean_data,
-                    "timestamp": chrono::Utc::now().to_rfc3339()
-                });
+                if let Err(e) = crate::services::cms_webhooks::validate_webhook_url(webhook_url) {
+                    tracing::warn!(
+                        target: "forms",
+                        event = "webhook_rejected_ssrf",
+                        url = %webhook_url,
+                        error = %e,
+                        "Rejected unsafe form webhook URL"
+                    );
+                } else {
+                    let webhook_payload = json!({
+                        "event": "form_submission",
+                        "form_id": form.id,
+                        "form_name": form.name,
+                        "form_slug": form.slug,
+                        "submission_id": submission_result.0,
+                        "data": clean_data,
+                        "timestamp": chrono::Utc::now().to_rfc3339()
+                    });
 
-                // Fire-and-forget webhook call (don't block response)
-                let webhook_url = webhook_url.to_string();
-                let client = reqwest::Client::new();
-                tokio::spawn(async move {
-                    match client
-                        .post(&webhook_url)
-                        .header("Content-Type", "application/json")
-                        .header("X-Webhook-Event", "form_submission")
-                        .json(&webhook_payload)
-                        .timeout(std::time::Duration::from_secs(10))
-                        .send()
-                        .await
-                    {
-                        Ok(response) => {
-                            if response.status().is_success() {
-                                tracing::info!(
+                    // Fire-and-forget webhook call (don't block response)
+                    let webhook_url = webhook_url.to_string();
+                    let client = reqwest::Client::new();
+                    tokio::spawn(async move {
+                        match client
+                            .post(&webhook_url)
+                            .header("Content-Type", "application/json")
+                            .header("X-Webhook-Event", "form_submission")
+                            .json(&webhook_payload)
+                            .timeout(std::time::Duration::from_secs(10))
+                            .send()
+                            .await
+                        {
+                            Ok(response) => {
+                                if response.status().is_success() {
+                                    tracing::info!(
+                                        target: "forms",
+                                        event = "webhook_success",
+                                        url = %webhook_url,
+                                        "Webhook delivered successfully"
+                                    );
+                                } else {
+                                    tracing::warn!(
+                                        target: "forms",
+                                        event = "webhook_error",
+                                        url = %webhook_url,
+                                        status = %response.status(),
+                                        "Webhook returned non-success status"
+                                    );
+                                }
+                            }
+                            Err(e) => {
+                                tracing::error!(
                                     target: "forms",
-                                    event = "webhook_success",
+                                    event = "webhook_failed",
                                     url = %webhook_url,
-                                    "Webhook delivered successfully"
-                                );
-                            } else {
-                                tracing::warn!(
-                                    target: "forms",
-                                    event = "webhook_error",
-                                    url = %webhook_url,
-                                    status = %response.status(),
-                                    "Webhook returned non-success status"
+                                    error = %e,
+                                    "Failed to deliver webhook"
                                 );
                             }
                         }
-                        Err(e) => {
-                            tracing::error!(
-                                target: "forms",
-                                event = "webhook_failed",
-                                url = %webhook_url,
-                                error = %e,
-                                "Failed to deliver webhook"
-                            );
-                        }
-                    }
-                });
+                    });
+                }
             }
         }
     }
@@ -435,7 +445,10 @@ fn validate_form_submission(
 
                 // Pattern validation
                 if let Some(pattern) = validation.get("pattern").and_then(|v| v.as_str()) {
-                    if let Ok(regex) = regex::Regex::new(pattern) {
+                    if let Ok(regex) = regex::RegexBuilder::new(pattern)
+                        .size_limit(1 << 16)
+                        .build()
+                    {
                         if !regex.is_match(value_str) {
                             let message = validation
                                 .get("pattern_message")
@@ -527,7 +540,7 @@ fn build_form_notification_email(form_name: &str, data: &serde_json::Value) -> S
     </div>
 </body>
 </html>"#,
-        form_name,
+        html_escape::encode_text(form_name),
         fields_html,
         chrono::Utc::now().format("%Y-%m-%d %H:%M:%S UTC")
     )

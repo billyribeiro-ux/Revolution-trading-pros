@@ -119,8 +119,8 @@ pub(super) async fn list_releases(
     let mut sql = String::from("SELECT * FROM cms_releases WHERE 1=1");
 
     // Build parameterized query to prevent SQL injection
-    if let Some(ref status) = query.status {
-        sql.push_str(" AND status = $1");
+    if let Some(ref _status) = query.status {
+        sql.push_str(" AND status = $1::cms_release_status");
     }
 
     sql.push_str(" ORDER BY created_at DESC");
@@ -149,7 +149,7 @@ pub(super) async fn list_releases(
 
     // Count query with parameterized binding
     let total: (i64,) = if let Some(ref status) = query.status {
-        sqlx::query_as("SELECT COUNT(*) FROM cms_releases WHERE status = $1")
+        sqlx::query_as("SELECT COUNT(*) FROM cms_releases WHERE status = $1::cms_release_status")
             .bind(status)
             .fetch_one(&state.db.pool)
             .await

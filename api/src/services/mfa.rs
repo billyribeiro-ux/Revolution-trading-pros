@@ -78,7 +78,6 @@ pub fn generate_backup_codes() -> Vec<String> {
 }
 
 /// Generate TOTP code for a given secret and time
-#[allow(clippy::result_large_err)]
 pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
     let secret_bytes = base32::decode(Alphabet::Rfc4648 { padding: false }, secret)
         .ok_or_else(|| ApiError::internal_error("Invalid TOTP secret"))?;
@@ -108,7 +107,6 @@ pub fn generate_totp(secret: &str, time: u64) -> Result<String, ApiError> {
 }
 
 /// Verify TOTP code (allows 1 period drift)
-#[allow(clippy::result_large_err)]
 pub fn verify_totp(secret: &str, code: &str) -> Result<bool, ApiError> {
     Ok(verify_totp_timestep(secret, code)?.is_some())
 }
@@ -117,7 +115,6 @@ pub fn verify_totp(secret: &str, code: &str) -> Result<bool, ApiError> {
 /// counter (Unix time / `TOTP_PERIOD`) so the caller can enforce single-use
 /// replay protection (RUST_DEEP_AUDIT P2-2 / RFC 6238 §5.2). Returns `None`
 /// when the code matches no period in the ±1 drift window.
-#[allow(clippy::result_large_err)]
 pub fn verify_totp_timestep(secret: &str, code: &str) -> Result<Option<i64>, ApiError> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -227,14 +224,14 @@ impl MfaService {
         let mfa_secret = mfa_secret
             .ok_or_else(|| ApiError::new(StatusCode::BAD_REQUEST, "MFA setup not initiated"))?;
 
-        // Verify the code
-        if !verify_totp(&mfa_secret.totp_secret, code)? {
+        // Verify the code and capture the accepted time-step to prevent setup replay
+        let Some(timestep) = verify_totp_timestep(&mfa_secret.totp_secret, code)? else {
             return Ok(MfaVerifyResult {
                 success: false,
                 method: "totp".to_string(),
                 backup_codes_remaining: None,
             });
-        }
+        };
 
         // ICT 7 SAFETY: mirror `disable_mfa` — marking the secret verified and
         // setting `users.mfa_enabled` must commit atomically. A crash between the
@@ -245,13 +242,15 @@ impl MfaService {
             ApiError::database_error(&e.to_string())
         })?;
 
-        // Mark as verified and enable MFA
+        // Mark as verified, record consumed timestep, and enable MFA
         sqlx::query(
             r"
-            UPDATE user_mfa_secrets SET totp_verified_at = NOW(), updated_at = NOW()
-            WHERE user_id = $1
+            UPDATE user_mfa_secrets
+            SET totp_verified_at = NOW(), last_totp_timestep = $1, updated_at = NOW()
+            WHERE user_id = $2
             ",
         )
+        .bind(timestep)
         .bind(user_id)
         .execute(&mut *tx)
         .await

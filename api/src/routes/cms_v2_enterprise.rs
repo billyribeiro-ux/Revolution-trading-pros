@@ -35,6 +35,15 @@ fn api_error(status: StatusCode, message: &str) -> (StatusCode, Json<JsonValue>)
     (status, Json(json!({ "error": message })))
 }
 
+fn require_admin(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
+    let role = user.role.as_deref().unwrap_or("user");
+    if matches!(role, "admin" | "super-admin" | "super_admin") {
+        Ok(())
+    } else {
+        Err(api_error(StatusCode::FORBIDDEN, "Admin access required"))
+    }
+}
+
 fn require_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
     let role = user.role.as_deref().unwrap_or("user");
     if matches!(
@@ -54,9 +63,12 @@ fn require_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
 /// Get audit logs with filtering
 async fn get_audit_logs(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
-    Query(query): Query<cms_audit::AuditLogQuery>,
+    AdminUser(_user): AdminUser,
+    Query(mut query): Query<cms_audit::AuditLogQuery>,
 ) -> ApiResult<JsonValue> {
+    let limit = query.limit.unwrap_or(100).clamp(1, 200);
+    query.limit = Some(limit);
+
     let logs = cms_audit::get_audit_logs(&state.db.pool, &query)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -69,7 +81,7 @@ async fn get_audit_logs(
         "data": logs,
         "meta": {
             "total": total,
-            "limit": query.limit.unwrap_or(100),
+            "limit": limit,
             "offset": query.offset.unwrap_or(0)
         }
     })))
@@ -116,6 +128,10 @@ async fn transition_workflow(
     Json(input): Json<TransitionWorkflowRequest>,
 ) -> ApiResult<cms_workflow::WorkflowStatus> {
     require_editor(&user)?;
+
+    if input.to_stage == "published" {
+        require_admin(&user)?;
+    }
 
     let to_stage = match input.to_stage.as_str() {
         "draft" => cms_workflow::WorkflowStage::Draft,
@@ -242,11 +258,13 @@ async fn create_preview_token(
 ) -> ApiResult<cms_preview::PreviewToken> {
     require_editor(&user)?;
 
+    let expires_in_hours = input.expires_in_hours.unwrap_or(24).clamp(1, 168);
+
     let token = cms_preview::generate_preview_token(
         &state.db.pool,
         content_id,
         user.id,
-        input.expires_in_hours.unwrap_or(24),
+        expires_in_hours,
         input.max_views,
     )
     .await

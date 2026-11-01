@@ -120,7 +120,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/cms-v2/enterprise", cms_v2_enterprise::router())
         .merge(cms_v2_enterprise::public_router())
         // CMS Revisions - Revision comparison and restore - ICT 7+ Grade
-        .nest("/api/cms", cms_revisions::router())
+        .nest("/cms", cms_revisions::router())
         // CMS Delivery API - Public content delivery with search
         .nest("/delivery", cms_delivery::delivery_router())
         // Real-time updates - SSE

@@ -16,7 +16,7 @@ use validator::Validate;
 pub struct User {
     pub id: i64,
     pub email: String,
-    #[serde(skip_serializing)]
+    #[serde(skip_serializing, default)]
     pub password_hash: String,
     pub name: String,
     #[sqlx(default)]
@@ -70,8 +70,9 @@ pub struct RefreshTokenRequest {
 }
 
 /// Request for password reset
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Validate)]
 pub struct ForgotPasswordRequest {
+    #[validate(email(message = "Invalid email format"))]
     pub email: String,
 }
 
@@ -84,7 +85,11 @@ pub struct ResetPasswordRequest {
     #[validate(email(message = "Invalid email format"))]
     #[validate(length(max = 254, message = "Email too long"))]
     pub email: String,
-    #[validate(length(min = 12, max = 128, message = "Password must be 12-128 chars"))]
+    #[validate(length(
+        min = 12,
+        max = 128,
+        message = "Password must be between 12 and 128 characters"
+    ))]
     pub password: String,
     #[validate(length(
         min = 12,
@@ -150,7 +155,10 @@ pub struct MessageResponse {
 impl From<User> for UserResponse {
     fn from(user: User) -> Self {
         let role = user.role.clone().unwrap_or_else(|| "user".to_string());
-        let is_admin = role == "admin" || role == "super_admin" || role == "developer";
+        let is_admin = role == "admin"
+            || role == "super_admin"
+            || role == "super-admin"
+            || role == "developer";
 
         // Parse name into first/last name
         let name_parts: Vec<&str> = user.name.split_whitespace().collect();

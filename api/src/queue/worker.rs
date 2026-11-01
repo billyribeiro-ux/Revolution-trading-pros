@@ -17,11 +17,20 @@ use reqwest::Client;
 use serde::Serialize;
 use sha2::Sha256;
 use sqlx::PgPool;
+use std::sync::LazyLock;
 use tokio::time::{sleep, Duration};
 
 use crate::{db::Database, models::Job};
 
 type HmacSha256 = Hmac<Sha256>;
+
+static HTTP_CLIENT: LazyLock<Client> = LazyLock::new(|| {
+    Client::builder()
+        .timeout(Duration::from_secs(30))
+        .redirect(reqwest::redirect::Policy::none())
+        .build()
+        .expect("static reqwest Client must build")
+});
 
 /// Postmark email payload
 #[derive(Serialize)]
@@ -40,12 +49,15 @@ struct PostmarkEmail {
 
 /// Send an email via Postmark API
 async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<()> {
-    let postmark_token = std::env::var("POSTMARK_API_KEY").unwrap_or_default();
-    let from_email = std::env::var("FROM_EMAIL")
+    let postmark_token = std::env::var("POSTMARK_TOKEN")
+        .or_else(|_| std::env::var("POSTMARK_API_KEY"))
+        .unwrap_or_default();
+    let from_email = std::env::var("EMAIL_FROM_ADDRESS")
+        .or_else(|_| std::env::var("FROM_EMAIL"))
         .unwrap_or_else(|_| "noreply@revolution-trading-pros.pages.dev".to_string());
 
     if postmark_token.is_empty() {
-        tracing::warn!("POSTMARK_API_KEY not set, skipping email send");
+        tracing::warn!("POSTMARK_TOKEN / POSTMARK_API_KEY not set, skipping email send");
         return Ok(());
     }
 
@@ -57,8 +69,7 @@ async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<
         message_stream: "outbound".to_string(),
     };
 
-    let client = Client::new();
-    client
+    HTTP_CLIENT
         .post("https://api.postmarkapp.com/email")
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
@@ -150,6 +161,30 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
             }
         };
 
+        // Validate webhook URL against SSRF egress guard
+        let validated_url = match crate::services::cms_webhooks::validate_webhook_url(&webhook.url)
+        {
+            Ok(u) => u,
+            Err(e) => {
+                let error_msg = format!("Blocked by SSRF egress policy: {e}");
+                tracing::warn!(
+                    target: "security",
+                    webhook_id = %delivery.webhook_id,
+                    delivery_id = %delivery.id,
+                    error = %e,
+                    "Webhook delivery blocked by SSRF egress guard"
+                );
+                sqlx::query(
+                    "UPDATE webhook_deliveries SET status = 'failed', error_message = $1 WHERE id = $2",
+                )
+                .bind(&error_msg)
+                .bind(delivery.id)
+                .execute(pool)
+                .await?;
+                continue;
+            }
+        };
+
         // Prepare the payload
         let payload_str = serde_json::to_string(&serde_json::json!({
             "event": delivery.event_type,
@@ -157,13 +192,11 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
             "data": delivery.payload
         }))?;
 
-        // Build request with optional HMAC signature
-        let client = Client::builder()
-            .timeout(Duration::from_secs(webhook.timeout_seconds as u64))
-            .build()?;
+        let timeout_secs = webhook.timeout_seconds.clamp(1, 30) as u64;
 
-        let mut request = client
-            .post(&webhook.url)
+        let mut request = HTTP_CLIENT
+            .post(validated_url)
+            .timeout(Duration::from_secs(timeout_secs))
             .header("Content-Type", "application/json")
             .header("X-Webhook-Event", &delivery.event_type)
             .header("X-Webhook-Delivery-Id", delivery.id.to_string());
@@ -174,10 +207,23 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
             request = request.header("X-Webhook-Signature", format!("sha256={signature}"));
         }
 
-        // Add custom headers
+        // Add custom headers (filtering restricted transport/security headers)
         if let Some(ref headers) = webhook.headers {
             if let Some(headers_obj) = headers.as_object() {
                 for (key, value) in headers_obj {
+                    let key_lower = key.to_ascii_lowercase();
+                    if matches!(
+                        key_lower.as_str(),
+                        "host"
+                            | "content-length"
+                            | "transfer-encoding"
+                            | "connection"
+                            | "x-webhook-signature"
+                            | "x-webhook-event"
+                            | "x-webhook-delivery-id"
+                    ) {
+                        continue;
+                    }
                     if let Some(value_str) = value.as_str() {
                         request = request.header(key, value_str);
                     }
@@ -191,11 +237,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
             Ok(resp) => {
                 let status = resp.status().as_u16() as i32;
                 let body = resp.text().await.unwrap_or_default();
-                let body_truncated = if body.len() > 1000 {
-                    &body[..1000]
-                } else {
-                    &body
-                };
+                let body_truncated = &body[..body.floor_char_boundary(1000)];
 
                 if status >= 200 && status < 300 {
                     // Success
@@ -629,12 +671,23 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
                 "pending" // Will be retried
             };
 
-            sqlx::query("UPDATE jobs SET status = $1, error = $2 WHERE id = $3")
-                .bind(new_status)
-                .bind(&error_msg)
-                .bind(job.id)
-                .execute(&db.pool)
-                .await?;
+            sqlx::query(
+                r"
+                UPDATE jobs SET
+                    status = $1,
+                    error = $2,
+                    available_at = CASE
+                        WHEN $1 = 'pending' THEN NOW() + make_interval(secs => (10 * power(2, LEAST(attempts, 6)))::int)
+                        ELSE available_at
+                    END
+                WHERE id = $3
+                ",
+            )
+            .bind(new_status)
+            .bind(&error_msg)
+            .bind(job.id)
+            .execute(&db.pool)
+            .await?;
         }
     }
 

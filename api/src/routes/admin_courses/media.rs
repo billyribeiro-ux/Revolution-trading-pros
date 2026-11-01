@@ -253,7 +253,18 @@ pub(super) async fn get_upload_url(
     Path(course_id): Path<Uuid>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let file_name = input["file_name"].as_str().unwrap_or("file");
+    let file_name = input["file_name"].as_str().unwrap_or("file").trim();
+    if file_name.is_empty()
+        || file_name.contains("..")
+        || file_name.contains('/')
+        || file_name.contains('\\')
+        || file_name.contains('\0')
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid file_name"})),
+        ));
+    }
     let file_type = input["file_type"]
         .as_str()
         .unwrap_or("application/octet-stream");

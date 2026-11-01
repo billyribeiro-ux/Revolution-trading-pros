@@ -240,11 +240,12 @@ pub(super) async fn export_subscriptions(
             us.status,
             us.starts_at,
             us.expires_at,
-            us.price,
-            us.product_name,
-            us.billing_period
+            COALESCE(mp.price::float8, 0.0) as price,
+            COALESCE(mp.name, 'Unknown') as product_name,
+            COALESCE(mp.billing_cycle, 'monthly') as billing_period
         FROM user_memberships us
         LEFT JOIN users u ON us.user_id = u.id
+        LEFT JOIN membership_plans mp ON mp.id = us.plan_id
         ORDER BY us.created_at DESC
         LIMIT 10000
         ",

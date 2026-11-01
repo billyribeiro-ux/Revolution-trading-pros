@@ -143,9 +143,9 @@ async fn run_renewal_reminders(state: &AppState) -> anyhow::Result<usize> {
     .fetch_all(&state.db.pool)
     .await?;
 
-    let count = rows.len();
+    let mut count = 0usize;
     for row in rows {
-        let _ = state
+        match state
             .services
             .email
             .send_transactional(
@@ -159,7 +159,18 @@ async fn run_renewal_reminders(state: &AppState) -> anyhow::Result<usize> {
                     "amount_dollars": row.amount_dollars,
                 }),
             )
-            .await;
+            .await
+        {
+            Ok(_) => count += 1,
+            Err(e) => {
+                tracing::warn!(
+                    target: "email_reminders",
+                    email = %row.email,
+                    error = %e,
+                    "Failed to send subscription renewal reminder"
+                );
+            }
+        }
     }
 
     tracing::info!(
@@ -214,9 +225,9 @@ async fn run_trial_ending_reminders(state: &AppState) -> anyhow::Result<usize> {
     .fetch_all(&state.db.pool)
     .await?;
 
-    let count = rows.len();
+    let mut count = 0usize;
     for row in rows {
-        let _ = state
+        match state
             .services
             .email
             .send_transactional(
@@ -229,7 +240,18 @@ async fn run_trial_ending_reminders(state: &AppState) -> anyhow::Result<usize> {
                     "trial_end_date": row.trial_end.and_utc().to_rfc3339(),
                 }),
             )
-            .await;
+            .await
+        {
+            Ok(_) => count += 1,
+            Err(e) => {
+                tracing::warn!(
+                    target: "email_reminders",
+                    email = %row.email,
+                    error = %e,
+                    "Failed to send trial-ending reminder"
+                );
+            }
+        }
     }
 
     tracing::info!(

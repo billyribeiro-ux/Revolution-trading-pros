@@ -264,15 +264,20 @@ pub(super) async fn submit_quiz(
     let empty_vec = Vec::new();
     let answers = input["answers"].as_array().unwrap_or(&empty_vec);
     let mut results = Vec::new();
+    let mut seen_questions = std::collections::HashSet::new();
 
     for answer in answers {
         let question_id = answer["question_id"].as_i64().unwrap_or(0);
+        if question_id <= 0 || !seen_questions.insert(question_id) {
+            continue;
+        }
         let answer_id = answer["answer_id"].as_i64();
 
-        // Get correct answer and points
+        // Get correct answer and points (scoped to quiz_id)
         let question: Option<(i32,)> =
-            sqlx::query_as("SELECT points FROM quiz_questions WHERE id = $1")
+            sqlx::query_as("SELECT points FROM quiz_questions WHERE id = $1 AND quiz_id = $2")
                 .bind(question_id)
+                .bind(quiz_id)
                 .fetch_optional(&state.db.pool)
                 .await
                 .ok()

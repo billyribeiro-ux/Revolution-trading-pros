@@ -72,7 +72,7 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
 
     let sitemap_count = (post_count as f64 / MAX_URLS_PER_SITEMAP as f64).ceil() as i64;
     let site_url = std::env::var("SITE_URL")
-        .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
+        .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
     let mut content = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     content.push_str("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
@@ -142,7 +142,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     }
 
     let site_url = std::env::var("SITE_URL")
-        .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
+        .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
     let mut content = build_xml_header(false);
 
     // Static pages
@@ -249,6 +249,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 /// GET /sitemap/posts/:page - Generate posts sitemap (paginated)
 #[tracing::instrument(skip(state))]
 pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Response {
+    let page = page.clamp(1, 1000);
     let cache_key = format!("sitemap:posts:{page}");
     {
         let cache = SITEMAP_CACHE.read().await;
@@ -260,7 +261,7 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
     }
 
     let site_url = std::env::var("SITE_URL")
-        .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
+        .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
     let offset = (page - 1) * MAX_URLS_PER_SITEMAP;
 
     let posts: Vec<(String, DateTime<Utc>, Option<String>)> = sqlx::query_as(
@@ -319,7 +320,7 @@ pub async fn categories(State(state): State<AppState>) -> Response {
     }
 
     let site_url = std::env::var("SITE_URL")
-        .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
+        .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
     let categories: Vec<(String, DateTime<Utc>)> =
         sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
@@ -370,7 +371,7 @@ pub async fn tags_sitemap(State(state): State<AppState>) -> Response {
     }
 
     let site_url = std::env::var("SITE_URL")
-        .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
+        .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
     let tags: Vec<(String, DateTime<Utc>)> = sqlx::query_as("SELECT slug, updated_at FROM tags")
         .fetch_all(state.db.pool())
@@ -426,8 +427,8 @@ fn build_xml_footer() -> String {
 fn build_url(
     loc: &str,
     lastmod: &DateTime<Utc>,
-    changefreq: &str,
-    priority: &str,
+    _changefreq: &str,
+    _priority: &str,
     image: Option<&str>,
 ) -> String {
     let mut url = String::from("  <url>\n");
@@ -439,8 +440,6 @@ fn build_url(
         "    <lastmod>{}</lastmod>\n",
         lastmod.format("%Y-%m-%d")
     ));
-    url.push_str(&format!("    <changefreq>{changefreq}</changefreq>\n"));
-    url.push_str(&format!("    <priority>{priority}</priority>\n"));
 
     if let Some(img) = image {
         url.push_str("    <image:image>\n");

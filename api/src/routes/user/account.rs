@@ -108,6 +108,7 @@ pub(super) async fn deactivate_account(
                 last_name = NULL,
                 avatar_url = NULL,
                 password_hash = 'DEACTIVATED',
+                is_active = false,
                 status = 'deleted',
                 deleted_at = NOW(),
                 updated_at = NOW()
@@ -132,6 +133,12 @@ pub(super) async fn deactivate_account(
             )
         })?;
 
+        if let Some(redis) = &state.services.redis {
+            let _ = redis.bump_token_version(user.id).await;
+            let _ = redis.invalidate_all_user_sessions(user.id).await;
+            let _ = redis.invalidate_user_cache(user.id).await;
+        }
+
         tracing::info!(
             target: "security_audit",
             event = "account_deleted",
@@ -148,6 +155,7 @@ pub(super) async fn deactivate_account(
         sqlx::query(
             r"
             UPDATE users SET
+                is_active = false,
                 status = 'deactivated',
                 updated_at = NOW()
             WHERE id = $1
@@ -170,6 +178,12 @@ pub(super) async fn deactivate_account(
                 Json(json!({"error": "Database error"})),
             )
         })?;
+
+        if let Some(redis) = &state.services.redis {
+            let _ = redis.bump_token_version(user.id).await;
+            let _ = redis.invalidate_all_user_sessions(user.id).await;
+            let _ = redis.invalidate_user_cache(user.id).await;
+        }
 
         tracing::info!(
             target: "security_audit",

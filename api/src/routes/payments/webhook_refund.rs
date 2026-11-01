@@ -51,7 +51,7 @@ pub(super) async fn handle_refund(
         sqlx::query(
             r"UPDATE orders SET
                status = $1,
-               refund_amount = COALESCE(refund_amount, 0) + ($2::BIGINT / 100.0),
+               refund_amount = ($2::BIGINT / 100.0),
                refunded_at = CASE WHEN $1 = 'refunded' THEN NOW() ELSE refunded_at END,
                updated_at = NOW()
                WHERE payment_intent_id = $3",
@@ -82,15 +82,17 @@ pub(super) async fn handle_refund(
         // refund-state and access revocation are all-or-nothing, and Stripe
         // retries the whole event on failure.
         if is_full_refund {
-            // Revoke subscription membership
+            // Revoke subscription membership scoped to the refunded order's plan items
             sqlx::query(
                 r"UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
-                   WHERE id IN (
-                       SELECT um.id FROM user_memberships um
-                       JOIN orders o ON o.user_id = um.user_id
-                       WHERE o.payment_intent_id = $1
-                         AND um.status != 'cancelled'
-                   )",
+                   WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
+                     AND plan_id IN (
+                         SELECT oi.plan_id FROM order_items oi
+                         JOIN orders o ON o.id = oi.order_id
+                         WHERE o.payment_intent_id = $1
+                           AND oi.plan_id IS NOT NULL
+                     )
+                     AND status != 'cancelled'",
             )
             .bind(pi)
             .execute(&mut **tx)
@@ -103,10 +105,17 @@ pub(super) async fn handle_refund(
                 )
             })?;
 
-            // Revoke course enrollment access
+            // Revoke course enrollment access scoped to the refunded order's course products
             sqlx::query(
                 r"UPDATE user_course_enrollments SET is_active = false
                    WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
+                     AND course_id IN (
+                         SELECT p.course_id FROM order_items oi
+                         JOIN orders o ON o.id = oi.order_id
+                         JOIN products p ON p.id = oi.product_id
+                         WHERE o.payment_intent_id = $1
+                           AND p.course_id IS NOT NULL
+                     )
                      AND is_active = true",
             )
             .bind(pi)
@@ -120,10 +129,17 @@ pub(super) async fn handle_refund(
                 )
             })?;
 
-            // Revoke indicator access
+            // Revoke indicator access scoped to the refunded order's indicator products
             sqlx::query(
                 r"UPDATE user_indicator_access SET is_active = false
                    WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
+                     AND indicator_id IN (
+                         SELECT p.indicator_id FROM order_items oi
+                         JOIN orders o ON o.id = oi.order_id
+                         JOIN products p ON p.id = oi.product_id
+                         WHERE o.payment_intent_id = $1
+                           AND p.indicator_id IS NOT NULL
+                     )
                      AND is_active = true",
             )
             .bind(pi)

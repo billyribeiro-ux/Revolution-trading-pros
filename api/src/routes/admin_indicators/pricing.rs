@@ -47,7 +47,7 @@ pub(super) async fn change_indicator_price(
 
     let indicator: IndicatorForPriceChange = sqlx::query_as(
         r"SELECT id, name, stripe_price_id, stripe_product_id,
-                  COALESCE(price_cents, (price * 100)::BIGINT) AS price_cents
+                  COALESCE(price_cents, 0) AS price_cents
            FROM indicators WHERE id = $1",
     )
     .bind(indicator_id)

@@ -50,7 +50,10 @@ pub fn encrypt_map(secret: &str, map: &HashMap<String, String>) -> String {
             blob.extend_from_slice(&ciphertext);
             format!("{AEAD_PREFIX}{}", STANDARD.encode(blob))
         }
-        Err(_) => String::new(),
+        Err(e) => {
+            tracing::error!("AES-256-GCM encryption failed: {e}");
+            String::new()
+        }
     }
 }
 
@@ -60,15 +63,24 @@ pub fn encrypt_map(secret: &str, map: &HashMap<String, String>) -> String {
 pub fn decrypt_map(secret: &str, blob: &str) -> HashMap<String, String> {
     let Some(b64) = blob.strip_prefix(AEAD_PREFIX) else {
         // Legacy: base64(JSON) written before this migration.
+        tracing::warn!(
+            "Reading legacy unencrypted base64 credentials blob; re-save to upgrade to AES-256-GCM"
+        );
         return match STANDARD.decode(blob) {
             Ok(bytes) => serde_json::from_slice(&bytes).unwrap_or_default(),
-            Err(_) => HashMap::new(),
+            Err(e) => {
+                tracing::warn!("Failed to decode legacy base64 credentials blob: {e}");
+                HashMap::new()
+            }
         };
     };
 
     let raw = match STANDARD.decode(b64) {
         Ok(r) if r.len() > 12 => r,
-        _ => return HashMap::new(),
+        _ => {
+            tracing::warn!("Invalid or truncated v1 AES-256-GCM credentials blob");
+            return HashMap::new();
+        }
     };
     let (nonce_bytes, ciphertext) = raw.split_at(12);
     let nonce_arr: [u8; 12] = match nonce_bytes.try_into() {
@@ -80,7 +92,10 @@ pub fn decrypt_map(secret: &str, blob: &str) -> HashMap<String, String> {
 
     match cipher.decrypt(&Nonce::from(nonce_arr), ciphertext) {
         Ok(plaintext) => serde_json::from_slice(&plaintext).unwrap_or_default(),
-        Err(_) => HashMap::new(),
+        Err(e) => {
+            tracing::warn!("AES-256-GCM credentials decryption failed: {e}");
+            HashMap::new()
+        }
     }
 }
 

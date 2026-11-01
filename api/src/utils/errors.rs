@@ -16,6 +16,10 @@ use axum::{
 };
 use serde::Serialize;
 use std::collections::HashMap;
+use std::sync::LazyLock;
+
+static IS_PRODUCTION: LazyLock<bool> =
+    LazyLock::new(|| std::env::var("ENVIRONMENT").unwrap_or_default() == "production");
 
 /// Standardized API error response
 /// All errors across the API use this consistent format
@@ -182,7 +186,7 @@ pub fn rate_limited(retry_after: Option<i64>) -> ApiError {
 pub fn internal_error(message: impl Into<String>) -> ApiError {
     // ICT 11+ Security: Don't expose internal details in production
     let msg = message.into();
-    let safe_message = if std::env::var("ENVIRONMENT").unwrap_or_default() == "production" {
+    let safe_message = if *IS_PRODUCTION {
         "An internal error occurred. Please try again later.".to_string()
     } else {
         msg.clone()
@@ -282,7 +286,6 @@ pub fn validate_max_length(field: &str, value: &str, max: usize) -> Result<(), (
 
 // FIX-2026-04-26: UNUSED HELPER — zero callers in src/. Either wire into route handlers or delete in follow-up.
 /// Collect validation errors and return ApiError if any
-#[allow(clippy::result_large_err)]
 pub fn collect_validation_errors(
     validations: Vec<Result<(), (String, String)>>,
 ) -> Result<(), ApiError> {

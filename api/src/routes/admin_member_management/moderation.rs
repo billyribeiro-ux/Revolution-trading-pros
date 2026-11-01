@@ -67,6 +67,17 @@ pub(super) async fn ban_member(
         )
     })?;
 
+    sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
+
     // Log activity
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
@@ -98,6 +109,12 @@ pub(super) async fn ban_member(
             Json(json!({"error": format!("Database error: {}", e)})),
         )
     })?;
+
+    if let Some(ref redis) = state.services.redis {
+        let _ = redis.bump_token_version(id).await;
+        let _ = redis.invalidate_all_user_sessions(id).await;
+        let _ = redis.invalidate_user_cache(id).await;
+    }
 
     Ok(Json(json!({
         "message": "Member banned successfully",
@@ -156,6 +173,17 @@ pub(super) async fn suspend_member(
         )
     })?;
 
+    sqlx::query("UPDATE users SET is_active = false, updated_at = NOW() WHERE id = $1")
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
+
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
         r"
@@ -186,6 +214,12 @@ pub(super) async fn suspend_member(
             Json(json!({"error": format!("Database error: {}", e)})),
         )
     })?;
+
+    if let Some(ref redis) = state.services.redis {
+        let _ = redis.bump_token_version(id).await;
+        let _ = redis.invalidate_all_user_sessions(id).await;
+        let _ = redis.invalidate_user_cache(id).await;
+    }
 
     Ok(Json(json!({
         "message": "Member suspended successfully",
@@ -226,6 +260,17 @@ pub(super) async fn unban_member(
         )
     })?;
 
+    sqlx::query("UPDATE users SET is_active = true, updated_at = NOW() WHERE id = $1")
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
+
     // Original pool reference: .execute(&state.db.pool)
     let _ = sqlx::query(
         r"
@@ -245,6 +290,10 @@ pub(super) async fn unban_member(
             Json(json!({"error": format!("Database error: {}", e)})),
         )
     })?;
+
+    if let Some(ref redis) = state.services.redis {
+        let _ = redis.invalidate_user_cache(id).await;
+    }
 
     Ok(Json(json!({
         "message": "Member unbanned successfully"

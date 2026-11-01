@@ -335,6 +335,13 @@ pub async fn merge_tags(
         return Err(ApiError::not_found("Source tag not found"));
     }
 
+    let mut tx = state
+        .db
+        .pool()
+        .begin()
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
     // Move all post_tags from source to target (ignoring duplicates)
     let moved_count = sqlx::query(
         "UPDATE post_tags SET tag_id = $1
@@ -343,7 +350,7 @@ pub async fn merge_tags(
     )
     .bind(payload.target_id)
     .bind(payload.source_id)
-    .execute(state.db.pool())
+    .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?
     .rows_affected();
@@ -351,14 +358,18 @@ pub async fn merge_tags(
     // Delete remaining post_tags for source (duplicates that couldn't be moved)
     sqlx::query("DELETE FROM post_tags WHERE tag_id = $1")
         .bind(payload.source_id)
-        .execute(state.db.pool())
+        .execute(&mut *tx)
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     // Delete the source tag
     sqlx::query("DELETE FROM tags WHERE id = $1")
         .bind(payload.source_id)
-        .execute(state.db.pool())
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    tx.commit()
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 

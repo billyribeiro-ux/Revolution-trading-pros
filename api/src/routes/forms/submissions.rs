@@ -80,7 +80,7 @@ pub(super) async fn get_submission(
     Path((form_id, submission_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let submission: FormSubmissionRow = sqlx::query_as(
-        "SELECT id, form_id, data, ip_address, user_agent, created_at FROM form_submissions WHERE id = $1 AND form_id = $2"
+        "SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address, user_agent, created_at FROM form_submissions WHERE id = $1 AND form_id = $2"
     )
     .bind(submission_id)
     .bind(form_id)
@@ -251,6 +251,13 @@ pub(super) async fn bulk_update_status(
         ));
     }
 
+    if input.submission_ids.len() > 500 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Maximum 500 submission IDs per bulk operation"})),
+        ));
+    }
+
     // Build IN clause for submission IDs
     let placeholders: Vec<String> = input
         .submission_ids
@@ -305,6 +312,13 @@ pub(super) async fn bulk_delete_submissions(
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "No submission IDs provided"})),
+        ));
+    }
+
+    if input.submission_ids.len() > 500 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Maximum 500 submission IDs per bulk operation"})),
         ));
     }
 

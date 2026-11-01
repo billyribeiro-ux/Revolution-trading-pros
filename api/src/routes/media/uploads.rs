@@ -33,7 +33,6 @@ pub(super) async fn presigned_upload(
         "image/png",
         "image/webp",
         "image/gif",
-        "image/svg+xml",
         "video/mp4",
         "video/webm",
         "video/quicktime",
@@ -59,7 +58,6 @@ pub(super) async fn presigned_upload(
         "image/png" => "png",
         "image/webp" => "webp",
         "image/gif" => "gif",
-        "image/svg+xml" => "svg",
         "video/mp4" => "mp4",
         "video/webm" => "webm",
         "video/quicktime" => "mov",
@@ -68,6 +66,13 @@ pub(super) async fn presigned_upload(
     };
 
     let folder = payload.collection.unwrap_or_else(|| "uploads".to_string());
+    if folder.contains("..")
+        || folder.contains('/')
+        || folder.contains('\\')
+        || folder.contains('\0')
+    {
+        return Err(ApiError::validation_error("Invalid collection name"));
+    }
     let file_key = format!("{}/{}.{}", folder, Uuid::new_v4(), extension);
 
     // Get presigned URL from storage service
@@ -110,6 +115,12 @@ pub(super) async fn confirm_upload(
         return Err(ApiError::validation_error(
             "Invalid file key: path traversal detected",
         ));
+    }
+
+    if let Some(ref col) = payload.collection {
+        if col.contains("..") || col.contains('/') || col.contains('\\') || col.contains('\0') {
+            return Err(ApiError::validation_error("Invalid collection name"));
+        }
     }
 
     // Validate file_key format (should be folder/uuid.ext)
@@ -187,7 +198,6 @@ pub(super) async fn direct_upload(
         "image/png",
         "image/webp",
         "image/gif",
-        "image/svg+xml",
         "video/mp4",
         "video/webm",
         "video/quicktime",

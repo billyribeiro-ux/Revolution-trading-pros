@@ -30,7 +30,8 @@ const getInitialTheme = (): Theme => {
 	return (localStorage.getItem('theme') as Theme) || defaultTheme;
 };
 
-let currentTheme = $state<Theme>(getInitialTheme());
+const initialTheme = getInitialTheme();
+let currentTheme = $state<Theme>(initialTheme);
 
 // Derived state for effective theme (resolves 'auto' to actual value)
 const effectiveThemeValue = $derived.by(() => {
@@ -85,7 +86,7 @@ function applyTheme(theme: Theme) {
 
 // Initialize theme on load
 if (browser) {
-	applyTheme(currentTheme);
+	applyTheme(initialTheme);
 
 	// Listen for system theme changes
 	if (typeof window !== 'undefined') {

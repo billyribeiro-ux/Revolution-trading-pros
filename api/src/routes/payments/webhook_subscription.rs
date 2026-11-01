@@ -64,6 +64,17 @@ pub(super) async fn handle_subscription_updated(
         _ => "active",
     };
 
+    let stripe_price_id = subscription
+        .items
+        .as_ref()
+        .and_then(|l| l.data.first())
+        .map(|item| item.price.id.as_str())
+        .or_else(|| {
+            event.data.object["items"]["data"]
+                .get(0)
+                .and_then(|item| item["price"]["id"].as_str())
+        });
+
     sqlx::query(
         r"UPDATE user_memberships SET
             status = $1,
@@ -71,6 +82,7 @@ pub(super) async fn handle_subscription_updated(
             current_period_end = $3,
             cancel_at_period_end = $4,
             cancelled_at = $5,
+            plan_id = COALESCE((SELECT id FROM membership_plans WHERE stripe_price_id = $7 LIMIT 1), plan_id),
             updated_at = NOW()
         WHERE stripe_subscription_id = $6",
     )
@@ -90,6 +102,7 @@ pub(super) async fn handle_subscription_updated(
             .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0).map(|d| d.naive_utc())),
     )
     .bind(&subscription.id)
+    .bind(stripe_price_id)
     .execute(&mut **tx)
     .await
     .map_err(|e| {

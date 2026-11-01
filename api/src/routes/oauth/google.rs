@@ -10,6 +10,9 @@
 //! - Tokens are returned via httpOnly cookies on the redirect Response
 //!   (FIX-C-1, 2026-04-29) — never in the URL.
 
+use std::sync::LazyLock;
+use std::time::Duration;
+
 use axum::{
     extract::{Query, State},
     http::StatusCode,
@@ -23,6 +26,14 @@ use super::session::oauth_callback_response_with_cookies;
 use super::types::{GoogleCallbackQuery, OAuthProvider};
 use super::user::{create_oauth_auth_response, create_or_get_oauth_user};
 use crate::{utils::generate_session_id, AppState};
+
+static GOOGLE_HTTP_CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| {
+    reqwest::Client::builder()
+        .timeout(Duration::from_secs(10))
+        .connect_timeout(Duration::from_secs(5))
+        .build()
+        .unwrap_or_else(|_| reqwest::Client::new())
+});
 
 /// Google token response
 #[derive(Debug, Deserialize)]
@@ -211,7 +222,7 @@ pub(super) async fn google_callback(
     })?;
     let redirect_uri = format!("{}/api/auth/google/callback", state.config.app_url);
 
-    let token_response = reqwest::Client::new()
+    let token_response = GOOGLE_HTTP_CLIENT
         .post("https://oauth2.googleapis.com/token")
         .form(&[
             ("code", code.as_str()),
@@ -250,7 +261,7 @@ pub(super) async fn google_callback(
     })?;
 
     // Get user info from Google
-    let user_info_response = reqwest::Client::new()
+    let user_info_response = GOOGLE_HTTP_CLIENT
         .get("https://www.googleapis.com/oauth2/v3/userinfo")
         .bearer_auth(&tokens.access_token)
         .send()
@@ -262,6 +273,15 @@ pub(super) async fn google_callback(
                 Json(serde_json::json!({"error": "Failed to get user info from Google"})),
             )
         })?;
+
+    if !user_info_response.status().is_success() {
+        let error_text = user_info_response.text().await.unwrap_or_default();
+        tracing::error!("Google userinfo error: {}", error_text);
+        return Err((
+            StatusCode::BAD_GATEWAY,
+            Json(serde_json::json!({"error": "Failed to get user info from Google"})),
+        ));
+    }
 
     let user_info: GoogleUserInfo = user_info_response.json().await.map_err(|e| {
         tracing::error!("Failed to parse Google user info: {}", e);
@@ -307,15 +327,15 @@ pub(super) async fn google_callback(
     .await?;
 
     // Create session in Redis
+    let session_id = generate_session_id();
     if let Some(redis) = &state.services.redis {
-        let session_id = generate_session_id();
         let _ = redis
             .create_session(&session_id, user.id, &user.email, None, None)
             .await;
     }
 
     // Create auth tokens
-    let auth_response = create_oauth_auth_response(user, &state).await?;
+    let auth_response = create_oauth_auth_response(user, &state, &session_id).await?;
 
     tracing::info!(
         target: "security_audit",

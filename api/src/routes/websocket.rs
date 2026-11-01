@@ -49,6 +49,9 @@ const CLIENT_TIMEOUT: u64 = 60;
 /// Maximum message size (64KB)
 const MAX_MESSAGE_SIZE: usize = 64 * 1024;
 
+/// Maximum room subscriptions per WebSocket connection
+const MAX_ROOMS_PER_CONNECTION: usize = 10;
+
 // ═══════════════════════════════════════════════════════════════════════════════════
 // MESSAGE TYPES
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -366,19 +369,24 @@ pub async fn ws_handler(
     State(state): State<AppState>,
     Query(params): Query<WsParams>,
 ) -> impl IntoResponse {
-    // JWT validation: if a token is supplied it must be valid and non-expired.
-    // Room subscriptions without a token are rejected (FIX-2026-04-26 Priority 9).
-    // Public/global heartbeat connections (no rooms) remain allowed.
     let has_room_request = params
         .rooms
         .as_ref()
         .map(|r| r.split(',').any(|s| !s.trim().is_empty()))
         .unwrap_or(false);
 
-    // FIX-2026-04-26 (Priority 3): pass "access" expected_type to verify_jwt.
-    // Original: if let Err(err) = verify_jwt(token, &state.config.jwt_secret) {
-    if let Some(ref token) = params.token {
-        if let Err(err) = verify_jwt(token, &state.config.jwt_secret, "access") {
+    let Some(ref token) = params.token else {
+        warn!("WebSocket connection rejected: missing JWT token");
+        return (
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error": "Unauthorized", "code": 4001, "reason": "authentication token required"})),
+        )
+            .into_response();
+    };
+
+    let claims = match verify_jwt(token, &state.config.jwt_secret, "access") {
+        Ok(c) => c,
+        Err(err) => {
             warn!(error = %err, "WebSocket connection rejected: invalid JWT token");
             return (
                 StatusCode::UNAUTHORIZED,
@@ -386,31 +394,107 @@ pub async fn ws_handler(
             )
                 .into_response();
         }
-    } else if has_room_request {
-        // FIX-2026-04-26 (Priority 9): no token + room subscription request = reject.
-        warn!("WebSocket connection rejected: room subscription requires JWT token");
+    };
+
+    // Enforce Redis token_version epoch check so revoked/banned tokens cannot connect
+    if let Some(ref redis) = state.services.redis {
+        match redis.get_token_version(claims.sub).await {
+            Ok(current_version) if claims.token_version < current_version => {
+                warn!(
+                    user_id = %claims.sub,
+                    token_version = %claims.token_version,
+                    current_version = %current_version,
+                    "WebSocket connection rejected: stale token_version"
+                );
+                return (
+                    StatusCode::UNAUTHORIZED,
+                    Json(json!({"error": "Token has been revoked", "code": 4001})),
+                )
+                    .into_response();
+            }
+            Ok(_) => {}
+            Err(e) => {
+                error!(user_id = %claims.sub, error = %e, "Redis token_version check failed on WebSocket upgrade");
+                return (
+                    StatusCode::UNAUTHORIZED,
+                    Json(json!({"error": "Authentication temporarily unavailable", "code": 4001})),
+                )
+                    .into_response();
+            }
+        }
+    }
+
+    // Verify user is active and check role / active membership for room access
+    let user_row: Option<(Option<String>, bool)> =
+        sqlx::query_as("SELECT role, is_active FROM users WHERE id = $1")
+            .bind(claims.sub)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
+
+    let Some((role_opt, is_active)) = user_row else {
         return (
             StatusCode::UNAUTHORIZED,
-            Json(json!({"error": "Unauthorized", "code": 4001, "reason": "room subscription requires authentication"})),
+            Json(json!({"error": "Unauthorized", "code": 4001})),
+        )
+            .into_response();
+    };
+
+    if !is_active {
+        return (
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Account is disabled", "code": 4003})),
+        )
+            .into_response();
+    }
+
+    let role = role_opt.as_deref().unwrap_or("");
+    let is_staff = matches!(role, "admin" | "super_admin" | "super-admin" | "developer");
+    let has_room_access = if is_staff {
+        true
+    } else {
+        let membership: Option<(i64,)> = sqlx::query_as(
+            "SELECT id FROM user_memberships \
+             WHERE user_id = $1 AND status IN ('active', 'trial', 'trialing') LIMIT 1",
+        )
+        .bind(claims.sub)
+        .fetch_optional(&state.db.pool)
+        .await
+        .ok()
+        .flatten();
+        membership.is_some()
+    };
+
+    if has_room_request && !has_room_access {
+        warn!(user_id = %claims.sub, "WebSocket room subscription rejected: no active membership");
+        return (
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Active membership required", "code": 4003})),
         )
             .into_response();
     }
 
     ws.max_message_size(MAX_MESSAGE_SIZE)
-        .on_upgrade(move |socket| handle_socket(socket, state, params))
+        .on_upgrade(move |socket| handle_socket(socket, state, params, has_room_access))
         .into_response()
 }
 
 /// Handle an individual WebSocket connection
-async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
+async fn handle_socket(
+    socket: WebSocket,
+    state: AppState,
+    params: WsParams,
+    has_room_access: bool,
+) {
     let connection_id = uuid::Uuid::new_v4().to_string();
     let (mut sender, mut receiver) = socket.split();
 
-    // Parse initial rooms to subscribe to.
+    // Parse initial rooms to subscribe to (capped at MAX_ROOMS_PER_CONNECTION and gated by membership).
     // RUST_DEEP_AUDIT_2026-06-07 (P2-9): de-duplicate (and drop empties) so a
     // `?rooms=alpha,alpha` cannot double-increment a room's connection count
     // (cleanup iterates the deduped HashSet once → off-by-one otherwise).
-    let initial_rooms: Vec<String> = {
+    let initial_rooms: Vec<String> = if has_room_access {
         let mut seen = HashSet::new();
         params
             .rooms
@@ -418,9 +502,12 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
                 r.split(',')
                     .map(|s| s.trim().to_string())
                     .filter(|s| !s.is_empty() && seen.insert(s.clone()))
+                    .take(MAX_ROOMS_PER_CONNECTION)
                     .collect()
             })
             .unwrap_or_default()
+    } else {
+        Vec::new()
     };
 
     // Create channels for internal communication
@@ -525,8 +612,31 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
                     if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&text) {
                         match client_msg {
                             ClientMessage::Subscribe { room } => {
+                                if !has_room_access {
+                                    let _ = tx_for_receive
+                                        .send(WsMessage::Error {
+                                            code: "FORBIDDEN".to_string(),
+                                            message:
+                                                "Active membership required to subscribe to rooms"
+                                                    .to_string(),
+                                        })
+                                        .await;
+                                    continue;
+                                }
                                 let mut rooms = subscribed_rooms_for_receive.write().await;
                                 if !rooms.contains(&room) {
+                                    if rooms.len() >= MAX_ROOMS_PER_CONNECTION {
+                                        drop(rooms);
+                                        let _ = tx_for_receive
+                                            .send(WsMessage::Error {
+                                                code: "ROOM_LIMIT_EXCEEDED".to_string(),
+                                                message: format!(
+                                                    "Maximum of {MAX_ROOMS_PER_CONNECTION} room subscriptions per connection"
+                                                ),
+                                            })
+                                            .await;
+                                        continue;
+                                    }
                                     rooms.insert(room.clone());
                                     drop(rooms);
 
@@ -637,6 +747,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, params: WsParams) {
 
 /// Get WebSocket connection statistics
 async fn ws_stats(
+    _admin: crate::middleware::admin::AdminUser,
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let total = state.ws_manager.total_connections().await;

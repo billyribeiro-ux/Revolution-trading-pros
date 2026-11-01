@@ -27,8 +27,8 @@ pub(super) async fn list_courses(
     State(state): State<AppState>,
     Query(params): Query<CourseQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = params.page.unwrap_or(1);
-    let per_page = params.per_page.unwrap_or(20).min(100);
+    let page = params.page.unwrap_or(1).max(1);
+    let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1) * per_page;
 
     // ICT 7 Grade: SECURE parameterized query with proper SQL injection prevention
@@ -64,7 +64,7 @@ pub(super) async fn list_courses(
         String,
         String,
         Option<String>,
-        i32,
+        i64,
         bool,
         Option<String>,
         Option<String>,
@@ -115,15 +115,23 @@ pub(super) async fn list_courses(
         })
         .collect();
 
-    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM courses")
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Database error: {}", e)})),
-            )
-        })?;
+    let total: (i64,) = sqlx::query_as(
+        r"
+        SELECT COUNT(*) FROM courses
+        WHERE ($1::text IS NULL OR level = $1)
+          AND ($2::text IS NULL OR title ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%')
+        ",
+    )
+    .bind(params.level.as_deref())
+    .bind(params.search.as_deref())
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     let total_pages = ((total.0 as f64) / (per_page as f64)).ceil() as i32;
 

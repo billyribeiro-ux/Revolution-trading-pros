@@ -508,10 +508,11 @@ async fn get_weekly_videos(
 /// ICT 7 ADDITION: Watch history for resume functionality
 async fn get_watch_history(
     State(state): State<AppState>,
+    user: crate::models::user::User,
     Query(params): Query<WatchHistoryQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id = params.user_id.unwrap_or(0);
-    let limit = params.limit.unwrap_or(20).min(50);
+    let user_id = user.id;
+    let limit = params.limit.unwrap_or(20).clamp(1, 50);
 
     #[allow(clippy::type_complexity)]
     let history: Vec<(

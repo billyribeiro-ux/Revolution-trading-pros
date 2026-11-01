@@ -603,10 +603,11 @@ pub fn get_indicator_embed_url(
 pub fn generate_download_url(file_url: &str, file_name: &str) -> String {
     // In production, this would generate a presigned URL from R2/S3
     // For now, return the direct URL with download disposition hint
+    let encoded_file_name = urlencoding::encode(file_name);
     if file_url.contains('?') {
-        format!("{file_url}&response-content-disposition=attachment%3B%20filename%3D{file_name}")
+        format!("{file_url}&response-content-disposition=attachment%3B%20filename%3D{encoded_file_name}")
     } else {
-        format!("{file_url}?response-content-disposition=attachment%3B%20filename%3D{file_name}")
+        format!("{file_url}?response-content-disposition=attachment%3B%20filename%3D{encoded_file_name}")
     }
 }
 
