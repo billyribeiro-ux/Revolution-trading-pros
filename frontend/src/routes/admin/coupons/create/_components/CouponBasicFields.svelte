@@ -49,7 +49,7 @@
 <!-- Description -->
 <div class="form-group">
 	<label for="coupon-description">Description (Optional)</label>
-	<input
+	<input autocomplete="off"
 		id="coupon-description"
 		name="description"
 		type="text"
@@ -89,7 +89,7 @@
 		{#if formData.discount_type === 'fixed'}
 			<span class="value-prefix">$</span>
 		{/if}
-		<input
+		<input autocomplete="off"
 			id="discount-value"
 			name="discount_value"
 			type="number"
@@ -115,7 +115,7 @@
 <div class="form-row">
 	<div class="form-group">
 		<label for="min-purchase">Minimum Purchase (Optional)</label>
-		<input
+		<input autocomplete="off"
 			id="min-purchase"
 			name="min_purchase"
 			type="number"
@@ -128,7 +128,7 @@
 	</div>
 	<div class="form-group">
 		<label for="max-discount">Maximum Discount (Optional)</label>
-		<input
+		<input autocomplete="off"
 			id="max-discount"
 			name="max_discount"
 			type="number"

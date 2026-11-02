@@ -140,7 +140,12 @@ class WebSocketService {
 	 * Connect to WebSocket server
 	 */
 	connect(): void {
-		if (!browser || this.ws?.readyState === WebSocket.OPEN) {
+		if (!browser || !this.url || this.ws?.readyState === WebSocket.OPEN) {
+			return;
+		}
+
+		// Never attempt insecure ws:// on https:// origins (Mixed Content & CSP violation)
+		if (window.location.protocol === 'https:' && this.url.startsWith('ws:')) {
 			return;
 		}
 
@@ -509,12 +514,14 @@ class WebSocketService {
 
 // Create singleton instance - use wss:// in production to avoid Mixed Content errors
 // NOTE: Cloudflare Pages does NOT support WebSockets - only connect if WS URL is explicitly configured
-const configuredWsUrl = browser ? import.meta.env['VITE_WS_URL'] : '';
+const configuredWsUrl = browser ? (import.meta.env['VITE_WS_URL'] || '') : '';
 // Only use WebSocket if explicitly configured via environment variable
 const wsUrl = configuredWsUrl || '';
 export const websocketService = new WebSocketService(wsUrl);
 
-// Auto-connect in browser only if WebSocket URL is configured
+// Auto-connect in browser only if WebSocket URL is configured and safe for current protocol
 if (browser && wsUrl) {
-	websocketService.connect();
+	if (!(window.location.protocol === 'https:' && wsUrl.startsWith('ws:'))) {
+		websocketService.connect();
+	}
 }

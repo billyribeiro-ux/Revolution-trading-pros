@@ -406,7 +406,7 @@
 			<div class="filters-row">
 				<div class="filter-group">
 					<label for="search">Search</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="search"
 						name="search"
@@ -559,7 +559,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="edit-name">Plan Name</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="edit-name"
 						name="edit-name"
@@ -571,7 +571,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="edit-price">Price ($)</label>
-						<input
+						<input autocomplete="off"
 							type="number"
 							id="edit-price"
 							name="edit-price"
@@ -597,7 +597,7 @@
 						Stripe Price ID
 						<span class="label-hint">Required for payments</span>
 					</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="edit-stripe"
 						name="edit-stripe"
@@ -625,7 +625,7 @@
 
 				<div class="form-group">
 					<label for="edit-trial">Trial Days</label>
-					<input
+					<input autocomplete="off"
 						type="number"
 						id="edit-trial"
 						name="edit-trial"
@@ -719,7 +719,7 @@
 					<div class="form-row">
 						<div class="form-group">
 							<label for="price-amount">New Price (USD)</label>
-							<input
+							<input autocomplete="off"
 								id="price-amount"
 								type="number"
 								step="0.01"

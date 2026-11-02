@@ -670,7 +670,7 @@
 				<div class="form-grid">
 					<div class="form-group full-width">
 						<label for="campaign-name">Campaign Name</label>
-						<input
+						<input autocomplete="off"
 							id="campaign-name"
 							name="campaign-name"
 							type="text"
@@ -681,7 +681,7 @@
 
 					<div class="form-group full-width">
 						<label for="campaign-subject">Subject Line</label>
-						<input
+						<input autocomplete="off"
 							id="campaign-subject"
 							name="campaign-subject"
 							type="text"
@@ -705,7 +705,7 @@
 					{#if newCampaign.useABTest}
 						<div class="form-group full-width">
 							<label for="campaign-subject-b">Subject Line B</label>
-							<input
+							<input autocomplete="off"
 								id="campaign-subject-b"
 								name="campaign-subject-b"
 								type="text"
@@ -751,7 +751,7 @@
 
 					<div class="form-group full-width">
 						<label for="campaign-schedule">Schedule (optional)</label>
-						<input
+						<input autocomplete="off"
 							id="campaign-schedule"
 							name="campaign-schedule"
 							type="datetime-local"

@@ -247,6 +247,11 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 		const envWsUrl = import.meta.env['VITE_WS_URL'];
 		if (!envWsUrl) return '';
 
+		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
+		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && envWsUrl.startsWith('ws:')) {
+			return '';
+		}
+
 		// Add rooms as query parameter
 		const roomsParam = rooms.length > 0 ? `?rooms=${rooms.join(',')}` : '';
 		return `${envWsUrl}${roomsParam}`;

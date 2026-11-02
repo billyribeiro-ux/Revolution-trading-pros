@@ -14,7 +14,7 @@
 	 * `<!-- Player Area -->` to a real provider (rrweb, FullStory, Hotjar,
 	 * OpenReplay, …) you MUST land an input-redaction policy first:
 	 *
-	 *   1. Mask all `<input id="recordings-input" name="recordings_input">`, `<textarea id="recordings-textarea" name="recordings_textarea">`, `[contenteditable]` content.
+	 *   1. Mask all `<input autocomplete="off" id="recordings-input" name="recordings_input">`, `<textarea id="recordings-textarea" name="recordings_textarea">`, `[contenteditable]` content.
 	 *      rrweb supports this via `maskAllInputs: true` or a per-field
 	 *      `data-rr-mask` allowlist. NEVER ship `maskAllInputs: false`.
 	 *   2. Block password / payment fields by attribute selector at the

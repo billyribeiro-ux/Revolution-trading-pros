@@ -11,7 +11,7 @@ import type { JsonValue, QueryParams } from './_types';
 // Backend is deployed on Fly.io (Rust + Axum)
 const PRODUCTION_API_URL = 'http://localhost:8080';
 const PRODUCTION_CDN_URL = 'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev';
-const PRODUCTION_WS_URL = 'ws://localhost:8080';
+const PRODUCTION_WS_URL = '';
 
 // Always use production URLs - no localhost
 export const API_BASE_URL = import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL;
@@ -19,6 +19,21 @@ export const API_BASE_URL = import.meta.env['VITE_API_URL'] || PRODUCTION_API_UR
 export const CDN_URL = import.meta.env['VITE_CDN_URL'] || PRODUCTION_CDN_URL;
 
 export const WS_URL = import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL;
+
+/**
+ * Returns a validated WebSocket URL if configured and safe for current protocol.
+ * Returns null if unconfigured or if running over HTTPS with an insecure ws:// URL.
+ */
+export function getSafeWsUrl(path: string = ''): string | null {
+	const raw = import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL;
+	if (!raw) return null;
+	if (typeof window !== 'undefined' && window.location.protocol === 'https:' && raw.startsWith('ws:')) {
+		return null;
+	}
+	const cleanBase = raw.replace(/\/+$/, '');
+	const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
+	return `${cleanBase}${cleanPath}`;
+}
 
 // Deprecated: Use API_BASE_URL instead (kept for backward compatibility)
 export const BACKEND_URL = API_BASE_URL;

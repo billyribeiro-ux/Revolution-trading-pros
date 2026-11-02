@@ -156,7 +156,7 @@
 	{:else}
 		<div class="date-range-picker">
 			<IconCalendar size={20} />
-			<input
+			<input autocomplete="off"
 				id="date-start"
 				name="date-start"
 				type="date"
@@ -164,7 +164,7 @@
 				onchange={loadData}
 			/>
 			<span>to</span>
-			<input
+			<input autocomplete="off"
 				id="date-end"
 				name="date-end"
 				type="date"

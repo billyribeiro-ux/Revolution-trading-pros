@@ -278,7 +278,7 @@
 				<div class="date-range">
 					<label class="filter-field" for="page-filterdatefrom">
 						<span>From</span>
-						<input
+						<input autocomplete="off"
 							id="page-filterdatefrom"
 							name="page-filterdatefrom"
 							type="date"
@@ -292,7 +292,7 @@
 					<span class="date-range__separator" aria-hidden="true">to</span>
 					<label class="filter-field" for="page-filterdateto">
 						<span>To</span>
-						<input
+						<input autocomplete="off"
 							id="page-filterdateto"
 							name="page-filterdateto"
 							type="date"

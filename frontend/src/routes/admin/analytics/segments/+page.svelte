@@ -416,7 +416,7 @@
 				<div class="form-stack">
 					<div class="field-group">
 						<label for="segment-name">Name</label>
-						<input
+						<input autocomplete="off"
 							id="segment-name"
 							name="segment-name"
 							type="text"
@@ -485,7 +485,7 @@
 									{/each}
 								</select>
 
-								<input id="segments-rule-value" name="segments_rule_value"
+								<input autocomplete="off" id="segments-rule-value" name="segments_rule_value"
 									type="text"
 									bind:value={rule.value}
 									placeholder="Value"

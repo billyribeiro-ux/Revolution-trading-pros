@@ -635,10 +635,15 @@ class SeoManagementService {
 	private setupWebSocket(): void {
 		if (!browser) return;
 
-		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured and safe
 		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
 		if (!configuredWsUrl) {
 			// Silently skip - WebSocket is optional
+			return;
+		}
+
+		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
+		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && configuredWsUrl.startsWith('ws:')) {
 			return;
 		}
 

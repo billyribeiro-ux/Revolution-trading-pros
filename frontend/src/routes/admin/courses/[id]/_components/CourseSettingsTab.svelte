@@ -46,7 +46,7 @@
 	<div class="form-grid">
 		<div class="form-group full">
 			<label for="meta_title">Meta Title</label>
-			<input id="meta_title" name="meta_title" type="text" bind:value={course.meta_title} />
+			<input autocomplete="off" id="meta_title" name="meta_title" type="text" bind:value={course.meta_title} />
 		</div>
 		<div class="form-group full">
 			<label for="meta_desc">Meta Description</label>
@@ -60,7 +60,7 @@
 	<div class="form-grid">
 		<div class="form-group">
 			<label for="bunny_lib">Bunny.net Library ID</label>
-			<input id="bunny_lib" name="bunny_lib" type="number" bind:value={course.bunny_library_id} />
+			<input autocomplete="off" id="bunny_lib" name="bunny_lib" type="number" bind:value={course.bunny_library_id} />
 		</div>
 	</div>
 </div>

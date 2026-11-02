@@ -17,7 +17,7 @@
 			<IconCalendar size={16} />
 			Publish Date
 		</label>
-		<input
+		<input autocomplete="off"
 			id="publish-date"
 			name="publish-date"
 			type="datetime-local"

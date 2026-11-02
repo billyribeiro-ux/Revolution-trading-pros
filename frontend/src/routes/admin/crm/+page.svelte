@@ -425,7 +425,7 @@
 			<div class="filters-bar">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input
+					<input autocomplete="off"
 						id="search-contacts"
 						name="search-contacts"
 						type="text"

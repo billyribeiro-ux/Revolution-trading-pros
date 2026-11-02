@@ -23,7 +23,7 @@
 	<div class="search-box">
 		<label for="search-coupons" class="visually-hidden">Search coupons</label>
 		<IconSearch size={18} />
-		<input
+		<input autocomplete="off"
 			type="text"
 			id="search-coupons"
 			name="search"

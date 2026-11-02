@@ -303,7 +303,7 @@
 											class="color-input"
 											aria-label={`Stage ${index + 1} color`}
 										/>
-										<input
+										<input autocomplete="off"
 											id={`stage-title-${index}`}
 											name={`stage_title_${index}`}
 											type="text"
@@ -336,7 +336,7 @@
 									class="color-input"
 									aria-label="New stage color"
 								/>
-								<input
+								<input autocomplete="off"
 									id="new-stage-title"
 									name="new_stage_title"
 									type="text"
@@ -374,7 +374,7 @@
 											class="color-input"
 											aria-label={`Label ${index + 1} color`}
 										/>
-										<input
+										<input autocomplete="off"
 											id={`label-title-${index}`}
 											name={`label_title_${index}`}
 											type="text"
@@ -406,7 +406,7 @@
 									class="color-input"
 									aria-label="New label color"
 								/>
-								<input
+								<input autocomplete="off"
 									id="new-label-title"
 									name="new_label_title"
 									type="text"
@@ -450,7 +450,7 @@
 
 								<div class="field-group">
 									<label for="default-hourly-rate">Default Hourly Rate ($)</label>
-									<input
+									<input autocomplete="off"
 										type="number"
 										id="default-hourly-rate"
 										name="default-hourly-rate"
@@ -463,7 +463,7 @@
 								<div class="field-grid">
 									<div class="field-group">
 										<label for="working-hours">Working Hours/Day</label>
-										<input
+										<input autocomplete="off"
 											type="number"
 											id="working-hours"
 											name="working-hours"
@@ -474,7 +474,7 @@
 									</div>
 									<div class="field-group">
 										<label for="working-days">Working Days/Week</label>
-										<input
+										<input autocomplete="off"
 											type="number"
 											id="working-days"
 											name="working-days"
@@ -508,7 +508,7 @@
 								{#if storageConfig && storageConfig.driver !== 'local'}
 									<div class="field-group">
 										<label for="bucket-name">Bucket Name</label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="bucket-name"
 											name="bucket-name"
@@ -518,7 +518,7 @@
 
 									<div class="field-group">
 										<label for="region">Region</label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="region"
 											name="region"
@@ -529,7 +529,7 @@
 
 									<div class="field-group">
 										<label for="endpoint">Endpoint (optional)</label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="endpoint"
 											name="endpoint"

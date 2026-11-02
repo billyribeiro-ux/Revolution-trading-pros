@@ -299,7 +299,7 @@
 	<div class="toolbar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
+			<input autocomplete="off"
 				id="search-churned-members"
 				name="search-churned-members"
 				type="text"
@@ -571,7 +571,7 @@
 
 				<div class="form-group">
 					<label for="email-subject">Subject Line</label>
-					<input
+					<input autocomplete="email"
 						id="email-subject"
 						name="email-subject"
 						type="text"

@@ -88,7 +88,7 @@
 					</div>
 					<div class="form-group">
 						<label for="alert_ticker">Ticker *</label>
-						<input
+						<input autocomplete="off"
 							id="alert_ticker"
 							name="alert_ticker"
 							type="text"
@@ -101,7 +101,7 @@
 
 				<div class="form-group full-width">
 					<label for="alert_title">Title *</label>
-					<input
+					<input autocomplete="off"
 						id="alert_title"
 						name="alert_title"
 						type="text"
@@ -151,7 +151,7 @@
 							</div>
 							<div class="form-group">
 								<label for="quantity">Quantity</label>
-								<input
+								<input autocomplete="off"
 									id="quantity"
 									name="quantity"
 									type="number"
@@ -173,7 +173,7 @@
 								</div>
 								<div class="form-group">
 									<label for="strike">Strike</label>
-									<input
+									<input autocomplete="off"
 										id="strike"
 										name="strike"
 										type="number"
@@ -184,7 +184,7 @@
 								</div>
 								<div class="form-group">
 									<label for="expiration">Expiration</label>
-									<input
+									<input autocomplete="off"
 										id="expiration"
 										name="expiration"
 										type="date"
@@ -216,7 +216,7 @@
 						<div class="form-row">
 							<div class="form-group">
 								<label for="limit_price">Limit Price</label>
-								<input
+								<input autocomplete="off"
 									id="limit_price"
 									name="limit_price"
 									type="number"
@@ -227,7 +227,7 @@
 							</div>
 							<div class="form-group">
 								<label for="fill_price">Fill Price</label>
-								<input
+								<input autocomplete="off"
 									id="fill_price"
 									name="fill_price"
 									type="number"
@@ -240,7 +240,7 @@
 
 						<div class="form-group full-width">
 							<label for="tos_string">TOS String (auto-generated or manual)</label>
-							<input
+							<input autocomplete="off"
 								id="tos_string"
 								name="tos_string"
 								type="text"

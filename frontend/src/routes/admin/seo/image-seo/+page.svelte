@@ -306,7 +306,7 @@
 				</div>
 				<div class="setting-row">
 					<label for="altFormat">Alt Text Format</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="altFormat"
 						name="altFormat"
@@ -326,7 +326,7 @@
 				<div class="setting-row inline">
 					<div>
 						<label for="altPrefix">Prefix</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="altPrefix"
 							name="altPrefix"
@@ -335,7 +335,7 @@
 					</div>
 					<div>
 						<label for="altSuffix">Suffix</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="altSuffix"
 							name="altSuffix"
@@ -382,7 +382,7 @@
 				</div>
 				<div class="setting-row">
 					<label for="titleFormat">Title Format</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="titleFormat"
 						name="titleFormat"
@@ -404,11 +404,11 @@
 				<h3>General Settings</h3>
 				<div class="setting-row">
 					<label for="siteName">Site Name</label>
-					<input type="text" id="siteName" name="siteName" bind:value={settings.siteName} />
+					<input autocomplete="off" type="text" id="siteName" name="siteName" bind:value={settings.siteName} />
 				</div>
 				<div class="setting-row">
 					<label for="separator">Separator</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="separator"
 						name="separator"

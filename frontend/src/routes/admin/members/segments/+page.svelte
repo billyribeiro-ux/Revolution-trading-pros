@@ -865,7 +865,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="segment-name">Segment Name</label>
-					<input
+					<input autocomplete="off"
 						id="segment-name"
 						name="segment-name"
 						type="text"
@@ -876,7 +876,7 @@
 
 				<div class="form-group">
 					<label for="segment-description">Description</label>
-					<input
+					<input autocomplete="off"
 						id="segment-description"
 						name="segment-description"
 						type="text"
@@ -910,7 +910,7 @@
 								{/each}
 							</select>
 
-							<input
+							<input autocomplete="off"
 								id="page-condition-value"
 								name="page-condition-value"
 								type="text"
@@ -967,7 +967,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="tag-name">Tag Name</label>
-					<input
+					<input autocomplete="off"
 						id="tag-name"
 						name="tag-name"
 						type="text"
@@ -1037,7 +1037,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="filter-name">Filter Name</label>
-					<input
+					<input autocomplete="off"
 						id="filter-name"
 						name="filter-name"
 						type="text"

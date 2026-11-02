@@ -222,7 +222,7 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="trader">Trader Name <span class="required">*</span></label>
-						<input
+						<input autocomplete="off"
 							id="trader"
 							name="trader"
 							type="text"
@@ -235,7 +235,7 @@
 
 					<div class="form-group">
 						<label for="weekOf">Week Of <span class="required">*</span></label>
-						<input id="weekOf" name="weekOf" type="date" bind:value={weekOf} required />
+						<input autocomplete="off" id="weekOf" name="weekOf" type="date" bind:value={weekOf} required />
 						<small>Monday of the week this watchlist covers</small>
 					</div>
 
@@ -284,7 +284,7 @@
 				<div class="form-grid">
 					<div class="form-group full-width">
 						<label for="videoUrl">Video URL <span class="required">*</span></label>
-						<input
+						<input autocomplete="off"
 							id="videoUrl"
 							name="videoUrl"
 							type="url"
@@ -297,7 +297,7 @@
 
 					<div class="form-group full-width">
 						<label for="posterUrl">Poster Image URL</label>
-						<input
+						<input autocomplete="off"
 							id="posterUrl"
 							name="posterUrl"
 							type="url"
@@ -334,7 +334,7 @@
 						<label for="spreadsheetUrl"
 							>Default Spreadsheet URL <span class="required">*</span></label
 						>
-						<input
+						<input autocomplete="off"
 							id="spreadsheetUrl"
 							name="spreadsheetUrl"
 							type="url"
@@ -383,7 +383,7 @@
 					<div class="date-adder-row">
 						<div class="form-group">
 							<label for="newDate">Date Label</label>
-							<input
+							<input autocomplete="off"
 								type="text"
 								id="newDate"
 								name="newDate"
@@ -394,7 +394,7 @@
 
 						<div class="form-group flex-grow">
 							<label for="newDateSpreadsheet">Spreadsheet URL</label>
-							<input
+							<input autocomplete="off"
 								type="url"
 								id="newDateSpreadsheet"
 								name="newDateSpreadsheet"

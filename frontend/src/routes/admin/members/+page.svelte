@@ -478,7 +478,7 @@
 		<div class="toolbar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input
+				<input autocomplete="email"
 					id="search-members"
 					name="search-members"
 					type="text"

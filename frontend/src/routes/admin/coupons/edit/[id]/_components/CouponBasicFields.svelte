@@ -25,7 +25,7 @@
 			Coupon Code *
 			<span class="label-hint">Unique identifier</span>
 		</label>
-		<input
+		<input autocomplete="off"
 			type="text"
 			id="code"
 			name="code"
@@ -55,7 +55,7 @@
 				{formData.type === 'percentage' ? 'Percentage' : 'Amount'} *
 			</label>
 			<div class="input-with-suffix">
-				<input
+				<input autocomplete="off"
 					type="number"
 					id="value"
 					name="value"

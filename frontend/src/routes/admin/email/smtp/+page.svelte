@@ -183,7 +183,7 @@
 				<!-- Host -->
 				<div class="form-group">
 					<label for="host">SMTP Host</label>
-					<input
+					<input autocomplete="off"
 						id="host"
 						name="host"
 						type="text"
@@ -196,7 +196,7 @@
 				<!-- Port -->
 				<div class="form-group">
 					<label for="port">Port</label>
-					<input id="port" name="port" type="number" bind:value={settings.port} required />
+					<input autocomplete="off" id="port" name="port" type="number" bind:value={settings.port} required />
 				</div>
 
 				<!-- Encryption -->
@@ -259,7 +259,7 @@
 				<!-- From Name -->
 				<div class="form-group">
 					<label for="from_name">From Name</label>
-					<input
+					<input autocomplete="off"
 						id="from_name"
 						name="from_name"
 						type="text"

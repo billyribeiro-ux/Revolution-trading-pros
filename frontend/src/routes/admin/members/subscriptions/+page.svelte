@@ -289,7 +289,7 @@
 	<div class="actions-row">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
+			<input autocomplete="email"
 				id="page-searchquery"
 				name="page-searchquery"
 				type="text"

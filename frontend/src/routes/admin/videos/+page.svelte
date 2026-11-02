@@ -359,7 +359,7 @@
 			video_platform: video.video_platform,
 			thumbnail_url: video.thumbnail_url || '',
 			// FIX-2026-04-26-audit (P2-5): always normalise to a YYYY-MM-DD string so
-			// the <input id="videos-date" name="videos_date" type="date"> binding never receives a Date/number that the
+			// the <input autocomplete="off" id="videos-date" name="videos_date" type="date"> binding never receives a Date/number that the
 			// browser silently rejects. Strings: trim the time portion. Anything
 			// else: coerce through Date and slice to ISO date. Invalid → today.
 			video_date: (() => {
@@ -1357,7 +1357,7 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<label for="search-videos" class="sr-only">Search videos or categories</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="search-videos"
 					name="search-videos"
@@ -1720,7 +1720,7 @@
 				<!-- Video URL -->
 				<div class="form-group">
 					<label for="video-url">Video URL</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="video-url"
 						name="video-url"
@@ -1739,7 +1739,7 @@
 				<!-- Title -->
 				<div class="form-group">
 					<label for="video-title">Title</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="video-title"
 						name="video-title"
@@ -1814,14 +1814,14 @@
 					</div>
 					<div class="form-group">
 						<label for="video-date">Video Date</label>
-						<input type="date" id="video-date" name="video-date" bind:value={formData.video_date} />
+						<input autocomplete="off" type="date" id="video-date" name="video-date" bind:value={formData.video_date} />
 					</div>
 				</div>
 
 				<!-- Thumbnail URL -->
 				<div class="form-group">
 					<label for="thumbnail-url">Thumbnail URL (optional)</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="thumbnail-url"
 						name="thumbnail-url"

@@ -71,7 +71,7 @@
 				</div>
 				<div class="form-group">
 					<label for="grant-expires">Expiration Date (optional)</label>
-					<input
+					<input autocomplete="off"
 						id="grant-expires"
 						name="grant-expires"
 						type="date"

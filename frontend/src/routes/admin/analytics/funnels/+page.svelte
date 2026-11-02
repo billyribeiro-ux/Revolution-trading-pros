@@ -346,7 +346,7 @@
 				<div class="form-stack">
 					<div class="form-field">
 						<label for="funnel-name">Name</label>
-						<input
+						<input autocomplete="off"
 							id="funnel-name"
 							name="funnel-name"
 							type="text"
@@ -378,7 +378,7 @@
 								<span class="step-row__number">
 									{index + 1}
 								</span>
-								<input
+								<input autocomplete="off"
 									id={`page-step-name-${index}`}
 									name={`page-step-name-${index}`}
 									type="text"
@@ -386,7 +386,7 @@
 									placeholder="Step name"
 									class="step-input"
 								/>
-								<input
+								<input autocomplete="off"
 									id={`page-step-event-name-${index}`}
 									name={`page-step-event-name-${index}`}
 									type="text"

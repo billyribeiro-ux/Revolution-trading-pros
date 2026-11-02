@@ -305,7 +305,7 @@
 					<label for="name">
 						Webhook Name <span class="required">*</span>
 					</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="name"
 						name="name"
@@ -322,7 +322,7 @@
 					<label for="url">
 						Webhook URL <span class="required">*</span>
 					</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="url"
 						name="url"
@@ -341,7 +341,7 @@
 				<div class="form-group">
 					<label for="secret"> Secret Key (Optional) </label>
 					<div class="input-with-action">
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="secret"
 							name="secret"
@@ -435,7 +435,7 @@
 					<div class="headers-list">
 						{#each customHeaders as header, index (index)}
 							<div class="header-row">
-								<input
+								<input autocomplete="off"
 									id="page-header-name"
 									name="page-header-name"
 									type="text"
@@ -443,7 +443,7 @@
 									value={header.key}
 									oninput={(e) => updateHeaderKey(index, e.currentTarget.value)}
 								/>
-								<input
+								<input autocomplete="off"
 									id="page-header-value"
 									name="page-header-value"
 									type="text"

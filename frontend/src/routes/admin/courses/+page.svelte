@@ -311,7 +311,7 @@
 			<div class="search-box">
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
 				<IconSearch size={20} aria-hidden="true" />
-				<input
+				<input autocomplete="off"
 					id="courses-searchquery"
 					name="courses-searchquery"
 					type="text"
@@ -476,7 +476,7 @@
 			<div class="modal-form">
 				<div class="form-group">
 					<label for="course-title">Course Title <span class="required">*</span></label>
-					<input
+					<input autocomplete="off"
 						id="course-title"
 						name="course-title"
 						type="text"
@@ -491,7 +491,7 @@
 					<label for="course-slug">URL Slug</label>
 					<div class="slug-preview">
 						<span class="slug-prefix">/classes/</span>
-						<input
+						<input autocomplete="off"
 							id="course-slug"
 							name="course-slug"
 							type="text"

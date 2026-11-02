@@ -64,7 +64,7 @@
 				<div class="custom-tag">
 					<span class="tags-label">Custom Tag</span>
 					<div class="custom-tag-input">
-						<input
+						<input autocomplete="off"
 							id="page-newtag"
 							name="page-newtag"
 							type="text"

@@ -454,7 +454,7 @@
 				<div class="boards-toolbar">
 					<div class="search-field">
 						<IconSearch class="search-icon" />
-						<input
+						<input autocomplete="off"
 							id="boards-searchquery"
 							name="boards-searchquery"
 							type="text"
@@ -731,7 +731,7 @@
 				<div class="modal-body">
 					<div class="form-field">
 						<label class="form-label" for="board-title">Board Title</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="board-title"
 							name="board-title"
@@ -793,7 +793,7 @@
 				<div class="modal-body">
 					<div class="form-field">
 						<label class="form-label" for="folder-name">Folder Name</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="folder-name"
 							name="folder-name"

@@ -514,7 +514,7 @@
 		<div class="toolbar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input
+				<input autocomplete="email"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"
@@ -754,7 +754,7 @@
 				<!-- Offer Code -->
 				<div class="form-group">
 					<label for="offer-code">Offer Code (Optional)</label>
-					<input
+					<input autocomplete="off"
 						id="offer-code"
 						name="offer-code"
 						type="text"
@@ -767,7 +767,7 @@
 				{#if emailTemplate === 'custom'}
 					<div class="form-group">
 						<label for="custom-subject">Subject Line</label>
-						<input
+						<input autocomplete="email"
 							id="custom-subject"
 							name="custom-subject"
 							type="text"
@@ -847,7 +847,7 @@
 
 				<div class="form-group">
 					<label for="survey-incentive">Incentive (Optional)</label>
-					<input
+					<input autocomplete="off"
 						id="survey-incentive"
 						name="survey-incentive"
 						type="text"

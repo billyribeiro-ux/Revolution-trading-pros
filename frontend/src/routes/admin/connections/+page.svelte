@@ -346,6 +346,7 @@
 							type="text"
 							placeholder="Search..."
 							bind:value={searchQuery}
+							autocomplete="off"
 							class="search-input"
 						/>
 						<span class="search-icon" aria-hidden="true">

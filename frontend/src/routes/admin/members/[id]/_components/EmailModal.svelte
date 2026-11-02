@@ -47,7 +47,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="email-subject-detail">Subject</label>
-					<input
+					<input autocomplete="email"
 						id="email-subject-detail"
 						name="email-subject-detail"
 						type="text"

@@ -103,7 +103,7 @@
 
 		<div class="form-group">
 			<label for="job_title">Job Title</label>
-			<input type="text" id="job_title" name="job_title" bind:value={formData.job_title} />
+			<input autocomplete="off" type="text" id="job_title" name="job_title" bind:value={formData.job_title} />
 		</div>
 
 		<div class="form-actions">

@@ -185,7 +185,7 @@
 			<div class="header-actions">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input
+					<input autocomplete="off"
 						id="search-products"
 						name="search-products"
 						type="text"

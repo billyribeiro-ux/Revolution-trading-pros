@@ -19,7 +19,7 @@
 <!-- Name -->
 <div class={['form-group', { 'has-error': getFieldError('name') }]}>
 	<label for="name">Product Name *</label>
-	<input
+	<input autocomplete="off"
 		id="name"
 		name="name"
 		type="text"
@@ -37,7 +37,7 @@
 	<label for="slug">URL Slug *</label>
 	<div class="slug-input">
 		<span class="slug-prefix">/products/</span>
-		<input
+		<input autocomplete="off"
 			id="slug"
 			name="slug"
 			type="text"
@@ -76,7 +76,7 @@
 		<IconPhoto size={16} />
 		Thumbnail URL
 	</label>
-	<input
+	<input autocomplete="off"
 		id="thumbnail"
 		name="thumbnail"
 		type="url"

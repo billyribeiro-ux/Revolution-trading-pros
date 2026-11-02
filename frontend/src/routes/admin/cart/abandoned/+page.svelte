@@ -481,7 +481,7 @@
 		<div class="toolbar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input
+				<input autocomplete="email"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"
@@ -744,7 +744,7 @@
 						</div>
 						<div class="form-group">
 							<label for="discount-code">Discount Code</label>
-							<input
+							<input autocomplete="off"
 								id="discount-code"
 								name="discount-code"
 								type="text"
@@ -759,7 +759,7 @@
 				{#if recoveryTemplate === 'custom'}
 					<div class="form-group">
 						<label for="custom-subject">Subject Line</label>
-						<input
+						<input autocomplete="email"
 							id="custom-subject"
 							name="custom-subject"
 							type="text"

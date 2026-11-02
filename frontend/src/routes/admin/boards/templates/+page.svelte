@@ -308,7 +308,7 @@
 		<div class="toolbar">
 			<div class="search-field">
 				<IconSearch class="search-field__icon" />
-				<input
+				<input autocomplete="off"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"

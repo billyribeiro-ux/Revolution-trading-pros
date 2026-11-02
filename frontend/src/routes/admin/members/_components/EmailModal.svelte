@@ -55,7 +55,7 @@
 
 			<div class="form-group">
 				<label for="email-subject">Subject</label>
-				<input
+				<input autocomplete="email"
 					id="email-subject"
 					name="email-subject"
 					type="text"

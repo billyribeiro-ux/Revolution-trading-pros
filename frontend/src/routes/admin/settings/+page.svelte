@@ -896,7 +896,7 @@
 			<div class="filter-section" in:fly={{ y: 20, duration: 600, delay: 200, easing: quintOut }}>
 				<!-- Search -->
 				<div class="search-wrapper">
-					<input
+					<input autocomplete="off"
 						id="search-integrations"
 						name="search"
 						type="text"
@@ -1049,7 +1049,7 @@
 									<h3>Site Name</h3>
 									<p>Your website display name</p>
 								</div>
-								<input
+								<input autocomplete="off"
 									id="site-name"
 									name="site_name"
 									type="text"

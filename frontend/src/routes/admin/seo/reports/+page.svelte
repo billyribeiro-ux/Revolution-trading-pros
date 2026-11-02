@@ -399,7 +399,7 @@
 
 			<div class="form-group">
 				<label for="name">Report Name *</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="name"
 					name="name"
@@ -431,7 +431,7 @@
 			{#if formData.frequency === 'monthly' || formData.frequency === 'quarterly'}
 				<div class="form-group">
 					<label for="dayOfMonth">Day of Month</label>
-					<input
+					<input autocomplete="off"
 						type="number"
 						id="dayOfMonth"
 						name="dayOfMonth"
@@ -445,11 +445,11 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="hour">Hour</label>
-					<input type="number" id="hour" name="hour" bind:value={formData.hour} min="0" max="23" />
+					<input autocomplete="off" type="number" id="hour" name="hour" bind:value={formData.hour} min="0" max="23" />
 				</div>
 				<div class="form-group">
 					<label for="minute">Minute</label>
-					<input
+					<input autocomplete="off"
 						type="number"
 						id="minute"
 						name="minute"
@@ -462,7 +462,7 @@
 
 			<div class="form-group">
 				<label for="recipients">Recipients (comma-separated emails) *</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="recipients"
 					name="recipients"

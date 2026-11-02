@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * R24-C extraction (2026-05-20): price + sale price row. `price` and
-	 * `sale_price` are strings (raw <input id="productpricingfields-number" name="productpricingfields_number" type="number"> value) — the parent
+	 * `sale_price` are strings (raw <input autocomplete="off" id="productpricingfields-number" name="productpricingfields_number" type="number"> value) — the parent
 	 * is responsible for converting + validating before submit. We deliberately
 	 * keep the string-typed bind here to preserve "empty string means no value"
 	 * semantics (parseFloat('') === NaN in the parent's submit handler).
@@ -21,7 +21,7 @@
 		<label for="price">Price (USD) *</label>
 		<div class="price-input">
 			<span class="currency">$</span>
-			<input
+			<input autocomplete="off"
 				id="price"
 				name="price"
 				type="number"
@@ -40,7 +40,7 @@
 		<label for="sale_price">Sale Price (Optional)</label>
 		<div class="price-input">
 			<span class="currency">$</span>
-			<input
+			<input autocomplete="off"
 				id="sale_price"
 				name="sale_price"
 				type="number"

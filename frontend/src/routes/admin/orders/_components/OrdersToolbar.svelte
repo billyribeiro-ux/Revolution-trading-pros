@@ -14,7 +14,7 @@
 <div class="toolbar">
 	<div class="search-box">
 		<IconSearch size={18} />
-		<input id="orderstoolbar-searchquery" name="orderstoolbar_searchquery"
+		<input autocomplete="email" id="orderstoolbar-searchquery" name="orderstoolbar_searchquery"
 			type="text"
 			placeholder="Search by order #, email, or name..."
 			bind:value={searchQuery}

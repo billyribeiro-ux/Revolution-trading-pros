@@ -438,7 +438,7 @@
 				<div class="filters-grid">
 					<div class="form-field">
 						<label for="search" class="form-label">Search</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="search"
 							name="search"

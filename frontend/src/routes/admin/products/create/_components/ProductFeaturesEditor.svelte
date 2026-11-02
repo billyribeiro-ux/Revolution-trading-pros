@@ -31,7 +31,7 @@
 
 	{#each features as feature, index (index)}
 		<div class="feature-row">
-			<input
+			<input autocomplete="off"
 				id="feature-{index}"
 				name="feature-{index}"
 				type="text"

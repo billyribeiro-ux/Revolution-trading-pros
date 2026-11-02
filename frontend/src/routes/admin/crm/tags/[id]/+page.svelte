@@ -228,7 +228,7 @@
 				<h2>Contacts with this Tag</h2>
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input
+					<input autocomplete="off"
 						id="page-searchquery"
 						name="page-searchquery"
 						type="text"

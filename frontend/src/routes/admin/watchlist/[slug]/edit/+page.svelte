@@ -233,7 +233,7 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="title">Title *</label>
-							<input
+							<input autocomplete="off"
 								id="title"
 								name="title"
 								type="text"
@@ -245,7 +245,7 @@
 
 						<div class="form-group">
 							<label for="trader">Trader *</label>
-							<input
+							<input autocomplete="off"
 								id="trader"
 								name="trader"
 								type="text"
@@ -257,7 +257,7 @@
 
 						<div class="form-group">
 							<label for="weekOf">Week Of *</label>
-							<input id="weekOf" name="weekOf" type="date" bind:value={formData.weekOf} required />
+							<input autocomplete="off" id="weekOf" name="weekOf" type="date" bind:value={formData.weekOf} required />
 						</div>
 
 						<div class="form-group">
@@ -286,7 +286,7 @@
 					<div class="form-grid">
 						<div class="form-group full-width">
 							<label for="videoSrc">Video URL</label>
-							<input
+							<input autocomplete="off"
 								id="videoSrc"
 								name="videoSrc"
 								type="url"
@@ -297,7 +297,7 @@
 
 						<div class="form-group">
 							<label for="videoPoster">Video Poster URL</label>
-							<input
+							<input autocomplete="off"
 								id="videoPoster"
 								name="videoPoster"
 								type="url"
@@ -308,7 +308,7 @@
 
 						<div class="form-group">
 							<label for="traderImage">Trader Image URL</label>
-							<input
+							<input autocomplete="off"
 								id="traderImage"
 								name="traderImage"
 								type="url"
@@ -319,7 +319,7 @@
 
 						<div class="form-group full-width">
 							<label for="spreadsheetSrc">Spreadsheet URL</label>
-							<input
+							<input autocomplete="off"
 								id="spreadsheetSrc"
 								name="spreadsheetSrc"
 								type="url"

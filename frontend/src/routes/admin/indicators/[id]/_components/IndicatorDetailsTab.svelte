@@ -39,15 +39,15 @@
 	<div class="form-grid">
 		<div class="form-group">
 			<label for="name">Name *</label>
-			<input type="text" id="name" name="name" bind:value={indicator.name} />
+			<input autocomplete="off" type="text" id="name" name="name" bind:value={indicator.name} />
 		</div>
 		<div class="form-group">
 			<label for="slug">Slug</label>
-			<input type="text" id="slug" name="slug" bind:value={indicator.slug} />
+			<input autocomplete="off" type="text" id="slug" name="slug" bind:value={indicator.slug} />
 		</div>
 		<div class="form-group">
 			<label for="price">Price (USD)</label>
-			<input type="number" id="price" name="price" step="0.01" bind:value={indicator.price} />
+			<input autocomplete="off" type="number" id="price" name="price" step="0.01" bind:value={indicator.price} />
 		</div>
 		<div class="form-group">
 			<label for="platform">Platform</label>
@@ -59,7 +59,7 @@
 		</div>
 		<div class="form-group">
 			<label for="version">Version</label>
-			<input
+			<input autocomplete="off"
 				type="text"
 				id="version"
 				name="version"
@@ -82,7 +82,7 @@
 	<div class="form-grid">
 		<div class="form-group">
 			<label for="thumbnail">Thumbnail URL</label>
-			<input
+			<input autocomplete="off"
 				type="url"
 				id="thumbnail"
 				name="thumbnail"
@@ -92,7 +92,7 @@
 		</div>
 		<div class="form-group">
 			<label for="download_url">Download URL</label>
-			<input
+			<input autocomplete="off"
 				type="url"
 				id="download_url"
 				name="download_url"
@@ -102,7 +102,7 @@
 		</div>
 		<div class="form-group full-width">
 			<label for="documentation_url">Documentation URL</label>
-			<input
+			<input autocomplete="off"
 				type="url"
 				id="documentation_url"
 				name="documentation_url"

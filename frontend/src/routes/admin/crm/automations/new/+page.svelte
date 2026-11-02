@@ -399,7 +399,7 @@
 
 				<div class="form-group">
 					<label for="title">Automation Title <span class="required">*</span></label>
-					<input
+					<input autocomplete="off"
 						id="title"
 						name="title"
 						type="text"
@@ -486,7 +486,7 @@
 				{:else if formData.trigger_type === 'form_submitted'}
 					<div class="form-group">
 						<label for="form-id">Form ID</label>
-						<input
+						<input autocomplete="off"
 							id="form-id"
 							name="form-id"
 							type="text"
@@ -497,7 +497,7 @@
 				{:else if formData.trigger_type === 'custom_event'}
 					<div class="form-group">
 						<label for="event-name">Event Name <span class="required">*</span></label>
-						<input
+						<input autocomplete="off"
 							id="event-name"
 							name="event-name"
 							type="text"

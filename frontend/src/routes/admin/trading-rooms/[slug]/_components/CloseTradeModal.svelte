@@ -96,7 +96,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="exit_price">Exit Price *</label>
-						<input
+						<input autocomplete="off"
 							id="exit_price"
 							name="exit_price"
 							type="number"
@@ -108,7 +108,7 @@
 					</div>
 					<div class="form-group">
 						<label for="exit_date">Exit Date</label>
-						<input id="exit_date" name="exit_date" type="date" bind:value={form.exit_date} />
+						<input autocomplete="off" id="exit_date" name="exit_date" type="date" bind:value={form.exit_date} />
 					</div>
 				</div>
 

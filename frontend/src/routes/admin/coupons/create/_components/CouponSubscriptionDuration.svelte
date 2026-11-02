@@ -41,7 +41,7 @@
 	{#if formData.duration === 'repeating'}
 		<div class="form-group">
 			<label for="duration-in-months">Number of Months</label>
-			<input
+			<input autocomplete="off"
 				id="duration-in-months"
 				name="duration_in_months"
 				type="number"

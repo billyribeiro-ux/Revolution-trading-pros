@@ -85,7 +85,7 @@
 			>
 				<div class="form-group">
 					<label for="title">Event Title <span class="required">*</span></label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="title"
 						name="title"
@@ -98,7 +98,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="trader_name">Trader/Host</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="trader_name"
 							name="trader_name"
@@ -142,7 +142,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="start_time">Start Time <span class="required">*</span></label>
-						<input
+						<input autocomplete="off"
 							type="time"
 							id="start_time"
 							name="start_time"
@@ -153,7 +153,7 @@
 
 					<div class="form-group">
 						<label for="end_time">End Time <span class="required">*</span></label>
-						<input
+						<input autocomplete="off"
 							type="time"
 							id="end_time"
 							name="end_time"

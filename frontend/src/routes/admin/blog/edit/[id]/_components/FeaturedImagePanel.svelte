@@ -40,7 +40,7 @@
 
 		<div class="form-group">
 			<label for="img-title">Image Title</label>
-			<input
+			<input autocomplete="off"
 				id="img-title"
 				name="img-title"
 				type="text"
@@ -51,7 +51,7 @@
 
 		<div class="form-group">
 			<label for="img-alt">Alt Text</label>
-			<input
+			<input autocomplete="off"
 				id="img-alt"
 				name="img-alt"
 				type="text"
@@ -62,7 +62,7 @@
 
 		<div class="form-group">
 			<label for="img-caption">Caption</label>
-			<input
+			<input autocomplete="off"
 				id="img-caption"
 				name="img-caption"
 				type="text"

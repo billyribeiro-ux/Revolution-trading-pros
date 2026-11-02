@@ -147,12 +147,12 @@
 
 			<div class="setting-group">
 				<label for="pubName">Publication Name</label>
-				<input type="text" id="pubName" name="pubName" bind:value={settings.publicationName} />
+				<input autocomplete="off" type="text" id="pubName" name="pubName" bind:value={settings.publicationName} />
 			</div>
 
 			<div class="setting-group">
 				<label for="language">Language Code</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="language"
 					name="language"
@@ -163,7 +163,7 @@
 
 			<div class="setting-group">
 				<label for="maxAge">Max Article Age (hours)</label>
-				<input
+				<input autocomplete="off"
 					type="number"
 					id="maxAge"
 					name="maxAge"

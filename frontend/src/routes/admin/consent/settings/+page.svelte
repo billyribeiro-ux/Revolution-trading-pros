@@ -418,7 +418,7 @@
 									>How long before consent expires and banner is shown again</span
 								>
 							</div>
-							<input
+							<input autocomplete="off"
 								id="page-settings-expire-days"
 								name="page-settings-expire-days"
 								type="number"
@@ -437,7 +437,7 @@
 								>
 							</div>
 							<div class="version-input">
-								<input
+								<input autocomplete="off"
 									id="page-settings-consent-version"
 									name="page-settings-consent-version"
 									type="number"
@@ -457,7 +457,7 @@
 									>Version string for your privacy policy (e.g., 1.0.0)</span
 								>
 							</div>
-							<input
+							<input autocomplete="off"
 								id="page-settings-policy-version"
 								name="page-settings-policy-version"
 								type="text"
@@ -585,7 +585,7 @@
 									<span class="setting-label">Scroll Distance (px)</span>
 									<span class="setting-description">Pixels to scroll before accepting</span>
 								</div>
-								<input
+								<input autocomplete="off"
 									id="page-settings-close-on-scroll-distance"
 									name="page-settings-close-on-scroll-distance"
 									type="number"
@@ -902,7 +902,7 @@
 									<span class="setting-label">Retention Period (Days)</span>
 									<span class="setting-description">How long to keep consent records</span>
 								</div>
-								<input
+								<input autocomplete="off"
 									id="page-settings-proof-retention-days"
 									name="page-settings-proof-retention-days"
 									type="number"

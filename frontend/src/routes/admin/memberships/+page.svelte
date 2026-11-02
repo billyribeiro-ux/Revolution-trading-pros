@@ -494,7 +494,7 @@
 		<div class="search-filter-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input
+				<input autocomplete="off"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"
@@ -701,7 +701,7 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="edit_name">Plan Name *</label>
-						<input
+						<input autocomplete="off"
 							id="edit_name"
 							name="edit_name"
 							type="text"
@@ -711,7 +711,7 @@
 					</div>
 					<div class="form-group">
 						<label for="edit_slug">URL Slug *</label>
-						<input
+						<input autocomplete="off"
 							id="edit_slug"
 							name="edit_slug"
 							type="text"
@@ -725,7 +725,7 @@
 					</div>
 					<div class="form-group">
 						<label for="edit_price">Price (USD) *</label>
-						<input
+						<input autocomplete="off"
 							id="edit_price"
 							name="edit_price"
 							type="number"
@@ -770,7 +770,7 @@
 								     two `page-feature-*` ids used to repeat for every row, breaking
 								     <label for> association and Playwright selectors. -->
 								<div class="feature-row">
-									<input
+									<input autocomplete="off"
 										id="feature-name-{index}"
 										name="feature-name-{index}"
 										type="text"
@@ -778,7 +778,7 @@
 										placeholder="Feature name"
 										class="feature-input"
 									/>
-									<input
+									<input autocomplete="off"
 										id="feature-description-{index}"
 										name="feature-description-{index}"
 										type="text"

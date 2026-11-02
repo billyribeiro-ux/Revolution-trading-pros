@@ -74,7 +74,7 @@
 			<!-- Title -->
 			<div class="form-group">
 				<label for="title">Title *</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="title"
 					name="title"
@@ -144,7 +144,7 @@
 			<!-- File URL -->
 			<div class="form-group">
 				<label for="file-url">File/Video URL *</label>
-				<input
+				<input autocomplete="off"
 					type="url"
 					id="file-url"
 					name="file-url"
@@ -187,7 +187,7 @@
 			<div class="form-row">
 				<div class="form-group">
 					<label for="thumbnail-url">Thumbnail URL</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="thumbnail-url"
 						name="thumbnail-url"
@@ -197,7 +197,7 @@
 				</div>
 				<div class="form-group">
 					<label for="resource-date">Date</label>
-					<input
+					<input autocomplete="off"
 						type="date"
 						id="resource-date"
 						name="resource-date"

@@ -6,13 +6,6 @@ import { defineConfig } from 'vitest/config';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 
-// Dev-mode detection. NODE_ENV is unreliable here: Vite sets it AFTER this
-// module evaluates, so reading process.env.NODE_ENV at this scope returns
-// undefined for `vite dev`. Detect via the CLI argv instead, which is
-// populated before any module-load. Covers `vite dev`, `vite dev --host`,
-// `pnpm dev`, and the `dev:fast` alias.
-const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('dev');
-
 // Build-unique app version (`kit.version.name`). Kit's update polling, the
 // `_app/version.json` file, and the service worker's cache names (via
 // `version` from `$app/env`) all read this one identifier.
@@ -31,12 +24,19 @@ const APP_VERSION =
 // SvelteKit 3 takes its config as options to the `sveltekit()` Vite plugin —
 // the old svelte.config.js is gone. Callback form so `mode` is available;
 // dev-only plugins gated on mode === 'development'.
-export default defineConfig(({ mode }) => ({
-	plugins: [
-		tailwindcss(),
-		enhancedImages(),
-		sveltekit({
-			preprocess: vitePreprocess(),
+export default defineConfig(({ mode, command }) => {
+	const isDev =
+		mode === 'development' ||
+		command === 'serve' ||
+		process.env.NODE_ENV === 'development' ||
+		process.argv.includes('dev');
+
+	return {
+		plugins: [
+			tailwindcss(),
+			enhancedImages(),
+			sveltekit({
+				preprocess: vitePreprocess(),
 			// Remote functions require BOTH `kit.experimental.remoteFunctions` AND
 			// `compilerOptions.experimental.async` (per the SvelteKit remote-functions
 			// docs). This repo previously enabled only the former, so any *client-side*
@@ -123,14 +123,16 @@ export default defineConfig(({ mode }) => ({
 						'https://*.mediadelivery.net',
 						'https://vz-5a23b520-193.b-cdn.net',
 						// Dev-only: allow direct calls to the local Rust API,
-						// Vite dev servers, and ws/wss for HMR. isDev is detected
-						// from process.argv (NODE_ENV isn't set yet at config load).
+						// Vite dev servers, and ws/wss for HMR.
 						...(isDev
 							? ([
 									'ws:',
 									'http://localhost:8080',
+									'http://127.0.0.1:8080',
 									'http://localhost:5173',
-									'http://localhost:5174'
+									'http://localhost:5174',
+									'ws://localhost:8080',
+									'ws://127.0.0.1:8080'
 								] as const)
 							: [])
 					],
@@ -218,4 +220,5 @@ export default defineConfig(({ mode }) => ({
 			}
 		}
 	}
-}));
+};
+});

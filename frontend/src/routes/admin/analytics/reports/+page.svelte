@@ -358,7 +358,7 @@
 				<div class="field-stack">
 					<div>
 						<label class="field-label" for="report-name">Name</label>
-						<input
+						<input autocomplete="off"
 							type="text"
 							id="report-name"
 							name="report-name"
@@ -450,7 +450,7 @@
 								<label for="report-recipients" class="field-label">
 									Recipients (comma-separated)
 								</label>
-								<input
+								<input autocomplete="email"
 									id="report-recipients"
 									name="report-recipients"
 									type="text"

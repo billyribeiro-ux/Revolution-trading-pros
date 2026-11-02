@@ -10,7 +10,7 @@
 </script>
 
 <div class="form-group">
-	<input
+	<input autocomplete="off"
 		id="page-post-title"
 		name="page-post-title"
 		type="text"
@@ -24,7 +24,7 @@
 	<label for="slug">URL Slug</label>
 	<div class="slug-input">
 		<span class="slug-prefix">your-site.com/blog/</span>
-		<input id="slug" name="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" />
+		<input autocomplete="off" id="slug" name="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" />
 		<button type="button" class="btn-regenerate" onclick={onGenerateSlug}>Regenerate</button>
 	</div>
 </div>

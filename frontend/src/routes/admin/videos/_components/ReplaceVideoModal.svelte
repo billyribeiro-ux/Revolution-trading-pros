@@ -59,7 +59,7 @@
 
 				<div class="form-group">
 					<label for="new-video-url">New Video URL</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="new-video-url"
 						name="new-video-url"

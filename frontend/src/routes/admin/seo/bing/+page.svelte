@@ -270,7 +270,7 @@
 				</p>
 				<div class="submit-form">
 					<label for="url-to-submit" class="sr-only">URL to submit</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="url-to-submit"
 						name="url-to-submit"

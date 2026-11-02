@@ -105,7 +105,7 @@
 		<div class="search-box">
 			<IconSearch size={20} />
 			<label for="search-keywords" class="sr-only">Search keywords</label>
-			<input
+			<input autocomplete="off"
 				type="text"
 				id="search-keywords"
 				name="search-keywords"

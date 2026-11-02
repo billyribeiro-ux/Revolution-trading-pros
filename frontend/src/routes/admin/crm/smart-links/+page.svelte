@@ -284,7 +284,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
+			<input autocomplete="off"
 				type="text"
 				id="search-smart-links"
 				name="search"

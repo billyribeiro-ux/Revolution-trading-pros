@@ -299,6 +299,11 @@
 			return;
 		}
 
+		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
+		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && configuredWsUrl.startsWith('ws:')) {
+			return;
+		}
+
 		try {
 			const socketGeneration = ++websocketGeneration;
 			const socket = new WebSocket(`${configuredWsUrl}/posts`);
@@ -894,7 +899,7 @@
 				{:else}
 					<div class="search-box">
 						<IconSearch size={20} />
-						<input
+						<input autocomplete="off"
 							id="blog-search"
 							name="blog-search"
 							type="text"
@@ -909,7 +914,7 @@
 			<div class="controls-right">
 				<!-- Date Range -->
 				<div class="date-range">
-					<input
+					<input autocomplete="off"
 						id="blog-date-start"
 						name="blog-date-start"
 						type="date"
@@ -918,7 +923,7 @@
 						class="date-input"
 					/>
 					<span>to</span>
-					<input
+					<input autocomplete="off"
 						id="blog-date-end"
 						name="blog-date-end"
 						type="date"

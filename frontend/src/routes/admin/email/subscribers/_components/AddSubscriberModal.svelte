@@ -80,7 +80,7 @@
 
 			<div class="form-group">
 				<label for="tags">Tags (comma-separated)</label>
-				<input
+				<input autocomplete="off"
 					id="tags"
 					name="tags"
 					type="text"

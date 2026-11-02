@@ -179,7 +179,7 @@
 		<div class="search-box">
 			<IconSearch size={20} />
 			<label for="search-redirects" class="sr-only">Search redirects</label>
-			<input
+			<input autocomplete="off"
 				type="text"
 				id="search-redirects"
 				name="search"

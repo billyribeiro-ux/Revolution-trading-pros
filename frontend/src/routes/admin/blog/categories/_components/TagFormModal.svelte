@@ -67,7 +67,7 @@
 
 				<div class="form-group">
 					<label for="tag-name">Name *</label>
-					<input
+					<input autocomplete="off"
 						id="tag-name"
 						name="tag-name"
 						type="text"
@@ -81,7 +81,7 @@
 				<div class="form-group">
 					<label for="tag-slug">Slug *</label>
 					<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input. -->
-					<input
+					<input autocomplete="off"
 						id="tag-slug"
 						name="tag-slug"
 						type="text"

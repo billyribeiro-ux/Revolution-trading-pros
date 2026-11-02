@@ -62,7 +62,7 @@
 							</button>
 						{/each}
 					</div>
-					<input
+					<input autocomplete="off"
 						id="extend-days"
 						name="extend-days"
 						type="number"

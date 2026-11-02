@@ -46,7 +46,7 @@
 			</div>
 			<div class="form-group">
 				<label for="new-file-url">New File URL</label>
-				<input
+				<input autocomplete="off"
 					bind:this={urlInput}
 					type="url"
 					id="new-file-url"

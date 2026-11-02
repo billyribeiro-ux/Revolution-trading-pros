@@ -640,7 +640,7 @@
 
 						<div class="form-group">
 							<label for="action-title">Action Title (optional)</label>
-							<input
+							<input autocomplete="off"
 								id="action-title"
 								name="action-title"
 								type="text"
@@ -653,7 +653,7 @@
 						<div class="form-group">
 							<label for="action-delay">Delay Before This Action</label>
 							<div class="delay-inputs">
-								<input
+								<input autocomplete="off"
 									id="action-delay"
 									name="action-delay"
 									type="number"
@@ -703,7 +703,7 @@
 						{:else if actionForm.action_type === 'send_email'}
 							<div class="form-group">
 								<label for="email-subject">Email Subject</label>
-								<input
+								<input autocomplete="email"
 									id="email-subject"
 									name="email-subject"
 									type="text"
@@ -722,7 +722,7 @@
 						{:else if actionForm.action_type === 'http_request'}
 							<div class="form-group">
 								<label for="webhook-url">Webhook URL</label>
-								<input
+								<input autocomplete="off"
 									id="webhook-url"
 									name="webhook-url"
 									type="url"

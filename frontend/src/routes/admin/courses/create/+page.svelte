@@ -1972,7 +1972,7 @@
 									<IconSparkles size={14} />
 								</button>
 							</label>
-							<input
+							<input autocomplete="off"
 								id="name"
 								name="name"
 								type="text"
@@ -1991,7 +1991,7 @@
 								<label for="slug">URL Slug</label>
 								<div class="input-group">
 									<span class="input-prefix">/courses/</span>
-									<input
+									<input autocomplete="off"
 										id="slug"
 										name="slug"
 										type="text"
@@ -2014,7 +2014,7 @@
 
 						<div class="form-group">
 							<label for="short-desc"> Short Description (Tagline) </label>
-							<input
+							<input autocomplete="off"
 								id="short-desc"
 								name="short-desc"
 								type="text"
@@ -2071,7 +2071,7 @@
 							<div class="form-row">
 								<div class="form-group">
 									<label for="start-date">Start Date</label>
-									<input
+									<input autocomplete="off"
 										id="start-date"
 										name="start-date"
 										type="date"
@@ -2081,7 +2081,7 @@
 
 								<div class="form-group">
 									<label for="end-date">End Date</label>
-									<input id="end-date" name="end-date" type="date" bind:value={course.end_date} />
+									<input autocomplete="off" id="end-date" name="end-date" type="date" bind:value={course.end_date} />
 								</div>
 							</div>
 						{/if}
@@ -2105,7 +2105,7 @@
 							{#each course.outcomes as _, i (i)}
 								<div class="list-item">
 									<IconCheck size={16} />
-									<input
+									<input autocomplete="off"
 										id={`course-outcome-${i}`}
 										name={`course-outcome-${i}`}
 										type="text"
@@ -2141,7 +2141,7 @@
 							{#each course.prerequisites as _, i (i)}
 								<div class="list-item">
 									<IconAlertCircle size={16} />
-									<input
+									<input autocomplete="off"
 										id={`course-prerequisite-${i}`}
 										name={`course-prerequisite-${i}`}
 										type="text"
@@ -2173,7 +2173,7 @@
 							{#each course.target_audience as _, i (i)}
 								<div class="list-item">
 									<IconUsers size={16} />
-									<input
+									<input autocomplete="off"
 										id={`course-target-audience-${i}`}
 										name={`course-target-audience-${i}`}
 										type="text"
@@ -2249,7 +2249,7 @@
 								<div class="module-header">
 									<IconGripVertical size={20} class="drag-handle" />
 									<span class="module-number">Module {moduleIndex + 1}</span>
-									<input
+									<input autocomplete="off"
 										id={`module-title-${module.id}`}
 										name={`module-title-${module.id}`}
 										type="text"
@@ -2307,7 +2307,7 @@
 														<option value="live">{getLessonIcon('live')} Live Session</option>
 														<option value="download">{getLessonIcon('download')} Resource</option>
 													</select>
-													<input
+													<input autocomplete="off"
 														id={`lesson-title-${lesson.id}`}
 														name={`lesson-title-${lesson.id}`}
 														type="text"
@@ -2315,7 +2315,7 @@
 														placeholder="Lesson title..."
 														class="lesson-title"
 													/>
-													<input
+													<input autocomplete="off"
 														id={`lesson-duration-${lesson.id}`}
 														name={`lesson-duration-${lesson.id}`}
 														type="number"
@@ -2484,7 +2484,7 @@
 									<label for="price">Price ({course.currency})</label>
 									<div class="price-input">
 										<span class="currency">$</span>
-										<input
+										<input autocomplete="off"
 											id="price"
 											name="price"
 											type="number"
@@ -2513,7 +2513,7 @@
 								{#if course.pricing_model === 'payment-plan'}
 									<div class="form-group">
 										<label for="installments">Number of Installments</label>
-										<input
+										<input autocomplete="off"
 											id="installments"
 											name="installments"
 											type="number"
@@ -2548,7 +2548,7 @@
 								<div class="form-row">
 									<div class="form-group">
 										<label for="early-bird-discount">Discount %</label>
-										<input
+										<input autocomplete="off"
 											id="early-bird-discount"
 											name="early-bird-discount"
 											type="number"
@@ -2565,7 +2565,7 @@
 									</div>
 									<div class="form-group">
 										<label for="early-bird-expires">Expires On</label>
-										<input
+										<input autocomplete="off"
 											id="early-bird-expires"
 											name="early-bird-expires"
 											type="datetime-local"
@@ -2600,7 +2600,7 @@
 										<option value="access">Access</option>
 										<option value="consultation">Consultation</option>
 									</select>
-									<input
+									<input autocomplete="off"
 										id={`bonus-title-${bonus.id}`}
 										name={`bonus-title-${bonus.id}`}
 										type="text"
@@ -2608,7 +2608,7 @@
 										placeholder="Bonus title..."
 										class="bonus-title"
 									/>
-									<input
+									<input autocomplete="off"
 										id={`bonus-value-${bonus.id}`}
 										name={`bonus-value-${bonus.id}`}
 										type="number"
@@ -2664,7 +2664,7 @@
 						{#if course.affiliate_enabled}
 							<div class="form-group">
 								<label for="affiliate-commission">Commission Rate (%)</label>
-								<input
+								<input autocomplete="off"
 									id="affiliate-commission"
 									name="affiliate-commission"
 									type="number"
@@ -2765,7 +2765,7 @@
 									<div class="divider">OR</div>
 
 									<div class="video-url">
-										<input
+										<input autocomplete="off"
 											id="page-paste-youtube-vimeo-or-wisti"
 											name="page-paste-youtube-vimeo-or-wisti"
 											type="url"
@@ -2829,7 +2829,7 @@
 
 						<div class="form-group">
 							<label for="meta-title">Meta Title</label>
-							<input
+							<input autocomplete="off"
 								id="meta-title"
 								name="meta-title"
 								type="text"
@@ -2862,7 +2862,7 @@
 										</button>
 									</span>
 								{/each}
-								<input
+								<input autocomplete="off"
 									id="keywords-input"
 									name="keywords-input"
 									type="text"
@@ -2947,7 +2947,7 @@
 							<div class="form-row">
 								<div class="form-group">
 									<label for="utm-source">Source</label>
-									<input
+									<input autocomplete="off"
 										id="utm-source"
 										name="utm-source"
 										type="text"
@@ -2957,7 +2957,7 @@
 								</div>
 								<div class="form-group">
 									<label for="utm-medium">Medium</label>
-									<input
+									<input autocomplete="off"
 										id="utm-medium"
 										name="utm-medium"
 										type="text"
@@ -2967,7 +2967,7 @@
 								</div>
 								<div class="form-group">
 									<label for="utm-campaign">Campaign</label>
-									<input
+									<input autocomplete="off"
 										id="utm-campaign"
 										name="utm-campaign"
 										type="text"
@@ -3097,7 +3097,7 @@
 						<div class="form-row">
 							<div class="form-group">
 								<label for="enrollment-limit">Enrollment Limit</label>
-								<input
+								<input autocomplete="off"
 									id="enrollment-limit"
 									name="enrollment-limit"
 									type="number"
@@ -3110,7 +3110,7 @@
 
 							<div class="form-group">
 								<label for="completion-threshold">Completion Threshold (%)</label>
-								<input
+								<input autocomplete="off"
 									id="completion-threshold"
 									name="completion-threshold"
 									type="number"
@@ -3126,7 +3126,7 @@
 						<div class="form-row">
 							<div class="form-group">
 								<label for="max-attempts">Max Quiz Attempts</label>
-								<input
+								<input autocomplete="off"
 									id="max-attempts"
 									name="max-attempts"
 									type="number"
@@ -3138,7 +3138,7 @@
 
 							<div class="form-group">
 								<label for="passing-score">Passing Score (%)</label>
-								<input
+								<input autocomplete="off"
 									id="passing-score"
 									name="passing-score"
 									type="number"
@@ -3158,7 +3158,7 @@
 							{#each course.tools_required as _, i (i)}
 								<div class="list-item">
 									<IconSettings size={16} />
-									<input
+									<input autocomplete="off"
 										id={`course-tool-required-${i}`}
 										name={`course-tool-required-${i}`}
 										type="text"

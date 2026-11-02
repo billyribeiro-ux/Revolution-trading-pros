@@ -28,7 +28,7 @@
 	<div class="seo-settings">
 		<div class="form-group">
 			<label for="meta_title">Meta Title</label>
-			<input
+			<input autocomplete="off"
 				id="meta_title"
 				name="meta_title"
 				type="text"
@@ -60,7 +60,7 @@
 
 		<div class="form-group">
 			<label for="canonical_url">Canonical URL</label>
-			<input
+			<input autocomplete="off"
 				id="canonical_url"
 				name="canonical_url"
 				type="url"

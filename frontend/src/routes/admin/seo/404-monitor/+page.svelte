@@ -134,7 +134,7 @@
 		<div class="search-box">
 			<IconSearch size={20} />
 			<label for="search-urls" class="sr-only">Search URLs</label>
-			<input
+			<input autocomplete="off"
 				type="text"
 				id="search-urls"
 				name="search"

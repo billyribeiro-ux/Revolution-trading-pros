@@ -243,7 +243,7 @@
 
 				<div class="form-group">
 					<label for="name">Plan Name *</label>
-					<input
+					<input autocomplete="off"
 						id="name"
 						name="name"
 						type="text"
@@ -255,7 +255,7 @@
 
 				<div class="form-group">
 					<label for="slug">URL Slug</label>
-					<input
+					<input autocomplete="off"
 						id="slug"
 						name="slug"
 						type="text"
@@ -280,7 +280,7 @@
 						<label for="price">Price (USD) *</label>
 						<div class="price-input">
 							<span class="currency">$</span>
-							<input
+							<input autocomplete="off"
 								id="price"
 								name="price"
 								type="number"
@@ -314,7 +314,7 @@
 					{#each membership.features as feature, index (index)}
 						<div class="feature-form">
 							<div class="feature-inputs">
-								<input
+								<input autocomplete="off"
 									id="page-feature-feature-name"
 									name="page-feature-feature-name"
 									type="text"
@@ -322,7 +322,7 @@
 									placeholder="Feature name"
 									class="feature-name-input"
 								/>
-								<input
+								<input autocomplete="off"
 									id="page-feature-description"
 									name="page-feature-description"
 									type="text"

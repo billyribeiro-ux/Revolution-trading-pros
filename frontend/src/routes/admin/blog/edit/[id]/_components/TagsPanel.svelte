@@ -41,7 +41,7 @@
 	</div>
 
 	<div class="tag-input-group">
-		<input
+		<input autocomplete="off"
 			id="page-newtag"
 			name="page-newtag"
 			type="text"

@@ -284,7 +284,7 @@
 	<!-- Quick Add Bar -->
 	{#if showQuickAdd}
 		<div class="quick-add-bar">
-			<input
+			<input autocomplete="off"
 				id="tradeentrymanager-quickform-ticker"
 				name="tradeentrymanager-quickform-ticker"
 				type="text"
@@ -298,7 +298,7 @@
 				<option value="BEARISH">BEARISH</option>
 				<option value="NEUTRAL">NEUTRAL</option>
 			</select>
-			<input
+			<input autocomplete="off"
 				id="tradeentrymanager-quickform-entry"
 				name="tradeentrymanager-quickform-entry"
 				type="text"
@@ -306,7 +306,7 @@
 				bind:value={quickForm.entry}
 				class="quick-input"
 			/>
-			<input
+			<input autocomplete="off"
 				id="tradeentrymanager-quickform-stop"
 				name="tradeentrymanager-quickform-stop"
 				type="text"
@@ -433,7 +433,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="ticker">Ticker *</label>
-						<input
+						<input autocomplete="off"
 							id="ticker"
 							name="ticker"
 							type="text"
@@ -456,7 +456,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="entry">Entry Price</label>
-						<input
+						<input autocomplete="off"
 							id="entry"
 							name="entry"
 							type="text"
@@ -467,7 +467,7 @@
 					</div>
 					<div class="form-group">
 						<label for="stop">Stop Loss</label>
-						<input
+						<input autocomplete="off"
 							id="stop"
 							name="stop"
 							type="text"
@@ -481,7 +481,7 @@
 				<div class="form-row targets">
 					<div class="form-group">
 						<label for="target1">Target 1</label>
-						<input
+						<input autocomplete="off"
 							id="target1"
 							name="target1"
 							type="text"
@@ -492,7 +492,7 @@
 					</div>
 					<div class="form-group">
 						<label for="target2">Target 2</label>
-						<input
+						<input autocomplete="off"
 							id="target2"
 							name="target2"
 							type="text"
@@ -503,7 +503,7 @@
 					</div>
 					<div class="form-group">
 						<label for="target3">Target 3</label>
-						<input
+						<input autocomplete="off"
 							id="target3"
 							name="target3"
 							type="text"
@@ -514,7 +514,7 @@
 					</div>
 					<div class="form-group">
 						<label for="runner">Runner</label>
-						<input
+						<input autocomplete="off"
 							id="runner"
 							name="runner"
 							type="text"
@@ -528,7 +528,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="options_strike">Options Strike</label>
-						<input
+						<input autocomplete="off"
 							id="options_strike"
 							name="options_strike"
 							type="text"
@@ -539,7 +539,7 @@
 					</div>
 					<div class="form-group">
 						<label for="options_exp">Expiration</label>
-						<input
+						<input autocomplete="off"
 							id="options_exp"
 							name="options_exp"
 							type="text"

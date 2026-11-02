@@ -126,7 +126,7 @@
 							</label>
 
 							{#if field.type === 'text' || field.type === 'url'}
-								<input
+								<input autocomplete="off"
 									id={field.key}
 									type={field.type}
 									value={String(getSetting(group.key, field.key))}

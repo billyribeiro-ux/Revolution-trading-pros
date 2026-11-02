@@ -45,7 +45,7 @@
 			<div class="search-box">
 				<IconSearch size={20} />
 				<label for="search-entities" class="sr-only">Search entities</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="search-entities"
 					name="search"

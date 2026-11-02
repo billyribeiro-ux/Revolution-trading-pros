@@ -47,11 +47,11 @@
 	<div class="form-grid">
 		<div class="form-group full">
 			<label for="title">Title</label>
-			<input id="title" name="title" type="text" bind:value={course.title} />
+			<input autocomplete="off" id="title" name="title" type="text" bind:value={course.title} />
 		</div>
 		<div class="form-group full">
 			<label for="slug">Slug</label>
-			<input id="slug" name="slug" type="text" bind:value={course.slug} />
+			<input autocomplete="off" id="slug" name="slug" type="text" bind:value={course.slug} />
 		</div>
 		<div class="form-group full">
 			<label for="description">Description</label>
@@ -59,7 +59,7 @@
 		</div>
 		<div class="form-group full">
 			<label for="card_description">Card Description (short)</label>
-			<input
+			<input autocomplete="off"
 				id="card_description"
 				name="card_description"
 				type="text"
@@ -77,7 +77,7 @@
 		</div>
 		<div class="form-group">
 			<label for="price">Price (cents)</label>
-			<input id="price" name="price" type="number" bind:value={course.price_cents} />
+			<input autocomplete="off" id="price" name="price" type="number" bind:value={course.price_cents} />
 		</div>
 		<div class="form-group">
 			<label class="checkbox-label">
@@ -98,7 +98,7 @@
 	<div class="form-grid">
 		<div class="form-group">
 			<label for="instructor_name">Name</label>
-			<input
+			<input autocomplete="off"
 				id="instructor_name"
 				name="instructor_name"
 				type="text"
@@ -107,7 +107,7 @@
 		</div>
 		<div class="form-group">
 			<label for="instructor_title">Title</label>
-			<input
+			<input autocomplete="off"
 				id="instructor_title"
 				name="instructor_title"
 				type="text"
@@ -126,11 +126,11 @@
 	<div class="form-grid">
 		<div class="form-group full">
 			<label for="card_image">Card Image URL</label>
-			<input id="card_image" name="card_image" type="text" bind:value={course.card_image_url} />
+			<input autocomplete="off" id="card_image" name="card_image" type="text" bind:value={course.card_image_url} />
 		</div>
 		<div class="form-group">
 			<label for="badge">Badge Text</label>
-			<input
+			<input autocomplete="off"
 				id="badge"
 				name="badge"
 				type="text"

@@ -129,7 +129,7 @@
 		</div>
 		<div class="header-actions">
 			<div class="search-box">
-				<input
+				<input autocomplete="off"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"

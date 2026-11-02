@@ -181,7 +181,7 @@
 			<div class="search-box">
 				<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: search -->
 				<IconSearch size={20} aria-hidden="true" />
-				<input
+				<input autocomplete="off"
 					id="search-indicators"
 					name="search-indicators"
 					type="text"

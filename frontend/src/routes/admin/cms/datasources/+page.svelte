@@ -782,7 +782,7 @@
 			<div class="filters-bar">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="search-datasources"
 						name="search"
@@ -965,7 +965,7 @@
 			<div class="filters-bar">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="search-entries"
 						name="search"
@@ -1095,7 +1095,7 @@
 				<div class="form-grid">
 					<div class="form-group full-width">
 						<label for="ds-name">Name *</label>
-						<input
+						<input autocomplete="off"
 							id="ds-name"
 							name="ds-name"
 							type="text"
@@ -1108,7 +1108,7 @@
 
 					<div class="form-group">
 						<label for="ds-slug">Slug *</label>
-						<input
+						<input autocomplete="off"
 							id="ds-slug"
 							name="ds-slug"
 							type="text"
@@ -1182,7 +1182,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="entry-name">Name (Label) *</label>
-					<input
+					<input autocomplete="off"
 						id="entry-name"
 						name="entry-name"
 						type="text"
@@ -1195,7 +1195,7 @@
 
 				<div class="form-group">
 					<label for="entry-value">Value *</label>
-					<input
+					<input autocomplete="off"
 						id="entry-value"
 						name="entry-value"
 						type="text"

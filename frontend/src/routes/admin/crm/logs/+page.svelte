@@ -203,7 +203,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
+			<input autocomplete="off"
 				id="page-searchquery" name="page-searchquery" type="text"
 				placeholder="Search logs..."
 				bind:value={searchQuery}

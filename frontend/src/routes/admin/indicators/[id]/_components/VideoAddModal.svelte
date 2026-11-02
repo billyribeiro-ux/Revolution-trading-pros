@@ -44,7 +44,7 @@
 		<div class="modal-body">
 			<div class="form-group">
 				<label for="video-title">Title *</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="video-title"
 					bind:value={newVideo.title}
@@ -61,7 +61,7 @@
 			</div>
 			<div class="form-group">
 				<label for="video-url">Video URL (Direct)</label>
-				<input
+				<input autocomplete="off"
 					type="url"
 					id="video-url"
 					bind:value={newVideo.video_url}
@@ -70,7 +70,7 @@
 			</div>
 			<div class="form-group">
 				<label for="embed-url">Embed URL (YouTube/Vimeo)</label>
-				<input
+				<input autocomplete="off"
 					type="url"
 					id="embed-url"
 					bind:value={newVideo.embed_url}
@@ -79,7 +79,7 @@
 			</div>
 			<div class="form-group">
 				<label for="thumbnail-url">Thumbnail URL</label>
-				<input
+				<input autocomplete="off"
 					type="url"
 					id="thumbnail-url"
 					bind:value={newVideo.thumbnail_url}

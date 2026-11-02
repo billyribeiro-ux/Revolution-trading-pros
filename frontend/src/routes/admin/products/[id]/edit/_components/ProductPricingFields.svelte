@@ -24,7 +24,7 @@
 		<label for="price">Price (USD) *</label>
 		<div class="price-input">
 			<span class="currency">$</span>
-			<input
+			<input autocomplete="off"
 				id="price"
 				name="price"
 				type="number"
@@ -43,7 +43,7 @@
 		<label for="sale_price">Sale Price (Optional)</label>
 		<div class="price-input">
 			<span class="currency">$</span>
-			<input
+			<input autocomplete="off"
 				id="sale_price"
 				name="sale_price"
 				type="number"
@@ -61,7 +61,7 @@
 		<IconPhoto size={16} />
 		Thumbnail URL
 	</label>
-	<input
+	<input autocomplete="off"
 		id="thumbnail"
 		name="thumbnail"
 		type="url"

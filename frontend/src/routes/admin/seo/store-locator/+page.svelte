@@ -386,7 +386,7 @@
 			<div class="form-grid">
 				<div class="form-group full-width">
 					<label for="name">Location Name *</label>
-					<input type="text" id="name" name="name" bind:value={formData.name} required />
+					<input autocomplete="off" type="text" id="name" name="name" bind:value={formData.name} required />
 				</div>
 
 				<div class="form-group">
@@ -411,7 +411,7 @@
 
 				<div class="form-group full-width">
 					<label for="streetAddress">Street Address *</label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="streetAddress"
 						name="streetAddress"
@@ -460,7 +460,7 @@
 
 				<div class="form-group full-width">
 					<label for="website">Website</label>
-					<input
+					<input autocomplete="off"
 						type="url"
 						id="website"
 						name="website"

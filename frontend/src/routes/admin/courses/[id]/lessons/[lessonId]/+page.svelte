@@ -344,11 +344,11 @@
 					<div class="form-grid">
 						<div class="form-group full">
 							<label for="title">Title</label>
-							<input id="title" name="title" type="text" bind:value={lesson.title} />
+							<input autocomplete="off" id="title" name="title" type="text" bind:value={lesson.title} />
 						</div>
 						<div class="form-group full">
 							<label for="slug">Slug</label>
-							<input id="slug" name="slug" type="text" bind:value={lesson.slug} />
+							<input autocomplete="off" id="slug" name="slug" type="text" bind:value={lesson.slug} />
 						</div>
 						<div class="form-group full">
 							<label for="description">Description</label>
@@ -365,7 +365,7 @@
 						</div>
 						<div class="form-group">
 							<label for="duration">Duration (minutes)</label>
-							<input
+							<input autocomplete="off"
 								id="duration"
 								name="duration"
 								type="number"
@@ -374,11 +374,11 @@
 						</div>
 						<div class="form-group">
 							<label for="sort">Sort Order</label>
-							<input id="sort" name="sort" type="number" bind:value={lesson.sort_order} />
+							<input autocomplete="off" id="sort" name="sort" type="number" bind:value={lesson.sort_order} />
 						</div>
 						<div class="form-group">
 							<label for="drip">Drip Days</label>
-							<input
+							<input autocomplete="off"
 								id="drip"
 								name="drip"
 								type="number"
@@ -448,7 +448,7 @@
 										Upload Video
 									</button>
 									<span class="divider">or</span>
-									<input
+									<input autocomplete="off"
 										id="page-lesson-bunny-video-guid"
 										name="page-lesson-bunny-video-guid"
 										type="text"
@@ -516,7 +516,7 @@
 							<div class="no-thumb">No thumbnail</div>
 						{/if}
 					</div>
-					<input
+					<input autocomplete="off"
 						id="page-lesson-thumbnail-url"
 						name="page-lesson-thumbnail-url"
 						type="text"

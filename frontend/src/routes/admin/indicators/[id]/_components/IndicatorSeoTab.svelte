@@ -32,7 +32,7 @@
 	<h2>SEO Settings</h2>
 	<div class="form-group full-width">
 		<label for="meta_title">Meta Title</label>
-		<input
+		<input autocomplete="off"
 			type="text"
 			id="meta_title"
 			name="meta_title"

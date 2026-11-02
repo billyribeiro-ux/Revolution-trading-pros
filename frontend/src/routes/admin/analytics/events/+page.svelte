@@ -174,7 +174,7 @@
 
 					<div class="search-column">
 						<div class="search-field">
-							<input
+							<input autocomplete="off"
 								id="page-searchquery"
 								name="page-searchquery"
 								type="text"

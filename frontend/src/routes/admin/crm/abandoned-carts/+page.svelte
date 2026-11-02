@@ -280,7 +280,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
+			<input autocomplete="email"
 				type="text"
 				id="search-abandoned-carts"
 				name="search"

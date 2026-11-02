@@ -372,7 +372,7 @@
 			<div class="cohort-modal__body">
 				<div class="form-field">
 					<label for="cohort-name">Name</label>
-					<input
+					<input autocomplete="off"
 						id="cohort-name"
 						name="cohort-name"
 						type="text"
@@ -415,7 +415,7 @@
 					<div class="form-grid">
 						<div class="form-field">
 							<label for="cohort-start-event">Start Event</label>
-							<input
+							<input autocomplete="off"
 								id="cohort-start-event"
 								name="cohort-start-event"
 								type="text"
@@ -426,7 +426,7 @@
 						</div>
 						<div class="form-field">
 							<label for="cohort-return-event">Return Event</label>
-							<input
+							<input autocomplete="off"
 								id="cohort-return-event"
 								name="cohort-return-event"
 								type="text"

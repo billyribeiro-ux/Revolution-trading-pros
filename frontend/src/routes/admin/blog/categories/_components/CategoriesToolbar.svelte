@@ -18,7 +18,7 @@
 <div class="toolbar">
 	<div class="search-group">
 		<IconSearch size={18} />
-		<input
+		<input autocomplete="off"
 			id="page-categorysearch"
 			name="page-categorysearch"
 			type="text"

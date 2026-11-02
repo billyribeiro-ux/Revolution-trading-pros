@@ -369,7 +369,7 @@
 				<div class="form-stack">
 					<div class="form-field">
 						<label for="goal-name">Name</label>
-						<input
+						<input autocomplete="off"
 							id="goal-name"
 							name="goal-name"
 							type="text"
@@ -421,7 +421,7 @@
 				{#if newGoal.type === 'event'}
 					<div class="form-field">
 						<label for="target-event">Target Event</label>
-						<input
+						<input autocomplete="off"
 							id="target-event"
 							name="target-event"
 							type="text"
@@ -433,7 +433,7 @@
 				{:else if newGoal.type === 'pageview'}
 					<div class="form-field">
 						<label for="target-url">Target URL</label>
-						<input
+						<input autocomplete="off"
 							id="target-url"
 							name="target-url"
 							type="text"
@@ -447,7 +447,7 @@
 						<label for="target-value">
 							{newGoal.type === 'revenue' ? 'Target Revenue ($)' : 'Target Duration (seconds)'}
 						</label>
-						<input
+						<input autocomplete="off"
 							id="target-value"
 							name="target-value"
 							type="number"

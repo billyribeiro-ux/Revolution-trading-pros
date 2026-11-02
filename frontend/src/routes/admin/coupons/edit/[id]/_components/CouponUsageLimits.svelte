@@ -22,7 +22,7 @@
 	<div class="form-row">
 		<div class="form-group" data-field="minimum_amount">
 			<label for="minimum_amount">Minimum Purchase ($)</label>
-			<input
+			<input autocomplete="off"
 				type="number"
 				id="minimum_amount"
 				name="minimum_amount"
@@ -36,7 +36,7 @@
 
 		<div class="form-group" data-field="usage_limit">
 			<label for="usage_limit">Total Uses</label>
-			<input
+			<input autocomplete="off"
 				type="number"
 				id="usage_limit"
 				name="usage_limit"
@@ -79,7 +79,7 @@
 		{#if formData.duration === 'repeating'}
 			<div class="form-group" data-field="duration_in_months">
 				<label for="duration-in-months">Number of Months</label>
-				<input
+				<input autocomplete="off"
 					type="number"
 					id="duration-in-months"
 					name="duration_in_months"

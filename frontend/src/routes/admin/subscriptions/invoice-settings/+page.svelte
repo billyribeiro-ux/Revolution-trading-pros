@@ -348,7 +348,7 @@
 												bind:value={settings.primary_color}
 												class="color-input"
 											/>
-											<input
+											<input autocomplete="off"
 												type="text"
 												id="primary-color-text"
 												name="primary-color-text"
@@ -367,7 +367,7 @@
 												bind:value={settings.secondary_color}
 												class="color-input"
 											/>
-											<input
+											<input autocomplete="off"
 												type="text"
 												id="secondary-color-text"
 												name="secondary-color-text"
@@ -386,7 +386,7 @@
 												bind:value={settings.accent_color}
 												class="color-input"
 											/>
-											<input
+											<input autocomplete="off"
 												type="text"
 												id="accent-color-text"
 												name="accent-color-text"
@@ -415,7 +415,7 @@
 								<div class="form-grid form-grid--two">
 									<div class="form-field">
 										<label for="company-name" class="form-label"> Company Name </label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="company-name"
 											name="company-name"
@@ -453,7 +453,7 @@
 									</div>
 									<div class="form-field">
 										<label for="tax-id" class="form-label"> Tax ID / VAT Number </label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="tax-id"
 											name="tax-id"
@@ -466,7 +466,7 @@
 
 								<div class="form-field">
 									<label for="company-address" class="form-label"> Street Address </label>
-									<input
+									<input autocomplete="street-address"
 										type="text"
 										id="company-address"
 										name="company-address"
@@ -479,7 +479,7 @@
 								<div class="form-grid form-grid--four">
 									<div class="form-field">
 										<label for="company-city" class="form-label">City</label>
-										<input
+										<input autocomplete="address-level2"
 											type="text"
 											id="company-city"
 											name="company-city"
@@ -489,7 +489,7 @@
 									</div>
 									<div class="form-field">
 										<label for="company-state" class="form-label">State</label>
-										<input
+										<input autocomplete="address-level1"
 											type="text"
 											id="company-state"
 											name="company-state"
@@ -499,7 +499,7 @@
 									</div>
 									<div class="form-field">
 										<label for="company-zip" class="form-label">ZIP</label>
-										<input
+										<input autocomplete="postal-code"
 											type="text"
 											id="company-zip"
 											name="company-zip"
@@ -529,7 +529,7 @@
 								<div class="form-grid form-grid--two">
 									<div class="form-field">
 										<label for="header-text" class="form-label"> Header Text </label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="header-text"
 											name="header-text"
@@ -540,7 +540,7 @@
 									</div>
 									<div class="form-field">
 										<label for="invoice-prefix" class="form-label"> Invoice Prefix </label>
-										<input
+										<input autocomplete="off"
 											type="text"
 											id="invoice-prefix"
 											name="invoice-prefix"
@@ -553,7 +553,7 @@
 
 								<div class="form-field">
 									<label for="payment-terms" class="form-label"> Payment Terms </label>
-									<input
+									<input autocomplete="off"
 										type="text"
 										id="payment-terms"
 										name="payment-terms"
@@ -565,7 +565,7 @@
 
 								<div class="form-field">
 									<label for="footer-text" class="form-label"> Footer Text </label>
-									<input
+									<input autocomplete="off"
 										type="text"
 										id="footer-text"
 										name="footer-text"

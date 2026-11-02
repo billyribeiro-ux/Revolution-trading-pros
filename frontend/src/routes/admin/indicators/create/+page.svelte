@@ -671,7 +671,7 @@
 
 					<div class="form-group">
 						<label for="name">Indicator Name <span class="required">*</span></label>
-						<input
+						<input autocomplete="off"
 							id="name"
 							name="name"
 							type="text"
@@ -689,7 +689,7 @@
 
 					<div class="form-group">
 						<label for="subtitle">Subtitle / Tagline</label>
-						<input
+						<input autocomplete="off"
 							id="subtitle"
 							name="subtitle"
 							type="text"
@@ -711,7 +711,7 @@
 
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input
+							<input autocomplete="off"
 								id="version"
 								name="version"
 								type="text"
@@ -749,7 +749,7 @@
 									<button type="button" class="tag-remove" onclick={() => removeTag(tag)}>×</button>
 								</span>
 							{/each}
-							<input
+							<input autocomplete="off"
 								id="tags-input"
 								name="tags-input"
 								type="text"
@@ -877,7 +877,7 @@
 
 										<!-- Installation Notes -->
 										<div class="form-group compact">
-											<input
+											<input autocomplete="off"
 												id="page-pf-installation-notes"
 												name="page-pf-installation-notes"
 												type="text"
@@ -922,7 +922,7 @@
 										>
 									</div>
 
-									<input
+									<input autocomplete="off"
 										id="page-doc-title"
 										name="page-doc-title"
 										type="text"
@@ -1007,7 +1007,7 @@
 							<label for="price">Price (USD)</label>
 							<div class="price-input">
 								<span class="currency">$</span>
-								<input
+								<input autocomplete="off"
 									id="price"
 									name="price"
 									type="number"

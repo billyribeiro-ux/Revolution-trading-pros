@@ -529,7 +529,7 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="search-categories"
 					name="search"
@@ -761,7 +761,7 @@
 				<div class="form-grid">
 					<div class="form-group full-width">
 						<label for="cat-name">Name *</label>
-						<input
+						<input autocomplete="off"
 							id="cat-name"
 							name="cat-name"
 							type="text"
@@ -775,7 +775,7 @@
 					<div class="form-group">
 						<label for="cat-slug">Slug *</label>
 						<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input. -->
-						<input
+						<input autocomplete="off"
 							id="cat-slug"
 							name="cat-slug"
 							type="text"
@@ -829,7 +829,7 @@
 
 					<div class="form-group full-width">
 						<label for="cat-meta-title">SEO Meta Title</label>
-						<input
+						<input autocomplete="off"
 							id="cat-meta-title"
 							name="cat-meta-title"
 							type="text"

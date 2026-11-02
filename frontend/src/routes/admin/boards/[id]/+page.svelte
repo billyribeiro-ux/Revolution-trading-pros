@@ -496,7 +496,7 @@
 					<!-- Search -->
 					<div class="search-field">
 						<IconSearch class="search-icon" />
-						<input
+						<input autocomplete="off"
 							id="page-searchquery"
 							name="page-searchquery"
 							type="text"
@@ -776,7 +776,7 @@
 				<div class="add-stage-column">
 					{#if showNewStageInput}
 						<div class="stage-composer">
-							<input
+							<input autocomplete="off"
 								id="page-newstagetitle"
 								name="page-newstagetitle"
 								type="text"
@@ -829,7 +829,7 @@
 				<div class="task-modal-header">
 					<div class="task-modal-title-area">
 						{#if editingTaskTitle}
-							<input
+							<input autocomplete="off"
 								id="page-text"
 								name="page-text"
 								type="text"
@@ -944,7 +944,7 @@
 									</div>
 								{/each}
 								<div class="inline-form">
-									<input
+									<input autocomplete="off"
 										id="page-newsubtasktitle"
 										name="page-newsubtasktitle"
 										type="text"
@@ -1064,7 +1064,7 @@
 						<!-- Due Date -->
 						<div class="sidebar-section">
 							<h4 class="sidebar-label">Due Date</h4>
-							<input
+							<input autocomplete="off"
 								id="page-date"
 								name="page-date"
 								type="date"

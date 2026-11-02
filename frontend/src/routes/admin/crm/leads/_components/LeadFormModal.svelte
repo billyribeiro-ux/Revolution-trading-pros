@@ -75,7 +75,7 @@
 			<div class="form-grid">
 				<div class="form-group">
 					<label for="{idPrefix}first_name">First Name *</label>
-					<input
+					<input autocomplete="given-name"
 						id="{idPrefix}first_name"
 						name="{idPrefix}first_name"
 						type="text"
@@ -85,7 +85,7 @@
 				</div>
 				<div class="form-group">
 					<label for="{idPrefix}last_name">Last Name *</label>
-					<input
+					<input autocomplete="family-name"
 						id="{idPrefix}last_name"
 						name="{idPrefix}last_name"
 						type="text"
@@ -116,7 +116,7 @@
 				</div>
 				<div class="form-group">
 					<label for="{idPrefix}company">Company</label>
-					<input
+					<input autocomplete="off"
 						id="{idPrefix}company"
 						name="{idPrefix}company"
 						type="text"
@@ -125,7 +125,7 @@
 				</div>
 				<div class="form-group">
 					<label for="{idPrefix}job_title">Job Title</label>
-					<input
+					<input autocomplete="off"
 						id="{idPrefix}job_title"
 						name="{idPrefix}job_title"
 						type="text"
@@ -142,7 +142,7 @@
 				</div>
 				<div class="form-group full-width">
 					<label for="{idPrefix}estimated_value">Estimated Value ($)</label>
-					<input
+					<input autocomplete="off"
 						id="{idPrefix}estimated_value"
 						name="{idPrefix}estimated_value"
 						type="number"

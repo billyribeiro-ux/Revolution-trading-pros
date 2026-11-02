@@ -1206,7 +1206,7 @@
 					</div>
 					<div class="field-group">
 						<label for="employee_id">Employee ID</label>
-						<input
+						<input autocomplete="off"
 							id="employee_id"
 							type="text"
 							bind:value={formData.employee_id}
@@ -1323,7 +1323,7 @@
 					<div class="form-grid">
 						<div class="field-group">
 							<label for="session_timeout">Session Timeout (min)</label>
-							<input
+							<input autocomplete="off"
 								id="session_timeout"
 								type="number"
 								bind:value={formData.session_timeout}
@@ -1332,7 +1332,7 @@
 						</div>
 						<div class="field-group">
 							<label for="password_expires">Password Expires</label>
-							<input
+							<input autocomplete="off"
 								id="password_expires"
 								type="date"
 								bind:value={formData.password_expires_at}
@@ -1427,7 +1427,7 @@
 					</div>
 					<div class="field-group">
 						<label for="job_title">Job Title</label>
-						<input
+						<input autocomplete="off"
 							id="job_title"
 							type="text"
 							bind:value={formData.job_title}
@@ -1445,11 +1445,11 @@
 					</div>
 					<div class="field-group">
 						<label for="office">Office</label>
-						<input id="office" type="text" bind:value={formData.office} class="form-control" />
+						<input autocomplete="off" id="office" type="text" bind:value={formData.office} class="form-control" />
 					</div>
 					<div class="field-group">
 						<label for="cost_center">Cost Center</label>
-						<input
+						<input autocomplete="off"
 							id="cost_center"
 							type="text"
 							bind:value={formData.cost_center}
@@ -1458,7 +1458,7 @@
 					</div>
 					<div class="field-group">
 						<label for="start_date">Start Date</label>
-						<input
+						<input autocomplete="off"
 							id="start_date"
 							type="date"
 							bind:value={formData.start_date}
@@ -1470,7 +1470,7 @@
 				<div class="form-grid">
 					<div class="field-group">
 						<label for="timezone">Timezone</label>
-						<input id="timezone" type="text" bind:value={formData.timezone} class="form-control" />
+						<input autocomplete="off" id="timezone" type="text" bind:value={formData.timezone} class="form-control" />
 					</div>
 					<div class="field-group">
 						<label for="language">Language</label>

@@ -60,11 +60,11 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="week_of">Week Of *</label>
-						<input id="week_of" name="week_of" type="date" bind:value={form.week_of} />
+						<input autocomplete="off" id="week_of" name="week_of" type="date" bind:value={form.week_of} />
 					</div>
 					<div class="form-group">
 						<label for="week_title">Week Title *</label>
-						<input
+						<input autocomplete="off"
 							id="week_title"
 							name="week_title"
 							type="text"
@@ -76,7 +76,7 @@
 
 				<div class="form-group full-width">
 					<label for="video_title">Video Title *</label>
-					<input
+					<input autocomplete="off"
 						id="video_title"
 						name="video_title"
 						type="text"
@@ -88,7 +88,7 @@
 				<div class="form-row">
 					<div class="form-group flex-2">
 						<label for="video_url">Video URL *</label>
-						<input
+						<input autocomplete="off"
 							id="video_url"
 							name="video_url"
 							type="url"
@@ -98,7 +98,7 @@
 					</div>
 					<div class="form-group">
 						<label for="duration">Duration</label>
-						<input
+						<input autocomplete="off"
 							id="duration"
 							name="duration"
 							type="text"
@@ -110,7 +110,7 @@
 
 				<div class="form-group full-width">
 					<label for="thumbnail_url">Thumbnail URL</label>
-					<input
+					<input autocomplete="off"
 						id="thumbnail_url"
 						name="thumbnail_url"
 						type="url"

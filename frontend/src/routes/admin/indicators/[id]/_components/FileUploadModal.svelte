@@ -72,7 +72,7 @@
 			</div>
 			<div class="form-group">
 				<label for="file-name">Display Name *</label>
-				<input
+				<input autocomplete="off"
 					type="text"
 					id="file-name"
 					bind:value={newFile.display_name}
@@ -81,7 +81,7 @@
 			</div>
 			<div class="form-group">
 				<label for="file-version">Version</label>
-				<input type="text" id="file-version" bind:value={newFile.version} placeholder="1.0" />
+				<input autocomplete="off" type="text" id="file-version" bind:value={newFile.version} placeholder="1.0" />
 			</div>
 			<div class="form-group">
 				<label for="file-input">File *</label>

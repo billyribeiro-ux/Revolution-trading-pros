@@ -250,7 +250,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
+			<input autocomplete="off"
 				type="text"
 				id="search-tags"
 				name="search"
@@ -354,7 +354,7 @@
 				{/if}
 				<div class="form-group">
 					<label for="tag-title">Title <span class="required">*</span></label>
-					<input
+					<input autocomplete="off"
 						type="text"
 						id="tag-title"
 						name="tag-title"

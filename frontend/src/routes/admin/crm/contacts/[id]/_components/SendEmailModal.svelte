@@ -97,7 +97,7 @@
 						<IconTag size={16} />
 						Subject Line
 					</label>
-					<input
+					<input autocomplete="email"
 						id="email-subject"
 						name="email-subject"
 						type="text"

@@ -375,7 +375,7 @@
 		>
 			<h3>Add Video URL</h3>
 			<p>Enter a video URL from YouTube, Vimeo, or other supported platforms.</p>
-			<input
+			<input autocomplete="off"
 				id="page-newvideourl"
 				name="page-newvideourl"
 				type="url"

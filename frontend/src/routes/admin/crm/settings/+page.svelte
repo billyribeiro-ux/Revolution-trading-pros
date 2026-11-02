@@ -205,7 +205,7 @@
 					{#if doubleOptIn.enabled}
 						<div class="form-group">
 							<label for="doi-subject">Confirmation Email Subject</label>
-							<input
+							<input autocomplete="off"
 								type="text"
 								id="doi-subject"
 								name="doi-subject"
@@ -228,7 +228,7 @@
 
 						<div class="form-group">
 							<label for="doi-redirect">Redirect URL After Confirmation</label>
-							<input
+							<input autocomplete="off"
 								type="text"
 								id="doi-redirect"
 								name="doi-redirect"
@@ -284,7 +284,7 @@
 					{#if emailPreferences.enabled}
 						<div class="form-group">
 							<label for="ep-title">Page Title</label>
-							<input
+							<input autocomplete="email"
 								type="text"
 								id="ep-title"
 								name="ep-title"
@@ -357,7 +357,7 @@
 
 						<div class="form-group">
 							<label for="ep-redirect">Redirect After Update</label>
-							<input
+							<input autocomplete="off"
 								type="text"
 								id="ep-redirect"
 								name="ep-redirect"

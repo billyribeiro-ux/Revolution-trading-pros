@@ -17,7 +17,7 @@
 <div class="form-row">
 	<div class="form-group">
 		<label for="usage-limit">Total Usage Limit (Optional)</label>
-		<input
+		<input autocomplete="off"
 			id="usage-limit"
 			name="usage_limit"
 			type="number"
@@ -29,7 +29,7 @@
 	</div>
 	<div class="form-group">
 		<label for="usage-limit-per-user">Per User Limit</label>
-		<input
+		<input autocomplete="off"
 			id="usage-limit-per-user"
 			name="usage_limit_per_user"
 			type="number"
@@ -45,7 +45,7 @@
 <div class="form-row">
 	<div class="form-group">
 		<label for="starts-at">Start Date</label>
-		<input
+		<input autocomplete="off"
 			id="starts-at"
 			name="starts_at"
 			type="datetime-local"
@@ -55,7 +55,7 @@
 	</div>
 	<div class="form-group">
 		<label for="expires-at">Expiration Date</label>
-		<input
+		<input autocomplete="off"
 			id="expires-at"
 			name="expires_at"
 			type="datetime-local"

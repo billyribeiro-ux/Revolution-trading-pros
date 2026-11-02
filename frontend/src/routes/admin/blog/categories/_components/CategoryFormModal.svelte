@@ -69,7 +69,7 @@
 
 				<div class="form-group">
 					<label for="cat-name">Name *</label>
-					<input
+					<input autocomplete="off"
 						id="cat-name"
 						name="cat-name"
 						type="text"
@@ -84,7 +84,7 @@
 					<label for="cat-slug">Slug *</label>
 					<!-- FIX-2026-04-26 (P0-4): mark as user-edited on input so the
 					     auto-generator stops clobbering manual slug edits. -->
-					<input
+					<input autocomplete="off"
 						id="cat-slug"
 						name="cat-slug"
 						type="text"

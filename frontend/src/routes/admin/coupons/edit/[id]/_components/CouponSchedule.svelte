@@ -20,7 +20,7 @@
 	<div class="form-row">
 		<div class="form-group" data-field="valid_from">
 			<label for="valid_from">Start Date</label>
-			<input
+			<input autocomplete="off"
 				type="datetime-local"
 				id="valid_from"
 				name="valid_from"
@@ -31,7 +31,7 @@
 
 		<div class="form-group" data-field="valid_until">
 			<label for="valid_until">Expiration Date</label>
-			<input
+			<input autocomplete="off"
 				type="datetime-local"
 				id="valid_until"
 				name="valid_until"
