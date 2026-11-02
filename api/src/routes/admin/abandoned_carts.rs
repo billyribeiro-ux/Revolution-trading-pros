@@ -41,11 +41,12 @@ pub async fn get_dashboard_stats(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let total_abandoned: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'abandoned'")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+    let total_abandoned: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'abandoned'",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let total_value: (Option<Decimal>,) =
         sqlx::query_as("SELECT SUM(cart_total) FROM crm_abandoned_carts")
@@ -53,11 +54,12 @@ pub async fn get_dashboard_stats(
             .await
             .unwrap_or((None,));
 
-    let recovered_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'recovered' OR recovered = true")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+    let recovered_count: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'recovered' OR recovered = true",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let recovered_value: (Option<Decimal>,) = sqlx::query_as(
         "SELECT SUM(cart_total) FROM crm_abandoned_carts WHERE status = 'recovered' OR recovered = true",
@@ -77,19 +79,26 @@ pub async fn get_dashboard_stats(
         0.0
     };
 
-    let total_val_f64 = total_value.0.map(|d| d.to_string().parse::<f64>().unwrap_or(0.0)).unwrap_or(0.0);
-    let recovered_val_f64 = recovered_value.0.map(|d| d.to_string().parse::<f64>().unwrap_or(0.0)).unwrap_or(0.0);
+    let total_val_f64 = total_value
+        .0
+        .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
+        .unwrap_or(0.0);
+    let recovered_val_f64 = recovered_value
+        .0
+        .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
+        .unwrap_or(0.0);
     let avg_cart_value = if total_all.0 > 0 {
         total_val_f64 / total_all.0 as f64
     } else {
         0.0
     };
 
-    let email_sent_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE recovery_email_sent = true")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+    let email_sent_count: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM crm_abandoned_carts WHERE recovery_email_sent = true",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let stats = json!({
         "total_abandoned": total_abandoned.0,
@@ -129,7 +138,7 @@ pub async fn list_abandoned_carts(
         "SELECT id, contact_id, email, cart_total, cart_items, status, recovery_email_sent, recovered, created_at, updated_at \
          FROM crm_abandoned_carts \
          ORDER BY created_at DESC \
-         LIMIT $1 OFFSET $2"
+         LIMIT $1 OFFSET $2",
     )
     .bind(per_page)
     .bind(offset)
@@ -147,9 +156,15 @@ pub async fn list_abandoned_carts(
     let data: Vec<serde_json::Value> = rows
         .into_iter()
         .map(|r| {
-            let cart_val = r.cart_total.map(|d| d.to_string().parse::<f64>().unwrap_or(0.0)).unwrap_or(0.0);
+            let cart_val = r
+                .cart_total
+                .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
+                .unwrap_or(0.0);
             let items = r.cart_items.unwrap_or_else(|| json!([]));
-            let created_iso = r.created_at.map(|d| d.to_rfc3339()).unwrap_or_else(|| Utc::now().to_rfc3339());
+            let created_iso = r
+                .created_at
+                .map(|d| d.to_rfc3339())
+                .unwrap_or_else(|| Utc::now().to_rfc3339());
             json!({
                 "id": r.id,
                 "user_id": r.contact_id,
@@ -222,20 +237,29 @@ pub async fn get_cart(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let row: Option<AbandonedCartRow> = sqlx::query_as(
         "SELECT id, contact_id, email, cart_total, cart_items, status, recovery_email_sent, recovered, created_at, updated_at \
-         FROM crm_abandoned_carts WHERE id = $1"
+         FROM crm_abandoned_carts WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
 
     let Some(r) = row else {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Cart not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({ "error": "Cart not found" })),
+        ));
     };
 
-    let cart_val = r.cart_total.map(|d| d.to_string().parse::<f64>().unwrap_or(0.0)).unwrap_or(0.0);
+    let cart_val = r
+        .cart_total
+        .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
+        .unwrap_or(0.0);
     let items = r.cart_items.unwrap_or_else(|| json!([]));
-    let created_iso = r.created_at.map(|d| d.to_rfc3339()).unwrap_or_else(|| Utc::now().to_rfc3339());
+    let created_iso = r
+        .created_at
+        .map(|d| d.to_rfc3339())
+        .unwrap_or_else(|| Utc::now().to_rfc3339());
 
     Ok(Json(json!({
         "id": r.id,
@@ -264,14 +288,19 @@ pub async fn send_recovery(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let result = sqlx::query("UPDATE crm_abandoned_carts SET recovery_email_sent = true, updated_at = NOW() WHERE id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let result = sqlx::query(
+        "UPDATE crm_abandoned_carts SET recovery_email_sent = true, updated_at = NOW() WHERE id = $1",
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Cart not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({ "error": "Cart not found" })),
+        ));
     }
 
     Ok(Json(json!({
@@ -296,7 +325,7 @@ pub async fn bulk_delete(
         .bind(&input.ids)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
 
     Ok(Json(json!({
         "message": "Abandoned carts deleted successfully",
@@ -313,4 +342,3 @@ pub fn router() -> Router<AppState> {
         .route("/{id}", get(get_cart))
         .route("/{id}/send-recovery", post(send_recovery))
 }
-
