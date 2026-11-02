@@ -833,7 +833,7 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .invoice-settings-page {
+	.invoice-settings-page {
 		color: var(--text-primary, #f0f6fc);
 	}
 
@@ -876,8 +876,8 @@
 		color: var(--text-tertiary, #6e7681);
 	}
 
-	:global(.dark) .page-subtitle,
-	:global(.dark) .section-copy {
+	.page-subtitle,
+	.section-copy {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -915,12 +915,12 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .secondary-button {
+	.secondary-button {
 		background: var(--bg-hover, #252b33);
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .secondary-button:hover {
+	.secondary-button:hover {
 		background: var(--bg-active, #2d333b);
 	}
 
@@ -965,12 +965,12 @@
 		color: var(--success-emphasis, #3fb950);
 	}
 
-	:global(.dark) .alert--error {
+	.alert--error {
 		background: rgba(127, 29, 29, 0.3);
 		color: var(--error-emphasis, #f85149);
 	}
 
-	:global(.dark) .alert--success {
+	.alert--success {
 		background: rgba(20, 83, 45, 0.3);
 		color: var(--success-emphasis, #3fb950);
 	}
@@ -1006,9 +1006,9 @@
 		overflow: hidden;
 	}
 
-	:global(.dark) .settings-card,
-	:global(.dark) .preview-card,
-	:global(.dark) .preview-modal {
+	.settings-card,
+	.preview-card,
+	.preview-modal {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -1020,10 +1020,10 @@
 		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
-	:global(.dark) .tabs-shell,
-	:global(.dark) .preview-card-header,
-	:global(.dark) .preview-modal-header,
-	:global(.dark) .danger-zone {
+	.tabs-shell,
+	.preview-card-header,
+	.preview-modal-header,
+	.danger-zone {
 		border-color: var(--border-default, #30363d);
 	}
 
@@ -1053,11 +1053,11 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .tab-button {
+	.tab-button {
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .tab-button:hover {
+	.tab-button:hover {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -1067,7 +1067,7 @@
 		color: var(--info-emphasis, #58a6ff);
 	}
 
-	:global(.dark) .tab-button.active {
+	.tab-button.active {
 		background: rgba(30, 64, 175, 0.2);
 	}
 
@@ -1107,9 +1107,9 @@
 		font-weight: 500;
 	}
 
-	:global(.dark) .form-label,
-	:global(.dark) .checkbox-label,
-	:global(.dark) .option-title {
+	.form-label,
+	.checkbox-label,
+	.option-title {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -1127,7 +1127,7 @@
 		font: inherit;
 	}
 
-	:global(.dark) .form-control {
+	.form-control {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-hover, #252b33);
 		color: #ffffff;
@@ -1164,7 +1164,7 @@
 		overflow: hidden;
 	}
 
-	:global(.dark) .logo-dropzone {
+	.logo-dropzone {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-base, #0d1117);
 	}
@@ -1206,11 +1206,11 @@
 		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
-	:global(.dark) .danger-soft-button {
+	.danger-soft-button {
 		background: rgba(127, 29, 29, 0.3);
 	}
 
-	:global(.dark) .danger-soft-button:hover {
+	.danger-soft-button:hover {
 		background: rgba(127, 29, 29, 0.5);
 	}
 
@@ -1264,11 +1264,11 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .option-card {
+	.option-card {
 		background: var(--bg-base, #0d1117);
 	}
 
-	:global(.dark) .option-card:hover {
+	.option-card:hover {
 		background: var(--bg-elevated, #161b22);
 	}
 
@@ -1278,7 +1278,7 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .inline-code {
+	.inline-code {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -1309,8 +1309,8 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .preview-card-title,
-	:global(.dark) .preview-modal-title {
+	.preview-card-title,
+	.preview-modal-title {
 		color: #ffffff;
 	}
 
@@ -1453,7 +1453,7 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .preview-modal-body {
+	.preview-modal-body {
 		background: var(--bg-base, #0d1117);
 	}
 
@@ -1473,7 +1473,7 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .icon-button:hover {
+	.icon-button:hover {
 		background: var(--bg-hover, #252b33);
 	}
 

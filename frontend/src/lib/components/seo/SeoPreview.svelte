@@ -55,7 +55,7 @@
 
 	.preview-content {
 		padding: 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.google-preview {

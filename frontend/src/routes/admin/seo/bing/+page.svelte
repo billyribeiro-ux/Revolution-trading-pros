@@ -501,7 +501,7 @@ https://yourdomain.com/page-3"
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 	}
 
 	.title-icon.bing {
@@ -545,7 +545,7 @@ https://yourdomain.com/page-3"
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 		flex-shrink: 0;
 	}
 
@@ -989,7 +989,7 @@ https://yourdomain.com/page-3"
 
 	.btn-primary.bing {
 		background: #008373;
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-secondary {

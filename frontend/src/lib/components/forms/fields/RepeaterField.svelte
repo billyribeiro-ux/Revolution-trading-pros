@@ -515,7 +515,7 @@
 	.repeater-row {
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		transition: all 0.2s;
 	}
 
@@ -673,7 +673,7 @@
 
 	.btn-add {
 		padding: 0.75rem 1.5rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		font-size: 0.875rem;

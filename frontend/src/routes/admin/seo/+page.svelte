@@ -698,7 +698,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 12px;
-		color: white;
+		color: #ffffff;
 	}
 
 	.visibility .stat-icon {
@@ -924,7 +924,7 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 14px;
-		color: white;
+		color: #ffffff;
 		margin-bottom: 1.25rem;
 	}
 

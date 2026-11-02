@@ -639,7 +639,7 @@
 	}
 
 	.time-selector button.active {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
@@ -693,7 +693,7 @@
 		max-width: 480px;
 		text-align: center;
 		padding: 48px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 20px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
@@ -743,7 +743,7 @@
 		gap: 8px;
 		padding: 12px 24px;
 		background: #0071e3;
-		color: white;
+		color: #ffffff;
 		font-size: 14px;
 		font-weight: 600;
 		border-radius: 10px;
@@ -835,7 +835,7 @@
 		align-items: center;
 		gap: 20px;
 		padding: 24px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		position: relative;
@@ -844,7 +844,7 @@
 
 	.hero-card.savings {
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 	}
 
 	.hero-card.cost {
@@ -947,7 +947,7 @@
 		align-items: center;
 		gap: 16px;
 		padding: 20px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
@@ -1008,7 +1008,7 @@
 	.chart-section {
 		margin: 24px;
 		padding: 24px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
@@ -1102,7 +1102,7 @@
 	.format-section {
 		margin: 0 24px 24px;
 		padding: 24px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
@@ -1172,7 +1172,7 @@
 	}
 
 	.bar-optimized .bar-label {
-		color: white;
+		color: #ffffff;
 	}
 
 	.format-savings {
@@ -1196,7 +1196,7 @@
 	.insights-section {
 		margin: 0 24px;
 		padding: 24px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}

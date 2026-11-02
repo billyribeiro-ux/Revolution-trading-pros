@@ -423,14 +423,14 @@
 
 	.back-btn:hover {
 		background: var(--bg-active, #2d333b);
-		color: white;
+		color: #ffffff;
 	}
 
 	.header-titles h1 {
 		margin: 0;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.subtitle {
@@ -479,7 +479,7 @@
 
 	.btn-secondary {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-secondary:hover {
@@ -573,7 +573,7 @@
 		margin: 0 0 16px;
 		font-size: 1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.section-description {
@@ -611,7 +611,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 	}
 
@@ -670,7 +670,7 @@
 	.modal h3 {
 		margin: 0 0 12px;
 		font-size: 1.25rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal p {
@@ -697,12 +697,12 @@
 
 	.btn-cancel {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-delete {
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 	}
 
 	/* Responsive */

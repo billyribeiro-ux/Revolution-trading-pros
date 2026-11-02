@@ -55,7 +55,7 @@
 	.stage-progress-section h3 {
 		margin: 0 0 20px;
 		font-size: 1rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.stages-row {
@@ -114,7 +114,7 @@
 
 	.stage-item.current .stage-name,
 	.stage-item.past .stage-name {
-		color: white;
+		color: #ffffff;
 		font-weight: 600;
 	}
 

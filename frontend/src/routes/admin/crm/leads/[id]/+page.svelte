@@ -980,7 +980,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 	}
 
 	.lead-identity {
@@ -999,7 +999,7 @@
 		margin: 0;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-star {
@@ -1349,7 +1349,7 @@
 		margin: 0 0 16px;
 		font-size: 1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.info-card h3 :global(svg) {
@@ -1486,7 +1486,7 @@
 
 	.assignee-name {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.assignee-email {
@@ -1565,7 +1565,7 @@
 
 	.timeline-title {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		font-size: 0.9rem;
 	}
 
@@ -1655,7 +1655,7 @@
 
 	.empty-state h3 {
 		margin: 0 0 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 1.1rem;
 	}
 
@@ -1741,7 +1741,7 @@
 		gap: 10px;
 		margin: 0;
 		font-size: 1.1rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-header h3 :global(svg) {
@@ -1758,7 +1758,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {
@@ -1799,7 +1799,7 @@
 	}
 
 	.confirm-text strong {
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-danger {
@@ -1808,7 +1808,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

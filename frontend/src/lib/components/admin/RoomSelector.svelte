@@ -314,7 +314,7 @@
 		align-items: center;
 		padding: 2px 8px;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		font-size: 10px;
 		font-weight: 700;
 		border-radius: 4px;
@@ -329,7 +329,7 @@
 		width: 22px;
 		height: 22px;
 		background: #0984ae;
-		color: white;
+		color: #ffffff;
 		font-size: 11px;
 		font-weight: 700;
 		border-radius: 50%;
@@ -457,7 +457,7 @@
 	.group-checkbox :global(svg) {
 		width: 12px;
 		height: 12px;
-		color: white;
+		color: #ffffff;
 	}
 
 	.group-title {
@@ -519,7 +519,7 @@
 	.room-checkbox :global(svg) {
 		width: 12px;
 		height: 12px;
-		color: white;
+		color: #ffffff;
 	}
 
 	.room-icon {
@@ -555,7 +555,7 @@
 		background: #0984ae;
 		border: none;
 		border-radius: 6px;
-		color: white;
+		color: #ffffff;
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;

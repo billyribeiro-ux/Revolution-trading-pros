@@ -547,7 +547,7 @@
 	   the metrics themselves carry the visual interest. */
 	.analytics-dashboard {
 		background: var(--bg-base, #0d1117);
-		color: white;
+		color: #ffffff;
 		position: relative;
 		overflow: hidden;
 	}
@@ -1252,8 +1252,8 @@
 	@media print {
 		.page-header,
 		.dashboard-content {
-			background: white;
-			color: black;
+			background: #ffffff;
+			color: var(--text-primary, #f0f6fc);
 		}
 
 		.header-actions {

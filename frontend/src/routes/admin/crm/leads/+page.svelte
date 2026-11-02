@@ -1031,7 +1031,7 @@
 		padding: 12px 0;
 		background: transparent;
 		border: none;
-		color: white;
+		color: #ffffff;
 		font-size: 0.9rem;
 		outline: none;
 	}
@@ -1057,7 +1057,7 @@
 
 	.btn-filter:hover {
 		border-color: var(--border-default, #30363d);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-filter :global(.rotate) {
@@ -1126,7 +1126,7 @@
 
 	.btn-refresh:hover {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -1200,7 +1200,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 		cursor: pointer;
 	}
@@ -1337,7 +1337,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 	}
 
 	.lead-info {
@@ -1348,7 +1348,7 @@
 
 	.lead-name {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.lead-email {
@@ -1539,7 +1539,7 @@
 	}
 
 	.empty-state h3 {
-		color: white;
+		color: #ffffff;
 		margin: 0 0 8px;
 	}
 

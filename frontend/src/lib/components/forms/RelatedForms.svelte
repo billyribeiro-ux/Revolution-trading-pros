@@ -217,7 +217,7 @@
 
 <style>
 	.related-forms {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
@@ -330,7 +330,7 @@
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		text-transform: uppercase;
 	}
 
@@ -349,7 +349,7 @@
 		align-items: center;
 		justify-content: center;
 		background: var(--warning-emphasis, #d29922);
-		color: white;
+		color: #ffffff;
 		font-size: 0.75rem;
 		font-weight: 700;
 		border-radius: 0.25rem;

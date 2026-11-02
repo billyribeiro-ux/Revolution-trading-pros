@@ -1367,7 +1367,7 @@
 		background: rgba(255, 255, 255, 0.1);
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 10px;
-		color: white;
+		color: #ffffff;
 		cursor: pointer;
 		transition: all 0.2s;
 		text-decoration: none;
@@ -1699,7 +1699,7 @@
 	}
 
 	.preview-frame {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		padding: 1.5rem;
 		min-height: 200px;

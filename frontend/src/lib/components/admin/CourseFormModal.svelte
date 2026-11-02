@@ -885,7 +885,7 @@
 		border-radius: var(--radius-sm);
 		font-size: var(--text-xs);
 		font-weight: var(--font-semibold);
-		color: white;
+		color: #ffffff;
 	}
 
 	/* Actions */

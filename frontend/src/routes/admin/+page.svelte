@@ -2306,8 +2306,8 @@
 	/* Print Styles */
 	@media print {
 		.admin-dashboard {
-			background: white;
-			color: black;
+			background: #ffffff;
+			color: var(--text-primary, #f0f6fc);
 		}
 
 		.header-actions,

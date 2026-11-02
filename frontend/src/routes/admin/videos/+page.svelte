@@ -2497,7 +2497,7 @@
 		background: rgba(0, 0, 0, 0.8);
 		border-radius: 3px;
 		font-size: 0.65rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.video-info {
@@ -2947,7 +2947,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: #ff9500;
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

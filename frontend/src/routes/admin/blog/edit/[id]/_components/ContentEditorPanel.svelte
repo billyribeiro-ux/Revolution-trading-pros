@@ -77,7 +77,7 @@
 	.editor-container {
 		display: flex;
 		flex-direction: column;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		overflow: hidden;
 		border: 1px solid var(--border-default, #30363d);
@@ -121,7 +121,7 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		cursor: pointer;

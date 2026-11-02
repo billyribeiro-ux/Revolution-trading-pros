@@ -91,7 +91,7 @@
 		margin: 0;
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-header h3 :global(svg) {
@@ -109,7 +109,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {
@@ -132,7 +132,7 @@
 	}
 
 	.confirm-text strong {
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-secondary {

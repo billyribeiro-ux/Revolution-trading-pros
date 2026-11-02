@@ -216,7 +216,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -232,7 +232,7 @@
 	}
 
 	.setting-group {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 2rem;

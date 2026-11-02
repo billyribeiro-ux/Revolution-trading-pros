@@ -328,7 +328,7 @@
 		justify-content: center;
 		gap: 1rem;
 		background: var(--bg-elevated, #161b22);
-		color: white;
+		color: #ffffff;
 		z-index: 10;
 	}
 
@@ -364,7 +364,7 @@
 		bottom: 1rem;
 		padding: 0.375rem 0.75rem;
 		background: rgba(0, 0, 0, 0.75);
-		color: white;
+		color: #ffffff;
 		font-size: 0.75rem;
 		font-weight: 500;
 		border-radius: 4px;
@@ -393,7 +393,7 @@
 		bottom: 0;
 		left: 50%;
 		width: 2px;
-		background: white;
+		background: #ffffff;
 		transform: translateX(-50%);
 	}
 
@@ -404,7 +404,7 @@
 		transform: translate(-50%, -50%);
 		width: 3rem;
 		height: 3rem;
-		background: white;
+		background: #ffffff;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;

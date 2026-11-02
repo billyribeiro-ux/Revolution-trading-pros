@@ -374,7 +374,7 @@
 
 	.btn-danger {
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-danger:hover {
@@ -389,7 +389,7 @@
 	}
 
 	.stat-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 		border-radius: 8px;
 		border: 1px solid var(--border-default, #30363d);
@@ -420,7 +420,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 	}
@@ -439,7 +439,7 @@
 
 	.filter-tab {
 		padding: 0.625rem 1rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--text-secondary, #8b949e);
@@ -459,7 +459,7 @@
 	}
 
 	.redirects-table {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		border: 1px solid var(--border-default, #30363d);
 		overflow: hidden;

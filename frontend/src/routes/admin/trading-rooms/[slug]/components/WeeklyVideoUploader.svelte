@@ -661,7 +661,7 @@
 
 <style>
 	.weekly-video-uploader {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		border: 1px solid var(--border-default, #30363d);
 		overflow: hidden;
@@ -757,7 +757,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.4);
-		color: white;
+		color: #ffffff;
 		opacity: 0;
 		transition: opacity 0.2s;
 	}
@@ -912,7 +912,7 @@
 	}
 
 	.modal-content {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		width: 100%;
 		max-width: 720px;
@@ -977,7 +977,7 @@
 	}
 
 	.mode-tab.active {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-color: var(--primary-500, #e6b800);
 		color: var(--primary-500, #e6b800);
 	}
@@ -1022,7 +1022,7 @@
 
 	.btn-browse {
 		padding: 10px 20px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-size: 14px;
@@ -1204,7 +1204,7 @@
 
 	.btn-cancel {
 		padding: 10px 20px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-size: 14px;

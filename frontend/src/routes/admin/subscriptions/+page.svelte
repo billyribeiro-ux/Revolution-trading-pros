@@ -762,7 +762,7 @@
 	/* Outer Container with Gradient Background */
 	.admin-subscriptions {
 		background: var(--bg-base, #0d1117);
-		color: white;
+		color: #ffffff;
 		position: relative;
 		overflow: hidden;
 	}

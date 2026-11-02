@@ -1044,7 +1044,7 @@
 
 	.btn-secondary {
 		background: rgba(255, 255, 255, 0.1);
-		color: white;
+		color: #ffffff;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 	}
 
@@ -1258,7 +1258,7 @@
 		width: 20px;
 		left: 3px;
 		bottom: 3px;
-		background: white;
+		background: #ffffff;
 		transition: 0.3s;
 		border-radius: 50%;
 	}
@@ -1497,7 +1497,7 @@
 		gap: 0.5rem;
 		padding: 0.875rem 1.25rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border-radius: 10px;
 		font-size: 0.875rem;
 		font-weight: 500;

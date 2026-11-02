@@ -141,7 +141,7 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: capitalize;
-		color: white;
+		color: #ffffff;
 	}
 
 	.preview-content {

@@ -842,7 +842,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 		box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
 	}
 
@@ -1241,7 +1241,7 @@
 		background: var(--warning-emphasis, #d29922);
 		border: none;
 		border-radius: 10px;
-		color: white;
+		color: #ffffff;
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
@@ -1332,7 +1332,7 @@
 		justify-content: center;
 		font-weight: 700;
 		font-size: 0.875rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.customer-name {
@@ -1765,7 +1765,7 @@
 		background: var(--warning-emphasis, #d29922);
 		border: none;
 		border-radius: 12px;
-		color: white;
+		color: #ffffff;
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);

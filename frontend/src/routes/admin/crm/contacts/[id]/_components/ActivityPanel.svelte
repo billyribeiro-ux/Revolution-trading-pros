@@ -88,7 +88,7 @@
 
 	.timeline-title {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		font-size: 0.9rem;
 	}
 
@@ -125,7 +125,7 @@
 
 	.empty-state h3 {
 		margin: 0 0 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 1.1rem;
 	}
 

@@ -332,7 +332,7 @@
 		padding: 1rem;
 		border: 2px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		cursor: pointer;
 		transition: all 0.2s;
 		text-align: left;
@@ -416,7 +416,7 @@
 	.quiz-option__radio-dot {
 		width: 10px;
 		height: 10px;
-		background: white;
+		background: #ffffff;
 		border-radius: 50%;
 	}
 

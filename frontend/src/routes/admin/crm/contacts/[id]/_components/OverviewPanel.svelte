@@ -220,7 +220,7 @@
 		margin: 0 0 16px;
 		font-size: 1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.info-card h3 :global(svg) {
@@ -400,7 +400,7 @@
 	.metric-value {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.empty-text {

@@ -89,7 +89,7 @@
 	.value-stat .stat-value {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.probability-bar {
@@ -119,7 +119,7 @@
 		height: 100%;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	@media (max-width: 767.98px) {

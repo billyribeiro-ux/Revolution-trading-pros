@@ -226,7 +226,7 @@
 	.admin-orders {
 		min-height: calc(100vh - 70px - 4rem);
 		background: var(--admin-bg, var(--bg-base, #0d1117));
-		color: white;
+		color: #ffffff;
 		position: relative;
 		overflow: hidden;
 		margin: -2rem;

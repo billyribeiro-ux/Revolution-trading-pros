@@ -751,7 +751,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem 2rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-bottom: 1px solid var(--border-default, #30363d);
 		position: sticky;
 		top: 0;
@@ -819,7 +819,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -865,7 +865,7 @@
 		font-weight: 700;
 		border: none;
 		border-radius: 8px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 		outline: none;
 	}
@@ -877,7 +877,7 @@
 	.slug-input {
 		display: flex;
 		align-items: center;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 6px;
 		overflow: hidden;
 		border: 1px solid var(--border-default, #30363d);
@@ -898,7 +898,7 @@
 		outline: none;
 		font-size: 0.95rem;
 		color: var(--text-primary, #f0f6fc);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	textarea {
@@ -909,7 +909,7 @@
 		font-size: 0.95rem;
 		font-family: inherit;
 		resize: vertical;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 	}
 
@@ -919,7 +919,7 @@
 	}
 
 	.panel {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		overflow: hidden;
 	}
@@ -930,7 +930,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: none;
 		cursor: pointer;
 		border-bottom: 1px solid var(--border-default, #30363d);
@@ -954,7 +954,7 @@
 	}
 
 	.sidebar-panel {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 		border-radius: 8px;
 		border: 1px solid var(--border-default, #30363d);
@@ -977,7 +977,7 @@
 		border-radius: 6px;
 		font-size: 0.9rem;
 		color: var(--text-primary, #f0f6fc);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.sidebar-panel input[type='checkbox'] {
@@ -1030,7 +1030,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.7);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 50%;
 		cursor: pointer;
@@ -1262,7 +1262,7 @@
 		font-family: inherit;
 		resize: vertical;
 		color: var(--text-primary, #f0f6fc);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.sidebar-panel textarea:focus {
@@ -1277,7 +1277,7 @@
 	.editor-container {
 		display: flex;
 		flex-direction: column;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		overflow: hidden;
 		border: 1px solid var(--border-default, #30363d);
@@ -1321,7 +1321,7 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		cursor: pointer;

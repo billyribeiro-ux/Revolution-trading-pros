@@ -1321,7 +1321,7 @@
 	/* Main container - consistent with other admin pages */
 	.admin-settings {
 		background: var(--bg-base, #0d1117);
-		color: white;
+		color: #ffffff;
 		position: relative;
 		overflow: hidden;
 	}

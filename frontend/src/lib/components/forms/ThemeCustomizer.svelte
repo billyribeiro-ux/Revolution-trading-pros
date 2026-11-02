@@ -590,7 +590,7 @@
 		padding: 0.875rem;
 		border: none;
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-weight: 600;
 		font-size: 0.9375rem;
 		cursor: pointer;

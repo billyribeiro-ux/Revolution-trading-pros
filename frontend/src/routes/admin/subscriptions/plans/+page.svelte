@@ -893,7 +893,7 @@
 <style>
 	.admin-plans {
 		background: var(--bg-base, #0d1117);
-		color: white;
+		color: #ffffff;
 		position: relative;
 	}
 
@@ -952,7 +952,7 @@
 
 	.btn-secondary:hover {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	/* Banners */
@@ -1055,7 +1055,7 @@
 	.stat-value {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 		margin: 0;
 	}
 
@@ -1092,7 +1092,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 	}
 
@@ -1158,7 +1158,7 @@
 
 	.plan-name {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.plan-slug {
@@ -1267,7 +1267,7 @@
 
 	.btn-edit:hover {
 		background: rgba(230, 184, 0, 0.25);
-		color: white;
+		color: #ffffff;
 	}
 
 	.row-actions {
@@ -1290,7 +1290,7 @@
 
 	.btn-price:hover {
 		background: rgba(63, 185, 80, 0.25);
-		color: white;
+		color: #ffffff;
 	}
 
 	/* Price-change modal */
@@ -1522,7 +1522,7 @@
 	.modal-header h2 {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		margin: 0;
 	}
 
@@ -1543,7 +1543,7 @@
 
 	.modal-close:hover {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {
@@ -1578,7 +1578,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.9rem;
 	}
 
@@ -1661,7 +1661,7 @@
 
 	.btn-cancel:hover:not(:disabled) {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-save {

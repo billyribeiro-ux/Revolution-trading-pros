@@ -729,7 +729,7 @@
 
 	.step.completed .step-number {
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 	}
 
 	.step-number {

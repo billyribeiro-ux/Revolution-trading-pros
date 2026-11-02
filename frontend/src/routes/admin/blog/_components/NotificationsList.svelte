@@ -46,7 +46,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		font-weight: 500;

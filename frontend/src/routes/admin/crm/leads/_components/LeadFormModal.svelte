@@ -213,7 +213,7 @@
 		margin: 0;
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-header h3 :global(svg) {
@@ -231,7 +231,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {
@@ -275,7 +275,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.9rem;
 		font-family: inherit;
 	}

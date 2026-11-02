@@ -487,7 +487,7 @@
 	.repeater-item {
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		overflow: hidden;
 		transition: all 0.2s;
 	}

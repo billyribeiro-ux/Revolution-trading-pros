@@ -451,7 +451,7 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .templates-page {
+	.templates-page {
 		background: var(--bg-base, #0d1117);
 		color: var(--text-primary, #f0f6fc);
 	}
@@ -461,7 +461,7 @@
 		background: var(--bg-elevated, #161b22);
 	}
 
-	:global(.dark) .page-header {
+	.page-header {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -518,11 +518,11 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .back-link {
+	.back-link {
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .back-link:hover {
+	.back-link:hover {
 		background: var(--bg-hover, #252b33);
 		color: var(--text-primary, #f0f6fc);
 	}
@@ -539,7 +539,7 @@
 		color: var(--primary-500, #e6b800);
 	}
 
-	:global(.dark) .title-icon {
+	.title-icon {
 		background: rgba(179, 143, 0, 0.3);
 		color: var(--primary-400, #ffd11a);
 	}
@@ -557,7 +557,7 @@
 		line-height: 1.25;
 	}
 
-	:global(.dark) .page-title {
+	.page-title {
 		color: #ffffff;
 	}
 
@@ -567,7 +567,7 @@
 		font-size: 0.875rem;
 	}
 
-	:global(.dark) .page-subtitle {
+	.page-subtitle {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -610,7 +610,7 @@
 		outline: none;
 	}
 
-	:global(.dark) .search-field__input {
+	.search-field__input {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 		color: #ffffff;
@@ -653,18 +653,18 @@
 		color: #0d1117;
 	}
 
-	:global(.dark) .filter-button {
+	.filter-button {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .filter-button:hover {
+	.filter-button:hover {
 		background: var(--bg-hover, #252b33);
 	}
 
-	:global(.dark) .filter-button--active,
-	:global(.dark) .filter-button--active:hover {
+	.filter-button--active,
+	.filter-button--active:hover {
 		border-color: #e6b800;
 		background: #e6b800;
 		color: #0d1117;
@@ -703,7 +703,7 @@
 		text-align: center;
 	}
 
-	:global(.dark) .empty-card {
+	.empty-card {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -723,7 +723,7 @@
 		line-height: 1.5rem;
 	}
 
-	:global(.dark) .empty-card__title {
+	.empty-card__title {
 		color: #ffffff;
 	}
 
@@ -732,7 +732,7 @@
 		color: var(--text-tertiary, #6e7681);
 	}
 
-	:global(.dark) .empty-card__text {
+	.empty-card__text {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -759,7 +759,7 @@
 		transform: translateY(-1px);
 	}
 
-	:global(.dark) .template-card {
+	.template-card {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -854,7 +854,7 @@
 		text-transform: capitalize;
 	}
 
-	:global(.dark) .template-meta__category {
+	.template-meta__category {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -867,7 +867,7 @@
 		line-height: 1rem;
 	}
 
-	:global(.dark) .default-badge {
+	.default-badge {
 		background: rgba(179, 143, 0, 0.3);
 		color: var(--primary-400, #ffd11a);
 	}
@@ -880,7 +880,7 @@
 		line-height: 1.5rem;
 	}
 
-	:global(.dark) .template-card__title {
+	.template-card__title {
 		color: #ffffff;
 	}
 
@@ -897,7 +897,7 @@
 		line-clamp: 2;
 	}
 
-	:global(.dark) .template-card__description {
+	.template-card__description {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -911,7 +911,7 @@
 		font-size: 0.75rem;
 	}
 
-	:global(.dark) .template-stats {
+	.template-stats {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -936,7 +936,7 @@
 		line-height: 1rem;
 	}
 
-	:global(.dark) .label-overflow {
+	.label-overflow {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -992,7 +992,7 @@
 		padding: 1.5rem;
 	}
 
-	:global(.dark) .custom-template-card {
+	.custom-template-card {
 		border-color: #b38f00;
 		background: rgba(179, 143, 0, 0.2);
 	}
@@ -1018,11 +1018,11 @@
 		font-size: 0.875rem;
 	}
 
-	:global(.dark) .custom-template-card__title {
+	.custom-template-card__title {
 		color: var(--primary-400, #ffd11a);
 	}
 
-	:global(.dark) .custom-template-card__text {
+	.custom-template-card__text {
 		color: rgba(255, 209, 26, 0.8);
 	}
 

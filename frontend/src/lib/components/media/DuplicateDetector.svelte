@@ -414,7 +414,7 @@
 <style>
 	.duplicate-detector {
 		padding: 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
@@ -553,7 +553,7 @@
 
 	.error-message button {
 		padding: 0.25rem 0.75rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		color: var(--error-emphasis, #f85149);
@@ -656,7 +656,7 @@
 	.merge-button {
 		padding: 0.5rem 1rem;
 		background: var(--warning-emphasis, #d29922);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 6px;
 		font-weight: 500;
@@ -750,7 +750,7 @@
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		overflow: hidden;
 		display: flex;
@@ -867,7 +867,7 @@
 	.keep-badge {
 		padding: 0.25rem 0.75rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		font-size: 0.75rem;
 		font-weight: 500;
 		border-radius: 9999px;
@@ -895,7 +895,7 @@
 
 	.cancel-button {
 		padding: 0.75rem 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-weight: 500;
@@ -912,7 +912,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 8px;
 		font-weight: 500;

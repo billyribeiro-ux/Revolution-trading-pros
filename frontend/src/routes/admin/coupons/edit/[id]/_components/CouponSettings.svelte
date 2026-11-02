@@ -108,7 +108,7 @@
 
 	.toggle-checkbox:checked + .toggle-switch:before {
 		transform: translateX(24px);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.toggle-text {

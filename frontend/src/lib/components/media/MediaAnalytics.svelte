@@ -359,7 +359,7 @@
 
 	.summary-card.primary .card-icon {
 		background: var(--success-color, #10b981);
-		color: white;
+		color: #ffffff;
 	}
 
 	.card-content {

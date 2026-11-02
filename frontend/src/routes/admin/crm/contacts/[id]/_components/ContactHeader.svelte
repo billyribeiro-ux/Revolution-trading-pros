@@ -117,7 +117,7 @@
 		margin: 0;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.vip-badge {

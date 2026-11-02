@@ -4282,7 +4282,7 @@
 		background: rgba(248, 81, 73, 0.9);
 		border: none;
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		cursor: pointer;
 		display: flex;
 		align-items: center;

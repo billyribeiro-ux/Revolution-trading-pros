@@ -234,7 +234,7 @@
 
 <style>
 	.seo-analyzer {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
@@ -277,7 +277,7 @@
 		width: 64px;
 		height: 64px;
 		border-radius: 50%;
-		background: white;
+		background: #ffffff;
 	}
 
 	.score-value {
@@ -305,7 +305,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--text-secondary, #8b949e);

@@ -791,7 +791,7 @@
 			100vh - 70px - 4rem
 		); /* Account for header (70px) and admin-content padding (2rem top + 2rem bottom) */
 		background: var(--admin-bg, linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%));
-		color: white;
+		color: #ffffff;
 		position: relative;
 		overflow: hidden;
 		margin: -2rem; /* Negate admin-content padding to fill edge-to-edge */
@@ -1031,7 +1031,7 @@
 		justify-content: center;
 		font-weight: 700;
 		font-size: 0.875rem;
-		color: white;
+		color: #ffffff;
 		background: var(--admin-accent-primary);
 	}
 
@@ -1350,8 +1350,8 @@
 	/* Print Styles */
 	@media print {
 		.admin-members {
-			background: white;
-			color: black;
+			background: #ffffff;
+			color: var(--text-primary, #f0f6fc);
 		}
 
 		.header-actions,

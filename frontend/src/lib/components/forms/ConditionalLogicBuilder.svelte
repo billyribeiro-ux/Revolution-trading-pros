@@ -421,7 +421,7 @@
 		left: 2px;
 		width: 20px;
 		height: 20px;
-		background-color: white;
+		background-color: #ffffff;
 		border-radius: 50%;
 		transition: transform 0.2s;
 	}
@@ -457,7 +457,7 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		font-weight: 500;
 		color: var(--info-emphasis, #58a6ff);
 	}
@@ -480,7 +480,7 @@
 		align-items: flex-start;
 		gap: 0.75rem;
 		padding: 0.75rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		position: relative;
@@ -513,7 +513,7 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 	}
 
 	.field-select {
@@ -544,7 +544,7 @@
 		justify-content: center;
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.25rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		cursor: pointer;
 		font-size: 0.875rem;
 		color: var(--text-tertiary, #6e7681);
@@ -588,7 +588,7 @@
 	/* Add Rule Button */
 	.btn-add-rule {
 		padding: 0.5rem 1rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;

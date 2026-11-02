@@ -1124,7 +1124,7 @@
 	.stat-value {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.stat-label {
@@ -1240,7 +1240,7 @@
 
 	.stage-name {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		font-size: 0.9rem;
 	}
 
@@ -1309,7 +1309,7 @@
 
 	.deal-name {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		font-size: 0.85rem;
 		text-decoration: none;
 	}
@@ -1457,7 +1457,7 @@
 
 	.deal-title {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.deal-link:hover .deal-title {
@@ -1513,7 +1513,7 @@
 		height: 100%;
 		font-size: 0.7rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.text-muted {
@@ -1587,7 +1587,7 @@
 	}
 
 	.empty-state h3 {
-		color: white;
+		color: #ffffff;
 		margin: 0 0 8px;
 	}
 
@@ -1659,7 +1659,7 @@
 		flex: 1;
 		margin: 0;
 		font-size: 1.1rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-close {
@@ -1672,7 +1672,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {
@@ -1689,7 +1689,7 @@
 	.deal-summary .deal-name {
 		margin: 0 0 4px;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.deal-summary .deal-value {
@@ -1749,7 +1749,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -1774,7 +1774,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

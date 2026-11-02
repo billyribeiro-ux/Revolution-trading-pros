@@ -593,7 +593,7 @@
 
 <style>
 	.trade-entry-manager {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		border: 1px solid var(--border-default, #30363d);
 		overflow: hidden;
@@ -636,7 +636,7 @@
 
 	.btn-quick-add {
 		padding: 8px 16px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-size: 13px;
@@ -700,7 +700,7 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 13px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-quick-submit {
@@ -713,7 +713,7 @@
 		border-radius: 6px;
 		font-size: 13px;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		cursor: pointer;
 	}
 
@@ -891,7 +891,7 @@
 	}
 
 	.modal-content {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		width: 100%;
 		max-width: 640px;
@@ -997,7 +997,7 @@
 
 	.btn-cancel {
 		padding: 10px 20px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-size: 14px;

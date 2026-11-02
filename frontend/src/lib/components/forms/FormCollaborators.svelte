@@ -393,7 +393,7 @@
 
 <style>
 	.collaborators-panel {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
@@ -460,14 +460,14 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-send-invite {
 		width: 100%;
 		padding: 0.5rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
@@ -531,7 +531,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: default;
@@ -563,7 +563,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 		font-weight: 600;
 		position: relative;
 	}
@@ -623,7 +623,7 @@
 		font-size: 0.75rem;
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.25rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		cursor: pointer;
 	}
 

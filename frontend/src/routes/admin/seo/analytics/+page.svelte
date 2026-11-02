@@ -327,7 +327,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -368,7 +368,7 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		margin-bottom: 2rem;
@@ -390,7 +390,7 @@
 	}
 
 	.metric-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 		border-radius: 8px;
 		border: 1px solid var(--border-default, #30363d);
@@ -441,7 +441,7 @@
 	}
 
 	.pages-table {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		border: 1px solid var(--border-default, #30363d);
 		overflow: hidden;

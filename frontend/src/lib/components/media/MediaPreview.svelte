@@ -803,7 +803,7 @@
 
 	.btn-danger {
 		background: var(--error-color, #ef4444);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-danger:hover {

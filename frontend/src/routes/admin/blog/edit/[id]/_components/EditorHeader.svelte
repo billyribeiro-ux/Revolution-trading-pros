@@ -55,7 +55,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem 2rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-bottom: 1px solid var(--border-default, #30363d);
 		position: sticky;
 		top: 0;
@@ -171,7 +171,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}

@@ -923,7 +923,7 @@
 		justify-content: center;
 		font-weight: 600;
 		font-size: 0.75rem;
-		color: white;
+		color: #ffffff;
 		flex-shrink: 0;
 	}
 

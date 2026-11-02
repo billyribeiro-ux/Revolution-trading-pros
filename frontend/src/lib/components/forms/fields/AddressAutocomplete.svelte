@@ -558,7 +558,7 @@
 		margin: 0;
 		padding: 0;
 		list-style: none;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -650,7 +650,7 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 	}
 
 	.sub-input:focus {

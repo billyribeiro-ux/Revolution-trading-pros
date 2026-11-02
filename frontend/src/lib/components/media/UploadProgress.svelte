@@ -304,7 +304,7 @@
 			0 4px 6px -4px rgb(0 0 0 / 0.1);
 	}
 
-	:global(.dark) .upload-progress {
+	.upload-progress {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -318,7 +318,7 @@
 		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
-	:global(.dark) .upload-progress__header {
+	.upload-progress__header {
 		border-bottom-color: var(--border-default, #30363d);
 	}
 
@@ -348,7 +348,7 @@
 		line-height: 1.25rem;
 	}
 
-	:global(.dark) .upload-progress__title {
+	.upload-progress__title {
 		color: #ffffff;
 	}
 
@@ -380,7 +380,7 @@
 		color: var(--success-emphasis, #3fb950);
 	}
 
-	:global(.dark) .upload-progress__badge--success {
+	.upload-progress__badge--success {
 		background: rgb(20 83 45 / 0.3);
 		color: var(--success-emphasis, #3fb950);
 	}
@@ -390,7 +390,7 @@
 		color: var(--error-emphasis, #f85149);
 	}
 
-	:global(.dark) .upload-progress__badge--error {
+	.upload-progress__badge--error {
 		background: rgb(127 29 29 / 0.3);
 		color: var(--error-emphasis, #f85149);
 	}
@@ -416,7 +416,7 @@
 		color: var(--text-tertiary, #6e7681);
 	}
 
-	:global(.dark) .upload-progress__icon-button--neutral:hover {
+	.upload-progress__icon-button--neutral:hover {
 		background: var(--bg-hover, #252b33);
 		color: var(--text-secondary, #8b949e);
 	}
@@ -426,7 +426,7 @@
 		color: var(--error-emphasis, #f85149);
 	}
 
-	:global(.dark) .upload-progress__icon-button--danger:hover {
+	.upload-progress__icon-button--danger:hover {
 		background: rgb(127 29 29 / 0.2);
 	}
 
@@ -435,7 +435,7 @@
 		color: var(--info-emphasis, #58a6ff);
 	}
 
-	:global(.dark) .upload-progress__icon-button--info:hover {
+	.upload-progress__icon-button--info:hover {
 		background: rgb(30 58 138 / 0.2);
 	}
 
@@ -448,7 +448,7 @@
 		color: var(--success-emphasis, #3fb950);
 	}
 
-	:global(.dark) .upload-progress__icon-button--success:hover {
+	.upload-progress__icon-button--success:hover {
 		background: rgb(20 83 45 / 0.2);
 	}
 
@@ -458,8 +458,8 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .upload-progress__total-track,
-	:global(.dark) .upload-progress__file-track {
+	.upload-progress__total-track,
+	.upload-progress__file-track {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -491,7 +491,7 @@
 		border-bottom: 0;
 	}
 
-	:global(.dark) .upload-progress__item {
+	.upload-progress__item {
 		border-bottom-color: var(--border-default, #30363d);
 	}
 
@@ -507,7 +507,7 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .upload-progress__thumbnail {
+	.upload-progress__thumbnail {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -536,7 +536,7 @@
 		white-space: nowrap;
 	}
 
-	:global(.dark) .upload-progress__file-name {
+	.upload-progress__file-name {
 		color: #ffffff;
 	}
 
@@ -545,7 +545,7 @@
 		color: var(--text-tertiary, #6e7681);
 	}
 
-	:global(.dark) .upload-progress__meta {
+	.upload-progress__meta {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -559,7 +559,7 @@
 		background: var(--bg-hover, #252b33);
 	}
 
-	:global(.dark) .upload-progress__status-dot--pending {
+	.upload-progress__status-dot--pending {
 		background: var(--bg-active, #2d333b);
 	}
 
@@ -612,7 +612,7 @@
 		color: var(--text-tertiary, #6e7681);
 	}
 
-	:global(.dark) .upload-progress__optimized-size {
+	.upload-progress__optimized-size {
 		color: var(--text-secondary, #8b949e);
 	}
 

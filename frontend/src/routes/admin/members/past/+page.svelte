@@ -1134,7 +1134,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1507,7 +1507,7 @@
 		justify-content: center;
 		font-weight: 700;
 		font-size: 0.875rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.member-name {

@@ -131,7 +131,7 @@
 		animation: shimmer 1.5s infinite;
 	}
 
-	:global(.dark) .skeleton-shimmer {
+	.skeleton-shimmer {
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
@@ -160,12 +160,12 @@
 		animation: pulse 2s ease-in-out infinite;
 	}
 
-	:global(.dark) .skeleton-card,
-	:global(.dark) .skeleton-card-large,
-	:global(.dark) .skeleton-row,
-	:global(.dark) .skeleton-upload,
-	:global(.dark) .skeleton-upload-item,
-	:global(.dark) .skeleton-single {
+	.skeleton-card,
+	.skeleton-card-large,
+	.skeleton-row,
+	.skeleton-upload,
+	.skeleton-upload-item,
+	.skeleton-single {
 		background: var(--bg-elevated, #161b22);
 	}
 
@@ -183,15 +183,15 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .skeleton-media,
-	:global(.dark) .skeleton-line,
-	:global(.dark) .skeleton-button,
-	:global(.dark) .skeleton-checkbox,
-	:global(.dark) .skeleton-thumbnail,
-	:global(.dark) .skeleton-row__action,
-	:global(.dark) .skeleton-progress,
-	:global(.dark) .skeleton-upload-item__status,
-	:global(.dark) .skeleton-single {
+	.skeleton-media,
+	.skeleton-line,
+	.skeleton-button,
+	.skeleton-checkbox,
+	.skeleton-thumbnail,
+	.skeleton-row__action,
+	.skeleton-progress,
+	.skeleton-upload-item__status,
+	.skeleton-single {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -328,8 +328,8 @@
 		padding: 1rem;
 	}
 
-	:global(.dark) .skeleton-upload__header,
-	:global(.dark) .skeleton-upload-item {
+	.skeleton-upload__header,
+	.skeleton-upload-item {
 		border-color: var(--border-default, #30363d);
 	}
 
@@ -385,7 +385,7 @@
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .skeleton-single__icon {
+	.skeleton-single__icon {
 		color: var(--text-tertiary, #6e7681);
 	}
 

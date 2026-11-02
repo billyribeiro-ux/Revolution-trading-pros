@@ -79,7 +79,7 @@
 	.modal-header h3 {
 		margin: 0;
 		font-size: 1.1rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-close {
@@ -92,7 +92,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {

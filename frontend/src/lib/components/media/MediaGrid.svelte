@@ -355,7 +355,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #ffffff;
 	}
 
 	.item-actions {
@@ -391,7 +391,7 @@
 	}
 
 	.action-btn:hover {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		transform: scale(1.1);
 	}
 
@@ -402,7 +402,7 @@
 
 	.action-btn.delete:hover {
 		background: var(--error-color, #ef4444);
-		color: white;
+		color: #ffffff;
 	}
 
 	.item-info {

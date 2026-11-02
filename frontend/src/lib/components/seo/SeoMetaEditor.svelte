@@ -429,7 +429,7 @@
 
 <style>
 	.seo-meta-editor {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		height: 100%;
 		display: flex;
 		flex-direction: column;
@@ -484,7 +484,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -627,7 +627,7 @@
 
 	.add-keyword {
 		padding: 0.375rem 0.75rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 4px;
 		color: var(--text-secondary, #8b949e);

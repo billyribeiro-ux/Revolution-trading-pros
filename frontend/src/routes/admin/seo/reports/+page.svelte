@@ -552,7 +552,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -569,7 +569,7 @@
 	}
 
 	.stat-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
@@ -588,7 +588,7 @@
 	}
 
 	.section {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 1.5rem;
@@ -697,7 +697,7 @@
 		align-items: center;
 		gap: 0.25rem;
 		padding: 0.5rem 0.75rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		font-size: 0.8rem;
@@ -786,7 +786,7 @@
 	}
 
 	.modal {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		padding: 2rem;
 		max-width: 500px;

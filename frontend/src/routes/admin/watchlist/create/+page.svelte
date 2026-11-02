@@ -460,14 +460,14 @@
 
 	.back-btn:hover {
 		background: var(--bg-active, #2d333b);
-		color: white;
+		color: #ffffff;
 	}
 
 	.header-titles h1 {
 		margin: 0;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.subtitle {
@@ -518,7 +518,7 @@
 		background: var(--bg-hover, #252b33);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -607,7 +607,7 @@
 		margin: 0 0 16px;
 		font-size: 1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.section-description {
@@ -654,7 +654,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 		font-family: inherit;
 		transition: border-color 0.2s;
@@ -739,7 +739,7 @@
 	}
 
 	.date-info strong {
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 	}
 

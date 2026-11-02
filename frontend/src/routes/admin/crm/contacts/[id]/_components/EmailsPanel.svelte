@@ -100,7 +100,7 @@
 
 	.email-subject {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.email-status {
@@ -139,7 +139,7 @@
 
 	.empty-state h3 {
 		margin: 0 0 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 1.1rem;
 	}
 

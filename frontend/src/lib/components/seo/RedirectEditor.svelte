@@ -223,7 +223,7 @@
 	}
 
 	.modal {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		width: 100%;
 		max-width: 600px;
@@ -373,7 +373,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}

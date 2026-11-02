@@ -231,15 +231,15 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: var(--btn-color, #3b82f6);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 14px;
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: none;
 	}
 
 	.connect-btn:hover {

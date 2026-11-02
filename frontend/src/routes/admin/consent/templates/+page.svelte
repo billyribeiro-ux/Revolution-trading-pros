@@ -429,7 +429,7 @@
 
 	.btn-secondary {
 		background: rgba(255, 255, 255, 0.1);
-		color: white;
+		color: #ffffff;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 	}
 
@@ -616,7 +616,7 @@
 		gap: 0.5rem;
 		padding: 0.875rem 1.25rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border-radius: 10px;
 		font-size: 0.875rem;
 		font-weight: 500;

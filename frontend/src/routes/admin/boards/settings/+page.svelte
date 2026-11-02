@@ -644,7 +644,7 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .board-settings-page {
+	.board-settings-page {
 		background: var(--bg-base, #0d1117);
 		color: var(--text-primary, #f0f6fc);
 	}
@@ -654,7 +654,7 @@
 		background: var(--bg-elevated, #161b22);
 	}
 
-	:global(.dark) .settings-header {
+	.settings-header {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -713,7 +713,7 @@
 		color: var(--primary-500, #e6b800);
 	}
 
-	:global(.dark) .title-icon {
+	.title-icon {
 		background: rgb(179 143 0 / 30%);
 		color: var(--primary-400, #ffd11a);
 	}
@@ -733,11 +733,11 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .back-link {
+	.back-link {
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .back-link:hover {
+	.back-link:hover {
 		background: var(--bg-hover, #252b33);
 		color: var(--text-primary, #f0f6fc);
 	}
@@ -758,8 +758,8 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) h1,
-	:global(.dark) h2 {
+	h1,
+	h2 {
 		color: #ffffff;
 	}
 
@@ -784,9 +784,9 @@
 		font-size: 0.75rem;
 	}
 
-	:global(.dark) .title-row p,
-	:global(.dark) .section-description,
-	:global(.dark) .setting-description {
+	.title-row p,
+	.section-description,
+	.setting-description {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -845,15 +845,15 @@
 		color: var(--primary-600, #b38f00);
 	}
 
-	:global(.dark) .settings-tab {
+	.settings-tab {
 		color: var(--text-secondary, #8b949e);
 	}
 
-	:global(.dark) .settings-tab:hover {
+	.settings-tab:hover {
 		background: var(--bg-hover, #252b33);
 	}
 
-	:global(.dark) .settings-tab.active {
+	.settings-tab.active {
 		background: rgb(179 143 0 / 30%);
 		color: var(--primary-400, #ffd11a);
 	}
@@ -870,7 +870,7 @@
 		padding: 1.5rem;
 	}
 
-	:global(.dark) .settings-card {
+	.settings-card {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -898,8 +898,8 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) label,
-	:global(.dark) .setting-label {
+	label,
+	.setting-label {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -915,8 +915,8 @@
 		font: inherit;
 	}
 
-	:global(.dark) input:not([type='checkbox']):not([type='color']),
-	:global(.dark) select {
+	input:not([type='checkbox']):not([type='color']),
+	select {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-hover, #252b33);
 		color: #ffffff;
@@ -993,7 +993,7 @@
 		box-shadow: 0 0 0 4px rgb(230 184 0 / 30%);
 	}
 
-	:global(.dark) .toggle-track {
+	.toggle-track {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -1015,11 +1015,11 @@
 		background: transparent;
 	}
 
-	:global(.dark) .config-row {
+	.config-row {
 		background: var(--bg-hover, #252b33);
 	}
 
-	:global(.dark) .config-row--new {
+	.config-row--new {
 		border-color: var(--border-default, #30363d);
 		background: transparent;
 	}
@@ -1054,7 +1054,7 @@
 		accent-color: #e6b800;
 	}
 
-	:global(.dark) .checkbox-option {
+	.checkbox-option {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -1092,7 +1092,7 @@
 		background: var(--bg-elevated, #161b22);
 	}
 
-	:global(.dark) .icon-button--danger:hover {
+	.icon-button--danger:hover {
 		background: rgb(127 29 29 / 20%);
 	}
 
@@ -1118,7 +1118,7 @@
 		font-size: 0.75rem;
 	}
 
-	:global(.dark) .stored-note {
+	.stored-note {
 		color: var(--success-emphasis, #3fb950);
 	}
 
@@ -1164,11 +1164,11 @@
 		background: rgb(230 184 0 / 5%);
 	}
 
-	:global(.dark) .secondary-button {
+	.secondary-button {
 		color: var(--primary-400, #ffd11a);
 	}
 
-	:global(.dark) .secondary-button:hover:not(:disabled) {
+	.secondary-button:hover:not(:disabled) {
 		background: rgb(179 143 0 / 20%);
 	}
 
@@ -1191,7 +1191,7 @@
 		padding-top: 1.5rem;
 	}
 
-	:global(.dark) .save-panel {
+	.save-panel {
 		border-color: var(--border-default, #30363d);
 	}
 

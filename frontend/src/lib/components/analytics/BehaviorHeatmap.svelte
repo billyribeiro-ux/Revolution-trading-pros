@@ -139,7 +139,7 @@
 		gap: 0.5rem;
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.heatmap-legend {

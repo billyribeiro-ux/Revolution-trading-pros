@@ -467,7 +467,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -482,7 +482,7 @@
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 6px;
 		font-weight: 500;
@@ -502,7 +502,7 @@
 	}
 
 	.stat-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
@@ -522,7 +522,7 @@
 	}
 
 	.settings-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 1.5rem;
@@ -584,7 +584,7 @@
 	}
 
 	.videos-section {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 1.5rem;
@@ -647,7 +647,7 @@
 		bottom: 4px;
 		right: 4px;
 		background: rgba(0, 0, 0, 0.8);
-		color: white;
+		color: #ffffff;
 		padding: 2px 6px;
 		border-radius: 4px;
 		font-size: 0.75rem;
@@ -664,7 +664,7 @@
 	.live-dot {
 		width: 6px;
 		height: 6px;
-		background: white;
+		background: #ffffff;
 		border-radius: 50%;
 	}
 
@@ -707,7 +707,7 @@
 
 	.icon-btn {
 		padding: 0.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		cursor: pointer;
@@ -741,7 +741,7 @@
 	}
 
 	.info-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
@@ -772,7 +772,7 @@
 	}
 
 	.modal {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		padding: 2rem;
 		max-width: 500px;

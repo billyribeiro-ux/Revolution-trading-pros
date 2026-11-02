@@ -414,7 +414,7 @@ ${'</'}script>`);
 		right: 2rem;
 		padding: 1rem 1.5rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border-radius: 8px;
 		font-size: 0.875rem;
 		font-weight: 600;

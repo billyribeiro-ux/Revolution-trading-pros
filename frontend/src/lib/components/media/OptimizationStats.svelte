@@ -205,7 +205,7 @@
 		font-weight: 500;
 	}
 
-	:global(.dark) .optimization-stats__optimized {
+	.optimization-stats__optimized {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -218,7 +218,7 @@
 		padding: 0.125rem 0.5rem;
 	}
 
-	:global(.dark) .optimization-stats__badge {
+	.optimization-stats__badge {
 		background: rgba(20, 83, 45, 0.3);
 	}
 
@@ -229,7 +229,7 @@
 		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 	}
 
-	:global(.dark) .optimization-card {
+	.optimization-card {
 		border-color: var(--success-base, #2ea043);
 		background: rgba(20, 83, 45, 0.2);
 	}
@@ -243,7 +243,7 @@
 		padding: 1rem;
 	}
 
-	:global(.dark) .optimization-card__header {
+	.optimization-card__header {
 		border-color: var(--success-base, #2ea043);
 		background: rgba(20, 83, 45, 0.3);
 	}
@@ -275,11 +275,11 @@
 		line-height: 1.25rem;
 	}
 
-	:global(.dark) .optimization-card h3 {
+	.optimization-card h3 {
 		color: #bbf7d0;
 	}
 
-	:global(.dark) .optimization-card p {
+	.optimization-card p {
 		color: var(--success-emphasis, #3fb950);
 	}
 
@@ -307,7 +307,7 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .optimization-ring__track {
+	.optimization-ring__track {
 		color: var(--text-primary, #f0f6fc);
 	}
 
@@ -356,7 +356,7 @@
 		line-height: 1rem;
 	}
 
-	:global(.dark) .optimization-comparison__label {
+	.optimization-comparison__label {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -374,7 +374,7 @@
 		line-height: 1.25rem;
 	}
 
-	:global(.dark) .optimization-comparison__optimized {
+	.optimization-comparison__optimized {
 		color: var(--success-emphasis, #3fb950);
 	}
 
@@ -388,7 +388,7 @@
 		padding: 0.125rem 0.375rem;
 	}
 
-	:global(.dark) .optimization-comparison__format {
+	.optimization-comparison__format {
 		background: var(--bg-hover, #252b33);
 		color: var(--text-secondary, #8b949e);
 	}
@@ -398,7 +398,7 @@
 		color: var(--success-emphasis, #3fb950);
 	}
 
-	:global(.dark) .optimization-comparison__format--optimized {
+	.optimization-comparison__format--optimized {
 		background: var(--success-base, #2ea043);
 		color: #86efac;
 	}
@@ -421,7 +421,7 @@
 		padding: 0.75rem 1rem;
 	}
 
-	:global(.dark) .optimization-card__details {
+	.optimization-card__details {
 		border-color: var(--success-base, #2ea043);
 		color: var(--text-secondary, #8b949e);
 	}

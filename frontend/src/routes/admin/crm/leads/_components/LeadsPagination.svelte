@@ -63,7 +63,7 @@
 		background: var(--bg-hover, #252b33);
 		border: none;
 		border-radius: 6px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.8rem;
 		cursor: pointer;
 		transition: all 0.2s;

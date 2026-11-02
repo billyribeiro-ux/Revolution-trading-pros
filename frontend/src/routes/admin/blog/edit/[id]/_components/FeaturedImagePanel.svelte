@@ -93,7 +93,7 @@
 
 <style>
 	.sidebar-panel {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 		border-radius: 8px;
 		border: 1px solid var(--border-default, #30363d);
@@ -115,7 +115,7 @@
 		border-radius: 6px;
 		font-size: 0.9rem;
 		color: var(--text-primary, #f0f6fc);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.upload-box {
@@ -176,7 +176,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.7);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 50%;
 		cursor: pointer;
@@ -210,7 +210,7 @@
 		font-family: inherit;
 		resize: vertical;
 		color: var(--text-primary, #f0f6fc);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.sidebar-panel textarea:focus {

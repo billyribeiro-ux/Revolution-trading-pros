@@ -251,7 +251,7 @@
 		display: none;
 	}
 
-	:global(.dark) .dropzone {
+	.dropzone {
 		border-color: var(--border-default, #30363d);
 		background-color: rgba(31, 41, 55, 0.5);
 	}
@@ -261,7 +261,7 @@
 		background-color: rgba(239, 246, 255, 0.5);
 	}
 
-	:global(.dark) .dropzone:hover:not(.dropzone-disabled) {
+	.dropzone:hover:not(.dropzone-disabled) {
 		border-color: var(--primary-500, #e6b800);
 		background-color: rgba(30, 58, 138, 0.1);
 	}
@@ -273,7 +273,7 @@
 			0 0 0 4px white;
 	}
 
-	:global(.dark) .dropzone:focus:not(.dropzone-disabled) {
+	.dropzone:focus:not(.dropzone-disabled) {
 		box-shadow:
 			0 0 0 2px #3b82f6,
 			0 0 0 4px #111827;
@@ -286,7 +286,7 @@
 		transform: scale(1.02);
 	}
 
-	:global(.dark) .dropzone-active {
+	.dropzone-active {
 		background-color: rgba(30, 58, 138, 0.2);
 	}
 
@@ -339,7 +339,7 @@
 		color: var(--text-primary, #f0f6fc);
 	}
 
-	:global(.dark) .dropzone__title {
+	.dropzone__title {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -350,7 +350,7 @@
 		line-height: 1.25rem;
 	}
 
-	:global(.dark) .dropzone__subtitle {
+	.dropzone__subtitle {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -367,7 +367,7 @@
 		margin: 0;
 	}
 
-	:global(.dark) .dropzone__requirements {
+	.dropzone__requirements {
 		color: var(--text-tertiary, #6e7681);
 	}
 

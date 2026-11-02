@@ -213,7 +213,7 @@
 
 	.status-card {
 		padding: 3rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		border: 2px solid;
 		text-align: center;
@@ -243,7 +243,7 @@
 	.site-info {
 		margin-top: 1.5rem;
 		padding: 1rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 6px;
 		text-align: left;
 		font-size: 0.9rem;
@@ -294,7 +294,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-weight: 500;
@@ -328,7 +328,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.25rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 	}

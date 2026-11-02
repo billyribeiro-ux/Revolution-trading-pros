@@ -425,7 +425,7 @@
 
 <style>
 	.import-export {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
@@ -710,7 +710,7 @@
 	.btn-secondary {
 		width: 100%;
 		padding: 0.5rem 1rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--info-emphasis, #58a6ff);
 		border: 1px solid var(--primary-500, #e6b800);
 		border-radius: 0.375rem;

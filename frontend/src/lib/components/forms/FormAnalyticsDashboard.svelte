@@ -486,12 +486,12 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 	}
 
 	.btn-export {
 		padding: 0.5rem 1rem;
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
@@ -524,7 +524,7 @@
 	}
 
 	.stat-card {
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 		padding: 1.25rem;
 		display: flex;
@@ -584,7 +584,7 @@
 
 	/* Chart Sections */
 	.chart-section {
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
@@ -717,7 +717,7 @@
 	}
 
 	.breakdown-card {
-		background-color: white;
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 		padding: 1.25rem;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

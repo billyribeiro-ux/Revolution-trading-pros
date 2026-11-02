@@ -108,7 +108,7 @@
 		flex: 1;
 		margin: 0;
 		font-size: 1.1rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-close {
@@ -121,7 +121,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {
@@ -138,7 +138,7 @@
 	.summary-name {
 		margin: 0 0 4px;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.summary-value {
@@ -213,7 +213,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

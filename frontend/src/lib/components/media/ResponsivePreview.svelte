@@ -243,7 +243,7 @@
 		padding: 1rem;
 	}
 
-	:global(.dark) .responsive-preview {
+	.responsive-preview {
 		background: rgb(31 41 55 / 0.5);
 	}
 
@@ -263,7 +263,7 @@
 		line-height: 1.25rem;
 	}
 
-	:global(.dark) .responsive-preview__title {
+	.responsive-preview__title {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -304,7 +304,7 @@
 			box-shadow 0.2s ease;
 	}
 
-	:global(.dark) .responsive-preview__variant {
+	.responsive-preview__variant {
 		background: var(--bg-elevated, #161b22);
 	}
 
@@ -319,7 +319,7 @@
 			0 2px 4px -2px rgb(0 0 0 / 0.1);
 	}
 
-	:global(.dark) .responsive-preview__variant--interactive:hover {
+	.responsive-preview__variant--interactive:hover {
 		border-color: var(--primary-500, #e6b800);
 	}
 
@@ -328,7 +328,7 @@
 		box-shadow: 0 0 0 2px #bfdbfe;
 	}
 
-	:global(.dark) .responsive-preview__variant--selected {
+	.responsive-preview__variant--selected {
 		box-shadow: 0 0 0 2px #1e40af;
 	}
 
@@ -338,7 +338,7 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .responsive-preview__thumbnail {
+	.responsive-preview__thumbnail {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -358,7 +358,7 @@
 		font-weight: 500;
 	}
 
-	:global(.dark) .responsive-preview__variant-label {
+	.responsive-preview__variant-label {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -367,7 +367,7 @@
 		font-size: 0.625rem;
 	}
 
-	:global(.dark) .responsive-preview__variant-dimensions {
+	.responsive-preview__variant-dimensions {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -390,7 +390,7 @@
 		background: var(--bg-surface, #1c2128);
 	}
 
-	:global(.dark) .responsive-preview__breakpoint-track {
+	.responsive-preview__breakpoint-track {
 		background: var(--bg-hover, #252b33);
 	}
 
@@ -405,7 +405,7 @@
 		border-top: 1px solid var(--border-default, #30363d);
 	}
 
-	:global(.dark) .responsive-preview__comparison {
+	.responsive-preview__comparison {
 		border-top-color: var(--border-default, #30363d);
 	}
 
@@ -443,7 +443,7 @@
 		background: #9ca3af;
 	}
 
-	:global(.dark) .responsive-preview__chart-bar--original {
+	.responsive-preview__chart-bar--original {
 		background: #6b7280;
 	}
 
@@ -460,7 +460,7 @@
 			0 8px 10px -6px rgb(0 0 0 / 0.1);
 	}
 
-	:global(.dark) .responsive-preview__tooltip {
+	.responsive-preview__tooltip {
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
 	}
@@ -480,7 +480,7 @@
 		background: var(--bg-elevated, #161b22);
 	}
 
-	:global(.dark) .responsive-preview__tooltip-meta {
+	.responsive-preview__tooltip-meta {
 		background: var(--bg-base, #0d1117);
 	}
 

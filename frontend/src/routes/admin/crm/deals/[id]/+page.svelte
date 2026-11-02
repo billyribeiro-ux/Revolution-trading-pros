@@ -540,7 +540,7 @@
 
 	.empty-state h3 {
 		margin: 0 0 8px;
-		color: white;
+		color: #ffffff;
 	}
 
 	.empty-state p {

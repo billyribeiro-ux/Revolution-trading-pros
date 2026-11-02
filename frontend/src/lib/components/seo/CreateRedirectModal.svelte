@@ -151,7 +151,7 @@
 	.modal {
 		position: fixed;
 		inset: 0;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0;
 		width: 100%;
 		max-height: 100dvh;
@@ -355,7 +355,7 @@
 	}
 
 	.btn-secondary {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
 	}

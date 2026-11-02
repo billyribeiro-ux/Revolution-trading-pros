@@ -301,7 +301,7 @@
 		background: #f3f4f6;
 	}
 
-	:global(.dark) .optimized-image__error {
+	.optimized-image__error {
 		background: var(--bg-elevated, #161b22);
 	}
 
@@ -316,7 +316,7 @@
 		margin: 0;
 	}
 
-	:global(.dark) .optimized-image__error-content {
+	.optimized-image__error-content {
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -329,7 +329,7 @@
 		animation: optimized-image-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 	}
 
-	:global(.dark) .optimized-image__skeleton {
+	.optimized-image__skeleton {
 		background: var(--bg-hover, #252b33);
 	}
 

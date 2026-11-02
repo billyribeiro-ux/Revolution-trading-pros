@@ -640,7 +640,7 @@
 		margin: 0;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.subtitle {
@@ -700,7 +700,7 @@
 		display: block;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.stat-label {
@@ -735,7 +735,7 @@
 		background: none;
 		border: none;
 		outline: none;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 	}
 
@@ -753,7 +753,7 @@
 		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 		cursor: pointer;
 	}
@@ -905,7 +905,7 @@
 
 	.item-title {
 		font-weight: 500;
-		color: white;
+		color: #ffffff;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -1031,7 +1031,7 @@
 
 	.action-btn:hover {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	/* Dropdown */
@@ -1123,7 +1123,7 @@
 	.modal h3 {
 		margin: 0 0 20px;
 		font-size: 1.25rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal p {
@@ -1163,7 +1163,7 @@
 		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 	}
 
@@ -1196,12 +1196,12 @@
 
 	.btn-cancel {
 		background: var(--bg-hover, #252b33);
-		color: white;
+		color: #ffffff;
 	}
 
 	.btn-delete {
 		background: var(--error-base, #da3633);
-		color: white;
+		color: #ffffff;
 	}
 
 	/* Responsive */

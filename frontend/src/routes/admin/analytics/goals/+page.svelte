@@ -474,7 +474,7 @@
 	.goals-page {
 		min-height: 100vh;
 		background: var(--bg-base);
-		color: white;
+		color: #ffffff;
 	}
 
 	.goals-page__container {
@@ -561,7 +561,7 @@
 
 	.primary-action {
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		box-shadow: 0 16px 36px rgb(13 148 136 / 0.28);
 	}
 
@@ -586,7 +586,7 @@
 	.secondary-action:hover {
 		border-color: rgb(255 255 255 / 0.16);
 		background: rgb(255 255 255 / 0.08);
-		color: white;
+		color: #ffffff;
 	}
 
 	.loading-state {
@@ -631,7 +631,7 @@
 	}
 
 	.goals-stat__value {
-		color: white;
+		color: #ffffff;
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1;
@@ -670,7 +670,7 @@
 
 	.goal-filter.is-active {
 		border-color: rgb(255 255 255 / 0.28);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--info-emphasis, #58a6ff);
 		box-shadow: 0 12px 34px rgb(255 255 255 / 0.1);
 	}
@@ -717,7 +717,7 @@
 
 	.state-card__button {
 		margin-top: 0.5rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.state-card__button--primary {
@@ -792,7 +792,7 @@
 	.goal-card h3 {
 		margin: 0;
 		overflow: hidden;
-		color: white;
+		color: #ffffff;
 		font-size: 1rem;
 		font-weight: 600;
 		text-overflow: ellipsis;
@@ -841,7 +841,7 @@
 	.goal-card__menu:hover,
 	.goal-modal__close:hover {
 		background: rgb(255 255 255 / 0.08);
-		color: white;
+		color: #ffffff;
 	}
 
 	.goal-card__description {
@@ -874,7 +874,7 @@
 	}
 
 	.goal-progress__header strong {
-		color: white;
+		color: #ffffff;
 		font-weight: 600;
 	}
 
@@ -987,7 +987,7 @@
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 0.75rem;
 		background: var(--bg-base, #0d1117);
-		color: white;
+		color: #ffffff;
 		font: inherit;
 		padding: 0.75rem 1rem;
 		transition:
@@ -1045,7 +1045,7 @@
 	}
 
 	.type-option__label {
-		color: white;
+		color: #ffffff;
 		font-weight: 700;
 	}
 

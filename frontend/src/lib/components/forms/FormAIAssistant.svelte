@@ -420,7 +420,7 @@
 
 <style>
 	.ai-assistant {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
@@ -619,7 +619,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.375rem;
 		border: 1px solid var(--border-default, #30363d);
 	}
@@ -653,7 +653,7 @@
 		width: 100%;
 		padding: 0.5rem;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
@@ -757,7 +757,7 @@
 		content: '';
 		position: absolute;
 		inset: 8px;
-		background: white;
+		background: #ffffff;
 		border-radius: 50%;
 	}
 
@@ -837,7 +837,7 @@
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		text-transform: uppercase;
 	}
 

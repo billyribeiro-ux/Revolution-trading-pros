@@ -461,7 +461,7 @@
 	.cohorts-page {
 		min-height: 100vh;
 		background: var(--bg-base);
-		color: white;
+		color: #ffffff;
 	}
 
 	.cohorts-page__container {
@@ -575,7 +575,7 @@
 	.secondary-action:hover {
 		border-color: rgb(255 255 255 / 0.16);
 		background: rgb(255 255 255 / 0.08);
-		color: white;
+		color: #ffffff;
 	}
 
 	.granularity-field,
@@ -597,7 +597,7 @@
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 0.75rem;
 		background: var(--bg-base, #0d1117);
-		color: white;
+		color: #ffffff;
 		font: inherit;
 		padding: 0.75rem 1rem;
 		transition:
@@ -693,7 +693,7 @@
 
 	.state-card__button {
 		margin-top: 0.5rem;
-		color: white;
+		color: #ffffff;
 	}
 
 	.state-card__button--primary {
@@ -748,7 +748,7 @@
 	}
 
 	.retention-card__value {
-		color: white;
+		color: #ffffff;
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1;
@@ -794,7 +794,7 @@
 	}
 
 	.detail-item__value {
-		color: white;
+		color: #ffffff;
 		font-size: 0.875rem;
 		text-transform: capitalize;
 	}
@@ -863,7 +863,7 @@
 
 	.cohort-modal__close:hover {
 		background: rgb(255 255 255 / 0.1);
-		color: white;
+		color: #ffffff;
 	}
 
 	.cohort-modal__body {

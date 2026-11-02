@@ -182,7 +182,7 @@
 		margin: 0 0 16px;
 		font-size: 1rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.info-card h3 :global(svg) {
@@ -256,7 +256,7 @@
 
 	.contact-name {
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 		text-decoration: none;
 	}
 

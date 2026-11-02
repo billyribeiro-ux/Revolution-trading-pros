@@ -558,7 +558,7 @@
 	}
 
 	.panel {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		overflow: hidden;
 	}
@@ -569,7 +569,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: none;
 		cursor: pointer;
 		border-bottom: 1px solid var(--border-default, #30363d);

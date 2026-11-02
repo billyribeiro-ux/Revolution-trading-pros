@@ -160,7 +160,7 @@
 	.stat-value {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.stat-label {

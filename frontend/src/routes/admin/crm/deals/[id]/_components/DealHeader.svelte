@@ -132,7 +132,7 @@
 		margin: 0;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: white;
+		color: #ffffff;
 	}
 
 	.status-badge {
@@ -221,7 +221,7 @@
 		gap: 8px;
 		padding: 12px 20px;
 		background: var(--success-base, #2ea043);
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

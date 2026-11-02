@@ -191,7 +191,7 @@
 		margin: 0;
 		font-size: 1.15rem;
 		font-weight: 600;
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-title-section h3 :global(svg) {
@@ -217,7 +217,7 @@
 	}
 
 	.modal-close:hover {
-		color: white;
+		color: #ffffff;
 	}
 
 	.modal-body {

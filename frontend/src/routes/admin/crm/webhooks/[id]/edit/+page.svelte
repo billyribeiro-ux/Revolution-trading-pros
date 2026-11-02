@@ -799,7 +799,7 @@
 
 	.toggle-input:checked + .toggle-switch::after {
 		left: 22px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.toggle-text {

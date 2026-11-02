@@ -116,7 +116,7 @@
 
 	.page-header {
 		padding: 2rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
@@ -140,7 +140,7 @@
 	}
 
 	.entities-sidebar {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-right: 1px solid var(--border-default, #30363d);
 		display: flex;
 		flex-direction: column;
@@ -180,7 +180,7 @@
 		padding: 1rem;
 		border: none;
 		border-bottom: 1px solid var(--border-default, #30363d);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		cursor: pointer;
 		transition: background 0.2s;
 		text-align: left;

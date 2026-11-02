@@ -61,7 +61,7 @@
 		font-weight: 700;
 		border: none;
 		border-radius: 8px;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 		outline: none;
 	}
@@ -73,7 +73,7 @@
 	.slug-input {
 		display: flex;
 		align-items: center;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 6px;
 		overflow: hidden;
 		border: 1px solid var(--border-default, #30363d);
@@ -94,7 +94,7 @@
 		outline: none;
 		font-size: 0.95rem;
 		color: var(--text-primary, #f0f6fc);
-		background: white;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-regenerate {
@@ -121,7 +121,7 @@
 		font-size: 0.95rem;
 		font-family: inherit;
 		resize: vertical;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		color: var(--text-primary, #f0f6fc);
 	}
 

@@ -116,7 +116,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: #ff9500;
-		color: white;
+		color: #ffffff;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

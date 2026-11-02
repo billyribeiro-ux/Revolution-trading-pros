@@ -291,7 +291,7 @@
 	}
 
 	.schema-card {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		overflow: hidden;
@@ -326,7 +326,7 @@
 
 	.action-btn {
 		padding: 0.5rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		color: var(--text-secondary, #8b949e);
@@ -419,7 +419,7 @@
 
 	.type-card {
 		padding: 1.25rem;
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		display: flex;
@@ -499,7 +499,7 @@
 	}
 
 	.modal {
-		background: white;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		width: 100%;
 		max-width: 700px;
