@@ -16,20 +16,20 @@
 //! - Comprehensive error handling
 
 use axum::{
+    Json, Router,
     extract::{Query, State},
     http::StatusCode,
     response::sse::{Event, KeepAlive, Sse},
     routing::{get, post},
-    Json, Router,
 };
 use chrono::{DateTime, Utc};
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use std::{convert::Infallible, time::Duration};
 use uuid::Uuid;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -410,7 +410,7 @@ async fn call_claude_api(
     prompt: &str,
     stream: bool,
 ) -> Result<ClaudeResponse, String> {
-    let client = reqwest::Client::new();
+    let client = &*crate::utils::http::LLM_HTTP;
 
     let request_body = json!({
         "model": CLAUDE_MODEL,
@@ -704,7 +704,7 @@ async fn ai_assist_stream(
         let start_time = std::time::Instant::now();
 
         // Call Claude API with streaming
-        let client = reqwest::Client::new();
+        let client = &*crate::utils::http::LLM_HTTP;
         let request_body = json!({
             "model": CLAUDE_MODEL,
             "max_tokens": 4096,
@@ -773,14 +773,13 @@ async fn ai_assist_stream(
                             if let Ok(event) = serde_json::from_str::<JsonValue>(data) {
                                 // Handle content_block_delta events
                                 if event.get("type").and_then(|t| t.as_str()) == Some("content_block_delta") {
-                                    if let Some(delta) = event.get("delta") {
-                                        if let Some(text_delta) = delta.get("text").and_then(|t| t.as_str()) {
+                                    if let Some(delta) = event.get("delta")
+                                        && let Some(text_delta) = delta.get("text").and_then(|t| t.as_str()) {
                                             full_text.push_str(text_delta);
                                             yield Ok(Event::default()
                                                 .event("chunk")
                                                 .data(json!({ "text": text_delta }).to_string()));
                                         }
-                                    }
                                 }
                                 // Handle message_delta for usage
                                 else if event.get("type").and_then(|t| t.as_str()) == Some("message_delta") {
@@ -789,13 +788,11 @@ async fn ai_assist_stream(
                                     }
                                 }
                                 // Handle message_start for input tokens
-                                else if event.get("type").and_then(|t| t.as_str()) == Some("message_start") {
-                                    if let Some(message) = event.get("message") {
-                                        if let Some(usage) = message.get("usage") {
+                                else if event.get("type").and_then(|t| t.as_str()) == Some("message_start")
+                                    && let Some(message) = event.get("message")
+                                        && let Some(usage) = message.get("usage") {
                                             input_tokens = usage.get("input_tokens").and_then(|t| t.as_u64()).unwrap_or(0) as u32;
                                         }
-                                    }
-                                }
                             }
                         }
                     }

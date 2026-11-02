@@ -7,16 +7,16 @@
 #![allow(clippy::type_complexity)]
 
 use axum::{
+    Router,
     extract::{Path, Query, State},
     response::Json,
     routing::get,
-    Router,
 };
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Member {
@@ -302,8 +302,7 @@ pub async fn services(
         ",
     )
     .fetch_all(state.db.pool())
-    .await
-    .unwrap_or_default();
+    .await?;
 
     let services_json: Vec<serde_json::Value> = services
         .into_iter()
@@ -787,8 +786,7 @@ pub async fn show(
             )
             .bind(id)
             .fetch_all(state.db.pool())
-            .await
-            .unwrap_or_default()
+            .await?
             .into_iter()
             .map(|(id, status, price_cents, period, created)| {
                 serde_json::json!({

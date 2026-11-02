@@ -5,11 +5,11 @@
 //! billing-cycle MRR normalization arm, and SQL aggregation
 //! preserved byte-for-byte.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
 use super::dtos::PaymentSummary;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// Get aggregate payment metrics for the admin dashboard.
 /// GET /api/payments/summary

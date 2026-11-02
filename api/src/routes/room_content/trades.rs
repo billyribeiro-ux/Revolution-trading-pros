@@ -8,9 +8,9 @@
 //! `public_router()` / `admin_router()` exactly as before.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
@@ -18,11 +18,11 @@ use serde_json::json;
 use tracing::{error, info};
 
 use super::{
-    ensure_room_access, CloseTradeRequest, CreateTradeRequest, InvalidateTradeRequest,
-    PaginationMeta, RoomTrade, TradeListQuery, UpdateTradeRequest,
+    CloseTradeRequest, CreateTradeRequest, InvalidateTradeRequest, PaginationMeta, RoomTrade,
+    TradeListQuery, UpdateTradeRequest, ensure_room_access,
 };
 use crate::cache::{cache_keys, cache_ttl};
-use crate::{middleware::admin::AdminUser, models::User, AppState};
+use crate::{AppState, middleware::admin::AdminUser, models::User};
 
 macro_rules! room_trade_cols {
     () => {
@@ -585,15 +585,14 @@ pub(super) async fn delete_trade(
         })?;
 
     // Invalidate trades cache
-    if let Some((room_slug,)) = entry {
-        if let Err(e) = state
+    if let Some((room_slug,)) = entry
+        && let Err(e) = state
             .services
             .cache_invalidator
             .on_trade_change(&room_slug, Some(id))
             .await
-        {
-            error!("Failed to invalidate trades cache: {}", e);
-        }
+    {
+        error!("Failed to invalidate trades cache: {}", e);
     }
 
     Ok(Json(json!({"success": true, "message": "Trade deleted"})))

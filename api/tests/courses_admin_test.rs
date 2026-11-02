@@ -9,10 +9,10 @@
 //! from the admin router will fail this suite.
 
 use revolution_api::models::course_enhanced::{
-    format_duration_minutes, format_duration_seconds, BulkLiveSessionsRequest, CourseEnhanced,
-    CourseListQuery, CourseResponse, CreateCourseRequest, CreateLessonRequest,
-    CreateLiveSessionRequest, CreateResourceRequest, CreateSectionRequest, LiveSessionInput,
-    ReorderItemsRequest, UpdateCourseRequest,
+    BulkLiveSessionsRequest, CourseEnhanced, CourseListQuery, CourseResponse, CreateCourseRequest,
+    CreateLessonRequest, CreateLiveSessionRequest, CreateResourceRequest, CreateSectionRequest,
+    LiveSessionInput, ReorderItemsRequest, UpdateCourseRequest, format_duration_minutes,
+    format_duration_seconds,
 };
 
 // ── Money: price_cents is i64 and round-trips past i32::MAX ──────────

@@ -5,10 +5,10 @@
 //! mapping, AdminUser gating, and money handling preserved
 //! byte-for-byte.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// Subscription metrics (admin)
 /// ICT 7+ Enterprise: Complete MRR/ARR/churn/LTV calculations

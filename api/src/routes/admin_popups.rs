@@ -9,15 +9,16 @@
 //! - Event tracking
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post, put},
-    Json, Router,
 };
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::popup::{
     AbTestVariantMetrics, ConversionMetrics, ConversionRateMetrics, CreatePopupRequest, DailyCount,
@@ -25,7 +26,6 @@ use crate::models::popup::{
     PopupDetail, PopupListResponse, PopupResponse, PopupSummary, TimelineData, TriggerRules,
     UpdatePopupRequest, ViewMetrics,
 };
-use crate::AppState;
 
 /// Query params for listing popups
 #[derive(Debug, Deserialize)]
@@ -529,7 +529,7 @@ async fn get_popup_analytics(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let mut device_breakdown = DeviceBreakdown {
         desktop: 0,
@@ -563,7 +563,7 @@ async fn get_popup_analytics(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let top_pages_formatted: Vec<PagePerformance> = top_pages
         .into_iter()
@@ -593,7 +593,7 @@ async fn get_popup_analytics(
     .bind(month_start)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let timeline_conversions: Vec<(String, i64)> = sqlx::query_as(
         r"
@@ -608,7 +608,7 @@ async fn get_popup_analytics(
     .bind(month_start)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Calculate trend (simplified: compare this week vs last week)
     let views_trend = if week_views > 0 { "up" } else { "stable" };

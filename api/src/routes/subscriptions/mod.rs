@@ -15,8 +15,8 @@
 //!    `ChangePlanRequest`, `ProrationPreview`.
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::AppState;

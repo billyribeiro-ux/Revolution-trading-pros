@@ -3,17 +3,17 @@
 //! ICT 7 Security: JWT blacklist checking for token revocation
 
 use axum::{
-    extract::FromRequestParts,
-    http::{request::Parts, StatusCode},
     RequestPartsExt,
+    extract::FromRequestParts,
+    http::{StatusCode, request::Parts},
 };
 use axum_extra::{
-    headers::{authorization::Bearer, Authorization},
     TypedHeader,
+    headers::{Authorization, authorization::Bearer},
 };
 use sha2::{Digest, Sha256};
 
-use crate::{models::User, utils::verify_jwt, AppState};
+use crate::{AppState, models::User, utils::verify_jwt};
 
 /// Hash a JWT token for blacklist lookup
 /// Using SHA256 to avoid storing full tokens in Redis
@@ -181,28 +181,27 @@ impl FromRequestParts<AppState> for User {
             }
 
             // ICT 7+: Try Redis cache first for faster auth (60-80% improvement)
-            if let Some(ref redis) = state.services.redis {
-                if let Ok(Some(cached_json)) = redis.get_cached_user(claims.sub).await {
-                    if let Ok(user) = serde_json::from_str::<User>(&cached_json) {
-                        if user.is_active == Some(false) {
-                            tracing::warn!(
-                                target: "security_audit",
-                                event = "banned_user_request_rejected",
-                                user_id = %user.id,
-                                email = %user.email,
-                                "Rejected request from cached banned/deactivated user"
-                            );
-                            return Err((StatusCode::FORBIDDEN, "Account has been deactivated"));
-                        }
-                        tracing::debug!(
-                            target: "performance",
-                            event = "auth_cache_hit",
-                            user_id = %claims.sub,
-                            "User loaded from Redis cache"
-                        );
-                        return Ok(user);
-                    }
+            if let Some(ref redis) = state.services.redis
+                && let Ok(Some(cached_json)) = redis.get_cached_user(claims.sub).await
+                && let Ok(user) = serde_json::from_str::<User>(&cached_json)
+            {
+                if user.is_active == Some(false) {
+                    tracing::warn!(
+                        target: "security_audit",
+                        event = "banned_user_request_rejected",
+                        user_id = %user.id,
+                        email = %user.email,
+                        "Rejected request from cached banned/deactivated user"
+                    );
+                    return Err((StatusCode::FORBIDDEN, "Account has been deactivated"));
                 }
+                tracing::debug!(
+                    target: "performance",
+                    event = "auth_cache_hit",
+                    user_id = %claims.sub,
+                    "User loaded from Redis cache"
+                );
+                return Ok(user);
             }
 
             // Cache miss or Redis unavailable - fetch from database
@@ -239,19 +238,18 @@ impl FromRequestParts<AppState> for User {
             }
 
             // ICT 7+: Cache user in Redis for subsequent requests
-            if let Some(ref redis) = state.services.redis {
-                if let Ok(user_json) = serde_json::to_string(&user) {
-                    if let Err(e) = redis.cache_user(user.id, &user_json).await {
-                        // Log but don't fail - caching is optimization, not critical
-                        tracing::warn!(
-                            target: "performance",
-                            event = "cache_write_failed",
-                            user_id = %user.id,
-                            error = %e,
-                            "Failed to cache user in Redis"
-                        );
-                    }
-                }
+            if let Some(ref redis) = state.services.redis
+                && let Ok(user_json) = serde_json::to_string(&user)
+                && let Err(e) = redis.cache_user(user.id, &user_json).await
+            {
+                // Log but don't fail - caching is optimization, not critical
+                tracing::warn!(
+                    target: "performance",
+                    event = "cache_write_failed",
+                    user_id = %user.id,
+                    error = %e,
+                    "Failed to cache user in Redis"
+                );
             }
 
             Ok(user)

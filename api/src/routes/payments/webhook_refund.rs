@@ -8,7 +8,7 @@
 //! audit row, and the operator chargeback notification email — all
 //! preserved byte-for-byte. P0-4 + P2-C atomicity comments retained.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 use serde_json::json;
 
 use crate::AppState;

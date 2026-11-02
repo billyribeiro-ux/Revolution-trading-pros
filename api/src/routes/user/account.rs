@@ -6,11 +6,11 @@
 //! Leaving a user marked `deleted` while their subscriptions are
 //! still `active` would be a billing-fraud-class bug.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Deactivate account request
 #[derive(Debug, Deserialize)]
@@ -32,7 +32,8 @@ pub(super) async fn deactivate_account(
     // Verify password — surface a 500 on hash-format / library failures rather
     // than masquerading them as a wrong-password 400, but never leak the
     // internal error to the caller.
-    let password_valid = crate::utils::verify_password(&input.password, &user.password_hash)
+    let password_valid = crate::utils::verify_password_async(&input.password, &user.password_hash)
+        .await
         .map_err(|e| {
             tracing::error!(user_id = user.id, "Password verification error: {}", e);
             (
@@ -134,9 +135,7 @@ pub(super) async fn deactivate_account(
         })?;
 
         if let Some(redis) = &state.services.redis {
-            let _ = redis.bump_token_version(user.id).await;
-            let _ = redis.invalidate_all_user_sessions(user.id).await;
-            let _ = redis.invalidate_user_cache(user.id).await;
+            redis.revoke_user_access(user.id).await;
         }
 
         tracing::info!(
@@ -180,9 +179,7 @@ pub(super) async fn deactivate_account(
         })?;
 
         if let Some(redis) = &state.services.redis {
-            let _ = redis.bump_token_version(user.id).await;
-            let _ = redis.invalidate_all_user_sessions(user.id).await;
-            let _ = redis.invalidate_user_cache(user.id).await;
+            redis.revoke_user_access(user.id).await;
         }
 
         tracing::info!(

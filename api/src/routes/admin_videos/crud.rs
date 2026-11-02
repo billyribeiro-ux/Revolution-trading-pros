@@ -2,23 +2,23 @@
 //! wired into the main `/admin/videos` router.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDate;
 use serde_json::json;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::video::{
-    get_all_tags, get_content_types, get_difficulty_levels, get_platforms, BulkAssignRequest,
-    BulkDeleteRequest, BulkPublishRequest, CreateVideoRequest, PaginationMeta, RoomInfo,
-    TraderInfo, UpdateVideoRequest, VideoListQuery, VideoStats, VideoStatsResponse, VideoTypeStats,
+    BulkAssignRequest, BulkDeleteRequest, BulkPublishRequest, CreateVideoRequest, PaginationMeta,
+    RoomInfo, TraderInfo, UpdateVideoRequest, VideoListQuery, VideoStats, VideoStatsResponse,
+    VideoTypeStats, get_all_tags, get_content_types, get_difficulty_levels, get_platforms,
 };
-use crate::AppState;
 
-use super::helpers::{slugify, video_to_response};
 use super::UnifiedVideoRow;
+use super::helpers::{slugify, video_to_response};
 
 /// List videos with filtering and pagination
 pub(super) async fn list_videos(
@@ -95,7 +95,11 @@ pub(super) async fn list_videos(
 
     let sql = format!(
         "SELECT * FROM unified_videos WHERE deleted_at IS NULL{} ORDER BY {} {} LIMIT ${} OFFSET ${}",
-        where_clause, sort_by, sort_dir, param_idx, param_idx + 1
+        where_clause,
+        sort_by,
+        sort_dir,
+        param_idx,
+        param_idx + 1
     );
     let count_sql =
         format!("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL{where_clause}");
@@ -178,7 +182,7 @@ pub(super) async fn list_videos(
         .bind(video.id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
         responses.push(video_to_response(video, trader, rooms));
     }
 
@@ -238,7 +242,7 @@ pub(super) async fn get_video(
     .bind(video.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -556,13 +560,13 @@ pub(super) async fn get_options(
             )
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default(),
+            .map_err(crate::utils::errors::db_error)?,
             "traders": sqlx::query_as::<_, TraderInfo>(
                 "SELECT id, name, slug FROM traders ORDER BY name"
             )
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default()
+            .map_err(crate::utils::errors::db_error)?
         }
     })))
 }

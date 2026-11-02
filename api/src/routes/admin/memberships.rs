@@ -5,14 +5,14 @@
 //! Handler bodies are byte-identical to the pre-split source.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MEMBERSHIP MANAGEMENT (Admin)

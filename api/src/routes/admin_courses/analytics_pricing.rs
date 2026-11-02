@@ -8,16 +8,16 @@
 //! is byte-identical to the pre-split monolith.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // COURSE ANALYTICS — wires CourseDetailDrawer "Analytics" tab to real DB rows.
@@ -161,7 +161,7 @@ pub(super) async fn get_course_analytics(
         .bind(course_id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     let recent_enrollments: Vec<serde_json::Value> = recent_rows
         .into_iter()

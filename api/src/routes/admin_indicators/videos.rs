@@ -1,14 +1,14 @@
 //! ICT 7 Grade — Video Management endpoints for indicators.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::types::{CreateVideoRequest, IndicatorVideoRow};
 

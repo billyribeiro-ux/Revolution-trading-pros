@@ -32,7 +32,7 @@ pub mod subscription_service;
 
 use crate::cache::{CacheInvalidator, CacheService};
 use crate::config::Config;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 
 /// Container for all external services
 #[derive(Clone)]

@@ -3,22 +3,22 @@
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
 use axum::{
+    Json,
     extract::State,
     http::{HeaderMap, StatusCode},
-    Json,
 };
 use serde_json::json;
 
-use super::helpers::{client_ip, current_token_version, enforce_ip_rate_limit_strict, ClientAddr};
+use super::helpers::{ClientAddr, client_ip, current_token_version, enforce_ip_rate_limit_strict};
 use crate::{
+    AppState,
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
     models::{AuthResponse, LoginUser, User},
     utils::{
         create_jwt_versioned, create_refresh_token_versioned, generate_session_id,
-        hash_dummy_password, hash_password, verify_password,
+        hash_dummy_password, hash_password_async, verify_password_async,
     },
-    AppState,
 };
 
 /// Login user
@@ -115,7 +115,7 @@ pub(super) async fn login(
         Some(u) => u,
         None => {
             // Hash dummy password to match timing of real verification
-            hash_dummy_password();
+            hash_dummy_password().await;
             tracing::info!(
                 target: "security",
                 event = "login_failed",
@@ -133,18 +133,23 @@ pub(super) async fn login(
     // Apple Principal Engineer Grade: Never log credentials, hashes, or password metadata
 
     // Verify password (this happens regardless of user existence due to above)
-    let password_valid = verify_password(&input.password, &user.password_hash).map_err(|e| {
-        tracing::error!("Password verification error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Authentication error"})),
-        )
-    })?;
+    let password_valid = verify_password_async(&input.password, &user.password_hash)
+        .await
+        .map_err(|e| {
+            tracing::error!("Password verification error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Authentication error"})),
+            )
+        })?;
 
     if !password_valid {
         // Record failed attempt for rate limiting
-        if let Some(redis) = &state.services.redis {
-            let _ = redis.record_failed_login(&input.email).await;
+        if let Some(redis) = &state.services.redis
+            && let Err(e) = redis.record_failed_login(&input.email).await
+        {
+            // Brute-force counter silently not incrementing = rate limit off.
+            tracing::error!(target: "security", error = %e, "Failed to record failed login attempt");
         }
 
         tracing::info!(
@@ -161,8 +166,10 @@ pub(super) async fn login(
     }
 
     // Clear failed login attempts on successful authentication
-    if let Some(redis) = &state.services.redis {
-        let _ = redis.clear_login_attempts(&input.email).await;
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis.clear_login_attempts(&input.email).await
+    {
+        tracing::warn!(target: "security", error = %e, "Failed to clear login attempts after successful login");
     }
 
     // FIX-M-4 (2026-04-29): silently re-hash bcrypt (Laravel legacy) into
@@ -178,9 +185,9 @@ pub(super) async fn login(
     // Best-effort: a failure here logs but does not fail the login; the
     // user keeps a bcrypt hash and we'll try again on their next login.
     if user.password_hash.starts_with("$2") {
-        match hash_password(&input.password) {
+        match hash_password_async(&input.password).await {
             Ok(new_hash) => {
-                if let Err(e) = sqlx::query(
+                match sqlx::query(
                     "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
                 )
                 .bind(&new_hash)
@@ -188,20 +195,23 @@ pub(super) async fn login(
                 .execute(&state.db.pool)
                 .await
                 {
-                    tracing::error!(
-                        target: "security_audit",
-                        event = "bcrypt_rehash_write_failed",
-                        user_id = %user.id,
-                        error = %e,
-                        "Could not migrate bcrypt hash to argon2id"
-                    );
-                } else {
-                    tracing::info!(
-                        target: "security_audit",
-                        event = "bcrypt_rehashed_to_argon2id",
-                        user_id = %user.id,
-                        "Migrated user from bcrypt to argon2id on successful login"
-                    );
+                    Err(e) => {
+                        tracing::error!(
+                            target: "security_audit",
+                            event = "bcrypt_rehash_write_failed",
+                            user_id = %user.id,
+                            error = %e,
+                            "Could not migrate bcrypt hash to argon2id"
+                        );
+                    }
+                    _ => {
+                        tracing::info!(
+                            target: "security_audit",
+                            event = "bcrypt_rehashed_to_argon2id",
+                            user_id = %user.id,
+                            "Migrated user from bcrypt to argon2id on successful login"
+                        );
+                    }
                 }
             }
             Err(e) => {
@@ -379,13 +389,12 @@ pub(super) async fn login(
     let session_id = generate_session_id();
 
     // ICT L11+ Security: Create server-side session in Redis
-    if let Some(redis) = &state.services.redis {
-        if let Err(e) = redis
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis
             .create_session(&session_id, user.id, &user.email, None, None)
             .await
-        {
-            tracing::warn!("Failed to create session in Redis: {}", e);
-        }
+    {
+        tracing::warn!("Failed to create session in Redis: {}", e);
     }
 
     // Security audit: successful login

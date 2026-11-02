@@ -23,8 +23,8 @@
 //! - `public`  — no-auth read-only block-by-slug (1 handler)
 
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
 
 use crate::AppState;

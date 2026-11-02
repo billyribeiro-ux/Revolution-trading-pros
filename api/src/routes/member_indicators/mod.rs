@@ -21,7 +21,7 @@
 //! - `license`    — license-key generation + validation
 //! - `guide`      — update notifications + installation guides
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::AppState;
 

@@ -3,9 +3,9 @@
 //! preserved verbatim.
 
 use axum::{
+    Json,
     extract::{Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{DateTime, Utc};
 use serde::Serialize;
@@ -13,7 +13,7 @@ use serde_json::json;
 use sqlx::FromRow;
 use std::collections::HashMap;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /admin/connections/audit-logs - Get connection audit logs
 #[tracing::instrument(skip(state, admin))]
@@ -65,7 +65,7 @@ pub(super) async fn get_audit_logs(
     .bind(offset)
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM admin_audit_logs WHERE entity_type IN ('service_connection', 'integration_webhook')"

@@ -6,19 +6,20 @@
 //! `update_schedule`, `cancel_schedule`, `delete_schedule`.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::Utc;
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use uuid::Uuid;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::{
-    api_error, require_cms_admin, require_cms_editor, ApiResult, CmsSchedule, CmsScheduleExtended,
-    CreateScheduleRequest, ListQuery, ScheduleListResponse, ScheduleStatus, UpdateScheduleRequest,
+    ApiResult, CmsSchedule, CmsScheduleExtended, CreateScheduleRequest, ListQuery,
+    ScheduleListResponse, ScheduleStatus, UpdateScheduleRequest, api_error, require_cms_admin,
+    require_cms_editor,
 };
 
 /// Create a new content schedule
@@ -298,13 +299,13 @@ pub(super) async fn update_schedule(
     }
 
     // Validate new scheduled time if provided
-    if let Some(ref scheduled_at) = req.scheduled_at {
-        if *scheduled_at <= Utc::now() {
-            return Err(api_error(
-                StatusCode::BAD_REQUEST,
-                "Scheduled time must be in the future",
-            ));
-        }
+    if let Some(ref scheduled_at) = req.scheduled_at
+        && *scheduled_at <= Utc::now()
+    {
+        return Err(api_error(
+            StatusCode::BAD_REQUEST,
+            "Scheduled time must be in the future",
+        ));
     }
 
     let schedule: CmsSchedule = sqlx::query_as(

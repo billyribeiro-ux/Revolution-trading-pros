@@ -1,14 +1,14 @@
 //! Member notes — list, create, delete.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::{CreateNoteRequest, MemberNote};
 
@@ -33,7 +33,7 @@ pub(super) async fn get_notes(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(notes))
 }

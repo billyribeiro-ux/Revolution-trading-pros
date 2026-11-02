@@ -12,15 +12,15 @@
 
 use axum::{
     body::Body,
-    http::{header, Request, StatusCode},
+    http::{Request, StatusCode, header},
 };
 use chrono::{Datelike, Duration, Utc};
 use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    assert_status_and_json, body_to_json, cleanup_room_data, TestContext, TestTradingRoom,
-    TestUser, TradePlanBuilder,
+    TestContext, TestTradingRoom, TestUser, TradePlanBuilder, assert_status_and_json, body_to_json,
+    cleanup_room_data,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -32,7 +32,7 @@ async fn test_list_trade_plans_empty_room() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Act
@@ -60,7 +60,7 @@ async fn test_list_trade_plans_with_pagination() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create 15 trade plans for pagination testing
@@ -114,7 +114,7 @@ async fn test_list_trade_plans_filter_by_week() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Get current week's Monday
@@ -184,10 +184,12 @@ async fn test_list_trade_plans_filter_by_week() {
     let plans = body["data"].as_array().unwrap();
     assert!(!plans.is_empty());
     for plan in plans {
-        assert!(plan["week_of"]
-            .as_str()
-            .unwrap()
-            .contains(&last_monday.format("%Y-%m-%d").to_string()));
+        assert!(
+            plan["week_of"]
+                .as_str()
+                .unwrap()
+                .contains(&last_monday.format("%Y-%m-%d").to_string())
+        );
     }
 }
 
@@ -196,7 +198,7 @@ async fn test_list_trade_plans_returns_most_recent_week_by_default() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Get dates for this week and last week
@@ -276,7 +278,7 @@ async fn test_list_trade_plans_sorted_by_sort_order() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create plans with specific sort orders
@@ -336,7 +338,7 @@ async fn test_create_bullish_trade_plan() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "SPY")
         .with_entry("495")
@@ -382,7 +384,7 @@ async fn test_create_bearish_trade_plan() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bearish(&room.slug, "QQQ")
         .with_entry("400")
@@ -416,7 +418,7 @@ async fn test_create_neutral_trade_plan() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::neutral(&room.slug, "IWM")
         .with_notes("Range-bound, wait for breakout direction")
@@ -448,7 +450,7 @@ async fn test_create_trade_plan_with_runner() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "AAPL")
         .with_entry("175")
@@ -484,7 +486,7 @@ async fn test_create_trade_plan_ticker_uppercase() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "msft") // lowercase
         .build_json();
@@ -515,7 +517,7 @@ async fn test_create_trade_plan_bias_uppercase() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::new(&room.slug)
         .with_ticker("NVDA")
@@ -548,7 +550,7 @@ async fn test_create_trade_plan_default_week_of() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create plan without specifying week_of
     let plan = json!({
@@ -591,7 +593,7 @@ async fn test_update_trade_plan() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create initial plan
     let plan = TradePlanBuilder::bullish(&room.slug, "AMD")
@@ -657,7 +659,7 @@ async fn test_update_trade_plan_change_bias() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create bullish plan
     let plan = TradePlanBuilder::bullish(&room.slug, "META").build_json();
@@ -712,7 +714,7 @@ async fn test_update_trade_plan_deactivate() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create active plan
     let plan = TradePlanBuilder::bullish(&room.slug, "GOOGL").build_json();
@@ -767,7 +769,7 @@ async fn test_update_trade_plan_partial() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create plan with many fields
     let plan = TradePlanBuilder::bullish(&room.slug, "NFLX")
@@ -837,7 +839,7 @@ async fn test_delete_trade_plan() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "AMZN").build_json();
 
@@ -884,7 +886,7 @@ async fn test_delete_trade_plan_soft_delete() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "DIS").build_json();
@@ -965,7 +967,7 @@ async fn test_create_trade_plan_requires_admin() {
     // Arrange
     let ctx = TestContext::new().await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "ORCL").build_json();
 
@@ -995,7 +997,7 @@ async fn test_update_trade_plan_requires_admin() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create plan as admin
     let plan = TradePlanBuilder::bullish(&room.slug, "IBM").build_json();
@@ -1046,7 +1048,7 @@ async fn test_delete_trade_plan_requires_admin() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create plan as admin
     let plan = TradePlanBuilder::bullish(&room.slug, "CSCO").build_json();
@@ -1093,7 +1095,7 @@ async fn test_list_trade_plans_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Act - Access without authentication is rejected per NF-1
     let unauth_response = ctx
@@ -1136,7 +1138,7 @@ async fn test_trade_plan_week_of_date_format() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "PYPL")
         .with_week_of("2026-02-03") // Specific date
@@ -1168,7 +1170,7 @@ async fn test_trade_plan_options_exp_date_format() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::bullish(&room.slug, "SQ")
         .with_options("100", "2026-02-21") // Specific expiration date
@@ -1203,7 +1205,7 @@ async fn test_trade_plan_options_exp_date_format() {
 async fn test_trade_plan_accepts_bullish_bias() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::new(&room.slug)
         .with_ticker("TEST1")
@@ -1232,7 +1234,7 @@ async fn test_trade_plan_accepts_bullish_bias() {
 async fn test_trade_plan_accepts_bearish_bias() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::new(&room.slug)
         .with_ticker("TEST2")
@@ -1261,7 +1263,7 @@ async fn test_trade_plan_accepts_bearish_bias() {
 async fn test_trade_plan_accepts_neutral_bias() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let plan = TradePlanBuilder::new(&room.slug)
         .with_ticker("TEST3")
@@ -1295,7 +1297,7 @@ async fn test_reorder_trade_plans() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create three plans
@@ -1385,7 +1387,7 @@ async fn test_only_active_plans_returned() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create active plan

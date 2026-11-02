@@ -11,21 +11,21 @@
 #![allow(clippy::collapsible_if)]
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 
 use crate::{
-    middleware::admin::AdminUser,
-    models::{order::Coupon, User},
     AppState,
+    middleware::admin::AdminUser,
+    models::{User, order::Coupon},
 };
 
 // ═══════════════════════════════════════════════════════════════════════════

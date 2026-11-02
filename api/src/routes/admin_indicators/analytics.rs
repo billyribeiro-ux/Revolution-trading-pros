@@ -1,14 +1,14 @@
 //! ICT 7 Grade — Download analytics endpoint for an indicator.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 /// ICT 7: Get download analytics for an indicator
 pub(super) async fn get_download_analytics(
@@ -38,7 +38,7 @@ pub(super) async fn get_download_analytics(
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

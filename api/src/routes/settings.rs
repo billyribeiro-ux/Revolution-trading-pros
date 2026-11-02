@@ -716,7 +716,7 @@ pub async fn list_feature_flags(
     )
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -1055,7 +1055,7 @@ pub async fn get_audit_logs(
     .bind(offset)
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM admin_audit_logs WHERE entity_type IN ('setting', 'feature_flag')",

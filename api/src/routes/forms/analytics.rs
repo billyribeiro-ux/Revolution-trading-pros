@@ -5,14 +5,14 @@
 //! status breakdown. All in one round trip via three queries.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::types::FormRow;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// Get form analytics (admin) - GET /forms/:id/analytics
 /// ICT 7 Fix: Comprehensive form analytics
@@ -67,7 +67,7 @@ pub(super) async fn get_form_analytics(
     .bind(form_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get status breakdown
     let status_breakdown: Vec<(String, i64)> = sqlx::query_as(
@@ -81,7 +81,7 @@ pub(super) async fn get_form_analytics(
     .bind(form_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "views": views,

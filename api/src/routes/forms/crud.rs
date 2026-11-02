@@ -5,14 +5,14 @@
 //! security-tagged tracing event with the acting admin's user id.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::types::{CreateFormRequest, FormListQuery, FormRow, UpdateFormRequest};
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// List all forms (admin)
 pub(super) async fn list_forms(

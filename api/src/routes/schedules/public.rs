@@ -11,9 +11,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{Datelike, Utc};
 use serde_json::json;
@@ -234,7 +234,7 @@ pub(super) async fn get_upcoming_events(
     .bind(end_date)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Build upcoming events
     let mut upcoming_events: Vec<UpcomingEventResponse> = Vec::new();
@@ -249,15 +249,15 @@ pub(super) async fn get_upcoming_events(
             }
 
             // Check effective dates
-            if let Some(from) = schedule.effective_from {
-                if event_date < from {
-                    continue;
-                }
+            if let Some(from) = schedule.effective_from
+                && event_date < from
+            {
+                continue;
             }
-            if let Some(until) = schedule.effective_until {
-                if event_date > until {
-                    continue;
-                }
+            if let Some(until) = schedule.effective_until
+                && event_date > until
+            {
+                continue;
             }
 
             // Check for exceptions

@@ -3,16 +3,16 @@
 //!
 //! Admin-only bulk create/update/delete for resources.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use chrono::NaiveDate;
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
-use super::helpers::slugify;
 use super::CreateResourceRequest;
+use super::helpers::slugify;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ICT 7 NEW: BULK OPERATIONS

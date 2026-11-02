@@ -45,6 +45,23 @@ impl CacheInvalidator {
         &self.cache
     }
 
+    /// Invalidate every cached public membership plan.
+    ///
+    /// Call this after any write to `membership_plans` (create, update,
+    /// delete, Stripe price change).
+    pub async fn invalidate_plans(&self) -> Result<()> {
+        let pattern = cache_keys::plans_pattern();
+        self.cache.delete_pattern(&pattern).await?;
+
+        info!(
+            target: "cache.invalidation",
+            pattern = %pattern,
+            "Plans cache invalidated"
+        );
+
+        Ok(())
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     // ALERTS INVALIDATION
     // ═══════════════════════════════════════════════════════════════════════════

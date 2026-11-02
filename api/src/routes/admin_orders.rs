@@ -33,21 +33,21 @@
 //! All handlers are AdminUser-gated and use parameterized SQL via sqlx.
 
 use axum::{
+    Json, Router,
     extract::{Query, State},
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::IntoResponse,
     routing::get,
-    Json, Router,
 };
 use serde::Deserialize;
 
 use crate::{
+    AppState,
     middleware::admin::AdminUser,
     routes::orders::{
         admin_cancel, admin_fulfill, admin_index, admin_refund, admin_resend_confirmation,
         admin_show, admin_update_status,
     },
-    AppState,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════

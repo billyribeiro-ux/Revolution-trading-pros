@@ -5,15 +5,15 @@
 //! powers the continue-watching CTA.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 pub(super) async fn get_certificate(
     user: User,
@@ -78,16 +78,16 @@ pub(super) async fn get_certificate(
     }
 
     // If certificate already exists, return it
-    if enrollment.2.unwrap_or(false) {
-        if let Some(cert_url) = enrollment.3 {
-            return Ok(Json(json!({
-                "success": true,
-                "data": {
-                    "certificate_url": cert_url,
-                    "already_issued": true
-                }
-            })));
-        }
+    if enrollment.2.unwrap_or(false)
+        && let Some(cert_url) = enrollment.3
+    {
+        return Ok(Json(json!({
+            "success": true,
+            "data": {
+                "certificate_url": cert_url,
+                "already_issued": true
+            }
+        })));
     }
 
     // Get user info for certificate (name and email)

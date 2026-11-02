@@ -10,17 +10,17 @@
 //! megafile.
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use chrono::Datelike;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

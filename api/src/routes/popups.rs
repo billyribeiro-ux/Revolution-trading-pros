@@ -8,17 +8,17 @@
 //! - A/B test variant selection
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::models::popup::{DisplayRules, FrequencyRules, PopupDesign, TriggerRules};
-use crate::{utils::html, AppState};
+use crate::{AppState, utils::html};
 
 /// Query params for active popups
 #[derive(Debug, Deserialize)]
@@ -172,20 +172,18 @@ async fn get_active_popups(
             }
 
             // Check UTM targeting
-            if let Some(ref sources) = rules.utm_source {
-                if let Some(ref user_source) = query.utm_source {
-                    if !sources.contains(user_source) {
-                        return false;
-                    }
-                }
+            if let Some(ref sources) = rules.utm_source
+                && let Some(ref user_source) = query.utm_source
+                && !sources.contains(user_source)
+            {
+                return false;
             }
 
-            if let Some(ref campaigns) = rules.utm_campaign {
-                if let Some(ref user_campaign) = query.utm_campaign {
-                    if !campaigns.contains(user_campaign) {
-                        return false;
-                    }
-                }
+            if let Some(ref campaigns) = rules.utm_campaign
+                && let Some(ref user_campaign) = query.utm_campaign
+                && !campaigns.contains(user_campaign)
+            {
+                return false;
             }
 
             // Check visitor type

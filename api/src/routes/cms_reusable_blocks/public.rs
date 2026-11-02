@@ -1,12 +1,12 @@
 //! No-auth public read-only block access (block previews).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 
-use crate::{utils::errors::ApiError, AppState};
+use crate::{AppState, utils::errors::ApiError};
 
 use super::types::{ApiResult, CmsReusableBlock};
 

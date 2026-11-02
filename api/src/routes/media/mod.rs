@@ -19,8 +19,8 @@
 //! @version 2.0.0 - January 2026
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::AppState;

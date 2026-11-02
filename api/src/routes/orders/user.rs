@@ -5,15 +5,15 @@
 //! mapping, and money invariant is preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 
 use super::dtos::{OrderListQuery, OrderResponse, OrderRow};
 use super::helpers::build_order_detail;
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// GET /api/my/orders - List user's orders with pagination
 #[tracing::instrument(skip(state))]

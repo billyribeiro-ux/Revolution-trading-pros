@@ -24,7 +24,7 @@
 //! style reads on rooms/sections/traders), `admin_videos` (admin video
 //! list per-room), `admin_stats` (admin dashboard counts).
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::AppState;
 

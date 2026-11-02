@@ -4,15 +4,15 @@
 //! ICT 7 ADDITIONS: Transcoding, Thumbnails, Embed Code
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 #[derive(Debug, Deserialize, Default)]
 pub(super) struct BunnyWebhookQuery {
@@ -118,7 +118,9 @@ pub(super) async fn bunny_webhook(
         }
         sqlx_query = sqlx_query.bind(video_guid);
 
-        let _ = sqlx_query.execute(&state.db.pool).await;
+        if let Err(e) = sqlx_query.execute(&state.db.pool).await {
+            tracing::warn!(error = %e, "Failed to persist Bunny video metadata refresh");
+        }
     }
 
     Ok(Json(json!({
@@ -278,7 +280,7 @@ pub(super) async fn get_embed_code(
                     return Err((
                         StatusCode::BAD_REQUEST,
                         Json(json!({"error": "Platform not supported for embed code generation"})),
-                    ))
+                    ));
                 }
             };
 

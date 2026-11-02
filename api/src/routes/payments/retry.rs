@@ -5,11 +5,11 @@
 //! past_due gate, Stripe call site, P2-C error propagation,
 //! and `tracing` fields preserved byte-for-byte.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
 use super::dtos::RetryPaymentRequest;
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Retry a failed subscription payment
 /// POST /api/payments/retry
@@ -64,20 +64,20 @@ pub(super) async fn retry_payment(
     }
 
     // Update payment method if provided
-    if let Some(pm_id) = &input.payment_method_id {
-        if let Some(customer_id) = &membership.stripe_customer_id {
-            state
-                .services
-                .stripe
-                .update_default_payment_method(customer_id, pm_id)
-                .await
-                .map_err(|e| {
-                    (
-                        StatusCode::BAD_GATEWAY,
-                        Json(json!({"error": format!("Failed to update payment method: {}", e)})),
-                    )
-                })?;
-        }
+    if let Some(pm_id) = &input.payment_method_id
+        && let Some(customer_id) = &membership.stripe_customer_id
+    {
+        state
+            .services
+            .stripe
+            .update_default_payment_method(customer_id, pm_id)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(json!({"error": format!("Failed to update payment method: {}", e)})),
+                )
+            })?;
     }
 
     // Retry the latest invoice

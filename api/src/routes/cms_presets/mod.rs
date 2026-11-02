@@ -34,8 +34,8 @@
 //! - `public`      — unauthenticated read-only endpoint
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::AppState;
@@ -100,7 +100,7 @@ pub fn public_router() -> Router<AppState> {
 
 #[cfg(test)]
 mod tests {
-    use super::dto::{default_true, CmsPresetCategory};
+    use super::dto::{CmsPresetCategory, default_true};
     use super::helpers::generate_slug;
 
     #[test]

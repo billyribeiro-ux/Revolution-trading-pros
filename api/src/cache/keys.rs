@@ -27,12 +27,33 @@ const KEY_VERSION: &str = "v1";
 /// Root prefix for all Explosive Swings cache keys
 const CACHE_PREFIX: &str = "es";
 
+/// Root prefix for public membership-plan cache keys (pricing page).
+const PLANS_PREFIX: &str = "plans";
+
 /// Cache key generation functions
 ///
 /// All functions return deterministic, URL-safe cache keys.
 /// Keys include version prefix for easy cache invalidation on schema changes.
 pub mod cache_keys {
-    use super::{CACHE_PREFIX, KEY_VERSION};
+    use super::{CACHE_PREFIX, KEY_VERSION, PLANS_PREFIX};
+
+    /// Key for the public active-plans list (`GET /subscriptions/plans`).
+    #[inline]
+    pub fn plans_list() -> String {
+        format!("{PLANS_PREFIX}:{KEY_VERSION}:list")
+    }
+
+    /// Key for one public plan (`GET /subscriptions/plans/{slug}`).
+    #[inline]
+    pub fn plan(slug: &str) -> String {
+        format!("{PLANS_PREFIX}:{KEY_VERSION}:slug:{slug}")
+    }
+
+    /// Glob matching every public plan key; used for invalidation.
+    #[inline]
+    pub fn plans_pattern() -> String {
+        format!("{PLANS_PREFIX}:{KEY_VERSION}:*")
+    }
 
     /// Generate cache key for paginated alerts list
     ///
@@ -182,6 +203,12 @@ pub mod cache_keys {
 /// - Videos: Long TTL (1hr) as they rarely change mid-week
 pub mod cache_ttl {
     use std::time::Duration;
+
+    /// TTL for public membership plans - 60 seconds.
+    /// Hard staleness bound: admin writes invalidate explicitly, but L1 is
+    /// per-process, so other instances (and any write path that bypasses the
+    /// admin handlers) converge within one TTL. Checkout never reads this cache.
+    pub const PLANS: Duration = Duration::from_secs(60);
 
     /// TTL for alerts - 60 seconds
     /// Short TTL because alerts are time-sensitive and frequently updated

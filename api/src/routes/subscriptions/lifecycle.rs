@@ -6,16 +6,16 @@
 //! free-upgrade fix are preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dtos::{
     CancelSubscriptionRequest, CreateSubscriptionRequest, MembershipPlanRow, UserSubscriptionRow,
 };
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Create subscription (subscribe to plan)
 /// ICT 7+ Enterprise: Full trial period support, proper period calculation

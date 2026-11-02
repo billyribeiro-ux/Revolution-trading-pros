@@ -11,14 +11,14 @@
 //! Handler bodies are byte-identical to the pre-split source.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CAMPAIGNS MANAGEMENT
@@ -59,7 +59,7 @@ pub(super) async fn list_campaigns(
         sqlx::query_as("SELECT * FROM campaigns ORDER BY created_at DESC")
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(campaigns))
 }

@@ -9,12 +9,12 @@
 //! @version 2.0.0 - January 2026
 
 use crate::config::IpCidr;
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use chrono::{DateTime, Duration, Utc};
 use hmac::{Hmac, KeyInit, Mac};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use sha2::Sha256;
 use sqlx::PgPool;
 use std::net::{IpAddr, ToSocketAddrs};
@@ -373,12 +373,12 @@ pub async fn deliver_webhook(
     }
 
     // Add custom headers if configured
-    if let Some(headers) = &config.headers {
-        if let Some(headers_obj) = headers.as_object() {
-            for (key, value) in headers_obj {
-                if let Some(val_str) = value.as_str() {
-                    request = request.header(key.as_str(), val_str);
-                }
+    if let Some(headers) = &config.headers
+        && let Some(headers_obj) = headers.as_object()
+    {
+        for (key, value) in headers_obj {
+            if let Some(val_str) = value.as_str() {
+                request = request.header(key.as_str(), val_str);
             }
         }
     }

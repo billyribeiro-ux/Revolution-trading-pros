@@ -4,15 +4,15 @@
 //! Version-history retrieval (public) and admin-only new-version creation.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::helpers::resource_to_response;
 use super::{ResourceResponse, RoomResource};

@@ -7,7 +7,7 @@
 //! preserved byte-for-byte. The single webhook transaction (`tx`)
 //! is still owned by the caller in `webhook.rs`.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 use serde_json::json;
 
 use crate::AppState;
@@ -135,22 +135,23 @@ pub(super) async fn handle_checkout_completed(
         );
 
         // If subscription, create user membership
-        if let Some(ref subscription_id) = session.subscription {
-            if let Some(user_id) = user_id {
-                // Get subscription details
-                let stripe_sub = state
-                    .services
-                    .stripe
-                    .get_subscription(subscription_id)
-                    .await
-                    .ok();
+        if let Some(ref subscription_id) = session.subscription
+            && let Some(user_id) = user_id
+        {
+            // Get subscription details
+            let stripe_sub = state
+                .services
+                .stripe
+                .get_subscription(subscription_id)
+                .await
+                .ok();
 
-                if let Some(sub) = stripe_sub {
-                    // FIX-2026-04-26: was `.ok().flatten()` which silently dropped DB errors
-                    // on the plan-id lookup. Now logs the error and proceeds without
-                    // creating the membership (rather than 500'ing the webhook).
-                    // Old: .fetch_optional(&state.db.pool).await.ok().flatten()
-                    let plan_id: Option<i64> = match sqlx::query_scalar::<_, i64>(
+            if let Some(sub) = stripe_sub {
+                // FIX-2026-04-26: was `.ok().flatten()` which silently dropped DB errors
+                // on the plan-id lookup. Now logs the error and proceeds without
+                // creating the membership (rather than 500'ing the webhook).
+                // Old: .fetch_optional(&state.db.pool).await.ok().flatten()
+                let plan_id: Option<i64> = match sqlx::query_scalar::<_, i64>(
                         "SELECT plan_id FROM order_items WHERE order_id = $1 AND plan_id IS NOT NULL LIMIT 1"
                     )
                     .bind(order_id)
@@ -163,33 +164,33 @@ pub(super) async fn handle_checkout_completed(
                         }
                     };
 
-                    if let Some(plan_id) = plan_id {
-                        // Batch 4: re-subscribe history.
-                        //
-                        // Was ON CONFLICT (user_id, plan_id) DO UPDATE — that
-                        // path is now unreachable because migration 063
-                        // replaced the (user_id, plan_id) unique constraint
-                        // with a *partial* unique index that only covers
-                        // live statuses ('active', 'trialing', 'past_due').
-                        // A user re-subscribing after full cancellation
-                        // therefore gets a NEW row, preserving the prior
-                        // cancelled row for history. Stripe is the source
-                        // of truth via stripe_subscription_id.
-                        //
-                        // We deliberately do not upsert. If the partial
-                        // unique index fires (an active row already exists
-                        // for this user+plan), Postgres returns an error
-                        // and we log it — the webhook will retry per
-                        // Stripe's idempotency, and on retry the existing
-                        // row's stripe_subscription_id will already match.
-                        // To handle the "duplicate retry" case cleanly we
-                        // make the INSERT idempotent on stripe_subscription_id.
-                        // P0-4: the customer has been charged; the membership
-                        // grant is part of the SAME transaction. A failure here
-                        // must roll the whole thing back and 5xx so Stripe
-                        // retries — NOT log-and-continue (which previously left
-                        // a charged customer with no membership).
-                        sqlx::query(
+                if let Some(plan_id) = plan_id {
+                    // Batch 4: re-subscribe history.
+                    //
+                    // Was ON CONFLICT (user_id, plan_id) DO UPDATE — that
+                    // path is now unreachable because migration 063
+                    // replaced the (user_id, plan_id) unique constraint
+                    // with a *partial* unique index that only covers
+                    // live statuses ('active', 'trialing', 'past_due').
+                    // A user re-subscribing after full cancellation
+                    // therefore gets a NEW row, preserving the prior
+                    // cancelled row for history. Stripe is the source
+                    // of truth via stripe_subscription_id.
+                    //
+                    // We deliberately do not upsert. If the partial
+                    // unique index fires (an active row already exists
+                    // for this user+plan), Postgres returns an error
+                    // and we log it — the webhook will retry per
+                    // Stripe's idempotency, and on retry the existing
+                    // row's stripe_subscription_id will already match.
+                    // To handle the "duplicate retry" case cleanly we
+                    // make the INSERT idempotent on stripe_subscription_id.
+                    // P0-4: the customer has been charged; the membership
+                    // grant is part of the SAME transaction. A failure here
+                    // must roll the whole thing back and 5xx so Stripe
+                    // retries — NOT log-and-continue (which previously left
+                    // a charged customer with no membership).
+                    sqlx::query(
                             r"INSERT INTO user_memberships (
                                 user_id, plan_id, starts_at, status,
                                 payment_provider, stripe_subscription_id, stripe_customer_id,
@@ -223,7 +224,6 @@ pub(super) async fn handle_checkout_completed(
                                 Json(json!({"error": "Failed to create membership"})),
                             )
                         })?;
-                    }
                 }
             }
         }

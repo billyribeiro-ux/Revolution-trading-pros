@@ -10,11 +10,11 @@
 #![allow(clippy::unnecessary_map_or)]
 
 use axum::{
+    Json, Router,
     extract::{Query, State},
     http::StatusCode,
     response::sse::{Event, KeepAlive, Sse},
     routing::get,
-    Json, Router,
 };
 use chrono::{DateTime, Utc};
 use futures::stream::{self, Stream};
@@ -24,7 +24,7 @@ use std::{convert::Infallible, sync::Arc, time::Duration};
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EVENT TYPES

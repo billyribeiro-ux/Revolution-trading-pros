@@ -20,8 +20,8 @@
 // not parse the response body.
 
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
 
 use crate::AppState;

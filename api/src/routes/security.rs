@@ -4,15 +4,15 @@
 //! Security event tracking and audit logging for compliance and monitoring
 
 use axum::{
+    Json, Router,
     extract::{Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -142,7 +142,7 @@ async fn get_security_events(
     // worst place for fail-open behaviour — admins lose forensic visibility while
     // still seeing HTTP 200. Propagate via AppError-equivalent tuple so admins
     // see the failure and can investigate.
-    // Old: let events = query_builder.fetch_all(&state.db.pool).await.unwrap_or_default();
+    // Old: let events = query_builder.fetch_all(&state.db.pool).await.map_err(crate::utils::errors::db_error)?;
     let events = query_builder.fetch_all(&state.db.pool).await.map_err(|e| {
         tracing::error!("security_events fetch failed: {}", e);
         (

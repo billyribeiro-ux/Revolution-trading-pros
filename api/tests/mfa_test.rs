@@ -92,8 +92,8 @@
 //! `tests/users_test.rs` (i64 BIGSERIAL PK + PII pin).
 
 use revolution_api::services::mfa::{
-    generate_backup_codes, generate_qr_uri, generate_totp, generate_totp_secret, verify_totp,
-    verify_totp_timestep, MfaSecret, MfaSetupResponse, MfaVerifyResult,
+    MfaSecret, MfaSetupResponse, MfaVerifyResult, generate_backup_codes, generate_qr_uri,
+    generate_totp, generate_totp_secret, verify_totp, verify_totp_timestep,
 };
 
 // ── 1. RFC 6238 known-answer test (independent reference vector) ─────

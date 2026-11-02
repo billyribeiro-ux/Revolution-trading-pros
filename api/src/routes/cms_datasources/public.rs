@@ -1,12 +1,12 @@
 //! No-auth public datasource read endpoint(s).
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 
-use crate::{utils::errors::ApiError, AppState};
+use crate::{AppState, utils::errors::ApiError};
 
 use super::types::{ApiResult, ListEntriesQuery, PublicDatasourceResponse, PublicEntryResponse};
 

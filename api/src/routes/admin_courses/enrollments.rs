@@ -2,16 +2,16 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 #[derive(serde::Deserialize)]
 pub(super) struct EnrollUserRequest {
@@ -129,7 +129,7 @@ pub(super) async fn list_enrollments(
     .bind(course_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|e| {
         json!({

@@ -7,13 +7,13 @@
 //!    Redis. Failure to reach Redis fails *open* (logs an error, allows the
 //!    request) so a Redis outage doesn't break content authoring.
 
-use axum::{http::StatusCode, Json};
-use serde_json::{json, Value as JsonValue};
+use axum::{Json, http::StatusCode};
+use serde_json::{Value as JsonValue, json};
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::{
-    api_error, api_error_with_details, RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS,
+    RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS, api_error, api_error_with_details,
 };
 
 pub(super) fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {

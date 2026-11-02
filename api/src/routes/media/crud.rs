@@ -14,7 +14,7 @@ use axum::{
 
 use super::dto::{Media, MediaQuery, UpdateMedia};
 use super::helpers::format_bytes;
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 /// GET /admin/media - List all media with filtering and pagination
 /// ICT 7 SECURITY: AdminUser authentication required, parameterized queries
@@ -327,16 +327,19 @@ pub(super) async fn destroy(
     // Delete file from R2 storage if path exists
     if let Some(file_key) = &media.path {
         let storage = &state.services.storage;
-        if let Err(e) = storage.delete(file_key).await {
-            tracing::warn!(
-                "Failed to delete file from R2 storage: {} - {}",
-                file_key,
-                e
-            );
-            // Continue with database deletion even if R2 deletion fails
-            // The file might have already been deleted or the path is invalid
-        } else {
-            tracing::info!("Deleted file from R2 storage: {}", file_key);
+        match storage.delete(file_key).await {
+            Err(e) => {
+                tracing::warn!(
+                    "Failed to delete file from R2 storage: {} - {}",
+                    file_key,
+                    e
+                );
+                // Continue with database deletion even if R2 deletion fails
+                // The file might have already been deleted or the path is invalid
+            }
+            _ => {
+                tracing::info!("Deleted file from R2 storage: {}", file_key);
+            }
         }
     }
 

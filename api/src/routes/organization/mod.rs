@@ -27,7 +27,7 @@
 //!   - Routers: `teams_router`, `departments_router`,
 //!     `profile_router` (ORPHAN — see note below), `admin_router`
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::AppState;
 

@@ -31,8 +31,8 @@
 //! - `stats`     — library statistics + tag aggregation
 
 use axum::{
-    routing::{get, post, put},
     Router,
+    routing::{get, post, put},
 };
 
 use crate::AppState;

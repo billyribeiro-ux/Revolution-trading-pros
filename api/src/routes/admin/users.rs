@@ -4,14 +4,14 @@
 //! Handler bodies are byte-identical to the pre-split source.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // USER MANAGEMENT (Admin Staff)
@@ -159,12 +159,14 @@ pub(super) async fn create_user(
     crate::utils::validate_password(&input.password)
         .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
-    let password_hash = crate::utils::hash_password(&input.password).map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let password_hash = crate::utils::hash_password_async(&input.password)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let role = input.role.unwrap_or_else(|| "user".to_string());
     const VALID_ROLES: &[&str] = &[
@@ -370,12 +372,10 @@ pub(super) async fn update_user(
         }
     }
 
-    if input.role.is_some() || input.is_active == Some(false) {
-        if let Some(ref redis) = state.services.redis {
-            let _ = redis.bump_token_version(id).await;
-            let _ = redis.invalidate_all_user_sessions(id).await;
-            let _ = redis.invalidate_user_cache(id).await;
-        }
+    if (input.role.is_some() || input.is_active == Some(false))
+        && let Some(ref redis) = state.services.redis
+    {
+        redis.revoke_user_access(id).await;
     }
 
     Ok(Json(updated))
@@ -432,9 +432,7 @@ pub(super) async fn delete_user(
         })?;
 
     if let Some(ref redis) = state.services.redis {
-        let _ = redis.bump_token_version(id).await;
-        let _ = redis.invalidate_all_user_sessions(id).await;
-        let _ = redis.invalidate_user_cache(id).await;
+        redis.revoke_user_access(id).await;
     }
 
     Ok(Json(json!({"message": "User deleted successfully"})))

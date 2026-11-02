@@ -5,18 +5,18 @@
 //! gated inside `super::player` instead.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::models::course::{
     Course, CourseListItem, CourseModule, CourseQueryParams, LessonListItem, ModuleWithLessons,
 };
-use crate::AppState;
 
 pub(super) async fn list_published_courses(
     State(state): State<AppState>,
@@ -145,7 +145,7 @@ pub(super) async fn get_course_detail(
     .bind(course.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let mut lessons: Vec<LessonListItem> = sqlx::query_as(
         r"
@@ -160,7 +160,7 @@ pub(super) async fn get_course_detail(
     .bind(course.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let course_is_free = course.is_free == Some(true);
     for lesson in &mut lessons {
@@ -222,7 +222,7 @@ pub(super) async fn get_course_reviews(
     .bind(course.0)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|r| json!({"id": r.0, "user_id": r.1, "rating": r.2, "title": r.3, "content": r.4, "is_verified_purchase": r.5, "created_at": r.6.format("%Y-%m-%dT%H:%M:%S").to_string()}))
     .collect();
@@ -243,7 +243,7 @@ pub(super) async fn get_course_reviews(
     .bind(course.0)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let mut dist_map = std::collections::HashMap::new();
     for (rating, count) in distribution {

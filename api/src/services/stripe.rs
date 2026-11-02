@@ -9,7 +9,7 @@
 //! - Subscription lifecycle management
 //! - Refund processing
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use hmac::{Hmac, KeyInit, Mac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
@@ -96,10 +96,10 @@ impl StripeSubscription {
     /// Returns (current_period_start, current_period_end) as Unix timestamps.
     /// Reads from `items.data[0]` first (Stripe 2026+), falls back to top-level fields.
     pub fn get_current_period(&self) -> (i64, i64) {
-        if let Some(item) = self.items.as_ref().and_then(|l| l.data.first()) {
-            if item.current_period_start != 0 || item.current_period_end != 0 {
-                return (item.current_period_start, item.current_period_end);
-            }
+        if let Some(item) = self.items.as_ref().and_then(|l| l.data.first())
+            && (item.current_period_start != 0 || item.current_period_end != 0)
+        {
+            return (item.current_period_start, item.current_period_end);
         }
         (self.current_period_start, self.current_period_end)
     }
@@ -329,16 +329,7 @@ impl StripeService {
         Self {
             secret_key: secret_key.to_string(),
             webhook_secret: None,
-            client: reqwest::Client::builder()
-                .timeout(std::time::Duration::from_secs(30))
-                .build()
-                .unwrap_or_else(|e| {
-                    tracing::error!(
-                        "Failed to create HTTP client with timeout: {}, using default",
-                        e
-                    );
-                    reqwest::Client::new()
-                }),
+            client: crate::utils::http::build_client(std::time::Duration::from_secs(30)),
         }
     }
 
@@ -369,10 +360,10 @@ impl StripeService {
             .json()
             .await?;
 
-        if let Some(customers) = response["data"].as_array() {
-            if let Some(customer) = customers.first() {
-                return Ok(serde_json::from_value(customer.clone())?);
-            }
+        if let Some(customers) = response["data"].as_array()
+            && let Some(customer) = customers.first()
+        {
+            return Ok(serde_json::from_value(customer.clone())?);
         }
 
         // Create new customer
@@ -515,23 +506,23 @@ impl StripeService {
         }
 
         // Trial support
-        if let Some(trial_days) = config.trial_period_days {
-            if trial_days > 0 {
+        if let Some(trial_days) = config.trial_period_days
+            && trial_days > 0
+        {
+            form_params.push((
+                "subscription_data[trial_period_days]".to_string(),
+                trial_days.to_string(),
+            ));
+            if !config.trial_requires_payment_method {
                 form_params.push((
-                    "subscription_data[trial_period_days]".to_string(),
-                    trial_days.to_string(),
+                    "payment_method_collection".to_string(),
+                    "if_required".to_string(),
                 ));
-                if !config.trial_requires_payment_method {
-                    form_params.push((
-                        "payment_method_collection".to_string(),
-                        "if_required".to_string(),
-                    ));
-                    form_params.push((
-                        "subscription_data[trial_settings][end_behavior][missing_payment_method]"
-                            .to_string(),
-                        "cancel".to_string(),
-                    ));
-                }
+                form_params.push((
+                    "subscription_data[trial_settings][end_behavior][missing_payment_method]"
+                        .to_string(),
+                    "cancel".to_string(),
+                ));
             }
         }
 

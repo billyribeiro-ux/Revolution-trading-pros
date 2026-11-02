@@ -12,14 +12,14 @@
 //! and AdminUser gating are identical to the source.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dto::{CreatePlanRequest, PlanListQuery, SubscriptionPlanRow, UpdatePlanRequest};
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// List all subscription plans (admin)
 pub(super) async fn list_plans(
@@ -159,6 +159,10 @@ pub(super) async fn create_plan(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
+    if let Err(e) = state.cache_invalidator.invalidate_plans().await {
+        tracing::warn!(target: "cache", error = %e, "Failed to invalidate plans cache");
+    }
+
     Ok(Json(
         json!({"data": plan, "message": "Plan created successfully"}),
     ))
@@ -214,6 +218,10 @@ pub(super) async fn update_plan(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Plan not found"}))))?;
 
+    if let Err(e) = state.cache_invalidator.invalidate_plans().await {
+        tracing::warn!(target: "cache", error = %e, "Failed to invalidate plans cache");
+    }
+
     Ok(Json(
         json!({"data": plan, "message": "Plan updated successfully"}),
     ))
@@ -249,6 +257,10 @@ pub(super) async fn delete_plan(
             StatusCode::NOT_FOUND,
             Json(json!({"error": "Plan not found"})),
         ));
+    }
+
+    if let Err(e) = state.cache_invalidator.invalidate_plans().await {
+        tracing::warn!(target: "cache", error = %e, "Failed to invalidate plans cache");
     }
 
     Ok(Json(json!({"message": "Plan deleted successfully"})))

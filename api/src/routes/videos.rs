@@ -5,20 +5,20 @@
 //! Supports filtering by content_type, room, tags for learning center
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use chrono::NaiveDate;
 use serde::Deserialize;
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::models::video::{
-    get_all_tags, PaginationMeta, RoomInfo, TagDetail, TraderInfo, VideoResponse,
-};
 use crate::AppState;
+use crate::models::video::{
+    PaginationMeta, RoomInfo, TagDetail, TraderInfo, VideoResponse, get_all_tags,
+};
 
 /// RUST_DEEP_AUDIT_2026-06-07 (P1-7): return a 500 for a failed video-list query
 /// instead of swallowing the DB error into an empty list (which presented as
@@ -429,7 +429,7 @@ async fn get_related_videos(
             return Err((
                 StatusCode::NOT_FOUND,
                 Json(json!({"error": "Video not found"})),
-            ))
+            ));
         }
     };
 

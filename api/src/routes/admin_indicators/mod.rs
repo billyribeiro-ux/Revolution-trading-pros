@@ -29,8 +29,8 @@
 //! Plus the [`router`] constructor with the unchanged route table.
 
 use axum::{
-    routing::{delete, get, post, put},
     Router,
+    routing::{delete, get, post, put},
 };
 
 use crate::AppState;

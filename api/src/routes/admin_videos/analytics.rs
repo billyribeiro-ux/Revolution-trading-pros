@@ -2,16 +2,16 @@
 //! and watch-progress upsert.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::User;
-use crate::AppState;
 
 #[derive(Debug, Deserialize)]
 pub(super) struct AnalyticsPeriodQuery {
@@ -65,7 +65,7 @@ pub(super) async fn analytics_dashboard(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

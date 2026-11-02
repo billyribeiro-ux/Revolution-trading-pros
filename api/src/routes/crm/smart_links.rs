@@ -2,17 +2,17 @@
 //! (split from `crm.rs` lines 200-212 types + 1196-1286 handlers).
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get},
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
 use super::ListFilters;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

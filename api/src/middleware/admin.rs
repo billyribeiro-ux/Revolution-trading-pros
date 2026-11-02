@@ -3,10 +3,10 @@
 
 use axum::{
     extract::FromRequestParts,
-    http::{request::Parts, StatusCode},
+    http::{StatusCode, request::Parts},
 };
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Admin user extractor - requires admin, super_admin, or developer role
 pub struct AdminUser(pub User);

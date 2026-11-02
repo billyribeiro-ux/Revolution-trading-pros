@@ -8,16 +8,16 @@
 //! preserve the original SQL byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
+use crate::AppState;
 use crate::models::indicator::{
     Indicator, IndicatorListItem, IndicatorQueryParams, IndicatorVideo,
 };
-use crate::AppState;
 
 /// ICT 7 SECURITY FIX: Fully parameterized queries to prevent SQL injection
 pub(super) async fn list_public_indicators(
@@ -147,7 +147,7 @@ pub(super) async fn get_public_indicator(
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get available platforms (but not actual files)
     let platforms: Vec<(String,)> = sqlx::query_as(
@@ -156,7 +156,7 @@ pub(super) async fn get_public_indicator(
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

@@ -2,17 +2,17 @@
 //! Revolution Trading Pros - Full CRM & Cart Recovery Endpoints
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 #[derive(Debug, Deserialize)]
 pub struct CartListQuery {
@@ -142,7 +142,7 @@ pub async fn list_abandoned_carts(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts")
         .fetch_one(&state.db.pool)
