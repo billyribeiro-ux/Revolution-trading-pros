@@ -12,7 +12,8 @@
 	}
 
 	interface Props {
-		stats: OrderStats;
+		/** null while loading: the grid still renders (with placeholders) so the page never shifts. */
+		stats: OrderStats | null;
 		formatCurrency: (amount: number, currency?: string) => string;
 	}
 
@@ -26,7 +27,7 @@
 		</div>
 		<div class="stat-content">
 			<div class="stat-label">Total Orders</div>
-			<div class="stat-value">{stats.total_orders.toLocaleString()}</div>
+			<div class="stat-value">{stats ? stats.total_orders.toLocaleString() : '—'}</div>
 		</div>
 	</div>
 
@@ -36,7 +37,7 @@
 		</div>
 		<div class="stat-content">
 			<div class="stat-label">Completed</div>
-			<div class="stat-value">{stats.completed_orders.toLocaleString()}</div>
+			<div class="stat-value">{stats ? stats.completed_orders.toLocaleString() : '—'}</div>
 		</div>
 	</div>
 
@@ -46,9 +47,9 @@
 		</div>
 		<div class="stat-content">
 			<div class="stat-label">Total Revenue</div>
-			<div class="stat-value">{formatCurrency(stats.total_revenue)}</div>
+			<div class="stat-value">{stats ? formatCurrency(stats.total_revenue) : '—'}</div>
 			<div class="stat-change neutral">
-				{formatCurrency(stats.revenue_this_month)} this month
+				{stats ? formatCurrency(stats.revenue_this_month) : '—'} this month
 			</div>
 		</div>
 	</div>
@@ -59,7 +60,7 @@
 		</div>
 		<div class="stat-content">
 			<div class="stat-label">Avg Order Value</div>
-			<div class="stat-value">{formatCurrency(stats.average_order_value)}</div>
+			<div class="stat-value">{stats ? formatCurrency(stats.average_order_value) : '—'}</div>
 		</div>
 	</div>
 </div>

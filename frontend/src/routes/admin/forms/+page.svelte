@@ -5,6 +5,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import FormList from '#lib/components/forms/FormList.svelte';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import type { Form } from '#lib/api/forms.js';
 
 	function handleEdit(form: Form) {
@@ -18,10 +19,6 @@
 	function handleViewAnalytics(form: Form) {
 		goto(`/admin/forms/${form.id}/analytics`);
 	}
-
-	function handleCreate() {
-		goto('/admin/forms/create');
-	}
 </script>
 
 <svelte:head>
@@ -29,14 +26,15 @@
 </svelte:head>
 
 <div class="admin-forms">
-	
-
 	<div class="admin-page-container">
 		<header class="page-header">
 			<h1>Forms</h1>
 			<p class="subtitle">Create and manage your forms</p>
 			<div class="header-actions">
-				<button class="btn-primary" onclick={handleCreate}> + Create New Form </button>
+				<a href="/admin/forms/create" class="btn-primary">
+					<IconPlus size={18} aria-hidden="true" />
+					Create New Form
+				</a>
 			</div>
 		</header>
 
@@ -52,8 +50,6 @@
 <style>
 	.admin-forms {
 		background: var(--bg-base);
-		position: relative;
-		overflow: hidden;
 	}
 
 	.page-header {
@@ -80,6 +76,39 @@
 		display: flex;
 		justify-content: center;
 		gap: 0.75rem;
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: 40px;
+		padding: 0 1.25rem;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
+		border: 1px solid var(--primary-500, #e6b800);
+		border-radius: 8px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+
+	.btn-primary:hover {
+		background: var(--primary-400, #ffd11a);
+	}
+
+	.btn-primary:focus-visible {
+		outline: none;
+		box-shadow: var(--admin-focus-ring, 0 0 0 3px rgba(230, 184, 0, 0.35));
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.btn-primary {
+			transition: none;
+		}
 	}
 
 

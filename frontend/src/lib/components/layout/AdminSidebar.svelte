@@ -416,6 +416,34 @@
 		cursor: default;
 	}
 
+	/*
+	 * Collapse toggle: blends into the sidebar. Near-invisible at rest, it comes back to
+	 * full strength when the sidebar is hovered, the button is hovered, or it has keyboard
+	 * focus, so it stays discoverable and keyboard-reachable.
+	 */
+	.collapse-btn {
+		color: var(--admin-border);
+		transition:
+			color 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.admin-sidebar:hover .collapse-btn,
+	.collapse-btn:hover,
+	.collapse-btn:focus-visible {
+		color: var(--admin-text-muted);
+	}
+
+	.collapse-btn:hover:not(:disabled) {
+		color: var(--admin-text-primary);
+	}
+
+	@media (forced-colors: active), (pointer: coarse) {
+		.collapse-btn {
+			color: var(--admin-text-muted);
+		}
+	}
+
 	/* The drawer shows a close button; the desktop shows the collapse toggle. */
 	.close-btn {
 		display: none;

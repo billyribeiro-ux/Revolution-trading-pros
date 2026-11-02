@@ -52,7 +52,18 @@
 
 	// Desktop preference: collapse the sidebar to the vertical icon rail.
 	const SIDEBAR_COLLAPSED_KEY = 'rtp-admin-sidebar-collapsed';
-	let isSidebarCollapsed = $state(false);
+	// Read synchronously so the first paint already has the right width. Restoring it in
+	// onMount shifted the whole shell (sidebar + content) for every user who collapsed it.
+	// The admin area is ssr = false, so localStorage is available at init.
+	function readCollapsedPreference(): boolean {
+		if (!browser) return false;
+		try {
+			return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
+		} catch {
+			return false;
+		}
+	}
+	let isSidebarCollapsed = $state(readCollapsedPreference());
 
 	function toggleSidebarCollapsed() {
 		isSidebarCollapsed = !isSidebarCollapsed;
@@ -163,12 +174,6 @@
 	// });
 	onMount(() => {
 		if (!browser) return;
-
-		try {
-			isSidebarCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
-		} catch {
-			isSidebarCollapsed = false;
-		}
 
 		keyboard.init({
 			search: () => (isCommandPaletteOpen = true),

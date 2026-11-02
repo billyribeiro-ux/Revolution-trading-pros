@@ -178,9 +178,7 @@
 
 		<PageHeader onrefresh={() => loadOrders()} onexport={handleExport} />
 
-		{#if stats}
-			<StatsGrid {stats} {formatCurrency} />
-		{/if}
+		<StatsGrid {stats} {formatCurrency} />
 
 		<OrdersToolbar
 			bind:searchQuery

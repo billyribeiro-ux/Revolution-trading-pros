@@ -10,7 +10,6 @@
 	 *
 	 * 1 bindable scalar, 0 callbacks.
 	 */
-	import { slide } from 'svelte/transition';
 	import type { OptimizationStatistics } from '#lib/api/media.js';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
@@ -38,15 +37,16 @@
 	}
 </script>
 
-{#if showStatsPanel && statistics}
-	<div class="stats-panel" transition:slide={{ duration: 300 }}>
+{#if showStatsPanel}
+	<!-- Rendered while statistics load (placeholders) so the content below never shifts. -->
+	<div class="stats-panel" aria-busy={!statistics}>
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon blue">
 					<IconPhoto size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics.total_images}</span>
+					<span class="stat-value">{statistics ? statistics.total_images : '—'}</span>
 					<span class="stat-label">Total Images</span>
 				</div>
 			</div>
@@ -56,7 +56,7 @@
 					<IconCircleCheck size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics.optimized_images}</span>
+					<span class="stat-value">{statistics ? statistics.optimized_images : '—'}</span>
 					<span class="stat-label">Optimized</span>
 				</div>
 			</div>
@@ -66,7 +66,7 @@
 					<IconClock size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics.pending_optimization}</span>
+					<span class="stat-value">{statistics ? statistics.pending_optimization : '—'}</span>
 					<span class="stat-label">Pending</span>
 				</div>
 			</div>
@@ -76,7 +76,7 @@
 					<IconBox size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{formatBytes(statistics.total_storage)}</span>
+					<span class="stat-value">{statistics ? formatBytes(statistics.total_storage) : '—'}</span>
 					<span class="stat-label">Storage Used</span>
 				</div>
 			</div>
@@ -86,7 +86,7 @@
 					<IconBolt size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{formatBytes(statistics.total_savings_bytes)}</span>
+					<span class="stat-value">{statistics ? formatBytes(statistics.total_savings_bytes) : '—'}</span>
 					<span class="stat-label">Total Savings</span>
 				</div>
 				<div class="stat-progress">

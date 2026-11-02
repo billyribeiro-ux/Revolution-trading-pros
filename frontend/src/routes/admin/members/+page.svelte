@@ -5,7 +5,7 @@
 	import { membersStore, emailStore } from '#lib/stores/members.svelte.js';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { Member, MemberFilters, MemberFullDetails } from '#lib/api/members.js';
+	import type { Member, MemberFilters, MemberFullDetails, MemberStats } from '#lib/api/members.js';
 	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
 		IconUsers,
@@ -41,6 +41,15 @@
 	// Reactive state from stores
 	let members = $derived(membersStore.members);
 	let stats = $derived(membersStore.stats);
+
+	/** Layout-only stand-in while stats load; its values are masked by `.stats-slot.pending`. */
+	const EMPTY_STATS: MemberStats = {
+		overview: { total_members: 0, new_this_month: 0, new_last_month: 0, growth_rate: 0 },
+		subscriptions: { active: 0, trial: 0, churned: 0, churn_rate: 0 },
+		revenue: { mrr: 0, total: 0, avg_ltv: 0 },
+		top_services: [],
+		growth_trend: []
+	};
 	let services = $derived(membersStore.services);
 	let pagination = $derived(membersStore.pagination);
 	let loading = $derived(membersStore.loading);
@@ -462,9 +471,14 @@
 		<PageHeader {exportFormat} {exporting} onAction={handleHeaderAction} />
 
 		<!-- Stats Grid -->
-		{#if stats}
-			<StatsGrid {stats} {formatCurrency} onRecoverChurned={() => goto('/admin/members/churned')} />
-		{/if}
+		<!-- Always rendered; masked while loading so the toolbar and table never shift. -->
+		<div class={{ 'stats-slot': true, pending: !stats }} aria-busy={!stats}>
+			<StatsGrid
+				stats={stats ?? EMPTY_STATS}
+				{formatCurrency}
+				onRecoverChurned={() => goto('/admin/members/churned')}
+			/>
+		</div>
 
 		<!-- Top Services -->
 		{#if stats?.top_services && stats.top_services.length > 0}
@@ -810,6 +824,19 @@
 
 
 	/* Toolbar */
+	.stats-slot.pending {
+		pointer-events: none;
+	}
+
+	.stats-slot.pending :global(.stat-value),
+	.stats-slot.pending :global(.stat-change),
+	.stats-slot.pending :global(.stat-sparkline) {
+		color: transparent;
+		background: var(--bg-hover, #252b33);
+		border-radius: 4px;
+		width: fit-content;
+	}
+
 	.toolbar {
 		display: flex;
 		justify-content: space-between;

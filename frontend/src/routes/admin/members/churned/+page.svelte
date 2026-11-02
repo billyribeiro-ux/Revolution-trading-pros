@@ -254,17 +254,17 @@
 	</div>
 
 	<!-- Stats -->
-	{#if stats}
-		<div class="stats-grid">
+	<!-- Always rendered (placeholders while loading) so the toolbar and table never shift. -->
+		<div class="stats-grid" aria-busy={!stats}>
 			<div class="stat-card">
 				<div class="stat-header">
 					<IconAlertTriangle size={24} />
 					<span class="stat-label">Total Churned</span>
 				</div>
-				<div class="stat-value">{stats.total_churned}</div>
+				<div class="stat-value">{stats?.total_churned ?? '—'}</div>
 				<div class="stat-sublabel">
 					<IconTrendingDown size={14} />
-					{stats.churned_this_month} this month
+					{stats?.churned_this_month ?? '—'} this month
 				</div>
 			</div>
 
@@ -273,7 +273,7 @@
 					<IconCurrencyDollar size={24} />
 					<span class="stat-label">Recovery Potential</span>
 				</div>
-				<div class="stat-value">{formatCurrency(stats.potential_recovery_revenue)}</div>
+				<div class="stat-value">{stats ? formatCurrency(stats.potential_recovery_revenue) : '—'}</div>
 				<div class="stat-sublabel">
 					<IconSparkles size={14} />
 					Estimated monthly recovery
@@ -286,14 +286,13 @@
 					<span class="stat-label">Top Churn Reason</span>
 				</div>
 				<div class="stat-value churn-reason">
-					{stats.top_churn_reasons?.[0]?.reason?.replace(/"/g, '') || 'Unknown'}
+					{stats ? stats.top_churn_reasons?.[0]?.reason?.replace(/"/g, '') || 'Unknown' : '—'}
 				</div>
 				<div class="stat-sublabel">
-					{stats.top_churn_reasons?.[0]?.count || 0} occurrences
+					{stats ? (stats.top_churn_reasons?.[0]?.count ?? 0) : '—'} occurrences
 				</div>
 			</div>
 		</div>
-	{/if}
 
 	<!-- Toolbar -->
 	<div class="toolbar">
