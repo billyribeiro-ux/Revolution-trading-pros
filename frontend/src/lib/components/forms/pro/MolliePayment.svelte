@@ -39,7 +39,7 @@
 	interface PaymentMethod {
 		id: string;
 		name: string;
-		icon: string;
+		icon: Component<{ size?: number; 'aria-hidden'?: 'true' }>;
 		description?: string;
 	}
 
@@ -61,6 +61,13 @@
 	}: Props = $props();
 
 	import Icon from '#lib/components/Icon.svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import type { Component } from 'svelte';
+	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
+	import IconCoin from '@tabler/icons-svelte-runes/icons/coin';
+	import IconBrandApple from '@tabler/icons-svelte-runes/icons/brand-apple';
 
 	let selectedMethod = $state('');
 	let selectedIssuer = $state('');
@@ -70,16 +77,16 @@
 	let loadingIssuers = $state(false);
 
 	const availableMethods: PaymentMethod[] = [
-		{ id: 'ideal', name: 'iDEAL', icon: '🏦', description: 'Dutch bank transfer' },
-		{ id: 'creditcard', name: 'Credit Card', icon: '💳', description: 'Visa, Mastercard, Amex' },
-		{ id: 'bancontact', name: 'Bancontact', icon: '💳', description: 'Belgian debit cards' },
-		{ id: 'sofort', name: 'SOFORT', icon: '🏦', description: 'German bank transfer' },
-		{ id: 'klarna', name: 'Klarna', icon: '🛒', description: 'Pay later or slice it' },
-		{ id: 'banktransfer', name: 'Bank Transfer', icon: '🏛️', description: 'Manual bank transfer' },
-		{ id: 'paypal', name: 'PayPal', icon: '💰', description: 'PayPal account' },
-		{ id: 'applepay', name: 'Apple Pay', icon: '🍎', description: 'Apple devices' },
-		{ id: 'eps', name: 'EPS', icon: '🏦', description: 'Austrian bank transfer' },
-		{ id: 'giropay', name: 'Giropay', icon: '🏦', description: 'German online banking' }
+		{ id: 'ideal', name: 'iDEAL', icon: IconBuildingBank, description: 'Dutch bank transfer' },
+		{ id: 'creditcard', name: 'Credit Card', icon: IconCreditCard, description: 'Visa, Mastercard, Amex' },
+		{ id: 'bancontact', name: 'Bancontact', icon: IconCreditCard, description: 'Belgian debit cards' },
+		{ id: 'sofort', name: 'SOFORT', icon: IconBuildingBank, description: 'German bank transfer' },
+		{ id: 'klarna', name: 'Klarna', icon: IconShoppingCart, description: 'Pay later or slice it' },
+		{ id: 'banktransfer', name: 'Bank Transfer', icon: IconBuildingBank, description: 'Manual bank transfer' },
+		{ id: 'paypal', name: 'PayPal', icon: IconCoin, description: 'PayPal account' },
+		{ id: 'applepay', name: 'Apple Pay', icon: IconBrandApple, description: 'Apple devices' },
+		{ id: 'eps', name: 'EPS', icon: IconBuildingBank, description: 'Austrian bank transfer' },
+		{ id: 'giropay', name: 'Giropay', icon: IconBuildingBank, description: 'German online banking' }
 	];
 
 	const filteredMethods = $derived(availableMethods.filter((m) => methods.includes(m.id)));
@@ -174,7 +181,7 @@
 
 	{#if testMode}
 		<div class="test-mode-banner">
-			<span>⚠️ Mollie Test Mode</span>
+			<span><IconAlertTriangle size={14} aria-hidden="true" />Mollie Test Mode</span>
 		</div>
 	{/if}
 
@@ -191,7 +198,7 @@
 				onclick={() => selectMethod(method.id)}
 				{disabled}
 			>
-				<span class="method-icon">{method.icon}</span>
+				<span class="method-icon"><method.icon size={24} aria-hidden="true" /></span>
 				<span class="method-name">{method.name}</span>
 				{#if method.description}
 					<span class="method-desc">{method.description}</span>
@@ -262,6 +269,12 @@
 		color: #374151;
 	}
 
+	.test-mode-banner span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+
 	.test-mode-banner {
 		padding: 0.5rem 0.75rem;
 		background-color: #fef3c7;
@@ -315,7 +328,7 @@
 	}
 
 	.method-icon {
-		font-size: 1.5rem;
+		display: inline-flex;
 	}
 
 	.method-name {

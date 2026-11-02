@@ -12,6 +12,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import IconMapPin from '@tabler/icons-svelte-runes/icons/map-pin';
 	import type { FormField } from '#lib/api/forms.js';
 
 	interface AddressComponents {
@@ -334,7 +335,7 @@
 							aria-selected={index === selectedIndex}
 							tabindex="0"
 						>
-							<span class="suggestion-icon">📍</span>
+							<span class="suggestion-icon"><IconMapPin size={16} aria-hidden="true" /></span>
 							<span class="suggestion-text">{suggestion.description}</span>
 						</li>
 					{/each}
@@ -581,6 +582,7 @@
 	}
 
 	.suggestion-icon {
+		display: inline-flex;
 		font-size: 1rem;
 		opacity: 0.6;
 	}

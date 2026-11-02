@@ -13,6 +13,13 @@
 		IconDevices,
 		IconCalendar
 	} from '#lib/icons/index.js';
+	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconDeviceDesktop from '@tabler/icons-svelte-runes/icons/device-desktop';
+	import IconDeviceTablet from '@tabler/icons-svelte-runes/icons/device-tablet';
+	import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
+	import IconMedal from '@tabler/icons-svelte-runes/icons/medal';
+	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
 
 	interface MetricTrend {
 		total: number;
@@ -102,9 +109,9 @@
 	}
 
 	function getTrendIcon(trend: 'up' | 'down' | 'stable') {
-		if (trend === 'up') return '📈';
-		if (trend === 'down') return '📉';
-		return '➡️';
+		if (trend === 'up') return IconTrendingUp;
+		if (trend === 'down') return IconTrendingDown;
+		return IconArrowRight;
 	}
 
 	function formatNumber(num: number): string {
@@ -161,6 +168,8 @@
 		</div>
 	</div>
 {:else if popup && analytics}
+	{@const ViewsTrendIcon = getTrendIcon(analytics.views.trend)}
+	{@const ConversionsTrendIcon = getTrendIcon(analytics.conversions.trend)}
 	<div class="analytics-page">
 		<!-- Header -->
 		<div class="page-header">
@@ -199,7 +208,7 @@
 						<p class="metric-label">Total Views</p>
 						<p class="metric-value">{formatNumber(analytics.views.total)}</p>
 						<div class="trend-row">
-							<span class="trend-icon">{getTrendIcon(analytics.views.trend)}</span>
+							<span class="trend-icon"><ViewsTrendIcon size={16} aria-hidden="true" /></span>
 							<span class={getTrendClass(analytics.views.trend)}>
 								{formatPercent(analytics.views.trend_percentage)}
 							</span>
@@ -219,7 +228,7 @@
 						<p class="metric-label">Conversions</p>
 						<p class="metric-value">{formatNumber(analytics.conversions.total)}</p>
 						<div class="trend-row">
-							<span class="trend-icon">{getTrendIcon(analytics.conversions.trend)}</span>
+							<span class="trend-icon"><ConversionsTrendIcon size={16} aria-hidden="true" /></span>
 							<span class={getTrendClass(analytics.conversions.trend)}>
 								{formatPercent(analytics.conversions.trend_percentage)}
 							</span>
@@ -352,7 +361,7 @@
 					<!-- Desktop -->
 					<div>
 						<div class="bar-header">
-							<span class="bar-label">🖥️ Desktop</span>
+							<span class="bar-label"><IconDeviceDesktop size={16} aria-hidden="true" />Desktop</span>
 							<span class="bar-value">{formatNumber(analytics.device_breakdown.desktop)}</span>
 						</div>
 						<div class="progress-track progress-track--small">
@@ -374,7 +383,7 @@
 					<!-- Tablet -->
 					<div>
 						<div class="bar-header">
-							<span class="bar-label">📱 Tablet</span>
+							<span class="bar-label"><IconDeviceTablet size={16} aria-hidden="true" />Tablet</span>
 							<span class="bar-value">{formatNumber(analytics.device_breakdown.tablet)}</span>
 						</div>
 						<div class="progress-track progress-track--small">
@@ -396,7 +405,7 @@
 					<!-- Mobile -->
 					<div>
 						<div class="bar-header">
-							<span class="bar-label">📱 Mobile</span>
+							<span class="bar-label"><IconDeviceMobile size={16} aria-hidden="true" />Mobile</span>
 							<span class="bar-value">{formatNumber(analytics.device_breakdown.mobile)}</span>
 						</div>
 						<div class="progress-track progress-track--small">
@@ -436,9 +445,7 @@
 								<div class="rank-header">
 									<p class="rank-url">
 										{#if index < 3}
-											<span class="rank-medal"
-												>{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}</span
-											>
+											<span class="rank-medal"><IconMedal size={16} aria-hidden="true" /></span>
 										{/if}
 										{truncateUrl(pageData.url)}
 									</p>
@@ -520,7 +527,7 @@
 
 		<!-- Insights & Recommendations -->
 		<Card class="insights-card">
-			<h2 class="section-heading">💡 Insights & Recommendations</h2>
+			<h2 class="section-heading"><IconBulb size={20} aria-hidden="true" /> Insights & Recommendations</h2>
 
 			<div class="insight-stack">
 				{#if analytics.conversion_rate.overall < 1}
@@ -710,8 +717,8 @@
 	}
 
 	.trend-icon {
+		display: inline-flex;
 		margin-right: 0.25rem;
-		font-size: 0.875rem;
 		line-height: 1;
 	}
 
@@ -876,6 +883,9 @@
 	}
 
 	.bar-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 		color: #374151;
 		font-size: 0.875rem;
 		font-weight: 600;
@@ -974,6 +984,8 @@
 	}
 
 	.rank-medal {
+		display: inline-flex;
+		vertical-align: middle;
 		margin-right: 0.25rem;
 	}
 

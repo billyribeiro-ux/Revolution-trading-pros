@@ -13,6 +13,10 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
+	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
+	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
 	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 	import { logger } from '#lib/utils/logger.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
@@ -353,13 +357,13 @@
 					<div class="activity-item">
 						<div class="activity-icon">
 							{#if activity.action.includes('comment')}
-								💬
+								<IconMessageCircle size={16} aria-hidden="true" />
 							{:else if activity.action.includes('field')}
-								📝
+								<IconPencil size={16} aria-hidden="true" />
 							{:else if activity.action.includes('publish')}
-								🚀
+								<IconRocket size={16} aria-hidden="true" />
 							{:else}
-								📋
+								<IconClipboard size={16} aria-hidden="true" />
 							{/if}
 						</div>
 						<div class="activity-content">
@@ -683,7 +687,8 @@
 	}
 
 	.activity-icon {
-		font-size: 1rem;
+		display: inline-flex;
+		color: var(--text-secondary);
 		flex-shrink: 0;
 	}
 

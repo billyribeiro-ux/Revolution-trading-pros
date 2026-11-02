@@ -9,7 +9,7 @@
 	 */
 
 	import { page } from '$app/state';
-	import { onMount, type Component } from 'svelte';
+	import { onMount } from 'svelte';
 	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
 	import IconBrandFacebook from '@tabler/icons-svelte-runes/icons/brand-facebook';
 	import IconBrandPaypal from '@tabler/icons-svelte-runes/icons/brand-paypal';
@@ -261,7 +261,8 @@
 	}
 
 	// Get service icon component (Tabler); null falls back to the service initial
-	const serviceIconMap: Record<string, Component> = {
+	type TablerIcon = typeof IconCreditCard;
+	const serviceIconMap: Record<string, TablerIcon> = {
 		stripe: IconCreditCard,
 		paypal: IconBrandPaypal,
 		google_analytics: IconChartBar,
@@ -286,7 +287,7 @@
 		fluent_forms_pro: IconNote
 	};
 
-	function getServiceIcon(service: Service): Component | null {
+	function getServiceIcon(service: Service): TablerIcon | null {
 		return serviceIconMap[service.key] ?? null;
 	}
 

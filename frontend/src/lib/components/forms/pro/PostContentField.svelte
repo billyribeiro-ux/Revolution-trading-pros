@@ -1,4 +1,6 @@
 <script lang="ts">
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconQuote from '@tabler/icons-svelte-runes/icons/quote';
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	/**
 	 * PostContentField Component (FluentForms Pro)
@@ -168,7 +170,7 @@
 				</button>
 				<span class="toolbar-divider"></span>
 				<button type="button" onclick={insertLink} title="Insert Link" class="toolbar-btn">
-					🔗
+					<IconLink size={16} aria-hidden="true" />
 				</button>
 				<button
 					type="button"
@@ -192,7 +194,7 @@
 					title="Quote"
 					class="toolbar-btn"
 				>
-					❝
+					<IconQuote size={16} aria-hidden="true" />
 				</button>
 				<span class="toolbar-divider"></span>
 				<button

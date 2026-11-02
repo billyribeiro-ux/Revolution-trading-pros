@@ -12,6 +12,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
 	import { tradePlanApi, type TradePlanEntry, type Bias } from '#lib/api/room-content.js';
 	import { logger } from '#lib/utils/logger.js';
 
@@ -333,7 +334,7 @@
 		</div>
 	{:else if entries.length === 0}
 		<div class="empty-state">
-			<div class="empty-icon">📋</div>
+			<div class="empty-icon"><IconClipboard size={48} aria-hidden="true" /></div>
 			<h4>No Trade Plan Entries</h4>
 			<p>Add your first entry to get started</p>
 			<button class="btn-add-first" onclick={openAddModal}>
@@ -846,6 +847,9 @@
 	}
 
 	.empty-icon {
+		display: flex;
+		justify-content: center;
+		color: var(--text-tertiary);
 		font-size: 48px;
 		margin-bottom: 16px;
 	}

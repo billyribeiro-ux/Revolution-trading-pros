@@ -3,6 +3,9 @@
 -->
 
 <script lang="ts">
+	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -34,7 +37,10 @@
 <div class="analytics-page">
 	<div class="page-header">
 		<div>
-			<button class="btn-back" onclick={() => goto('/admin/forms')}> ← Back to Forms </button>
+			<button class="btn-back" onclick={() => goto('/admin/forms')}>
+				<IconArrowLeft size={16} aria-hidden="true" />
+				Back to Forms
+			</button>
 			<h1>Form Analytics</h1>
 			{#if form}
 				<p class="page-description">{form.title}</p>
@@ -43,10 +49,12 @@
 		<div class="header-actions">
 			{#if form}
 				<button class="btn-action" onclick={() => goto(`/admin/forms/${formId}/edit`)}>
-					✏️ Edit Form
+					<IconPencil size={16} aria-hidden="true" />
+					Edit Form
 				</button>
 				<button class="btn-action" onclick={() => goto(`/admin/forms/${formId}/submissions`)}>
-					📊 View Submissions
+					<IconChartBar size={16} aria-hidden="true" />
+					View Submissions
 				</button>
 			{/if}
 		</div>
@@ -81,6 +89,9 @@
 	}
 
 	.btn-back {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		background: none;
 		border: none;
 		color: var(--text-secondary, #8b949e);
@@ -114,6 +125,10 @@
 	}
 
 	.btn-action {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
 		color: var(--primary-500);

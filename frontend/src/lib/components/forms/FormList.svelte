@@ -1,4 +1,12 @@
 <script lang="ts">
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconRocket from '@tabler/icons-svelte-runes/icons/rocket';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconArchive from '@tabler/icons-svelte-runes/icons/archive';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import { onMount } from 'svelte';
 	import type { Form } from '#lib/api/forms.js';
 	import {
@@ -219,7 +227,7 @@
 								<div class="action-buttons">
 									{#if props.onEdit}
 										<button class="btn-icon" onclick={() => props.onEdit?.(form)} title="Edit">
-											✏️
+											<IconPencil size={16} aria-hidden="true" />
 										</button>
 									{/if}
 
@@ -229,7 +237,7 @@
 											onclick={() => props.onViewSubmissions?.(form)}
 											title="View Submissions"
 										>
-											📊
+											<IconChartBar size={16} aria-hidden="true" />
 										</button>
 									{/if}
 
@@ -239,7 +247,7 @@
 											onclick={() => props.onViewAnalytics?.(form)}
 											title="View Analytics"
 										>
-											📈
+											<IconTrendingUp size={16} aria-hidden="true" />
 										</button>
 									{/if}
 
@@ -248,16 +256,20 @@
 										onclick={() => handlePublish(form)}
 										title={form.status === 'published' ? 'Unpublish' : 'Publish'}
 									>
-										{form.status === 'published' ? '👁️' : '🚀'}
+										{#if form.status === 'published'}
+											<IconEye size={16} aria-hidden="true" />
+										{:else}
+											<IconRocket size={16} aria-hidden="true" />
+										{/if}
 									</button>
 
 									<button class="btn-icon" onclick={() => handleDuplicate(form)} title="Duplicate">
-										📋
+										<IconCopy size={16} aria-hidden="true" />
 									</button>
 
 									{#if form.status !== 'archived'}
 										<button class="btn-icon" onclick={() => handleArchive(form)} title="Archive">
-											📦
+											<IconArchive size={16} aria-hidden="true" />
 										</button>
 									{/if}
 
@@ -266,7 +278,7 @@
 										onclick={() => handleDelete(form)}
 										title="Delete"
 									>
-										🗑️
+										<IconTrash size={16} aria-hidden="true" />
 									</button>
 								</div>
 							</td>
@@ -467,6 +479,8 @@
 	}
 
 	.btn-icon {
+		display: inline-flex;
+		align-items: center;
 		background: none;
 		border: none;
 		font-size: 1.25rem;

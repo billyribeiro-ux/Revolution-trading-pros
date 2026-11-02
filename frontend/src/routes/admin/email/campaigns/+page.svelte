@@ -421,7 +421,6 @@
 			serviceName="Email Marketing"
 			description="Connect an email marketing service to create and manage email campaigns, track opens, clicks, and subscriber engagement."
 			serviceKey="mailchimp"
-			icon="📧"
 			color="#E6B800"
 			features={[
 				'Create and schedule email campaigns',

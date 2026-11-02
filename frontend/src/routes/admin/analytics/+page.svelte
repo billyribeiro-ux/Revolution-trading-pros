@@ -11,6 +11,15 @@
 
 	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconLeaf from '@tabler/icons-svelte-runes/icons/leaf';
 	import { fade } from 'svelte/transition';
 	import { analyticsApi, type DashboardData } from '#lib/api/analytics.js';
 	import {
@@ -90,22 +99,22 @@
 
 	// Navigation tabs
 	const tabs = [
-		{ id: 'overview', label: 'Overview', icon: '📊' },
-		{ id: 'funnels', label: 'Funnels', icon: '🔻' },
-		{ id: 'cohorts', label: 'Cohorts', icon: '👥' },
-		{ id: 'attribution', label: 'Attribution', icon: '🎯' }
+		{ id: 'overview', label: 'Overview', icon: IconChartBar },
+		{ id: 'funnels', label: 'Funnels', icon: IconFilter },
+		{ id: 'cohorts', label: 'Cohorts', icon: IconUsers },
+		{ id: 'attribution', label: 'Attribution', icon: IconTarget }
 	];
 	let activeTab = $state('overview');
 
 	// Analytics services that can be connected - dynamically generated from FEATURE_SERVICES
 	const analyticsServices =
 		FEATURE_SERVICES['analytics']?.map((key) => {
-			const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
-				[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#E6B800' },
-				[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#B38F00' },
-				[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: '📉', color: '#3b82f6' },
-				[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: '🔗', color: '#10b981' },
-				[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
+			const serviceConfig: Record<string, { name: string; icon: typeof IconChartBar; color: string }> = {
+				[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: IconChartBar, color: '#E6B800' },
+				[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: IconTrendingUp, color: '#B38F00' },
+				[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: IconTrendingDown, color: '#3b82f6' },
+				[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: IconLink, color: '#10b981' },
+				[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: IconLeaf, color: '#14b8a6' }
 			};
 			return { key, ...serviceConfig[key] };
 		}) || [];
@@ -217,11 +226,12 @@
 			{#if isConnected}
 				<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
 					{#each tabs as tab (tab.id)}
+						{@const TabIcon = tab.icon}
 						<button
 							class={['tab-btn', { active: activeTab === tab.id }]}
 							onclick={() => (activeTab = tab.id)}
 						>
-							<span class="tab-icon">{tab.icon}</span>
+							<span class="tab-icon"><TabIcon size={16} aria-hidden="true" /></span>
 							{tab.label}
 						</button>
 					{/each}
@@ -243,7 +253,6 @@
 					<ApiNotConnected
 						serviceName="Analytics"
 						description="Connect an analytics service to view real-time data, track user behavior, and measure conversions."
-						icon="📊"
 						color="#E6B800"
 						features={[
 							'Real-time visitor tracking',
@@ -259,12 +268,13 @@
 						<h3>Available Analytics Services</h3>
 						<div class="services-grid">
 							{#each analyticsServices as service (service.key)}
+								{@const ServiceIcon = service.icon}
 								<a
 									href="/admin/connections?connect={service.key}"
 									class="service-card"
 									style:--service-color={service.color}
 								>
-									<span class="service-icon">{service.icon}</span>
+									<span class="service-icon"><ServiceIcon size={24} aria-hidden="true" /></span>
 									<span class="service-name">{service.name}</span>
 									<IconArrowRight size={16} class="service-arrow" />
 								</a>
@@ -281,7 +291,7 @@
 			{:else if error}
 				<!-- Error State -->
 				<div class="error-state" in:fade={{ duration: 300 }}>
-					<div class="error-icon">⚠️</div>
+					<div class="error-icon"><IconAlertTriangle size={48} aria-hidden="true" /></div>
 					<h3>Unable to Load Analytics</h3>
 					<p>{error}</p>
 					<button class="btn-retry" onclick={loadDashboard}>
@@ -307,21 +317,21 @@
 									<div class="quick-actions">
 										<h3>Quick Actions</h3>
 										<a href="/admin/analytics/segments" class="action-link">
-											<span class="action-icon">👥</span>
+											<span class="action-icon"><IconUsers size={24} aria-hidden="true" /></span>
 											<div class="action-text">
 												<strong>Segments</strong>
 												<span>Manage user segments</span>
 											</div>
 										</a>
 										<a href="/admin/analytics/goals" class="action-link">
-											<span class="action-icon">🎯</span>
+											<span class="action-icon"><IconTarget size={24} aria-hidden="true" /></span>
 											<div class="action-text">
 												<strong>Goals</strong>
 												<span>Track conversion goals</span>
 											</div>
 										</a>
 										<a href="/admin/analytics/reports" class="action-link">
-											<span class="action-icon">📈</span>
+											<span class="action-icon"><IconTrendingUp size={24} aria-hidden="true" /></span>
 											<div class="action-text">
 												<strong>Reports</strong>
 												<span>Custom report builder</span>
@@ -416,7 +426,7 @@
 								</div>
 							{:else}
 								<div class="empty-state">
-									<span class="empty-icon">🔻</span>
+									<span class="empty-icon"><IconFilter size={48} aria-hidden="true" /></span>
 									<h3>No Funnels Yet</h3>
 									<p>Create your first funnel to track user journeys</p>
 									<a href="/admin/analytics/funnels/create" class="btn-primary">
@@ -451,7 +461,7 @@
 								{/each}
 							{:else}
 								<div class="empty-state">
-									<span class="empty-icon">👥</span>
+									<span class="empty-icon"><IconUsers size={48} aria-hidden="true" /></span>
 									<h3>No Cohort Data</h3>
 									<p>Start tracking user retention with cohort analysis</p>
 									<a href="/admin/analytics/cohorts/create" class="btn-primary">
@@ -516,7 +526,7 @@
 								</div>
 							{:else}
 								<div class="empty-state">
-									<span class="empty-icon">🎯</span>
+									<span class="empty-icon"><IconTarget size={48} aria-hidden="true" /></span>
 									<h3>No Attribution Data</h3>
 									<p>Attribution data will appear once conversions are tracked</p>
 								</div>
@@ -651,6 +661,8 @@
 	}
 
 	.tab-icon {
+		display: inline-flex;
+		align-items: center;
 		font-size: 1rem;
 	}
 
@@ -737,6 +749,8 @@
 	}
 
 	.service-icon {
+		display: inline-flex;
+		align-items: center;
 		font-size: 1.5rem;
 	}
 
@@ -765,6 +779,8 @@
 	}
 
 	.error-icon {
+		display: flex;
+		justify-content: center;
 		font-size: 3rem;
 		margin-bottom: 1rem;
 	}
@@ -916,6 +932,8 @@
 	}
 
 	.action-icon {
+		display: inline-flex;
+		align-items: center;
 		font-size: 1.5rem;
 	}
 
@@ -1012,7 +1030,8 @@
 
 	.empty-icon {
 		font-size: 3rem;
-		display: block;
+		display: flex;
+		justify-content: center;
 		margin-bottom: 1rem;
 	}
 

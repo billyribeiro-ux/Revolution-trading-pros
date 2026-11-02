@@ -23,6 +23,7 @@
 	 */
 
 	import { onDestroy, onMount } from 'svelte';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import { SvelteSet } from 'svelte/reactivity';
 	import {
 		previewForm,
@@ -315,7 +316,7 @@
 		</div>
 	{:else if submitted}
 		<div class="form-success">
-			<div class="success-icon">✓</div>
+			<div class="success-icon"><IconCheck size={24} aria-hidden="true" /></div>
 			<p>{submitMessage}</p>
 			<button type="button" class="btn-reset" onclick={resetForm}>Submit Another Response</button>
 		</div>

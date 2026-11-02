@@ -1,4 +1,8 @@
 <script lang="ts">
+	import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
+	import IconArrowDown from '@tabler/icons-svelte-runes/icons/arrow-down';
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import type { Form, FormField, FormSettings } from '#lib/api/forms.js';
 	import { getFieldTypes, createForm, updateForm } from '#lib/api/forms.js';
 	import FieldEditor from './FieldEditor.svelte';
@@ -370,7 +374,7 @@
 									disabled={index === 0}
 									title="Move up"
 								>
-									↑
+									<IconArrowUp size={16} aria-hidden="true" />
 								</button>
 								<button
 									class="btn-icon"
@@ -378,17 +382,17 @@
 									disabled={index === fields.length - 1}
 									title="Move down"
 								>
-									↓
+									<IconArrowDown size={16} aria-hidden="true" />
 								</button>
 								<button class="btn-icon" onclick={() => handleEditField(index)} title="Edit">
-									✏️
+									<IconPencil size={16} aria-hidden="true" />
 								</button>
 								<button
 									class="btn-icon btn-danger"
 									onclick={() => handleDeleteField(index)}
 									title="Delete"
 								>
-									🗑️
+									<IconTrash size={16} aria-hidden="true" />
 								</button>
 							</div>
 						</div>

@@ -12,6 +12,9 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	interface Props {
@@ -180,7 +183,7 @@
 				</div>
 			{:else}
 				<div class="empty-state">
-					<span class="empty-icon">🔍</span>
+					<span class="empty-icon"><IconSearch size={32} aria-hidden="true" /></span>
 					<p>No related forms found</p>
 				</div>
 			{/if}
@@ -197,14 +200,14 @@
 								{/if}
 							</div>
 							<div class="trending-indicator">
-								<span class="trending-icon">🔥</span>
+								<span class="trending-icon"><IconFlame size={20} aria-hidden="true" /></span>
 							</div>
 						</a>
 					{/each}
 				</div>
 			{:else}
 				<div class="empty-state">
-					<span class="empty-icon">📊</span>
+					<span class="empty-icon"><IconChartBar size={32} aria-hidden="true" /></span>
 					<p>No trending forms yet</p>
 				</div>
 			{/if}
@@ -393,7 +396,8 @@
 	}
 
 	.trending-icon {
-		font-size: 1.25rem;
+		display: inline-flex;
+		color: var(--warning-emphasis);
 	}
 
 	.empty-state {
@@ -405,7 +409,8 @@
 	}
 
 	.empty-icon {
-		font-size: 2rem;
+		display: inline-flex;
+		color: var(--text-tertiary);
 		margin-bottom: 0.5rem;
 	}
 

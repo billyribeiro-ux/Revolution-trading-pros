@@ -6,6 +6,8 @@
 	 * channel performance across the customer journey.
 	 */
 	import { onMount } from 'svelte';
+	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
+	import IconMapPin from '@tabler/icons-svelte-runes/icons/map-pin';
 	import { browser } from '$app/env';
 	import { analyticsApi, type AttributionReport } from '#lib/api/analytics.js';
 	import AttributionChart from '#lib/components/analytics/AttributionChart.svelte';
@@ -274,7 +276,7 @@
 											{channel}
 										</span>
 										{#if j < path.channels.length - 1}
-											<span class="path-arrow">→</span>
+											<span class="path-arrow"><IconArrowRight size={14} aria-hidden="true" /></span>
 										{/if}
 									{/each}
 								</div>
@@ -289,7 +291,7 @@
 			{/if}
 		{:else}
 			<div class="empty-card">
-				<div class="empty-icon">📍</div>
+				<div class="empty-icon"><IconMapPin size={40} aria-hidden="true" /></div>
 				<h3>No Attribution Data</h3>
 				<p>Attribution data will appear once conversions are tracked</p>
 			</div>
@@ -618,6 +620,7 @@
 	}
 
 	.path-arrow {
+		display: inline-flex;
 		color: var(--text-secondary, #8b949e);
 	}
 
@@ -642,8 +645,10 @@
 	}
 
 	.empty-icon {
+		display: flex;
+		justify-content: center;
 		margin-bottom: 1rem;
-		font-size: 2.5rem;
+		color: var(--text-tertiary);
 		line-height: 1;
 	}
 

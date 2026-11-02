@@ -1,4 +1,12 @@
 <script lang="ts">
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconCalendarMonth from '@tabler/icons-svelte-runes/icons/calendar-month';
+	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconMailOpened from '@tabler/icons-svelte-runes/icons/mail-opened';
+	import IconArrowBackUp from '@tabler/icons-svelte-runes/icons/arrow-back-up';
 	/**
 	 * Form Analytics Dashboard - Enterprise-grade analytics visualization
 	 *
@@ -241,7 +249,7 @@
 		<!-- Stats Cards -->
 		<div class="stats-grid">
 			<div class="stat-card primary">
-				<div class="stat-icon">📊</div>
+				<div class="stat-icon"><IconChartBar size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.total_submissions.toLocaleString()}</div>
 					<div class="stat-label">Total Submissions</div>
@@ -249,7 +257,7 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon">📅</div>
+				<div class="stat-icon"><IconCalendar size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.submissions_today}</div>
 					<div class="stat-label">Today</div>
@@ -257,7 +265,7 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon">📈</div>
+				<div class="stat-icon"><IconTrendingUp size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.submissions_this_week}</div>
 					<div class="stat-label">This Week</div>
@@ -265,7 +273,7 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon">🗓️</div>
+				<div class="stat-icon"><IconCalendarMonth size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.submissions_this_month}</div>
 					<div class="stat-label">This Month</div>
@@ -273,7 +281,7 @@
 			</div>
 
 			<div class="stat-card success">
-				<div class="stat-icon">✓</div>
+				<div class="stat-icon"><IconCircleCheck size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.conversion_rate}%</div>
 					<div class="stat-label">Conversion Rate</div>
@@ -281,7 +289,7 @@
 			</div>
 
 			<div class="stat-card">
-				<div class="stat-icon">⏱️</div>
+				<div class="stat-icon"><IconClock size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{formatTime(stats.avg_completion_time)}</div>
 					<div class="stat-label">Avg. Completion Time</div>
@@ -289,7 +297,7 @@
 			</div>
 
 			<div class="stat-card warning">
-				<div class="stat-icon">📭</div>
+				<div class="stat-icon"><IconMailOpened size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.unread_count}</div>
 					<div class="stat-label">Unread</div>
@@ -297,7 +305,7 @@
 			</div>
 
 			<div class="stat-card danger">
-				<div class="stat-icon">↩️</div>
+				<div class="stat-icon"><IconArrowBackUp size={24} aria-hidden="true" /></div>
 				<div class="stat-content">
 					<div class="stat-value">{stats.bounce_rate}%</div>
 					<div class="stat-label">Bounce Rate</div>

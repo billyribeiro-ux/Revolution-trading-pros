@@ -6,6 +6,11 @@
 	 * with multiple visualization options.
 	 */
 	import { onMount } from 'svelte';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconArrowsShuffle from '@tabler/icons-svelte-runes/icons/arrows-shuffle';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import { browser } from '$app/env';
 	import { analyticsApi } from '#lib/api/analytics.js';
 	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
@@ -183,11 +188,11 @@
 	);
 
 	// Report type icons
-	const typeIcons: Record<string, string> = {
-		dashboard: '📊',
-		table: '📋',
-		chart: '📈',
-		mixed: '🔀'
+	const typeIcons: Record<string, typeof IconChartBar> = {
+		dashboard: IconChartBar,
+		table: IconClipboard,
+		chart: IconTrendingUp,
+		mixed: IconArrowsShuffle
 	};
 
 	function getFilterClass(value: typeof activeFilter): Record<string, boolean> {
@@ -269,7 +274,7 @@
 				</div>
 			{:else if filteredReports.length === 0}
 				<div class="empty-card">
-					<div class="empty-icon">📊</div>
+					<div class="empty-icon"><IconChartBar size={40} aria-hidden="true" /></div>
 					<h3>No Reports Yet</h3>
 					<p>Create your first custom report</p>
 					<button
@@ -284,10 +289,11 @@
 				<!-- Reports Grid -->
 				<div class="reports-grid">
 					{#each filteredReports as report (report.id)}
+						{@const ReportIcon = typeIcons[report.type] ?? IconChartBar}
 						<div class="report-card">
 							<div class="report-header">
 								<div class="report-title-row">
-									<span class="report-icon">{typeIcons[report.type] || '📊'}</span>
+									<span class="report-icon"><ReportIcon size={24} aria-hidden="true" /></span>
 									<div>
 										<h3>{report.name}</h3>
 										<span class={getReportStatusClass(report.status)}>
@@ -348,7 +354,7 @@
 						class="close-button"
 						aria-label="Close create report modal"
 					>
-						✕
+						<IconX size={20} aria-hidden="true" />
 					</button>
 				</div>
 			</div>
@@ -657,6 +663,9 @@
 	}
 
 	.empty-icon {
+		display: flex;
+		justify-content: center;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 1rem;
 		font-size: 2.5rem;
 		line-height: 1;
@@ -701,6 +710,8 @@
 	}
 
 	.report-icon {
+		display: inline-flex;
+		color: var(--primary-500, #e6b800);
 		font-size: 1.5rem;
 		line-height: 1;
 	}
@@ -737,6 +748,8 @@
 
 	.menu-button,
 	.close-button {
+		display: inline-flex;
+		align-items: center;
 		border: 0;
 		background: transparent;
 		color: var(--text-secondary, #8b949e);

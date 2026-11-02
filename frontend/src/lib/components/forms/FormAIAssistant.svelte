@@ -12,6 +12,9 @@
 	 * @version 1.0.0
 	 */
 
+	import IconRobot from '@tabler/icons-svelte-runes/icons/robot';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconInfoCircle from '@tabler/icons-svelte-runes/icons/info-circle';
 	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	// The AI endpoints return loose, generation-time field/form shapes (note the
@@ -204,7 +207,7 @@
 
 <div class="ai-assistant">
 	<div class="assistant-header">
-		<div class="header-icon">🤖</div>
+		<div class="header-icon"><IconRobot size={32} aria-hidden="true" /></div>
 		<div class="header-content">
 			<h3>AI Assistant</h3>
 			<p>Let AI help you build better forms</p>
@@ -369,7 +372,11 @@
 								{#each analysis.issues as issue (issue.message)}
 									<div class={getIssueClasses(issue.severity)}>
 										<span class="issue-icon">
-											{issue.severity === 'warning' ? '⚠️' : 'ℹ️'}
+											{#if issue.severity === 'warning'}
+												<IconAlertTriangle size={16} aria-hidden="true" />
+											{:else}
+												<IconInfoCircle size={16} aria-hidden="true" />
+											{/if}
 										</span>
 										<span class="issue-message">{issue.message}</span>
 									</div>
@@ -429,7 +436,8 @@
 	}
 
 	.header-icon {
-		font-size: 2rem;
+		display: inline-flex;
+		color: var(--primary-500);
 	}
 
 	.header-content h3 {
@@ -801,6 +809,7 @@
 
 	.issue-icon {
 		flex-shrink: 0;
+		display: inline-flex;
 	}
 
 	.issue-message {

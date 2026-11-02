@@ -38,6 +38,7 @@
 	}
 
 	import Icon from '#lib/components/Icon.svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import type {
 		Payments,
 		Card,
@@ -249,7 +250,7 @@
 
 	{#if testMode}
 		<div class="test-mode-banner">
-			<span>⚠️ Square Sandbox Mode</span>
+			<span><IconAlertTriangle size={14} aria-hidden="true" />Square Sandbox Mode</span>
 		</div>
 	{/if}
 
@@ -340,6 +341,12 @@
 		font-size: 0.875rem;
 		font-weight: 500;
 		color: #374151;
+	}
+
+	.test-mode-banner span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 	}
 
 	.test-mode-banner {

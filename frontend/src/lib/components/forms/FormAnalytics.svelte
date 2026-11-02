@@ -1,4 +1,8 @@
 <script lang="ts">
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import { onMount } from 'svelte';
 	import type {
 		Form,
@@ -168,7 +172,7 @@
 		<div class="analytics-grid">
 			<!-- Key Metrics -->
 			<div class="metric-card primary">
-				<div class="metric-icon">📊</div>
+				<div class="metric-icon"><IconChartBar size={40} aria-hidden="true" /></div>
 				<div class="metric-content">
 					<div class="metric-value">{stats?.total_submissions || 0}</div>
 					<div class="metric-label">Total Submissions</div>
@@ -176,7 +180,7 @@
 			</div>
 
 			<div class="metric-card">
-				<div class="metric-icon">📈</div>
+				<div class="metric-icon"><IconTrendingUp size={40} aria-hidden="true" /></div>
 				<div class="metric-content">
 					<div class="metric-value">{stats?.recent_submissions || 0}</div>
 					<div class="metric-label">Last 7 Days</div>
@@ -184,7 +188,7 @@
 			</div>
 
 			<div class="metric-card">
-				<div class="metric-icon">✉️</div>
+				<div class="metric-icon"><IconMail size={40} aria-hidden="true" /></div>
 				<div class="metric-content">
 					<div class="metric-value">{stats?.unread_count || 0}</div>
 					<div class="metric-label">Unread</div>
@@ -192,7 +196,7 @@
 			</div>
 
 			<div class="metric-card">
-				<div class="metric-icon">⭐</div>
+				<div class="metric-icon"><IconStar size={40} aria-hidden="true" /></div>
 				<div class="metric-content">
 					<div class="metric-value">{stats?.starred_count || 0}</div>
 					<div class="metric-label">Starred</div>
@@ -359,7 +363,8 @@
 	}
 
 	.metric-icon {
-		font-size: 2.5rem;
+		display: flex;
+		color: var(--primary-500);
 		opacity: 0.8;
 	}
 

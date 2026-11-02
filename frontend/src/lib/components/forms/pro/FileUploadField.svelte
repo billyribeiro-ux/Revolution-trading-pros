@@ -7,6 +7,13 @@
 
 	import type { Attachment } from 'svelte/attachments';
 	import Icon from '#lib/components/Icon.svelte';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconFileTypePdf from '@tabler/icons-svelte-runes/icons/file-type-pdf';
+	import IconFileTypeDoc from '@tabler/icons-svelte-runes/icons/file-type-doc';
+	import IconFileSpreadsheet from '@tabler/icons-svelte-runes/icons/file-spreadsheet';
+	import IconMovie from '@tabler/icons-svelte-runes/icons/movie';
+	import IconFileMusic from '@tabler/icons-svelte-runes/icons/file-music';
+	import IconFolder from '@tabler/icons-svelte-runes/icons/folder';
 
 	interface UploadedFile {
 		id: string;
@@ -74,14 +81,14 @@
 		return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 	}
 
-	function getFileIcon(type: string): string {
-		if (type.startsWith('image/')) return '🖼️';
-		if (type.includes('pdf')) return '📄';
-		if (type.includes('word') || type.includes('document')) return '📝';
-		if (type.includes('excel') || type.includes('spreadsheet')) return '📊';
-		if (type.includes('video')) return '🎬';
-		if (type.includes('audio')) return '🎵';
-		return '📁';
+	function getFileIcon(type: string): typeof IconFolder {
+		if (type.startsWith('image/')) return IconPhoto;
+		if (type.includes('pdf')) return IconFileTypePdf;
+		if (type.includes('word') || type.includes('document')) return IconFileTypeDoc;
+		if (type.includes('excel') || type.includes('spreadsheet')) return IconFileSpreadsheet;
+		if (type.includes('video')) return IconMovie;
+		if (type.includes('audio')) return IconFileMusic;
+		return IconFolder;
 	}
 
 	function validateFile(file: File): string | null {
@@ -250,7 +257,8 @@
 							loading="lazy"
 						/>
 					{:else}
-						<span class="file-icon">{getFileIcon(file.type)}</span>
+						{@const FileIcon = getFileIcon(file.type)}
+						<span class="file-icon"><FileIcon size={24} aria-hidden="true" /></span>
 					{/if}
 
 					<div class="file-info">
@@ -400,9 +408,11 @@
 	}
 
 	.file-icon {
-		font-size: 2rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--text-secondary);
 		width: 48px;
-		text-align: center;
 	}
 
 	.file-info {

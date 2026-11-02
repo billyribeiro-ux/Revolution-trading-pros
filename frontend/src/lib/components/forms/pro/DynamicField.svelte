@@ -11,6 +11,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import Icon from '#lib/components/Icon.svelte';
 
 	interface DynamicOption {
@@ -201,7 +202,7 @@
 		</div>
 	{:else if fetchError}
 		<div class="error-state">
-			<span class="error-icon">⚠️</span>
+			<span class="error-icon"><IconAlertTriangle size={16} aria-hidden="true" /></span>
 			<span>{fetchError}</span>
 			<button type="button" class="retry-btn" onclick={() => void fetchOptions()}>Retry</button>
 		</div>

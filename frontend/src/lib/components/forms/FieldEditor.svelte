@@ -17,6 +17,7 @@
 	 * event handlers rather than reactive side effects.
 	 */
 	import { untrack } from 'svelte';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import type {
 		FormField,
 		FieldValidation,
@@ -490,7 +491,7 @@
 									title="Remove rule"
 									aria-label="Remove rule {index + 1}"
 								>
-									✕
+									<IconX size={16} aria-hidden="true" />
 								</button>
 							</div>
 						{/each}

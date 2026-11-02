@@ -13,6 +13,10 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconMessage from '@tabler/icons-svelte-runes/icons/message';
+	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
 	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 
 	interface Props {
@@ -24,10 +28,10 @@
 	let props: Props = $props();
 
 	const embedTypes = [
-		{ value: 'iframe', label: 'Standard Embed (iframe)', icon: '📋' },
-		{ value: 'javascript', label: 'JavaScript Widget', icon: '⚡' },
-		{ value: 'popup', label: 'Popup/Modal', icon: '💬' },
-		{ value: 'inline', label: 'Inline Injection', icon: '📥' }
+		{ value: 'iframe', label: 'Standard Embed (iframe)', icon: IconClipboard },
+		{ value: 'javascript', label: 'JavaScript Widget', icon: IconBolt },
+		{ value: 'popup', label: 'Popup/Modal', icon: IconMessage },
+		{ value: 'inline', label: 'Inline Injection', icon: IconDownload }
 	] as const;
 
 	type EmbedType = (typeof embedTypes)[number]['value'];
@@ -181,11 +185,12 @@
 			<h3 class="section-label">Embed Type</h3>
 			<div class="embed-types">
 				{#each embedTypes as type (type.value)}
+				{@const TypeIcon = type.icon}
 					<button
 						class={{ 'type-option': true, selected: selectedType === type.value }}
 						onclick={() => selectEmbedType(type.value)}
 					>
-						<span class="type-icon">{type.icon}</span>
+						<span class="type-icon"><TypeIcon size={20} aria-hidden="true" /></span>
 						<span class="type-label">{type.label}</span>
 					</button>
 				{/each}
@@ -474,6 +479,7 @@
 	}
 
 	.type-icon {
+		display: inline-flex;
 		font-size: 1.25rem;
 	}
 

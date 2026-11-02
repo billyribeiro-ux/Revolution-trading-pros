@@ -14,6 +14,11 @@
 	import { getAuthToken } from '#lib/stores/auth.svelte.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
+	import IconBraces from '@tabler/icons-svelte-runes/icons/braces';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconFileSpreadsheet from '@tabler/icons-svelte-runes/icons/file-spreadsheet';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 	interface FormImportResult {
 		fields_created?: number;
@@ -50,9 +55,9 @@
 
 	// Export formats
 	const exportFormats = [
-		{ value: 'json', label: 'JSON', description: 'Full form structure', icon: '{ }' },
-		{ value: 'csv', label: 'CSV', description: 'Submissions data', icon: '📊' },
-		{ value: 'xlsx', label: 'Excel', description: 'Spreadsheet format', icon: '📗' }
+		{ value: 'json', label: 'JSON', description: 'Full form structure', icon: IconBraces },
+		{ value: 'csv', label: 'CSV', description: 'Submissions data', icon: IconChartBar },
+		{ value: 'xlsx', label: 'Excel', description: 'Spreadsheet format', icon: IconFileSpreadsheet }
 	];
 
 	// Import sources
@@ -265,7 +270,7 @@
 								onclick={() => (exportFormat = format.value)}
 								disabled={exportType !== 'form' && format.value === 'json'}
 							>
-								<span class="format-icon">{format.icon}</span>
+								<span class="format-icon"><format.icon size={24} aria-hidden="true" /></span>
 								<span class="format-label">{format.label}</span>
 								<span class="format-desc">{format.description}</span>
 							</button>
@@ -368,9 +373,9 @@
 						}}
 					>
 						{#if importResult.success}
-							<span class="result-icon">✓</span>
+							<span class="result-icon"><IconCheck size={16} aria-hidden="true" /></span>
 						{:else}
-							<span class="result-icon">✕</span>
+							<span class="result-icon"><IconX size={16} aria-hidden="true" /></span>
 						{/if}
 						<span class="result-message">{importResult.message}</span>
 					</div>
@@ -557,7 +562,7 @@
 	}
 
 	.format-icon {
-		font-size: 1.5rem;
+		display: inline-flex;
 		margin-bottom: 0.5rem;
 	}
 
@@ -766,7 +771,7 @@
 	}
 
 	.result-icon {
-		font-weight: bold;
+		display: inline-flex;
 	}
 
 	.result-message {

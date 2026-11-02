@@ -4,6 +4,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
+	import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import FormBuilder from '#lib/components/forms/FormBuilder.svelte';
@@ -85,11 +88,19 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn-theme" onclick={toggleThemeCustomizer}>
-				{showThemeCustomizer ? '📝 Edit Form' : '🎨 Customize Theme'}
+				{#if showThemeCustomizer}
+					<IconPencil size={16} aria-hidden="true" /> Edit Form
+				{:else}
+					<IconPalette size={16} aria-hidden="true" /> Customize Theme
+				{/if}
 			</button>
 			{#if form && form.status === 'published'}
 				<button class="btn-embed" onclick={toggleEmbedCode}>
-					{showEmbedCode ? '📝 Edit Form' : '🔗 Get Embed Code'}
+					{#if showEmbedCode}
+						<IconPencil size={16} aria-hidden="true" /> Edit Form
+					{:else}
+						<IconLink size={16} aria-hidden="true" /> Get Embed Code
+					{/if}
 				</button>
 			{/if}
 		</div>
@@ -152,6 +163,10 @@
 	}
 
 	.btn-theme {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
 		color: var(--primary-500);
@@ -169,6 +184,10 @@
 	}
 
 	.btn-embed {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
 		background: var(--primary-500);
 		color: white;

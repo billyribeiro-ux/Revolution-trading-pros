@@ -13,6 +13,7 @@
 
 	import { onMount } from 'svelte';
 	import Icon from '#lib/components/Icon.svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 
 	interface Props {
 		vendorId: number;
@@ -175,7 +176,7 @@
 <div class={['paddle-payment', { disabled, 'has-error': error || paymentError }]}>
 	{#if testMode}
 		<div class="test-mode-banner">
-			<span>⚠️ Paddle Sandbox Mode</span>
+			<span><IconAlertTriangle size={14} aria-hidden="true" />Paddle Sandbox Mode</span>
 		</div>
 	{/if}
 
@@ -241,6 +242,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+
+	.test-mode-banner span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 	}
 
 	.test-mode-banner {

@@ -1,4 +1,12 @@
 <script lang="ts">
+	import IconClipboardList from '@tabler/icons-svelte-runes/icons/clipboard-list';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
+	import IconMessageCircle from '@tabler/icons-svelte-runes/icons/message-circle';
+	import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
+	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
+	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
 	/**
 	 * Form Template Selector - Svelte 5
 	 *
@@ -20,13 +28,13 @@
 	let searchQuery = $state('');
 
 	const categories = [
-		{ id: 'all', label: 'All Templates', icon: '📋' },
-		{ id: 'contact', label: 'Contact', icon: '📧' },
-		{ id: 'survey', label: 'Survey', icon: '📊' },
-		{ id: 'registration', label: 'Registration', icon: '🎫' },
-		{ id: 'feedback', label: 'Feedback', icon: '💭' },
-		{ id: 'order', label: 'Order', icon: '🛒' },
-		{ id: 'application', label: 'Application', icon: '💼' }
+		{ id: 'all', label: 'All Templates', icon: IconClipboardList },
+		{ id: 'contact', label: 'Contact', icon: IconMail },
+		{ id: 'survey', label: 'Survey', icon: IconChartBar },
+		{ id: 'registration', label: 'Registration', icon: IconTicket },
+		{ id: 'feedback', label: 'Feedback', icon: IconMessageCircle },
+		{ id: 'order', label: 'Order', icon: IconShoppingCart },
+		{ id: 'application', label: 'Application', icon: IconBriefcase }
 	];
 
 	// Svelte 5: Derived value using $derived() rune
@@ -56,7 +64,10 @@
 			<h2>Choose a Template</h2>
 			<p class="header-description">Start with a pre-designed form or build from scratch</p>
 		</div>
-		<button class="btn-scratch" onclick={handleStartFromScratch}> ✨ Start from Scratch </button>
+		<button class="btn-scratch" onclick={handleStartFromScratch}>
+			<IconSparkles size={16} aria-hidden="true" />
+			Start from Scratch
+		</button>
 	</div>
 
 	<div class="search-filter">
@@ -74,7 +85,7 @@
 				class={['category-btn', { active: selectedCategory === category.id }]}
 				onclick={() => (selectedCategory = category.id)}
 			>
-				<span class="category-icon">{category.icon}</span>
+				<span class="category-icon"><category.icon size={16} aria-hidden="true" /></span>
 				<span>{category.label}</span>
 			</button>
 		{/each}
@@ -157,6 +168,9 @@
 	}
 
 	.btn-scratch {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
 		background: var(--primary-500, #e6b800);
 		color: var(--bg-base, #0d1117);
@@ -236,7 +250,7 @@
 	}
 
 	.category-icon {
-		font-size: 1.125rem;
+		display: inline-flex;
 	}
 
 	.templates-grid {
