@@ -41,12 +41,11 @@ pub async fn get_dashboard_stats(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let total_abandoned: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'abandoned'",
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_abandoned: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'abandoned'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let total_value: (Option<Decimal>,) =
         sqlx::query_as("SELECT SUM(cart_total) FROM crm_abandoned_carts")
@@ -93,12 +92,11 @@ pub async fn get_dashboard_stats(
         0.0
     };
 
-    let email_sent_count: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM crm_abandoned_carts WHERE recovery_email_sent = true",
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let email_sent_count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE recovery_email_sent = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let stats = json!({
         "total_abandoned": total_abandoned.0,
@@ -325,7 +323,12 @@ pub async fn bulk_delete(
         .bind(&input.ids)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({ "error": e.to_string() }))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "error": e.to_string() })),
+            )
+        })?;
 
     Ok(Json(json!({
         "message": "Abandoned carts deleted successfully",

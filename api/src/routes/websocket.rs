@@ -490,7 +490,9 @@ async fn ws_handler_inner(
     };
 
     if has_room_request && !has_room_access {
-        warn!("WebSocket room subscription rejected: active membership required or unauthenticated");
+        warn!(
+            "WebSocket room subscription rejected: active membership required or unauthenticated"
+        );
         return (
             StatusCode::FORBIDDEN,
             Json(json!({"error": "Active membership required", "code": 4003})),
