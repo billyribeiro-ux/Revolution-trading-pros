@@ -308,8 +308,8 @@
 				</div>
 
 				<div class="form-group checkbox">
-					<label>
-						<input type="checkbox" bind:checked={notifyOnPublish} />
+					<label for="notify-on-publish">
+						<input type="checkbox" id="notify-on-publish" name="notify_on_publish" bind:checked={notifyOnPublish} />
 						Send notification when published
 					</label>
 				</div>

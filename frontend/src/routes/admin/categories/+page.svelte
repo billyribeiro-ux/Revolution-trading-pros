@@ -542,7 +542,7 @@
 					bind:value={searchQuery}
 				/>
 			</div>
-			<select class="filter-select" bind:value={parentFilter}>
+			<select id="categories-parentfilter" name="categories_parentfilter" class="filter-select" bind:value={parentFilter}>
 				<option value={null}>All Categories</option>
 				<option value={0}>Root Categories Only</option>
 				{#each parentCategories as parent (parent.id)}

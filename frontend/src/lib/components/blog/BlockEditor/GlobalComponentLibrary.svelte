@@ -557,6 +557,8 @@
 					<div class="search-box">
 						<IconSearch size={18} />
 						<input
+							id="search-components-input"
+							name="search_components"
 							type="text"
 							bind:value={searchQuery}
 							placeholder="Search components..."
@@ -604,7 +606,7 @@
 					<!-- Sort -->
 					<div class="sort-controls">
 						<label for="sort-select">Sort by:</label>
-						<select id="sort-select" bind:value={sortBy} onchange={() => loadComponents()}>
+						<select id="sort-select" name="sort_by" bind:value={sortBy} onchange={() => loadComponents()}>
 							<option value="updated_at">Recently Updated</option>
 							<option value="created_at">Recently Created</option>
 							<option value="name">Name</option>
@@ -935,6 +937,7 @@
 					<label for="comp-name">Name *</label>
 					<input
 						id="comp-name"
+						name="component_name"
 						type="text"
 						bind:value={formName}
 						placeholder="e.g., Main Header, Footer CTA"
@@ -946,6 +949,7 @@
 					<label for="comp-description">Description</label>
 					<textarea
 						id="comp-description"
+						name="component_description"
 						bind:value={formDescription}
 						placeholder="Brief description of this component"
 						rows="2"></textarea>
@@ -954,7 +958,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="comp-category">Category *</label>
-						<select id="comp-category" bind:value={formCategory}>
+						<select id="comp-category" name="component_category" bind:value={formCategory}>
 							{#each Object.entries(categoryConfig) as [key, config] (key)}
 								<option value={key}>{config.label}</option>
 							{/each}
@@ -965,6 +969,7 @@
 						<label for="comp-tags">Tags</label>
 						<input
 							id="comp-tags"
+							name="component_tags"
 							type="text"
 							bind:value={formTags}
 							placeholder="tag1, tag2, tag3"
@@ -973,8 +978,8 @@
 				</div>
 
 				<div class="form-group">
-					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formIsGlobal} />
+					<label class="checkbox-label" for="comp-is-global">
+						<input id="comp-is-global" name="is_global" type="checkbox" bind:checked={formIsGlobal} />
 						<span>Make globally available</span>
 					</label>
 				</div>

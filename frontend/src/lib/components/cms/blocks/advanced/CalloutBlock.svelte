@@ -213,7 +213,7 @@
 		<div class="callout-settings">
 			<label class="setting-field">
 				<span>Type:</span>
-				<select
+				<select name="calloutType" id="calloutblock-calloutType"
 					value={calloutType}
 					onchange={(e) =>
 						updateSettings({ type: (e.target as HTMLSelectElement).value as CalloutType })}
@@ -226,7 +226,7 @@
 			</label>
 
 			<label class="setting-checkbox">
-				<input
+				<input name="dismissible" id="calloutblock-dismissible"
 					type="checkbox"
 					checked={dismissible}
 					onchange={(e) => updateSettings({ dismissible: (e.target as HTMLInputElement).checked })}

@@ -320,7 +320,7 @@
 											<div class="button-row">
 												<label class="primary-button file-button">
 													{uploading ? 'Uploading...' : 'Upload Logo'}
-													<input
+													<input id="invoice-settings-file" name="invoice_settings_file"
 														type="file"
 														class="visually-hidden"
 														accept="image/*"

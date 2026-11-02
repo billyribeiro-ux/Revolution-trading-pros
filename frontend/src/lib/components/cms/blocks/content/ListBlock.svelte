@@ -258,7 +258,7 @@
 		<div class="list-block__items">
 			{#each checklistItems as item, index (item.id)}
 				<label class={checkItemClass(item.checked)}>
-					<input
+					<input name="checked" id="listblock-checked"
 						type="checkbox"
 						checked={item.checked}
 						onchange={() => toggleCheckItem(item.id)}

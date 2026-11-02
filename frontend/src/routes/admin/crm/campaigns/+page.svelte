@@ -288,7 +288,7 @@
 				bind:value={searchQuery}
 			/>
 		</div>
-		<select class="filter-select" bind:value={selectedStatus}>
+		<select id="campaigns-selectedstatus" name="campaigns_selectedstatus" class="filter-select" bind:value={selectedStatus}>
 			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}

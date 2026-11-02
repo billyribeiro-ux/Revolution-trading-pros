@@ -174,7 +174,7 @@
 				<div class="settings-row">
 					<label class="setting-field">
 						<span>Text:</span>
-						<input
+						<input name="text" id="ctablock-text"
 							type="text"
 							placeholder="Button text"
 							value={ctaPrimaryButton.text}
@@ -183,7 +183,7 @@
 					</label>
 					<label class="setting-field">
 						<span>URL:</span>
-						<input
+						<input name="url" id="ctablock-url"
 							type="url"
 							placeholder="https://..."
 							value={ctaPrimaryButton.url}
@@ -198,7 +198,7 @@
 				<div class="settings-row">
 					<label class="setting-field">
 						<span>Text:</span>
-						<input
+						<input name="leave_empty_to_hide" id="ctablock-leave_empty_to_hide"
 							type="text"
 							placeholder="Leave empty to hide"
 							value={ctaSecondaryButton?.text || ''}
@@ -207,7 +207,7 @@
 					</label>
 					<label class="setting-field">
 						<span>URL:</span>
-						<input
+						<input name="https_" id="ctablock-https_"
 							type="url"
 							placeholder="https://..."
 							value={ctaSecondaryButton?.url || ''}
@@ -222,7 +222,7 @@
 				<div class="settings-row">
 					<label class="setting-field">
 						<span>Alignment:</span>
-						<select
+						<select name="alignment" id="ctablock-alignment"
 							value={alignment}
 							onchange={(e) =>
 								updateSettings({ alignment: (e.target as HTMLSelectElement).value as Alignment })}
@@ -235,14 +235,14 @@
 
 					<label class="setting-field">
 						<span>Background:</span>
-						<input
+						<input name="backgroundColor" id="ctablock-backgroundColor"
 							type="color"
 							value={backgroundColor}
 							oninput={(e) =>
 								updateSettings({ backgroundColor: (e.target as HTMLInputElement).value })}
 							class="color-picker"
 						/>
-						<input
+						<input name="backgroundColor" id="ctablock-backgroundColor"
 							type="text"
 							value={backgroundColor}
 							placeholder="#3b82f6"

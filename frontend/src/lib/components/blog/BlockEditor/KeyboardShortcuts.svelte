@@ -194,6 +194,8 @@
 			<div class="search-bar">
 				<span class="search-icon">🔍</span>
 				<input
+					id="search-shortcuts-input"
+					name="search_shortcuts"
 					type="text"
 					placeholder="Search shortcuts..."
 					bind:value={searchQuery}

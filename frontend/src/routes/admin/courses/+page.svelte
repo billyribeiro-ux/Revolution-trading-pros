@@ -325,7 +325,7 @@
 					onkeydown={(e) => e.key === 'Enter' && handleSearch()}
 				/>
 			</div>
-			<select bind:value={statusFilter} onchange={handleSearch} class="filter-select">
+			<select id="courses-statusfilter" name="courses_statusfilter" bind:value={statusFilter} onchange={handleSearch} class="filter-select">
 				<option value="all">All Status</option>
 				<option value="draft">Draft</option>
 				<option value="published">Published</option>

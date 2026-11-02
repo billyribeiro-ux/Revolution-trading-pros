@@ -268,8 +268,8 @@
 				</div>
 
 				<div class="form-group">
-					<label class="toggle-label">
-						<input type="checkbox" bind:checked={dripEnabled} disabled={isLoading} />
+					<label class="toggle-label" for="module-drip-enabled">
+						<input type="checkbox" id="module-drip-enabled" name="drip_enabled" bind:checked={dripEnabled} disabled={isLoading} />
 						<span class="toggle-text">
 							<strong>Content Dripping</strong>
 							<span>Release this module after a delay</span>

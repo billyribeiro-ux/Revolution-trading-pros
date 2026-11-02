@@ -447,8 +447,8 @@
 				{:else if activeSection === 'options'}
 					<div class="form-section">
 						<div class="form-group">
-							<label class="toggle-label">
-								<input type="checkbox" bind:checked={autoRenew} disabled={isLoading} />
+							<label class="toggle-label" for="sub-auto-renew">
+								<input type="checkbox" id="sub-auto-renew" name="auto_renew" bind:checked={autoRenew} disabled={isLoading} />
 								<span class="toggle-text">
 									<strong>Auto-Renew</strong>
 									<span>Automatically renew subscription at the end of each billing period</span>

@@ -915,7 +915,7 @@
 							{#each documentationFiles as doc, index (index)}
 								<div class="doc-item">
 									<div class="doc-header">
-										<select bind:value={doc.doc_type} class="doc-type-select">
+										<select id="create-doc-doc-type" name="create_doc_doc_type" bind:value={doc.doc_type} class="doc-type-select">
 											{#each DOC_TYPES as dt (dt.id)}
 												<option value={dt.id}>{dt.name}</option>
 											{/each}

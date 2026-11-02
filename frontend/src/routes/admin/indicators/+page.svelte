@@ -37,7 +37,7 @@
 	let perPage = $state(20);
 	let search = $state('');
 	// FIX-2026-04-26-audit (P3): the previous `@ts-ignore write-only state` comment
-	// was wrong — `statusFilter` drives the status <select> value further down,
+	// was wrong — `statusFilter` drives the status <select id="indicators-select" name="indicators_select"> value further down,
 	// so it is read both in the markup and in fetchIndicators().
 	let statusFilter = $state('');
 	let deleting = $state<string | null>(null);

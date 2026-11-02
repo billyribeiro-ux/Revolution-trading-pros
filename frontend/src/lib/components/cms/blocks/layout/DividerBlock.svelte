@@ -139,7 +139,7 @@
 			<div class="toolbar-row">
 				<div class="toolbar-group">
 					<label class="toolbar-label" for="divider-color">Color:</label>
-					<input
+					<input name="dividerColor"
 						type="color"
 						id="divider-color"
 						class="color-picker"
@@ -152,7 +152,7 @@
 
 				<div class="toolbar-group">
 					<label class="toolbar-label" for="thickness-select">Thickness:</label>
-					<select
+					<select name="thickness"
 						id="thickness-select"
 						class="select-input"
 						value={thickness}

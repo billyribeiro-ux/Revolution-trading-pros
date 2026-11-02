@@ -313,7 +313,7 @@
 						<span>
 							{file ? 'Choose Different File' : 'Browse Files'}
 						</span>
-						<input
+						<input id="import-file" name="import_file"
 							type="file"
 							accept={sources.find((s) => s.id === selectedSource)?.accept}
 							onchange={handleFileSelect}

@@ -266,6 +266,8 @@
 					<div class="search-box">
 						<IconSearch size={18} />
 						<input
+							id="search-blocks-input"
+							name="search_blocks"
 							type="text"
 							placeholder="Search blocks..."
 							bind:value={localSearch}

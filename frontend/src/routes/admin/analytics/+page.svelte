@@ -436,7 +436,7 @@
 							<div class="tab-header">
 								<h2>Cohort Analysis</h2>
 								<div class="tab-actions">
-									<select class="select-input">
+									<select id="analytics-select" name="analytics_select" class="select-input">
 										<option value="weekly">Weekly Cohorts</option>
 										<option value="monthly">Monthly Cohorts</option>
 										<option value="daily">Daily Cohorts</option>
@@ -470,7 +470,7 @@
 						<div class="tab-content">
 							<div class="tab-header">
 								<h2>Channel Attribution</h2>
-								<select bind:value={attributionModel} class="select-input">
+								<select id="analytics-attributionmodel" name="analytics_attributionmodel" bind:value={attributionModel} class="select-input">
 									<option value="first_touch">First Touch</option>
 									<option value="last_touch">Last Touch</option>
 									<option value="linear">Linear</option>

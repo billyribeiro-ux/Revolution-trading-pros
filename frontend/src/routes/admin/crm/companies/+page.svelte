@@ -259,12 +259,12 @@
 					bind:value={searchQuery}
 				/>
 			</div>
-			<select class="filter-select" bind:value={selectedIndustry}>
+			<select id="companies-selectedindustry" name="companies_selectedindustry" class="filter-select" bind:value={selectedIndustry}>
 				{#each industryOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
-			<select class="filter-select" bind:value={selectedSize}>
+			<select id="companies-selectedsize" name="companies_selectedsize" class="filter-select" bind:value={selectedSize}>
 				{#each sizeOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}

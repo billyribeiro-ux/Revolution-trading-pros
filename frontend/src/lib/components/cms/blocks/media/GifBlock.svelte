@@ -115,7 +115,7 @@
 				</button>
 			</div>
 			<div class="gif-meta">
-				<input
+				<input name="gifAlt" id="gifblock-gifAlt"
 					type="text"
 					placeholder="Alt text for accessibility"
 					value={gifAlt}
@@ -130,7 +130,7 @@
 				</div>
 				<div class="search-input">
 					<IconSearch size={18} aria-hidden="true" />
-					<input
+					<input name="searchQuery" id="gifblock-searchQuery"
 						type="text"
 						placeholder="Search Giphy..."
 						bind:value={searchQuery}
@@ -165,7 +165,7 @@
 
 				<div class="gif-url-input">
 					<span>Or paste a GIF URL directly:</span>
-					<input
+					<input name="https_media_giphy_co" id="gifblock-https_media_giphy_co"
 						type="url"
 						placeholder="https://media.giphy.com/..."
 						oninput={(e) => {

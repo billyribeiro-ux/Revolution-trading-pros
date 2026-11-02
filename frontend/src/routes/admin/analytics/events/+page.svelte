@@ -160,7 +160,7 @@
 				<div class="filters-row">
 					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
 
-					<select
+					<select id="events-selectedeventtype" name="events_selectedeventtype"
 						bind:value={selectedEventType}
 						onchange={handleEventTypeChange}
 						class="event-select"

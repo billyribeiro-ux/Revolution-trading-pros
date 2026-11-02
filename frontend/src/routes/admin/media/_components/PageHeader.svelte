@@ -5,7 +5,7 @@
 	 *
 	 * Props:
 	 *   - totalItems: number
-	 *   - searchQuery: string                ($bindable — bound to <input>)
+	 *   - searchQuery: string                ($bindable — bound to <input id="pageheader-input" name="pageheader_input">)
 	 *   - viewMode: 'grid' | 'list'          ($bindable — flipped by toggle buttons)
 	 *   - showUploadPanel: boolean           ($bindable — flipped by Upload button)
 	 *   - onSearchSubmit: () => void         (Enter key on search input)

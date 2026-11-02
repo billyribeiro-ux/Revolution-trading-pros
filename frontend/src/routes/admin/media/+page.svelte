@@ -884,21 +884,21 @@
 		<div class="toolbar">
 			<div class="toolbar-left">
 				<!-- Filters -->
-				<select bind:value={filterType} onchange={() => void loadMedia()}>
+				<select id="media-filter-type" name="media_filter_type" bind:value={filterType} onchange={() => void loadMedia()}>
 					<option value="all">All Types</option>
 					<option value="image">Images</option>
 					<option value="video">Videos</option>
 					<option value="document">Documents</option>
 				</select>
 
-				<select bind:value={filterStatus} onchange={() => void loadMedia()}>
+				<select id="media-filter-status" name="media_filter_status" bind:value={filterStatus} onchange={() => void loadMedia()}>
 					<option value="all">All Status</option>
 					<option value="optimized">Optimized</option>
 					<option value="pending">Needs Optimization</option>
 					<option value="processing">Processing</option>
 				</select>
 
-				<select bind:value={sortBy} onchange={() => void loadMedia()}>
+				<select id="media-sort-by" name="media_sort_by" bind:value={sortBy} onchange={() => void loadMedia()}>
 					<option value="created_at">Date Added</option>
 					<option value="filename">Name</option>
 					<option value="size">Size</option>
@@ -1215,6 +1215,8 @@
 							{/if}
 						</div>
 						<textarea
+							id="media-alt-text"
+							name="media_alt_text"
 							class="alt-input"
 							placeholder="Enter alt text for accessibility..."
 							value={detailItem.alt_text || ''}

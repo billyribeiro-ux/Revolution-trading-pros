@@ -2276,6 +2276,8 @@
 								{#if expandedModules.has(module.id)}
 									<div transition:slide={{ duration: 200 }}>
 										<textarea
+											id={`module-description-${module.id}`}
+											name={`module_description_${module.id}`}
 											bind:value={module.description}
 											placeholder="Brief module description..."
 											class="module-description"
@@ -2295,7 +2297,7 @@
 												>
 													<IconGripVertical size={16} class="lesson-drag" />
 													<span class="lesson-number">{lessonIndex + 1}</span>
-													<select bind:value={lesson.type} class="lesson-type">
+													<select id={`lesson-type-${lesson.id}`} name={`lesson_type_${lesson.id}`} bind:value={lesson.type} class="lesson-type">
 														<option value="video">{getLessonIcon('video')} Video</option>
 														<option value="text">{getLessonIcon('text')} Text</option>
 														<option value="quiz">{getLessonIcon('quiz')} Quiz</option>
@@ -2388,7 +2390,7 @@
 							{#each course.modules as module, i (i)}
 								<div class="drip-item">
 									<span class="module-name">{module.title || `Module ${i + 1}`}</span>
-									<select>
+									<select id={`module-drip-${module.id || i}`} name={`module_drip_${module.id || i}`}>
 										<option value="0">Available immediately</option>
 										<option value="7">After 1 week</option>
 										<option value="14">After 2 weeks</option>
@@ -2583,7 +2585,7 @@
 						<div class="bonus-list">
 							{#each course.bonuses as bonus (bonus.id)}
 								<div class="bonus-item">
-									<select bind:value={bonus.icon} class="bonus-icon">
+									<select id={`bonus-icon-${bonus.id}`} name={`bonus_icon_${bonus.id}`} bind:value={bonus.icon} class="bonus-icon">
 										<option value="📚">📚</option>
 										<option value="🎯">🎯</option>
 										<option value="💎">💎</option>
@@ -2591,7 +2593,7 @@
 										<option value="📊">📊</option>
 										<option value="🎁">🎁</option>
 									</select>
-									<select bind:value={bonus.type} class="bonus-type">
+									<select id={`bonus-type-${bonus.id}`} name={`bonus_type_${bonus.id}`} bind:value={bonus.type} class="bonus-type">
 										<option value="pdf">PDF Guide</option>
 										<option value="video">Video</option>
 										<option value="template">Template</option>

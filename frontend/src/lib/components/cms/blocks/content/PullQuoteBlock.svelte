@@ -369,7 +369,7 @@
 					</div>
 					<div class="custom-color">
 						<label for="custom-color-input">Custom:</label>
-						<input
+						<input name="accentColor"
 							type="color"
 							id="custom-color-input"
 							value={accentColor}

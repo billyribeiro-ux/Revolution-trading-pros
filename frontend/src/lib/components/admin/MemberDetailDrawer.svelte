@@ -629,6 +629,8 @@
 							<!-- Add Note Form -->
 							<div class="add-note-form">
 								<textarea
+									id="member-note-input"
+									name="member_note"
 									class="note-input"
 									placeholder="Add a note about this member..."
 									bind:value={newNote}

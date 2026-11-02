@@ -337,7 +337,7 @@
 			>
 				<h3>Import Configuration</h3>
 				<p>Paste your exported JSON configuration:</p>
-				<textarea
+				<textarea id="templates-importjson" name="templates_importjson"
 					class="import-textarea"
 					bind:value={importJson}
 					placeholder={importPlaceholder}

@@ -249,7 +249,7 @@
 		{#if isSelected}
 			<div class="accordion-settings" role="group" aria-label="Accordion settings">
 				<label class="setting-checkbox">
-					<input
+					<input name="allowMultiple" id="accordionblock-allowMultiple"
 						type="checkbox"
 						checked={allowMultiple}
 						onchange={(e) =>
@@ -266,7 +266,7 @@
 				<fieldset class="setting-radio">
 					<legend class="setting-label">Icon style:</legend>
 					<label>
-						<input
+						<input id="accordionblock-radio_input"
 							type="radio"
 							name="icon-style-{blockId}"
 							value="chevron"
@@ -279,7 +279,7 @@
 						<span>Chevron</span>
 					</label>
 					<label>
-						<input
+						<input id="accordionblock-radio_input"
 							type="radio"
 							name="icon-style-{blockId}"
 							value="plusminus"

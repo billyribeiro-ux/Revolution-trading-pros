@@ -70,6 +70,7 @@
 		</label>
 		<input
 			id="meta-title"
+			name="meta_title"
 			type="text"
 			bind:value={meta.meta_title}
 			placeholder="SEO title for search engines"
@@ -85,6 +86,7 @@
 		</label>
 		<textarea
 			id="meta-description"
+			name="meta_description"
 			bind:value={meta.meta_description}
 			placeholder="Brief description for search results"
 			rows="3"
@@ -110,6 +112,7 @@
 			<div class="keyword-input-row">
 				<input
 					id="meta-keywords"
+					name="new_keyword"
 					type="text"
 					bind:value={newKeyword}
 					placeholder="Add a keyword..."
@@ -127,6 +130,7 @@
 		<label for="canonical-url">Canonical URL</label>
 		<input
 			id="canonical-url"
+			name="canonical_url"
 			type="url"
 			bind:value={meta.canonical_url}
 			placeholder="https://example.com/post-url"
@@ -135,8 +139,13 @@
 	</div>
 
 	<div class="form-group">
-		<label>
-			<input type="checkbox" bind:checked={meta.indexable} />
+		<label for="meta-indexable">
+			<input
+				id="meta-indexable"
+				name="meta_indexable"
+				type="checkbox"
+				bind:checked={meta.indexable}
+			/>
 			Allow search engines to index this post
 		</label>
 	</div>

@@ -227,7 +227,7 @@
 
 		<div class="filter-group">
 			<IconFilter size={16} />
-			<select bind:value={statusFilter} onchange={() => void handleStatusFilter(statusFilter)}>
+			<select id="id-statusfilter" name="id_statusfilter" bind:value={statusFilter} onchange={() => void handleStatusFilter(statusFilter)}>
 				<option value="">All Status</option>
 				<option value="active">Active</option>
 				<option value="trial">Trial</option>

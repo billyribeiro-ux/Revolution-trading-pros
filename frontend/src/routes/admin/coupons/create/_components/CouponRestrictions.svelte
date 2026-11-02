@@ -103,7 +103,7 @@
 				{:else}
 					{#each availableProducts as product (product.id)}
 						<label class="item-checkbox">
-							<input
+							<input id="couponrestrictions-checkbox" name="couponrestrictions_checkbox"
 								type="checkbox"
 								checked={selectedProducts.has(product.id)}
 								onchange={() => onAction({ kind: 'toggle-product', productId: product.id })}
@@ -142,7 +142,7 @@
 				{:else}
 					{#each availablePlans as plan (plan.id)}
 						<label class="item-checkbox">
-							<input
+							<input id="couponrestrictions-checkbox" name="couponrestrictions_checkbox"
 								type="checkbox"
 								checked={selectedPlans.has(plan.id)}
 								onchange={() => onAction({ kind: 'toggle-plan', planId: plan.id })}

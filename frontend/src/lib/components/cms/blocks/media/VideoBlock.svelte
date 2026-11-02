@@ -332,7 +332,7 @@
 
 			<div class="video-url-input-wrapper">
 				<IconLink size={18} class="video-url-icon" />
-				<input
+				<input name="urlInputValue" id="videoblock-urlInputValue"
 					type="url"
 					placeholder="https://www.youtube.com/watch?v=..."
 					value={urlInputValue}

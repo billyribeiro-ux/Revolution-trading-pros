@@ -266,7 +266,7 @@
 	// FIX-2026-04-26 (P2): one-shot data load. Was `$effect` keyed on selectedRoomId
 	// which fires write-while-reading cascades on first paint (see commit 34a0bd070).
 	// We still need to reload when the user switches rooms; that is wired via the
-	// <select onchange> handler `selectRoom()` below.
+	// <select id="schedules-select" name="schedules_select" onchange> handler `selectRoom()` below.
 	onMount(() => {
 		if (selectedRoomId) {
 			void loadSchedules();

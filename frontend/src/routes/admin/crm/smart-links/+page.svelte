@@ -298,7 +298,7 @@
 				oninput={handleSearchInput}
 			/>
 		</div>
-		<select class="filter-select" value={String(filterActive)} onchange={handleFilterChange}>
+		<select id="smart-links-string-filteractive" name="smart_links_string_filteractive" class="filter-select" value={String(filterActive)} onchange={handleFilterChange}>
 			<option value="all">All Links</option>
 			<option value="true">Active</option>
 			<option value="false">Inactive</option>

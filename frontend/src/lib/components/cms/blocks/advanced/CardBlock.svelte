@@ -50,7 +50,7 @@
 			</div>
 		{/if}
 		{#if props.isEditing}
-			<input
+			<input name="imageUrl" id="cardblock-imageUrl"
 				type="url"
 				class="image-input"
 				placeholder="Image URL..."
@@ -89,20 +89,20 @@
 
 		{#if props.isEditing}
 			<div class="button-edit">
-				<input
+				<input name="buttonText" id="cardblock-buttonText"
 					type="text"
 					placeholder="Button text"
 					value={buttonText}
 					oninput={(e) => updateContent({ cardButtonText: (e.target as HTMLInputElement).value })}
 				/>
-				<input
+				<input name="buttonUrl" id="cardblock-buttonUrl"
 					type="url"
 					placeholder="Button URL"
 					value={buttonUrl}
 					oninput={(e) => updateContent({ cardButtonUrl: (e.target as HTMLInputElement).value })}
 				/>
 				<label class="new-tab-check">
-					<input
+					<input name="newTab" id="cardblock-newTab"
 						type="checkbox"
 						checked={newTab}
 						onchange={(e) =>

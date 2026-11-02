@@ -293,7 +293,7 @@
 			<div class="settings-row">
 				<label class="setting-field">
 					<span>Preset:</span>
-					<select value={preset} onchange={handlePresetChange}>
+					<select name="preset" id="riskdisclaimerblock-preset" value={preset} onchange={handlePresetChange}>
 						<option value="general">General Risk</option>
 						<option value="trading">Trading Risk</option>
 						<option value="investment">Investment Advice</option>
@@ -303,7 +303,7 @@
 
 				<label class="setting-field">
 					<span>Style:</span>
-					<select value={style} onchange={handleStyleChange}>
+					<select name="style" id="riskdisclaimerblock-style" value={style} onchange={handleStyleChange}>
 						<option value="warning">Warning (Yellow)</option>
 						<option value="danger">Danger (Red)</option>
 						<option value="info">Info (Blue)</option>
@@ -311,7 +311,7 @@
 				</label>
 
 				<label class="setting-field checkbox-field">
-					<input type="checkbox" checked={requireAcknowledgment} onchange={handleAckToggle} />
+					<input name="requireAcknowledgment" id="riskdisclaimerblock-requireAcknowledgment" type="checkbox" checked={requireAcknowledgment} onchange={handleAckToggle} />
 					<span>Require acknowledgment</span>
 				</label>
 			</div>
@@ -319,7 +319,7 @@
 			<div class="settings-row text-fields">
 				<label class="setting-field full-width">
 					<span>Main Warning Text:</span>
-					<textarea
+					<textarea name="text" id="riskdisclaimerblock-text"
 						value={text}
 						oninput={handleTextChange}
 						placeholder="Enter the main warning message..."
@@ -330,7 +330,7 @@
 			<div class="settings-row text-fields">
 				<label class="setting-field full-width">
 					<span>Expanded Details (optional):</span>
-					<textarea
+					<textarea name="expandedText" id="riskdisclaimerblock-expandedText"
 						value={expandedText}
 						oninput={handleExpandedTextChange}
 						placeholder="Enter detailed disclaimer text for the expandable section..."

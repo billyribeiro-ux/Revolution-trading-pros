@@ -126,7 +126,7 @@
 	</div>
 
 	<div class="language-bar">
-		<select
+		<select name="sourceLang" id="aitranslationblock-sourceLang"
 			value={sourceLang}
 			onchange={(e) =>
 				updateContent({ translationSourceLang: (e.target as HTMLSelectElement).value })}
@@ -141,7 +141,7 @@
 			<IconArrowsLeftRight size={18} />
 		</button>
 
-		<select
+		<select name="targetLang" id="aitranslationblock-targetLang"
 			value={targetLang}
 			onchange={(e) =>
 				updateContent({ translationTargetLang: (e.target as HTMLSelectElement).value })}
@@ -159,7 +159,7 @@
 				<span>{languages.find((l) => l.code === sourceLang)?.name || 'Source'}</span>
 			</div>
 			{#if props.isEditing}
-				<textarea
+				<textarea name="sourceText" id="aitranslationblock-sourceText"
 					class="panel-content"
 					placeholder="Enter text to translate..."
 					value={sourceText}
@@ -218,7 +218,7 @@
 
 			<div class="view-toggle">
 				<label>
-					<input
+					<input id="aitranslationblock-radio_input"
 						type="radio"
 						name="view-{props.blockId}"
 						value="stacked"
@@ -228,7 +228,7 @@
 					Stacked
 				</label>
 				<label>
-					<input
+					<input id="aitranslationblock-radio_input"
 						type="radio"
 						name="view-{props.blockId}"
 						value="side-by-side"

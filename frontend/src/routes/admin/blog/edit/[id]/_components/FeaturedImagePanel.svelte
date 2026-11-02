@@ -81,7 +81,7 @@
 		</div>
 	{:else}
 		<label class={{ 'upload-box': true, disabled: uploadingImage }}>
-			<input type="file" accept="image/*" onchange={onUpload} hidden disabled={uploadingImage} />
+			<input id="featuredimagepanel-file" name="featuredimagepanel_file" type="file" accept="image/*" onchange={onUpload} hidden disabled={uploadingImage} />
 			<IconPhoto size={48} />
 			<span>Click to upload featured image</span>
 		</label>

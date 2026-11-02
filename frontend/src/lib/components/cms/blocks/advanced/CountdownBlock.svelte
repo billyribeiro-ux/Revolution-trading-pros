@@ -205,7 +205,7 @@
 				<div class="settings-row">
 					<label class="setting-field">
 						<span>Target Date & Time:</span>
-						<input
+						<input name="targetDate" id="countdownblock-targetDate"
 							type="datetime-local"
 							value={targetDate}
 							oninput={(e) =>
@@ -216,7 +216,7 @@
 				<div class="settings-row">
 					<label class="setting-field">
 						<span>Expired Message:</span>
-						<input
+						<input name="expiredMessage" id="countdownblock-expiredMessage"
 							type="text"
 							value={expiredMessage}
 							placeholder="Message when countdown ends"

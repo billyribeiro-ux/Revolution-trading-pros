@@ -215,7 +215,7 @@
 			<div class="platform-toggles">
 				{#each platforms as platform (platform.id)}
 					<label class="toggle-label">
-						<input
+						<input name="checkbox_input" id="socialshareblock-checkbox_input"
 							type="checkbox"
 							checked={enabledPlatforms.includes(platform.id)}
 							onchange={() => togglePlatform(platform.id)}
@@ -224,7 +224,7 @@
 					</label>
 				{/each}
 				<label class="toggle-label">
-					<input type="checkbox" checked={true} disabled />
+					<input name="true" id="socialshareblock-true" type="checkbox" checked={true} disabled />
 					<span>Copy Link</span>
 				</label>
 			</div>

@@ -479,14 +479,14 @@
 			</div>
 
 			{#if pipelines.length > 0}
-				<select class="filter-select" bind:value={selectedPipeline}>
+				<select id="deals-selectedpipeline" name="deals_selectedpipeline" class="filter-select" bind:value={selectedPipeline}>
 					{#each pipelines as pipeline (pipeline.id)}
 						<option value={pipeline}>{pipeline.name}</option>
 					{/each}
 				</select>
 			{/if}
 
-			<select class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
+			<select id="deals-selectedstatus" name="deals_selectedstatus" class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
 				<option value="all">All Status</option>
 				<option value="open">Open</option>
 				<option value="won">Won</option>

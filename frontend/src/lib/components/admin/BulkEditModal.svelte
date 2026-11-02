@@ -174,12 +174,12 @@
 	<div class="edit-sections">
 		<!-- Content Type -->
 		<div class="edit-section">
-			<label class="section-toggle">
-				<input type="checkbox" bind:checked={updateContentType} />
+			<label class="section-toggle" for="bulk-update-content-type">
+				<input type="checkbox" id="bulk-update-content-type" name="bulk_update_content_type" bind:checked={updateContentType} />
 				<span>Change Content Type</span>
 			</label>
 			{#if updateContentType}
-				<select bind:value={contentType}>
+				<select id="bulk-content-type" name="bulk_content_type" bind:value={contentType}>
 					<option value="">Select content type...</option>
 					{#each contentTypes as ct (ct.value)}
 						<option value={ct.value}>{ct.label}</option>
@@ -190,12 +190,12 @@
 
 		<!-- Trader -->
 		<div class="edit-section">
-			<label class="section-toggle">
-				<input type="checkbox" bind:checked={updateTrader} />
+			<label class="section-toggle" for="bulk-update-trader">
+				<input type="checkbox" id="bulk-update-trader" name="bulk_update_trader" bind:checked={updateTrader} />
 				<span>Change Trader</span>
 			</label>
 			{#if updateTrader}
-				<select bind:value={traderId}>
+				<select id="bulk-trader-id" name="bulk_trader_id" bind:value={traderId}>
 					<option value={null}>No trader</option>
 					{#each traders as trader (trader.id)}
 						<option value={trader.id}>{trader.name}</option>
@@ -206,18 +206,18 @@
 
 		<!-- Published -->
 		<div class="edit-section">
-			<label class="section-toggle">
-				<input type="checkbox" bind:checked={updatePublished} />
+			<label class="section-toggle" for="bulk-update-published">
+				<input type="checkbox" id="bulk-update-published" name="bulk_update_published" bind:checked={updatePublished} />
 				<span>Change Published Status</span>
 			</label>
 			{#if updatePublished}
 				<div class="radio-group">
-					<label>
-						<input type="radio" bind:group={isPublished} value={true} />
+					<label for="bulk-published-yes">
+						<input type="radio" id="bulk-published-yes" name="bulk_published" bind:group={isPublished} value={true} />
 						Published
 					</label>
-					<label>
-						<input type="radio" bind:group={isPublished} value={false} />
+					<label for="bulk-published-no">
+						<input type="radio" id="bulk-published-no" name="bulk_published" bind:group={isPublished} value={false} />
 						Unpublished
 					</label>
 				</div>
@@ -226,18 +226,18 @@
 
 		<!-- Featured -->
 		<div class="edit-section">
-			<label class="section-toggle">
-				<input type="checkbox" bind:checked={updateFeatured} />
+			<label class="section-toggle" for="bulk-update-featured">
+				<input type="checkbox" id="bulk-update-featured" name="bulk_update_featured" bind:checked={updateFeatured} />
 				<span>Change Featured Status</span>
 			</label>
 			{#if updateFeatured}
 				<div class="radio-group">
-					<label>
-						<input type="radio" bind:group={isFeatured} value={true} />
+					<label for="bulk-featured-yes">
+						<input type="radio" id="bulk-featured-yes" name="bulk_featured" bind:group={isFeatured} value={true} />
 						Featured
 					</label>
-					<label>
-						<input type="radio" bind:group={isFeatured} value={false} />
+					<label for="bulk-featured-no">
+						<input type="radio" id="bulk-featured-no" name="bulk_featured" bind:group={isFeatured} value={false} />
 						Not Featured
 					</label>
 				</div>
@@ -246,12 +246,12 @@
 
 		<!-- Difficulty -->
 		<div class="edit-section">
-			<label class="section-toggle">
-				<input type="checkbox" bind:checked={updateDifficulty} />
+			<label class="section-toggle" for="bulk-update-difficulty">
+				<input type="checkbox" id="bulk-update-difficulty" name="bulk_update_difficulty" bind:checked={updateDifficulty} />
 				<span>Change Difficulty Level</span>
 			</label>
 			{#if updateDifficulty}
-				<select bind:value={difficultyLevel}>
+				<select id="bulk-difficulty-level" name="bulk_difficulty_level" bind:value={difficultyLevel}>
 					<option value="">Select difficulty...</option>
 					{#each difficulties as d (d.value)}
 						<option value={d.value}>{d.label}</option>

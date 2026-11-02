@@ -248,7 +248,7 @@
 						<IconVolume size={20} aria-hidden="true" />
 					{/if}
 				</button>
-				<input
+				<input name="volume" id="audioblock-volume"
 					type="range"
 					min="0"
 					max="1"
@@ -288,7 +288,7 @@
 			<span class="audio-placeholder-subtitle">Enter a URL or upload an audio file</span>
 
 			<div class="audio-url-input-wrapper">
-				<input
+				<input name="urlInputValue" id="audioblock-urlInputValue"
 					type="url"
 					placeholder="https://example.com/audio.mp3"
 					value={urlInputValue}
@@ -312,7 +312,7 @@
 			<label class="audio-file-upload">
 				<IconUpload size={20} aria-hidden="true" />
 				<span>Upload audio file</span>
-				<input
+				<input name="file_input" id="audioblock-file_input"
 					type="file"
 					accept="audio/mpeg,audio/wav,audio/ogg,.mp3,.wav,.ogg"
 					onchange={handleFileUpload}

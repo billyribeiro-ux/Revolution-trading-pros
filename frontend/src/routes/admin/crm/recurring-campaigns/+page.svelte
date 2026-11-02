@@ -243,7 +243,7 @@
 				oninput={handleSearchInput}
 			/>
 		</div>
-		<select class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
+		<select id="recurring-campaigns-selectedstatus" name="recurring_campaigns_selectedstatus" class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
 			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}

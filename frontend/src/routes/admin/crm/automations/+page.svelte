@@ -629,7 +629,7 @@
 				</button>
 			{/if}
 		</div>
-		<select
+		<select id="automations-selectedstatus" name="automations_selectedstatus"
 			class="filter-select"
 			value={selectedStatus}
 			onchange={handleStatusChange}
@@ -639,7 +639,7 @@
 				<option value={option.value}>{option.label}</option>
 			{/each}
 		</select>
-		<select
+		<select id="automations-selectedtrigger" name="automations_selectedtrigger"
 			class="filter-select"
 			value={selectedTrigger}
 			onchange={handleTriggerChange}

@@ -251,7 +251,7 @@
 	<div class="related-posts-settings">
 		<label class="setting-field">
 			<span>Number of Posts:</span>
-			<select
+			<select name="postCount" id="relatedpostsblock-postCount"
 				value={postCount}
 				onchange={(e) =>
 					updateContent({ relatedPostsCount: parseInt((e.target as HTMLSelectElement).value, 10) })}
@@ -263,7 +263,7 @@
 		</label>
 
 		<label class="setting-checkbox">
-			<input
+			<input name="showCategory" id="relatedpostsblock-showCategory"
 				type="checkbox"
 				checked={showCategory}
 				onchange={(e) =>
@@ -273,7 +273,7 @@
 		</label>
 
 		<label class="setting-checkbox">
-			<input
+			<input name="showExcerpt" id="relatedpostsblock-showExcerpt"
 				type="checkbox"
 				checked={showExcerpt}
 				onchange={(e) =>

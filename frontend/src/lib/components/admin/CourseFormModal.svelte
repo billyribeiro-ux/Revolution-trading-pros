@@ -385,8 +385,8 @@
 				{:else if activeSection === 'pricing'}
 					<div class="form-section">
 						<div class="form-group">
-							<label class="toggle-label">
-								<input type="checkbox" bind:checked={isFree} disabled={isLoading} />
+							<label class="toggle-label" for="course-is-free">
+								<input type="checkbox" id="course-is-free" name="is_free" bind:checked={isFree} disabled={isLoading} />
 								<span class="toggle-text">
 									<strong>Free Course</strong>
 									<span>Make this course available at no cost</span>

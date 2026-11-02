@@ -446,7 +446,7 @@
 					</button>
 				{/if}
 			</div>
-			<select
+			<select id="templates-selectedcategory" name="templates_selectedcategory"
 				value={selectedCategory}
 				onchange={(event) => updateSelectedCategory(event.currentTarget.value)}
 				class="filter-select"
@@ -457,7 +457,7 @@
 					<option value={category.slug}>{category.name} ({category.templates_count})</option>
 				{/each}
 			</select>
-			<select
+			<select id="templates-perpage" name="templates_perpage"
 				value={perPage}
 				onchange={(e) => changePerPage(parseInt(e.currentTarget.value))}
 				class="filter-select per-page-select"

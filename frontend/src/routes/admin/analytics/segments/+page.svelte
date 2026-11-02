@@ -464,7 +464,7 @@
 					<div class="rule-list">
 						{#each newSegment.rules as rule, index (index)}
 							<div class="rule-row">
-								<select
+								<select id="segments-rule-field" name="segments_rule_field"
 									bind:value={rule.field}
 									class="form-control form-control--compact"
 									aria-label={`Rule ${index + 1} field`}
@@ -475,7 +475,7 @@
 									{/each}
 								</select>
 
-								<select
+								<select id="segments-rule-operator" name="segments_rule_operator"
 									bind:value={rule.operator}
 									class="form-control form-control--compact operator-control"
 									aria-label={`Rule ${index + 1} operator`}
@@ -485,7 +485,7 @@
 									{/each}
 								</select>
 
-								<input
+								<input id="segments-rule-value" name="segments_rule_value"
 									type="text"
 									bind:value={rule.value}
 									placeholder="Value"

@@ -558,8 +558,10 @@
 
 									{#if mode === 'create'}
 										<div class="form-group full-width checkbox-group">
-											<label class="checkbox-label">
+											<label class="checkbox-label" for="member-welcome-email">
 												<input
+													id="member-welcome-email"
+													name="send_welcome_email"
 													type="checkbox"
 													bind:checked={sendWelcomeEmail}
 													disabled={isLoading}
@@ -792,8 +794,8 @@
 												<p>Require 2FA for account login</p>
 											</div>
 										</div>
-										<label class="toggle-switch">
-											<input type="checkbox" bind:checked={enableTwoFactor} disabled={isLoading} />
+										<label class="toggle-switch" for="member-enable-2fa">
+											<input type="checkbox" id="member-enable-2fa" name="enable_two_factor" bind:checked={enableTwoFactor} disabled={isLoading} />
 											<span class="toggle-slider"></span>
 										</label>
 									</div>
@@ -806,8 +808,10 @@
 												<p>Receive alerts and updates via email</p>
 											</div>
 										</div>
-										<label class="toggle-switch">
+										<label class="toggle-switch" for="member-email-notifications">
 											<input
+												id="member-email-notifications"
+												name="email_notifications"
 												type="checkbox"
 												bind:checked={emailNotifications}
 												disabled={isLoading}
@@ -824,8 +828,8 @@
 												<p>Receive alerts via text message</p>
 											</div>
 										</div>
-										<label class="toggle-switch">
-											<input type="checkbox" bind:checked={smsNotifications} disabled={isLoading} />
+										<label class="toggle-switch" for="member-sms-notifications">
+											<input type="checkbox" id="member-sms-notifications" name="sms_notifications" bind:checked={smsNotifications} disabled={isLoading} />
 											<span class="toggle-slider"></span>
 										</label>
 									</div>
@@ -838,8 +842,8 @@
 												<p>Receive promotional content</p>
 											</div>
 										</div>
-										<label class="toggle-switch">
-											<input type="checkbox" bind:checked={marketingEmails} disabled={isLoading} />
+										<label class="toggle-switch" for="member-marketing-emails">
+											<input type="checkbox" id="member-marketing-emails" name="marketing_emails" bind:checked={marketingEmails} disabled={isLoading} />
 											<span class="toggle-slider"></span>
 										</label>
 									</div>

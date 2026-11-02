@@ -236,7 +236,7 @@
 			<div class="setting-radio">
 				<span class="setting-label">Orientation:</span>
 				<label>
-					<input
+					<input id="tabsblock-radio_input"
 						type="radio"
 						name="orientation-{props.blockId}"
 						value="horizontal"
@@ -249,7 +249,7 @@
 					<span>Horizontal</span>
 				</label>
 				<label>
-					<input
+					<input id="tabsblock-radio_input"
 						type="radio"
 						name="orientation-{props.blockId}"
 						value="vertical"

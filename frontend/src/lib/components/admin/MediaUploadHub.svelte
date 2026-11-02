@@ -545,6 +545,8 @@
 		onkeydown={(e) => e.key === 'Enter' && openFilePicker()}
 	>
 		<input
+			id="media-upload-hub-input"
+			name="media_files"
 			type="file"
 			accept={getAcceptString()}
 			{multiple}

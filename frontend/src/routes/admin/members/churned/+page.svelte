@@ -312,7 +312,7 @@
 		<div class="filters">
 			<div class="filter-group">
 				<IconFilter size={16} />
-				<select
+				<select id="churned-winbackpotential" name="churned_winbackpotential"
 					bind:value={winbackPotential}
 					onchange={() => handlePotentialFilter(winbackPotential)}
 				>
@@ -325,7 +325,7 @@
 
 			<div class="filter-group">
 				<IconCalendar size={16} />
-				<select bind:value={churnedWithinDays} onchange={() => handleDaysFilter(churnedWithinDays)}>
+				<select id="churned-churnedwithindays" name="churned_churnedwithindays" bind:value={churnedWithinDays} onchange={() => handleDaysFilter(churnedWithinDays)}>
 					<option value="">Any Time</option>
 					<option value="7">Last 7 days</option>
 					<option value="30">Last 30 days</option>

@@ -23,6 +23,8 @@
 	<label class="browse-btn">
 		Browse Files
 		<input
+			id="dropzone-upload"
+			name="asset_upload"
 			type="file"
 			multiple
 			accept={acceptTypes.map((t) => (t === 'document' ? 'application/*' : `${t}/*`)).join(',')}

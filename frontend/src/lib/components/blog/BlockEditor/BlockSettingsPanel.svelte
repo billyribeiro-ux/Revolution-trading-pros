@@ -408,7 +408,7 @@
 						<div class="field">
 							<label>
 								Font Family
-								<select
+								<select name="fontFamily" id="setting-fontFamily"
 									value={block.settings.fontFamily || 'inherit'}
 									onchange={(e: Event) =>
 										updateSetting('fontFamily', (e.currentTarget as HTMLInputElement).value)}
@@ -425,7 +425,7 @@
 								<label>
 									Size
 									<div class="input-with-unit">
-										<input
+										<input name="fontSize" id="setting-fontSize"
 											type="number"
 											min="8"
 											max="200"
@@ -443,7 +443,7 @@
 							<div class="field">
 								<label>
 									Weight
-									<select
+									<select name="fontWeight" id="setting-fontWeight"
 										value={block.settings.fontWeight || '400'}
 										onchange={(e: Event) =>
 											updateSetting('fontWeight', (e.currentTarget as HTMLInputElement).value)}
@@ -460,7 +460,7 @@
 							<div class="field">
 								<label>
 									Line Height
-									<input
+									<input name="lineHeight" id="setting-lineHeight"
 										type="number"
 										min="0.5"
 										max="3"
@@ -475,7 +475,7 @@
 								<label>
 									Letter Spacing
 									<div class="input-with-unit">
-										<input
+										<input name="letterSpacing" id="setting-letterSpacing"
 											type="number"
 											min="-5"
 											max="20"
@@ -566,7 +566,7 @@
 										onclick={() => (showColorPicker = showColorPicker === 'text' ? null : 'text')}
 										aria-label="Pick text color"
 									></button>
-									<input
+									<input name="textColor" id="setting-textColor"
 										type="text"
 										value={block.settings.textColor || '#000000'}
 										onchange={(e: Event) =>
@@ -603,7 +603,7 @@
 										onclick={() => (showColorPicker = showColorPicker === 'bg' ? null : 'bg')}
 										aria-label="Pick background color"
 									></button>
-									<input
+									<input name="backgroundColor" id="setting-backgroundColor"
 										type="text"
 										value={block.settings.backgroundColor || 'transparent'}
 										onchange={(e: Event) =>
@@ -632,7 +632,7 @@
 						<div class="field">
 							<label>
 								Background Gradient
-								<input
+								<input name="backgroundGradient" id="setting-backgroundGradient"
 									type="text"
 									placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
 									value={block.settings.backgroundGradient || ''}
@@ -660,7 +660,7 @@
 							<span class="field-label">Padding</span>
 							<div class="spacing-grid" role="group" aria-label="Padding values">
 								<div class="spacing-top">
-									<input
+									<input name="padding_top" id="setting-padding_top"
 										type="number"
 										min="0"
 										aria-label="Padding top"
@@ -675,7 +675,7 @@
 									/>
 								</div>
 								<div class="spacing-left">
-									<input
+									<input name="padding_left" id="setting-padding_left"
 										type="number"
 										min="0"
 										aria-label="Padding left"
@@ -693,7 +693,7 @@
 									<span class="spacing-label">px</span>
 								</div>
 								<div class="spacing-right">
-									<input
+									<input name="padding_right" id="setting-padding_right"
 										type="number"
 										min="0"
 										aria-label="Padding right"
@@ -708,7 +708,7 @@
 									/>
 								</div>
 								<div class="spacing-bottom">
-									<input
+									<input name="padding_bottom" id="setting-padding_bottom"
 										type="number"
 										min="0"
 										aria-label="Padding bottom"
@@ -729,7 +729,7 @@
 							<span class="field-label">Margin</span>
 							<div class="spacing-grid" role="group" aria-label="Margin values">
 								<div class="spacing-top">
-									<input
+									<input name="margin_top" id="setting-margin_top"
 										type="number"
 										aria-label="Margin top"
 										value={parseInt(marginValues.top) || 0}
@@ -743,7 +743,7 @@
 									/>
 								</div>
 								<div class="spacing-left">
-									<input
+									<input name="margin_left" id="setting-margin_left"
 										type="number"
 										aria-label="Margin left"
 										value={parseInt(marginValues.left) || 0}
@@ -760,7 +760,7 @@
 									<span class="spacing-label">px</span>
 								</div>
 								<div class="spacing-right">
-									<input
+									<input name="margin_right" id="setting-margin_right"
 										type="number"
 										aria-label="Margin right"
 										value={parseInt(marginValues.right) || 0}
@@ -774,7 +774,7 @@
 									/>
 								</div>
 								<div class="spacing-bottom">
-									<input
+									<input name="margin_bottom" id="setting-margin_bottom"
 										type="number"
 										aria-label="Margin bottom"
 										value={parseInt(marginValues.bottom) || 0}
@@ -805,7 +805,7 @@
 							<div class="field">
 								<label>
 									Style
-									<select
+									<select name="borderStyle" id="setting-borderStyle"
 										value={block.settings.borderStyle || 'none'}
 										onchange={(e: Event) =>
 											updateSetting('borderStyle', (e.currentTarget as HTMLInputElement).value)}
@@ -820,7 +820,7 @@
 								<label>
 									Width
 									<div class="input-with-unit">
-										<input
+										<input name="borderWidth" id="setting-borderWidth"
 											type="number"
 											min="0"
 											max="20"
@@ -849,7 +849,7 @@
 											(showColorPicker = showColorPicker === 'border' ? null : 'border')}
 										aria-label="Pick border color"
 									></button>
-									<input
+									<input name="borderColor" id="setting-borderColor"
 										type="text"
 										value={block.settings.borderColor || '#CCCCCC'}
 										onchange={(e: Event) =>
@@ -879,7 +879,7 @@
 							<label>
 								Border Radius
 								<div class="input-with-unit">
-									<input
+									<input name="borderRadius" id="setting-borderRadius"
 										type="number"
 										min="0"
 										max="100"
@@ -898,7 +898,7 @@
 						<div class="field">
 							<label>
 								Box Shadow
-								<input
+								<input name="boxShadow" id="setting-boxShadow"
 									type="text"
 									placeholder="0 4px 6px rgba(0, 0, 0, 0.1)"
 									value={block.settings.boxShadow || ''}
@@ -922,7 +922,7 @@
 						<div class="field">
 							<label>
 								Entrance Animation
-								<select
+								<select name="animation" id="setting-animation"
 									value={block.settings.animation || 'none'}
 									onchange={(e: Event) =>
 										updateSetting('animation', (e.currentTarget as HTMLInputElement).value)}
@@ -939,7 +939,7 @@
 								<label>
 									Duration
 									<div class="input-with-unit">
-										<input
+										<input name="animationDuration" id="setting-animationDuration"
 											type="number"
 											min="0"
 											max="5"
@@ -959,7 +959,7 @@
 								<label>
 									Delay
 									<div class="input-with-unit">
-										<input
+										<input name="animationDelay" id="setting-animationDelay"
 											type="number"
 											min="0"
 											max="5"
@@ -993,7 +993,7 @@
 								<label>
 									Rotate
 									<div class="input-with-unit">
-										<input
+										<input name="rotate" id="setting-rotate"
 											type="number"
 											min="-360"
 											max="360"
@@ -1011,7 +1011,7 @@
 							<div class="field">
 								<label>
 									Scale
-									<input
+									<input name="scale" id="setting-scale"
 										type="number"
 										min="0"
 										max="3"
@@ -1029,7 +1029,7 @@
 								<label>
 									Translate X
 									<div class="input-with-unit">
-										<input
+										<input name="translateX" id="setting-translateX"
 											type="number"
 											value={parseInt(block.settings.translateX || '0')}
 											onchange={(e: Event) =>
@@ -1046,7 +1046,7 @@
 								<label>
 									Translate Y
 									<div class="input-with-unit">
-										<input
+										<input name="translateY" id="setting-translateY"
 											type="number"
 											value={parseInt(block.settings.translateY || '0')}
 											onchange={(e: Event) =>
@@ -1066,7 +1066,7 @@
 								<label>
 									Skew X
 									<div class="input-with-unit">
-										<input
+										<input name="skewX" id="setting-skewX"
 											type="number"
 											min="-45"
 											max="45"
@@ -1082,7 +1082,7 @@
 								<label>
 									Skew Y
 									<div class="input-with-unit">
-										<input
+										<input name="skewY" id="setting-skewY"
 											type="number"
 											min="-45"
 											max="45"
@@ -1111,7 +1111,7 @@
 							<label>
 								Opacity
 								<div class="slider-field">
-									<input
+									<input name="opacity" id="setting-opacity"
 										type="range"
 										min="0"
 										max="1"
@@ -1131,7 +1131,7 @@
 						<div class="field">
 							<label>
 								Blend Mode
-								<select
+								<select name="blendMode" id="setting-blendMode"
 									value={block.settings.blendMode || 'normal'}
 									onchange={(e: Event) =>
 										updateSetting('blendMode', (e.currentTarget as HTMLInputElement).value)}
@@ -1148,7 +1148,7 @@
 							<div class="filter-controls">
 								<div class="filter-item">
 									<span>Blur</span>
-									<input
+									<input name="filterBlur" id="setting-filterBlur"
 										type="range"
 										min="0"
 										max="20"
@@ -1163,7 +1163,7 @@
 								</div>
 								<div class="filter-item">
 									<span>Brightness</span>
-									<input
+									<input name="filterBrightness" id="setting-filterBrightness"
 										type="range"
 										min="0"
 										max="200"
@@ -1178,7 +1178,7 @@
 								</div>
 								<div class="filter-item">
 									<span>Contrast</span>
-									<input
+									<input name="filterContrast" id="setting-filterContrast"
 										type="range"
 										min="0"
 										max="200"
@@ -1193,7 +1193,7 @@
 								</div>
 								<div class="filter-item">
 									<span>Grayscale</span>
-									<input
+									<input name="filterGrayscale" id="setting-filterGrayscale"
 										type="range"
 										min="0"
 										max="100"
@@ -1208,7 +1208,7 @@
 								</div>
 								<div class="filter-item">
 									<span>Saturate</span>
-									<input
+									<input name="filterSaturate" id="setting-filterSaturate"
 										type="range"
 										min="0"
 										max="200"
@@ -1238,7 +1238,7 @@
 						<div class="field">
 							<label>
 								CSS Class
-								<input
+								<input name="customClass" id="setting-customClass"
 									type="text"
 									placeholder="my-custom-class another-class"
 									value={block.settings.customClass || ''}
@@ -1251,7 +1251,7 @@
 						<div class="field">
 							<label>
 								CSS ID
-								<input
+								<input name="customId" id="setting-customId"
 									type="text"
 									placeholder="my-element-id"
 									value={block.settings.customId || ''}
@@ -1264,7 +1264,7 @@
 						<div class="field">
 							<label>
 								Custom CSS
-								<textarea
+								<textarea name="customCSS" id="setting-customCSS"
 									rows="6"
 									placeholder=".selector &#123;
   property: value;
@@ -1294,7 +1294,7 @@
 						<div class="field">
 							<label>
 								Option Source
-								<select
+								<select name="optionSource" id="setting-optionSource"
 									value={block.settings.optionSource || 'static'}
 									onchange={(e: Event) =>
 										updateSetting('optionSource', (e.currentTarget as HTMLSelectElement).value)}
@@ -1312,7 +1312,7 @@
 									{#if loadingDatasources}
 										<span class="loading-indicator">Loading...</span>
 									{/if}
-									<select
+									<select name="datasourceSlug" id="setting-datasourceSlug"
 										value={block.settings.datasourceSlug || ''}
 										onchange={async (e: Event) => {
 											const slug = (e.currentTarget as HTMLSelectElement).value;
@@ -1358,7 +1358,7 @@
 								<div class="field">
 									<label>
 										Dimension (for translations)
-										<input
+										<input name="datasourceDimension" id="setting-datasourceDimension"
 											type="text"
 											placeholder="default"
 											value={block.settings.datasourceDimension || 'default'}
@@ -1374,7 +1374,7 @@
 
 								<div class="field">
 									<label class="checkbox-label-inline">
-										<input
+										<input name="datasourceIncludeEmpty" id="setting-datasourceIncludeEmpty"
 											type="checkbox"
 											checked={block.settings.datasourceIncludeEmpty !== false}
 											onchange={(e: Event) =>
@@ -1393,7 +1393,7 @@
 							<div class="field">
 								<label>
 									Static Options (one per line)
-									<textarea
+									<textarea name="staticOptions" id="setting-staticOptions"
 										rows="4"
 										placeholder="Option 1|value1&#10;Option 2|value2&#10;Option 3|value3"
 										value={block.settings.staticOptions || ''}
@@ -1420,7 +1420,7 @@
 					<div class="section-content">
 						<div class="visibility-options">
 							<label class="checkbox-label">
-								<input
+								<input name="hideOnDesktop" id="setting-hideOnDesktop"
 									type="checkbox"
 									checked={block.settings.hideOnDesktop !== true}
 									onchange={(e: Event) =>
@@ -1430,7 +1430,7 @@
 								<span>Show on Desktop</span>
 							</label>
 							<label class="checkbox-label">
-								<input
+								<input name="hideOnTablet" id="setting-hideOnTablet"
 									type="checkbox"
 									checked={block.settings.hideOnTablet !== true}
 									onchange={(e: Event) =>
@@ -1440,7 +1440,7 @@
 								<span>Show on Tablet</span>
 							</label>
 							<label class="checkbox-label">
-								<input
+								<input name="hideOnMobile" id="setting-hideOnMobile"
 									type="checkbox"
 									checked={block.settings.hideOnMobile !== true}
 									onchange={(e: Event) =>
@@ -1472,7 +1472,7 @@
 								<div class="field">
 									<label>
 										Font Size
-										<input
+										<input name="tabletFontSize" id="setting-tabletFontSize"
 											type="text"
 											placeholder="e.g., 14px"
 											value={block.settings.tabletFontSize || ''}
@@ -1487,7 +1487,7 @@
 								<div class="field">
 									<label>
 										Padding
-										<input
+										<input name="tabletPadding" id="setting-tabletPadding"
 											type="text"
 											placeholder="e.g., 10px 15px"
 											value={block.settings.tabletPadding || ''}
@@ -1505,7 +1505,7 @@
 								<div class="field">
 									<label>
 										Font Size
-										<input
+										<input name="mobileFontSize" id="setting-mobileFontSize"
 											type="text"
 											placeholder="e.g., 12px"
 											value={block.settings.mobileFontSize || ''}
@@ -1520,7 +1520,7 @@
 								<div class="field">
 									<label>
 										Padding
-										<input
+										<input name="mobilePadding" id="setting-mobilePadding"
 											type="text"
 											placeholder="e.g., 8px 10px"
 											value={block.settings.mobilePadding || ''}
@@ -1546,7 +1546,7 @@
 						<div class="field">
 							<label>
 								Z-Index
-								<input
+								<input name="zIndex" id="setting-zIndex"
 									type="number"
 									min="-999"
 									max="9999"
@@ -1560,7 +1560,7 @@
 						<div class="field">
 							<label>
 								Position
-								<select
+								<select name="position" id="setting-position"
 									value={block.settings.position || 'static'}
 									onchange={(e: Event) =>
 										updateSetting('position', (e.currentTarget as HTMLInputElement).value)}
@@ -1579,7 +1579,7 @@
 								<div class="field">
 									<label>
 										Top
-										<input
+										<input name="positionTop" id="setting-positionTop"
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionTop || ''}
@@ -1591,7 +1591,7 @@
 								<div class="field">
 									<label>
 										Right
-										<input
+										<input name="positionRight" id="setting-positionRight"
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionRight || ''}
@@ -1605,7 +1605,7 @@
 								<div class="field">
 									<label>
 										Bottom
-										<input
+										<input name="positionBottom" id="setting-positionBottom"
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionBottom || ''}
@@ -1620,7 +1620,7 @@
 								<div class="field">
 									<label>
 										Left
-										<input
+										<input name="positionLeft" id="setting-positionLeft"
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionLeft || ''}

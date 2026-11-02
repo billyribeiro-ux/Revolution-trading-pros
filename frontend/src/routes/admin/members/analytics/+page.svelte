@@ -116,7 +116,7 @@
 			<div class="header-actions">
 				<div class="date-filter">
 					<IconCalendar size={18} />
-					<select bind:value={dateRange}>
+					<select id="analytics-daterange" name="analytics_daterange" bind:value={dateRange}>
 						<option value="7d">Last 7 days</option>
 						<option value="30d">Last 30 days</option>
 						<option value="90d">Last 90 days</option>

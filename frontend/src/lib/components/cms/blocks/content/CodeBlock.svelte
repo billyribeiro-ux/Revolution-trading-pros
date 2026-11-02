@@ -108,7 +108,7 @@
 			<span class="code-block__icon" aria-hidden="true">
 				<IconCode size={16} />
 			</span>
-			<select
+			<select name="code_block_language_" id="codeblock-code_block_language_"
 				value={props.block.content.language || 'javascript'}
 				onchange={handleLanguageChange}
 				disabled={!props.isEditing}

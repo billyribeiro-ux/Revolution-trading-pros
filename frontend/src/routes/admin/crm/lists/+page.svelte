@@ -195,7 +195,7 @@
 				oninput={handleSearchInput}
 			/>
 		</div>
-		<select class="filter-select" value={String(filterPublic)} onchange={handlePublicFilterChange}>
+		<select id="lists-string-filterpublic" name="lists_string_filterpublic" class="filter-select" value={String(filterPublic)} onchange={handlePublicFilterChange}>
 			<option value="all">All Lists</option>
 			<option value="true">Public</option>
 			<option value="false">Private</option>

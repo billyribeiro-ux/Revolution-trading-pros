@@ -364,7 +364,7 @@
 				<div class="settings-group">
 					<label class="setting-field">
 						<span>Height:</span>
-						<select value={height} onchange={handleHeightChange}>
+						<select name="height" id="chartblock-height" value={height} onchange={handleHeightChange}>
 							{#each heightOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
@@ -377,7 +377,7 @@
 				<div class="settings-row embed-settings">
 					<label class="setting-field symbol-field">
 						<span>Symbol:</span>
-						<input
+						<input name="symbol" id="chartblock-symbol"
 							type="text"
 							value={symbol}
 							oninput={handleSymbolChange}
@@ -389,7 +389,7 @@
 
 					<label class="setting-field">
 						<span>Interval:</span>
-						<select value={interval} onchange={handleIntervalChange}>
+						<select name="interval" id="chartblock-interval" value={interval} onchange={handleIntervalChange}>
 							{#each intervalOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
@@ -398,7 +398,7 @@
 
 					<label class="setting-field">
 						<span>Theme:</span>
-						<select value={themePreference} onchange={handleThemeChange}>
+						<select name="themePreference" id="chartblock-themePreference" value={themePreference} onchange={handleThemeChange}>
 							<option value="auto">Auto (sync)</option>
 							<option value="light">Light</option>
 							<option value="dark">Dark</option>
@@ -425,7 +425,7 @@
 				<div class="settings-row image-settings">
 					<label class="setting-field image-url-field">
 						<span>Image URL:</span>
-						<input
+						<input name="imageUrl" id="chartblock-imageUrl"
 							type="url"
 							value={imageUrl}
 							oninput={handleImageUrlChange}
@@ -439,7 +439,7 @@
 				<div class="settings-row">
 					<label class="setting-field">
 						<span>Alt Text:</span>
-						<input
+						<input name="imageAlt" id="chartblock-imageAlt"
 							type="text"
 							value={imageAlt}
 							oninput={handleImageAltChange}
@@ -449,7 +449,7 @@
 
 					<label class="setting-field">
 						<span>Caption:</span>
-						<input
+						<input name="imageCaption" id="chartblock-imageCaption"
 							type="text"
 							value={imageCaption}
 							oninput={handleImageCaptionChange}

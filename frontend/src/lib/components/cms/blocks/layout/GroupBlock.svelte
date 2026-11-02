@@ -114,7 +114,7 @@
 				<div class="toolbar-group">
 					<label class="toolbar-label" for="bg-color">Background:</label>
 					<div class="color-picker-wrapper">
-						<input
+						<input name="color_picker"
 							type="color"
 							id="bg-color"
 							class="color-picker"
@@ -154,7 +154,7 @@
 
 				<div class="toolbar-group">
 					<label class="toolbar-label" for="border-radius">Radius:</label>
-					<select
+					<select name="borderRadius"
 						id="border-radius"
 						class="select-input"
 						value={borderRadius}

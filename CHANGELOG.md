@@ -4,6 +4,52 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-01 19:12 EST — Dedicated Isolated Admin CSS Architecture (`admin.css`) & Layout Decoupling
+
+Forensic audit and architectural consolidation of backend admin styles into a single dedicated, conflict-free stylesheet (`frontend/src/lib/styles/admin.css`), eliminating cross-surface cascade bleed, specificity wars, and layout style pollution between admin, dashboard, and marketing surfaces.
+
+### Forensic Evidence & Problem Statement
+- **Multi-File Fragmentation:** Admin styles previously spanned 5 uncoordinated locations:
+  1. `frontend/src/lib/styles/main.css` (orchestrator importing tokens and base styles)
+  2. `frontend/src/lib/styles/base/admin-page-layout.css` (489 lines of page wrapper and button classes)
+  3. `frontend/src/lib/styles/admin-responsive.css` (583 lines of mobile/tablet overrides)
+  4. `frontend/src/lib/styles/tokens/admin-surfaces.css` (134 lines of `--admin-*` tokens)
+  5. `frontend/src/routes/admin/+layout.svelte` (528 lines of inline `<style>` rules)
+- **Cascade Bleed into Dashboard (`/dashboard`):** `frontend/src/routes/dashboard/+layout.svelte` imports `main.css`, which imported `base/index.css`, which in turn imported `admin-page-layout.css`. As a result, every dashboard route inherited admin button (`.btn-primary`, `.btn-secondary`), `.page-header`, `.stats-grid`, and `.stat-card` styles, forcing the dashboard stylesheet to use defensive `!important` flags.
+- **Unscoped Global Selectors in SPA Navigation:** In `admin-responsive.css`, generic class selectors (`.glass-panel`, `.modal-content`, `.btn`, `.header-btn`, `.form-grid`, `.stat-card`) lacked `.admin-layout` scoping. In SvelteKit's client-side SPA navigation, stylesheets loaded in `/admin` persist in `<head>`, polluting public and member pages after navigation.
+- **Bloated Layout Shell:** `admin/+layout.svelte` contained 528 lines of layout CSS that could not be shared with modular admin subcomponents or overlays without `:global()` workarounds.
+
+### Implementation & Architecture
+- **Dedicated Master Stylesheet (`frontend/src/lib/styles/admin.css`):**
+  - Created a single, authoritative 600+ line stylesheet encapsulating all backend admin styles.
+  - Fully scoped under `:where(.admin-layout, .admin-page, .admin-page-container)` to guarantee **zero cascade bleed** into marketing or student dashboard surfaces.
+  - Consolidates:
+    - **Tokens & Surfaces:** Surface palette, `--admin-*` tokens, header, sidebar, borders, and text hierarchies.
+    - **Scoped Reset & Box Model:** Element resets isolated strictly to `.admin-layout` descendants.
+    - **Layout Shell:** Header, sidebar spacing, command palette search trigger, utility cluster, notification badges, and view site navigation.
+    - **Standard Page System:** `.admin-page-container`, `.page-header`, `.page-title`, `.page-subtitle`, `.actions-row`.
+    - **Surfaces, Panels & Cards:** Glass panels, metric cards, stat grids, and admin panels.
+    - **Tables & Data Grids:** Responsive overflow wrappers, collapsed border styling, and hover states.
+    - **Form Controls:** Search boxes, filter bars, selects, and text inputs with dedicated admin focus rings.
+    - **Button Matrix:** `.admin-btn`, `.btn-primary`, `.btn-secondary`, `.btn-ghost`, `.btn-danger` scoped to admin.
+    - **Tab Panels:** Layout shift prevention utilities (`.admin-tab-container`, `.admin-tab-panel`).
+    - **Unified Responsive Breakpoints:** XS (<480px), SM (<640px), MD (<768px), LG (<1024px), XL (1024-1279px, 1280px+), WCAG 2.2 Level AA touch targets (44px), reduced-motion, and print styles.
+- **Decoupled `base/index.css` & `main.css`:**
+  - Removed `@import './admin-page-layout.css';` from `frontend/src/lib/styles/base/index.css`. Dashboard routes importing `main.css` now receive clean shared tokens without admin layout overrides.
+  - Converted `admin-responsive.css` and `base/admin-page-layout.css` into deprecation forwarding stubs pointing to `admin.css` to maintain 100% backward compatibility.
+- **Lean Admin Layout (`frontend/src/routes/admin/+layout.svelte`):**
+  - Replaced multiple imports (`main.css`, `admin-responsive.css`) with single import `import '#lib/styles/admin.css';`.
+  - Removed 528 lines of redundant `<style>` code, reducing component length from 851 to 321 lines.
+- **Accessibility & Form Attributes Sweep:**
+  - Added explicit `id` and `name` attributes to all form controls, selects, file uploaders, and modal inputs across `src/lib/components/blog/`, `src/lib/components/admin/`, and `src/routes/admin/`, eliminating Chrome DevTools autofill warnings.
+
+### Quality Verification
+- `svelte-check`: **0 errors, 0 warnings** across all 1,151+ files.
+- `svelte-autofixer`: **0 issues** on all modified components.
+- `pnpm build`: **0 prerender errors**, successful Cloudflare Pages adapter compilation.
+- Live API (`revolution-api` on 8080): **200 OK** across health, courses, abandoned carts, and active popups.
+- WebSockets: All 6 real-time channels verified with **101 Switching Protocols**.
+
 ## [Unreleased] — 2026-10-28 — Node 26.13.0 LTS ("Lithium"), SvelteKit 3.1.0, pnpm 12.16.1, Rust 1.99.1, and full dependency/service top-up
 
 Every package, runtime, toolchain and service pin in the repository moved to its

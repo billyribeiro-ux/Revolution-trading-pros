@@ -52,7 +52,7 @@
 		</div>
 		<div class="alert-title">
 			{#if props.isEditing}
-				<input
+				<input name="symbol" id="pricealertblock-symbol"
 					type="text"
 					class="symbol-input"
 					value={symbol}
@@ -81,7 +81,7 @@
 			<div class="level target">
 				<span class="level-label"><IconTarget size={14} /> Target</span>
 				{#if props.isEditing}
-					<input
+					<input name="targetPrice" id="pricealertblock-targetPrice"
 						type="number"
 						step="0.01"
 						value={targetPrice}
@@ -95,7 +95,7 @@
 			<div class="level entry">
 				<span class="level-label">Entry</span>
 				{#if props.isEditing}
-					<input
+					<input name="entryPrice" id="pricealertblock-entryPrice"
 						type="number"
 						step="0.01"
 						value={entryPrice}
@@ -109,7 +109,7 @@
 			<div class="level stop">
 				<span class="level-label">Stop Loss</span>
 				{#if props.isEditing}
-					<input
+					<input name="stopLoss" id="pricealertblock-stopLoss"
 						type="number"
 						step="0.01"
 						value={stopLoss}
@@ -130,7 +130,7 @@
 		{#if props.isEditing}
 			<div class="direction-selector">
 				<label>
-					<input
+					<input id="pricealertblock-radio_input"
 						type="radio"
 						name="direction-{props.blockId}"
 						value="above"
@@ -140,7 +140,7 @@
 					<span>Bullish (Above)</span>
 				</label>
 				<label>
-					<input
+					<input id="pricealertblock-radio_input"
 						type="radio"
 						name="direction-{props.blockId}"
 						value="below"
@@ -155,7 +155,7 @@
 		{#if note || props.isEditing}
 			<div class="alert-note">
 				{#if props.isEditing}
-					<textarea
+					<textarea name="note" id="pricealertblock-note"
 						placeholder="Add notes about this alert..."
 						value={note}
 						oninput={(e) => updateContent({ alertNote: (e.target as HTMLTextAreaElement).value })}

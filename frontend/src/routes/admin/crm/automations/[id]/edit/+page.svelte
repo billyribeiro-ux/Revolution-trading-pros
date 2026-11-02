@@ -660,7 +660,7 @@
 									min="0"
 									bind:value={actionForm.delay_seconds}
 								/>
-								<select bind:value={actionForm.delay_unit}>
+								<select id="edit-actionform-delay-unit" name="edit_actionform_delay_unit" bind:value={actionForm.delay_unit}>
 									<option value="minutes">Minutes</option>
 									<option value="hours">Hours</option>
 									<option value="days">Days</option>

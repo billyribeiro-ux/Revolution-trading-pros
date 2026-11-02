@@ -898,7 +898,7 @@
 
 					{#each newSegment.conditions as condition, index (index)}
 						<div class="condition-row">
-							<select bind:value={condition.field}>
+							<select id="segments-condition-field" name="segments_condition_field" bind:value={condition.field}>
 								{#each conditionFields as field (field.value)}
 									<option value={field.value}>
 										{#if field.value === 'total_spent'}
@@ -909,7 +909,7 @@
 								{/each}
 							</select>
 
-							<select bind:value={condition.operator}>
+							<select id="segments-condition-operator" name="segments_condition_operator" bind:value={condition.operator}>
 								{#each conditionOperators[condition.field] || [] as op (op.value)}
 									<option value={op.value}>{op.label}</option>
 								{/each}

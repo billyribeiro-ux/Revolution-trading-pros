@@ -499,7 +499,7 @@
 								<span class="setting-label">Banner Position</span>
 								<span class="setting-description">Where to display the consent banner</span>
 							</div>
-							<select class="select" bind:value={settings.banner_position}>
+							<select id="settings-settings-banner-position" name="settings_settings_banner_position" class="select" bind:value={settings.banner_position}>
 								<option value="bottom">Bottom</option>
 								<option value="top">Top</option>
 								<option value="center">Center (Modal)</option>
@@ -511,7 +511,7 @@
 								<span class="setting-label">Banner Layout</span>
 								<span class="setting-description">Choose the banner display style</span>
 							</div>
-							<select class="select" bind:value={settings.banner_layout}>
+							<select id="settings-settings-banner-layout" name="settings_settings_banner_layout" class="select" bind:value={settings.banner_layout}>
 								<option value="bar">Full-width Bar</option>
 								<option value="popup">Popup Modal</option>
 								<option value="floating">Floating Card</option>

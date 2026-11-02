@@ -34,7 +34,7 @@
 	</div>
 
 	<div class="filter-group">
-		<select bind:value={statusFilter} onchange={onsearch}>
+		<select id="filtersbar-statusfilter" name="filtersbar_statusfilter" bind:value={statusFilter} onchange={onsearch}>
 			<option value="all">All Status</option>
 			<option value="subscribed">Subscribed</option>
 			<option value="unsubscribed">Unsubscribed</option>

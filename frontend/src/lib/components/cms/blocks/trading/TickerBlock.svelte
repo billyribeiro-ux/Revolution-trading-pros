@@ -117,7 +117,7 @@
 			{const isPositive = ticker.change >= 0}
 			<div class={['ticker-card', { positive: isPositive, negative: !isPositive }]}>
 				{#if props.isEditing}
-					<input
+					<input name="symbol" id="tickerblock-symbol"
 						type="text"
 						class="ticker-symbol-input"
 						value={ticker.symbol}
@@ -126,7 +126,7 @@
 						aria-label="Ticker symbol"
 					/>
 					<div class="ticker-edit-fields">
-						<input
+						<input name="price" id="tickerblock-price"
 							type="number"
 							step="0.01"
 							value={ticker.price}
@@ -136,7 +136,7 @@
 								})}
 							aria-label="Price"
 						/>
-						<input
+						<input name="change" id="tickerblock-change"
 							type="number"
 							step="0.01"
 							value={ticker.change}
@@ -193,7 +193,7 @@
 		<div class="ticker-settings">
 			<label class="setting-field">
 				<span>Layout:</span>
-				<select
+				<select name="layout" id="tickerblock-layout"
 					value={layout}
 					onchange={(e) =>
 						props.onUpdate({

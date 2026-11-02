@@ -374,6 +374,8 @@
 				<div class="search-box">
 					<IconSearch size={18} />
 					<input
+						id="search-presets-input"
+						name="search_presets"
 						type="text"
 						placeholder="Search presets..."
 						bind:value={searchQuery}
@@ -605,6 +607,7 @@
 					<input
 						{@attach focusPresetNameInput}
 						id="preset-name"
+						name="preset_name"
 						type="text"
 						bind:value={savePresetName}
 						placeholder="e.g., Primary CTA Button"
@@ -615,6 +618,7 @@
 					<label for="preset-description">Description</label>
 					<textarea
 						id="preset-description"
+						name="preset_description"
 						bind:value={savePresetDescription}
 						placeholder="Describe what this preset is for..."
 						rows="3"></textarea>
@@ -622,7 +626,7 @@
 
 				<div class="form-field">
 					<label for="preset-category">Category</label>
-					<select id="preset-category" bind:value={savePresetCategory}>
+					<select id="preset-category" name="preset_category" bind:value={savePresetCategory}>
 						{#each Object.entries(CATEGORY_CONFIG) as [key, config] (key)}
 							<option value={key}>{config.name}</option>
 						{/each}

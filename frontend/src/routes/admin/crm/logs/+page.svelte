@@ -210,7 +210,7 @@
 				onchange={loadLogs}
 			/>
 		</div>
-		<select bind:value={levelFilter} class="filter-select" onchange={loadLogs}>
+		<select id="logs-levelfilter" name="logs_levelfilter" bind:value={levelFilter} class="filter-select" onchange={loadLogs}>
 			<option value="">All Levels</option>
 			<option value="debug">Debug</option>
 			<option value="info">Info</option>
@@ -218,7 +218,7 @@
 			<option value="error">Error</option>
 			<option value="critical">Critical</option>
 		</select>
-		<select bind:value={categoryFilter} class="filter-select" onchange={loadLogs}>
+		<select id="logs-categoryfilter" name="logs_categoryfilter" bind:value={categoryFilter} class="filter-select" onchange={loadLogs}>
 			<option value="">All Categories</option>
 			<option value="email">Email</option>
 			<option value="automation">Automation</option>

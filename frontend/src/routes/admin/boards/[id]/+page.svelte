@@ -546,19 +546,19 @@
 			<!-- Filter Bar -->
 			{#if showFilters}
 				<div class="filter-bar">
-					<select bind:value={filterAssignee} class="filter-select">
+					<select id="filter-assignee" name="filter_assignee" bind:value={filterAssignee} class="filter-select">
 						<option value={null}>All assignees</option>
 						{#each members as member (member.user_id)}
 							<option value={member.user_id}>{member.name}</option>
 						{/each}
 					</select>
-					<select bind:value={filterLabel} class="filter-select">
+					<select id="filter-label" name="filter_label" bind:value={filterLabel} class="filter-select">
 						<option value={null}>All labels</option>
 						{#each labels as label (label.id)}
 							<option value={label.id}>{label.title}</option>
 						{/each}
 					</select>
-					<select bind:value={filterPriority} class="filter-select">
+					<select id="filter-priority" name="filter_priority" bind:value={filterPriority} class="filter-select">
 						<option value={null}>All priorities</option>
 						<option value="urgent">Urgent</option>
 						<option value="high">High</option>
@@ -720,6 +720,8 @@
 							{#if showNewTaskInput === stage.id}
 								<div class="task-composer">
 									<textarea
+										id="new-task-title-input"
+										name="new_task_title"
 										bind:value={newTaskTitle}
 										placeholder="Enter task title..."
 										rows="2"
@@ -883,6 +885,8 @@
 							<h3 class="modal-section-title">Description</h3>
 							{#if editingTaskDescription}
 								<textarea
+									id="task-description-input"
+									name="task_description"
 									value={selectedTask.description || ''}
 									onblur={(e: FocusEvent) => {
 										updateTask({ description: (e.currentTarget as HTMLTextAreaElement).value });
@@ -991,6 +995,8 @@
 									</div>
 									<div class="comment-body">
 										<textarea
+											id="new-comment-input"
+											name="new_comment"
 											bind:value={newComment}
 											placeholder="Write a comment..."
 											rows="2"
@@ -1073,6 +1079,8 @@
 						<div class="sidebar-section">
 							<h4 class="sidebar-label">Priority</h4>
 							<select
+								id="task-priority-select"
+								name="task_priority"
 								value={selectedTask.priority}
 								onchange={(e: Event) =>
 									updateTask({

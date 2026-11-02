@@ -511,7 +511,7 @@
 							<p class="drop-text">Drag & drop video here</p>
 							<p class="drop-subtext">or</p>
 							<label class="btn-browse">
-								<input type="file" accept="video/*" onchange={handleFileSelect} hidden />
+								<input id="weeklyvideouploader-file" name="weeklyvideouploader_file" type="file" accept="video/*" onchange={handleFileSelect} hidden />
 								Browse Files
 							</label>
 						{/if}

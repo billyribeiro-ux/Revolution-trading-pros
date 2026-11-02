@@ -1005,6 +1005,8 @@
 							<div class="search-box">
 								<Icon name="IconSearch" size={16} />
 								<input
+									id="search-assets-input"
+									name="search_assets"
 									type="text"
 									placeholder="Search assets..."
 									bind:value={searchQuery}
@@ -1026,6 +1028,8 @@
 
 							<!-- Type Filter -->
 							<select
+								id="asset-type-filter"
+								name="asset_type_filter"
 								class="filter-select"
 								bind:value={typeFilter}
 								onchange={() => fetchAssets(true)}
@@ -1038,7 +1042,7 @@
 							</select>
 
 							<!-- Sort -->
-							<select class="filter-select" bind:value={sortBy} onchange={() => fetchAssets(true)}>
+							<select id="asset-sort-by" name="asset_sort_by" class="filter-select" bind:value={sortBy} onchange={() => fetchAssets(true)}>
 								<option value="created_at">Date Added</option>
 								<option value="filename">Name</option>
 								<option value="file_size">Size</option>
@@ -1361,12 +1365,13 @@
 										<div class="metadata-form" transition:slide={{ duration: 200 }}>
 											<div class="field">
 												<label for="meta-title">Title</label>
-												<input id="meta-title" type="text" bind:value={metadataForm.title} />
+												<input id="meta-title" name="meta_title" type="text" bind:value={metadataForm.title} />
 											</div>
 											<div class="field">
 												<label for="meta-alt">Alt Text</label>
 												<input
 													id="meta-alt"
+													name="meta_alt"
 													type="text"
 													bind:value={metadataForm.alt_text}
 													placeholder="Describe the image"
@@ -1374,12 +1379,13 @@
 											</div>
 											<div class="field">
 												<label for="meta-caption">Caption</label>
-												<textarea id="meta-caption" bind:value={metadataForm.caption}></textarea>
+												<textarea id="meta-caption" name="meta_caption" bind:value={metadataForm.caption}></textarea>
 											</div>
 											<div class="field">
 												<label for="meta-credits">Credits</label>
 												<input
 													id="meta-credits"
+													name="meta_credits"
 													type="text"
 													bind:value={metadataForm.credits}
 													placeholder="Photo credit or attribution"
@@ -1389,6 +1395,7 @@
 												<label for="meta-seo-title">SEO Title</label>
 												<input
 													id="meta-seo-title"
+													name="meta_seo_title"
 													type="text"
 													bind:value={metadataForm.seo_title}
 												/>
@@ -1397,13 +1404,14 @@
 												<label for="meta-seo-description">SEO Description</label>
 												<input
 													id="meta-seo-description"
+													name="meta_seo_description"
 													type="text"
 													bind:value={metadataForm.seo_description}
 												/>
 											</div>
 											<div class="field">
 												<label for="meta-tags">Tags (comma separated)</label>
-												<input id="meta-tags" type="text" bind:value={metadataForm.tags} />
+												<input id="meta-tags" name="meta_tags" type="text" bind:value={metadataForm.tags} />
 											</div>
 											<button
 												class="save-btn"

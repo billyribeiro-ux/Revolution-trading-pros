@@ -266,7 +266,7 @@
 					<span class="author-block__upload-hint">Upload photo</span>
 				{/if}
 			</div>
-			<input
+			<input name="author_block_file_in" id="authorblock-author_block_file_in"
 				type="file"
 				accept="image/*"
 				onchange={handleFileSelect}
@@ -286,7 +286,7 @@
 			<div class="author-block__photo-actions">
 				{#if showUrlInput}
 					<div class="author-block__url-input-wrapper">
-						<input
+						<input name="urlInputValue" id="authorblock-urlInputValue"
 							type="url"
 							class="author-block__url-input"
 							placeholder="Paste image URL..."
@@ -393,7 +393,7 @@
 				{#each socials as social, index (index)}
 					{#if props.isEditing}
 						<div class="author-block__social-edit">
-							<select
+							<select name="platform" id="authorblock-platform"
 								value={social.platform}
 								onchange={(e) =>
 									updateSocial(index, 'platform', (e.target as HTMLSelectElement).value)}
@@ -403,7 +403,7 @@
 									<option value={option.value}>{option.label}</option>
 								{/each}
 							</select>
-							<input
+							<input name="url" id="authorblock-url"
 								type="url"
 								placeholder="https://..."
 								value={social.url}

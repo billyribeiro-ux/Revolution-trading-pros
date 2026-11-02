@@ -30,7 +30,7 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<textarea
+				<textarea id="addnotemodal-content" name="addnotemodal_content"
 					class="note-input"
 					placeholder="Write your note here..."
 					bind:value={content}

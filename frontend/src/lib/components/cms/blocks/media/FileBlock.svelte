@@ -81,19 +81,19 @@
 				<FileIcon size={28} aria-hidden="true" />
 			</div>
 			<div class="file-inputs">
-				<input
+				<input name="fileName" id="fileblock-fileName"
 					type="text"
 					placeholder="File name (e.g., document.pdf)"
 					value={fileName}
 					oninput={(e) => updateContent({ fileName: (e.target as HTMLInputElement).value })}
 				/>
-				<input
+				<input name="fileUrl" id="fileblock-fileUrl"
 					type="url"
 					placeholder="File URL"
 					value={fileUrl}
 					oninput={(e) => updateContent({ fileUrl: (e.target as HTMLInputElement).value })}
 				/>
-				<input
+				<input name="file_size_bytes_" id="fileblock-file_size_bytes_"
 					type="number"
 					placeholder="File size (bytes)"
 					value={fileSize || ''}

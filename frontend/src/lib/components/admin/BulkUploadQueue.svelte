@@ -320,6 +320,8 @@
 		</div>
 
 		<input
+			id="bulk-upload-file-input"
+			name="bulk_upload_files"
 			type="file"
 			accept="video/*"
 			multiple

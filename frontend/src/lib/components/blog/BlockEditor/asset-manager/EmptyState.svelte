@@ -22,6 +22,8 @@
 	<label class="upload-cta">
 		Upload Files
 		<input
+			id="empty-state-upload"
+			name="asset_upload"
 			type="file"
 			multiple
 			accept={acceptTypes.map((t) => (t === 'document' ? 'application/*' : `${t}/*`)).join(',')}

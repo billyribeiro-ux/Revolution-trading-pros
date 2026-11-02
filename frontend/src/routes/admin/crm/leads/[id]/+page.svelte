@@ -384,7 +384,7 @@
 						</p>
 					{/if}
 					<div class="status-badges">
-						<select
+						<select id="id-lead-status" name="id_lead_status"
 							class={['status-select', getStatusClass(lead.status)]}
 							value={lead.status}
 							onchange={(e) => updateStatus((e.target as HTMLSelectElement).value)}
@@ -770,7 +770,7 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<textarea
+				<textarea id="id-newnotecontent" name="id_newnotecontent"
 					class="note-input"
 					placeholder="Write your note here..."
 					bind:value={newNoteContent}

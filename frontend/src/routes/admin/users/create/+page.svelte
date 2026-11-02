@@ -1287,16 +1287,16 @@
 					</div>
 				{/if}
 				<div class="checkbox-stack">
-					<label class="checkbox-row">
-						<input type="checkbox" bind:checked={formData.require_2fa} />
+					<label class="checkbox-row" for="create-user-require-2fa">
+						<input type="checkbox" id="create-user-require-2fa" name="require_2fa" bind:checked={formData.require_2fa} />
 						<span>Require Two-Factor Authentication</span>
 					</label>
-					<label class="checkbox-row">
-						<input type="checkbox" bind:checked={formData.temporary_password} />
+					<label class="checkbox-row" for="create-user-temporary-password">
+						<input type="checkbox" id="create-user-temporary-password" name="temporary_password" bind:checked={formData.temporary_password} />
 						<span>Temporary password (expires)</span>
 					</label>
-					<label class="checkbox-row">
-						<input type="checkbox" bind:checked={formData.require_password_change} />
+					<label class="checkbox-row" for="create-user-require-password-change">
+						<input type="checkbox" id="create-user-require-password-change" name="require_password_change" bind:checked={formData.require_password_change} />
 						<span>Require password change on first login</span>
 					</label>
 				</div>
@@ -1471,25 +1471,25 @@
 				</div>
 			{:else if activeStep === 'compliance'}
 				<div class="compliance-stack">
-					<label class="check-card">
-						<input type="checkbox" bind:checked={formData.terms_accepted} />
+					<label class="check-card" for="create-user-terms-accepted">
+						<input type="checkbox" id="create-user-terms-accepted" name="terms_accepted" bind:checked={formData.terms_accepted} />
 						<span>I accept the Terms of Service *</span>
 					</label>
-					<label class="check-card">
-						<input type="checkbox" bind:checked={formData.privacy_accepted} />
+					<label class="check-card" for="create-user-privacy-accepted">
+						<input type="checkbox" id="create-user-privacy-accepted" name="privacy_accepted" bind:checked={formData.privacy_accepted} />
 						<span>I accept the Privacy Policy *</span>
 					</label>
-					<label class="check-card">
-						<input type="checkbox" bind:checked={formData.data_processing_consent} />
+					<label class="check-card" for="create-user-data-processing-consent">
+						<input type="checkbox" id="create-user-data-processing-consent" name="data_processing_consent" bind:checked={formData.data_processing_consent} />
 						<span>Data Processing Consent</span>
 					</label>
-					<label class="check-card">
-						<input type="checkbox" bind:checked={formData.marketing_consent} />
+					<label class="check-card" for="create-user-marketing-consent">
+						<input type="checkbox" id="create-user-marketing-consent" name="marketing_consent" bind:checked={formData.marketing_consent} />
 						<span>Marketing Communications</span>
 					</label>
 					<div class="field-group">
 						<label for="onboarding">Onboarding Plan</label>
-						<select id="onboarding" bind:value={formData.onboarding_plan} class="form-control">
+						<select id="onboarding" name="onboarding_plan" bind:value={formData.onboarding_plan} class="form-control">
 							{#each onboardingPlans as plan (plan.id)}
 								<option value={plan.id}>{plan.name}</option>
 							{/each}
@@ -1521,12 +1521,12 @@
 						>
 					</div>
 					<div class="review-options">
-						<label class="checkbox-row">
-							<input type="checkbox" bind:checked={formData.send_welcome_email} />
+						<label class="checkbox-row" for="create-user-send-welcome-email">
+							<input type="checkbox" id="create-user-send-welcome-email" name="send_welcome_email" bind:checked={formData.send_welcome_email} />
 							<span>Send welcome email</span>
 						</label>
-						<label class="checkbox-row">
-							<input type="checkbox" bind:checked={formData.add_to_directory} />
+						<label class="checkbox-row" for="create-user-add-to-directory">
+							<input type="checkbox" id="create-user-add-to-directory" name="add_to_directory" bind:checked={formData.add_to_directory} />
 							<span>Add to directory</span>
 						</label>
 					</div>

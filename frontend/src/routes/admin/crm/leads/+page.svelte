@@ -831,7 +831,7 @@
 										</div>
 									</td>
 									<td>
-										<select
+										<select id="leads-lead-status" name="leads_lead_status"
 											class={['status-select', getStatusClass(lead.status)]}
 											value={lead.status}
 											onchange={(e) =>

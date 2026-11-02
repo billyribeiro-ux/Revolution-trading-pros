@@ -261,7 +261,7 @@
 		<div class="toc-settings">
 			<label class="setting-field">
 				<span>Max heading level:</span>
-				<select
+				<select name="maxLevel" id="tocblock-maxLevel"
 					value={maxLevel}
 					onchange={(e) =>
 						props.onUpdate({

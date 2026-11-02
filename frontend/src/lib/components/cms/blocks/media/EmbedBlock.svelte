@@ -105,7 +105,7 @@
 			</div>
 			<div class="embed-input-wrapper">
 				<IconLink size={18} aria-hidden="true" />
-				<input
+				<input name="embedUrl" id="embedblock-embedUrl"
 					type="url"
 					placeholder="Paste YouTube, Vimeo, or other embed URL..."
 					value={embedUrl}

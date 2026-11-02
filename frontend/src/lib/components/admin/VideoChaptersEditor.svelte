@@ -248,6 +248,8 @@
 					{#if editingId === chapter.id}
 						<div class="chapter-edit-form">
 							<input
+								id="edit-chapter-title"
+								name="edit_chapter_title"
 								type="text"
 								bind:value={editForm.title}
 								placeholder="Chapter title"
@@ -255,6 +257,8 @@
 							/>
 							<div class="time-inputs">
 								<input
+									id="edit-chapter-start"
+									name="edit_chapter_start"
 									type="text"
 									bind:value={editForm.startTime}
 									placeholder="Start (MM:SS)"
@@ -262,6 +266,8 @@
 								/>
 								<span>-</span>
 								<input
+									id="edit-chapter-end"
+									name="edit_chapter_end"
 									type="text"
 									bind:value={editForm.endTime}
 									placeholder="End (optional)"
@@ -269,6 +275,8 @@
 								/>
 							</div>
 							<textarea
+								id="edit-chapter-desc"
+								name="edit_chapter_desc"
 								bind:value={editForm.description}
 								placeholder="Description (optional)"
 								rows="2"></textarea>
@@ -326,6 +334,8 @@
 			<h4>Add New Chapter</h4>
 			<div class="form-row">
 				<input
+					id="new-chapter-title"
+					name="new_chapter_title"
 					type="text"
 					bind:value={newChapter.title}
 					placeholder="Chapter title"
@@ -334,12 +344,16 @@
 			</div>
 			<div class="form-row time-row">
 				<input
+					id="new-chapter-start"
+					name="new_chapter_start"
 					type="text"
 					bind:value={newChapter.startTime}
 					placeholder="Start time (MM:SS)"
 					class="input-time"
 				/>
 				<input
+					id="new-chapter-end"
+					name="new_chapter_end"
 					type="text"
 					bind:value={newChapter.endTime}
 					placeholder="End time (optional)"
@@ -347,7 +361,12 @@
 				/>
 			</div>
 			<div class="form-row">
-				<textarea bind:value={newChapter.description} placeholder="Description (optional)" rows="2"
+				<textarea
+					id="new-chapter-desc"
+					name="new_chapter_desc"
+					bind:value={newChapter.description}
+					placeholder="Description (optional)"
+					rows="2"
 				></textarea>
 			</div>
 			<button

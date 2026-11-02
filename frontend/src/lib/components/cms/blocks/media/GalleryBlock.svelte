@@ -420,21 +420,21 @@
 									</button>
 								</div>
 								<div class="gallery-item-meta">
-									<input
+									<input name="alt" id="galleryblock-alt"
 										type="text"
 										class="gallery-alt-input"
 										placeholder="Alt text (accessibility)"
 										value={image.alt}
 										oninput={(e) => updateImageAlt(index, (e.target as HTMLInputElement).value)}
 									/>
-									<input
+									<input name="caption" id="galleryblock-caption"
 										type="text"
 										class="gallery-caption-input"
 										placeholder="Caption (visible)"
 										value={image.caption}
 										oninput={(e) => updateImageCaption(index, (e.target as HTMLInputElement).value)}
 									/>
-									<input
+									<input name="url" id="galleryblock-url"
 										type="url"
 										class="gallery-url-input"
 										placeholder="Image URL"
@@ -576,19 +576,19 @@
 							<IconX size={16} />
 						</button>
 					</div>
-					<input
+					<input name="newImageUrl" id="galleryblock-newImageUrl"
 						type="url"
 						class="add-form-input"
 						placeholder="Image URL (https://...)"
 						bind:value={newImageUrl}
 					/>
-					<input
+					<input name="newImageAlt" id="galleryblock-newImageAlt"
 						type="text"
 						class="add-form-input"
 						placeholder="Alt text for accessibility"
 						bind:value={newImageAlt}
 					/>
-					<input
+					<input name="newImageCaption" id="galleryblock-newImageCaption"
 						type="text"
 						class="add-form-input"
 						placeholder="Caption (optional, visible below image)"
@@ -615,7 +615,7 @@
 			<div class="gallery-settings">
 				<div class="setting-group">
 					<label class="setting-label" for="layout-{props.blockId}">Layout</label>
-					<select
+					<select name="layout"
 						id="layout-{props.blockId}"
 						class="setting-select"
 						value={layout}
@@ -629,7 +629,7 @@
 				{#if layout !== 'carousel'}
 					<div class="setting-group">
 						<label class="setting-label" for="columns-{props.blockId}">Columns</label>
-						<select
+						<select name="columns"
 							id="columns-{props.blockId}"
 							class="setting-select"
 							value={columns}
@@ -642,7 +642,7 @@
 					</div>
 					<div class="setting-group">
 						<label class="setting-label" for="gap-{props.blockId}">Gap</label>
-						<select
+						<select name="gap"
 							id="gap-{props.blockId}"
 							class="setting-select"
 							value={gap}

@@ -443,6 +443,7 @@
 				<label class="image-block__alt-label" for={descriptionId}> Alt text (accessibility) </label>
 				<input
 					id={descriptionId}
+					name="image_alt"
 					type="text"
 					class="image-block__alt-input"
 					value={imageAlt}
@@ -524,6 +525,8 @@
 
 						<div class="image-block__url-input-wrapper">
 							<input
+								id="image-url-input-{props.block?.id ?? 'default'}"
+								name="image_url"
 								type="url"
 								class="image-block__url-input"
 								placeholder="Paste image URL..."
@@ -552,6 +555,8 @@
 			<!-- Hidden file input -->
 			<input
 				{@attach attachFileInput}
+				id="image-file-input-{props.block?.id ?? 'default'}"
+				name="image_file"
 				type="file"
 				accept="image/*"
 				onchange={handleFileSelect}

@@ -935,6 +935,8 @@
 
 				<!-- Filters -->
 				<select
+					id="blog-status-filter"
+					name="status_filter"
 					class="filter-select"
 					value={statusFilter}
 					onchange={(event) => setStatusFilter((event.currentTarget as HTMLSelectElement).value)}
@@ -945,6 +947,8 @@
 				</select>
 
 				<select
+					id="blog-category-filter"
+					name="category_filter"
 					class="filter-select"
 					value={categoryFilter}
 					onchange={(event) => setCategoryFilter((event.currentTarget as HTMLSelectElement).value)}
@@ -958,6 +962,8 @@
 				<!-- Sort -->
 				<div class="sort-controls">
 					<select
+						id="blog-sort-by"
+						name="sort_by"
 						class="filter-select"
 						value={sortBy}
 						onchange={(event) => setSortBy((event.currentTarget as HTMLSelectElement).value)}
@@ -998,10 +1004,10 @@
 					<button class="btn-secondary" onclick={() => (showExportModal = true)}
 						><IconDownload size={18} />Export</button
 					>
-					<label class="btn-secondary">
+					<label class="btn-secondary" for="blog-import-posts-file">
 						<IconUpload size={18} />
 						Import
-						<input type="file" accept=".csv,.json" onchange={importPosts} hidden />
+						<input id="blog-import-posts-file" name="import_posts_file" type="file" accept=".csv,.json" onchange={importPosts} hidden />
 					</label>
 					<a href="/admin/blog/categories" class="btn-secondary">
 						<IconFilter size={18} />

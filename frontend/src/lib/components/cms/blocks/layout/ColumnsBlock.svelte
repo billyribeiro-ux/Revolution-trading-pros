@@ -127,7 +127,7 @@
 
 			<div class="toolbar-group">
 				<label class="toolbar-label" for="custom-columns">Custom:</label>
-				<input
+				<input name="columnCount"
 					type="number"
 					id="custom-columns"
 					class="column-count-input"
@@ -141,7 +141,7 @@
 
 			<div class="toolbar-group">
 				<label class="toolbar-label" for="gap-select">Gap:</label>
-				<select
+				<select name="gap"
 					id="gap-select"
 					class="gap-select"
 					value={gap}

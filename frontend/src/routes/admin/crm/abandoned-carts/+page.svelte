@@ -289,7 +289,7 @@
 				oninput={handleSearchInput}
 			/>
 		</div>
-		<select value={statusFilter} class="filter-select" onchange={handleStatusFilterChange}>
+		<select id="abandoned-carts-statusfilter" name="abandoned_carts_statusfilter" value={statusFilter} class="filter-select" onchange={handleStatusFilterChange}>
 			<option value="">All Statuses</option>
 			<option value="draft">Draft</option>
 			<option value="processing">Processing</option>

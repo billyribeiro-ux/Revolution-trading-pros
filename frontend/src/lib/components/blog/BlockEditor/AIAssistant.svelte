@@ -712,6 +712,8 @@
 			<div class="generate-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
 					<textarea
+						id="ai-prompt-generate"
+						name="ai_prompt_generate"
 						bind:value={prompt}
 						placeholder="Describe what you want to write about..."
 						rows="3"
@@ -721,7 +723,7 @@
 				<div class="options-row">
 					<div class="option-group">
 						<label for="ai-tone-select">Tone</label>
-						<select id="ai-tone-select" bind:value={tone} disabled={isGenerating}>
+						<select id="ai-tone-select" name="ai_tone" bind:value={tone} disabled={isGenerating}>
 							{#each toneOptions as option (option.value)}
 								<option value={option.value}>{option.label}</option>
 							{/each}
@@ -729,7 +731,7 @@
 					</div>
 					<div class="option-group">
 						<label for="ai-length-select">Length</label>
-						<select id="ai-length-select" bind:value={length} disabled={isGenerating}>
+						<select id="ai-length-select" name="ai_length" bind:value={length} disabled={isGenerating}>
 							<option value="short">Short (~100 words)</option>
 							<option value="medium">Medium (~200 words)</option>
 							<option value="long">Long (~400 words)</option>
@@ -740,7 +742,7 @@
 				<div class="options-row">
 					<div class="option-group full">
 						<label for="ai-style-select">Style</label>
-						<select id="ai-style-select" bind:value={style} disabled={isGenerating}>
+						<select id="ai-style-select" name="ai_style" bind:value={style} disabled={isGenerating}>
 							<option value="blog">Blog Post</option>
 							<option value="news">News Article</option>
 							<option value="tutorial">Tutorial</option>
@@ -754,6 +756,8 @@
 			<div class="improve-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
 					<textarea
+						id="ai-prompt-improve"
+						name="ai_prompt_improve"
 						bind:value={prompt}
 						placeholder="Paste the text you want to improve..."
 						rows="6"
@@ -765,6 +769,8 @@
 			<div class="translate-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
 					<textarea
+						id="ai-prompt-translate"
+						name="ai_prompt_translate"
 						bind:value={prompt}
 						placeholder="Paste the text you want to translate..."
 						rows="6"
@@ -773,7 +779,7 @@
 				<div class="options-row">
 					<div class="option-group full">
 						<label for="ai-language-select">Translate to</label>
-						<select id="ai-language-select" bind:value={targetLanguage} disabled={isGenerating}>
+						<select id="ai-language-select" name="ai_language" bind:value={targetLanguage} disabled={isGenerating}>
 							{#each languages as lang (lang.code)}
 								<option value={lang.code}>{lang.name}</option>
 							{/each}
@@ -785,6 +791,8 @@
 			<div class="summarize-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
 					<textarea
+						id="ai-prompt-summarize"
+						name="ai_prompt_summarize"
 						bind:value={prompt}
 						placeholder="Paste the text you want to summarize..."
 						rows="6"

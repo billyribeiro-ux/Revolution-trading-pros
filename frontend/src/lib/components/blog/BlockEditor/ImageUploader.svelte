@@ -598,6 +598,8 @@
 	>
 		<input
 			{@attach captureFileInput}
+			id="image-file-input"
+			name="image_upload"
 			type="file"
 			{accept}
 			{multiple}

@@ -276,7 +276,7 @@
 				bind:value={searchQuery}
 			/>
 		</div>
-		<select class="filter-select" bind:value={filterActive}>
+		<select id="segments-filteractive" name="segments_filteractive" class="filter-select" bind:value={filterActive}>
 			<option value="all">All Segments</option>
 			<option value={true}>Active</option>
 			<option value={false}>Inactive</option>

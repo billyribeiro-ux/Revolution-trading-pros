@@ -363,7 +363,7 @@
 	<div class="testimonial-block__settings">
 		<!-- Show Photo Toggle -->
 		<label class="testimonial-block__setting">
-			<input type="checkbox" checked={showPhoto} onchange={handleShowPhotoChange} />
+			<input name="showPhoto" id="testimonialblock-showPhoto" type="checkbox" checked={showPhoto} onchange={handleShowPhotoChange} />
 			<span>Show author photo</span>
 		</label>
 
@@ -398,7 +398,7 @@
 						<span class="testimonial-block__upload-divider">or</span>
 
 						<div class="testimonial-block__url-input-wrapper">
-							<input
+							<input name="urlInputValue" id="testimonialblock-urlInputValue"
 								type="url"
 								class="testimonial-block__url-input"
 								placeholder="Paste image URL..."
@@ -421,7 +421,7 @@
 				{/if}
 
 				<!-- Hidden file input -->
-				<input
+				<input name="testimonial_block_fi" id="testimonialblock-testimonial_block_fi"
 					type="file"
 					accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
 					onchange={handleFileSelect}

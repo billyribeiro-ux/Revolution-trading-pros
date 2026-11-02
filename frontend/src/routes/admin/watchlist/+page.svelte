@@ -300,7 +300,7 @@
 			</div>
 
 			<div class="filter-group">
-				<select bind:value={selectedStatus}>
+				<select id="watchlist-selectedstatus" name="watchlist_selectedstatus" bind:value={selectedStatus}>
 					<option value="">All Status</option>
 					<option value="published">Published</option>
 					<option value="draft">Draft</option>

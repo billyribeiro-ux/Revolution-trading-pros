@@ -93,7 +93,7 @@
 				<div class="source-section">
 					<label>
 						<span class="label-text">Content to Summarize</span>
-						<textarea
+						<textarea name="sourceContent" id="aisummaryblock-sourceContent"
 							placeholder="Paste or type the content you want to summarize..."
 							value={sourceContent}
 							oninput={(e) =>
@@ -104,7 +104,7 @@
 					<div class="summary-controls">
 						<label class="length-select">
 							<span>Length:</span>
-							<select
+							<select name="summaryLength" id="aisummaryblock-summaryLength"
 								value={summaryLength}
 								onchange={(e) =>
 									updateContent({

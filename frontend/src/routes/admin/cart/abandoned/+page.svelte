@@ -493,7 +493,7 @@
 
 			<div class="filter-group">
 				<IconFilter size={16} />
-				<select bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
+				<select id="abandoned-cart-status-filter" name="status_filter" bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
 					<option value="">All Status</option>
 					<option value="pending">Pending</option>
 					<option value="email_sent">Email Sent</option>

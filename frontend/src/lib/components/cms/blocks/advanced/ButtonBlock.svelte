@@ -111,7 +111,7 @@
 		<div class="settings-row">
 			<label class="setting-field">
 				<span>URL:</span>
-				<input
+				<input name="buttonUrl" id="buttonblock-buttonUrl"
 					type="url"
 					placeholder="https://..."
 					value={buttonUrl}
@@ -123,7 +123,7 @@
 		<div class="settings-row">
 			<label class="setting-field">
 				<span>Style:</span>
-				<select
+				<select name="buttonStyle" id="buttonblock-buttonStyle"
 					value={buttonStyle}
 					onchange={(e) =>
 						updateContent({ buttonStyle: (e.target as HTMLSelectElement).value as ButtonStyle })}
@@ -137,7 +137,7 @@
 
 			<label class="setting-field">
 				<span>Size:</span>
-				<select
+				<select name="buttonSize" id="buttonblock-buttonSize"
 					value={buttonSize}
 					onchange={(e) =>
 						updateContent({ buttonSize: (e.target as HTMLSelectElement).value as ButtonSize })}
@@ -151,7 +151,7 @@
 
 		<div class="settings-row">
 			<label class="setting-checkbox">
-				<input
+				<input name="fullWidth" id="buttonblock-fullWidth"
 					type="checkbox"
 					checked={fullWidth}
 					onchange={(e) => updateSettings({ fullWidth: (e.target as HTMLInputElement).checked })}

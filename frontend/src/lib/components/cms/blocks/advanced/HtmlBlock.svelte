@@ -197,7 +197,7 @@
 			{#if viewMode === 'edit' || viewMode === 'split'}
 				<div class="editor-pane">
 					<label class="sr-only" for="html-editor-{props.blockId}"> HTML Code Editor </label>
-					<textarea
+					<textarea name="enter_your_html_code"
 						id="html-editor-{props.blockId}"
 						class="html-textarea"
 						style:height={editorHeightValue}
@@ -254,7 +254,7 @@ Example:
 			<div class="html-settings">
 				<label class="setting-field">
 					<span>Editor Height:</span>
-					<select
+					<select name="editorHeight" id="htmlblock-editorHeight"
 						value={editorHeight}
 						onchange={(e) =>
 							updateSettings({
@@ -269,7 +269,7 @@ Example:
 				</label>
 
 				<label class="setting-checkbox">
-					<input
+					<input name="showWarning" id="htmlblock-showWarning"
 						type="checkbox"
 						checked={showWarning}
 						onchange={(e) =>

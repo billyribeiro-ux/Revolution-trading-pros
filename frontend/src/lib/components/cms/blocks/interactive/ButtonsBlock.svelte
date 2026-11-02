@@ -137,7 +137,7 @@
 					<span class="setting-title">Button {index + 1}</span>
 					<label class="setting-field">
 						<span>URL:</span>
-						<input
+						<input name="url" id="buttonsblock-url"
 							type="url"
 							value={button.url}
 							oninput={(e) => updateButton(index, { url: (e.target as HTMLInputElement).value })}
@@ -145,7 +145,7 @@
 					</label>
 					<label class="setting-field">
 						<span>Style:</span>
-						<select
+						<select name="style" id="buttonsblock-style"
 							value={button.style}
 							onchange={(e) =>
 								updateButton(index, {
@@ -159,7 +159,7 @@
 						</select>
 					</label>
 					<label class="setting-checkbox">
-						<input
+						<input name="newTab" id="buttonsblock-newTab"
 							type="checkbox"
 							checked={button.newTab}
 							onchange={(e) =>
@@ -172,7 +172,7 @@
 			<div class="layout-settings">
 				<label class="setting-field">
 					<span>Layout:</span>
-					<select
+					<select name="layout" id="buttonsblock-layout"
 						value={layout}
 						onchange={(e) =>
 							props.onUpdate({
@@ -189,7 +189,7 @@
 				</label>
 				<label class="setting-field">
 					<span>Align:</span>
-					<select
+					<select name="alignment" id="buttonsblock-alignment"
 						value={alignment}
 						onchange={(e) =>
 							props.onUpdate({

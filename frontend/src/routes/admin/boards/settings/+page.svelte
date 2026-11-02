@@ -296,19 +296,23 @@
 								{#each settings.default_stages as stage, index (index)}
 									<div class="config-row">
 										<input
+											id={`stage-color-${index}`}
+											name={`stage_color_${index}`}
 											type="color"
 											bind:value={stage.color}
 											class="color-input"
 											aria-label={`Stage ${index + 1} color`}
 										/>
 										<input
+											id={`stage-title-${index}`}
+											name={`stage_title_${index}`}
 											type="text"
 											bind:value={stage.title}
 											class="compact-input"
 											aria-label={`Stage ${index + 1} title`}
 										/>
-										<label class="checkbox-option">
-											<input type="checkbox" bind:checked={stage.auto_complete} />
+										<label class="checkbox-option" for={`stage-auto-complete-${index}`}>
+											<input type="checkbox" id={`stage-auto-complete-${index}`} name={`stage_auto_complete_${index}`} bind:checked={stage.auto_complete} />
 											<span>Auto-complete</span>
 										</label>
 										<button
@@ -325,20 +329,24 @@
 
 							<div class="config-row config-row--new">
 								<input
+									id="new-stage-color"
+									name="new_stage_color"
 									type="color"
 									bind:value={newStage.color}
 									class="color-input"
 									aria-label="New stage color"
 								/>
 								<input
+									id="new-stage-title"
+									name="new_stage_title"
 									type="text"
 									bind:value={newStage.title}
 									placeholder="Stage name..."
 									class="compact-input"
 									aria-label="New stage name"
 								/>
-								<label class="checkbox-option">
-									<input type="checkbox" bind:checked={newStage.auto_complete} />
+								<label class="checkbox-option" for="new-stage-auto-complete">
+									<input type="checkbox" id="new-stage-auto-complete" name="new_stage_auto_complete" bind:checked={newStage.auto_complete} />
 									<span>Auto-complete</span>
 								</label>
 								<button
@@ -359,12 +367,16 @@
 								{#each settings.default_labels as label, index (index)}
 									<div class="config-row">
 										<input
+											id={`label-color-${index}`}
+											name={`label_color_${index}`}
 											type="color"
 											bind:value={label.color}
 											class="color-input"
 											aria-label={`Label ${index + 1} color`}
 										/>
 										<input
+											id={`label-title-${index}`}
+											name={`label_title_${index}`}
 											type="text"
 											bind:value={label.title}
 											class="compact-input"
@@ -387,12 +399,16 @@
 
 							<div class="config-row config-row--new">
 								<input
+									id="new-label-color"
+									name="new_label_color"
 									type="color"
 									bind:value={newLabel.color}
 									class="color-input"
 									aria-label="New label color"
 								/>
 								<input
+									id="new-label-title"
+									name="new_label_title"
 									type="text"
 									bind:value={newLabel.title}
 									placeholder="Label name..."

@@ -117,7 +117,7 @@
 	{#if props.isEditing && props.isSelected}
 		<div class="toggle-settings">
 			<label class="setting-checkbox">
-				<input
+				<input name="defaultOpen" id="toggleblock-defaultOpen"
 					type="checkbox"
 					checked={defaultOpen}
 					onchange={(e) =>
@@ -133,7 +133,7 @@
 
 			<label class="setting-field">
 				<span>Icon style:</span>
-				<select
+				<select name="iconStyle" id="toggleblock-iconStyle"
 					value={iconStyle}
 					onchange={(e) =>
 						props.onUpdate({

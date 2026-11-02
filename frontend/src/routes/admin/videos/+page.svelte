@@ -359,7 +359,7 @@
 			video_platform: video.video_platform,
 			thumbnail_url: video.thumbnail_url || '',
 			// FIX-2026-04-26-audit (P2-5): always normalise to a YYYY-MM-DD string so
-			// the <input type="date"> binding never receives a Date/number that the
+			// the <input id="videos-date" name="videos_date" type="date"> binding never receives a Date/number that the
 			// browser silently rejects. Strings: trim the time portion. Anything
 			// else: coerce through Date and slice to ISO date. Invalid → today.
 			video_date: (() => {
@@ -1964,7 +1964,7 @@
 						<p class="text-muted">or</p>
 						<label class="btn-secondary">
 							Browse Files
-							<input
+							<input id="videos-file" name="videos_file"
 								type="file"
 								accept="video/*,.mp4,.mov,.webm"
 								multiple

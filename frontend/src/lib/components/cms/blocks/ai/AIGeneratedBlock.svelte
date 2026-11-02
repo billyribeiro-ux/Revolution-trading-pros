@@ -94,7 +94,7 @@
 		<div class="ai-input-section">
 			<label class="prompt-label">
 				<span>Prompt</span>
-				<textarea
+				<textarea name="prompt" id="aigeneratedblock-prompt"
 					placeholder="Describe what content you want the AI to generate..."
 					value={prompt}
 					oninput={(e) => updateContent({ aiPrompt: (e.target as HTMLTextAreaElement).value })}
@@ -105,7 +105,7 @@
 			<div class="ai-controls">
 				<label class="model-select">
 					<span>Model:</span>
-					<select
+					<select name="model" id="aigeneratedblock-model"
 						value={model}
 						onchange={(e) => updateContent({ aiModel: (e.target as HTMLSelectElement).value })}
 					>

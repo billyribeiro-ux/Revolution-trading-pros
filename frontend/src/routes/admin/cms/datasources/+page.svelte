@@ -979,7 +979,7 @@
 					/>
 				</div>
 				{#if dimensions.length > 1}
-					<select
+					<select id="datasources-selecteddimension" name="datasources_selecteddimension"
 						class="dimension-select"
 						value={selectedDimension}
 						onchange={handleDimensionChange}

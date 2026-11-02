@@ -430,7 +430,7 @@
 					</button>
 				{/if}
 			</div>
-			<select
+			<select id="sequences-selectedstatus" name="sequences_selectedstatus"
 				class="filter-select"
 				bind:value={selectedStatus}
 				onchange={(event) =>

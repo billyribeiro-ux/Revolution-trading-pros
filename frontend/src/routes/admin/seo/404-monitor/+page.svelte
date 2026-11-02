@@ -143,7 +143,7 @@
 			/>
 		</div>
 
-		<select class="sort-select" bind:value={sortBy}>
+		<select id="404-monitor-sortby" name="404_monitor_sortby" class="sort-select" bind:value={sortBy}>
 			{#each sortOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}

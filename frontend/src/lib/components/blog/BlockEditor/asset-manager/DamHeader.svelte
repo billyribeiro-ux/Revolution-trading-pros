@@ -27,6 +27,8 @@
 			<Icon name="IconUpload" size={16} />
 			Upload
 			<input
+				id="dam-header-upload"
+				name="asset_upload"
 				type="file"
 				multiple
 				accept={acceptTypes.map((t) => (t === 'document' ? 'application/*' : `${t}/*`)).join(',')}

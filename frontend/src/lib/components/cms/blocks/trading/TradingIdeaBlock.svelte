@@ -61,7 +61,7 @@
 		</div>
 		<div class="trade-info">
 			{#if props.isEditing}
-				<input
+				<input name="symbol" id="tradingideablock-symbol"
 					type="text"
 					class="symbol-input"
 					value={symbol}
@@ -89,7 +89,7 @@
 			<div class="level-row entry-level">
 				<span class="level-label">Entry</span>
 				{#if props.isEditing}
-					<input
+					<input name="entry" id="tradingideablock-entry"
 						type="number"
 						step="0.01"
 						value={entry}
@@ -103,7 +103,7 @@
 			<div class="level-row stop-level">
 				<span class="level-label"><IconShieldCheck size={14} /> Stop Loss</span>
 				{#if props.isEditing}
-					<input
+					<input name="stopLoss" id="tradingideablock-stopLoss"
 						type="number"
 						step="0.01"
 						value={stopLoss}
@@ -118,7 +118,7 @@
 			<div class="level-row target-level">
 				<span class="level-label"><IconTarget size={14} /> Target 1</span>
 				{#if props.isEditing}
-					<input
+					<input name="target1" id="tradingideablock-target1"
 						type="number"
 						step="0.01"
 						value={target1}
@@ -133,7 +133,7 @@
 			<div class="level-row target-level">
 				<span class="level-label"><IconTarget size={14} /> Target 2</span>
 				{#if props.isEditing}
-					<input
+					<input name="target2" id="tradingideablock-target2"
 						type="number"
 						step="0.01"
 						value={target2}
@@ -151,7 +151,7 @@
 			<div class="confidence-meter">
 				<span class="meta-label">Confidence</span>
 				{#if props.isEditing}
-					<input
+					<input name="confidence" id="tradingideablock-confidence"
 						type="range"
 						min="0"
 						max="100"
@@ -168,7 +168,7 @@
 			<div class="timeframe">
 				<span class="meta-label">Timeframe</span>
 				{#if props.isEditing}
-					<select
+					<select name="timeframe" id="tradingideablock-timeframe"
 						value={timeframe}
 						onchange={(e) =>
 							updateContent({ tradeTimeframe: (e.target as HTMLSelectElement).value })}
@@ -187,7 +187,7 @@
 		{#if props.isEditing}
 			<div class="direction-toggle">
 				<label
-					><input
+					><input id="tradingideablock-isLong"
 						type="radio"
 						name="dir-{props.blockId}"
 						value="long"
@@ -196,7 +196,7 @@
 					/> Long</label
 				>
 				<label
-					><input
+					><input id="tradingideablock-radio_input"
 						type="radio"
 						name="dir-{props.blockId}"
 						value="short"
@@ -210,7 +210,7 @@
 		<div class="thesis-section">
 			<span class="meta-label">Trade Thesis</span>
 			{#if props.isEditing}
-				<textarea
+				<textarea name="thesis" id="tradingideablock-thesis"
 					placeholder="Explain your trade reasoning..."
 					value={thesis}
 					oninput={(e) => updateContent({ tradeThesis: (e.target as HTMLTextAreaElement).value })}

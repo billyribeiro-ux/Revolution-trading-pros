@@ -157,7 +157,7 @@
 		<!-- Form State -->
 		<form class="newsletter-form" onsubmit={handleSubmit} novalidate>
 			<div class="form-group">
-				<input
+				<input name="emailInput" id="newsletterblock-emailInput"
 					type="email"
 					value={emailInput}
 					oninput={handleEmailInput}
@@ -200,7 +200,7 @@
 			<div class="settings-grid">
 				<label class="setting-field">
 					<span class="setting-label">Placeholder Text:</span>
-					<input
+					<input name="placeholder" id="newsletterblock-placeholder"
 						type="text"
 						value={placeholder}
 						oninput={(e) =>
@@ -210,7 +210,7 @@
 				</label>
 				<label class="setting-field">
 					<span class="setting-label">Button Text:</span>
-					<input
+					<input name="buttonText" id="newsletterblock-buttonText"
 						type="text"
 						value={buttonText}
 						oninput={(e) =>

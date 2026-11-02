@@ -56,7 +56,7 @@
 
 	<!-- Filters -->
 	<div class="filters">
-		<select
+		<select id="schedulestoolbar-filteractive" name="schedulestoolbar_filteractive"
 			value={filterActive}
 			onchange={(e) =>
 				onfilterActiveChange((e.currentTarget as HTMLSelectElement).value as FilterActive)}
@@ -67,7 +67,7 @@
 			<option value="inactive">Inactive Only</option>
 		</select>
 
-		<select value={filterDay ?? ''} onchange={handleDayChange} class="filter-select">
+		<select id="schedulestoolbar-filterday" name="schedulestoolbar_filterday" value={filterDay ?? ''} onchange={handleDayChange} class="filter-select">
 			<!-- FIX-2026-04-26 (P3-3): <option value={null}> silently coerces to "" — use explicit empty string. -->
 			<option value="">All Days</option>
 			{#each days as day, index (index)}

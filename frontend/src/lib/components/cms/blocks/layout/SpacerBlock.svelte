@@ -153,7 +153,7 @@
 				<div class="toolbar-row">
 					<div class="toolbar-group slider-group">
 						<label class="toolbar-label" for="height-slider">Custom:</label>
-						<input
+						<input name="heightInRem"
 							type="range"
 							id="height-slider"
 							class="height-slider"

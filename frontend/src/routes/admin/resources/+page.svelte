@@ -845,20 +845,20 @@
 				/>
 			</div>
 			<div class="filter-group">
-				<select bind:value={selectedResourceType}>
+				<select id="resources-selectedresourcetype" name="resources_selectedresourcetype" bind:value={selectedResourceType}>
 					<option value="all">All Types</option>
 					{#each RESOURCE_TYPES as type (type.id)}
 						<option value={type.id}>{type.name}</option>
 					{/each}
 				</select>
-				<select bind:value={selectedContentType}>
+				<select id="resources-selectedcontenttype" name="resources_selectedcontenttype" bind:value={selectedContentType}>
 					<option value="all">All Content</option>
 					{#each CONTENT_TYPES as type (type.id)}
 						<option value={type.id}>{type.name}</option>
 					{/each}
 				</select>
 				<!-- ICT 7: Section filter -->
-				<select bind:value={selectedSection}>
+				<select id="resources-selectedsection" name="resources_selectedsection" bind:value={selectedSection}>
 					<option value="all">All Sections</option>
 					{#each availableSections as section (section.id)}
 						<option value={section.id}>{section.name}</option>

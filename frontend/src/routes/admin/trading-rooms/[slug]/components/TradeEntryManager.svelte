@@ -293,7 +293,7 @@
 				class="quick-input ticker"
 				onkeydown={(e) => e.key === 'Enter' && quickAddEntry()}
 			/>
-			<select bind:value={quickForm.bias} class="quick-select">
+			<select id="tradeentrymanager-quickform-bias" name="tradeentrymanager_quickform_bias" bind:value={quickForm.bias} class="quick-select">
 				<option value="BULLISH">BULLISH</option>
 				<option value="BEARISH">BEARISH</option>
 				<option value="NEUTRAL">NEUTRAL</option>

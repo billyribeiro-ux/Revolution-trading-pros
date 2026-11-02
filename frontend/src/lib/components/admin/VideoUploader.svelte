@@ -404,6 +404,8 @@
 				{/if}
 			</div>
 			<input
+				id="video-file-upload"
+				name="video_file"
 				type="file"
 				accept="video/mp4,video/webm,video/quicktime"
 				hidden
@@ -442,6 +444,8 @@
 					{/if}
 				</div>
 				<input
+					id="thumbnail-file-upload"
+					name="thumbnail_file"
 					type="file"
 					accept="image/jpeg,image/png,image/webp"
 					hidden
@@ -512,8 +516,10 @@
 					<legend>Categories</legend>
 					<div class="category-checkboxes">
 						{#each categories as category (category.id)}
-							<label class="checkbox-label">
+							<label class="checkbox-label" for="category-{category.id}">
 								<input
+									id="category-{category.id}"
+									name="categories"
 									type="checkbox"
 									value={category.id}
 									checked={selectedCategories.includes(category.id)}
@@ -533,12 +539,12 @@
 			</div>
 
 			<div class="form-row">
-				<label class="toggle-label">
-					<input type="checkbox" bind:checked={isPremium} />
+				<label class="toggle-label" for="video-is-premium">
+					<input type="checkbox" id="video-is-premium" name="is_premium" bind:checked={isPremium} />
 					<span>Premium Content</span>
 				</label>
-				<label class="toggle-label">
-					<input type="checkbox" bind:checked={isPublished} />
+				<label class="toggle-label" for="video-is-published">
+					<input type="checkbox" id="video-is-published" name="is_published" bind:checked={isPublished} />
 					<span>Publish Immediately</span>
 				</label>
 			</div>

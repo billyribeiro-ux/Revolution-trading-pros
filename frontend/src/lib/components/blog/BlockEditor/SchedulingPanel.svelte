@@ -633,19 +633,20 @@
 									<input
 										type="date"
 										id="schedule-date"
+										name="schedule_date"
 										bind:value={scheduleDate}
 										min={new Date().toISOString().split('T')[0]}
 									/>
 								</div>
 								<div class="form-group">
 									<label for="schedule-time">Time</label>
-									<input type="time" id="schedule-time" bind:value={scheduleTime} />
+									<input type="time" id="schedule-time" name="schedule_time" bind:value={scheduleTime} />
 								</div>
 							</div>
 
 							<div class="form-group">
 								<label for="schedule-timezone">Timezone</label>
-								<select id="schedule-timezone" bind:value={scheduleTimezone}>
+								<select id="schedule-timezone" name="schedule_timezone" bind:value={scheduleTimezone}>
 									{#each commonTimezones as tz (tz)}
 										<option value={tz}>{tz.replace('_', ' ')}</option>
 									{/each}
@@ -656,6 +657,7 @@
 								<label for="schedule-notes">Notes (optional)</label>
 								<textarea
 									id="schedule-notes"
+									name="schedule_notes"
 									bind:value={scheduleNotes}
 									placeholder="Add any notes about this schedule..."
 									rows="2"></textarea>
@@ -730,6 +732,7 @@
 									<input
 										type="text"
 										id="release-name"
+										name="release_name"
 										bind:value={newReleaseName}
 										placeholder="e.g., Spring Campaign Launch"
 									/>
@@ -738,6 +741,7 @@
 									<label for="release-description">Description (optional)</label>
 									<textarea
 										id="release-description"
+										name="release_description"
 										bind:value={newReleaseDescription}
 										placeholder="Describe this release..."
 										rows="2"></textarea>

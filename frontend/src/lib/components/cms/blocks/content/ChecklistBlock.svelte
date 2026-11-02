@@ -440,7 +440,7 @@
 {#if props.isEditing && props.isSelected}
 	<div class="checklist-controls" role="toolbar" aria-label="Checklist options">
 		<label class="control-toggle">
-			<input
+			<input name="showProgress" id="checklistblock-showProgress"
 				type="checkbox"
 				checked={showProgress}
 				onchange={toggleShowProgress}
@@ -451,7 +451,7 @@
 		</label>
 
 		<label class="control-toggle">
-			<input
+			<input name="strikethrough" id="checklistblock-strikethrough"
 				type="checkbox"
 				checked={strikethrough}
 				onchange={toggleStrikethrough}
