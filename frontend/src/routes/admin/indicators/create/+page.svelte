@@ -644,10 +644,7 @@
 <div class="admin-indicators-create">
 	<!-- Animated Background -->
 	<div class="background-effects">
-		<div class="background-blob background-blob-1"></div>
-		<div class="background-blob background-blob-2"></div>
-		<div class="background-blob background-blob-3"></div>
-	</div>
+		</div>
 
 	<div class="admin-page-container">
 		<!-- Header -->

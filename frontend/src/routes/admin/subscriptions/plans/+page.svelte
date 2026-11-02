@@ -318,9 +318,7 @@
 	<div class="admin-page-container">
 		<!-- Background Effects -->
 		<div class="background-effects">
-			<div class="background-blob background-blob-1"></div>
-			<div class="background-blob background-blob-2"></div>
-		</div>
+			</div>
 
 		<!-- Header -->
 		<header class="page-header">

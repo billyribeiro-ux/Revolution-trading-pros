@@ -348,12 +348,7 @@
 <svelte:window onkeydown={showSendEmailModal ? handleModalKeydown : undefined} />
 
 <div class="admin-crm-sequences">
-	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
-	</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header -->

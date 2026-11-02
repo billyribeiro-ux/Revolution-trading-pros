@@ -469,10 +469,7 @@
 <div class="admin-popups-new">
 	<!-- Decorative background hooks retained for layout parity; visuals are page-scoped. -->
 	<div class="decorative-effects" aria-hidden="true">
-		<div class="decorative-blob decorative-blob--one"></div>
-		<div class="decorative-blob decorative-blob--two"></div>
-		<div class="decorative-blob decorative-blob--three"></div>
-	</div>
+		</div>
 
 	<div class="admin-page-container">
 		<!-- Header -->

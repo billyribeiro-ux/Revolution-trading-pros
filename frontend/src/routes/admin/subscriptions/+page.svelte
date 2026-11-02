@@ -303,10 +303,7 @@
 	<div class="admin-page-container">
 		<!-- Animated Background -->
 		<div class="background-effects">
-			<div class="background-blob background-blob--one"></div>
-			<div class="background-blob background-blob--two"></div>
-			<div class="background-blob background-blob--three"></div>
-		</div>
+			</div>
 		<!-- Header - Centered Style -->
 		<header class="page-header">
 			<h1>Subscription Management</h1>

@@ -306,12 +306,7 @@
 
 <div class="seo-dashboard">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="animated-bg">
-			<div class="blob blob-1"></div>
-			<div class="blob blob-2"></div>
-			<div class="blob blob-3"></div>
-		</div>
+		
 
 		<!-- Header Section -->
 		<header class="dashboard-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>

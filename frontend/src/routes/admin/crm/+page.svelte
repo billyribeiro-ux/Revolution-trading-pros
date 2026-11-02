@@ -327,12 +327,7 @@
 <svelte:head><title>Contacts | CRM - Admin Dashboard</title></svelte:head>
 
 <div class="admin-crm">
-	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
-	</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Page Header - Centered -->

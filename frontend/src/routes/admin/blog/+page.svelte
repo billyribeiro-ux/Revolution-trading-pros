@@ -829,10 +829,7 @@
 <div class="admin-blog">
 	<!-- Animated Background -->
 	<div class="background-effects">
-		<div class="background-blob background-blob--primary"></div>
-		<div class="background-blob background-blob--secondary"></div>
-		<div class="background-blob background-blob--tertiary"></div>
-	</div>
+		</div>
 
 	<div class="admin-page-container">
 		<!-- Notifications -->
