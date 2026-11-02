@@ -1,14 +1,14 @@
 //! Member activity log handler (paginated, optional action filter).
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::{ActivityQuery, MemberActivity};
 

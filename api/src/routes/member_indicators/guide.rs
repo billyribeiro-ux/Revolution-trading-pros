@@ -7,14 +7,14 @@
 //! - `get_default_instructions` — built-in fallback copy
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 /// ICT 7: Check for indicator updates for owned indicators
 pub(super) async fn check_updates(
@@ -196,7 +196,8 @@ fn get_default_instructions(platform: &str) -> String {
 5. Apply to any chart by right-clicking and selecting Studies > Add Study
 
 **Tip:** Make sure to save the workspace after adding the indicator.
-".to_string(),
+"
+        .to_string(),
         "tradingview" => r#"
 ## TradingView Installation
 
@@ -207,7 +208,8 @@ fn get_default_instructions(platform: &str) -> String {
 5. If it's invite-only, ensure your TradingView username is registered
 
 **Note:** TradingView indicators are cloud-based and don't require file downloads.
-"#.to_string(),
+"#
+        .to_string(),
         "metatrader" | "mt4" | "mt5" => r"
 ## MetaTrader Installation
 
@@ -219,7 +221,8 @@ fn get_default_instructions(platform: &str) -> String {
 6. Find the indicator in Navigator > Indicators
 
 **Tip:** Make sure to compile .mq4/.mq5 files if needed.
-".to_string(),
+"
+        .to_string(),
         "ninjatrader" => r"
 ## NinjaTrader Installation
 
@@ -231,7 +234,8 @@ fn get_default_instructions(platform: &str) -> String {
 6. The indicator will appear in your Indicators list
 
 **Note:** Restart NinjaTrader if the indicator doesn't appear immediately.
-".to_string(),
+"
+        .to_string(),
         "tradestation" => r"
 ## TradeStation Installation
 
@@ -243,7 +247,8 @@ fn get_default_instructions(platform: &str) -> String {
 6. Follow the import wizard
 
 **Tip:** You may need to verify the indicator in the TradeStation scanner.
-".to_string(),
+"
+        .to_string(),
         _ => format!(
             "## {platform} Installation\n\n1. Download the indicator file\n2. Follow the platform's standard import process\n3. Consult the platform's documentation for detailed steps\n\nContact support if you need assistance."
         ),

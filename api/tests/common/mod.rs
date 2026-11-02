@@ -8,8 +8,8 @@
 //! whose `sub` is that row's id — so the request flows through the
 //! genuine `User` / `AdminUser` extractors against a real database.
 
-use axum::response::Response;
 use axum::Router;
+use axum::response::Response;
 use http_body_util::BodyExt;
 use serde_json::Value;
 use std::sync::Once;
@@ -17,7 +17,7 @@ use std::sync::Once;
 use revolution_api::cache::{CacheInvalidator, CacheService};
 use revolution_api::routes::realtime::EventBroadcaster;
 use revolution_api::routes::websocket::WsConnectionManager;
-use revolution_api::{config::Config, db::Database, routes, services::Services, AppState};
+use revolution_api::{AppState, config::Config, db::Database, routes, services::Services};
 
 static INIT: Once = Once::new();
 
@@ -28,19 +28,26 @@ fn init_test_env() {
         dotenvy::dotenv().ok();
 
         if std::env::var("JWT_SECRET").is_err() {
-            std::env::set_var(
-                "JWT_SECRET",
-                "test-jwt-secret-minimum-32-characters-for-testing",
-            );
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe {
+                std::env::set_var(
+                    "JWT_SECRET",
+                    "test-jwt-secret-minimum-32-characters-for-testing",
+                )
+            };
         }
         if std::env::var("DATABASE_URL").is_err() {
-            std::env::set_var(
-                "DATABASE_URL",
-                "postgres://test:test@localhost:5432/test_db",
-            );
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe {
+                std::env::set_var(
+                    "DATABASE_URL",
+                    "postgres://test:test@localhost:5432/test_db",
+                )
+            };
         }
         if std::env::var("REDIS_URL").is_err() {
-            std::env::set_var("REDIS_URL", "redis://localhost:6379");
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe { std::env::set_var("REDIS_URL", "redis://localhost:6379") };
         }
     });
 }

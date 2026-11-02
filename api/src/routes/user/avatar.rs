@@ -6,13 +6,13 @@
 //! preserved.
 
 use axum::{
+    Json,
     extract::{Multipart, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Upload user avatar
 /// POST /api/user/avatar

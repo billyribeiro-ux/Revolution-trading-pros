@@ -14,14 +14,15 @@
 //! - Fast: Uses connection pooling and transaction rollback
 //! - Comprehensive: Covers edge cases and error paths
 
-use axum::{body::Body, Router};
+use axum::{Router, body::Body};
 use chrono::{Datelike, Duration, NaiveDate, Utc};
 use http_body_util::BodyExt;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use sqlx::PgPool;
-use std::sync::{atomic::AtomicI64, Once};
+use std::sync::{Once, atomic::AtomicI64};
 
 use revolution_api::{
+    AppState,
     cache::{CacheInvalidator, CacheService},
     config::Config,
     db::Database,
@@ -30,7 +31,6 @@ use revolution_api::{
     routes::websocket::WsConnectionManager,
     services::Services,
     utils::{create_jwt, hash_password},
-    AppState,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -49,25 +49,34 @@ pub fn init_test_env() {
 
         // Set required env vars with test defaults if not already set
         if std::env::var("JWT_SECRET").is_err() {
-            std::env::set_var(
-                "JWT_SECRET",
-                "test-jwt-secret-minimum-32-characters-for-testing-explosive-swings",
-            );
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe {
+                std::env::set_var(
+                    "JWT_SECRET",
+                    "test-jwt-secret-minimum-32-characters-for-testing-explosive-swings",
+                )
+            };
         }
         if std::env::var("DATABASE_URL").is_err() {
-            std::env::set_var(
-                "DATABASE_URL",
-                "postgres://test:test@localhost:5432/test_db",
-            );
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe {
+                std::env::set_var(
+                    "DATABASE_URL",
+                    "postgres://test:test@localhost:5432/test_db",
+                )
+            };
         }
         if std::env::var("REDIS_URL").is_err() {
-            std::env::set_var("REDIS_URL", "redis://localhost:6379");
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe { std::env::set_var("REDIS_URL", "redis://localhost:6379") };
         }
         if std::env::var("STRIPE_SECRET_KEY").is_err() {
-            std::env::set_var("STRIPE_SECRET_KEY", "sk_test_mock_key");
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe { std::env::set_var("STRIPE_SECRET_KEY", "sk_test_mock_key") };
         }
         if std::env::var("STRIPE_WEBHOOK_SECRET").is_err() {
-            std::env::set_var("STRIPE_WEBHOOK_SECRET", "whsec_test_mock_secret");
+            // FIXME: Audit that the environment access only happens in single-threaded code.
+            unsafe { std::env::set_var("STRIPE_WEBHOOK_SECRET", "whsec_test_mock_secret") };
         }
     });
 }
@@ -1036,11 +1045,7 @@ pub fn calculate_win_rate(wins: i32, losses: i32) -> f64 {
 /// Calculate expected profit factor from wins and losses
 pub fn calculate_profit_factor(total_wins: f64, total_losses: f64) -> f64 {
     if total_losses == 0.0 {
-        if total_wins > 0.0 {
-            f64::INFINITY
-        } else {
-            0.0
-        }
+        if total_wins > 0.0 { f64::INFINITY } else { 0.0 }
     } else {
         total_wins / total_losses.abs()
     }

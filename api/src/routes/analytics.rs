@@ -9,20 +9,20 @@
 //! - Equity curves and P&L analysis
 
 use axum::{
+    Json, Router,
     body::Bytes,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
+    AppState,
     middleware::admin::AdminUser,
     services::analytics::{AnalyticsService, DateRange},
-    AppState,
 };
 
 #[derive(Debug, Deserialize)]

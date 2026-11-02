@@ -19,8 +19,8 @@
 //! same path.
 
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};

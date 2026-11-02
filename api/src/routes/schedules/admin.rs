@@ -19,15 +19,15 @@
 #![allow(clippy::useless_format)]
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::helpers::{parse_date, parse_time};
 use super::types::{CreateScheduleRequest, ScheduleRow, UpdateScheduleRequest};
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /api/admin/schedules
 /// Get all schedules (admin)

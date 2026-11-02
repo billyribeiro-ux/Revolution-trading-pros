@@ -2,14 +2,14 @@
 //! Multi-platform file downloads with version management.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::types::{CreateFileRequest, IndicatorFileRow, UpdateFileRequest};
 

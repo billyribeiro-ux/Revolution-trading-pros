@@ -1,16 +1,16 @@
 //! CRM contacts handlers (split from `crm.rs` lines 30-84 + 278-503).
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

@@ -4,11 +4,11 @@
 //! `payments.rs` as a pure structural move. All SQL, Stripe calls,
 //! and error mapping preserved byte-for-byte.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
 use super::dtos::{CreatePortalRequest, PortalResponse};
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Get Stripe customer portal URL// Get Stripe customer portal URL
 /// POST /api/payments/portal

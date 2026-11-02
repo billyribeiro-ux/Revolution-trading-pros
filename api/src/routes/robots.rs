@@ -5,11 +5,11 @@
 //! Blocks AI crawlers, protects admin areas, includes sitemap references.
 
 use axum::{
+    Router,
     extract::State,
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -34,18 +34,18 @@ pub async fn robots_txt(State(state): State<AppState>) -> Response {
     // Check cache
     {
         let cache = ROBOTS_CACHE.read().await;
-        if let Some(cached) = cache.as_ref() {
-            if Instant::now() < cached.expires_at {
-                return (
-                    StatusCode::OK,
-                    [
-                        (header::CONTENT_TYPE, "text/plain"),
-                        (header::CACHE_CONTROL, "public, max-age=3600"),
-                    ],
-                    cached.content.clone(),
-                )
-                    .into_response();
-            }
+        if let Some(cached) = cache.as_ref()
+            && Instant::now() < cached.expires_at
+        {
+            return (
+                StatusCode::OK,
+                [
+                    (header::CONTENT_TYPE, "text/plain"),
+                    (header::CACHE_CONTROL, "public, max-age=3600"),
+                ],
+                cached.content.clone(),
+            )
+                .into_response();
         }
     }
 

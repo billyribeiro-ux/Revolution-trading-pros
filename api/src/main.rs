@@ -4,10 +4,10 @@
 //! Stack: Fly.io PostgreSQL, Upstash Redis, Cloudflare R2
 
 use axum::{
-    http::{header, HeaderName, HeaderValue, Method},
+    Router,
+    http::{HeaderName, HeaderValue, Method, header},
     middleware as axum_middleware,
     routing::get,
-    Router,
 };
 use std::net::SocketAddr;
 use tower_http::{
@@ -21,8 +21,8 @@ use revolution_api::jobs::{email_reminders, reconcile_stripe};
 use revolution_api::routes::realtime::EventBroadcaster;
 use revolution_api::routes::websocket::WsConnectionManager;
 use revolution_api::{
-    config::Config, db::Database, docs, middleware, monitoring, queue, routes, services::Services,
-    AppState,
+    AppState, config::Config, db::Database, docs, middleware, monitoring, queue, routes,
+    services::Services,
 };
 
 #[tokio::main]

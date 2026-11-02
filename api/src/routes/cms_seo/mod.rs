@@ -36,8 +36,8 @@
 //! - `handlers.rs` — the `POST /validate` handler that orchestrates
 //!   the analyzers and folds scores into the response
 
-use axum::{http::StatusCode, routing::post, Json, Router};
-use serde_json::{json, Value as JsonValue};
+use axum::{Json, Router, http::StatusCode, routing::post};
+use serde_json::{Value as JsonValue, json};
 
 use crate::AppState;
 

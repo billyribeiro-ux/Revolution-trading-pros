@@ -4,14 +4,14 @@
 //! Handler bodies are byte-identical to the pre-split source.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // USER MANAGEMENT (Admin Staff)
@@ -370,12 +370,12 @@ pub(super) async fn update_user(
         }
     }
 
-    if input.role.is_some() || input.is_active == Some(false) {
-        if let Some(ref redis) = state.services.redis {
-            let _ = redis.bump_token_version(id).await;
-            let _ = redis.invalidate_all_user_sessions(id).await;
-            let _ = redis.invalidate_user_cache(id).await;
-        }
+    if (input.role.is_some() || input.is_active == Some(false))
+        && let Some(ref redis) = state.services.redis
+    {
+        let _ = redis.bump_token_version(id).await;
+        let _ = redis.invalidate_all_user_sessions(id).await;
+        let _ = redis.invalidate_user_cache(id).await;
     }
 
     Ok(Json(updated))

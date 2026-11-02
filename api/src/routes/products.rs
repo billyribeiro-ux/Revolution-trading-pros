@@ -2,18 +2,18 @@
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
+    AppState,
     middleware::admin::AdminUser,
     models::{CreateProduct, UpdateProduct, User},
-    AppState,
 };
 
 /// Product list query parameters

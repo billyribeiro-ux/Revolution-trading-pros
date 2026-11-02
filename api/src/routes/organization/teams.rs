@@ -7,15 +7,15 @@
 //! byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dtos::{CreateTeamRequest, ListQuery, Team, UpdateTeamRequest};
 use super::helpers::{generate_slug, log_organization_audit};
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /admin/organization/teams - List all teams
 #[tracing::instrument(skip(state, admin))]

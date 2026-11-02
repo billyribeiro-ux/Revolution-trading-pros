@@ -605,9 +605,13 @@ pub fn generate_download_url(file_url: &str, file_name: &str) -> String {
     // For now, return the direct URL with download disposition hint
     let encoded_file_name = urlencoding::encode(file_name);
     if file_url.contains('?') {
-        format!("{file_url}&response-content-disposition=attachment%3B%20filename%3D{encoded_file_name}")
+        format!(
+            "{file_url}&response-content-disposition=attachment%3B%20filename%3D{encoded_file_name}"
+        )
     } else {
-        format!("{file_url}?response-content-disposition=attachment%3B%20filename%3D{encoded_file_name}")
+        format!(
+            "{file_url}?response-content-disposition=attachment%3B%20filename%3D{encoded_file_name}"
+        )
     }
 }
 

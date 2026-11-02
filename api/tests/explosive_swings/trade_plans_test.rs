@@ -12,15 +12,15 @@
 
 use axum::{
     body::Body,
-    http::{header, Request, StatusCode},
+    http::{Request, StatusCode, header},
 };
 use chrono::{Datelike, Duration, Utc};
 use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    assert_status_and_json, body_to_json, cleanup_room_data, TestContext, TestTradingRoom,
-    TestUser, TradePlanBuilder,
+    TestContext, TestTradingRoom, TestUser, TradePlanBuilder, assert_status_and_json, body_to_json,
+    cleanup_room_data,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -184,10 +184,12 @@ async fn test_list_trade_plans_filter_by_week() {
     let plans = body["data"].as_array().unwrap();
     assert!(!plans.is_empty());
     for plan in plans {
-        assert!(plan["week_of"]
-            .as_str()
-            .unwrap()
-            .contains(&last_monday.format("%Y-%m-%d").to_string()));
+        assert!(
+            plan["week_of"]
+                .as_str()
+                .unwrap()
+                .contains(&last_monday.format("%Y-%m-%d").to_string())
+        );
     }
 }
 

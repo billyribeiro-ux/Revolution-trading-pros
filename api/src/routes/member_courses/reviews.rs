@@ -4,16 +4,16 @@
 //! [`super::public`] because it requires no authentication.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 /// Submit a review for a course
 pub(super) async fn submit_review(

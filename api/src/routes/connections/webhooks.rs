@@ -3,13 +3,13 @@
 //! preserved verbatim.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 use super::audit::log_connection_audit;
 use super::crypto::generate_webhook_secret;

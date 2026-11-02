@@ -5,16 +5,16 @@
 //! All admin endpoints require AdminUser authentication.
 
 use axum::{
+    Router,
     extract::{Path, Query, State},
     response::Json,
     routing::{delete, get, post, put},
-    Router,
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Redirect {
@@ -219,12 +219,12 @@ pub async fn update(
         .ok_or_else(|| ApiError::not_found("Redirect not found"))?;
 
     // Validate status code if provided
-    if let Some(status_code) = payload.status_code {
-        if ![301, 302, 307, 308].contains(&status_code) {
-            return Err(ApiError::validation_error(
-                "Status code must be 301, 302, 307, or 308",
-            ));
-        }
+    if let Some(status_code) = payload.status_code
+        && ![301, 302, 307, 308].contains(&status_code)
+    {
+        return Err(ApiError::validation_error(
+            "Status code must be 301, 302, 307, or 308",
+        ));
     }
 
     // ICT 7: Validate path format if provided

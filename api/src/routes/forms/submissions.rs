@@ -6,9 +6,9 @@
 //! in a single transaction so the counter cannot drift on a crash.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
@@ -16,7 +16,7 @@ use super::types::{
     BulkDeleteRequest, BulkUpdateStatusRequest, ExportQuery, FormRow, FormSubmissionRow,
     SubmissionListQuery, UpdateSubmissionStatusRequest,
 };
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// List form submissions (admin)
 pub(super) async fn list_submissions(

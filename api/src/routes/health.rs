@@ -3,13 +3,13 @@
 
 use axum::http::StatusCode;
 use axum::{
-    routing::{get, post},
     Json, Router,
+    routing::{get, post},
 };
 use serde::Serialize;
 
-use crate::middleware::admin::SuperAdminUser;
 use crate::AppState;
+use crate::middleware::admin::SuperAdminUser;
 
 #[derive(Serialize)]
 struct HealthResponse {

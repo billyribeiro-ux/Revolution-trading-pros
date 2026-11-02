@@ -30,7 +30,7 @@ use chrono::{Duration, Utc};
 // (aliased to avoid name conflict with argon2::Algorithm imported above)
 // use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use jsonwebtoken::{
-    decode, encode, Algorithm as JwtAlgorithm, DecodingKey, EncodingKey, Header, Validation,
+    Algorithm as JwtAlgorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
 };
 use serde::{Deserialize, Serialize};
 
@@ -375,8 +375,8 @@ pub fn constant_time_compare(a: &str, b: &str) -> bool {
 
 /// Generate a random token (for password reset, etc.)
 pub fn generate_token() -> String {
-    use rand::distr::Alphanumeric;
     use rand::RngExt;
+    use rand::distr::Alphanumeric;
     let mut rng = rand::rng();
     (0..32).map(|_| rng.sample(Alphanumeric) as char).collect()
 }
@@ -592,7 +592,7 @@ mod token_version_tests {
         // still decode (token_version defaults to 0) so we don't hard-fail
         // every in-flight session on deploy. We hand-craft a payload with
         // NO `tv` key and sign it with the real HS256 key.
-        use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+        use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
         let now = Utc::now().timestamp();
         // Header {"alg":"HS256","typ":"JWT"} == jsonwebtoken's Header::default.
         let header_json = br#"{"typ":"JWT","alg":"HS256"}"#;

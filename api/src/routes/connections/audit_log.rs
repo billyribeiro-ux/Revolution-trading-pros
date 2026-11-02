@@ -3,9 +3,9 @@
 //! preserved verbatim.
 
 use axum::{
+    Json,
     extract::{Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{DateTime, Utc};
 use serde::Serialize;
@@ -13,7 +13,7 @@ use serde_json::json;
 use sqlx::FromRow;
 use std::collections::HashMap;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /admin/connections/audit-logs - Get connection audit logs
 #[tracing::instrument(skip(state, admin))]

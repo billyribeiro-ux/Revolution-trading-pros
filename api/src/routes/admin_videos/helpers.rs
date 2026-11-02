@@ -4,7 +4,7 @@
 //! responses) and any future sub-module that needs to build a
 //! `VideoResponse` from a `UnifiedVideoRow`.
 
-use crate::models::video::{get_all_tags, RoomInfo, TagDetail, TraderInfo, VideoResponse};
+use crate::models::video::{RoomInfo, TagDetail, TraderInfo, VideoResponse, get_all_tags};
 
 use super::UnifiedVideoRow;
 

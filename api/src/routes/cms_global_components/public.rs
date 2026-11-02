@@ -4,14 +4,14 @@
 //! delivery side can render them without leaking unpublished work.
 
 use axum::{
-    extract::{Path, State},
     Json,
+    extract::{Path, State},
 };
 use uuid::Uuid;
 
 use crate::AppState;
 
-use super::types::{not_found_component, sqlx_err, ApiResult, GlobalComponent};
+use super::types::{ApiResult, GlobalComponent, not_found_component, sqlx_err};
 
 /// Public endpoint to get a global component by slug (no auth required)
 pub(super) async fn get_global_component_public(

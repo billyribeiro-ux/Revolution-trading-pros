@@ -746,8 +746,16 @@ impl EmailService {
 
         let text = format!(
             "Hi {},\n\nYour subscription to {} has been confirmed!\n\nPlan: {}\nPrice: ${:.2}/{}\n\n{}\nManage: {}\n\n- The Revolution Trading Pros Team",
-            name, plan_name, plan_name, price, billing_cycle,
-            if has_trial { format!("You have a {trial_days}-day free trial.") } else { String::new() },
+            name,
+            plan_name,
+            plan_name,
+            price,
+            billing_cycle,
+            if has_trial {
+                format!("You have a {trial_days}-day free trial.")
+            } else {
+                String::new()
+            },
             dashboard_url
         );
 

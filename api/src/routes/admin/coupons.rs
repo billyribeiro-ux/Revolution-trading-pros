@@ -4,14 +4,14 @@
 //! Handler bodies are byte-identical to the pre-split source.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // COUPON MANAGEMENT
@@ -291,14 +291,14 @@ pub(super) async fn delete_coupon(
             )
         })?;
 
-    if let Some(Some(sid)) = stripe_coupon_id {
-        if let Err(e) = state.services.stripe.delete_coupon(&sid).await {
-            tracing::warn!(
-                target: "admin",
-                "DB coupon {} deleted but Stripe coupon {} delete failed: {}; manual cleanup required",
-                id, sid, e
-            );
-        }
+    if let Some(Some(sid)) = stripe_coupon_id
+        && let Err(e) = state.services.stripe.delete_coupon(&sid).await
+    {
+        tracing::warn!(
+            target: "admin",
+            "DB coupon {} deleted but Stripe coupon {} delete failed: {}; manual cleanup required",
+            id, sid, e
+        );
     }
 
     Ok(Json(json!({"message": "Coupon deleted successfully"})))
@@ -572,16 +572,15 @@ pub(super) async fn update_coupon(
         Ok(Some(coupon)) => {
             // DB success. If math changed, best-effort delete old Stripe coupon.
             if math_changed {
-                if let Some(ref old) = existing.stripe_coupon_id {
-                    if Some(old) != new_stripe_coupon_id.as_ref() {
-                        if let Err(e) = state.services.stripe.delete_coupon(old).await {
-                            tracing::warn!(
-                                target: "admin",
-                                "DB coupon {} updated; new Stripe coupon attached but old Stripe coupon {} delete failed: {}; manual cleanup may be needed",
-                                id, old, e
-                            );
-                        }
-                    }
+                if let Some(ref old) = existing.stripe_coupon_id
+                    && Some(old) != new_stripe_coupon_id.as_ref()
+                    && let Err(e) = state.services.stripe.delete_coupon(old).await
+                {
+                    tracing::warn!(
+                        target: "admin",
+                        "DB coupon {} updated; new Stripe coupon attached but old Stripe coupon {} delete failed: {}; manual cleanup may be needed",
+                        id, old, e
+                    );
                 }
 
                 // Batch 4: write an audit row for the recreate-and-swap so
@@ -842,18 +841,18 @@ pub(super) async fn validate_coupon(
     match coupon {
         Some(c) => {
             // Check expiry
-            if let Some(expires_at) = c.expires_at {
-                if expires_at < chrono::Utc::now().naive_utc() {
-                    return Ok(Json(json!({"valid": false, "error": "Coupon has expired"})));
-                }
+            if let Some(expires_at) = c.expires_at
+                && expires_at < chrono::Utc::now().naive_utc()
+            {
+                return Ok(Json(json!({"valid": false, "error": "Coupon has expired"})));
             }
             // Check usage limit
-            if let Some(limit) = c.usage_limit {
-                if c.usage_count >= limit {
-                    return Ok(Json(
-                        json!({"valid": false, "error": "Coupon usage limit reached"}),
-                    ));
-                }
+            if let Some(limit) = c.usage_limit
+                && c.usage_count >= limit
+            {
+                return Ok(Json(
+                    json!({"valid": false, "error": "Coupon usage limit reached"}),
+                ));
             }
             Ok(Json(json!({
                 "valid": true,

@@ -4,15 +4,15 @@
 //! ICT 7 ADDITIONS: Transcoding, Thumbnails, Embed Code
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 #[derive(Debug, Deserialize, Default)]
 pub(super) struct BunnyWebhookQuery {
@@ -278,7 +278,7 @@ pub(super) async fn get_embed_code(
                     return Err((
                         StatusCode::BAD_REQUEST,
                         Json(json!({"error": "Platform not supported for embed code generation"})),
-                    ))
+                    ));
                 }
             };
 

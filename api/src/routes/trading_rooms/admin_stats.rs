@@ -6,12 +6,12 @@
 //! `?` (intentional — see fn-level docs), tracing fields, and the
 //! `RoomStatsRow` wire shape are preserved exactly.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde::Serialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::fallback::get_fallback_rooms;
 

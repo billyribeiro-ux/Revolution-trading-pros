@@ -7,14 +7,14 @@
 //! and the audit log shape are preserved exactly.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::types::VideosQuery;
 

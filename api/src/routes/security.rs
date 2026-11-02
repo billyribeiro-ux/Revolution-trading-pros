@@ -4,15 +4,15 @@
 //! Security event tracking and audit logging for compliance and monitoring
 
 use axum::{
+    Json, Router,
     extract::{Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

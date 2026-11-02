@@ -5,20 +5,20 @@
 //! - `remove_component_usage` — drop a tracking row when the instance is deleted
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{DateTime, Utc};
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::helpers::require_cms_editor;
 use super::types::{
-    not_found_component, sqlx_err, ApiResult, ApiResultEmpty, ComponentUsageResponse,
-    GlobalComponentUsage, GlobalComponentUsageWithContent, TrackComponentUsageRequest,
+    ApiResult, ApiResultEmpty, ComponentUsageResponse, GlobalComponentUsage,
+    GlobalComponentUsageWithContent, TrackComponentUsageRequest, not_found_component, sqlx_err,
 };
 
 /// Get usage locations for a global component

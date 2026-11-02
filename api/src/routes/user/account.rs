@@ -6,11 +6,11 @@
 //! Leaving a user marked `deleted` while their subscriptions are
 //! still `active` would be a billing-fraud-class bug.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Deactivate account request
 #[derive(Debug, Deserialize)]

@@ -7,13 +7,13 @@
 //! byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, models::User, AppState};
+use crate::{AppState, middleware::admin::AdminUser, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // NOTIFICATION SCHEDULING ENDPOINTS - ICT 7 Fix

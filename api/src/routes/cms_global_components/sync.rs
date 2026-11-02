@@ -5,16 +5,16 @@
 //! to allow local edits.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::helpers::{get_cms_user_id, require_cms_editor};
-use super::types::{sqlx_err, ApiResult, GlobalComponentUsage, SyncComponentRequest};
+use super::types::{ApiResult, GlobalComponentUsage, SyncComponentRequest, sqlx_err};
 
 /// Sync a component instance to the latest version
 #[utoipa::path(

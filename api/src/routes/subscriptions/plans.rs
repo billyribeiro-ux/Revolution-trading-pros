@@ -5,9 +5,9 @@
 //! mapping, and money handling preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 

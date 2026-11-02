@@ -24,8 +24,8 @@
 //! `revolution_api::routes::subscriptions_admin::{...}` paths byte-for-byte.
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::AppState;

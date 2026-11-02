@@ -5,18 +5,18 @@
 //! gated inside `super::player` instead.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::models::course::{
     Course, CourseListItem, CourseModule, CourseQueryParams, LessonListItem, ModuleWithLessons,
 };
-use crate::AppState;
 
 pub(super) async fn list_published_courses(
     State(state): State<AppState>,

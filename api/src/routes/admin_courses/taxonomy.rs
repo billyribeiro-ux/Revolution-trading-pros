@@ -2,16 +2,16 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::routes::admin_courses::slugify;
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // CATEGORIES & TAGS - ICT 7 Grade

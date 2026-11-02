@@ -6,13 +6,13 @@
 //! preserved.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::dtos::{AddPaymentMethodRequest, PaymentMethodResponse};
 

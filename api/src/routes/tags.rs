@@ -4,16 +4,16 @@
 //! Manages blog tags with full CRUD, search, filtering, and sorting.
 
 use axum::{
+    Router,
     extract::{Path, Query, State},
     response::Json,
     routing::{delete, get, post, put},
-    Router,
 };
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 // Minimal schema - production tags only has id, name, slug
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Tag {

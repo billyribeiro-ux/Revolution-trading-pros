@@ -32,14 +32,14 @@ use std::{
     collections::HashMap,
     future::Future,
     sync::{
-        atomic::{AtomicU64, Ordering},
         Arc,
+        atomic::{AtomicU64, Ordering},
     },
     time::{Duration, Instant},
 };
 
 use anyhow::{Context, Result};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use tokio::sync::RwLock;
 
 use crate::services::redis::RedisService;
@@ -292,27 +292,27 @@ impl CacheService {
         // L1: Check in-memory cache first
         {
             let cache = self.local_cache.read().await;
-            if let Some(cached) = cache.get(key) {
-                if !cached.is_expired() {
-                    self.metrics.record_hit(true);
-                    match serde_json::from_str::<T>(&cached.data) {
-                        Ok(value) => {
-                            tracing::trace!(
-                                target: "cache",
-                                key = %key,
-                                "L1 cache hit"
-                            );
-                            return Some(value);
-                        }
-                        Err(e) => {
-                            tracing::warn!(
-                                target: "cache",
-                                key = %key,
-                                error = %e,
-                                "L1 cache deserialization error"
-                            );
-                            self.metrics.record_error();
-                        }
+            if let Some(cached) = cache.get(key)
+                && !cached.is_expired()
+            {
+                self.metrics.record_hit(true);
+                match serde_json::from_str::<T>(&cached.data) {
+                    Ok(value) => {
+                        tracing::trace!(
+                            target: "cache",
+                            key = %key,
+                            "L1 cache hit"
+                        );
+                        return Some(value);
+                    }
+                    Err(e) => {
+                        tracing::warn!(
+                            target: "cache",
+                            key = %key,
+                            error = %e,
+                            "L1 cache deserialization error"
+                        );
+                        self.metrics.record_error();
                     }
                 }
             }
@@ -388,16 +388,16 @@ impl CacheService {
         self.set_local(key.to_string(), cached).await;
 
         // Write to L2 (Redis) cache
-        if let Some(ref redis) = self.redis {
-            if let Err(e) = redis.set(key, &data, Some(ttl.as_secs())).await {
-                tracing::warn!(
-                    target: "cache",
-                    key = %key,
-                    error = %e,
-                    "Redis set error - L1 cache still valid"
-                );
-                self.metrics.record_redis_failure();
-            }
+        if let Some(ref redis) = self.redis
+            && let Err(e) = redis.set(key, &data, Some(ttl.as_secs())).await
+        {
+            tracing::warn!(
+                target: "cache",
+                key = %key,
+                error = %e,
+                "Redis set error - L1 cache still valid"
+            );
+            self.metrics.record_redis_failure();
         }
 
         self.metrics.record_write();
@@ -422,16 +422,16 @@ impl CacheService {
         }
 
         // Remove from L2 (Redis)
-        if let Some(ref redis) = self.redis {
-            if let Err(e) = redis.delete(key).await {
-                tracing::warn!(
-                    target: "cache",
-                    key = %key,
-                    error = %e,
-                    "Redis delete error"
-                );
-                self.metrics.record_redis_failure();
-            }
+        if let Some(ref redis) = self.redis
+            && let Err(e) = redis.delete(key).await
+        {
+            tracing::warn!(
+                target: "cache",
+                key = %key,
+                error = %e,
+                "Redis delete error"
+            );
+            self.metrics.record_redis_failure();
         }
 
         self.metrics.record_deletion();
@@ -596,15 +596,15 @@ impl CacheService {
         }
 
         // Clear L2 (matching our prefix only)
-        if let Some(ref redis) = self.redis {
-            if let Err(e) = self.delete_redis_pattern(redis, "es:v1:*").await {
-                tracing::error!(
-                    target: "cache",
-                    error = %e,
-                    "Failed to clear Redis cache"
-                );
-                return Err(e);
-            }
+        if let Some(ref redis) = self.redis
+            && let Err(e) = self.delete_redis_pattern(redis, "es:v1:*").await
+        {
+            tracing::error!(
+                target: "cache",
+                error = %e,
+                "Failed to clear Redis cache"
+            );
+            return Err(e);
         }
 
         tracing::warn!(

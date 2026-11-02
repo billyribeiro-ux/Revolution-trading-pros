@@ -2,14 +2,14 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
 use super::helpers::{current_token_version, hash_token_for_blacklist};
 use crate::{
+    AppState,
     models::{RefreshTokenRequest, RefreshTokenResponse},
     utils::{create_jwt_versioned, create_refresh_token_versioned, verify_jwt},
-    AppState,
 };
 
 /// Refresh access token

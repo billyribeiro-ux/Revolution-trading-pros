@@ -28,7 +28,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use base64::{engine::general_purpose::STANDARD, Engine as _};
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use sqlx::PgPool;
 use tokio::sync::RwLock;
 

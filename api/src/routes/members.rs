@@ -7,16 +7,16 @@
 #![allow(clippy::type_complexity)]
 
 use axum::{
+    Router,
     extract::{Path, Query, State},
     response::Json,
     routing::get,
-    Router,
 };
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Member {

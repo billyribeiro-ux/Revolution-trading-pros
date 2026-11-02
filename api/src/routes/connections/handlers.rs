@@ -3,14 +3,14 @@
 //! preserved verbatim — only the module boundary changed.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use std::collections::HashMap;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 use super::audit::log_connection_audit;
 use super::crypto::{decrypt_credentials, encrypt_credentials, mask_credentials};

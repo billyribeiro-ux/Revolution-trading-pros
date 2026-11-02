@@ -95,7 +95,7 @@ fn rotating_xff_cannot_change_the_bucket_key_when_peer_untrusted() {
 fn trusted_peer_returns_real_client_from_xff() {
     let trusted = cidrs(&["10.0.0.0/8"]);
     let peer = ip("10.0.0.1"); // our load balancer
-                               // [ real client , (nothing else) ] — single proxy in front.
+    // [ real client , (nothing else) ] — single proxy in front.
     let h = headers(&[("x-forwarded-for", "203.0.113.42")]);
     assert_eq!(resolve_client_ip(peer, &h, &trusted), ip("203.0.113.42"));
 }

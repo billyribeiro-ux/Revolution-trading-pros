@@ -5,7 +5,7 @@
 //! product-grant transition, and money invariant (`i64` cents
 //! end-to-end) is preserved byte-for-byte.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 
 use super::dtos::{
     OrderDetailResponse, OrderItemDetailResponse, OrderItemRow, OrderRow, ProductMeta,

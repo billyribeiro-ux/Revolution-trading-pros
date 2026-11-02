@@ -7,13 +7,13 @@ use std::convert::Infallible;
 use std::net::{IpAddr, SocketAddr};
 
 use axum::{
-    extract::{connect_info::MockConnectInfo, ConnectInfo, FromRequestParts},
-    http::{request::Parts, HeaderMap, StatusCode},
     Json,
+    extract::{ConnectInfo, FromRequestParts, connect_info::MockConnectInfo},
+    http::{HeaderMap, StatusCode, request::Parts},
 };
 use serde_json::json;
 
-use crate::{config::IpCidr, AppState};
+use crate::{AppState, config::IpCidr};
 
 /// Infallible client-address extractor.
 ///
@@ -152,10 +152,10 @@ fn parse_forwarded_hop(hop: &str) -> Option<IpAddr> {
     }
     // `host:port` — only meaningful for IPv4 (an unbracketed IPv6 with a
     // port is ambiguous and non-conformant; reject it).
-    if let Some((host, _port)) = hop.rsplit_once(':') {
-        if let Ok(v4) = host.parse::<std::net::Ipv4Addr>() {
-            return Some(IpAddr::V4(v4));
-        }
+    if let Some((host, _port)) = hop.rsplit_once(':')
+        && let Ok(v4) = host.parse::<std::net::Ipv4Addr>()
+    {
+        return Some(IpAddr::V4(v4));
     }
     None
 }

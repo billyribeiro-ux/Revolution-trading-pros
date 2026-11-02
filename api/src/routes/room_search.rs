@@ -23,22 +23,22 @@
 //! ═══════════════════════════════════════════════════════════════════════════════════
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::{error, info, instrument};
 
+use crate::AppState;
 use crate::models::User;
 use crate::services::room_search::{
     AlertSearchResult, Pagination, RoomSearchService, SearchFilters, SearchResults,
     SearchSuggestions, SearchableContentType, TradePlanSearchResult, TradeSearchResult,
 };
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // REQUEST TYPES
@@ -481,16 +481,16 @@ fn parse_filters(
     };
 
     // Validate date range
-    if let (Some(from), Some(to)) = (from_date, to_date) {
-        if from > to {
-            return Err((
-                StatusCode::BAD_REQUEST,
-                Json(json!({
-                    "success": false,
-                    "error": "'from' date cannot be after 'to' date"
-                })),
-            ));
-        }
+    if let (Some(from), Some(to)) = (from_date, to_date)
+        && from > to
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "success": false,
+                "error": "'from' date cannot be after 'to' date"
+            })),
+        ));
     }
 
     Ok(SearchFilters {

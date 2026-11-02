@@ -3,14 +3,15 @@
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
 use axum::{
+    Json,
     extract::State,
     http::{HeaderMap, StatusCode},
-    Json,
 };
 use serde_json::json;
 
-use super::helpers::{client_ip, current_token_version, enforce_ip_rate_limit_strict, ClientAddr};
+use super::helpers::{ClientAddr, client_ip, current_token_version, enforce_ip_rate_limit_strict};
 use crate::{
+    AppState,
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
     models::{AuthResponse, LoginUser, User},
@@ -18,7 +19,6 @@ use crate::{
         create_jwt_versioned, create_refresh_token_versioned, generate_session_id,
         hash_dummy_password, hash_password, verify_password,
     },
-    AppState,
 };
 
 /// Login user
@@ -180,7 +180,7 @@ pub(super) async fn login(
     if user.password_hash.starts_with("$2") {
         match hash_password(&input.password) {
             Ok(new_hash) => {
-                if let Err(e) = sqlx::query(
+                match sqlx::query(
                     "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
                 )
                 .bind(&new_hash)
@@ -188,20 +188,23 @@ pub(super) async fn login(
                 .execute(&state.db.pool)
                 .await
                 {
-                    tracing::error!(
-                        target: "security_audit",
-                        event = "bcrypt_rehash_write_failed",
-                        user_id = %user.id,
-                        error = %e,
-                        "Could not migrate bcrypt hash to argon2id"
-                    );
-                } else {
-                    tracing::info!(
-                        target: "security_audit",
-                        event = "bcrypt_rehashed_to_argon2id",
-                        user_id = %user.id,
-                        "Migrated user from bcrypt to argon2id on successful login"
-                    );
+                    Err(e) => {
+                        tracing::error!(
+                            target: "security_audit",
+                            event = "bcrypt_rehash_write_failed",
+                            user_id = %user.id,
+                            error = %e,
+                            "Could not migrate bcrypt hash to argon2id"
+                        );
+                    }
+                    _ => {
+                        tracing::info!(
+                            target: "security_audit",
+                            event = "bcrypt_rehashed_to_argon2id",
+                            user_id = %user.id,
+                            "Migrated user from bcrypt to argon2id on successful login"
+                        );
+                    }
                 }
             }
             Err(e) => {
@@ -379,13 +382,12 @@ pub(super) async fn login(
     let session_id = generate_session_id();
 
     // ICT L11+ Security: Create server-side session in Redis
-    if let Some(redis) = &state.services.redis {
-        if let Err(e) = redis
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis
             .create_session(&session_id, user.id, &user.email, None, None)
             .await
-        {
-            tracing::warn!("Failed to create session in Redis: {}", e);
-        }
+    {
+        tracing::warn!("Failed to create session in Redis: {}", e);
     }
 
     // Security audit: successful login

@@ -11,14 +11,14 @@
 //! Both share the `execute_schedule_action` helper which maps a
 //! `ScheduleAction` onto a `cms_content` row update.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::{
-    api_error, require_cms_admin, ApiResult, CmsSchedule, CronExecutionResponse, ScheduleAction,
+    ApiResult, CmsSchedule, CronExecutionResponse, ScheduleAction, api_error, require_cms_admin,
 };
 
 /// Process pending schedules (cron job endpoint)

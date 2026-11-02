@@ -17,8 +17,8 @@
 //! - `analytics.rs` — admin analytics (views, conversion, trends)
 
 use axum::{
-    routing::{get, post, put},
     Router,
+    routing::{get, post, put},
 };
 
 use crate::AppState;

@@ -11,16 +11,16 @@
 //! check upstream is the paywall gate the rest of this module depends on.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use hmac::{Hmac, KeyInit, Mac};
 use serde_json::json;
 use sha2::Sha256;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 /// ICT 7: Generate a license key for an indicator.
 ///

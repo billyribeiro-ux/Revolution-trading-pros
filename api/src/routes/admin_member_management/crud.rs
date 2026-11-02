@@ -2,15 +2,15 @@
 //! plus engagement-score and timeline helpers used by the detail endpoint.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{NaiveDateTime, Utc};
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::{
     CreateMemberRequest, MemberActivity, MemberDetail, MemberNote, MemberOrder, MemberSubscription,
@@ -344,8 +344,8 @@ pub(super) async fn create_member(
     // Generate password hash
     let password_was_generated = input.password.is_none();
     let password = input.password.unwrap_or_else(|| {
-        use rand::distr::Alphanumeric;
         use rand::RngExt;
+        use rand::distr::Alphanumeric;
         let mut rng = rand::rng();
         let rand_part: String = (0..12).map(|_| rng.sample(Alphanumeric) as char).collect();
         format!("Aa1!{rand_part}")
@@ -471,17 +471,17 @@ pub(super) async fn update_member(
         ));
     }
 
-    if let Some(ref new_role) = input.role {
-        if matches!(
+    if let Some(ref new_role) = input.role
+        && matches!(
             new_role.as_str(),
             "super_admin" | "super-admin" | "developer"
-        ) && !actor_is_super
-        {
-            return Err((
-                StatusCode::FORBIDDEN,
-                Json(json!({"error": "Only super_admin can grant developer or super_admin roles"})),
-            ));
-        }
+        )
+        && !actor_is_super
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Only super_admin can grant developer or super_admin roles"})),
+        ));
     }
 
     if let Some(ref password) = input.password {

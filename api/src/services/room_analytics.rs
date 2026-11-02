@@ -759,11 +759,7 @@ mod tests {
     /// Calculate profit factor from raw PnL totals (mirrors inline logic, line ~257-263).
     fn calculate_profit_factor(total_wins: f64, total_losses: f64) -> f64 {
         if total_losses == 0.0 {
-            if total_wins > 0.0 {
-                f64::INFINITY
-            } else {
-                0.0
-            }
+            if total_wins > 0.0 { f64::INFINITY } else { 0.0 }
         } else {
             total_wins / total_losses.abs()
         }

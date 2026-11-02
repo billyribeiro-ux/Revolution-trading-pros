@@ -6,12 +6,12 @@
 //!   GET /:id         — single asset with full metadata
 
 use axum::{
-    extract::{Path, Query, State},
     Json,
+    extract::{Path, Query, State},
 };
 use uuid::Uuid;
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 use super::dto::{Asset, AssetListQuery, AssetSummary, PaginatedAssets, PaginationMeta};
 

@@ -12,19 +12,19 @@
 //! @version 2.0.0 - January 2026
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use uuid::Uuid;
 
 use crate::{
-    models::cms::{CmsContentStatus, CmsContentType},
     AppState,
+    models::cms::{CmsContentStatus, CmsContentType},
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════════

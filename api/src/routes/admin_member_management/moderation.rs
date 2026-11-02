@@ -1,15 +1,15 @@
 //! Ban / suspend / unban handlers for member moderation.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::Utc;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::BanMemberRequest;
 

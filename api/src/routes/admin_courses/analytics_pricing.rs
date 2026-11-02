@@ -8,16 +8,16 @@
 //! is byte-identical to the pre-split monolith.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // COURSE ANALYTICS — wires CourseDetailDrawer "Analytics" tab to real DB rows.

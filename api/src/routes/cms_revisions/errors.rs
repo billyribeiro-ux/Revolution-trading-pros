@@ -3,9 +3,9 @@
 //! R27-B4 split (2026-05-20) — extracted verbatim from the original
 //! `routes/cms_revisions.rs` (lines 32-69). No behavioural change.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 use chrono::Utc;
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 
 use crate::models::User;
 

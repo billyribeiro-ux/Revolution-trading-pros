@@ -13,15 +13,15 @@
 
 use axum::{
     body::Body,
-    http::{header, Request, StatusCode},
+    http::{Request, StatusCode, header},
 };
 use chrono::{Duration, Utc};
 use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    assert_status_and_json, body_to_json, cleanup_room_data, AlertBuilder, TestContext,
-    TestTradingRoom, TestUser, TosFormatter,
+    AlertBuilder, TestContext, TestTradingRoom, TestUser, TosFormatter, assert_status_and_json,
+    body_to_json, cleanup_room_data,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════

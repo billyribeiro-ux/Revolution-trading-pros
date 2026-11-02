@@ -2,9 +2,9 @@
 
 use crate::AppState;
 use axum::{
+    Json, Router,
     extract::{Query, State},
     routing::get,
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 

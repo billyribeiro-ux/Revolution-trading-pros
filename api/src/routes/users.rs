@@ -3,14 +3,14 @@
 //! Previously these endpoints were PUBLIC - exposing all user data
 
 use axum::{
+    Json, Router,
     extract::{Path, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, models::UserResponse, AppState};
+use crate::{AppState, middleware::admin::AdminUser, models::UserResponse};
 
 /// Get user by ID - REQUIRES ADMIN AUTH
 /// ICT Level 7 Security: Protected endpoint

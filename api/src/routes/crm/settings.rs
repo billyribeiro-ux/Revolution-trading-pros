@@ -2,16 +2,16 @@
 //! (split from `crm.rs` lines 1646-1709).
 
 use axum::{
+    Json, Router,
     extract::{Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use serde::Deserialize;
 use serde_json::json;
 
 use super::ListFilters;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

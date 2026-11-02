@@ -99,7 +99,7 @@ fn token_type_segregation_is_enforced() {
 /// `Validation::default()`.
 #[test]
 fn alg_none_forgery_is_rejected() {
-    use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+    use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 
     let now = chrono::Utc::now().timestamp();
     let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"none","typ":"JWT"}"#);
@@ -200,8 +200,7 @@ fn hash_token_is_deterministic_and_not_identity() {
 /// test fails first instead.
 #[test]
 fn verifies_password_hashed_by_argon2_0_5() {
-    const LEGACY_ARGON2_0_5_HASH: &str =
-        "$argon2id$v=19$m=65536,t=3,p=4$CEoQaV7jsF2LZbHp3C/UBw$Exi2MqlY5D2/sLl+inv7tgWdMTgJH8FMuyzt1JsXzqY";
+    const LEGACY_ARGON2_0_5_HASH: &str = "$argon2id$v=19$m=65536,t=3,p=4$CEoQaV7jsF2LZbHp3C/UBw$Exi2MqlY5D2/sLl+inv7tgWdMTgJH8FMuyzt1JsXzqY";
 
     assert!(
         utils::verify_password("correct horse battery staple", LEGACY_ARGON2_0_5_HASH).unwrap(),

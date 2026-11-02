@@ -5,11 +5,11 @@
 //! Supports sitemap index for large sites (>50,000 URLs).
 
 use axum::{
+    Router,
     extract::{Path, State},
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
@@ -56,10 +56,10 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:index".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -134,10 +134,10 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:main".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -253,10 +253,10 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
     let cache_key = format!("sitemap:posts:{page}");
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -312,10 +312,10 @@ pub async fn categories(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:categories".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -363,10 +363,10 @@ pub async fn tags_sitemap(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:tags".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 

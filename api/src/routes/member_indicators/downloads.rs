@@ -11,19 +11,19 @@
 //! decodes `file_id` as `i32` to match.
 
 use axum::{
-    extract::{Path, Query, State},
-    http::{header, StatusCode},
-    response::Response,
     Json,
+    extract::{Path, Query, State},
+    http::{StatusCode, header},
+    response::Response,
 };
 use chrono::{Duration, Utc};
 use hmac::{Hmac, KeyInit, Mac};
 use serde_json::json;
 use sha2::Sha256;
 
-use crate::models::indicator::IndicatorFile;
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
+use crate::models::indicator::IndicatorFile;
 
 /// ICT 7 FIX: Uses i64 for indicator_id, queries user_indicators table
 pub(super) async fn generate_download_url(

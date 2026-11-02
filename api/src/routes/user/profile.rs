@@ -6,11 +6,11 @@
 //! commit atomically; external email send happens AFTER commit) is
 //! preserved.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Get current user profile
 /// Matches frontend expectation: GET /api/user/profile
@@ -246,32 +246,32 @@ pub(super) async fn update_profile(
     }
 
     // Post-commit: send verification email (external HTTP, never inside a tx).
-    if email_changed {
-        if let (Some(new_email), Some((raw_token, _))) = (&input.email, verification_token) {
-            // Send verification email
-            {
-                let email_service = &state.services.email;
-                let name = display_name.as_deref().unwrap_or(&user.name);
-                email_service
-                    .send_verification_email(new_email, name, &raw_token)
-                    .await
-                    .ok();
-            }
-
-            tracing::info!(
-                target: "security_audit",
-                event = "email_change_verification_sent",
-                user_id = %user.id,
-                new_email = %new_email,
-                "ICT 7 AUDIT: Email change verification sent"
-            );
-
-            return Ok(Json(json!({
-                "success": true,
-                "message": "Profile updated. Please verify your new email address.",
-                "email_verification_required": true
-            })));
+    if email_changed
+        && let (Some(new_email), Some((raw_token, _))) = (&input.email, verification_token)
+    {
+        // Send verification email
+        {
+            let email_service = &state.services.email;
+            let name = display_name.as_deref().unwrap_or(&user.name);
+            email_service
+                .send_verification_email(new_email, name, &raw_token)
+                .await
+                .ok();
         }
+
+        tracing::info!(
+            target: "security_audit",
+            event = "email_change_verification_sent",
+            user_id = %user.id,
+            new_email = %new_email,
+            "ICT 7 AUDIT: Email change verification sent"
+        );
+
+        return Ok(Json(json!({
+            "success": true,
+            "message": "Profile updated. Please verify your new email address.",
+            "email_verification_required": true
+        })));
     }
 
     Ok(Json(json!({

@@ -5,11 +5,11 @@
 //! integer-cents money path, and JSON response shape preserved
 //! byte-for-byte.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
 use super::dtos::GenerateInvoiceRequest;
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Generate invoice for an order
 /// POST /api/payments/invoice

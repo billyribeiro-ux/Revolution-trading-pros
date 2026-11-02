@@ -6,16 +6,16 @@
 //! marks the attempt complete.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 /// Get available quizzes for a course
 pub(super) async fn get_course_quizzes(
@@ -142,13 +142,13 @@ pub(super) async fn start_quiz(
     .await
     .unwrap_or((0,));
 
-    if let Some(max) = quiz.2 {
-        if attempt_count.0 >= max as i64 {
-            return Err((
-                StatusCode::FORBIDDEN,
-                Json(json!({"error": "Maximum attempts reached", "max_attempts": max})),
-            ));
-        }
+    if let Some(max) = quiz.2
+        && attempt_count.0 >= max as i64
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Maximum attempts reached", "max_attempts": max})),
+        ));
     }
 
     // Get questions.
@@ -283,26 +283,24 @@ pub(super) async fn submit_quiz(
                 .ok()
                 .flatten();
 
-        if let Some(q) = question {
-            if let Some(aid) = answer_id {
-                let is_correct: Option<(bool,)> = sqlx::query_as(
-                    "SELECT is_correct FROM quiz_answers WHERE id = $1 AND question_id = $2",
-                )
-                .bind(aid)
-                .bind(question_id)
-                .fetch_optional(&state.db.pool)
-                .await
-                .ok()
-                .flatten();
+        if let Some(q) = question
+            && let Some(aid) = answer_id
+        {
+            let is_correct: Option<(bool,)> = sqlx::query_as(
+                "SELECT is_correct FROM quiz_answers WHERE id = $1 AND question_id = $2",
+            )
+            .bind(aid)
+            .bind(question_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
-                if is_correct.map(|c| c.0).unwrap_or(false) {
-                    total_score += q.0;
-                    results
-                        .push(json!({"question_id": question_id, "correct": true, "points": q.0}));
-                } else {
-                    results
-                        .push(json!({"question_id": question_id, "correct": false, "points": 0}));
-                }
+            if is_correct.map(|c| c.0).unwrap_or(false) {
+                total_score += q.0;
+                results.push(json!({"question_id": question_id, "correct": true, "points": q.0}));
+            } else {
+                results.push(json!({"question_id": question_id, "correct": false, "points": 0}));
             }
         }
     }

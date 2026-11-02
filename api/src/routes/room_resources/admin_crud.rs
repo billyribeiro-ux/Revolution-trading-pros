@@ -6,17 +6,17 @@
 //! mutations, analytics, and download logs.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::helpers::{resource_to_response, slugify};
 use super::{
@@ -77,7 +77,9 @@ pub(super) async fn admin_list_resources(
 
     let sql = format!(
         "SELECT * FROM room_resources WHERE deleted_at IS NULL{} ORDER BY created_at DESC LIMIT ${} OFFSET ${}",
-        where_clause, param_idx, param_idx + 1
+        where_clause,
+        param_idx,
+        param_idx + 1
     );
     let count_sql =
         format!("SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL{where_clause}");
@@ -539,14 +541,14 @@ pub(super) async fn validate_upload(
     }
 
     // Validate MIME type
-    if let Some(ref mime) = input.mime_type {
-        if !limit.allowed_mime_types.contains(mime) {
-            return Ok(Json(json!({
-                "success": true,
-                "valid": false,
-                "error": format!("MIME type '{}' is not allowed. Allowed: {:?}", mime, limit.allowed_mime_types)
-            })));
-        }
+    if let Some(ref mime) = input.mime_type
+        && !limit.allowed_mime_types.contains(mime)
+    {
+        return Ok(Json(json!({
+            "success": true,
+            "valid": false,
+            "error": format!("MIME type '{}' is not allowed. Allowed: {:?}", mime, limit.allowed_mime_types)
+        })));
     }
 
     // Validate extension

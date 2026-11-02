@@ -6,7 +6,7 @@
 //! `tx` routing, error mapping, status mapping, Stripe getter,
 //! and `tracing` field is preserved byte-for-byte.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 use serde_json::json;
 
 use crate::AppState;

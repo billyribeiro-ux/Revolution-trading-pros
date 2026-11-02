@@ -3,19 +3,19 @@
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
 use axum::{
+    Json,
     extract::State,
     http::{HeaderMap, StatusCode},
-    Json,
 };
 use serde_json::json;
 
-use super::helpers::{client_ip, enforce_ip_rate_limit_strict, ClientAddr};
+use super::helpers::{ClientAddr, client_ip, enforce_ip_rate_limit_strict};
 use crate::{
+    AppState,
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
     models::{ForgotPasswordRequest, MessageResponse, ResetPasswordRequest, User},
     utils::{generate_verification_token, hash_password, hash_token, validate_password},
-    AppState,
 };
 
 /// Request password reset

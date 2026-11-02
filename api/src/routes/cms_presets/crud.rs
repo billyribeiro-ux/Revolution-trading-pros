@@ -5,19 +5,19 @@
 //! move — handler bodies are unchanged.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::dto::{CmsPreset, CmsPresetCategory, CreatePresetRequest, UpdatePresetRequest};
 use super::helpers::{
-    ensure_unique_slug, generate_slug, require_cms_admin, require_cms_editor, ApiResult,
-    ApiResultEmpty,
+    ApiResult, ApiResultEmpty, ensure_unique_slug, generate_slug, require_cms_admin,
+    require_cms_editor,
 };
 
 /// Create a new preset

@@ -2,16 +2,16 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // QUIZ CRUD - ICT 7 Grade

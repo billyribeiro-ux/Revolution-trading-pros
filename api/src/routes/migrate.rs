@@ -3,10 +3,10 @@
 // ICT 11+ Pattern: Admin-only endpoint to run migrations remotely
 // ═══════════════════════════════════════════════════════════════════════════
 
-use axum::{extract::State, http::StatusCode, routing::post, Json, Router};
+use axum::{Json, Router, extract::State, http::StatusCode, routing::post};
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 pub fn router() -> Router<AppState> {
     Router::new().route("/run-schedule-migration", post(run_schedule_migration))

@@ -9,18 +9,18 @@
 //! move — handler bodies are unchanged.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::dto::{
     BlockTypeWithPresets, BlockTypesWithPresetsResponse, CmsPresetSummary, GroupedPresetsResponse,
     ListPresetsQuery, PaginatedPresetsResponse, PaginationMeta, PresetsByCategory,
 };
-use super::helpers::{require_cms_editor, ApiResult};
+use super::helpers::{ApiResult, require_cms_editor};
 
 /// List presets with pagination and filtering
 ///

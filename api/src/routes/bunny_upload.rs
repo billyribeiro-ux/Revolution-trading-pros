@@ -12,16 +12,16 @@
  * @version 1.0.0
  */
 use axum::{
+    Json, Router,
     extract::{DefaultBodyLimit, Path, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

@@ -9,15 +9,15 @@
 
 use axum::{
     body::Body,
-    http::{header, Request, StatusCode},
+    http::{Request, StatusCode, header},
 };
 use chrono::{Duration, Utc};
 use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    assert_status_and_json, body_to_json, calculate_win_rate, cleanup_room_data, TestContext,
-    TestTradingRoom, TestUser, TradeBuilder,
+    TestContext, TestTradingRoom, TestUser, TradeBuilder, assert_status_and_json, body_to_json,
+    calculate_win_rate, cleanup_room_data,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════

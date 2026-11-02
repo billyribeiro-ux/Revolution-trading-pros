@@ -7,22 +7,22 @@
 //! `cancel_release`, `delete_release`.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::{
-    api_error, default_timezone, require_cms_admin, require_cms_editor, AddReleaseItemRequest,
-    ApiResult, CmsRelease, CmsReleaseItem, CmsReleaseItemExtended, CreateReleaseRequest, ListQuery,
-    ReleaseDetailResponse, ReleaseListResponse, ReleaseStatus, UpdateReleaseRequest,
+    AddReleaseItemRequest, ApiResult, CmsRelease, CmsReleaseItem, CmsReleaseItemExtended,
+    CreateReleaseRequest, ListQuery, ReleaseDetailResponse, ReleaseListResponse, ReleaseStatus,
+    UpdateReleaseRequest, api_error, default_timezone, require_cms_admin, require_cms_editor,
 };
 
 /// Create a new release

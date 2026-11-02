@@ -1,14 +1,14 @@
 //! Member notes — list, create, delete.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::{CreateNoteRequest, MemberNote};
 

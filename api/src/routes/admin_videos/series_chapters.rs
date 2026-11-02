@@ -1,14 +1,14 @@
 //! Video series CRUD + per-video chapter CRUD handlers.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SERIES

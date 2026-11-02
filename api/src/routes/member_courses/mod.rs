@@ -7,8 +7,8 @@
 //! API (`public_router`, `member_router`) is unchanged.
 
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
 
 use crate::AppState;

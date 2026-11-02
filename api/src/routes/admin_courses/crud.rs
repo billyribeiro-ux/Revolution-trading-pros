@@ -2,21 +2,21 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::course::{
     Course, CourseDownload, CourseQueryParams, CreateCourseRequest, LessonListItem,
     ModuleWithLessons, UpdateCourseRequest,
 };
 use crate::routes::admin_courses::slugify;
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // COURSE CRUD
@@ -339,7 +339,7 @@ pub(super) async fn update_course(
     let mut param_count = 1;
 
     macro_rules! add_update {
-        ($field:expr, $value:expr) => {
+        ($field:expr_2021, $value:expr_2021) => {
             if let Some(ref v) = $value {
                 updates.push(format!("{} = ${}", $field, param_count));
                 param_count += 1;

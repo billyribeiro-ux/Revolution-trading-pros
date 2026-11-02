@@ -15,12 +15,12 @@
 //!   (FIX-C-1, 2026-04-29) — never in the URL.
 
 use axum::{
+    Json,
     extract::State,
     http::StatusCode,
     response::{IntoResponse, Redirect, Response},
-    Json,
 };
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 
@@ -29,7 +29,7 @@ use super::crypto::generate_random_string;
 use super::session::oauth_callback_response_with_cookies;
 use super::types::{AppleCallbackBody, OAuthProvider};
 use super::user::{create_oauth_auth_response, create_or_get_oauth_user};
-use crate::{utils::generate_session_id, AppState};
+use crate::{AppState, utils::generate_session_id};
 
 /// Apple user info (only provided on first auth)
 #[derive(Debug, Deserialize)]

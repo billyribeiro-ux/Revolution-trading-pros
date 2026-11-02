@@ -8,16 +8,16 @@
 //! preserve the original SQL byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
+use crate::AppState;
 use crate::models::indicator::{
     Indicator, IndicatorListItem, IndicatorQueryParams, IndicatorVideo,
 };
-use crate::AppState;
 
 /// ICT 7 SECURITY FIX: Fully parameterized queries to prevent SQL injection
 pub(super) async fn list_public_indicators(

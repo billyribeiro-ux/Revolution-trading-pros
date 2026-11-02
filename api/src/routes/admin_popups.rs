@@ -9,15 +9,16 @@
 //! - Event tracking
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post, put},
-    Json, Router,
 };
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::popup::{
     AbTestVariantMetrics, ConversionMetrics, ConversionRateMetrics, CreatePopupRequest, DailyCount,
@@ -25,7 +26,6 @@ use crate::models::popup::{
     PopupDetail, PopupListResponse, PopupResponse, PopupSummary, TimelineData, TriggerRules,
     UpdatePopupRequest, ViewMetrics,
 };
-use crate::AppState;
 
 /// Query params for listing popups
 #[derive(Debug, Deserialize)]

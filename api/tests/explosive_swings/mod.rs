@@ -27,7 +27,7 @@ pub mod trades_test;
 
 // Re-export common fixtures for easy access
 pub use fixtures::{
-    assert_status_and_json, body_to_json, calculate_profit_factor, calculate_win_rate,
-    cleanup_room_data, cleanup_test_users, init_test_env, AlertBuilder, TestContext,
-    TestTradingRoom, TestUser, TosFormatter, TradeBuilder, TradePlanBuilder,
+    AlertBuilder, TestContext, TestTradingRoom, TestUser, TosFormatter, TradeBuilder,
+    TradePlanBuilder, assert_status_and_json, body_to_json, calculate_profit_factor,
+    calculate_win_rate, cleanup_room_data, cleanup_test_users, init_test_env,
 };

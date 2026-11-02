@@ -5,14 +5,14 @@
 //! status breakdown. All in one round trip via three queries.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::types::FormRow;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// Get form analytics (admin) - GET /forms/:id/analytics
 /// ICT 7 Fix: Comprehensive form analytics

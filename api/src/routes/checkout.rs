@@ -2,15 +2,15 @@
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
 use axum::{
+    Json, Router,
     extract::{Path, State},
     http::StatusCode,
     routing::{get, post},
-    Json, Router,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CART
@@ -255,14 +255,15 @@ async fn create_checkout(
         // Batch 4: enforce min_purchase BEFORE attaching the Stripe
         // discount. Stripe Coupons can't gate on order subtotal, so we
         // do it here in cents.
-        if let Some(min) = c.min_purchase_cents {
-            if min > 0 && subtotal_cents < min {
-                let msg = format!(
-                    "Order must be at least ${:.2} to use this coupon",
-                    (min as f64) / 100.0
-                );
-                return Err((StatusCode::BAD_REQUEST, Json(json!({"error": msg}))));
-            }
+        if let Some(min) = c.min_purchase_cents
+            && min > 0
+            && subtotal_cents < min
+        {
+            let msg = format!(
+                "Order must be at least ${:.2} to use this coupon",
+                (min as f64) / 100.0
+            );
+            return Err((StatusCode::BAD_REQUEST, Json(json!({"error": msg}))));
         }
 
         applied_coupon_id = Some(c.id);

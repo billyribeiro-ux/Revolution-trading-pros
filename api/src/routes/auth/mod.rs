@@ -16,8 +16,8 @@
 //! audit event, and rate-limit gate is preserved byte-for-byte.
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::AppState;

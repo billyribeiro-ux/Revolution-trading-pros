@@ -5,17 +5,17 @@
 //! Full CRUD for user favorites with room-scoped access
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post},
-    Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 use tracing::{error, info};
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS

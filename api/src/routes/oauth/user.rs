@@ -17,14 +17,14 @@
 //! revocation. DO NOT relax the fail-closed semantics without a security
 //! sign-off.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 
 use super::crypto::generate_random_string;
 use super::types::OAuthProvider;
 use crate::{
+    AppState,
     models::{AuthResponse, User},
     utils::{create_jwt_versioned, create_refresh_token_versioned},
-    AppState,
 };
 
 /// Create or get existing user from OAuth data

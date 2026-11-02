@@ -3,7 +3,7 @@
 //! PE7: Resilient connection with exponential backoff retry
 
 use anyhow::Result;
-use redis::{aio::ConnectionManager, AsyncCommands};
+use redis::{AsyncCommands, aio::ConnectionManager};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
@@ -451,23 +451,23 @@ impl RedisService {
         };
 
         // Check if account is locked
-        if let Some(locked_until) = attempts.locked_until {
-            if now < locked_until {
-                let retry_after = locked_until - now;
-                tracing::warn!(
-                    target: "security",
-                    event = "login_blocked_lockout",
-                    identifier = %identifier,
-                    retry_after = %retry_after,
-                    "Login blocked - account locked"
-                );
-                return Ok(RateLimitResult {
-                    allowed: false,
-                    remaining: 0,
-                    retry_after: Some(retry_after),
-                    locked: true,
-                });
-            }
+        if let Some(locked_until) = attempts.locked_until
+            && now < locked_until
+        {
+            let retry_after = locked_until - now;
+            tracing::warn!(
+                target: "security",
+                event = "login_blocked_lockout",
+                identifier = %identifier,
+                retry_after = %retry_after,
+                "Login blocked - account locked"
+            );
+            return Ok(RateLimitResult {
+                allowed: false,
+                remaining: 0,
+                retry_after: Some(retry_after),
+                locked: true,
+            });
         }
 
         // Check if over limit

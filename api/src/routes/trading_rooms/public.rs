@@ -6,9 +6,9 @@
 //! payload.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
@@ -144,13 +144,13 @@ pub(super) async fn get_trading_room(
         Ok(None) => {
             // Try fallback
             let fallback = get_fallback_rooms();
-            if let Some(rooms) = fallback.as_array() {
-                if let Some(room) = rooms.iter().find(|r| r["slug"] == slug) {
-                    return Ok(Json(json!({
-                        "success": true,
-                        "data": room
-                    })));
-                }
+            if let Some(rooms) = fallback.as_array()
+                && let Some(room) = rooms.iter().find(|r| r["slug"] == slug)
+            {
+                return Ok(Json(json!({
+                    "success": true,
+                    "data": room
+                })));
             }
 
             Err((
@@ -164,13 +164,13 @@ pub(super) async fn get_trading_room(
         Err(_) => {
             // Try fallback on error
             let fallback = get_fallback_rooms();
-            if let Some(rooms) = fallback.as_array() {
-                if let Some(room) = rooms.iter().find(|r| r["slug"] == slug) {
-                    return Ok(Json(json!({
-                        "success": true,
-                        "data": room
-                    })));
-                }
+            if let Some(rooms) = fallback.as_array()
+                && let Some(room) = rooms.iter().find(|r| r["slug"] == slug)
+            {
+                return Ok(Json(json!({
+                    "success": true,
+                    "data": room
+                })));
             }
 
             Err((

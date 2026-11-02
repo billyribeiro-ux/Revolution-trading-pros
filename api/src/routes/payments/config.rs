@@ -3,7 +3,7 @@
 //! R16-B (2026-05-20): extracted from the original 2,368-LOC
 //! `payments.rs` as a pure structural move.
 
-use axum::{extract::State, Json};
+use axum::{Json, extract::State};
 use serde_json::json;
 
 use crate::AppState;

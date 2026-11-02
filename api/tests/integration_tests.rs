@@ -4,7 +4,7 @@
 //! Tests all critical API endpoints with real database connections
 
 use axum::body::Body;
-use axum::http::{header, Request, StatusCode};
+use axum::http::{Request, StatusCode, header};
 use serde_json::json;
 use tower::ServiceExt;
 

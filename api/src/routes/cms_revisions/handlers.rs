@@ -12,14 +12,14 @@
 //!   - `restore_revision`   — POST /content/:id/revisions/:version/restore
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::Utc;
 use uuid::Uuid;
 
-use crate::{models::User, services::cms_content, AppState};
+use crate::{AppState, models::User, services::cms_content};
 
 use super::diff::compute_diff;
 use super::dtos::{
@@ -27,7 +27,7 @@ use super::dtos::{
     RevisionCompareResponse, RevisionListQuery, RevisionListResponse, RevisionMetadata,
     RevisionSummary,
 };
-use super::errors::{api_error, require_cms_admin, require_cms_editor, ApiResult};
+use super::errors::{ApiResult, api_error, require_cms_admin, require_cms_editor};
 
 /// List all revisions for content
 ///
