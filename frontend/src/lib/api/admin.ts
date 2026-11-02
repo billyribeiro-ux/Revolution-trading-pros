@@ -592,12 +592,11 @@ async function makeRequest<T = unknown>(
 		retries?: number;
 	} = {}
 ): Promise<ApiResponse<T>> {
-	// Use secure getter from auth store
+	// Auth is the httpOnly `rtp_access_token` cookie, sent via credentials:'include'.
+	// The in-memory token is only a hint: it is empty on a hard page load until the
+	// auth store hydrates, and throwing here logged admins out of products, coupons,
+	// templates and subscriptions. The server answers 401 itself when truly signed out.
 	const token = authStore.getToken();
-
-	if (!token) {
-		throw new AdminApiError('Not authenticated', 401);
-	}
 
 	// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 	const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
@@ -628,10 +627,11 @@ async function makeRequest<T = unknown>(
 				url,
 				{
 					...fetchOptions,
+					credentials: 'include',
 					headers: {
 						'Content-Type': 'application/json',
 						Accept: 'application/json',
-						Authorization: `Bearer ${token}`,
+						...(token ? { Authorization: `Bearer ${token}` } : {}),
 						...fetchOptions.headers
 					}
 				},

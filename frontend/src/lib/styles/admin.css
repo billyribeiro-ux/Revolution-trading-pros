@@ -987,6 +987,61 @@
 	}
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   13. TAILWIND UTILITY BRIDGE
+   Shared primitives (ui/Card, Badge, Input, Select, Button) and a few pages still
+   emit light-theme Tailwind utilities. Inside the admin they resolve to the dark
+   token layer so every surface, text and border matches. Unlayered + .admin-layout
+   scoping beats the layered utilities and never leaks to public pages.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.admin-layout .bg-white,
+.admin-layout .bg-gray-50 {
+	background-color: var(--admin-surface-elevated);
+}
+.admin-layout .bg-gray-100,
+.admin-layout .bg-gray-200 {
+	background-color: var(--admin-surface-sunken);
+}
+.admin-layout .hover\:bg-gray-50:hover,
+.admin-layout .hover\:bg-gray-100:hover {
+	background-color: var(--admin-surface-hover);
+}
+.admin-layout .text-gray-900,
+.admin-layout .text-gray-800,
+.admin-layout .text-gray-700 {
+	color: var(--admin-text-primary);
+}
+.admin-layout .text-gray-600,
+.admin-layout .text-gray-500 {
+	color: var(--admin-text-secondary);
+}
+.admin-layout .text-gray-400 {
+	color: var(--admin-text-muted);
+}
+.admin-layout .border-gray-200,
+.admin-layout .border-gray-300 {
+	border-color: var(--admin-border);
+}
+.admin-layout .bg-blue-600,
+.admin-layout .bg-blue-500,
+.admin-layout .hover\:bg-blue-700:hover {
+	background-color: var(--admin-accent-primary);
+	color: var(--admin-btn-primary-text);
+}
+.admin-layout .bg-red-100 { background-color: var(--admin-error-bg); }
+.admin-layout .text-red-800 { color: var(--admin-error); }
+.admin-layout .bg-green-100 { background-color: var(--admin-success-bg); }
+.admin-layout .text-green-800 { color: var(--admin-success); }
+.admin-layout .bg-yellow-100 { background-color: var(--admin-warning-bg); }
+.admin-layout .text-yellow-800 { color: var(--admin-warning); }
+.admin-layout .bg-blue-100 { background-color: var(--admin-info-bg); }
+.admin-layout .text-blue-800 { color: var(--admin-info); }
+.admin-layout .focus\:ring-blue-500:focus,
+.admin-layout .focus\:border-blue-500:focus {
+	--tw-ring-color: var(--admin-accent-primary);
+	border-color: var(--admin-accent-primary);
+}
+
 /* Print Styles */
 @media print {
 	.admin-layout .admin-header,
