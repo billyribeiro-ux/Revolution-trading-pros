@@ -17,7 +17,7 @@ use crate::{
     models::{AuthResponse, LoginUser, User},
     utils::{
         create_jwt_versioned, create_refresh_token_versioned, generate_session_id,
-        hash_dummy_password, hash_password, verify_password,
+        hash_dummy_password, hash_password_async, verify_password_async,
     },
 };
 
@@ -115,7 +115,7 @@ pub(super) async fn login(
         Some(u) => u,
         None => {
             // Hash dummy password to match timing of real verification
-            hash_dummy_password();
+            hash_dummy_password().await;
             tracing::info!(
                 target: "security",
                 event = "login_failed",
@@ -133,18 +133,23 @@ pub(super) async fn login(
     // Apple Principal Engineer Grade: Never log credentials, hashes, or password metadata
 
     // Verify password (this happens regardless of user existence due to above)
-    let password_valid = verify_password(&input.password, &user.password_hash).map_err(|e| {
-        tracing::error!("Password verification error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Authentication error"})),
-        )
-    })?;
+    let password_valid = verify_password_async(&input.password, &user.password_hash)
+        .await
+        .map_err(|e| {
+            tracing::error!("Password verification error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Authentication error"})),
+            )
+        })?;
 
     if !password_valid {
         // Record failed attempt for rate limiting
-        if let Some(redis) = &state.services.redis {
-            let _ = redis.record_failed_login(&input.email).await;
+        if let Some(redis) = &state.services.redis
+            && let Err(e) = redis.record_failed_login(&input.email).await
+        {
+            // Brute-force counter silently not incrementing = rate limit off.
+            tracing::error!(target: "security", error = %e, "Failed to record failed login attempt");
         }
 
         tracing::info!(
@@ -161,8 +166,10 @@ pub(super) async fn login(
     }
 
     // Clear failed login attempts on successful authentication
-    if let Some(redis) = &state.services.redis {
-        let _ = redis.clear_login_attempts(&input.email).await;
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis.clear_login_attempts(&input.email).await
+    {
+        tracing::warn!(target: "security", error = %e, "Failed to clear login attempts after successful login");
     }
 
     // FIX-M-4 (2026-04-29): silently re-hash bcrypt (Laravel legacy) into
@@ -178,7 +185,7 @@ pub(super) async fn login(
     // Best-effort: a failure here logs but does not fail the login; the
     // user keeps a bcrypt hash and we'll try again on their next login.
     if user.password_hash.starts_with("$2") {
-        match hash_password(&input.password) {
+        match hash_password_async(&input.password).await {
             Ok(new_hash) => {
                 match sqlx::query(
                     "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",

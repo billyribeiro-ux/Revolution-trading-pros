@@ -28,7 +28,9 @@ fn init_test_env() {
         dotenvy::dotenv().ok();
 
         if std::env::var("JWT_SECRET").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
             unsafe {
                 std::env::set_var(
                     "JWT_SECRET",
@@ -37,7 +39,9 @@ fn init_test_env() {
             };
         }
         if std::env::var("DATABASE_URL").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
             unsafe {
                 std::env::set_var(
                     "DATABASE_URL",
@@ -46,8 +50,10 @@ fn init_test_env() {
             };
         }
         if std::env::var("REDIS_URL").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
-            unsafe { std::env::set_var("REDIS_URL", "redis://localhost:6379") };
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
+            unsafe { std::env::set_var("REDIS_URL", "redis://localhost:6379/9") };
         }
     });
 }

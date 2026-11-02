@@ -38,7 +38,7 @@ pub(super) async fn get_download_analytics(
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

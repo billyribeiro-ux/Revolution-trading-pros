@@ -59,7 +59,7 @@ pub(super) async fn list_campaigns(
         sqlx::query_as("SELECT * FROM campaigns ORDER BY created_at DESC")
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default();
+            .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(campaigns))
 }

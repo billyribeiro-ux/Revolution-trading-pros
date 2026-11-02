@@ -219,6 +219,10 @@ pub(super) async fn change_plan_price(
         )
     })?;
 
+    if let Err(e) = state.cache_invalidator.invalidate_plans().await {
+        tracing::warn!(target: "cache", error = %e, "Failed to invalidate plans cache");
+    }
+
     tracing::info!(
         target: "stripe_price",
         event = "plan_price_changed",

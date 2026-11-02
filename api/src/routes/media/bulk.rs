@@ -175,8 +175,7 @@ pub(super) async fn cleanup_orphaned_files(
         ",
     )
     .fetch_all(state.db.pool())
-    .await
-    .unwrap_or_default();
+    .await?;
 
     // Step 2: Verify each file exists in storage
     let storage = &state.services.storage;

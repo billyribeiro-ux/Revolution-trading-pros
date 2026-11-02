@@ -54,7 +54,7 @@ pub(super) async fn get_my_courses(
     .bind(user_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let mut result = Vec::new();
     for enrollment in enrollments {
@@ -396,7 +396,7 @@ pub(super) async fn get_course_downloads(
     .bind(enrolled.is_some())
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

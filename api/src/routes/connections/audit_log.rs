@@ -65,7 +65,7 @@ pub(super) async fn get_audit_logs(
     .bind(offset)
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM admin_audit_logs WHERE entity_type IN ('service_connection', 'integration_webhook')"

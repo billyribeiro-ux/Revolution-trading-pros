@@ -15,7 +15,7 @@ use crate::{
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
     models::{CreateUser, User},
-    utils::{generate_verification_token, hash_password, validate_password},
+    utils::{generate_verification_token, hash_password_async, validate_password},
 };
 
 /// Registration response (no tokens - must verify email first)
@@ -97,7 +97,7 @@ pub(super) async fn register(
     }
 
     // Hash password
-    let password_hash = hash_password(&input.password).map_err(|e| {
+    let password_hash = hash_password_async(&input.password).await.map_err(|e| {
         tracing::error!("Password hashing error: {}", e);
         (
             StatusCode::INTERNAL_SERVER_ERROR,

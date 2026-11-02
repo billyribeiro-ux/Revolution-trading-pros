@@ -64,7 +64,7 @@ pub(super) async fn list_departments(
     let departments: Vec<Department> = query_builder
         .fetch_all(state.db.pool())
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

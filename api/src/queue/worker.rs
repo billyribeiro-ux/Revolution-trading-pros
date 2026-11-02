@@ -27,6 +27,7 @@ type HmacSha256 = Hmac<Sha256>;
 static HTTP_CLIENT: LazyLock<Client> = LazyLock::new(|| {
     Client::builder()
         .timeout(Duration::from_secs(30))
+        .connect_timeout(Duration::from_secs(10))
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .expect("static reqwest Client must build")

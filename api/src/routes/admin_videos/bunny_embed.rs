@@ -118,7 +118,9 @@ pub(super) async fn bunny_webhook(
         }
         sqlx_query = sqlx_query.bind(video_guid);
 
-        let _ = sqlx_query.execute(&state.db.pool).await;
+        if let Err(e) = sqlx_query.execute(&state.db.pool).await {
+            tracing::warn!(error = %e, "Failed to persist Bunny video metadata refresh");
+        }
     }
 
     Ok(Json(json!({

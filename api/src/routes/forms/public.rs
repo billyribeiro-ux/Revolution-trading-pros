@@ -42,7 +42,7 @@ pub(super) async fn list_public_forms(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
     for form in &mut forms {
         html::sanitize_form_fields(&mut form.fields);
     }
@@ -292,7 +292,7 @@ pub(super) async fn submit_form(
 
                 // Fire-and-forget webhook call (don't block response)
                 let webhook_url = webhook_url.to_string();
-                let client = reqwest::Client::new();
+                let client = crate::utils::http::WEBHOOK_HTTP.clone();
                 tokio::spawn(async move {
                     match client
                         .post(&webhook_url)

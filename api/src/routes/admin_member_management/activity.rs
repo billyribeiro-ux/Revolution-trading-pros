@@ -42,7 +42,7 @@ pub(super) async fn get_activity(
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(crate::utils::errors::db_error)?
     } else {
         sqlx::query_as(
             r"
@@ -58,7 +58,7 @@ pub(super) async fn get_activity(
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(crate::utils::errors::db_error)?
     };
 
     let total: i64 =

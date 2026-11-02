@@ -29,7 +29,7 @@ async fn test_get_room_stats_empty() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Act
@@ -57,7 +57,7 @@ async fn test_get_room_stats_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Act - Access without authentication is rejected per NF-1
     let unauth_response = ctx
@@ -418,7 +418,7 @@ async fn test_pnl_calculation_long_call_win() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Entry: 2.50 per contract, Quantity: 2, Exit: 5.00
     // P&L = (5.00 - 2.50) * 2 = 5.00
@@ -471,7 +471,7 @@ async fn test_pnl_calculation_long_call_loss() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Entry: 5.00 per contract, Quantity: 1, Exit: 1.00
     // P&L = (1.00 - 5.00) * 1 = -4.00
@@ -527,7 +527,7 @@ async fn test_pnl_percent_calculation() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Entry: 4.00, Exit: 6.00
     // P&L % = ((6.00 - 4.00) / 4.00) * 100 = 50%
@@ -585,7 +585,7 @@ async fn test_holding_days_same_day() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let today = Utc::now().date_naive();
     let trade = TradeBuilder::long_call(&room.slug, "HOLD0", 100.0, 2.00)
@@ -643,7 +643,7 @@ async fn test_holding_days_multi_day() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let entry_date = Utc::now().date_naive() - Duration::days(10);
     let exit_date = Utc::now().date_naive();
@@ -845,7 +845,7 @@ async fn test_stats_structure() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Manually insert stats cache for testing
     sqlx::query(
@@ -1097,7 +1097,7 @@ async fn test_stats_with_breakeven_trade() {
     // A trade that closes at exactly entry price (0% gain)
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "BREAKEVEN", 100.0, 3.00).build_json();
 

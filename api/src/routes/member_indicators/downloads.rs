@@ -372,7 +372,7 @@ pub(super) async fn get_download_history(
     .bind(offset as i64)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM indicator_downloads WHERE user_id = $1")

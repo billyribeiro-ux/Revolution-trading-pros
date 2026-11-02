@@ -24,7 +24,7 @@ pub(super) async fn list_series(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -172,7 +172,7 @@ pub(super) async fn list_chapters(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

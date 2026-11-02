@@ -496,7 +496,7 @@ pub(super) async fn get_upload_limits(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -791,7 +791,7 @@ pub(super) async fn get_resource_analytics(
     let by_type: Vec<TypeStats> = by_type_q
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     // By access level
     let by_access_sql = format!(
@@ -805,7 +805,7 @@ pub(super) async fn get_resource_analytics(
     let by_access_level: Vec<AccessStats> = by_access_q
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     // Top viewed
     let top_viewed_sql = format!(
@@ -819,7 +819,7 @@ pub(super) async fn get_resource_analytics(
     let top_viewed: Vec<ResourceStats> = top_viewed_q
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     // Top downloaded
     let top_downloaded_sql = format!(
@@ -833,7 +833,7 @@ pub(super) async fn get_resource_analytics(
     let top_downloaded: Vec<ResourceStats> = top_downloaded_q
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     // Recent uploads
     let recent_uploads_sql = format!(
@@ -847,7 +847,7 @@ pub(super) async fn get_resource_analytics(
     let recent_uploads: Vec<ResourceStats> = recent_uploads_q
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     let analytics = ResourceAnalytics {
         total_resources: totals.0,
@@ -896,7 +896,7 @@ pub(super) async fn get_download_logs(
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
         let total: (i64,) =
             sqlx::query_as("SELECT COUNT(*) FROM resource_download_logs WHERE resource_id = $1")
@@ -919,7 +919,7 @@ pub(super) async fn get_download_logs(
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
         let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM resource_download_logs")
             .fetch_one(&state.db.pool)

@@ -467,3 +467,56 @@ mod html_sanitization {
         );
     }
 }
+
+// ── Async password helpers (spawn_blocking + concurrency cap) ────────────────
+
+#[tokio::test]
+async fn async_password_helpers_roundtrip() {
+    let hash = utils::hash_password_async("SecurePassword123!")
+        .await
+        .unwrap();
+    assert!(hash.starts_with("$argon2id$"));
+    assert!(
+        utils::verify_password_async("SecurePassword123!", &hash)
+            .await
+            .unwrap()
+    );
+    assert!(
+        !utils::verify_password_async("WrongPassword", &hash)
+            .await
+            .unwrap()
+    );
+}
+
+/// More concurrent jobs than permits (the cap is the core count) must queue
+/// and all complete correctly — not fail, and not deadlock.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn async_password_work_beyond_the_cap_queues_and_completes() {
+    let hash = utils::hash_password("QueueMe123!").unwrap();
+    let jobs = std::thread::available_parallelism().map_or(2, std::num::NonZeroUsize::get) * 3;
+
+    let mut set = tokio::task::JoinSet::new();
+    for i in 0..jobs {
+        let hash = hash.clone();
+        // Alternate right/wrong so a result mix-up between jobs would show.
+        let (password, expected) = if i % 2 == 0 {
+            ("QueueMe123!", true)
+        } else {
+            ("nope", false)
+        };
+        set.spawn(async move {
+            (
+                utils::verify_password_async(password, &hash).await.unwrap(),
+                expected,
+            )
+        });
+    }
+
+    let mut done = 0;
+    while let Some(res) = set.join_next().await {
+        let (got, expected) = res.unwrap();
+        assert_eq!(got, expected);
+        done += 1;
+    }
+    assert_eq!(done, jobs);
+}

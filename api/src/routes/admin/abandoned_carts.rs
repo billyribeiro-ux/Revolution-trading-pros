@@ -142,7 +142,7 @@ pub async fn list_abandoned_carts(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts")
         .fetch_one(&state.db.pool)

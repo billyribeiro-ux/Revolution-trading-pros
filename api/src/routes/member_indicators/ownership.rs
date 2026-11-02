@@ -140,7 +140,7 @@ pub(super) async fn get_indicator_downloads(
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // ICT 7 FIX: Get videos - use indicator_videos table if exists
     let videos: Vec<IndicatorVideo> = sqlx::query_as(
@@ -149,7 +149,7 @@ pub(super) async fn get_indicator_downloads(
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Build ownership response
     let ownership_info = ownership.map(|(id, user_id, indicator_id, purchased_at, license_key)| {

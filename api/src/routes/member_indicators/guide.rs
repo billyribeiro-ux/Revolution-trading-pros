@@ -52,7 +52,7 @@ pub(super) async fn check_updates(
     .bind(user_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let updates_list: Vec<serde_json::Value> = updates
         .into_iter()
@@ -143,7 +143,7 @@ pub(super) async fn get_installation_guide(
     .bind(&platform)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let guide = match platform_guide {
         Some((name, instructions, platform_doc_url)) => {

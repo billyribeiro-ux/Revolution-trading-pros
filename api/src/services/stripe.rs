@@ -329,16 +329,7 @@ impl StripeService {
         Self {
             secret_key: secret_key.to_string(),
             webhook_secret: None,
-            client: reqwest::Client::builder()
-                .timeout(std::time::Duration::from_secs(30))
-                .build()
-                .unwrap_or_else(|e| {
-                    tracing::error!(
-                        "Failed to create HTTP client with timeout: {}, using default",
-                        e
-                    );
-                    reqwest::Client::new()
-                }),
+            client: crate::utils::http::build_client(std::time::Duration::from_secs(30)),
         }
     }
 

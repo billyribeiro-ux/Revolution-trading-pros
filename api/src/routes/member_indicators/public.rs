@@ -147,7 +147,7 @@ pub(super) async fn get_public_indicator(
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get available platforms (but not actual files)
     let platforms: Vec<(String,)> = sqlx::query_as(
@@ -156,7 +156,7 @@ pub(super) async fn get_public_indicator(
     .bind(indicator.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

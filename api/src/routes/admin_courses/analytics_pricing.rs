@@ -161,7 +161,7 @@ pub(super) async fn get_course_analytics(
         .bind(course_id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     let recent_enrollments: Vec<serde_json::Value> = recent_rows
         .into_iter()

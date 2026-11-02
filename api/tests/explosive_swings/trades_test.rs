@@ -32,7 +32,7 @@ async fn test_list_trades_empty_room() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Act
@@ -61,7 +61,7 @@ async fn test_list_trades_with_pagination() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create 15 trades for pagination testing
@@ -115,7 +115,7 @@ async fn test_list_trades_filter_by_status_open() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create an open trade
@@ -205,7 +205,7 @@ async fn test_list_trades_filter_by_status_closed() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create and close a trade
@@ -278,7 +278,7 @@ async fn test_list_trades_filter_by_ticker() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create trades with different tickers
@@ -335,7 +335,7 @@ async fn test_create_options_trade_long_call() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "SPY", 500.0, 2.50)
         .with_quantity(2)
@@ -378,7 +378,7 @@ async fn test_create_options_trade_long_put() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_put(&room.slug, "QQQ", 400.0, 3.25).build_json();
 
@@ -410,7 +410,7 @@ async fn test_create_shares_trade() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::shares(&room.slug, "GOOG", 100, 140.50).build_json();
 
@@ -444,7 +444,7 @@ async fn test_create_trade_ticker_uppercase() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "aapl", 175.0, 2.00) // lowercase
         .build_json();
@@ -475,7 +475,7 @@ async fn test_create_trade_default_status_open() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "NVDA", 800.0, 15.00).build_json();
 
@@ -505,7 +505,7 @@ async fn test_create_trade_with_entry_alert_link() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create an alert first
     let alert = json!({
@@ -569,7 +569,7 @@ async fn test_close_trade_winning() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create trade with entry price of 2.50
     let trade = TradeBuilder::long_call(&room.slug, "SPY", 500.0, 2.50)
@@ -636,7 +636,7 @@ async fn test_close_trade_losing() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create trade with entry price of 5.00
     let trade = TradeBuilder::long_call(&room.slug, "AAPL", 175.0, 5.00)
@@ -698,7 +698,7 @@ async fn test_close_trade_calculates_holding_days() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create trade with entry date 5 days ago
     let entry_date = (Utc::now() - Duration::days(5)).date_naive();
@@ -756,7 +756,7 @@ async fn test_close_trade_with_exit_alert_link() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create trade
     let trade = TradeBuilder::long_call(&room.slug, "AMD", 150.0, 3.00).build_json();
@@ -838,7 +838,7 @@ async fn test_close_trade_with_custom_exit_date() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "INTC", 50.0, 1.50).build_json();
 
@@ -902,7 +902,7 @@ async fn test_invalidate_trade() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "DIS", 100.0, 2.00).build_json();
 
@@ -961,7 +961,7 @@ async fn test_invalidated_trade_not_counted_in_stats() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create and close a winning trade
@@ -1063,7 +1063,7 @@ async fn test_update_trade() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "NFLX", 600.0, 20.00).build_json();
 
@@ -1119,7 +1119,7 @@ async fn test_update_trade_partial() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "AMZN", 180.0, 8.00)
         .with_quantity(5)
@@ -1182,7 +1182,7 @@ async fn test_delete_trade() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "UBER", 70.0, 3.00).build_json();
 
@@ -1233,7 +1233,7 @@ async fn test_create_trade_requires_admin() {
     // Arrange
     let ctx = TestContext::new().await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let trade = TradeBuilder::long_call(&room.slug, "PYPL", 80.0, 2.00).build_json();
 
@@ -1263,7 +1263,7 @@ async fn test_close_trade_requires_admin() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create trade as admin
     let trade = TradeBuilder::long_call(&room.slug, "SQ", 75.0, 2.50).build_json();
@@ -1313,7 +1313,7 @@ async fn test_list_trades_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Act - Access without authentication is rejected per NF-1
     let unauth_response = ctx
@@ -1387,7 +1387,7 @@ async fn test_trade_status_transitions() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create trade (status: open)
     let trade = TradeBuilder::long_call(&room.slug, "COIN", 200.0, 10.00).build_json();
@@ -1441,7 +1441,7 @@ async fn test_trade_cannot_transition_from_closed_to_invalidated() {
 
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create and close trade
     let trade = TradeBuilder::long_call(&room.slug, "SHOP", 80.0, 5.00).build_json();

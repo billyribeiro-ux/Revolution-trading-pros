@@ -67,7 +67,7 @@ pub(super) async fn get_form_analytics(
     .bind(form_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get status breakdown
     let status_breakdown: Vec<(String, i64)> = sqlx::query_as(
@@ -81,7 +81,7 @@ pub(super) async fn get_form_analytics(
     .bind(form_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "views": views,

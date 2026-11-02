@@ -234,7 +234,7 @@ pub(super) async fn get_upcoming_events(
     .bind(end_date)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Build upcoming events
     let mut upcoming_events: Vec<UpcomingEventResponse> = Vec::new();

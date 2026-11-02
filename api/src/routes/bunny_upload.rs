@@ -193,7 +193,7 @@ async fn create_video(
     };
 
     // Create video in Bunny.net
-    let client = reqwest::Client::new();
+    let client = &*crate::utils::http::OUTBOUND_HTTP;
     let create_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos");
 
     let mut body = json!({
@@ -295,7 +295,7 @@ async fn get_video_status(
             .unwrap_or_else(get_default_library_id);
 
     // Get video status from Bunny.net
-    let client = reqwest::Client::new();
+    let client = &*crate::utils::http::OUTBOUND_HTTP;
     let status_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos/{video_guid}");
 
     let response = client
@@ -393,7 +393,7 @@ async fn list_uploads(
         )
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     let uploads_json: Vec<serde_json::Value> = uploads
         .into_iter()
@@ -514,7 +514,7 @@ async fn upload_video(
     );
 
     // Upload to Bunny.net
-    let client = reqwest::Client::new();
+    let client = &*crate::utils::http::UPLOAD_HTTP;
     let upload_url = format!("{BUNNY_API_BASE}/library/{library_id}/videos/{video_guid}");
 
     let response = client

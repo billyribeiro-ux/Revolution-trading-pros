@@ -71,7 +71,7 @@ pub(super) async fn get_connections_status(
     let db_connections: Vec<ServiceConnection> = query_builder
         .fetch_all(state.db.pool())
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     // Build a map of existing connections by service_key
     let existing_keys: std::collections::HashSet<String> = db_connections

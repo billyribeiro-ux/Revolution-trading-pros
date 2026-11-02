@@ -80,7 +80,9 @@ pub(super) async fn bulk_delete(
 
             if let Some((storage_key,)) = key {
                 let storage = &state.services.storage;
-                let _ = storage.delete(&storage_key).await;
+                if let Err(e) = storage.delete(&storage_key).await {
+                    tracing::warn!(storage_key = %storage_key, error = %e, "Failed to delete asset blob from storage; object is orphaned");
+                }
             }
 
             if sqlx::query("DELETE FROM cms_assets WHERE id = $1")

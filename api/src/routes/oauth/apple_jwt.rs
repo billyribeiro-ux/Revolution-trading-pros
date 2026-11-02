@@ -19,13 +19,8 @@ use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 
-static APPLE_HTTP_CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| {
-    reqwest::Client::builder()
-        .timeout(Duration::from_secs(10))
-        .connect_timeout(Duration::from_secs(5))
-        .build()
-        .unwrap_or_else(|_| reqwest::Client::new())
-});
+static APPLE_HTTP_CLIENT: LazyLock<reqwest::Client> =
+    LazyLock::new(|| crate::utils::http::build_client(Duration::from_secs(10)));
 
 /// Apple ID token claims
 #[derive(Debug, Deserialize)]

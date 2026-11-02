@@ -373,10 +373,28 @@ async fn init_db(
     }
 
     // Run migrations
-    let _ = state.db.migrate().await;
+    if let Err(e) = state.db.migrate().await {
+        tracing::error!("init-db migration failed: {e}");
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(SetupResponse {
+                success: false,
+                message: "Migrations failed; see server logs".to_string(),
+            }),
+        ));
+    }
 
     // Bootstrap developer from environment variables ONLY
-    let _ = state.db.bootstrap_developer(&state.config).await;
+    if let Err(e) = state.db.bootstrap_developer(&state.config).await {
+        tracing::error!("init-db developer bootstrap failed: {e}");
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(SetupResponse {
+                success: false,
+                message: "Developer bootstrap failed; see server logs".to_string(),
+            }),
+        ));
+    }
 
     Ok(Json(SetupResponse {
         success: true,

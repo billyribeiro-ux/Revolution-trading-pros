@@ -67,7 +67,7 @@ pub(super) async fn get_course_quizzes(
     .bind(course.0)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|q| json!({"id": q.0, "title": q.1, "description": q.2, "quiz_type": q.3, "passing_score": q.4, "time_limit_minutes": q.5, "max_attempts": q.6, "is_required": q.7}))
     .collect();
@@ -162,7 +162,7 @@ pub(super) async fn start_quiz(
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|q| {
         let question_id = q.0;
@@ -185,7 +185,7 @@ pub(super) async fn start_quiz(
         .bind(question_id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(crate::utils::errors::db_error)?
         .into_iter()
         .map(|a| json!({"id": a.0, "answer_text": a.1}))
         .collect();
@@ -356,7 +356,7 @@ pub(super) async fn get_quiz_results(
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|a| json!({
         "attempt_id": a.0, "score": a.1, "score_percent": a.2, "passed": a.3,

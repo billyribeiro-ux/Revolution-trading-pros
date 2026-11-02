@@ -27,7 +27,7 @@ pub(super) async fn list_categories(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|c| json!({"id": c.0, "name": c.1, "slug": c.2, "description": c.3, "color": c.4, "parent_id": c.5, "sort_order": c.6, "is_featured": c.7, "course_count": c.8}))
     .collect();
@@ -107,7 +107,7 @@ pub(super) async fn list_tags(
         )
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(crate::utils::errors::db_error)?
         .into_iter()
         .map(|t| json!({"id": t.0, "name": t.1, "slug": t.2, "color": t.3, "course_count": t.4}))
         .collect();

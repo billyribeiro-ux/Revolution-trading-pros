@@ -65,7 +65,7 @@ pub(super) async fn analytics_dashboard(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

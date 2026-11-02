@@ -61,7 +61,7 @@ pub(super) async fn process_pending_schedules(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     for (schedule_id, content_id, action, staged_data) in pending {
         processed += 1;
@@ -248,7 +248,7 @@ pub(super) async fn process_pending_releases(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     for (release_id, stop_on_error) in pending {
         processed += 1;
@@ -265,7 +265,7 @@ pub(super) async fn process_pending_releases(
         .bind(release_id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
         let mut release_failed = false;
 

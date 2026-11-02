@@ -626,8 +626,10 @@ pub(super) async fn update_coupon(
         }
         Ok(None) => {
             // DB row not found after we'd already created a new Stripe coupon → orphan cleanup.
-            if let Some(ref new_id) = new_stripe_coupon_id {
-                let _ = state.services.stripe.delete_coupon(new_id).await;
+            if let Some(ref new_id) = new_stripe_coupon_id
+                && let Err(e) = state.services.stripe.delete_coupon(new_id).await
+            {
+                tracing::error!(target: "admin", stripe_coupon_id = %new_id, error = %e, "Orphaned Stripe coupon: rollback delete failed, remove it manually");
             }
             Err((
                 StatusCode::NOT_FOUND,
@@ -637,8 +639,10 @@ pub(super) async fn update_coupon(
         Err(e) => {
             tracing::error!(target: "admin", "update_coupon DB error: {}", e);
             // Roll back orphan Stripe coupon if math changed.
-            if let Some(ref new_id) = new_stripe_coupon_id {
-                let _ = state.services.stripe.delete_coupon(new_id).await;
+            if let Some(ref new_id) = new_stripe_coupon_id
+                && let Err(e) = state.services.stripe.delete_coupon(new_id).await
+            {
+                tracing::error!(target: "admin", stripe_coupon_id = %new_id, error = %e, "Orphaned Stripe coupon: rollback delete failed, remove it manually");
             }
             if e.to_string().contains("duplicate") {
                 Err((
@@ -787,7 +791,9 @@ pub(super) async fn sync_coupon_to_stripe(
         let stripe = state.services.stripe.clone();
         let stripe_id = created.id.clone();
         tokio::spawn(async move {
-            let _ = stripe.delete_coupon(&stripe_id).await;
+            if let Err(e) = stripe.delete_coupon(&stripe_id).await {
+                tracing::error!(target: "admin", stripe_coupon_id = %stripe_id, error = %e, "Orphaned Stripe coupon: rollback delete failed, remove it manually");
+            }
         });
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;

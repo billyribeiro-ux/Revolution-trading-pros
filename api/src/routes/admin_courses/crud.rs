@@ -194,7 +194,7 @@ pub(super) async fn get_course(
     .bind(course.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let lessons: Vec<LessonListItem> = sqlx::query_as(
         r"
@@ -209,7 +209,7 @@ pub(super) async fn get_course(
     .bind(course.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let downloads: Vec<CourseDownload> = sqlx::query_as(
         r"
@@ -221,7 +221,7 @@ pub(super) async fn get_course(
     .bind(course.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let modules_with_lessons: Vec<ModuleWithLessons> = modules
         .into_iter()

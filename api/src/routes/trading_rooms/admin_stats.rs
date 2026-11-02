@@ -57,7 +57,7 @@ pub(super) async fn admin_get_rooms_stats(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let room_slugs: Vec<String> = if db_slugs.is_empty() {
         get_fallback_rooms()

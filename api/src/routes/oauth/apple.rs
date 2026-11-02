@@ -240,10 +240,12 @@ pub(super) async fn apple_callback(
 
     // Create session in Redis
     let session_id = generate_session_id();
-    if let Some(redis) = &state.services.redis {
-        let _ = redis
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis
             .create_session(&session_id, user.id, &user.email, None, None)
-            .await;
+            .await
+    {
+        tracing::error!(target: "security", error = %e, "Failed to create Redis session after OAuth login");
     }
 
     // Create auth tokens

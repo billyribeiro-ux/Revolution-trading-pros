@@ -131,8 +131,10 @@ pub(super) async fn verify_email(
         )
     })?;
 
-    if let Some(redis) = &state.services.redis {
-        let _ = redis.invalidate_user_cache(user_id).await;
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis.invalidate_user_cache(user_id).await
+    {
+        tracing::warn!(target: "security", user_id, error = %e, "Failed to invalidate cached user after email verification");
     }
 
     // ICT 11+ AUDIT: Log successful email verification

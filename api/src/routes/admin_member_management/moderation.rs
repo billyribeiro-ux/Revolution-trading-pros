@@ -111,9 +111,7 @@ pub(super) async fn ban_member(
     })?;
 
     if let Some(ref redis) = state.services.redis {
-        let _ = redis.bump_token_version(id).await;
-        let _ = redis.invalidate_all_user_sessions(id).await;
-        let _ = redis.invalidate_user_cache(id).await;
+        redis.revoke_user_access(id).await;
     }
 
     Ok(Json(json!({
@@ -216,9 +214,7 @@ pub(super) async fn suspend_member(
     })?;
 
     if let Some(ref redis) = state.services.redis {
-        let _ = redis.bump_token_version(id).await;
-        let _ = redis.invalidate_all_user_sessions(id).await;
-        let _ = redis.invalidate_user_cache(id).await;
+        redis.revoke_user_access(id).await;
     }
 
     Ok(Json(json!({
@@ -291,8 +287,10 @@ pub(super) async fn unban_member(
         )
     })?;
 
-    if let Some(ref redis) = state.services.redis {
-        let _ = redis.invalidate_user_cache(id).await;
+    if let Some(ref redis) = state.services.redis
+        && let Err(e) = redis.invalidate_user_cache(id).await
+    {
+        tracing::warn!(target: "security", user_id = id, error = %e, "Failed to invalidate cached user after moderation update");
     }
 
     Ok(Json(json!({

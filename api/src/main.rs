@@ -12,7 +12,7 @@ use axum::{
 use std::net::SocketAddr;
 use tower_http::{
     compression::CompressionLayer, cors::CorsLayer, set_header::SetResponseHeaderLayer,
-    trace::TraceLayer,
+    timeout::RequestBodyTimeoutLayer, trace::TraceLayer,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -193,10 +193,12 @@ async fn main() -> anyhow::Result<()> {
             header::X_FRAME_OPTIONS,
             HeaderValue::from_static("DENY"),
         ))
-        // XSS Protection (legacy browsers)
+        // X-XSS-Protection: 0 — OWASP HTTP Headers Cheat Sheet: the legacy XSS
+        // auditor "can create XSS vulnerabilities in otherwise safe websites";
+        // set 0 and rely on CSP. (The frontend omits the header for the same reason.)
         .layer(SetResponseHeaderLayer::overriding(
             HeaderName::from_static("x-xss-protection"),
-            HeaderValue::from_static("1; mode=block"),
+            HeaderValue::from_static("0"),
         ))
         // Referrer Policy
         .layer(SetResponseHeaderLayer::overriding(
@@ -290,6 +292,13 @@ async fn main() -> anyhow::Result<()> {
         .layer(cors)
         .layer(axum_middleware::from_fn(middleware::ensure_content_type))
         .layer(CompressionLayer::new())
+        // Idle (not total) body timeout: the deadline resets on every received
+        // frame, so slow-body / stalled clients are cut off after 30s of
+        // silence while legitimate large uploads (5 GiB Bunny route) that keep
+        // sending data are unaffected. Does not apply to WebSocket/SSE.
+        .layer(RequestBodyTimeoutLayer::new(
+            std::time::Duration::from_secs(30),
+        ))
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

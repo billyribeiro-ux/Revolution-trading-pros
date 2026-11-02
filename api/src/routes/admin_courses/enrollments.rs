@@ -129,7 +129,7 @@ pub(super) async fn list_enrollments(
     .bind(course_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|e| {
         json!({

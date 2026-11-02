@@ -12,7 +12,7 @@ publish = false
 axum = { version = "0.8.9", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
-tower-http = { version = "0.7.1", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
+tower-http = { version = "0.7.1", features = ["cors", "trace", "compression-gzip", "limit", "set-header", "timeout"] }
 html-escape = "0.3.0"
 # HTML sanitization of author content on public endpoints (utils/html.rs)
 ammonia = "4.2.4"

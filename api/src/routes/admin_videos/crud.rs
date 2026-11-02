@@ -182,7 +182,7 @@ pub(super) async fn list_videos(
         .bind(video.id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
         responses.push(video_to_response(video, trader, rooms));
     }
 
@@ -242,7 +242,7 @@ pub(super) async fn get_video(
     .bind(video.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -560,13 +560,13 @@ pub(super) async fn get_options(
             )
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default(),
+            .map_err(crate::utils::errors::db_error)?,
             "traders": sqlx::query_as::<_, TraderInfo>(
                 "SELECT id, name, slug FROM traders ORDER BY name"
             )
             .fetch_all(&state.db.pool)
             .await
-            .unwrap_or_default()
+            .map_err(crate::utils::errors::db_error)?
         }
     })))
 }

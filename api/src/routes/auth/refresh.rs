@@ -54,9 +54,7 @@ pub(super) async fn refresh(
                 );
                 // Best-effort: bump token epoch, invalidate every active session, and bust user cache
                 // so rotated access/refresh tokens are immediately rejected across all devices.
-                let _ = redis.bump_token_version(claims.sub).await;
-                let _ = redis.invalidate_all_user_sessions(claims.sub).await;
-                let _ = redis.invalidate_user_cache(claims.sub).await;
+                redis.revoke_user_access(claims.sub).await;
                 return Err((
                     StatusCode::UNAUTHORIZED,
                     Json(json!({

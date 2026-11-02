@@ -15,7 +15,7 @@ use crate::{
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
     models::{ForgotPasswordRequest, MessageResponse, ResetPasswordRequest, User},
-    utils::{generate_verification_token, hash_password, hash_token, validate_password},
+    utils::{generate_verification_token, hash_password_async, hash_token, validate_password},
 };
 
 /// Request password reset
@@ -211,7 +211,7 @@ pub(super) async fn reset_password(
     })?;
 
     // Hash the new password
-    let password_hash = hash_password(&input.password).map_err(|e| {
+    let password_hash = hash_password_async(&input.password).await.map_err(|e| {
         tracing::error!("Password hashing error: {}", e);
         (
             StatusCode::INTERNAL_SERVER_ERROR,

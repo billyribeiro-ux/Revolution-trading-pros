@@ -10,7 +10,7 @@
 use serde::Deserialize;
 
 /// Membership plan row (price in integer cents per architecture standard §1.2)
-#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
 pub struct MembershipPlanRow {
     pub id: i64,
     pub name: String,

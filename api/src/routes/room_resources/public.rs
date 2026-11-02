@@ -571,7 +571,7 @@ pub(super) async fn get_recently_accessed(
     .bind(limit)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -696,7 +696,7 @@ pub(super) async fn get_favorite_resources(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM resource_favorites WHERE user_id = $1")

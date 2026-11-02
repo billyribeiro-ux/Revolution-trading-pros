@@ -38,7 +38,18 @@ use revolution_api::{
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 static INIT: Once = Once::new();
-static TEST_USER_COUNTER: AtomicI64 = AtomicI64::new(1000);
+/// Test user ids are seeded from the clock so they never repeat across runs.
+/// The app caches users in Redis by id; a counter that restarted at a fixed
+/// value reused the same ids with different roles each run and served the
+/// previous run's cached role (admin-vs-member 200/403 flakes).
+static TEST_USER_COUNTER: std::sync::LazyLock<AtomicI64> = std::sync::LazyLock::new(|| {
+    let millis = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("system clock before 1970")
+        .as_millis();
+    // millis * 1000 leaves 1000 ids per millisecond; one run uses far fewer.
+    AtomicI64::new(i64::try_from(millis).expect("millis fit i64") * 1000)
+});
 
 /// Initialize test environment variables once (thread-safe)
 pub fn init_test_env() {
@@ -49,7 +60,9 @@ pub fn init_test_env() {
 
         // Set required env vars with test defaults if not already set
         if std::env::var("JWT_SECRET").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
             unsafe {
                 std::env::set_var(
                     "JWT_SECRET",
@@ -58,7 +71,9 @@ pub fn init_test_env() {
             };
         }
         if std::env::var("DATABASE_URL").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
             unsafe {
                 std::env::set_var(
                     "DATABASE_URL",
@@ -67,15 +82,21 @@ pub fn init_test_env() {
             };
         }
         if std::env::var("REDIS_URL").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
-            unsafe { std::env::set_var("REDIS_URL", "redis://localhost:6379") };
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
+            unsafe { std::env::set_var("REDIS_URL", "redis://localhost:6379/9") };
         }
         if std::env::var("STRIPE_SECRET_KEY").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
             unsafe { std::env::set_var("STRIPE_SECRET_KEY", "sk_test_mock_key") };
         }
         if std::env::var("STRIPE_WEBHOOK_SECRET").is_err() {
-            // FIXME: Audit that the environment access only happens in single-threaded code.
+            // SAFETY: test harness only. Runs inside `INIT.call_once`, which every test
+            // passes through before touching the app or env, so no test code reads the
+            // environment until these writes finish. Edition 2024 marks `set_var` unsafe.
             unsafe { std::env::set_var("STRIPE_WEBHOOK_SECRET", "whsec_test_mock_secret") };
         }
     });
@@ -247,6 +268,16 @@ impl TestTradingRoom {
     /// Create the Explosive Swings trading room (default for tests)
     pub async fn explosive_swings(ctx: &TestContext) -> Self {
         Self::create(ctx, "Explosive Swings", "explosive-swings").await
+    }
+
+    /// Create a room with a unique slug, for tests that assert on a room's
+    /// exact contents. The shared `explosive-swings` room is written to by
+    /// every other test running in parallel, and the app caches room reads by
+    /// slug, so "this room is empty" is only checkable on a room nobody else uses.
+    pub async fn unique(ctx: &TestContext) -> Self {
+        let suffix = uuid::Uuid::new_v4().simple().to_string();
+        let slug = format!("es-isolated-{}", &suffix[..12]);
+        Self::create(ctx, "Isolated Test Room", &slug).await
     }
 
     /// Create a custom trading room

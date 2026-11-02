@@ -69,7 +69,7 @@ pub(super) async fn get_member_full(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Orders for the user — read from `orders` table (canonical), in cents
     let orders: Vec<MemberOrder> = sqlx::query_as(
@@ -88,7 +88,7 @@ pub(super) async fn get_member_full(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get recent activity
     let activity: Vec<MemberActivity> = sqlx::query_as(
@@ -103,7 +103,7 @@ pub(super) async fn get_member_full(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get notes
     let notes: Vec<MemberNote> = sqlx::query_as(
@@ -118,7 +118,7 @@ pub(super) async fn get_member_full(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get ban status
     let ban_info: Option<(String, Option<NaiveDateTime>, Option<String>)> = sqlx::query_as(
@@ -158,7 +158,7 @@ pub(super) async fn get_member_full(
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Engagement score calculation (simplified)
     let engagement_score = calculate_engagement_score(&subscriptions, &activity, &orders);
@@ -360,12 +360,14 @@ pub(super) async fn create_member(
     // let password_hash = bcrypt::hash(&password, bcrypt::DEFAULT_COST).map_err(|e| {
     //     (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to hash password: {}", e)})))
     // })?;
-    let password_hash = crate::utils::hash_password(&password).map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Failed to hash password: {}", e)})),
-        )
-    })?;
+    let password_hash = crate::utils::hash_password_async(&password)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to hash password: {}", e)})),
+            )
+        })?;
 
     // FIX-2026-04-26 (Priority 5): wrap user-insert + activity-log-insert in a tx.
     let mut tx = state.db.pool.begin().await.map_err(|e| {
@@ -571,12 +573,14 @@ pub(super) async fn update_member(
         // let hash = bcrypt::hash(password, bcrypt::DEFAULT_COST).map_err(|e| {
         //     (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": format!("Failed to hash password: {}", e)})))
         // })?;
-        let hash = crate::utils::hash_password(password).map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to hash password: {}", e)})),
-            )
-        })?;
+        let hash = crate::utils::hash_password_async(password)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Failed to hash password: {}", e)})),
+                )
+            })?;
         query = query.bind(hash);
     }
 
@@ -709,9 +713,7 @@ pub(super) async fn delete_member(
     .await;
 
     if let Some(ref redis) = state.services.redis {
-        let _ = redis.bump_token_version(id).await;
-        let _ = redis.invalidate_all_user_sessions(id).await;
-        let _ = redis.invalidate_user_cache(id).await;
+        redis.revoke_user_access(id).await;
     }
 
     Ok(Json(json!({

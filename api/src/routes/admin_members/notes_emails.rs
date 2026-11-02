@@ -50,7 +50,7 @@ pub(super) async fn get_member_notes(
     .bind(member_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(notes))
 }
@@ -93,7 +93,7 @@ pub(super) async fn get_member_emails(
     .bind(member_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(emails))
 }

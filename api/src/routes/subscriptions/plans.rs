@@ -12,35 +12,57 @@ use axum::{
 use serde_json::json;
 
 use super::dtos::{MembershipPlanExtended, MembershipPlanRow};
-use crate::AppState;
+use crate::{
+    AppState,
+    cache::{cache_keys, cache_ttl},
+};
 
 /// List all membership plans (public)
+///
+/// Read-through cached (60s, see `cache_ttl::PLANS`); admin plan writes
+/// invalidate it. Checkout reads `membership_plans` directly, never this cache.
 pub(super) async fn list_plans(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
-    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
-    let plans: Vec<MembershipPlanRow> = sqlx::query_as(
-        r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
-           is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
-           FROM membership_plans WHERE is_active = true ORDER BY price ASC",
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let pool = state.db.pool.clone();
+    let plans = state
+        .cache
+        .get_or_fetch(&cache_keys::plans_list(), cache_ttl::PLANS, || async move {
+            // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+            let rows: Vec<MembershipPlanRow> = sqlx::query_as(
+                r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
+                   is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
+                   FROM membership_plans WHERE is_active = true ORDER BY price ASC",
+            )
+            .fetch_all(&pool)
+            .await?;
+            Ok(rows)
+        })
+        .await
+        .map_err(|e| {
+            tracing::error!("Failed to list membership plans: {e:#}");
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to load plans"})),
+            )
+        })?;
 
     Ok(Json(plans))
 }
 
 /// Get plan by slug (public)
+///
+/// Only found plans are cached: caching 404s would let callers fill the
+/// cache with arbitrary slugs.
 pub(super) async fn get_plan(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<MembershipPlanRow>, (StatusCode, Json<serde_json::Value>)> {
+    let key = cache_keys::plan(&slug);
+    if let Some(cached) = state.cache.get::<MembershipPlanRow>(&key).await {
+        return Ok(Json(cached));
+    }
+
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: MembershipPlanRow = sqlx::query_as(
         r"SELECT id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle,
@@ -51,9 +73,10 @@ pub(super) async fn get_plan(
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
+        tracing::error!("Failed to load membership plan {slug}: {e}");
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
+            Json(json!({"error": "Failed to load plan"})),
         )
     })?
     .ok_or_else(|| {
@@ -62,6 +85,10 @@ pub(super) async fn get_plan(
             Json(json!({"error": "Plan not found"})),
         )
     })?;
+
+    if let Err(e) = state.cache.set(&key, &plan, cache_ttl::PLANS).await {
+        tracing::warn!(target: "cache", key = %key, error = %e, "Failed to cache plan");
+    }
 
     Ok(Json(plan))
 }

@@ -410,7 +410,7 @@ async fn call_claude_api(
     prompt: &str,
     stream: bool,
 ) -> Result<ClaudeResponse, String> {
-    let client = reqwest::Client::new();
+    let client = &*crate::utils::http::LLM_HTTP;
 
     let request_body = json!({
         "model": CLAUDE_MODEL,
@@ -704,7 +704,7 @@ async fn ai_assist_stream(
         let start_time = std::time::Instant::now();
 
         // Call Claude API with streaming
-        let client = reqwest::Client::new();
+        let client = &*crate::utils::http::LLM_HTTP;
         let request_body = json!({
             "model": CLAUDE_MODEL,
             "max_tokens": 4096,

@@ -95,7 +95,7 @@ pub(super) async fn analytics_growth(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let data: Vec<serde_json::Value> = growth_data
         .into_iter()

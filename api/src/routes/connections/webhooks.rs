@@ -55,7 +55,7 @@ pub(super) async fn list_webhooks(
     .bind(connection_id)
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Mask secrets
     let webhooks_masked: Vec<serde_json::Value> = webhooks
