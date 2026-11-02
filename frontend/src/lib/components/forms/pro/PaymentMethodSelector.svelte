@@ -78,17 +78,19 @@
 		return (props.value ?? '') === methodId;
 	}
 
-	function getMethodIcon(iconType: string): string {
-		const icons: Record<string, string> = {
-			card: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
-			paypal:
-				'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
-			square: 'M4 4h16v16H4V4z',
-			razorpay:
-				'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
-			mollie: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'
-		};
-		return icons[iconType] || icons.card;
+	function getMethodIconName(iconType: string): 'IconCreditCard' | 'IconBrandPaypal' | 'IconSquare' | 'IconWallet' {
+		switch (iconType) {
+			case 'paypal':
+				return 'IconBrandPaypal';
+			case 'square':
+				return 'IconSquare';
+			case 'razorpay':
+			case 'mollie':
+				return 'IconWallet';
+			case 'card':
+			default:
+				return 'IconCreditCard';
+		}
 	}
 </script>
 
@@ -133,15 +135,7 @@
 
 				<!-- Method Icon -->
 				<span class="method-icon">
-					<svg
-						class="method-icon__svg"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						stroke-width="1.5"
-					>
-						<path stroke-linecap="round" stroke-linejoin="round" d={getMethodIcon(method.icon)} />
-					</svg>
+					<Icon name={getMethodIconName(method.icon)} size={24} class="method-icon__svg" />
 				</span>
 
 				<!-- Method Info -->
@@ -327,7 +321,7 @@
 		color: #4b5563;
 	}
 
-	.method-icon__svg {
+	:global(.method-icon__svg) {
 		width: 1.25rem;
 		height: 1.25rem;
 	}
@@ -478,7 +472,7 @@
 			height: 3rem;
 		}
 
-		.method-icon__svg {
+		:global(.method-icon__svg) {
 			width: 1.5rem;
 			height: 1.5rem;
 		}

@@ -44,6 +44,9 @@
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconDeviceDesktop from '@tabler/icons-svelte-runes/icons/device-desktop';
+	import IconDeviceTablet from '@tabler/icons-svelte-runes/icons/device-tablet';
+	import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
 
 	interface Recording {
 		id: string;
@@ -131,17 +134,6 @@
 			timeZone: 'UTC',
 			timeZoneName: 'short'
 		});
-	}
-
-	function getDeviceIcon(device: string): string {
-		switch (device) {
-			case 'mobile':
-				return 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z';
-			case 'tablet':
-				return 'M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z';
-			default:
-				return 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z';
-		}
 	}
 
 	// FIX-2026-04-26 (P1-3): $derived(...) installs tracking at the proxy
@@ -314,19 +306,13 @@
 										</td>
 										<td>
 											<div class="recording-device">
-												<svg
-													class="recording-device__icon"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														stroke-linecap="round"
-														stroke-linejoin="round"
-														stroke-width="2"
-														d={getDeviceIcon(recording.device_type)}
-													></path>
-												</svg>
+												{#if recording.device_type === 'mobile'}
+													<IconDeviceMobile class="recording-device__icon" size={16} aria-hidden="true" />
+												{:else if recording.device_type === 'tablet'}
+													<IconDeviceTablet class="recording-device__icon" size={16} aria-hidden="true" />
+												{:else}
+													<IconDeviceDesktop class="recording-device__icon" size={16} aria-hidden="true" />
+												{/if}
 												<span>{recording.device_type}</span>
 											</div>
 										</td>
@@ -798,7 +784,7 @@
 		text-transform: capitalize;
 	}
 
-	.recording-device__icon {
+	:global(.recording-device__icon) {
 		width: 1rem;
 		height: 1rem;
 		color: #94a3b8;

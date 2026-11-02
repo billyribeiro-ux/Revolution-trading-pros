@@ -16,6 +16,10 @@
 	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
 	import IconDots from '@tabler/icons-svelte-runes/icons/dots-vertical';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconEye from '@tabler/icons-svelte-runes/icons/eye';
+	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 
 	interface Goal {
@@ -57,25 +61,21 @@
 		{
 			value: 'event',
 			label: 'Event Goal',
-			icon: 'M13 10V3L4 14h7v7l9-11h-7z',
 			description: 'Track specific events'
 		},
 		{
 			value: 'pageview',
 			label: 'Pageview Goal',
-			icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z',
 			description: 'Track page visits'
 		},
 		{
 			value: 'revenue',
 			label: 'Revenue Goal',
-			icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
 			description: 'Track revenue targets'
 		},
 		{
 			value: 'duration',
 			label: 'Duration Goal',
-			icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
 			description: 'Track time on site'
 		}
 	];
@@ -292,20 +292,15 @@
 							<div class="goal-card__header">
 								<div class="goal-card__title-group">
 									<div class="goal-card__icon">
-										<svg
-											class="goal-card__svg"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d={goalTypes.find((t) => t.value === goal.type)?.icon ||
-													'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}
-											></path>
-										</svg>
+										{#if goal.type === 'pageview'}
+											<IconEye class="goal-card__svg" size={24} aria-hidden="true" />
+										{:else if goal.type === 'revenue'}
+											<IconCurrencyDollar class="goal-card__svg" size={24} aria-hidden="true" />
+										{:else if goal.type === 'duration'}
+											<IconClock class="goal-card__svg" size={24} aria-hidden="true" />
+										{:else}
+											<IconBolt class="goal-card__svg" size={24} aria-hidden="true" />
+										{/if}
 									</div>
 									<div>
 										<h3>{goal.name}</h3>
@@ -406,19 +401,15 @@
 									'is-selected': newGoal.type === type.value
 								}}
 							>
-								<svg
-									class="type-option__icon"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d={type.icon}
-									></path>
-								</svg>
+								{#if type.value === 'pageview'}
+									<IconEye class="type-option__icon" size={24} aria-hidden="true" />
+								{:else if type.value === 'revenue'}
+									<IconCurrencyDollar class="type-option__icon" size={24} aria-hidden="true" />
+								{:else if type.value === 'duration'}
+									<IconClock class="type-option__icon" size={24} aria-hidden="true" />
+								{:else}
+									<IconBolt class="type-option__icon" size={24} aria-hidden="true" />
+								{/if}
 								<div class="type-option__label">{type.label}</div>
 								<div class="type-option__description">{type.description}</div>
 							</button>
@@ -795,8 +786,8 @@
 		background: rgb(16 185 129 / 0.12);
 	}
 
-	.goal-card__svg,
-	.type-option__icon {
+	:global(.goal-card__svg),
+	:global(.type-option__icon) {
 		width: 1.5rem;
 		height: 1.5rem;
 	}
@@ -1053,7 +1044,7 @@
 		transform: translateY(-1px);
 	}
 
-	.type-option__icon {
+	:global(.type-option__icon) {
 		color: #34d399;
 	}
 

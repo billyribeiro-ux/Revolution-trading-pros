@@ -12,6 +12,7 @@
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconLoader2 from '@tabler/icons-svelte-runes/icons/loader-2';
 	// FIX-2026-04-26 (audit 02 §P3-8): the invoice preview HTML is generated
 	// from a server template that interpolates Stripe webhook payloads and
 	// admin-uploaded company info. Trust boundary is "our own backend" but
@@ -228,21 +229,7 @@
 			</button>
 			<button onclick={saveSettings} disabled={saving} class="primary-button">
 				{#if saving}
-					<svg aria-hidden="true" class="button-spinner" fill="none" viewBox="0 0 24 24">
-						<circle
-							class="spinner-track"
-							cx="12"
-							cy="12"
-							r="10"
-							stroke="currentColor"
-							stroke-width="4"
-						></circle>
-						<path
-							class="spinner-mark"
-							fill="currentColor"
-							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-						></path>
-					</svg>
+					<IconLoader2 size={20} class="button-spinner" aria-hidden="true" />
 					Saving...
 				{:else}
 					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: check (saved) -->
@@ -951,22 +938,14 @@
 		cursor: not-allowed;
 	}
 
-	.button-spinner,
+	:global(.button-spinner),
 	.page-spinner {
 		animation: invoice-spin 1s linear infinite;
 	}
 
-	.button-spinner {
+	:global(.button-spinner) {
 		width: 1.25rem;
 		height: 1.25rem;
-	}
-
-	.spinner-track {
-		opacity: 0.25;
-	}
-
-	.spinner-mark {
-		opacity: 0.75;
 	}
 
 	.alert {

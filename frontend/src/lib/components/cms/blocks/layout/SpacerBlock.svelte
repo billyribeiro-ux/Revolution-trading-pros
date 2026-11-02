@@ -10,6 +10,7 @@
 
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import IconGripHorizontal from '@tabler/icons-svelte-runes/icons/grip-horizontal';
 	import type { Block, BlockSettings } from '../types';
 	import type { BlockId } from '#lib/stores/blockState.svelte.js';
 
@@ -193,10 +194,7 @@
 				onkeydown={handleKeyDown}
 			>
 				<div class="drag-handle-icon">
-					<svg aria-hidden="true" width="20" height="8" viewBox="0 0 20 8" fill="currentColor">
-						<rect x="0" y="0" width="20" height="2" rx="1" />
-						<rect x="0" y="6" width="20" height="2" rx="1" />
-					</svg>
+					<IconGripHorizontal size={16} aria-hidden="true" />
 				</div>
 				<span class="drag-hint">Drag to resize</span>
 			</div>
