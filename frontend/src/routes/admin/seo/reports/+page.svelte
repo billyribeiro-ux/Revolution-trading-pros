@@ -543,12 +543,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-secondary {
@@ -711,13 +711,13 @@
 	}
 
 	.action-btn.primary {
-		background: #3b82f6;
-		color: white;
-		border-color: #3b82f6;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.action-btn.primary:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.action-btn.danger {
@@ -823,7 +823,7 @@
 	.form-group input:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 

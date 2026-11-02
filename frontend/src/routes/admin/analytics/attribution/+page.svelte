@@ -413,7 +413,7 @@
 
 	.model-card--selected,
 	.model-card--selected:hover {
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
@@ -439,7 +439,7 @@
 	.loader {
 		width: 2rem;
 		height: 2rem;
-		border: 4px solid #2563eb;
+		border: 4px solid var(--primary-500, #e6b800);
 		border-top-color: transparent;
 		border-radius: 999px;
 		animation: spin 0.8s linear infinite;
@@ -459,13 +459,13 @@
 	.error-card button {
 		margin-top: 1rem;
 		border: 0;
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 		color: #ffffff;
 		padding: 0.5rem 1rem;
 	}
 
 	.error-card button:hover {
-		background: #b91c1c;
+		background: var(--error-base, #da3633);
 	}
 
 	.summary-card {
@@ -578,7 +578,7 @@
 	.share-bar {
 		height: 100%;
 		border-radius: inherit;
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.paths-panel {

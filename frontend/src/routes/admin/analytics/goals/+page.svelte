@@ -505,7 +505,7 @@
 		flex: 0 0 auto;
 		place-items: center;
 		border-radius: 1rem;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		box-shadow: 0 18px 44px rgb(16 185 129 / 0.24);
 	}
 
@@ -560,7 +560,7 @@
 	}
 
 	.primary-action {
-		background: #059669;
+		background: var(--success-base, #2ea043);
 		color: white;
 		box-shadow: 0 16px 36px rgb(13 148 136 / 0.28);
 	}
@@ -599,7 +599,7 @@
 		width: 2rem;
 		height: 2rem;
 		border: 2px solid rgba(63, 185, 80, 0.22);
-		border-top-color: #10b981;
+		border-top-color: var(--success-base, #2ea043);
 		border-radius: 999px;
 		animation: goals-spin 780ms linear infinite;
 	}
@@ -671,7 +671,7 @@
 	.goal-filter.is-active {
 		border-color: rgb(255 255 255 / 0.28);
 		background: white;
-		color: #020617;
+		color: var(--info-emphasis, #58a6ff);
 		box-shadow: 0 12px 34px rgb(255 255 255 / 0.1);
 	}
 
@@ -721,12 +721,12 @@
 	}
 
 	.state-card__button--primary {
-		background: #059669;
+		background: var(--success-base, #2ea043);
 		box-shadow: 0 16px 36px rgb(13 148 136 / 0.24);
 	}
 
 	.state-card__button--error {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 		box-shadow: 0 16px 36px rgb(220 38 38 / 0.24);
 	}
 
@@ -892,19 +892,19 @@
 	}
 
 	.goal-progress__bar[data-tone='complete'] {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 
 	.goal-progress__bar[data-tone='strong'] {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.goal-progress__bar[data-tone='warning'] {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.goal-progress__bar[data-tone='danger'] {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.goal-card__meta {
@@ -996,7 +996,7 @@
 	}
 
 	.form-control:focus {
-		border-color: #10b981;
+		border-color: var(--success-base, #2ea043);
 		box-shadow: 0 0 0 3px rgb(16 185 129 / 0.16);
 		outline: none;
 	}

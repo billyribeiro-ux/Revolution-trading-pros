@@ -617,13 +617,13 @@
 
 	.drop-zone:hover,
 	.drop-zone--dragging {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: rgba(88, 166, 255, 0.1);
 	}
 
 	.drop-zone--has-file {
 		border-style: solid;
-		border-color: #22c55e;
+		border-color: var(--success-base, #2ea043);
 		background: rgba(63, 185, 80, 0.1);
 		padding: 1.5rem;
 	}
@@ -724,12 +724,12 @@
 	}
 
 	.thumbnail-drop:hover {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.thumbnail-drop--has-file {
 		border-style: solid;
-		border-color: #22c55e;
+		border-color: var(--success-base, #2ea043);
 	}
 
 	.thumbnail-drop :global(svg) {
@@ -780,7 +780,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 		transition: width 0.3s;
 	}
 
@@ -812,8 +812,8 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -879,7 +879,7 @@
 	.form-group textarea:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-row {

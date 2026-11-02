@@ -1682,11 +1682,11 @@
 	}
 
 	.alert-card.is-new {
-		border-left: 4px solid #22c55e;
+		border-left: 4px solid var(--success-base, #2ea043);
 	}
 
 	.alert-card.is-pinned {
-		border-left: 4px solid #2563eb;
+		border-left: 4px solid var(--primary-500, #e6b800);
 		background: var(--bg-elevated, #161b22);
 	}
 
@@ -1728,7 +1728,7 @@
 
 	.pinned-badge {
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
-		color: #1d4ed8;
+		color: var(--primary-400, #ffd11a);
 		padding: 3px 8px;
 		border-radius: 4px;
 		font-size: 10px;
@@ -1892,7 +1892,7 @@
 		align-items: center;
 		gap: 4px;
 		padding: 6px 12px;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: #fff;
 		border: none;
 		border-radius: 6px;
@@ -1903,7 +1903,7 @@
 	}
 
 	.btn-close-trade:hover {
-		background: #16a34a;
+		background: var(--success-base, #2ea043);
 	}
 
 	/* Video Library Grid */
@@ -1949,7 +1949,7 @@
 		position: absolute;
 		top: 8px;
 		left: 8px;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		color: #fff;
 		padding: 3px 10px;
 		border-radius: 4px;

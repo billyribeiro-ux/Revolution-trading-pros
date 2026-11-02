@@ -3983,7 +3983,7 @@
 
 	.pricing-model.selected .model-content {
 		background: rgba(63, 185, 80, 0.1);
-		border-color: #10b981;
+		border-color: var(--success-base, #2ea043);
 	}
 
 	.model-title {
@@ -4293,7 +4293,7 @@
 	}
 
 	.remove-btn:hover {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 		transform: translateY(-1px);
 	}
 
@@ -4549,7 +4549,7 @@
 
 	.btn-primary {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {

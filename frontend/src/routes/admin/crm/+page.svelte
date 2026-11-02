@@ -637,7 +637,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -917,7 +917,7 @@
 		align-items: center;
 		justify-content: center;
 		font-weight: 600;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 	}
 

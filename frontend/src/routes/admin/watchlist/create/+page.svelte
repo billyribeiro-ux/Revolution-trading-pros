@@ -495,8 +495,8 @@
 		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -548,7 +548,7 @@
 
 	.btn-icon-danger:hover {
 		background: rgba(248, 81, 73, 0.2);
-		border-color: #ef4444;
+		border-color: var(--error-base, #da3633);
 	}
 
 	/* Alerts */
@@ -664,7 +664,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-group textarea {

@@ -298,7 +298,7 @@
 	.error button {
 		padding: 0.5rem 1rem;
 		background: var(--primary-color, #3b82f6);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;

@@ -784,7 +784,7 @@
 
 	.btn-primary {
 		background: var(--primary-color, #3b82f6);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {

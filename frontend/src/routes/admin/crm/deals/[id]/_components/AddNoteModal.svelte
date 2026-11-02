@@ -143,7 +143,7 @@
 
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.modal-footer {
@@ -178,8 +178,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

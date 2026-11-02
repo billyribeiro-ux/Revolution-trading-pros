@@ -203,7 +203,7 @@
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -220,12 +220,12 @@
 	}
 
 	.status-card.connected {
-		border-color: #16a34a;
-		background: #f0fdf4;
+		border-color: var(--success-base, #2ea043);
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 	}
 
 	.status-card.disconnected {
-		border-color: #e5e5e5;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.status-card h3 {
@@ -236,7 +236,7 @@
 	}
 
 	.status-card p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.5rem;
 	}
 
@@ -247,7 +247,7 @@
 		border-radius: 6px;
 		text-align: left;
 		font-size: 0.9rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.site-info strong {
@@ -259,8 +259,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 500;
@@ -269,7 +269,7 @@
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.actions-section {
@@ -295,7 +295,7 @@
 		gap: 0.5rem;
 		padding: 1rem 1.5rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-weight: 500;
 		cursor: pointer;
@@ -329,7 +329,7 @@
 		align-items: center;
 		padding: 1.25rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 	}
 
@@ -340,7 +340,7 @@
 
 	.site-permission {
 		font-size: 0.85rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}

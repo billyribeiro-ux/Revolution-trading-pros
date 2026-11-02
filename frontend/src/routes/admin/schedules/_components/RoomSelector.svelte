@@ -67,8 +67,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 16px;
-		background: #fff;
-		border: 2px solid #e2e8f0;
+		background: var(--bg-elevated, #161b22);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -78,7 +78,7 @@
 
 	.room-tab:hover {
 		border-color: var(--room-color, #143e59);
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.room-tab.active {

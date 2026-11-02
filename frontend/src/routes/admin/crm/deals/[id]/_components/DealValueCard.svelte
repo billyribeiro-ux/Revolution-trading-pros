@@ -106,7 +106,7 @@
 		left: 0;
 		top: 0;
 		height: 100%;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		transition: width 0.3s;
 	}
 

@@ -572,7 +572,7 @@
 
 	.tab-btn.active {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	/* Tab Content - Layout Shift Prevention */
@@ -651,7 +651,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -707,7 +707,7 @@
 		margin-top: 16px;
 		padding: 10px 20px;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -732,7 +732,7 @@
 
 	.toast-success {
 		background: #065f46;
-		border: 1px solid #10b981;
+		border: 1px solid var(--success-base, #2ea043);
 		color: #ecfdf5;
 	}
 
@@ -742,7 +742,7 @@
 
 	.toast-error {
 		background: #7f1d1d;
-		border: 1px solid #f87171;
+		border: 1px solid var(--border-default, #30363d);
 		color: #fef2f2;
 	}
 

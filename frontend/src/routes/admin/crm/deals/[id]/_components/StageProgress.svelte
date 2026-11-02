@@ -130,6 +130,6 @@
 	}
 
 	.stage-connector.active {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 </style>

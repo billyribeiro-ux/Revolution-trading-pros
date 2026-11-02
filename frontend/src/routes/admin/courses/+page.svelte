@@ -743,7 +743,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: 8px;
@@ -854,7 +854,7 @@
 	}
 
 	.card-status.published .status-dot {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	/* Card Actions */

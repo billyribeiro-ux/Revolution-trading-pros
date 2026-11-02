@@ -43,7 +43,7 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel h3 {
@@ -52,13 +52,13 @@
 		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel input[type='datetime-local'] {
 		width: 100%;
 		padding: 0.625rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.9rem;
 		color: var(--text-primary, #f0f6fc);

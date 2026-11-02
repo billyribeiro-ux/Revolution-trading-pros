@@ -1531,7 +1531,7 @@
 	.pagination-page.active {
 		background: var(--primary-500);
 		border-color: transparent;
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.pagination-ellipsis {
@@ -1703,7 +1703,7 @@
 		border-radius: 8px;
 		padding: 1.5rem;
 		min-height: 200px;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.preview-frame :global(.no-content) {

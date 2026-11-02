@@ -510,7 +510,7 @@
 
 	.form-input:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
@@ -695,7 +695,7 @@
 
 	.field-type-button:hover {
 		background: rgba(230, 184, 0, 0.1);
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 		color: var(--primary-400, #ffd11a);
 	}
 

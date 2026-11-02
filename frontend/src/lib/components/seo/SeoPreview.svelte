@@ -36,7 +36,7 @@
 <style>
 	.seo-preview {
 		margin-top: 2rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		overflow: hidden;
 	}
@@ -46,11 +46,11 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: #f8f9fa;
-		border-bottom: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 		font-weight: 500;
 		font-size: 0.9rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.preview-content {
@@ -64,13 +64,13 @@
 
 	.preview-url {
 		font-size: 0.85rem;
-		color: #1a0dab;
+		color: var(--info-emphasis, #58a6ff);
 		margin-bottom: 0.25rem;
 	}
 
 	.preview-title {
 		font-size: 1.25rem;
-		color: #1a0dab;
+		color: var(--info-emphasis, #58a6ff);
 		font-weight: 400;
 		margin-bottom: 0.25rem;
 		line-height: 1.3;
@@ -82,16 +82,16 @@
 
 	.preview-description {
 		font-size: 0.9rem;
-		color: #545454;
+		color: var(--text-secondary, #8b949e);
 		line-height: 1.5;
 	}
 
 	.preview-footer {
 		padding: 0.5rem 1rem;
-		background: #f8f9fa;
-		border-top: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border-top: 1px solid var(--border-default, #30363d);
 		font-size: 0.8rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 </style>

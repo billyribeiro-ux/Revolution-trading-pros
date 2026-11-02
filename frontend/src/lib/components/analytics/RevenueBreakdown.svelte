@@ -244,7 +244,7 @@
 		padding: 0.25rem 0.75rem;
 		border-radius: 0.5rem;
 		background: rgba(210, 153, 34, 0.2);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 		font-size: 0.875rem;
 		font-weight: 500;
 		white-space: nowrap;
@@ -435,15 +435,15 @@
 
 	.waterfall-bar.start .bar,
 	.waterfall-bar.end .bar {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.waterfall-bar.positive .bar {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.waterfall-bar.negative .bar {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.bar-value {

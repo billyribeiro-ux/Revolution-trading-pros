@@ -925,12 +925,12 @@
 	}
 
 	.primary-button {
-		background: #2563eb;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.primary-button:hover:not(:disabled) {
-		background: #1d4ed8;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.primary-button:disabled {
@@ -957,7 +957,7 @@
 
 	.alert--error {
 		background: var(--error-soft, rgba(218, 54, 51, 0.15));
-		color: #b91c1c;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.alert--success {
@@ -986,7 +986,7 @@
 		width: 3rem;
 		height: 3rem;
 		border: 2px solid rgba(88, 166, 255, 0.25);
-		border-bottom-color: #2563eb;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 	}
 
@@ -1062,7 +1062,7 @@
 	}
 
 	.tab-button.active {
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 	}
@@ -1134,7 +1134,7 @@
 	}
 
 	.form-control:focus {
-		outline: 2px solid #2563eb;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 

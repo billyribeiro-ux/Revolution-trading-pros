@@ -241,7 +241,7 @@
 	}
 
 	.btn-primary.btn-danger {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.btn-primary.btn-danger:hover {

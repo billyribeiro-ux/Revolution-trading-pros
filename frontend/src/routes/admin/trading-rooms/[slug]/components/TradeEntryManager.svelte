@@ -663,7 +663,7 @@
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 600;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -708,7 +708,7 @@
 		align-items: center;
 		gap: 4px;
 		padding: 8px 16px;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		border: none;
 		border-radius: 6px;
 		font-size: 13px;
@@ -718,7 +718,7 @@
 	}
 
 	.btn-quick-submit:hover:not(:disabled) {
-		background: #16a34a;
+		background: var(--success-base, #2ea043);
 	}
 
 	.btn-quick-submit:disabled {
@@ -834,7 +834,7 @@
 	.spinner {
 		width: 32px;
 		height: 32px;
-		border: 3px solid #e2e8f0;
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
@@ -874,7 +874,7 @@
 		border-radius: 8px;
 		font-size: 14px;
 		font-weight: 600;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		cursor: pointer;
 	}
 
@@ -1020,7 +1020,7 @@
 		border-radius: 8px;
 		font-size: 14px;
 		font-weight: 600;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		cursor: pointer;
 	}
 

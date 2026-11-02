@@ -79,18 +79,18 @@
 		display: grid;
 		grid-template-columns: repeat(5, 1fr);
 		gap: 1px;
-		background: #e2e8f0;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.day-column {
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 		min-height: 300px;
 	}
 
 	.day-header {
 		padding: 12px 16px;
-		background: #f8fafc;
-		border-bottom: 1px solid #e2e8f0;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 		text-align: center;
 	}
 

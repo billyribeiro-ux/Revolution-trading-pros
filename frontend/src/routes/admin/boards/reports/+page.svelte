@@ -536,7 +536,7 @@
 	}
 
 	.filter-field select:focus {
-		border-color: #4f46e5;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgb(79 70 229 / 0.14);
 		outline: none;
 	}
@@ -599,7 +599,7 @@
 		width: 2rem;
 		height: 2rem;
 		border: 2px solid rgba(230, 184, 0, 0.22);
-		border-bottom-color: #4f46e5;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: reports-spin 760ms linear infinite;
 	}
@@ -789,19 +789,19 @@
 	}
 
 	.progress-bar[data-priority='urgent'] {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.progress-bar[data-priority='high'] {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.progress-bar[data-priority='medium'] {
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.progress-bar[data-priority='low'] {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.progress-bar[data-priority='none'] {

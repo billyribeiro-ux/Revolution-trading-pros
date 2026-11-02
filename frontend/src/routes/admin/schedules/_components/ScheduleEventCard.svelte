@@ -163,7 +163,7 @@
 	}
 
 	.event-card.conflict {
-		border-color: #f59e0b;
+		border-color: var(--warning-emphasis, #d29922);
 		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 	}
 

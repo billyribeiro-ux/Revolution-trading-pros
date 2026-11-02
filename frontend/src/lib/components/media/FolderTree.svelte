@@ -204,7 +204,7 @@
 
 	.btn-add-folder:hover {
 		background: rgba(55, 65, 81, 0.5);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.folder-list {
@@ -243,7 +243,7 @@
 
 	.folder-item.active {
 		background: rgba(210, 153, 34, 0.2);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.expand-btn {
@@ -269,7 +269,7 @@
 	}
 
 	.folder-item.active :global(.folder-icon) {
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.folder-item-wrapper {
@@ -298,6 +298,6 @@
 
 	.folder-item.active .folder-count {
 		background: rgba(210, 153, 34, 0.2);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 </style>

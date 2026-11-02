@@ -222,7 +222,7 @@
 	.segment-list__system-badge {
 		border-radius: 0.25rem;
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
-		color: #1d4ed8;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.75rem;
 		line-height: 1rem;
 		padding: 0.125rem 0.375rem;

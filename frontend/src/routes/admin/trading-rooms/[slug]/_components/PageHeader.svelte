@@ -113,7 +113,7 @@
 	.header-content h1 {
 		font-size: 28px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 4px 0;
 	}
 
@@ -127,10 +127,10 @@
 	.stats-panel {
 		display: flex;
 		gap: 24px;
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 		padding: 16px 24px;
 		border-radius: 12px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.stat-item {
@@ -143,7 +143,7 @@
 	.stat-value {
 		font-size: 24px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		line-height: 1;
 	}
 

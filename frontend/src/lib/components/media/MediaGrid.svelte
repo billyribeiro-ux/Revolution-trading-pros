@@ -397,7 +397,7 @@
 
 	.action-btn.optimize:hover {
 		background: var(--primary-color, #3b82f6);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.action-btn.delete:hover {

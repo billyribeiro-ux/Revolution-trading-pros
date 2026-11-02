@@ -163,7 +163,7 @@
 	}
 
 	.legend-color.click {
-		background-color: #fbbf24;
+		background-color: var(--warning-emphasis, #d29922);
 	}
 
 	.legend-color.hover {

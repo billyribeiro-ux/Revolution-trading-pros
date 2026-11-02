@@ -67,8 +67,8 @@
 
 <style>
 	.form-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 24px;
 		margin-bottom: 24px;
@@ -76,7 +76,7 @@
 	.form-section h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 20px;
 	}
 	.form-grid {
@@ -95,12 +95,12 @@
 	.form-group label {
 		font-size: 13px;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 	.form-group input,
 	.form-group textarea {
 		padding: 10px 12px;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 14px;
 	}

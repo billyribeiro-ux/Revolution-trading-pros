@@ -387,7 +387,7 @@
 
 	.upload-progress__badge--error {
 		background: var(--error-soft, rgba(218, 54, 51, 0.15));
-		color: #b91c1c;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	:global(.dark) .upload-progress__badge--error {
@@ -470,7 +470,7 @@
 	.upload-progress__total-fill,
 	.upload-progress__file-fill {
 		height: 100%;
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 		transition: width 0.3s ease;
 	}
 
@@ -564,19 +564,19 @@
 	}
 
 	.upload-progress__status-dot--uploading {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.upload-progress__status-dot--processing {
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.upload-progress__status-dot--complete {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.upload-progress__status-dot--error {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.upload-progress__file-track {

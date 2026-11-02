@@ -583,7 +583,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		padding: 0.625rem 1rem;
 		border-radius: 6px;

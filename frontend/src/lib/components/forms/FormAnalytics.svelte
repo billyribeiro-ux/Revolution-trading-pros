@@ -431,7 +431,7 @@
 		background: #4ade80;
 	}
 	.status-dot.starred {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 	}
 	.status-dot.archived {
 		background: #9ca3af;
@@ -457,7 +457,7 @@
 		background: #4ade80;
 	}
 	.bar-fill.starred {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 	}
 	.bar-fill.archived {
 		background: #9ca3af;

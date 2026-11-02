@@ -43,7 +43,7 @@
 	.page-header {
 		margin-bottom: 24px;
 		padding-bottom: 24px;
-		border-bottom: 1px solid #e2e8f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.header-content {
@@ -68,7 +68,7 @@
 	.header-title h1 {
 		font-size: 28px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 4px 0;
 	}
 
@@ -89,8 +89,8 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 12px;
-		background: #fef3c7;
-		color: #b45309;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
 		border-radius: 6px;
 		font-size: 13px;
 		font-weight: 500;

@@ -701,7 +701,7 @@
 	}
 
 	.warning-more {
-		color: #ca8a04;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.inline-back {
@@ -730,7 +730,7 @@
 	}
 
 	.drop-zone--active {
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
@@ -796,7 +796,7 @@
 		margin-top: 1rem;
 		border-color: var(--border-default, #30363d);
 		background: var(--bg-elevated, #161b22);
-		color: #b91c1c;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.error-callout span {
@@ -852,15 +852,15 @@
 	}
 
 	.source-icon--blue {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.source-icon--orange {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.source-icon--green {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.source-card h3 {
@@ -883,7 +883,7 @@
 
 	.help-panel h3,
 	.help-panel ul {
-		color: #1e40af;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	@media (min-width: 640px) {
@@ -986,9 +986,9 @@
 	}
 
 		.help-panel {
-			border-color: #1e3a8a;
+			border-color: var(--primary-500, #e6b800);
 			background: rgba(30, 58, 138, 0.22);
-		}
+	}
 
 		.help-panel h3,
 		.help-panel ul {

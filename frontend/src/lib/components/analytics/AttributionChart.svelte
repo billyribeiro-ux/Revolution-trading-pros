@@ -121,9 +121,9 @@
 
 <style>
 	.attribution-chart {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 	}
 
@@ -216,7 +216,7 @@
 		overflow: hidden;
 		height: 1.5rem;
 		border-radius: 999px;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.attribution-chart__bar {
@@ -228,12 +228,12 @@
 
 	.attribution-chart__swatch[data-tone='organic'],
 	.attribution-chart__bar[data-tone='organic'] {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.attribution-chart__swatch[data-tone='paid'],
 	.attribution-chart__bar[data-tone='paid'] {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.attribution-chart__swatch[data-tone='social'],
@@ -243,7 +243,7 @@
 
 	.attribution-chart__swatch[data-tone='email'],
 	.attribution-chart__bar[data-tone='email'] {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.attribution-chart__swatch[data-tone='direct'],
@@ -293,7 +293,7 @@
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
-		border-top: 1px solid #f3f4f6;
+		border-top: 1px solid var(--border-default, #30363d);
 		margin-top: 1.5rem;
 		padding-top: 1rem;
 		text-align: center;

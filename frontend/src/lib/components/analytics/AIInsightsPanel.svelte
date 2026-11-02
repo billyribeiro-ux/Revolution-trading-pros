@@ -162,7 +162,7 @@
 	}
 
 	.header-title :global(.panel-icon) {
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.title {
@@ -177,7 +177,7 @@
 		padding: 0.25rem 0.75rem;
 		border-radius: 999px;
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		font-weight: 600;
 		white-space: nowrap;
@@ -227,7 +227,7 @@
 		height: 2.5rem;
 		border-radius: 0.5rem;
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.severity-critical .insight-icon {
@@ -320,7 +320,7 @@
 		border: 0;
 		border-radius: 0.5rem;
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 		font: inherit;
 		font-size: 0.875rem;
 		font-weight: 500;

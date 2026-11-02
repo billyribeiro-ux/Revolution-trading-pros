@@ -221,7 +221,7 @@
 		height: 3rem;
 		margin: 0 auto;
 		border: 2px solid transparent;
-		border-bottom-color: #2563eb;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 0.8s linear infinite;
 	}
@@ -253,11 +253,11 @@
 	}
 
 	.entry-action:hover {
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.entry-action:focus-visible {
-		outline: 2px solid #2563eb;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 

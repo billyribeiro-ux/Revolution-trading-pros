@@ -706,11 +706,11 @@
 	}
 
 	.keywords .stat-icon {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.backlinks .stat-icon {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.technical .stat-icon {
@@ -962,8 +962,8 @@
 		position: absolute;
 		top: 1rem;
 		right: 1rem;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		font-size: 0.625rem;
 		font-weight: 700;
 		padding: 0.25rem 0.5rem;

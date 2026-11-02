@@ -211,7 +211,7 @@
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -226,7 +226,7 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		text-align: center;
 	}
 
@@ -238,7 +238,7 @@
 	}
 
 	.stat-label {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 	}
 
@@ -265,7 +265,7 @@
 		gap: 0.5rem;
 		padding: 1rem 1.5rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-weight: 500;
 		cursor: pointer;
@@ -273,9 +273,9 @@
 	}
 
 	.action-btn.primary {
-		background: #3b82f6;
-		color: white;
-		border-color: #3b82f6;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.action-btn:hover:not(:disabled) {
@@ -283,7 +283,7 @@
 	}
 
 	.action-btn.primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.action-btn:disabled {
@@ -320,7 +320,7 @@
 	.info-card {
 		padding: 1.5rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 	}
 
@@ -332,7 +332,7 @@
 	}
 
 	.info-card p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		line-height: 1.6;
 		font-size: 0.95rem;
 	}
@@ -366,7 +366,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h3 {
@@ -380,7 +380,7 @@
 		background: none;
 		border: none;
 		font-size: 2rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		line-height: 1;
 	}

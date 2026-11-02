@@ -380,7 +380,7 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 1rem;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		box-shadow: 0 12px 26px rgba(245, 158, 11, 0.2);
 		color: #ffffff;
 	}
@@ -411,7 +411,7 @@
 		height: 2.5rem;
 		border: 4px solid rgba(210, 153, 34, 0.2);
 		border-top-color: transparent;
-		border-right-color: #f59e0b;
+		border-right-color: var(--warning-emphasis, #d29922);
 		border-radius: 999px;
 		animation: spin 0.8s linear infinite;
 	}
@@ -498,7 +498,7 @@
 	.search-button,
 	.event-filter-chip--active {
 		border-color: transparent;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		box-shadow: 0 12px 26px rgba(245, 158, 11, 0.25);
 		color: #ffffff;
 	}
@@ -516,7 +516,7 @@
 
 	.search-button:hover,
 	.search-button:focus-visible {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 		box-shadow: 0 14px 30px rgba(245, 158, 11, 0.4);
 	}
 
@@ -578,7 +578,7 @@
 	.event-chip--purple {
 		border-color: rgba(230, 184, 0, 0.3);
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.event-chip--amber {

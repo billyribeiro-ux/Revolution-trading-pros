@@ -948,7 +948,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
 	}
 

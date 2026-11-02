@@ -643,7 +643,7 @@
 		padding: 16px;
 		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
-		border: 1px dashed #fbbf24;
+		border: 1px dashed var(--warning-emphasis, #d29922);
 		border-radius: 6px;
 		font-size: 14px;
 	}
@@ -661,7 +661,7 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid #e5e7eb;
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;

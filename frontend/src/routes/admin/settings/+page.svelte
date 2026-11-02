@@ -1617,7 +1617,7 @@
 	.status-expired .status-dot,
 	.status-pending .status-dot,
 	.status-connecting .status-dot {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.health-score {
@@ -1978,7 +1978,7 @@
 	}
 
 	.toggle-switch.toggle-on {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.toggle-switch.toggle-on .toggle-slider {
@@ -2217,8 +2217,8 @@
 
 	.environment-option--selected {
 		border-color: transparent;
-		background: #ffffff;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-input {
@@ -2312,22 +2312,22 @@
 	}
 
 	.modal-action--primary {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		box-shadow: 0 10px 24px rgba(245, 158, 11, 0.2);
 	}
 
 	.modal-action--primary:hover,
 	.modal-action--primary:focus-visible {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.modal-action--danger {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 	}
 
 	.modal-action--danger:hover,
 	.modal-action--danger:focus-visible {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.modal-action:disabled {

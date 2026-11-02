@@ -839,7 +839,7 @@
 		height: 3rem;
 		margin: 0 auto;
 		border: 2px solid rgba(88, 166, 255, 0.2);
-		border-bottom-color: #2563eb;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 0.8s linear infinite;
 	}
@@ -955,13 +955,13 @@
 	}
 
 	.native-control:focus {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 		outline: none;
 	}
 
 	.native-control.has-error {
-		border-color: #ef4444;
+		border-color: var(--error-base, #da3633);
 	}
 
 	textarea.native-control {
@@ -1012,7 +1012,7 @@
 	.info-callout p,
 	.schedule-preview p {
 		margin: 0;
-		color: #1e40af;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
@@ -1024,7 +1024,7 @@
 
 	.schedule-preview h4 {
 		margin: 0 0 0.25rem;
-		color: #1e40af;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		font-weight: 700;
 		line-height: 1.4;

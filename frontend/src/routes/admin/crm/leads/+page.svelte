@@ -1148,7 +1148,7 @@
 		gap: 8px;
 		padding: 0.75rem 1.25rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -1222,7 +1222,7 @@
 	}
 
 	.btn-clear-filters:hover {
-		border-color: #f87171;
+		border-color: var(--border-default, #30363d);
 		color: var(--error-emphasis, #f85149);
 	}
 
@@ -1315,14 +1315,14 @@
 		align-items: center;
 		justify-content: center;
 		font-weight: 600;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.9rem;
 		flex-shrink: 0;
 		position: relative;
 	}
 
 	.lead-avatar.hot {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.hot-indicator {
@@ -1331,7 +1331,7 @@
 		right: -2px;
 		width: 18px;
 		height: 18px;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		border: 2px solid var(--border-muted, #21262d);
 		border-radius: 50%;
 		display: flex;

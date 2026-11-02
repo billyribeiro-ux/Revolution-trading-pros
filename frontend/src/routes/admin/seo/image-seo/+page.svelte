@@ -496,12 +496,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {
@@ -573,8 +573,8 @@
 	}
 
 	.tab.active {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.images-section,
@@ -750,7 +750,7 @@
 	.setting-row input:focus,
 	.setting-row select:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 

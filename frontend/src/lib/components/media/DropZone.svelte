@@ -235,10 +235,10 @@
 <style>
 	.dropzone {
 		position: relative;
-		border: 2px dashed #d1d5db;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 0.75rem;
 		padding: 2rem;
-		background-color: #f9fafb;
+		background-color: var(--bg-elevated, #161b22);
 		cursor: pointer;
 		transition: all 200ms ease;
 		display: flex;
@@ -262,7 +262,7 @@
 	}
 
 	:global(.dark) .dropzone:hover:not(.dropzone-disabled) {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background-color: rgba(30, 58, 138, 0.1);
 	}
 
@@ -280,9 +280,9 @@
 	}
 
 	.dropzone-active {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		border-style: solid;
-		background-color: #eff6ff;
+		background-color: var(--info-soft, rgba(56, 139, 253, 0.15));
 		transform: scale(1.02);
 	}
 
@@ -336,7 +336,7 @@
 
 	.dropzone__title {
 		margin-bottom: 0.25rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .dropzone__title {

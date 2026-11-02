@@ -1038,7 +1038,7 @@
 
 	.stat-icon-stripe {
 		background: rgba(230, 184, 0, 0.1);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.stat-icon-warning {
@@ -1099,7 +1099,7 @@
 	.filter-input:focus,
 	.filter-select:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.filter-select {
@@ -1190,7 +1190,7 @@
 	.billing-quarterly {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.billing-annual {
@@ -1417,7 +1417,7 @@
 	}
 
 	.btn-destructive {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		border: 1px solid rgba(248, 81, 73, 0.5);
 		color: #fff;
 	}
@@ -1438,7 +1438,7 @@
 		width: 32px;
 		height: 32px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #6366f1;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -1584,7 +1584,7 @@
 
 	.form-input:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-input.stripe-price-input,

@@ -111,7 +111,7 @@
 		justify-content: center;
 		font-weight: 700;
 		font-size: 1.5rem;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		overflow: hidden;
 	}
 

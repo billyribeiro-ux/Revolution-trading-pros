@@ -416,7 +416,7 @@
 	.back-btn:hover {
 		background: var(--bg-elevated, #161b22);
 		color: var(--warning-emphasis, #d29922);
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary {
@@ -424,8 +424,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -473,8 +473,8 @@
 	}
 
 	.tab-btn.active {
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	/* Tab Content - Layout Shift Prevention */
@@ -556,7 +556,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(210, 153, 34, 0.2);
-		border-top-color: #f97316;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;

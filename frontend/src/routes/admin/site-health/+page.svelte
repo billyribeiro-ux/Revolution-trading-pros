@@ -1223,7 +1223,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: 6px;
@@ -1505,11 +1505,11 @@
 	}
 
 	.overview-card.performance .card-icon {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.overview-card.security .card-icon {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 
 	.overview-card.database .card-icon {
@@ -1517,7 +1517,7 @@
 	}
 
 	.overview-card.server .card-icon {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.card-title h3 {
@@ -1712,15 +1712,15 @@
 	}
 
 	.check-item.good {
-		border-left: 3px solid #10b981;
+		border-left: 3px solid var(--success-base, #2ea043);
 	}
 
 	.check-item.warning {
-		border-left: 3px solid #f59e0b;
+		border-left: 3px solid var(--warning-emphasis, #d29922);
 	}
 
 	.check-item.critical {
-		border-left: 3px solid #ef4444;
+		border-left: 3px solid var(--error-base, #da3633);
 	}
 
 	.check-icon {
@@ -1919,7 +1919,7 @@
 		background: var(--primary-500);
 		border: none;
 		border-radius: 6px;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;

@@ -328,7 +328,7 @@
 		height: 3rem;
 		margin: 0 auto;
 		border: 2px solid rgba(88, 166, 255, 0.18);
-		border-bottom-color: #2563eb;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 800ms linear infinite;
 	}
@@ -382,7 +382,7 @@
 	.score-ring__progress--warning,
 	.score-number--warning,
 	.score-status--warning {
-		color: #ca8a04;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.score-ring__progress--poor,
@@ -472,7 +472,7 @@
 	}
 
 	.insight-item__text {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.empty-state__icon {

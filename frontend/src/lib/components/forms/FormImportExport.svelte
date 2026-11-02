@@ -468,7 +468,7 @@
 
 	.tab.active {
 		color: var(--info-emphasis, #58a6ff);
-		border-bottom-color: #3b82f6;
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 
 	.panel-content {
@@ -547,12 +547,12 @@
 	}
 
 	.format-btn:hover:not(:disabled) {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.format-btn.selected {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
@@ -598,11 +598,11 @@
 	}
 
 	.source-btn:hover {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.source-btn.selected {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
@@ -661,7 +661,7 @@
 	}
 
 	.file-label:hover {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--bg-elevated, #161b22);
 	}
 
@@ -684,8 +684,8 @@
 	.btn-primary {
 		width: 100%;
 		padding: 0.75rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
@@ -699,7 +699,7 @@
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {
@@ -712,7 +712,7 @@
 		padding: 0.5rem 1rem;
 		background: white;
 		color: var(--info-emphasis, #58a6ff);
-		border: 1px solid #3b82f6;
+		border: 1px solid var(--primary-500, #e6b800);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		font-weight: 500;

@@ -743,7 +743,7 @@
 	}
 
 	.service-status-badge:hover .badge-dot {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════

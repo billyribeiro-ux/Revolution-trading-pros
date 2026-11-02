@@ -416,8 +416,8 @@
 
 	.btn-invite {
 		padding: 0.375rem 0.75rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 0.375rem;
 		font-size: 0.75rem;
@@ -427,7 +427,7 @@
 	}
 
 	.btn-invite:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.invite-form {
@@ -452,7 +452,7 @@
 
 	.email-input:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.role-select {
@@ -466,7 +466,7 @@
 	.btn-send-invite {
 		width: 100%;
 		padding: 0.5rem;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border: none;
 		border-radius: 0.375rem;
@@ -477,7 +477,7 @@
 	}
 
 	.btn-send-invite:hover:not(:disabled) {
-		background: #059669;
+		background: var(--success-base, #2ea043);
 	}
 
 	.btn-send-invite:disabled {
@@ -515,7 +515,7 @@
 	.online-dot {
 		width: 8px;
 		height: 8px;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		border-radius: 50%;
 	}
 
@@ -575,7 +575,7 @@
 		right: 0;
 		width: 10px;
 		height: 10px;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		border: 2px solid white;
 		border-radius: 50%;
 	}
@@ -661,7 +661,7 @@
 		padding: 0.5rem 1rem;
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
-		border: 1px solid #3b82f6;
+		border: 1px solid var(--primary-500, #e6b800);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -669,8 +669,8 @@
 	}
 
 	.btn-invite-first:hover {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.activity-feed {

@@ -167,7 +167,7 @@
 
 	.export-options label:has(:global(input[type='radio']:checked)) {
 		background: rgba(88, 166, 255, 0.1);
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		color: var(--info-emphasis, #58a6ff);
 	}
 
@@ -197,7 +197,7 @@
 
 	.btn-primary {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 	}
 

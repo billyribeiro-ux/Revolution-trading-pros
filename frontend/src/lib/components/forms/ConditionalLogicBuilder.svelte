@@ -427,7 +427,7 @@
 	}
 
 	.toggle-input:checked + .toggle-switch {
-		background-color: #2563eb;
+		background-color: var(--primary-500, #e6b800);
 	}
 
 	.toggle-input:checked + .toggle-switch::after {
@@ -619,7 +619,7 @@
 	.preview-label {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #1e40af;
+		color: var(--primary-400, #ffd11a);
 		text-transform: uppercase;
 		margin-bottom: 0.25rem;
 	}

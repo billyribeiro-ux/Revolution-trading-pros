@@ -149,7 +149,7 @@
 		padding: 0.65rem 1.25rem;
 		background: var(--primary-500);
 		border-radius: 10px;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		text-decoration: none;
 		font-size: 0.9rem;
 		font-weight: 600;

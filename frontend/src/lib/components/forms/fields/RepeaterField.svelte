@@ -525,7 +525,7 @@
 	}
 
 	.repeater-row.drag-over {
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		background-color: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
@@ -649,7 +649,7 @@
 	.sub-field-textarea:focus,
 	.sub-field-select:focus {
 		outline: none;
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 	}
 
@@ -684,7 +684,7 @@
 
 	.btn-add:hover:not(:disabled) {
 		background-color: var(--bg-elevated, #161b22);
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		color: var(--info-emphasis, #58a6ff);
 	}
 

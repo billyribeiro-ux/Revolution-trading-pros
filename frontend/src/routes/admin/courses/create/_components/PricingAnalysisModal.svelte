@@ -149,7 +149,7 @@
 		transition: all 0.2s;
 		font-size: 0.875rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {

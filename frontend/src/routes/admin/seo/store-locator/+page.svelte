@@ -542,12 +542,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-secondary {
@@ -626,7 +626,7 @@
 		position: absolute;
 		top: 1rem;
 		right: 1rem;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 		font-size: 0.7rem;
 		font-weight: 600;
@@ -784,7 +784,7 @@
 	.form-group input:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 

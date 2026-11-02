@@ -143,7 +143,7 @@
 
 	.btn-spinner.danger {
 		border-color: rgba(248, 113, 113, 0.3);
-		border-top-color: #f87171;
+		border-top-color: var(--border-default, #30363d);
 	}
 
 	@keyframes spin {

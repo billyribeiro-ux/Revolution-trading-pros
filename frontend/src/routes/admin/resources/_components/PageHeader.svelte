@@ -108,7 +108,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		color: #fff;
 		border: none;
 		border-radius: 10px;

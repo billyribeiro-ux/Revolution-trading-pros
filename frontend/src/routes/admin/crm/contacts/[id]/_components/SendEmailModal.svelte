@@ -293,7 +293,7 @@
 
 	.form-select:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 	}
 
@@ -320,7 +320,7 @@
 
 	.form-input:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 	}
 
@@ -354,7 +354,7 @@
 
 	.form-textarea:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 	}
 
@@ -379,7 +379,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

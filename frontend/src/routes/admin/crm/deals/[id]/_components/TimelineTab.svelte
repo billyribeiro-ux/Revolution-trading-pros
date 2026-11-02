@@ -68,7 +68,7 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		flex-shrink: 0;
 		margin-top: 4px;
 	}

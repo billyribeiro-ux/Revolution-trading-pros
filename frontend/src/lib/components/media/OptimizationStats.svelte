@@ -230,7 +230,7 @@
 	}
 
 	:global(.dark) .optimization-card {
-		border-color: #166534;
+		border-color: var(--success-base, #2ea043);
 		background: rgba(20, 83, 45, 0.2);
 	}
 
@@ -244,7 +244,7 @@
 	}
 
 	:global(.dark) .optimization-card__header {
-		border-color: #166534;
+		border-color: var(--success-base, #2ea043);
 		background: rgba(20, 83, 45, 0.3);
 	}
 
@@ -255,7 +255,7 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 999px;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: #ffffff;
 		flex: 0 0 auto;
 	}
@@ -399,7 +399,7 @@
 	}
 
 	:global(.dark) .optimization-comparison__format--optimized {
-		background: #166534;
+		background: var(--success-base, #2ea043);
 		color: #86efac;
 	}
 
@@ -422,7 +422,7 @@
 	}
 
 	:global(.dark) .optimization-card__details {
-		border-color: #166534;
+		border-color: var(--success-base, #2ea043);
 		color: var(--text-secondary, #8b949e);
 	}
 

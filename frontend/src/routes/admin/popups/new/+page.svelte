@@ -1381,7 +1381,7 @@
 	}
 
 	.template-card.selected {
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 		background: rgba(230, 184, 0, 0.1);
 	}
 
@@ -1552,7 +1552,7 @@
 	}
 
 	.info-callout--warning a {
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 		text-decoration: underline;
 		text-underline-offset: 0.15em;
 	}
@@ -1640,7 +1640,7 @@
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		border-radius: 6px;
 		border: none;

@@ -687,7 +687,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		display: flex;
 		align-items: center;
 		justify-content: center;

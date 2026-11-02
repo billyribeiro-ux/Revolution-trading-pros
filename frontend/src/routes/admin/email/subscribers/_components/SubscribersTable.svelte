@@ -177,7 +177,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		font-size: 0.875rem;
 	}

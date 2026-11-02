@@ -2345,7 +2345,7 @@
 	.room-tab.active {
 		background: var(--room-color, var(--primary-500));
 		border-color: var(--room-color, var(--primary-500));
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.room-count {
@@ -3273,7 +3273,7 @@
 
 	.bulk-tag-btn.add.selected {
 		background: rgba(63, 185, 80, 0.2);
-		border-color: #22c55e;
+		border-color: var(--success-base, #2ea043);
 		color: var(--success-emphasis, #3fb950);
 	}
 
@@ -3285,7 +3285,7 @@
 
 	.bulk-tag-btn.remove.selected {
 		background: rgba(248, 81, 73, 0.2);
-		border-color: #ef4444;
+		border-color: var(--error-base, #da3633);
 		color: var(--error-emphasis, #f85149);
 	}
 

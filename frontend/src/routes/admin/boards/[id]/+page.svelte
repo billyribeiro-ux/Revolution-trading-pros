@@ -1717,19 +1717,19 @@
 	}
 
 	.priority-dot--urgent {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.priority-dot--high {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.priority-dot--medium {
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.priority-dot--low {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.priority-dot--none {
@@ -1988,7 +1988,7 @@
 		padding: 0.375rem 0.75rem;
 		border: 0;
 		border-radius: 0.5rem;
-		background: #16a34a;
+		background: var(--success-base, #2ea043);
 		color: #ffffff;
 		font: inherit;
 		font-size: 0.875rem;
@@ -2087,8 +2087,8 @@
 	}
 
 	.subtask-check.checked {
-		border-color: #22c55e;
-		background: #22c55e;
+		border-color: var(--success-base, #2ea043);
+		background: var(--success-base, #2ea043);
 	}
 
 	.subtask-title {

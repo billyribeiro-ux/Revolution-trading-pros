@@ -423,8 +423,8 @@
 	}
 
 	.btn-primary {
-		background: #0ea5e9;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-secondary {
@@ -615,7 +615,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.25rem;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border-radius: 10px;
 		font-size: 0.875rem;

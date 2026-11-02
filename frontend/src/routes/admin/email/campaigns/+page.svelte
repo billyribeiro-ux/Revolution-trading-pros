@@ -1047,7 +1047,7 @@
 
 	.status-badge.status-sending {
 		background: rgba(210, 153, 34, 0.2);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.status-badge.status-default {

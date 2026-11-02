@@ -534,20 +534,20 @@
 	}
 
 	.stat-card.primary {
-		background: #2563eb;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.stat-card.success {
-		border-left: 4px solid #16a34a;
+		border-left: 4px solid var(--success-base, #2ea043);
 	}
 
 	.stat-card.warning {
-		border-left: 4px solid #f59e0b;
+		border-left: 4px solid var(--warning-emphasis, #d29922);
 	}
 
 	.stat-card.danger {
-		border-left: 4px solid #ef4444;
+		border-left: 4px solid var(--error-base, #da3633);
 	}
 
 	.stat-icon {
@@ -620,14 +620,14 @@
 
 	.bar {
 		width: 100%;
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 		border-radius: 2px 2px 0 0;
 		min-height: 2px;
 		transition: height 0.3s ease;
 	}
 
 	.bar:hover {
-		background: #1d4ed8;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.bar-label {
@@ -682,7 +682,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: #16a34a;
+		background: var(--success-base, #2ea043);
 		border-radius: 4px;
 		transition: width 0.3s ease;
 	}
@@ -783,7 +783,7 @@
 	}
 
 	.funnel-bar.success {
-		background: #16a34a;
+		background: var(--success-base, #2ea043);
 	}
 
 	.funnel-label {
@@ -812,8 +812,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid #e5e7eb;
-		border-top-color: #2563eb;
+		border: 3px solid var(--border-default, #30363d);
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}

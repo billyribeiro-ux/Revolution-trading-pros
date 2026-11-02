@@ -283,7 +283,7 @@
 		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;

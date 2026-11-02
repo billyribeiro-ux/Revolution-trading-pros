@@ -131,7 +131,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

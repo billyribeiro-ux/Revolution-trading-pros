@@ -390,7 +390,7 @@
 		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
-		border-left: 4px solid #fbbf24;
+		border-left: 4px solid var(--warning-emphasis, #d29922);
 	}
 
 	.grade-header-content {
@@ -633,7 +633,7 @@
 	.subscribe-btn {
 		width: 100%;
 		padding: 14px;
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 		color: #1e1b4b;
 		border: none;
 		border-radius: 14px;
@@ -688,7 +688,7 @@
 	.form-group textarea:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: #fbbf24;
+		border-color: var(--warning-emphasis, #d29922);
 		box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
 	}
 
@@ -799,7 +799,7 @@
 	.feature-name-input:focus,
 	.feature-desc-input:focus {
 		outline: none;
-		border-color: #fbbf24;
+		border-color: var(--warning-emphasis, #d29922);
 	}
 
 	.feature-name-input {
@@ -878,7 +878,7 @@
 	}
 
 	.btn-primary {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 		color: #1e1b4b;
 		box-shadow: 0 4px 14px rgba(251, 191, 36, 0.25);
 	}

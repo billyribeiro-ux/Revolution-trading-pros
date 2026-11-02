@@ -724,7 +724,7 @@
 
 	.filter-field select:focus,
 	.filter-field input:focus {
-		border-color: #4f46e5;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgb(79 70 229 / 0.14);
 		outline: none;
 	}
@@ -764,7 +764,7 @@
 		width: 2rem;
 		height: 2rem;
 		border: 2px solid rgba(230, 184, 0, 0.22);
-		border-bottom-color: #4f46e5;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: time-spin 760ms linear infinite;
 	}

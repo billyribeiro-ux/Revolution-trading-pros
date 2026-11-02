@@ -42,13 +42,13 @@
 	}
 
 	.message.success {
-		background: #dcfce7;
-		color: #166534;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.message.error {
-		background: #fef2f2;
-		color: #991b1b;
+		background: var(--bg-elevated, #161b22);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.message button {

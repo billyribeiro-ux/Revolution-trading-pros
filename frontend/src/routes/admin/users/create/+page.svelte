@@ -1639,7 +1639,7 @@
 		border-radius: 0.5rem;
 		background: var(--bg-elevated, #161b22);
 		padding: 0.5rem 1rem;
-		color: #52525b;
+		color: var(--text-secondary, #8b949e);
 		font: inherit;
 		font-size: 0.875rem;
 		white-space: nowrap;
@@ -1650,8 +1650,8 @@
 	}
 
 	.step-button.active {
-		background: #2563eb;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.step-button.complete {
@@ -1696,7 +1696,7 @@
 
 	.form-control:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
 	}
 
@@ -1796,15 +1796,15 @@
 	}
 
 	.strength-fill.strong {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 
 	.strength-fill.medium {
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.strength-fill.weak {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.strength-meta,
@@ -1865,7 +1865,7 @@
 	}
 
 	.role-card.selected {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: rgba(88, 166, 255, 10%);
 	}
 
@@ -2015,12 +2015,12 @@
 	}
 
 	.primary-button {
-		background: #2563eb;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.primary-button:hover:not(:disabled) {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.primary-button--wide {

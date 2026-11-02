@@ -501,16 +501,16 @@
 		border-left-color: #64748b;
 	}
 	.log-entry.blue {
-		border-left-color: #3b82f6;
+		border-left-color: var(--primary-500, #e6b800);
 	}
 	.log-entry.yellow {
-		border-left-color: #fbbf24;
+		border-left-color: var(--warning-emphasis, #d29922);
 	}
 	.log-entry.red {
-		border-left-color: #ef4444;
+		border-left-color: var(--error-base, #da3633);
 	}
 	.log-entry.purple {
-		border-left-color: #8b5cf6;
+		border-left-color: var(--primary-500, #e6b800);
 	}
 
 	.log-header {

@@ -331,7 +331,7 @@
 	}
 
 	.retention-cell--excellent {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.retention-cell--strong {
@@ -339,11 +339,11 @@
 	}
 
 	.retention-cell--moderate {
-		background: #facc15;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.retention-cell--low {
-		background: #fb923c;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.retention-cell--critical {
@@ -420,7 +420,7 @@
 	}
 
 	.cohort-matrix__swatch--excellent {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.cohort-matrix__swatch--strong {
@@ -428,11 +428,11 @@
 	}
 
 	.cohort-matrix__swatch--moderate {
-		background: #facc15;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.cohort-matrix__swatch--low {
-		background: #fb923c;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.cohort-matrix__swatch--critical {

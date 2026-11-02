@@ -157,7 +157,7 @@
 
 	.status-pending {
 		background: rgba(210, 153, 34, 0.2);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 		border-color: rgba(210, 153, 34, 0.35);
 	}
 

@@ -1484,7 +1484,7 @@
 	}
 	.quick-action-icon.yellow {
 		background: rgba(210, 153, 34, 0.15);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.quick-action-label {
@@ -2320,7 +2320,7 @@
 		.glass-panel {
 			break-inside: avoid;
 			box-shadow: none;
-			border: 1px solid #ccc;
+			border: 1px solid var(--border-default, #30363d);
 		}
 	}
 </style>

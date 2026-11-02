@@ -48,12 +48,12 @@
 	}
 
 	.toast-success {
-		border-left: 4px solid #10b981;
+		border-left: 4px solid var(--success-base, #2ea043);
 		color: var(--success-emphasis, #3fb950);
 	}
 
 	.toast-error {
-		border-left: 4px solid #ef4444;
+		border-left: 4px solid var(--error-base, #da3633);
 		color: var(--error-emphasis, #f85149);
 	}
 

@@ -92,7 +92,7 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel h3 {
@@ -101,13 +101,13 @@
 		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel input[type='text'] {
 		width: 100%;
 		padding: 0.625rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.9rem;
 		color: var(--text-primary, #f0f6fc);
@@ -135,7 +135,7 @@
 	}
 
 	.checkbox-item:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.tags-selected {
@@ -180,14 +180,14 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
 	}
 
 	.btn-add-tag:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 </style>

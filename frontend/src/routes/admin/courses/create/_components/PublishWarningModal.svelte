@@ -79,7 +79,7 @@
 
 	.btn-primary {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {

@@ -204,7 +204,7 @@
 
 	.progress-bar {
 		height: 100%;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		transition: width 1s ease-out;
 	}
 

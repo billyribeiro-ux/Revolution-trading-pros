@@ -86,7 +86,7 @@
 	.tabs {
 		display: flex;
 		gap: 8px;
-		border-bottom: 2px solid #e2e8f0;
+		border-bottom: 2px solid var(--border-default, #30363d);
 		margin-bottom: 32px;
 	}
 
@@ -107,7 +107,7 @@
 	}
 
 	.tab:hover {
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab.active {
@@ -116,7 +116,7 @@
 	}
 
 	.tab .badge {
-		background: #e2e8f0;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--text-tertiary, #6e7681);
 		padding: 2px 8px;
 		border-radius: 10px;
@@ -129,7 +129,7 @@
 	}
 
 	.tab .badge.active {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: #fff;
 	}
 </style>

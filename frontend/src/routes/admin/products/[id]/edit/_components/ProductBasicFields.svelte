@@ -74,7 +74,7 @@
 	}
 
 	.form-group.has-error input {
-		border-color: #ef4444;
+		border-color: var(--error-base, #da3633);
 	}
 
 	.form-group label {
@@ -102,7 +102,7 @@
 	.form-group input:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 	}
 

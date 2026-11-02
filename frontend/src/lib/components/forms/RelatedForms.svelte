@@ -259,7 +259,7 @@
 
 	.tab.active {
 		color: var(--info-emphasis, #58a6ff);
-		border-bottom-color: #3b82f6;
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 
 	.panel-content {
@@ -278,8 +278,8 @@
 	.loading-spinner {
 		width: 24px;
 		height: 24px;
-		border: 2px solid #e5e7eb;
-		border-top-color: #3b82f6;
+		border: 2px solid var(--border-default, #30363d);
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -307,7 +307,7 @@
 	}
 
 	.form-card:hover {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		transform: translateY(-1px);
 	}
@@ -348,7 +348,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		color: white;
 		font-size: 0.75rem;
 		font-weight: 700;

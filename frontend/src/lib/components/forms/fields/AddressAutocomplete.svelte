@@ -523,12 +523,12 @@
 
 	.search-input:focus {
 		outline: none;
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 	}
 
 	.search-input.has-error {
-		border-color: #dc2626;
+		border-color: var(--error-base, #da3633);
 	}
 
 	.search-spinner {
@@ -538,8 +538,8 @@
 		transform: translateY(-50%);
 		width: 20px;
 		height: 20px;
-		border: 2px solid #e5e7eb;
-		border-top-color: #2563eb;
+		border: 2px solid var(--border-default, #30363d);
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -605,7 +605,7 @@
 
 	.btn-manual:hover,
 	.btn-search:hover {
-		color: #1d4ed8;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.address-fields {
@@ -655,7 +655,7 @@
 
 	.sub-input:focus {
 		outline: none;
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.sub-input[readonly] {

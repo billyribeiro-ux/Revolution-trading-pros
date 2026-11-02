@@ -97,7 +97,7 @@
 		justify-content: center;
 		font-size: 2rem;
 		font-weight: 700;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		flex-shrink: 0;
 	}
 
@@ -122,7 +122,7 @@
 
 	.vip-badge {
 		padding: 4px 10px;
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 		border-radius: 20px;
 		font-size: 0.7rem;
 		font-weight: 700;
@@ -188,7 +188,7 @@
 		gap: 8px;
 		padding: 10px 20px;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

@@ -207,7 +207,7 @@
 		width: 1.5rem;
 		height: 1.5rem;
 		border: 2px solid rgba(255, 255, 255, 0.2);
-		border-top-color: #ffffff;
+		border-top-color: var(--border-default, #30363d);
 		border-radius: 999px;
 		animation: spin 900ms linear infinite;
 	}
@@ -252,11 +252,11 @@
 	}
 
 	.real-time-widget__metric-value--conversions {
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.real-time-widget__metric-value--revenue {
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.real-time-widget__section {

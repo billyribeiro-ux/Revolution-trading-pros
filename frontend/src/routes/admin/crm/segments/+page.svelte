@@ -460,8 +460,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -616,11 +616,11 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 12px;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		flex-shrink: 0;
 	}
 
@@ -756,7 +756,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(210, 153, 34, 0.2);
-		border-top-color: #f97316;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

@@ -783,7 +783,7 @@
 	}
 
 	.stat-value--purple {
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.stat-value--emerald {
@@ -875,8 +875,8 @@
 	}
 
 	.segment-type--dynamic {
-		background: #3b82f6;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.segment-type--static {
@@ -885,7 +885,7 @@
 	}
 
 	.segment-type--computed {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		color: #ffffff;
 	}
 
@@ -1066,7 +1066,7 @@
 
 	.type-badge.segment-type--static {
 		background: rgba(230, 184, 0, 20%);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.type-badge.segment-type--computed {

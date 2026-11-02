@@ -443,8 +443,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 500;
@@ -453,7 +453,7 @@
 	}
 
 	.scan-button:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.scan-button:disabled {
@@ -471,7 +471,7 @@
 
 	.progress-bar {
 		height: 100%;
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 		transition: width 0.3s ease;
 	}
 
@@ -601,7 +601,7 @@
 		height: 3rem;
 		border-width: 3px;
 		border-color: rgba(88, 166, 255, 0.2);
-		border-top-color: #3b82f6;
+		border-top-color: var(--primary-500, #e6b800);
 		margin-bottom: 1rem;
 	}
 
@@ -655,7 +655,7 @@
 
 	.merge-button {
 		padding: 0.5rem 1rem;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		color: white;
 		border: none;
 		border-radius: 6px;
@@ -665,7 +665,7 @@
 	}
 
 	.merge-button:hover {
-		background: #d97706;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.files-preview {
@@ -823,7 +823,7 @@
 	}
 
 	.file-option--selected .file-option-content {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
@@ -866,7 +866,7 @@
 
 	.keep-badge {
 		padding: 0.25rem 0.75rem;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: white;
 		font-size: 0.75rem;
 		font-weight: 500;
@@ -911,7 +911,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -920,7 +920,7 @@
 	}
 
 	.confirm-button:hover:not(:disabled) {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 	}
 
 	.confirm-button:disabled,

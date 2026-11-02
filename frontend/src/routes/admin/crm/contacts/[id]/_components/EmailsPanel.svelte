@@ -80,7 +80,7 @@
 		justify-content: center;
 		background: var(--primary-500);
 		border-radius: 10px;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		flex-shrink: 0;
 	}
 

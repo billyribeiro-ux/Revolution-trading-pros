@@ -1488,8 +1488,8 @@
 	}
 
 	.environment-option.active {
-		background: #ffffff;
-		color: #000000;
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
@@ -1598,21 +1598,21 @@
 	}
 
 	.modal-button--primary {
-		background: #ffffff;
-		color: #000000;
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-button--primary:hover:not(:disabled) {
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.modal-button--danger {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: #ffffff;
 	}
 
 	.modal-button--danger:hover:not(:disabled) {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 	}
 
 	.button-loading-label {
@@ -1629,7 +1629,7 @@
 
 	.button-spinner--light {
 		border-color: rgb(255 255 255 / 20%);
-		border-top-color: #ffffff;
+		border-top-color: var(--border-default, #30363d);
 	}
 
 	.button-spinner--dark {

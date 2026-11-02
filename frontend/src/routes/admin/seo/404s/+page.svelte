@@ -258,7 +258,7 @@
 		height: 3rem;
 		margin: 0 auto;
 		border: 2px solid rgba(88, 166, 255, 0.18);
-		border-bottom-color: #2563eb;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 800ms linear infinite;
 	}
@@ -316,7 +316,7 @@
 		gap: 0.5rem;
 		margin: 0;
 		padding: 0;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		list-style: none;
 	}
 

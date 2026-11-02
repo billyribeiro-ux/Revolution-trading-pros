@@ -296,7 +296,7 @@
 
 	.score-sublabel {
 		font-size: 0.8rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.25rem;
 	}
 
@@ -431,7 +431,7 @@
 	.empty-state {
 		text-align: center;
 		padding: 3rem 1rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state h4 {

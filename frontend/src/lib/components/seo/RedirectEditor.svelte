@@ -238,7 +238,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h2 {
@@ -251,7 +251,7 @@
 	.close-btn {
 		background: none;
 		border: none;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		padding: 0.25rem;
 		display: flex;
@@ -262,7 +262,7 @@
 	}
 
 	.close-btn:hover {
-		background: #f0f0f0;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.modal-body {
@@ -272,7 +272,7 @@
 
 	.error-message {
 		padding: 0.75rem 1rem;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 		border-radius: 6px;
 		margin-bottom: 1rem;
@@ -300,7 +300,7 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 		font-family: inherit;
@@ -311,7 +311,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-group textarea {
@@ -333,7 +333,7 @@
 	.hint {
 		margin-top: 0.375rem;
 		font-size: 0.85rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.modal-footer {
@@ -341,7 +341,7 @@
 		justify-content: flex-end;
 		gap: 0.75rem;
 		padding: 1.5rem;
-		border-top: 1px solid #e5e5e5;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-primary,
@@ -359,12 +359,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {
@@ -374,11 +374,11 @@
 
 	.btn-secondary {
 		background: white;
-		color: #666;
-		border: 1px solid #e5e5e5;
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 </style>

@@ -46,15 +46,15 @@
 	}
 
 	.alert-error {
-		background: #fef2f2;
+		background: var(--bg-elevated, #161b22);
 		color: var(--error-emphasis, #f85149);
-		border: 1px solid #fecaca;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.alert-success {
-		background: #f0fdf4;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
-		border: 1px solid #bbf7d0;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.alert button {

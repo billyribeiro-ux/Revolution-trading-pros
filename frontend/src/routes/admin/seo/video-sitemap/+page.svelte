@@ -453,12 +453,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {
@@ -481,7 +481,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border: none;
 		border-radius: 6px;
@@ -491,7 +491,7 @@
 	}
 
 	.btn-add:hover {
-		background: #059669;
+		background: var(--success-base, #2ea043);
 	}
 
 	.stats-grid {
@@ -655,7 +655,7 @@
 	}
 
 	.duration-badge.live {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		display: flex;
 		align-items: center;
 		gap: 4px;

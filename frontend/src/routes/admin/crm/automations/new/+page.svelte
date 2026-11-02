@@ -728,7 +728,7 @@
 	}
 
 	.step.completed .step-number {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: white;
 	}
 
@@ -748,7 +748,7 @@
 
 	.step.active .step-number {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.step-info {
@@ -955,7 +955,7 @@
 
 	.trigger-icon.tone-purple {
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.trigger-icon.tone-orange {
@@ -1029,7 +1029,7 @@
 		height: 24px;
 		border-radius: 50%;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1149,7 +1149,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

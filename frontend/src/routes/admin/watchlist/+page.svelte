@@ -666,8 +666,8 @@
 		transition: all 0.2s ease;
 		border: none;
 		cursor: pointer;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
@@ -770,7 +770,7 @@
 	}
 
 	.clear-btn:hover {
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 		color: var(--warning-emphasis, #d29922);
 	}
 
@@ -786,7 +786,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid var(--border-default, #30363d);
-		border-top-color: #f97316;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 		margin: 0 auto 16px;
@@ -801,8 +801,8 @@
 	.error-state button {
 		margin-top: 16px;
 		padding: 10px 20px;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -1171,7 +1171,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-group textarea {
@@ -1200,7 +1200,7 @@
 	}
 
 	.btn-delete {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: white;
 	}
 

@@ -193,12 +193,12 @@
 	}
 
 	.dropzone:hover {
-		border-color: #eab308;
+		border-color: var(--warning-emphasis, #d29922);
 		background: rgba(31, 41, 55, 0.3);
 	}
 
 	.dropzone.dragging {
-		border-color: #eab308;
+		border-color: var(--warning-emphasis, #d29922);
 		background: rgba(210, 153, 34, 0.1);
 	}
 
@@ -208,7 +208,7 @@
 	}
 
 	.dropzone.dragging :global(.upload-icon) {
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.upload-title {
@@ -317,7 +317,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 		transition: width 0.3s ease;
 	}
 
@@ -358,7 +358,7 @@
 		width: 1.25rem;
 		height: 1.25rem;
 		border: 2px solid var(--border-default, #30363d);
-		border-top-color: #facc15;
+		border-top-color: var(--warning-emphasis, #d29922);
 		border-radius: 999px;
 		animation: upload-spin 1s linear infinite;
 	}

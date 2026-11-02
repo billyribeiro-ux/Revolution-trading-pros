@@ -837,7 +837,7 @@
 	.title-icon {
 		width: 64px;
 		height: 64px;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		border-radius: 20px;
 		display: flex;
 		align-items: center;
@@ -894,7 +894,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(210, 153, 34, 0.2);
-		border-top-color: #f59e0b;
+		border-top-color: var(--warning-emphasis, #d29922);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -1082,7 +1082,7 @@
 	}
 
 	.stage-fill.pending {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 	}
 	.stage-fill.sent {
 		background: #38bdf8;
@@ -1238,7 +1238,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		border: none;
 		border-radius: 10px;
 		color: white;
@@ -1326,7 +1326,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1605,7 +1605,7 @@
 	}
 
 	.template-option.active {
-		border-color: #f59e0b;
+		border-color: var(--warning-emphasis, #d29922);
 		background: rgba(210, 153, 34, 0.1);
 		color: var(--warning-emphasis, #d29922);
 	}
@@ -1716,7 +1716,7 @@
 		-webkit-appearance: none;
 		width: 20px;
 		height: 20px;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		border-radius: 50%;
 		cursor: pointer;
 	}
@@ -1762,7 +1762,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 		border: none;
 		border-radius: 12px;
 		color: white;

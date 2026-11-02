@@ -424,7 +424,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid var(--border-muted, #21262d);
-		border-top-color: #3b82f6;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -556,7 +556,7 @@
 
 	.btn-primary {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {

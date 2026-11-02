@@ -242,7 +242,7 @@
 
 	.search-input:focus,
 	.filter-select:focus {
-		outline: 2px solid #eab308;
+		outline: 2px solid var(--warning-emphasis, #d29922);
 		outline-offset: 2px;
 	}
 
@@ -262,7 +262,7 @@
 		padding: 0.5rem 1rem;
 		border: 0;
 		border-radius: 0.5rem;
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 		color: var(--bg-base, #0d1117);
 		font: inherit;
 		font-weight: 600;
@@ -271,7 +271,7 @@
 	}
 
 	.btn-export:hover {
-		background: #facc15;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.events-table-container {
@@ -386,7 +386,7 @@
 		width: 2rem;
 		height: 2rem;
 		border: 4px solid var(--border-default, #30363d);
-		border-top-color: #facc15;
+		border-top-color: var(--warning-emphasis, #d29922);
 		border-radius: 999px;
 		animation: event-spin 1s linear infinite;
 	}

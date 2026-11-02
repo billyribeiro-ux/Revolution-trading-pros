@@ -607,7 +607,7 @@
 
 	.granularity-field select:focus,
 	.form-control:focus {
-		border-color: #a855f7;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgb(168 85 247 / 0.16);
 		outline: none;
 	}
@@ -631,7 +631,7 @@
 		width: 2rem;
 		height: 2rem;
 		border: 2px solid rgba(230, 184, 0, 0.22);
-		border-top-color: #a855f7;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: cohorts-spin 780ms linear infinite;
 	}
@@ -676,7 +676,7 @@
 	}
 
 	.state-card__icon--purple {
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 		background: rgba(230, 184, 0, 0.12);
 	}
 
@@ -702,7 +702,7 @@
 	}
 
 	.state-card__button--error {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 		box-shadow: 0 16px 36px rgb(220 38 38 / 0.24);
 	}
 
@@ -755,7 +755,7 @@
 	}
 
 	.retention-card__value[data-tone='purple'] {
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.retention-card__value[data-tone='pink'] {

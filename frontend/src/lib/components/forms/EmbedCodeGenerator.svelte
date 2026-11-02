@@ -259,7 +259,7 @@ ${'</'}script>`);
 	}
 
 	.type-btn.active {
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 		background: rgba(230, 184, 0, 0.1);
 		color: var(--primary-400, #ffd11a);
 	}
@@ -413,7 +413,7 @@ ${'</'}script>`);
 		bottom: 2rem;
 		right: 2rem;
 		padding: 1rem 1.5rem;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border-radius: 8px;
 		font-size: 0.875rem;

@@ -1483,7 +1483,7 @@
 
 	.btn-primary {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 	}
 
@@ -1609,7 +1609,7 @@
 	}
 
 	.media-grid .media-item.focused {
-		border-color: #8b5cf6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow:
 			0 0 0 2px rgba(139, 92, 246, 0.3),
 			0 0 0 4px rgba(139, 92, 246, 0.1);
@@ -1673,7 +1673,7 @@
 		width: 12px;
 		height: 12px;
 		border: 2px solid rgba(210, 153, 34, 0.3);
-		border-top-color: #f59e0b;
+		border-top-color: var(--warning-emphasis, #d29922);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

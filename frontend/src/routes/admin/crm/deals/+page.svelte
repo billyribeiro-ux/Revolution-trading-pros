@@ -982,7 +982,7 @@
 
 	.toggle-btn.active {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-secondary {
@@ -1030,7 +1030,7 @@
 		gap: 8px;
 		padding: 0.75rem 1.25rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -1748,7 +1748,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -1773,7 +1773,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: white;
 		border: none;
 		border-radius: 10px;

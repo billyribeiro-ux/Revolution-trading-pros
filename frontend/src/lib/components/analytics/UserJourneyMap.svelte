@@ -190,7 +190,7 @@
 		width: 2rem;
 		height: 2rem;
 		border-radius: 999px;
-		background: #eab308;
+		background: var(--warning-emphasis, #d29922);
 		color: var(--bg-base, #0d1117);
 		font-weight: 700;
 	}
@@ -274,7 +274,7 @@
 	}
 
 	.action-count {
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 		font-weight: 600;
 	}
 

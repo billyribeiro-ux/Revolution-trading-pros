@@ -125,7 +125,7 @@
 	.spinner-small {
 		width: 20px;
 		height: 20px;
-		border: 2px solid #e5e7eb;
+		border: 2px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
@@ -195,7 +195,7 @@
 		border-radius: 4px;
 	}
 	.tag.active {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 	.video-card .btn-icon {
 		position: absolute;

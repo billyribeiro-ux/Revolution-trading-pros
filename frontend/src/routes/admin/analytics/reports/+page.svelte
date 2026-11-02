@@ -592,7 +592,7 @@
 	}
 
 	.spinner {
-		border-color: #a855f7;
+		border-color: var(--primary-500, #e6b800);
 		border-top-color: transparent;
 		animation: spin 0.8s linear infinite;
 	}
@@ -600,7 +600,7 @@
 	.loader {
 		width: 2rem;
 		height: 2rem;
-		border: 4px solid #2563eb;
+		border: 4px solid var(--primary-500, #e6b800);
 		border-top-color: transparent;
 		animation: spin 0.8s linear infinite;
 	}
@@ -648,13 +648,13 @@
 	.error-card button {
 		margin-top: 1rem;
 		border: 0;
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 		color: #ffffff;
 		padding: 0.5rem 1rem;
 	}
 
 	.error-card button:hover {
-		background: #b91c1c;
+		background: var(--error-base, #da3633);
 	}
 
 	.empty-card {
@@ -803,14 +803,14 @@
 
 	.primary-button {
 		border: 0;
-		background: #2563eb;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		padding: 0.5rem 1rem;
 		text-decoration: none;
 	}
 
 	.primary-button:hover {
-		background: #1d4ed8;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.primary-button:disabled {
@@ -922,7 +922,7 @@
 	}
 
 	.field-control:focus {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 		outline: none;
 	}
@@ -947,8 +947,8 @@
 
 	.toggle-chip--blue,
 	.toggle-chip--blue:hover {
-		background: #2563eb;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.toggle-chip--purple,

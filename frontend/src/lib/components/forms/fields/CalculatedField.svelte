@@ -322,7 +322,7 @@
 	.calculated-display {
 		padding: 1rem 1.25rem;
 		background: var(--bg-elevated, #161b22);
-		border: 2px solid #0ea5e9;
+		border: 2px solid var(--primary-500, #e6b800);
 		border-radius: 0.5rem;
 		display: flex;
 		align-items: baseline;

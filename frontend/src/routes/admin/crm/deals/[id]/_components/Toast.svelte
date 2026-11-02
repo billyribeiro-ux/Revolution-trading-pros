@@ -42,7 +42,7 @@
 
 	.toast-success {
 		background: #065f46;
-		border: 1px solid #10b981;
+		border: 1px solid var(--success-base, #2ea043);
 		color: #ecfdf5;
 	}
 
@@ -52,7 +52,7 @@
 
 	.toast-error {
 		background: #7f1d1d;
-		border: 1px solid #f87171;
+		border: 1px solid var(--border-default, #30363d);
 		color: #fef2f2;
 	}
 

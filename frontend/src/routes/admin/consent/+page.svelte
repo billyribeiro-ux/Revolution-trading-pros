@@ -506,8 +506,8 @@
 	}
 
 	.btn-primary {
-		background: #0ea5e9;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-secondary {
@@ -593,7 +593,7 @@
 
 	.tab.active {
 		color: var(--info-emphasis, #58a6ff);
-		border-bottom-color: #0ea5e9;
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 
 	.tab-content {
@@ -713,13 +713,13 @@
 	}
 
 	.category-bar-fill.low {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 	.category-bar-fill.medium {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 	.category-bar-fill.high {
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 	}
 
 	.insights-list {
@@ -822,7 +822,7 @@
 	}
 	.category-badge--marketing {
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 	.category-badge--preferences {
 		background: rgba(210, 153, 34, 0.2);

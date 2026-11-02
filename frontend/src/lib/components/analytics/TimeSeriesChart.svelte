@@ -253,9 +253,9 @@
 
 <style>
 	.time-series-chart {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		padding: 1rem;
 	}
 

@@ -224,7 +224,7 @@
 	}
 
 	.close-btn:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 
@@ -288,7 +288,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-group textarea {
@@ -298,7 +298,7 @@
 	.hint {
 		margin-top: 0.375rem;
 		font-size: 0.85rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* Sticky footer */
@@ -336,16 +336,16 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 

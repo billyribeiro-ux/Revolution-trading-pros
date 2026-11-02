@@ -28,7 +28,7 @@
 	.tabs {
 		display: flex;
 		gap: 4px;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		margin-bottom: 24px;
 	}
 	.tabs button {
@@ -46,14 +46,14 @@
 		gap: 8px;
 	}
 	.tabs button:hover {
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 	}
 	.tabs button.active {
 		color: var(--primary-500, #e6b800);
 		border-bottom-color: var(--primary-500, #e6b800);
 	}
 	.badge {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 		padding: 2px 8px;
 		border-radius: 10px;
 		font-size: 12px;

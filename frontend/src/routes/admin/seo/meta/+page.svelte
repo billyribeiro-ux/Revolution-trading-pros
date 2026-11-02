@@ -164,7 +164,7 @@
 	}
 
 	.search-box input::placeholder {
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.entities-list {
@@ -192,7 +192,7 @@
 
 	.entity-item.active {
 		background: var(--info-soft, rgba(56, 139, 253, 0.15));
-		border-left: 3px solid #3b82f6;
+		border-left: 3px solid var(--primary-500, #e6b800);
 	}
 
 	.entity-info h4 {
@@ -204,7 +204,7 @@
 
 	.entity-type {
 		font-size: 0.8rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: capitalize;
 	}
 
@@ -241,7 +241,7 @@
 		justify-content: center;
 		padding: 3rem 1.5rem;
 		text-align: center;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state p {
@@ -265,7 +265,7 @@
 		align-items: center;
 		justify-content: center;
 		height: 100%;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
@@ -285,7 +285,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	@media (max-width: 1023.98px) {

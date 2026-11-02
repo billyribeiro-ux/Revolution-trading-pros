@@ -549,11 +549,11 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.list-info {

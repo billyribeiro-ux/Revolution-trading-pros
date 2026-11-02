@@ -727,7 +727,7 @@
 
 	/* Schedule Container — the white card that wraps the grid + weekend section */
 	.schedule-container {
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
@@ -753,7 +753,7 @@
 	.empty-state h3 {
 		font-size: 20px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin: 16px 0 8px;
 	}
 
@@ -764,7 +764,7 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid #e2e8f0;
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

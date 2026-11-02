@@ -378,12 +378,12 @@
 		font-weight: 500;
 		border: none;
 		cursor: pointer;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: white;
 	}
 
 	.btn-danger:hover {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 	}
 
 	.logs-table {
@@ -445,7 +445,7 @@
 	}
 
 	.referer-cell {
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.85rem;
 		max-width: 200px;
 		overflow: hidden;
@@ -473,7 +473,7 @@
 
 	.status-badge.ignored {
 		background: var(--bg-surface, #1c2128);
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.actions {
@@ -530,6 +530,6 @@
 	.loading {
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 </style>

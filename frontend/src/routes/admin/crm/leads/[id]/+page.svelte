@@ -926,7 +926,7 @@
 	.back-btn:hover {
 		background: var(--bg-elevated, #161b22);
 		color: var(--warning-emphasis, #d29922);
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	/* Header */
@@ -959,13 +959,13 @@
 		justify-content: center;
 		font-size: 2rem;
 		font-weight: 700;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		flex-shrink: 0;
 		position: relative;
 	}
 
 	.avatar-large.hot {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.hot-badge {
@@ -974,7 +974,7 @@
 		right: -4px;
 		width: 28px;
 		height: 28px;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		border: 3px solid var(--border-muted, #21262d);
 		border-radius: 50%;
 		display: flex;
@@ -1133,8 +1133,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -1242,7 +1242,7 @@
 
 	.score-fill {
 		height: 100%;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		border-radius: 3px;
 		transition: width 0.3s;
 	}
@@ -1280,8 +1280,8 @@
 	}
 
 	.tab-btn.active {
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	/* Tab Content - Layout Shift Prevention */
@@ -1470,12 +1470,12 @@
 		width: 44px;
 		height: 44px;
 		border-radius: 50%;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-weight: 600;
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.assignee-info {
@@ -1522,7 +1522,7 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		flex-shrink: 0;
 		margin-top: 4px;
 	}
@@ -1536,7 +1536,7 @@
 	}
 
 	.timeline-dot--meeting {
-		background: #fbbf24;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.timeline-dot--note {
@@ -1668,7 +1668,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(210, 153, 34, 0.2);
-		border-top-color: #f97316;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
@@ -1695,8 +1695,8 @@
 	.error-state button {
 		margin-top: 16px;
 		padding: 10px 20px;
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -1788,7 +1788,7 @@
 
 	.note-input:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.confirm-text {
@@ -1807,7 +1807,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -1846,13 +1846,13 @@
 
 	.toast-success {
 		background: #065f46;
-		border: 1px solid #10b981;
+		border: 1px solid var(--success-base, #2ea043);
 		color: #ecfdf5;
 	}
 
 	.toast-error {
 		background: #7f1d1d;
-		border: 1px solid #f87171;
+		border: 1px solid var(--border-default, #30363d);
 		color: #fef2f2;
 	}
 

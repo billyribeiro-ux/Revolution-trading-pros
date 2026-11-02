@@ -1551,7 +1551,7 @@
 
 	.btn-primary {
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 	}
 
@@ -1826,7 +1826,7 @@
 	}
 
 	.post-card.selected {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: rgba(88, 166, 255, 0.05);
 	}
 
@@ -2277,7 +2277,7 @@
 		top: 0;
 		height: 100%;
 		width: var(--score);
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		z-index: -1;
 	}
 
@@ -2804,7 +2804,6 @@
 			box-shadow: none;
 			border: 1px solid var(--border-default, #30363d);
 		}
-	;
 	}
 
 	/* Landscape Mode - Short viewport */

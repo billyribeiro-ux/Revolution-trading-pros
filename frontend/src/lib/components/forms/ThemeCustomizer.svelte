@@ -363,7 +363,7 @@
 	}
 
 	.theme-card.active {
-		border-color: #6366f1;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 	}
 

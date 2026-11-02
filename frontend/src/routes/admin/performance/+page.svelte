@@ -450,12 +450,12 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.header-title h1 {
@@ -652,15 +652,15 @@
 	}
 
 	.metric-bar.success {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 
 	.metric-bar.warning {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.metric-bar.danger {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.metric-value {
@@ -848,8 +848,8 @@
 	}
 
 	.btn-primary {
-		background: #f97316;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-secondary {

@@ -114,11 +114,11 @@
 		background: var(--bg-surface, #1c2128);
 	}
 	.btn-success {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: #fff;
 	}
 	.btn-success:hover {
-		background: #059669;
+		background: var(--success-base, #2ea043);
 	}
 
 	@media (max-width: 639px) {

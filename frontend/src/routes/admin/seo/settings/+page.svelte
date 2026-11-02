@@ -179,7 +179,7 @@
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -202,12 +202,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {
@@ -217,12 +217,12 @@
 
 	.btn-secondary {
 		background: white;
-		color: #666;
-		border: 1px solid #e5e5e5;
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.settings-content {
@@ -233,7 +233,7 @@
 
 	.setting-group {
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 2rem;
 	}
@@ -244,7 +244,7 @@
 		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1.5rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.fields {
@@ -266,7 +266,7 @@
 	.field textarea {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 		font-family: inherit;
@@ -277,7 +277,7 @@
 	.field input[type='url']:focus,
 	.field textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.field textarea {

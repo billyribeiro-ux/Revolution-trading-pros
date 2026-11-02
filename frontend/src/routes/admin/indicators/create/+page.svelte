@@ -1632,7 +1632,7 @@
 
 	.platform-toggle input:checked + .toggle-slider::after {
 		left: 25px;
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.platform-name {
@@ -1703,12 +1703,12 @@
 
 	.drop-zone.has-file {
 		border-style: solid;
-		border-color: #22c55e;
+		border-color: var(--success-base, #2ea043);
 		background: rgba(63, 185, 80, 0.05);
 	}
 
 	.drop-zone.uploading {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		background: rgba(88, 166, 255, 0.05);
 	}
 
@@ -1800,7 +1800,7 @@
 		width: 24px;
 		height: 24px;
 		border: 3px solid rgba(88, 166, 255, 0.3);
-		border-top-color: #3b82f6;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -1973,7 +1973,7 @@
 
 	.thumbnail-drop-zone.has-image {
 		border-style: solid;
-		border-color: #22c55e;
+		border-color: var(--success-base, #2ea043);
 	}
 
 	.thumbnail-preview {
@@ -2040,7 +2040,7 @@
 	.preview-image {
 		position: relative;
 		aspect-ratio: 16/10;
-		background: #1e3a8a;
+		background: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		justify-content: center;

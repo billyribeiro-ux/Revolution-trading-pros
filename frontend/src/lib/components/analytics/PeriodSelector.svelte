@@ -57,7 +57,7 @@
 		align-items: center;
 		gap: 0.25rem;
 		border-radius: 0.5rem;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		padding: 0.25rem;
 	}
 
@@ -84,14 +84,14 @@
 	}
 
 	.period-selector__button:focus-visible {
-		outline: 2px solid #2563eb;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 
 	.period-selector__button.is-selected {
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	@media (max-width: 480px) {

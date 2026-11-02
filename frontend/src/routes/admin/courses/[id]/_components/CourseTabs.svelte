@@ -33,7 +33,7 @@
 		display: flex;
 		gap: 4px;
 		margin-bottom: 24px;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.tabs button {
 		padding: 12px 20px;
@@ -47,7 +47,7 @@
 		margin-bottom: -1px;
 	}
 	.tabs button:hover {
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 	}
 	.tabs button.active {
 		color: var(--primary-500, #e6b800);

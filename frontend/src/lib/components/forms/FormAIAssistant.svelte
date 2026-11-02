@@ -477,7 +477,7 @@
 
 	.tab.active {
 		color: var(--primary-500, #e6b800);
-		border-bottom-color: #8b5cf6;
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 
 	.assistant-content {
@@ -513,7 +513,7 @@
 
 	.prompt-input:focus {
 		outline: none;
-		border-color: #8b5cf6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 	}
 
@@ -652,7 +652,7 @@
 	.btn-apply {
 		width: 100%;
 		padding: 0.5rem;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border: none;
 		border-radius: 0.375rem;
@@ -663,7 +663,7 @@
 	}
 
 	.btn-apply:hover {
-		background: #059669;
+		background: var(--success-base, #2ea043);
 	}
 
 	.section-description {

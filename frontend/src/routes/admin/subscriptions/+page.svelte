@@ -887,7 +887,7 @@
 
 	.stat-card__icon[data-tone='purple'] {
 		background: rgba(230, 184, 0, 0.1);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.stat-card__value {
@@ -996,7 +996,7 @@
 	}
 
 	.form-control:focus {
-		border-color: #10b981;
+		border-color: var(--success-base, #2ea043);
 		outline: none;
 	}
 
@@ -1008,11 +1008,11 @@
 	}
 
 	.form-control--warning:focus {
-		border-color: #f97316;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-control--danger:focus {
-		border-color: #ef4444;
+		border-color: var(--error-base, #da3633);
 	}
 
 	.table-card {
@@ -1079,7 +1079,7 @@
 	.table-spinner {
 		width: 1.25rem;
 		height: 1.25rem;
-		border: 2px solid #10b981;
+		border: 2px solid var(--success-base, #2ea043);
 		border-top-color: transparent;
 		border-radius: 999px;
 		animation: spin 700ms linear infinite;
@@ -1120,7 +1120,7 @@
 	.status-badge[data-status='pending'] {
 		border-color: rgba(210, 153, 34, 0.2);
 		background: rgba(210, 153, 34, 0.1);
-		color: #facc15;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.status-badge[data-status='on-hold'] {
@@ -1287,19 +1287,19 @@
 	}
 
 	.modal-button--warning {
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.modal-button--warning:hover:not(:disabled) {
-		background: #ea580c;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.modal-button--danger {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 	}
 
 	.modal-button--danger:hover:not(:disabled) {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 	}
 
 	@keyframes spin {

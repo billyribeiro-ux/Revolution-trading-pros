@@ -389,7 +389,7 @@
 
 	.error-message {
 		background: #ef44441a;
-		border: 1px solid #ef4444;
+		border: 1px solid var(--error-base, #da3633);
 		color: var(--error-emphasis, #f85149);
 		padding: 0.75rem;
 		border-radius: 8px;

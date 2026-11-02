@@ -76,7 +76,7 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel h3 {
@@ -85,7 +85,7 @@
 		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.categories-panel h3 {
@@ -99,8 +99,8 @@
 		flex-wrap: wrap;
 		gap: 0.5rem;
 		padding: 0.75rem;
-		background: #f8f9fa;
-		border: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		max-height: 280px;
 		overflow-y: auto;

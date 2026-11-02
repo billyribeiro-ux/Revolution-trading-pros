@@ -1110,7 +1110,7 @@
 		gap: 8px;
 		padding: 0.5rem 1rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 6px;
 		font-weight: 600;
@@ -1819,7 +1819,7 @@
 		width: 100%;
 		padding: 0.75rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;

@@ -526,7 +526,7 @@
 
 <style>
 	.post-editor {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.loading-state {
@@ -534,7 +534,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		gap: 1rem;
 	}
 
@@ -572,7 +572,7 @@
 		background: white;
 		border: none;
 		cursor: pointer;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.panel-header h3 {

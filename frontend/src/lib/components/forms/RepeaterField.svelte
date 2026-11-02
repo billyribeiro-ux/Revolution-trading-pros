@@ -498,7 +498,7 @@
 	}
 
 	.repeater-item--drag-over {
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 	}
 
@@ -609,7 +609,7 @@
 
 	.repeater-item__input:focus {
 		outline: none;
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 	}
 
@@ -637,7 +637,7 @@
 	}
 
 	.repeater-add-btn:hover {
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 		color: var(--info-emphasis, #58a6ff);
 		background: var(--bg-elevated, #161b22);
 	}

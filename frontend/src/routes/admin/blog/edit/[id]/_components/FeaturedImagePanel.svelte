@@ -96,7 +96,7 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel h3 {
@@ -105,13 +105,13 @@
 		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel input[type='text'] {
 		width: 100%;
 		padding: 0.625rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.9rem;
 		color: var(--text-primary, #f0f6fc);
@@ -124,15 +124,15 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem 1rem;
-		border: 2px dashed #e5e5e5;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.upload-box:hover {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		color: var(--info-emphasis, #58a6ff);
 	}
 
@@ -194,7 +194,7 @@
 	.upload-loading span {
 		margin-top: 0.5rem;
 		font-size: 0.9rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-loading :global(.spin) {
@@ -204,7 +204,7 @@
 	.sidebar-panel textarea {
 		width: 100%;
 		padding: 0.625rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.9rem;
 		font-family: inherit;
@@ -215,7 +215,7 @@
 
 	.sidebar-panel textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-group {

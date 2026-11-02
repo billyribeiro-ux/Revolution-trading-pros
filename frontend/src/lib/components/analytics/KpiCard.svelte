@@ -335,13 +335,13 @@
 	.kpi-card--cyan {
 		border-color: rgba(88, 166, 255, 0.2);
 		background: rgba(88, 166, 255, 0.1);
-		color: #0891b2;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.kpi-card--gold {
 		border-color: rgba(210, 153, 34, 0.2);
 		background: rgba(210, 153, 34, 0.1);
-		color: #ca8a04;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.kpi-card--gray {
@@ -355,7 +355,7 @@
 		top: -0.5rem;
 		right: -0.5rem;
 		border-radius: 9999px;
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: #ffffff;
 		font-size: 0.75rem;
 		line-height: 1rem;
@@ -481,7 +481,7 @@
 
 	.kpi-card__target--at-risk {
 		background: rgba(210, 153, 34, 0.2);
-		color: #ca8a04;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.kpi-card__target--behind {

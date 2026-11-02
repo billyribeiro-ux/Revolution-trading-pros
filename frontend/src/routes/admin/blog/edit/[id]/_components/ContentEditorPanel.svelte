@@ -80,7 +80,7 @@
 		background: white;
 		border-radius: 8px;
 		overflow: hidden;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		min-height: 600px;
 	}
 
@@ -99,8 +99,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1rem;
-		border-bottom: 1px solid #e5e5e5;
-		background: #f8f9fa;
+		border-bottom: 1px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.editor-label {
@@ -122,15 +122,15 @@
 		width: 36px;
 		height: 36px;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		cursor: pointer;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.2s;
 	}
 
 	.toolbar-btn:hover {
-		background: #f0f0f0;
+		background: var(--bg-surface, #1c2128);
 		color: var(--info-emphasis, #58a6ff);
 	}
 

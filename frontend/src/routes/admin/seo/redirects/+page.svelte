@@ -373,12 +373,12 @@
 	}
 
 	.btn-danger {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		color: white;
 	}
 
 	.btn-danger:hover {
-		background: #dc2626;
+		background: var(--error-base, #da3633);
 	}
 
 	.stats-grid {
@@ -561,7 +561,7 @@
 		gap: 0.5rem;
 		background: none;
 		border: none;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		font-size: 0.9rem;
 	}
@@ -616,6 +616,6 @@
 	.loading {
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 </style>

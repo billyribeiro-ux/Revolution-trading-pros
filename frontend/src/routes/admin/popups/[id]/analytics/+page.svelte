@@ -592,7 +592,7 @@
 		height: 3rem;
 		margin: 0 auto;
 		border: 2px solid rgba(88, 166, 255, 0.18);
-		border-bottom-color: #2563eb;
+		border-bottom-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 0.8s linear infinite;
 	}
@@ -703,7 +703,7 @@
 	}
 
 	.performance-value--average {
-		color: #ca8a04;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.performance-value--poor {
@@ -781,7 +781,7 @@
 
 	.metric-icon--yellow {
 		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
-		color: #ca8a04;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.section-card,
@@ -811,16 +811,16 @@
 	}
 
 	.period-card {
-		border-left: 4px solid #2563eb;
+		border-left: 4px solid var(--primary-500, #e6b800);
 		padding-left: 1rem;
 	}
 
 	.period-card--green {
-		border-left-color: #22c55e;
+		border-left-color: var(--success-base, #2ea043);
 	}
 
 	.period-card--purple {
-		border-left-color: #a855f7;
+		border-left-color: var(--primary-500, #e6b800);
 	}
 
 	.period-card h3 {
@@ -931,11 +931,11 @@
 	}
 
 	.progress-bar--blue {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.progress-bar--green {
-		background: #16a34a;
+		background: var(--success-base, #2ea043);
 	}
 
 	.progress-bar--purple {
@@ -962,7 +962,7 @@
 	}
 
 	.rank-card--gold {
-		border-left-color: #eab308;
+		border-left-color: var(--warning-emphasis, #d29922);
 	}
 
 	.rank-card--silver {
@@ -970,7 +970,7 @@
 	}
 
 	.rank-card--bronze {
-		border-left-color: #ea580c;
+		border-left-color: var(--primary-500, #e6b800);
 	}
 
 	.rank-url {
@@ -1024,7 +1024,7 @@
 
 	.insight p {
 		margin: 0;
-		color: #1e40af;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
@@ -1032,7 +1032,7 @@
 	.insight ul {
 		margin: 0.25rem 0 0 1.25rem;
 		padding: 0;
-		color: #1d4ed8;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}

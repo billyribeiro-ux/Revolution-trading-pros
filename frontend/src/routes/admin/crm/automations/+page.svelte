@@ -1050,7 +1050,7 @@ contact_789"
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: var(--primary-500);
-		color: white;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -1395,7 +1395,7 @@ contact_789"
 
 	.trigger-form-submitted {
 		background: rgba(230, 184, 0, 0.2);
-		color: #c084fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.trigger-order-completed {

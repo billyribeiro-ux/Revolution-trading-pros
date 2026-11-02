@@ -300,12 +300,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-secondary {
@@ -467,7 +467,7 @@
 	}
 
 	.trend.neutral {
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.competition-bar {
@@ -484,7 +484,7 @@
 		top: 0;
 		left: 0;
 		height: 100%;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		transition: width 0.3s;
 	}
 
@@ -550,7 +550,7 @@
 	.loading {
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.top-keywords-section,

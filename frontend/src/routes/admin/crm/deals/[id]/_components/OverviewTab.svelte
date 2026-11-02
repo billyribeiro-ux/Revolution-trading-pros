@@ -238,13 +238,13 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		flex-shrink: 0;
 	}
 

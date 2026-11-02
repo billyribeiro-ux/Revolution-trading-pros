@@ -133,7 +133,7 @@
 
 	button.kpi-grid__item:focus-visible {
 		border-radius: 0.75rem;
-		outline: 2px solid #2563eb;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 3px;
 	}
 

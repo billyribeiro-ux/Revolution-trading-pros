@@ -617,7 +617,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		display: flex;
 		align-items: center;
 		justify-content: center;

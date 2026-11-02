@@ -156,7 +156,7 @@
 	.skeleton-upload,
 	.skeleton-upload-item,
 	.skeleton-single {
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		animation: pulse 2s ease-in-out infinite;
 	}
 
@@ -180,7 +180,7 @@
 	.skeleton-single {
 		position: relative;
 		overflow: hidden;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .skeleton-media,
@@ -324,7 +324,7 @@
 	.skeleton-upload__header {
 		display: grid;
 		gap: 0.5rem;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		padding: 1rem;
 	}
 
@@ -352,7 +352,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		padding: 1rem;
 	}
 

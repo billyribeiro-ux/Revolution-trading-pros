@@ -1038,8 +1038,8 @@
 	}
 
 	.btn-primary {
-		background: #0ea5e9;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-secondary {
@@ -1051,7 +1051,7 @@
 	.btn-outline {
 		background: transparent;
 		color: var(--info-emphasis, #58a6ff);
-		border: 1px solid #0ea5e9;
+		border: 1px solid var(--primary-500, #e6b800);
 	}
 
 	.btn-sm {
@@ -1096,7 +1096,7 @@
 
 	.tab.active {
 		color: var(--info-emphasis, #58a6ff);
-		border-bottom-color: #0ea5e9;
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 
 	.tab-icon {
@@ -1269,7 +1269,7 @@
 	}
 
 	.toggle input:checked + .toggle-slider {
-		background: #0ea5e9;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.toggle input:checked + .toggle-slider::before {
@@ -1496,7 +1496,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.25rem;
-		background: #22c55e;
+		background: var(--success-base, #2ea043);
 		color: white;
 		border-radius: 10px;
 		font-size: 0.875rem;
@@ -1507,7 +1507,7 @@
 	}
 
 	.notification.error {
-		background: #ef4444;
+		background: var(--error-base, #da3633);
 		box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
 	}
 

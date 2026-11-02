@@ -16,10 +16,13 @@
 		<div class="spinner"></div>
 		<span>Loading rooms...</span>
 	</div>
-{:else}
-	<div class="room-tabs">
+{:else if rooms.length > 0}
+	<div class="room-tabs" role="tablist" aria-label="Trading rooms">
 		{#each rooms as room (room.id)}
 			<button
+				type="button"
+				role="tab"
+				aria-selected={selectedRoom?.id === room.id}
 				class={['room-tab', { active: selectedRoom?.id === room.id }]}
 				onclick={() => onSelect(room)}
 			>
@@ -37,8 +40,9 @@
 		margin-bottom: 1.5rem;
 		flex-wrap: wrap;
 		padding: 0.5rem;
-		background: var(--bg-base, #0d1117);
-		border-radius: 12px;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
+		border-radius: var(--radius-lg, 8px);
 	}
 
 	.room-tabs.loading {
@@ -58,7 +62,7 @@
 	}
 
 	.room-tab:hover {
-		background: rgba(230, 184, 0, 0.1);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary, #f0f6fc);
 	}
 
@@ -70,7 +74,7 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(230, 184, 0, 0.2);
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;

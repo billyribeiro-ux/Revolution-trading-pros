@@ -609,7 +609,7 @@
 
 	.subtitle {
 		font-size: 14px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 		margin: 4px 0 0 0;
 	}
 
@@ -633,7 +633,7 @@
 		border-radius: 6px;
 		font-size: 13px;
 		font-weight: 500;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -677,7 +677,7 @@
 		justify-content: center;
 		height: 400px;
 		gap: 16px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Not Connected State - NO MOCK DATA */
@@ -702,12 +702,12 @@
 		width: 80px;
 		height: 80px;
 		margin: 0 auto 24px;
-		background: #f97316;
+		background: var(--primary-500, #e6b800);
 		border-radius: 20px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: var(--bg-base, #0d1117);
 	}
 
 	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
@@ -725,7 +725,7 @@
 
 	.not-connected-card > p {
 		font-size: 15px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 		line-height: 1.6;
 		margin: 0 0 24px;
 	}
@@ -783,7 +783,7 @@
 	.service-info h3 {
 		font-size: 13px;
 		font-weight: 600;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
@@ -843,13 +843,13 @@
 	}
 
 	.hero-card.savings {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 	}
 
 	.hero-card.cost {
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.hero-card.eco {
@@ -1001,7 +1001,7 @@
 
 	.stat-label {
 		font-size: 12px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Chart Section */
@@ -1037,7 +1037,7 @@
 		align-items: center;
 		gap: 6px;
 		font-size: 13px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.legend-item .dot {
@@ -1050,10 +1050,10 @@
 		background: var(--primary-500);
 	}
 	.legend-item.optimized .dot {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 	.legend-item.savings .dot {
-		background: #f59e0b;
+		background: var(--warning-emphasis, #d29922);
 	}
 
 	.chart-container {
@@ -1081,7 +1081,7 @@
 		padding-right: 12px;
 		text-align: right;
 		font-size: 11px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.x-axis {
@@ -1095,7 +1095,7 @@
 		align-items: flex-start;
 		padding-top: 12px;
 		font-size: 11px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Format Section */
@@ -1134,7 +1134,7 @@
 
 	.format-count {
 		font-size: 13px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.format-bar {
@@ -1161,7 +1161,7 @@
 	}
 
 	.bar-optimized {
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 	}
 
 	.bar-label {
@@ -1189,7 +1189,7 @@
 
 	.savings-label {
 		font-size: 13px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Insights Section */
@@ -1253,7 +1253,7 @@
 
 	.insight-content p {
 		font-size: 13px;
-		color: #86868b;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 		line-height: 1.5;
 	}

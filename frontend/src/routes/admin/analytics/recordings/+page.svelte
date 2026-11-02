@@ -530,7 +530,7 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #6366f1;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 700ms linear infinite;
 	}
@@ -625,9 +625,9 @@
 	}
 
 	.recordings-filter.is-active {
-		border-color: #ffffff;
-		background: #ffffff;
-		color: var(--bg-base, #0d1117);
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.state-card {

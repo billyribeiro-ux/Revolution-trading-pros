@@ -320,11 +320,11 @@
 	}
 
 	:global(.dark) .responsive-preview__variant--interactive:hover {
-		border-color: #2563eb;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.responsive-preview__variant--selected {
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 2px #bfdbfe;
 	}
 
@@ -396,7 +396,7 @@
 
 	.responsive-preview__breakpoint-fill {
 		height: 100%;
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.responsive-preview__comparison {
@@ -436,7 +436,7 @@
 	}
 
 	.responsive-preview__chart-bar--variant {
-		background: #3b82f6;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.responsive-preview__chart-bar--original {

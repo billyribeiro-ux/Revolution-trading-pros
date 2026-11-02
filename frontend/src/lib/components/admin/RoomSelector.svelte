@@ -313,7 +313,7 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 2px 8px;
-		background: #10b981;
+		background: var(--success-base, #2ea043);
 		color: white;
 		font-size: 10px;
 		font-weight: 700;

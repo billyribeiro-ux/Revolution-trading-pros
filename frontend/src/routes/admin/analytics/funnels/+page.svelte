@@ -555,7 +555,7 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #8b5cf6;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 999px;
 		animation: spin 700ms linear infinite;
 	}

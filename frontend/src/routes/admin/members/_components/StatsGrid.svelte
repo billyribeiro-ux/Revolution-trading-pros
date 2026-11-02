@@ -357,7 +357,7 @@
 		.stat-card {
 			break-inside: avoid;
 			box-shadow: none;
-			border: 1px solid #ccc;
-		}
+			border: 1px solid var(--border-default, #30363d);
+	}
 	}
 </style>

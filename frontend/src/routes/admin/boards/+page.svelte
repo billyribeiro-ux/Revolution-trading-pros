@@ -1536,7 +1536,7 @@
 
 	.icon-button--danger:hover {
 		background: var(--error-soft, rgba(218, 54, 51, 0.15));
-		color: #b91c1c;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	:global(.dark) .icon-button--danger:hover {

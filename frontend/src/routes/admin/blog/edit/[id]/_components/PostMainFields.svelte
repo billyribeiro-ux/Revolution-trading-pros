@@ -76,13 +76,13 @@
 		background: white;
 		border-radius: 6px;
 		overflow: hidden;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.slug-prefix {
 		padding: 0.75rem 1rem;
-		background: #f8f9fa;
-		color: #999;
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.9rem;
 		white-space: nowrap;
 	}
@@ -99,24 +99,24 @@
 
 	.btn-regenerate {
 		padding: 0.75rem 1rem;
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 		border: none;
-		border-left: 1px solid #e5e5e5;
-		color: #666;
+		border-left: 1px solid var(--border-default, #30363d);
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.85rem;
 		cursor: pointer;
 		white-space: nowrap;
 	}
 
 	.btn-regenerate:hover {
-		background: #e5e5e5;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	textarea {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 		font-family: inherit;
@@ -127,6 +127,6 @@
 
 	textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 </style>

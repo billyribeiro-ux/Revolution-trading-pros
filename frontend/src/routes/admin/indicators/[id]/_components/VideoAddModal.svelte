@@ -108,7 +108,7 @@
 		padding: 20px;
 	}
 	.modal {
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		max-width: 500px;
 		width: 100%;
@@ -120,7 +120,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 20px 24px;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.modal-header h2 {
 		margin: 0;
@@ -138,7 +138,7 @@
 		justify-content: flex-end;
 		gap: 12px;
 		padding: 16px 24px;
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.form-group {
@@ -149,12 +149,12 @@
 	label {
 		font-size: 13px;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 	input,
 	textarea {
 		padding: 10px 12px;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 14px;
 	}
@@ -191,12 +191,12 @@
 		cursor: not-allowed;
 	}
 	.btn-secondary {
-		background: #f3f4f6;
-		color: #374151;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
+		border: 1px solid var(--border-default, #30363d);
 	}
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 	.btn-close {
 		background: none;
@@ -207,7 +207,7 @@
 		padding: 4px 8px;
 	}
 	.btn-close:hover {
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	@media (max-width: 639px) {

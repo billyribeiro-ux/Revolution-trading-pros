@@ -271,8 +271,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border-radius: 6px;
 		font-weight: 500;
 		text-decoration: none;
@@ -280,7 +280,7 @@
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.schema-grid {
@@ -387,7 +387,7 @@
 		grid-column: 1 / -1;
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state h3 {
@@ -481,7 +481,7 @@
 		grid-column: 1 / -1;
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.modal-overlay {
@@ -536,8 +536,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
@@ -545,7 +545,7 @@
 	}
 
 	.btn-copy:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.close-btn {
