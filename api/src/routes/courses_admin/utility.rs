@@ -2,16 +2,16 @@
 //! Extracted from `courses_admin.rs` in R14-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use tracing::{error, info};
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::course_enhanced::*;
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // UTILITY ENDPOINTS

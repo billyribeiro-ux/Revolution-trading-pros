@@ -5,9 +5,9 @@
 //! `public_router()` / `admin_router()` exactly as before.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
@@ -15,11 +15,11 @@ use serde_json::json;
 use tracing::{debug, error, info};
 
 use super::{
-    ensure_room_access, CreateTradePlanRequest, ListQuery, PaginationMeta, ReorderRequest,
-    TradePlanEntry, UpdateTradePlanRequest,
+    CreateTradePlanRequest, ListQuery, PaginationMeta, ReorderRequest, TradePlanEntry,
+    UpdateTradePlanRequest, ensure_room_access,
 };
 use crate::cache::{cache_keys, cache_ttl};
-use crate::{middleware::admin::AdminUser, models::User, AppState};
+use crate::{AppState, middleware::admin::AdminUser, models::User};
 
 /// Cached response for trade plans list
 #[derive(Debug, Clone, Serialize, Deserialize)]

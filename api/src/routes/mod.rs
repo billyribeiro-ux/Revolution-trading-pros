@@ -246,4 +246,9 @@ pub fn api_router() -> Router<AppState> {
         .merge(tags::router())
         .merge(redirects::router())
         .merge(members::router())
+        // Withhold every 500 body from clients (handlers build them from raw
+        // sqlx/upstream errors); the original is logged server-side.
+        .layer(axum::middleware::from_fn(
+            crate::middleware::scrub_internal_errors,
+        ))
 }

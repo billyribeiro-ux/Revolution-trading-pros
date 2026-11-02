@@ -2,16 +2,16 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::course::{CourseDownload, CreateDownloadRequest, UpdateDownloadRequest};
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // DOWNLOAD CRUD
@@ -184,7 +184,7 @@ pub(super) async fn create_video_upload(
     }
 
     // Create video in Bunny Stream
-    let client = reqwest::Client::new();
+    let client = &*crate::utils::http::OUTBOUND_HTTP;
     let response = client
         .post(format!(
             "https://video.bunnycdn.com/library/{library_id}/videos"

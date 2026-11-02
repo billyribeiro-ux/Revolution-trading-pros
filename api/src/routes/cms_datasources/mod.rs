@@ -24,8 +24,8 @@
 //! - `public`         — no-auth read-only endpoint (1 handler)
 
 use axum::{
-    routing::{get, post, put},
     Router,
+    routing::{get, post, put},
 };
 
 use crate::AppState;

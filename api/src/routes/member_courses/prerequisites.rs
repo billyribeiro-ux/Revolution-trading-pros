@@ -6,15 +6,15 @@
 //! `user_lesson_progress` row.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 /// Check if user can access a lesson (prerequisites satisfied)
 pub(super) async fn check_lesson_access(
@@ -91,10 +91,11 @@ pub(super) async fn check_lesson_access(
 
     let mut missing_prereqs = Vec::new();
     for prereq_id in &prereq_ids {
-        if let Some(pid) = prereq_id.as_str() {
-            if let Ok(prereq_uuid) = Uuid::parse_str(pid) {
-                // Check if completed
-                let completed: Option<(bool,)> = sqlx::query_as(
+        if let Some(pid) = prereq_id.as_str()
+            && let Ok(prereq_uuid) = Uuid::parse_str(pid)
+        {
+            // Check if completed
+            let completed: Option<(bool,)> = sqlx::query_as(
                     "SELECT is_completed FROM user_lesson_progress WHERE user_id = $1 AND lesson_id = $2"
                 )
                 .bind(user_id)
@@ -104,17 +105,16 @@ pub(super) async fn check_lesson_access(
                 .ok()
                 .flatten();
 
-                if !completed.map(|c| c.0).unwrap_or(false) {
-                    // Get lesson title
-                    let prereq_title: Option<(String,)> =
-                        sqlx::query_as("SELECT title FROM lessons WHERE id = $1")
-                            .bind(prereq_uuid)
-                            .fetch_optional(&state.db.pool)
-                            .await
-                            .ok()
-                            .flatten();
-                    missing_prereqs.push(json!({"lesson_id": pid, "title": prereq_title.map(|t| t.0).unwrap_or_default()}));
-                }
+            if !completed.map(|c| c.0).unwrap_or(false) {
+                // Get lesson title
+                let prereq_title: Option<(String,)> =
+                    sqlx::query_as("SELECT title FROM lessons WHERE id = $1")
+                        .bind(prereq_uuid)
+                        .fetch_optional(&state.db.pool)
+                        .await
+                        .ok()
+                        .flatten();
+                missing_prereqs.push(json!({"lesson_id": pid, "title": prereq_title.map(|t| t.0).unwrap_or_default()}));
             }
         }
     }

@@ -5,14 +5,14 @@
 //! legacy NUMERIC `price` column.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::helpers::slugify;
 use super::types::{

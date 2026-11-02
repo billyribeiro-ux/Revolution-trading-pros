@@ -2,16 +2,16 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // QUIZ CRUD - ICT 7 Grade
@@ -32,7 +32,7 @@ pub(super) async fn list_quizzes(
     .bind(course_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|q| json!({
         "id": q.0,
@@ -196,7 +196,7 @@ pub(super) async fn get_quiz(
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|q| json!({"id": q.0, "question_type": q.1, "question_text": q.2, "explanation": q.3, "points": q.4, "sort_order": q.5}))
     .collect();

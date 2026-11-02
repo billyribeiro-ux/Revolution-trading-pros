@@ -5,14 +5,14 @@
 //! mapping, and money invariant is preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 
 use super::dtos::{AdminOrderListQuery, AdminOrderResponse, AdminOrderStats, OrderRow};
 use super::helpers::build_order_detail;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /api/admin/orders - List all orders with pagination (Admin only)
 /// ICT 7 SECURITY FIX: Use AdminUser extractor for consistent authorization
@@ -40,20 +40,20 @@ pub async fn admin_index(
 
     let mut bind_count = 0;
 
-    if let Some(ref status) = query.status {
-        if !status.is_empty() {
-            bind_count += 1;
-            sql.push_str(&format!(" AND o.status = ${bind_count}"));
-        }
+    if let Some(ref status) = query.status
+        && !status.is_empty()
+    {
+        bind_count += 1;
+        sql.push_str(&format!(" AND o.status = ${bind_count}"));
     }
 
-    if let Some(ref search) = query.search {
-        if !search.is_empty() {
-            bind_count += 1;
-            sql.push_str(&format!(
+    if let Some(ref search) = query.search
+        && !search.is_empty()
+    {
+        bind_count += 1;
+        sql.push_str(&format!(
                 " AND (o.order_number ILIKE ${bind_count} OR u.email ILIKE ${bind_count} OR u.name ILIKE ${bind_count})"
             ));
-        }
     }
 
     sql.push_str(" GROUP BY o.id, u.email, u.name ORDER BY o.created_at DESC");
@@ -137,19 +137,19 @@ pub async fn admin_index(
            WHERE 1=1",
     );
     let mut count_bind_count = 0;
-    if let Some(ref status) = query.status {
-        if !status.is_empty() {
-            count_bind_count += 1;
-            count_sql.push_str(&format!(" AND o.status = ${count_bind_count}"));
-        }
+    if let Some(ref status) = query.status
+        && !status.is_empty()
+    {
+        count_bind_count += 1;
+        count_sql.push_str(&format!(" AND o.status = ${count_bind_count}"));
     }
-    if let Some(ref search) = query.search {
-        if !search.is_empty() {
-            count_bind_count += 1;
-            count_sql.push_str(&format!(
+    if let Some(ref search) = query.search
+        && !search.is_empty()
+    {
+        count_bind_count += 1;
+        count_sql.push_str(&format!(
                 " AND (o.order_number ILIKE ${count_bind_count} OR u.email ILIKE ${count_bind_count} OR u.name ILIKE ${count_bind_count})"
             ));
-        }
     }
 
     let total_count: i64 = match (&query.status, &query.search) {

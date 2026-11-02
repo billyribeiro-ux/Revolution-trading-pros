@@ -3,14 +3,14 @@
 //! preserved verbatim — only the module boundary changed.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use std::collections::HashMap;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 use super::audit::log_connection_audit;
 use super::crypto::{decrypt_credentials, encrypt_credentials, mask_credentials};
@@ -71,7 +71,7 @@ pub(super) async fn get_connections_status(
     let db_connections: Vec<ServiceConnection> = query_builder
         .fetch_all(state.db.pool())
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     // Build a map of existing connections by service_key
     let existing_keys: std::collections::HashSet<String> = db_connections

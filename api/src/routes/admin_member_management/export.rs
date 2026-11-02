@@ -2,16 +2,16 @@
 //! Includes minimal XML/PDF generation helpers (production would use real libraries).
 
 use axum::{
-    extract::{Query, State},
-    http::{header, StatusCode},
-    response::IntoResponse,
     Json,
+    extract::{Query, State},
+    http::{StatusCode, header},
+    response::IntoResponse,
 };
 use chrono::{NaiveDateTime, Utc};
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::ExportQuery;
 

@@ -10,9 +10,9 @@
 #![allow(dead_code)]
 
 use axum::{
+    Json,
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
 };
 use serde::Serialize;
 use std::collections::HashMap;
@@ -207,6 +207,19 @@ pub fn service_unavailable(message: impl Into<String>) -> ApiError {
 // ═══════════════════════════════════════════════════════════════════════════
 // Conversion implementations
 // ═══════════════════════════════════════════════════════════════════════════
+
+/// `map_err` adapter for handlers that return `(StatusCode, Json<Value>)`.
+///
+/// Logs the real database error server-side and gives the client a generic
+/// 500. Use as `.fetch_all(&pool).await.map_err(db_error)?` instead of
+/// `.unwrap_or_default()`, which turns a DB outage into an empty 200.
+pub fn db_error(e: sqlx::Error) -> (axum::http::StatusCode, axum::Json<serde_json::Value>) {
+    tracing::error!(target: "db", error = %e, "database query failed");
+    (
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+        axum::Json(serde_json::json!({"error": "Database error"})),
+    )
+}
 
 impl From<sqlx::Error> for ApiError {
     fn from(err: sqlx::Error) -> Self {

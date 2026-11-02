@@ -4,9 +4,9 @@
 //!   GET /stats — DAM library totals (size, by-type counts, recent/unused)
 //!   GET /tags  — distinct tags across all non-deleted assets
 
-use axum::{extract::State, Json};
+use axum::{Json, extract::State};
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 use super::dto::{AssetStats, TypeStats};
 use super::helpers::format_bytes;

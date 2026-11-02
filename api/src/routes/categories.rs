@@ -5,16 +5,16 @@
 //! All admin endpoints require AdminUser authentication.
 
 use axum::{
+    Router,
     extract::{Path, Query, State},
     response::Json,
     routing::{delete, get, post, put},
-    Router,
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Category {

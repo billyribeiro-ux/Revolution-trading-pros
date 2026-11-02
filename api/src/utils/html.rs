@@ -20,7 +20,7 @@ use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
 
-use ammonia::{url::ParseError, Builder, Url, UrlRelative};
+use ammonia::{Builder, Url, UrlRelative, url::ParseError};
 use serde_json::{Map, Value};
 
 /// Elements kept; anything else is unwrapped (its children survive).

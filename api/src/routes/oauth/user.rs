@@ -17,14 +17,14 @@
 //! revocation. DO NOT relax the fail-closed semantics without a security
 //! sign-off.
 
-use axum::{http::StatusCode, Json};
+use axum::{Json, http::StatusCode};
 
 use super::crypto::generate_random_string;
 use super::types::OAuthProvider;
 use crate::{
+    AppState,
     models::{AuthResponse, User},
     utils::{create_jwt_versioned, create_refresh_token_versioned},
-    AppState,
 };
 
 /// Create or get existing user from OAuth data
@@ -168,13 +168,15 @@ pub(super) async fn create_or_get_oauth_user(
 
     // Generate a random password hash for OAuth users (they won't use it)
     let random_password = generate_random_string(32);
-    let password_hash = crate::utils::hash_password(&random_password).map_err(|e| {
-        tracing::error!("Password hashing error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({"error": "Account creation failed"})),
-        )
-    })?;
+    let password_hash = crate::utils::hash_password_async(&random_password)
+        .await
+        .map_err(|e| {
+            tracing::error!("Password hashing error: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "Account creation failed"})),
+            )
+        })?;
 
     let insert_query = format!(
         r"

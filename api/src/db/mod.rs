@@ -3,7 +3,7 @@
 
 use anyhow::Result;
 use argon2::PasswordHash;
-use sqlx::{postgres::PgPoolOptions, PgPool};
+use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
 
 use crate::config::Config;

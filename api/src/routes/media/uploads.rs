@@ -16,7 +16,7 @@ use uuid::Uuid;
 
 use super::dto::{ConfirmUploadRequest, Media, PresignedUploadRequest};
 use super::helpers::validate_file_signature;
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 /// POST /admin/media/presigned-upload - Get presigned URL for direct upload
 /// Client uploads directly to R2, then confirms with /admin/media/confirm-upload
@@ -117,10 +117,10 @@ pub(super) async fn confirm_upload(
         ));
     }
 
-    if let Some(ref col) = payload.collection {
-        if col.contains("..") || col.contains('/') || col.contains('\\') || col.contains('\0') {
-            return Err(ApiError::validation_error("Invalid collection name"));
-        }
+    if let Some(ref col) = payload.collection
+        && (col.contains("..") || col.contains('/') || col.contains('\\') || col.contains('\0'))
+    {
+        return Err(ApiError::validation_error("Invalid collection name"));
     }
 
     // Validate file_key format (should be folder/uuid.ext)

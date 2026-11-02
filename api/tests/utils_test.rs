@@ -99,7 +99,7 @@ fn token_type_segregation_is_enforced() {
 /// `Validation::default()`.
 #[test]
 fn alg_none_forgery_is_rejected() {
-    use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+    use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 
     let now = chrono::Utc::now().timestamp();
     let header = URL_SAFE_NO_PAD.encode(br#"{"alg":"none","typ":"JWT"}"#);
@@ -200,8 +200,7 @@ fn hash_token_is_deterministic_and_not_identity() {
 /// test fails first instead.
 #[test]
 fn verifies_password_hashed_by_argon2_0_5() {
-    const LEGACY_ARGON2_0_5_HASH: &str =
-        "$argon2id$v=19$m=65536,t=3,p=4$CEoQaV7jsF2LZbHp3C/UBw$Exi2MqlY5D2/sLl+inv7tgWdMTgJH8FMuyzt1JsXzqY";
+    const LEGACY_ARGON2_0_5_HASH: &str = "$argon2id$v=19$m=65536,t=3,p=4$CEoQaV7jsF2LZbHp3C/UBw$Exi2MqlY5D2/sLl+inv7tgWdMTgJH8FMuyzt1JsXzqY";
 
     assert!(
         utils::verify_password("correct horse battery staple", LEGACY_ARGON2_0_5_HASH).unwrap(),
@@ -467,4 +466,57 @@ mod html_sanitization {
             ])
         );
     }
+}
+
+// ── Async password helpers (spawn_blocking + concurrency cap) ────────────────
+
+#[tokio::test]
+async fn async_password_helpers_roundtrip() {
+    let hash = utils::hash_password_async("SecurePassword123!")
+        .await
+        .unwrap();
+    assert!(hash.starts_with("$argon2id$"));
+    assert!(
+        utils::verify_password_async("SecurePassword123!", &hash)
+            .await
+            .unwrap()
+    );
+    assert!(
+        !utils::verify_password_async("WrongPassword", &hash)
+            .await
+            .unwrap()
+    );
+}
+
+/// More concurrent jobs than permits (the cap is the core count) must queue
+/// and all complete correctly — not fail, and not deadlock.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn async_password_work_beyond_the_cap_queues_and_completes() {
+    let hash = utils::hash_password("QueueMe123!").unwrap();
+    let jobs = std::thread::available_parallelism().map_or(2, std::num::NonZeroUsize::get) * 3;
+
+    let mut set = tokio::task::JoinSet::new();
+    for i in 0..jobs {
+        let hash = hash.clone();
+        // Alternate right/wrong so a result mix-up between jobs would show.
+        let (password, expected) = if i % 2 == 0 {
+            ("QueueMe123!", true)
+        } else {
+            ("nope", false)
+        };
+        set.spawn(async move {
+            (
+                utils::verify_password_async(password, &hash).await.unwrap(),
+                expected,
+            )
+        });
+    }
+
+    let mut done = 0;
+    while let Some(res) = set.join_next().await {
+        let (got, expected) = res.unwrap();
+        assert_eq!(got, expected);
+        done += 1;
+    }
+    assert_eq!(done, jobs);
 }

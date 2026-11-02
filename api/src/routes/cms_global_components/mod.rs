@@ -23,8 +23,8 @@
 //! - `public`   — no-auth read-only endpoints (2 handlers)
 
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
 
 use crate::AppState;
@@ -95,7 +95,7 @@ pub fn public_router() -> Router<AppState> {
 #[cfg(test)]
 mod tests {
     use super::helpers::generate_slug;
-    use super::types::{default_true, GlobalComponentCategory};
+    use super::types::{GlobalComponentCategory, default_true};
 
     #[test]
     fn test_generate_slug() {

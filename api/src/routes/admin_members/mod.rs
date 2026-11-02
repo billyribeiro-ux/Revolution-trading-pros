@@ -10,8 +10,8 @@
 //! mounted at `/admin/members` from `routes::mod.rs`.
 
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
 
 use crate::AppState;

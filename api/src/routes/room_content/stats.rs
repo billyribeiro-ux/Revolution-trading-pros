@@ -5,17 +5,17 @@
 //! `public_router()` / `admin_router()` exactly as before.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::error;
 
-use super::{ensure_room_access, RoomStats};
+use super::{RoomStats, ensure_room_access};
 use crate::cache::{cache_keys, cache_ttl};
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Cached response for room stats
 #[derive(Debug, Clone, Serialize, Deserialize)]

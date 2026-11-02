@@ -4,21 +4,21 @@
 //! - `restore_version`     — restore a prior version as a new current version
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::helpers::{
     create_version_record, get_cms_user_id, require_cms_admin, require_cms_editor,
 };
 use super::types::{
-    not_found_component, sqlx_err, ApiResult, GlobalComponent, GlobalComponentVersion,
-    VersionHistoryResponse,
+    ApiResult, GlobalComponent, GlobalComponentVersion, VersionHistoryResponse,
+    not_found_component, sqlx_err,
 };
 
 /// Get version history for a global component

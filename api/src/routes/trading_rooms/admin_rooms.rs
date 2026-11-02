@@ -7,14 +7,14 @@
 //! query patterns the SecOps team relies on keep matching.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 use super::fallback::{get_fallback_rooms, get_fallback_sections};
 use super::types::{RoomSection, TradersQuery, TradingRoom, TradingRoomsQuery};
@@ -160,13 +160,13 @@ pub(super) async fn admin_get_trading_room(
         }))),
         Ok(None) => {
             let fallback = get_fallback_rooms();
-            if let Some(rooms) = fallback.as_array() {
-                if let Some(room) = rooms.iter().find(|r| r["slug"] == slug) {
-                    return Ok(Json(json!({
-                        "success": true,
-                        "data": room
-                    })));
-                }
+            if let Some(rooms) = fallback.as_array()
+                && let Some(room) = rooms.iter().find(|r| r["slug"] == slug)
+            {
+                return Ok(Json(json!({
+                    "success": true,
+                    "data": room
+                })));
             }
             Err((
                 StatusCode::NOT_FOUND,
@@ -178,13 +178,13 @@ pub(super) async fn admin_get_trading_room(
         }
         Err(_) => {
             let fallback = get_fallback_rooms();
-            if let Some(rooms) = fallback.as_array() {
-                if let Some(room) = rooms.iter().find(|r| r["slug"] == slug) {
-                    return Ok(Json(json!({
-                        "success": true,
-                        "data": room
-                    })));
-                }
+            if let Some(rooms) = fallback.as_array()
+                && let Some(room) = rooms.iter().find(|r| r["slug"] == slug)
+            {
+                return Ok(Json(json!({
+                    "success": true,
+                    "data": room
+                })));
             }
             Err((
                 StatusCode::NOT_FOUND,

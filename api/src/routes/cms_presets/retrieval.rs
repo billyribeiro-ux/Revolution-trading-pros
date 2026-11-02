@@ -5,16 +5,16 @@
 //! move — handler bodies are unchanged.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::dto::CmsPreset;
-use super::helpers::{require_cms_editor, ApiResult};
+use super::helpers::{ApiResult, require_cms_editor};
 
 /// Get a preset by ID
 #[utoipa::path(

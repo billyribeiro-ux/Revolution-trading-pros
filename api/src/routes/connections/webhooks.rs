@@ -3,13 +3,13 @@
 //! preserved verbatim.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 use super::audit::log_connection_audit;
 use super::crypto::generate_webhook_secret;
@@ -55,7 +55,7 @@ pub(super) async fn list_webhooks(
     .bind(connection_id)
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Mask secrets
     let webhooks_masked: Vec<serde_json::Value> = webhooks

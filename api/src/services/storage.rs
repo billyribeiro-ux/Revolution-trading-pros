@@ -3,9 +3,9 @@
 use anyhow::Result;
 use aws_config::BehaviorVersion;
 use aws_sdk_s3::{
+    Client,
     config::{Credentials, Region},
     primitives::ByteStream,
-    Client,
 };
 use uuid::Uuid;
 

@@ -6,16 +6,16 @@
 //! favorites), and stock-list public reads.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDate;
 use serde::Serialize;
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::helpers::resource_to_response;
 use super::{
@@ -106,7 +106,9 @@ pub(super) async fn list_resources(
 
     let sql = format!(
         "SELECT * FROM room_resources WHERE is_published = true AND deleted_at IS NULL{} ORDER BY is_pinned DESC, is_featured DESC, resource_date DESC, created_at DESC LIMIT ${} OFFSET ${}",
-        where_clause, param_idx, param_idx + 1
+        where_clause,
+        param_idx,
+        param_idx + 1
     );
     let count_sql = format!(
         "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL{where_clause}"
@@ -363,7 +365,9 @@ pub(super) async fn list_stock_lists(
     // `param_idx` placeholders below.
     let sql = format!(
         "SELECT * FROM stock_lists WHERE 1=1{} ORDER BY is_featured DESC, week_of DESC NULLS LAST, created_at DESC LIMIT ${} OFFSET ${}",
-        where_clause, param_idx, param_idx + 1
+        where_clause,
+        param_idx,
+        param_idx + 1
     );
     // SAFETY: see comment on `sql` above — `where_clause` carries only
     // bind-parameter placeholders.
@@ -567,7 +571,7 @@ pub(super) async fn get_recently_accessed(
     .bind(limit)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -692,7 +696,7 @@ pub(super) async fn get_favorite_resources(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let total: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM resource_favorites WHERE user_id = $1")

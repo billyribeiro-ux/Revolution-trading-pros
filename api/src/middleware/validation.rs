@@ -9,7 +9,7 @@
 
 use axum::{
     extract::Request,
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     middleware::Next,
     response::Response,
 };
@@ -23,12 +23,11 @@ pub async fn validate_request(
     next: Next,
 ) -> Result<Response, (StatusCode, &'static str)> {
     // Check Content-Length if present
-    if let Some(content_length) = request.headers().get(header::CONTENT_LENGTH) {
-        if let Ok(length) = content_length.to_str().unwrap_or("0").parse::<usize>() {
-            if length > MAX_BODY_SIZE {
-                return Err((StatusCode::PAYLOAD_TOO_LARGE, "Request body too large"));
-            }
-        }
+    if let Some(content_length) = request.headers().get(header::CONTENT_LENGTH)
+        && let Ok(length) = content_length.to_str().unwrap_or("0").parse::<usize>()
+        && length > MAX_BODY_SIZE
+    {
+        return Err((StatusCode::PAYLOAD_TOO_LARGE, "Request body too large"));
     }
 
     // For POST/PUT/PATCH, validate Content-Type

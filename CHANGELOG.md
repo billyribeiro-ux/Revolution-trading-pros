@@ -4,6 +4,29 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-02 — Backend audit hardening (api/)
+
+Full audit of `api/` (clippy, deny, machete, 845-test suite against Postgres + Redis) and fixes for what it found. Behaviour changes are in the second commit; the first is a mechanical edition-2024 migration.
+
+### Security
+- **Password hashing off the async workers.** `hash_password_async` / `verify_password_async` run Argon2id/bcrypt via `spawn_blocking`, capped at the core count by a semaphore. Without the cap, Tokio's 512-thread blocking pool would allow ~32 GiB of concurrent 64 MiB Argon2 allocations under a login flood. All 12 call sites migrated.
+- **500 bodies are never sent to clients.** `middleware::scrub_internal_errors` (on `/api`) replaces every 500 body with `{"error":"Internal server error"}` and logs the original server-side. ~600 handlers built their 500 body from raw sqlx/upstream errors (`e.to_string()`).
+- **Outbound HTTP always has timeouts.** New `utils::http` (`OUTBOUND_HTTP`, `UPLOAD_HTTP`, `LLM_HTTP`, `WEBHOOK_HTTP`, `build_client`) sets both `timeout` and `connect_timeout`; 7 bare `reqwest::Client::new()` sites and 4 silent fall-backs to an untimed client are gone. Form webhooks no longer follow redirects (SSRF-validation bypass).
+- **Idle request-body timeout** (`RequestBodyTimeoutLayer`, 30 s): stalled clients are cut off; large uploads that keep sending are unaffected.
+- **`X-XSS-Protection: 0`** (was `1; mode=block`), per the OWASP HTTP Headers Cheat Sheet.
+- **Revocation failures are loud.** `RedisService::revoke_user_access` replaces 8 copies of three discarded Redis calls (token-version bump, session invalidation, user-cache drop) and logs each failure at ERROR.
+
+### Reliability
+- 92 `fetch_all(..).await.unwrap_or_default()` sites no longer turn a DB outage into an empty 200; they return a generic 500 via `utils::errors::db_error` (sitemaps return 503 + `Retry-After`). `init_db`, Stripe coupon rollbacks and a few other discarded results are now logged or returned.
+
+### Performance
+- `GET /subscriptions/plans` and `/plans/{slug}` are read-through cached in Redis/L1 (60 s TTL). Admin plan create/update/delete and Stripe price changes invalidate the cache; checkout never reads it. 404s are not cached.
+
+### Tooling
+- Rust edition 2024 (stable since 1.85; toolchain pinned at 1.99.1), 91 nested `if let` collapsed to let-chains.
+- Tests: user ids are clock-seeded and each explosive-swings test uses its own room (removes parallel/order-dependent failures); the test harness defaults to Redis db 9 instead of the dev Redis. New: `plans_cache_test`, `internal_errors_test`, async password tests.
+- Fresh-database test setup still needs `migrations/schema.sql` + `sqlx-seed.sql` (see `migrations/README.md`, audit G0.3).
+
 ## [Unreleased] — 2026-11-01 19:12 EST — Dedicated Isolated Admin CSS Architecture (`admin.css`) & Layout Decoupling
 
 Forensic audit and architectural consolidation of backend admin styles into a single dedicated, conflict-free stylesheet (`frontend/src/lib/styles/admin.css`), eliminating cross-surface cascade bleed, specificity wars, and layout style pollution between admin, dashboard, and marketing surfaces.

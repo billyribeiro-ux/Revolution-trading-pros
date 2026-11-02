@@ -125,8 +125,16 @@ impl SearchService {
 
     /// Global search across all indexes
     pub async fn search_all(&self, query: &str) -> Result<serde_json::Value> {
-        let courses = self.search_courses(query, 5).await.unwrap_or_default();
-        let posts = self.search_posts(query, 5).await.unwrap_or_default();
+        // Federated search degrades per index (one down index must not blank the
+        // other), but the failure is logged rather than swallowed.
+        let courses = self.search_courses(query, 5).await.unwrap_or_else(|e| {
+            tracing::error!(index = "courses", error = %e, "Meilisearch query failed");
+            Vec::new()
+        });
+        let posts = self.search_posts(query, 5).await.unwrap_or_else(|e| {
+            tracing::error!(index = "posts", error = %e, "Meilisearch query failed");
+            Vec::new()
+        });
 
         Ok(serde_json::json!({
             "courses": courses,

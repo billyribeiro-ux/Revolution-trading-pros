@@ -18,7 +18,7 @@ use serde::Serialize;
 use sha2::Sha256;
 use sqlx::PgPool;
 use std::sync::LazyLock;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 use crate::{db::Database, models::Job};
 
@@ -27,6 +27,7 @@ type HmacSha256 = Hmac<Sha256>;
 static HTTP_CLIENT: LazyLock<Client> = LazyLock::new(|| {
     Client::builder()
         .timeout(Duration::from_secs(30))
+        .connect_timeout(Duration::from_secs(10))
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .expect("static reqwest Client must build")
@@ -208,25 +209,25 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         }
 
         // Add custom headers (filtering restricted transport/security headers)
-        if let Some(ref headers) = webhook.headers {
-            if let Some(headers_obj) = headers.as_object() {
-                for (key, value) in headers_obj {
-                    let key_lower = key.to_ascii_lowercase();
-                    if matches!(
-                        key_lower.as_str(),
-                        "host"
-                            | "content-length"
-                            | "transfer-encoding"
-                            | "connection"
-                            | "x-webhook-signature"
-                            | "x-webhook-event"
-                            | "x-webhook-delivery-id"
-                    ) {
-                        continue;
-                    }
-                    if let Some(value_str) = value.as_str() {
-                        request = request.header(key, value_str);
-                    }
+        if let Some(ref headers) = webhook.headers
+            && let Some(headers_obj) = headers.as_object()
+        {
+            for (key, value) in headers_obj {
+                let key_lower = key.to_ascii_lowercase();
+                if matches!(
+                    key_lower.as_str(),
+                    "host"
+                        | "content-length"
+                        | "transfer-encoding"
+                        | "connection"
+                        | "x-webhook-signature"
+                        | "x-webhook-event"
+                        | "x-webhook-delivery-id"
+                ) {
+                    continue;
+                }
+                if let Some(value_str) = value.as_str() {
+                    request = request.header(key, value_str);
                 }
             }
         }

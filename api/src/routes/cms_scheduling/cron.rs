@@ -11,14 +11,14 @@
 //! Both share the `execute_schedule_action` helper which maps a
 //! `ScheduleAction` onto a `cms_content` row update.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::{
-    api_error, require_cms_admin, ApiResult, CmsSchedule, CronExecutionResponse, ScheduleAction,
+    ApiResult, CmsSchedule, CronExecutionResponse, ScheduleAction, api_error, require_cms_admin,
 };
 
 /// Process pending schedules (cron job endpoint)
@@ -61,7 +61,7 @@ pub(super) async fn process_pending_schedules(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     for (schedule_id, content_id, action, staged_data) in pending {
         processed += 1;
@@ -248,7 +248,7 @@ pub(super) async fn process_pending_releases(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     for (release_id, stop_on_error) in pending {
         processed += 1;
@@ -265,7 +265,7 @@ pub(super) async fn process_pending_releases(
         .bind(release_id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
         let mut release_failed = false;
 

@@ -6,13 +6,13 @@
 //! preserved.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::dtos::{AddPaymentMethodRequest, PaymentMethodResponse};
 
@@ -88,7 +88,7 @@ pub(super) async fn get_payment_methods(
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Build response
     let payment_methods: Vec<PaymentMethodResponse> = stripe_methods

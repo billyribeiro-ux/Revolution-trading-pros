@@ -5,11 +5,11 @@
 //! Supports sitemap index for large sites (>50,000 URLs).
 
 use axum::{
+    Router,
     extract::{Path, State},
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
@@ -31,6 +31,17 @@ static SITEMAP_CACHE: std::sync::LazyLock<
 
 const CACHE_TTL: Duration = Duration::from_secs(3600); // 1 hour
 const MAX_URLS_PER_SITEMAP: i64 = 50000;
+
+/// 503 + Retry-After for a sitemap whose backing query failed. An empty 200
+/// would make crawlers drop every URL that happened to be missing.
+fn sitemap_unavailable() -> Response {
+    (
+        StatusCode::SERVICE_UNAVAILABLE,
+        [(header::RETRY_AFTER, "300")],
+        "Sitemap temporarily unavailable",
+    )
+        .into_response()
+}
 
 /// GET /sitemap - Main sitemap or sitemap index
 #[tracing::instrument(skip(state))]
@@ -56,10 +67,10 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:index".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -134,10 +145,10 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:main".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -176,7 +187,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     ));
 
     // Blog posts
-    let posts: Vec<(String, DateTime<Utc>)> = sqlx::query_as(
+    let posts: Vec<(String, DateTime<Utc>)> = match sqlx::query_as(
         "SELECT slug, COALESCE(updated_at, published_at) as last_modified 
          FROM posts 
          WHERE status = 'published' 
@@ -184,7 +195,13 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     )
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    {
+        Ok(rows) => rows,
+        Err(e) => {
+            tracing::error!(target: "db", error = %e, "sitemap query failed");
+            return sitemap_unavailable();
+        }
+    };
 
     for (slug, last_modified) in posts {
         content.push_str(&build_url(
@@ -198,10 +215,16 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     // Categories
     let categories: Vec<(String, DateTime<Utc>)> =
-        sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
+        match sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
             .fetch_all(state.db.pool())
             .await
-            .unwrap_or_default();
+        {
+            Ok(rows) => rows,
+            Err(e) => {
+                tracing::error!(target: "db", error = %e, "sitemap query failed");
+                return sitemap_unavailable();
+            }
+        };
 
     for (slug, updated_at) in categories {
         content.push_str(&build_url(
@@ -214,10 +237,17 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     }
 
     // Tags
-    let tags: Vec<(String, DateTime<Utc>)> = sqlx::query_as("SELECT slug, updated_at FROM tags")
-        .fetch_all(state.db.pool())
-        .await
-        .unwrap_or_default();
+    let tags: Vec<(String, DateTime<Utc>)> =
+        match sqlx::query_as("SELECT slug, updated_at FROM tags")
+            .fetch_all(state.db.pool())
+            .await
+        {
+            Ok(rows) => rows,
+            Err(e) => {
+                tracing::error!(target: "db", error = %e, "sitemap query failed");
+                return sitemap_unavailable();
+            }
+        };
 
     for (slug, updated_at) in tags {
         content.push_str(&build_url(
@@ -253,10 +283,10 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
     let cache_key = format!("sitemap:posts:{page}");
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -264,7 +294,7 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
         .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
     let offset = (page - 1) * MAX_URLS_PER_SITEMAP;
 
-    let posts: Vec<(String, DateTime<Utc>, Option<String>)> = sqlx::query_as(
+    let posts: Vec<(String, DateTime<Utc>, Option<String>)> = match sqlx::query_as(
         "SELECT slug, COALESCE(updated_at, published_at) as last_modified, featured_image 
          FROM posts 
          WHERE status = 'published' 
@@ -275,7 +305,13 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
     .bind(offset)
     .fetch_all(state.db.pool())
     .await
-    .unwrap_or_default();
+    {
+        Ok(rows) => rows,
+        Err(e) => {
+            tracing::error!(target: "db", error = %e, "sitemap query failed");
+            return sitemap_unavailable();
+        }
+    };
 
     let mut content = build_xml_header(true);
 
@@ -312,10 +348,10 @@ pub async fn categories(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:categories".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
@@ -323,10 +359,16 @@ pub async fn categories(State(state): State<AppState>) -> Response {
         .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
     let categories: Vec<(String, DateTime<Utc>)> =
-        sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
+        match sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
             .fetch_all(state.db.pool())
             .await
-            .unwrap_or_default();
+        {
+            Ok(rows) => rows,
+            Err(e) => {
+                tracing::error!(target: "db", error = %e, "sitemap query failed");
+                return sitemap_unavailable();
+            }
+        };
 
     let mut content = build_xml_header(false);
 
@@ -363,20 +405,27 @@ pub async fn tags_sitemap(State(state): State<AppState>) -> Response {
     let cache_key = "sitemap:tags".to_string();
     {
         let cache = SITEMAP_CACHE.read().await;
-        if let Some(cached) = cache.get(&cache_key) {
-            if Instant::now() < cached.expires_at {
-                return xml_response(&cached.content);
-            }
+        if let Some(cached) = cache.get(&cache_key)
+            && Instant::now() < cached.expires_at
+        {
+            return xml_response(&cached.content);
         }
     }
 
     let site_url = std::env::var("SITE_URL")
         .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
-    let tags: Vec<(String, DateTime<Utc>)> = sqlx::query_as("SELECT slug, updated_at FROM tags")
-        .fetch_all(state.db.pool())
-        .await
-        .unwrap_or_default();
+    let tags: Vec<(String, DateTime<Utc>)> =
+        match sqlx::query_as("SELECT slug, updated_at FROM tags")
+            .fetch_all(state.db.pool())
+            .await
+        {
+            Ok(rows) => rows,
+            Err(e) => {
+                tracing::error!(target: "db", error = %e, "sitemap query failed");
+                return sitemap_unavailable();
+            }
+        };
 
     let mut content = build_xml_header(false);
 

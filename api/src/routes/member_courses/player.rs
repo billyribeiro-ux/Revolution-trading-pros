@@ -6,20 +6,20 @@
 //! tray.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
 use super::entitlement::{is_course_admin, is_lesson_entitled};
+use crate::AppState;
+use crate::models::User;
 use crate::models::course::{
     Course, CourseDownload, CourseListItem, CourseModule, LessonListItem, UpdateProgressRequest,
     UserCourseEnrollment, UserLessonProgress,
 };
-use crate::models::User;
-use crate::AppState;
 
 /// RUST_DEEP_AUDIT_2026-06-07 (P1-7): build a 500 for a failed course-player
 /// query instead of swallowing the DB error into an empty Vec (which rendered
@@ -54,7 +54,7 @@ pub(super) async fn get_my_courses(
     .bind(user_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let mut result = Vec::new();
     for enrollment in enrollments {
@@ -216,10 +216,8 @@ pub(super) async fn get_course_player(
                         l.is_preview.unwrap_or(false),
                     );
                     let mut value = json!(l);
-                    if !entitled {
-                        if let Some(obj) = value.as_object_mut() {
-                            obj.insert("bunny_video_guid".to_string(), json!(null));
-                        }
+                    if !entitled && let Some(obj) = value.as_object_mut() {
+                        obj.insert("bunny_video_guid".to_string(), json!(null));
                     }
                     value
                 })
@@ -398,7 +396,7 @@ pub(super) async fn get_course_downloads(
     .bind(enrolled.is_some())
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

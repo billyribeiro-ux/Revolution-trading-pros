@@ -9,14 +9,14 @@
 //! and AdminUser gating are identical to the source.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dto::SubscriptionRow;
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// Cancel subscription (admin)
 pub(super) async fn cancel_subscription(
@@ -45,24 +45,24 @@ pub(super) async fn cancel_subscription(
         )
     })?;
 
-    if let Some(ref sub_id) = stripe_sub_id {
-        if !sub_id.is_empty() {
-            let env_scope = state.config.environment.clone();
-            let stripe_client = state
-                .services
-                .credentials
-                .stripe_client(&state.db.pool, &env_scope)
-                .await;
-            stripe_client
-                .cancel_subscription(sub_id, true)
-                .await
-                .map_err(|e| {
-                    (
-                        StatusCode::BAD_GATEWAY,
-                        Json(json!({"error": format!("Stripe error: {}", e)})),
-                    )
-                })?;
-        }
+    if let Some(ref sub_id) = stripe_sub_id
+        && !sub_id.is_empty()
+    {
+        let env_scope = state.config.environment.clone();
+        let stripe_client = state
+            .services
+            .credentials
+            .stripe_client(&state.db.pool, &env_scope)
+            .await;
+        stripe_client
+            .cancel_subscription(sub_id, true)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(json!({"error": format!("Stripe error: {}", e)})),
+                )
+            })?;
     }
 
     let subscription: SubscriptionRow = sqlx::query_as(

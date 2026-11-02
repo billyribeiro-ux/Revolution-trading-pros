@@ -6,14 +6,14 @@
 //! free-upgrade fix are preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dtos::{ChangePlanRequest, MembershipPlanRow, ProrationPreview, UserSubscriptionRow};
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Upgrade or downgrade subscription to a new plan
 /// ICT 7+ Enterprise: Full proration calculation

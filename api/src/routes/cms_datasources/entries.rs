@@ -3,14 +3,14 @@
 //! Endpoints: list, create, bulk-create, update, delete, reorder.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::helpers::require_cms_editor;
 use super::types::{

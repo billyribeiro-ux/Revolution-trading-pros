@@ -86,42 +86,39 @@ pub(super) fn analyze_title(
     }
 
     // Keyword in title
-    if let Some(kw) = keyword {
-        if !kw.is_empty() {
-            let title_lower = title.to_lowercase();
-            let kw_lower = kw.to_lowercase();
+    if let Some(kw) = keyword
+        && !kw.is_empty()
+    {
+        let title_lower = title.to_lowercase();
+        let kw_lower = kw.to_lowercase();
 
-            if title_lower.contains(&kw_lower) {
+        if title_lower.contains(&kw_lower) {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Success,
+                category: SeoIssueCategory::Title,
+                message: "Focus keyword found in title".to_string(),
+                impact: None,
+            });
+
+            // Check if keyword is near the beginning
+            if title_lower.starts_with(&kw_lower) || title_lower.find(&kw_lower).unwrap_or(100) < 20
+            {
                 issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Success,
                     category: SeoIssueCategory::Title,
-                    message: "Focus keyword found in title".to_string(),
+                    message: "Focus keyword appears near the beginning of the title".to_string(),
                     impact: None,
                 });
-
-                // Check if keyword is near the beginning
-                if title_lower.starts_with(&kw_lower)
-                    || title_lower.find(&kw_lower).unwrap_or(100) < 20
-                {
-                    issues.push(SeoIssue {
-                        severity: SeoIssueSeverity::Success,
-                        category: SeoIssueCategory::Title,
-                        message: "Focus keyword appears near the beginning of the title"
-                            .to_string(),
-                        impact: None,
-                    });
-                }
-            } else {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Warning,
-                    category: SeoIssueCategory::Title,
-                    message: "Focus keyword not found in title".to_string(),
-                    impact: Some("high".to_string()),
-                });
-                suggestions
-                    .push("Add your focus keyword near the beginning of the title".to_string());
-                score -= 15;
             }
+        } else {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Warning,
+                category: SeoIssueCategory::Title,
+                message: "Focus keyword not found in title".to_string(),
+                impact: Some("high".to_string()),
+            });
+            suggestions.push("Add your focus keyword near the beginning of the title".to_string());
+            score -= 15;
         }
     }
 
@@ -224,28 +221,28 @@ pub(super) fn analyze_meta_description(
     }
 
     // Keyword in meta
-    if let Some(kw) = keyword {
-        if !kw.is_empty() {
-            let meta_lower = meta_text.to_lowercase();
-            let kw_lower = kw.to_lowercase();
+    if let Some(kw) = keyword
+        && !kw.is_empty()
+    {
+        let meta_lower = meta_text.to_lowercase();
+        let kw_lower = kw.to_lowercase();
 
-            if meta_lower.contains(&kw_lower) {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Success,
-                    category: SeoIssueCategory::Meta,
-                    message: "Focus keyword found in meta description".to_string(),
-                    impact: None,
-                });
-            } else {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Warning,
-                    category: SeoIssueCategory::Meta,
-                    message: "Focus keyword not found in meta description".to_string(),
-                    impact: Some("medium".to_string()),
-                });
-                suggestions.push("Include your focus keyword in the meta description".to_string());
-                score -= 15;
-            }
+        if meta_lower.contains(&kw_lower) {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Success,
+                category: SeoIssueCategory::Meta,
+                message: "Focus keyword found in meta description".to_string(),
+                impact: None,
+            });
+        } else {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Warning,
+                category: SeoIssueCategory::Meta,
+                message: "Focus keyword not found in meta description".to_string(),
+                impact: Some("medium".to_string()),
+            });
+            suggestions.push("Include your focus keyword in the meta description".to_string());
+            score -= 15;
         }
     }
 
@@ -319,20 +316,21 @@ pub(super) fn analyze_content(
     }
 
     // Keyword analysis
-    if let Some(kw) = keyword {
-        if !kw.is_empty() {
-            keyword_density = calculate_keyword_density(text, kw);
+    if let Some(kw) = keyword
+        && !kw.is_empty()
+    {
+        keyword_density = calculate_keyword_density(text, kw);
 
-            if keyword_density == 0.0 {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Error,
-                    category: SeoIssueCategory::Keyword,
-                    message: "Focus keyword not found in content".to_string(),
-                    impact: Some("high".to_string()),
-                });
-                score -= 25;
-            } else if keyword_density < KEYWORD_DENSITY_MIN {
-                issues.push(SeoIssue {
+        if keyword_density == 0.0 {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Error,
+                category: SeoIssueCategory::Keyword,
+                message: "Focus keyword not found in content".to_string(),
+                impact: Some("high".to_string()),
+            });
+            score -= 25;
+        } else if keyword_density < KEYWORD_DENSITY_MIN {
+            issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Warning,
                     category: SeoIssueCategory::Keyword,
                     message: format!(
@@ -340,9 +338,9 @@ pub(super) fn analyze_content(
                     ),
                     impact: Some("medium".to_string()),
                 });
-                score -= 10;
-            } else if keyword_density > KEYWORD_DENSITY_MAX {
-                issues.push(SeoIssue {
+            score -= 10;
+        } else if keyword_density > KEYWORD_DENSITY_MAX {
+            issues.push(SeoIssue {
                     severity: SeoIssueSeverity::Warning,
                     category: SeoIssueCategory::Keyword,
                     message: format!(
@@ -350,50 +348,49 @@ pub(super) fn analyze_content(
                     ),
                     impact: Some("medium".to_string()),
                 });
-                score -= 15;
-            } else if (KEYWORD_DENSITY_OPTIMAL_MIN..=KEYWORD_DENSITY_OPTIMAL_MAX)
-                .contains(&keyword_density)
-            {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Success,
-                    category: SeoIssueCategory::Keyword,
-                    message: format!("Keyword density is optimal ({keyword_density:.1}%)"),
-                    impact: None,
-                });
-            } else {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Info,
-                    category: SeoIssueCategory::Keyword,
-                    message: format!("Keyword density is acceptable ({keyword_density:.1}%)"),
-                    impact: None,
-                });
-            }
+            score -= 15;
+        } else if (KEYWORD_DENSITY_OPTIMAL_MIN..=KEYWORD_DENSITY_OPTIMAL_MAX)
+            .contains(&keyword_density)
+        {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Success,
+                category: SeoIssueCategory::Keyword,
+                message: format!("Keyword density is optimal ({keyword_density:.1}%)"),
+                impact: None,
+            });
+        } else {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Info,
+                category: SeoIssueCategory::Keyword,
+                message: format!("Keyword density is acceptable ({keyword_density:.1}%)"),
+                impact: None,
+            });
+        }
 
-            // Check keyword in first paragraph (first 100 words)
-            let first_100_words: String = text
-                .split_whitespace()
-                .take(100)
-                .collect::<Vec<&str>>()
-                .join(" ")
-                .to_lowercase();
+        // Check keyword in first paragraph (first 100 words)
+        let first_100_words: String = text
+            .split_whitespace()
+            .take(100)
+            .collect::<Vec<&str>>()
+            .join(" ")
+            .to_lowercase();
 
-            if first_100_words.contains(&kw.to_lowercase()) {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Success,
-                    category: SeoIssueCategory::Content,
-                    message: "Focus keyword appears in the first 100 words".to_string(),
-                    impact: None,
-                });
-            } else {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Warning,
-                    category: SeoIssueCategory::Content,
-                    message: "Focus keyword does not appear in the first 100 words".to_string(),
-                    impact: Some("medium".to_string()),
-                });
-                suggestions.push("Add your focus keyword within the first paragraph".to_string());
-                score -= 10;
-            }
+        if first_100_words.contains(&kw.to_lowercase()) {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Success,
+                category: SeoIssueCategory::Content,
+                message: "Focus keyword appears in the first 100 words".to_string(),
+                impact: None,
+            });
+        } else {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Warning,
+                category: SeoIssueCategory::Content,
+                message: "Focus keyword does not appear in the first 100 words".to_string(),
+                impact: Some("medium".to_string()),
+            });
+            suggestions.push("Add your focus keyword within the first paragraph".to_string());
+            score -= 10;
         }
     }
 
@@ -609,33 +606,33 @@ pub(super) fn analyze_slug(
     }
 
     // Keyword in slug
-    if let Some(kw) = keyword {
-        if !kw.is_empty() {
-            let slug_lower = slug.to_lowercase();
-            let kw_slug = kw.to_lowercase().replace(' ', "-");
+    if let Some(kw) = keyword
+        && !kw.is_empty()
+    {
+        let slug_lower = slug.to_lowercase();
+        let kw_slug = kw.to_lowercase().replace(' ', "-");
 
-            if slug_lower.contains(&kw_slug)
-                || kw
-                    .to_lowercase()
-                    .split_whitespace()
-                    .all(|w| slug_lower.contains(w))
-            {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Success,
-                    category: SeoIssueCategory::Slug,
-                    message: "Focus keyword found in URL slug".to_string(),
-                    impact: None,
-                });
-            } else {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Warning,
-                    category: SeoIssueCategory::Slug,
-                    message: "Focus keyword not found in URL slug".to_string(),
-                    impact: Some("medium".to_string()),
-                });
-                suggestions.push("Include your focus keyword in the URL slug".to_string());
-                score -= 15;
-            }
+        if slug_lower.contains(&kw_slug)
+            || kw
+                .to_lowercase()
+                .split_whitespace()
+                .all(|w| slug_lower.contains(w))
+        {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Success,
+                category: SeoIssueCategory::Slug,
+                message: "Focus keyword found in URL slug".to_string(),
+                impact: None,
+            });
+        } else {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Warning,
+                category: SeoIssueCategory::Slug,
+                message: "Focus keyword not found in URL slug".to_string(),
+                impact: Some("medium".to_string()),
+            });
+            suggestions.push("Include your focus keyword in the URL slug".to_string());
+            score -= 15;
         }
     }
 
@@ -778,31 +775,30 @@ pub(super) fn analyze_structure(
     }
 
     // Keyword in headings check
-    if let Some(kw) = keyword {
-        if !kw.is_empty() {
-            let kw_lower = kw.to_lowercase();
-            let has_keyword_in_heading = headings
-                .iter()
-                .any(|h| h.text.to_lowercase().contains(&kw_lower));
+    if let Some(kw) = keyword
+        && !kw.is_empty()
+    {
+        let kw_lower = kw.to_lowercase();
+        let has_keyword_in_heading = headings
+            .iter()
+            .any(|h| h.text.to_lowercase().contains(&kw_lower));
 
-            if has_keyword_in_heading {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Success,
-                    category: SeoIssueCategory::Headings,
-                    message: "Focus keyword found in at least one heading".to_string(),
-                    impact: None,
-                });
-            } else if !headings.is_empty() {
-                issues.push(SeoIssue {
-                    severity: SeoIssueSeverity::Warning,
-                    category: SeoIssueCategory::Headings,
-                    message: "Focus keyword not found in any heading".to_string(),
-                    impact: Some("medium".to_string()),
-                });
-                suggestions
-                    .push("Add your focus keyword to at least one subheading (H2)".to_string());
-                score -= 10;
-            }
+        if has_keyword_in_heading {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Success,
+                category: SeoIssueCategory::Headings,
+                message: "Focus keyword found in at least one heading".to_string(),
+                impact: None,
+            });
+        } else if !headings.is_empty() {
+            issues.push(SeoIssue {
+                severity: SeoIssueSeverity::Warning,
+                category: SeoIssueCategory::Headings,
+                message: "Focus keyword not found in any heading".to_string(),
+                impact: Some("medium".to_string()),
+            });
+            suggestions.push("Add your focus keyword to at least one subheading (H2)".to_string());
+            score -= 10;
         }
     }
 

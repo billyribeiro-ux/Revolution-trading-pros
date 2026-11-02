@@ -20,8 +20,8 @@
 //! `routes::room_resources::admin_router()` returning `Router<AppState>`.
 
 use axum::{
-    routing::{delete, get, post, put},
     Router,
+    routing::{delete, get, post, put},
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};

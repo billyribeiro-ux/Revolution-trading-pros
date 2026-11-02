@@ -5,9 +5,9 @@
 //! `public_router()` / `admin_router()` exactly as before.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use chrono::{Datelike, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
@@ -17,7 +17,7 @@ use tracing::{error, info};
 use super::{CreateWeeklyVideoRequest, ListQuery, PaginationMeta, WeeklyVideo};
 use crate::cache::{cache_keys, cache_ttl};
 use crate::routes::room_content::ensure_room_access;
-use crate::{middleware::admin::AdminUser, models::User, AppState};
+use crate::{AppState, middleware::admin::AdminUser, models::User};
 
 /// Cached response for weekly video
 #[derive(Debug, Clone, Serialize, Deserialize)]

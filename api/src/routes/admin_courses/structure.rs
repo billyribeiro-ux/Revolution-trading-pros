@@ -2,20 +2,20 @@
 //! Extracted from `admin_courses.rs` in R13-B split (2026-05-20).
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::models::course::{
     CourseDownload, CourseModule, CreateLessonRequest, CreateModuleRequest, Lesson, LessonListItem,
     ReorderRequest, UpdateLessonRequest, UpdateModuleRequest,
 };
 use crate::routes::admin_courses::slugify;
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // MODULE CRUD
@@ -262,7 +262,7 @@ pub(super) async fn get_lesson(
     .bind(lesson_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

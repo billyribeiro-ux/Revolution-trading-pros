@@ -71,10 +71,10 @@ pub(super) fn extract_html_from_blocks(blocks: &[JsonValue]) -> String {
             }
 
             // Add paragraph text
-            if block_type == "paragraph" {
-                if let Some(text) = content.get("text").and_then(|v| v.as_str()) {
-                    html.push_str(&format!("<p>{text}</p>\n"));
-                }
+            if block_type == "paragraph"
+                && let Some(text) = content.get("text").and_then(|v| v.as_str())
+            {
+                html.push_str(&format!("<p>{text}</p>\n"));
             }
 
             // Handle images
@@ -115,11 +115,7 @@ pub(super) fn count_words(text: &str) -> u32 {
 /// Count sentences in text
 pub(super) fn count_sentences(text: &str) -> u32 {
     let count = SENTENCE_END_RE.find_iter(text).count();
-    if count == 0 {
-        1
-    } else {
-        count as u32
-    }
+    if count == 0 { 1 } else { count as u32 }
 }
 
 /// Count syllables in a word (approximation)
@@ -146,11 +142,7 @@ pub(super) fn count_syllables(word: &str) -> u32 {
         }
     }
 
-    if count == 0 {
-        1
-    } else {
-        count
-    }
+    if count == 0 { 1 } else { count }
 }
 
 /// Calculate Flesch-Kincaid readability score

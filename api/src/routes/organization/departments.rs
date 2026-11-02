@@ -7,15 +7,15 @@
 //! fields, and JSON error envelopes are preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dtos::{CreateDepartmentRequest, Department, ListQuery, UpdateDepartmentRequest};
 use super::helpers::{generate_slug, log_organization_audit};
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /admin/organization/departments - List all departments
 #[tracing::instrument(skip(state, admin))]
@@ -64,7 +64,7 @@ pub(super) async fn list_departments(
     let departments: Vec<Department> = query_builder
         .fetch_all(state.db.pool())
         .await
-        .unwrap_or_default();
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

@@ -33,10 +33,10 @@
 //! Remaining 213 handlers should be migrated incrementally in follow-up sweeps.
 
 use axum::{
-    extract::{rejection::JsonRejection, FromRequest, Request},
+    Json,
+    extract::{FromRequest, Request, rejection::JsonRejection},
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
 };
 use serde::de::DeserializeOwned;
 use serde_json::json;

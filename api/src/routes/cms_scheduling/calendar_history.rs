@@ -6,16 +6,16 @@
 //! - `get_history`:  paginated audit log filterable by entity
 
 use axum::{
+    Json,
     extract::{Query, State},
     http::StatusCode,
-    Json,
 };
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::{
-    api_error, require_cms_editor, ApiResult, CalendarEntry, CalendarQuery, CmsScheduleHistory,
-    HistoryListResponse, HistoryQuery,
+    ApiResult, CalendarEntry, CalendarQuery, CmsScheduleHistory, HistoryListResponse, HistoryQuery,
+    api_error, require_cms_editor,
 };
 
 /// Get schedule calendar view

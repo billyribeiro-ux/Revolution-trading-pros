@@ -3,7 +3,7 @@
 //! PE7: Resilient connection with exponential backoff retry
 
 use anyhow::Result;
-use redis::{aio::ConnectionManager, AsyncCommands};
+use redis::{AsyncCommands, aio::ConnectionManager};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
@@ -451,23 +451,23 @@ impl RedisService {
         };
 
         // Check if account is locked
-        if let Some(locked_until) = attempts.locked_until {
-            if now < locked_until {
-                let retry_after = locked_until - now;
-                tracing::warn!(
-                    target: "security",
-                    event = "login_blocked_lockout",
-                    identifier = %identifier,
-                    retry_after = %retry_after,
-                    "Login blocked - account locked"
-                );
-                return Ok(RateLimitResult {
-                    allowed: false,
-                    remaining: 0,
-                    retry_after: Some(retry_after),
-                    locked: true,
-                });
-            }
+        if let Some(locked_until) = attempts.locked_until
+            && now < locked_until
+        {
+            let retry_after = locked_until - now;
+            tracing::warn!(
+                target: "security",
+                event = "login_blocked_lockout",
+                identifier = %identifier,
+                retry_after = %retry_after,
+                "Login blocked - account locked"
+            );
+            return Ok(RateLimitResult {
+                allowed: false,
+                remaining: 0,
+                retry_after: Some(retry_after),
+                locked: true,
+            });
         }
 
         // Check if over limit
@@ -666,6 +666,27 @@ impl RedisService {
             "User cache invalidated"
         );
         Ok(())
+    }
+
+    /// Revoke every credential-bearing artefact for a user: bump the token
+    /// epoch (kills all issued JWTs), drop all sessions, and drop the cached
+    /// profile.
+    ///
+    /// Call after password change, ban/suspend/delete, role or email change.
+    /// All three steps are always attempted (one failing must not skip the
+    /// others) and each failure is logged at ERROR on the `security` target:
+    /// the DB change that triggered this has already committed, so a Redis
+    /// outage must be loud rather than silently leaving old tokens live.
+    pub async fn revoke_user_access(&self, user_id: i64) {
+        if let Err(e) = self.bump_token_version(user_id).await {
+            tracing::error!(target: "security", event = "revoke_token_version_failed", user_id, error = %e, "Failed to bump token version; previously issued tokens may stay valid");
+        }
+        if let Err(e) = self.invalidate_all_user_sessions(user_id).await {
+            tracing::error!(target: "security", event = "revoke_sessions_failed", user_id, error = %e, "Failed to invalidate user sessions");
+        }
+        if let Err(e) = self.invalidate_user_cache(user_id).await {
+            tracing::error!(target: "security", event = "revoke_user_cache_failed", user_id, error = %e, "Failed to invalidate cached user");
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

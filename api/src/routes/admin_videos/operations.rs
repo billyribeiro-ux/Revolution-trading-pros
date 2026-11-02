@@ -2,15 +2,15 @@
 //! room/CDN ops, scheduled jobs, bulk upload, and tag/feature bulk ops.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEDULED JOBS
@@ -199,7 +199,7 @@ pub(super) async fn export_videos_csv(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Build CSV with headers
     let mut csv = String::from(

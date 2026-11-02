@@ -2,18 +2,18 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use axum_extra::{
-    headers::{authorization::Bearer, Authorization},
     TypedHeader,
+    headers::{Authorization, authorization::Bearer},
 };
 use serde::Deserialize;
 use serde_json::json;
 
 use super::helpers::hash_token_for_blacklist;
 use crate::{
-    models::{MessageResponse, User, UserResponse},
     AppState,
+    models::{MessageResponse, User, UserResponse},
 };
 
 /// Get current user (requires auth)
@@ -39,12 +39,11 @@ pub(super) async fn logout(
     Json(input): Json<LogoutRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Invalidate session in Redis if session_id provided
-    if let Some(session_id) = input.session_id {
-        if let Some(redis) = &state.services.redis {
-            if let Err(e) = redis.invalidate_session(&session_id).await {
-                tracing::warn!("Failed to invalidate session: {}", e);
-            }
-        }
+    if let Some(session_id) = input.session_id
+        && let Some(redis) = &state.services.redis
+        && let Err(e) = redis.invalidate_session(&session_id).await
+    {
+        tracing::warn!("Failed to invalidate session: {}", e);
     }
 
     // ICT 7 SECURITY: Blacklist the current JWT token to prevent reuse
@@ -55,21 +54,24 @@ pub(super) async fn logout(
         // Blacklist for the remaining token lifetime (max 24 hours for safety)
         let blacklist_duration = (state.config.jwt_expires_in * 3600).min(86400) as u64;
 
-        if let Err(e) = redis.blacklist_token(&token_hash, blacklist_duration).await {
-            tracing::warn!(
-                target: "security",
-                event = "token_blacklist_failed",
-                user_id = %user.id,
-                error = %e,
-                "Failed to blacklist token on logout"
-            );
-        } else {
-            tracing::info!(
-                target: "security_audit",
-                event = "token_blacklisted",
-                user_id = %user.id,
-                "JWT token blacklisted on logout"
-            );
+        match redis.blacklist_token(&token_hash, blacklist_duration).await {
+            Err(e) => {
+                tracing::warn!(
+                    target: "security",
+                    event = "token_blacklist_failed",
+                    user_id = %user.id,
+                    error = %e,
+                    "Failed to blacklist token on logout"
+                );
+            }
+            _ => {
+                tracing::info!(
+                    target: "security_audit",
+                    event = "token_blacklisted",
+                    user_id = %user.id,
+                    "JWT token blacklisted on logout"
+                );
+            }
         }
     }
 

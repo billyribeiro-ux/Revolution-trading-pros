@@ -4,16 +4,16 @@
 #![allow(clippy::map_flatten)]
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use serde::Deserialize;
 use serde_json::json;
 
 // ICT 7 SECURITY FIX: Use AdminUser for all contact management (admin-only)
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct ContactRow {

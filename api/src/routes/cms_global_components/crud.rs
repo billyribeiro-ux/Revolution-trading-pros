@@ -2,24 +2,24 @@
 //! (list / get / get-by-slug / create / update / delete / duplicate).
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use uuid::Uuid;
 
-use crate::{models::User, utils::errors::ApiError, AppState};
+use crate::{AppState, models::User, utils::errors::ApiError};
 
 use super::helpers::{
     create_version_record, ensure_unique_slug, generate_slug, get_cms_user_id, require_cms_admin,
     require_cms_editor,
 };
 use super::types::{
-    not_found_component, sqlx_err, ApiResult, ApiResultEmpty, CategoryCount,
-    CreateGlobalComponentRequest, GlobalComponent, GlobalComponentCategory, GlobalComponentSummary,
-    GlobalComponentVersion, GlobalComponentWithMeta, ListGlobalComponentsQuery,
-    PaginatedComponentsResponse, PaginationMeta, UpdateGlobalComponentRequest,
+    ApiResult, ApiResultEmpty, CategoryCount, CreateGlobalComponentRequest, GlobalComponent,
+    GlobalComponentCategory, GlobalComponentSummary, GlobalComponentVersion,
+    GlobalComponentWithMeta, ListGlobalComponentsQuery, PaginatedComponentsResponse,
+    PaginationMeta, UpdateGlobalComponentRequest, not_found_component, sqlx_err,
 };
 
 /// List global components with pagination and filtering

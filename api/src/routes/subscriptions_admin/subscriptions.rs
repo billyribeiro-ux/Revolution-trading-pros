@@ -8,16 +8,16 @@
 //! and AdminUser gating are identical to the source.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dto::{
     CreateSubscriptionRequest, SubscriptionListQuery, SubscriptionRow, UpdateSubscriptionRequest,
 };
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// List all subscriptions (admin)
 pub(super) async fn list_subscriptions(

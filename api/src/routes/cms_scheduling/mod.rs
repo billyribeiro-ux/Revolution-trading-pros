@@ -22,19 +22,19 @@
 //! - `cron`             — internal cron endpoints + execution helper (2 handlers)
 
 use axum::{
+    Router,
     extract::Json,
     http::StatusCode,
     routing::{delete, get, post, put},
-    Router,
 };
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value as JsonValue};
+use serde_json::{Value as JsonValue, json};
 use sqlx::FromRow;
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 mod calendar_history;
 mod cron;

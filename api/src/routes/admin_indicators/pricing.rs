@@ -6,15 +6,15 @@
 //! `BEGIN/COMMIT` transaction so the row and pointer move together.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::middleware::admin::AdminUser;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
 
 #[derive(Debug, Deserialize)]
 pub(super) struct ChangeIndicatorPrice {

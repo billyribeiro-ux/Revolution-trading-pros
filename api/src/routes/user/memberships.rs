@@ -5,13 +5,13 @@
 //! conversion at the SQL edge are preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::dtos::{
     CancelSubscriptionRequest, MembershipPlanDbRow, MembershipsResponse, UserMembershipResponse,
@@ -167,24 +167,24 @@ pub(super) async fn cancel_membership(
     })?
     .flatten();
 
-    if let Some(ref sub_id) = stripe_sub_id {
-        if !sub_id.is_empty() {
-            let env_scope = state.config.environment.clone();
-            let stripe_client = state
-                .services
-                .credentials
-                .stripe_client(&state.db.pool, &env_scope)
-                .await;
-            stripe_client
-                .cancel_subscription(sub_id, input.cancel_immediately)
-                .await
-                .map_err(|e| {
-                    (
-                        StatusCode::BAD_GATEWAY,
-                        Json(json!({"error": format!("Stripe error: {}", e)})),
-                    )
-                })?;
-        }
+    if let Some(ref sub_id) = stripe_sub_id
+        && !sub_id.is_empty()
+    {
+        let env_scope = state.config.environment.clone();
+        let stripe_client = state
+            .services
+            .credentials
+            .stripe_client(&state.db.pool, &env_scope)
+            .await;
+        stripe_client
+            .cancel_subscription(sub_id, input.cancel_immediately)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::BAD_GATEWAY,
+                    Json(json!({"error": format!("Stripe error: {}", e)})),
+                )
+            })?;
     }
 
     if input.cancel_immediately {

@@ -5,12 +5,12 @@
 //! singleton row `id = 1`), audit-log call sites, tracing fields,
 //! status codes, and JSON error envelopes are preserved byte-for-byte.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde_json::json;
 
 use super::dtos::{OrganizationProfile, UpdateOrganizationRequest};
 use super::helpers::{generate_slug, log_organization_audit};
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 /// GET /admin/organization/profile - Get organization profile
 #[tracing::instrument(skip(state, admin))]

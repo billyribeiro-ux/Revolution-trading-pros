@@ -5,10 +5,10 @@
 //! slug, structure, links) and folds their per-category scores into a
 //! single weighted-average overall score + grade + sorted issues list.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use std::collections::HashSet;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::analyzers::{
     analyze_content, analyze_links, analyze_meta_description, analyze_readability, analyze_slug,
@@ -19,7 +19,7 @@ use super::text::{count_words, extract_html_from_blocks, extract_text_from_block
 use super::types::{
     CategoryScores, SeoIssue, SeoIssueSeverity, SeoValidationRequest, SeoValidationResponse,
 };
-use super::{api_error, ApiResult, WORDS_PER_MINUTE};
+use super::{ApiResult, WORDS_PER_MINUTE, api_error};
 
 /// POST /api/cms/seo/validate
 /// Validate content for SEO

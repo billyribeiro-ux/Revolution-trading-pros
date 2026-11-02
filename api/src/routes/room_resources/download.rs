@@ -5,13 +5,13 @@
 //! that verifies tokens for premium resources.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 use super::RoomResource;
 

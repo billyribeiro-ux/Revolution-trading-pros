@@ -13,15 +13,15 @@
 
 use axum::{
     body::Body,
-    http::{header, Request, StatusCode},
+    http::{Request, StatusCode, header},
 };
 use chrono::{Duration, Utc};
 use serde_json::json;
 use tower::ServiceExt;
 
 use super::fixtures::{
-    assert_status_and_json, body_to_json, cleanup_room_data, AlertBuilder, TestContext,
-    TestTradingRoom, TestUser, TosFormatter,
+    AlertBuilder, TestContext, TestTradingRoom, TestUser, TosFormatter, assert_status_and_json,
+    body_to_json, cleanup_room_data,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -33,7 +33,7 @@ async fn test_list_alerts_empty_room() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Act
@@ -62,7 +62,7 @@ async fn test_list_alerts_with_pagination() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create 25 alerts for pagination testing
@@ -139,7 +139,7 @@ async fn test_list_alerts_respects_per_page_limit() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Act - Request more than max per_page (100)
     let response = ctx
@@ -168,7 +168,7 @@ async fn test_list_alerts_only_published() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create published alert
@@ -238,7 +238,7 @@ async fn test_list_alerts_pinned_first() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create regular alert first
@@ -310,7 +310,7 @@ async fn test_create_entry_alert() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "SPY")
         .with_strike(500.0)
@@ -352,7 +352,7 @@ async fn test_create_exit_alert() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // First create an entry alert
     let entry_alert = AlertBuilder::entry(&room.slug, "AAPL")
@@ -411,7 +411,7 @@ async fn test_create_update_alert() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // First create an entry alert
     let entry_alert = AlertBuilder::entry(&room.slug, "TSLA").build_json();
@@ -466,7 +466,7 @@ async fn test_create_alert_with_tos_string() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let expiration = Utc::now().date_naive() + Duration::days(7);
     let tos_string = TosFormatter::options(
@@ -512,7 +512,7 @@ async fn test_create_alert_ticker_uppercase() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "aapl") // lowercase input
         .build_json();
@@ -543,7 +543,7 @@ async fn test_create_alert_with_limit_order() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "NVDA")
         .with_order_type("LMT")
@@ -577,7 +577,7 @@ async fn test_create_alert_shares_trade() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::new(&room.slug)
         .with_alert_type("ENTRY")
@@ -619,7 +619,7 @@ async fn test_update_alert() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create initial alert
     let alert = AlertBuilder::entry(&room.slug, "AMD").build_json();
@@ -678,7 +678,7 @@ async fn test_update_alert_partial() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert with specific values
     let alert = AlertBuilder::entry(&room.slug, "META")
@@ -738,7 +738,7 @@ async fn test_update_alert_mark_as_read() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert as new
     let alert = AlertBuilder::entry(&room.slug, "AMZN")
@@ -799,7 +799,7 @@ async fn test_delete_alert() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert
     let alert = AlertBuilder::entry(&room.slug, "NFLX").build_json();
@@ -847,7 +847,7 @@ async fn test_delete_alert_soft_delete() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
     cleanup_room_data(&ctx.pool, &room.slug).await;
 
     // Create alert
@@ -926,7 +926,7 @@ async fn test_create_alert_requires_admin() {
     // Arrange
     let ctx = TestContext::new().await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "ORCL").build_json();
 
@@ -954,7 +954,7 @@ async fn test_create_alert_requires_admin() {
 async fn test_create_alert_no_auth() {
     // Arrange
     let ctx = TestContext::new().await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "IBM").build_json();
 
@@ -983,7 +983,7 @@ async fn test_update_alert_requires_admin() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert as admin
     let alert = AlertBuilder::entry(&room.slug, "CSCO").build_json();
@@ -1034,7 +1034,7 @@ async fn test_delete_alert_requires_admin() {
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
     let member = TestUser::member(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert as admin
     let alert = AlertBuilder::entry(&room.slug, "QCOM").build_json();
@@ -1081,7 +1081,7 @@ async fn test_list_alerts_public_access() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Act - Access without authentication is rejected per NF-1
     let unauth_response = ctx
@@ -1120,7 +1120,7 @@ async fn test_super_admin_can_manage_alerts() {
     // Arrange
     let ctx = TestContext::new().await;
     let super_admin = TestUser::super_admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "PYPL").build_json();
 
@@ -1149,7 +1149,7 @@ async fn test_developer_can_manage_alerts() {
     // Arrange
     let ctx = TestContext::new().await;
     let developer = TestUser::developer(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::entry(&room.slug, "SQ").build_json();
 
@@ -1250,7 +1250,7 @@ async fn test_alert_type_uppercase_normalization() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert with lowercase type
     let alert = AlertBuilder::new(&room.slug)
@@ -1283,7 +1283,7 @@ async fn test_action_uppercase_normalization() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::new(&room.slug)
         .with_action("buy") // lowercase
@@ -1315,7 +1315,7 @@ async fn test_option_type_uppercase_normalization() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     let alert = AlertBuilder::new(&room.slug)
         .with_option_type("call") // lowercase
@@ -1351,7 +1351,7 @@ async fn test_mark_alert_read_endpoint() {
     // Arrange
     let ctx = TestContext::new().await;
     let admin = TestUser::admin(&ctx).await;
-    let room = TestTradingRoom::explosive_swings(&ctx).await;
+    let room = TestTradingRoom::unique(&ctx).await;
 
     // Create alert as new
     let alert = AlertBuilder::entry(&room.slug, "UBER")

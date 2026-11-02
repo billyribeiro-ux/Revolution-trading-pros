@@ -7,12 +7,12 @@
 //! move — handler body is unchanged.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 
-use crate::{utils::errors::ApiError, AppState};
+use crate::{AppState, utils::errors::ApiError};
 
 use super::dto::{CmsPresetSummary, GroupedPresetsResponse, PresetsByCategory};
 use super::helpers::ApiResult;

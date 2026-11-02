@@ -377,19 +377,19 @@ impl Content {
         }
 
         // SEO validation
-        if let Some(ref meta_title) = self.meta_title {
-            if meta_title.len() > 70 {
-                return Err(ContentError::ValidationFailed(
-                    "Meta title should be less than 70 characters".to_string(),
-                ));
-            }
+        if let Some(ref meta_title) = self.meta_title
+            && meta_title.len() > 70
+        {
+            return Err(ContentError::ValidationFailed(
+                "Meta title should be less than 70 characters".to_string(),
+            ));
         }
-        if let Some(ref meta_desc) = self.meta_description {
-            if meta_desc.len() > 160 {
-                return Err(ContentError::ValidationFailed(
-                    "Meta description should be less than 160 characters".to_string(),
-                ));
-            }
+        if let Some(ref meta_desc) = self.meta_description
+            && meta_desc.len() > 160
+        {
+            return Err(ContentError::ValidationFailed(
+                "Meta description should be less than 160 characters".to_string(),
+            ));
         }
 
         Ok(())

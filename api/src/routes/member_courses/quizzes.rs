@@ -6,16 +6,16 @@
 //! marks the attempt complete.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::models::User;
 use crate::AppState;
+use crate::models::User;
 
 /// Get available quizzes for a course
 pub(super) async fn get_course_quizzes(
@@ -67,7 +67,7 @@ pub(super) async fn get_course_quizzes(
     .bind(course.0)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|q| json!({"id": q.0, "title": q.1, "description": q.2, "quiz_type": q.3, "passing_score": q.4, "time_limit_minutes": q.5, "max_attempts": q.6, "is_required": q.7}))
     .collect();
@@ -142,13 +142,13 @@ pub(super) async fn start_quiz(
     .await
     .unwrap_or((0,));
 
-    if let Some(max) = quiz.2 {
-        if attempt_count.0 >= max as i64 {
-            return Err((
-                StatusCode::FORBIDDEN,
-                Json(json!({"error": "Maximum attempts reached", "max_attempts": max})),
-            ));
-        }
+    if let Some(max) = quiz.2
+        && attempt_count.0 >= max as i64
+    {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Maximum attempts reached", "max_attempts": max})),
+        ));
     }
 
     // Get questions.
@@ -162,7 +162,7 @@ pub(super) async fn start_quiz(
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|q| {
         let question_id = q.0;
@@ -185,7 +185,7 @@ pub(super) async fn start_quiz(
         .bind(question_id)
         .fetch_all(&state.db.pool)
         .await
-        .unwrap_or_default()
+        .map_err(crate::utils::errors::db_error)?
         .into_iter()
         .map(|a| json!({"id": a.0, "answer_text": a.1}))
         .collect();
@@ -283,26 +283,24 @@ pub(super) async fn submit_quiz(
                 .ok()
                 .flatten();
 
-        if let Some(q) = question {
-            if let Some(aid) = answer_id {
-                let is_correct: Option<(bool,)> = sqlx::query_as(
-                    "SELECT is_correct FROM quiz_answers WHERE id = $1 AND question_id = $2",
-                )
-                .bind(aid)
-                .bind(question_id)
-                .fetch_optional(&state.db.pool)
-                .await
-                .ok()
-                .flatten();
+        if let Some(q) = question
+            && let Some(aid) = answer_id
+        {
+            let is_correct: Option<(bool,)> = sqlx::query_as(
+                "SELECT is_correct FROM quiz_answers WHERE id = $1 AND question_id = $2",
+            )
+            .bind(aid)
+            .bind(question_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
-                if is_correct.map(|c| c.0).unwrap_or(false) {
-                    total_score += q.0;
-                    results
-                        .push(json!({"question_id": question_id, "correct": true, "points": q.0}));
-                } else {
-                    results
-                        .push(json!({"question_id": question_id, "correct": false, "points": 0}));
-                }
+            if is_correct.map(|c| c.0).unwrap_or(false) {
+                total_score += q.0;
+                results.push(json!({"question_id": question_id, "correct": true, "points": q.0}));
+            } else {
+                results.push(json!({"question_id": question_id, "correct": false, "points": 0}));
             }
         }
     }
@@ -358,7 +356,7 @@ pub(super) async fn get_quiz_results(
     .bind(quiz_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default()
+    .map_err(crate::utils::errors::db_error)?
     .into_iter()
     .map(|a| json!({
         "attempt_id": a.0, "score": a.1, "score_percent": a.2, "passed": a.3,

@@ -6,11 +6,11 @@
 //! commit atomically; external email send happens AFTER commit) is
 //! preserved.
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{Json, extract::State, http::StatusCode};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Get current user profile
 /// Matches frontend expectation: GET /api/user/profile
@@ -57,14 +57,16 @@ pub(super) async fn update_profile(
         // Verify current password — propagate library / hash-format failures
         // as 500 so they get logged and alerted, instead of silently treating
         // them as a wrong-password 400.
-        let password_valid = crate::utils::verify_password(current_password, &user.password_hash)
-            .map_err(|e| {
-            tracing::error!(user_id = user.id, "Password verification error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({ "error": "Password verification failed" })),
-            )
-        })?;
+        let password_valid =
+            crate::utils::verify_password_async(current_password, &user.password_hash)
+                .await
+                .map_err(|e| {
+                    tracing::error!(user_id = user.id, "Password verification error: {}", e);
+                    (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        Json(json!({ "error": "Password verification failed" })),
+                    )
+                })?;
         if !password_valid {
             return Err((
                 StatusCode::BAD_REQUEST,
@@ -87,13 +89,15 @@ pub(super) async fn update_profile(
         }
 
         // Hash new password
-        let hash = crate::utils::hash_password(new_password).map_err(|e| {
-            tracing::error!("Password hashing error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Failed to process password"})),
-            )
-        })?;
+        let hash = crate::utils::hash_password_async(new_password)
+            .await
+            .map_err(|e| {
+                tracing::error!("Password hashing error: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to process password"})),
+                )
+            })?;
         Some(hash)
     } else {
         None
@@ -230,10 +234,11 @@ pub(super) async fn update_profile(
 
     if let Some(redis) = &state.services.redis {
         if new_password_hash.is_some() || email_changed {
-            let _ = redis.bump_token_version(user.id).await;
-            let _ = redis.invalidate_all_user_sessions(user.id).await;
+            // Credentials changed: revoke tokens + sessions + cached user.
+            redis.revoke_user_access(user.id).await;
+        } else if let Err(e) = redis.invalidate_user_cache(user.id).await {
+            tracing::warn!(target: "security", user_id = user.id, error = %e, "Failed to invalidate cached user after profile update");
         }
-        let _ = redis.invalidate_user_cache(user.id).await;
     }
 
     if new_password_hash.is_some() {
@@ -246,32 +251,32 @@ pub(super) async fn update_profile(
     }
 
     // Post-commit: send verification email (external HTTP, never inside a tx).
-    if email_changed {
-        if let (Some(new_email), Some((raw_token, _))) = (&input.email, verification_token) {
-            // Send verification email
-            {
-                let email_service = &state.services.email;
-                let name = display_name.as_deref().unwrap_or(&user.name);
-                email_service
-                    .send_verification_email(new_email, name, &raw_token)
-                    .await
-                    .ok();
-            }
-
-            tracing::info!(
-                target: "security_audit",
-                event = "email_change_verification_sent",
-                user_id = %user.id,
-                new_email = %new_email,
-                "ICT 7 AUDIT: Email change verification sent"
-            );
-
-            return Ok(Json(json!({
-                "success": true,
-                "message": "Profile updated. Please verify your new email address.",
-                "email_verification_required": true
-            })));
+    if email_changed
+        && let (Some(new_email), Some((raw_token, _))) = (&input.email, verification_token)
+    {
+        // Send verification email
+        {
+            let email_service = &state.services.email;
+            let name = display_name.as_deref().unwrap_or(&user.name);
+            email_service
+                .send_verification_email(new_email, name, &raw_token)
+                .await
+                .ok();
         }
+
+        tracing::info!(
+            target: "security_audit",
+            event = "email_change_verification_sent",
+            user_id = %user.id,
+            new_email = %new_email,
+            "ICT 7 AUDIT: Email change verification sent"
+        );
+
+        return Ok(Json(json!({
+            "success": true,
+            "message": "Profile updated. Please verify your new email address.",
+            "email_verification_required": true
+        })));
     }
 
     Ok(Json(json!({

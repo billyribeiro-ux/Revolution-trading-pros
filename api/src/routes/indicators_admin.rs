@@ -142,7 +142,7 @@ async fn get_indicator(
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get platform files with platform info
     let platform_files: Vec<(IndicatorPlatformFile, String, String, Option<String>)> = sqlx::query_as(
@@ -155,7 +155,7 @@ async fn get_indicator(
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Get documentation
     let docs: Vec<IndicatorDocumentation> = sqlx::query_as(
@@ -164,7 +164,7 @@ async fn get_indicator(
     .bind(indicator_id)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Build responses
     let video_responses: Vec<serde_json::Value> = videos
@@ -457,7 +457,7 @@ async fn list_platforms(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let platform_responses: Vec<serde_json::Value> = platforms
         .iter()
@@ -1205,7 +1205,7 @@ async fn list_tradingview_accesses(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let access_responses: Vec<serde_json::Value> = accesses
         .iter()
@@ -1380,7 +1380,7 @@ async fn get_indicator_stats(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     // Top indicators
     let top_indicators: Vec<(i64, String, i64)> = sqlx::query_as(
@@ -1392,7 +1392,7 @@ async fn get_indicator_stats(
     )
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "total_indicators": total_indicators.0,
@@ -1443,7 +1443,7 @@ async fn get_download_log(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
 
     let log_responses: Vec<serde_json::Value> = logs
         .iter()

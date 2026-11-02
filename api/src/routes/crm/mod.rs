@@ -13,11 +13,11 @@
 //! 2026-05-20). Public API unchanged: external callers still see
 //! `routes::crm::router()` returning `Router<AppState>`.
 
-use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
+use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 pub mod automations;
 pub mod companies;

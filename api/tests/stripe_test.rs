@@ -81,9 +81,11 @@ fn wrong_secret_does_not_verify() {
 #[test]
 fn tampered_payload_does_not_verify() {
     let header = stripe_sig::sign_now(br#"{"amount":1000}"#, SECRET);
-    assert!(!svc()
-        .verify_webhook(br#"{"amount":9999}"#, &header)
-        .unwrap());
+    assert!(
+        !svc()
+            .verify_webhook(br#"{"amount":9999}"#, &header)
+            .unwrap()
+    );
 }
 
 #[test]
@@ -127,16 +129,20 @@ fn empty_header_errors() {
 
 #[test]
 fn malformed_header_errors() {
-    assert!(svc()
-        .verify_webhook(b"{}", "malformed=header=format")
-        .is_err());
+    assert!(
+        svc()
+            .verify_webhook(b"{}", "malformed=header=format")
+            .is_err()
+    );
 }
 
 #[test]
 fn non_numeric_timestamp_errors() {
-    assert!(svc()
-        .verify_webhook(b"{}", "t=not-a-number,v1=deadbeef")
-        .is_err());
+    assert!(
+        svc()
+            .verify_webhook(b"{}", "t=not-a-number,v1=deadbeef")
+            .is_err()
+    );
 }
 
 /// Security property (previously UNTESTED — the duplicated verifier
@@ -178,7 +184,9 @@ fn non_utf8_payload_is_rejected() {
 fn unconfigured_webhook_secret_errors() {
     let no_secret = StripeService::new("sk_test_dummy");
     let now = chrono::Utc::now().timestamp();
-    assert!(no_secret
-        .verify_webhook(b"{}", &format!("t={now},v1=00"))
-        .is_err());
+    assert!(
+        no_secret
+            .verify_webhook(b"{}", &format!("t={now},v1=00"))
+            .is_err()
+    );
 }

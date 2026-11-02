@@ -14,10 +14,10 @@ use std::sync::LazyLock;
 use std::time::Duration;
 
 use axum::{
+    Json,
     extract::{Query, State},
     http::StatusCode,
     response::{IntoResponse, Redirect, Response},
-    Json,
 };
 use serde::Deserialize;
 
@@ -25,15 +25,10 @@ use super::crypto::{generate_code_challenge, generate_code_verifier, generate_ra
 use super::session::oauth_callback_response_with_cookies;
 use super::types::{GoogleCallbackQuery, OAuthProvider};
 use super::user::{create_oauth_auth_response, create_or_get_oauth_user};
-use crate::{utils::generate_session_id, AppState};
+use crate::{AppState, utils::generate_session_id};
 
-static GOOGLE_HTTP_CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| {
-    reqwest::Client::builder()
-        .timeout(Duration::from_secs(10))
-        .connect_timeout(Duration::from_secs(5))
-        .build()
-        .unwrap_or_else(|_| reqwest::Client::new())
-});
+static GOOGLE_HTTP_CLIENT: LazyLock<reqwest::Client> =
+    LazyLock::new(|| crate::utils::http::build_client(Duration::from_secs(10)));
 
 /// Google token response
 #[derive(Debug, Deserialize)]
@@ -328,10 +323,12 @@ pub(super) async fn google_callback(
 
     // Create session in Redis
     let session_id = generate_session_id();
-    if let Some(redis) = &state.services.redis {
-        let _ = redis
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis
             .create_session(&session_id, user.id, &user.email, None, None)
-            .await;
+            .await
+    {
+        tracing::error!(target: "security", error = %e, "Failed to create Redis session after OAuth login");
     }
 
     // Create auth tokens

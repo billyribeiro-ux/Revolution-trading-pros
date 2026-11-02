@@ -3,18 +3,18 @@
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
 use axum::{
+    Json,
     extract::{Query, State},
     http::{HeaderMap, StatusCode},
-    Json,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use super::helpers::{client_ip, enforce_ip_rate_limit_strict, ClientAddr};
+use super::helpers::{ClientAddr, client_ip, enforce_ip_rate_limit_strict};
 use crate::{
+    AppState,
     models::{MessageResponse, User},
     utils::{generate_verification_token, hash_token},
-    AppState,
 };
 
 /// Query params for email verification
@@ -131,8 +131,10 @@ pub(super) async fn verify_email(
         )
     })?;
 
-    if let Some(redis) = &state.services.redis {
-        let _ = redis.invalidate_user_cache(user_id).await;
+    if let Some(redis) = &state.services.redis
+        && let Err(e) = redis.invalidate_user_cache(user_id).await
+    {
+        tracing::warn!(target: "security", user_id, error = %e, "Failed to invalidate cached user after email verification");
     }
 
     // ICT 11+ AUDIT: Log successful email verification

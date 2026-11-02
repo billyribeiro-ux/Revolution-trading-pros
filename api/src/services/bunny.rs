@@ -27,18 +27,7 @@ pub struct BunnyClient {
 impl BunnyClient {
     pub fn new() -> Self {
         Self {
-            // Mirror services/stripe.rs: builder with a 30s request timeout and
-            // a graceful fallback to a default client instead of panicking.
-            http: Client::builder()
-                .timeout(std::time::Duration::from_secs(30))
-                .build()
-                .unwrap_or_else(|e| {
-                    error!(
-                        "Failed to create HTTP client with timeout: {}, using default",
-                        e
-                    );
-                    Client::new()
-                }),
+            http: crate::utils::http::build_client(std::time::Duration::from_secs(30)),
             stream_api_key: env::var("BUNNY_STREAM_API_KEY")
                 .map(|s| s.trim().to_string())
                 .unwrap_or_default(),

@@ -300,10 +300,10 @@ impl UnifiedVideo {
     pub fn get_embed_url(&self) -> String {
         match self.video_platform.as_str() {
             "bunny" => {
-                if let Some(guid) = &self.bunny_video_guid {
-                    if let Some(lib_id) = self.bunny_library_id {
-                        return format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}");
-                    }
+                if let Some(guid) = &self.bunny_video_guid
+                    && let Some(lib_id) = self.bunny_library_id
+                {
+                    return format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}");
                 }
                 self.video_url.clone()
             }

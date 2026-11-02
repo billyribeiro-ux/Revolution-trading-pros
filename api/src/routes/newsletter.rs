@@ -6,19 +6,19 @@
 #![allow(clippy::map_flatten)]
 
 use axum::{
+    Json, Router,
     extract::{ConnectInfo, Query, State},
     http::{HeaderMap, StatusCode},
     routing::{delete, get, post},
-    Json, Router,
 };
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use hmac::{Hmac, KeyInit, Mac};
 use serde::Deserialize;
 use serde_json::json;
 use sha2::Sha256;
 use std::net::SocketAddr;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 type HmacSha256 = Hmac<Sha256>;
 
@@ -259,7 +259,7 @@ async fn subscribe(
             "confirm_url": confirm_url,
             "app_url": state.config.app_url,
         });
-        if let Err(e) = state
+        match state
             .services
             .email
             .send_transactional(
@@ -270,21 +270,24 @@ async fn subscribe(
             )
             .await
         {
-            tracing::warn!(
-                target: "newsletter",
-                event = "confirmation_resend_email_failed",
-                subscriber_id = %subscriber.id,
-                error = %e,
-                "Failed to resend newsletter confirmation email"
-            );
-        } else {
-            tracing::info!(
-                target: "newsletter",
-                event = "confirmation_resent",
-                subscriber_id = %subscriber.id,
-                email = %email,
-                "Resending confirmation email"
-            );
+            Err(e) => {
+                tracing::warn!(
+                    target: "newsletter",
+                    event = "confirmation_resend_email_failed",
+                    subscriber_id = %subscriber.id,
+                    error = %e,
+                    "Failed to resend newsletter confirmation email"
+                );
+            }
+            _ => {
+                tracing::info!(
+                    target: "newsletter",
+                    event = "confirmation_resent",
+                    subscriber_id = %subscriber.id,
+                    email = %email,
+                    "Resending confirmation email"
+                );
+            }
         }
 
         return Ok(Json(json!({

@@ -12,7 +12,7 @@ use axum::{
 };
 
 use super::dto::{MalwareScanResult, Media};
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 /// Hook for malware scanning integration
 /// In production, integrate with ClamAV, VirusTotal API, or cloud malware scanning service

@@ -4,20 +4,20 @@
 //! ICT 7 SECURITY AUDIT: Complete rewrite to add authentication and fix SQL injection
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post, put},
-    Json, Router,
 };
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::AppState;
+use crate::models::User;
 use crate::models::page_layout::{
     CreatePageLayoutRequest, PageLayout, PageLayoutListItem, PageLayoutQueryParams,
     PageLayoutVersion, PaginatedLayouts, UpdatePageLayoutRequest,
 };
-use crate::models::User;
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // AUTHORIZATION - ICT 7 SECURITY FIX: Added admin authentication

@@ -18,6 +18,7 @@
 pub mod crypto;
 pub mod errors;
 pub mod html;
+pub mod http;
 
 use anyhow::Result;
 // argon2 0.6 / password-hash 0.6: `SaltString` and the `rand_core` re-export are
@@ -30,7 +31,7 @@ use chrono::{Duration, Utc};
 // (aliased to avoid name conflict with argon2::Algorithm imported above)
 // use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use jsonwebtoken::{
-    decode, encode, Algorithm as JwtAlgorithm, DecodingKey, EncodingKey, Header, Validation,
+    Algorithm as JwtAlgorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode,
 };
 use serde::{Deserialize, Serialize};
 
@@ -194,10 +195,63 @@ pub fn hash_password(password: &str) -> Result<String> {
     Ok(hash.to_string())
 }
 
+/// Cap on concurrent password hash/verify jobs.
+///
+/// Each Argon2id run allocates 64 MiB (see [`hash_password`]). `spawn_blocking`
+/// alone does not bound that: Tokio's blocking pool defaults to 512 threads
+/// (tokio::runtime::Builder::max_blocking_threads), so a login flood could
+/// hold ~32 GiB. Bounding to the core count keeps memory flat and queues the
+/// excess *asynchronously* (waiting on the semaphore does not occupy a thread).
+static PASSWORD_WORK: std::sync::LazyLock<std::sync::Arc<tokio::sync::Semaphore>> =
+    std::sync::LazyLock::new(|| {
+        let permits = std::thread::available_parallelism().map_or(2, std::num::NonZeroUsize::get);
+        std::sync::Arc::new(tokio::sync::Semaphore::new(permits))
+    });
+
+/// Run CPU/memory-heavy password work on the blocking pool under the
+/// [`PASSWORD_WORK`] cap. The permit moves into the closure, so it is held
+/// until the work actually finishes even if the awaiting request is dropped.
+async fn run_password_work<T, F>(work: F) -> Result<T>
+where
+    T: Send + 'static,
+    F: FnOnce() -> T + Send + 'static,
+{
+    let permit = std::sync::Arc::clone(&PASSWORD_WORK)
+        .acquire_owned()
+        .await
+        .map_err(|e| anyhow::anyhow!("Password work limiter closed: {e}"))?;
+    tokio::task::spawn_blocking(move || {
+        let _permit = permit;
+        work()
+    })
+    .await
+    .map_err(|e| anyhow::anyhow!("Password work task failed: {e}"))
+}
+
+/// Hash a password on the blocking pool (bounded; see [`PASSWORD_WORK`]).
+///
+/// Argon2id at 64 MiB / 3 passes is CPU- and memory-bound for tens of
+/// milliseconds; running it inline would stall every other task scheduled on
+/// the same Tokio worker. Async handlers must call this, not [`hash_password`].
+pub async fn hash_password_async(password: &str) -> Result<String> {
+    let password = password.to_owned();
+    run_password_work(move || hash_password(&password)).await?
+}
+
+/// Verify a password on the blocking pool (bounded; bcrypt and Argon2 are both
+/// CPU-bound). Async handlers must call this, not [`verify_password`].
+pub async fn verify_password_async(password: &str, hash: &str) -> Result<bool> {
+    let password = password.to_owned();
+    let hash = hash.to_owned();
+    run_password_work(move || verify_password(&password, &hash)).await?
+}
+
 /// Hash a "dummy" password to prevent timing attacks
 /// Call this when user doesn't exist to match timing of real verification
-pub fn hash_dummy_password() {
-    let _ = hash_password("dummy_password_for_timing");
+pub async fn hash_dummy_password() {
+    if let Err(e) = hash_password_async("dummy_password_for_timing").await {
+        tracing::warn!("Dummy password hash for timing equalisation failed: {e}");
+    }
 }
 
 /// Verify a password against a hash
@@ -375,8 +429,8 @@ pub fn constant_time_compare(a: &str, b: &str) -> bool {
 
 /// Generate a random token (for password reset, etc.)
 pub fn generate_token() -> String {
-    use rand::distr::Alphanumeric;
     use rand::RngExt;
+    use rand::distr::Alphanumeric;
     let mut rng = rand::rng();
     (0..32).map(|_| rng.sample(Alphanumeric) as char).collect()
 }
@@ -592,7 +646,7 @@ mod token_version_tests {
         // still decode (token_version defaults to 0) so we don't hard-fail
         // every in-flight session on deploy. We hand-craft a payload with
         // NO `tv` key and sign it with the real HS256 key.
-        use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+        use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
         let now = Utc::now().timestamp();
         // Header {"alg":"HS256","typ":"JWT"} == jsonwebtoken's Header::default.
         let header_json = br#"{"typ":"JWT","alg":"HS256"}"#;

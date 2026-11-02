@@ -6,20 +6,20 @@
 //! ICT 7 SECURITY: All queries use parameterized SQL - NO string interpolation
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post, put},
-    Json, Router,
 };
 use chrono::NaiveDate;
 use serde::Deserialize;
 use serde_json::json;
 use tracing::{error, info};
 
-use crate::middleware::admin::AdminUser;
-use crate::models::watchlist::*;
-use crate::models::User;
 use crate::AppState;
+use crate::middleware::admin::AdminUser;
+use crate::models::User;
+use crate::models::watchlist::*;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // QUERY PARAMETERS

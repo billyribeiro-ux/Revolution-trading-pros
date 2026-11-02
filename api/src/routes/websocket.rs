@@ -12,14 +12,14 @@
 //! Built for the next 10 years with extensibility in mind.
 
 use axum::{
+    Json, Router,
     extract::{
-        ws::{rejection::WebSocketUpgradeRejection, Message, WebSocket, WebSocketUpgrade},
         Query, State,
+        ws::{Message, WebSocket, WebSocketUpgrade, rejection::WebSocketUpgradeRejection},
     },
     http::StatusCode,
     response::IntoResponse,
     routing::get,
-    Json, Router,
 };
 use chrono::{DateTime, Utc};
 use futures::{
@@ -29,12 +29,12 @@ use futures::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::{collections::HashSet, sync::Arc, time::Duration};
-use tokio::sync::{broadcast, mpsc, RwLock};
+use tokio::sync::{RwLock, broadcast, mpsc};
 use tracing::{debug, error, info, warn};
 
+use crate::AppState;
 use crate::middleware::admin::AdminUser;
 use crate::utils::verify_jwt;
-use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -329,7 +329,7 @@ impl WsConnectionManager {
         let connections = self.room_connections.read().await;
         connections
             .iter()
-            .filter(|(_, &count)| count > 0)
+            .filter(|&(_, &count)| count > 0)
             .map(|(room, &count)| (room.clone(), count))
             .collect()
     }
@@ -615,10 +615,10 @@ async fn handle_socket(
     // Spawn task to send messages to client
     let mut send_handle = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
-            if let Ok(json) = serde_json::to_string(&msg) {
-                if sender.send(Message::Text(json.into())).await.is_err() {
-                    break;
-                }
+            if let Ok(json) = serde_json::to_string(&msg)
+                && sender.send(Message::Text(json.into())).await.is_err()
+            {
+                break;
             }
         }
     });

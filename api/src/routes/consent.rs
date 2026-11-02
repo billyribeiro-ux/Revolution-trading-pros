@@ -16,17 +16,17 @@
 //! diverge (FULL_REPO_AUDIT_2026-05-17 — "P3 consent OnceLock", cluster I).
 
 use axum::{
+    Router,
     extract::State,
     http::StatusCode,
     response::Json,
     routing::{get, post},
-    Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use validator::Validate;
 
-use crate::{middleware::admin::AdminUser, AppState};
+use crate::{AppState, middleware::admin::AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

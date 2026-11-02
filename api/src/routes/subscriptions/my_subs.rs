@@ -6,14 +6,14 @@
 //! mapping, and money handling preserved byte-for-byte.
 
 use axum::{
+    Json,
     extract::{Path, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::dtos::{UserSubscriptionRow, UserSubscriptionWithPlanRow};
-use crate::{models::User, AppState};
+use crate::{AppState, models::User};
 
 /// Get user's subscriptions with complete plan details
 /// ICT 7+ Fix: Returns full plan information instead of placeholders

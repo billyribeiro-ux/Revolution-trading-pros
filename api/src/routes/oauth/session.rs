@@ -32,7 +32,7 @@ use axum::{
     response::{IntoResponse, Redirect, Response},
 };
 
-use crate::{models::AuthResponse, AppState};
+use crate::{AppState, models::AuthResponse};
 
 /// Build a redirect Response with the OAuth session set in httpOnly cookies.
 pub(super) fn oauth_callback_response_with_cookies(

@@ -7,15 +7,15 @@
 #![allow(clippy::needless_borrows_for_generic_args)]
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post, put},
-    Json, Router,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{middleware::admin::AdminUser, utils::html, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::html};
 
 /// Post list query
 #[derive(Debug, Deserialize)]
@@ -886,7 +886,7 @@ async fn get_related_posts(
             return Err((
                 StatusCode::NOT_FOUND,
                 Json(json!({"error": "Post not found"})),
-            ))
+            ));
         }
     };
 

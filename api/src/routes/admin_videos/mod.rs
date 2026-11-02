@@ -17,8 +17,8 @@
 //! - `bunny_embed`    — Bunny webhook + transcoding-status + thumbnail-generation + embed-code
 
 use axum::{
-    routing::{delete, get, post, put},
     Router,
+    routing::{delete, get, post, put},
 };
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};

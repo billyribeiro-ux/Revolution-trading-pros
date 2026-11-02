@@ -14,10 +14,10 @@
 //! ═══════════════════════════════════════════════════════════════════════════════════
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     routing::get,
-    Json, Router,
 };
 use chrono::NaiveDate;
 use serde::Deserialize;
@@ -25,13 +25,13 @@ use serde_json::json;
 use tracing::error;
 
 use crate::{
+    AppState,
     middleware::admin::AdminUser,
     services::room_analytics::{
         EquityPoint, MonthlyReturn, RoomAnalytics, RoomAnalyticsService, SetupPerformance,
         TickerPerformance,
     },
     utils::errors::ApiError,
-    AppState,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════

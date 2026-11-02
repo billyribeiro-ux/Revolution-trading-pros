@@ -7,14 +7,14 @@
 //! DB tx across an outbound HTTP call.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
 use serde_json::json;
 
 use super::types::{FormListQuery, FormRow};
-use crate::{utils::html, AppState};
+use crate::{AppState, utils::html};
 
 /// List published forms (public) - GET /forms
 pub(super) async fn list_public_forms(
@@ -42,7 +42,7 @@ pub(super) async fn list_public_forms(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_default();
+    .map_err(crate::utils::errors::db_error)?;
     for form in &mut forms {
         html::sanitize_form_fields(&mut form.fields);
     }
@@ -110,40 +110,38 @@ pub(super) async fn submit_form(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 7 Spam Protection: Check honeypot field
     // If _hp_website field is filled, it's a bot (humans can't see this field)
-    if let Some(honeypot) = data.get("_hp_website") {
-        if let Some(hp_str) = honeypot.as_str() {
-            if !hp_str.is_empty() {
-                tracing::warn!(
-                    target: "security",
-                    event = "spam_blocked",
-                    form_slug = %slug,
-                    "Honeypot triggered - spam submission blocked"
-                );
-                // Silently accept to not tip off bots, but don't save
-                return Ok(Json(json!({
-                    "success": true,
-                    "message": "Form submitted successfully"
-                })));
-            }
-        }
+    if let Some(honeypot) = data.get("_hp_website")
+        && let Some(hp_str) = honeypot.as_str()
+        && !hp_str.is_empty()
+    {
+        tracing::warn!(
+            target: "security",
+            event = "spam_blocked",
+            form_slug = %slug,
+            "Honeypot triggered - spam submission blocked"
+        );
+        // Silently accept to not tip off bots, but don't save
+        return Ok(Json(json!({
+            "success": true,
+            "message": "Form submitted successfully"
+        })));
     }
 
     // Also check for _hp_email honeypot variant
-    if let Some(honeypot) = data.get("_hp_email") {
-        if let Some(hp_str) = honeypot.as_str() {
-            if !hp_str.is_empty() {
-                tracing::warn!(
-                    target: "security",
-                    event = "spam_blocked",
-                    form_slug = %slug,
-                    "Honeypot triggered - spam submission blocked"
-                );
-                return Ok(Json(json!({
-                    "success": true,
-                    "message": "Form submitted successfully"
-                })));
-            }
-        }
+    if let Some(honeypot) = data.get("_hp_email")
+        && let Some(hp_str) = honeypot.as_str()
+        && !hp_str.is_empty()
+    {
+        tracing::warn!(
+            target: "security",
+            event = "spam_blocked",
+            form_slug = %slug,
+            "Honeypot triggered - spam submission blocked"
+        );
+        return Ok(Json(json!({
+            "success": true,
+            "message": "Form submitted successfully"
+        })));
     }
 
     // Remove honeypot fields from submission data
@@ -236,17 +234,18 @@ pub(super) async fn submit_form(
             .get("send_email")
             .and_then(|v| v.as_bool())
             .unwrap_or(false)
+            && let Some(email_to) = settings.get("email_to").and_then(|v| v.as_str())
         {
-            if let Some(email_to) = settings.get("email_to").and_then(|v| v.as_str()) {
-                {
-                    let email_service = &state.services.email;
-                    let subject = format!("New Form Submission: {}", form.name);
-                    let html_body = build_form_notification_email(&form.name, &clean_data);
+            {
+                let email_service = &state.services.email;
+                let subject = format!("New Form Submission: {}", form.name);
+                let html_body = build_form_notification_email(&form.name, &clean_data);
 
-                    if let Err(e) = email_service
-                        .send(email_to, &subject, &html_body, None)
-                        .await
-                    {
+                match email_service
+                    .send(email_to, &subject, &html_body, None)
+                    .await
+                {
+                    Err(e) => {
                         tracing::error!(
                             target: "forms",
                             event = "email_send_error",
@@ -254,7 +253,8 @@ pub(super) async fn submit_form(
                             error = %e,
                             "Failed to send form notification email"
                         );
-                    } else {
+                    }
+                    _ => {
                         tracing::info!(
                             target: "forms",
                             event = "email_notification_sent",
@@ -268,70 +268,70 @@ pub(super) async fn submit_form(
         }
 
         // ICT 7 Fix: Webhook integration
-        if let Some(webhook_url) = settings.get("webhook_url").and_then(|v| v.as_str()) {
-            if !webhook_url.is_empty() {
-                if let Err(e) = crate::services::cms_webhooks::validate_webhook_url(webhook_url) {
-                    tracing::warn!(
-                        target: "forms",
-                        event = "webhook_rejected_ssrf",
-                        url = %webhook_url,
-                        error = %e,
-                        "Rejected unsafe form webhook URL"
-                    );
-                } else {
-                    let webhook_payload = json!({
-                        "event": "form_submission",
-                        "form_id": form.id,
-                        "form_name": form.name,
-                        "form_slug": form.slug,
-                        "submission_id": submission_result.0,
-                        "data": clean_data,
-                        "timestamp": chrono::Utc::now().to_rfc3339()
-                    });
+        if let Some(webhook_url) = settings.get("webhook_url").and_then(|v| v.as_str())
+            && !webhook_url.is_empty()
+        {
+            if let Err(e) = crate::services::cms_webhooks::validate_webhook_url(webhook_url) {
+                tracing::warn!(
+                    target: "forms",
+                    event = "webhook_rejected_ssrf",
+                    url = %webhook_url,
+                    error = %e,
+                    "Rejected unsafe form webhook URL"
+                );
+            } else {
+                let webhook_payload = json!({
+                    "event": "form_submission",
+                    "form_id": form.id,
+                    "form_name": form.name,
+                    "form_slug": form.slug,
+                    "submission_id": submission_result.0,
+                    "data": clean_data,
+                    "timestamp": chrono::Utc::now().to_rfc3339()
+                });
 
-                    // Fire-and-forget webhook call (don't block response)
-                    let webhook_url = webhook_url.to_string();
-                    let client = reqwest::Client::new();
-                    tokio::spawn(async move {
-                        match client
-                            .post(&webhook_url)
-                            .header("Content-Type", "application/json")
-                            .header("X-Webhook-Event", "form_submission")
-                            .json(&webhook_payload)
-                            .timeout(std::time::Duration::from_secs(10))
-                            .send()
-                            .await
-                        {
-                            Ok(response) => {
-                                if response.status().is_success() {
-                                    tracing::info!(
-                                        target: "forms",
-                                        event = "webhook_success",
-                                        url = %webhook_url,
-                                        "Webhook delivered successfully"
-                                    );
-                                } else {
-                                    tracing::warn!(
-                                        target: "forms",
-                                        event = "webhook_error",
-                                        url = %webhook_url,
-                                        status = %response.status(),
-                                        "Webhook returned non-success status"
-                                    );
-                                }
-                            }
-                            Err(e) => {
-                                tracing::error!(
+                // Fire-and-forget webhook call (don't block response)
+                let webhook_url = webhook_url.to_string();
+                let client = crate::utils::http::WEBHOOK_HTTP.clone();
+                tokio::spawn(async move {
+                    match client
+                        .post(&webhook_url)
+                        .header("Content-Type", "application/json")
+                        .header("X-Webhook-Event", "form_submission")
+                        .json(&webhook_payload)
+                        .timeout(std::time::Duration::from_secs(10))
+                        .send()
+                        .await
+                    {
+                        Ok(response) => {
+                            if response.status().is_success() {
+                                tracing::info!(
                                     target: "forms",
-                                    event = "webhook_failed",
+                                    event = "webhook_success",
                                     url = %webhook_url,
-                                    error = %e,
-                                    "Failed to deliver webhook"
+                                    "Webhook delivered successfully"
+                                );
+                            } else {
+                                tracing::warn!(
+                                    target: "forms",
+                                    event = "webhook_error",
+                                    url = %webhook_url,
+                                    status = %response.status(),
+                                    "Webhook returned non-success status"
                                 );
                             }
                         }
-                    });
-                }
+                        Err(e) => {
+                            tracing::error!(
+                                target: "forms",
+                                event = "webhook_failed",
+                                url = %webhook_url,
+                                error = %e,
+                                "Failed to deliver webhook"
+                            );
+                        }
+                    }
+                });
             }
         }
     }
@@ -421,66 +421,64 @@ fn validate_form_submission(
 
             // Min/max length validation
             if let Some(validation) = validation {
-                if let Some(min_length) = validation.get("min_length").and_then(|v| v.as_u64()) {
-                    if (value_str.len() as u64) < min_length {
-                        errors
-                            .entry(field_name.to_string())
-                            .or_default()
-                            .push(format!(
-                                "{field_label} must be at least {min_length} characters"
-                            ));
-                    }
+                if let Some(min_length) = validation.get("min_length").and_then(|v| v.as_u64())
+                    && (value_str.len() as u64) < min_length
+                {
+                    errors
+                        .entry(field_name.to_string())
+                        .or_default()
+                        .push(format!(
+                            "{field_label} must be at least {min_length} characters"
+                        ));
                 }
 
-                if let Some(max_length) = validation.get("max_length").and_then(|v| v.as_u64()) {
-                    if (value_str.len() as u64) > max_length {
-                        errors
-                            .entry(field_name.to_string())
-                            .or_default()
-                            .push(format!(
-                                "{field_label} must be no more than {max_length} characters"
-                            ));
-                    }
+                if let Some(max_length) = validation.get("max_length").and_then(|v| v.as_u64())
+                    && (value_str.len() as u64) > max_length
+                {
+                    errors
+                        .entry(field_name.to_string())
+                        .or_default()
+                        .push(format!(
+                            "{field_label} must be no more than {max_length} characters"
+                        ));
                 }
 
                 // Pattern validation
-                if let Some(pattern) = validation.get("pattern").and_then(|v| v.as_str()) {
-                    if let Ok(regex) = regex::RegexBuilder::new(pattern)
+                if let Some(pattern) = validation.get("pattern").and_then(|v| v.as_str())
+                    && let Ok(regex) = regex::RegexBuilder::new(pattern)
                         .size_limit(1 << 16)
                         .build()
-                    {
-                        if !regex.is_match(value_str) {
-                            let message = validation
-                                .get("pattern_message")
-                                .and_then(|v| v.as_str())
-                                .unwrap_or("Invalid format");
-                            errors
-                                .entry(field_name.to_string())
-                                .or_default()
-                                .push(message.to_string());
-                        }
-                    }
+                    && !regex.is_match(value_str)
+                {
+                    let message = validation
+                        .get("pattern_message")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("Invalid format");
+                    errors
+                        .entry(field_name.to_string())
+                        .or_default()
+                        .push(message.to_string());
                 }
 
                 // Number validation (min/max)
-                if field_type == "number" {
-                    if let Ok(num_value) = value_str.parse::<f64>() {
-                        if let Some(min) = validation.get("min").and_then(|v| v.as_f64()) {
-                            if num_value < min {
-                                errors
-                                    .entry(field_name.to_string())
-                                    .or_default()
-                                    .push(format!("{field_label} must be at least {min}"));
-                            }
-                        }
-                        if let Some(max) = validation.get("max").and_then(|v| v.as_f64()) {
-                            if num_value > max {
-                                errors
-                                    .entry(field_name.to_string())
-                                    .or_default()
-                                    .push(format!("{field_label} must be no more than {max}"));
-                            }
-                        }
+                if field_type == "number"
+                    && let Ok(num_value) = value_str.parse::<f64>()
+                {
+                    if let Some(min) = validation.get("min").and_then(|v| v.as_f64())
+                        && num_value < min
+                    {
+                        errors
+                            .entry(field_name.to_string())
+                            .or_default()
+                            .push(format!("{field_label} must be at least {min}"));
+                    }
+                    if let Some(max) = validation.get("max").and_then(|v| v.as_f64())
+                        && num_value > max
+                    {
+                        errors
+                            .entry(field_name.to_string())
+                            .or_default()
+                            .push(format!("{field_label} must be no more than {max}"));
                     }
                 }
             }

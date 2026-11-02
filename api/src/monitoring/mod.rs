@@ -2,11 +2,11 @@
 //! ICT 11+ Principal Engineer Grade - Production Monitoring
 
 use axum::{
+    Router,
     extract::State,
-    http::{header, StatusCode},
+    http::{StatusCode, header},
     response::{IntoResponse, Json},
     routing::get,
-    Router,
 };
 use serde::Serialize;
 use std::sync::atomic::{AtomicU64, Ordering};

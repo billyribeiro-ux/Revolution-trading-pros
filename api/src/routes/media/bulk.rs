@@ -10,7 +10,7 @@ use axum::{
 };
 
 use super::dto::{BulkDeleteRequest, BulkUpdateRequest, CleanupResult, Media};
-use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
+use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 /// POST /admin/media/bulk-delete - Delete multiple media items
 /// ICT 7 SECURITY: AdminUser authentication required
@@ -50,10 +50,10 @@ pub(super) async fn bulk_delete(
 
         if let Some(media) = media {
             // Delete from R2 if path exists
-            if let Some(file_key) = &media.path {
-                if let Err(e) = storage.delete(file_key).await {
-                    tracing::warn!("Failed to delete file from R2: {} - {}", file_key, e);
-                }
+            if let Some(file_key) = &media.path
+                && let Err(e) = storage.delete(file_key).await
+            {
+                tracing::warn!("Failed to delete file from R2: {} - {}", file_key, e);
             }
 
             // Delete from database
@@ -175,8 +175,7 @@ pub(super) async fn cleanup_orphaned_files(
         ",
     )
     .fetch_all(state.db.pool())
-    .await
-    .unwrap_or_default();
+    .await?;
 
     // Step 2: Verify each file exists in storage
     let storage = &state.services.storage;
