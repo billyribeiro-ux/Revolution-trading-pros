@@ -26,6 +26,7 @@
 	 */
 
 	import {
+		IconTarget,
 		IconUsers,
 		IconUserPlus,
 		IconSearch,
@@ -610,7 +611,7 @@
 				serviceName="CRM"
 				description="Connect to manage leads, track opportunities, and grow your sales pipeline."
 				serviceKey="hubspot"
-				icon="target"
+				icon={IconTarget}
 				color="#f97316"
 				features={[
 					'Lead scoring and qualification',

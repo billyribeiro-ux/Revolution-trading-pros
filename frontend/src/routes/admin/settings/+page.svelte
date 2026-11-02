@@ -1690,7 +1690,7 @@
 	}
 
 	.btn-connect:hover {
-		background: #f5c800;
+		background: var(--primary-500, #e6b800);
 		transform: translateY(-1px);
 	}
 

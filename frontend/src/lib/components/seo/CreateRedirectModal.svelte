@@ -187,7 +187,7 @@
 		align-items: center;
 		padding: 1rem;
 		padding-top: calc(1.25rem + env(safe-area-inset-top, 0));
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		background: rgba(255, 255, 255, 0.95);
 		flex-shrink: 0;
 	}
@@ -195,7 +195,7 @@
 	.modal-header h2 {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -210,7 +210,7 @@
 		height: 44px;
 		background: none;
 		border: none;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		padding: 0;
 		border-radius: 0.75rem;
@@ -220,7 +220,7 @@
 	}
 
 	.close-btn:hover {
-		background: #f0f0f0;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.close-btn:focus-visible {
@@ -238,7 +238,7 @@
 
 	.error-message {
 		padding: 0.75rem 1rem;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 		border-radius: 6px;
 		margin-bottom: 1rem;
@@ -253,7 +253,7 @@
 	.form-group .field-label {
 		display: block;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.95rem;
 	}
@@ -264,8 +264,8 @@
 
 	.readonly-field {
 		padding: 0.75rem;
-		background: #f8f9fa;
-		border: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-family: monospace;
 		font-size: 0.9rem;
@@ -277,7 +277,7 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 		font-family: inherit;
@@ -311,8 +311,8 @@
 		gap: 0.75rem;
 		padding: 1rem;
 		padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
-		border-top: 1px solid #e5e5e5;
-		background: #f9fafb;
+		border-top: 1px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 		flex-shrink: 0;
 	}
 
@@ -356,12 +356,12 @@
 
 	.btn-secondary {
 		background: white;
-		color: #666;
-		border: 1px solid #e5e5e5;
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-secondary:focus-visible {

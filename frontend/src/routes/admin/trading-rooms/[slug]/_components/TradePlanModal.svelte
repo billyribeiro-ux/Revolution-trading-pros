@@ -288,7 +288,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.form-group textarea {
@@ -309,8 +309,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;
@@ -320,7 +320,7 @@
 	}
 
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {

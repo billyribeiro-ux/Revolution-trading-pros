@@ -166,7 +166,7 @@
 				serviceName="Behavior Analytics"
 				description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."
 				serviceKey="google_analytics"
-				icon="🔍"
+				icon={IconEye}
 				color="#10b981"
 				features={[
 					'Track user sessions and interactions',

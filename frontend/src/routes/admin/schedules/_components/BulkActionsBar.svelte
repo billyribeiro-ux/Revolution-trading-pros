@@ -40,7 +40,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 12px 16px;
-		background: #143e59;
+		background: var(--primary-500, #e6b800);
 		border-radius: 8px;
 		margin-bottom: 16px;
 	}
@@ -67,21 +67,21 @@
 	.btn-sm {
 		padding: 6px 12px;
 		font-size: 13px;
-		background: #f1f5f9;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-sm:hover {
-		background: #e2e8f0;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.btn-danger {
-		background: #fef2f2;
+		background: var(--bg-elevated, #161b22);
 		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-danger:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
 	.btn-text {

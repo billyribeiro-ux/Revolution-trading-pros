@@ -60,7 +60,7 @@
 	}
 
 	.header-title :global(svg) {
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 		flex-shrink: 0;
 		margin-top: 4px;
 	}
@@ -111,12 +111,12 @@
 	}
 
 	.btn-primary {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
-		background: #0d2a3d;
+		background: var(--primary-500, #e6b800);
 	}
 
 	@media (max-width: 767.98px) {

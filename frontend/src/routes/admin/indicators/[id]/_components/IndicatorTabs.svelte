@@ -49,8 +49,8 @@
 		color: #1f2937;
 	}
 	.tabs button.active {
-		color: #143e59;
-		border-bottom-color: #143e59;
+		color: var(--primary-500, #e6b800);
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 	.badge {
 		background: #e5e7eb;

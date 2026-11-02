@@ -442,9 +442,9 @@
 					<div class="connected-services-list">
 						{#each seoServices as service (service.key)}
 							{@const status = getConnectionStatus(service.key)}
+							{@const ServiceIcon = service.icon}
 							{#if status?.isConnected}
 								<div class="connected-service">
-									{@const ServiceIcon = service.icon}
 									<span class="service-icon-small"><ServiceIcon size={16} aria-hidden="true" /></span>
 									<span class="service-name">{service.name}</span>
 									<IconCheck size={16} class="check-icon" />

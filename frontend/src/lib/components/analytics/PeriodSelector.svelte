@@ -80,7 +80,7 @@
 	}
 
 	.period-selector__button:hover {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.period-selector__button:focus-visible {

@@ -89,7 +89,7 @@
 		gap: 16px;
 		margin-bottom: 20px;
 		padding: 12px 16px;
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		flex-wrap: wrap;
 	}
@@ -103,7 +103,7 @@
 	.week-label {
 		font-size: 15px;
 		font-weight: 600;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		min-width: 180px;
 		text-align: center;
 	}
@@ -116,22 +116,22 @@
 
 	.filter-select {
 		padding: 8px 12px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 13px;
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 		cursor: pointer;
 	}
 
 	.filter-select:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.btn-icon {
 		padding: 8px;
-		background: #f8fafc;
-		border: 1px solid #e2e8f0;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		cursor: pointer;
 		display: flex;
@@ -141,14 +141,14 @@
 	}
 
 	.btn-icon:hover {
-		background: #f1f5f9;
-		border-color: #cbd5e1;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-text {
 		background: none;
 		border: none;
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 		font-weight: 600;
 		cursor: pointer;
 		padding: 8px 12px;

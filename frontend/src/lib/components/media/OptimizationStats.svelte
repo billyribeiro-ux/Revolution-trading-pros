@@ -185,7 +185,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
@@ -201,7 +201,7 @@
 	}
 
 	.optimization-stats__optimized {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 
@@ -211,7 +211,7 @@
 
 	.optimization-stats__badge {
 		border-radius: 999px;
-		background: #dcfce7;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		font-size: 0.75rem;
 		font-weight: 600;
 		line-height: 1rem;
@@ -224,9 +224,9 @@
 
 	.optimization-card {
 		overflow: hidden;
-		border: 1px solid #bbf7d0;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #f0fdf4;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 	}
 
 	:global(.dark) .optimization-card {
@@ -238,7 +238,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		border-bottom: 1px solid #bbf7d0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		background: rgba(220, 252, 231, 0.5);
 		padding: 1rem;
 	}
@@ -262,7 +262,7 @@
 
 	.optimization-card h3 {
 		margin: 0;
-		color: #166534;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -308,7 +308,7 @@
 	}
 
 	:global(.dark) .optimization-ring__track {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.optimization-ring__progress {
@@ -380,7 +380,7 @@
 
 	.optimization-comparison__format {
 		border-radius: 0.25rem;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 		color: var(--text-tertiary, #6e7681);
 		font-size: 0.625rem;
 		font-weight: 500;
@@ -394,8 +394,8 @@
 	}
 
 	.optimization-comparison__format--optimized {
-		background: #bbf7d0;
-		color: #15803d;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	:global(.dark) .optimization-comparison__format--optimized {
@@ -414,7 +414,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 1.5rem;
-		border-top: 1px solid #bbf7d0;
+		border-top: 1px solid var(--border-default, #30363d);
 		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;

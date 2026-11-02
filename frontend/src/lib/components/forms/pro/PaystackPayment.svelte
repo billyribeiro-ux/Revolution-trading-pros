@@ -55,6 +55,11 @@
 	}: Props = $props();
 
 	import Icon from '#lib/components/Icon.svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
+	import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
+	import IconCoin from '@tabler/icons-svelte-runes/icons/coin';
 
 	let loading = $state(false);
 	let paymentError = $state('');
@@ -140,7 +145,7 @@
 <div class={['paystack-payment', { disabled, 'has-error': error || paymentError }]}>
 	{#if testMode}
 		<div class="test-mode-banner">
-			<span>⚠️ Paystack Test Mode</span>
+			<span><IconAlertTriangle size={14} aria-hidden="true" /> Paystack Test Mode</span>
 		</div>
 	{/if}
 
@@ -163,16 +168,16 @@
 
 	<div class="payment-methods">
 		{#if channels.includes('card')}
-			<span class="payment-badge">💳 Card</span>
+			<span class="payment-badge"><IconCreditCard size={14} aria-hidden="true" /> Card</span>
 		{/if}
 		{#if channels.includes('bank')}
-			<span class="payment-badge">🏦 Bank</span>
+			<span class="payment-badge"><IconBuildingBank size={14} aria-hidden="true" /> Bank</span>
 		{/if}
 		{#if channels.includes('ussd')}
-			<span class="payment-badge">📱 USSD</span>
+			<span class="payment-badge"><IconDeviceMobile size={14} aria-hidden="true" /> USSD</span>
 		{/if}
 		{#if channels.includes('mobile_money')}
-			<span class="payment-badge">💰 Mobile Money</span>
+			<span class="payment-badge"><IconCoin size={14} aria-hidden="true" /> Mobile Money</span>
 		{/if}
 	</div>
 
@@ -191,6 +196,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+
+	.test-mode-banner span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 	}
 
 	.test-mode-banner {
@@ -212,7 +223,7 @@
 	}
 
 	.amount-display strong {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 	}
 
@@ -270,6 +281,9 @@
 	}
 
 	.payment-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
 		padding: 0.25rem 0.5rem;
 		background-color: #f3f4f6;
 		border-radius: 0.25rem;

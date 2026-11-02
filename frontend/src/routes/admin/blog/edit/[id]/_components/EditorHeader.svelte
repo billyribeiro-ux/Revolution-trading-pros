@@ -56,7 +56,7 @@
 		align-items: center;
 		padding: 1.5rem 2rem;
 		background: white;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		position: sticky;
 		top: 0;
 		z-index: 100;
@@ -74,23 +74,23 @@
 		justify-content: center;
 		width: 40px;
 		height: 40px;
-		background: #f8f9fa;
-		border: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		cursor: pointer;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.2s;
 	}
 
 	.btn-back:hover {
-		background: #e5e5e5;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.editor-header h1 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -125,8 +125,8 @@
 
 	.save-error {
 		padding: 0.5rem 1rem;
-		background: #fef2f2;
-		border: 1px solid #fecaca;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
@@ -135,8 +135,8 @@
 
 	.save-success {
 		padding: 0.5rem 1rem;
-		background: #f0fdf4;
-		border: 1px solid #bbf7d0;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
@@ -172,11 +172,11 @@
 
 	.btn-secondary {
 		background: white;
-		color: #666;
-		border: 1px solid #e5e5e5;
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 </style>

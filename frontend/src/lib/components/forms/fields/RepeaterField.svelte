@@ -492,7 +492,7 @@
 	.repeater-label {
 		font-weight: 500;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.required {
@@ -513,7 +513,7 @@
 	}
 
 	.repeater-row {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		background-color: white;
 		transition: all 0.2s;
@@ -526,15 +526,15 @@
 
 	.repeater-row.drag-over {
 		border-color: #2563eb;
-		background-color: #eff6ff;
+		background-color: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.row-header {
 		display: flex;
 		align-items: center;
 		padding: 0.75rem;
-		background-color: #f9fafb;
-		border-bottom: 1px solid #e5e7eb;
+		background-color: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem 0.5rem 0 0;
 	}
 
@@ -564,7 +564,7 @@
 		text-align: left;
 		cursor: pointer;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		padding: 0.25rem;
 	}
 
@@ -605,8 +605,8 @@
 	}
 
 	.btn-remove:hover:not(:disabled) {
-		background-color: #fee2e2;
-		border-color: #fca5a5;
+		background-color: var(--error-soft, rgba(218, 54, 51, 0.15));
+		border-color: var(--border-default, #30363d);
 		color: var(--error-emphasis, #f85149);
 	}
 
@@ -639,7 +639,7 @@
 	.sub-field-textarea,
 	.sub-field-select {
 		padding: 0.5rem 0.75rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		transition: border-color 0.2s;
@@ -663,7 +663,7 @@
 		gap: 0.5rem;
 		cursor: pointer;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.sub-field-help {
@@ -674,7 +674,7 @@
 	.btn-add {
 		padding: 0.75rem 1.5rem;
 		background-color: white;
-		border: 1px dashed #d1d5db;
+		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
 		color: var(--text-tertiary, #6e7681);
@@ -683,7 +683,7 @@
 	}
 
 	.btn-add:hover:not(:disabled) {
-		background-color: #f9fafb;
+		background-color: var(--bg-elevated, #161b22);
 		border-color: #2563eb;
 		color: var(--info-emphasis, #58a6ff);
 	}
@@ -705,7 +705,7 @@
 
 	.field-errors {
 		padding: 0.5rem 0.75rem;
-		background-color: #fee2e2;
+		background-color: var(--error-soft, rgba(218, 54, 51, 0.15));
 		border-radius: 0.375rem;
 	}
 

@@ -553,7 +553,7 @@
      Base Layout
      ═══════════════════════════════════════════════════════════════════════════ */
 	.analytics-dashboard {
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		font-family:
 			-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
 		padding-bottom: 48px;
@@ -584,14 +584,14 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 8px;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		transition: all 0.2s;
 	}
 
 	.back-link:hover {
-		background: #e8e8ed;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
@@ -603,7 +603,7 @@
 	.header h1 {
 		font-size: 24px;
 		font-weight: 700;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -621,7 +621,7 @@
 
 	.time-selector {
 		display: flex;
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 8px;
 		padding: 2px;
 	}
@@ -640,7 +640,7 @@
 
 	.time-selector button.active {
 		background: white;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
@@ -649,18 +649,18 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 16px;
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		border-radius: 8px;
 		font-size: 14px;
 		font-weight: 500;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-export:hover {
-		background: #e8e8ed;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	/* FIX-2026-04-26: :global() so styles reach Tabler's internal <svg> */
@@ -719,7 +719,7 @@
 	.not-connected-card h2 {
 		font-size: 24px;
 		font-weight: 700;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 12px;
 	}
 
@@ -761,8 +761,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: #f5f5f7;
-		color: #1d1d1f;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 14px;
 		font-weight: 500;
 		border: none;
@@ -772,12 +772,12 @@
 	}
 
 	.not-connected-actions .btn-secondary:hover {
-		background: #e8e8ed;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.service-info {
 		padding-top: 24px;
-		border-top: 1px solid #e5e5e5;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.service-info h3 {
@@ -801,9 +801,9 @@
 
 	.service-info li {
 		font-size: 13px;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		padding: 6px 12px;
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 6px;
 	}
 
@@ -968,11 +968,11 @@
 	}
 
 	.stat-icon.blue {
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-icon.green {
-		background: #d1fae5;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.purple {
@@ -980,12 +980,12 @@
 		color: var(--primary-500);
 	}
 	.stat-icon.orange {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
 	}
 	.stat-icon.cyan {
-		background: #cffafe;
-		color: #0891b2;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.stat-info {
@@ -996,7 +996,7 @@
 	.stat-value {
 		font-size: 20px;
 		font-weight: 600;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.stat-label {
@@ -1023,7 +1023,7 @@
 	.section-header h2 {
 		font-size: 18px;
 		font-weight: 600;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -1066,7 +1066,7 @@
 	.chart {
 		width: 100%;
 		height: 100%;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.y-axis {
@@ -1115,7 +1115,7 @@
 
 	.format-card {
 		padding: 20px;
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 12px;
 	}
 
@@ -1129,7 +1129,7 @@
 	.format-name {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.format-count {
@@ -1167,7 +1167,7 @@
 	.bar-label {
 		font-size: 11px;
 		font-weight: 500;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		white-space: nowrap;
 	}
 
@@ -1211,7 +1211,7 @@
 		display: flex;
 		gap: 16px;
 		padding: 20px;
-		background: #f5f5f7;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 12px;
 	}
 
@@ -1232,22 +1232,22 @@
 	}
 
 	.insight-icon.green {
-		background: #d1fae5;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 	.insight-icon.blue {
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 	}
 	.insight-icon.orange {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
 	}
 
 	.insight-content h3 {
 		font-size: 14px;
 		font-weight: 600;
-		color: #1d1d1f;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 6px 0;
 	}
 

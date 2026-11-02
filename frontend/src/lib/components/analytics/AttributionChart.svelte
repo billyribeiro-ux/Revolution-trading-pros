@@ -137,7 +137,7 @@
 
 	.attribution-chart h3 {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -157,7 +157,7 @@
 	}
 
 	.attribution-chart__total div {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 2rem;
@@ -200,7 +200,7 @@
 	}
 
 	.attribution-chart__channel-stats span:last-child {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
@@ -300,7 +300,7 @@
 	}
 
 	.attribution-chart__summary-item div {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.75rem;

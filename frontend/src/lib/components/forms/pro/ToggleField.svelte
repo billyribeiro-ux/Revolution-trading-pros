@@ -129,7 +129,7 @@
 	}
 
 	.toggle-label.active {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 

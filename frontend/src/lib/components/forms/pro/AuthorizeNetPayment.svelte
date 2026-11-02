@@ -468,7 +468,7 @@
 	.payment-label {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -564,7 +564,7 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
 		font-size: 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		background-color: white;
 		transition: all 0.15s;
 	}

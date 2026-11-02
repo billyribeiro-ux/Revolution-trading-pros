@@ -83,8 +83,8 @@
 
 <style>
 	.downloads-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 24px;
 	}
@@ -97,7 +97,7 @@
 	.content-header h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -113,11 +113,11 @@
 		transition: all 0.2s;
 		text-decoration: none;
 		border: none;
-		background: #f3f4f6;
-		color: #1f2937;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 	.btn-secondary:disabled {
 		opacity: 0.6;
@@ -143,7 +143,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 12px;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 6px;
 		margin-bottom: 8px;
 	}
@@ -177,7 +177,7 @@
 		width: 16px;
 		height: 16px;
 		border: 2px solid #e5e7eb;
-		border-top-color: #143e59;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 		display: inline-block;

@@ -101,8 +101,8 @@
 
 <style>
 	.form-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 24px;
 		margin-bottom: 24px;
@@ -110,7 +110,7 @@
 	.form-section h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 	.section-header {
@@ -130,18 +130,18 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.spinner-small {
 		width: 20px;
 		height: 20px;
 		border: 2px solid #e5e7eb;
-		border-top-color: #143e59;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -183,31 +183,31 @@
 		font-weight: 600;
 		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.files-table td {
 		padding: 12px;
-		border-bottom: 1px solid #f3f4f6;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.platform {
 		font-weight: 500;
 		text-transform: capitalize;
 	}
 	.file-name {
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 14px;
 	}
 	.file-status {
 		font-size: 12px;
 		padding: 4px 12px;
 		border-radius: 4px;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		cursor: pointer;
 	}
 	.file-status.active {
-		background: #d1fae5;
-		color: #065f46;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 	.file-status:hover {
 		opacity: 0.8;
@@ -220,7 +220,7 @@
 		width: 32px;
 		height: 32px;
 		border: none;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 6px;
 		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
@@ -229,7 +229,7 @@
 		font-weight: bold;
 	}
 	.btn-danger:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 

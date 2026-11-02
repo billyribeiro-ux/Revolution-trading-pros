@@ -84,7 +84,7 @@
 	.room-tab.active {
 		background: var(--room-color, #143e59);
 		border-color: var(--room-color, #143e59);
-		color: #fff;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.room-icon {

@@ -139,8 +139,8 @@
 
 <style>
 	.event-card {
-		background: #fff;
-		border: 1px solid #e2e8f0;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 12px;
 		position: relative;
@@ -154,17 +154,17 @@
 
 	.event-card.inactive {
 		opacity: 0.6;
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.event-card.selected {
-		border-color: #143e59;
-		background: #f0f9ff;
+		border-color: var(--primary-500, #e6b800);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.event-card.conflict {
 		border-color: #f59e0b;
-		background: #fffbeb;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 	}
 
 	.event-checkbox {
@@ -193,14 +193,14 @@
 		gap: 4px;
 		font-size: 12px;
 		font-weight: 600;
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 		margin-bottom: 4px;
 	}
 
 	.event-title {
 		font-size: 13px;
 		font-weight: 600;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 4px;
 	}
 
@@ -229,22 +229,22 @@
 	}
 
 	.badge-live {
-		background: #dcfce7;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 
 	.badge-recorded {
-		background: #e0e7ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--primary-500, #e6b800);
 	}
 
 	.badge-hybrid {
-		background: #fef3c7;
-		color: #b45309;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.badge-inactive {
-		background: #f1f5f9;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--text-tertiary, #6e7681);
 	}
 
@@ -253,13 +253,13 @@
 		gap: 4px;
 		margin-top: 8px;
 		padding-top: 8px;
-		border-top: 1px solid #f1f5f9;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-icon {
 		padding: 8px;
-		background: #f8fafc;
-		border: 1px solid #e2e8f0;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		cursor: pointer;
 		display: flex;
@@ -269,16 +269,16 @@
 	}
 
 	.btn-icon:hover {
-		background: #f1f5f9;
-		border-color: #cbd5e1;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-icon.btn-danger {
-		background: #fff;
-		border-color: #fecaca;
+		background: var(--bg-elevated, #161b22);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-icon.btn-danger:hover {
-		background: #fef2f2;
+		background: var(--bg-elevated, #161b22);
 	}
 </style>

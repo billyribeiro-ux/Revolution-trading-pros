@@ -195,7 +195,7 @@
 
 <style>
 	.errors-page {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.page-header {
@@ -208,7 +208,7 @@
 
 	.page-title {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 2.25rem;
@@ -234,7 +234,7 @@
 
 	.stat-value {
 		margin: 0.25rem 0 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 2rem;
@@ -285,7 +285,7 @@
 	.url-cell {
 		max-width: 28rem;
 		overflow: hidden;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-family:
 			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
 			monospace;
@@ -305,7 +305,7 @@
 
 	.section-title {
 		margin: 0 0 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.75rem;

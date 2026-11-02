@@ -515,7 +515,7 @@
 	}
 
 	.membership-card {
-		background: #1e1b4b;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 24px;
 		padding: 32px 24px;
 		border: 2px solid transparent;

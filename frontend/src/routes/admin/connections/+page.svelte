@@ -1325,7 +1325,7 @@
 		overflow: hidden;
 		border: 1px solid rgb(255 255 255 / 10%);
 		border-radius: 1rem;
-		background: #141415;
+		background: var(--bg-elevated, #161b22);
 		box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
 		color: #ffffff;
 	}

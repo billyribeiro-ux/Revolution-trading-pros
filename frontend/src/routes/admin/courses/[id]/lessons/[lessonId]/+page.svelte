@@ -622,9 +622,9 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
-		background: #fee2e2;
-		color: #991b1b;
-		border: 1px solid #fecaca;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 10px 14px;
 		border-radius: 8px;
 		margin-bottom: 16px;
@@ -641,8 +641,8 @@
 	}
 	.video-invalid {
 		padding: 16px;
-		background: #fef3c7;
-		color: #92400e;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
 		border: 1px dashed #fbbf24;
 		border-radius: 6px;
 		font-size: 14px;
@@ -662,7 +662,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #e5e7eb;
-		border-top-color: #143e59;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 16px;
@@ -679,7 +679,7 @@
 		align-items: flex-start;
 		margin-bottom: 24px;
 		padding-bottom: 24px;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.header-left {
 		display: flex;
@@ -695,12 +695,12 @@
 		font-size: 14px;
 	}
 	.back-link:hover {
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 	}
 	.header-left h1 {
 		font-size: 24px;
 		margin: 0;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.header-actions {
@@ -719,29 +719,29 @@
 		border: none;
 	}
 	.btn-primary {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
 	.btn-secondary {
-		background: #f3f4f6;
-		color: #1f2937;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 	.btn-danger {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 	.btn-danger:hover {
-		background: #fecaca;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
 	.editor-content {
@@ -756,15 +756,15 @@
 		gap: 24px;
 	}
 	.form-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 24px;
 	}
 	.form-section h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 20px;
 	}
 
@@ -784,13 +784,13 @@
 	.form-group label {
 		font-size: 13px;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 	.form-group input,
 	.form-group select,
 	.form-group textarea {
 		padding: 10px 12px;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 14px;
 	}
@@ -798,7 +798,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 	}
 	.code-input {
 		font-family: monospace;
@@ -826,7 +826,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 6px;
 	}
 	.video-info p {
@@ -841,8 +841,8 @@
 		align-items: center;
 		gap: 12px;
 		padding: 32px;
-		background: #f9fafb;
-		border: 2px dashed #d1d5db;
+		background: var(--bg-elevated, #161b22);
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 8px;
 		text-align: center;
 	}
@@ -858,13 +858,13 @@
 		width: 100%;
 		max-width: 300px;
 		padding: 10px 12px;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 14px;
 	}
 	.upload-area input[type='text']:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 	}
 	.divider {
 		color: var(--text-secondary, #8b949e);
@@ -882,10 +882,10 @@
 		justify-content: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: #143e59;
+		background: var(--primary-500, #e6b800);
 		border: none;
 		border-radius: 8px;
-		color: #fff;
+		color: var(--bg-base, #0d1117);
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
@@ -898,7 +898,7 @@
 	.btn-cancel-upload {
 		margin-top: 12px;
 		padding: 8px 16px;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		border-radius: 6px;
 		color: var(--text-tertiary, #6e7681);
@@ -906,7 +906,7 @@
 		cursor: pointer;
 	}
 	.btn-cancel-upload:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.side-panel {
@@ -915,15 +915,15 @@
 		gap: 16px;
 	}
 	.panel-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 16px;
 	}
 	.panel-section h3 {
 		font-size: 14px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 12px;
 	}
 
@@ -942,7 +942,7 @@
 
 	.thumbnail-preview {
 		aspect-ratio: 16/9;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 6px;
 		overflow: hidden;
 		margin-bottom: 8px;
@@ -973,7 +973,7 @@
 	}
 	.downloads-list li {
 		padding: 8px;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 4px;
 		margin-bottom: 4px;
 		font-size: 13px;
@@ -999,21 +999,21 @@
 		flex-shrink: 0;
 	}
 	.btn-remove-download:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 	.btn-add {
 		width: 100%;
 		padding: 8px;
-		background: #f3f4f6;
-		border: 1px dashed #d1d5db;
+		background: var(--bg-surface, #1c2128);
+		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--text-tertiary, #6e7681);
 		font-size: 13px;
 		cursor: pointer;
 	}
 	.btn-add:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	@media (max-width: 1023.98px) {

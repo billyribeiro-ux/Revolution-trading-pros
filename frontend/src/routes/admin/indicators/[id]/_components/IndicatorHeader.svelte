@@ -50,12 +50,12 @@
 		font-size: 14px;
 	}
 	.back-link:hover {
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 	}
 	h1 {
 		font-size: 24px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -68,12 +68,12 @@
 		text-transform: capitalize;
 	}
 	.status--draft {
-		background: #fef3c7;
-		color: #92400e;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
 	}
 	.status--published {
-		background: #d1fae5;
-		color: #065f46;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.header-actions {
@@ -95,23 +95,23 @@
 		text-decoration: none;
 	}
 	.btn-primary {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
 	.btn-secondary {
-		background: #f3f4f6;
-		color: #374151;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
+		border: 1px solid var(--border-default, #30363d);
 	}
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 	.btn-success {
 		background: #10b981;

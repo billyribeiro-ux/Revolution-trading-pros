@@ -1097,7 +1097,7 @@
 		align-items: center;
 		justify-content: center;
 		margin: 0 auto 1.25rem;
-		color: #fff;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.modal h2 {
@@ -1256,7 +1256,7 @@
 		border-radius: 8px;
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #fff;
+		color: var(--bg-base, #0d1117);
 		cursor: pointer;
 		transition: all 0.2s;
 	}

@@ -261,7 +261,7 @@
 
 	.time-series-chart h3 {
 		margin: 0 0 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;

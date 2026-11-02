@@ -1488,22 +1488,22 @@
 	}
 
 	.notification.success {
-		background: #dcfce7;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 
 	.notification.error {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 
 	.notification.warning {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
 	}
 
 	.notification.info {
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 	}
 
@@ -2802,8 +2802,9 @@
 		.stat-card {
 			break-inside: avoid;
 			box-shadow: none;
-			border: 1px solid #ccc;
+			border: 1px solid var(--border-default, #30363d);
 		}
+	;
 	}
 
 	/* Landscape Mode - Short viewport */

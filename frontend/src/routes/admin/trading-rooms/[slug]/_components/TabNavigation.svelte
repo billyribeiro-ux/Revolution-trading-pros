@@ -111,8 +111,8 @@
 	}
 
 	.tab.active {
-		color: #143e59;
-		border-bottom-color: #143e59;
+		color: var(--primary-500, #e6b800);
+		border-bottom-color: var(--primary-500, #e6b800);
 	}
 
 	.tab .badge {
@@ -124,8 +124,8 @@
 	}
 
 	.tab.active .badge {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.tab .badge.active {

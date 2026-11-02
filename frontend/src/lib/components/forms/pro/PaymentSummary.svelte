@@ -165,7 +165,7 @@
 	}
 
 	.summary-title {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 600;
 	}
@@ -220,7 +220,7 @@
 	.line-item__price {
 		flex: 0 0 auto;
 		margin-left: 0.75rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}

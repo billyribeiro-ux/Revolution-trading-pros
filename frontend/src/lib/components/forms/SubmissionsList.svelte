@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
+	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 	import type { FormSubmission } from '#lib/api/forms.js';
 	import {
 		getSubmissions,
@@ -360,7 +361,7 @@
 										onclick={() => handleDelete(submission)}
 										title="Delete"
 									>
-										🗑️
+										<IconTrash size={18} aria-hidden="true" />
 									</button>
 								</div>
 							</td>
@@ -660,6 +661,8 @@
 	}
 
 	.btn-icon {
+		display: inline-flex;
+		align-items: center;
 		background: none;
 		border: none;
 		font-size: 1.125rem;

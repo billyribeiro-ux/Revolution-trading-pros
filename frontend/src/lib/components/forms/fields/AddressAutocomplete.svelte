@@ -489,7 +489,7 @@
 	.field-label {
 		font-weight: 500;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.required {
@@ -515,7 +515,7 @@
 		width: 100%;
 		padding: 0.75rem 1rem;
 		padding-right: 2.5rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
 		transition: all 0.2s;
@@ -559,7 +559,7 @@
 		padding: 0;
 		list-style: none;
 		background-color: white;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 		max-height: 250px;
@@ -578,7 +578,7 @@
 
 	.suggestion-item:hover,
 	.suggestion-item.selected {
-		background-color: #f3f4f6;
+		background-color: var(--bg-surface, #1c2128);
 	}
 
 	.suggestion-icon {
@@ -589,7 +589,7 @@
 
 	.suggestion-text {
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.btn-manual,
@@ -613,7 +613,7 @@
 		flex-direction: column;
 		gap: 0.75rem;
 		padding: 1rem;
-		background-color: #f9fafb;
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 	}
 
@@ -647,7 +647,7 @@
 
 	.sub-input {
 		padding: 0.5rem 0.75rem;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		background-color: white;
@@ -659,13 +659,13 @@
 	}
 
 	.sub-input[readonly] {
-		background-color: #f3f4f6;
+		background-color: var(--bg-surface, #1c2128);
 		cursor: default;
 	}
 
 	.field-errors {
 		padding: 0.5rem 0.75rem;
-		background-color: #fee2e2;
+		background-color: var(--error-soft, rgba(218, 54, 51, 0.15));
 		border-radius: 0.375rem;
 	}
 

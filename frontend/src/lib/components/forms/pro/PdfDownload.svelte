@@ -400,7 +400,7 @@
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.pdf-list {
@@ -440,7 +440,7 @@
 
 	.pdf-name {
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 

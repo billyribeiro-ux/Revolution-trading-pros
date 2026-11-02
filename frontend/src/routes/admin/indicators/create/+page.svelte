@@ -1314,7 +1314,7 @@
 		margin: 0 auto 1rem;
 		background: var(--primary-500);
 		border-radius: 20px;
-		color: #fff;
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
 	}
 
@@ -2064,7 +2064,7 @@
 		padding: 0.375rem 0.75rem;
 		background: rgba(230, 184, 0, 0.9);
 		border-radius: 20px;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.75rem;
 		font-weight: 600;
 	}

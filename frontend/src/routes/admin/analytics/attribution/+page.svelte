@@ -323,7 +323,7 @@
 
 	.page-header h1 {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 1.25;
@@ -353,15 +353,15 @@
 	}
 
 	.secondary-button {
-		border: 1px solid #d1d5db;
-		background: #ffffff;
-		color: #374151;
+		border: 1px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		padding: 0.5rem 1rem;
 		font-size: 0.875rem;
 	}
 
 	.secondary-button:hover {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.panel,
@@ -369,9 +369,9 @@
 	.table-panel,
 	.empty-card,
 	.error-card {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.model-panel,
@@ -387,7 +387,7 @@
 
 	.section-title {
 		margin: 0 0 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.4;
@@ -401,25 +401,25 @@
 	}
 
 	.model-card {
-		border: 2px solid #e5e7eb;
-		background: #ffffff;
+		border: 2px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 		padding: 1rem;
 		text-align: left;
 	}
 
 	.model-card:hover {
-		border-color: #d1d5db;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.model-card--selected,
 	.model-card--selected:hover {
 		border-color: #2563eb;
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.model-name {
 		margin-bottom: 0.25rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 		line-height: 1.4;
 	}
@@ -480,7 +480,7 @@
 	}
 
 	.summary-value {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -491,13 +491,13 @@
 	}
 
 	.table-header {
-		border-bottom: 1px solid #f3f4f6;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		padding: 1rem;
 	}
 
 	.table-header h3 {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 700;
 		line-height: 1.4;
 	}
@@ -514,15 +514,15 @@
 
 	thead,
 	tfoot {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	tbody tr {
-		border-top: 1px solid #f3f4f6;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	tbody tr:hover {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	th,
@@ -538,7 +538,7 @@
 	}
 
 	tfoot td {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
@@ -547,7 +547,7 @@
 	}
 
 	.channel-name {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 		text-transform: capitalize;
 	}
@@ -558,7 +558,7 @@
 	}
 
 	.strong-cell {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
@@ -572,7 +572,7 @@
 		height: 0.5rem;
 		overflow: hidden;
 		border-radius: 999px;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.share-bar {
@@ -593,7 +593,7 @@
 	.path-row {
 		gap: 1rem;
 		border-radius: 8px;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		padding: 0.75rem;
 	}
 
@@ -611,9 +611,9 @@
 	}
 
 	.path-chip {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		padding: 0.25rem 0.5rem;
 		font-size: 0.875rem;
 		text-transform: capitalize;
@@ -629,7 +629,7 @@
 	}
 
 	.path-result div:first-child {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 		line-height: 1.4;
 	}
@@ -654,7 +654,7 @@
 
 	.empty-card h3 {
 		margin: 0 0 0.5rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.4;

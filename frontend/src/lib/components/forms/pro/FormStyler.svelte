@@ -609,7 +609,7 @@
 	.styler-title {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -680,7 +680,7 @@
 
 	.tab.active {
 		background-color: white;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
 

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
 	import Icon from '#lib/components/Icon.svelte';
 
 	/**
@@ -252,10 +254,10 @@
 	{#if showFeedback && answered}
 		<div class={['quiz-field__result', { 'quiz-field__result--correct': isCorrect === true }]}>
 			{#if isCorrect}
-				<span class="quiz-field__result-icon">✓</span>
+				<span class="quiz-field__result-icon"><IconCheck size={20} aria-hidden="true" /></span>
 				Correct!
 			{:else}
-				<span class="quiz-field__result-icon">✗</span>
+				<span class="quiz-field__result-icon"><IconX size={20} aria-hidden="true" /></span>
 				Incorrect
 			{/if}
 		</div>
@@ -285,7 +287,7 @@
 	.quiz-field__label {
 		font-weight: 500;
 		font-size: 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.quiz-field__required {
@@ -296,7 +298,7 @@
 	.quiz-field__score {
 		font-size: 0.875rem;
 		color: var(--text-tertiary, #6e7681);
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		padding: 0.25rem 0.75rem;
 		border-radius: 1rem;
 	}
@@ -328,7 +330,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem;
-		border: 2px solid #e5e7eb;
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
 		background: white;
 		cursor: pointer;
@@ -339,27 +341,27 @@
 
 	.quiz-option:hover:not(:disabled) {
 		border-color: #2563eb;
-		background: #f0f7ff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.quiz-option--selected {
 		border-color: #2563eb;
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.quiz-option--correct {
 		border-color: #10b981;
-		background: #d1fae5;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 	}
 
 	.quiz-option--incorrect {
 		border-color: #ef4444;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
 	.quiz-option--show-correct:not(.quiz-option--selected) {
 		border-color: #10b981;
-		background: #ecfdf5;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 	}
 
 	.quiz-option--with-image {
@@ -460,22 +462,22 @@
 		margin-top: 1rem;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
-		background: #fef3c7;
-		color: #92400e;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
 		font-size: 0.875rem;
 	}
 
 	.quiz-field__feedback--correct {
-		background: #d1fae5;
-		color: #065f46;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.quiz-field__result {
 		margin-top: 1rem;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
-		background: #fee2e2;
-		color: #991b1b;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.9375rem;
 		font-weight: 500;
 		display: flex;
@@ -484,12 +486,12 @@
 	}
 
 	.quiz-field__result--correct {
-		background: #d1fae5;
-		color: #065f46;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.quiz-field__result-icon {
-		font-size: 1.25rem;
+		display: inline-flex;
 	}
 
 	.quiz-field__errors {
@@ -503,7 +505,7 @@
 	}
 
 	.quiz-field--error .quiz-option {
-		border-color: #fca5a5;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.quiz-option:disabled {

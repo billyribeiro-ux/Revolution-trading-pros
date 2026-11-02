@@ -454,7 +454,7 @@
 
 	.tabs {
 		display: flex;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.tab {
@@ -471,8 +471,8 @@
 	}
 
 	.tab:hover {
-		color: #374151;
-		background: #f9fafb;
+		color: var(--text-primary, #f0f6fc);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.tab.active {
@@ -486,7 +486,7 @@
 
 	.error-message {
 		padding: 0.75rem;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
@@ -497,14 +497,14 @@
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.prompt-input {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
 		resize: vertical;
@@ -532,7 +532,7 @@
 
 	.example-btn {
 		padding: 0.25rem 0.5rem;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		border-radius: 0.25rem;
 		font-size: 0.75rem;
@@ -542,7 +542,7 @@
 	}
 
 	.example-btn:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.btn-generate,
@@ -596,7 +596,7 @@
 	.generated-preview {
 		margin-top: 1.5rem;
 		padding: 1rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 	}
 
@@ -604,7 +604,7 @@
 		margin: 0 0 0.75rem 0;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.fields-list {
@@ -621,12 +621,12 @@
 		padding: 0.5rem 0.75rem;
 		background: white;
 		border-radius: 0.375rem;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.field-type-badge {
 		padding: 0.125rem 0.5rem;
-		background: #ede9fe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--primary-500, #e6b800);
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
@@ -637,12 +637,12 @@
 	.field-label {
 		flex: 1;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.required-badge {
 		padding: 0.125rem 0.375rem;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
@@ -681,9 +681,9 @@
 
 	.suggestion-card {
 		padding: 1rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.suggestion-header {
@@ -695,7 +695,7 @@
 
 	.suggestion-label {
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.suggestion-reason {
@@ -736,7 +736,7 @@
 		flex-direction: column;
 		align-items: center;
 		padding: 1.5rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 		margin-bottom: 1rem;
 	}
@@ -765,7 +765,7 @@
 		position: relative;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.score-label {
@@ -790,7 +790,7 @@
 		margin: 0 0 0.75rem 0;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.issue-item {
@@ -798,13 +798,13 @@
 		align-items: flex-start;
 		gap: 0.5rem;
 		padding: 0.75rem;
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		border-radius: 0.375rem;
 		margin-bottom: 0.5rem;
 	}
 
 	.issue-item--info {
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.issue-icon {
@@ -814,15 +814,15 @@
 
 	.issue-message {
 		font-size: 0.8125rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.recommendation-card {
 		padding: 1rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
 		margin-bottom: 0.75rem;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.rec-header {
@@ -849,7 +849,7 @@
 
 	.rec-suggestion {
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 

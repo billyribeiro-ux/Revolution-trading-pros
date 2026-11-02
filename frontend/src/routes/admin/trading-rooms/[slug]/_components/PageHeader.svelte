@@ -4,6 +4,7 @@
 -->
 <script lang="ts">
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import type { RoomStats } from '#lib/api/room-content.js';
 
 	interface RoomBadge {
@@ -29,7 +30,11 @@
 	<div class="header-row">
 		<div class="header-content">
 			<div class="room-badge" style:background={room?.color || '#143E59'}>
-				{room?.icon || '📊'}
+				{#if room?.icon}
+					{room.icon}
+				{:else}
+					<IconChartBar size={24} aria-hidden="true" />
+				{/if}
 			</div>
 			<div>
 				<h1>{room?.name || 'Trading Room'}</h1>
@@ -78,7 +83,7 @@
 	}
 
 	.back-link:hover {
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.header-row {

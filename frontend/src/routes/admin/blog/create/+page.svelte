@@ -743,7 +743,7 @@
 
 <style>
 	.post-editor {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.editor-header {
@@ -752,7 +752,7 @@
 		align-items: center;
 		padding: 1.5rem 2rem;
 		background: white;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		position: sticky;
 		top: 0;
 		z-index: 100;
@@ -761,7 +761,7 @@
 	.editor-header h1 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -773,8 +773,8 @@
 
 	.save-error {
 		padding: 0.5rem 1rem;
-		background: #fef2f2;
-		border: 1px solid #fecaca;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
@@ -783,8 +783,8 @@
 
 	.save-success {
 		padding: 0.5rem 1rem;
-		background: #f0fdf4;
-		border: 1px solid #bbf7d0;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
@@ -820,12 +820,12 @@
 
 	.btn-secondary {
 		background: white;
-		color: #666;
-		border: 1px solid #e5e5e5;
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.editor-layout {
@@ -854,7 +854,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 	}
 
@@ -866,7 +866,7 @@
 		border: none;
 		border-radius: 8px;
 		background: white;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		outline: none;
 	}
 
@@ -880,12 +880,12 @@
 		background: white;
 		border-radius: 6px;
 		overflow: hidden;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.slug-prefix {
 		padding: 0.75rem 1rem;
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 		color: #999;
 		font-size: 0.9rem;
 		white-space: nowrap;
@@ -897,20 +897,20 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		background: white;
 	}
 
 	textarea {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 		font-family: inherit;
 		resize: vertical;
 		background: white;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	textarea:focus {
@@ -933,13 +933,13 @@
 		background: white;
 		border: none;
 		cursor: pointer;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.panel-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -957,26 +957,26 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.sidebar-panel input[type='text'],
 	.sidebar-panel input[type='datetime-local'] {
 		width: 100%;
 		padding: 0.625rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.9rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		background: white;
 	}
 
@@ -990,7 +990,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem 1rem;
-		border: 2px dashed #e5e5e5;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -1053,7 +1053,7 @@
 	}
 
 	.checkbox-item:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1071,8 +1071,8 @@
 		flex-wrap: wrap;
 		gap: 0.5rem;
 		padding: 0.75rem;
-		background: #f8f9fa;
-		border: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		max-height: 280px;
 		overflow-y: auto;
@@ -1225,7 +1225,7 @@
 	.upload-loading span {
 		margin-top: 0.5rem;
 		font-size: 0.9rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-loading :global(.spin) {
@@ -1256,12 +1256,12 @@
 	.sidebar-panel textarea {
 		width: 100%;
 		padding: 0.625rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.9rem;
 		font-family: inherit;
 		resize: vertical;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		background: white;
 	}
 
@@ -1280,7 +1280,7 @@
 		background: white;
 		border-radius: 8px;
 		overflow: hidden;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		min-height: 600px;
 	}
 
@@ -1299,13 +1299,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1rem;
-		border-bottom: 1px solid #e5e5e5;
-		background: #f8f9fa;
+		border-bottom: 1px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.editor-label {
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 		margin: 0;
 	}
@@ -1322,15 +1322,15 @@
 		width: 36px;
 		height: 36px;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		cursor: pointer;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.2s;
 	}
 
 	.toolbar-btn:hover {
-		background: #f0f0f0;
+		background: var(--bg-surface, #1c2128);
 		color: var(--info-emphasis, #58a6ff);
 	}
 

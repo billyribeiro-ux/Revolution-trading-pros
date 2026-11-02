@@ -795,7 +795,7 @@
 	.step-title {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 

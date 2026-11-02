@@ -467,12 +467,12 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -511,12 +511,12 @@
 
 	.btn-secondary {
 		background: white;
-		color: #374151;
-		border: 1px solid #e5e5e5;
+		color: var(--text-primary, #f0f6fc);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.stats-grid {
@@ -528,7 +528,7 @@
 
 	.stat-card {
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
 		text-align: center;
@@ -537,12 +537,12 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.25rem;
 	}
 
 	.stat-label {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.85rem;
 	}
 
@@ -550,7 +550,7 @@
 		display: flex;
 		gap: 0.5rem;
 		margin-bottom: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		padding-bottom: 0.5rem;
 	}
 
@@ -563,13 +563,13 @@
 		border: none;
 		border-radius: 6px 6px 0 0;
 		cursor: pointer;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		transition: all 0.2s;
 	}
 
 	.tab:hover {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.tab.active {
@@ -580,7 +580,7 @@
 	.images-section,
 	.settings-section {
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 1.5rem;
 	}
@@ -589,7 +589,7 @@
 	.empty-state {
 		text-align: center;
 		padding: 3rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.images-list {
@@ -602,7 +602,7 @@
 		display: flex;
 		gap: 1.5rem;
 		padding: 1rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 	}
 
@@ -613,7 +613,7 @@
 		flex-shrink: 0;
 		border-radius: 6px;
 		overflow: hidden;
-		background: #e5e5e5;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.image-preview img {
@@ -640,7 +640,7 @@
 
 	.image-filename {
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.75rem;
 		font-size: 0.9rem;
 	}
@@ -653,12 +653,12 @@
 	}
 
 	.attribute-label {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		min-width: 100px;
 	}
 
 	.attribute-value {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		flex: 1;
 	}
 
@@ -696,7 +696,7 @@
 	}
 
 	.settings-card {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
@@ -705,10 +705,10 @@
 	.settings-card h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1.25rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.setting-row {
@@ -727,7 +727,7 @@
 	.setting-row label {
 		display: block;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
@@ -742,7 +742,7 @@
 	.setting-row select {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 	}
@@ -757,7 +757,7 @@
 	.hint {
 		display: block;
 		font-size: 0.8rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		margin-top: 0.5rem;
 	}
 

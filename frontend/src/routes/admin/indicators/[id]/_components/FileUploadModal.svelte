@@ -165,7 +165,7 @@
 	input:focus,
 	select:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 	}
 	.hint {
 		font-size: 13px;
@@ -186,11 +186,11 @@
 		cursor: pointer;
 	}
 	.btn-primary {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 	.btn-primary:disabled {
 		opacity: 0.6;

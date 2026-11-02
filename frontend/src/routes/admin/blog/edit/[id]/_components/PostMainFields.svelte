@@ -50,7 +50,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 	}
 
@@ -62,7 +62,7 @@
 		border: none;
 		border-radius: 8px;
 		background: white;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		outline: none;
 	}
 
@@ -93,7 +93,7 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		background: white;
 	}
 
@@ -122,7 +122,7 @@
 		font-family: inherit;
 		resize: vertical;
 		background: white;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	textarea:focus {

@@ -305,7 +305,7 @@
 	.field-label {
 		font-weight: 500;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.required {
@@ -321,7 +321,7 @@
 
 	.calculated-display {
 		padding: 1rem 1.25rem;
-		background: #f0f9ff;
+		background: var(--bg-elevated, #161b22);
 		border: 2px solid #0ea5e9;
 		border-radius: 0.5rem;
 		display: flex;
@@ -330,14 +330,14 @@
 	}
 
 	.calculated-display.has-error {
-		background: #fef2f2;
-		border-color: #f87171;
+		background: var(--bg-elevated, #161b22);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.calculated-value {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #0369a1;
+		color: var(--info-emphasis, #58a6ff);
 		font-family: 'SF Mono', Monaco, 'Courier New', monospace;
 	}
 
@@ -355,7 +355,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
-		background-color: #f3f4f6;
+		background-color: var(--bg-surface, #1c2128);
 		border-radius: 0.25rem;
 	}
 
@@ -368,7 +368,7 @@
 	.formula-code {
 		font-size: 0.75rem;
 		font-family: 'SF Mono', Monaco, 'Courier New', monospace;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		background-color: transparent;
 	}
 
@@ -376,7 +376,7 @@
 		font-size: 0.75rem;
 		color: var(--error-emphasis, #f85149);
 		padding: 0.25rem 0.5rem;
-		background-color: #fee2e2;
+		background-color: var(--error-soft, rgba(218, 54, 51, 0.15));
 		border-radius: 0.25rem;
 	}
 </style>

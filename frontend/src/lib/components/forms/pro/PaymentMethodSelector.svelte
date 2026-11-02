@@ -342,7 +342,7 @@
 	}
 
 	.method-name {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}

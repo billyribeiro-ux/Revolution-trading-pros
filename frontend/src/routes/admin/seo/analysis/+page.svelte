@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
+	import IconX from '@tabler/icons-svelte-runes/icons/x';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import { Card, Button, Badge, Input, Select } from '#lib/components/ui/index.js';
 	import { addToast } from '#lib/utils/toast.js';
 	import { seoApi, type SeoAnalysis } from '#lib/api/seo.js';
@@ -211,10 +214,12 @@
 					<p class="metric-label">Meta Tags</p>
 					<div class="badge-row">
 						<Badge variant={analysis.has_meta_title ? 'success' : 'danger'}>
-							Title {analysis.has_meta_title ? '✓' : '✗'}
+							Title
+							{#if analysis.has_meta_title}<IconCheck size={14} aria-label="present" />{:else}<IconX size={14} aria-label="missing" />{/if}
 						</Badge>
 						<Badge variant={analysis.has_meta_description ? 'success' : 'danger'}>
-							Description {analysis.has_meta_description ? '✓' : '✗'}
+							Description
+							{#if analysis.has_meta_description}<IconCheck size={14} aria-label="present" />{:else}<IconX size={14} aria-label="missing" />{/if}
 						</Badge>
 					</div>
 				</Card>
@@ -227,7 +232,7 @@
 					<ul class="insight-list">
 						{#each analysis.suggestions as suggestion (suggestion)}
 							<li class="insight-item">
-								<span class="insight-item__icon insight-item__icon--warning">⚠</span>
+								<span class="insight-item__icon insight-item__icon--warning"><IconAlertTriangle size={16} aria-hidden="true" /></span>
 								<span class="insight-item__text">{suggestion}</span>
 							</li>
 						{/each}
@@ -242,7 +247,7 @@
 					<ul class="insight-list insight-list--compact">
 						{#each analysis.analysis_results as result (result)}
 							<li class="insight-item">
-								<span class="insight-item__icon insight-item__icon--success">✓</span>
+								<span class="insight-item__icon insight-item__icon--success"><IconCheck size={16} aria-hidden="true" /></span>
 								<span class="insight-item__text">{result}</span>
 							</li>
 						{/each}
@@ -264,7 +269,7 @@
 
 <style>
 	.seo-analysis-page {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.page-header {
@@ -273,7 +278,7 @@
 
 	.page-title {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 2.25rem;
@@ -290,7 +295,7 @@
 
 	.section-title {
 		margin: 0 0 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.75rem;
@@ -415,7 +420,7 @@
 
 	.metric-value {
 		margin: 0.25rem 0 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 2rem;
@@ -453,6 +458,7 @@
 	}
 
 	.insight-item__icon {
+		display: inline-flex;
 		margin-top: 0.125rem;
 		line-height: 1;
 	}

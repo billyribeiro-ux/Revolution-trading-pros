@@ -239,7 +239,7 @@
 <style>
 	.responsive-preview {
 		border-radius: 0.75rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		padding: 1rem;
 	}
 
@@ -257,7 +257,7 @@
 
 	.responsive-preview__title {
 		margin: 0;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 600;
 		line-height: 1.25rem;
@@ -296,7 +296,7 @@
 		overflow: hidden;
 		border: 2px solid transparent;
 		border-radius: 0.5rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		padding: 0;
 		text-align: inherit;
 		transition:
@@ -313,7 +313,7 @@
 	}
 
 	.responsive-preview__variant--interactive:hover {
-		border-color: #93c5fd;
+		border-color: var(--border-default, #30363d);
 		box-shadow:
 			0 4px 6px -1px rgb(0 0 0 / 0.1),
 			0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -335,7 +335,7 @@
 	.responsive-preview__thumbnail {
 		aspect-ratio: 1;
 		overflow: hidden;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .responsive-preview__thumbnail {
@@ -354,7 +354,7 @@
 	}
 
 	.responsive-preview__variant-label {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 
@@ -387,7 +387,7 @@
 
 	.responsive-preview__breakpoint-track {
 		height: 0.25rem;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .responsive-preview__breakpoint-track {
@@ -402,7 +402,7 @@
 	.responsive-preview__comparison {
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	:global(.dark) .responsive-preview__comparison {
@@ -452,9 +452,9 @@
 		z-index: 50;
 		overflow: hidden;
 		pointer-events: none;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		box-shadow:
 			0 20px 25px -5px rgb(0 0 0 / 0.1),
 			0 8px 10px -6px rgb(0 0 0 / 0.1);
@@ -477,7 +477,7 @@
 		justify-content: space-between;
 		gap: 0.5rem;
 		padding: 0.25rem 0.5rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	:global(.dark) .responsive-preview__tooltip-meta {

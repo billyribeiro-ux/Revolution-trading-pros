@@ -266,7 +266,7 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
@@ -342,7 +342,7 @@
 	.settings-card h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1.5rem;
 	}
 
@@ -403,7 +403,7 @@
 	.section-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -466,7 +466,7 @@
 	.article-info h4 {
 		font-size: 0.95rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem;
 	}
 
@@ -484,7 +484,7 @@
 	.info-section h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1rem;
 	}
 
@@ -504,7 +504,7 @@
 	.info-card h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 

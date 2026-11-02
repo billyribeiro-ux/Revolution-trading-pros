@@ -157,23 +157,23 @@
 	}
 
 	.stat-icon.blue {
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-icon.green {
-		background: #d1fae5;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.orange {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
 	}
 	.stat-icon.gold {
-		background: #fff8e0;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--primary-600);
 	}
 	.stat-icon.emerald {
-		background: #d1fae5;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 

@@ -1580,7 +1580,7 @@
 <style>
 	.create-user-page {
 		min-height: 100%;
-		background: #09090b;
+		background: var(--bg-base, #0d1117);
 		color: #ffffff;
 		padding: 1.5rem;
 	}
@@ -1637,7 +1637,7 @@
 		flex: 0 0 auto;
 		border: 0;
 		border-radius: 0.5rem;
-		background: #18181b;
+		background: var(--bg-elevated, #161b22);
 		padding: 0.5rem 1rem;
 		color: #52525b;
 		font: inherit;
@@ -1655,7 +1655,7 @@
 	}
 
 	.step-button.complete {
-		background: #27272a;
+		background: var(--bg-surface, #1c2128);
 		color: #d4d4d8;
 	}
 
@@ -1688,7 +1688,7 @@
 		min-height: 2.625rem;
 		border: 1px solid #3f3f46;
 		border-radius: 0.5rem;
-		background: #18181b;
+		background: var(--bg-elevated, #161b22);
 		padding: 0.625rem 1rem;
 		color: #ffffff;
 		font: inherit;
@@ -1764,7 +1764,7 @@
 	.info-panel,
 	.review-panel {
 		border-radius: 0.75rem;
-		background: #18181b;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.strength-panel,
@@ -1784,7 +1784,7 @@
 		height: 0.5rem;
 		overflow: hidden;
 		border-radius: 999px;
-		background: #27272a;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.strength-fill {
@@ -1850,7 +1850,7 @@
 	.role-card {
 		border: 1px solid #27272a;
 		border-radius: 0.75rem;
-		background: #18181b;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.25rem;
 		color: #ffffff;
 		text-align: left;
@@ -1948,7 +1948,7 @@
 		gap: 0.75rem;
 		border: 1px solid #27272a;
 		border-radius: 0.5rem;
-		background: #18181b;
+		background: var(--bg-elevated, #161b22);
 		padding: 1rem;
 		color: #d4d4d8;
 	}
@@ -1962,7 +1962,7 @@
 
 	.training-chip {
 		border-radius: 999px;
-		background: #27272a;
+		background: var(--bg-surface, #1c2128);
 		padding: 0.25rem 0.75rem;
 		color: #d4d4d8;
 		font-size: 0.75rem;
@@ -2029,7 +2029,7 @@
 	}
 
 	.secondary-button {
-		background: #27272a;
+		background: var(--bg-surface, #1c2128);
 		color: #d4d4d8;
 	}
 

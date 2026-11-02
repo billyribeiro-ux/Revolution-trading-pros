@@ -290,7 +290,7 @@
 
 	.item-label {
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.item-price {

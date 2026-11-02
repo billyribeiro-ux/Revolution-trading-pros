@@ -225,7 +225,7 @@
 	}
 
 	.modal {
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		width: 100%;
 		max-width: 560px;
@@ -239,13 +239,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 20px 24px;
-		border-bottom: 1px solid #e2e8f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h3 {
 		font-size: 20px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -260,8 +260,8 @@
 	}
 
 	.modal-close:hover {
-		background: #f1f5f9;
-		color: #1e293b;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-form {
@@ -290,19 +290,19 @@
 		width: 100%;
 		padding: 10px 14px;
 		font-size: 14px;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		transition:
 			border-color 0.2s,
 			box-shadow 0.2s;
-		background: #fff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.form-group input:focus,
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
 	}
 
@@ -338,7 +338,7 @@
 
 	.form-checkbox span {
 		font-weight: 400;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-actions {
@@ -347,7 +347,7 @@
 		gap: 12px;
 		margin-top: 24px;
 		padding-top: 20px;
-		border-top: 1px solid #e2e8f0;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn {
@@ -365,12 +365,12 @@
 	}
 
 	.btn-primary {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
-		background: #0d2a3d;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-primary:disabled {
@@ -379,12 +379,12 @@
 	}
 
 	.btn-secondary {
-		background: #f1f5f9;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-secondary:hover {
-		background: #e2e8f0;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.spinner-sm {

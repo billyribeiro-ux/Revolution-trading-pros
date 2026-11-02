@@ -640,8 +640,8 @@
 <style>
 	.board-settings-page {
 		min-height: 100%;
-		background: #f9fafb;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .board-settings-page {
@@ -650,8 +650,8 @@
 	}
 
 	.settings-header {
-		border-bottom: 1px solid #e5e7eb;
-		background: #ffffff;
+		border-bottom: 1px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	:global(.dark) .settings-header {
@@ -729,8 +729,8 @@
 	}
 
 	.back-link:hover {
-		background: #f3f4f6;
-		color: #374151;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .back-link {
@@ -747,7 +747,7 @@
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 1.25;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	h2 {
@@ -755,7 +755,7 @@
 		font-size: 1.125rem;
 		font-weight: 650;
 		line-height: 1.4;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) h1,
@@ -827,7 +827,7 @@
 		border: 0;
 		border-radius: 0.5rem;
 		background: transparent;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font: inherit;
 		text-align: left;
 		cursor: pointer;
@@ -837,7 +837,7 @@
 	}
 
 	.settings-tab:hover {
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.settings-tab.active {
@@ -864,9 +864,9 @@
 	}
 
 	.settings-card {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 	}
 
@@ -895,7 +895,7 @@
 	.setting-label {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) label,
@@ -907,11 +907,11 @@
 	select {
 		width: 100%;
 		min-height: 2.5rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		padding: 0.5rem 0.75rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font: inherit;
 	}
 
@@ -961,7 +961,7 @@
 		position: absolute;
 		inset: 0;
 		border-radius: 999px;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 		transition:
 			background-color 160ms ease,
 			box-shadow 160ms ease;
@@ -973,9 +973,9 @@
 		left: 0.125rem;
 		width: 1.25rem;
 		height: 1.25rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 999px;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		content: '';
 		transition: transform 160ms ease;
 	}
@@ -986,7 +986,7 @@
 
 	.toggle-control input:checked + .toggle-track::after {
 		transform: translateX(1.25rem);
-		border-color: #ffffff;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.toggle-control input:focus-visible + .toggle-track {
@@ -1006,12 +1006,12 @@
 	.config-row {
 		gap: 0.75rem;
 		border-radius: 0.5rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		padding: 0.75rem;
 	}
 
 	.config-row--new {
-		border: 2px dashed #d1d5db;
+		border: 2px dashed var(--border-default, #30363d);
 		background: transparent;
 	}
 
@@ -1089,7 +1089,7 @@
 	}
 
 	.icon-button--danger:hover {
-		background: #fef2f2;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	:global(.dark) .icon-button--danger:hover {
@@ -1187,7 +1187,7 @@
 
 	.save-panel {
 		margin-top: 2rem;
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--border-default, #30363d);
 		padding-top: 1.5rem;
 	}
 

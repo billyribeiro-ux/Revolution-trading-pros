@@ -88,7 +88,7 @@
 	.empty-state {
 		text-align: center;
 		padding: 80px 20px;
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		color: var(--text-tertiary, #6e7681);
 	}
@@ -101,7 +101,7 @@
 	.empty-state h3 {
 		font-size: 20px;
 		font-weight: 600;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 8px 0;
 	}
 
@@ -115,8 +115,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;
@@ -126,13 +126,13 @@
 	}
 
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 
 	/* Weekly Video */
 	.current-video-card {
-		background: #fff;
-		border: 2px solid #143e59;
+		background: var(--bg-elevated, #161b22);
+		border: 2px solid var(--primary-500, #e6b800);
 		border-radius: 16px;
 		overflow: hidden;
 		position: relative;
@@ -142,8 +142,8 @@
 		position: absolute;
 		top: 16px;
 		left: 16px;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		padding: 6px 14px;
 		border-radius: 6px;
 		font-size: 11px;
@@ -162,7 +162,7 @@
 		height: 180px;
 		background-size: cover;
 		background-position: center;
-		background-color: #f1f5f9;
+		background-color: var(--info-soft, rgba(56, 139, 253, 0.15));
 		border-radius: 12px;
 		flex-shrink: 0;
 		position: relative;
@@ -187,7 +187,7 @@
 	.video-info h3 {
 		font-size: 20px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 8px 0;
 	}
 
@@ -232,13 +232,13 @@
 		align-items: center;
 		gap: 16px;
 		padding: 14px 18px;
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 10px;
 	}
 
 	.archived-week {
 		font-weight: 600;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 		min-width: 200px;
 	}
 

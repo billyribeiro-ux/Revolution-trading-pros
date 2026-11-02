@@ -98,7 +98,7 @@
 		display: block;
 		font-size: 14px;
 		font-weight: 700;
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.day-date {
@@ -128,7 +128,7 @@
 	.btn-link {
 		background: none;
 		border: none;
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 		font-size: 13px;
 		font-weight: 500;
 		cursor: pointer;
@@ -136,7 +136,7 @@
 	}
 
 	.btn-link:hover {
-		color: #0d2a3d;
+		color: var(--primary-500, #e6b800);
 	}
 
 	@media (max-width: 1199.98px) {

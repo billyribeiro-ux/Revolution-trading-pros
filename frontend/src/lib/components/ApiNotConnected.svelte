@@ -12,6 +12,7 @@
 
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
+	import type { Component } from 'svelte';
 	import { IconPlugConnected, IconArrowRight, IconLock } from '#lib/icons/index.js';
 
 	interface Props {
@@ -21,8 +22,8 @@
 		description?: string;
 		/** Service key for direct navigation */
 		serviceKey?: string;
-		/** Icon to display (component or emoji) */
-		icon?: string;
+		/** Tabler icon component to display */
+		icon?: Component<{ size?: number; 'aria-hidden'?: boolean | 'true' | 'false' }>;
 		/** Primary color for theming */
 		color?: string;
 		/** List of features this connection enables */
@@ -35,11 +36,13 @@
 		serviceName,
 		description = '',
 		serviceKey,
-		icon = '🔌',
+		icon = IconPlugConnected,
 		color = '#3b82f6',
 		features = [],
 		compact = false
 	}: Props = $props();
+
+	const Icon = $derived(icon);
 
 	let finalDescription = $derived(description || `Connect ${serviceName} to enable this feature`);
 
@@ -73,7 +76,7 @@
 		<div class="content">
 			<!-- Icon -->
 			<div class="icon-container" style:--icon-color={color}>
-				<span class="service-icon">{icon}</span>
+				<span class="service-icon"><Icon size={32} aria-hidden="true" /></span>
 				<div class="plug-indicator">
 					<IconPlugConnected size={20} />
 				</div>

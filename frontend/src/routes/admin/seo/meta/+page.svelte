@@ -111,24 +111,24 @@
 	.seo-meta-page {
 		display: flex;
 		flex-direction: column;
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.page-header {
 		padding: 2rem;
 		background: white;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -141,7 +141,7 @@
 
 	.entities-sidebar {
 		background: white;
-		border-right: 1px solid #e5e5e5;
+		border-right: 1px solid var(--border-default, #30363d);
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -152,7 +152,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.search-box input {
@@ -160,7 +160,7 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.search-box input::placeholder {
@@ -179,7 +179,7 @@
 		justify-content: space-between;
 		padding: 1rem;
 		border: none;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		background: white;
 		cursor: pointer;
 		transition: background 0.2s;
@@ -187,18 +187,18 @@
 	}
 
 	.entity-item:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.entity-item.active {
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		border-left: 3px solid #3b82f6;
 	}
 
 	.entity-info h4 {
 		font-size: 0.95rem;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.25rem;
 	}
 
@@ -220,17 +220,17 @@
 	}
 
 	.score-badge.good {
-		background: #dcfce7;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 
 	.score-badge.warning {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
 	}
 
 	.score-badge.poor {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 
@@ -256,7 +256,7 @@
 
 	.editor-area {
 		overflow-y: auto;
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.no-selection {
@@ -271,7 +271,7 @@
 
 	.no-selection h3 {
 		margin: 1rem 0 0.5rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 	}
 

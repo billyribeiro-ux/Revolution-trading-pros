@@ -446,7 +446,7 @@
 	.editor-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -517,7 +517,7 @@
 	}
 
 	.tab:hover {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab.active {
@@ -541,7 +541,7 @@
 		gap: 0.5rem;
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1.5rem;
 	}
 
@@ -554,7 +554,7 @@
 		justify-content: space-between;
 		align-items: center;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.95rem;
 	}
@@ -669,7 +669,7 @@
 
 	.checkbox-group strong {
 		display: block;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.25rem;
 	}
 

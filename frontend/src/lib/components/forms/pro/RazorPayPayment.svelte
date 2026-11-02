@@ -12,6 +12,10 @@
 	 */
 
 	import Icon from '#lib/components/Icon.svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconBuildingBank from '@tabler/icons-svelte-runes/icons/building-bank';
+	import IconCoin from '@tabler/icons-svelte-runes/icons/coin';
 
 	interface Props {
 		keyId: string;
@@ -153,7 +157,7 @@
 <div class={['razorpay-payment', { disabled, 'has-error': error || paymentError }]}>
 	{#if testMode}
 		<div class="test-mode-banner">
-			<span>⚠️ Razorpay Test Mode</span>
+			<span><IconAlertTriangle size={14} aria-hidden="true" /> Razorpay Test Mode</span>
 		</div>
 	{/if}
 
@@ -175,10 +179,10 @@
 	</button>
 
 	<div class="payment-methods">
-		<span class="payment-badge">💳 Cards</span>
-		<span class="payment-badge">🏦 UPI</span>
-		<span class="payment-badge">🏛️ Net Banking</span>
-		<span class="payment-badge">💰 Wallets</span>
+		<span class="payment-badge"><IconCreditCard size={14} aria-hidden="true" /> Cards</span>
+		<span class="payment-badge"><IconBuildingBank size={14} aria-hidden="true" /> UPI</span>
+		<span class="payment-badge"><IconBuildingBank size={14} aria-hidden="true" /> Net Banking</span>
+		<span class="payment-badge"><IconCoin size={14} aria-hidden="true" /> Wallets</span>
 	</div>
 
 	<div class="secure-badge">
@@ -196,6 +200,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+
+	.test-mode-banner span {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 	}
 
 	.test-mode-banner {
@@ -217,7 +227,7 @@
 	}
 
 	.amount-display strong {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 	}
 
@@ -275,6 +285,9 @@
 	}
 
 	.payment-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
 		padding: 0.25rem 0.5rem;
 		background-color: #f3f4f6;
 		border-radius: 0.25rem;

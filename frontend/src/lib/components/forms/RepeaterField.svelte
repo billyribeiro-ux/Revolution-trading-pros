@@ -456,7 +456,7 @@
 	.repeater-field__label {
 		font-weight: 500;
 		font-size: 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.repeater-field__required {
@@ -467,7 +467,7 @@
 	.repeater-field__count {
 		font-size: 0.75rem;
 		color: var(--text-tertiary, #6e7681);
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		padding: 0.125rem 0.5rem;
 		border-radius: 0.25rem;
 	}
@@ -485,7 +485,7 @@
 	}
 
 	.repeater-item {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
 		background: white;
 		overflow: hidden;
@@ -507,8 +507,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: #f9fafb;
-		border-bottom: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.repeater-item--collapsed .repeater-item__header {
@@ -525,7 +525,7 @@
 	}
 
 	.repeater-item__drag-handle:hover {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.repeater-item__drag-handle:active {
@@ -536,7 +536,7 @@
 		flex: 1;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.repeater-item__preview {
@@ -560,8 +560,8 @@
 	}
 
 	.repeater-item__action:hover:not(:disabled) {
-		background: #e5e7eb;
-		color: #374151;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.repeater-item__action:disabled {
@@ -570,7 +570,7 @@
 	}
 
 	.repeater-item__action--danger:hover:not(:disabled) {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 
@@ -592,14 +592,14 @@
 		display: block;
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.375rem;
 	}
 
 	.repeater-item__input {
 		width: 100%;
 		padding: 0.5rem 0.75rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
 		transition:
@@ -626,7 +626,7 @@
 		width: 100%;
 		padding: 0.75rem;
 		margin-top: 0.75rem;
-		border: 2px dashed #d1d5db;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 0.75rem;
 		background: transparent;
 		color: var(--text-tertiary, #6e7681);
@@ -639,7 +639,7 @@
 	.repeater-add-btn:hover {
 		border-color: #2563eb;
 		color: var(--info-emphasis, #58a6ff);
-		background: #f0f7ff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.repeater-field__errors {
@@ -653,7 +653,7 @@
 	}
 
 	.repeater-field--error .repeater-item {
-		border-color: #fca5a5;
+		border-color: var(--border-default, #30363d);
 	}
 
 	@media (max-width: 639.98px) {

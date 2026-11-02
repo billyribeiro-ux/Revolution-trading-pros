@@ -286,12 +286,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -306,7 +306,7 @@
 		background: white;
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -314,24 +314,24 @@
 	}
 
 	.stat-card.warning {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		border-color: #fde047;
 	}
 
 	.stat-card.success {
-		background: #dcfce7;
-		border-color: #86efac;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		border-color: var(--border-default, #30363d);
 	}
 
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0.5rem 0;
 	}
 
 	.stat-label {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 	}
 
@@ -349,7 +349,7 @@
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 	}
 
@@ -363,7 +363,7 @@
 	.sort-select {
 		padding: 0.75rem 1rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.95rem;
 		cursor: pointer;
@@ -389,7 +389,7 @@
 	.logs-table {
 		background: white;
 		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		overflow: hidden;
 	}
 
@@ -401,21 +401,21 @@
 	th {
 		text-align: left;
 		padding: 1rem;
-		background: #f8f9fa;
-		border-bottom: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 	}
 
 	td {
 		padding: 1rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		font-size: 0.95rem;
 	}
 
 	tbody tr:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.url-cell {
@@ -427,20 +427,20 @@
 	.hits-badge {
 		display: inline-block;
 		padding: 0.25rem 0.625rem;
-		background: #f0f0f0;
-		color: #666;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
 		border-radius: 12px;
 		font-size: 0.85rem;
 		font-weight: 600;
 	}
 
 	.hits-badge.high {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 
 	.date-cell {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 	}
 
@@ -462,17 +462,17 @@
 	}
 
 	.status-badge.pending {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 		color: var(--warning-emphasis, #d29922);
 	}
 
 	.status-badge.resolved {
-		background: #dcfce7;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-badge.ignored {
-		background: #f0f0f0;
+		background: var(--bg-surface, #1c2128);
 		color: #999;
 	}
 
@@ -484,33 +484,33 @@
 	.action-btn {
 		padding: 0.5rem;
 		background: none;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: #f8f9fa;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.action-btn.primary {
 		color: var(--info-emphasis, #58a6ff);
-		border-color: #dbeafe;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.action-btn.primary:hover {
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 	}
 
 	.action-btn.danger {
 		color: var(--error-emphasis, #f85149);
-		border-color: #fee2e2;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.action-btn.danger:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
 	.empty-state {
@@ -519,12 +519,12 @@
 	}
 
 	.empty-state h3 {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.empty-state p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.loading {

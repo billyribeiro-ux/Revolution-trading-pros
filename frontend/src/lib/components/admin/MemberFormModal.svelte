@@ -1622,7 +1622,7 @@
 	}
 
 	.btn-submit:hover:not(:disabled) {
-		background: #f5c800;
+		background: var(--primary-500, #e6b800);
 		transform: translateY(-2px);
 		box-shadow:
 			0 8px 24px rgba(230, 184, 0, 0.35),
@@ -1763,7 +1763,7 @@
 	}
 
 	.btn-primary:hover {
-		background: #f5c800;
+		background: var(--primary-500, #e6b800);
 		transform: translateY(-2px);
 		box-shadow:
 			0 8px 24px rgba(230, 184, 0, 0.35),

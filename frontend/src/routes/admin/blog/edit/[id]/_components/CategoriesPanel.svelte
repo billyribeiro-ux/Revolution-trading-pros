@@ -82,7 +82,7 @@
 	.sidebar-panel h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid #f0f0f0;

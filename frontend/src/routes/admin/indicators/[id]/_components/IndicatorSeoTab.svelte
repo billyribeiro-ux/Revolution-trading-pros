@@ -89,7 +89,7 @@
 	input:focus,
 	textarea:focus {
 		outline: none;
-		border-color: #143e59;
+		border-color: var(--primary-500, #e6b800);
 	}
 	textarea {
 		resize: vertical;

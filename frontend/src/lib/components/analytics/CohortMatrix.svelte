@@ -216,19 +216,19 @@
 <style>
 	.cohort-matrix {
 		overflow: hidden;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.cohort-matrix__header {
-		border-bottom: 1px solid #f3f4f6;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		padding: 1rem;
 	}
 
 	.cohort-matrix__header h3 {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -253,7 +253,7 @@
 	}
 
 	thead tr {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.cohort-matrix__heading {
@@ -284,11 +284,11 @@
 	}
 
 	.cohort-matrix__heading--sticky {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.cohort-matrix__row {
-		border-top: 1px solid #f3f4f6;
+		border-top: 1px solid var(--border-default, #30363d);
 		transition: background 160ms ease;
 	}
 
@@ -297,8 +297,8 @@
 	}
 
 	.cohort-matrix__cohort {
-		background: #ffffff;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 
@@ -324,7 +324,7 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 0.25rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.75rem;
 		font-weight: 500;
 		line-height: 1;
@@ -352,7 +352,7 @@
 
 	.retention-cell--empty,
 	.retention-cell--missing {
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.retention-cell--missing {
@@ -368,14 +368,14 @@
 	}
 
 	.cohort-matrix__average {
-		border-top: 2px solid #e5e7eb;
-		background: #f9fafb;
+		border-top: 2px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.cohort-matrix__average-label {
 		padding: 0.5rem 0.75rem;
-		background: #f9fafb;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
@@ -389,7 +389,7 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		border-top: 1px solid #f3f4f6;
+		border-top: 1px solid var(--border-default, #30363d);
 		padding: 1rem;
 		font-size: 0.75rem;
 		line-height: 1rem;
@@ -410,7 +410,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.cohort-matrix__swatch {

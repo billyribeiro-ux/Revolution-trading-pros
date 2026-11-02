@@ -257,12 +257,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -292,7 +292,7 @@
 
 	.schema-card {
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		overflow: hidden;
 		transition: box-shadow 0.2s;
@@ -307,8 +307,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem;
-		background: #f8f9fa;
-		border-bottom: 1px solid #e5e5e5;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.schema-type {
@@ -327,24 +327,24 @@
 	.action-btn {
 		padding: 0.5rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: #f0f0f0;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.action-btn.danger {
 		color: var(--error-emphasis, #f85149);
-		border-color: #fee2e2;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.action-btn.danger:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
 	.card-body {
@@ -354,22 +354,22 @@
 	.card-body h4 {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.meta {
 		font-size: 0.85rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.meta strong {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.card-footer {
 		padding: 1rem 1.5rem;
-		border-top: 1px solid #f0f0f0;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.edit-link {
@@ -391,12 +391,12 @@
 	}
 
 	.empty-state h3 {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem;
 	}
 
 	.empty-state p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.5rem;
 	}
 
@@ -407,7 +407,7 @@
 	.templates-section h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1.5rem;
 	}
 
@@ -420,7 +420,7 @@
 	.type-card {
 		padding: 1.25rem;
 		background: white;
-		border: 1px solid #e5e5e5;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		display: flex;
 		flex-direction: column;
@@ -435,13 +435,13 @@
 	}
 
 	.type-card--deprecated {
-		background: #fbfaf6;
-		border-color: #e8d8a8;
+		background: var(--bg-elevated, #161b22);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.type-name {
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.75rem;
 		display: inline-flex;
 		align-items: center;
@@ -455,14 +455,14 @@
 		text-transform: uppercase;
 		padding: 0.15rem 0.45rem;
 		border-radius: 999px;
-		background: #fef3c7;
-		color: #92400e;
-		border: 1px solid #f3d791;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.type-note {
 		font-size: 0.75rem;
-		color: #6b6b6b;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 0.75rem;
 		line-height: 1.35;
 	}
@@ -513,7 +513,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h3 {
@@ -522,7 +522,7 @@
 		gap: 0.5rem;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -552,7 +552,7 @@
 		background: none;
 		border: none;
 		font-size: 2rem;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		line-height: 1;
 	}

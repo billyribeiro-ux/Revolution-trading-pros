@@ -1,4 +1,5 @@
 <script lang="ts">
+	import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
 	import type { FormTheme } from '#lib/data/formTemplates.js';
 	import { themes } from '#lib/data/formTemplates.js';
 
@@ -80,7 +81,9 @@
 
 	<div class="custom-section">
 		{#if !isCustomizing}
-			<button class="btn-customize" onclick={enableCustomization}> 🎨 Customize Theme </button>
+			<button class="btn-customize" onclick={enableCustomization}>
+				<IconPalette size={18} aria-hidden="true" /> Customize Theme
+			</button>
 		{:else}
 			<div class="custom-controls">
 				<div class="control-section">
@@ -403,6 +406,10 @@
 	}
 
 	.btn-customize {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
 		width: 100%;
 		padding: 0.875rem;
 		background: rgba(230, 184, 0, 0.1);

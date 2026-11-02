@@ -860,7 +860,7 @@
 
 	.page-title {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -894,7 +894,7 @@
 
 	.section-heading {
 		margin: 0 0 1rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.25rem;
 		font-weight: 700;
 		line-height: 1.3;
@@ -909,7 +909,7 @@
 
 	.subsection-heading {
 		margin: 0 0 0.75rem;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 700;
 		line-height: 1.4;
@@ -918,7 +918,7 @@
 	.field-label {
 		display: block;
 		margin: 0 0 0.25rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -942,10 +942,10 @@
 	.native-control {
 		width: 100%;
 		min-height: 2.5rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		background: #ffffff;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		padding: 0.5rem 0.75rem;
 		font: inherit;
 		line-height: 1.5;
@@ -980,12 +980,12 @@
 		width: 1rem;
 		height: 1rem;
 		flex: 0 0 auto;
-		border-color: #d1d5db;
+		border-color: var(--border-default, #30363d);
 		accent-color: #2563eb;
 	}
 
 	.checkbox-label {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -1003,9 +1003,9 @@
 
 	.info-callout,
 	.schedule-preview {
-		border: 1px solid #bfdbfe;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		padding: 1rem;
 	}
 
@@ -1032,9 +1032,9 @@
 
 	.active-test-card {
 		margin-bottom: 1rem;
-		border: 1px solid #bbf7d0;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		background: #f0fdf4;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
 		padding: 1rem;
 	}
 
@@ -1057,24 +1057,24 @@
 	}
 
 	.status-pill--success {
-		background: #dcfce7;
-		color: #166534;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.active-test-id {
-		color: #15803d;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 	}
 
 	.active-test-copy {
 		margin: 0;
-		color: #166534;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
 
 	.empty-test-card {
-		border: 2px dashed #e5e7eb;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
 		text-align: center;
@@ -1089,7 +1089,7 @@
 
 	.empty-test-title {
 		margin: 0 0 0.5rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -1106,13 +1106,13 @@
 	.tips-card {
 		margin-top: 1rem;
 		border-radius: 6px;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		padding: 1rem;
 	}
 
 	.tips-title {
 		margin: 0 0 0.5rem;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 700;
 		line-height: 1.4;
@@ -1147,7 +1147,7 @@
 
 	.metric-value {
 		margin: 0.125rem 0 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -1163,7 +1163,7 @@
 
 	.metric-status {
 		margin: 0.5rem 0 0;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 700;
 		letter-spacing: 0.04em;

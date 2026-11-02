@@ -172,7 +172,7 @@
 
 <style>
 	.form-entries-page {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.page-header {
@@ -185,7 +185,7 @@
 
 	.page-header h1 {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1.2;

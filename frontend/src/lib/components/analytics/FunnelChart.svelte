@@ -134,7 +134,7 @@
 
 	.funnel-chart h3 {
 		margin: 0 0 1.5rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -287,7 +287,7 @@
 
 	.funnel-chart__summary-value {
 		margin-left: 0.25rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.funnel-chart__empty {

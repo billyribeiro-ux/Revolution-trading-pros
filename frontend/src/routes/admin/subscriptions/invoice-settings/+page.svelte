@@ -830,7 +830,7 @@
 		width: min(100% - 2rem, 72rem);
 		margin-inline: auto;
 		padding-block: 2rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .invoice-settings-page {
@@ -907,12 +907,12 @@
 	}
 
 	.secondary-button {
-		background: #f3f4f6;
-		color: #374151;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.secondary-button:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .secondary-button {
@@ -956,13 +956,13 @@
 	}
 
 	.alert--error {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: #b91c1c;
 	}
 
 	.alert--success {
-		background: #dcfce7;
-		color: #15803d;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	:global(.dark) .alert--error {
@@ -999,9 +999,9 @@
 	.settings-card,
 	.preview-card,
 	.preview-modal {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 		overflow: hidden;
 	}
@@ -1017,7 +1017,7 @@
 	.preview-card-header,
 	.preview-modal-header,
 	.danger-zone {
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	:global(.dark) .tabs-shell,
@@ -1050,7 +1050,7 @@
 	}
 
 	.tab-button:hover {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .tab-button {
@@ -1063,7 +1063,7 @@
 
 	.tab-button.active {
 		border-color: #2563eb;
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 	}
 
@@ -1102,7 +1102,7 @@
 	.form-label,
 	.checkbox-label,
 	.option-title {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -1120,10 +1120,10 @@
 	.form-control {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background: #ffffff;
-		color: var(--bg-base, #0d1117);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		font: inherit;
 	}
 
@@ -1158,9 +1158,9 @@
 		justify-content: center;
 		width: 10rem;
 		height: 6rem;
-		border: 2px dashed #d1d5db;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		overflow: hidden;
 	}
 
@@ -1198,12 +1198,12 @@
 
 	.danger-soft-button {
 		padding: 0.5rem 1rem;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 
 	.danger-soft-button:hover {
-		background: #fecaca;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 	}
 
 	:global(.dark) .danger-soft-button {
@@ -1256,12 +1256,12 @@
 	.option-card {
 		padding: 1rem;
 		border-radius: 0.5rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		transition: background-color 0.2s ease;
 	}
 
 	.option-card:hover {
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .option-card {
@@ -1275,7 +1275,7 @@
 	.inline-code {
 		padding-inline: 0.25rem;
 		border-radius: 0.25rem;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .inline-code {
@@ -1285,7 +1285,7 @@
 	.danger-zone {
 		padding-top: 1rem;
 		border-bottom: 0;
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.preview-sticky {
@@ -1306,7 +1306,7 @@
 	}
 
 	.preview-card-title {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .preview-card-title,
@@ -1317,11 +1317,11 @@
 	.mini-invoice {
 		aspect-ratio: 8.5 / 11;
 		overflow: hidden;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.08);
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 6px;
 	}
 
@@ -1395,7 +1395,7 @@
 	}
 
 	.mini-table tbody tr {
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.mini-total-row {
@@ -1411,7 +1411,7 @@
 	.mini-footer {
 		margin-top: 0.5rem;
 		padding-top: 0.25rem;
-		border-top: 1px solid #e5e7eb;
+		border-top: 1px solid var(--border-default, #30363d);
 		color: var(--text-tertiary, #6e7681);
 		font-size: 4px;
 		text-align: center;
@@ -1450,7 +1450,7 @@
 		flex: 1;
 		overflow: auto;
 		padding: 1.5rem;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .preview-modal-body {
@@ -1460,7 +1460,7 @@
 	.preview-document {
 		max-width: 800px;
 		margin-inline: auto;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
 	}
 
@@ -1470,7 +1470,7 @@
 	}
 
 	.icon-button:hover {
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	:global(.dark) .icon-button:hover {

@@ -49,7 +49,7 @@
 	.sidebar-panel h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid #f0f0f0;
@@ -61,7 +61,7 @@
 		border: 1px solid #e5e5e5;
 		border-radius: 6px;
 		font-size: 0.9rem;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		background: white;
 	}
 
@@ -80,7 +80,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 	}
 </style>

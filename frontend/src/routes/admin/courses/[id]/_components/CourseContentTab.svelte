@@ -126,8 +126,8 @@
 
 <style>
 	.content-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 24px;
 	}
@@ -140,7 +140,7 @@
 	.content-header h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -156,28 +156,28 @@
 		transition: all 0.2s;
 		text-decoration: none;
 		border: none;
-		background: #f3f4f6;
-		color: #1f2937;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.module-card {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		margin-bottom: 16px;
 		overflow: hidden;
 	}
 	.module-card.unassigned {
-		background: #fef3c7;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
 	}
 	.module-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 12px 16px;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 	.module-card.unassigned .module-header {
 		background: #fcd34d;
@@ -199,7 +199,7 @@
 		padding: 4px;
 	}
 	.module-actions button:hover {
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.lesson-list {
@@ -211,7 +211,7 @@
 		display: flex;
 		align-items: center;
 		padding: 12px 16px;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.lesson-list li:last-child {
 		border-bottom: none;
@@ -227,11 +227,11 @@
 		gap: 10px;
 		flex: 1;
 		text-decoration: none;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 14px;
 	}
 	.lesson-list li a:hover {
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 	}
 	.lesson-list .duration {
 		color: var(--text-secondary, #8b949e);
@@ -256,8 +256,8 @@
 		gap: 8px;
 		width: 100%;
 		padding: 12px;
-		background: #f3f4f6;
-		border: 2px dashed #d1d5db;
+		background: var(--bg-surface, #1c2128);
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 8px;
 		color: var(--text-tertiary, #6e7681);
 		font-size: 14px;
@@ -265,7 +265,7 @@
 		margin-top: 16px;
 	}
 	.btn-add-lesson:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 		border-color: #9ca3af;
 	}
 

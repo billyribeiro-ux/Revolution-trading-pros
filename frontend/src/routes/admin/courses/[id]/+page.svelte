@@ -580,7 +580,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #e5e7eb;
-		border-top-color: #143e59;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 16px;

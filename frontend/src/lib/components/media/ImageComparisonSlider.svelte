@@ -252,9 +252,9 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1rem;
-		background: #f8fafc;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px 8px 0 0;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border-default, #30363d);
 		border-bottom: none;
 	}
 
@@ -274,7 +274,7 @@
 	.size-item .size {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #1e293b;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.savings {
@@ -282,15 +282,15 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: #fef2f2;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 9999px;
 		font-size: 0.875rem;
-		color: #991b1b;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.savings.positive {
-		background: #dcfce7;
-		color: #166534;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.savings .bytes {
@@ -304,7 +304,7 @@
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
 		cursor: ew-resize;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0 0 8px 8px;
 		background: var(--bg-elevated, #161b22);
 		user-select: none;
@@ -435,8 +435,8 @@
 	.keyboard-hint kbd {
 		display: inline-block;
 		padding: 0.125rem 0.375rem;
-		background: #f1f5f9;
-		border: 1px solid #e2e8f0;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		font-family: inherit;
 		font-size: 0.75rem;

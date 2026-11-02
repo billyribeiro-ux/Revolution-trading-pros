@@ -451,7 +451,7 @@
 <style>
 	.analytics-dashboard {
 		padding: 1.5rem;
-		background-color: #f9fafb;
+		background-color: var(--bg-elevated, #161b22);
 		/* ICT11+ Fix: Removed min-height: 100vh - let parent flex container handle height */
 		flex: 1;
 	}
@@ -466,7 +466,7 @@
 	.header-left h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -483,7 +483,7 @@
 
 	.date-select {
 		padding: 0.5rem 1rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		background-color: white;
@@ -492,7 +492,7 @@
 	.btn-export {
 		padding: 0.5rem 1rem;
 		background-color: white;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -500,7 +500,7 @@
 	}
 
 	.btn-export:hover {
-		background-color: #f3f4f6;
+		background-color: var(--bg-surface, #1c2128);
 	}
 
 	/* Stats Grid */
@@ -594,7 +594,7 @@
 	.chart-section h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem 0;
 	}
 
@@ -657,7 +657,7 @@
 	.field-stats-table td {
 		padding: 0.75rem 1rem;
 		text-align: left;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.field-stats-table th {
@@ -674,7 +674,7 @@
 	.progress-bar {
 		width: 120px;
 		height: 20px;
-		background-color: #e5e7eb;
+		background-color: var(--bg-surface, #1c2128);
 		border-radius: 4px;
 		position: relative;
 		overflow: hidden;
@@ -694,7 +694,7 @@
 		transform: translateY(-50%);
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.high-dropoff {
@@ -726,7 +726,7 @@
 	.breakdown-card h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem 0;
 	}
 
@@ -751,13 +751,13 @@
 	.donut-label {
 		flex: 1;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.donut-value {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	/* Funnel Chart */
@@ -778,7 +778,7 @@
 	.funnel-bar {
 		flex: 1;
 		height: 40px;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 4px;
 	}
 
@@ -789,14 +789,14 @@
 	.funnel-label {
 		width: 150px;
 		font-size: 0.875rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.funnel-value {
 		width: 50px;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		text-align: right;
 	}
 

@@ -1143,7 +1143,7 @@
 	.field-heading {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		margin: 0.5rem 0;
 	}
 
@@ -1288,7 +1288,7 @@
 	.category-label {
 		font-size: 1rem; /* 16px for readability */
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.category-description {

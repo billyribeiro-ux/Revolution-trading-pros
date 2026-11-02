@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconCode from '@tabler/icons-svelte-runes/icons/code';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import type { Form } from '#lib/api/forms.js';
 
 	interface Props {
@@ -91,7 +96,7 @@ ${'</'}script>`);
 			class={['type-btn', { active: embedType === 'iframe' }]}
 			onclick={() => (embedType = 'iframe')}
 		>
-			<span class="icon">🖼️</span>
+			<span class="icon"><IconPhoto size={32} aria-hidden="true" /></span>
 			<span class="label">iFrame Embed</span>
 		</button>
 
@@ -99,7 +104,7 @@ ${'</'}script>`);
 			class={['type-btn', { active: embedType === 'script' }]}
 			onclick={() => (embedType = 'script')}
 		>
-			<span class="icon">📜</span>
+			<span class="icon"><IconCode size={32} aria-hidden="true" /></span>
 			<span class="label">JavaScript Embed</span>
 		</button>
 
@@ -107,7 +112,7 @@ ${'</'}script>`);
 			class={['type-btn', { active: embedType === 'link' }]}
 			onclick={() => (embedType = 'link')}
 		>
-			<span class="icon">🔗</span>
+			<span class="icon"><IconLink size={32} aria-hidden="true" /></span>
 			<span class="label">Direct Link</span>
 		</button>
 	</div>
@@ -124,7 +129,7 @@ ${'</'}script>`);
 				{/if}
 			</h4>
 			<button class="copy-btn" onclick={() => copyToClipboard(getCode(), 'Code')}>
-				📋 Copy Code
+				<IconCopy size={16} aria-hidden="true" /> Copy Code
 			</button>
 		</div>
 
@@ -168,7 +173,7 @@ ${'</'}script>`);
 		<div class="code-header">
 			<pre class="code-block inline"><code>{shortcode}</code></pre>
 			<button class="copy-btn" onclick={() => copyToClipboard(shortcode, 'Shortcode')}>
-				📋 Copy
+				<IconCopy size={16} aria-hidden="true" /> Copy
 			</button>
 		</div>
 		<p class="note">Use this if you have a Revolution Forms WordPress plugin installed.</p>
@@ -179,18 +184,22 @@ ${'</'}script>`);
 		<div class="url-row">
 			<span class="url-label">Embed URL:</span>
 			<code class="url-value">{embedUrl}</code>
-			<button class="copy-btn-small" onclick={() => copyToClipboard(embedUrl, 'URL')}>📋</button>
+			<button class="copy-btn-small" onclick={() => copyToClipboard(embedUrl, 'URL')}
+				aria-label="Copy embed URL"><IconCopy size={14} aria-hidden="true" /></button
+			>
 		</div>
 		<div class="url-row">
 			<span class="url-label">Direct URL:</span>
 			<code class="url-value">{directUrl}</code>
-			<button class="copy-btn-small" onclick={() => copyToClipboard(directUrl, 'URL')}>📋</button>
+			<button class="copy-btn-small" onclick={() => copyToClipboard(directUrl, 'URL')}
+				aria-label="Copy direct URL"><IconCopy size={14} aria-hidden="true" /></button
+			>
 		</div>
 	</div>
 
 	{#if copiedMessage}
 		<div class="copy-notification">
-			✓ {copiedMessage}
+			<IconCheck size={16} aria-hidden="true" /> {copiedMessage}
 		</div>
 	{/if}
 </div>
@@ -256,7 +265,7 @@ ${'</'}script>`);
 	}
 
 	.type-btn .icon {
-		font-size: 2rem;
+		display: inline-flex;
 	}
 
 	.type-btn .label {
@@ -282,6 +291,9 @@ ${'</'}script>`);
 
 	.copy-btn,
 	.copy-btn-small {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 		padding: 0.5rem 1rem;
 		background: var(--primary-500, #e6b800);
 		color: var(--bg-base, #0d1117);
@@ -394,6 +406,9 @@ ${'</'}script>`);
 	}
 
 	.copy-notification {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
 		position: fixed;
 		bottom: 2rem;
 		right: 2rem;

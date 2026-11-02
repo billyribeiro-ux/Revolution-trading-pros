@@ -86,8 +86,8 @@
 
 <style>
 	.form-section {
-		background: #fff;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 24px;
 		margin-bottom: 24px;
@@ -95,7 +95,7 @@
 	.form-section h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 	.section-header {
@@ -115,18 +115,18 @@
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.spinner-small {
 		width: 20px;
 		height: 20px;
 		border: 2px solid #e5e7eb;
-		border-top-color: #143e59;
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -159,7 +159,7 @@
 		gap: 16px;
 	}
 	.video-card {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		overflow: hidden;
 		position: relative;
@@ -169,7 +169,7 @@
 		width: 100%;
 		aspect-ratio: 16/9;
 		object-fit: cover;
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -190,8 +190,8 @@
 	.tag {
 		font-size: 11px;
 		padding: 2px 8px;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border-radius: 4px;
 	}
 	.tag.active {
@@ -212,7 +212,7 @@
 		width: 32px;
 		height: 32px;
 		border: none;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 6px;
 		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
@@ -221,7 +221,7 @@
 		font-weight: bold;
 	}
 	.btn-danger:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 

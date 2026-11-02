@@ -989,7 +989,7 @@
 
 <style>
 	.settings-page {
-		background: #0a101c;
+		background: var(--bg-base, #0d1117);
 		color: var(--text-primary, #f0f6fc);
 		padding: 2rem;
 	}

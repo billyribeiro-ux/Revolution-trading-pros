@@ -58,7 +58,7 @@
 		align-items: flex-start;
 		margin-bottom: 24px;
 		padding-bottom: 24px;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 	.header-left {
 		display: flex;
@@ -74,25 +74,25 @@
 		font-size: 14px;
 	}
 	.back-link:hover {
-		color: #143e59;
+		color: var(--primary-500, #e6b800);
 	}
 	.header-left h1 {
 		font-size: 24px;
 		margin: 0;
-		color: #1f2937;
+		color: var(--text-primary, #f0f6fc);
 	}
 	.status {
 		display: inline-block;
 		padding: 4px 10px;
-		background: #fef3c7;
-		color: #92400e;
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15));
+		color: var(--warning-emphasis, #d29922);
 		border-radius: 4px;
 		font-size: 12px;
 		font-weight: 500;
 	}
 	.status.published {
-		background: #d1fae5;
-		color: #065f46;
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.header-actions {
@@ -114,22 +114,22 @@
 		border: none;
 	}
 	.btn-primary {
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-primary:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 	}
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
 	.btn-secondary {
-		background: #f3f4f6;
-		color: #1f2937;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: var(--bg-surface, #1c2128);
 	}
 	.btn-builder {
 		display: inline-flex;
@@ -142,11 +142,11 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		text-decoration: none;
-		background: #143e59;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 	.btn-builder:hover {
-		background: #0f2d42;
+		background: var(--primary-500, #e6b800);
 		transform: translateY(-1px);
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
 	}

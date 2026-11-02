@@ -404,14 +404,14 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.25rem;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.panel-header h3 {
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.btn-invite {
@@ -432,8 +432,8 @@
 
 	.invite-form {
 		padding: 1rem 1.25rem;
-		background: #f9fafb;
-		border-bottom: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.form-row {
@@ -445,7 +445,7 @@
 	.email-input {
 		flex: 1;
 		padding: 0.5rem 0.75rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 	}
@@ -457,7 +457,7 @@
 
 	.role-select {
 		padding: 0.5rem 0.75rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		background: white;
@@ -493,7 +493,7 @@
 
 	.section {
 		padding: 1rem 1.25rem;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.section:last-child {
@@ -553,7 +553,7 @@
 	}
 
 	.collaborator-item:hover {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.collab-avatar {
@@ -588,7 +588,7 @@
 	.collab-name {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.collab-email {
@@ -621,7 +621,7 @@
 	.role-badge {
 		padding: 0.25rem 0.5rem;
 		font-size: 0.75rem;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.25rem;
 		background: white;
 		cursor: pointer;
@@ -643,7 +643,7 @@
 	}
 
 	.btn-remove:hover {
-		background: #fee2e2;
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
 		color: var(--error-emphasis, #f85149);
 	}
 
@@ -659,7 +659,7 @@
 
 	.btn-invite-first {
 		padding: 0.5rem 1rem;
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: var(--info-emphasis, #58a6ff);
 		border: 1px solid #3b82f6;
 		border-radius: 0.375rem;
@@ -699,7 +699,7 @@
 
 	.activity-description {
 		font-size: 0.8125rem;
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.activity-time {

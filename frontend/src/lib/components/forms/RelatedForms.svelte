@@ -225,19 +225,19 @@
 
 	.panel-header {
 		padding: 1rem 1.25rem;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.panel-header h3 {
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tabs {
 		display: flex;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.tab {
@@ -254,7 +254,7 @@
 	}
 
 	.tab:hover {
-		color: #374151;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab.active {
@@ -299,16 +299,16 @@
 	.form-card {
 		display: block;
 		padding: 0.875rem;
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 0.5rem;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		text-decoration: none;
 		transition: all 0.2s;
 	}
 
 	.form-card:hover {
 		border-color: #3b82f6;
-		background: #eff6ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		transform: translateY(-1px);
 	}
 
@@ -336,7 +336,7 @@
 
 	.score-badge {
 		padding: 0.125rem 0.375rem;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
 		color: var(--text-tertiary, #6e7681);
@@ -365,7 +365,7 @@
 		margin: 0;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -384,7 +384,7 @@
 		display: inline-block;
 		margin-top: 0.5rem;
 		padding: 0.125rem 0.5rem;
-		background: #e0e7ff;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: #4338ca;
 		border-radius: 9999px;
 		font-size: 0.625rem;

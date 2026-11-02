@@ -105,7 +105,7 @@
 
 	.editor-label {
 		font-weight: 600;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 		margin: 0;
 	}

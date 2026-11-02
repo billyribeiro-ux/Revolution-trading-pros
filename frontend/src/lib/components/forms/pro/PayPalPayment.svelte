@@ -11,6 +11,7 @@
 	 */
 
 	import type { Attachment } from 'svelte/attachments';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import Icon from '#lib/components/Icon.svelte';
 
 	interface Props {
@@ -178,7 +179,8 @@
 
 	{#if testMode}
 		<div class="test-mode-banner">
-			<span>⚠️ PayPal Sandbox Mode - Use test accounts</span>
+			<IconAlertTriangle size={14} aria-hidden="true" />
+			<span>PayPal Sandbox Mode - Use test accounts</span>
 		</div>
 	{/if}
 
@@ -227,6 +229,9 @@
 	}
 
 	.test-mode-banner {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
 		background-color: #fef3c7;
 		border: 1px solid #f59e0b;
@@ -245,7 +250,7 @@
 	}
 
 	.amount-display strong {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 	}
 

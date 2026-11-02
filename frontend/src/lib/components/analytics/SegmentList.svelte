@@ -4,6 +4,16 @@
 	 *
 	 * Lists user segments with counts and percentages.
 	 */
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconUserX from '@tabler/icons-svelte-runes/icons/user-x';
+	import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
+	import IconCrown from '@tabler/icons-svelte-runes/icons/crown';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconUser from '@tabler/icons-svelte-runes/icons/user';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import type { Segment } from '#lib/api/analytics.js';
 
 	interface Props {
@@ -21,16 +31,16 @@
 	};
 
 	// Icon mapping
-	const iconMap: Record<string, string> = {
-		star: '⭐',
-		'alert-triangle': '⚠️',
-		'user-x': '🚫',
-		'user-plus': '➕',
-		crown: '👑',
-		'credit-card': '💳',
-		user: '👤',
-		search: '🔍',
-		target: '🎯'
+	const iconMap: Record<string, typeof IconStar> = {
+		star: IconStar,
+		'alert-triangle': IconAlertTriangle,
+		'user-x': IconUserX,
+		'user-plus': IconUserPlus,
+		crown: IconCrown,
+		'credit-card': IconCreditCard,
+		user: IconUser,
+		search: IconSearch,
+		target: IconTarget
 	};
 
 	// Sort segments: system first, then by user count
@@ -56,6 +66,7 @@
 
 	<div class="segment-list__items">
 		{#each sortedSegments as segment (segment.key)}
+			{@const SegmentIcon = iconMap[segment.icon || ''] ?? IconChartBar}
 			<button
 				class={{
 					'segment-list__item': true,
@@ -66,7 +77,7 @@
 			>
 				<!-- Icon -->
 				<div class="segment-list__icon" style:background-color={`${segment.color || '#6b7280'}20`}>
-					{iconMap[segment.icon || ''] || '📊'}
+					<SegmentIcon size={18} aria-hidden="true" />
 				</div>
 
 				<!-- Info -->
@@ -116,19 +127,19 @@
 
 <style>
 	.segment-list {
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
-		background: #ffffff;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.segment-list__header {
-		border-bottom: 1px solid #f3f4f6;
+		border-bottom: 1px solid var(--border-default, #30363d);
 		padding: 1rem;
 	}
 
 	.segment-list__header h3 {
 		margin: 0;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -151,7 +162,7 @@
 		align-items: center;
 		gap: 1rem;
 		border: 0;
-		border-top: 1px solid #f3f4f6;
+		border-top: 1px solid var(--border-default, #30363d);
 		background: transparent;
 		color: inherit;
 		font: inherit;
@@ -169,7 +180,7 @@
 	}
 
 	.segment-list__item--selectable:hover {
-		background: #f9fafb;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.segment-list__item:disabled {
@@ -202,7 +213,7 @@
 
 	.segment-list__name {
 		overflow: hidden;
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -210,7 +221,7 @@
 
 	.segment-list__system-badge {
 		border-radius: 0.25rem;
-		background: #dbeafe;
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
 		color: #1d4ed8;
 		font-size: 0.75rem;
 		line-height: 1rem;
@@ -239,7 +250,7 @@
 	}
 
 	.segment-list__count {
-		color: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
@@ -254,7 +265,7 @@
 		width: 6rem;
 		height: 0.5rem;
 		border-radius: 999px;
-		background: #f3f4f6;
+		background: var(--bg-surface, #1c2128);
 		flex: 0 0 auto;
 	}
 
