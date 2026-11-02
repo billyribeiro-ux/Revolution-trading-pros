@@ -106,8 +106,6 @@ export async function loadVendorsForConsent(
 ): Promise<void> {
 	if (!browser) return;
 
-	logger.debug('[VendorLoader] Loading vendors for consent state', { consent });
-
 	// Process vendors in parallel
 	const results = await Promise.allSettled(
 		vendors.map(async (vendor) => {
@@ -122,8 +120,9 @@ export async function loadVendorsForConsent(
 	);
 
 	const loaded = results.filter((r) => r.status === 'fulfilled' && r.value === true).length;
-
-	logger.debug(`[VendorLoader] Loaded ${loaded}/${vendors.length} vendors`);
+	if (loaded > 0) {
+		logger.debug(`[VendorLoader] Loaded ${loaded}/${vendors.length} vendors`);
+	}
 }
 
 /**

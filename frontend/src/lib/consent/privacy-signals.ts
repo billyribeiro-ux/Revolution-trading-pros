@@ -266,7 +266,9 @@ export function detectPrivacySignals(): PrivacySignals {
 		requiresStrictConsent: requiresStrict
 	};
 
-	logger.debug('[PrivacySignals] Detected:', signals);
+	if (dnt || gpc) {
+		logger.debug('[PrivacySignals] Active signals detected:', signals);
+	}
 
 	return signals;
 }

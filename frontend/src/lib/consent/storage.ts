@@ -191,7 +191,6 @@ export function loadConsent(
 		}
 	}
 
-	logger.debug('[Consent] No stored consent found, using defaults');
 	return { ...DEFAULT_CONSENT_STATE };
 }
 

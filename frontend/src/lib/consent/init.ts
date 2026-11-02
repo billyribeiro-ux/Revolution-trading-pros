@@ -54,38 +54,24 @@ export function initializeConsent(): () => void {
 	// Step 2: Capture URL parameters for attribution passthrough
 	captureUrlParameters();
 
-	// Step 3: Apply Google Consent Mode v2
-	applyConsentMode(initialConsent);
-
-	// Step 4: Apply Bing/Microsoft Consent Mode
-	applyBingConsentMode(initialConsent);
-
-	// Step 5: Apply URL Passthrough based on consent
-	applyUrlPassthrough(initialConsent);
-
-	// Step 6: Load vendors that have consent
-	loadVendorsForConsent(initialConsent, vendors);
-
-	// Step 7: Initialize consent-aware behavior tracking
+	// Step 3: Initialize consent-aware behavior tracking
 	initConsentAwareBehaviorTracking();
 
-	// Step 8: Initialize banner template system
+	// Step 4: Initialize banner template system
 	initializeTemplateStore();
 
-	// Step 9: Track banner shown if needed
+	// Step 5: Track banner shown if needed
 	if (!initialConsent.hasInteracted) {
 		trackConsentInteraction('banner_shown');
 	}
 
-	// Step 10: Subscribe to future changes
+	// Step 6: Subscribe to consent changes (and apply initial consent)
 	const unsubscribe = consentStore.subscribe((consent: ConsentState) => {
 		applyConsentMode(consent);
 		applyBingConsentMode(consent);
 		applyUrlPassthrough(consent);
 		loadVendorsForConsent(consent, vendors);
 	});
-
-	console.debug('[Consent] System initialized with consent-magic-pro v5.1.0 features');
 
 	// Return cleanup function
 	return () => {

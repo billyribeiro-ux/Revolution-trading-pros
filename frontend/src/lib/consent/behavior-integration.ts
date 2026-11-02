@@ -55,14 +55,11 @@ export async function initConsentAwareBehaviorTracking(): Promise<void> {
 	// Only start tracking if analytics consent is granted
 	if (consent.analytics) {
 		await enableTracking();
-	} else {
-		logger.debug('[BehaviorIntegration] Analytics consent not granted, tracking disabled');
+		logger.debug('[BehaviorIntegration] Tracking initialized (consent granted)');
 	}
 
 	// Subscribe to consent changes
 	consentUnsubscribe = consentStore.subscribe(handleConsentChange);
-
-	logger.debug('[BehaviorIntegration] Initialized with consent:', consent.analytics);
 }
 
 /**

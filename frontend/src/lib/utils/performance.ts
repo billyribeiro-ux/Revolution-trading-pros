@@ -1336,9 +1336,6 @@ export function initPerformanceMonitoring(): void {
 
 	// Start FPS monitoring
 	perfMonitor.startFPSMonitoring();
-
-	// Log initialization
-	console.debug('[Performance] Monitoring initialized');
 }
 
 // ============================================================================
