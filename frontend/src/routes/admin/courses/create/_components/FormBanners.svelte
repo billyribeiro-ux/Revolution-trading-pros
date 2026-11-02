@@ -43,16 +43,16 @@
 	}
 
 	.form-error-banner {
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #fca5a5;
+		background: rgba(248, 81, 73, 0.15);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.form-error-banner button {
 		margin-left: auto;
 		background: none;
 		border: none;
-		color: #fca5a5;
+		color: var(--error-emphasis, #f85149);
 		cursor: pointer;
 		padding: 0.25rem;
 		display: flex;
@@ -63,12 +63,12 @@
 	}
 
 	.form-error-banner button:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.form-success-banner {
-		background: rgba(34, 197, 94, 0.15);
-		border: 1px solid rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border: 1px solid rgba(63, 185, 80, 0.3);
 		color: #86efac;
 	}
 </style>

@@ -191,13 +191,13 @@
 	}
 
 	.optimization-stats__original {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		text-decoration: line-through;
 	}
 
 	.optimization-stats__icon {
 		display: inline-flex;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimization-stats__optimized {
@@ -206,7 +206,7 @@
 	}
 
 	:global(.dark) .optimization-stats__optimized {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimization-stats__badge {
@@ -270,7 +270,7 @@
 
 	.optimization-card p {
 		margin: 0;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
@@ -280,7 +280,7 @@
 	}
 
 	:global(.dark) .optimization-card p {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.optimization-card__main {
@@ -304,7 +304,7 @@
 	}
 
 	.optimization-ring__track {
-		color: #e5e7eb;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	:global(.dark) .optimization-ring__track {
@@ -331,7 +331,7 @@
 	}
 
 	.optimization-ring__caption {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
@@ -351,37 +351,37 @@
 
 	.optimization-comparison__label {
 		width: 4rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
 
 	:global(.dark) .optimization-comparison__label {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimization-comparison__original {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		text-decoration: line-through;
 	}
 
 	.optimization-comparison__optimized {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		font-weight: 600;
 		line-height: 1.25rem;
 	}
 
 	:global(.dark) .optimization-comparison__optimized {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.optimization-comparison__format {
 		border-radius: 0.25rem;
 		background: #e5e7eb;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.625rem;
 		font-weight: 500;
 		line-height: 1;
@@ -389,8 +389,8 @@
 	}
 
 	:global(.dark) .optimization-comparison__format {
-		background: #374151;
-		color: #9ca3af;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimization-comparison__format--optimized {
@@ -406,7 +406,7 @@
 	.optimization-comparison__arrow {
 		display: flex;
 		padding: 0.25rem 0;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.optimization-card__details {
@@ -415,7 +415,7 @@
 		justify-content: center;
 		gap: 1.5rem;
 		border-top: 1px solid #bbf7d0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;
 		padding: 0.75rem 1rem;
@@ -423,7 +423,7 @@
 
 	:global(.dark) .optimization-card__details {
 		border-color: #166534;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimization-card__detail {
@@ -433,35 +433,35 @@
 	}
 
 	.optimization-card__detail :global(svg) {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimization-stats__badge[data-tone='excellent'],
 	.optimization-ring__progress[data-tone='excellent'],
 	.optimization-ring__value[data-tone='excellent'] {
-		color: #22c55e;
-		stroke: #22c55e;
+		color: var(--success-emphasis, #3fb950);
+		stroke: var(--success-emphasis, #3fb950);
 	}
 
 	.optimization-stats__badge[data-tone='strong'],
 	.optimization-ring__progress[data-tone='strong'],
 	.optimization-ring__value[data-tone='strong'] {
-		color: #4ade80;
-		stroke: #4ade80;
+		color: var(--success-emphasis, #3fb950);
+		stroke: var(--success-emphasis, #3fb950);
 	}
 
 	.optimization-stats__badge[data-tone='moderate'],
 	.optimization-ring__progress[data-tone='moderate'],
 	.optimization-ring__value[data-tone='moderate'] {
-		color: #eab308;
-		stroke: #eab308;
+		color: var(--primary-500, #e6b800);
+		stroke: var(--primary-500, #e6b800);
 	}
 
 	.optimization-stats__badge[data-tone='low'],
 	.optimization-ring__progress[data-tone='low'],
 	.optimization-ring__value[data-tone='low'] {
-		color: #f97316;
-		stroke: #f97316;
+		color: var(--warning-emphasis, #d29922);
+		stroke: var(--warning-emphasis, #d29922);
 	}
 
 	@media (max-width: 640px) {

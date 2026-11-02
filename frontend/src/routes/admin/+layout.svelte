@@ -50,6 +50,20 @@
 	let isKeyboardHelpOpen = $state(false);
 	let isConnectionHealthOpen = $state(false);
 
+	// Desktop preference: collapse the sidebar to the vertical icon rail.
+	const SIDEBAR_COLLAPSED_KEY = 'rtp-admin-sidebar-collapsed';
+	let isSidebarCollapsed = $state(false);
+
+	function toggleSidebarCollapsed() {
+		isSidebarCollapsed = !isSidebarCollapsed;
+		try {
+			localStorage.setItem(SIDEBAR_COLLAPSED_KEY, isSidebarCollapsed ? '1' : '0');
+		} catch (err) {
+			// Storage can be blocked (private mode); the preference simply won't persist.
+			console.warn('[admin layout] could not persist sidebar preference', err);
+		}
+	}
+
 	// PRINCIPAL-2026-04-26: auth-guard converted from $effect to onMount.
 	// The previous $effect read $isAuthenticated, which under Svelte 5 compiles
 	// to a `legacy_pre_subscribe` call that synchronously fires fn(getSnapshot())
@@ -150,6 +164,12 @@
 	onMount(() => {
 		if (!browser) return;
 
+		try {
+			isSidebarCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
+		} catch {
+			isSidebarCollapsed = false;
+		}
+
 		keyboard.init({
 			search: () => (isCommandPaletteOpen = true),
 			'search-alt': () => (isCommandPaletteOpen = true),
@@ -222,9 +242,14 @@
 	<title>{formatPageTitle(page.url.pathname)} · Admin · Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="admin-layout admin">
+<div class={{ 'admin-layout': true, admin: true, 'sidebar-collapsed': isSidebarCollapsed }}>
 	<!-- Sidebar -->
-	<AdminSidebar isOpen={isSidebarOpen} onclose={closeSidebar} />
+	<AdminSidebar
+		isOpen={isSidebarOpen}
+		collapsed={isSidebarCollapsed}
+		onclose={closeSidebar}
+		ontoggle={toggleSidebarCollapsed}
+	/>
 
 	<!-- Main Content -->
 	<div class="admin-main">
@@ -253,7 +278,7 @@
 					title="Search (⌘K)"
 					aria-label="Open search"
 				>
-					<IconSearch size={16} aria-hidden="true" />
+					<IconSearch size={18} aria-hidden="true" />
 					<span class="search-trigger__label desktop-only">Search…</span>
 					<kbd class="kbd desktop-only">⌘K</kbd>
 				</button>
@@ -312,10 +337,13 @@
 	</div>
 </div>
 
-<!-- Global Components -->
-<Toast />
-<CommandPalette bind:isOpen={isCommandPaletteOpen} />
-<NotificationCenter bind:isOpen={isNotificationCenterOpen} />
-<KeyboardShortcutsHelp bind:isOpen={isKeyboardHelpOpen} />
-<ConnectionHealthPanel bind:isOpen={isConnectionHealthOpen} />
-<OfflineIndicator />
+<!-- Global Components. `.admin-tokens` gives these overlays the same --admin-* /
+     palette variables as the shell (they render outside `.admin-layout`). -->
+<div class="admin-tokens">
+	<Toast />
+	<CommandPalette bind:isOpen={isCommandPaletteOpen} />
+	<NotificationCenter bind:isOpen={isNotificationCenterOpen} />
+	<KeyboardShortcutsHelp bind:isOpen={isKeyboardHelpOpen} />
+	<ConnectionHealthPanel bind:isOpen={isConnectionHealthOpen} />
+	<OfflineIndicator />
+</div>

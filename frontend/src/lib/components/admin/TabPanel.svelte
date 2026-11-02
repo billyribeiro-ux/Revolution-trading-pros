@@ -160,7 +160,7 @@
 		padding: 0.625rem 1.25rem;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--admin-text-muted, #94a3b8);
+		color: var(--admin-text-muted, var(--text-secondary, #8b949e));
 		background: transparent;
 		border: none;
 		border-radius: 0.75rem;
@@ -172,7 +172,7 @@
 	}
 
 	.tab-btn:hover:not(.disabled) {
-		color: var(--admin-text-primary, #f1f5f9);
+		color: var(--admin-text-primary, var(--text-primary, #f0f6fc));
 		background: rgba(255, 255, 255, 0.05);
 	}
 
@@ -182,8 +182,8 @@
 	}
 
 	.tab-btn.active {
-		color: var(--bg-base, #0f172a);
-		background: linear-gradient(135deg, var(--primary-500, #e6b800), var(--primary-600, #b38f00));
+		color: var(--bg-base, #0d1117);
+		background: var(--primary-500, #e6b800);
 		font-weight: 600;
 		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.25);
 	}
@@ -304,8 +304,6 @@
 
 	.switcher .tab-nav {
 		background: rgba(255, 255, 255, 0.05);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
 		border-radius: 1rem;
 		padding: 0.25rem;
 		border: 1px solid rgba(255, 255, 255, 0.1);

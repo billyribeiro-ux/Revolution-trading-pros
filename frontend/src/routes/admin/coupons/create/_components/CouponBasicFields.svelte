@@ -149,7 +149,7 @@
 		gap: 0.5rem;
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.25rem 0;
 	}
 
@@ -171,7 +171,7 @@
 	.form-label {
 		display: block;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.9rem;
 	}
@@ -179,10 +179,10 @@
 	.input {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 		transition: all 0.2s;
 	}
@@ -194,7 +194,7 @@
 	}
 
 	.input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.input-code {
@@ -218,10 +218,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -229,7 +229,7 @@
 	}
 
 	.btn-generate:hover:not(:disabled) {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.btn-generate:disabled {
@@ -241,7 +241,7 @@
 		display: block;
 		margin-top: 0.375rem;
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.discount-type-toggle {
@@ -256,10 +256,10 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 600;
 		font-size: 0.95rem;
 		cursor: pointer;
@@ -268,7 +268,7 @@
 
 	.type-btn:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.type-btn.active {
@@ -280,8 +280,8 @@
 	.value-input-wrapper {
 		display: flex;
 		align-items: center;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		overflow: hidden;
 	}
@@ -294,18 +294,18 @@
 	.value-prefix,
 	.value-suffix {
 		padding: 0.75rem 1rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 600;
 		font-size: 1.1rem;
-		background: rgba(30, 41, 59, 0.5);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.value-prefix {
-		border-right: 1px solid rgba(148, 163, 184, 0.2);
+		border-right: 1px solid var(--border-default, #30363d);
 	}
 
 	.value-suffix {
-		border-left: 1px solid rgba(148, 163, 184, 0.2);
+		border-left: 1px solid var(--border-default, #30363d);
 	}
 
 	.input-value {

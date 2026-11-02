@@ -134,7 +134,7 @@
 
 	.funnel-chart h3 {
 		margin: 0 0 1.5rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -231,7 +231,7 @@
 
 	.funnel-chart__rate span[data-tone='strong'],
 	.funnel-chart__summary-value[data-tone='strong'] {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.funnel-chart__rate span[data-tone='moderate'] {
@@ -239,11 +239,11 @@
 	}
 
 	.funnel-chart__rate span[data-tone='weak'] {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.funnel-chart__summary-value[data-tone='low'] {
-		color: #ea580c;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.funnel-chart__dropoff {
@@ -258,13 +258,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
 
 	.funnel-chart__dropoff-content span:last-child {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.funnel-chart__summary {
@@ -282,17 +282,17 @@
 	}
 
 	.funnel-chart__summary-label {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.funnel-chart__summary-value {
 		margin-left: 0.25rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.funnel-chart__empty {
 		padding: 2rem 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 

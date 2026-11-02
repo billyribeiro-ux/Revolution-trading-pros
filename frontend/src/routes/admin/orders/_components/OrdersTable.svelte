@@ -157,7 +157,6 @@
 		border: 1px solid var(--border-muted);
 		border-radius: 12px;
 		overflow: hidden;
-		backdrop-filter: blur(10px);
 	}
 
 	.loading-state,
@@ -246,24 +245,24 @@
 	}
 
 	.status-badge.status-completed {
-		background: rgba(16, 185, 129, 0.15);
-		color: #10b981;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.status-badge.status-pending {
-		background: rgba(251, 191, 36, 0.15);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.15);
+		color: var(--warning-emphasis, #d29922);
 	}
 	.status-badge.status-refunded {
-		background: rgba(239, 68, 68, 0.15);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 	.status-badge.status-failed {
-		background: rgba(239, 68, 68, 0.15);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 	.status-badge.status-default {
-		background: rgba(148, 163, 184, 0.15);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.order-total {
@@ -285,7 +284,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: 1px solid var(--border-default);
 		border-radius: 6px;
 		color: var(--text-secondary);
@@ -324,7 +323,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: 1px solid var(--border-default);
 		border-radius: 12px;
 		color: var(--text-secondary);

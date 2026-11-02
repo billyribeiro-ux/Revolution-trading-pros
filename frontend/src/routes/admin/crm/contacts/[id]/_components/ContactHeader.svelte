@@ -75,8 +75,8 @@
 		gap: 24px;
 		margin-bottom: 24px;
 		padding: 24px;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		flex-wrap: wrap;
 	}
@@ -91,7 +91,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -122,7 +122,7 @@
 
 	.vip-badge {
 		padding: 4px 10px;
-		background: linear-gradient(135deg, #fbbf24, #f59e0b);
+		background: #fbbf24;
 		border-radius: 20px;
 		font-size: 0.7rem;
 		font-weight: 700;
@@ -132,7 +132,7 @@
 	.job-info {
 		margin: 0;
 		font-size: 0.95rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.status-badges {
@@ -162,10 +162,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -177,9 +177,9 @@
 	}
 
 	.btn-icon.danger:hover {
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border-color: rgba(248, 81, 73, 0.3);
 	}
 
 	.btn-primary {
@@ -187,7 +187,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -208,9 +208,9 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #0f172a;
-		border: 1px solid #334155;
-		color: #e2e8f0;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
+		color: var(--text-primary, #f0f6fc);
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.875rem;
@@ -219,8 +219,8 @@
 	}
 
 	.btn-secondary:hover {
-		background: #1e293b;
-		border-color: #475569;
+		background: var(--bg-elevated, #161b22);
+		border-color: var(--border-default, #30363d);
 	}
 
 	@media (max-width: 639.98px) {

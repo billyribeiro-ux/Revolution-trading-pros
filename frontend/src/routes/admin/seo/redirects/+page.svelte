@@ -341,7 +341,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -364,12 +364,12 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
 	.btn-primary:hover {
-		background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+		background: var(--primary-400);
 	}
 
 	.btn-danger {
@@ -398,7 +398,7 @@
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -476,7 +476,7 @@
 		background: #f8f9fa;
 		border-bottom: 1px solid #e5e5e5;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.9rem;
 	}
 
@@ -532,17 +532,17 @@
 
 	.type-badge.type-301 {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.type-badge.type-302 {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.type-badge.type-307 {
 		background: #dbeafe;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.type-badge.type-308 {
@@ -552,7 +552,7 @@
 
 	.type-badge.type-410 {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.status-toggle {
@@ -567,7 +567,7 @@
 	}
 
 	.status-toggle.active {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.actions {
@@ -590,7 +590,7 @@
 	}
 
 	.action-btn.danger {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		border-color: #fee2e2;
 	}
 
@@ -604,7 +604,7 @@
 	}
 
 	.empty-state h3 {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 

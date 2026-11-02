@@ -72,7 +72,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.9375rem;
 	}
@@ -82,10 +82,10 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.25);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 		transition: all 0.2s;
 	}
@@ -108,7 +108,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		cursor: pointer;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.checkbox-label input[type='checkbox'] {
@@ -122,10 +122,10 @@
 	.seo-toggle {
 		width: 100%;
 		padding: 0.75rem;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px dashed rgba(148, 163, 184, 0.3);
+		background: var(--bg-surface, #1c2128);
+		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -133,15 +133,15 @@
 	}
 
 	.seo-toggle:hover {
-		background: rgba(148, 163, 184, 0.15);
-		color: #f1f5f9;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.seo-settings {
 		padding: 1.5rem;
-		background: rgba(148, 163, 184, 0.05);
+		background: var(--bg-surface, #1c2128);
 		border-radius: 12px;
-		border: 1px solid rgba(148, 163, 184, 0.15);
+		border: 1px solid var(--border-muted, #21262d);
 		margin-bottom: 1.5rem;
 	}
 </style>

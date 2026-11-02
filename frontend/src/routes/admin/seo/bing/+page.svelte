@@ -505,18 +505,18 @@ https://yourdomain.com/page-3"
 	}
 
 	.title-icon.bing {
-		background: linear-gradient(135deg, #008373, #00a99d);
+		background: #008373;
 	}
 
 	.header-title h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0.25rem 0 0;
 	}
 
@@ -531,7 +531,7 @@ https://yourdomain.com/page-3"
 		align-items: center;
 		gap: 1.5rem;
 		padding: 1.5rem;
-		background: linear-gradient(135deg, rgba(0, 131, 115, 0.15), rgba(0, 169, 157, 0.1));
+		background: rgba(0, 131, 115, 0.15);
 		border: 1px solid rgba(0, 169, 157, 0.3);
 		border-radius: 16px;
 		margin-bottom: 2rem;
@@ -540,7 +540,7 @@ https://yourdomain.com/page-3"
 	.advantage-icon {
 		width: 64px;
 		height: 64px;
-		background: linear-gradient(135deg, #008373, #00a99d);
+		background: #008373;
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -557,13 +557,13 @@ https://yourdomain.com/page-3"
 	}
 
 	.advantage-content p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 		line-height: 1.6;
 	}
 
 	.advantage-content strong {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	/* Stats */
@@ -579,8 +579,8 @@ https://yourdomain.com/page-3"
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 	}
 
@@ -594,31 +594,31 @@ https://yourdomain.com/page-3"
 	}
 
 	.stat-icon.blue {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-icon.emerald {
-		background: rgba(16, 185, 129, 0.15);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
 		color: var(--primary-500);
 	}
 	.stat-icon.yellow {
-		background: rgba(251, 191, 36, 0.15);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.15);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.stat-content .stat-value {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.stat-content .stat-label {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* Submit Section */
@@ -628,8 +628,8 @@ https://yourdomain.com/page-3"
 
 	.submit-card {
 		padding: 2rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 	}
 
@@ -637,7 +637,7 @@ https://yourdomain.com/page-3"
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.75rem;
 	}
 
@@ -648,7 +648,7 @@ https://yourdomain.com/page-3"
 	}
 
 	.submit-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1.5rem;
 	}
 
@@ -660,10 +660,10 @@ https://yourdomain.com/page-3"
 	.submit-form input {
 		flex: 1;
 		padding: 0.875rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 	}
 
@@ -681,8 +681,8 @@ https://yourdomain.com/page-3"
 	}
 
 	.column-card {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		padding: 1.5rem;
 	}
@@ -693,20 +693,20 @@ https://yourdomain.com/page-3"
 		align-items: center;
 		margin-bottom: 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.card-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
 	.view-all,
 	.header-note {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.view-all:hover {
@@ -725,7 +725,7 @@ https://yourdomain.com/page-3"
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(15, 23, 42, 0.4);
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
 	}
 
@@ -736,14 +736,14 @@ https://yourdomain.com/page-3"
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(239, 68, 68, 0.15);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 		flex-shrink: 0;
 	}
 
 	.submission-status.success {
-		background: rgba(16, 185, 129, 0.15);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.submission-info {
@@ -753,7 +753,7 @@ https://yourdomain.com/page-3"
 
 	.submission-url {
 		font-size: 0.875rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -763,12 +763,12 @@ https://yourdomain.com/page-3"
 		display: flex;
 		gap: 0.75rem;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.25rem;
 	}
 
 	.submission-type {
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		padding: 0.125rem 0.375rem;
 		border-radius: 4px;
 	}
@@ -785,7 +785,7 @@ https://yourdomain.com/page-3"
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem;
-		background: rgba(15, 23, 42, 0.4);
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
 	}
 
@@ -797,12 +797,12 @@ https://yourdomain.com/page-3"
 	.query-text {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.query-url {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -820,19 +820,19 @@ https://yourdomain.com/page-3"
 	.query-stat .stat-value {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.query-stat .stat-label {
 		font-size: 0.625rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 	}
 
 	/* Setup Guide */
 	.setup-guide {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		padding: 1.5rem;
 	}
@@ -840,7 +840,7 @@ https://yourdomain.com/page-3"
 	.setup-guide h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.5rem;
 	}
 
@@ -854,22 +854,22 @@ https://yourdomain.com/page-3"
 		display: flex;
 		gap: 1rem;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.4);
+		background: var(--bg-base, #0d1117);
 		border-radius: 10px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid var(--border-muted, #21262d);
 	}
 
 	.setup-step.completed {
-		border-color: rgba(16, 185, 129, 0.3);
-		background: rgba(16, 185, 129, 0.05);
+		border-color: rgba(63, 185, 80, 0.3);
+		background: rgba(63, 185, 80, 0.05);
 	}
 
 	.step-number {
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
-		background: rgba(148, 163, 184, 0.2);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -878,25 +878,25 @@ https://yourdomain.com/page-3"
 	}
 
 	.setup-step.completed .step-number {
-		background: rgba(16, 185, 129, 0.2);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.step-content h4 {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem;
 	}
 
 	.step-content p {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 	}
 
 	.step-content code {
-		background: rgba(148, 163, 184, 0.15);
+		background: var(--bg-hover, #252b33);
 		padding: 0.125rem 0.375rem;
 		border-radius: 4px;
 		font-family: monospace;
@@ -917,7 +917,7 @@ https://yourdomain.com/page-3"
 		align-items: center;
 		justify-content: center;
 		padding: 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
@@ -945,9 +945,9 @@ https://yourdomain.com/page-3"
 	.skeleton {
 		background: linear-gradient(
 			90deg,
-			rgba(148, 163, 184, 0.1) 25%,
-			rgba(148, 163, 184, 0.2) 50%,
-			rgba(148, 163, 184, 0.1) 75%
+			var(--bg-surface, #1c2128) 25%,
+			var(--bg-hover, #252b33) 50%,
+			var(--bg-surface, #1c2128) 75%
 		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
@@ -983,19 +983,19 @@ https://yourdomain.com/page-3"
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
 	.btn-primary.bing {
-		background: linear-gradient(135deg, #008373, #00a99d);
+		background: #008373;
 		color: white;
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-primary:disabled,
@@ -1009,7 +1009,6 @@ https://yourdomain.com/page-3"
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.8);
-		backdrop-filter: blur(4px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1018,8 +1017,8 @@ https://yourdomain.com/page-3"
 	}
 
 	.modal-content {
-		background: #1e293b;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 20px;
 		width: 100%;
 		max-width: 600px;
@@ -1030,13 +1029,13 @@ https://yourdomain.com/page-3"
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.modal-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -1046,10 +1045,10 @@ https://yourdomain.com/page-3"
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 	}
 
@@ -1058,17 +1057,17 @@ https://yourdomain.com/page-3"
 	}
 
 	.batch-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1rem;
 	}
 
 	.modal-body textarea {
 		width: 100%;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-family: monospace;
 		resize: vertical;
@@ -1082,7 +1081,7 @@ https://yourdomain.com/page-3"
 	.batch-count {
 		text-align: right;
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.5rem;
 	}
 
@@ -1091,7 +1090,7 @@ https://yourdomain.com/page-3"
 		justify-content: flex-end;
 		gap: 0.75rem;
 		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--border-muted, #21262d);
 	}
 
 	@media (max-width: 767.98px) {

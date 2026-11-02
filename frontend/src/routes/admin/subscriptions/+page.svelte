@@ -761,7 +761,7 @@
 
 	/* Outer Container with Gradient Background */
 	.admin-subscriptions {
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		background: var(--bg-base, #0d1117);
 		color: white;
 		position: relative;
 		overflow: hidden;
@@ -790,12 +790,12 @@
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 1rem;
 		margin: 0 0 1.5rem 0;
 	}
@@ -811,7 +811,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
@@ -835,9 +835,8 @@
 	.stat-card,
 	.filters-panel,
 	.table-card {
-		border: 1px solid rgb(51 65 85);
-		background: rgb(30 41 59 / 0.5);
-		backdrop-filter: blur(8px);
+		border: 1px solid var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.stat-card,
@@ -856,7 +855,7 @@
 
 	.stat-card h3 {
 		margin: 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.25rem;
@@ -872,22 +871,22 @@
 	}
 
 	.stat-card__icon[data-tone='emerald'] {
-		background: rgb(16 185 129 / 0.1);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stat-card__icon[data-tone='blue'] {
-		background: rgb(59 130 246 / 0.1);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.1);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.stat-card__icon[data-tone='orange'] {
-		background: rgb(249 115 22 / 0.1);
-		color: #fb923c;
+		background: rgba(210, 153, 34, 0.1);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.stat-card__icon[data-tone='purple'] {
-		background: rgb(168 85 247 / 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		color: #c084fc;
 	}
 
@@ -901,13 +900,13 @@
 
 	.stat-card__note {
 		margin: 0.5rem 0 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
 
 	.stat-card__note--positive {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.alert-card {
@@ -918,15 +917,15 @@
 	}
 
 	.alert-card[data-tone='red'] {
-		border-color: rgb(239 68 68 / 0.2);
-		background: rgb(239 68 68 / 0.1);
-		color: #f87171;
+		border-color: rgba(248, 81, 73, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.alert-card[data-tone='blue'] {
-		border-color: rgb(59 130 246 / 0.2);
-		background: rgb(59 130 246 / 0.1);
-		color: #60a5fa;
+		border-color: rgba(88, 166, 255, 0.2);
+		background: rgba(88, 166, 255, 0.1);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.alert-card__title {
@@ -950,13 +949,13 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
 
 	.alert-card__date {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.filters-panel {
@@ -976,7 +975,7 @@
 	}
 
 	.form-label {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.25rem;
@@ -984,16 +983,16 @@
 
 	.form-control {
 		width: 100%;
-		border: 1px solid #475569;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		color: #ffffff;
 		font: inherit;
 		padding: 0.5rem 1rem;
 	}
 
 	.form-control::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-control:focus {
@@ -1031,12 +1030,12 @@
 	}
 
 	.subscriptions-table thead {
-		background: rgb(15 23 42 / 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.subscriptions-table th {
 		padding: 1rem 1.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		letter-spacing: 0.05em;
@@ -1052,7 +1051,7 @@
 	}
 
 	.subscriptions-table tbody tr + tr {
-		border-top: 1px solid #334155;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.subscription-row {
@@ -1061,11 +1060,11 @@
 	}
 
 	.subscription-row:hover {
-		background: rgb(51 65 85 / 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.table-state {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		padding-block: 3rem;
 		text-align: center;
 	}
@@ -1092,11 +1091,11 @@
 	}
 
 	.table-secondary {
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.table-muted {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
@@ -1113,33 +1112,33 @@
 	}
 
 	.status-badge[data-status='active'] {
-		border-color: rgb(16 185 129 / 0.2);
-		background: rgb(16 185 129 / 0.1);
-		color: #34d399;
+		border-color: rgba(63, 185, 80, 0.2);
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-badge[data-status='pending'] {
-		border-color: rgb(234 179 8 / 0.2);
-		background: rgb(234 179 8 / 0.1);
+		border-color: rgba(210, 153, 34, 0.2);
+		background: rgba(210, 153, 34, 0.1);
 		color: #facc15;
 	}
 
 	.status-badge[data-status='on-hold'] {
-		border-color: rgb(249 115 22 / 0.2);
-		background: rgb(249 115 22 / 0.1);
-		color: #fb923c;
+		border-color: rgba(210, 153, 34, 0.2);
+		background: rgba(210, 153, 34, 0.1);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.status-badge[data-status='cancelled'] {
-		border-color: rgb(239 68 68 / 0.2);
-		background: rgb(239 68 68 / 0.1);
-		color: #f87171;
+		border-color: rgba(248, 81, 73, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.status-badge[data-status='expired'] {
-		border-color: rgb(100 116 139 / 0.2);
-		background: rgb(100 116 139 / 0.1);
-		color: #94a3b8;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.status-badge[data-status='pending-cancel'] {
@@ -1167,7 +1166,7 @@
 	}
 
 	.link-action--info {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.link-action--info:hover {
@@ -1175,7 +1174,7 @@
 	}
 
 	.link-action--success {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.link-action--success:hover {
@@ -1183,7 +1182,7 @@
 	}
 
 	.link-action--warning {
-		color: #fb923c;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.link-action--warning:hover {
@@ -1191,11 +1190,11 @@
 	}
 
 	.link-action--danger {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.link-action--danger:hover {
-		color: #fca5a5;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.modal-backdrop {
@@ -1206,16 +1205,15 @@
 		align-items: center;
 		justify-content: center;
 		background: rgb(0 0 0 / 0.8);
-		backdrop-filter: blur(8px);
 		padding: 1rem;
 	}
 
 	.modal-card {
 		width: 100%;
 		max-width: 28rem;
-		border: 1px solid #334155;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 1rem;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		padding: 2rem;
 	}
 
@@ -1229,7 +1227,7 @@
 
 	.modal-copy {
 		margin: 0 0 1.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.modal-field {
@@ -1237,14 +1235,14 @@
 	}
 
 	.required {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.checkbox-field {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		font-size: 0.875rem;
 		line-height: 1.25rem;
@@ -1281,11 +1279,11 @@
 	}
 
 	.modal-button--secondary {
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.modal-button--secondary:hover:not(:disabled) {
-		background: #475569;
+		background: var(--bg-active, #2d333b);
 	}
 
 	.modal-button--warning {
@@ -1316,17 +1314,17 @@
 	}
 
 	.table-scroll::-webkit-scrollbar-track {
-		background: rgb(15 23 42);
+		background: var(--bg-base, #0d1117);
 		border-radius: 4px;
 	}
 
 	.table-scroll::-webkit-scrollbar-thumb {
-		background: rgb(71 85 105);
+		background: var(--bg-hover, #252b33);
 		border-radius: 4px;
 	}
 
 	.table-scroll::-webkit-scrollbar-thumb:hover {
-		background: rgb(100 116 139);
+		background: var(--bg-hover, #252b33);
 	}
 
 	@media (min-width: 768px) {

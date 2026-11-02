@@ -292,12 +292,12 @@
 	}
 
 	.drop-icon {
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.drop-zone:hover .drop-icon,
 	.drop-zone.dragging .drop-icon {
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.drop-text {
@@ -309,12 +309,12 @@
 	.drop-title {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 	}
 
 	.drop-subtitle {
 		font-size: 0.875rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.drop-info {
@@ -323,7 +323,7 @@
 		justify-content: center;
 		gap: 0.5rem 1rem;
 		font-size: 0.75rem;
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.upload-progress {
@@ -335,7 +335,7 @@
 	}
 
 	.progress-icon {
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.progress-text {
@@ -348,12 +348,12 @@
 	.progress-percent {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.progress-label {
 		font-size: 0.875rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.progress-bar {
@@ -399,20 +399,20 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 	}
 
 	.file-size {
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.file-progress {
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 		font-weight: 500;
 	}
 
 	.file-error {
-		color: var(--error-color, #ef4444);
+		color: var(--error-color, var(--error-emphasis, #f85149));
 		font-weight: 500;
 	}
 

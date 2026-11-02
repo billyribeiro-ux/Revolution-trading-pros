@@ -29,7 +29,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(4px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -37,7 +36,7 @@
 	}
 
 	.modal-content {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 16px;
 		padding: 2rem;
@@ -47,13 +46,13 @@
 	}
 
 	.modal-content h3 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.25rem;
 		margin-bottom: 1rem;
 	}
 
 	.modal-content p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.5rem;
 		line-height: 1.6;
 	}
@@ -79,7 +78,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 	}
 
@@ -95,13 +94,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.btn-secondary:disabled {

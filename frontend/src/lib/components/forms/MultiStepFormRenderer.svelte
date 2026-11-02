@@ -666,14 +666,14 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		background: #3b82f6;
 		transition: width 0.3s ease;
 	}
 
 	.progress-text {
 		text-align: center;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.5rem;
 	}
 
@@ -696,7 +696,7 @@
 		justify-content: center;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -708,7 +708,7 @@
 
 	.step-dot--visited:not(:disabled):hover {
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.step-dot--active {
@@ -795,12 +795,12 @@
 	.step-title {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
 	.step-description {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 1.5rem;
 		line-height: 1.5;
 	}
@@ -855,7 +855,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: #3b82f6;
 		color: white;
 	}
 
@@ -930,11 +930,11 @@
 		gap: 0.5rem;
 		margin-top: 1rem;
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.save-indicator :global(svg) {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.multi-step-form--single-step .progress-container,

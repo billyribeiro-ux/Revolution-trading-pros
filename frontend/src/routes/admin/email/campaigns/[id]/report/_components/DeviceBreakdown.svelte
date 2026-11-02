@@ -111,7 +111,6 @@
 		border: 1px solid var(--border-default);
 		border-radius: 20px;
 		padding: 1.75rem;
-		backdrop-filter: blur(20px);
 		box-shadow: var(--admin-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.4));
 		position: relative;
 		overflow: hidden;
@@ -167,8 +166,8 @@
 	}
 
 	.panel-icon.purple {
-		background: var(--admin-widget-purple-bg, rgba(139, 92, 246, 0.15));
-		color: var(--admin-widget-purple-icon, #a78bfa);
+		background: var(--admin-widget-purple-bg, rgba(230, 184, 0, 0.15));
+		color: var(--admin-widget-purple-icon, var(--primary-400, #ffd11a));
 	}
 
 	.device-chart {
@@ -207,23 +206,15 @@
 	}
 
 	.device-bar.desktop {
-		background: linear-gradient(
-			90deg,
-			var(--admin-accent-secondary, var(--secondary-500)),
-			var(--admin-accent-secondary-hover, var(--secondary-300))
-		);
+		background: var(--admin-accent-secondary, var(--secondary-500));
 	}
 
 	.device-bar.mobile {
-		background: linear-gradient(
-			90deg,
-			var(--primary-500),
-			var(--admin-accent-primary-hover, var(--primary-400))
-		);
+		background: var(--primary-500);
 	}
 
 	.device-bar.tablet {
-		background: linear-gradient(90deg, var(--admin-info, #388bfd), var(--admin-info-text, #58a6ff));
+		background: var(--admin-info, #388bfd);
 	}
 
 	.device-percent {
@@ -275,11 +266,7 @@
 
 	.client-bar {
 		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--admin-widget-purple-icon, #a78bfa),
-			var(--admin-info-text, #58a6ff)
-		);
+		background: var(--admin-widget-purple-icon, #a78bfa);
 		border-radius: 3px;
 		transition: width 1s ease-out;
 	}

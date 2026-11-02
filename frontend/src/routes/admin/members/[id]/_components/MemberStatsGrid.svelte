@@ -74,8 +74,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 	}
 
@@ -93,35 +93,35 @@
 		color: var(--primary-400);
 	}
 	.stat-icon.emerald {
-		background: rgba(16, 185, 129, 0.15);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.blue {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-icon.emerald-400 {
 		background: rgba(52, 211, 153, 0.15);
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.yellow-400 {
-		background: rgba(251, 191, 36, 0.15);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.15);
+		color: var(--warning-emphasis, #d29922);
 	}
 	.stat-icon.red-400 {
 		background: rgba(248, 113, 113, 0.15);
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.stat-value {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.stat-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}

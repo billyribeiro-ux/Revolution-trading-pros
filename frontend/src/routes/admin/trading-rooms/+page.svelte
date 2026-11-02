@@ -144,12 +144,7 @@
 <style>
 	/* Page wrapper */
 	.admin-trading-rooms {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		position: relative;
 		overflow: hidden;
 	}
@@ -164,7 +159,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 8px 0;
 	}
 
@@ -182,8 +177,8 @@
 		flex-direction: column;
 		align-items: flex-start;
 		padding: 28px;
-		background: rgba(30, 41, 59, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		cursor: pointer;
 		transition: all 0.3s ease;
@@ -216,14 +211,14 @@
 	.room-info h2 {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 6px 0;
 	}
 
 	.room-type {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -244,7 +239,7 @@
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 500;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.room-arrow {
@@ -252,7 +247,7 @@
 		right: 1.5rem;
 		top: 50%;
 		transform: translateY(-50%);
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		transition: all 0.3s ease;
 	}
 
@@ -263,8 +258,8 @@
 
 	/* Quick Stats Section */
 	.quick-stats {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		padding: 32px;
 	}
@@ -272,7 +267,7 @@
 	.quick-stats h2 {
 		font-size: 1.125rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 24px 0;
 	}
 
@@ -289,8 +284,8 @@
 		flex-direction: column;
 		align-items: flex-start;
 		padding: 24px;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		text-decoration: none;
 		transition: all 0.2s ease;
@@ -310,13 +305,13 @@
 	.action-card span {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 4px;
 	}
 
 	.action-card p {
 		font-size: 14px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 		text-align: center;
 		transition: color 0.2s ease;

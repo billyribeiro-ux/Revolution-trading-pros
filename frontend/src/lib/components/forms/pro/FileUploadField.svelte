@@ -305,7 +305,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -347,23 +347,23 @@
 	}
 
 	:global(.upload-icon) {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.dropzone-text {
 		font-size: 0.9375rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.dropzone-link {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		font-weight: 500;
 	}
 
 	.dropzone-hint {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 	}
 
@@ -422,13 +422,13 @@
 
 	.file-size {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.file-error {
 		display: block;
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.progress-bar {
@@ -456,7 +456,7 @@
 		min-height: 44px;
 		border: none;
 		background-color: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		border-radius: 0.375rem;
 		transition: all 0.15s;
@@ -465,7 +465,7 @@
 
 	.remove-btn:hover {
 		background-color: #fee2e2;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.remove-btn :global(svg) {
@@ -475,13 +475,13 @@
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

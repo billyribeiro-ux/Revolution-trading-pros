@@ -453,7 +453,7 @@
 <style>
 	.recordings-page {
 		min-height: 100%;
-		background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+		background: var(--bg-base, #0d1117);
 		color: #ffffff;
 	}
 
@@ -492,7 +492,7 @@
 		width: 3rem;
 		height: 3rem;
 		border-radius: 1rem;
-		background: linear-gradient(135deg, #6366f1 0%, #2563eb 100%);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 10px 15px -3px rgb(99 102 241 / 0.2);
 	}
 
@@ -516,7 +516,7 @@
 	.recording-player p,
 	.recording-modal__meta span {
 		margin: 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.loading-state {
@@ -529,7 +529,7 @@
 	.loading-spinner {
 		width: 2.5rem;
 		height: 2.5rem;
-		border: 4px solid rgb(99 102 241 / 0.2);
+		border: 4px solid rgba(230, 184, 0, 0.2);
 		border-top-color: #6366f1;
 		border-radius: 999px;
 		animation: spin 700ms linear infinite;
@@ -552,7 +552,6 @@
 	.recordings-table-card {
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.05);
-		backdrop-filter: blur(24px);
 	}
 
 	.recordings-stat {
@@ -569,15 +568,15 @@
 	}
 
 	.recordings-stat__value[data-tone='indigo'] {
-		color: #818cf8;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.recordings-stat__value[data-tone='red'] {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.recordings-stat__value[data-tone='amber'] {
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.recordings-stat__label,
@@ -613,7 +612,7 @@
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 0.75rem;
 		background: rgb(255 255 255 / 0.05);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.25rem;
@@ -628,7 +627,7 @@
 	.recordings-filter.is-active {
 		border-color: #ffffff;
 		background: #ffffff;
-		color: #0f172a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.state-card {
@@ -638,8 +637,8 @@
 	}
 
 	.state-card--error {
-		border-color: rgb(239 68 68 / 0.2);
-		background: rgb(239 68 68 / 0.1);
+		border-color: rgba(248, 81, 73, 0.2);
+		background: rgba(248, 81, 73, 0.1);
 	}
 
 	.state-card__icon {
@@ -650,13 +649,13 @@
 		height: 4rem;
 		border-radius: 1rem;
 		margin: 0 auto 1rem;
-		background: rgb(239 68 68 / 0.1);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.state-card__icon--indigo {
-		background: rgb(99 102 241 / 0.1);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.state-card h3 {
@@ -669,11 +668,11 @@
 
 	.state-card p {
 		margin: 0 0 1.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.state-card--error p {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.state-card__button {
@@ -686,23 +685,23 @@
 	}
 
 	.state-card__button--primary {
-		background: linear-gradient(90deg, #6366f1 0%, #2563eb 100%);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 10px 15px -3px rgb(99 102 241 / 0.25);
 	}
 
 	.state-card__button--primary:hover {
-		background: linear-gradient(90deg, #818cf8 0%, #3b82f6 100%);
+		background: var(--primary-500, #e6b800);
 	}
 
 	.state-card__button--error {
-		border: 1px solid rgb(239 68 68 / 0.3);
-		background: rgb(239 68 68 / 0.2);
-		color: #f87171;
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 		padding: 0.625rem 1.25rem;
 	}
 
 	.state-card__button--error:hover {
-		background: rgb(239 68 68 / 0.3);
+		background: rgba(248, 81, 73, 0.3);
 	}
 
 	.recordings-table-card {
@@ -722,7 +721,7 @@
 	}
 
 	.recordings-table thead {
-		background: rgb(30 41 59 / 0.5);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.recordings-table th,
@@ -733,7 +732,7 @@
 	}
 
 	.recordings-table th {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		letter-spacing: 0.05em;
@@ -775,7 +774,7 @@
 	}
 
 	.recording-anonymous {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-style: italic;
 	}
 
@@ -787,7 +786,7 @@
 	:global(.recording-device__icon) {
 		width: 1rem;
 		height: 1rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.recording-flags {
@@ -803,17 +802,17 @@
 	}
 
 	.flag-badge[data-tone='red'] {
-		background: rgb(239 68 68 / 0.2);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.flag-badge[data-tone='amber'] {
-		background: rgb(245 158 11 / 0.2);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.2);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.recording-empty-flag {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.recording-date {
@@ -822,8 +821,8 @@
 
 	.play-button {
 		border-radius: 0.5rem;
-		background: rgb(99 102 241 / 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.75rem;
 		font-weight: 500;
 		line-height: 1rem;
@@ -831,7 +830,7 @@
 	}
 
 	.play-button:hover {
-		background: rgb(99 102 241 / 0.3);
+		background: rgba(230, 184, 0, 0.3);
 	}
 
 	.recordings-pagination {
@@ -851,7 +850,7 @@
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 0.75rem;
 		background: transparent;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		padding: 0.5rem 1rem;
@@ -874,7 +873,6 @@
 		align-items: center;
 		justify-content: center;
 		background: rgb(0 0 0 / 0.8);
-		backdrop-filter: blur(8px);
 		padding: 1rem;
 	}
 
@@ -885,7 +883,7 @@
 		overflow: hidden;
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 1rem;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.6);
 	}
 
@@ -914,8 +912,8 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		border-radius: 0.75rem;
-		background: rgb(99 102 241 / 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.recording-modal h3 {
@@ -936,7 +934,7 @@
 		height: 2rem;
 		border-radius: 0.5rem;
 		background: rgb(255 255 255 / 0.05);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.recording-modal__close:hover {
@@ -949,7 +947,7 @@
 		align-items: center;
 		justify-content: center;
 		aspect-ratio: 16 / 9;
-		background: rgb(30 41 59 / 0.5);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.recording-player__content {
@@ -961,14 +959,14 @@
 		height: 5rem;
 		border-radius: 1rem;
 		margin: 0 auto 1rem;
-		background: rgb(99 102 241 / 0.1);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.recording-player span {
 		display: block;
 		margin-top: 0.25rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}

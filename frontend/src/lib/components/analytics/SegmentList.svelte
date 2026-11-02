@@ -128,7 +128,7 @@
 
 	.segment-list__header h3 {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -136,7 +136,7 @@
 
 	.segment-list__header p {
 		margin: 0.25rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
@@ -202,7 +202,7 @@
 
 	.segment-list__name {
 		overflow: hidden;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 500;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -218,7 +218,7 @@
 	}
 
 	.segment-list__type {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
@@ -226,7 +226,7 @@
 	.segment-list__description {
 		overflow: hidden;
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		text-overflow: ellipsis;
@@ -239,12 +239,12 @@
 	}
 
 	.segment-list__count {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 	}
 
 	.segment-list__percentage {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
@@ -266,7 +266,7 @@
 
 	.segment-list__empty {
 		padding: 2rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 

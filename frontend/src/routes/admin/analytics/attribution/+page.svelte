@@ -321,7 +321,7 @@
 
 	.page-header h1 {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 1.25;
@@ -329,7 +329,7 @@
 
 	.page-header p {
 		margin: 0.25rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -385,7 +385,7 @@
 
 	.section-title {
 		margin: 0 0 1rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.4;
@@ -417,13 +417,13 @@
 
 	.model-name {
 		margin-bottom: 0.25rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		line-height: 1.4;
 	}
 
 	.model-description {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1.5;
 	}
@@ -451,7 +451,7 @@
 
 	.error-card p {
 		margin: 0;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.error-card button {
@@ -472,13 +472,13 @@
 
 	.summary-label {
 		margin-bottom: 0.25rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
 
 	.summary-value {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -495,7 +495,7 @@
 
 	.table-header h3 {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 700;
 		line-height: 1.4;
 	}
@@ -531,12 +531,12 @@
 	}
 
 	th {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 600;
 	}
 
 	tfoot td {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 	}
 
@@ -545,18 +545,18 @@
 	}
 
 	.channel-name {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		text-transform: capitalize;
 	}
 
 	.muted-cell,
 	.share-cell {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.strong-cell {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 	}
 
@@ -598,7 +598,7 @@
 	.path-rank {
 		width: 1.5rem;
 		flex: 0 0 auto;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 	}
 
@@ -618,7 +618,7 @@
 	}
 
 	.path-arrow {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.path-result {
@@ -626,13 +626,13 @@
 	}
 
 	.path-result div:first-child {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		line-height: 1.4;
 	}
 
 	.path-result div:last-child {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -649,7 +649,7 @@
 
 	.empty-card h3 {
 		margin: 0 0 0.5rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -657,7 +657,7 @@
 
 	.empty-card p {
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		line-height: 1.5;
 	}
 

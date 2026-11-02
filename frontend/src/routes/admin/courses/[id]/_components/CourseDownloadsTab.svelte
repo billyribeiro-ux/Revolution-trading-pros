@@ -127,7 +127,7 @@
 	.empty-downloads {
 		text-align: center;
 		padding: 48px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 	.empty-downloads :global(svg) {
 		margin-bottom: 16px;
@@ -157,21 +157,21 @@
 		align-items: center;
 	}
 	.dl-file {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 13px;
 	}
 	.dl-size {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 12px;
 	}
 	.downloads-list button {
 		background: none;
 		border: none;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 	}
 	.downloads-list button:hover {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 	.spinner-small {
 		width: 16px;

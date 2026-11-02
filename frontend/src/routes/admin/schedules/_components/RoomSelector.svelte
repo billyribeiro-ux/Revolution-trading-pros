@@ -104,7 +104,7 @@
 
 	.room-stats {
 		font-size: 13px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	@media (max-width: 767.98px) {

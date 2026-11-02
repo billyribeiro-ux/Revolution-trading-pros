@@ -203,7 +203,7 @@
 		border: none;
 		font-size: 20px;
 		cursor: pointer;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		padding: 4px 8px;
 	}
 	.btn-close:hover {

@@ -40,9 +40,9 @@
 		align-items: center;
 		margin-bottom: 2rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.search-group {
@@ -51,9 +51,9 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border-radius: 6px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.search-input {
@@ -62,11 +62,11 @@
 		background: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.search-input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.checkbox-label {
@@ -75,6 +75,6 @@
 		gap: 0.5rem;
 		cursor: pointer;
 		user-select: none;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 </style>

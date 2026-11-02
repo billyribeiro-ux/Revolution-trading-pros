@@ -244,7 +244,7 @@
 	.modal-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -273,7 +273,7 @@
 	.error-message {
 		padding: 0.75rem 1rem;
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 6px;
 		margin-bottom: 1rem;
 		font-size: 0.9rem;
@@ -286,13 +286,13 @@
 	.form-group label {
 		display: block;
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 		font-size: 0.95rem;
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.form-group input[type='text'],

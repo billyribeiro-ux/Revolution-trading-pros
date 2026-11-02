@@ -65,7 +65,7 @@
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 	}
 
@@ -76,17 +76,17 @@
 		flex: 1;
 		max-width: 400px;
 		padding: 0.5rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.search-box input {
 		flex: 1;
 		background: none;
 		border: none;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 	}
 
@@ -96,10 +96,10 @@
 
 	.filter-group select {
 		padding: 0.625rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 
@@ -109,8 +109,8 @@
 		gap: 0.75rem;
 		margin-left: auto;
 		padding-left: 1rem;
-		border-left: 1px solid rgba(148, 163, 184, 0.2);
-		color: #94a3b8;
+		border-left: 1px solid var(--border-default, #30363d);
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 	}
 
@@ -120,10 +120,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 	}
 
@@ -135,9 +135,9 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 	}
 
 	.btn-danger.small {

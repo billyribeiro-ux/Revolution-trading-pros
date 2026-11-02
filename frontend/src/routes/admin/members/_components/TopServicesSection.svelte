@@ -64,7 +64,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		min-width: 200px;
-		backdrop-filter: blur(10px);
 	}
 
 	.service-card:hover {

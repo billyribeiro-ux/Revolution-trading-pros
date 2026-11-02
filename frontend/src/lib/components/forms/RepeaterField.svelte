@@ -456,17 +456,17 @@
 	.repeater-field__label {
 		font-weight: 500;
 		font-size: 1rem;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.repeater-field__required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.repeater-field__count {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		background: #f3f4f6;
 		padding: 0.125rem 0.5rem;
 		border-radius: 0.25rem;
@@ -474,7 +474,7 @@
 
 	.repeater-field__description {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1rem;
 	}
 
@@ -520,7 +520,7 @@
 		background: none;
 		border: none;
 		cursor: grab;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		transition: color 0.2s;
 	}
 
@@ -541,7 +541,7 @@
 
 	.repeater-item__preview {
 		font-weight: 400;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.repeater-item__actions {
@@ -554,7 +554,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		border-radius: 0.375rem;
 		transition: all 0.2s;
 	}
@@ -571,7 +571,7 @@
 
 	.repeater-item__action--danger:hover:not(:disabled) {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.repeater-item__body {
@@ -629,7 +629,7 @@
 		border: 2px dashed #d1d5db;
 		border-radius: 0.75rem;
 		background: transparent;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -638,7 +638,7 @@
 
 	.repeater-add-btn:hover {
 		border-color: #2563eb;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		background: #f0f7ff;
 	}
 
@@ -648,7 +648,7 @@
 
 	.repeater-field__error {
 		font-size: 0.8125rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

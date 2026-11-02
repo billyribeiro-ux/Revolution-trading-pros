@@ -32,11 +32,11 @@
 		justify-content: center;
 		gap: 1rem;
 		padding: 1rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--border-muted, #21262d);
 	}
 
 	.page-info {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -48,9 +48,9 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 		font-size: 0.875rem;
 	}
 

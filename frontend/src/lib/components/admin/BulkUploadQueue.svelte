@@ -468,7 +468,7 @@
 	.error-message {
 		background: #ef44441a;
 		border: 1px solid #ef4444;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		padding: 0.75rem;
 		border-radius: 8px;
 		margin-bottom: 1rem;
@@ -553,7 +553,7 @@
 	}
 
 	.btn-remove:hover {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-start {
@@ -614,15 +614,15 @@
 	}
 
 	.stat.completed {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stat.failed {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.stat.in-progress {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.stat.pending {
@@ -686,13 +686,13 @@
 
 	.item-error {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-top: 0.25rem;
 	}
 
 	.item-success {
 		font-size: 0.75rem;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 		margin-top: 0.25rem;
 	}
 
@@ -705,7 +705,7 @@
 	.upload-complete {
 		text-align: center;
 		padding: 2rem;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.upload-complete p {

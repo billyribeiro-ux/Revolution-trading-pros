@@ -266,7 +266,7 @@
 
 	.size-item .label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -294,7 +294,7 @@
 	}
 
 	.savings .bytes {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.75rem;
 	}
 
@@ -306,7 +306,7 @@
 		cursor: ew-resize;
 		border: 1px solid #e2e8f0;
 		border-radius: 0 0 8px 8px;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		user-select: none;
 	}
 
@@ -327,7 +327,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 1rem;
-		background: rgba(30, 41, 59, 0.9);
+		background: var(--bg-elevated, #161b22);
 		color: white;
 		z-index: 10;
 	}
@@ -368,7 +368,6 @@
 		font-size: 0.75rem;
 		font-weight: 500;
 		border-radius: 4px;
-		backdrop-filter: blur(4px);
 	}
 
 	.before-label {
@@ -396,7 +395,6 @@
 		width: 2px;
 		background: white;
 		transform: translateX(-50%);
-		box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
 	}
 
 	.handle-button {
@@ -431,7 +429,7 @@
 		margin-top: 0.75rem;
 		text-align: center;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.keyboard-hint kbd {

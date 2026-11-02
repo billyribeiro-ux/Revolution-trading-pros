@@ -244,7 +244,7 @@
 
 	.step-indicator.upcoming .step-number {
 		background-color: #e5e7eb;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.step-indicator.active .step-number {
@@ -271,16 +271,16 @@
 	}
 
 	.step-indicator.active .step-title {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.step-indicator.completed .step-title {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.step-description {
 		font-size: 0.6875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
@@ -358,7 +358,7 @@
 
 	.step-counter {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.disabled {

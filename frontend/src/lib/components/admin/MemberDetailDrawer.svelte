@@ -740,7 +740,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(4px);
 		z-index: 1000;
 		animation: fadeIn 0.2s ease;
 	}
@@ -763,7 +762,7 @@
 		max-width: 100%;
 		height: 100%;
 		min-height: 100vh;
-		background: linear-gradient(180deg, #161b22 0%, #0f172a 100%);
+		background: var(--bg-elevated, #161b22);
 		border-left: 1px solid rgba(230, 184, 0, 0.15);
 		display: flex;
 		flex-direction: column;
@@ -833,7 +832,7 @@
 		width: 56px;
 		height: 56px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--primary-500, #e6b800), var(--primary-400, #ffd11a));
+		background: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		justify-content: center;

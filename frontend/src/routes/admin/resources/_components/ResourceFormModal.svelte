@@ -289,7 +289,7 @@
 	}
 
 	.modal {
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		width: 100%;
 		max-width: 500px;
@@ -314,20 +314,20 @@
 	.modal-header h2 {
 		margin: 0;
 		font-size: 1.25rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-close {
 		background: transparent;
 		border: none;
 		font-size: 1.5rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		line-height: 1;
 	}
 
 	.modal-close:hover {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-body {
@@ -352,7 +352,7 @@
 	.form-group .group-label {
 		display: block;
 		margin-bottom: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -362,10 +362,10 @@
 	.form-group select {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 	}
 
@@ -390,12 +390,12 @@
 	.form-hint {
 		display: block;
 		margin-top: 0.5rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.8rem;
 	}
 
 	.form-hint strong {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 		text-transform: uppercase;
 	}
 
@@ -411,10 +411,10 @@
 		align-items: center;
 		gap: 0.35rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.8rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -443,7 +443,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		cursor: pointer;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 	}
 
@@ -459,7 +459,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
@@ -484,7 +484,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;
@@ -494,7 +494,7 @@
 
 	.btn-secondary:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.spinner-small {

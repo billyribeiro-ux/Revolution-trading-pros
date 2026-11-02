@@ -76,7 +76,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		background: none;
 		border: none;
 		cursor: pointer;
@@ -105,7 +105,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -130,12 +130,12 @@
 	.member-name-row h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
 	.member-email {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0.25rem 0 0.75rem;
 	}
 
@@ -163,13 +163,13 @@
 		border: none;
 		padding: 0;
 		cursor: pointer;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		display: flex;
 		transition: color 0.2s;
 	}
 
 	.tag-remove:hover {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.tag-add {
@@ -177,11 +177,11 @@
 		align-items: center;
 		gap: 0.25rem;
 		padding: 0.25rem 0.75rem;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px dashed rgba(148, 163, 184, 0.3);
+		background: var(--bg-surface, #1c2128);
+		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 9999px;
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -222,19 +222,19 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.15);
-		color: #f1f5f9;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	@media (max-width: 767.98px) {

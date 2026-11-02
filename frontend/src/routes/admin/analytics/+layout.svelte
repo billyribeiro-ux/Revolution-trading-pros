@@ -1,58 +1,115 @@
 <script lang="ts">
 	/**
-	 * Analytics Layout - Shared navigation for analytics section
-	 * Updated to Svelte 5 syntax (November 2025)
+	 * Analytics Layout - Shared navigation for the analytics section.
+	 * Uses the admin token layer (no Tailwind utilities, no emoji icons).
 	 */
 	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+	import IconFilter from '@tabler/icons-svelte-runes/icons/filter';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
+	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
+	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconFileAnalytics from '@tabler/icons-svelte-runes/icons/file-analytics';
 
-	// Svelte 5: Props - no destructuring
 	interface Props {
 		children: Snippet;
 	}
 	let props: Props = $props();
 
-	// FIX-2026-04-26 (audit 08-analytics §P1-7): added goals, heatmaps,
-	// recordings — all three exist as `+page.svelte` siblings but were
-	// previously only reachable via the dashboard's Quick Actions panel or
-	// deep links from elsewhere.
 	const navItems = [
-		{ href: '/admin/analytics', label: 'Dashboard', icon: '📊' },
-		{ href: '/admin/analytics/events', label: 'Events', icon: '⚡' },
-		{ href: '/admin/analytics/funnels', label: 'Funnels', icon: '🔻' },
-		{ href: '/admin/analytics/cohorts', label: 'Cohorts', icon: '👥' },
-		{ href: '/admin/analytics/segments', label: 'Segments', icon: '🎯' },
-		{ href: '/admin/analytics/attribution', label: 'Attribution', icon: '📍' },
-		{ href: '/admin/analytics/goals', label: 'Goals', icon: '🎯' },
-		{ href: '/admin/analytics/heatmaps', label: 'Heatmaps', icon: '🔥' },
-		{ href: '/admin/analytics/recordings', label: 'Recordings', icon: '🎥' },
-		{ href: '/admin/analytics/reports', label: 'Reports', icon: '📈' }
+		{ href: '/admin/analytics', label: 'Dashboard', icon: IconChartBar },
+		{ href: '/admin/analytics/events', label: 'Events', icon: IconBolt },
+		{ href: '/admin/analytics/funnels', label: 'Funnels', icon: IconFilter },
+		{ href: '/admin/analytics/cohorts', label: 'Cohorts', icon: IconUsers },
+		{ href: '/admin/analytics/segments', label: 'Segments', icon: IconUsersGroup },
+		{ href: '/admin/analytics/attribution', label: 'Attribution', icon: IconRoute },
+		{ href: '/admin/analytics/goals', label: 'Goals', icon: IconTarget },
+		{ href: '/admin/analytics/heatmaps', label: 'Heatmaps', icon: IconFlame },
+		{ href: '/admin/analytics/recordings', label: 'Recordings', icon: IconVideo },
+		{ href: '/admin/analytics/reports', label: 'Reports', icon: IconFileAnalytics }
 	];
 
-	// Svelte 5: Derived state
 	let currentPath = $derived(page.url.pathname);
 </script>
 
-<div class="bg-gray-50">
-	<!-- Secondary Navigation -->
-	<div class="bg-white border-b border-gray-200 sticky top-0 z-10">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<nav class="flex items-center gap-1 -mb-px overflow-x-auto">
-				{#each navItems as item (item.href)}
-					<a
-						href={item.href}
-						class="flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 whitespace-nowrap transition-colors
-							{currentPath === item.href
-							? 'border-blue-600 text-blue-600'
-							: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-					>
-						<span>{item.icon}</span>
-						{item.label}
-					</a>
-				{/each}
-			</nav>
-		</div>
-	</div>
+<div class="analytics-shell">
+	<nav class="analytics-tabs" aria-label="Analytics sections">
+		{#each navItems as item (item.href)}
+			{@const Icon = item.icon}
+			{@const active = currentPath === item.href}
+			<a
+				href={item.href}
+				class={{ 'analytics-tab': true, active }}
+				aria-current={active ? 'page' : undefined}
+			>
+				<Icon size={18} aria-hidden="true" />
+				<span>{item.label}</span>
+			</a>
+		{/each}
+	</nav>
 
 	{@render props.children()}
 </div>
+
+<style>
+	.analytics-shell {
+		background: var(--bg-base, #0d1117);
+	}
+
+	.analytics-tabs {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		overflow-x: auto;
+		padding: 0 1rem;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: var(--radius-lg, 8px);
+		margin-bottom: 1.5rem;
+		scrollbar-width: thin;
+	}
+
+	.analytics-tab {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 48px;
+		padding: 0 1rem;
+		border-bottom: 2px solid transparent;
+		color: var(--text-secondary, #8b949e);
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-decoration: none;
+		white-space: nowrap;
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.analytics-tab:hover {
+		color: var(--text-primary, #f0f6fc);
+		background: var(--bg-hover, #252b33);
+	}
+
+	.analytics-tab.active {
+		color: var(--primary-500, #e6b800);
+		border-bottom-color: var(--primary-500, #e6b800);
+	}
+
+	.analytics-tab:focus-visible {
+		outline: none;
+		box-shadow: var(--admin-focus-ring, 0 0 0 3px rgba(230, 184, 0, 0.35));
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.analytics-tab {
+			transition: none;
+		}
+	}
+</style>

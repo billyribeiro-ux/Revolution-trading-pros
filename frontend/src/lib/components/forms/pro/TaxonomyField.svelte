@@ -358,7 +358,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -370,7 +370,7 @@
 		background-color: #f9fafb;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.spinner) {
@@ -496,14 +496,14 @@
 
 	.term-count {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-left: auto;
 	}
 
 	.no-results {
 		padding: 1rem;
 		text-align: center;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.create-option {
@@ -534,19 +534,19 @@
 
 	.selection-count {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

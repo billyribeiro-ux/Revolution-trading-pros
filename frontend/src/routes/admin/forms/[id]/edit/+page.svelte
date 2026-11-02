@@ -136,12 +136,12 @@
 	h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.page-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9375rem;
 		margin: 0;
 	}
@@ -170,7 +170,7 @@
 
 	.btn-embed {
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -194,11 +194,11 @@
 	.error-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.error-state {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-back {

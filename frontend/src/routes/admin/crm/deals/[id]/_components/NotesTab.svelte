@@ -41,8 +41,8 @@
 
 <style>
 	.notes-section {
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 14px;
 		padding: 20px;
 	}
@@ -59,7 +59,7 @@
 
 	.note-item {
 		padding: 16px;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border-radius: 10px;
 	}
 
@@ -71,18 +71,18 @@
 
 	.note-author {
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 
 	.note-date {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.note-content {
 		margin: 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 		line-height: 1.6;
 		white-space: pre-wrap;
@@ -93,7 +93,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: #f97316;
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -115,11 +115,11 @@
 		justify-content: center;
 		padding: 60px 20px;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 16px;
 	}
 

@@ -448,12 +448,12 @@
 	.templates-page {
 		min-height: 100vh;
 		background: #f9fafb;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	:global(.dark) .templates-page {
-		background: #111827;
-		color: #f9fafb;
+		background: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.page-header {
@@ -462,8 +462,8 @@
 	}
 
 	:global(.dark) .page-header {
-		border-color: #374151;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.page-container {
@@ -507,7 +507,7 @@
 	.back-link {
 		width: 2.25rem;
 		height: 2.25rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		transition:
 			background-color 160ms ease,
 			color 160ms ease;
@@ -519,12 +519,12 @@
 	}
 
 	:global(.dark) .back-link {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .back-link:hover {
-		background: #374151;
-		color: #e5e7eb;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.back-link__icon {
@@ -536,12 +536,12 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 	}
 
 	:global(.dark) .title-icon {
 		background: rgba(179, 143, 0, 0.3);
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.title-icon__svg {
@@ -551,7 +551,7 @@
 
 	.page-title {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 1.25;
@@ -563,12 +563,12 @@
 
 	.page-subtitle {
 		margin: 0.125rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
 	:global(.dark) .page-subtitle {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.toolbar {
@@ -589,7 +589,7 @@
 		left: 0.75rem;
 		width: 1.25rem;
 		height: 1.25rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		transform: translateY(-50%);
 		pointer-events: none;
 	}
@@ -599,7 +599,7 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
 		background: #ffffff;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		padding: 0.5rem 1rem 0.5rem 2.5rem;
 		font: inherit;
 	}
@@ -611,8 +611,8 @@
 	}
 
 	:global(.dark) .search-field__input {
-		border-color: #4b5563;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 		color: #ffffff;
 	}
 
@@ -654,13 +654,13 @@
 	}
 
 	:global(.dark) .filter-button {
-		border-color: #4b5563;
-		background: #1f2937;
-		color: #d1d5db;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .filter-button:hover {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	:global(.dark) .filter-button--active,
@@ -704,20 +704,20 @@
 	}
 
 	:global(.dark) .empty-card {
-		border-color: #374151;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.empty-card__icon {
 		width: 3rem;
 		height: 3rem;
 		margin: 0 auto 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-card__title {
 		margin: 0 0 0.5rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 500;
 		line-height: 1.5rem;
@@ -729,11 +729,11 @@
 
 	.empty-card__text {
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.dark) .empty-card__text {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.templates-grid {
@@ -760,15 +760,15 @@
 	}
 
 	:global(.dark) .template-card {
-		border-color: #374151;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.template-preview {
 		display: flex;
 		align-items: flex-end;
 		height: 8rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: #e6b800;
 		padding: 1rem;
 	}
 
@@ -845,23 +845,23 @@
 	.template-meta__icon {
 		width: 1rem;
 		height: 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.template-meta__category {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		text-transform: capitalize;
 	}
 
 	:global(.dark) .template-meta__category {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.default-badge {
 		border-radius: 0.25rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #b38f00;
+		color: var(--primary-600, #b38f00);
 		padding: 0.125rem 0.5rem;
 		font-size: 0.75rem;
 		line-height: 1rem;
@@ -869,12 +869,12 @@
 
 	:global(.dark) .default-badge {
 		background: rgba(179, 143, 0, 0.3);
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.template-card__title {
 		margin: 0 0 0.5rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5rem;
@@ -889,7 +889,7 @@
 		min-height: 2.5rem;
 		margin: 0 0 1rem;
 		overflow: hidden;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		-webkit-box-orient: vertical;
@@ -898,7 +898,7 @@
 	}
 
 	:global(.dark) .template-card__description {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.template-stats {
@@ -907,12 +907,12 @@
 		align-items: center;
 		gap: 0.5rem 1rem;
 		margin-bottom: 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
 	:global(.dark) .template-stats {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.label-list {
@@ -931,13 +931,13 @@
 	}
 
 	.label-overflow {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
 
 	:global(.dark) .label-overflow {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.use-template-button,
@@ -1006,7 +1006,7 @@
 
 	.custom-template-card__title {
 		margin: 0;
-		color: #b38f00;
+		color: var(--primary-600, #b38f00);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5rem;
@@ -1019,7 +1019,7 @@
 	}
 
 	:global(.dark) .custom-template-card__title {
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	:global(.dark) .custom-template-card__text {

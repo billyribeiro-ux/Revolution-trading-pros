@@ -390,7 +390,7 @@
 	.error-message {
 		background: #ef44441a;
 		border: 1px solid #ef4444;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		padding: 0.75rem;
 		border-radius: 8px;
 		margin-bottom: 1rem;
@@ -439,7 +439,7 @@
 	}
 
 	.stat-icon {
-		color: var(--primary, #e6b800);
+		color: var(--primary, var(--primary-500, #e6b800));
 		margin-bottom: 0.5rem;
 	}
 

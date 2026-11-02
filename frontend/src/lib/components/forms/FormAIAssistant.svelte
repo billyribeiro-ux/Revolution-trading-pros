@@ -424,8 +424,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.header-icon {
@@ -456,7 +456,7 @@
 		border: none;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 		border-bottom: 2px solid transparent;
@@ -468,7 +468,7 @@
 	}
 
 	.tab.active {
-		color: #8b5cf6;
+		color: var(--primary-500, #e6b800);
 		border-bottom-color: #8b5cf6;
 	}
 
@@ -479,7 +479,7 @@
 	.error-message {
 		padding: 0.75rem;
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		margin-bottom: 1rem;
@@ -518,7 +518,7 @@
 
 	.examples-label {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		align-self: center;
 	}
 
@@ -528,7 +528,7 @@
 		border: none;
 		border-radius: 0.25rem;
 		font-size: 0.75rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -542,8 +542,8 @@
 	.btn-analyze {
 		width: 100%;
 		padding: 0.75rem;
-		background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
@@ -619,7 +619,7 @@
 	.field-type-badge {
 		padding: 0.125rem 0.5rem;
 		background: #ede9fe;
-		color: #7c3aed;
+		color: var(--primary-500, #e6b800);
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
 		font-weight: 600;
@@ -635,7 +635,7 @@
 	.required-badge {
 		padding: 0.125rem 0.375rem;
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
 		font-weight: 500;
@@ -660,7 +660,7 @@
 
 	.section-description {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1rem 0;
 	}
 
@@ -692,14 +692,14 @@
 
 	.suggestion-reason {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 0.75rem 0;
 	}
 
 	.btn-add-field {
 		padding: 0.375rem 0.75rem;
-		background: #8b5cf6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 0.25rem;
 		font-size: 0.75rem;
@@ -709,14 +709,14 @@
 	}
 
 	.btn-add-field:hover {
-		background: #7c3aed;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.empty-suggestions,
 	.empty-analysis {
 		text-align: center;
 		padding: 2rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.analysis-results {
@@ -757,19 +757,19 @@
 		position: relative;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.score-label {
 		position: relative;
 		font-size: 0.625rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.score-text {
 		margin-top: 0.5rem;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.issues-section,
@@ -834,7 +834,7 @@
 
 	.rec-category {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: capitalize;
 	}
 
@@ -846,7 +846,7 @@
 
 	.rec-impact {
 		font-size: 0.75rem;
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 		margin: 0;
 	}
 </style>

@@ -58,7 +58,6 @@
 		border: 1px solid var(--border-default);
 		border-radius: 20px;
 		padding: 1.75rem;
-		backdrop-filter: blur(20px);
 		box-shadow: var(--admin-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.4));
 		position: relative;
 		overflow: hidden;
@@ -159,11 +158,7 @@
 
 	.ctor-bar-fill {
 		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--primary-500),
-			var(--admin-accent-tertiary, var(--primary-400))
-		);
+		background: var(--primary-500);
 		border-radius: 4px;
 		transition: width 1s ease-out;
 	}

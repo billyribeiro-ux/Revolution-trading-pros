@@ -34,27 +34,26 @@
 		justify-content: flex-end;
 		gap: 1rem;
 		padding: 1.5rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		position: sticky;
 		bottom: 1rem;
-		backdrop-filter: blur(8px);
 	}
 
 	.btn-cancel {
 		padding: 0.875rem 1.5rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-cancel:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.btn-save {
@@ -62,7 +61,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 2rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		border: none;
 		border-radius: 8px;
 		color: var(--bg-base);

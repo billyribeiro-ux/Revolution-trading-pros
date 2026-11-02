@@ -7,6 +7,9 @@
 	 * @author Revolution Trading Pros
 	 */
 	import { page } from '$app/state';
+	import { MediaQuery } from 'svelte/reactivity';
+	import IconLayoutSidebarLeftCollapse from '@tabler/icons-svelte-runes/icons/layout-sidebar-left-collapse';
+	import IconLayoutSidebarLeftExpand from '@tabler/icons-svelte-runes/icons/layout-sidebar-left-expand';
 	import { goto } from '$app/navigation';
 	import { user } from '#lib/stores/auth.svelte.js';
 	import { logout } from '#lib/api/auth.js';
@@ -43,14 +46,40 @@
 		IconClock,
 		IconShieldLock,
 		IconGauge,
-		IconPackage
+		IconPackage,
+		IconCrown
 	} from '#lib/icons/index.js';
 	interface Props {
 		isOpen?: boolean;
+		/** Desktop preference: collapse to the vertical icon rail. */
+		collapsed?: boolean;
 		onclose?: () => void;
+		ontoggle?: () => void;
 	}
 
 	let props: Props = $props();
+
+	// Breakpoints follow the canonical scale in design-tokens.css (lg 1024 / xl 1280).
+	const isDesktop = new MediaQuery('min-width: 1024px');
+	const isWide = new MediaQuery('min-width: 1280px');
+
+	// Rail = icon-only vertical bar. Forced on mid-range desktops (1024–1279px),
+	// optional on wide desktops via the toggle. Never applies to the mobile drawer.
+	const rail = $derived(isDesktop.current && (props.collapsed || !isWide.current));
+
+	// Tooltip for the rail. Rendered as a fixed element outside the scrolling
+	// <nav>, so `overflow` can never clip it.
+	let tip = $state<{ label: string; top: number; left: number } | null>(null);
+
+	function showTip(event: Event, label: string) {
+		if (!rail) return;
+		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+		tip = { label, top: rect.top + rect.height / 2, left: rect.right + 12 };
+	}
+
+	function hideTip() {
+		tip = null;
+	}
 
 	const menuSections = [
 		{
@@ -65,6 +94,7 @@
 				{ icon: IconReceipt, label: 'Subscriptions', href: '/admin/subscriptions' },
 				{ icon: IconShoppingCart, label: 'Products', href: '/admin/products' },
 				{ icon: IconTicket, label: 'Coupons', href: '/admin/coupons' },
+				{ icon: IconCrown, label: 'Memberships', href: '/admin/memberships' },
 				{ icon: IconPackage, label: 'Orders', href: '/admin/orders' },
 				{ icon: IconShoppingCart, label: 'Abandoned Carts', href: '/admin/cart/abandoned' }
 			]
@@ -190,22 +220,50 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<aside class={{ 'admin-sidebar': true, open: props.isOpen }}>
+<aside
+	class={{ 'admin-sidebar': true, open: props.isOpen, rail }}
+	aria-label="Admin sidebar"
+	inert={!isDesktop.current && !props.isOpen}
+>
 	<!-- Header -->
 	<div class="sidebar-header">
-		<a href="/admin" class="sidebar-logo">
-			<img src="/revolution-trading-pros.png" alt="RTP Admin" width="3163" height="835" />
+		<a href="/admin" class="sidebar-logo" aria-label="Revolution Trading Pros admin home">
+			<img src="/revolution-trading-pros-mark.png" alt="" width="256" height="256" />
 		</a>
-		<button class="close-btn" onclick={closeSidebar}>
-			<IconX size={24} />
+		{#if isWide.current}
+			<button
+				type="button"
+				class="header-btn collapse-btn"
+				onclick={() => props.ontoggle?.()}
+				onmouseenter={(e) => showTip(e, props.collapsed ? 'Expand sidebar' : 'Collapse sidebar')}
+				onmouseleave={hideTip}
+				onfocus={(e) => showTip(e, props.collapsed ? 'Expand sidebar' : 'Collapse sidebar')}
+				onblur={hideTip}
+				aria-label={props.collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+				aria-pressed={props.collapsed}
+			>
+				{#if props.collapsed}
+					<IconLayoutSidebarLeftExpand size={18} aria-hidden="true" />
+				{:else}
+					<IconLayoutSidebarLeftCollapse size={18} aria-hidden="true" />
+				{/if}
+			</button>
+		{/if}
+		<button
+			type="button"
+			class="header-btn close-btn"
+			onclick={closeSidebar}
+			aria-label="Close sidebar"
+		>
+			<IconX size={20} aria-hidden="true" />
 		</button>
 	</div>
 
 	<!-- Navigation -->
-	<nav class="sidebar-nav" aria-label="Admin primary navigation">
+	<nav class="sidebar-nav" aria-label="Admin primary navigation" onscroll={hideTip}>
 		{#each menuSections as section (section.title ?? '__top__')}
 			{#if section.title}
-				<div class="nav-section-title">{section.title}</div>
+				<div class="nav-section-title" aria-hidden={rail}>{section.title}</div>
 			{/if}
 			{#each section.items as item (item.href)}
 				{@const Icon = item.icon}
@@ -214,8 +272,15 @@
 					href={item.href}
 					class={{ 'nav-item': true, active }}
 					aria-current={active ? 'page' : undefined}
-					data-tooltip={item.label}
-					onclick={closeSidebar}
+					aria-label={rail ? item.label : undefined}
+					onclick={() => {
+						hideTip();
+						closeSidebar();
+					}}
+					onmouseenter={(e) => showTip(e, item.label)}
+					onmouseleave={hideTip}
+					onfocus={(e) => showTip(e, item.label)}
+					onblur={hideTip}
 				>
 					<Icon size={20} aria-hidden="true" />
 					<span>{item.label}</span>
@@ -235,22 +300,42 @@
 				<span class="user-role">{displayRole}</span>
 			</div>
 		</div>
-		<button type="button" class="exit-btn" onclick={handleSignOut}>
+		<button
+			type="button"
+			class="exit-btn"
+			onclick={handleSignOut}
+			onmouseenter={(e) => showTip(e, 'Sign Out')}
+			onmouseleave={hideTip}
+			onfocus={(e) => showTip(e, 'Sign Out')}
+			onblur={hideTip}
+			aria-label={rail ? 'Sign Out' : undefined}
+		>
 			<IconLogout size={18} aria-hidden="true" />
 			<span>Sign Out</span>
 		</button>
 	</div>
 </aside>
 
+{#if tip && rail}
+	<div class="rail-tooltip" role="tooltip" style:top="{tip.top}px" style:left="{tip.left}px">
+		{tip.label}
+	</div>
+{/if}
+
 <!-- Mobile Overlay -->
 {#if props.isOpen}
-	<button class="sidebar-overlay" onclick={closeSidebar} aria-label="Close sidebar"></button>
+	<button type="button" class="sidebar-overlay" onclick={closeSidebar} aria-label="Close sidebar"
+	></button>
 {/if}
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * ADMIN SIDEBAR - Netflix L11+ Principal Engineer Grade
-	 * Uses CSS custom properties for bulletproof light/dark theme support
+	 * ADMIN SIDEBAR
+	 * Three modes (breakpoints from design-tokens.css):
+	 *   • >= 1280px   full sidebar (240px) — can be collapsed to the rail by the user
+	 *   • 1024–1279px icon rail (72px)
+	 *   • <  1024px   off-canvas drawer
+	 * Colours come only from the admin token layer (colors.css / admin-surfaces.css).
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-sidebar {
@@ -262,70 +347,91 @@
 		position: fixed;
 		top: 0;
 		left: 0;
-		/* Use dynamic viewport height for better mobile browser support */
 		height: 100vh;
 		height: 100dvh;
-		/* Safe area insets for notched devices (2026 mobile standards) */
 		padding-top: env(safe-area-inset-top, 0);
 		padding-bottom: env(safe-area-inset-bottom, 0);
 		padding-left: env(safe-area-inset-left, 0);
-		z-index: var(--z-modal, 500);
-		transition:
-			transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-			background 0.3s ease,
-			border-color 0.3s ease;
+		z-index: var(--z-modal, 400);
+		transition: width 0.2s ease;
 	}
 
-	/* Sidebar Header */
+	.admin-sidebar.rail {
+		width: 72px;
+	}
+
+	/* Header: logo mark + controls */
 	.sidebar-header {
-		padding: 1.5rem;
+		height: var(--admin-header-height, 70px);
+		padding: 0 1rem;
 		border-bottom: 1px solid var(--admin-border-light);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 0.5rem;
+		flex-shrink: 0;
+	}
+
+	.sidebar-logo {
+		display: inline-flex;
+		align-items: center;
+		border-radius: var(--radius-md, 6px);
 	}
 
 	.sidebar-logo img {
+		width: 36px;
 		height: 36px;
-		width: auto;
+		object-fit: contain;
 	}
 
-	/* Close Button (Mobile) */
-	.close-btn {
-		display: none;
-		background: transparent;
-		border: none;
-		color: var(--admin-text-muted);
-		cursor: pointer;
-		/* Touch target optimization - minimum 44px (2026 WCAG standards) */
-		min-width: 44px;
-		min-height: 44px;
-		padding: 0.5rem;
-		border-radius: var(--radius-md, 0.5rem);
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.close-btn:hover {
-		background: var(--admin-btn-bg-hover);
-		color: var(--admin-accent-primary);
-	}
-
-	.close-btn:focus-visible {
+	.sidebar-logo:focus-visible,
+	.nav-item:focus-visible,
+	.header-btn:focus-visible,
+	.exit-btn:focus-visible {
 		box-shadow: var(--admin-focus-ring);
 		outline: none;
 	}
 
-	/* Navigation Container */
+	.header-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		padding: 0;
+		background: transparent;
+		border: none;
+		border-radius: var(--radius-sm, 4px);
+		color: var(--admin-text-muted);
+		cursor: pointer;
+		transition: background-color 0.2s ease, color 0.2s ease;
+	}
+
+	.header-btn:hover:not(:disabled) {
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-text-primary);
+	}
+
+	.header-btn:disabled {
+		cursor: default;
+	}
+
+	/* The drawer shows a close button; the desktop shows the collapse toggle. */
+	.close-btn {
+		display: none;
+	}
+
+	/* Navigation */
 	.sidebar-nav {
 		flex: 1;
 		padding: 0.5rem 1rem;
 		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
-	/* Section Title - Montserrat 600 for overlines/small headings */
 	.nav-section-title {
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		font-size: 0.8125rem;
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
 		font-weight: 600;
 		color: var(--admin-nav-section-title);
 		text-transform: uppercase;
@@ -339,34 +445,24 @@
 		padding-top: 0.5rem;
 	}
 
-	/* Navigation Item - Roboto 500 for nav items */
 	.nav-item {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		/* Touch target optimization - minimum 44px height (2026 WCAG standards) */
 		min-height: 44px;
-		padding: 0.6rem 0.75rem;
+		padding: 0.5rem 0.75rem;
 		color: var(--admin-nav-text);
 		text-decoration: none;
-		border-radius: var(--radius-md, 0.5rem);
-		font-family: var(--font-body), 'Roboto', sans-serif;
+		border-radius: var(--radius-md, 6px);
+		font-family: var(--font-body);
 		font-size: 0.875rem;
 		font-weight: 500;
 		letter-spacing: 0.01em;
 		margin-bottom: 0.25rem;
 		position: relative;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: background-color 0.2s ease, color 0.2s ease;
 	}
 
-	/* FIX P3 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
-	   replaced 5 hardcoded RTP-gold hex values with `--admin-accent-primary`
-	   (defined at the admin scope; resolves to gold today). Future re-themes
-	   that change `--admin-accent-primary` will now flow through the
-	   sidebar without missing this file. The "Gold text" / "Bright gold for
-	   active" pair (#ffd11a) doesn't have a brighter sibling variable, so
-	   we keep `var(--admin-accent-primary)` for those too — close enough
-	   that the file no longer needs a per-shade override. */
 	.nav-item::before {
 		content: '';
 		position: absolute;
@@ -377,80 +473,58 @@
 		height: 0;
 		background: var(--admin-accent-primary);
 		border-radius: 0 2px 2px 0;
-		transition: height 0.3s ease-in-out;
+		transition: height 0.2s ease;
 	}
 
 	.nav-item:hover {
-		background: var(--admin-nav-bg-hover, rgba(37, 43, 51, 0.8));
-		color: var(--admin-nav-text-hover, #f0f6fc);
+		background: var(--admin-nav-bg-hover);
+		color: var(--admin-nav-text-hover);
 	}
 
 	.nav-item:hover::before {
 		height: 50%;
-		background: var(--admin-accent-primary);
-	}
-
-	/* Smooth exit - uses same transition from ::before */
-
-	.nav-item:focus-visible {
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring (alpha-blended hex; var doesn't expose RGB triplet) */
-		outline: none;
 	}
 
 	.nav-item.active {
-		background: rgba(
-			230,
-			184,
-			0,
-			0.12
-		); /* Gold soft background (alpha-blended hex; var doesn't expose RGB triplet) */
+		background: var(--sidebar-active);
 		color: var(--admin-accent-primary);
 		font-weight: 600;
 	}
 
 	.nav-item.active::before {
 		height: 60%;
-		background: var(--admin-accent-primary);
 	}
 
-	/* Ensure active state is not affected by hover transition leak */
-	.nav-item.active:not(:hover)::before {
-		height: 60%;
-	}
-
-	/* Sidebar Footer */
+	/* Footer */
 	.sidebar-footer {
 		padding: 1rem;
 		border-top: 1px solid var(--admin-border-light);
+		flex-shrink: 0;
 	}
 
-	/* User Info Card */
 	.user-info {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem;
 		background: var(--admin-surface-sunken);
-		border-radius: var(--radius-lg, 0.75rem);
+		border: 1px solid var(--admin-border-light);
+		border-radius: var(--radius-lg, 8px);
 		margin-bottom: 0.75rem;
-		transition: background-color 0.3s ease;
 	}
 
 	.user-avatar {
-		width: 40px;
-		height: 40px;
-		border-radius: var(--radius-md, 0.5rem);
-		background: linear-gradient(
-			135deg,
-			var(--admin-accent-primary),
-			var(--admin-widget-purple-icon)
-		);
+		width: 36px;
+		height: 36px;
+		border-radius: var(--radius-md, 6px);
+		background: var(--admin-accent-bg);
+		border: 1px solid var(--sidebar-active);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-weight: 700;
-		font-size: 1.125rem;
-		color: white;
+		font-size: 1rem;
+		color: var(--admin-accent-primary);
 		flex-shrink: 0;
 	}
 
@@ -462,7 +536,7 @@
 	}
 
 	.user-name {
-		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-family: var(--font-body);
 		font-weight: 500;
 		font-size: 0.875rem;
 		color: var(--admin-text-primary);
@@ -472,30 +546,30 @@
 	}
 
 	.user-role {
-		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-family: var(--font-body);
 		font-size: 0.75rem;
 		font-weight: 400;
 		color: var(--admin-text-muted);
 	}
 
-	/* Exit Button - Roboto 500 */
 	.exit-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
 		width: 100%;
-		padding: 0.625rem 1rem;
+		min-height: 40px;
+		padding: 0 1rem;
 		background: transparent;
-		border: 1px solid var(--admin-error-border);
-		border-radius: var(--radius-md, 0.5rem);
-		color: var(--admin-text-muted);
-		text-decoration: none;
-		font-family: var(--font-body), 'Roboto', sans-serif;
+		border: 1px solid var(--admin-border);
+		border-radius: var(--radius-md, 6px);
+		color: var(--admin-text-secondary);
+		font-family: var(--font-body);
 		font-weight: 500;
 		font-size: 0.875rem;
 		letter-spacing: 0.01em;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		cursor: pointer;
+		transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 	}
 
 	.exit-btn:hover {
@@ -504,184 +578,114 @@
 		border-color: var(--admin-error-border);
 	}
 
-	.exit-btn:focus-visible {
-		box-shadow: var(--admin-focus-ring);
-		outline: none;
+	/* Rail mode: icons only, section titles collapse to hairline dividers */
+	.admin-sidebar.rail .sidebar-header {
+		flex-direction: column;
+		justify-content: center;
+		height: auto;
+		min-height: var(--admin-header-height, 70px);
+		padding: 0.75rem 0;
+		gap: 0.5rem;
 	}
 
-	/* Mobile Overlay */
+	.admin-sidebar.rail .sidebar-nav {
+		padding: 0.5rem;
+	}
+
+	.admin-sidebar.rail .nav-section-title {
+		font-size: 0;
+		height: 0;
+		padding: 0;
+		margin: 0.5rem 0.25rem;
+		border-top: 1px solid var(--admin-border-light);
+	}
+
+	.admin-sidebar.rail .nav-item {
+		justify-content: center;
+		gap: 0;
+		padding: 0.5rem 0;
+	}
+
+	.admin-sidebar.rail .nav-item span,
+	.admin-sidebar.rail .exit-btn span,
+	.admin-sidebar.rail .user-details {
+		display: none;
+	}
+
+	.admin-sidebar.rail .sidebar-footer {
+		padding: 0.75rem 0.5rem;
+	}
+
+	.admin-sidebar.rail .user-info {
+		justify-content: center;
+		padding: 0.5rem 0;
+	}
+
+	.admin-sidebar.rail .exit-btn {
+		padding: 0;
+	}
+
+	/* Rail tooltip: fixed so the scrolling <nav> can never clip it */
+	.rail-tooltip {
+		position: fixed;
+		transform: translateY(-50%);
+		padding: 0.375rem 0.625rem;
+		background: var(--admin-tooltip-bg);
+		color: var(--admin-tooltip-text);
+		border: 1px solid var(--admin-tooltip-border);
+		border-radius: var(--radius-md, 6px);
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		white-space: nowrap;
+		pointer-events: none;
+		z-index: var(--z-tooltip, 700);
+		box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.35));
+	}
+
 	.sidebar-overlay {
 		display: none;
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.5);
-		z-index: calc(var(--z-modal, 500) - 1);
+		background: rgba(0, 0, 0, 0.6);
+		z-index: calc(var(--z-modal, 400) - 1);
 		border: none;
 		cursor: pointer;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE BREAKPOINTS
-	 *
-	 * Three layout modes:
-	 *   • >= 1280px       full sidebar (240px, labels visible)
-	 *   • 1024–1279px     compact rail (72px, icons only — Linear/Vercel pattern)
-	 *   • <  1024px       off-canvas drawer (slides in via .open)
-	 *
-	 * The compact rail keeps the sidebar visible at midrange widths instead of
-	 * forcing a drawer pattern, so admins on 13–14" laptops still get persistent
-	 * navigation. `.admin-main` reads `--admin-sidebar-width` for its left
-	 * offset, so flipping the variable is enough to keep the layout in sync.
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Compact rail — labels collapse to icons only. CSS-only tooltips appear
-	   on hover/focus to expose the missing label; group titles hide entirely.
-	   No JS / no portal — same pattern Linear, Vercel, and GitHub use for icon
-	   rails. The tooltip only renders inside this breakpoint, so the full
-	   sidebar (>=1280px) and the mobile drawer (<1024px) never show it. */
-	@media (min-width: 1024px) and (max-width: 1279px) {
-		.admin-sidebar {
-			width: 72px;
-		}
-
-		.sidebar-logo img {
-			height: 28px;
-		}
-
-		.sidebar-nav {
-			padding: 0.5rem 0.5rem;
-		}
-
-		.nav-section-title {
-			display: none;
-		}
-
-		.nav-item {
-			justify-content: center;
-			gap: 0;
-			padding: 0.6rem 0;
-			/* Allow the absolutely-positioned tooltip pseudo-element to escape
-			   the 72px rail. The .admin-sidebar itself has overflow-y: auto on
-			   .sidebar-nav, so the tooltip lives on .nav-item's stacking
-			   context but is positioned via `left: calc(100% + …)`. */
-			position: relative;
-		}
-
-		.nav-item span {
-			display: none;
-		}
-
-		/* CSS tooltip — shows the data-tooltip attribute on hover/focus.
-		   Positioned to the right of the rail, with a small arrow. Hidden by
-		   default; opacity transition for a subtle fade-in. */
-		.nav-item[data-tooltip]::after {
-			content: attr(data-tooltip);
-			position: absolute;
-			left: calc(100% + 0.75rem);
-			top: 50%;
-			transform: translateY(-50%);
-			padding: 0.4rem 0.625rem;
-			background: var(--admin-tooltip-bg, #0f1419);
-			color: var(--admin-tooltip-text, #f0f6fc);
-			border: 1px solid var(--admin-tooltip-border, rgba(230, 184, 0, 0.25));
-			border-radius: 0.375rem;
-			font-family: var(--font-body), 'Roboto', sans-serif;
-			font-size: 0.8125rem;
-			font-weight: 500;
-			letter-spacing: 0.01em;
-			white-space: nowrap;
-			pointer-events: none;
-			opacity: 0;
-			visibility: hidden;
-			transition:
-				opacity 0.15s ease-out,
-				visibility 0.15s ease-out;
-			z-index: 1000;
-			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-		}
-
-		.nav-item[data-tooltip]:hover::after,
-		.nav-item[data-tooltip]:focus-visible::after {
-			opacity: 1;
-			visibility: visible;
-		}
-
-		.user-info {
-			justify-content: center;
-			padding: 0.5rem;
-		}
-
-		.user-details {
-			display: none;
-		}
-
-		.exit-btn {
-			padding: 0.625rem 0;
-			gap: 0;
-			position: relative;
-		}
-
-		.exit-btn span {
-			display: none;
-		}
-
-		/* Mirror the tooltip pattern for the sign-out button. */
-		.exit-btn::after {
-			content: 'Sign Out';
-			position: absolute;
-			left: calc(100% + 0.75rem);
-			top: 50%;
-			transform: translateY(-50%);
-			padding: 0.4rem 0.625rem;
-			background: var(--admin-tooltip-bg, #0f1419);
-			color: var(--admin-tooltip-text, #f0f6fc);
-			border: 1px solid var(--admin-tooltip-border, rgba(230, 184, 0, 0.25));
-			border-radius: 0.375rem;
-			font-family: var(--font-body), 'Roboto', sans-serif;
-			font-size: 0.8125rem;
-			font-weight: 500;
-			white-space: nowrap;
-			pointer-events: none;
-			opacity: 0;
-			visibility: hidden;
-			transition:
-				opacity 0.15s ease-out,
-				visibility 0.15s ease-out;
-			z-index: 1000;
-			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-		}
-
-		.exit-btn:hover::after,
-		.exit-btn:focus-visible::after {
-			opacity: 1;
-			visibility: visible;
-		}
-	}
-
-	/* Honour reduced-motion: skip the fade so tooltips appear instantly. */
-	@media (prefers-reduced-motion: reduce) {
-		.nav-item[data-tooltip]::after,
-		.exit-btn::after {
-			transition: none;
-		}
-	}
-
-	/* Mobile / tablet — off-canvas drawer, requires explicit open toggle. */
-	@media (max-width: 1023px) {
+	/* Mobile / tablet drawer */
+	@media (max-width: 1023.98px) {
 		.admin-sidebar {
 			transform: translateX(-100%);
+			transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 		}
 
 		.admin-sidebar.open {
 			transform: translateX(0);
 		}
 
+		.collapse-btn {
+			display: none;
+		}
+
 		.close-btn {
-			display: block;
+			display: inline-flex;
+			width: 44px;
+			height: 44px;
 		}
 
 		.sidebar-overlay {
 			display: block;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.admin-sidebar,
+		.nav-item,
+		.nav-item::before,
+		.header-btn,
+		.exit-btn {
+			transition: none;
 		}
 	}
 </style>

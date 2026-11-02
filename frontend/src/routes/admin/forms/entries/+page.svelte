@@ -172,7 +172,7 @@
 
 <style>
 	.form-entries-page {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.page-header {
@@ -185,7 +185,7 @@
 
 	.page-header h1 {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -193,7 +193,7 @@
 
 	.page-header p {
 		margin: 0.25rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-selector {
@@ -204,7 +204,7 @@
 	.empty-state {
 		padding: 3rem 1rem;
 		text-align: center;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state p {
@@ -213,7 +213,7 @@
 
 	.empty-state .loading-spinner + p {
 		margin-top: 1rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.loading-spinner {
@@ -235,7 +235,7 @@
 	.entry-preview {
 		max-width: 20rem;
 		overflow: hidden;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
@@ -246,7 +246,7 @@
 		justify-content: center;
 		padding: 0.5rem;
 		border-radius: 0.25rem;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		transition:
 			background-color 0.2s ease,
 			color 0.2s ease;

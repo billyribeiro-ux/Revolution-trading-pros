@@ -377,10 +377,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -388,14 +388,14 @@
 	}
 
 	.type-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.type-btn.active {
 		background: var(
 			--admin-btn-primary-bg,
-			linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%)
+			var(--primary-500)
 		);
 		border-color: transparent;
 		color: var(--admin-btn-primary-text, var(--bg-base));
@@ -411,13 +411,13 @@
 
 	.results-summary {
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin-bottom: 1.5rem;
 	}
 
 	.search-term {
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -434,15 +434,15 @@
 	}
 
 	.alert.error {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.alert-dismiss {
 		background: transparent;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 		padding: 0.375rem 0.75rem;
 		border-radius: 4px;
 		cursor: pointer;
@@ -452,7 +452,7 @@
 	}
 
 	.alert-dismiss:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -480,8 +480,8 @@
 	}
 
 	.product-card {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		overflow: hidden;
 		transition: all 0.3s;
@@ -490,7 +490,7 @@
 	.product-card:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-		border-color: rgba(148, 163, 184, 0.4);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.product-card.deleting {
@@ -503,14 +503,14 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.25rem;
-		background: rgba(15, 23, 42, 0.6);
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-base, #0d1117);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.product-thumbnail {
 		height: 160px;
 		overflow: hidden;
-		background: rgba(15, 23, 42, 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.product-thumbnail img {
@@ -537,8 +537,8 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(99, 102, 241, 0.15);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--primary-400, #ffd11a);
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -546,13 +546,13 @@
 	}
 
 	.status-badge.active {
-		background: rgba(34, 197, 94, 0.15);
-		color: #22c55e;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-badge.inactive {
-		background: rgba(148, 163, 184, 0.2);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.product-content {
@@ -562,19 +562,19 @@
 	.product-content h3 {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.25rem;
 	}
 
 	.slug {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 0.75rem;
 		font-family: monospace;
 	}
 
 	.description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.5;
 		margin-bottom: 1rem;
@@ -595,8 +595,8 @@
 	.price-badge {
 		display: inline-block;
 		padding: 0.375rem 0.75rem;
-		background: rgba(99, 102, 241, 0.15);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--primary-400, #ffd11a);
 		border-radius: 6px;
 		font-size: 1rem;
 		font-weight: 700;
@@ -605,15 +605,15 @@
 
 	.original-price {
 		font-size: 0.875rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: line-through;
 	}
 
 	.sale-price {
 		display: inline-block;
 		padding: 0.375rem 0.75rem;
-		background: rgba(34, 197, 94, 0.15);
-		color: #22c55e;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 		border-radius: 6px;
 		font-size: 1rem;
 		font-weight: 700;
@@ -623,8 +623,8 @@
 		display: flex;
 		gap: 0.5rem;
 		padding: 1rem 1.25rem;
-		background: rgba(15, 23, 42, 0.6);
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-base, #0d1117);
+		border-top: 1px solid var(--border-muted, #21262d);
 	}
 
 	.action-btn {
@@ -643,25 +643,25 @@
 	}
 
 	.action-btn.edit {
-		background: rgba(99, 102, 241, 0.15);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--primary-400, #ffd11a);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 	}
 
 	.action-btn.edit:hover {
-		background: rgba(99, 102, 241, 0.25);
-		border-color: rgba(99, 102, 241, 0.5);
+		background: rgba(230, 184, 0, 0.25);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.action-btn.delete {
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 	}
 
 	.action-btn.delete:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.2);
-		border-color: rgba(239, 68, 68, 0.5);
+		background: rgba(248, 81, 73, 0.2);
+		border-color: rgba(248, 81, 73, 0.5);
 	}
 
 	.action-btn:disabled {

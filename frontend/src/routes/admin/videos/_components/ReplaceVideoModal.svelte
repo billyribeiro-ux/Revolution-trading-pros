@@ -202,7 +202,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: #e6b800;
 		border: none;
 		border-radius: 10px;
 		color: #0d1117;
@@ -227,8 +227,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: rgba(100, 116, 139, 0.1);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
 		color: var(--text-secondary);
 		font-size: 0.875rem;
@@ -238,7 +238,7 @@
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
 	}
 
@@ -281,8 +281,8 @@
 	}
 
 	.platform-preview {
-		background: rgba(34, 197, 94, 0.1);
-		border: 1px solid rgba(34, 197, 94, 0.2);
+		background: rgba(63, 185, 80, 0.1);
+		border: 1px solid rgba(63, 185, 80, 0.2);
 		border-radius: 6px;
 		padding: 0.75rem;
 		margin-top: 1rem;

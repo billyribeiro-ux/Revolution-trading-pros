@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { fade, fly, scale } from 'svelte/transition';
-	import { cubicOut, elasticOut } from 'svelte/easing';
 	import {
 		IconReceipt,
 		IconTicket,
@@ -523,7 +521,7 @@
 <div class="admin-dashboard">
 	<div class="admin-page-container">
 		<!-- Header - Centered Style -->
-		<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
+		<header class="page-header">
 			<h1>Analytics Dashboard</h1>
 			<p class="subtitle">
 				Real-time insights and performance metrics
@@ -555,7 +553,7 @@
 		</header>
 
 		{#if error}
-			<div class="error-banner" role="alert" in:fly={{ y: -10, duration: 300 }}>
+			<div class="error-banner" role="alert">
 				<IconAlertCircle size={20} aria-hidden="true" />
 				<span class="error-banner__message">{error}</span>
 				<button
@@ -571,7 +569,7 @@
 		{/if}
 
 		<!-- Site Analytics Panel -->
-		<section class="analytics-panel glass-panel" in:fly={{ y: 20, duration: 500, delay: 100 }}>
+		<section class="analytics-panel glass-panel">
 			<div class="panel-header">
 				<div class="panel-title">
 					<div class="panel-icon analytics-icon">
@@ -619,7 +617,6 @@
 						{@const MetricIcon = metric.icon}
 						<div
 							class={['metric-card', metric.color]}
-							in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}
 						>
 							<div class={['metric-icon-wrap', metric.color]}>
 								<MetricIcon size={20} />
@@ -657,7 +654,6 @@
 									{/if}
 								</div>
 							</div>
-							<div class={['metric-glow', metric.color]}></div>
 						</div>
 					{/each}
 				</div>
@@ -669,7 +665,6 @@
 			<!-- SEO Overview -->
 			<section
 				class="analytics-panel glass-panel seo-panel"
-				in:fly={{ x: -20, duration: 500, delay: 200 }}
 			>
 				<div class="panel-header">
 					<div class="panel-title">
@@ -734,12 +729,6 @@
 									+{seoMetrics.searchTraffic.change}%
 								</div>
 							{/if}
-							<div class="seo-metric-bar">
-								<div
-									class="seo-metric-bar-fill"
-									style:width={seoMetrics.searchTraffic.value !== null ? '75%' : '0%'}
-								></div>
-							</div>
 						</div>
 
 						<div class="seo-metric-card">
@@ -871,7 +860,6 @@
 			<!-- Site Health -->
 			<section
 				class="analytics-panel glass-panel health-panel"
-				in:fly={{ x: 20, duration: 500, delay: 200 }}
 			>
 				<div class="panel-header">
 					<div class="panel-title">
@@ -889,6 +877,9 @@
 					<!-- Device Breakdown -->
 					<div class="health-card device-card">
 						<h4>Device Breakdown</h4>
+						{#if deviceBreakdown.desktop + deviceBreakdown.mobile + deviceBreakdown.tablet === 0}
+							<p class="no-data">No device data reported by analytics yet.</p>
+						{:else}
 						<div class="device-bars">
 							<div class="device-row">
 								<div class="device-info">
@@ -921,6 +912,7 @@
 								<span class="device-percent">{deviceBreakdown.tablet}%</span>
 							</div>
 						</div>
+						{/if}
 					</div>
 
 					<!-- Errors & Redirects -->
@@ -947,7 +939,7 @@
 						<h4>Redirections</h4>
 						<div class="error-stats">
 							<div class="error-stat">
-								<span class="redirect-count">{seoMetrics.redirections.count}</span>
+								<span class="redirect-count">{seoMetrics.redirections.count ?? '—'}</span>
 								<span class="error-label">Active</span>
 							</div>
 							<div class="error-stat">
@@ -963,7 +955,6 @@
 		<!-- Business Overview -->
 		<section
 			class="analytics-panel glass-panel business-panel"
-			in:fly={{ y: 20, duration: 500, delay: 300 }}
 		>
 			<div class="panel-header">
 				<div class="panel-title">
@@ -983,7 +974,6 @@
 					<a
 						href={item.href}
 						class={['business-card', item.color]}
-						in:scale={{ duration: 400, delay: 350 + i * 50, easing: cubicOut }}
 					>
 						<div class={['business-card-icon', item.color]}>
 							<BusinessIcon size={28} />
@@ -1008,7 +998,6 @@
 		<!-- Quick Actions - Uses remaining icons -->
 		<section
 			class="analytics-panel glass-panel quick-actions-panel"
-			in:fade={{ duration: 400, delay: 400 }}
 		>
 			<div class="panel-header">
 				<div class="panel-title">
@@ -1027,12 +1016,11 @@
 				     Tiles whose dedicated routes don't yet exist are aliased to the
 				     closest existing surface (see docs/audits/ADMIN_QUICK_ACTIONS_BACKLOG.md
 				     for the full mapping and what's missing). -->
-				{#each [{ href: '/admin/email', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/seo', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/categories', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/email', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/settings', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/indicators', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i (i)}
+				{#each [{ href: '/admin/email/campaigns', icon: IconMail, label: 'Email', color: 'blue' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', color: 'purple' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Notifications', color: 'amber' }, { href: '/admin/media', icon: IconPhoto, label: 'Media', color: 'pink' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', color: 'red' }, { href: '/admin/categories', icon: IconTag, label: 'Tags', color: 'green' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', color: 'orange' }, { href: '/admin/seo', icon: IconLink, label: 'Links', color: 'cyan' }, { href: '/admin/categories', icon: IconFilter, label: 'Filters', color: 'indigo' }, { href: '/admin/email/campaigns', icon: IconSend, label: 'Broadcast', color: 'teal' }, { href: '/admin/settings', icon: IconWorld, label: 'Global', color: 'slate' }, { href: '/admin/indicators', icon: IconAlertTriangle, label: 'Alerts', color: 'yellow' }] as action, i (i)}
 					{@const ActionIcon = action.icon}
 					<a
 						href={action.href}
 						class={['quick-action-card', action.color]}
-						in:scale={{ duration: 300, delay: 450 + i * 30, easing: elasticOut }}
 					>
 						<div class={['quick-action-icon', action.color]}>
 							<ActionIcon size={20} />
@@ -1047,7 +1035,6 @@
 		{#if hasRealAnalyticsData && topPages.length > 0}
 			<section
 				class="analytics-panel glass-panel top-pages-panel"
-				in:fly={{ y: 20, duration: 400, delay: 500 }}
 			>
 				<div class="panel-header">
 					<div class="panel-title">
@@ -1064,7 +1051,7 @@
 				</div>
 				<div class="top-pages-list">
 					{#each topPages as page, i (page.path)}
-						<div class="top-page-item" in:fly={{ x: -10, duration: 300, delay: 550 + i * 50 }}>
+						<div class="top-page-item">
 							<span class="top-page-rank">{i + 1}</span>
 							<span class="top-page-path">{page.path}</span>
 							<span class="top-page-views">{formatNumber(page.views)} views</span>
@@ -1088,31 +1075,11 @@
 	 * Consistent with Analytics Dashboard styling
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Outer Container — flat surface with one subtle radial accent.
-	   Per the team's "no childish blob effects" rule (see
-	   docs/audits/MASTER_UIUX_BACKLOG.md item 8c), animated decorative blobs
-	   are out. We follow the Stripe / Linear / Vercel pattern: a single fixed
-	   radial gradient anchored top-right adds depth without distracting from
-	   the metrics that the dashboard exists to surface. The gradient lives on
-	   the container ::before so it scrolls with the page (cheaper than a
-	   fixed-position layer) and uses pointer-events:none so it never
-	   intercepts clicks. */
+	/* Outer container: flat surface, no decorative backgrounds. */
 	.admin-dashboard {
 		background: var(--bg-base);
 		color: var(--text-primary);
 		position: relative;
-		isolation: isolate;
-	}
-
-	.admin-dashboard::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: -1;
-		pointer-events: none;
-		background:
-			radial-gradient(ellipse 800px 600px at 100% 0%, rgba(230, 184, 0, 0.06), transparent 60%),
-			radial-gradient(ellipse 700px 500px at 0% 100%, rgba(61, 90, 153, 0.05), transparent 60%);
 	}
 
 	/* Inner Container */
@@ -1185,7 +1152,7 @@
 	}
 
 	.period-selector button.active {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
@@ -1194,7 +1161,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		padding: 0.625rem 1rem;
@@ -1307,7 +1274,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: var(--bg-base);
 		text-decoration: none;
 		border-radius: 10px;
@@ -1318,7 +1285,6 @@
 	}
 
 	.connect-btn:hover {
-		transform: translateY(-2px);
 		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
 	}
 
@@ -1347,14 +1313,13 @@
 
 	/* Glass Panel - RTP Color System */
 	.glass-panel {
-		background: rgba(22, 27, 34, 0.6);
+		background: var(--bg-elevated);
 		border: 1px solid var(--border-muted);
 		border-radius: 16px;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
 		position: relative;
 		overflow: hidden;
-		backdrop-filter: blur(10px);
 	}
 
 	.panel-header {
@@ -1412,13 +1377,13 @@
 	}
 
 	.panel-icon.actions-icon {
-		background: rgba(139, 92, 246, 0.15);
-		color: #a78bfa;
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.panel-icon.pages-icon {
-		background: rgba(6, 182, 212, 0.15);
-		color: #22d3ee;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	/* Quick Actions Grid */
@@ -1462,7 +1427,6 @@
 	.quick-action-card:hover {
 		background: var(--bg-hover);
 		border-color: var(--border-default);
-		transform: translateY(-2px);
 	}
 
 	.quick-action-icon {
@@ -1475,51 +1439,51 @@
 	}
 
 	.quick-action-icon.blue {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.quick-action-icon.purple {
-		background: rgba(139, 92, 246, 0.15);
-		color: #a78bfa;
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--primary-400, #ffd11a);
 	}
 	.quick-action-icon.amber {
-		background: rgba(245, 158, 11, 0.15);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.15);
+		color: var(--warning-emphasis, #d29922);
 	}
 	.quick-action-icon.pink {
 		background: rgba(236, 72, 153, 0.15);
 		color: #f472b6;
 	}
 	.quick-action-icon.red {
-		background: rgba(239, 68, 68, 0.15);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 	.quick-action-icon.green {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.quick-action-icon.orange {
-		background: rgba(249, 115, 22, 0.15);
-		color: #fb923c;
+		background: rgba(210, 153, 34, 0.15);
+		color: var(--warning-emphasis, #d29922);
 	}
 	.quick-action-icon.cyan {
-		background: rgba(6, 182, 212, 0.15);
-		color: #22d3ee;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.quick-action-icon.indigo {
-		background: rgba(99, 102, 241, 0.15);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--primary-400, #ffd11a);
 	}
 	.quick-action-icon.teal {
 		background: rgba(20, 184, 166, 0.15);
 		color: #2dd4bf;
 	}
 	.quick-action-icon.slate {
-		background: rgba(100, 116, 139, 0.15);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 	.quick-action-icon.yellow {
-		background: rgba(234, 179, 8, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		color: #facc15;
 	}
 
@@ -1645,7 +1609,6 @@
 	}
 
 	.metric-card:hover {
-		transform: translateY(-2px);
 		border-color: var(--border-default);
 		background: rgba(22, 27, 34, 0.5);
 	}
@@ -1668,40 +1631,6 @@
 	}
 	.metric-card.pink:hover {
 		border-color: rgba(230, 184, 0, 0.5);
-	}
-
-	.metric-glow {
-		position: absolute;
-		bottom: -50%;
-		left: -50%;
-		width: 200%;
-		height: 200%;
-		opacity: 0;
-		transition: opacity 0.3s;
-		pointer-events: none;
-	}
-
-	.metric-card:hover .metric-glow {
-		opacity: 1;
-	}
-
-	.metric-glow.blue {
-		background: radial-gradient(circle, var(--info-soft) 0%, transparent 70%);
-	}
-	.metric-glow.purple {
-		background: radial-gradient(circle, rgba(230, 184, 0, 0.15) 0%, transparent 70%);
-	}
-	.metric-glow.cyan {
-		background: radial-gradient(circle, var(--info-soft) 0%, transparent 70%);
-	}
-	.metric-glow.green {
-		background: radial-gradient(circle, var(--success-soft) 0%, transparent 70%);
-	}
-	.metric-glow.orange {
-		background: radial-gradient(circle, var(--warning-soft) 0%, transparent 70%);
-	}
-	.metric-glow.pink {
-		background: radial-gradient(circle, rgba(230, 184, 0, 0.15) 0%, transparent 70%);
 	}
 
 	.metric-icon-wrap {
@@ -1772,9 +1701,9 @@
 		vertical-align: middle;
 		background: linear-gradient(
 			90deg,
-			rgba(148, 163, 184, 0.08) 0%,
-			rgba(148, 163, 184, 0.18) 50%,
-			rgba(148, 163, 184, 0.08) 100%
+			var(--bg-surface, #1c2128) 0%,
+			var(--bg-hover, #252b33) 50%,
+			var(--bg-surface, #1c2128) 100%
 		);
 		background-size: 200% 100%;
 		border-radius: 4px;
@@ -1798,8 +1727,8 @@
 	@media (prefers-reduced-motion: reduce) {
 		.skeleton-bar {
 			animation: none;
-			background: rgba(148, 163, 184, 0.12);
-		}
+			background: var(--bg-surface, #1c2128);
+	}
 	}
 
 	/* Visually-hidden helper for screen-reader-only loading announcements.
@@ -1907,7 +1836,7 @@
 
 	.seo-metric-card.primary {
 		grid-column: span 3;
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1), rgba(61, 90, 153, 0.1));
+		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.2);
 	}
 
@@ -1956,26 +1885,6 @@
 	.seo-metric-change.negative {
 		color: var(--error-emphasis);
 		background: var(--error-soft);
-	}
-
-	.seo-metric-bar {
-		height: 4px;
-		background: rgba(13, 17, 23, 0.6);
-		border-radius: 2px;
-		margin-top: 1rem;
-		overflow: hidden;
-	}
-
-	.seo-metric-bar-fill {
-		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--error-base),
-			var(--warning-emphasis),
-			var(--success-emphasis)
-		);
-		border-radius: 2px;
-		transition: width 1s ease-out;
 	}
 
 	/* Health Panel - Email Templates Style */
@@ -2035,13 +1944,13 @@
 	}
 
 	.device-bar.desktop {
-		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 	}
 	.device-bar.mobile {
-		background: linear-gradient(90deg, var(--info-base), var(--info-emphasis));
+		background: var(--info-base);
 	}
 	.device-bar.tablet {
-		background: linear-gradient(90deg, var(--warning-base), var(--warning-emphasis));
+		background: var(--warning-base);
 	}
 
 	.device-percent {
@@ -2118,7 +2027,6 @@
 	}
 
 	.business-card:hover {
-		transform: translateY(-2px);
 		background: rgba(22, 27, 34, 0.5);
 	}
 
@@ -2192,13 +2100,11 @@
 	.business-card-arrow {
 		color: var(--text-tertiary);
 		opacity: 0;
-		transform: translateX(-10px);
 		transition: all 0.2s;
 	}
 
 	.business-card:hover .business-card-arrow {
 		opacity: 1;
-		transform: translateX(0);
 		color: var(--primary-400);
 	}
 

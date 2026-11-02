@@ -9,7 +9,28 @@
 	 */
 
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
+	import { onMount, type Component } from 'svelte';
+	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
+	import IconBrandFacebook from '@tabler/icons-svelte-runes/icons/brand-facebook';
+	import IconBrandPaypal from '@tabler/icons-svelte-runes/icons/brand-paypal';
+	import IconBrandTwitter from '@tabler/icons-svelte-runes/icons/brand-twitter';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+	import IconCloud from '@tabler/icons-svelte-runes/icons/cloud';
+	import IconCloudUpload from '@tabler/icons-svelte-runes/icons/cloud-upload';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconFileSearch from '@tabler/icons-svelte-runes/icons/file-search';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconMailbox from '@tabler/icons-svelte-runes/icons/mailbox';
+	import IconNote from '@tabler/icons-svelte-runes/icons/note';
+	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
+	import IconRobot from '@tabler/icons-svelte-runes/icons/robot';
+	import IconSend from '@tabler/icons-svelte-runes/icons/send';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconTrendingDown from '@tabler/icons-svelte-runes/icons/trending-down';
+	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
@@ -239,43 +260,34 @@
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 	}
 
-	// Get service icon component
-	function getServiceIcon(service: Service): string {
-		const iconMap: Record<string, string> = {
-			// Payment
-			stripe: '💳',
-			paypal: '🅿️',
-			// Analytics
-			google_analytics: '📊',
-			mixpanel: '📈',
-			amplitude: '📉',
-			// Email
-			sendgrid: '✉️',
-			mailgun: '📧',
-			fluent_smtp: '📬',
-			// Storage
-			aws_s3: '☁️',
-			cloudinary: '🖼️',
-			bunny_cdn: '🐰',
-			// CRM
-			fluent_crm_pro: '👥',
-			hubspot: '🎯',
-			// Social
-			facebook: '👍',
-			twitter: '🐦',
-			// AI
-			openai: '🤖',
-			anthropic: '🧠',
-			// Search
-			algolia: '🔍',
-			elasticsearch: '🔎',
-			// SEO
-			google_search_console: '📈',
-			ahrefs: '🔗',
-			// Forms
-			fluent_forms_pro: '📝'
-		};
-		return iconMap[service.key] || service.name.charAt(0).toUpperCase();
+	// Get service icon component (Tabler); null falls back to the service initial
+	const serviceIconMap: Record<string, Component> = {
+		stripe: IconCreditCard,
+		paypal: IconBrandPaypal,
+		google_analytics: IconChartBar,
+		mixpanel: IconTrendingUp,
+		amplitude: IconTrendingDown,
+		sendgrid: IconSend,
+		mailgun: IconMail,
+		fluent_smtp: IconMailbox,
+		aws_s3: IconCloud,
+		cloudinary: IconPhoto,
+		bunny_cdn: IconCloudUpload,
+		fluent_crm_pro: IconUsers,
+		hubspot: IconTarget,
+		facebook: IconBrandFacebook,
+		twitter: IconBrandTwitter,
+		openai: IconRobot,
+		anthropic: IconBrain,
+		algolia: IconSearch,
+		elasticsearch: IconFileSearch,
+		google_search_console: IconChartLine,
+		ahrefs: IconLink,
+		fluent_forms_pro: IconNote
+	};
+
+	function getServiceIcon(service: Service): Component | null {
+		return serviceIconMap[service.key] ?? null;
 	}
 
 	onMount(async () => {
@@ -301,6 +313,15 @@
 		}
 	});
 </script>
+
+{#snippet serviceIcon(service: Service)}
+	{@const ServiceGlyph = getServiceIcon(service)}
+	{#if ServiceGlyph}
+		<ServiceGlyph size={22} aria-hidden="true" />
+	{:else}
+		{service.name.charAt(0).toUpperCase()}
+	{/if}
+{/snippet}
 
 <svelte:head>
 	<title>Connections | System</title>
@@ -393,7 +414,7 @@
 							>
 								<div class="service-card-content">
 									<div class="service-icon builtin-icon">
-										{getServiceIcon(service)}
+										{@render serviceIcon(service)}
 									</div>
 									<div class="service-info">
 										<div class="service-name-row">
@@ -442,7 +463,7 @@
 											style:background={`${service.color}15`}
 											style:color={service.color}
 										>
-											{getServiceIcon(service)}
+											{@render serviceIcon(service)}
 										</div>
 										<div>
 											<h3 class="service-name">{service.name}</h3>
@@ -546,7 +567,7 @@
 										style:background={`${service.color}15`}
 										style:color={service.color}
 									>
-										{getServiceIcon(service)}
+										{@render serviceIcon(service)}
 									</div>
 									<div class="service-info">
 										<h3 class="service-name">{service.name}</h3>
@@ -577,7 +598,7 @@
 									style:background={`${service.color}15`}
 									style:color={service.color}
 								>
-									{getServiceIcon(service)}
+									{@render serviceIcon(service)}
 								</div>
 
 								<div class="service-list-info">
@@ -640,7 +661,7 @@
 						style:background={`${selectedService.color}15`}
 						style:color={selectedService.color}
 					>
-						{getServiceIcon(selectedService)}
+						{@render serviceIcon(selectedService)}
 					</div>
 					<div class="modal-copy">
 						<h2 class="modal-title">{selectedService.name}</h2>
@@ -1093,7 +1114,7 @@
 	}
 
 	.builtin-card {
-		background: linear-gradient(135deg, rgba(46, 160, 67, 0.05), transparent);
+		background: rgba(46, 160, 67, 0.05);
 		border-color: rgba(46, 160, 67, 0.2);
 	}
 
@@ -1197,17 +1218,6 @@
 		height: 0.5rem;
 		background: var(--success-emphasis, #3fb950);
 		border-radius: 50%;
-		animation: pulse 2s ease-in-out infinite;
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
 	}
 
 	.status-text {
@@ -1305,7 +1315,6 @@
 		inset: 0;
 		border: 0;
 		background: rgb(0 0 0 / 80%);
-		backdrop-filter: blur(4px);
 		cursor: pointer;
 	}
 
@@ -1376,7 +1385,7 @@
 	.modal-description,
 	.confirm-copy {
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -1394,7 +1403,7 @@
 		border: 0;
 		border-radius: 0.375rem;
 		background: transparent;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition:
 			background-color 160ms ease,
@@ -1419,7 +1428,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.25rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		text-decoration: none;
 		transition: color 160ms ease;
@@ -1445,7 +1454,7 @@
 	.modal-label {
 		display: block;
 		margin-bottom: 0.5rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 600;
 		letter-spacing: 0.05em;
@@ -1463,7 +1472,7 @@
 		border-radius: 0.5rem;
 		background: rgb(255 255 255 / 5%);
 		padding: 0.625rem 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font: inherit;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -1485,7 +1494,7 @@
 
 	.required-indicator {
 		margin-left: 0.25rem;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.modal-input {
@@ -1503,7 +1512,7 @@
 	}
 
 	.modal-input::placeholder {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.modal-input:focus {
@@ -1514,7 +1523,7 @@
 
 	.field-help {
 		margin: 0.375rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -1525,15 +1534,15 @@
 	}
 
 	.modal-result.success {
-		border-color: rgb(16 185 129 / 20%);
-		background: rgb(16 185 129 / 10%);
-		color: #34d399;
+		border-color: rgba(63, 185, 80, 20%);
+		background: rgba(63, 185, 80, 10%);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.modal-result.error {
-		border-color: rgb(239 68 68 / 20%);
-		background: rgb(239 68 68 / 10%);
-		color: #f87171;
+		border-color: rgba(248, 81, 73, 20%);
+		background: rgba(248, 81, 73, 10%);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.result-content,
@@ -1636,8 +1645,8 @@
 		height: 3.5rem;
 		margin: 0 auto 1rem;
 		border-radius: 999px;
-		background: rgb(239 68 68 / 10%);
-		color: #f87171;
+		background: rgba(248, 81, 73, 10%);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.confirm-title {

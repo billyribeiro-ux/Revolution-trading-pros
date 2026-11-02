@@ -261,7 +261,7 @@
 
 	.time-series-chart h3 {
 		margin: 0 0 1rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -276,7 +276,7 @@
 	}
 
 	.time-series-chart__axis-label {
-		fill: #6b7280;
+		fill: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
@@ -287,7 +287,7 @@
 		pointer-events: none;
 		transform: translateX(-50%);
 		border-radius: 0.5rem;
-		background: #111827;
+		background: var(--bg-base, #0d1117);
 		box-shadow:
 			0 10px 15px -3px rgba(17, 24, 39, 0.2),
 			0 4px 6px -4px rgba(17, 24, 39, 0.2);
@@ -302,7 +302,7 @@
 	}
 
 	.time-series-chart__tooltip-date {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}

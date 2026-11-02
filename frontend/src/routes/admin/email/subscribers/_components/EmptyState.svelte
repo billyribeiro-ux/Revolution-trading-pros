@@ -25,12 +25,12 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
 	.empty-state h3 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -49,7 +49,7 @@
 		transition: all 0.2s;
 		border: none;
 		font-size: 0.875rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 </style>

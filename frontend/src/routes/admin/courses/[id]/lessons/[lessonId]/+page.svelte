@@ -690,7 +690,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		font-size: 14px;
 	}
@@ -738,7 +738,7 @@
 	}
 	.btn-danger {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 	.btn-danger:hover {
 		background: #fecaca;
@@ -832,7 +832,7 @@
 	.video-info p {
 		margin: 0;
 		font-size: 13px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.upload-area {
@@ -847,10 +847,10 @@
 		text-align: center;
 	}
 	.upload-area :global(svg) {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 	.upload-area p {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 	/* .upload-area input[type="file"] { cursor: pointer; } - Unused */
@@ -867,7 +867,7 @@
 		border-color: #143e59;
 	}
 	.divider {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 12px;
 	}
 
@@ -882,7 +882,7 @@
 		justify-content: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: linear-gradient(135deg, #143e59 0%, #1e73be 100%);
+		background: #143e59;
 		border: none;
 		border-radius: 8px;
 		color: #fff;
@@ -901,7 +901,7 @@
 		background: #f3f4f6;
 		border: none;
 		border-radius: 6px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 13px;
 		cursor: pointer;
 	}
@@ -957,12 +957,12 @@
 		align-items: center;
 		justify-content: center;
 		height: 100%;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 13px;
 	}
 
 	.empty-text {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 13px;
 		margin: 0;
 	}
@@ -992,7 +992,7 @@
 	.btn-remove-download {
 		background: none;
 		border: none;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		padding: 4px;
 		border-radius: 4px;
@@ -1000,7 +1000,7 @@
 	}
 	.btn-remove-download:hover {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 	.btn-add {
 		width: 100%;
@@ -1008,7 +1008,7 @@
 		background: #f3f4f6;
 		border: 1px dashed #d1d5db;
 		border-radius: 6px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 13px;
 		cursor: pointer;
 	}

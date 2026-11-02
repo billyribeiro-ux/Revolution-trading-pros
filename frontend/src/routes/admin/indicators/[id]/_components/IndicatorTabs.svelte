@@ -37,7 +37,7 @@
 		border: none;
 		font-size: 14px;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		border-bottom: 2px solid transparent;
 		margin-bottom: -1px;

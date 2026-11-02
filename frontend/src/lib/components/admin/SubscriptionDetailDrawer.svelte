@@ -782,11 +782,7 @@
 		width: 56px;
 		height: 56px;
 		border-radius: var(--radius-lg, 0.75rem);
-		background: linear-gradient(
-			135deg,
-			var(--admin-accent-primary),
-			var(--admin-widget-purple-icon)
-		);
+		background: var(--admin-accent-primary);
 		display: flex;
 		align-items: center;
 		justify-content: center;

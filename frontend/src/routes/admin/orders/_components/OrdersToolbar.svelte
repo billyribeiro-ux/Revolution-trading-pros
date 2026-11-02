@@ -50,7 +50,6 @@
 		border: 1px solid var(--border-muted);
 		border-radius: 12px;
 		color: var(--text-secondary);
-		backdrop-filter: blur(10px);
 	}
 
 	.search-box:focus-within {
@@ -81,8 +80,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		color: var(--text-primary);
 		font-weight: 500;

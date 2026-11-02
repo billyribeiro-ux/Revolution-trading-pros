@@ -277,7 +277,7 @@
 	}
 
 	.required-marker {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -311,7 +311,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.5rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		pointer-events: none;
 	}
 
@@ -339,7 +339,7 @@
 		background-color: white;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.375rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 		touch-action: manipulation;
@@ -358,13 +358,13 @@
 	.action-btn.clear:hover:not(:disabled) {
 		background-color: #fef2f2;
 		border-color: #fca5a5;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.signature-hint {
 		margin: 0;
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Disabled State */
@@ -382,7 +382,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.8125rem;
 	}
 

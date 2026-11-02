@@ -183,7 +183,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem;
-		border: 2px dashed #4b5563;
+		border: 2px dashed var(--border-default, #30363d);
 		border-radius: 0.75rem;
 		cursor: pointer;
 		text-align: center;
@@ -199,12 +199,12 @@
 
 	.dropzone.dragging {
 		border-color: #eab308;
-		background: rgba(234, 179, 8, 0.1);
+		background: rgba(210, 153, 34, 0.1);
 	}
 
 	.dropzone :global(.upload-icon) {
 		margin-bottom: 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.dropzone.dragging :global(.upload-icon) {
@@ -222,7 +222,7 @@
 	.upload-subtitle {
 		margin: 0;
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.hidden {
@@ -238,10 +238,10 @@
 	}
 
 	.upload-list {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.upload-list-title {
@@ -276,11 +276,11 @@
 	}
 
 	.upload-item-icon :global(.upload-status-icon--success) {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.upload-item-icon :global(.upload-status-icon--error) {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.upload-item-details {
@@ -298,7 +298,7 @@
 
 	.upload-item-size {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-item-progress {
@@ -312,7 +312,7 @@
 		height: 0.5rem;
 		overflow: hidden;
 		border-radius: 999px;
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.progress-fill {
@@ -323,7 +323,7 @@
 
 	.progress-text {
 		width: 2.5rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		text-align: right;
 	}
@@ -334,18 +334,18 @@
 	}
 
 	.status-text.success {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-text.error {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.remove-btn {
 		padding: 0.25rem;
 		border: 0;
 		background: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: color 0.2s ease;
 	}
@@ -357,7 +357,7 @@
 	.spinner-small {
 		width: 1.25rem;
 		height: 1.25rem;
-		border: 2px solid #4b5563;
+		border: 2px solid var(--border-default, #30363d);
 		border-top-color: #facc15;
 		border-radius: 999px;
 		animation: upload-spin 1s linear infinite;

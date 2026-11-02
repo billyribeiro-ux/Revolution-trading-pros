@@ -217,12 +217,12 @@
 
 	.required-indicator {
 		margin-left: 0.25rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-help {
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -318,7 +318,7 @@
 		justify-content: center;
 		border-radius: 0.5rem;
 		background: #f3f4f6;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.method-icon__svg) {
@@ -342,13 +342,13 @@
 	}
 
 	.method-name {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
 
 	.method-description {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -395,7 +395,7 @@
 		border: 1px solid #e5e7eb;
 		border-radius: 0.25rem;
 		background: #fff;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -404,14 +404,14 @@
 		align-items: center;
 		gap: 0.5rem;
 		margin: 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
 	.security-note__icon {
 		display: flex;
 		flex: 0 0 auto;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.error-panel {
@@ -424,7 +424,7 @@
 
 	.error-message {
 		margin: 0;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.75rem;
 	}
 

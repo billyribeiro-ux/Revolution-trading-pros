@@ -234,12 +234,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-contacts {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		color: var(--text-primary);
 		position: relative;
 		overflow: hidden;
@@ -287,7 +282,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 8px;

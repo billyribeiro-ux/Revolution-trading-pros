@@ -160,19 +160,19 @@
 
 	.info-card {
 		padding: 20px;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 14px;
 	}
 
 	.info-card.success {
-		border-color: rgba(34, 197, 94, 0.3);
-		background: rgba(34, 197, 94, 0.05);
+		border-color: rgba(63, 185, 80, 0.3);
+		background: rgba(63, 185, 80, 0.05);
 	}
 
 	.info-card.danger {
-		border-color: rgba(239, 68, 68, 0.3);
-		background: rgba(239, 68, 68, 0.05);
+		border-color: rgba(248, 81, 73, 0.3);
+		background: rgba(248, 81, 73, 0.05);
 	}
 
 	.info-card h3 {
@@ -186,15 +186,15 @@
 	}
 
 	.info-card h3 :global(svg) {
-		color: #f97316;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.info-card.success h3 :global(svg) {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.info-card.danger h3 :global(svg) {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.info-grid {
@@ -211,19 +211,19 @@
 
 	.info-label {
 		font-size: 0.7rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
 	.info-value {
 		font-size: 0.9rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.detail-text {
 		margin: 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 		line-height: 1.6;
 	}
@@ -238,7 +238,7 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: #f97316;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -261,7 +261,7 @@
 	}
 
 	.contact-name:hover {
-		color: #f97316;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.contact-email,
@@ -270,7 +270,7 @@
 		align-items: center;
 		gap: 6px;
 		font-size: 0.8rem;
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		text-decoration: none;
 	}
 
@@ -287,14 +287,14 @@
 
 	.tag-pill {
 		padding: 4px 12px;
-		background: rgba(249, 115, 22, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		border-radius: 20px;
 		font-size: 0.8rem;
-		color: #f97316;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.empty-text {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 </style>

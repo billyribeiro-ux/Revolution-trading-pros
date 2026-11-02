@@ -582,7 +582,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		padding: 0.625rem 1rem;
@@ -607,9 +607,9 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 0.625rem 1rem;
 		border-radius: 6px;
 		font-size: 0.875rem;
@@ -619,8 +619,8 @@
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.4);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-secondary:disabled {
@@ -632,9 +632,9 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.375rem;
-		background: rgba(239, 68, 68, 0.1);
+		background: rgba(248, 81, 73, 0.1);
 		color: var(--error-emphasis);
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 		padding: 0.5rem 0.875rem;
 		border-radius: 6px;
 		font-size: 0.8125rem;
@@ -644,13 +644,13 @@
 	}
 
 	.btn-clear:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.btn-retry {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 		color: var(--error-emphasis);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		padding: 0.4rem 1rem;
 		border-radius: 6px;
 		cursor: pointer;
@@ -659,7 +659,7 @@
 	}
 
 	.btn-retry:hover {
-		background: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.3);
 	}
 
 	.btn-icon {
@@ -677,20 +677,20 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(99, 102, 241, 0.15);
-		border-color: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.3);
 		color: var(--secondary-300);
 	}
 
 	.btn-icon.success:hover {
-		background: rgba(34, 197, 94, 0.15);
-		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border-color: rgba(63, 185, 80, 0.3);
 		color: var(--success-emphasis);
 	}
 
 	.btn-icon.danger:hover {
-		background: rgba(239, 68, 68, 0.15);
-		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.15);
+		border-color: rgba(248, 81, 73, 0.3);
 		color: var(--error-emphasis);
 	}
 
@@ -738,7 +738,7 @@
 
 	.filter-group select:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -765,19 +765,19 @@
 	}
 
 	.stat-item.active {
-		border-color: rgba(34, 197, 94, 0.3);
+		border-color: rgba(63, 185, 80, 0.3);
 	}
 
 	.stat-item.trial {
-		border-color: rgba(99, 102, 241, 0.3);
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.stat-item.paused {
-		border-color: rgba(251, 191, 36, 0.3);
+		border-color: rgba(210, 153, 34, 0.3);
 	}
 
 	.stat-item.cancelled {
-		border-color: rgba(239, 68, 68, 0.3);
+		border-color: rgba(248, 81, 73, 0.3);
 	}
 
 	.stat-label {
@@ -850,7 +850,7 @@
 	}
 
 	.subscriptions-table tbody tr:hover {
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.customer-cell {
@@ -888,7 +888,7 @@
 
 	.plan-badge {
 		padding: 0.25rem 0.5rem;
-		background: rgba(99, 102, 241, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 		color: var(--secondary-300);
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -898,7 +898,7 @@
 
 	.interval-badge {
 		padding: 0.25rem 0.5rem;
-		background: rgba(99, 102, 241, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 		color: var(--secondary-300);
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -914,27 +914,27 @@
 	}
 
 	.status-badge.status-active {
-		background: rgba(34, 197, 94, 0.15);
+		background: rgba(63, 185, 80, 0.15);
 		color: var(--success-emphasis);
 	}
 
 	.status-badge.status-trial {
-		background: rgba(99, 102, 241, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 		color: var(--secondary-300);
 	}
 
 	.status-badge.status-paused {
-		background: rgba(251, 191, 36, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		color: var(--warning-emphasis);
 	}
 
 	.status-badge.status-cancelled {
-		background: rgba(239, 68, 68, 0.15);
+		background: rgba(248, 81, 73, 0.15);
 		color: var(--error-emphasis);
 	}
 
 	.status-badge.status-default {
-		background: rgba(148, 163, 184, 0.15);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-secondary);
 	}
 
@@ -954,7 +954,7 @@
 	.loader {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
+		border: 3px solid rgba(230, 184, 0, 0.2);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
@@ -995,12 +995,12 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
+		background: rgba(248, 81, 73, 0.1);
 		color: var(--error-base);
 		padding: 0.75rem 1rem;
 		border-radius: 6px;
 		margin-bottom: 1rem;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 	}
 
 	.error-content {

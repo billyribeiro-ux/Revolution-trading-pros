@@ -424,7 +424,7 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -512,7 +512,7 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.25rem;
 	}
 
@@ -532,7 +532,7 @@
 	.settings-card h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1.5rem;
 	}
 
@@ -601,7 +601,7 @@
 	.section-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -666,17 +666,6 @@
 		height: 6px;
 		background: white;
 		border-radius: 50%;
-		animation: pulse 1.5s infinite;
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
 	}
 
 	.video-info {
@@ -687,7 +676,7 @@
 	.video-info h4 {
 		font-size: 0.95rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 0.5rem;
 	}
 
@@ -708,7 +697,7 @@
 	}
 
 	.video-url {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.video-actions {
@@ -731,7 +720,7 @@
 	}
 
 	.icon-btn.danger {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.icon-btn.danger:hover {
@@ -741,7 +730,7 @@
 	.info-section h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -761,7 +750,7 @@
 	.info-card h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 

@@ -89,7 +89,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.85);
-		backdrop-filter: blur(8px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -98,7 +97,7 @@
 	}
 
 	.modal-content {
-		background: linear-gradient(145deg, var(--bg-elevated) 0%, var(--bg-base) 100%);
+		background: var(--bg-elevated);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 16px;
 		width: 100%;
@@ -132,8 +131,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
 		color: var(--text-secondary);
 		cursor: pointer;
@@ -141,7 +140,7 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
 	}
 
@@ -248,24 +247,24 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: var(--bg-base);
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: linear-gradient(135deg, var(--primary-400), var(--primary-500));
+		background: var(--primary-400);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
 	}

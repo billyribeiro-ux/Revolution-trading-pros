@@ -10,6 +10,9 @@
 	 * - Audit log viewer
 	 */
 	import { onMount } from 'svelte';
+	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
+	import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+	import IconBulb from '@tabler/icons-svelte-runes/icons/bulb';
 	import { browser } from '$app/env';
 	import {
 		getAnalyticsSummary,
@@ -140,12 +143,12 @@
 		<!-- Quick Actions -->
 		<div class="quick-actions">
 			<a href="/admin/consent/settings" class="action-card">
-				<span class="action-icon">⚙️</span>
+				<span class="action-icon"><IconSettings size={24} aria-hidden="true" /></span>
 				<span class="action-label">Settings</span>
 				<span class="action-desc">Configure consent system</span>
 			</a>
 			<a href="/admin/consent/templates" class="action-card">
-				<span class="action-icon">🎨</span>
+				<span class="action-icon"><IconPalette size={24} aria-hidden="true" /></span>
 				<span class="action-label">Templates</span>
 				<span class="action-desc">Customize banner design</span>
 			</a>
@@ -245,7 +248,7 @@
 						<div class="insights-list">
 							{#each insights as insight (insight)}
 								<div class="insight-item">
-									<span class="insight-icon">💡</span>
+									<span class="insight-icon"><IconBulb size={20} aria-hidden="true" /></span>
 									<span>{insight}</span>
 								</div>
 							{/each}
@@ -460,7 +463,7 @@
 <style>
 	.dashboard {
 		background: #0a101c;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		padding: 2rem;
 	}
 
@@ -480,7 +483,7 @@
 	}
 
 	.header p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0.25rem 0 0;
 	}
 
@@ -503,7 +506,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+		background: #0ea5e9;
 		color: white;
 	}
 
@@ -542,24 +545,25 @@
 	}
 
 	.action-card:hover {
-		background: rgba(14, 165, 233, 0.1);
-		border-color: rgba(14, 165, 233, 0.3);
+		background: rgba(88, 166, 255, 0.1);
+		border-color: rgba(88, 166, 255, 0.3);
 		transform: translateY(-2px);
 	}
 
 	.action-icon {
+		display: inline-flex;
 		font-size: 1.5rem;
 	}
 
 	.action-label {
 		font-weight: 600;
 		font-size: 0.9rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.action-desc {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.tabs {
@@ -574,7 +578,7 @@
 		padding: 0.75rem 1.5rem;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -584,11 +588,11 @@
 	}
 
 	.tab:hover {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab.active {
-		color: #0ea5e9;
+		color: var(--info-emphasis, #58a6ff);
 		border-bottom-color: #0ea5e9;
 	}
 
@@ -613,7 +617,7 @@
 		font-size: 1.1rem;
 		font-weight: 600;
 		margin-bottom: 1rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.section-header {
@@ -644,13 +648,13 @@
 		display: block;
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		line-height: 1.2;
 	}
 
 	.metric-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		margin-top: 0.25rem;
@@ -658,13 +662,13 @@
 	}
 
 	.highlight-green .metric-value {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.highlight-red .metric-value {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 	.highlight-yellow .metric-value {
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.category-bars {
@@ -691,7 +695,7 @@
 	}
 
 	.category-value {
-		color: #0ea5e9;
+		color: var(--info-emphasis, #58a6ff);
 		font-weight: 600;
 	}
 
@@ -729,12 +733,13 @@
 		align-items: flex-start;
 		gap: 0.75rem;
 		padding: 1rem;
-		background: rgba(14, 165, 233, 0.1);
-		border: 1px solid rgba(14, 165, 233, 0.2);
+		background: rgba(88, 166, 255, 0.1);
+		border: 1px solid rgba(88, 166, 255, 0.2);
 		border-radius: 8px;
 	}
 
 	.insight-icon {
+		display: inline-flex;
 		font-size: 1.25rem;
 	}
 
@@ -767,7 +772,7 @@
 
 	.data-table th {
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		text-transform: uppercase;
 	}
@@ -784,20 +789,20 @@
 		border-radius: 4px;
 		font-size: 0.75rem;
 		text-transform: capitalize;
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.action-badge.given {
-		background: rgba(34, 197, 94, 0.2);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.action-badge.updated {
-		background: rgba(59, 130, 246, 0.2);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.2);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.action-badge.revoked {
-		background: rgba(239, 68, 68, 0.2);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.category-badge {
@@ -808,39 +813,39 @@
 	}
 
 	.category-badge--necessary {
-		background: rgba(34, 197, 94, 0.2);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.category-badge--analytics {
-		background: rgba(59, 130, 246, 0.2);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.2);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.category-badge--marketing {
-		background: rgba(168, 85, 247, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #c084fc;
 	}
 	.category-badge--preferences {
-		background: rgba(245, 158, 11, 0.2);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.2);
+		color: var(--warning-emphasis, #d29922);
 	}
 	.category-badge--unknown {
-		background: rgba(148, 163, 184, 0.2);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-state {
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		padding: 3rem;
 		background: rgba(255, 255, 255, 0.02);
 		border-radius: 8px;
 	}
 
 	.highlight-green {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.highlight-red {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	@media (max-width: 767.98px) {

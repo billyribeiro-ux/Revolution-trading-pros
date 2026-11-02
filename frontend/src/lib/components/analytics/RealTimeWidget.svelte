@@ -152,7 +152,7 @@
 <style>
 	.real-time-widget {
 		border-radius: 0.75rem;
-		background: linear-gradient(135deg, #0f172a, #1e293b);
+		background: var(--bg-base, #0d1117);
 		color: #ffffff;
 		padding: 1rem;
 	}
@@ -186,7 +186,7 @@
 	.real-time-widget__metric-label,
 	.real-time-widget__row-count,
 	.real-time-widget__event span {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.real-time-widget__timestamp,
@@ -213,7 +213,7 @@
 	}
 
 	.real-time-widget__error {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		padding: 1rem 0;
 		text-align: center;
 	}
@@ -244,11 +244,11 @@
 	}
 
 	.real-time-widget__metric-value--active {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.real-time-widget__metric-value--views {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.real-time-widget__metric-value--conversions {
@@ -260,7 +260,7 @@
 	}
 
 	.real-time-widget__section {
-		border-top: 1px solid #374151;
+		border-top: 1px solid var(--border-default, #30363d);
 		padding-top: 1rem;
 	}
 
@@ -270,7 +270,7 @@
 
 	.real-time-widget__section h4 {
 		margin: 0 0 0.5rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		line-height: 1rem;
@@ -293,7 +293,7 @@
 	.real-time-widget__path {
 		overflow: hidden;
 		max-width: 12.5rem;
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
@@ -306,7 +306,7 @@
 
 	.real-time-widget__event {
 		border-radius: 0.25rem;
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 		padding: 0.25rem 0.5rem;
 	}
 

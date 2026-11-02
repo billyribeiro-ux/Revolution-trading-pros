@@ -53,35 +53,35 @@
 	.subject {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1rem;
 	}
 	.body {
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		padding: 1.5rem;
 		border-radius: 8px;
 		border: 1px solid rgba(230, 184, 0, 0.1);
 	}
 	.text-muted {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 		padding: 0.75rem 1rem;
 		border-radius: 6px;
 		margin-bottom: 1rem;
 	}
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 0.5rem 1rem;
 		border-radius: 6px;
 		cursor: pointer;
 		margin-top: 1rem;
 	}
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 </style>

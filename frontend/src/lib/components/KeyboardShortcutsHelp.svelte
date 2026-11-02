@@ -122,7 +122,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(8px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -134,8 +133,8 @@
 		width: 100%;
 		max-width: 700px;
 		max-height: 80vh;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 20px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 		overflow: hidden;
@@ -148,14 +147,14 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.header-title {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.header-title h2 {
@@ -170,17 +169,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border: none;
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.close-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #f1f5f9;
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-content {
@@ -201,12 +200,12 @@
 	}
 
 	.modal-content::-webkit-scrollbar-thumb {
-		background: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 		border-radius: 3px;
 	}
 
 	.shortcut-group {
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 		border-radius: 12px;
 		padding: 1rem;
 	}
@@ -216,7 +215,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: #818cf8;
+		color: var(--primary-400, #ffd11a);
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -236,7 +235,7 @@
 
 	.shortcut-description {
 		font-size: 0.875rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.shortcut-keys {
@@ -251,37 +250,37 @@
 		justify-content: center;
 		min-width: 24px;
 		padding: 0.25rem 0.5rem;
-		background: rgba(99, 102, 241, 0.15);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.15);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 6px;
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.75rem;
 		font-family: inherit;
 		font-weight: 500;
 	}
 
 	.key-separator {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
 	.modal-footer {
 		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-		background: rgba(15, 23, 42, 0.5);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.footer-hint {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.footer-hint kbd {
 		padding: 0.125rem 0.375rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 4px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-family: inherit;
 	}

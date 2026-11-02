@@ -303,7 +303,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -405,7 +405,7 @@
 	.metric-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -418,11 +418,11 @@
 	}
 
 	.metric-change.positive {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.metric-change.negative {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.metric-change.neutral {
@@ -436,7 +436,7 @@
 	.top-pages-section h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1.5rem;
 	}
 
@@ -458,7 +458,7 @@
 		background: #f8f9fa;
 		border-bottom: 1px solid #e5e5e5;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.9rem;
 	}
 
@@ -482,7 +482,7 @@
 	}
 
 	.url-cell {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		max-width: 400px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -496,7 +496,7 @@
 	}
 
 	.empty-state h3 {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 

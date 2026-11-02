@@ -277,7 +277,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -346,7 +346,7 @@
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -398,7 +398,7 @@
 		background: #f8f9fa;
 		border-bottom: 1px solid #e5e5e5;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.9rem;
 	}
 
@@ -414,7 +414,7 @@
 
 	.keyword-cell {
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.rank-badge {
@@ -427,17 +427,17 @@
 
 	.rank-badge.top-3 {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.rank-badge.top-10 {
 		background: #dbeafe;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.rank-badge.top-20 {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.rank-badge.other {
@@ -447,7 +447,7 @@
 
 	.rank-badge.unranked {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.trend {
@@ -459,11 +459,11 @@
 	}
 
 	.trend.positive {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.trend.negative {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.trend.neutral {
@@ -484,7 +484,7 @@
 		top: 0;
 		left: 0;
 		height: 100%;
-		background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+		background: #22c55e;
 		transition: width 0.3s;
 	}
 
@@ -496,7 +496,7 @@
 		height: 100%;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.url-cell {
@@ -524,7 +524,7 @@
 	}
 
 	.action-btn.danger {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		border-color: #fee2e2;
 	}
 
@@ -538,7 +538,7 @@
 	}
 
 	.empty-state h3 {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -562,7 +562,7 @@
 	.opportunities-section h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -589,13 +589,13 @@
 	.keyword-rank {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 		margin-bottom: 0.5rem;
 	}
 
 	.keyword-name {
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -625,7 +625,7 @@
 
 	.opp-keyword {
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 

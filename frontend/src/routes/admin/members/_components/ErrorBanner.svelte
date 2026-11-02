@@ -21,8 +21,8 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.5rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 12px;
 		color: var(--error-emphasis);
 		margin-bottom: 1.5rem;
@@ -35,8 +35,8 @@
 
 	.error-banner button {
 		padding: 0.5rem 1rem;
-		background: rgba(239, 68, 68, 0.2);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.2);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 6px;
 		color: var(--error-emphasis);
 		font-weight: 600;
@@ -45,6 +45,6 @@
 	}
 
 	.error-banner button:hover {
-		background: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.3);
 	}
 </style>

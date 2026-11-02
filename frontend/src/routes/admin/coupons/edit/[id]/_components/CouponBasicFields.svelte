@@ -79,8 +79,8 @@
 
 <style>
 	.form-section {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		padding: 2rem;
 	}
@@ -88,7 +88,7 @@
 	.form-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -113,14 +113,14 @@
 	label {
 		display: block;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.95rem;
 	}
 
 	.label-hint {
 		font-weight: 400;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		margin-left: 0.5rem;
 	}
@@ -128,22 +128,22 @@
 	.input {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.8);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 		transition: all 0.2s;
 	}
 
 	.input:focus {
 		outline: none;
-		border-color: rgba(59, 130, 246, 0.5);
+		border-color: rgba(88, 166, 255, 0.5);
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 
 	.input.error {
-		border-color: rgba(239, 68, 68, 0.5);
+		border-color: rgba(248, 81, 73, 0.5);
 	}
 
 	.input-large {
@@ -165,7 +165,7 @@
 		right: 1rem;
 		top: 50%;
 		transform: translateY(-50%);
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 600;
 	}
 
@@ -173,7 +173,7 @@
 		display: block;
 		margin-top: 0.5rem;
 		font-size: 0.875rem;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	@media (max-width: 767.98px) {

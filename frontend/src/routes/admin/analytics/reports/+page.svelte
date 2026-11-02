@@ -485,7 +485,7 @@
 <style>
 	.reports-page {
 		min-height: 100vh;
-		background: linear-gradient(135deg, #020617, #0f172a 48%, #020617);
+		background: var(--bg-base, #0d1117);
 		color: #ffffff;
 	}
 
@@ -524,7 +524,7 @@
 
 	.page-header p {
 		margin: 0.25rem 0 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -548,7 +548,7 @@
 
 	.create-button {
 		border: 0;
-		background: linear-gradient(90deg, #9333ea, #2563eb);
+		background: #9333ea;
 		box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
 		color: #ffffff;
 		padding: 0.5rem 1rem;
@@ -557,7 +557,7 @@
 	}
 
 	.create-button:hover {
-		background: linear-gradient(90deg, #a855f7, #3b82f6);
+		background: var(--primary-500, #e6b800);
 	}
 
 	.loading-state {
@@ -582,7 +582,7 @@
 	.spinner {
 		position: absolute;
 		inset: 0;
-		border: 4px solid rgba(168, 85, 247, 0.2);
+		border: 4px solid rgba(230, 184, 0, 0.2);
 	}
 
 	.spinner {
@@ -608,7 +608,7 @@
 	.filter-button {
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		background: rgba(255, 255, 255, 0.05);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		padding: 0.5rem 1rem;
 		font-size: 0.875rem;
 		font-weight: 600;
@@ -617,7 +617,7 @@
 	.filter-button:hover,
 	.filter-button--active {
 		background: #ffffff;
-		color: #0f172a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.error-card,
@@ -626,7 +626,7 @@
 		border: 1px solid #e5e7eb;
 		border-radius: 12px;
 		background: #ffffff;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.error-card {
@@ -636,7 +636,7 @@
 
 	.error-card p {
 		margin: 0;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.error-card button {
@@ -671,7 +671,7 @@
 
 	.empty-card p {
 		margin: 0 0 1.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.reports-grid {
@@ -739,7 +739,7 @@
 	.close-button {
 		border: 0;
 		background: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 	}
 
@@ -750,7 +750,7 @@
 
 	.menu-button:hover,
 	.close-button:hover {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.report-description {
@@ -760,7 +760,7 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		margin: 0 0 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -768,7 +768,7 @@
 	.report-meta {
 		display: grid;
 		gap: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -843,7 +843,7 @@
 		overflow-y: auto;
 		border-radius: 16px;
 		background: #ffffff;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.modal-header,
@@ -902,7 +902,7 @@
 		border: 1px solid #d1d5db;
 		border-radius: 8px;
 		background: #ffffff;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		padding: 0.5rem 1rem;
 		font: inherit;
 		line-height: 1.5;
@@ -955,7 +955,7 @@
 
 	.checkbox-row {
 		gap: 0.75rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		cursor: pointer;
 	}

@@ -708,7 +708,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: var(--primary, #e6b800);
+		color: var(--primary, var(--primary-500, #e6b800));
 	}
 
 	.header-left h3 {
@@ -754,7 +754,7 @@
 	}
 
 	.drop-indicator {
-		color: var(--primary, #e6b800);
+		color: var(--primary, var(--primary-500, #e6b800));
 	}
 
 	.drop-text {
@@ -838,7 +838,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--primary, #e6b800), #ffd700);
+		background: var(--primary, #e6b800);
 		border-radius: 3px;
 		transition: width 0.3s ease;
 	}
@@ -856,15 +856,15 @@
 	}
 
 	.stat.completed {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stat.failed {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.stat.pending {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.queue-list {
@@ -890,7 +890,7 @@
 	}
 
 	.queue-item.error {
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 	}
 
 	.item-preview {
@@ -952,7 +952,7 @@
 
 	.item-error {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.item-status {
@@ -974,7 +974,7 @@
 	}
 
 	.btn-remove:hover {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.queue-actions {
@@ -1014,9 +1014,7 @@
 		animation: spin 1s linear infinite;
 	}
 
-	:global(.animate-bounce) {
-		animation: bounce 1s infinite;
-	}
+	
 
 	@keyframes spin {
 		from {
@@ -1024,18 +1022,6 @@
 		}
 		to {
 			transform: rotate(360deg);
-		}
-	}
-
-	@keyframes bounce {
-		0%,
-		100% {
-			transform: translateY(-15%);
-			animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-		}
-		50% {
-			transform: translateY(0);
-			animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
 		}
 	}
 </style>

@@ -346,12 +346,7 @@
 
 <style>
 	.admin-coupon-create {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		position: relative;
 		overflow: hidden;
 	}
@@ -364,8 +359,8 @@
 	}
 
 	.form-section {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		padding: 1.5rem;
 	}

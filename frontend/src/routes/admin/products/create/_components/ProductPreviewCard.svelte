@@ -98,13 +98,13 @@
 	.preview-section h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1rem;
 	}
 
 	.product-preview-card {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		overflow: hidden;
 		position: relative;
@@ -112,7 +112,7 @@
 
 	.preview-thumbnail {
 		height: 200px;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -126,7 +126,7 @@
 	}
 
 	.preview-thumbnail.placeholder {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.preview-badge {
@@ -151,12 +151,12 @@
 	.preview-content h4 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.preview-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.5;
 		margin-bottom: 1rem;
@@ -177,23 +177,23 @@
 	.preview-current {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.preview-original {
 		font-size: 1rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: line-through;
 	}
 
 	.preview-sale {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.preview-features {
-		border-top: 1px solid rgba(148, 163, 184, 0.15);
+		border-top: 1px solid var(--border-muted, #21262d);
 		padding-top: 1rem;
 	}
 
@@ -201,18 +201,18 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		padding: 0.375rem 0;
 	}
 
 	.preview-feature :global(svg) {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 		flex-shrink: 0;
 	}
 
 	.preview-more {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.8125rem;
 		padding: 0.375rem 0;
 		font-style: italic;
@@ -224,13 +224,13 @@
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.preview-status.active {
-		background: rgba(16, 185, 129, 0.1);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	@media (max-width: 1023.98px) {

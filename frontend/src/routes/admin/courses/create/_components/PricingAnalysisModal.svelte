@@ -64,7 +64,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(4px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -72,7 +71,7 @@
 	}
 
 	.modal-content {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 16px;
 		padding: 2rem;
@@ -82,13 +81,13 @@
 	}
 
 	.modal-content h3 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.25rem;
 		margin-bottom: 1rem;
 	}
 
 	.modal-content p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.5rem;
 		line-height: 1.6;
 	}
@@ -111,12 +110,12 @@
 
 	.pricing-details ul {
 		list-style: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.pricing-details li {
 		padding: 0.5rem 0;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.suggested-price {
@@ -130,7 +129,7 @@
 	}
 
 	.suggested-price span {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.suggested-price strong {
@@ -149,7 +148,7 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		font-size: 0.875rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 	}
 

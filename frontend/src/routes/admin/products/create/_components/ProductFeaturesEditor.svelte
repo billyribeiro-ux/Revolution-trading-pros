@@ -53,9 +53,9 @@
 	.features-section {
 		margin: 1.5rem 0;
 		padding: 1.5rem;
-		background: rgba(59, 130, 246, 0.05);
+		background: rgba(88, 166, 255, 0.05);
 		border-radius: 12px;
-		border: 1px solid rgba(59, 130, 246, 0.15);
+		border: 1px solid rgba(88, 166, 255, 0.15);
 	}
 
 	.section-header {
@@ -71,7 +71,7 @@
 		gap: 0.5rem;
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -80,10 +80,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(59, 130, 246, 0.1);
-		border: 1px solid rgba(59, 130, 246, 0.3);
+		background: rgba(88, 166, 255, 0.1);
+		border: 1px solid rgba(88, 166, 255, 0.3);
 		border-radius: 6px;
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		font-weight: 500;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -91,7 +91,7 @@
 	}
 
 	.add-feature-btn:hover {
-		background: rgba(59, 130, 246, 0.2);
+		background: rgba(88, 166, 255, 0.2);
 	}
 
 	.feature-row {
@@ -103,10 +103,10 @@
 	.feature-row input {
 		flex: 1;
 		padding: 0.625rem 0.875rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 
@@ -117,9 +117,9 @@
 	}
 
 	.remove-feature-btn {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 		width: 36px;
 		height: 36px;
 		border-radius: 6px;
@@ -132,6 +132,6 @@
 	}
 
 	.remove-feature-btn:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 </style>

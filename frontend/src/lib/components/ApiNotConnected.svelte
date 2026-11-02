@@ -68,7 +68,6 @@
 	<!-- Full Card Version -->
 	<div class="api-not-connected" in:scale={{ duration: 400, start: 0.95 }} role="alert">
 		<!-- Background Glow -->
-		<div class="glow" style:--glow-color={color}></div>
 
 		<!-- Content -->
 		<div class="content">
@@ -114,8 +113,6 @@
 		</div>
 
 		<!-- Decorative Elements -->
-		<div class="decoration decoration-1"></div>
-		<div class="decoration decoration-2"></div>
 	</div>
 {/if}
 
@@ -123,25 +120,12 @@
 	/* Full Version Styles */
 	.api-not-connected {
 		position: relative;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 24px;
 		padding: 3rem;
 		text-align: center;
 		overflow: hidden;
-		backdrop-filter: blur(20px);
-	}
-
-	.glow {
-		position: absolute;
-		top: -50%;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 300px;
-		height: 300px;
-		background: radial-gradient(circle, var(--glow-color, #3b82f6) 0%, transparent 70%);
-		opacity: 0.1;
-		pointer-events: none;
 	}
 
 	.content {
@@ -157,7 +141,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 20px;
 	}
@@ -174,25 +158,25 @@
 		right: -8px;
 		width: 32px;
 		height: 32px;
-		background: linear-gradient(135deg, #475569, #334155);
+		background: var(--bg-active, #2d333b);
 		border-radius: 10px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.title {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.75rem 0;
 	}
 
 	.description {
 		font-size: 1rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 2rem 0;
 		max-width: 400px;
 		margin-left: auto;
@@ -215,7 +199,7 @@
 		font-size: 0.75rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -229,13 +213,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		padding: 0.375rem 0;
 	}
 
 	.check {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 600;
 	}
 
@@ -244,11 +228,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: linear-gradient(
-			135deg,
-			var(--btn-color, #3b82f6),
-			color-mix(in srgb, var(--btn-color, #3b82f6), #8b5cf6 50%)
-		);
+		background: var(--btn-color, #3b82f6);
 		color: white;
 		border: none;
 		border-radius: 14px;
@@ -275,30 +255,7 @@
 		gap: 0.5rem;
 		margin-top: 1.5rem;
 		font-size: 0.75rem;
-		color: #64748b;
-	}
-
-	.decoration {
-		position: absolute;
-		border-radius: 50%;
-		opacity: 0.03;
-		pointer-events: none;
-	}
-
-	.decoration-1 {
-		width: 200px;
-		height: 200px;
-		bottom: -50px;
-		right: -50px;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-	}
-
-	.decoration-2 {
-		width: 150px;
-		height: 150px;
-		top: 20%;
-		left: -30px;
-		background: linear-gradient(135deg, #8b5cf6, #ec4899);
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* Compact Version Styles */
@@ -307,19 +264,19 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.875rem 1rem;
-		background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
-		border: 1px solid rgba(245, 158, 11, 0.2);
+		background: rgba(210, 153, 34, 0.1);
+		border: 1px solid rgba(210, 153, 34, 0.2);
 		border-radius: 10px;
 	}
 
 	.compact-icon {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.compact-message {
 		flex: 1;
 		font-size: 0.875rem;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 		font-weight: 500;
 	}
 
@@ -328,10 +285,10 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 1rem;
-		background: rgba(245, 158, 11, 0.2);
-		border: 1px solid rgba(245, 158, 11, 0.3);
+		background: rgba(210, 153, 34, 0.2);
+		border: 1px solid rgba(210, 153, 34, 0.3);
 		border-radius: 6px;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 		font-size: 0.8125rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -339,7 +296,7 @@
 	}
 
 	.compact-btn:hover {
-		background: rgba(245, 158, 11, 0.3);
-		border-color: rgba(245, 158, 11, 0.4);
+		background: rgba(210, 153, 34, 0.3);
+		border-color: rgba(210, 153, 34, 0.4);
 	}
 </style>

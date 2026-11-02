@@ -99,7 +99,6 @@
 		gap: 0.875rem;
 		padding: 1rem 1.25rem;
 		background: rgba(15, 23, 42, 0.95);
-		backdrop-filter: blur(20px);
 		border: 1px solid rgba(148, 163, 184, 0.1);
 		border-radius: 16px;
 		box-shadow:
@@ -171,7 +170,7 @@
 	}
 
 	.toast-success .toast-progress-bar {
-		background: linear-gradient(90deg, #10b981, #34d399);
+		background: #10b981;
 	}
 
 	/* Error */
@@ -185,7 +184,7 @@
 	}
 
 	.toast-error .toast-progress-bar {
-		background: linear-gradient(90deg, #ef4444, #f87171);
+		background: #ef4444;
 	}
 
 	/* Warning */
@@ -199,7 +198,7 @@
 	}
 
 	.toast-warning .toast-progress-bar {
-		background: linear-gradient(90deg, #f59e0b, #fbbf24);
+		background: #f59e0b;
 	}
 
 	/* Info */
@@ -213,7 +212,7 @@
 	}
 
 	.toast-info .toast-progress-bar {
-		background: linear-gradient(90deg, #3b82f6, #60a5fa);
+		background: #3b82f6;
 	}
 
 	/* Loading */

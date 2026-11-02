@@ -33,7 +33,7 @@
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 800;
-		color: var(--admin-text-primary, #f8fafc);
+		color: var(--admin-text-primary, var(--text-primary, #f0f6fc));
 		margin: 0 0 0.5rem;
 	}
 
@@ -58,12 +58,12 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid var(--border-default, #30363d);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 </style>

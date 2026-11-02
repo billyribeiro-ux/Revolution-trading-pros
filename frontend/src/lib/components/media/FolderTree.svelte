@@ -168,10 +168,10 @@
 
 <style>
 	.folder-tree {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.folder-tree-header {
@@ -195,7 +195,7 @@
 		border: 0;
 		border-radius: 0.5rem;
 		background: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition:
 			background-color 0.2s ease,
@@ -228,7 +228,7 @@
 		border: 0;
 		border-radius: 0.5rem;
 		background: transparent;
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 		font: inherit;
 		text-align: left;
 		cursor: pointer;
@@ -242,7 +242,7 @@
 	}
 
 	.folder-item.active {
-		background: rgba(234, 179, 8, 0.2);
+		background: rgba(210, 153, 34, 0.2);
 		color: #facc15;
 	}
 
@@ -250,7 +250,7 @@
 		padding: 0.125rem;
 		border: 0;
 		background: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: color 0.2s ease;
 	}
@@ -291,13 +291,13 @@
 		padding: 0.125rem 0.5rem;
 		border-radius: 0.25rem;
 		background: rgba(55, 65, 81, 0.5);
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		white-space: nowrap;
 	}
 
 	.folder-item.active .folder-count {
-		background: rgba(234, 179, 8, 0.2);
+		background: rgba(210, 153, 34, 0.2);
 		color: #facc15;
 	}
 </style>

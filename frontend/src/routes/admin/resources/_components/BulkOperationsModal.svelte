@@ -111,7 +111,7 @@
 	}
 
 	.modal {
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		width: 100%;
 		max-width: 500px;
@@ -132,20 +132,20 @@
 	.modal-header h2 {
 		margin: 0;
 		font-size: 1.25rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-close {
 		background: transparent;
 		border: none;
 		font-size: 1.5rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		line-height: 1;
 	}
 
 	.modal-close:hover {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-body {
@@ -163,12 +163,12 @@
 
 	/* Bulk info */
 	.bulk-info {
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.5rem;
 	}
 
 	.bulk-info strong {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	/* Form */
@@ -179,7 +179,7 @@
 	.form-group label {
 		display: block;
 		margin-bottom: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -187,10 +187,10 @@
 	.form-group select {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 	}
 
@@ -210,9 +210,9 @@
 	}
 
 	.alert-error {
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.15);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	/* Buttons */
@@ -221,7 +221,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
@@ -241,7 +241,7 @@
 	}
 
 	.btn-primary.btn-danger {
-		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+		background: #ef4444;
 	}
 
 	.btn-primary.btn-danger:hover {
@@ -254,7 +254,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;
@@ -264,7 +264,7 @@
 
 	.btn-secondary:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.spinner-small {

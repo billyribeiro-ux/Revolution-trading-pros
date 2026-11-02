@@ -194,7 +194,7 @@
 	.module-actions button {
 		background: none;
 		border: none;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		padding: 4px;
 	}
@@ -217,7 +217,7 @@
 		border-bottom: none;
 	}
 	.lesson-list li.empty {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-style: italic;
 		font-size: 13px;
 	}
@@ -234,19 +234,19 @@
 		color: #143e59;
 	}
 	.lesson-list .duration {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 12px;
 		margin-left: auto;
 	}
 	.lesson-list li > button {
 		background: none;
 		border: none;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		padding: 4px;
 	}
 	.lesson-list li > button:hover {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-add-lesson {
@@ -259,7 +259,7 @@
 		background: #f3f4f6;
 		border: 2px dashed #d1d5db;
 		border-radius: 8px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 14px;
 		cursor: pointer;
 		margin-top: 16px;

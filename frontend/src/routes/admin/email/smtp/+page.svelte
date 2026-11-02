@@ -294,12 +294,12 @@
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 1rem;
 	}
 
@@ -311,20 +311,19 @@
 	}
 
 	.alert-success {
-		background: rgba(34, 197, 94, 0.1);
-		color: #22c55e;
-		border: 1px solid rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
+		border: 1px solid rgba(63, 185, 80, 0.3);
 	}
 
 	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 	}
 
 	.settings-card {
-		background: rgba(30, 41, 59, 0.5);
-		backdrop-filter: blur(10px);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 16px;
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		padding: 2rem;
@@ -350,23 +349,23 @@
 	label {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.hint {
 		font-weight: 400;
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-left: 0.5rem;
 	}
 
 	input,
 	select {
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.5);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 		transition: all 0.2s;
 	}
@@ -375,7 +374,7 @@
 	select:focus {
 		outline: none;
 		border-color: var(--primary-500);
-		background: rgba(15, 23, 42, 0.7);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.form-actions {
@@ -396,7 +395,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
@@ -406,13 +405,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	button:disabled {

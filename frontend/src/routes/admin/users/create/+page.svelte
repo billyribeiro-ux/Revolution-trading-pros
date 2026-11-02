@@ -1610,15 +1610,15 @@
 		display: grid;
 		gap: 0.375rem;
 		margin-bottom: 1.5rem;
-		border: 1px solid rgb(239 68 68 / 30%);
+		border: 1px solid rgba(248, 81, 73, 30%);
 		border-radius: 0.5rem;
-		background: rgb(239 68 68 / 10%);
+		background: rgba(248, 81, 73, 10%);
 		padding: 1rem;
 	}
 
 	.error-summary p {
 		margin: 0;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 	}
 
@@ -1718,12 +1718,12 @@
 	}
 
 	.input-status.success {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.input-status.error,
 	.field-help.error {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.file-control {
@@ -1756,7 +1756,7 @@
 	}
 
 	.link-button {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		font-size: 0.875rem;
 	}
 
@@ -1866,7 +1866,7 @@
 
 	.role-card.selected {
 		border-color: #3b82f6;
-		background: rgb(59 130 246 / 10%);
+		background: rgba(88, 166, 255, 10%);
 	}
 
 	.role-header {
@@ -1919,11 +1919,11 @@
 	}
 
 	.positive {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.negative {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.info-panel h4 {

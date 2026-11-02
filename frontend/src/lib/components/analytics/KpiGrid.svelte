@@ -102,7 +102,7 @@
 
 	.kpi-grid__heading {
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 600;
 		letter-spacing: 0.05em;
@@ -139,7 +139,7 @@
 
 	.kpi-grid__empty {
 		padding: 3rem 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 

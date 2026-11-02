@@ -81,8 +81,8 @@
 
 <style>
 	.panel {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -92,13 +92,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.panel-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -108,12 +108,12 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
 	.empty-state h4 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -125,8 +125,8 @@
 	}
 
 	.subscription-card {
-		background: rgba(15, 23, 42, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		padding: 1.25rem;
 	}
@@ -141,13 +141,13 @@
 	.subscription-product h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
 	.subscription-plan {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.subscription-details {
@@ -159,7 +159,7 @@
 	.subscription-detail .label {
 		display: block;
 		font-size: 0.6875rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.25rem;
@@ -167,7 +167,7 @@
 
 	.subscription-detail .value {
 		font-size: 0.875rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 
@@ -182,15 +182,15 @@
 	}
 
 	.status-active {
-		background: rgba(16, 185, 129, 0.2);
-		color: #34d399;
-		border-color: rgba(16, 185, 129, 0.35);
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
+		border-color: rgba(63, 185, 80, 0.35);
 	}
 
 	.status-inactive {
-		background: rgba(100, 116, 139, 0.2);
-		color: #94a3b8;
-		border-color: rgba(100, 116, 139, 0.35);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.subscription-actions {
@@ -198,7 +198,7 @@
 		gap: 0.5rem;
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--border-muted, #21262d);
 	}
 
 	.btn-primary,
@@ -216,19 +216,19 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.15);
-		color: #f1f5f9;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.btn-primary.small,
@@ -243,9 +243,9 @@
 		gap: 0.375rem;
 		padding: 0.5rem 0.875rem;
 		background: transparent;
-		border: 1px solid rgba(239, 68, 68, 0.4);
+		border: 1px solid rgba(248, 81, 73, 0.4);
 		border-radius: 8px;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -253,8 +253,8 @@
 	}
 
 	.btn-danger-outline:hover {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.6);
+		background: rgba(248, 81, 73, 0.1);
+		border-color: rgba(248, 81, 73, 0.6);
 	}
 
 	@media (max-width: 1023.98px) {

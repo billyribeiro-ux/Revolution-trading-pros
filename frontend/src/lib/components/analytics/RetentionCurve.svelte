@@ -173,10 +173,10 @@
 
 <style>
 	.retention-curve {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.curve-header {
@@ -216,7 +216,7 @@
 
 	.legend-label {
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.curve-chart {
@@ -224,7 +224,7 @@
 	}
 
 	.axis-label {
-		fill: #9ca3af;
+		fill: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 	}
 
@@ -256,7 +256,7 @@
 		padding: 0.75rem;
 		border: 1px solid rgba(55, 65, 81, 0.5);
 		border-radius: 0.5rem;
-		background: rgba(17, 24, 39, 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.insight-cohort {
@@ -270,7 +270,7 @@
 	.insight-metrics {
 		display: flex;
 		gap: 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 	}
 

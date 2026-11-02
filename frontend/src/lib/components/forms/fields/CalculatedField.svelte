@@ -309,19 +309,19 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.calculated-display {
 		padding: 1rem 1.25rem;
-		background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+		background: #f0f9ff;
 		border: 2px solid #0ea5e9;
 		border-radius: 0.5rem;
 		display: flex;
@@ -330,7 +330,7 @@
 	}
 
 	.calculated-display.has-error {
-		background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+		background: #fef2f2;
 		border-color: #f87171;
 	}
 
@@ -342,12 +342,12 @@
 	}
 
 	.calculated-display.has-error .calculated-value {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.raw-value {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.formula-display {
@@ -362,7 +362,7 @@
 	.formula-label {
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.formula-code {
@@ -374,7 +374,7 @@
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		padding: 0.25rem 0.5rem;
 		background-color: #fee2e2;
 		border-radius: 0.25rem;

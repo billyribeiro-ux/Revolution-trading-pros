@@ -113,7 +113,7 @@
 <style>
 	.stats-panel {
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		margin-bottom: 1.5rem;
 		position: relative;
@@ -130,16 +130,16 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.5);
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid var(--border-muted, #21262d);
 		position: relative;
 		overflow: hidden;
 	}
 
 	.stat-card.highlight {
-		background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 95, 70, 0.15));
-		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border-color: rgba(63, 185, 80, 0.3);
 	}
 
 	.stat-icon {
@@ -158,15 +158,15 @@
 
 	.stat-icon.blue {
 		background: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-icon.green {
 		background: #d1fae5;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.orange {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 	.stat-icon.gold {
 		background: #fff8e0;
@@ -174,7 +174,7 @@
 	}
 	.stat-icon.emerald {
 		background: #d1fae5;
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stat-info {
@@ -185,12 +185,12 @@
 	.stat-value {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.stat-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.stat-progress {
@@ -199,12 +199,12 @@
 		left: 0;
 		right: 0;
 		height: 3px;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.progress-bar {
 		height: 100%;
-		background: linear-gradient(135deg, #10b981, #059669);
+		background: #10b981;
 		transition: width 1s ease-out;
 	}
 
@@ -214,15 +214,15 @@
 		top: 50%;
 		transform: translateY(-50%);
 		padding: 0.5rem;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.stats-toggle:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.stats-toggle :global(svg) {
@@ -237,18 +237,18 @@
 		gap: 0.5rem;
 		margin-bottom: 1.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.stats-show:hover {
-		background: rgba(30, 41, 59, 0.6);
-		border-color: rgba(99, 102, 241, 0.3);
+		background: var(--bg-elevated, #161b22);
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.stats-show :global(svg) {

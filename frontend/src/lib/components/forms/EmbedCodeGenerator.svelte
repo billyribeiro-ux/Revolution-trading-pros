@@ -198,27 +198,27 @@ ${'</'}script>`);
 <style>
 	.embed-generator {
 		padding: 2rem;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 	}
 
 	h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.75rem 0;
 	}
 
 	.description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		margin: 0 0 1.5rem 0;
 	}
@@ -236,23 +236,23 @@ ${'</'}script>`);
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem;
-		background: #1e293b;
-		border: 2px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 2px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.type-btn:hover {
-		border-color: rgba(99, 102, 241, 0.4);
-		background: rgba(99, 102, 241, 0.05);
+		border-color: rgba(230, 184, 0, 0.4);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.type-btn.active {
 		border-color: #6366f1;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.type-btn .icon {
@@ -266,8 +266,8 @@ ${'</'}script>`);
 
 	.code-section,
 	.additional-section {
-		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 8px;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
@@ -283,8 +283,8 @@ ${'</'}script>`);
 	.copy-btn,
 	.copy-btn-small {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -305,15 +305,15 @@ ${'</'}script>`);
 	}
 
 	.code-block {
-		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		padding: 1rem;
 		overflow-x: auto;
 		font-family: 'Monaco', 'Menlo', monospace;
 		font-size: 0.75rem;
 		line-height: 1.5;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -324,24 +324,24 @@ ${'</'}script>`);
 	}
 
 	.code-block code {
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.usage-instructions {
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.usage-instructions p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		margin: 0 0 0.5rem 0;
 	}
 
 	.usage-instructions ul {
 		margin: 0.5rem 0 0 1.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.8125rem;
 	}
 
@@ -350,14 +350,14 @@ ${'</'}script>`);
 	}
 
 	.note {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.8125rem;
 		margin: 0.5rem 0 0 0;
 	}
 
 	.urls-section {
-		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 8px;
 		padding: 1.5rem;
 	}
@@ -376,19 +376,19 @@ ${'</'}script>`);
 	.url-label {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		min-width: 100px;
 	}
 
 	.url-value {
 		flex: 1;
 		padding: 0.5rem 0.75rem;
-		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		font-family: monospace;
 		font-size: 0.75rem;
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 		overflow-x: auto;
 		white-space: nowrap;
 	}
@@ -398,7 +398,7 @@ ${'</'}script>`);
 		bottom: 2rem;
 		right: 2rem;
 		padding: 1rem 1.5rem;
-		background: linear-gradient(135deg, #10b981, #059669);
+		background: #10b981;
 		color: white;
 		border-radius: 8px;
 		font-size: 0.875rem;

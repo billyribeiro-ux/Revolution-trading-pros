@@ -120,10 +120,10 @@
 
 <style lang="postcss">
 	.heatmap-container {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.heatmap-header {
@@ -153,7 +153,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.legend-color {
@@ -178,7 +178,7 @@
 		position: relative;
 		overflow: hidden;
 		border-radius: 0.5rem;
-		background-color: rgba(17, 24, 39, 0.5);
+		background-color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -192,7 +192,7 @@
 		align-items: center;
 		gap: 1.5rem;
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.stat {

@@ -65,7 +65,7 @@
 		border: 0;
 		border-radius: 0.375rem;
 		background: transparent;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		font: inherit;
 		font-size: 0.875rem;
@@ -80,7 +80,7 @@
 	}
 
 	.period-selector__button:hover {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.period-selector__button:focus-visible {
@@ -91,7 +91,7 @@
 	.period-selector__button.is-selected {
 		background: #ffffff;
 		box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	@media (max-width: 480px) {

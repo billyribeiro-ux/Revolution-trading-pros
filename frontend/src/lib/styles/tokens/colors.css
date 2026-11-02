@@ -13,6 +13,7 @@
 
 /* SCOPED: Only applies within admin layout wrapper - prevents cascade pollution */
 .admin-layout,
+.admin-tokens,
 .admin-page-container {
 	/* ═══════════════════════════════════════════════════════════════════════════
      * BACKGROUND SCALE

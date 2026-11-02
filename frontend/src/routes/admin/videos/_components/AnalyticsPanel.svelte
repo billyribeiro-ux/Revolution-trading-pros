@@ -171,7 +171,7 @@
 	.analytics-stat {
 		text-align: center;
 		padding: 1rem;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 	}
 
@@ -192,7 +192,7 @@
 	.categories-stats-section {
 		margin-top: 1.5rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.top-videos-section h4,
@@ -256,7 +256,7 @@
 
 	.filter-select:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.btn-icon {

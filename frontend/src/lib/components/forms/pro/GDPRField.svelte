@@ -118,7 +118,7 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -171,7 +171,7 @@
 		height: 28px;
 		background-color: #dbeafe;
 		border-radius: 50%;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		flex-shrink: 0;
 	}
 
@@ -182,7 +182,7 @@
 	}
 
 	.consent-text :global(a) {
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		text-decoration: none;
 	}
 
@@ -204,24 +204,24 @@
 		align-items: center;
 		gap: 0.375rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		transition: color 0.2s;
 	}
 
 	.legal-link:hover {
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error p {

@@ -19,6 +19,18 @@
 	import { fade, fly, scale, slide } from 'svelte/transition';
 	import { backOut, cubicOut } from 'svelte/easing';
 	import Icon from '#lib/components/Icon.svelte';
+	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
+	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconCreditCard from '@tabler/icons-svelte-runes/icons/credit-card';
+	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
+	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
+	import IconLink from '@tabler/icons-svelte-runes/icons/link';
+	import IconRobot from '@tabler/icons-svelte-runes/icons/robot';
+	import IconBell from '@tabler/icons-svelte-runes/icons/bell';
+	import IconPlug from '@tabler/icons-svelte-runes/icons/plug';
+	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import {
 		connections,
 		getIsAnalyticsConnected,
@@ -32,13 +44,15 @@
 		type ServiceKey
 	} from '#lib/stores/connections.svelte.js';
 
+	type ServiceIconComponent = typeof IconPlug;
+
 	// Feature configuration - maps features to display info
 	const FEATURE_CONFIG: Record<
 		string,
 		{
 			name: string;
 			description: string;
-			icon: string;
+			icon: ServiceIconComponent;
 			color: string;
 			features: string[];
 			primaryService?: ServiceKey;
@@ -47,7 +61,7 @@
 		analytics: {
 			name: 'Analytics',
 			description: 'Track visitors, sessions, and user behavior across your site',
-			icon: '📊',
+			icon: IconChartBar,
 			color: '#F9AB00',
 			features: [
 				'Real-time visitor tracking',
@@ -60,7 +74,7 @@
 		seo: {
 			name: 'SEO Tools',
 			description: 'Monitor search rankings, indexing status, and SEO performance',
-			icon: '🔍',
+			icon: IconSearch,
 			color: '#4285F4',
 			features: [
 				'Search ranking monitoring',
@@ -73,7 +87,7 @@
 		email: {
 			name: 'Email Services',
 			description: 'Send transactional and marketing emails to your users',
-			icon: '✉️',
+			icon: IconMail,
 			color: '#1A82E2',
 			features: [
 				'Transactional emails',
@@ -86,7 +100,7 @@
 		payment: {
 			name: 'Payment Processing',
 			description: 'Accept payments and manage subscriptions seamlessly',
-			icon: '💳',
+			icon: IconCreditCard,
 			color: '#635BFF',
 			features: [
 				'Credit card payments',
@@ -99,7 +113,7 @@
 		crm: {
 			name: 'CRM & Contacts',
 			description: 'Manage customer relationships, contacts, and sales pipelines',
-			icon: '👥',
+			icon: IconUsers,
 			color: '#FF7A59',
 			features: [
 				'Contact management',
@@ -112,7 +126,7 @@
 		forms: {
 			name: 'Form Builder',
 			description: 'Create and manage forms with advanced features',
-			icon: '📝',
+			icon: IconNotes,
 			color: '#10B981',
 			features: [
 				'Drag-drop builder',
@@ -125,7 +139,7 @@
 		behavior: {
 			name: 'Behavior Tracking',
 			description: 'Track user interactions, clicks, and engagement patterns',
-			icon: '🎯',
+			icon: IconTarget,
 			color: '#8B5CF6',
 			features: ['Click tracking', 'Scroll depth', 'Event tracking', 'Heatmaps'],
 			primaryService: 'google_analytics'
@@ -133,7 +147,7 @@
 		social: {
 			name: 'Social Media',
 			description: 'Connect your social media accounts for tracking and sharing',
-			icon: '🔗',
+			icon: IconLink,
 			color: '#1877F2',
 			features: ['Social tracking', 'Share buttons', 'Pixel integration', 'Audience sync'],
 			primaryService: 'facebook'
@@ -141,7 +155,7 @@
 		ai: {
 			name: 'AI Services',
 			description: 'Enable AI-powered features for content and automation',
-			icon: '🤖',
+			icon: IconRobot,
 			color: '#10A37F',
 			features: ['Content generation', 'Smart suggestions', 'Automation', 'Analysis'],
 			primaryService: 'openai'
@@ -149,7 +163,7 @@
 		monitoring: {
 			name: 'Error Monitoring',
 			description: 'Track errors, performance issues, and application health',
-			icon: '🔔',
+			icon: IconBell,
 			color: '#362D59',
 			features: ['Error tracking', 'Performance monitoring', 'Alerts', 'Debug tools'],
 			primaryService: 'datadog'
@@ -174,7 +188,7 @@
 		/** Custom color */
 		color?: string;
 		/** Custom icon */
-		icon?: string;
+		icon?: ServiceIconComponent;
 		/** Callback when connected */
 		onConnected?: () => void;
 	}
@@ -199,7 +213,7 @@
 		return {
 			name: serviceName || 'Service',
 			description: description || 'Connect this service to enable features',
-			icon: icon || '🔌',
+			icon: icon || IconPlug,
 			color: color || '#E6B800',
 			features: [],
 			primaryService: serviceKey
@@ -258,18 +272,15 @@
 			aria-live="polite"
 		>
 			<!-- Gradient Background Glow -->
-			<div class="card-glow" style:--glow-color={config.color}></div>
 
 			<!-- Decorative Elements -->
-			<div class="decorative-orb orb-1" style:--orb-color={config.color}></div>
-			<div class="decorative-orb orb-2" style:--orb-color={config.color}></div>
 
 			<!-- Content -->
 			<div class="card-content">
 				<!-- Icon & Status -->
 				<div class="icon-section">
 					<div class="icon-container" style:--icon-color={config.color}>
-						<span class="service-icon">{config.icon}</span>
+						<span class="service-icon"><config.icon size={40} aria-hidden="true" /></span>
 						<div class="status-indicator">
 							<Icon name="IconPlugConnectedX" size={18} class="disconnect-icon" />
 						</div>
@@ -293,7 +304,7 @@
 						<ul class="features-list">
 							{#each config.features as featureItem, i (i)}
 								<li in:fly={{ x: -10, duration: 200, delay: 150 + i * 50 }}>
-									<span class="check-icon" style:color={config.color}>✓</span>
+									<span class="check-icon" style:color={config.color}><IconCheck size={14} aria-hidden="true" /></span>
 									{featureItem}
 								</li>
 							{/each}
@@ -322,10 +333,9 @@
 			in:fly={{ y: -20, duration: 400, easing: cubicOut }}
 			role="alert"
 		>
-			<div class="banner-glow" style:--glow-color={config.color}></div>
 			<div class="banner-content">
 				<div class="banner-icon" style:--icon-color={config.color}>
-					<span>{config.icon}</span>
+					<config.icon size={22} aria-hidden="true" />
 				</div>
 				<div class="banner-text">
 					<h4>{config.name} Not Connected</h4>
@@ -380,46 +390,11 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 	.service-status-card {
 		position: relative;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 24px;
 		padding: 2.5rem;
 		overflow: hidden;
-		backdrop-filter: blur(20px);
-	}
-
-	.card-glow {
-		position: absolute;
-		top: -100px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 400px;
-		height: 400px;
-		background: radial-gradient(circle, var(--glow-color, #e6b800) 0%, transparent 70%);
-		opacity: 0.08;
-		pointer-events: none;
-	}
-
-	.decorative-orb {
-		position: absolute;
-		border-radius: 50%;
-		background: linear-gradient(135deg, var(--orb-color, #e6b800), transparent);
-		opacity: 0.03;
-		pointer-events: none;
-	}
-
-	.orb-1 {
-		width: 200px;
-		height: 200px;
-		bottom: -60px;
-		right: -60px;
-	}
-
-	.orb-2 {
-		width: 120px;
-		height: 120px;
-		top: 20%;
-		left: -40px;
 	}
 
 	.card-content {
@@ -446,14 +421,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 24px;
 	}
 
 	.service-icon {
-		font-size: 2.5rem;
-		filter: grayscale(50%);
+		display: inline-flex;
+		color: var(--icon-color, var(--text-secondary));
 		opacity: 0.7;
 	}
 
@@ -463,7 +438,7 @@
 		right: -8px;
 		width: 32px;
 		height: 32px;
-		background: linear-gradient(135deg, #475569, #334155);
+		background: var(--bg-active, #2d333b);
 		border-radius: 10px;
 		display: flex;
 		align-items: center;
@@ -474,7 +449,7 @@
 	:global(.disconnect-icon) {
 		width: 18px;
 		height: 18px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.status-badge {
@@ -487,7 +462,7 @@
 		border-radius: 20px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #fca5a5;
+		color: var(--error-emphasis, #f85149);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -506,13 +481,13 @@
 	.title {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.75rem 0;
 	}
 
 	.description {
 		font-size: 1rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 		max-width: 400px;
 		line-height: 1.6;
@@ -532,7 +507,7 @@
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -546,14 +521,14 @@
 		display: flex;
 		align-items: center;
 		gap: 0.625rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		padding: 0.375rem 0;
 	}
 
 	.check-icon {
-		font-weight: 700;
-		font-size: 0.75rem;
+		display: inline-flex;
+		vertical-align: middle;
 	}
 
 	.connect-button {
@@ -561,11 +536,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: linear-gradient(
-			135deg,
-			var(--btn-color, #e6b800),
-			color-mix(in srgb, var(--btn-color, #e6b800), #b38f00 40%)
-		);
+		background: var(--btn-color, #e6b800);
 		color: #0d1117;
 		border: none;
 		border-radius: 16px;
@@ -598,7 +569,7 @@
 		gap: 0.5rem;
 		margin-top: 1.5rem;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.lock-icon) {
@@ -611,25 +582,11 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 	.service-status-banner {
 		position: relative;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(245, 158, 11, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(210, 153, 34, 0.2);
 		border-radius: 16px;
 		padding: 1rem 1.5rem;
 		overflow: hidden;
-	}
-
-	.banner-glow {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 100%;
-		background: linear-gradient(
-			90deg,
-			color-mix(in srgb, var(--glow-color, #f59e0b) 10%, transparent),
-			transparent
-		);
-		pointer-events: none;
 	}
 
 	.banner-content {
@@ -649,7 +606,7 @@
 		justify-content: center;
 		background: color-mix(in srgb, var(--icon-color, #f59e0b) 15%, transparent);
 		border-radius: 12px;
-		font-size: 1.25rem;
+		color: var(--icon-color, var(--warning-emphasis));
 	}
 
 	.banner-text {
@@ -661,13 +618,13 @@
 		margin: 0;
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.banner-text p {
 		margin: 0.25rem 0 0 0;
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -682,7 +639,7 @@
 		background: color-mix(in srgb, var(--btn-color, #f59e0b) 20%, transparent);
 		border: 1px solid color-mix(in srgb, var(--btn-color, #f59e0b) 30%, transparent);
 		border-radius: 10px;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 		font-size: 0.8125rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -707,8 +664,8 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.875rem 1rem;
-		background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.04));
-		border: 1px solid rgba(245, 158, 11, 0.15);
+		background: rgba(210, 153, 34, 0.08);
+		border: 1px solid rgba(210, 153, 34, 0.15);
 		border-radius: 12px;
 	}
 
@@ -724,7 +681,7 @@
 	.inline-message {
 		flex: 1;
 		font-size: 0.875rem;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 		font-weight: 500;
 	}
 
@@ -733,10 +690,10 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 1rem;
-		background: rgba(245, 158, 11, 0.15);
-		border: 1px solid rgba(245, 158, 11, 0.25);
+		background: rgba(210, 153, 34, 0.15);
+		border: 1px solid rgba(210, 153, 34, 0.25);
 		border-radius: 8px;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 		font-size: 0.8125rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -744,8 +701,8 @@
 	}
 
 	.inline-button:hover {
-		background: rgba(245, 158, 11, 0.25);
-		border-color: rgba(245, 158, 11, 0.35);
+		background: rgba(210, 153, 34, 0.25);
+		border-color: rgba(210, 153, 34, 0.35);
 	}
 
 	.inline-button :global(svg) {
@@ -761,10 +718,10 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(100, 116, 139, 0.15);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 20px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -772,9 +729,9 @@
 	}
 
 	.service-status-badge:hover {
-		background: rgba(245, 158, 11, 0.15);
-		border-color: rgba(245, 158, 11, 0.25);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.15);
+		border-color: rgba(210, 153, 34, 0.25);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.badge-dot {
@@ -798,9 +755,9 @@
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
 		background: transparent;
-		border: 1px dashed rgba(148, 163, 184, 0.3);
+		border: 1px dashed var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -811,7 +768,7 @@
 		background: color-mix(in srgb, var(--btn-color, #e6b800) 10%, transparent);
 		border-color: color-mix(in srgb, var(--btn-color, #e6b800) 40%, transparent);
 		border-style: solid;
-		color: var(--btn-color, #e6b800);
+		color: var(--btn-color, var(--primary-500, #e6b800));
 	}
 
 	:global(.plug-icon) {

@@ -40,14 +40,14 @@
 	}
 
 	.alert-success {
-		background: rgba(34, 197, 94, 0.15);
-		border: 1px solid rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border: 1px solid rgba(63, 185, 80, 0.3);
 		color: var(--success-emphasis);
 	}
 
 	.alert-error {
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.15);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		color: var(--error-emphasis);
 	}
 

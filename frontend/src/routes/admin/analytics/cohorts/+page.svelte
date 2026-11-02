@@ -460,9 +460,7 @@
 <style>
 	.cohorts-page {
 		min-height: 100vh;
-		background:
-			radial-gradient(circle at top left, rgb(168 85 247 / 0.16), transparent 28rem),
-			linear-gradient(135deg, #020617 0%, #0f172a 48%, #020617 100%);
+		background: var(--bg-base);
 		color: white;
 	}
 
@@ -500,7 +498,7 @@
 		flex: 0 0 auto;
 		place-items: center;
 		border-radius: 1rem;
-		background: linear-gradient(135deg, #a855f7, #db2777);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 18px 44px rgb(168 85 247 / 0.24);
 	}
 
@@ -513,7 +511,7 @@
 
 	.cohorts-header p {
 		margin: 0.35rem 0 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.cohorts-header__actions {
@@ -551,8 +549,8 @@
 	}
 
 	.primary-action {
-		background: linear-gradient(135deg, #a855f7, #db2777);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 16px 36px rgb(168 85 247 / 0.28);
 	}
 
@@ -571,7 +569,7 @@
 	.secondary-action {
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.04);
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.secondary-action:hover {
@@ -588,7 +586,7 @@
 
 	.granularity-field span,
 	.form-field label {
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 600;
 	}
@@ -598,7 +596,7 @@
 		width: 100%;
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 0.75rem;
-		background: rgb(15 23 42 / 0.82);
+		background: var(--bg-base, #0d1117);
 		color: white;
 		font: inherit;
 		padding: 0.75rem 1rem;
@@ -615,7 +613,7 @@
 	}
 
 	.form-control::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-control--textarea {
@@ -632,7 +630,7 @@
 	.loading-spinner {
 		width: 2rem;
 		height: 2rem;
-		border: 2px solid rgb(168 85 247 / 0.22);
+		border: 2px solid rgba(230, 184, 0, 0.22);
 		border-top-color: #a855f7;
 		border-radius: 999px;
 		animation: cohorts-spin 780ms linear infinite;
@@ -651,7 +649,6 @@
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.05);
 		box-shadow: 0 24px 80px rgb(2 6 23 / 0.24);
-		backdrop-filter: blur(24px);
 	}
 
 	.state-card {
@@ -664,7 +661,7 @@
 	}
 
 	.state-card--error {
-		border-color: rgb(239 68 68 / 0.25);
+		border-color: rgba(248, 81, 73, 0.25);
 		background: rgb(127 29 29 / 0.18);
 	}
 
@@ -674,13 +671,13 @@
 		height: 4rem;
 		place-items: center;
 		border-radius: 999px;
-		color: #f87171;
-		background: rgb(239 68 68 / 0.12);
+		color: var(--error-emphasis, #f85149);
+		background: rgba(248, 81, 73, 0.12);
 	}
 
 	.state-card__icon--purple {
 		color: #c084fc;
-		background: rgb(168 85 247 / 0.12);
+		background: rgba(230, 184, 0, 0.12);
 	}
 
 	.state-card h3 {
@@ -691,7 +688,7 @@
 	.state-card p {
 		margin: 0;
 		max-width: 34rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.state-card__button {
@@ -700,12 +697,12 @@
 	}
 
 	.state-card__button--primary {
-		background: linear-gradient(135deg, #a855f7, #db2777);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 16px 36px rgb(168 85 247 / 0.24);
 	}
 
 	.state-card__button--error {
-		background: linear-gradient(135deg, #dc2626, #f97316);
+		background: #dc2626;
 		box-shadow: 0 16px 36px rgb(220 38 38 / 0.24);
 	}
 
@@ -721,14 +718,14 @@
 		flex: 0 0 auto;
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.05);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		white-space: nowrap;
 	}
 
 	.cohort-tab.is-active {
 		border-color: transparent;
-		background: linear-gradient(135deg, #a855f7, #db2777);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 16px 36px rgb(168 85 247 / 0.24);
 	}
 
@@ -746,7 +743,7 @@
 
 	.retention-card__label {
 		margin-bottom: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 	}
 
@@ -790,7 +787,7 @@
 
 	.detail-item__label {
 		margin-bottom: 0.25rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		font-weight: 700;
 		text-transform: uppercase;
@@ -810,7 +807,7 @@
 
 	.detail-description p {
 		margin: 0;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 	}
 
@@ -821,8 +818,7 @@
 		display: grid;
 		place-items: center;
 		padding: 1rem;
-		background: rgb(2 6 23 / 0.72);
-		backdrop-filter: blur(8px);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.cohort-modal {
@@ -859,7 +855,7 @@
 		place-items: center;
 		border-radius: 0.625rem;
 		background: rgb(255 255 255 / 0.05);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		transition:
 			background 180ms ease,
 			color 180ms ease;

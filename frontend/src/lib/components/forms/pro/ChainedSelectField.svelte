@@ -169,7 +169,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -194,28 +194,28 @@
 	.select-input:disabled {
 		background-color: #f3f4f6;
 		cursor: not-allowed;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.select-input.placeholder {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.disabled-hint {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-style: italic;
 	}
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

@@ -342,7 +342,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.status-badge {
@@ -382,7 +382,7 @@
 		border: none;
 		border-radius: 6px;
 		background: rgba(255, 255, 255, 0.9);
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -413,7 +413,7 @@
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -424,7 +424,7 @@
 		gap: 0.5rem;
 		margin-top: 0.25rem;
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	/* Skeleton loading */
@@ -466,7 +466,7 @@
 		justify-content: center;
 		gap: 1rem;
 		padding: 4rem 2rem;
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	@keyframes spin {

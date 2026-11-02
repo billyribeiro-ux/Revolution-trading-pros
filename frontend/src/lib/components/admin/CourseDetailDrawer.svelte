@@ -1043,13 +1043,13 @@
 	}
 
 	.btn-action.builder {
-		background: rgba(99, 102, 241, 0.1);
-		border-color: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.btn-action.builder:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.btn-action.success {
@@ -1495,11 +1495,7 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background: linear-gradient(
-			135deg,
-			var(--admin-accent-primary),
-			var(--admin-widget-purple-icon)
-		);
+		background: var(--admin-accent-primary);
 		display: flex;
 		align-items: center;
 		justify-content: center;

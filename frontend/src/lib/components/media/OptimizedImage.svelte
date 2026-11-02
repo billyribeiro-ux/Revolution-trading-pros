@@ -302,11 +302,11 @@
 	}
 
 	:global(.dark) .optimized-image__error {
-		background: #1f2937;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.optimized-image__error-content {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 		text-align: center;
@@ -317,7 +317,7 @@
 	}
 
 	:global(.dark) .optimized-image__error-content {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.optimized-image-container :global(.optimized-image__error-icon) {
@@ -330,7 +330,7 @@
 	}
 
 	:global(.dark) .optimized-image__skeleton {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	@keyframes optimized-image-pulse {

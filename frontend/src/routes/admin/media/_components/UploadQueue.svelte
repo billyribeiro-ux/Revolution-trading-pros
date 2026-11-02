@@ -89,19 +89,19 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(15, 23, 42, 0.5);
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid var(--border-muted, #21262d);
 	}
 
 	.upload-item.complete {
-		background: rgba(34, 197, 94, 0.1);
-		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.1);
+		border-color: rgba(63, 185, 80, 0.3);
 	}
 
 	.upload-item.error {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		border-color: rgba(248, 81, 73, 0.3);
 	}
 
 	.upload-icon {
@@ -118,16 +118,16 @@
 	}
 
 	.upload-icon :global(.text-green) {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.upload-icon :global(.text-red) {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.upload-spinner {
 		width: 20px;
 		height: 20px;
-		border: 2px solid rgba(99, 102, 241, 0.2);
+		border: 2px solid rgba(230, 184, 0, 0.2);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
@@ -142,25 +142,25 @@
 	.upload-name {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.upload-size {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.upload-progress-bar {
 		width: 100px;
 		height: 4px;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border-radius: 2px;
 		overflow: hidden;
 	}
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		transition: width 0.3s;
 	}
 
@@ -170,19 +170,19 @@
 		gap: 0.375rem;
 		margin-top: 0.75rem;
 		padding: 0.5rem 1rem;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.4);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	@keyframes spin {

@@ -41,6 +41,7 @@
 		IconClock,
 		IconTarget
 	} from '#lib/icons/index.js';
+	import IconBrandBing from '@tabler/icons-svelte-runes/icons/brand-bing';
 	import { connections, getIsSeoConnected, SERVICE_KEYS } from '#lib/stores/connections.svelte.js';
 
 	// State
@@ -91,7 +92,7 @@
 			icon: IconFileText,
 			href: '/admin/seo/meta',
 			color: '#3b82f6',
-			gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+			gradient: '#3b82f6'
 		},
 		{
 			title: 'Redirects',
@@ -99,7 +100,7 @@
 			icon: IconArrowForward,
 			href: '/admin/seo/redirects',
 			color: '#10b981',
-			gradient: 'linear-gradient(135deg, #10b981, #059669)'
+			gradient: '#10b981'
 		},
 		{
 			title: '404 Monitor',
@@ -107,7 +108,7 @@
 			icon: IconError404,
 			href: '/admin/seo/404-monitor',
 			color: '#ef4444',
-			gradient: 'linear-gradient(135deg, #ef4444, #dc2626)'
+			gradient: '#ef4444'
 		},
 		{
 			title: 'Schema Markup',
@@ -115,7 +116,7 @@
 			icon: IconCode,
 			href: '/admin/seo/schema',
 			color: '#E6B800',
-			gradient: 'linear-gradient(135deg, #E6B800, #B38F00)'
+			gradient: '#E6B800'
 		},
 		{
 			title: 'Keywords',
@@ -123,7 +124,7 @@
 			icon: IconKey,
 			href: '/admin/seo/keywords',
 			color: '#f59e0b',
-			gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+			gradient: '#f59e0b',
 			requiresConnection: true
 		},
 		{
@@ -132,7 +133,7 @@
 			icon: IconChartBar,
 			href: '/admin/seo/analytics',
 			color: '#14b8a6',
-			gradient: 'linear-gradient(135deg, #14b8a6, #0d9488)',
+			gradient: '#14b8a6',
 			requiresConnection: true
 		},
 		{
@@ -141,7 +142,7 @@
 			icon: IconSitemap,
 			href: '/admin/seo/sitemap',
 			color: '#E6B800',
-			gradient: 'linear-gradient(135deg, #E6B800, #B38F00)'
+			gradient: '#E6B800'
 		},
 		{
 			title: 'News Sitemap',
@@ -149,7 +150,7 @@
 			icon: IconNews,
 			href: '/admin/seo/news-sitemap',
 			color: '#f43f5e',
-			gradient: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+			gradient: '#f43f5e',
 			isNew: true
 		},
 		{
@@ -158,7 +159,7 @@
 			icon: IconVideo,
 			href: '/admin/seo/video-sitemap',
 			color: '#dc2626',
-			gradient: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+			gradient: '#dc2626',
 			isNew: true
 		},
 		{
@@ -167,7 +168,7 @@
 			icon: IconPhoto,
 			href: '/admin/seo/image-seo',
 			color: '#059669',
-			gradient: 'linear-gradient(135deg, #059669, #047857)',
+			gradient: '#059669',
 			isNew: true
 		},
 		{
@@ -176,7 +177,7 @@
 			icon: IconMapPin,
 			href: '/admin/seo/store-locator',
 			color: '#d97706',
-			gradient: 'linear-gradient(135deg, #d97706, #b45309)',
+			gradient: '#d97706',
 			isNew: true
 		},
 		{
@@ -185,7 +186,7 @@
 			icon: IconMail,
 			href: '/admin/seo/reports',
 			color: '#0284c7',
-			gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+			gradient: '#0284c7',
 			isNew: true
 		},
 		{
@@ -194,7 +195,7 @@
 			icon: IconBrandGoogle,
 			href: '/admin/seo/search-console',
 			color: '#ec4899',
-			gradient: 'linear-gradient(135deg, #ec4899, #db2777)',
+			gradient: '#ec4899',
 			requiresConnection: true
 		},
 		{
@@ -203,7 +204,7 @@
 			icon: IconSettings,
 			href: '/admin/seo/settings',
 			color: '#6b7280',
-			gradient: 'linear-gradient(135deg, #6b7280, #4b5563)'
+			gradient: '#6b7280'
 		}
 	];
 
@@ -212,35 +213,35 @@
 		{
 			key: SERVICE_KEYS.GOOGLE_SEARCH_CONSOLE,
 			name: 'Google Search Console',
-			icon: '🔍',
+			icon: IconSearch,
 			color: '#4285F4',
 			description: 'Track search performance, indexing, and site health'
 		},
 		{
 			key: SERVICE_KEYS.BING_WEBMASTER,
 			name: 'Bing Webmaster Tools',
-			icon: '🅱️',
+			icon: IconBrandBing,
 			color: '#00809D',
 			description: 'Monitor Bing search presence and crawl data'
 		},
 		{
 			key: SERVICE_KEYS.SEMRUSH,
 			name: 'SEMrush',
-			icon: '📊',
+			icon: IconChartBar,
 			color: '#FF642D',
 			description: 'Comprehensive SEO analytics and keyword research'
 		},
 		{
 			key: SERVICE_KEYS.AHREFS,
 			name: 'Ahrefs',
-			icon: '🔗',
+			icon: IconLink,
 			color: '#FF5800',
 			description: 'Backlink analysis and competitive research'
 		},
 		{
 			key: SERVICE_KEYS.MOZ,
 			name: 'Moz',
-			icon: '📈',
+			icon: IconTrendingUp,
 			color: '#4A90E2',
 			description: 'Domain authority and SEO insights'
 		}
@@ -443,7 +444,8 @@
 							{@const status = getConnectionStatus(service.key)}
 							{#if status?.isConnected}
 								<div class="connected-service">
-									<span class="service-icon-small">{service.icon}</span>
+									{@const ServiceIcon = service.icon}
+									<span class="service-icon-small"><ServiceIcon size={16} aria-hidden="true" /></span>
 									<span class="service-name">{service.name}</span>
 									<IconCheck size={16} class="check-icon" />
 								</div>
@@ -508,7 +510,7 @@
 		padding: 2rem;
 		max-width: 1600px;
 		margin: 0 auto;
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+		background: var(--bg-base, #0d1117);
 		overflow: hidden;
 	}
 
@@ -530,10 +532,9 @@
 		align-items: center;
 		margin-bottom: 2rem;
 		padding: 1.5rem 2rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 20px;
-		backdrop-filter: blur(20px);
 	}
 
 	.header-content {
@@ -548,7 +549,7 @@
 		justify-content: center;
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		border-radius: 16px;
 		color: var(--bg-base);
 		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
@@ -557,14 +558,14 @@
 	.header-text h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 		letter-spacing: -0.02em;
 	}
 
 	.header-text p {
 		font-size: 0.9rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 	}
 
@@ -582,9 +583,9 @@
 		border-radius: 12px;
 		font-size: 0.8125rem;
 		font-weight: 600;
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #fca5a5;
+		background: rgba(248, 81, 73, 0.15);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 		transition: all 0.3s ease;
 	}
 
@@ -599,10 +600,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -610,8 +611,8 @@
 	}
 
 	.refresh-btn:hover:not(:disabled) {
-		background: rgba(148, 163, 184, 0.2);
-		border-color: rgba(148, 163, 184, 0.3);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.refresh-btn:disabled {
@@ -642,13 +643,13 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.loading-spinner {
 		width: 48px;
 		height: 48px;
-		border: 3px solid rgba(148, 163, 184, 0.2);
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
@@ -678,10 +679,9 @@
 
 	.stat-card {
 		padding: 1.5rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 20px;
-		backdrop-filter: blur(10px);
 	}
 
 	.stat-header {
@@ -702,25 +702,25 @@
 	}
 
 	.visibility .stat-icon {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 	}
 
 	.keywords .stat-icon {
-		background: linear-gradient(135deg, #f59e0b, #d97706);
+		background: #f59e0b;
 	}
 
 	.backlinks .stat-icon {
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+		background: #3b82f6;
 	}
 
 	.technical .stat-icon {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 	}
 
 	.stat-label {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.stat-value {
@@ -730,14 +730,14 @@
 	.stat-value .value {
 		font-size: 2.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		letter-spacing: -0.02em;
 	}
 
 	.stat-value .unit {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-left: 0.25rem;
 	}
 
@@ -747,11 +747,11 @@
 		gap: 0.375rem;
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.stat-change.positive {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stat-detail {
@@ -762,34 +762,34 @@
 	.detail-item {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.detail-item.positive {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.detail-item.negative {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.detail-item.highlight {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	/* No Data Message */
 	.no-data-message {
 		text-align: center;
 		padding: 3rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 20px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 2rem;
 	}
 
 	.no-data-message h3 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -831,7 +831,8 @@
 	}
 
 	.service-icon-small {
-		font-size: 1rem;
+		display: inline-flex;
+		align-items: center;
 	}
 
 	:global(.check-icon) {
@@ -869,7 +870,7 @@
 	.sections-title {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -883,13 +884,12 @@
 		position: relative;
 		display: block;
 		padding: 1.75rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 20px;
 		text-decoration: none;
 		overflow: hidden;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		backdrop-filter: blur(10px);
 	}
 
 	.section-card::before {
@@ -931,13 +931,13 @@
 	.section-card h3 {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.section-card p {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 		line-height: 1.6;
 	}
@@ -946,7 +946,7 @@
 		position: absolute;
 		top: 1.75rem;
 		right: 1.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		opacity: 0;
 		transform: translateX(-8px);
 		transition: all 0.3s ease;
@@ -962,7 +962,7 @@
 		position: absolute;
 		top: 1rem;
 		right: 1rem;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: #f97316;
 		color: white;
 		font-size: 0.625rem;
 		font-weight: 700;
@@ -970,18 +970,7 @@
 		border-radius: 6px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		animation: pulse-badge 2s ease-in-out infinite;
 		z-index: 2;
-	}
-
-	@keyframes pulse-badge {
-		0%,
-		100% {
-			transform: scale(1);
-		}
-		50% {
-			transform: scale(1.05);
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -995,7 +984,7 @@
 		gap: 0.5rem;
 		margin-top: 2rem;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════

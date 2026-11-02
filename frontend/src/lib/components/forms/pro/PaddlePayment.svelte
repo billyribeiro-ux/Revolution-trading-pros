@@ -262,14 +262,14 @@
 	}
 
 	.amount-display strong {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 	}
 
 	.tax-note {
 		display: block;
 		font-size: 0.6875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.25rem;
 	}
 
@@ -282,7 +282,7 @@
 		background-color: #f9fafb;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.spinner),
@@ -301,7 +301,7 @@
 
 	.payment-error {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 		text-align: center;
 	}
@@ -314,7 +314,7 @@
 		width: 100%;
 		padding: 0.875rem 1.5rem;
 		background-color: #ffcc00;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 0.5rem;
 		font-size: 1rem;
@@ -343,7 +343,7 @@
 		align-items: center;
 		gap: 0.375rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.feature :global(svg) {
@@ -357,7 +357,7 @@
 		justify-content: center;
 		gap: 0.375rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.secure-badge :global(svg) {
@@ -367,7 +367,7 @@
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

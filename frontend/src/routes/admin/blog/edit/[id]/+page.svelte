@@ -578,7 +578,7 @@
 	.panel-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 

@@ -120,10 +120,10 @@
 
 <style>
 	.journey-map {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.journey-header {
@@ -151,7 +151,7 @@
 
 	.stat-item {
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.journey-flow {
@@ -167,12 +167,12 @@
 		padding: 1rem;
 		border: 1px solid rgba(55, 65, 81, 0.5);
 		border-radius: 0.5rem;
-		background: rgba(17, 24, 39, 0.5);
+		background: var(--bg-base, #0d1117);
 		transition: border-color 0.2s ease;
 	}
 
 	.step-card:hover {
-		border-color: rgba(234, 179, 8, 0.3);
+		border-color: rgba(210, 153, 34, 0.3);
 	}
 
 	.step-header {
@@ -191,7 +191,7 @@
 		height: 2rem;
 		border-radius: 999px;
 		background: #eab308;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 700;
 	}
 
@@ -208,14 +208,14 @@
 
 	.step-users {
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.step-badge {
 		padding: 0.25rem 0.75rem;
 		border-radius: 0.5rem;
-		background: rgba(34, 197, 94, 0.2);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		font-weight: 600;
 		white-space: nowrap;
@@ -236,7 +236,7 @@
 
 	.metric-label {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.metric-value {
@@ -246,7 +246,7 @@
 	}
 
 	.metric.drop-off .metric-value {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.step-actions {
@@ -258,7 +258,7 @@
 	.actions-label {
 		margin-bottom: 0.5rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.action-item {
@@ -270,7 +270,7 @@
 	}
 
 	.action-name {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.action-count {
@@ -289,7 +289,7 @@
 	.connector-line {
 		width: 0.125rem;
 		height: 2rem;
-		background: linear-gradient(to bottom, #4b5563, #374151);
+		background: var(--bg-active, #2d333b);
 	}
 
 	.connector-stats {
@@ -300,11 +300,11 @@
 	}
 
 	.connector-stats :global(.connector-icon) {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.conversion-rate {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		font-weight: 600;
 	}
@@ -315,8 +315,8 @@
 		gap: 0.25rem;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.75rem;
 	}
 
@@ -326,12 +326,12 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding-block: 1rem;
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 600;
 	}
 
 	.completion-badge :global(.completion-icon) {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	@media (max-width: 640px) {

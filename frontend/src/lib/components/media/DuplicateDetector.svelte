@@ -434,7 +434,7 @@
 	}
 
 	.header-content p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -471,7 +471,7 @@
 
 	.progress-bar {
 		height: 100%;
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		background: #3b82f6;
 		transition: width 0.3s ease;
 	}
 
@@ -492,7 +492,7 @@
 	}
 
 	.summary-card.highlight {
-		background: linear-gradient(135deg, #dcfce7, #d1fae5);
+		background: #dcfce7;
 	}
 
 	.card-icon {
@@ -506,17 +506,17 @@
 
 	.card-icon.groups {
 		background: #dbeafe;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.card-icon.files {
 		background: #fef3c7;
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.card-icon.savings {
 		background: #dcfce7;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.card-content {
@@ -532,7 +532,7 @@
 
 	.card-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.error-message {
@@ -543,7 +543,7 @@
 		background: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 8px;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-bottom: 1.5rem;
 	}
 
@@ -556,7 +556,7 @@
 		background: white;
 		border: 1px solid #fecaca;
 		border-radius: 4px;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		cursor: pointer;
 	}
 
@@ -578,12 +578,12 @@
 	}
 
 	.empty-state p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.empty-state :global(.empty-state__icon) {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 		margin-bottom: 1rem;
 	}
 
@@ -600,7 +600,7 @@
 		width: 3rem;
 		height: 3rem;
 		border-width: 3px;
-		border-color: rgba(59, 130, 246, 0.2);
+		border-color: rgba(88, 166, 255, 0.2);
 		border-top-color: #3b82f6;
 		margin-bottom: 1rem;
 	}
@@ -649,7 +649,7 @@
 	}
 
 	.group-savings {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
 	}
 
@@ -709,14 +709,14 @@
 
 	.file-meta {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.usage-badge {
 		display: inline-block;
 		padding: 0.125rem 0.5rem;
 		background: #dbeafe;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		font-size: 0.625rem;
 		font-weight: 500;
 		border-radius: 9999px;
@@ -730,7 +730,7 @@
 		width: 80px;
 		background: #f1f5f9;
 		border-radius: 6px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -775,7 +775,7 @@
 		padding: 0.5rem;
 		background: none;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		border-radius: 6px;
 	}
@@ -790,7 +790,7 @@
 	}
 
 	.modal-description {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -856,12 +856,12 @@
 
 	.file-option-meta {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.file-option-usage {
 		font-size: 0.75rem;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.keep-badge {

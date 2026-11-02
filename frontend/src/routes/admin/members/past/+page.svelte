@@ -943,7 +943,7 @@
 	.title-icon {
 		width: 64px;
 		height: 64px;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		border-radius: 20px;
 		display: flex;
 		align-items: center;
@@ -978,8 +978,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		color: var(--pm-text-muted);
 		font-weight: 500;
@@ -1101,7 +1101,7 @@
 
 	.period-card.active {
 		border-color: var(--pm-primary);
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.15), rgba(230, 184, 0, 0.1));
+		background: rgba(230, 184, 0, 0.15);
 	}
 
 	.period-label {
@@ -1173,18 +1173,18 @@
 	}
 
 	.stat-card.success .stat-icon {
-		background: rgba(16, 185, 129, 0.15);
+		background: rgba(63, 185, 80, 0.15);
 		color: var(--pm-success);
 	}
 
 	.stat-card.warning .stat-icon {
-		background: rgba(251, 191, 36, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		color: var(--pm-warning);
 	}
 
 	.stat-card.info .stat-icon {
-		background: rgba(56, 189, 248, 0.15);
-		color: #38bdf8;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.stat-label {
@@ -1239,7 +1239,7 @@
 
 	.reason-card {
 		position: relative;
-		background: rgba(15, 23, 42, 0.4);
+		background: var(--bg-base, #0d1117);
 		border-radius: 12px;
 		overflow: hidden;
 	}
@@ -1250,7 +1250,7 @@
 		top: 0;
 		bottom: 0;
 		width: var(--width);
-		background: linear-gradient(90deg, rgba(230, 184, 0, 0.2), rgba(230, 184, 0, 0.05));
+		background: rgba(230, 184, 0, 0.2);
 		transition: width 0.5s ease-out;
 	}
 
@@ -1296,7 +1296,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.25rem 1.5rem;
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1), rgba(230, 184, 0, 0.05));
+		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 16px;
 		margin-bottom: 1.5rem;
@@ -1332,33 +1332,33 @@
 	}
 
 	.campaign-btn.free {
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border-color: rgba(63, 185, 80, 0.3);
 		color: var(--pm-success);
 	}
 
 	.campaign-btn.free:hover {
-		background: rgba(16, 185, 129, 0.25);
+		background: rgba(63, 185, 80, 0.25);
 	}
 
 	.campaign-btn.discount {
-		background: rgba(251, 191, 36, 0.15);
-		border-color: rgba(251, 191, 36, 0.3);
+		background: rgba(210, 153, 34, 0.15);
+		border-color: rgba(210, 153, 34, 0.3);
 		color: var(--pm-warning);
 	}
 
 	.campaign-btn.discount:hover {
-		background: rgba(251, 191, 36, 0.25);
+		background: rgba(210, 153, 34, 0.25);
 	}
 
 	.campaign-btn.personal {
-		background: rgba(244, 63, 94, 0.15);
-		border-color: rgba(244, 63, 94, 0.3);
+		background: rgba(248, 81, 73, 0.15);
+		border-color: rgba(248, 81, 73, 0.3);
 		color: #fb7185;
 	}
 
 	.campaign-btn.personal:hover {
-		background: rgba(244, 63, 94, 0.25);
+		background: rgba(248, 81, 73, 0.25);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1409,7 +1409,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		border: none;
 		border-radius: 10px;
 		color: var(--bg-base);
@@ -1449,7 +1449,7 @@
 	}
 
 	.members-table thead {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.members-table th {
@@ -1477,7 +1477,7 @@
 
 	.members-table td {
 		padding: 1rem 1.5rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.checkbox-col {
@@ -1501,7 +1501,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #64748b, var(--pm-text-muted));
+		background: #64748b;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1544,8 +1544,8 @@
 	.days-badge {
 		display: inline-flex;
 		padding: 0.25rem 0.5rem;
-		background: rgba(251, 191, 36, 0.15);
-		border: 1px solid rgba(251, 191, 36, 0.2);
+		background: rgba(210, 153, 34, 0.15);
+		border: 1px solid rgba(210, 153, 34, 0.2);
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -1587,8 +1587,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		color: var(--pm-text-muted);
 		cursor: pointer;
@@ -1619,7 +1619,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.85);
-		backdrop-filter: blur(8px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1628,7 +1627,7 @@
 	}
 
 	.modal-content {
-		background: linear-gradient(135deg, #1e293b, #0f172a);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 24px;
 		width: 100%;
@@ -1669,7 +1668,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: none;
 		border-radius: 8px;
 		color: var(--pm-text-muted);
@@ -1678,7 +1677,7 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.modal-body {
@@ -1743,7 +1742,7 @@
 
 	/* Template Preview */
 	.template-preview {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid var(--pm-border);
 		border-radius: 12px;
 		padding: 1rem 1.25rem;
@@ -1787,8 +1786,8 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.875rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		color: var(--pm-text);
 		font-size: 0.9375rem;
@@ -1870,7 +1869,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		border: none;
 		border-radius: 12px;
 		color: var(--bg-base);

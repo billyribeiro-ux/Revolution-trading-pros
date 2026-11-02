@@ -435,7 +435,7 @@
 		margin: 0;
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.tabs {
@@ -450,7 +450,7 @@
 		border: none;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		border-bottom: 2px solid transparent;
 		transition: all 0.2s;
@@ -462,7 +462,7 @@
 	}
 
 	.tab.active {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border-bottom-color: #3b82f6;
 	}
 
@@ -520,7 +520,7 @@
 
 	.radio-desc {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.format-options {
@@ -569,7 +569,7 @@
 
 	.format-desc {
 		font-size: 0.625rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.25rem;
 	}
 
@@ -609,7 +609,7 @@
 
 	.source-desc {
 		font-size: 0.6875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.125rem;
 	}
 
@@ -629,7 +629,7 @@
 
 	.date-separator {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.file-upload {
@@ -668,12 +668,12 @@
 
 	.file-size {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.file-placeholder {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-primary {
@@ -706,7 +706,7 @@
 		width: 100%;
 		padding: 0.5rem 1rem;
 		background: white;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border: 1px solid #3b82f6;
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
@@ -742,7 +742,7 @@
 
 	.template-hint {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -791,7 +791,7 @@
 		margin: 0;
 		padding-left: 1.25rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.import-help li {

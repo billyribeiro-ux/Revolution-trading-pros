@@ -104,7 +104,7 @@
 	.day-date {
 		display: block;
 		font-size: 12px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 2px;
 	}
 
@@ -121,7 +121,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 32px 16px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 13px;
 	}
 

@@ -536,7 +536,7 @@
 	   use solid surfaces + subtle borders to keep data legible and let
 	   the metrics themselves carry the visual interest. */
 	.analytics-dashboard {
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		color: white;
 		position: relative;
 		overflow: hidden;
@@ -553,12 +553,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin-bottom: 1.5rem;
 	}
@@ -576,7 +576,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
@@ -598,21 +598,21 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 		border-radius: 20px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		margin-top: 1rem;
 		max-width: 1400px;
 		width: fit-content;
 	}
 
 	.connection-status.connected {
-		background: rgba(16, 185, 129, 0.1);
-		border-color: rgba(16, 185, 129, 0.2);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.1);
+		border-color: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	/* Tab Navigation */
@@ -621,7 +621,7 @@
 		gap: 0.25rem;
 		margin-top: 1.5rem;
 		max-width: 1400px;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 		padding-bottom: 0;
 	}
 
@@ -633,7 +633,7 @@
 		background: transparent;
 		border: none;
 		border-bottom: 2px solid transparent;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -642,7 +642,7 @@
 	}
 
 	.tab-btn:hover {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab-btn.active {
@@ -689,7 +689,7 @@
 	}
 
 	.loading-state p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -705,7 +705,7 @@
 	.available-services h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.25rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
@@ -722,16 +722,16 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		text-decoration: none;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		transition: all 0.2s;
 	}
 
 	.service-card:hover {
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 		border-color: var(--service-color, var(--primary-500));
 		transform: translateY(-2px);
 	}
@@ -746,7 +746,7 @@
 	}
 
 	.service-card :global(.service-arrow) {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		transition: all 0.2s;
 	}
 
@@ -759,8 +759,8 @@
 	.error-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		background: rgba(239, 68, 68, 0.05);
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.05);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 		border-radius: 16px;
 	}
 
@@ -772,12 +772,12 @@
 	.error-state h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem;
 	}
 
 	.error-state p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1.5rem;
 	}
 
@@ -786,17 +786,17 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 10px;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-retry:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	/* Dashboard Grid - Layout Shift Prevention */
@@ -868,10 +868,10 @@
 
 	.select-input {
 		padding: 0.625rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 
@@ -883,8 +883,8 @@
 
 	.widget-large,
 	.widget-small {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -897,7 +897,7 @@
 		font-size: 1rem;
 		font-weight: 600;
 		margin: 0 0 1rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.action-link {
@@ -921,13 +921,13 @@
 
 	.action-text strong {
 		display: block;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 
 	.action-text span {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.charts-row {
@@ -943,8 +943,8 @@
 	}
 
 	.data-table {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		padding: 1.5rem;
 	}
@@ -966,7 +966,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.5rem 0;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.table-row:last-child {
@@ -976,13 +976,13 @@
 	.row-rank {
 		width: 24px;
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.row-label {
 		flex: 1;
 		font-size: 0.875rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -991,11 +991,11 @@
 	.row-value {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.no-data {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		text-align: center;
 		padding: 2rem;
@@ -1005,8 +1005,8 @@
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 	}
 
@@ -1023,7 +1023,7 @@
 	}
 
 	.empty-state p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1.5rem;
 	}
 
@@ -1036,8 +1036,8 @@
 
 	/* Attribution Table */
 	.attribution-table {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		padding: 1.5rem;
 	}
@@ -1061,9 +1061,9 @@
 	.attribution-table th {
 		text-align: right;
 		padding: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 500;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.attribution-table th:first-child {
@@ -1073,13 +1073,13 @@
 	.attribution-table td {
 		padding: 0.75rem;
 		text-align: right;
-		color: #94a3b8;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+		color: var(--text-secondary, #8b949e);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.attribution-table td.channel-name {
 		text-align: left;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 		text-transform: capitalize;
 	}

@@ -10,6 +10,14 @@
 	// Multi-admin = stored XSS in the admin's own session. Route through
 	// sanitizeHtml so any <script>/on*/javascript: gets stripped before render.
 	import { sanitizeHtml } from '#lib/utils/sanitize.js';
+	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconBan from '@tabler/icons-svelte-runes/icons/ban';
+	import IconGift from '@tabler/icons-svelte-runes/icons/gift';
+	import IconSpeakerphone from '@tabler/icons-svelte-runes/icons/speakerphone';
+	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 
 	// Form state
 	let formData = $state<Partial<Popup>>({
@@ -102,14 +110,14 @@
 	let selectedTemplate = $state<string | null>(null);
 
 	const templateChoices = [
-		{ id: 'scratch', icon: '+', name: 'From Scratch' },
-		{ id: 'newsletter', icon: '✉', name: 'Newsletter' },
-		{ id: 'exit_intent', icon: '⛔', name: 'Exit Intent' },
-		{ id: 'promotional', icon: '🎁', name: 'Promotional' },
-		{ id: 'announcement', icon: '📣', name: 'Announcement' },
-		{ id: 'countdown', icon: '⏰', name: 'Countdown' },
-		{ id: 'video', icon: '▶', name: 'Video' },
-		{ id: 'social_proof', icon: '★', name: 'Social Proof' }
+		{ id: 'scratch', icon: IconPlus, name: 'From Scratch' },
+		{ id: 'newsletter', icon: IconMail, name: 'Newsletter' },
+		{ id: 'exit_intent', icon: IconBan, name: 'Exit Intent' },
+		{ id: 'promotional', icon: IconGift, name: 'Promotional' },
+		{ id: 'announcement', icon: IconSpeakerphone, name: 'Announcement' },
+		{ id: 'countdown', icon: IconClock, name: 'Countdown' },
+		{ id: 'video', icon: IconPlayerPlay, name: 'Video' },
+		{ id: 'social_proof', icon: IconStar, name: 'Social Proof' }
 	];
 
 	// Popup templates definitions
@@ -349,12 +357,12 @@
 	];
 
 	const animationOptions = [
-		{ value: 'fade', label: '✨ Fade In' },
-		{ value: 'slide', label: '⬆️ Slide Up' },
-		{ value: 'zoom', label: '🔍 Zoom In' },
-		{ value: 'bounce', label: '🏀 Bounce In' },
-		{ value: 'rotate', label: '🔄 Rotate In' },
-		{ value: 'flip', label: '🔃 Flip In' }
+		{ value: 'fade', label: 'Fade In' },
+		{ value: 'slide', label: 'Slide Up' },
+		{ value: 'zoom', label: 'Zoom In' },
+		{ value: 'bounce', label: 'Bounce In' },
+		{ value: 'rotate', label: 'Rotate In' },
+		{ value: 'flip', label: 'Flip In' }
 	];
 
 	function validateForm(): boolean {
@@ -492,12 +500,15 @@
 
 		<div class="template-grid">
 			{#each templateChoices as template (template.id)}
+				{@const Icon = template.icon}
 				<button
 					type="button"
 					onclick={() => applyTemplate(template.id)}
 					class={{ 'template-card': true, selected: isTemplateSelected(template.id) }}
 				>
-					<div class="template-icon">{template.icon}</div>
+					<div class="template-icon">
+						<Icon size={32} aria-hidden="true" />
+					</div>
 					<div class="template-name">{template.name}</div>
 				</button>
 			{/each}
@@ -1133,7 +1144,7 @@
 
 			<!-- Design Customization -->
 			<Card>
-				<h2 class="section-heading">🎨 Design Customization</h2>
+				<h2 class="section-heading">Design Customization</h2>
 
 				<div class="section-stack">
 					<!-- Popup Colors -->
@@ -1294,12 +1305,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0.75rem 0 0.25rem 0;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0;
 	}
@@ -1309,17 +1320,17 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.4rem 0.75rem;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 		border-radius: 6px;
 		text-decoration: none;
 		font-size: 0.875rem;
 		transition: all 0.2s;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.back-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.preview-btn {
@@ -1327,18 +1338,18 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.2);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--primary-400, #ffd11a);
 		border-radius: 6px;
 		font-size: 0.875rem;
 		font-weight: 500;
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.preview-btn:hover {
-		background: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 	}
 
 	/* Template Selector */
@@ -1357,32 +1368,34 @@
 		flex-direction: column;
 		align-items: center;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.template-card:hover {
-		border-color: rgba(99, 102, 241, 0.5);
-		background: rgba(15, 23, 42, 0.8);
+		border-color: rgba(230, 184, 0, 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.template-card.selected {
 		border-color: #6366f1;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.template-icon {
-		font-size: 2rem;
+		display: flex;
+		justify-content: center;
+		color: var(--primary-500);
 		margin-bottom: 0.5rem;
 	}
 
 	.template-name {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.form-stack,
@@ -1408,7 +1421,7 @@
 
 	.section-heading {
 		margin: 0 0 1rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.25rem;
 		font-weight: 700;
 		line-height: 1.25;
@@ -1416,14 +1429,14 @@
 
 	.section-copy {
 		margin: 0 0 1rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
 
 	.subsection-heading {
 		margin: 0 0 0.75rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 700;
 		line-height: 1.4;
@@ -1432,7 +1445,7 @@
 	.field-label {
 		display: block;
 		margin: 0 0 0.375rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -1446,20 +1459,20 @@
 	}
 
 	.field-help {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.field-error {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.native-control {
 		width: 100%;
 		min-height: 2.5rem;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		background: rgba(15, 23, 42, 0.6);
-		color: #f1f5f9;
+		background: var(--bg-base, #0d1117);
+		color: var(--text-primary, #f0f6fc);
 		padding: 0.5rem 0.75rem;
 		font: inherit;
 		line-height: 1.5;
@@ -1470,13 +1483,13 @@
 	}
 
 	.native-control:focus {
-		border-color: rgba(99, 102, 241, 0.55);
+		border-color: rgba(230, 184, 0, 0.55);
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
 		outline: none;
 	}
 
 	.native-control.has-error {
-		border-color: rgba(239, 68, 68, 0.6);
+		border-color: rgba(248, 81, 73, 0.6);
 	}
 
 	textarea.native-control {
@@ -1499,7 +1512,7 @@
 	}
 
 	.checkbox-label {
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -1516,22 +1529,22 @@
 	}
 
 	.info-callout {
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 6px;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		padding: 1rem;
 	}
 
 	.info-callout p {
 		margin: 0;
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
 
 	.info-callout--warning {
-		border-color: rgba(234, 179, 8, 0.35);
-		background: rgba(234, 179, 8, 0.1);
+		border-color: rgba(210, 153, 34, 0.35);
+		background: rgba(210, 153, 34, 0.1);
 	}
 
 	.info-callout--warning p {
@@ -1545,8 +1558,8 @@
 	}
 
 	.info-callout--success {
-		border-color: rgba(34, 197, 94, 0.35);
-		background: rgba(34, 197, 94, 0.1);
+		border-color: rgba(63, 185, 80, 0.35);
+		background: rgba(63, 185, 80, 0.1);
 	}
 
 	.info-callout--success p {
@@ -1557,15 +1570,15 @@
 	.preview-panel {
 		margin-bottom: 1.5rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 8px;
 	}
 
 	.preview-title {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1rem;
 	}
 
@@ -1626,7 +1639,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		font-weight: 600;
 		border-radius: 6px;
@@ -1649,11 +1662,11 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		border-radius: 6px;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid var(--border-default, #30363d);
 		cursor: pointer;
 		transition: all 0.2s;
 	}

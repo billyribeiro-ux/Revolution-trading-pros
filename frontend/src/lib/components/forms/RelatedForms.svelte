@@ -229,7 +229,7 @@
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.tabs {
@@ -244,7 +244,7 @@
 		border: none;
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		border-bottom: 2px solid transparent;
 		transition: all 0.2s;
@@ -255,7 +255,7 @@
 	}
 
 	.tab.active {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border-bottom-color: #3b82f6;
 	}
 
@@ -269,7 +269,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 2rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.loading-spinner {
@@ -336,7 +336,7 @@
 		background: #f3f4f6;
 		border-radius: 0.25rem;
 		font-size: 0.625rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.rank-badge {
@@ -345,7 +345,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+		background: #f59e0b;
 		color: white;
 		font-size: 0.75rem;
 		font-weight: 700;
@@ -362,7 +362,7 @@
 		margin: 0;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -371,7 +371,7 @@
 	.form-description {
 		margin: 0.25rem 0 0 0;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -401,7 +401,7 @@
 		flex-direction: column;
 		align-items: center;
 		padding: 2rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-icon {

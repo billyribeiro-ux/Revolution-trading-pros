@@ -195,7 +195,7 @@
 
 <style>
 	.errors-page {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.page-header {
@@ -208,7 +208,7 @@
 
 	.page-title {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 2.25rem;
@@ -216,7 +216,7 @@
 
 	.page-subtitle {
 		margin: 0.25rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.stats-grid {
@@ -228,24 +228,24 @@
 
 	.stat-label {
 		margin: 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
 	.stat-value {
 		margin: 0.25rem 0 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 2rem;
 	}
 
 	.stat-value--danger {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.stat-value--success {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.state-card {
@@ -257,7 +257,7 @@
 		width: 3rem;
 		height: 3rem;
 		margin: 0 auto;
-		border: 2px solid rgba(37, 99, 235, 0.18);
+		border: 2px solid rgba(88, 166, 255, 0.18);
 		border-bottom-color: #2563eb;
 		border-radius: 999px;
 		animation: spin 800ms linear infinite;
@@ -265,7 +265,7 @@
 
 	.state-text {
 		margin: 1rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.state-icon {
@@ -274,18 +274,18 @@
 	}
 
 	.state-icon--success {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.empty-text {
 		margin: 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.url-cell {
 		max-width: 28rem;
 		overflow: hidden;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-family:
 			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
 			monospace;
@@ -295,7 +295,7 @@
 	}
 
 	.date-cell {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -305,7 +305,7 @@
 
 	.section-title {
 		margin: 0 0 1rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.75rem;
@@ -328,7 +328,7 @@
 
 	.action-marker {
 		margin-top: 0.125rem;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	@keyframes spin {

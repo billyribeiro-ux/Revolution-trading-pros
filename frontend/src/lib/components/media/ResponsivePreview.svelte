@@ -264,7 +264,7 @@
 	}
 
 	:global(.dark) .responsive-preview__title {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.responsive-preview__original-size,
@@ -283,7 +283,7 @@
 	.responsive-preview__variant-stats,
 	.responsive-preview__chart-item,
 	.responsive-preview__tooltip-size {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.responsive-preview__grid {
@@ -305,7 +305,7 @@
 	}
 
 	:global(.dark) .responsive-preview__variant {
-		background: #1f2937;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.responsive-preview__variant--interactive {
@@ -339,7 +339,7 @@
 	}
 
 	:global(.dark) .responsive-preview__thumbnail {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.responsive-preview__thumbnail-image {
@@ -359,16 +359,16 @@
 	}
 
 	:global(.dark) .responsive-preview__variant-label {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.responsive-preview__variant-dimensions {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.625rem;
 	}
 
 	:global(.dark) .responsive-preview__variant-dimensions {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.responsive-preview__variant-stats {
@@ -381,7 +381,7 @@
 	}
 
 	.responsive-preview__savings {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
 	}
 
@@ -391,7 +391,7 @@
 	}
 
 	:global(.dark) .responsive-preview__breakpoint-track {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.responsive-preview__breakpoint-fill {
@@ -406,7 +406,7 @@
 	}
 
 	:global(.dark) .responsive-preview__comparison {
-		border-top-color: #374151;
+		border-top-color: var(--border-default, #30363d);
 	}
 
 	.responsive-preview__comparison-heading {
@@ -461,8 +461,8 @@
 	}
 
 	:global(.dark) .responsive-preview__tooltip {
-		border-color: #374151;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.responsive-preview__tooltip-image {
@@ -481,7 +481,7 @@
 	}
 
 	:global(.dark) .responsive-preview__tooltip-meta {
-		background: #111827;
+		background: var(--bg-base, #0d1117);
 	}
 
 	.responsive-preview__tooltip-dimensions {

@@ -160,8 +160,8 @@
 	.modal {
 		width: 100%;
 		max-width: 480px;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -175,7 +175,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 20px;
-		border-bottom: 1px solid #334155;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-title-section {
@@ -195,16 +195,16 @@
 	}
 
 	.modal-title-section h3 :global(svg) {
-		color: #f97316;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.email-recipient {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.email-recipient strong {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.modal-close {
@@ -212,7 +212,7 @@
 		padding: 8px;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 	}
 
@@ -229,7 +229,7 @@
 		justify-content: flex-end;
 		gap: 12px;
 		padding: 20px;
-		border-top: 1px solid #334155;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.email-form {
@@ -250,32 +250,32 @@
 		gap: 8px;
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.form-label :global(svg) {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-label.required::after {
 		content: '*';
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 2px;
 	}
 
 	.label-optional {
 		font-weight: 400;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
 	.form-select {
 		width: 100%;
 		padding: 12px 14px;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		font-family: inherit;
 		cursor: pointer;
@@ -288,7 +288,7 @@
 	}
 
 	.form-select:hover:not(:disabled) {
-		border-color: #475569;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.form-select:focus {
@@ -305,17 +305,17 @@
 	.form-input {
 		width: 100%;
 		padding: 12px 14px;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		font-family: inherit;
 		transition: all 0.2s;
 	}
 
 	.form-input:hover:not(:disabled) {
-		border-color: #475569;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.form-input:focus {
@@ -330,16 +330,16 @@
 	}
 
 	.form-input::placeholder {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-textarea {
 		width: 100%;
 		padding: 14px;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		font-family: inherit;
 		resize: vertical;
@@ -349,7 +349,7 @@
 	}
 
 	.form-textarea:hover:not(:disabled) {
-		border-color: #475569;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.form-textarea:focus {
@@ -364,12 +364,12 @@
 	}
 
 	.form-textarea::placeholder {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-hint {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -378,7 +378,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -404,9 +404,9 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #0f172a;
-		border: 1px solid #334155;
-		color: #e2e8f0;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
+		color: var(--text-primary, #f0f6fc);
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.875rem;
@@ -415,8 +415,8 @@
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: #1e293b;
-		border-color: #475569;
+		background: var(--bg-elevated, #161b22);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.send-btn {

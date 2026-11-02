@@ -153,11 +153,11 @@
 	}
 
 	.offline-banner {
-		background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
+		background: rgba(248, 81, 73, 0.95);
 	}
 
 	.online-banner {
-		background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+		background: rgba(63, 185, 80, 0.95);
 	}
 
 	.banner-content {
@@ -244,10 +244,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: var(--primary-500, #e6b800);
 		border: none;
 		border-radius: 12px;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -266,8 +266,8 @@
 		bottom: 10rem;
 		right: 1.5rem;
 		width: 280px;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 14px;
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 		z-index: 1000;
@@ -279,8 +279,8 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.875rem 1rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-		color: #f1f5f9;
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 		font-size: 0.875rem;
 	}
@@ -291,17 +291,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border: none;
 		border-radius: 6px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.close-details:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #f1f5f9;
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.details-content {
@@ -310,7 +310,7 @@
 
 	.details-content p {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1rem;
 	}
 
@@ -321,10 +321,10 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.75rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: var(--primary-500, #e6b800);
 		border: none;
 		border-radius: 10px;
-		color: white;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: pointer;

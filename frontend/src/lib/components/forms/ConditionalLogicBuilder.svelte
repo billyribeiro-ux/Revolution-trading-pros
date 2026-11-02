@@ -459,12 +459,12 @@
 		font-size: 0.875rem;
 		background-color: white;
 		font-weight: 500;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.config-text {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* Rules List */
@@ -496,7 +496,7 @@
 		justify-content: center;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		flex-shrink: 0;
 	}
 
@@ -547,13 +547,13 @@
 		background-color: white;
 		cursor: pointer;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		transition: all 0.2s;
 	}
 
 	.btn-icon:hover:not(:disabled) {
 		background-color: #f3f4f6;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-icon:disabled {
@@ -564,7 +564,7 @@
 	.btn-icon.btn-danger:hover:not(:disabled) {
 		background-color: #fee2e2;
 		border-color: #fca5a5;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	/* Logic Connector */
@@ -578,7 +578,7 @@
 	.connector-text {
 		padding: 0.125rem 0.5rem;
 		background-color: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		font-size: 0.625rem;
 		font-weight: 600;
 		border-radius: 0.25rem;
@@ -592,7 +592,7 @@
 		border: 1px dashed #d1d5db;
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -639,7 +639,7 @@
 
 	.error-item {
 		font-size: 0.875rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.error-item + .error-item {

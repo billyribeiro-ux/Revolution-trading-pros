@@ -223,13 +223,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -290,13 +290,13 @@
 
 	.item-label {
 		font-weight: 500;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.item-price {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.quantity-control {
@@ -350,12 +350,12 @@
 	.total-amount {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error p {

@@ -84,13 +84,13 @@
 
 	.btn-back:hover {
 		background: #e5e5e5;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.editor-header h1 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -103,18 +103,18 @@
 	}
 
 	.status-badge.published {
-		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-badge.draft {
-		background: rgba(245, 158, 11, 0.1);
-		color: #f59e0b;
+		background: rgba(210, 153, 34, 0.1);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.status-badge.scheduled {
-		background: rgba(59, 130, 246, 0.1);
-		color: #3b82f6;
+		background: rgba(88, 166, 255, 0.1);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.header-actions {
@@ -128,7 +128,7 @@
 		background: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 6px;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -138,7 +138,7 @@
 		background: #f0fdf4;
 		border: 1px solid #bbf7d0;
 		border-radius: 6px;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}

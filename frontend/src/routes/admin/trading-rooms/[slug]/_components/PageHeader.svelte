@@ -69,7 +69,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 500;
@@ -114,7 +114,7 @@
 
 	.header-content p {
 		font-size: 15px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -145,7 +145,7 @@
 	.stat-label {
 		font-size: 11px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-top: 4px;

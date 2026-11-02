@@ -355,12 +355,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0 0 1rem 0;
 	}
@@ -376,7 +376,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		padding: 0.625rem 1.25rem;
@@ -396,9 +396,9 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 0.625rem 1.25rem;
 		border-radius: 6px;
 		font-weight: 600;
@@ -411,7 +411,7 @@
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	button:disabled {
@@ -432,15 +432,15 @@
 	}
 
 	.alert-success {
-		background: rgba(34, 197, 94, 0.1);
-		color: #22c55e;
-		border: 1px solid rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
+		border: 1px solid rgba(63, 185, 80, 0.3);
 	}
 
 	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -448,9 +448,9 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.settings-card {
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid var(--border-muted, #21262d);
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
 	}
@@ -458,10 +458,10 @@
 	.card-title {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.25rem 0;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -487,23 +487,23 @@
 	label {
 		font-size: 0.8125rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.hint {
 		font-weight: 400;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-left: 0.5rem;
 	}
 
 	input,
 	select {
 		padding: 0.625rem 0.875rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		transition: all 0.2s;
 	}
@@ -511,13 +511,13 @@
 	input:focus,
 	select:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
-		background: rgba(15, 23, 42, 0.8);
+		border-color: rgba(230, 184, 0, 0.5);
+		background: var(--bg-base, #0d1117);
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	input::placeholder {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	select {

@@ -58,12 +58,12 @@
 	];
 
 	const typeOptions = [
-		{ value: 'newsletter', label: '📧 Newsletter Signup' },
-		{ value: 'exit_intent', label: '🚪 Exit Intent' },
-		{ value: 'timed', label: '⏱️ Timed Popup' },
-		{ value: 'scroll', label: '📜 Scroll Triggered' },
-		{ value: 'click_trigger', label: '👆 Click Trigger' },
-		{ value: 'content_locker', label: '🔒 Content Locker' }
+		{ value: 'newsletter', label: 'Newsletter Signup' },
+		{ value: 'exit_intent', label: 'Exit Intent' },
+		{ value: 'timed', label: 'Timed Popup' },
+		{ value: 'scroll', label: 'Scroll Triggered' },
+		{ value: 'click_trigger', label: 'Click Trigger' },
+		{ value: 'content_locker', label: 'Content Locker' }
 	];
 
 	const statusOptions = [
@@ -89,12 +89,12 @@
 	];
 
 	const animationOptions = [
-		{ value: 'fade', label: '✨ Fade In' },
-		{ value: 'slide', label: '⬆️ Slide Up' },
-		{ value: 'zoom', label: '🔍 Zoom In' },
-		{ value: 'bounce', label: '🏀 Bounce In' },
-		{ value: 'rotate', label: '🔄 Rotate In' },
-		{ value: 'flip', label: '🔃 Flip In' }
+		{ value: 'fade', label: 'Fade In' },
+		{ value: 'slide', label: 'Slide Up' },
+		{ value: 'zoom', label: 'Zoom In' },
+		{ value: 'bounce', label: 'Bounce In' },
+		{ value: 'rotate', label: 'Rotate In' },
+		{ value: 'flip', label: 'Flip In' }
 	];
 
 	onMount(async () => {
@@ -556,7 +556,7 @@
 
 				<!-- Design Customization -->
 				<Card>
-					<h2 class="section-heading">🎨 Design Customization</h2>
+					<h2 class="section-heading">Design Customization</h2>
 
 					<div class="section-stack">
 						<!-- Popup Colors -->
@@ -838,7 +838,7 @@
 		width: 3rem;
 		height: 3rem;
 		margin: 0 auto;
-		border: 2px solid rgba(37, 99, 235, 0.2);
+		border: 2px solid rgba(88, 166, 255, 0.2);
 		border-bottom-color: #2563eb;
 		border-radius: 999px;
 		animation: spin 0.8s linear infinite;
@@ -846,7 +846,7 @@
 
 	.loading-copy {
 		margin: 1rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.popup-edit-page {
@@ -860,7 +860,7 @@
 
 	.page-title {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -868,7 +868,7 @@
 
 	.page-subtitle {
 		margin: 0.25rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-stack,
@@ -894,7 +894,7 @@
 
 	.section-heading {
 		margin: 0 0 1rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.25rem;
 		font-weight: 700;
 		line-height: 1.3;
@@ -902,7 +902,7 @@
 
 	.section-copy {
 		margin: 0 0 1rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
@@ -932,11 +932,11 @@
 	}
 
 	.field-help {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.field-error {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.native-control {
@@ -945,7 +945,7 @@
 		border: 1px solid #d1d5db;
 		border-radius: 6px;
 		background: #ffffff;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		padding: 0.5rem 0.75rem;
 		font: inherit;
 		line-height: 1.5;
@@ -1083,13 +1083,13 @@
 	.empty-test-icon {
 		display: grid;
 		margin-bottom: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		place-items: center;
 	}
 
 	.empty-test-title {
 		margin: 0 0 0.5rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -1098,7 +1098,7 @@
 	.empty-test-copy {
 		max-width: 36rem;
 		margin: 0 auto 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
@@ -1123,7 +1123,7 @@
 		gap: 0.25rem;
 		margin: 0;
 		padding-left: 1.25rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.6;
 	}
@@ -1140,25 +1140,25 @@
 
 	.metric-label {
 		margin: 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
 
 	.metric-value {
 		margin: 0.125rem 0 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 1.2;
 	}
 
 	.metric-value--success {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.metric-value--accent {
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.metric-status {

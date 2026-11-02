@@ -148,7 +148,7 @@
 	.btn-back {
 		background: none;
 		border: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		padding: 0.5rem 0;
@@ -157,18 +157,18 @@
 	}
 
 	.btn-back:hover {
-		color: #E6B800;
+		color: var(--primary-500, #e6b800);
 	}*/
 
 	h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0 0 1rem 0;
 	}
@@ -183,7 +183,7 @@
 	.btn-theme {
 		padding: 0.875rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: var(--primary-500, #e6b800);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;
@@ -198,7 +198,7 @@
 	}*/
 
 	.theme-section {
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		padding: 1.5rem;
 		margin-bottom: 2rem;

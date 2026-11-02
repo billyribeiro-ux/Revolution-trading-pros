@@ -450,7 +450,7 @@
 		max-width: 900px;
 		margin: 0 auto;
 		padding: 2rem;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 	}
 
 	.loading-state {
@@ -460,7 +460,7 @@
 		justify-content: center;
 		padding: 4rem 2rem;
 		text-align: center;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.loading-state p {

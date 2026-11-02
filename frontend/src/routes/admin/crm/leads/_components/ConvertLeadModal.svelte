@@ -67,8 +67,8 @@
 		max-width: 560px;
 		max-height: 90vh;
 		overflow-y: auto;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 	}
 
@@ -81,7 +81,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 20px;
-		border-bottom: 1px solid #334155;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h3 {
@@ -103,7 +103,7 @@
 		padding: 8px;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: color 0.2s;
 	}
@@ -121,13 +121,13 @@
 		justify-content: flex-end;
 		gap: 12px;
 		padding: 20px;
-		border-top: 1px solid #334155;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.confirm-text {
 		margin: 0;
 		font-size: 0.95rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		line-height: 1.6;
 	}
 
@@ -141,10 +141,10 @@
 		justify-content: center;
 		gap: 8px;
 		padding: 0.75rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -152,8 +152,8 @@
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-primary {
@@ -161,7 +161,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 8px;

@@ -829,7 +829,6 @@
 		border: 1px solid var(--border-muted);
 		border-radius: 12px;
 		color: var(--text-secondary);
-		backdrop-filter: blur(10px);
 	}
 
 	.search-box:focus-within {
@@ -862,8 +861,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		color: var(--text-primary);
 		font-weight: 500;
@@ -884,8 +883,8 @@
 	}
 
 	.btn-email {
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border-color: rgba(63, 185, 80, 0.3);
 		color: var(--success-emphasis);
 	}
 
@@ -898,7 +897,6 @@
 		border: 1px solid var(--border-muted);
 		border-radius: 12px;
 		margin-bottom: 1rem;
-		backdrop-filter: blur(10px);
 	}
 
 	.filter-group {
@@ -934,8 +932,8 @@
 
 	.clear-filters {
 		padding: 0.625rem 1rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		color: var(--text-primary);
 		font-weight: 500;
@@ -944,8 +942,8 @@
 	}
 
 	.clear-filters:hover {
-		background: rgba(239, 68, 68, 0.15);
-		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.15);
+		border-color: rgba(248, 81, 73, 0.3);
 		color: var(--error-emphasis);
 	}
 
@@ -955,7 +953,6 @@
 		border: 1px solid var(--border-muted);
 		border-radius: 12px;
 		overflow: hidden;
-		backdrop-filter: blur(10px);
 	}
 
 	.empty-state {
@@ -1035,7 +1032,7 @@
 		font-weight: 700;
 		font-size: 0.875rem;
 		color: white;
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-accent-secondary));
+		background: var(--admin-accent-primary);
 	}
 
 	.member-name {
@@ -1076,7 +1073,7 @@
 	}
 
 	.status-badge.status-default {
-		background: var(--admin-badge-default-bg, rgba(148, 163, 184, 0.15));
+		background: var(--admin-badge-default-bg, var(--bg-hover, #252b33));
 		color: var(--admin-text-muted);
 		border-color: var(--admin-border-light);
 	}
@@ -1114,7 +1111,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: 1px solid var(--border-default);
 		border-radius: 6px;
 		color: var(--text-secondary);
@@ -1143,24 +1140,24 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: var(--bg-base);
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: linear-gradient(135deg, var(--primary-400), var(--primary-500));
+		background: var(--primary-400);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
 	}

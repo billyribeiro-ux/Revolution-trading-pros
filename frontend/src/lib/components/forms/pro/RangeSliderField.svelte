@@ -194,13 +194,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -228,7 +228,7 @@
 	}
 
 	.value-separator {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -329,7 +329,7 @@
 
 	.tick-label {
 		font-size: 0.625rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.min-max-labels {
@@ -337,12 +337,12 @@
 		justify-content: space-between;
 		margin-top: 0.25rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error p {

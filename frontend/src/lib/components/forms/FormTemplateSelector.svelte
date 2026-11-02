@@ -140,26 +140,26 @@
 		align-items: flex-start;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	h2 {
 		font-size: 1.875rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.header-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9375rem;
 		margin: 0;
 	}
 
 	.btn-scratch {
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -181,22 +181,22 @@
 	.search-input {
 		width: 100%;
 		padding: 0.875rem 1.25rem;
-		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 		transition: all 0.2s;
 	}
 
 	.search-input:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	.search-input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.categories {
@@ -212,10 +212,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -224,15 +224,15 @@
 	}
 
 	.category-btn:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--primary-400, #ffd11a);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.category-btn.active {
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-		color: #a5b4fc;
-		border-color: rgba(99, 102, 241, 0.5);
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--primary-400, #ffd11a);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.category-icon {
@@ -246,8 +246,8 @@
 	}
 
 	.template-card {
-		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 12px;
 		padding: 1.5rem;
 		cursor: pointer;
@@ -257,7 +257,7 @@
 	}
 
 	.template-card:hover {
-		border-color: rgba(99, 102, 241, 0.4);
+		border-color: rgba(230, 184, 0, 0.4);
 		transform: translateY(-4px);
 		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
 	}
@@ -270,12 +270,12 @@
 	.template-content h3 {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.template-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		line-height: 1.5;
 		margin: 0 0 1rem 0;
@@ -290,7 +290,7 @@
 
 	.field-count {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.theme-badge {
@@ -303,7 +303,7 @@
 	.template-preview {
 		margin-top: 1.25rem;
 		padding-top: 1.25rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.preview-fields {
@@ -320,21 +320,21 @@
 
 	.preview-label {
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 	}
 
 	.preview-input {
 		height: 32px;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 6px;
 	}
 
 	.preview-more {
 		text-align: center;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-style: italic;
 		padding-top: 0.5rem;
 	}
@@ -343,7 +343,7 @@
 		grid-column: 1 / -1;
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	@media (max-width: 767.98px) {

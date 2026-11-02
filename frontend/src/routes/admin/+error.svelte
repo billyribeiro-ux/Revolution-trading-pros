@@ -252,11 +252,7 @@
 	}
 
 	.error-header {
-		background: linear-gradient(
-			135deg,
-			var(--accent-color),
-			color-mix(in srgb, var(--accent-color) 70%, #000)
-		);
+		background: var(--accent-color);
 		padding: 2.5rem 2rem;
 		display: flex;
 		flex-direction: column;
@@ -378,7 +374,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 

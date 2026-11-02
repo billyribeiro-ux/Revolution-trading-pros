@@ -523,9 +523,9 @@
 		gap: 8px;
 		padding: 8px 16px;
 		background: transparent;
-		border: 1px solid #334155;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -533,7 +533,7 @@
 	}
 
 	.back-btn:hover {
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		color: var(--primary-500);
 		border-color: var(--primary-500);
 	}
@@ -544,7 +544,7 @@
 		gap: 4px;
 		margin-bottom: 24px;
 		padding: 4px;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		overflow-x: auto;
 	}
@@ -557,7 +557,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 8px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -566,12 +566,12 @@
 	}
 
 	.tab-btn:hover {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.tab-btn.active {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 	}
 
@@ -629,7 +629,7 @@
 	}
 
 	.empty-state :global(svg) {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 16px;
 	}
 
@@ -641,7 +641,7 @@
 
 	.empty-state p {
 		margin: 0 0 20px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.9rem;
 	}
 
@@ -650,7 +650,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -672,7 +672,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 60px 20px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.spinner {
@@ -700,7 +700,7 @@
 		align-items: center;
 		padding: 60px 20px;
 		text-align: center;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.error-state button {
@@ -731,23 +731,23 @@
 	}
 
 	.toast-success {
-		background: linear-gradient(135deg, #065f46, #047857);
+		background: #065f46;
 		border: 1px solid #10b981;
 		color: #ecfdf5;
 	}
 
 	.toast-success :global(svg) {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.toast-error {
-		background: linear-gradient(135deg, #7f1d1d, #991b1b);
+		background: #7f1d1d;
 		border: 1px solid #f87171;
 		color: #fef2f2;
 	}
 
 	.toast-error :global(svg) {
-		color: #fca5a5;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.toast-close {

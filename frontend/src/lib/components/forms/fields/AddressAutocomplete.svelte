@@ -492,13 +492,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -595,7 +595,7 @@
 		background: none;
 		border: none;
 		font-size: 0.75rem;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		cursor: pointer;
 		text-decoration: underline;
 		padding: 0.25rem 0;
@@ -640,7 +640,7 @@
 	.sub-label {
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.sub-input {
@@ -670,7 +670,7 @@
 	.field-errors p {
 		margin: 0;
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	@media (max-width: 639.98px) {

@@ -150,7 +150,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 24px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 	@keyframes spin {
 		to {
@@ -161,11 +161,11 @@
 	.empty-state {
 		text-align: center;
 		padding: 40px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 	.hint {
 		font-size: 13px;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.files-table {
@@ -181,7 +181,7 @@
 		padding: 12px;
 		font-size: 12px;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		border-bottom: 1px solid #e5e7eb;
 	}
@@ -222,7 +222,7 @@
 		border: none;
 		background: #f3f4f6;
 		border-radius: 6px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		min-height: 44px;
 		min-width: 44px;
@@ -230,7 +230,7 @@
 	}
 	.btn-danger:hover {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	@media (max-width: 639px) {

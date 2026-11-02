@@ -73,7 +73,7 @@
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 14px;
 		margin: 0;
 	}

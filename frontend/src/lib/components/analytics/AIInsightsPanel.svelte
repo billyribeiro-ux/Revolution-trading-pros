@@ -141,10 +141,10 @@
 
 <style>
 	.insights-panel {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.panel-header {
@@ -176,7 +176,7 @@
 	.insights-count {
 		padding: 0.25rem 0.75rem;
 		border-radius: 999px;
-		background: rgba(168, 85, 247, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #c084fc;
 		font-size: 0.875rem;
 		font-weight: 600;
@@ -195,27 +195,27 @@
 		padding: 1rem;
 		border: 1px solid rgba(55, 65, 81, 0.5);
 		border-radius: 0.5rem;
-		background: rgba(17, 24, 39, 0.5);
+		background: var(--bg-base, #0d1117);
 		transition: border-color 0.2s ease;
 	}
 
 	.insight-card:hover {
-		border-color: #4b5563;
+		border-color: var(--border-default, #30363d);
 	}
 
 	.insight-card.severity-critical {
-		border-color: rgba(239, 68, 68, 0.5);
-		background: rgba(239, 68, 68, 0.05);
+		border-color: rgba(248, 81, 73, 0.5);
+		background: rgba(248, 81, 73, 0.05);
 	}
 
 	.insight-card.severity-warning {
-		border-color: rgba(249, 115, 22, 0.5);
-		background: rgba(249, 115, 22, 0.05);
+		border-color: rgba(210, 153, 34, 0.5);
+		background: rgba(210, 153, 34, 0.05);
 	}
 
 	.insight-card.severity-info {
-		border-color: rgba(59, 130, 246, 0.5);
-		background: rgba(59, 130, 246, 0.05);
+		border-color: rgba(88, 166, 255, 0.5);
+		background: rgba(88, 166, 255, 0.05);
 	}
 
 	.insight-icon {
@@ -226,23 +226,23 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		border-radius: 0.5rem;
-		background: rgba(168, 85, 247, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #c084fc;
 	}
 
 	.severity-critical .insight-icon {
-		background: rgba(239, 68, 68, 0.2);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.severity-warning .insight-icon {
-		background: rgba(249, 115, 22, 0.2);
-		color: #fb923c;
+		background: rgba(210, 153, 34, 0.2);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.severity-info .insight-icon {
-		background: rgba(59, 130, 246, 0.2);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.2);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.insight-content {
@@ -270,7 +270,7 @@
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
 		background: rgba(55, 65, 81, 0.5);
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		text-transform: uppercase;
@@ -280,7 +280,7 @@
 	.insight-description {
 		margin: 0 0 0.75rem;
 		font-size: 0.875rem;
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.insight-metrics {
@@ -295,7 +295,7 @@
 	}
 
 	.metric-label {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.metric-value {
@@ -308,18 +308,18 @@
 	}
 
 	.metric-change.positive {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.metric-change.negative {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.insight-action {
 		padding: 0.5rem 1rem;
 		border: 0;
 		border-radius: 0.5rem;
-		background: rgba(168, 85, 247, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #c084fc;
 		font: inherit;
 		font-size: 0.875rem;
@@ -329,7 +329,7 @@
 	}
 
 	.insight-action:hover {
-		background: rgba(168, 85, 247, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 	}
 
 	.insight-footer {
@@ -340,7 +340,7 @@
 
 	.insight-timestamp {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state {
@@ -353,17 +353,17 @@
 	}
 
 	.empty-state :global(.empty-icon) {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-title {
 		margin: 0.75rem 0 0;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-copy {
 		margin: 0.25rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 

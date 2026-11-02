@@ -55,21 +55,21 @@
 
 	.notification.success {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.notification.error {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.notification.warning {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.notification.info {
 		background: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 </style>

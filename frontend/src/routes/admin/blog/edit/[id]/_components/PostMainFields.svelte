@@ -50,7 +50,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.95rem;
 	}
 
@@ -62,7 +62,7 @@
 		border: none;
 		border-radius: 8px;
 		background: white;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		outline: none;
 	}
 
@@ -93,7 +93,7 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		background: white;
 	}
 
@@ -110,7 +110,7 @@
 
 	.btn-regenerate:hover {
 		background: #e5e5e5;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	textarea {
@@ -122,7 +122,7 @@
 		font-family: inherit;
 		resize: vertical;
 		background: white;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	textarea:focus {

@@ -107,7 +107,6 @@
 				{formatCurrency(stats?.revenue?.avg_ltv ?? 0)} avg LTV
 			</div>
 		</div>
-		<div class="stat-glow"></div>
 	</div>
 
 	<!-- Churn Rate -->
@@ -147,20 +146,19 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		backdrop-filter: blur(10px);
 	}
 
 	.stat-card.gradient-purple {
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 	.stat-card.gradient-emerald {
-		border-color: rgba(16, 185, 129, 0.3);
+		border-color: rgba(63, 185, 80, 0.3);
 	}
 	.stat-card.gradient-gold {
-		border-color: rgba(251, 191, 36, 0.3);
+		border-color: rgba(210, 153, 34, 0.3);
 	}
 	.stat-card.gradient-red {
-		border-color: rgba(239, 68, 68, 0.3);
+		border-color: rgba(248, 81, 73, 0.3);
 	}
 
 	.stat-icon {
@@ -177,15 +175,15 @@
 		color: var(--primary-400);
 	}
 	.gradient-emerald .stat-icon {
-		background: rgba(16, 185, 129, 0.15);
+		background: rgba(63, 185, 80, 0.15);
 		color: var(--success-emphasis);
 	}
 	.gradient-gold .stat-icon {
-		background: rgba(251, 191, 36, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		color: var(--warning-emphasis);
 	}
 	.gradient-red .stat-icon {
-		background: rgba(239, 68, 68, 0.15);
+		background: rgba(248, 81, 73, 0.15);
 		color: var(--error-emphasis);
 	}
 
@@ -263,20 +261,13 @@
 		color: var(--success-emphasis);
 	}
 
-	.stat-glow {
-		position: absolute;
-		inset: 0;
-		background: radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.15), transparent 60%);
-		pointer-events: none;
-	}
-
 	.stat-action {
 		position: absolute;
 		right: 1rem;
 		bottom: 1rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(239, 68, 68, 0.15);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.15);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 6px;
 		color: var(--error-emphasis);
 		font-size: 0.75rem;
@@ -289,7 +280,7 @@
 	}
 
 	.stat-action:hover {
-		background: rgba(239, 68, 68, 0.25);
+		background: rgba(248, 81, 73, 0.25);
 	}
 
 	/* Responsive */

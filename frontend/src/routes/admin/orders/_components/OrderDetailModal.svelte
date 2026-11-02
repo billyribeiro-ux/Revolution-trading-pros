@@ -173,7 +173,6 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.85);
-		backdrop-filter: blur(8px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -182,7 +181,7 @@
 	}
 
 	.modal-content {
-		background: linear-gradient(145deg, var(--bg-elevated) 0%, var(--bg-base) 100%);
+		background: var(--bg-elevated);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 16px;
 		width: 100%;
@@ -213,8 +212,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
 		color: var(--text-secondary);
 		cursor: pointer;
@@ -266,24 +265,24 @@
 	}
 
 	.status-badge.status-completed {
-		background: rgba(16, 185, 129, 0.15);
-		color: #10b981;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.status-badge.status-pending {
-		background: rgba(251, 191, 36, 0.15);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.15);
+		color: var(--warning-emphasis, #d29922);
 	}
 	.status-badge.status-refunded {
-		background: rgba(239, 68, 68, 0.15);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 	.status-badge.status-failed {
-		background: rgba(239, 68, 68, 0.15);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 	.status-badge.status-default {
-		background: rgba(148, 163, 184, 0.15);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-secondary {
@@ -295,13 +294,13 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid var(--border-default, #30363d);
+		background: var(--bg-hover, #252b33);
 		color: var(--text-primary);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.order-detail-grid {
@@ -335,7 +334,7 @@
 		color: var(--text-primary);
 	}
 	.detail-row .value.discount {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.detail-row .value.coupon {
 		color: var(--primary-500);

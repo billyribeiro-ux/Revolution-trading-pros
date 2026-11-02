@@ -156,13 +156,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -171,7 +171,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem 1.25rem;
-		background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+		background: #1e3a8a;
 		border-radius: 0.5rem;
 		color: white;
 	}
@@ -203,7 +203,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.375rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 0.5rem;
 		padding-bottom: 0.5rem;
 		border-bottom: 1px dashed #e5e7eb;
@@ -222,7 +222,7 @@
 	}
 
 	.variable-label {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.variable-value {
@@ -240,7 +240,7 @@
 	}
 
 	.formula-label {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.formula-expression {
@@ -253,7 +253,7 @@
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error p {

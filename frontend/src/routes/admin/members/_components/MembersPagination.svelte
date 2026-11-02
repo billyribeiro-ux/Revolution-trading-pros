@@ -73,7 +73,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border: 1px solid var(--border-default);
 		border-radius: 12px;
 		color: var(--text-secondary);

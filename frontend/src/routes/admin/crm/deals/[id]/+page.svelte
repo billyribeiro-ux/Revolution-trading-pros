@@ -404,9 +404,9 @@
 		gap: 8px;
 		padding: 8px 16px;
 		background: transparent;
-		border: 1px solid #334155;
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -414,8 +414,8 @@
 	}
 
 	.back-btn:hover {
-		background: #1e293b;
-		color: #f97316;
+		background: var(--bg-elevated, #161b22);
+		color: var(--warning-emphasis, #d29922);
 		border-color: #f97316;
 	}
 
@@ -424,7 +424,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: #f97316;
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -446,7 +446,7 @@
 		gap: 4px;
 		margin-bottom: 24px;
 		padding: 4px;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		overflow-x: auto;
 	}
@@ -459,7 +459,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 8px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -468,12 +468,12 @@
 	}
 
 	.tab-btn:hover {
-		color: #e2e8f0;
-		background: rgba(249, 115, 22, 0.1);
+		color: var(--text-primary, #f0f6fc);
+		background: rgba(210, 153, 34, 0.1);
 	}
 
 	.tab-btn.active {
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: #f97316;
 		color: white;
 	}
 
@@ -530,11 +530,11 @@
 		justify-content: center;
 		padding: 60px 20px;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 16px;
 	}
 
@@ -548,14 +548,14 @@
 	}
 
 	.error-state :global(svg) {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		margin-bottom: 16px;
 	}
 
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(249, 115, 22, 0.2);
+		border: 3px solid rgba(210, 153, 34, 0.2);
 		border-top-color: #f97316;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;

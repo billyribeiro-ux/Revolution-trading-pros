@@ -65,8 +65,8 @@
 
 <style>
 	.panel {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -76,13 +76,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.panel-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -92,12 +92,12 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
 	.empty-state h4 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -107,7 +107,7 @@
 	}
 
 	.orders-table thead {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.orders-table th {
@@ -115,18 +115,18 @@
 		text-align: left;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
 	.orders-table tbody tr {
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--border-muted, #21262d);
 	}
 
 	.orders-table td {
 		padding: 1rem 1.5rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.order-number {
@@ -136,7 +136,7 @@
 
 	.order-total {
 		font-weight: 600;
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-badge {
@@ -150,15 +150,15 @@
 	}
 
 	.status-completed {
-		background: rgba(16, 185, 129, 0.2);
-		color: #34d399;
-		border-color: rgba(16, 185, 129, 0.35);
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
+		border-color: rgba(63, 185, 80, 0.35);
 	}
 
 	.status-pending {
-		background: rgba(234, 179, 8, 0.2);
+		background: rgba(210, 153, 34, 0.2);
 		color: #facc15;
-		border-color: rgba(234, 179, 8, 0.35);
+		border-color: rgba(210, 153, 34, 0.35);
 	}
 
 	.btn-secondary {
@@ -170,15 +170,15 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 		font-size: 0.875rem;
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.15);
-		color: #f1f5f9;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.btn-secondary.small {
@@ -192,10 +192,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}

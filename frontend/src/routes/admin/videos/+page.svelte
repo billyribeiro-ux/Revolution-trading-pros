@@ -2222,7 +2222,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 6px;
@@ -2417,7 +2417,7 @@
 
 	.filter-select:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	/* Videos Table */
@@ -2545,7 +2545,7 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.25rem 0.5rem;
-		background: rgba(100, 116, 139, 0.15);
+		background: var(--bg-hover, #252b33);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
@@ -2581,7 +2581,7 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(148, 163, 184, 0.15);
+		background: var(--bg-hover, #252b33);
 		border: 1px solid var(--border-default);
 		border-radius: 20px;
 		font-size: 0.75rem;
@@ -2592,8 +2592,8 @@
 	}
 
 	.status-toggle.published {
-		background: rgba(34, 197, 94, 0.15);
-		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.15);
+		border-color: rgba(63, 185, 80, 0.3);
 		color: var(--success-base);
 	}
 
@@ -2622,9 +2622,9 @@
 	}
 
 	.btn-icon.danger:hover {
-		background: rgba(239, 68, 68, 0.1);
+		background: rgba(248, 81, 73, 0.1);
 		color: var(--error-emphasis);
-		border-color: rgba(239, 68, 68, 0.3);
+		border-color: rgba(248, 81, 73, 0.3);
 	}
 
 	/* States */
@@ -2762,11 +2762,11 @@
 	}
 
 	.field-label-icon.add {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.field-label-icon.remove {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.form-group input,
@@ -2822,8 +2822,8 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(100, 116, 139, 0.1);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.8rem;
 		font-weight: 500;
@@ -2946,7 +2946,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #ff9500, #ff7b00);
+		background: #ff9500;
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -3061,8 +3061,8 @@
 
 	.btn-remove {
 		padding: 0.375rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 		border-radius: 4px;
 		color: var(--error-emphasis);
 		cursor: pointer;
@@ -3070,7 +3070,7 @@
 	}
 
 	.btn-remove:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.upload-progress {
@@ -3086,7 +3086,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #ff9500, #ff7b00);
+		background: #ff9500;
 		border-radius: 4px;
 		transition: width 0.3s ease;
 	}
@@ -3131,8 +3131,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 1rem;
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(230, 184, 0, 0.1));
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.15);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 10px;
 		margin-bottom: 1rem;
 	}
@@ -3179,8 +3179,8 @@
 	}
 
 	.btn-bulk.danger:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.15);
-		border-color: rgba(239, 68, 68, 0.4);
+		background: rgba(248, 81, 73, 0.15);
+		border-color: rgba(248, 81, 73, 0.4);
 		color: var(--error-emphasis);
 	}
 
@@ -3222,18 +3222,18 @@
 	}
 
 	tr.selected {
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	tr.selected td {
-		border-color: rgba(99, 102, 241, 0.2);
+		border-color: rgba(230, 184, 0, 0.2);
 	}
 
 	/* Bulk Tags Modal */
 	.bulk-info {
 		margin-bottom: 1.5rem;
 		padding: 0.75rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 8px;
 		color: var(--text-primary);
 	}
@@ -3255,8 +3255,8 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(100, 116, 139, 0.1);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.8rem;
 		font-weight: 500;
@@ -3266,27 +3266,27 @@
 	}
 
 	.bulk-tag-btn.add:hover {
-		background: rgba(34, 197, 94, 0.15);
-		border-color: rgba(34, 197, 94, 0.3);
-		color: #22c55e;
+		background: rgba(63, 185, 80, 0.15);
+		border-color: rgba(63, 185, 80, 0.3);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.bulk-tag-btn.add.selected {
-		background: rgba(34, 197, 94, 0.2);
+		background: rgba(63, 185, 80, 0.2);
 		border-color: #22c55e;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.bulk-tag-btn.remove:hover {
-		background: rgba(239, 68, 68, 0.15);
-		border-color: rgba(239, 68, 68, 0.3);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.15);
+		border-color: rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.bulk-tag-btn.remove.selected {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 		border-color: #ef4444;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.bulk-tags-summary {

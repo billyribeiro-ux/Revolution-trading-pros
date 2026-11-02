@@ -496,13 +496,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.repeater-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -546,7 +546,7 @@
 	.row-drag-handle {
 		cursor: grab;
 		padding: 0.25rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		user-select: none;
 	}
 
@@ -574,7 +574,7 @@
 
 	.toggle-icon {
 		font-size: 0.625rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.row-title {
@@ -582,7 +582,7 @@
 	}
 
 	.row-summary {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -600,14 +600,14 @@
 		border-radius: 0.25rem;
 		cursor: pointer;
 		font-size: 1.25rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.2s;
 	}
 
 	.btn-remove:hover:not(:disabled) {
 		background-color: #fee2e2;
 		border-color: #fca5a5;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-remove:disabled {
@@ -632,7 +632,7 @@
 	.sub-field-label {
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.sub-field-input,
@@ -668,7 +668,7 @@
 
 	.sub-field-help {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-add {
@@ -677,7 +677,7 @@
 		border: 1px dashed #d1d5db;
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -685,7 +685,7 @@
 	.btn-add:hover:not(:disabled) {
 		background-color: #f9fafb;
 		border-color: #2563eb;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.btn-add:disabled {
@@ -695,12 +695,12 @@
 
 	.item-count {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		text-align: center;
 	}
 
 	.min-notice {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.field-errors {
@@ -712,6 +712,6 @@
 	.field-errors p {
 		margin: 0;
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 </style>

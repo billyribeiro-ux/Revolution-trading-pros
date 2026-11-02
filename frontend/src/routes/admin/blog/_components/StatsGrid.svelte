@@ -68,8 +68,8 @@
 	}
 
 	.stat-card {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 1.5rem;
 		border-radius: 8px;
 		display: flex;
@@ -83,18 +83,18 @@
 	}
 
 	.stat-card.published {
-		background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-		border-color: rgba(16, 185, 129, 0.3);
+		background: rgba(63, 185, 80, 0.1);
+		border-color: rgba(63, 185, 80, 0.3);
 	}
 
 	.stat-card.draft {
-		background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
-		border-color: rgba(245, 158, 11, 0.3);
+		background: rgba(210, 153, 34, 0.1);
+		border-color: rgba(210, 153, 34, 0.3);
 	}
 
 	.stat-card.views {
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(230, 184, 0, 0.05));
-		border-color: rgba(59, 130, 246, 0.3);
+		background: rgba(88, 166, 255, 0.1);
+		border-color: rgba(88, 166, 255, 0.3);
 	}
 
 	.stat-icon {
@@ -105,7 +105,7 @@
 		height: 48px;
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 12px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.stat-content {

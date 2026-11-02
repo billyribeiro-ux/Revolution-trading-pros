@@ -225,7 +225,7 @@
 	 */
 	.admin-orders {
 		min-height: calc(100vh - 70px - 4rem);
-		background: var(--admin-bg, linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%));
+		background: var(--admin-bg, var(--bg-base, #0d1117));
 		color: white;
 		position: relative;
 		overflow: hidden;

@@ -45,8 +45,8 @@
 
 <style>
 	.stage-progress-section {
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		padding: 24px;
 		margin-bottom: 24px;
@@ -84,7 +84,7 @@
 	}
 
 	.stage-item:hover:not(:disabled) {
-		background: rgba(249, 115, 22, 0.05);
+		background: rgba(210, 153, 34, 0.05);
 		border-radius: 10px;
 	}
 
@@ -92,7 +92,7 @@
 		width: 16px;
 		height: 16px;
 		border-radius: 50%;
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 		transition: all 0.2s;
 	}
 
@@ -108,7 +108,7 @@
 
 	.stage-item .stage-name {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
@@ -120,13 +120,13 @@
 
 	.stage-item .stage-probability {
 		font-size: 0.7rem;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.stage-connector {
 		width: 32px;
 		height: 2px;
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.stage-connector.active {

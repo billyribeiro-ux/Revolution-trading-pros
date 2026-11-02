@@ -80,8 +80,8 @@
 	.modal {
 		width: 100%;
 		max-width: 480px;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -91,15 +91,15 @@
 		align-items: center;
 		gap: 12px;
 		padding: 20px;
-		border-bottom: 1px solid #334155;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header.success {
-		background: rgba(34, 197, 94, 0.1);
+		background: rgba(63, 185, 80, 0.1);
 	}
 
 	.modal-header.success :global(svg) {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.modal-header h3 {
@@ -114,7 +114,7 @@
 		padding: 8px;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 	}
 
@@ -128,7 +128,7 @@
 
 	.deal-summary {
 		padding: 16px;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border-radius: 10px;
 		margin-bottom: 20px;
 	}
@@ -143,7 +143,7 @@
 		margin: 0;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.form-group {
@@ -155,15 +155,15 @@
 	.form-group label {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.form-group textarea {
 		padding: 12px;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		font-family: inherit;
 		resize: vertical;
@@ -179,7 +179,7 @@
 		justify-content: flex-end;
 		gap: 12px;
 		padding: 20px;
-		border-top: 1px solid #334155;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary {
@@ -187,10 +187,10 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 10px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -198,7 +198,7 @@
 	}
 
 	.btn-secondary:hover {
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-success {
@@ -206,7 +206,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		background: linear-gradient(135deg, #22c55e, #16a34a);
+		background: #22c55e;
 		color: white;
 		border: none;
 		border-radius: 10px;

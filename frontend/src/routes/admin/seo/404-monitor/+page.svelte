@@ -286,7 +286,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -326,7 +326,7 @@
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0.5rem 0;
 	}
 
@@ -404,7 +404,7 @@
 		background: #f8f9fa;
 		border-bottom: 1px solid #e5e5e5;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.9rem;
 	}
 
@@ -419,7 +419,7 @@
 	}
 
 	.url-cell {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-family: monospace;
 		font-size: 0.9rem;
 	}
@@ -436,7 +436,7 @@
 
 	.hits-badge.high {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.date-cell {
@@ -463,12 +463,12 @@
 
 	.status-badge.pending {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.status-badge.resolved {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-badge.ignored {
@@ -496,7 +496,7 @@
 	}
 
 	.action-btn.primary {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border-color: #dbeafe;
 	}
 
@@ -505,7 +505,7 @@
 	}
 
 	.action-btn.danger {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		border-color: #fee2e2;
 	}
 
@@ -519,7 +519,7 @@
 	}
 
 	.empty-state h3 {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 

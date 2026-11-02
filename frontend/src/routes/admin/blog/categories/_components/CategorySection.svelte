@@ -135,9 +135,9 @@
 
 <style>
 	.section {
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 1.5rem;
 	}
 
@@ -147,14 +147,14 @@
 		align-items: center;
 		margin-bottom: 1.5rem;
 		padding-bottom: 1rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.section-title {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.section-title h2 {
@@ -163,7 +163,7 @@
 		gap: 0.5rem;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -179,11 +179,11 @@
 		min-width: 24px;
 		height: 24px;
 		padding: 0 0.5rem;
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 		border-radius: 12px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-primary {
@@ -191,7 +191,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 6px;
@@ -211,9 +211,9 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 6px;
 		font-weight: 500;
 		font-size: 0.9rem;
@@ -221,7 +221,7 @@
 	}
 
 	.btn-danger-ghost:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.items-list {
@@ -235,15 +235,15 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1rem;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		transition: all 0.2s;
-		background: rgba(15, 23, 42, 0.4);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.item-card:hover {
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-		border-color: rgba(148, 163, 184, 0.3);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.checkbox-wrapper {
@@ -279,13 +279,13 @@
 	.item-info h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem;
 	}
 
 	.item-description {
 		font-size: 0.85rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0.25rem 0;
 	}
 
@@ -294,7 +294,7 @@
 		align-items: center;
 		gap: 1rem;
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.item-count {
@@ -305,10 +305,10 @@
 
 	.item-slug {
 		font-family: monospace;
-		background: rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
 		padding: 0.125rem 0.5rem;
 		border-radius: 4px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.item-actions {
@@ -322,26 +322,26 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
-		color: #f1f5f9;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.action-btn.danger {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		border-color: rgba(248, 113, 113, 0.3);
 	}
 
 	.action-btn.danger:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.badge {
@@ -355,18 +355,18 @@
 	}
 
 	.badge-gray {
-		background: rgba(100, 116, 139, 0.3);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-state {
 		text-align: center;
 		padding: 3rem 1rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 1rem 0;
 	}
 
@@ -374,9 +374,9 @@
 		height: 80px;
 		background: linear-gradient(
 			90deg,
-			rgba(148, 163, 184, 0.1) 25%,
-			rgba(148, 163, 184, 0.2) 50%,
-			rgba(148, 163, 184, 0.1) 75%
+			var(--bg-surface, #1c2128) 25%,
+			var(--bg-hover, #252b33) 50%,
+			var(--bg-surface, #1c2128) 75%
 		);
 		background-size: 200% 100%;
 		animation: loading 1.5s infinite;

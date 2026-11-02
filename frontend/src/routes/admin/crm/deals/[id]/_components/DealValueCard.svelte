@@ -39,8 +39,8 @@
 
 <style>
 	.value-card {
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		padding: 24px;
 		margin-bottom: 24px;
@@ -58,13 +58,13 @@
 
 	.value-label {
 		font-size: 0.85rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.value-amount {
 		font-size: 2.5rem;
 		font-weight: 700;
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.value-stats {
@@ -81,7 +81,7 @@
 
 	.value-stat .stat-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -96,7 +96,7 @@
 		position: relative;
 		width: 100px;
 		height: 24px;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border-radius: 12px;
 		overflow: hidden;
 	}
@@ -106,7 +106,7 @@
 		left: 0;
 		top: 0;
 		height: 100%;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: #f97316;
 		transition: width 0.3s;
 	}
 

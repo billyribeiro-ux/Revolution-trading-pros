@@ -358,7 +358,7 @@
 	}
 
 	.generate-btn.secondary:hover:not(:disabled) {
-		background-color: #4b5563;
+		background-color: var(--bg-active, #2d333b);
 	}
 
 	.preview-btn {
@@ -393,14 +393,14 @@
 	}
 
 	.card-header :global(svg) {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.card-header h3 {
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.pdf-list {
@@ -428,7 +428,7 @@
 		height: 48px;
 		background-color: #fef2f2;
 		border-radius: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.pdf-info {
@@ -440,13 +440,13 @@
 
 	.pdf-name {
 		font-weight: 500;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 	}
 
 	.pdf-meta {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.action-btn {
@@ -455,7 +455,7 @@
 		border: 1px solid #e5e7eb;
 		border-radius: 0.375rem;
 		cursor: pointer;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		transition: all 0.2s;
 	}
 
@@ -489,7 +489,7 @@
 		gap: 0.375rem;
 		padding: 0.25rem 0.5rem;
 		background-color: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border: none;
 		border-radius: 0.25rem;
 		font-size: 0.75rem;
@@ -511,7 +511,7 @@
 		justify-content: center;
 		padding: 2rem;
 		gap: 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -521,7 +521,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
 		background-color: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		margin-top: 0.5rem;
@@ -537,7 +537,7 @@
 	}
 
 	.loading-state .spinner {
-		border-color: rgba(220, 38, 38, 0.3);
+		border-color: rgba(248, 81, 73, 0.3);
 		border-top-color: #dc2626;
 	}
 
@@ -588,14 +588,14 @@
 		padding: 0.5rem;
 		background: none;
 		border: none;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		border-radius: 0.375rem;
 	}
 
 	.close-btn:hover {
 		background-color: #f3f4f6;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.preview-content {

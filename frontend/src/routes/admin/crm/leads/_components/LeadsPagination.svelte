@@ -44,12 +44,12 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 16px 20px;
-		border-top: 1px solid #334155;
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.results-count {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.pagination {
@@ -60,7 +60,7 @@
 
 	.pagination-btn {
 		padding: 8px 16px;
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 		border: none;
 		border-radius: 6px;
 		color: white;
@@ -70,7 +70,7 @@
 	}
 
 	.pagination-btn:hover:not(:disabled) {
-		background: #475569;
+		background: var(--bg-active, #2d333b);
 	}
 
 	.pagination-btn:disabled {
@@ -80,6 +80,6 @@
 
 	.pagination-info {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 </style>

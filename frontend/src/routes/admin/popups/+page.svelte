@@ -284,12 +284,7 @@
 
 <style>
 	.admin-popups {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		position: relative;
 		overflow: hidden;
 	}
@@ -302,12 +297,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0 0 1rem 0;
 	}
@@ -323,7 +318,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		font-weight: 600;
 		border-radius: 6px;
@@ -343,14 +338,14 @@
 		display: flex;
 		gap: 1rem;
 		margin-bottom: 2rem;
-		border-bottom: 2px solid #1e293b;
+		border-bottom: 2px solid var(--border-muted, #21262d);
 	}
 
 	.tab {
 		padding: 0.75rem 1.5rem;
 		background: none;
 		border: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 600;
 		cursor: pointer;
 		border-bottom: 2px solid transparent;
@@ -359,7 +354,7 @@
 	}
 
 	.tab:hover {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab.active {
@@ -375,7 +370,7 @@
 	}
 
 	.popup-card {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		overflow: hidden;
@@ -401,13 +396,13 @@
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		background: rgba(148, 163, 184, 0.15);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.status-badge.active {
-		background: rgba(34, 197, 94, 0.15);
-		color: #22c55e;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.icon-btn {
@@ -433,13 +428,13 @@
 	.popup-name {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.popup-title {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-style: italic;
 		margin-bottom: 1rem;
 	}
@@ -463,14 +458,14 @@
 
 	.stat-label {
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 0.25rem;
 	}
 
 	.stat-value {
 		font-size: 1.125rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.rules-preview {
@@ -501,9 +496,9 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.75rem;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -512,13 +507,13 @@
 	}
 
 	.action-btn:hover {
-		background: #334155;
-		color: #e2e8f0;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.action-btn.danger:hover {
-		background: rgba(239, 68, 68, 0.2);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	/* Loading State */
@@ -528,7 +523,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.spinner {
@@ -555,21 +550,21 @@
 		justify-content: center;
 		padding: 4rem 2rem;
 		text-align: center;
-		background: rgba(30, 41, 59, 0.4);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
+		border: 1px solid var(--border-muted, #21262d);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-state h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem 0;
 	}
 
 	.empty-state p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin-bottom: 1.5rem;
 	}
 

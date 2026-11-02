@@ -105,7 +105,7 @@
 
 	.editor-label {
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.95rem;
 		margin: 0;
 	}
@@ -131,7 +131,7 @@
 
 	.toolbar-btn:hover {
 		background: #f0f0f0;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	/* Make BlockEditor take full height */

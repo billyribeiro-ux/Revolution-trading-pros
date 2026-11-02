@@ -253,7 +253,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		padding: 4px;
 		display: flex;
 		border-radius: 6px;
@@ -276,12 +276,12 @@
 		display: block;
 		font-size: 13px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 6px;
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.form-group input,
@@ -380,7 +380,7 @@
 
 	.btn-secondary {
 		background: #f1f5f9;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-secondary:hover {

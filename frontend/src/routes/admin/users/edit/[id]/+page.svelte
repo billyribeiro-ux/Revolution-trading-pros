@@ -346,7 +346,7 @@
 		max-width: 900px;
 		margin: 0 auto;
 		padding: 2rem;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 	}
 
 	.page-header {
@@ -359,12 +359,12 @@
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
 	}
@@ -383,7 +383,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
@@ -398,13 +398,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #cbd5e1;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.alert {
@@ -418,15 +418,15 @@
 	}
 
 	.alert.success {
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.3);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.1);
+		border: 1px solid rgba(63, 185, 80, 0.3);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.alert.error {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 		justify-content: flex-start;
 	}
 
@@ -436,10 +436,10 @@
 
 	.btn-retry {
 		padding: 0.5rem 1rem;
-		background: rgba(239, 68, 68, 0.2);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.2);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 6px;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -447,19 +447,19 @@
 	}
 
 	.btn-retry:hover {
-		background: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.3);
 	}
 
 	.loading {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.loading .spinner {
 		width: 48px;
 		height: 48px;
-		border: 4px solid rgba(148, 163, 184, 0.1);
+		border: 4px solid var(--border-muted, #21262d);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
@@ -479,8 +479,8 @@
 	}
 
 	.form-section {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		padding: 2rem;
 	}
@@ -488,7 +488,7 @@
 	.form-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -509,7 +509,7 @@
 	label {
 		display: block;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.95rem;
 	}
@@ -517,10 +517,10 @@
 	.input {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.8);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 		transition: all 0.2s;
 		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
@@ -533,7 +533,7 @@
 	}
 
 	.help-text {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		margin: 0 0 1rem 0;
 		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
@@ -562,8 +562,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.5rem;
-		background: rgba(15, 23, 42, 0.8);
-		border: 2px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		transition: all 0.2s;
 	}
@@ -574,7 +574,7 @@
 	}
 
 	.role-checkbox:hover .role-card {
-		border-color: rgba(148, 163, 184, 0.4);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.role-icon {
@@ -603,13 +603,13 @@
 
 	.role-name {
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.25rem;
 	}
 
 	.role-description {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
 	}
 

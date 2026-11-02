@@ -41,23 +41,23 @@
 	}
 
 	.toast-success {
-		background: linear-gradient(135deg, #065f46, #047857);
+		background: #065f46;
 		border: 1px solid #10b981;
 		color: #ecfdf5;
 	}
 
 	.toast-success :global(svg) {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.toast-error {
-		background: linear-gradient(135deg, #7f1d1d, #991b1b);
+		background: #7f1d1d;
 		border: 1px solid #f87171;
 		color: #fef2f2;
 	}
 
 	.toast-error :global(svg) {
-		color: #fca5a5;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.toast-close {

@@ -602,7 +602,7 @@
 		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
 		background: #f9fafb;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -625,7 +625,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -662,7 +662,7 @@
 	.payment-error {
 		margin: 0;
 		padding-inline: 0.25rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.75rem;
 	}
 
@@ -676,8 +676,8 @@
 		padding: 0.75rem 1rem;
 		border: 0;
 		border-radius: 0.5rem;
-		background: #4f46e5;
-		color: #fff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		cursor: pointer;
 		font-size: 1rem;
 		font-weight: 600;
@@ -712,7 +712,7 @@
 		justify-content: center;
 		gap: 0.375rem;
 		padding-block: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 

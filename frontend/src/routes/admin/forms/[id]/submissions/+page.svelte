@@ -78,7 +78,7 @@
 	.btn-back {
 		background: none;
 		border: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		padding: 0.5rem 0;
@@ -93,12 +93,12 @@
 	h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.page-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9375rem;
 		margin: 0;
 	}
@@ -123,10 +123,10 @@
 	.error-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.error-state {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 </style>

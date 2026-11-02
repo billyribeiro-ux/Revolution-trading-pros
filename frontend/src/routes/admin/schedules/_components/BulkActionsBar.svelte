@@ -68,7 +68,7 @@
 		padding: 6px 12px;
 		font-size: 13px;
 		background: #f1f5f9;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-sm:hover {
@@ -77,7 +77,7 @@
 
 	.btn-danger {
 		background: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-danger:hover {

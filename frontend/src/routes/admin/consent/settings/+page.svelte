@@ -15,6 +15,13 @@
 	 *
 	 */
 	import { onMount } from 'svelte';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
+	import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+	import IconCode from '@tabler/icons-svelte-runes/icons/code';
+	import IconPlug from '@tabler/icons-svelte-runes/icons/plug';
+	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
+	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
 	import { browser } from '$app/env';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
 	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
@@ -306,7 +313,7 @@
 			role="alert"
 			style="background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-weight:600;display:flex;gap:0.5rem;align-items:center;"
 		>
-			<span aria-hidden="true">⚠</span>
+			<IconAlertTriangle size={18} aria-hidden="true" />
 			<span>
 				TEST MODE active — consent banner is shown to admins only. Public visitors are NOT being
 				prompted and consent is NOT being collected.
@@ -342,19 +349,21 @@
 				class={['tab', { active: activeTab === tab.id }]}
 				onclick={() => (activeTab = tab.id)}
 			>
-				<span class="tab-icon"
-					>{tab.icon === 'settings'
-						? '⚙️'
-						: tab.icon === 'layout'
-							? '🎨'
-							: tab.icon === 'code'
-								? '📜'
-								: tab.icon === 'plug'
-									? '🔌'
-									: tab.icon === 'globe'
-										? '🌍'
-										: '📋'}</span
-				>
+				<span class="tab-icon">
+					{#if tab.icon === 'settings'}
+						<IconSettings size={16} aria-hidden="true" />
+					{:else if tab.icon === 'layout'}
+						<IconPalette size={16} aria-hidden="true" />
+					{:else if tab.icon === 'code'}
+						<IconCode size={16} aria-hidden="true" />
+					{:else if tab.icon === 'plug'}
+						<IconPlug size={16} aria-hidden="true" />
+					{:else if tab.icon === 'globe'}
+						<IconWorld size={16} aria-hidden="true" />
+					{:else}
+						<IconClipboard size={16} aria-hidden="true" />
+					{/if}
+				</span>
 				{tab.label}
 			</button>
 		{/each}
@@ -856,7 +865,7 @@
 								</div>
 								<div class="geo-rule">
 									<div class="geo-region">
-										<span class="flag">🌍</span>
+										<span class="flag"><IconWorld size={20} aria-hidden="true" /></span>
 										<span>Rest of World</span>
 									</div>
 									<div class="geo-config">
@@ -981,7 +990,7 @@
 <style>
 	.settings-page {
 		background: #0a101c;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		padding: 2rem;
 	}
 
@@ -1002,7 +1011,7 @@
 
 	.page-header p {
 		margin: 0.25rem 0 0;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.header-actions {
@@ -1029,7 +1038,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+		background: #0ea5e9;
 		color: white;
 	}
 
@@ -1041,7 +1050,7 @@
 
 	.btn-outline {
 		background: transparent;
-		color: #0ea5e9;
+		color: var(--info-emphasis, #58a6ff);
 		border: 1px solid #0ea5e9;
 	}
 
@@ -1071,7 +1080,7 @@
 		padding: 0.75rem 1.25rem;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -1082,15 +1091,17 @@
 	}
 
 	.tab:hover {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tab.active {
-		color: #0ea5e9;
+		color: var(--info-emphasis, #58a6ff);
 		border-bottom-color: #0ea5e9;
 	}
 
 	.tab-icon {
+		display: inline-flex;
+		align-items: center;
 		font-size: 1rem;
 	}
 
@@ -1100,7 +1111,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.spinner {
@@ -1150,11 +1161,11 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		margin: 0 0 0.5rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.section-description {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0 0 1.5rem;
 	}
@@ -1166,7 +1177,7 @@
 	.setting-group h3 {
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 1.5rem 0 0.75rem;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
@@ -1189,8 +1200,8 @@
 	}
 
 	.setting-row.highlight {
-		background: rgba(14, 165, 233, 0.1);
-		border-color: rgba(14, 165, 233, 0.2);
+		background: rgba(88, 166, 255, 0.1);
+		border-color: rgba(88, 166, 255, 0.2);
 	}
 
 	.setting-info {
@@ -1200,14 +1211,14 @@
 	.setting-label {
 		display: block;
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.25rem;
 	}
 
 	.setting-description {
 		display: block;
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.toggle {
@@ -1235,7 +1246,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 		transition: 0.3s;
 		border-radius: 26px;
 	}
@@ -1276,7 +1287,7 @@
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: 6px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 
@@ -1343,11 +1354,11 @@
 	}
 
 	.integration-icon.google {
-		background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335);
+		background: #4285f4;
 	}
 
 	.integration-icon.microsoft {
-		background: linear-gradient(135deg, #f25022, #7fba00, #00a4ef, #ffb900);
+		background: #f25022;
 	}
 
 	.integration-info {
@@ -1358,13 +1369,13 @@
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.integration-info p {
 		margin: 0.25rem 0 0;
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.integration-details {
@@ -1376,7 +1387,7 @@
 	.integration-details p {
 		margin: 0 0 0.5rem;
 		font-size: 0.8rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.integration-details ul {
@@ -1386,7 +1397,7 @@
 
 	.integration-details li {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 0.25rem;
 	}
 
@@ -1430,6 +1441,8 @@
 	}
 
 	.flag {
+		display: inline-flex;
+		align-items: center;
 		font-size: 1.25rem;
 	}
 
@@ -1441,13 +1454,13 @@
 	}
 
 	.badge.strict {
-		background: rgba(239, 68, 68, 0.2);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.badge.notice {
-		background: rgba(251, 191, 36, 0.2);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.2);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.proof-info {
@@ -1461,7 +1474,7 @@
 		margin: 0 0 0.75rem;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.proof-info ul {
@@ -1471,7 +1484,7 @@
 
 	.proof-info li {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 0.25rem;
 	}
 

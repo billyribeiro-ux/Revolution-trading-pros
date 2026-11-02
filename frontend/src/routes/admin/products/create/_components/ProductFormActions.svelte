@@ -36,7 +36,7 @@
 		justify-content: flex-end;
 		margin-top: 2rem;
 		padding-top: 2rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.15);
+		border-top: 1px solid var(--border-muted, #21262d);
 	}
 
 	.btn-primary,
@@ -53,7 +53,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 	}
 
@@ -68,13 +68,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		color: #cbd5e1;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-spinner {

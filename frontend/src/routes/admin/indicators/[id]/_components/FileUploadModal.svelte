@@ -169,7 +169,7 @@
 	}
 	.hint {
 		font-size: 13px;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		margin: 0;
 	}
 
@@ -209,7 +209,7 @@
 		border: none;
 		font-size: 20px;
 		cursor: pointer;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		padding: 4px 8px;
 	}
 	.btn-close:hover {

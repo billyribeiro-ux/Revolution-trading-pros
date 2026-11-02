@@ -209,7 +209,7 @@
 		align-items: center;
 		gap: 4px;
 		font-size: 11px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 8px;
 	}
 
@@ -230,12 +230,12 @@
 
 	.badge-live {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.badge-recorded {
 		background: #e0e7ff;
-		color: #4f46e5;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.badge-hybrid {
@@ -245,7 +245,7 @@
 
 	.badge-inactive {
 		background: #f1f5f9;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.event-actions {

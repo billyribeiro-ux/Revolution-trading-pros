@@ -82,7 +82,7 @@
 	.sidebar-panel h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid #f0f0f0;
@@ -111,12 +111,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(100, 116, 139, 0.1);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.8rem;
 		font-weight: 500;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -124,13 +124,13 @@
 	.category-btn:hover {
 		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
 		border-color: color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
-		color: var(--tag-color, #6366f1);
+		color: var(--tag-color, var(--primary-500, #e6b800));
 	}
 
 	.category-btn.selected {
 		background: color-mix(in srgb, var(--tag-color, #6366f1) 20%, transparent);
 		border-color: var(--tag-color, #6366f1);
-		color: var(--tag-color, #6366f1);
+		color: var(--tag-color, var(--primary-500, #e6b800));
 	}
 
 	.selected-categories {
@@ -139,14 +139,14 @@
 		gap: 0.5rem;
 		margin-top: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(59, 130, 246, 0.05);
-		border: 1px solid rgba(59, 130, 246, 0.1);
+		background: rgba(88, 166, 255, 0.05);
+		border: 1px solid rgba(88, 166, 255, 0.1);
 		border-radius: 8px;
 	}
 
 	.selected-count {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-right: 0.5rem;
 		width: 100%;
 	}
@@ -161,7 +161,7 @@
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--tag-color, #6366f1);
+		color: var(--tag-color, var(--primary-500, #e6b800));
 	}
 
 	.selected-tag button {

@@ -351,8 +351,8 @@
 
 	/* Table container (page chrome only) */
 	.table-container {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -364,14 +364,14 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(148, 163, 184, 0.2);
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;

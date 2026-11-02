@@ -81,7 +81,7 @@
 	.loading {
 		text-align: center;
 		padding: 60px 20px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 16px;
 	}
 
@@ -90,7 +90,7 @@
 		padding: 80px 20px;
 		background: #f8fafc;
 		border-radius: 16px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
@@ -194,20 +194,20 @@
 	.video-info h4 {
 		font-size: 16px;
 		font-weight: 500;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 16px 0;
 	}
 
 	.video-url {
 		font-size: 13px;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		word-break: break-all;
 		margin: 0 0 12px 0;
 	}
 
 	.video-date {
 		font-size: 13px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.archived-section {
@@ -217,7 +217,7 @@
 	.archived-section h3 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 16px 0;
 	}
 
@@ -244,12 +244,12 @@
 
 	.archived-title {
 		flex: 1;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.archived-date {
 		font-size: 13px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	@media (max-width: 767.98px) {

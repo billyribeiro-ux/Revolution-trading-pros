@@ -364,12 +364,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-behavior {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		color: var(--text-primary);
 		position: relative;
 		overflow: hidden;
@@ -414,7 +409,7 @@
 
 	.period-selector {
 		display: flex;
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 		border-radius: 10px;
 		padding: 4px;
 		border: 1px solid rgba(230, 184, 0, 0.2);
@@ -424,7 +419,7 @@
 		padding: 0.5rem 1rem;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 600;
 		border-radius: 8px;
@@ -433,11 +428,11 @@
 	}
 
 	.period-selector__button:hover {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.period-selector__button--active {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: white;
 	}
 
@@ -447,10 +442,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -475,10 +470,10 @@
 
 	.error-banner {
 		padding: 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 10px;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		margin-bottom: 1.5rem;
 	}
 
@@ -503,7 +498,7 @@
 	}
 
 	.metric-card {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		padding: 1.25rem;
@@ -523,24 +518,24 @@
 	}
 
 	.metric-icon.blue {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.metric-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
 		color: var(--primary-500);
 	}
 	.metric-icon.cyan {
-		background: rgba(6, 182, 212, 0.15);
-		color: #22d3ee;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.metric-icon.green {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.metric-icon.orange {
 		background: rgba(251, 146, 60, 0.15);
-		color: #fb923c;
+		color: var(--warning-emphasis, #d29922);
 	}
 	.metric-icon.pink {
 		background: rgba(236, 72, 153, 0.15);
@@ -556,12 +551,12 @@
 	.metric-value {
 		font-size: 1.75rem;
 		font-weight: 800;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.metric-label {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* FIX-2026-04-26 (P1-5): .metric-trend / .positive / .negative removed
@@ -582,7 +577,7 @@
 	}
 
 	.panel {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		overflow: hidden;
@@ -612,7 +607,7 @@
 		gap: 0.75rem;
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -641,11 +636,11 @@
 		justify-content: center;
 		padding: 3rem 1rem;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 1rem;
 	}
 
@@ -696,12 +691,12 @@
 
 	.click-element {
 		font-weight: 500;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.click-page {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.click-count {
@@ -731,7 +726,7 @@
 
 	.scroll-page {
 		font-weight: 500;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		white-space: nowrap;
 		overflow: hidden;
@@ -740,7 +735,7 @@
 
 	.scroll-views {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.scroll-bar-wrap {
@@ -753,7 +748,7 @@
 
 	.scroll-bar {
 		height: 100%;
-		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		border-radius: 4px;
 		transition: width 0.5s ease-out;
 	}
@@ -802,17 +797,17 @@
 
 	.recording-duration {
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.recording-pages {
 		font-size: 0.8rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.recording-date {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-play {

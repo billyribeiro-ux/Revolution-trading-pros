@@ -215,12 +215,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-users {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		color: var(--text-primary);
 		position: relative;
 		overflow: hidden;
@@ -277,7 +272,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
@@ -287,33 +282,33 @@
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #cbd5e1;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.error-state,
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-state {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 1rem;
 	}
 
 	.empty-state h3 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 1.5rem;
 	}
@@ -324,14 +319,14 @@
 	}
 
 	.error-state p {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		margin-bottom: 1rem;
 		font-size: 1.125rem;
 	}
 
 	.users-table {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		overflow: hidden;
 	}
@@ -342,7 +337,7 @@
 	}
 
 	thead {
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 	}
 
 	th {
@@ -350,13 +345,13 @@
 		text-align: left;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
 	tbody tr {
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--border-muted, #21262d);
 		transition: background 0.2s;
 	}
 
@@ -366,7 +361,7 @@
 
 	td {
 		padding: 1rem 1.5rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.user-info {
@@ -379,7 +374,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -390,16 +385,16 @@
 
 	.user-name {
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.user-full-name {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.email {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-family: 'Open Sans Pro', 'Open Sans', monospace;
 	}
 
@@ -424,13 +419,13 @@
 	}
 
 	.role-badge.user {
-		background: rgba(148, 163, 184, 0.1);
-		border-color: rgba(148, 163, 184, 0.3);
-		color: #94a3b8;
+		background: var(--bg-surface, #1c2128);
+		border-color: var(--border-default, #30363d);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.date {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 	}
 
@@ -445,16 +440,16 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 	}
 
 	.action-btn.edit:hover {
@@ -464,9 +459,9 @@
 	}
 
 	.action-btn.delete:hover {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border-color: rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	@media (max-width: 1023.98px) {

@@ -395,12 +395,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 
 	.page-description {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -415,15 +415,15 @@
 	}
 
 	.success-message {
-		background: rgba(34, 197, 94, 0.1);
-		border: 1px solid rgba(34, 197, 94, 0.3);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.1);
+		border: 1px solid rgba(63, 185, 80, 0.3);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.error-message {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.settings-layout {
@@ -452,7 +452,7 @@
 		background: transparent;
 		border: 1px solid transparent;
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -461,7 +461,7 @@
 	}
 
 	.tab:hover {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		background: rgba(230, 184, 0, 0.1);
 	}
 
@@ -472,7 +472,7 @@
 	}
 
 	.settings-content {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		padding: 2rem;
@@ -489,12 +489,12 @@
 	.section-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 
 	.section-header p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -506,7 +506,7 @@
 		display: block;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
@@ -515,10 +515,10 @@
 	.form-group select {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		transition: border-color 0.2s;
 	}
@@ -537,7 +537,7 @@
 
 	.form-help {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.5rem;
 	}
 
@@ -555,7 +555,7 @@
 	.toggle-switch {
 		width: 44px;
 		height: 24px;
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 		border-radius: 12px;
 		position: relative;
 		transition: background 0.2s;
@@ -592,7 +592,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		cursor: pointer;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.checkbox-label input {
@@ -612,7 +612,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
@@ -651,7 +651,7 @@
 		justify-content: center;
 		padding: 4rem 2rem;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.spinner {

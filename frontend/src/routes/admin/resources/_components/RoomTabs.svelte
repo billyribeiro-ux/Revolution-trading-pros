@@ -37,7 +37,7 @@
 		margin-bottom: 1.5rem;
 		flex-wrap: wrap;
 		padding: 0.5rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border-radius: 12px;
 	}
 
@@ -51,7 +51,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -59,11 +59,11 @@
 
 	.room-tab:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.room-tab.active {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 

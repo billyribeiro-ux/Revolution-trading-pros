@@ -47,8 +47,8 @@
 
 <style>
 	.form-section {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		padding: 2rem;
 	}
@@ -56,7 +56,7 @@
 	.form-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -82,8 +82,8 @@
 		position: relative;
 		width: 52px;
 		height: 28px;
-		background: rgba(148, 163, 184, 0.2);
-		border: 1px solid rgba(148, 163, 184, 0.3);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 28px;
 		transition: 0.3s;
 		flex-shrink: 0;
@@ -102,7 +102,7 @@
 	}
 
 	.toggle-checkbox:checked + .toggle-switch {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		border-color: transparent;
 	}
 
@@ -112,12 +112,12 @@
 	}
 
 	.toggle-text {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
 	.toggle-hint {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 400;
 	}

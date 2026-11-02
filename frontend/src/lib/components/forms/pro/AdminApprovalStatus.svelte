@@ -327,7 +327,7 @@
 
 	.submission-id {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.admin-actions {
@@ -388,7 +388,7 @@
 	.status-btn.hold {
 		background-color: #f9fafb;
 		border-color: #d1d5db;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.status-btn.hold:hover {
@@ -442,7 +442,7 @@
 	.btn-cancel {
 		background-color: white;
 		border: 1px solid #d1d5db;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-cancel:hover {
@@ -536,16 +536,16 @@
 
 	.history-date {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.history-admin {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.admin-email {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.history-note {
@@ -557,13 +557,13 @@
 		background-color: #f9fafb;
 		border-radius: 0.375rem;
 		font-size: 0.8125rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.history-note :global(svg) {
 		flex-shrink: 0;
 		margin-top: 0.125rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.error-message {
@@ -574,7 +574,7 @@
 		background-color: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 	}
 

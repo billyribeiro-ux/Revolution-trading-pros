@@ -284,7 +284,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -325,7 +325,7 @@
 
 	.toolbar-btn.active {
 		background-color: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.toolbar-divider {
@@ -367,7 +367,7 @@
 		border-left: 3px solid #d1d5db;
 		padding-left: 1rem;
 		margin: 0.75rem 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-style: italic;
 	}
 
@@ -378,7 +378,7 @@
 	}
 
 	.content-editor :global(a) {
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		text-decoration: underline;
 	}
 
@@ -413,22 +413,22 @@
 		display: flex;
 		gap: 1rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.stats-bar .warning {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

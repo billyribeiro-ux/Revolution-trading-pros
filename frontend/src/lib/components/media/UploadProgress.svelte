@@ -305,8 +305,8 @@
 	}
 
 	:global(.dark) .upload-progress {
-		border-color: #374151;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.upload-progress__header {
@@ -319,7 +319,7 @@
 	}
 
 	:global(.dark) .upload-progress__header {
-		border-bottom-color: #374151;
+		border-bottom-color: var(--border-default, #30363d);
 	}
 
 	.upload-progress__summary,
@@ -342,7 +342,7 @@
 
 	.upload-progress__title {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 600;
 		line-height: 1.25rem;
@@ -361,7 +361,7 @@
 	}
 
 	.upload-progress__percent {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.upload-progress__badge {
@@ -382,7 +382,7 @@
 
 	:global(.dark) .upload-progress__badge--success {
 		background: rgb(20 83 45 / 0.3);
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.upload-progress__badge--error {
@@ -392,7 +392,7 @@
 
 	:global(.dark) .upload-progress__badge--error {
 		background: rgb(127 29 29 / 0.3);
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.upload-progress__icon-button {
@@ -404,7 +404,7 @@
 		border: 0;
 		border-radius: 0.5rem;
 		background: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition:
 			background-color 0.15s ease,
@@ -413,17 +413,17 @@
 
 	.upload-progress__icon-button--neutral:hover {
 		background: #f3f4f6;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.dark) .upload-progress__icon-button--neutral:hover {
-		background: #374151;
-		color: #d1d5db;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-progress__icon-button--danger:hover {
 		background: #fef2f2;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	:global(.dark) .upload-progress__icon-button--danger:hover {
@@ -432,7 +432,7 @@
 
 	.upload-progress__icon-button--info:hover {
 		background: #eff6ff;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	:global(.dark) .upload-progress__icon-button--info:hover {
@@ -440,12 +440,12 @@
 	}
 
 	.upload-progress__icon-button--success {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.upload-progress__icon-button--success:hover {
 		background: #f0fdf4;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	:global(.dark) .upload-progress__icon-button--success:hover {
@@ -460,7 +460,7 @@
 
 	:global(.dark) .upload-progress__total-track,
 	:global(.dark) .upload-progress__file-track {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.upload-progress__total-track {
@@ -492,7 +492,7 @@
 	}
 
 	:global(.dark) .upload-progress__item {
-		border-bottom-color: #374151;
+		border-bottom-color: var(--border-default, #30363d);
 	}
 
 	.upload-progress__thumbnail {
@@ -508,7 +508,7 @@
 	}
 
 	:global(.dark) .upload-progress__thumbnail {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.upload-progress__thumbnail-image {
@@ -518,7 +518,7 @@
 	}
 
 	.upload-progress :global(.upload-progress__icon-muted) {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-progress__details {
@@ -528,7 +528,7 @@
 
 	.upload-progress__file-name {
 		overflow: hidden;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.25rem;
@@ -542,11 +542,11 @@
 
 	.upload-progress__meta {
 		gap: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.dark) .upload-progress__meta {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-progress__status-dot {
@@ -560,7 +560,7 @@
 	}
 
 	:global(.dark) .upload-progress__status-dot--pending {
-		background: #4b5563;
+		background: var(--bg-active, #2d333b);
 	}
 
 	.upload-progress__status-dot--uploading {
@@ -595,7 +595,7 @@
 
 	.upload-progress__error {
 		margin-top: 0.25rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.upload-progress__stats {
@@ -604,20 +604,20 @@
 	}
 
 	.upload-progress__original-size {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		text-decoration: line-through;
 	}
 
 	.upload-progress__optimized-size {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.dark) .upload-progress__optimized-size {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.upload-progress__savings {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
 	}
 

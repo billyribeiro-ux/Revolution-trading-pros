@@ -61,7 +61,7 @@
 		display: flex;
 		gap: 1.5rem;
 		padding: 1rem 1.5rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border-radius: 12px;
 		margin-bottom: 1.5rem;
 		flex-wrap: wrap;
@@ -71,13 +71,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.stat-value {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.stat-label {

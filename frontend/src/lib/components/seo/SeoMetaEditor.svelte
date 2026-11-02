@@ -446,7 +446,7 @@
 	.editor-header h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -517,11 +517,11 @@
 	}
 
 	.tab:hover {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.tab.active {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border-bottom-color: #3b82f6;
 	}
 
@@ -541,7 +541,7 @@
 		gap: 0.5rem;
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1.5rem;
 	}
 
@@ -554,7 +554,7 @@
 		justify-content: space-between;
 		align-items: center;
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 		font-size: 0.95rem;
 	}
@@ -610,7 +610,7 @@
 		gap: 0.5rem;
 		padding: 0.375rem 0.75rem;
 		background: #eff6ff;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border-radius: 4px;
 		font-size: 0.9rem;
 	}
@@ -618,7 +618,7 @@
 	.keyword-tag button {
 		background: none;
 		border: none;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		font-size: 1.25rem;
 		line-height: 1;
 		cursor: pointer;
@@ -638,7 +638,7 @@
 
 	.add-keyword:hover {
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.checkbox-group label {
@@ -669,7 +669,7 @@
 
 	.checkbox-group strong {
 		display: block;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.25rem;
 	}
 

@@ -201,21 +201,21 @@
 	label {
 		font-weight: 600;
 		margin-bottom: 0.25rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 	input,
 	textarea {
 		padding: 0.75rem;
-		background: rgba(15, 23, 42, 0.5);
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 	input:focus,
 	textarea:focus {
 		outline: none;
 		border-color: #e6b800;
-		background: rgba(15, 23, 42, 0.7);
+		background: var(--bg-base, #0d1117);
 	}
 	.actions {
 		display: flex;
@@ -224,7 +224,7 @@
 		margin-top: 1.5rem;
 	}
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: #e6b800;
 		color: #0d1117;
 		border: none;
 		padding: 0.5rem 1rem;
@@ -235,9 +235,9 @@
 		gap: 0.5rem;
 	}
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 		padding: 0.5rem 1rem;
 		border-radius: 6px;
 		cursor: pointer;
@@ -250,8 +250,8 @@
 		opacity: 0.9;
 	}
 	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 		padding: 0.75rem 1rem;
 		border-radius: 6px;
 		margin-bottom: 1rem;

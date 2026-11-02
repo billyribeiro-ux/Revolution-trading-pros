@@ -514,7 +514,7 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -579,7 +579,7 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.stat-label {
@@ -598,7 +598,7 @@
 	.section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1.5rem;
 	}
 
@@ -643,7 +643,7 @@
 	.template-header h3 {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -652,14 +652,14 @@
 	}
 
 	.template-status .active {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
 	}
 
 	.template-status .inactive {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
@@ -721,7 +721,7 @@
 	}
 
 	.action-btn.danger {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.action-btn.danger:hover {
@@ -751,7 +751,7 @@
 
 	.report-name {
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.report-date {

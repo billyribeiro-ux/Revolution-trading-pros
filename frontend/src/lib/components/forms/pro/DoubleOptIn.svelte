@@ -304,7 +304,7 @@
 
 	.status-description {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -314,14 +314,14 @@
 		align-items: center;
 		gap: 0.375rem;
 		font-size: 0.8125rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.5rem;
 	}
 
 	.sent-info,
 	.confirmed-info {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		margin-top: 0.25rem;
 	}
 
@@ -346,7 +346,7 @@
 
 	.resend-hint {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 		text-align: center;
 	}
@@ -380,7 +380,7 @@
 		width: 16px;
 		height: 16px;
 		border: 2px solid #d1d5db;
-		border-top-color: #374151;
+		border-top-color: var(--border-default, #30363d);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -413,7 +413,7 @@
 		background-color: #f9fafb;
 		border-radius: 0.375rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.gdpr-notice :global(svg) {
@@ -429,7 +429,7 @@
 		background-color: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 	}
 

@@ -57,8 +57,8 @@
 	}
 
 	.modal {
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.3);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		width: 90%;
 		max-width: 600px;
@@ -78,13 +78,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 

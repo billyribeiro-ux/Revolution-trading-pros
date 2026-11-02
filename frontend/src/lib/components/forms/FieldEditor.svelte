@@ -523,7 +523,7 @@
 	.editor-header h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -542,7 +542,7 @@
 	.form-group label {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* 2026 Mobile-First: 44px touch targets, 16px font */
@@ -551,7 +551,7 @@
 		padding: 0.75rem 1rem;
 		min-height: 44px; /* Touch target */
 		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 1rem; /* 16px prevents iOS zoom */
 		color: #e2e8f0;
@@ -587,7 +587,7 @@
 		cursor: pointer;
 		font-size: 1rem; /* 16px for readability */
 		font-weight: 500;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		min-height: 44px; /* Touch target */
 		padding: 0.5rem 0;
 		touch-action: manipulation;
@@ -602,12 +602,12 @@
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.form-section {
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		padding: 1.5rem;
 		border-radius: 10px;
 	}
@@ -615,7 +615,7 @@
 	.form-section h4 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem 0;
 	}
 
@@ -659,9 +659,9 @@
 	}
 
 	.btn-remove {
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 		border-radius: 8px;
 		width: 44px; /* Touch target */
 		height: 44px; /* Touch target */
@@ -677,7 +677,7 @@
 	}
 
 	.btn-remove:hover {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.btn-add-rule {
@@ -685,8 +685,8 @@
 		padding: 0.75rem 1rem;
 		min-height: 44px; /* Touch target */
 		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		color: var(--primary-400, #ffd11a);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -696,7 +696,7 @@
 	}
 
 	.btn-add-rule:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	/* 2026 Mobile-First: Safe area insets and full-width buttons on mobile */
@@ -707,7 +707,7 @@
 		margin-top: 2rem;
 		padding-top: 2rem;
 		padding-bottom: env(safe-area-inset-bottom, 0);
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	@media (min-width: 640px) {
@@ -738,8 +738,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary:hover {
@@ -748,13 +748,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--primary-400, #ffd11a);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.sr-only {

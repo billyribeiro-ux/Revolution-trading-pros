@@ -332,11 +332,11 @@
 	.reports-page {
 		min-height: 100vh;
 		background: #f9fafb;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	:global(.dark) .reports-page {
-		background: #111827;
+		background: var(--bg-base, #0d1117);
 		color: white;
 	}
 
@@ -352,8 +352,8 @@
 	}
 
 	:global(.dark) .reports-header {
-		border-bottom-color: #374151;
-		background: #1f2937;
+		border-bottom-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.reports-header__inner,
@@ -401,12 +401,12 @@
 		flex: 0 0 auto;
 		border-radius: 0.75rem;
 		background: #e0e7ff;
-		color: #4f46e5;
+		color: var(--primary-500, #e6b800);
 	}
 
 	:global(.dark) .reports-header__icon {
-		background: rgb(79 70 229 / 0.28);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.28);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.reports-header h1 {
@@ -418,12 +418,12 @@
 
 	.reports-header p {
 		margin: 0.2rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
 	:global(.dark) .reports-header p {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.reports-header__actions {
@@ -448,7 +448,7 @@
 		height: 2.5rem;
 		border-radius: 0.625rem;
 		background: transparent;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 	}
 
@@ -458,12 +458,12 @@
 	}
 
 	:global(.dark) .icon-button {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .icon-button:hover {
-		background: #374151;
-		color: #e5e7eb;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.secondary-action,
@@ -484,8 +484,8 @@
 	}
 
 	.primary-action {
-		background: #4f46e5;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.primary-action:hover {
@@ -493,11 +493,11 @@
 	}
 
 	:global(.dark) .secondary-action {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .secondary-action:hover {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.reports-main {
@@ -514,13 +514,13 @@
 		display: grid;
 		gap: 0.375rem;
 		min-width: 16rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 		font-weight: 600;
 	}
 
 	:global(.dark) .filter-field {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.filter-field select {
@@ -528,7 +528,7 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.625rem;
 		background: white;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font: inherit;
 		font-size: 0.875rem;
 		font-weight: 400;
@@ -542,8 +542,8 @@
 	}
 
 	:global(.dark) .filter-field select {
-		border-color: #4b5563;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 		color: white;
 	}
 
@@ -557,14 +557,14 @@
 	}
 
 	:global(.dark) .period-group {
-		background: #1f2937;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.period-button {
 		min-height: 2.5rem;
 		border-radius: 0.5rem;
 		background: transparent;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		padding: 0.5rem 1rem;
 		font-size: 0.875rem;
 	}
@@ -572,17 +572,17 @@
 	.period-button:hover,
 	.period-button.is-active {
 		background: white;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 1px 3px rgb(17 24 39 / 0.12);
 	}
 
 	:global(.dark) .period-button {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .period-button:hover,
 	:global(.dark) .period-button.is-active {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 		color: white;
 	}
 
@@ -598,7 +598,7 @@
 	.loading-spinner {
 		width: 2rem;
 		height: 2rem;
-		border: 2px solid rgb(79 70 229 / 0.22);
+		border: 2px solid rgba(230, 184, 0, 0.22);
 		border-bottom-color: #4f46e5;
 		border-radius: 999px;
 		animation: reports-spin 760ms linear infinite;
@@ -622,8 +622,8 @@
 	:global(.dark) .overview-card,
 	:global(.dark) .panel,
 	:global(.dark) .empty-state {
-		border-color: #374151;
-		background: #1f2937;
+		border-color: var(--border-default, #30363d);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.overview-card {
@@ -634,28 +634,28 @@
 		justify-content: space-between;
 		gap: 1rem;
 		margin-bottom: 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
 	.overview-card__header :global(svg) {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.overview-card:nth-child(2) .overview-card__header :global(svg) {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.overview-card:nth-child(3) .overview-card__header :global(svg) {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.overview-card:nth-child(4) .overview-card__header :global(svg) {
-		color: #8b5cf6;
+		color: var(--primary-500, #e6b800);
 	}
 
 	:global(.dark) .overview-card__header {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.overview-card__value {
@@ -665,21 +665,21 @@
 	}
 
 	.overview-card__value[data-tone='success'] {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.overview-card__value[data-tone='danger'] {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.overview-card__note {
 		margin-top: 0.25rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
 	:global(.dark) .overview-card__note {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.panel {
@@ -709,7 +709,7 @@
 	}
 
 	.velocity-metric span {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -718,20 +718,20 @@
 	}
 
 	:global(.dark) .velocity-metric span {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.velocity-trend {
 		gap: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.velocity-trend[data-trend='up'] {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.velocity-trend[data-trend='down'] {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.report-sections {
@@ -755,15 +755,15 @@
 	}
 
 	.metric-row__header span:last-child {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.dark) .metric-row__header {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .metric-row__header span:last-child {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.priority-name {
@@ -778,13 +778,13 @@
 	}
 
 	:global(.dark) .progress-track {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.progress-bar {
 		height: 100%;
 		border-radius: inherit;
-		background: #4f46e5;
+		background: var(--primary-500, #e6b800);
 		transition: width 320ms ease;
 	}
 
@@ -817,7 +817,7 @@
 	}
 
 	:global(.dark) .assignee-card {
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.assignee-card__person {
@@ -832,8 +832,8 @@
 		flex: 0 0 auto;
 		place-items: center;
 		border-radius: 999px;
-		background: #6366f1;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 700;
 	}
@@ -850,7 +850,7 @@
 
 	.assignee-card p,
 	.assignee-card__rate span {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -867,7 +867,7 @@
 
 	:global(.dark) .assignee-card p,
 	:global(.dark) .assignee-card__rate span {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.label-list {
@@ -893,19 +893,19 @@
 
 	.empty-state {
 		gap: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state__icon {
 		width: 4rem;
 		height: 4rem;
 		margin-bottom: 0.25rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-state h3 {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 	}
@@ -916,7 +916,7 @@
 
 	:global(.dark) .empty-state,
 	:global(.dark) .empty-state__icon {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	:global(.dark) .empty-state h3 {

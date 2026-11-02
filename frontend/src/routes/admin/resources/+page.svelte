@@ -1075,12 +1075,7 @@
 
 <style>
 	.admin-resources {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		position: relative;
 		overflow: hidden;
 	}
@@ -1091,7 +1086,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
@@ -1117,17 +1112,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: var(--primary-500, #e6b800);
 	}*/
 
 	.btn-icon {
@@ -1139,7 +1134,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 6px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -1150,12 +1145,12 @@
 	}
 
 	.btn-icon.danger:hover {
-		background: rgba(239, 68, 68, 0.2);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-icon.active {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	/* Filters */
@@ -1173,23 +1168,23 @@
 		flex: 1;
 		min-width: 250px;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.search-box input {
 		flex: 1;
 		background: transparent;
 		border: none;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		outline: none;
 	}
 
 	.search-box input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.filter-group {
@@ -1199,10 +1194,10 @@
 
 	.filter-group select {
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9rem;
 		cursor: pointer;
 	}
@@ -1215,7 +1210,7 @@
 	}
 
 	.resource-card {
-		background: rgba(15, 23, 42, 0.8);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.15);
 		border-radius: 12px;
 		overflow: hidden;
@@ -1229,11 +1224,11 @@
 	}
 
 	.resource-card.featured {
-		border-color: rgba(234, 179, 8, 0.5);
+		border-color: rgba(210, 153, 34, 0.5);
 	}
 
 	.resource-card.pinned {
-		border-color: rgba(6, 182, 212, 0.5);
+		border-color: rgba(88, 166, 255, 0.5);
 	}
 
 	.resource-card.unpublished {
@@ -1244,7 +1239,7 @@
 		position: relative;
 		width: 100%;
 		padding-top: 56.25%;
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.resource-thumbnail img {
@@ -1265,7 +1260,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.type-badge {
@@ -1273,11 +1268,11 @@
 		top: 0.75rem;
 		left: 0.75rem;
 		padding: 0.25rem 0.5rem;
-		background: rgba(15, 23, 42, 0.9);
+		background: var(--bg-base, #0d1117);
 		border-radius: 4px;
 		font-size: 0.65rem;
 		font-weight: 700;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -1286,24 +1281,24 @@
 		color: var(--primary-500);
 	}
 	.type-badge.pdf {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 	.type-badge.image {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.featured-badge {
 		position: absolute;
 		top: 0.75rem;
 		right: 0.75rem;
-		color: #eab308;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.pinned-badge {
 		position: absolute;
 		top: 0.75rem;
 		right: 2rem;
-		color: #06b6d4;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.resource-content {
@@ -1313,7 +1308,7 @@
 	.resource-title {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 		line-height: 1.4;
 		display: -webkit-box;
@@ -1327,7 +1322,7 @@
 		display: flex;
 		gap: 0.75rem;
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 0.75rem;
 	}
 
@@ -1367,12 +1362,12 @@
 		justify-content: center;
 		padding: 4rem 2rem;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state h3 {
 		margin: 1rem 0 0.5rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.spinner {

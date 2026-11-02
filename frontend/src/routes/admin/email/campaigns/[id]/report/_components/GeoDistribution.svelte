@@ -63,7 +63,6 @@
 		border: 1px solid var(--border-default);
 		border-radius: 20px;
 		padding: 1.75rem;
-		backdrop-filter: blur(20px);
 		box-shadow: var(--admin-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.4));
 		position: relative;
 		overflow: hidden;
@@ -170,11 +169,7 @@
 
 	.geo-bar {
 		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--admin-success, #2ea043),
-			var(--admin-success-text, #3fb950)
-		);
+		background: var(--admin-success, #2ea043);
 		border-radius: 4px;
 		transition: width 1s ease-out;
 	}

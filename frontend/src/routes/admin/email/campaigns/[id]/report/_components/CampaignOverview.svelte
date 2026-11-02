@@ -63,7 +63,6 @@
 		border-radius: 20px;
 		padding: 1.75rem;
 		margin-bottom: 1.5rem;
-		backdrop-filter: blur(20px);
 		box-shadow: var(--admin-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.4));
 		position: relative;
 		overflow: hidden;

@@ -99,7 +99,7 @@
 		border: none;
 		font-size: 15px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		border-bottom: 3px solid transparent;
 		margin-bottom: -2px;
@@ -117,7 +117,7 @@
 
 	.tab .badge {
 		background: #e2e8f0;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		padding: 2px 8px;
 		border-radius: 10px;
 		font-size: 12px;

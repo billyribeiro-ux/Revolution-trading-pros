@@ -622,7 +622,7 @@
 
 	.entry-count {
 		font-size: 13px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		background: #e2e8f0;
 		padding: 2px 8px;
 		border-radius: 10px;
@@ -640,7 +640,7 @@
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 500;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -742,7 +742,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		background: #f8fafc;
 		border-bottom: 1px solid #e2e8f0;
 	}
@@ -760,7 +760,7 @@
 
 	.col-drag {
 		width: 32px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: grab;
 	}
 
@@ -804,7 +804,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 4px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -816,7 +816,7 @@
 
 	.action-btn.delete:hover {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	/* Loading & Empty States */
@@ -857,7 +857,7 @@
 
 	.empty-state p {
 		margin: 0 0 20px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.btn-add-first {
@@ -916,7 +916,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 8px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 	}
 
@@ -954,7 +954,7 @@
 	.form-group label {
 		font-size: 12px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -998,7 +998,7 @@
 		border-radius: 8px;
 		font-size: 14px;
 		font-weight: 500;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 	}
 

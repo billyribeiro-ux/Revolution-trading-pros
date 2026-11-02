@@ -208,8 +208,8 @@
 
 	.info-card {
 		padding: 20px;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 14px;
 	}
 
@@ -267,12 +267,12 @@
 		align-items: flex-start;
 		gap: 12px;
 		padding: 10px;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
 	}
 
 	.info-item :global(svg) {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		flex-shrink: 0;
 		margin-top: 2px;
 	}
@@ -285,18 +285,18 @@
 
 	.info-label {
 		font-size: 0.7rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
 	.info-value {
 		font-size: 0.875rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.info-value.link {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		text-decoration: none;
 	}
 
@@ -345,14 +345,14 @@
 		align-items: center;
 		gap: 10px;
 		padding: 10px 12px;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
 		font-size: 0.875rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.list-item :global(svg) {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.list-remove {
@@ -361,7 +361,7 @@
 		padding: 4px;
 		background: transparent;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		opacity: 0;
 		transition: opacity 0.2s;
@@ -372,7 +372,7 @@
 	}
 
 	.list-remove:hover {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.metrics-grid {
@@ -386,13 +386,13 @@
 		flex-direction: column;
 		gap: 4px;
 		padding: 12px;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
 	}
 
 	.metric-label {
 		font-size: 0.7rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -404,7 +404,7 @@
 	}
 
 	.empty-text {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0;
 	}

@@ -58,7 +58,7 @@
 		padding: 0.625rem 1.5rem;
 		font-size: 0.8125rem;
 		line-height: 1.4;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.rtp-breadcrumbs-list {
@@ -78,24 +78,24 @@
 	}
 
 	.rtp-breadcrumbs-link {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-decoration: none;
 		transition: color 0.15s ease;
 	}
 
 	.rtp-breadcrumbs-link:hover,
 	.rtp-breadcrumbs-link:focus-visible {
-		color: #f8fafc;
+		color: var(--text-primary, #f0f6fc);
 		text-decoration: underline;
 	}
 
 	.rtp-breadcrumbs-sep {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		user-select: none;
 	}
 
 	.rtp-breadcrumbs-current {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 </style>

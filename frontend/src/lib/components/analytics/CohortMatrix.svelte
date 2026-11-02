@@ -228,7 +228,7 @@
 
 	.cohort-matrix__header h3 {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.5;
@@ -236,7 +236,7 @@
 
 	.cohort-matrix__header p {
 		margin: 0.25rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.35;
 	}
@@ -258,7 +258,7 @@
 
 	.cohort-matrix__heading {
 		padding: 0.5rem 0.75rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 500;
 		text-align: left;
 		white-space: nowrap;
@@ -298,7 +298,7 @@
 
 	.cohort-matrix__cohort {
 		background: #ffffff;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 500;
 	}
 
@@ -308,7 +308,7 @@
 	}
 
 	.cohort-matrix__size {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 		white-space: nowrap;
 	}
@@ -375,13 +375,13 @@
 	.cohort-matrix__average-label {
 		padding: 0.5rem 0.75rem;
 		background: #f9fafb;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 	}
 
 	.cohort-matrix__empty {
 		padding: 2rem 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
@@ -396,7 +396,7 @@
 	}
 
 	.cohort-matrix__legend-label {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.cohort-matrix__legend-items {

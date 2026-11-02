@@ -560,8 +560,8 @@
 		padding: 2rem;
 		max-width: 1400px;
 		margin: 0 auto;
-		background: var(--admin-bg, #0f172a);
-		color: #f1f5f9;
+		background: var(--admin-bg, var(--bg-base, #0d1117));
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.content-grid {

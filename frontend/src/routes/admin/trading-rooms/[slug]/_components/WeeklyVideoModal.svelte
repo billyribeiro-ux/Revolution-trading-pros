@@ -187,7 +187,7 @@
 	.close-btn {
 		background: none;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		padding: 4px;
 	}
@@ -224,7 +224,7 @@
 	.form-group label {
 		font-size: 13px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-group input,
@@ -295,7 +295,7 @@
 		gap: 8px;
 		padding: 12px 24px;
 		background: #f1f5f9;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;

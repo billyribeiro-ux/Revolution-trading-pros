@@ -72,7 +72,6 @@
 		border: 1px solid var(--border-default);
 		border-radius: 20px;
 		padding: 1.75rem;
-		backdrop-filter: blur(20px);
 		box-shadow: var(--admin-card-shadow, 0 4px 20px rgba(0, 0, 0, 0.4));
 		position: relative;
 		overflow: hidden;
@@ -191,15 +190,11 @@
 	}
 
 	.bar.opens {
-		background: linear-gradient(180deg, var(--primary-500), var(--admin-warning, #bb8009));
+		background: var(--primary-500);
 	}
 
 	.bar.clicks {
-		background: linear-gradient(
-			180deg,
-			var(--admin-info, #388bfd),
-			var(--admin-accent-secondary, var(--secondary-500))
-		);
+		background: var(--admin-info, #388bfd);
 	}
 
 	.bar:hover {

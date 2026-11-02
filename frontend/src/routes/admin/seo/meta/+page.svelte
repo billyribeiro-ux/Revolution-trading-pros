@@ -123,7 +123,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -160,7 +160,7 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.search-box input::placeholder {
@@ -198,7 +198,7 @@
 	.entity-info h4 {
 		font-size: 0.95rem;
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.25rem;
 	}
 
@@ -221,17 +221,17 @@
 
 	.score-badge.good {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.score-badge.warning {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.score-badge.poor {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.empty-state {

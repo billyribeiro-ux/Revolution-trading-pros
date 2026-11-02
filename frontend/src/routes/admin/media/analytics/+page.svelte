@@ -566,8 +566,6 @@
 		justify-content: space-between;
 		padding: 16px 24px;
 		background: rgba(255, 255, 255, 0.8);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
 		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 		position: sticky;
 		top: 0;
@@ -704,7 +702,7 @@
 		width: 80px;
 		height: 80px;
 		margin: 0 auto 24px;
-		background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+		background: #f97316;
 		border-radius: 20px;
 		display: flex;
 		align-items: center;
@@ -744,7 +742,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
+		background: #0071e3;
 		color: white;
 		font-size: 14px;
 		font-weight: 600;
@@ -845,17 +843,17 @@
 	}
 
 	.hero-card.savings {
-		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+		background: #10b981;
 		color: white;
 	}
 
 	.hero-card.cost {
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: #3b82f6;
 		color: white;
 	}
 
 	.hero-card.eco {
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 
@@ -971,11 +969,11 @@
 
 	.stat-icon.blue {
 		background: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-icon.green {
 		background: #d1fae5;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
@@ -983,7 +981,7 @@
 	}
 	.stat-icon.orange {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 	.stat-icon.cyan {
 		background: #cffafe;
@@ -1163,7 +1161,7 @@
 	}
 
 	.bar-optimized {
-		background: linear-gradient(90deg, #10b981, #34d399);
+		background: #10b981;
 	}
 
 	.bar-label {
@@ -1186,7 +1184,7 @@
 	.savings-value {
 		font-size: 24px;
 		font-weight: 700;
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.savings-label {
@@ -1235,15 +1233,15 @@
 
 	.insight-icon.green {
 		background: #d1fae5;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.insight-icon.blue {
 		background: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.insight-icon.orange {
 		background: #fef3c7;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.insight-content h3 {

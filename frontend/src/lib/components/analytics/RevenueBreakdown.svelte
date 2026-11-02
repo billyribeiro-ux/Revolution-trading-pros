@@ -218,10 +218,10 @@
 
 <style>
 	.revenue-breakdown {
-		background-color: rgba(30, 41, 59, 0.5);
+		background-color: var(--bg-elevated, #161b22);
 		border-radius: 0.75rem;
 		padding: 1.5rem;
-		border: 1px solid rgba(51, 65, 85, 0.5);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.breakdown-header {
@@ -243,7 +243,7 @@
 	.period-badge {
 		padding: 0.25rem 0.75rem;
 		border-radius: 0.5rem;
-		background: rgba(234, 179, 8, 0.2);
+		background: rgba(210, 153, 34, 0.2);
 		color: #facc15;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -261,18 +261,18 @@
 		padding: 1rem;
 		border: 1px solid rgba(55, 65, 81, 0.5);
 		border-radius: 0.5rem;
-		background: rgba(17, 24, 39, 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.metric-card.primary {
-		border-color: rgba(234, 179, 8, 0.3);
-		background: rgba(234, 179, 8, 0.05);
+		border-color: rgba(210, 153, 34, 0.3);
+		background: rgba(210, 153, 34, 0.05);
 	}
 
 	.metric-label {
 		margin-bottom: 0.5rem;
 		font-size: 0.875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.metric-value {
@@ -289,20 +289,20 @@
 	}
 
 	.metric-value--positive {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.metric-value--negative {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.metric-value--neutral {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.metric-sublabel {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.metric-change {
@@ -314,11 +314,11 @@
 	}
 
 	.metric-change.positive {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.metric-change.negative {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.mrr-movement {
@@ -343,28 +343,28 @@
 		padding: 0.75rem;
 		border: 1px solid rgba(55, 65, 81, 0.5);
 		border-radius: 0.5rem;
-		background: rgba(17, 24, 39, 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.movement-item.positive {
-		border-color: rgba(34, 197, 94, 0.3);
-		background: rgba(34, 197, 94, 0.05);
+		border-color: rgba(63, 185, 80, 0.3);
+		background: rgba(63, 185, 80, 0.05);
 	}
 
 	.movement-item.negative {
-		border-color: rgba(239, 68, 68, 0.3);
-		background: rgba(239, 68, 68, 0.05);
+		border-color: rgba(248, 81, 73, 0.3);
+		background: rgba(248, 81, 73, 0.05);
 	}
 
 	.movement-item.net {
-		border-color: rgba(234, 179, 8, 0.3);
-		background: rgba(234, 179, 8, 0.05);
+		border-color: rgba(210, 153, 34, 0.3);
+		background: rgba(210, 153, 34, 0.05);
 	}
 
 	.movement-label {
 		margin-bottom: 0.25rem;
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.movement-value {
@@ -388,7 +388,7 @@
 		padding: 0.75rem;
 		border: 1px solid rgba(55, 65, 81, 0.5);
 		border-radius: 0.5rem;
-		background: rgba(17, 24, 39, 0.5);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.waterfall-chart {
@@ -418,7 +418,7 @@
 
 	.bar-label {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		text-align: center;
 	}
 

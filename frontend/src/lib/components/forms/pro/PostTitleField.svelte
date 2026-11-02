@@ -92,7 +92,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -115,29 +115,29 @@
 	}
 
 	.title-input::placeholder {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 400;
 	}
 
 	.char-counter {
 		align-self: flex-end;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.char-counter.near-limit {
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

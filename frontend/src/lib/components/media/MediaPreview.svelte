@@ -445,7 +445,7 @@
 	.preview-title {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		margin: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -457,13 +457,13 @@
 		border: none;
 		padding: 0.5rem;
 		cursor: pointer;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 		border-radius: 6px;
 	}
 
 	.close-btn:hover {
 		background: var(--bg-hover, #f3f4f6);
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 	}
 
 	.preview-tabs {
@@ -480,17 +480,17 @@
 		border-bottom: 2px solid transparent;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.tab-btn:hover {
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 	}
 
 	.tab-btn.active {
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 		border-bottom-color: var(--primary-color, #3b82f6);
 	}
 
@@ -535,7 +535,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 1rem;
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.preview-sidebar {
@@ -555,7 +555,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -578,12 +578,12 @@
 
 	.info-list dt {
 		font-size: 0.75rem;
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.info-list dd {
 		font-size: 0.875rem;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		margin: 0;
 	}
 
@@ -604,12 +604,12 @@
 
 	.status-badge.optimized {
 		background: var(--success-bg, #d1fae5);
-		color: var(--success-color, #059669);
+		color: var(--success-color, var(--success-emphasis, #3fb950));
 	}
 
 	.status-badge.pending {
 		background: var(--warning-bg, #fef3c7);
-		color: var(--warning-color, #d97706);
+		color: var(--warning-color, var(--warning-emphasis, #d29922));
 	}
 
 	.edit-form {
@@ -626,7 +626,7 @@
 
 	.edit-form label span {
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.edit-form input,
@@ -689,21 +689,21 @@
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		text-transform: capitalize;
 	}
 
 	.variant-details {
 		display: block;
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 		margin-top: 0.25rem;
 	}
 
 	.variant-savings {
 		display: inline-block;
 		font-size: 0.75rem;
-		color: var(--success-color, #10b981);
+		color: var(--success-color, var(--success-emphasis, #3fb950));
 		font-weight: 500;
 		margin-top: 0.25rem;
 	}
@@ -724,7 +724,7 @@
 	.metadata-section h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -813,7 +813,7 @@
 	.btn-text {
 		background: none;
 		padding: 0.25rem 0.5rem;
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.btn-text:hover {

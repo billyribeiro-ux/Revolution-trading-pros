@@ -35,7 +35,7 @@
 		gap: 0.5rem;
 		background: transparent;
 		border: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		margin-bottom: 1rem;
@@ -44,18 +44,18 @@
 	}
 
 	.back-btn:hover {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 </style>

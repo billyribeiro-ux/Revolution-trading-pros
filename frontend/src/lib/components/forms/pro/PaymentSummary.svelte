@@ -165,7 +165,7 @@
 	}
 
 	.summary-title {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 600;
 	}
@@ -214,13 +214,13 @@
 	.quantity-pill {
 		padding: 0.125rem 0.375rem;
 		background: #f3f4f6;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.line-item__price {
 		flex: 0 0 auto;
 		margin-left: 0.75rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -246,7 +246,7 @@
 	}
 
 	.calculation-label {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.calculation-value {
@@ -257,7 +257,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.375rem;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.discount-label__icon,
@@ -280,7 +280,7 @@
 
 	.discount-value {
 		flex: 0 0 auto;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
 	}
 

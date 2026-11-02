@@ -252,7 +252,7 @@
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 	}
 
 	/* Alert */
@@ -266,9 +266,9 @@
 	}
 
 	.alert.error {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.alert-dismiss {
@@ -292,8 +292,8 @@
 
 	/* Form Section */
 	.form-card {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		padding: 2rem;
 	}
@@ -301,7 +301,7 @@
 	.form-card h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 1.5rem;
 	}
 
@@ -315,7 +315,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		cursor: pointer;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.checkbox-label input[type='checkbox'] {

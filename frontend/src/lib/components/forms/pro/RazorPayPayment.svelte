@@ -217,13 +217,13 @@
 	}
 
 	.amount-display strong {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 	}
 
 	.payment-error {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 		text-align: center;
 	}
@@ -279,7 +279,7 @@
 		background-color: #f3f4f6;
 		border-radius: 0.25rem;
 		font-size: 0.6875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.secure-badge {
@@ -288,12 +288,12 @@
 		justify-content: center;
 		gap: 0.375rem;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

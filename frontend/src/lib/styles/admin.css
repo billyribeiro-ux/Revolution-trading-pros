@@ -162,7 +162,6 @@
 	min-height: 100vh;
 	min-height: 100dvh;
 	position: relative;
-	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .admin-main {
@@ -171,18 +170,27 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
-	transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition: margin-left 0.2s ease;
 }
 
-/* Compact rail breakpoint (1024-1279px) */
-@media (min-width: 1024px) and (max-width: 1279px) {
+/* Breakpoint scale (design-tokens.css): sm 640 · md 768 · lg 1024 · xl 1280.
+   The max-width side is exclusive (-0.02px) so no value matches two rules. */
+
+/* Icon rail: forced on 1024–1279px, optional on >= 1280px via the sidebar toggle */
+@media (min-width: 1024px) and (max-width: 1279.98px) {
 	.admin-layout {
 		--admin-sidebar-width: 72px;
 	}
 }
 
+@media (min-width: 1280px) {
+	.admin-layout.sidebar-collapsed {
+		--admin-sidebar-width: 72px;
+	}
+}
+
 /* Mobile drawer (< 1024px) */
-@media (max-width: 1023px) {
+@media (max-width: 1023.98px) {
 	.admin-layout {
 		--admin-sidebar-width: 0px;
 	}
@@ -203,29 +211,7 @@
 	gap: var(--space-4, 1rem);
 	position: sticky;
 	top: 0;
-	z-index: var(--z-sticky, 40);
-	transition: var(--transition-colors, all 0.2s ease), box-shadow 0.2s ease;
-}
-
-.mobile-menu-btn {
-	display: none;
-	background: transparent;
-	border: none;
-	color: var(--admin-text-muted);
-	cursor: pointer;
-	padding: var(--space-2, 0.5rem);
-	border-radius: var(--radius-md, 0.375rem);
-	transition: var(--transition-all, all 0.2s ease);
-}
-
-.mobile-menu-btn:hover {
-	background: var(--admin-btn-bg-hover);
-	color: var(--admin-accent-primary);
-}
-
-.mobile-menu-btn:focus-visible {
-	box-shadow: var(--admin-focus-ring);
-	outline: none;
+	z-index: var(--z-sticky, 200);
 }
 
 .header-title h1 {
@@ -238,7 +224,13 @@
 	letter-spacing: var(--tracking-tight, -0.015em);
 }
 
-/* Header Actions & Toolbars */
+/* ── Header control system ────────────────────────────────────────────────
+   Every control in the header toolbar is exactly --admin-control-height tall,
+   uses the same radius, border, surface and focus ring. */
+.admin-layout {
+	--admin-control-height: 36px;
+}
+
 .admin-header .header-actions {
 	margin-left: auto;
 	display: flex;
@@ -246,28 +238,50 @@
 	gap: var(--space-3, 0.75rem);
 }
 
+.mobile-menu-btn,
+.search-trigger,
+.header-utility-group,
+.view-site-btn {
+	min-height: var(--admin-control-height);
+	border-radius: var(--radius-md, 6px);
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.mobile-menu-btn {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: var(--admin-control-height);
+	background: transparent;
+	border: 1px solid transparent;
+	color: var(--admin-text-muted);
+	cursor: pointer;
+	padding: 0;
+}
+
+.mobile-menu-btn:hover {
+	background: var(--admin-btn-bg-hover);
+	color: var(--admin-text-primary);
+}
+
 .search-trigger {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-2, 0.5rem);
-	min-height: 36px;
 	padding: 0 var(--space-3, 0.75rem);
 	background: var(--admin-surface-sunken);
 	border: 1px solid var(--admin-btn-border);
-	border-radius: var(--radius-md, 0.375rem);
 	color: var(--admin-text-muted);
-	cursor: text;
-	transition: var(--transition-all, all 0.2s ease);
+	cursor: pointer;
 }
 
 .search-trigger:hover {
 	border-color: var(--admin-btn-border-hover);
 	color: var(--admin-text-primary);
-}
-
-.search-trigger:focus-visible {
-	box-shadow: var(--admin-focus-ring);
-	outline: none;
 }
 
 .search-trigger__label {
@@ -283,7 +297,7 @@
 	padding: 2px 6px;
 	background: var(--admin-kbd-bg);
 	border: 1px solid var(--admin-kbd-border);
-	border-radius: var(--radius-sm, 0.25rem);
+	border-radius: var(--radius-sm, 4px);
 	font-size: var(--text-xs, 0.75rem);
 	font-weight: var(--font-semibold, 600);
 	color: var(--admin-kbd-text);
@@ -293,29 +307,10 @@
 .header-utility-group {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--space-1, 0.25rem);
-	padding: 4px;
+	gap: 2px;
+	padding: 0 3px;
 	background: var(--admin-surface-sunken);
 	border: 1px solid var(--admin-btn-border);
-	border-radius: var(--radius-md, 0.375rem);
-}
-
-.header-utility-group .rate-limit-btn {
-	background: transparent;
-	border: none;
-	padding: 0 var(--space-2, 0.5rem);
-	min-height: 32px;
-	border-radius: var(--radius-sm, 0.25rem);
-	gap: 4px;
-}
-
-.header-utility-group .rate-limit-btn:hover {
-	background: var(--admin-btn-bg-hover);
-}
-
-.header-utility-group .rate-limit-btn .limit-percentage {
-	font-size: var(--text-xs, 0.75rem);
-	font-weight: var(--font-semibold, 600);
 }
 
 .icon-btn {
@@ -327,11 +322,20 @@
 	padding: 0;
 	background: transparent;
 	border: none;
-	border-radius: var(--radius-sm, 0.25rem);
+	border-radius: var(--radius-sm, 4px);
 	color: var(--admin-text-muted);
 	cursor: pointer;
-	transition: var(--transition-all, all 0.2s ease);
 	position: relative;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+/* Inside the toolbar group the buttons are 28px so the group is exactly 36px */
+.header-utility-group .icon-btn {
+	width: 28px;
+	height: 28px;
 }
 
 .icon-btn:hover {
@@ -339,13 +343,18 @@
 	color: var(--admin-text-primary);
 }
 
-.icon-btn:focus-visible {
+/* One focus treatment for every header control */
+.mobile-menu-btn:focus-visible,
+.search-trigger:focus-visible,
+.icon-btn:focus-visible,
+.view-site-btn:focus-visible {
+	border-color: var(--admin-accent-primary);
 	box-shadow: var(--admin-focus-ring);
 	outline: none;
 }
 
-.icon-btn:active {
-	transform: scale(0.96);
+.icon-btn:focus-visible {
+	border-color: transparent;
 }
 
 .notification-btn {
@@ -362,36 +371,33 @@
 	align-items: center;
 	justify-content: center;
 	background: var(--admin-color-danger);
+	border: 2px solid var(--admin-surface-sunken);
+	box-sizing: content-box;
 	border-radius: var(--radius-full, 9999px);
-	font-size: var(--text-xs, 0.75rem);
+	font-size: 0.6875rem;
 	font-weight: var(--font-bold, 700);
 	color: #ffffff;
-	padding: 0 4px;
+	padding: 0 3px;
+	line-height: 1;
 }
 
 .view-site-btn {
-	padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
-	background: rgba(230, 184, 0, 0.12);
+	display: inline-flex;
+	align-items: center;
+	padding: 0 var(--space-4, 1rem);
+	background: var(--admin-accent-bg);
 	color: var(--admin-accent-primary);
 	text-decoration: none;
-	border-radius: var(--radius-md, 0.375rem);
 	font-family: var(--font-sans);
 	font-weight: var(--font-medium, 500);
 	font-size: var(--text-sm, 0.875rem);
-	border: 1px solid rgba(230, 184, 0, 0.25);
-	transition: var(--transition-all, all 0.2s ease);
+	border: 1px solid var(--sidebar-active);
 }
 
 .view-site-btn:hover {
 	background: var(--admin-accent-primary);
 	border-color: var(--admin-accent-primary);
-	color: #0d1117;
-	transform: translateY(-1px);
-}
-
-.view-site-btn:focus-visible {
-	box-shadow: var(--admin-focus-ring);
-	outline: none;
+	color: var(--admin-btn-primary-text);
 }
 
 /* Admin Main Content Host */
@@ -493,8 +499,8 @@
 	margin-left: 0.5rem;
 }
 
-.admin-layout .header-actions,
-.admin-layout .actions-row {
+.admin-content .header-actions,
+.admin-content .actions-row {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -555,9 +561,7 @@
 
 .admin-layout .glass-panel,
 .admin-layout .analytics-panel {
-	background: rgba(22, 27, 34, 0.75);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
+	background: var(--admin-surface-primary);
 	border: 1px solid var(--admin-border);
 	border-radius: var(--radius-xl, 0.75rem);
 	padding: var(--space-5, 1.25rem);
@@ -831,19 +835,20 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════
    11. UNIFIED RESPONSIVE BREAKPOINT MATRIX
+   sm 640 · md 768 · lg 1024 · xl 1280 (see design-tokens.css). No other rungs.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Large Screens & Rail Mode (1024-1279px) */
-@media (min-width: 1024px) and (max-width: 1279px) {
+/* Large screens, rail mode (1024–1279px) */
+@media (min-width: 1024px) and (max-width: 1279.98px) {
 	.admin-layout .admin-page-container {
 		max-width: 100%;
 	}
 }
 
-/* Tablet (< 1024px) */
-@media (max-width: 1023px) {
+/* Tablet and below (< 1024px) */
+@media (max-width: 1023.98px) {
 	.admin-layout .mobile-menu-btn {
-		display: block;
+		display: inline-flex;
 	}
 
 	.admin-layout .admin-content {
@@ -856,27 +861,21 @@
 	}
 }
 
-/* Mobile Landscape (< 768px) */
-@media (max-width: 767px) {
+/* Below md (< 768px) */
+@media (max-width: 767.98px) {
 	.admin-layout :where(.desktop-only) {
 		display: none;
 	}
 
 	.admin-layout .search-trigger {
 		min-width: 0;
-		padding: 0 var(--space-2, 0.5rem);
-		min-height: 36px;
-		width: 36px;
+		width: var(--admin-control-height);
+		padding: 0;
 		justify-content: center;
 	}
 
-	.admin-layout .view-site-btn {
-		padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
-		font-size: var(--text-sm, 0.875rem);
-	}
-
-	.admin-layout .header-actions,
-	.admin-layout .actions-row {
+	.admin-content .header-actions,
+	.admin-content .actions-row {
 		flex-direction: column;
 		width: 100%;
 	}
@@ -886,8 +885,8 @@
 	}
 }
 
-/* Mobile Portrait (< 640px) */
-@media (max-width: 639px) {
+/* Below sm (< 640px) */
+@media (max-width: 639.98px) {
 	.admin-layout .admin-header {
 		padding: 0 var(--space-4, 1rem);
 		height: 60px;
@@ -901,13 +900,10 @@
 		padding: var(--space-4, 1rem);
 	}
 
-	.admin-layout .admin-header .header-actions {
-		gap: var(--space-2, 0.5rem);
+	.admin-layout .view-site-btn {
+		padding: 0 var(--space-3, 0.75rem);
 	}
-}
 
-/* Very Small Phone (< 480px) */
-@media (max-width: 480px) {
 	.admin-layout .admin-table th,
 	.admin-layout .admin-table td {
 		padding: 0.5rem;
@@ -918,7 +914,7 @@
 	.admin-layout .admin-modal,
 	.admin-layout .modal-content {
 		margin: 0.5rem;
-		max-height: calc(100vh - 1rem);
+		max-height: calc(100dvh - 1rem);
 		width: calc(100vw - 1rem);
 		max-width: calc(100vw - 1rem);
 	}
@@ -935,35 +931,13 @@
 	}
 }
 
-/* Minimal Screens (< 380px) */
-@media (max-width: 380px) {
-	.admin-layout .admin-header {
-		padding: 0 var(--space-3, 0.75rem);
-		height: 56px;
-	}
-
-	.admin-layout .header-title h1 {
-		font-size: var(--text-base, 1rem);
-	}
-
-	.admin-layout .admin-content {
-		padding: var(--space-3, 0.75rem);
-	}
-
-	.admin-layout .view-site-btn {
-		padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
-		font-size: var(--text-xs, 0.75rem);
-	}
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    12. ACCESSIBILITY, TOUCH & PRINT
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Touch Devices — WCAG 2.2 Level AA 44x44px min targets */
+/* Touch devices — WCAG 2.2 AA 44x44px targets */
 @media (hover: none) and (pointer: coarse) {
 	.admin-layout .search-trigger,
-	.admin-layout .icon-btn,
 	.admin-layout .mobile-menu-btn,
 	.admin-layout .view-site-btn,
 	.admin-layout .btn,
@@ -972,13 +946,14 @@
 		min-width: 44px;
 	}
 
-	.admin-layout .icon-btn {
+	.admin-layout .icon-btn,
+	.admin-layout .header-utility-group .icon-btn {
 		width: 44px;
 		height: 44px;
 	}
 }
 
-/* Reduced Motion */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
 	.admin-layout,
 	.admin-layout .admin-header,
@@ -986,13 +961,14 @@
 	.admin-layout .icon-btn,
 	.admin-layout .mobile-menu-btn,
 	.admin-layout .view-site-btn,
+	.admin-layout .admin-main,
 	.admin-layout .admin-tab-panel {
 		transition: none !important;
 		transform: none !important;
 	}
 }
 
-/* High Contrast Mode */
+/* High contrast */
 @media (prefers-contrast: high) {
 	.admin-layout .admin-header {
 		border-bottom-width: 2px;

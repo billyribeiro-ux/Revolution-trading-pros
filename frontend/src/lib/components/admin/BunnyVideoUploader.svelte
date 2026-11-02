@@ -378,7 +378,7 @@
 	.upload-icon {
 		width: 48px;
 		height: 48px;
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 		margin-bottom: 0.5rem;
 	}
 
@@ -390,26 +390,26 @@
 	.drop-text {
 		font-size: 1rem;
 		font-weight: 500;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
 	.drop-hint {
 		font-size: 0.875rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.supported-formats {
 		font-size: 0.75rem;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.5rem;
 	}
 
 	.file-selected {
 		padding: 1.25rem;
-		background: rgba(34, 197, 94, 0.1);
-		border: 1px solid rgba(34, 197, 94, 0.3);
+		background: rgba(63, 185, 80, 0.1);
+		border: 1px solid rgba(63, 185, 80, 0.3);
 		border-radius: 12px;
 	}
 
@@ -422,7 +422,7 @@
 	.file-icon {
 		width: 40px;
 		height: 40px;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 		flex-shrink: 0;
 	}
 
@@ -440,22 +440,22 @@
 
 	.file-name {
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		word-break: break-word;
 	}
 
 	.file-size {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-remove {
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 		border: none;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -465,7 +465,7 @@
 	}
 
 	.btn-remove:hover {
-		background: rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.3);
 	}
 
 	.btn-remove :global(svg) {
@@ -486,7 +486,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #e6b800, #b38f00);
+		background: #e6b800;
 		transition: width 0.3s;
 		border-radius: 4px;
 	}
@@ -517,7 +517,7 @@
 		text-align: center;
 		margin-top: 0.5rem;
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-upload {
@@ -528,7 +528,7 @@
 		width: 100%;
 		margin-top: 1rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: #e6b800;
 		border: none;
 		border-radius: 8px;
 		color: #0d1117;
@@ -557,7 +557,7 @@
 		width: 64px;
 		height: 64px;
 		margin: 0 auto 1rem;
-		background: rgba(34, 197, 94, 0.15);
+		background: rgba(63, 185, 80, 0.15);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -567,11 +567,11 @@
 	.success-icon :global(svg) {
 		width: 32px;
 		height: 32px;
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.complete-state p {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
 		margin: 0 0 1rem;
 	}
@@ -579,14 +579,14 @@
 	.btn-link {
 		background: transparent;
 		border: none;
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		cursor: pointer;
 		text-decoration: underline;
 	}
 
 	.btn-link:hover {
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.error-message {
@@ -595,10 +595,10 @@
 		gap: 0.5rem;
 		margin-top: 1rem;
 		padding: 0.75rem 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 8px;
-		color: #fca5a5;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 	}
 

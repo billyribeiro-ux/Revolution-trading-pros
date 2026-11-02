@@ -380,7 +380,7 @@
 <style>
 	.templates-page {
 		background: #0a101c;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		padding: 2rem;
 	}
 
@@ -401,7 +401,7 @@
 
 	.page-header p {
 		margin: 0.25rem 0 0;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.header-actions {
@@ -423,7 +423,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+		background: #0ea5e9;
 		color: white;
 	}
 
@@ -459,20 +459,20 @@
 	}
 
 	.search-box :global(svg) {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.search-box input {
 		flex: 1;
 		background: transparent;
 		border: none;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 		outline: none;
 	}
 
 	.search-box input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.category-tabs {
@@ -490,7 +490,7 @@
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid transparent;
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -501,13 +501,13 @@
 
 	.category-tab:hover {
 		background: rgba(255, 255, 255, 0.1);
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.category-tab.active {
-		background: rgba(14, 165, 233, 0.15);
-		border-color: rgba(14, 165, 233, 0.3);
-		color: #38bdf8;
+		background: rgba(88, 166, 255, 0.15);
+		border-color: rgba(88, 166, 255, 0.3);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.category-tab .count {
@@ -532,7 +532,7 @@
 
 	.empty-state p {
 		margin: 0 0 1rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.preview-controls {
@@ -544,17 +544,16 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 0.75rem 1.5rem;
-		background: rgba(15, 23, 42, 0.95);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 12px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 		z-index: 99998;
-		backdrop-filter: blur(10px);
 	}
 
 	.preview-controls span {
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.modal-backdrop {
@@ -569,7 +568,7 @@
 	}
 
 	.modal {
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border-radius: 12px;
 		padding: 1.5rem;
 		width: 100%;
@@ -586,7 +585,7 @@
 	.modal p {
 		margin: 0 0 1rem;
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.import-textarea {
@@ -595,7 +594,7 @@
 		background: rgba(0, 0, 0, 0.3);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-family: monospace;
 		font-size: 0.8125rem;
 		resize: vertical;

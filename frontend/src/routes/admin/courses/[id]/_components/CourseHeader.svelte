@@ -69,7 +69,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 4px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		font-size: 14px;
 	}
@@ -142,11 +142,11 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		text-decoration: none;
-		background: linear-gradient(135deg, #143e59 0%, #1e73be 100%);
+		background: #143e59;
 		color: #fff;
 	}
 	.btn-builder:hover {
-		background: linear-gradient(135deg, #0f2d42 0%, #143e59 100%);
+		background: #0f2d42;
 		transform: translateY(-1px);
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
 	}

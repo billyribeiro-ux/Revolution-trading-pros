@@ -82,35 +82,35 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-decoration: none;
 		font-size: 0.9rem;
 		margin-bottom: 0.75rem;
 		transition: color 0.2s;
 	}
 	.back-link:hover {
-		color: #c7d2fe;
+		color: var(--primary-400, #ffd11a);
 	}
 	.page-header h1 {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 	.page-description {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 	.page-description code {
-		background: rgba(99, 102, 241, 0.12);
-		color: #c7d2fe;
+		background: rgba(230, 184, 0, 0.12);
+		color: var(--primary-400, #ffd11a);
 		padding: 0.1rem 0.35rem;
 		border-radius: 4px;
 		font-size: 0.8rem;
 	}
 	.stub-card {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.15);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid rgba(230, 184, 0, 0.15);
 		border-radius: 14px;
 		padding: 2.5rem 1.5rem;
 		text-align: center;
@@ -122,24 +122,24 @@
 		width: 64px;
 		height: 64px;
 		border-radius: 50%;
-		background: rgba(245, 158, 11, 0.12);
-		color: #fbbf24;
+		background: rgba(210, 153, 34, 0.12);
+		color: var(--warning-emphasis, #d29922);
 		margin-bottom: 1rem;
 	}
 	.stub-card h2 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 1.15rem;
 		margin: 0 0 0.5rem 0;
 	}
 	.stub-card p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 		margin: 0 0 1.5rem 0;
 		line-height: 1.55;
 	}
 	.stub-card code {
-		background: rgba(99, 102, 241, 0.12);
-		color: #c7d2fe;
+		background: rgba(230, 184, 0, 0.12);
+		color: var(--primary-400, #ffd11a);
 		padding: 0.1rem 0.35rem;
 		border-radius: 4px;
 		font-size: 0.8rem;
@@ -147,7 +147,7 @@
 	.btn-back {
 		display: inline-block;
 		padding: 0.65rem 1.25rem;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		border-radius: 10px;
 		color: white;
 		text-decoration: none;

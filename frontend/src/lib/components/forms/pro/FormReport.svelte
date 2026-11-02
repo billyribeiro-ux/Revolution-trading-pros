@@ -317,13 +317,13 @@
 		margin: 0;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.date-range {
 		margin: 0.25rem 0 0;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.export-btn {
@@ -386,18 +386,18 @@
 		background-color: #f59e0b;
 	}
 	.stat-icon.fields {
-		background-color: #8b5cf6;
+		background-color: var(--primary-500, #e6b800);
 	}
 
 	.stat-value {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.stat-label {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.field-reports {
@@ -425,7 +425,7 @@
 		border: 1px solid #e5e7eb;
 		border-radius: 0.375rem;
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -462,7 +462,7 @@
 
 	.response-count {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.chart-row {
@@ -496,7 +496,7 @@
 
 	.chart-value {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		white-space: nowrap;
 	}
 
@@ -530,7 +530,7 @@
 	.source-rank {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.source-name {
@@ -542,7 +542,7 @@
 	.source-count {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	/* States */
@@ -555,7 +555,7 @@
 		justify-content: center;
 		gap: 1rem;
 		padding: 3rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
@@ -571,7 +571,7 @@
 	.spinner {
 		width: 24px;
 		height: 24px;
-		border: 3px solid rgba(59, 130, 246, 0.2);
+		border: 3px solid rgba(88, 166, 255, 0.2);
 		border-top-color: #3b82f6;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;

@@ -60,11 +60,11 @@
 		padding: 2rem;
 	}
 	.text-muted {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 	.alert-error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 		padding: 0.75rem 1rem;
 		border-radius: 6px;
 		margin-bottom: 1rem;

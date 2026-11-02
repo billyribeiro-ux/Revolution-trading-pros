@@ -285,7 +285,7 @@
 		z-index: 1;
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.score-label {
@@ -361,7 +361,7 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.25rem;
 	}
 
@@ -373,7 +373,7 @@
 	.analysis-results h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -394,19 +394,19 @@
 	.result-item.green {
 		background: #dcfce7;
 		border-color: #86efac;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.result-item.yellow {
 		background: #fef3c7;
 		border-color: #fde047;
-		color: #d97706;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.result-item.red {
 		background: #fee2e2;
 		border-color: #fca5a5;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.result-icon {
@@ -453,7 +453,7 @@
 	.readability-details h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -480,6 +480,6 @@
 	.detail-value {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 </style>

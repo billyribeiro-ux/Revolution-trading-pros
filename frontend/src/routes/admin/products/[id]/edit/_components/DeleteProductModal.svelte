@@ -62,8 +62,8 @@
 	}
 
 	.modal {
-		background: #1e293b;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 16px;
 		padding: 2rem;
 		max-width: 480px;
@@ -73,19 +73,19 @@
 	.modal h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.75rem;
 	}
 
 	.modal p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9375rem;
 		line-height: 1.5;
 		margin-bottom: 1.5rem;
 	}
 
 	.modal strong {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.modal-actions {
@@ -108,23 +108,23 @@
 	}
 
 	.btn-secondary {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		color: #cbd5e1;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.btn-danger {
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-danger:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.btn-danger:disabled {

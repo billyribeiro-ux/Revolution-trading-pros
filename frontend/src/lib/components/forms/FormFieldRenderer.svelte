@@ -1,6 +1,7 @@
 <script lang="ts">
 	/* eslint svelte/no-at-html-tags: "off" -- every {@html} in this file renders sanitizer-cleaned HTML (sanitizeHtml/sanitizeBlogContent/etc.) or serialized JSON-LD; audited 2026-05-30 */
 	import { onMount } from 'svelte';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
 	import type { FormField } from '#lib/api/forms.js';
 	import type { JsonValue } from '#lib/api/_types.js';
 	import { sanitizeFormContent } from '#lib/utils/sanitize.js';
@@ -553,7 +554,7 @@
 						onclick={() => props.onchange?.(i + 1)}
 						aria-label={`Rate ${i + 1} stars`}
 					>
-						★
+						<IconStar size={32} aria-hidden="true" />
 					</button>
 				{/each}
 			</div>
@@ -885,13 +886,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* 2026 Mobile-First Responsive - 44px touch targets, 16px font to prevent iOS zoom */
@@ -998,7 +999,7 @@
 		background: none;
 		border: none;
 		font-size: 2rem;
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: color 0.2s;
 		padding: 0.5rem;
@@ -1012,7 +1013,11 @@
 
 	.star-button:hover,
 	.star-button.active {
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
+	}
+
+	.star-button.active :global(svg) {
+		fill: currentColor;
 	}
 
 	.signature-wrapper {
@@ -1053,12 +1058,12 @@
 	}
 
 	.btn-clear-signature:hover {
-		background-color: #4b5563;
+		background-color: var(--bg-active, #2d333b);
 	}
 
 	.signature-status {
 		font-size: 0.875rem;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
 	}
 
@@ -1110,7 +1115,7 @@
 
 	.address-sub-label {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 500;
 	}
 
@@ -1123,12 +1128,12 @@
 
 	.phone-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error p {
@@ -1138,7 +1143,7 @@
 	.field-heading {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0.5rem 0;
 	}
 
@@ -1196,7 +1201,7 @@
 
 	.privacy-link {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		transition: color 0.2s;
 		padding: 0.5rem 0;
@@ -1207,7 +1212,7 @@
 	}
 
 	.privacy-link:hover {
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		text-decoration: underline;
 	}
 
@@ -1283,19 +1288,19 @@
 	.category-label {
 		font-size: 1rem; /* 16px for readability */
 		font-weight: 500;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.category-description {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		line-height: 1.4;
 	}
 
 	.category-hint {
 		grid-column: 1 / -1;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.25rem;
 	}
 </style>

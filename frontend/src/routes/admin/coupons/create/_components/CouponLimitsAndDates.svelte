@@ -92,7 +92,7 @@
 	label {
 		display: block;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.9rem;
 	}
@@ -100,10 +100,10 @@
 	.input {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.95rem;
 		transition: all 0.2s;
 	}
@@ -115,7 +115,7 @@
 	}
 
 	.input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.checkbox-label {
@@ -123,7 +123,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		cursor: pointer;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 500;
 		margin-bottom: 0;
 	}

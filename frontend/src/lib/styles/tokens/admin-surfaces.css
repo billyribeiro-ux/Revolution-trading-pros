@@ -17,6 +17,7 @@
  */
 
 .admin-layout,
+.admin-tokens,
 .admin-page-container {
 	/* ───── Surface layers ───── */
 	--admin-bg: var(--bg-base);
@@ -131,4 +132,15 @@
 	--admin-widget-red-icon: var(--error-emphasis);
 	--admin-widget-muted-bg: rgba(139, 148, 158, 0.12);
 	--admin-widget-muted-icon: var(--text-tertiary);
+
+	/* ───── Compatibility aliases ─────
+	   Shared admin components reference these names; they were previously undefined
+	   and fell back to an off-palette navy/purple. Map them onto the canonical scale. */
+	--primary: var(--primary-500);
+	--bg-primary: var(--bg-base);
+	--bg-secondary: var(--bg-elevated);
+	--bg-tertiary: var(--bg-surface);
+	--color-info: var(--info-emphasis);
+	--color-loss-dark: var(--error-base);
+	--space-9: 2.25rem;
 }

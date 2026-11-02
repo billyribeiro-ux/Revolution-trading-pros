@@ -1521,7 +1521,7 @@
 		background: #f1f5f9;
 		border: none;
 		border-radius: 6px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -1533,19 +1533,19 @@
 
 	.icon-btn.danger:hover {
 		background: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.icon-btn.active {
 		background: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	/* Loading & Empty States */
 	.loading {
 		text-align: center;
 		padding: 60px 20px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 16px;
 	}
 
@@ -1554,7 +1554,7 @@
 		padding: 80px 20px;
 		background: #f8fafc;
 		border-radius: 16px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
@@ -1622,16 +1622,16 @@
 	}
 
 	.target-cell {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.runner-cell {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		font-weight: 600;
 	}
 
 	.stop-cell {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.bias-badge {
@@ -1653,13 +1653,13 @@
 		padding: 12px 16px;
 		background: #f8fafc;
 		font-size: 13px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		border-bottom: 2px solid #e2e8f0;
 	}
 
 	.notes-label {
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* Alerts List */
@@ -1748,7 +1748,7 @@
 	}
 
 	.alert-message {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 12px 0;
 		line-height: 1.6;
 	}
@@ -1764,14 +1764,14 @@
 		display: block;
 		font-size: 11px;
 		text-transform: uppercase;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 6px;
 	}
 
 	.alert-notes p {
 		margin: 0;
 		font-size: 14px;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		line-height: 1.6;
 	}
 
@@ -1782,7 +1782,7 @@
 
 	.alert-time {
 		font-size: 13px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Filter Pills */
@@ -1798,7 +1798,7 @@
 		border-radius: 20px;
 		font-size: 13px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -1824,7 +1824,7 @@
 		border-radius: 4px;
 		font-size: 11px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 	}
 
@@ -1852,7 +1852,7 @@
 	}
 
 	.pending {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.pnl-value {
@@ -1976,7 +1976,7 @@
 
 	.video-card-date {
 		font-size: 13px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 8px 0;
 	}
 
@@ -1987,14 +1987,14 @@
 		border-radius: 4px;
 		font-size: 11px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: capitalize;
 	}
 
 	.video-card-stats {
 		margin-top: 8px;
 		font-size: 12px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.video-card-actions {

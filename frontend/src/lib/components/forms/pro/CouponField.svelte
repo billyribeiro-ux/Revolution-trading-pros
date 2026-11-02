@@ -176,13 +176,13 @@
 	}
 
 	.required {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
 	.field-help {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -251,7 +251,7 @@
 	.clear-btn {
 		padding: 0.625rem;
 		background-color: #f3f4f6;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		border: 1px solid #d1d5db;
 		border-radius: 0.375rem;
 		cursor: pointer;
@@ -292,17 +292,17 @@
 
 	.validation-result.success {
 		background-color: #ecfdf5;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.validation-result.error {
 		background-color: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error {
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.field-error p {

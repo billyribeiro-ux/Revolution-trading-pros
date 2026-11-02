@@ -327,7 +327,7 @@
 	.loading {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.analytics-grid {
@@ -342,8 +342,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.5rem;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		transition: all 0.2s;
 	}
@@ -354,8 +354,8 @@
 	}
 
 	.metric-card.primary {
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-		border-color: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.metric-icon {
@@ -366,21 +366,21 @@
 	.metric-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		line-height: 1;
 	}
 
 	.metric-label {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-top: 0.25rem;
 	}
 
 	.chart-card {
-		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		padding: 1.5rem;
 		margin-bottom: 2rem;
@@ -389,7 +389,7 @@
 	.chart-card h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -410,7 +410,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-size: 0.875rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.status-dot {
@@ -434,7 +434,7 @@
 
 	.bar-track {
 		height: 8px;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -476,7 +476,7 @@
 
 	.trend-bar .bar {
 		width: 100%;
-		background: linear-gradient(180deg, #6366f1, #8b5cf6);
+		background: var(--primary-500, #e6b800);
 		border-radius: 4px 4px 0 0;
 		transition: height 0.3s ease;
 		min-height: 5px;
@@ -484,15 +484,15 @@
 
 	.bar-label {
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.trend-summary {
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 		font-size: 0.875rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-align: center;
 	}
 
@@ -511,7 +511,7 @@
 
 	.field-name {
 		font-size: 0.875rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -520,14 +520,14 @@
 	.completion-bar {
 		position: relative;
 		height: 24px;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 12px;
 		overflow: hidden;
 	}
 
 	.completion-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+		background: var(--primary-500, #e6b800);
 		border-radius: 12px;
 		transition: width 0.3s ease;
 	}
@@ -539,7 +539,7 @@
 		transform: translateY(-50%);
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.performance-grid {
@@ -549,8 +549,8 @@
 	}
 
 	.performance-card {
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		padding: 1.5rem;
 		text-align: center;
@@ -558,7 +558,7 @@
 
 	.performance-label {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.75rem;
@@ -567,13 +567,13 @@
 	.performance-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 		margin-bottom: 0.5rem;
 	}
 
 	.performance-note {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-style: italic;
 	}
 

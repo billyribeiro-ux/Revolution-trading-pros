@@ -277,7 +277,7 @@
 		justify-content: center;
 		gap: 1rem;
 		padding: 2rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.spinner {
@@ -327,7 +327,7 @@
 	}
 
 	.summary-card.primary {
-		background: linear-gradient(135deg, var(--success-bg, #d1fae5), var(--bg-secondary, #f9fafb));
+		background: var(--success-bg, #d1fae5);
 		border: 1px solid var(--success-color, #10b981);
 	}
 
@@ -339,22 +339,22 @@
 		align-items: center;
 		justify-content: center;
 		background: var(--primary-bg, #dbeafe);
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.card-icon.storage {
 		background: var(--purple-bg, #ede9fe);
-		color: var(--purple-color, #7c3aed);
+		color: var(--purple-color, var(--primary-500, #e6b800));
 	}
 
 	.card-icon.images {
 		background: var(--primary-bg, #dbeafe);
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.card-icon.variants {
 		background: var(--orange-bg, #ffedd5);
-		color: var(--orange-color, #ea580c);
+		color: var(--orange-color, var(--warning-emphasis, #d29922));
 	}
 
 	.summary-card.primary .card-icon {
@@ -370,12 +370,12 @@
 		display: block;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 	}
 
 	.card-label {
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.card-trend {
@@ -387,7 +387,7 @@
 	}
 
 	.card-trend.positive {
-		color: var(--success-color, #10b981);
+		color: var(--success-color, var(--success-emphasis, #3fb950));
 	}
 
 	/* Sections */
@@ -400,7 +400,7 @@
 	.section-title {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		margin: 0 0 1rem 0;
 	}
 
@@ -420,11 +420,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(
-			90deg,
-			var(--primary-color, #3b82f6),
-			var(--success-color, #10b981)
-		);
+		background: var(--primary-color, #3b82f6);
 		border-radius: 6px;
 		transition: width 0.5s ease;
 	}
@@ -435,17 +431,17 @@
 		align-items: center;
 		margin-top: 0.5rem;
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.progress-label .optimized {
-		color: var(--success-color, #10b981);
+		color: var(--success-color, var(--success-emphasis, #3fb950));
 		font-weight: 600;
 	}
 
 	.progress-percent {
 		font-weight: 700;
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.pending-alert {
@@ -496,13 +492,13 @@
 
 	.storage-type {
 		font-weight: 500;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 		text-transform: capitalize;
 		min-width: 80px;
 	}
 
 	.storage-count {
-		color: var(--text-muted, #9ca3af);
+		color: var(--text-muted, var(--text-secondary, #8b949e));
 	}
 
 	.storage-size {
@@ -533,30 +529,30 @@
 	}
 
 	.queue-count.pending {
-		color: var(--warning-color, #f59e0b);
+		color: var(--warning-color, var(--warning-emphasis, #d29922));
 	}
 
 	.queue-count.processing {
-		color: var(--primary-color, #3b82f6);
+		color: var(--primary-color, var(--info-emphasis, #58a6ff));
 	}
 
 	.queue-count.completed {
-		color: var(--success-color, #10b981);
+		color: var(--success-color, var(--success-emphasis, #3fb950));
 	}
 
 	.queue-count.failed {
-		color: var(--error-color, #ef4444);
+		color: var(--error-color, var(--error-emphasis, #f85149));
 	}
 
 	.queue-label {
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	.queue-meta {
 		margin-top: 0.75rem;
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 		text-align: center;
 	}
 
@@ -579,12 +575,12 @@
 	.usage-value {
 		font-size: 1.125rem;
 		font-weight: 700;
-		color: var(--text-primary, #111827);
+		color: var(--text-primary, var(--bg-base, #0d1117));
 	}
 
 	.usage-label {
 		font-size: 0.75rem;
-		color: var(--text-muted, #6b7280);
+		color: var(--text-muted, var(--text-tertiary, #6e7681));
 	}
 
 	@media (max-width: 639.98px) {

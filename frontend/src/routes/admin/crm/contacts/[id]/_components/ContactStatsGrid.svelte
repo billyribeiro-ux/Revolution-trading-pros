@@ -72,8 +72,8 @@
 		align-items: center;
 		gap: 12px;
 		padding: 16px;
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 	}
 
@@ -82,22 +82,22 @@
 	}
 
 	.stat-box :global(.green) {
-		color: #4ade80;
+		color: var(--success-emphasis, #3fb950);
 	}
 	.stat-box :global(.blue) {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-box :global(.gold) {
 		color: var(--primary-500);
 	}
 	.stat-box :global(.cyan) {
-		color: #22d3ee;
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.stat-box :global(.amber) {
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 	}
 	.stat-box :global(.emerald) {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stat-info {
@@ -114,7 +114,7 @@
 
 	.stat-label {
 		font-size: 0.7rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}

@@ -82,20 +82,19 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		backdrop-filter: blur(10px);
 	}
 
 	.stat-card.gradient-purple {
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 	.stat-card.gradient-emerald {
-		border-color: rgba(16, 185, 129, 0.3);
+		border-color: rgba(63, 185, 80, 0.3);
 	}
 	.stat-card.gradient-gold {
-		border-color: rgba(251, 191, 36, 0.3);
+		border-color: rgba(210, 153, 34, 0.3);
 	}
 	.stat-card.gradient-blue {
-		border-color: rgba(59, 130, 246, 0.3);
+		border-color: rgba(88, 166, 255, 0.3);
 	}
 
 	.stat-icon {
@@ -112,16 +111,16 @@
 		color: var(--primary-400);
 	}
 	.gradient-emerald .stat-icon {
-		background: rgba(16, 185, 129, 0.15);
+		background: rgba(63, 185, 80, 0.15);
 		color: var(--success-emphasis);
 	}
 	.gradient-gold .stat-icon {
-		background: rgba(251, 191, 36, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		color: var(--warning-emphasis);
 	}
 	.gradient-blue .stat-icon {
-		background: rgba(59, 130, 246, 0.15);
-		color: #3b82f6;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.stat-label {

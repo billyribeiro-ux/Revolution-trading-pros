@@ -214,12 +214,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-coupons {
-		background: linear-gradient(
-			135deg,
-			var(--bg-base) 0%,
-			var(--bg-elevated) 50%,
-			var(--bg-base) 100%
-		);
+		background: var(--bg-base);
 		position: relative;
 		overflow: hidden;
 	}

@@ -264,7 +264,7 @@
 
 <style>
 	.seo-analysis-page {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.page-header {
@@ -273,7 +273,7 @@
 
 	.page-title {
 		margin: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.875rem;
 		font-weight: 700;
 		line-height: 2.25rem;
@@ -281,7 +281,7 @@
 
 	.page-subtitle {
 		margin: 0.25rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.analysis-form-card {
@@ -290,7 +290,7 @@
 
 	.section-title {
 		margin: 0 0 1rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.75rem;
@@ -322,7 +322,7 @@
 		width: 3rem;
 		height: 3rem;
 		margin: 0 auto;
-		border: 2px solid rgba(37, 99, 235, 0.18);
+		border: 2px solid rgba(88, 166, 255, 0.18);
 		border-bottom-color: #2563eb;
 		border-radius: 999px;
 		animation: spin 800ms linear infinite;
@@ -330,7 +330,7 @@
 
 	.loading-text {
 		margin: 1rem 0 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.results-stack {
@@ -341,7 +341,7 @@
 	.score-label,
 	.metric-label {
 		margin: 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
@@ -365,13 +365,13 @@
 	}
 
 	.score-ring__track {
-		color: #e5e7eb;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.score-ring__progress--good,
 	.score-number--good,
 	.score-status--good {
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.score-ring__progress--warning,
@@ -383,7 +383,7 @@
 	.score-ring__progress--poor,
 	.score-number--poor,
 	.score-status--poor {
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.score-ring__value {
@@ -402,7 +402,7 @@
 
 	.score-total {
 		margin: 0;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -415,7 +415,7 @@
 
 	.metric-value {
 		margin: 0.25rem 0 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.5rem;
 		font-weight: 700;
 		line-height: 2rem;
@@ -423,7 +423,7 @@
 
 	.metric-hint {
 		margin: 0.25rem 0 0;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 
@@ -458,11 +458,11 @@
 	}
 
 	.insight-item__icon--warning {
-		color: #eab308;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.insight-item__icon--success {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.insight-item__text {
@@ -472,13 +472,13 @@
 	.empty-state__icon {
 		display: block;
 		margin: 0 auto 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.empty-state__text {
 		margin: 0 auto;
 		max-width: 34rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	@keyframes spin {

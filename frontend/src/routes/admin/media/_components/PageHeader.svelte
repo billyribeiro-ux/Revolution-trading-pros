@@ -85,12 +85,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem;
 	}
 
 	.subtitle {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		margin: 0 0 1.5rem;
 	}
@@ -110,28 +110,28 @@
 	.search-input {
 		width: 240px;
 		padding: 0.625rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 	}
 
 	.search-input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.search-input:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.view-toggle {
 		display: flex;
-		background: rgba(30, 41, 59, 0.6);
+		background: var(--bg-elevated, #161b22);
 		border-radius: 8px;
 		padding: 2px;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.view-toggle button {
@@ -141,16 +141,16 @@
 		border-radius: 6px;
 		cursor: pointer;
 		transition: all 0.2s;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.view-toggle button.active {
-		background: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.3);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.view-toggle button:hover:not(.active) {
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.view-toggle button :global(svg) {
@@ -174,7 +174,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		border: none;
 	}
@@ -185,14 +185,14 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.4);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-primary :global(svg),

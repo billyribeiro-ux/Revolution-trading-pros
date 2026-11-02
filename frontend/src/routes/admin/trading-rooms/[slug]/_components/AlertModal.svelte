@@ -327,7 +327,7 @@
 	.close-btn {
 		background: none;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		padding: 4px;
 	}
@@ -360,7 +360,7 @@
 	.form-group label {
 		font-size: 13px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-group input,
@@ -394,7 +394,7 @@
 		align-items: center;
 		gap: 8px;
 		font-size: 14px;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 	}
 
@@ -443,7 +443,7 @@
 		gap: 8px;
 		padding: 12px 24px;
 		background: #f1f5f9;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		border: none;
 		border-radius: 10px;
 		font-size: 14px;
@@ -468,7 +468,7 @@
 	.section-title {
 		font-size: 14px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 16px 0;
 		padding-bottom: 12px;
 		border-bottom: 1px solid #e2e8f0;

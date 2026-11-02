@@ -15,11 +15,11 @@
 		display: flex;
 		gap: 1rem;
 		padding: 0.75rem 1.25rem;
-		background: rgba(30, 41, 59, 0.95);
-		border: 1px solid rgba(148, 163, 184, 0.3);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		z-index: 100;
 	}
 

@@ -576,7 +576,7 @@
 	}
 	.alert-error {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 	.alert-success {
 		background: #d1fae5;

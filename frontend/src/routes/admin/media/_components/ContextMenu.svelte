@@ -88,15 +88,13 @@
 <style>
 	.context-menu {
 		position: fixed;
-		background: rgba(15, 23, 42, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 0.25rem;
 		min-width: 160px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 		z-index: 1000;
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
 	}
 
 	.context-menu button,
@@ -111,7 +109,7 @@
 		border-radius: 6px;
 		text-align: left;
 		font-size: 0.8125rem;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		cursor: pointer;
 		text-decoration: none;
 		transition: all 0.2s;
@@ -119,37 +117,37 @@
 
 	.context-menu button:hover,
 	.context-menu a:hover {
-		background: rgba(99, 102, 241, 0.15);
-		color: #f1f5f9;
+		background: rgba(230, 184, 0, 0.15);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.context-menu button.danger {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.context-menu button.danger:hover {
-		background: rgba(239, 68, 68, 0.15);
+		background: rgba(248, 81, 73, 0.15);
 	}
 
 	.context-menu button :global(svg),
 	.context-menu a :global(svg) {
 		width: 16px;
 		height: 16px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.context-menu button:hover :global(svg),
 	.context-menu a:hover :global(svg) {
-		color: #a5b4fc;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.context-menu button.danger :global(svg) {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.context-menu hr {
 		border: none;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid var(--border-muted, #21262d);
 		margin: 0.25rem 0;
 	}
 </style>

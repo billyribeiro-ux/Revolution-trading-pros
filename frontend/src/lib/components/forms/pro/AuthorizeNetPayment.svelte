@@ -468,13 +468,13 @@
 	.payment-label {
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
 	.payment-description {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0.25rem 0 0;
 	}
 
@@ -564,7 +564,7 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
 		font-size: 1rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		background-color: white;
 		transition: all 0.15s;
 	}
@@ -576,7 +576,7 @@
 	}
 
 	.form-row input::placeholder {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.card-input-wrapper {
@@ -595,7 +595,7 @@
 		transform: translateY(-50%);
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		background-color: #f3f4f6;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
@@ -625,7 +625,7 @@
 	}
 
 	.expiry-separator {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 1.25rem;
 	}
 
@@ -678,7 +678,7 @@
 		background-color: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 	}
 
@@ -688,7 +688,7 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 

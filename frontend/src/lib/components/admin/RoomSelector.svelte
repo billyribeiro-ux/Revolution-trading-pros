@@ -283,10 +283,10 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px 16px;
-		background: #0f172a;
-		border: 1px solid #334155;
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 14px;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -294,7 +294,7 @@
 
 	.selector-trigger:hover:not(:disabled) {
 		border-color: #0984ae;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.selector-trigger.expanded {
@@ -313,7 +313,7 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 2px 8px;
-		background: linear-gradient(135deg, #10b981, #0984ae);
+		background: #10b981;
 		color: white;
 		font-size: 10px;
 		font-weight: 700;
@@ -338,7 +338,7 @@
 	:global(.trigger-icon) {
 		width: 20px;
 		height: 20px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		transition: transform 0.2s;
 	}
 
@@ -363,7 +363,7 @@
 		left: 0;
 		right: 0;
 		z-index: 50;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		border: 1px solid #0984ae;
 		border-top: none;
 		border-radius: 0 0 8px 8px;
@@ -377,17 +377,17 @@
 		display: flex;
 		gap: 8px;
 		padding: 12px;
-		background: #1e293b;
-		border-bottom: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.quick-btn {
 		flex: 1;
 		padding: 8px 12px;
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 		border: none;
 		border-radius: 6px;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 13px;
 		font-weight: 600;
 		cursor: pointer;
@@ -395,7 +395,7 @@
 	}
 
 	.quick-btn:hover:not(:disabled) {
-		background: #475569;
+		background: var(--bg-active, #2d333b);
 	}
 
 	.quick-btn:disabled {
@@ -405,7 +405,7 @@
 
 	/* Room Groups */
 	.room-group {
-		border-bottom: 1px solid #334155;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.room-group:last-of-type {
@@ -418,9 +418,9 @@
 		align-items: center;
 		gap: 12px;
 		padding: 12px 16px;
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 		border: none;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 13px;
 		font-weight: 600;
 		text-transform: uppercase;
@@ -430,13 +430,13 @@
 	}
 
 	.group-header:hover {
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.group-checkbox {
 		width: 18px;
 		height: 18px;
-		border: 2px solid #475569;
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		display: flex;
 		align-items: center;
@@ -450,8 +450,8 @@
 	}
 
 	.group-checkbox.partial {
-		background: #475569;
-		border-color: #475569;
+		background: var(--bg-active, #2d333b);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.group-checkbox :global(svg) {
@@ -467,7 +467,7 @@
 
 	.group-count {
 		font-size: 11px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 500;
 	}
 
@@ -485,14 +485,14 @@
 		background: transparent;
 		border: none;
 		border-radius: 6px;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 14px;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.room-item:hover {
-		background: #1e293b;
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.room-item.selected {
@@ -502,7 +502,7 @@
 	.room-checkbox {
 		width: 18px;
 		height: 18px;
-		border: 2px solid #475569;
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 4px;
 		display: flex;
 		align-items: center;
@@ -545,14 +545,14 @@
 	/* Footer */
 	.dropdown-footer {
 		padding: 12px;
-		background: #1e293b;
-		border-top: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.done-btn {
 		width: 100%;
 		padding: 10px;
-		background: linear-gradient(135deg, #0984ae, #10b981);
+		background: #0984ae;
 		border: none;
 		border-radius: 6px;
 		color: white;

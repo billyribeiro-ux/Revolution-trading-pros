@@ -746,7 +746,7 @@
 
 	.loading-state p,
 	.empty-state p {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 8px 0 20px;
 	}
 
@@ -758,7 +758,7 @@
 	}
 
 	.empty-state :global(svg) {
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.spinner {

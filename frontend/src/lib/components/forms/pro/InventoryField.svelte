@@ -345,7 +345,7 @@
 	}
 
 	.required-marker {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -419,13 +419,13 @@
 	.product-name {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
 	.product-sku {
 		font-size: 0.75rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.product-meta {
@@ -438,7 +438,7 @@
 	.product-price {
 		font-size: 1rem;
 		font-weight: 700;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.stock-badge {
@@ -510,7 +510,7 @@
 		text-align: center;
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.qty-input::-webkit-inner-spin-button,
@@ -522,12 +522,12 @@
 	.line-total {
 		font-size: 0.8125rem;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.unavailable-label {
 		font-size: 0.8125rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-style: italic;
 	}
 
@@ -577,13 +577,13 @@
 
 	.summary-label {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.summary-value {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.summary-row.total {
@@ -598,7 +598,7 @@
 
 	.summary-row.total .summary-value {
 		font-size: 1.125rem;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	/* Disabled State */
@@ -616,7 +616,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.8125rem;
 	}
 

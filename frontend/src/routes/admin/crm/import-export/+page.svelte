@@ -384,12 +384,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 
 	.page-description {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -399,17 +399,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(30, 41, 59, 0.8);
+		background: var(--bg-elevated, #161b22);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -441,20 +441,20 @@
 		background: transparent;
 		border: 1px solid transparent;
 		border-radius: 10px;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.tab:hover {
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.tab.active {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.section {
@@ -464,12 +464,12 @@
 	.section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.section-description {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -484,7 +484,7 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		text-decoration: none;
@@ -507,25 +507,25 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 		flex-shrink: 0;
 	}
 
 	.type-info h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.25rem 0;
 	}
 
 	.type-info p {
 		font-size: 0.85rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.jobs-table {
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		overflow: hidden;
@@ -544,8 +544,8 @@
 	}
 
 	.jobs-table th {
-		background: rgba(30, 41, 59, 0.5);
-		color: #94a3b8;
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-secondary, #8b949e);
 		font-weight: 600;
 		font-size: 0.8rem;
 		text-transform: uppercase;
@@ -561,12 +561,12 @@
 		border-radius: 9999px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 		text-transform: capitalize;
 	}
 
 	.file-name {
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-family: monospace;
 		font-size: 0.85rem;
 	}
@@ -583,20 +583,20 @@
 	}
 
 	.status-badge.green {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
+		background: rgba(63, 185, 80, 0.15);
+		color: var(--success-emphasis, #3fb950);
 	}
 	.status-badge.red {
-		background: rgba(239, 68, 68, 0.15);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 	.status-badge.blue {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
+		background: rgba(88, 166, 255, 0.15);
+		color: var(--info-emphasis, #58a6ff);
 	}
 	.status-badge.gray {
-		background: rgba(100, 116, 139, 0.15);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.progress-info {
@@ -607,11 +607,11 @@
 
 	.error-count {
 		font-size: 0.75rem;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.date {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.85rem;
 	}
 
@@ -623,7 +623,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #ffd11a;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.85rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -639,9 +639,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		border-radius: 10px;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 </style>

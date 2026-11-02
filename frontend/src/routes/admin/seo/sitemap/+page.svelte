@@ -206,7 +206,7 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -233,7 +233,7 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0.75rem 0 0.5rem;
 	}
 
@@ -249,7 +249,7 @@
 	.actions-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -307,7 +307,7 @@
 	.info-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -327,7 +327,7 @@
 	.info-card h4 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.75rem;
 	}
 
@@ -372,7 +372,7 @@
 	.modal-header h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -392,8 +392,8 @@
 	}
 
 	.modal-body pre {
-		background: #1e293b;
-		color: #e2e8f0;
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		padding: 1.5rem;
 		border-radius: 6px;
 		overflow: auto;

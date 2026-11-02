@@ -198,7 +198,7 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -231,7 +231,7 @@
 	.status-card h3 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -251,7 +251,7 @@
 	}
 
 	.site-info strong {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-primary {
@@ -279,7 +279,7 @@
 	.actions-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -314,7 +314,7 @@
 	.sites-section h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1rem;
 	}
 
@@ -335,7 +335,7 @@
 
 	.site-url {
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.site-permission {

@@ -183,13 +183,12 @@
 		top: 100%;
 		z-index: var(--z-dropdown);
 		min-width: 180px;
-		background: #1e293b;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.75rem;
 		padding: 0.5rem;
 		box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
 		animation: dropdownIn 0.15s ease;
-		backdrop-filter: blur(20px);
 	}
 
 	@keyframes dropdownIn {
@@ -213,7 +212,7 @@
 
 	.menu-divider {
 		height: 1px;
-		background: rgba(148, 163, 184, 0.15);
+		background: var(--bg-hover, #252b33);
 		margin: 0.5rem 0;
 	}
 
@@ -225,7 +224,7 @@
 		padding: 0.625rem 0.875rem;
 		background: transparent;
 		border: none;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-family: inherit;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -237,7 +236,7 @@
 
 	.menu-item:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.15);
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.menu-item:focus-visible {
@@ -246,29 +245,29 @@
 	}
 
 	.menu-item.danger {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.menu-item.danger:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.15);
-		color: #fca5a5;
+		background: rgba(248, 81, 73, 0.15);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.menu-item.warning {
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.menu-item.warning:hover:not(:disabled) {
-		background: rgba(251, 191, 36, 0.15);
+		background: rgba(210, 153, 34, 0.15);
 		color: #fcd34d;
 	}
 
 	.menu-item.success {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.menu-item.success:hover:not(:disabled) {
-		background: rgba(16, 185, 129, 0.15);
+		background: rgba(63, 185, 80, 0.15);
 		color: #6ee7b7;
 	}
 

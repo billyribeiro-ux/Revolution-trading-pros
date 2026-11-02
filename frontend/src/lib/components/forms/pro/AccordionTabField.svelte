@@ -225,18 +225,18 @@
 	}
 
 	.required-marker {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-weight: 600;
 	}
 
 	:global(.chevron) {
 		transition: transform 0.2s;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.accordion-item.open :global(.chevron) {
 		transform: rotate(180deg);
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.accordion-content {
@@ -286,7 +286,7 @@
 		cursor: pointer;
 		font-size: 0.9375rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		white-space: nowrap;
 		transition: all 0.2s;
 	}
@@ -297,7 +297,7 @@
 	}
 
 	.tab-button.active {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border-bottom-color: #3b82f6;
 	}
 
@@ -361,7 +361,7 @@
 		margin-top: 0.5rem;
 		padding: 0.5rem 0.75rem;
 		background-color: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 	}

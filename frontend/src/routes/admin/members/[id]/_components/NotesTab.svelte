@@ -45,8 +45,8 @@
 
 <style>
 	.panel {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -56,13 +56,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.panel-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -72,12 +72,12 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 	}
 
 	.empty-state h4 {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 1rem 0 0.5rem;
 	}
 
@@ -88,15 +88,15 @@
 	.note-item {
 		position: relative;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 10px;
 		margin-bottom: 0.75rem;
 	}
 
 	.note-content {
 		font-size: 0.875rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		line-height: 1.5;
 		margin-bottom: 0.5rem;
 	}
@@ -105,7 +105,7 @@
 		display: flex;
 		gap: 1rem;
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.note-delete {
@@ -114,7 +114,7 @@
 		right: 0.75rem;
 		background: none;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		padding: 0.25rem;
 		opacity: 0;
@@ -126,7 +126,7 @@
 	}
 
 	.note-delete:hover {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-primary {
@@ -140,7 +140,7 @@
 		transition: all 0.2s;
 		border: none;
 		font-size: 0.875rem;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		color: var(--bg-base);
 	}
 

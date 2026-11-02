@@ -467,7 +467,7 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -537,7 +537,7 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.25rem;
 	}
 
@@ -640,7 +640,7 @@
 
 	.image-filename {
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.75rem;
 		font-size: 0.9rem;
 	}
@@ -658,17 +658,17 @@
 	}
 
 	.attribute-value {
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		flex: 1;
 	}
 
 	.attribute-value.empty {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-style: italic;
 	}
 
 	.attribute-value.suggested {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		font-family: monospace;
 		font-size: 0.8rem;
 	}
@@ -688,11 +688,11 @@
 	}
 
 	.issue.error {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.recommendation {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.settings-card {
@@ -705,7 +705,7 @@
 	.settings-card h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 1.25rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid #e5e5e5;

@@ -49,7 +49,6 @@
 				<span class="metric-value">{formatNumber(metrics.sent)}</span>
 				<span class="metric-label">Emails Sent</span>
 			</div>
-			<div class="metric-glow purple"></div>
 		</div>
 
 		<div class="metric-card green" in:scale={{ duration: 400, delay: 250 }}>
@@ -61,7 +60,6 @@
 				<span class="metric-label">Delivered</span>
 				<span class="metric-rate">{rates.delivery_rate.toFixed(1)}%</span>
 			</div>
-			<div class="metric-glow green"></div>
 		</div>
 
 		<div class="metric-card gold" in:scale={{ duration: 400, delay: 300 }}>
@@ -73,7 +71,6 @@
 				<span class="metric-label">Unique Opens</span>
 				<span class="metric-rate">{rates.unique_open_rate.toFixed(1)}%</span>
 			</div>
-			<div class="metric-glow gold"></div>
 		</div>
 
 		<div class="metric-card blue" in:scale={{ duration: 400, delay: 350 }}>
@@ -85,7 +82,6 @@
 				<span class="metric-label">Unique Clicks</span>
 				<span class="metric-rate">{rates.unique_click_rate.toFixed(1)}%</span>
 			</div>
-			<div class="metric-glow blue"></div>
 		</div>
 
 		<div class="metric-card orange" in:scale={{ duration: 400, delay: 400 }}>
@@ -97,7 +93,6 @@
 				<span class="metric-label">Bounced</span>
 				<span class="metric-rate">{rates.bounce_rate.toFixed(1)}%</span>
 			</div>
-			<div class="metric-glow orange"></div>
 		</div>
 
 		<div class="metric-card red" in:scale={{ duration: 400, delay: 450 }}>
@@ -109,7 +104,6 @@
 				<span class="metric-label">Unsubscribed</span>
 				<span class="metric-rate">{rates.unsubscribe_rate.toFixed(2)}%</span>
 			</div>
-			<div class="metric-glow red"></div>
 		</div>
 	</div>
 </section>
@@ -163,7 +157,7 @@
 		border-color: var(--admin-success-border, rgba(46, 160, 67, 0.3));
 	}
 	.metric-card.purple:hover {
-		border-color: rgba(139, 92, 246, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 	.metric-card.orange:hover {
 		border-color: var(--admin-warning-border, rgba(187, 128, 9, 0.3));
@@ -233,40 +227,6 @@
 		font-weight: 600;
 		color: var(--primary-500);
 		margin-top: 0.25rem;
-	}
-
-	.metric-glow {
-		position: absolute;
-		bottom: -50%;
-		left: -50%;
-		width: 200%;
-		height: 200%;
-		opacity: 0;
-		transition: opacity 0.3s;
-		pointer-events: none;
-	}
-
-	.metric-card:hover .metric-glow {
-		opacity: 1;
-	}
-
-	.metric-glow.gold {
-		background: radial-gradient(circle, var(--admin-widget-gold-bg) 0%, transparent 70%);
-	}
-	.metric-glow.blue {
-		background: radial-gradient(circle, var(--admin-widget-blue-bg) 0%, transparent 70%);
-	}
-	.metric-glow.green {
-		background: radial-gradient(circle, var(--admin-widget-green-bg) 0%, transparent 70%);
-	}
-	.metric-glow.purple {
-		background: radial-gradient(circle, var(--admin-widget-purple-bg) 0%, transparent 70%);
-	}
-	.metric-glow.orange {
-		background: radial-gradient(circle, var(--admin-widget-orange-bg) 0%, transparent 70%);
-	}
-	.metric-glow.red {
-		background: radial-gradient(circle, var(--admin-widget-red-bg) 0%, transparent 70%);
 	}
 
 	@media (max-width: 479.98px) {

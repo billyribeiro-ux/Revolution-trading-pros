@@ -428,7 +428,7 @@
 <style>
 	.funnels-page {
 		min-height: 100%;
-		background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+		background: var(--bg-base, #0d1117);
 		color: #ffffff;
 	}
 
@@ -482,7 +482,7 @@
 		width: 3rem;
 		height: 3rem;
 		border-radius: 1rem;
-		background: linear-gradient(135deg, #8b5cf6 0%, #9333ea 100%);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.2);
 	}
 
@@ -501,7 +501,7 @@
 	.table-muted,
 	.from-start span {
 		margin: 0;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.primary-action,
@@ -524,9 +524,9 @@
 
 	.primary-action {
 		border-radius: 0.75rem;
-		background: linear-gradient(90deg, #8b5cf6 0%, #9333ea 100%);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.25);
-		color: #ffffff;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 600;
 		line-height: 1.25rem;
@@ -534,7 +534,7 @@
 	}
 
 	.primary-action:hover:not(:disabled) {
-		background: linear-gradient(90deg, #a78bfa 0%, #a855f7 100%);
+		background: #a78bfa;
 		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.4);
 	}
 
@@ -554,7 +554,7 @@
 	.loading-spinner {
 		width: 2.5rem;
 		height: 2.5rem;
-		border: 4px solid rgb(139 92 246 / 0.2);
+		border: 4px solid rgba(230, 184, 0, 0.2);
 		border-top-color: #8b5cf6;
 		border-radius: 999px;
 		animation: spin 700ms linear infinite;
@@ -570,7 +570,6 @@
 	.analysis-card {
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.05);
-		backdrop-filter: blur(24px);
 	}
 
 	.state-card {
@@ -580,8 +579,8 @@
 	}
 
 	.state-card--error {
-		border-color: rgb(239 68 68 / 0.2);
-		background: rgb(239 68 68 / 0.1);
+		border-color: rgba(248, 81, 73, 0.2);
+		background: rgba(248, 81, 73, 0.1);
 	}
 
 	.state-card__icon {
@@ -589,13 +588,13 @@
 		height: 4rem;
 		border-radius: 1rem;
 		margin: 0 auto 1rem;
-		background: rgb(239 68 68 / 0.1);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.state-card__icon--violet {
-		background: rgb(139 92 246 / 0.1);
-		color: #a78bfa;
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.state-card h3 {
@@ -608,11 +607,11 @@
 
 	.state-card p {
 		margin: 0 0 1.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.state-card--error p {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.state-card__button {
@@ -624,23 +623,23 @@
 	}
 
 	.state-card__button--primary {
-		background: linear-gradient(90deg, #8b5cf6 0%, #9333ea 100%);
+		background: var(--primary-500, #e6b800);
 		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.25);
 	}
 
 	.state-card__button--primary:hover {
-		background: linear-gradient(90deg, #a78bfa 0%, #a855f7 100%);
+		background: #a78bfa;
 	}
 
 	.state-card__button--error {
-		border: 1px solid rgb(239 68 68 / 0.3);
-		background: rgb(239 68 68 / 0.2);
-		color: #f87171;
+		border: 1px solid rgba(248, 81, 73, 0.3);
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 		padding: 0.625rem 1.25rem;
 	}
 
 	.state-card__button--error:hover {
-		background: rgb(239 68 68 / 0.3);
+		background: rgba(248, 81, 73, 0.3);
 	}
 
 	.funnel-cards {
@@ -659,12 +658,12 @@
 	}
 
 	.funnel-card:hover {
-		border-color: rgb(139 92 246 / 0.3);
+		border-color: rgba(230, 184, 0, 0.3);
 		background: rgb(255 255 255 / 0.1);
 	}
 
 	.funnel-card.is-selected {
-		border-color: rgb(139 92 246 / 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 		box-shadow: 0 0 0 2px #8b5cf6;
 	}
 
@@ -738,7 +737,7 @@
 	}
 
 	.analysis-table thead {
-		background: rgb(30 41 59 / 0.5);
+		background: var(--bg-elevated, #161b22);
 	}
 
 	.analysis-table th,
@@ -749,7 +748,7 @@
 	}
 
 	.analysis-table th {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		letter-spacing: 0.05em;
@@ -783,8 +782,8 @@
 		width: 1.75rem;
 		height: 1.75rem;
 		border-radius: 0.5rem;
-		background: rgb(139 92 246 / 0.2);
-		color: #a78bfa;
+		background: rgba(230, 184, 0, 0.2);
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.75rem;
 		font-weight: 600;
 		line-height: 1rem;
@@ -798,11 +797,11 @@
 	}
 
 	.table-value--positive {
-		color: #34d399;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.table-value--negative {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.from-start {
@@ -815,13 +814,13 @@
 		width: 5rem;
 		height: 0.5rem;
 		border-radius: 999px;
-		background: #334155;
+		background: var(--bg-hover, #252b33);
 	}
 
 	.from-start__bar {
 		height: 100%;
 		border-radius: inherit;
-		background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+		background: var(--primary-500, #e6b800);
 	}
 
 	.from-start span {
@@ -837,7 +836,6 @@
 		align-items: center;
 		justify-content: center;
 		background: rgb(0 0 0 / 0.6);
-		backdrop-filter: blur(8px);
 		padding: 1rem;
 	}
 
@@ -848,7 +846,7 @@
 		overflow-y: auto;
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 1rem;
-		background: #0f172a;
+		background: var(--bg-base, #0d1117);
 		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.6);
 	}
 
@@ -879,7 +877,7 @@
 		height: 2rem;
 		border-radius: 0.5rem;
 		background: rgb(255 255 255 / 0.05);
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.funnel-modal__close:hover {
@@ -905,7 +903,7 @@
 
 	.form-field label,
 	.steps-header span {
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.25rem;
@@ -914,7 +912,7 @@
 	.form-control,
 	.step-input {
 		border: 1px solid rgb(255 255 255 / 0.1);
-		background: rgb(30 41 59 / 0.5);
+		background: var(--bg-elevated, #161b22);
 		color: #ffffff;
 		font: inherit;
 		outline: none;
@@ -944,12 +942,12 @@
 
 	.form-control::placeholder,
 	.step-input::placeholder {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.form-control:focus,
 	.step-input:focus {
-		border-color: rgb(139 92 246 / 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 		box-shadow: 0 0 0 2px rgb(139 92 246 / 0.5);
 	}
 
@@ -961,7 +959,7 @@
 
 	.steps-header__add {
 		background: transparent;
-		color: #a78bfa;
+		color: var(--primary-400, #ffd11a);
 		font-size: 0.875rem;
 		font-weight: 500;
 		line-height: 1.25rem;
@@ -969,7 +967,7 @@
 	}
 
 	.steps-header__add:hover {
-		color: #c4b5fd;
+		color: var(--primary-400, #ffd11a);
 	}
 
 	.steps-list {
@@ -988,13 +986,13 @@
 	.step-row__remove {
 		border-radius: 0.5rem;
 		background: transparent;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		padding: 0.5rem;
 	}
 
 	.step-row__remove:hover {
-		background: rgb(239 68 68 / 0.1);
-		color: #fca5a5;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.funnel-modal__footer {
@@ -1007,7 +1005,7 @@
 		border: 1px solid rgb(255 255 255 / 0.1);
 		border-radius: 0.75rem;
 		background: transparent;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		padding: 0.625rem 1.25rem;
 	}
 

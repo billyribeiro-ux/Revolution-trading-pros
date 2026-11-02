@@ -458,13 +458,13 @@
 	.header-left h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
 	.form-name {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.header-right {
@@ -526,7 +526,7 @@
 	}
 
 	.stat-card.primary {
-		background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+		background: #2563eb;
 		color: white;
 	}
 
@@ -565,7 +565,7 @@
 
 	.stat-label {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -586,7 +586,7 @@
 	.chart-section h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 1rem 0;
 	}
 
@@ -612,7 +612,7 @@
 
 	.bar {
 		width: 100%;
-		background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+		background: #2563eb;
 		border-radius: 2px 2px 0 0;
 		min-height: 2px;
 		transition: height 0.3s ease;
@@ -624,14 +624,14 @@
 
 	.bar-label {
 		font-size: 0.625rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		margin-top: 4px;
 	}
 
 	.chart-legend {
 		text-align: right;
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-top: 0.5rem;
 	}
 
@@ -655,7 +655,7 @@
 	.field-stats-table th {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 	}
 
@@ -674,7 +674,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+		background: #16a34a;
 		border-radius: 4px;
 		transition: width 0.3s ease;
 	}
@@ -686,11 +686,11 @@
 		transform: translateY(-50%);
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.high-dropoff {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-weight: 600;
 	}
 
@@ -718,7 +718,7 @@
 	.breakdown-card h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 1rem 0;
 	}
 
@@ -749,7 +749,7 @@
 	.donut-value {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	/* Funnel Chart */
@@ -770,12 +770,12 @@
 	.funnel-bar {
 		flex: 1;
 		height: 40px;
-		background: linear-gradient(90deg, #e5e7eb 0%, #d1d5db 100%);
+		background: #e5e7eb;
 		border-radius: 4px;
 	}
 
 	.funnel-bar.success {
-		background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+		background: #16a34a;
 	}
 
 	.funnel-label {
@@ -788,7 +788,7 @@
 		width: 50px;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		text-align: right;
 	}
 

@@ -300,7 +300,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -312,7 +312,7 @@
 		background-color: #f9fafb;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.5rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	:global(.spinner) {
@@ -338,14 +338,14 @@
 		background-color: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.retry-btn {
 		margin-left: auto;
 		padding: 0.25rem 0.75rem;
 		font-size: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		background-color: white;
 		border: 1px solid #fecaca;
 		border-radius: 0.25rem;
@@ -431,7 +431,7 @@
 	.no-options {
 		padding: 1rem;
 		text-align: center;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		background-color: #f9fafb;
 		border: 1px dashed #d1d5db;
 		border-radius: 0.5rem;
@@ -440,13 +440,13 @@
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

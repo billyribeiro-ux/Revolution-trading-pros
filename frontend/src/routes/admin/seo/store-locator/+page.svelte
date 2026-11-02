@@ -513,7 +513,7 @@
 		gap: 0.75rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin-bottom: 0.5rem;
 	}
 
@@ -578,7 +578,7 @@
 	.stat-value {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.stat-label {
@@ -645,7 +645,7 @@
 	.location-header h3 {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -654,14 +654,14 @@
 	}
 
 	.location-status .open {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
 	}
 
 	.location-status .closed {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
@@ -683,7 +683,7 @@
 	}
 
 	.detail a {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		text-decoration: none;
 	}
 
@@ -717,7 +717,7 @@
 	}
 
 	.action-btn.danger {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.action-btn.danger:hover {

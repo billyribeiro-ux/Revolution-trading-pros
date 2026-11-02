@@ -22,6 +22,16 @@
 		IconCheck
 	} from '#lib/icons/index.js';
 	import { onDestroy, untrack } from 'svelte';
+	import IconUserCircle from '@tabler/icons-svelte-runes/icons/user';
+	import IconClipboard from '@tabler/icons-svelte-runes/icons/clipboard';
+	import IconStar from '@tabler/icons-svelte-runes/icons/star';
+	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
+	import IconNote from '@tabler/icons-svelte-runes/icons/note';
+	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
+	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
+	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+	import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
+	import IconNews from '@tabler/icons-svelte-runes/icons/news';
 
 	interface Props {
 		isOpen: boolean;
@@ -140,11 +150,11 @@
 	];
 
 	const sections = [
-		{ id: 'basic', label: 'Basic Info', icon: '👤' },
-		{ id: 'profile', label: 'Profile', icon: '📋' },
-		{ id: 'membership', label: 'Membership', icon: '⭐' },
-		{ id: 'preferences', label: 'Preferences', icon: '⚙️' },
-		{ id: 'notes', label: 'Admin Notes', icon: '📝' }
+		{ id: 'basic', label: 'Basic Info', icon: IconUserCircle },
+		{ id: 'profile', label: 'Profile', icon: IconClipboard },
+		{ id: 'membership', label: 'Membership', icon: IconStar },
+		{ id: 'preferences', label: 'Preferences', icon: IconSettings },
+		{ id: 'notes', label: 'Admin Notes', icon: IconNote }
 	] as const;
 
 	// FIX P2-2 (audits/admin-2026-04-26/01-shell-and-dashboard.md): this file
@@ -403,7 +413,7 @@
 							</button>
 						</div>
 						<p class="password-warning">
-							⚠️ This password will not be shown again. Make sure to save it securely.
+							<IconAlertTriangle size={16} aria-hidden="true" /> This password will not be shown again. Make sure to save it securely.
 						</p>
 						<button type="button" class="btn-primary" onclick={closeAndClear}>Done</button>
 					</div>
@@ -411,12 +421,13 @@
 					<!-- Section Navigation -->
 					<div class="section-nav">
 						{#each sections as section (section.id)}
+							{@const SectionIcon = section.icon}
 							<button
 								type="button"
 								class={['section-tab', { active: activeSection === section.id }]}
 								onclick={() => (activeSection = section.id)}
 							>
-								<span class="tab-icon">{section.icon}</span>
+								<span class="tab-icon"><SectionIcon size={18} aria-hidden="true" /></span>
 								<span class="tab-label">{section.label}</span>
 							</button>
 						{/each}
@@ -432,7 +443,7 @@
 					>
 						{#if error}
 							<div class="error-banner">
-								<span class="error-icon">⚠️</span>
+								<span class="error-icon"><IconAlertTriangle size={16} aria-hidden="true" /></span>
 								{error}
 							</div>
 						{/if}
@@ -552,7 +563,7 @@
 											onclick={generatePassword}
 											disabled={isLoading}
 										>
-											🔐 Generate Strong Password
+											<IconLock size={16} aria-hidden="true" /> Generate Strong Password
 										</button>
 									</div>
 
@@ -788,7 +799,7 @@
 								<div class="preferences-grid">
 									<div class="preference-card">
 										<div class="preference-header">
-											<span class="preference-icon">🔐</span>
+											<span class="preference-icon"><IconLock size={24} aria-hidden="true" /></span>
 											<div class="preference-info">
 												<h4>Two-Factor Authentication</h4>
 												<p>Require 2FA for account login</p>
@@ -802,7 +813,7 @@
 
 									<div class="preference-card">
 										<div class="preference-header">
-											<span class="preference-icon">📧</span>
+											<span class="preference-icon"><IconMail size={24} aria-hidden="true" /></span>
 											<div class="preference-info">
 												<h4>Email Notifications</h4>
 												<p>Receive alerts and updates via email</p>
@@ -822,7 +833,7 @@
 
 									<div class="preference-card">
 										<div class="preference-header">
-											<span class="preference-icon">📱</span>
+											<span class="preference-icon"><IconDeviceMobile size={24} aria-hidden="true" /></span>
 											<div class="preference-info">
 												<h4>SMS Notifications</h4>
 												<p>Receive alerts via text message</p>
@@ -836,7 +847,7 @@
 
 									<div class="preference-card">
 										<div class="preference-header">
-											<span class="preference-icon">📰</span>
+											<span class="preference-icon"><IconNews size={24} aria-hidden="true" /></span>
 											<div class="preference-info">
 												<h4>Marketing Emails</h4>
 												<p>Receive promotional content</p>
@@ -908,24 +919,11 @@
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.85);
-		backdrop-filter: blur(12px) saturate(180%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		z-index: var(--z-modal);
 		padding: var(--space-6);
-		animation: backdropFadeIn var(--duration-normal) var(--ease-out);
-	}
-
-	@keyframes backdropFadeIn {
-		from {
-			opacity: 0;
-			backdrop-filter: blur(0px) saturate(100%);
-		}
-		to {
-			opacity: 1;
-			backdrop-filter: blur(12px) saturate(180%);
-		}
 	}
 
 	/* Sturdy Frame - Outer border effect */
@@ -933,13 +931,7 @@
 		position: relative;
 		border-radius: var(--radius-xl);
 		padding: 3px;
-		background: linear-gradient(
-			145deg,
-			rgba(230, 184, 0, 0.4) 0%,
-			rgba(230, 184, 0, 0.1) 30%,
-			rgba(100, 116, 139, 0.2) 70%,
-			rgba(230, 184, 0, 0.3) 100%
-		);
+		background: rgba(230, 184, 0, 0.4);
 		box-shadow:
 			0 0 0 1px rgba(0, 0, 0, 0.5),
 			0 30px 80px -20px rgba(0, 0, 0, 0.8),
@@ -961,12 +953,7 @@
 	}
 
 	.modal-container {
-		background: linear-gradient(
-			165deg,
-			var(--admin-surface-elevated) 0%,
-			var(--admin-surface-primary) 40%,
-			var(--admin-bg) 100%
-		);
+		background: var(--admin-surface-elevated);
 		border-radius: var(--radius-lg);
 		max-width: 640px;
 		width: 100%;
@@ -975,17 +962,6 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
-	}
-
-	.modal-container::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background:
-			radial-gradient(ellipse at 20% 0%, rgba(230, 184, 0, 0.08) 0%, transparent 50%),
-			radial-gradient(ellipse at 80% 100%, rgba(100, 116, 139, 0.06) 0%, transparent 50%);
-		pointer-events: none;
-		border-radius: 1.125rem;
 	}
 
 	/* ============================================
@@ -997,11 +973,7 @@
 		justify-content: space-between;
 		padding: var(--space-5) var(--space-6);
 		border-bottom: 1px solid var(--admin-border-subtle);
-		background: linear-gradient(
-			180deg,
-			var(--admin-surface-elevated) 0%,
-			var(--admin-surface-primary) 100%
-		);
+		background: var(--admin-surface-elevated);
 		position: relative;
 		z-index: 1;
 	}
@@ -1114,7 +1086,8 @@
 	}
 
 	.tab-icon {
-		font-size: 1rem;
+		display: inline-flex;
+		align-items: center;
 	}
 
 	.tab-label {
@@ -1130,20 +1103,7 @@
 		flex: 1;
 	}
 
-	.form-section {
-		animation: sectionFadeIn 0.25s ease;
-	}
-
-	@keyframes sectionFadeIn {
-		from {
-			opacity: 0;
-			transform: translateX(10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
+	
 
 	.section-header {
 		margin-bottom: var(--space-6);
@@ -1178,7 +1138,8 @@
 	}
 
 	.error-icon {
-		font-size: 1rem;
+		display: inline-flex;
+		align-items: center;
 	}
 
 	.form-grid {
@@ -1292,12 +1253,11 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		box-shadow: 0 0 6px currentColor;
 	}
 
 	.status-text {
 		font-size: 0.75rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Password Input */
@@ -1317,21 +1277,24 @@
 		transform: translateY(-50%);
 		background: none;
 		border: none;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		padding: 0.25rem;
 		transition: color 0.2s ease;
 	}
 
 	.btn-toggle-password:hover {
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.btn-generate {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
 		margin-top: 0.5rem;
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1) 0%, rgba(230, 184, 0, 0.05) 100%);
+		background: rgba(230, 184, 0, 0.1);
 		border: 1px dashed rgba(230, 184, 0, 0.4);
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 		padding: 0.625rem 1rem;
 		border-radius: 0.5rem;
 		font-size: 0.8125rem;
@@ -1368,9 +1331,9 @@
 	.checkbox-box {
 		width: 22px;
 		height: 22px;
-		border: 2px solid rgba(148, 163, 184, 0.3);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-base, #0d1117);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1385,7 +1348,7 @@
 
 	.checkbox-text {
 		font-size: 0.9375rem;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Tier Selector */
@@ -1400,10 +1363,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.15);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 0.5rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -1412,14 +1375,13 @@
 
 	.tier-option:hover {
 		border-color: var(--tier-color);
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tier-option.selected {
-		background: linear-gradient(135deg, rgba(var(--tier-color), 0.15) 0%, transparent 100%);
+		background: rgba(var(--tier-color), 0.15);
 		border-color: var(--tier-color);
-		color: #f1f5f9;
-		box-shadow: 0 0 12px rgba(var(--tier-color), 0.2);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.tier-badge {
@@ -1440,10 +1402,10 @@
 
 	.quick-btn {
 		padding: 0.5rem 0.75rem;
-		background: rgba(100, 116, 139, 0.15);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.375rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -1453,13 +1415,13 @@
 	.quick-btn:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 	}
 
 	/* Tags Input */
 	.tags-input-wrapper {
-		background: rgba(15, 23, 42, 0.7);
-		border: 1px solid rgba(148, 163, 184, 0.15);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 0.625rem;
 		padding: 0.5rem;
 		transition: all 0.2s ease;
@@ -1485,7 +1447,7 @@
 		background: rgba(230, 184, 0, 0.15);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 0.375rem;
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 		font-size: 0.8125rem;
 		font-weight: 500;
 	}
@@ -1502,7 +1464,7 @@
 	}
 
 	.tag-remove:hover {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.tag-input {
@@ -1510,14 +1472,14 @@
 		min-width: 100px;
 		background: transparent;
 		border: none;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.875rem;
 		padding: 0.375rem;
 		outline: none;
 	}
 
 	.tag-input::placeholder {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	/* Preferences Grid */
@@ -1532,15 +1494,15 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem 1.25rem;
-		background: rgba(15, 23, 42, 0.5);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 0.75rem;
 		transition: all 0.2s ease;
 	}
 
 	.preference-card:hover {
-		background: rgba(15, 23, 42, 0.7);
-		border-color: rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.preference-header {
@@ -1550,19 +1512,20 @@
 	}
 
 	.preference-icon {
-		font-size: 1.5rem;
+		display: inline-flex;
+		align-items: center;
 	}
 
 	.preference-info h4 {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.125rem;
 	}
 
 	.preference-info p {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
@@ -1584,7 +1547,7 @@
 	.toggle-slider {
 		position: absolute;
 		inset: 0;
-		background: rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
 		border-radius: 28px;
 		transition: all 0.3s ease;
 	}
@@ -1603,7 +1566,7 @@
 	}
 
 	.toggle-switch input:checked + .toggle-slider {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: #e6b800;
 	}
 
 	.toggle-switch input:checked + .toggle-slider::before {
@@ -1617,8 +1580,8 @@
 		display: flex;
 		gap: 0.875rem;
 		padding: 1.25rem 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.12);
-		background: linear-gradient(180deg, rgba(15, 23, 36, 0.95) 0%, rgba(10, 15, 22, 1) 100%);
+		border-top: 1px solid var(--border-muted, #21262d);
+		background: rgba(15, 23, 36, 0.95);
 	}
 
 	.btn-cancel,
@@ -1634,19 +1597,19 @@
 	}
 
 	.btn-cancel {
-		background: rgba(100, 116, 139, 0.15);
-		border: 1px solid rgba(100, 116, 139, 0.25);
-		color: #cbd5e1;
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-cancel:hover:not(:disabled) {
-		background: rgba(100, 116, 139, 0.25);
-		border-color: rgba(100, 116, 139, 0.4);
-		color: #f1f5f9;
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.btn-submit {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: #e6b800;
 		border: none;
 		color: #0d1117;
 		display: flex;
@@ -1659,7 +1622,7 @@
 	}
 
 	.btn-submit:hover:not(:disabled) {
-		background: linear-gradient(135deg, #f5c800 0%, #d4a600 100%);
+		background: #f5c800;
 		transform: translateY(-2px);
 		box-shadow:
 			0 8px 24px rgba(230, 184, 0, 0.35),
@@ -1707,21 +1670,8 @@
 	.success-ring {
 		position: absolute;
 		inset: 0;
-		border: 3px solid rgba(16, 185, 129, 0.2);
+		border: 3px solid rgba(63, 185, 80, 0.2);
 		border-radius: 50%;
-		animation: ringPulse 2s ease-in-out infinite;
-	}
-
-	@keyframes ringPulse {
-		0%,
-		100% {
-			transform: scale(1);
-			opacity: 1;
-		}
-		50% {
-			transform: scale(1.1);
-			opacity: 0.5;
-		}
 	}
 
 	.success-icon {
@@ -1730,32 +1680,22 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+		background: rgba(63, 185, 80, 0.2);
 		border-radius: 50%;
-		color: #34d399;
-		animation: iconBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	}
-
-	@keyframes iconBounce {
-		from {
-			transform: scale(0);
-		}
-		to {
-			transform: scale(1);
-		}
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.password-created h3 {
 		font-family: 'Montserrat', sans-serif;
 		font-size: 1.375rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.625rem;
 	}
 
 	.password-created p {
 		font-size: 0.9375rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1.25rem;
 		line-height: 1.5;
 	}
@@ -1765,8 +1705,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
-		background: rgba(15, 23, 42, 0.7);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.625rem;
 		padding: 1.125rem 1.25rem;
 		margin-bottom: 1rem;
@@ -1775,15 +1715,15 @@
 	.password-display code {
 		font-family: 'JetBrains Mono', 'SF Mono', monospace;
 		font-size: 1.0625rem;
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 		word-break: break-all;
 		letter-spacing: 0.025em;
 	}
 
 	.btn-copy {
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(100, 116, 139, 0.2);
-		color: #64748b;
+		background: var(--bg-hover, #252b33);
+		border: 1px solid var(--border-default, #30363d);
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		padding: 0.5rem;
 		border-radius: 0.375rem;
@@ -1793,18 +1733,22 @@
 	.btn-copy:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.password-warning {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
 		font-size: 0.875rem;
-		color: #fbbf24;
+		color: var(--warning-emphasis, #d29922);
 		margin-bottom: 1.75rem;
 		font-weight: 500;
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: #e6b800;
 		border: none;
 		color: #0d1117;
 		padding: 0.875rem 2.5rem;
@@ -1819,7 +1763,7 @@
 	}
 
 	.btn-primary:hover {
-		background: linear-gradient(135deg, #f5c800 0%, #d4a600 100%);
+		background: #f5c800;
 		transform: translateY(-2px);
 		box-shadow:
 			0 8px 24px rgba(230, 184, 0, 0.35),
@@ -1931,10 +1875,6 @@
 
 		.tab-label {
 			display: none;
-		}
-
-		.tab-icon {
-			font-size: 1.25rem;
 		}
 
 		/* Form reduced padding on mobile */

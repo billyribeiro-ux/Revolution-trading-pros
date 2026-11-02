@@ -297,33 +297,33 @@
 	}
 
 	.kpi-card--green {
-		border-color: rgb(34 197 94 / 0.2);
-		background: rgb(34 197 94 / 0.1);
-		color: #16a34a;
+		border-color: rgba(63, 185, 80, 0.2);
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.kpi-card--blue {
-		border-color: rgb(59 130 246 / 0.2);
-		background: rgb(59 130 246 / 0.1);
-		color: #2563eb;
+		border-color: rgba(88, 166, 255, 0.2);
+		background: rgba(88, 166, 255, 0.1);
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.kpi-card--purple {
-		border-color: rgb(168 85 247 / 0.2);
-		background: rgb(168 85 247 / 0.1);
+		border-color: rgba(230, 184, 0, 0.2);
+		background: rgba(230, 184, 0, 0.1);
 		color: #9333ea;
 	}
 
 	.kpi-card--orange {
-		border-color: rgb(249 115 22 / 0.2);
-		background: rgb(249 115 22 / 0.1);
-		color: #ea580c;
+		border-color: rgba(210, 153, 34, 0.2);
+		background: rgba(210, 153, 34, 0.1);
+		color: var(--warning-emphasis, #d29922);
 	}
 
 	.kpi-card--red {
-		border-color: rgb(239 68 68 / 0.2);
-		background: rgb(239 68 68 / 0.1);
-		color: #dc2626;
+		border-color: rgba(248, 81, 73, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.kpi-card--pink {
@@ -333,21 +333,21 @@
 	}
 
 	.kpi-card--cyan {
-		border-color: rgb(6 182 212 / 0.2);
-		background: rgb(6 182 212 / 0.1);
+		border-color: rgba(88, 166, 255, 0.2);
+		background: rgba(88, 166, 255, 0.1);
 		color: #0891b2;
 	}
 
 	.kpi-card--gold {
-		border-color: rgb(234 179 8 / 0.2);
-		background: rgb(234 179 8 / 0.1);
+		border-color: rgba(210, 153, 34, 0.2);
+		background: rgba(210, 153, 34, 0.1);
 		color: #ca8a04;
 	}
 
 	.kpi-card--gray {
 		border-color: rgb(107 114 128 / 0.2);
 		background: rgb(107 114 128 / 0.1);
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.kpi-card__anomaly-badge {
@@ -434,15 +434,15 @@
 	}
 
 	.kpi-card__trend--positive {
-		color: #22c55e;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.kpi-card__trend--negative {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.kpi-card__trend--neutral {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.kpi-card__trend-icon {
@@ -475,17 +475,17 @@
 	}
 
 	.kpi-card__target--on-track {
-		background: rgb(34 197 94 / 0.2);
-		color: #16a34a;
+		background: rgba(63, 185, 80, 0.2);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.kpi-card__target--at-risk {
-		background: rgb(234 179 8 / 0.2);
+		background: rgba(210, 153, 34, 0.2);
 		color: #ca8a04;
 	}
 
 	.kpi-card__target--behind {
-		background: rgb(239 68 68 / 0.2);
-		color: #dc2626;
+		background: rgba(248, 81, 73, 0.2);
+		color: var(--error-emphasis, #f85149);
 	}
 </style>

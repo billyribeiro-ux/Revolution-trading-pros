@@ -34,7 +34,7 @@
 
 	.progress-bar {
 		height: 8px;
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 		border-radius: 4px;
 		overflow: hidden;
 		margin-bottom: 0.5rem;
@@ -42,7 +42,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		transition: width 0.5s ease;
 	}
 
@@ -50,6 +50,6 @@
 		display: flex;
 		justify-content: space-between;
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 </style>

@@ -7,6 +7,7 @@
 
 /* SCOPED: Only applies within admin layout wrapper */
 .admin-layout,
+.admin-tokens,
 .admin-page-container {
 	/* Base spacing scale (4px increments) */
 	--space-0: 0;

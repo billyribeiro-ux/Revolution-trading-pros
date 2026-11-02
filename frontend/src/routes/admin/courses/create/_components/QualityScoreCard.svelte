@@ -53,16 +53,15 @@
 <style>
 	/* Mirrors the original +page.svelte rules so the card renders identically. */
 	.validation-card {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		padding: 1.25rem;
-		backdrop-filter: blur(10px);
 	}
 
 	.validation-card h3 {
 		font-size: 1.05rem;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem 0;
 		font-weight: 600;
 	}
@@ -87,7 +86,7 @@
 		transform: translate(-50%, -50%);
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.validation-items {
@@ -101,27 +100,27 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.625rem 0.875rem;
-		background: rgba(148, 163, 184, 0.05);
+		background: var(--bg-surface, #1c2128);
 		border-radius: 6px;
 		font-size: 0.875rem;
 	}
 
 	.validation-item.good {
-		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
-		border: 1px solid rgba(16, 185, 129, 0.2);
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
+		border: 1px solid rgba(63, 185, 80, 0.2);
 	}
 
 	.validation-item.warning {
-		background: rgba(245, 158, 11, 0.1);
-		color: #f59e0b;
-		border: 1px solid rgba(245, 158, 11, 0.2);
+		background: rgba(210, 153, 34, 0.1);
+		color: var(--warning-emphasis, #d29922);
+		border: 1px solid rgba(210, 153, 34, 0.2);
 	}
 
 	.validation-item.error {
-		background: rgba(239, 68, 68, 0.1);
-		color: #ef4444;
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.2);
 	}
 
 	.item-score {

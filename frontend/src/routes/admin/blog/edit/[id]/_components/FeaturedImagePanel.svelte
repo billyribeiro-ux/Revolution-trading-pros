@@ -102,7 +102,7 @@
 	.sidebar-panel h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid #f0f0f0;
@@ -114,7 +114,7 @@
 		border: 1px solid #e5e5e5;
 		border-radius: 6px;
 		font-size: 0.9rem;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		background: white;
 	}
 
@@ -133,7 +133,7 @@
 
 	.upload-box:hover {
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.upload-box span {
@@ -147,7 +147,7 @@
 	}
 
 	.upload-error {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.85rem;
 		margin-top: 0.5rem;
 		text-align: center;
@@ -188,7 +188,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem 1rem;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.upload-loading span {
@@ -209,7 +209,7 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		resize: vertical;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		background: white;
 	}
 
@@ -229,7 +229,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.95rem;
 	}
 

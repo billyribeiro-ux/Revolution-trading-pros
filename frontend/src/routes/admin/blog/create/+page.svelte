@@ -761,7 +761,7 @@
 	.editor-header h1 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -776,7 +776,7 @@
 		background: #fef2f2;
 		border: 1px solid #fecaca;
 		border-radius: 6px;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -786,7 +786,7 @@
 		background: #f0fdf4;
 		border: 1px solid #bbf7d0;
 		border-radius: 6px;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
@@ -854,7 +854,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.95rem;
 	}
 
@@ -866,7 +866,7 @@
 		border: none;
 		border-radius: 8px;
 		background: white;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		outline: none;
 	}
 
@@ -897,7 +897,7 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		background: white;
 	}
 
@@ -910,7 +910,7 @@
 		font-family: inherit;
 		resize: vertical;
 		background: white;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 	}
 
 	textarea:focus {
@@ -939,7 +939,7 @@
 	.panel-header h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -963,7 +963,7 @@
 	.sidebar-panel h3 {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 1rem;
 		padding-bottom: 0.75rem;
 		border-bottom: 1px solid #f0f0f0;
@@ -976,7 +976,7 @@
 		border: 1px solid #e5e5e5;
 		border-radius: 6px;
 		font-size: 0.9rem;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		background: white;
 	}
 
@@ -999,7 +999,7 @@
 
 	.upload-box:hover {
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.upload-box span {
@@ -1083,12 +1083,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(100, 116, 139, 0.1);
-		border: 1px solid rgba(100, 116, 139, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 6px;
 		font-size: 0.8rem;
 		font-weight: 500;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -1111,14 +1111,14 @@
 		gap: 0.5rem;
 		margin-top: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(59, 130, 246, 0.05);
-		border: 1px solid rgba(59, 130, 246, 0.1);
+		background: rgba(88, 166, 255, 0.05);
+		border: 1px solid rgba(88, 166, 255, 0.1);
 		border-radius: 8px;
 	}
 
 	.selected-count {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		margin-right: 0.5rem;
 		width: 100%;
 	}
@@ -1169,7 +1169,7 @@
 		font-size: 0.85rem;
 		font-weight: 500;
 		background: color-mix(in srgb, var(--tag-color, #64748b) 12.5%, transparent);
-		color: var(--tag-color, #64748b);
+		color: var(--tag-color, var(--text-tertiary, #6e7681));
 	}
 
 	.tag-badge button {
@@ -1183,7 +1183,7 @@
 	}
 
 	.tag-option-name {
-		color: var(--tag-color, #64748b);
+		color: var(--tag-color, var(--text-tertiary, #6e7681));
 	}
 
 	.tag-input-group {
@@ -1219,7 +1219,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem 1rem;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.upload-loading span {
@@ -1247,7 +1247,7 @@
 	}
 
 	.upload-error {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.85rem;
 		margin-top: 0.5rem;
 		text-align: center;
@@ -1261,7 +1261,7 @@
 		font-size: 0.9rem;
 		font-family: inherit;
 		resize: vertical;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		background: white;
 	}
 
@@ -1305,7 +1305,7 @@
 
 	.editor-label {
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.95rem;
 		margin: 0;
 	}
@@ -1331,7 +1331,7 @@
 
 	.toolbar-btn:hover {
 		background: #f0f0f0;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	/* Make BlockEditor take full height */

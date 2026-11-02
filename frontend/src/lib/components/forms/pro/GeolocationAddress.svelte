@@ -343,7 +343,7 @@
 	}
 
 	.required-marker {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -388,7 +388,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-size: 0.8125rem;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.coordinates {
@@ -401,20 +401,20 @@
 		padding: 0.25rem;
 		background: none;
 		border: none;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		border-radius: 0.25rem;
 	}
 
 	.clear-location:hover {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		background-color: #fef2f2;
 	}
 
 	.geolocation-error {
 		padding: 0.5rem 0.75rem;
 		background-color: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 0.375rem;
 		font-size: 0.8125rem;
 		margin-bottom: 1rem;
@@ -439,12 +439,12 @@
 	.field-row label {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.optional {
 		font-weight: 400;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.field-row input {
@@ -463,7 +463,7 @@
 	}
 
 	.field-row input::placeholder {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.map-preview {
@@ -514,7 +514,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		margin-top: 0.75rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.8125rem;
 	}
 

@@ -609,7 +609,7 @@
 	.styler-title {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0;
 	}
 
@@ -627,7 +627,7 @@
 		background-color: #f9fafb;
 		border: 1px solid #e5e7eb;
 		border-radius: 0.375rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -643,7 +643,7 @@
 		border: 1px solid #e5e7eb;
 		border-radius: 0.375rem;
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -669,7 +669,7 @@
 		border-radius: 0.375rem;
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -680,7 +680,7 @@
 
 	.tab.active {
 		background-color: white;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
 
@@ -703,7 +703,7 @@
 
 	.setting-row label {
 		font-size: 0.8125rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		flex-shrink: 0;
 	}
 
@@ -783,7 +783,7 @@
 
 	.preview-field input::placeholder,
 	.preview-field textarea::placeholder {
-		color: var(--form-input-placeholder-color, #9ca3af);
+		color: var(--form-input-placeholder-color, var(--text-secondary, #8b949e));
 	}
 
 	.preview-field input:focus,

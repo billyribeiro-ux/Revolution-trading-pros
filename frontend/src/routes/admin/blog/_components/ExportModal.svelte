@@ -101,8 +101,8 @@
 	}
 
 	.modal {
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.3);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		width: 90%;
 		max-width: 600px;
@@ -117,13 +117,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -138,7 +138,7 @@
 		justify-content: flex-end;
 		gap: 1rem;
 		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.2);
+		border-top: 1px solid var(--border-default, #30363d);
 	}
 
 	.export-options {
@@ -153,29 +153,29 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		cursor: pointer;
-		color: #cbd5e1;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.2s;
 	}
 
 	.export-options label:hover {
-		border-color: rgba(59, 130, 246, 0.3);
+		border-color: rgba(88, 166, 255, 0.3);
 	}
 
 	.export-options label:has(:global(input[type='radio']:checked)) {
-		background: rgba(59, 130, 246, 0.1);
+		background: rgba(88, 166, 255, 0.1);
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.export-info {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.9rem;
 		padding: 1rem;
-		background: rgba(59, 130, 246, 0.1);
+		background: rgba(88, 166, 255, 0.1);
 		border-radius: 8px;
 	}
 
@@ -196,7 +196,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 	}
@@ -207,14 +207,14 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.btn-icon {

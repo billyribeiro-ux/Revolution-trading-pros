@@ -264,7 +264,7 @@
 	}
 
 	.required {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin-left: 0.25rem;
 	}
 
@@ -293,7 +293,7 @@
 	.row-number {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.row-actions {
@@ -311,7 +311,7 @@
 		border: none;
 		border-radius: 0.25rem;
 		background-color: transparent;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
@@ -328,7 +328,7 @@
 
 	.remove-btn:hover:not(:disabled) {
 		background-color: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.row-fields {
@@ -353,7 +353,7 @@
 		display: block;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 0.25rem;
 	}
 
@@ -392,7 +392,7 @@
 		border: 2px dashed #d1d5db;
 		border-radius: 0.5rem;
 		background-color: white;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -401,7 +401,7 @@
 
 	.add-row-btn:hover:not(:disabled) {
 		border-color: #3b82f6;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		background-color: #eff6ff;
 	}
 
@@ -412,20 +412,20 @@
 
 	.max-rows-notice {
 		font-size: 0.75rem;
-		color: #f59e0b;
+		color: var(--warning-emphasis, #d29922);
 		text-align: center;
 		margin: 0;
 	}
 
 	.help-text {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0;
 	}
 
 	.error-text {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 		margin: 0;
 	}
 

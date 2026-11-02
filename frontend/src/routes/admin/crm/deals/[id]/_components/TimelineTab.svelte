@@ -42,8 +42,8 @@
 
 <style>
 	.timeline-section {
-		background: #1e293b;
-		border: 1px solid #334155;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 14px;
 		padding: 20px;
 	}
@@ -57,7 +57,7 @@
 		display: flex;
 		gap: 16px;
 		padding: 16px 0;
-		border-bottom: 1px solid #334155;
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.timeline-item:last-child {
@@ -92,19 +92,19 @@
 
 	.timeline-time {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		white-space: nowrap;
 	}
 
 	.timeline-description {
 		margin: 0 0 4px;
 		font-size: 0.85rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.timeline-author {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state {
@@ -114,11 +114,11 @@
 		justify-content: center;
 		padding: 60px 20px;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.empty-state :global(svg) {
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 16px;
 	}
 

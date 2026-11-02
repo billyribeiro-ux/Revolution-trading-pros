@@ -45,7 +45,7 @@
 		gap: 12px;
 	}
 	.back-link {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		font-size: 14px;
 	}

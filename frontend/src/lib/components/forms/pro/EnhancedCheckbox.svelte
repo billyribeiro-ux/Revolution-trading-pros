@@ -310,21 +310,21 @@
 	}
 
 	.other-input::placeholder {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.selection-hint {
 		font-size: 0.8125rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.selection-count {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.required-note {
 		font-size: 0.75rem;
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	/* Disabled State */
@@ -345,7 +345,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.8125rem;
 	}
 

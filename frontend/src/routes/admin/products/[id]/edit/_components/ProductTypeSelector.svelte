@@ -59,23 +59,23 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 12px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.type-option:hover {
-		border-color: rgba(148, 163, 184, 0.4);
-		color: #f1f5f9;
+		border-color: var(--border-default, #30363d);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.type-option.selected {
 		border-color: var(--type-color);
 		background: color-mix(in srgb, var(--type-color) 10%, transparent);
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.type-option span {

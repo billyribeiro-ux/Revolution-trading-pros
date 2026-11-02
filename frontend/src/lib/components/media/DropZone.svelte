@@ -252,7 +252,7 @@
 	}
 
 	:global(.dark) .dropzone {
-		border-color: #4b5563;
+		border-color: var(--border-default, #30363d);
 		background-color: rgba(31, 41, 55, 0.5);
 	}
 
@@ -313,13 +313,13 @@
 	}
 
 	.dropzone :global(.dropzone__upload-icon) {
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		animation: dropzone-bounce 1s infinite;
 	}
 
 	.dropzone :global(.dropzone__photo-icon) {
 		margin-bottom: 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.dropzone__drop-label,
@@ -331,7 +331,7 @@
 	}
 
 	.dropzone__drop-label {
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.dropzone__title {
@@ -340,25 +340,25 @@
 	}
 
 	:global(.dark) .dropzone__title {
-		color: #d1d5db;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.dropzone__subtitle {
 		margin: 0 0 1rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.25rem;
 	}
 
 	:global(.dark) .dropzone__subtitle {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.dropzone__requirements {
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
@@ -368,7 +368,7 @@
 	}
 
 	:global(.dark) .dropzone__requirements {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	@keyframes dropzone-bounce {

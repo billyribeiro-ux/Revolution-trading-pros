@@ -392,7 +392,7 @@
 	.import-page {
 		min-height: 100vh;
 		background: #f9fafb;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.page-header {
@@ -447,7 +447,7 @@
 		width: 2.25rem;
 		height: 2.25rem;
 		border-radius: 8px;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-decoration: none;
 		transition:
 			background-color 0.2s ease,
@@ -464,7 +464,7 @@
 		height: 2.5rem;
 		border-radius: 8px;
 		background: #e0e7ff;
-		color: #4f46e5;
+		color: var(--primary-500, #e6b800);
 	}
 
 	h1,
@@ -488,7 +488,7 @@
 	.drop-copy,
 	.selected-file-size,
 	.source-card p {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -514,7 +514,7 @@
 	.panel-title,
 	.source-section h2 {
 		margin-bottom: 0;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 700;
 		line-height: 1.4;
@@ -534,22 +534,22 @@
 
 	.status-pill--success {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.status-pill--danger {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.status-pill--info {
 		background: #dbeafe;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.status-pill--neutral {
 		background: #f3f4f6;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.progress-section {
@@ -560,7 +560,7 @@
 		justify-content: space-between;
 		gap: 1rem;
 		margin-bottom: 0.5rem;
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 		line-height: 1.5;
 	}
@@ -575,7 +575,7 @@
 	.progress-bar {
 		height: 100%;
 		border-radius: inherit;
-		background: #4f46e5;
+		background: var(--primary-500, #e6b800);
 		transition: width 0.2s ease;
 	}
 
@@ -593,17 +593,17 @@
 
 	.result-icon--success {
 		background: #dcfce7;
-		color: #16a34a;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.result-icon--danger {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.result-state h3 {
 		margin-bottom: 0.5rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -639,8 +639,8 @@
 	.file-picker span {
 		justify-content: center;
 		gap: 0.5rem;
-		background: #4f46e5;
-		color: #ffffff;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 	}
 
 	.primary-action:hover,
@@ -709,7 +709,7 @@
 		margin-bottom: 1rem;
 		border: 0;
 		background: transparent;
-		color: #4f46e5;
+		color: var(--primary-500, #e6b800);
 		font: inherit;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -738,7 +738,7 @@
 		justify-content: center;
 		gap: 0.75rem;
 		margin-bottom: 1rem;
-		color: #4f46e5;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.selected-file-details {
@@ -746,7 +746,7 @@
 	}
 
 	.selected-file-name {
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-weight: 600;
 		line-height: 1.4;
 	}
@@ -755,18 +755,18 @@
 		display: grid;
 		border: 0;
 		background: transparent;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		place-items: center;
 	}
 
 	.clear-file:hover {
-		color: #4b5563;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.drop-icon {
 		margin: 0 auto 1rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.drop-copy {
@@ -865,7 +865,7 @@
 
 	.source-card h3 {
 		margin-bottom: 0.125rem;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		font-size: 1.125rem;
 		font-weight: 600;
 		line-height: 1.4;
@@ -900,26 +900,26 @@
 
 	@media (prefers-color-scheme: dark) {
 		.import-page {
-			background: #111827;
-			color: #f9fafb;
-		}
+			background: var(--bg-base, #0d1117);
+			color: var(--text-primary, #f0f6fc);
+	}
 
 		.page-header,
 		.panel,
 		.source-card {
-			border-color: #374151;
-			background: #1f2937;
-		}
+			border-color: var(--border-default, #30363d);
+			background: var(--bg-elevated, #161b22);
+	}
 
 		.back-link {
-			color: #9ca3af;
-		}
+			color: var(--text-secondary, #8b949e);
+	}
 
 		.back-link:hover,
 		.secondary-action:hover {
-			background: #374151;
-			color: #e5e7eb;
-		}
+			background: var(--bg-hover, #252b33);
+			color: var(--text-primary, #f0f6fc);
+	}
 
 		h1,
 		.panel-header h2,
@@ -938,12 +938,12 @@
 		.selected-file-size,
 		.source-card p,
 		.progress-header {
-			color: #9ca3af;
-		}
+			color: var(--text-secondary, #8b949e);
+	}
 
 		.progress-track {
-			background: #374151;
-		}
+			background: var(--bg-hover, #252b33);
+	}
 
 		.status-pill--success,
 		.result-icon--success {
@@ -953,23 +953,23 @@
 		.status-pill--danger,
 		.result-icon--danger,
 		.error-callout {
-			background: rgba(220, 38, 38, 0.16);
-		}
+			background: rgba(248, 81, 73, 0.16);
+	}
 
 		.status-pill--info,
 		.title-icon,
 		.drop-zone--active {
-			background: rgba(79, 70, 229, 0.24);
-		}
+			background: rgba(230, 184, 0, 0.24);
+	}
 
 		.status-pill--neutral {
-			background: #374151;
-			color: #d1d5db;
-		}
+			background: var(--bg-hover, #252b33);
+			color: var(--text-secondary, #8b949e);
+	}
 
 		.secondary-action {
-			color: #d1d5db;
-		}
+			color: var(--text-secondary, #8b949e);
+	}
 
 		.warning-callout {
 			border-color: #854d0e;
@@ -982,8 +982,8 @@
 		}
 
 		.drop-zone {
-			border-color: #4b5563;
-		}
+			border-color: var(--border-default, #30363d);
+	}
 
 		.help-panel {
 			border-color: #1e3a8a;

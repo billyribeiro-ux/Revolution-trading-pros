@@ -256,7 +256,7 @@
 	}
 
 	.save-button:hover:not(:disabled) {
-		background-color: #4b5563;
+		background-color: var(--bg-active, #2d333b);
 	}
 
 	.save-button:disabled {
@@ -271,7 +271,7 @@
 		padding: 0.25rem;
 		background: none;
 		border: none;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: color 0.2s;
@@ -283,7 +283,7 @@
 	}
 
 	.save-link:disabled {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: not-allowed;
 	}
 
@@ -300,7 +300,7 @@
 	.spinner-small {
 		width: 14px;
 		height: 14px;
-		border-color: rgba(37, 99, 235, 0.3);
+		border-color: rgba(88, 166, 255, 0.3);
 		border-top-color: #2563eb;
 	}
 
@@ -338,7 +338,7 @@
 		right: 1rem;
 		background: none;
 		border: none;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		padding: 0.25rem;
 	}
@@ -355,7 +355,7 @@
 		height: 64px;
 		background-color: #eff6ff;
 		border-radius: 50%;
-		color: #2563eb;
+		color: var(--info-emphasis, #58a6ff);
 		margin-bottom: 1rem;
 	}
 
@@ -367,20 +367,20 @@
 		height: 80px;
 		background-color: #ecfdf5;
 		border-radius: 50%;
-		color: #059669;
+		color: var(--success-emphasis, #3fb950);
 		margin-bottom: 1rem;
 	}
 
 	.modal-title {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 		margin: 0 0 0.5rem;
 	}
 
 	.modal-description {
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1.5rem;
 	}
 
@@ -486,7 +486,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
 		background-color: #fef2f2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		margin-top: 0.5rem;

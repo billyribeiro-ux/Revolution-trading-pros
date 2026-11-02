@@ -11,9 +11,8 @@
 
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
-	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
+	import IconGauge from '@tabler/icons-svelte-runes/icons/gauge';
 	import IconPlugConnectedX from '@tabler/icons-svelte-runes/icons/plug-connected-x';
-	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 	import IconAlertTriangle from '@tabler/icons-svelte-runes/icons/alert-triangle';
 	import IconCircleCheck from '@tabler/icons-svelte-runes/icons/circle-check';
 	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
@@ -167,32 +166,35 @@
 
 <div class="rate-limit-container">
 	<button
+		type="button"
 		class={[
+			'icon-btn',
 			'rate-limit-btn',
 			{
 				warning: overallStatus === 'warning',
 				critical: overallStatus === 'critical',
-				disconnected: overallStatus === 'none'
+				ok: overallStatus === 'ok'
 			}
 		]}
 		onclick={(e: MouseEvent) => {
 			e.stopPropagation();
 			toggle();
 		}}
-		title="API Rate Limits"
+		title="API rate limits"
+		aria-label={hasConnectedServices
+			? `API rate limits, lowest remaining ${Math.round(lowestPercentage ?? 0)}%`
+			: 'API rate limits, no services connected'}
+		aria-haspopup="menu"
+		aria-expanded={isOpen}
 	>
 		{#if hasConnectedServices}
-			<IconPlugConnected size={18} />
-			<span class="limit-percentage"
-				>{lowestPercentage !== null ? Math.round(lowestPercentage ?? 0) : '--'}%</span
-			>
+			<IconGauge size={18} aria-hidden="true" />
 		{:else}
-			<IconPlugConnectedX size={18} />
-			<span class="limit-percentage">--</span>
+			<IconPlugConnectedX size={18} aria-hidden="true" />
 		{/if}
-		<span class={['chevron', { rotated: isOpen }]}>
-			<IconChevronDown size={14} />
-		</span>
+		{#if overallStatus !== 'none'}
+			<span class="status-dot" aria-hidden="true"></span>
+		{/if}
 	</button>
 
 	{#if isOpen}
@@ -285,61 +287,30 @@
 		position: relative;
 	}
 
-	.rate-limit-btn {
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		padding: 0.5rem 0.75rem;
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.2);
-		border-radius: 8px;
-		color: #10b981;
-		font-size: 0.8125rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
+	/* Sizing, hover and focus come from the shared `.icon-btn` in admin.css so the
+	   header toolbar stays uniform. Only the status dot is local. */
+	.status-dot {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		width: 8px;
+		height: 8px;
+		border-radius: var(--radius-full, 9999px);
+		background: var(--text-tertiary, #6e7681);
+		border: 2px solid var(--bg-surface, #1c2128);
+		box-sizing: content-box;
 	}
 
-	.rate-limit-btn:hover {
-		background: rgba(16, 185, 129, 0.2);
+	.rate-limit-btn.ok .status-dot {
+		background: var(--success-emphasis, #3fb950);
 	}
 
-	.rate-limit-btn.warning {
-		background: rgba(245, 158, 11, 0.1);
-		border-color: rgba(245, 158, 11, 0.2);
-		color: #f59e0b;
+	.rate-limit-btn.warning .status-dot {
+		background: var(--warning-emphasis, #d29922);
 	}
 
-	.rate-limit-btn.warning:hover {
-		background: rgba(245, 158, 11, 0.2);
-	}
-
-	.rate-limit-btn.critical {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.2);
-		color: #ef4444;
-	}
-
-	.rate-limit-btn.critical:hover {
-		background: rgba(239, 68, 68, 0.2);
-	}
-
-	.rate-limit-btn.disconnected {
-		background: rgba(107, 114, 128, 0.1);
-		border-color: rgba(107, 114, 128, 0.2);
-		color: #6b7280;
-	}
-
-	.rate-limit-btn.disconnected:hover {
-		background: rgba(107, 114, 128, 0.2);
-	}
-
-	.chevron {
-		transition: transform 0.2s ease;
-	}
-
-	.chevron.rotated {
-		transform: rotate(180deg);
+	.rate-limit-btn.critical .status-dot {
+		background: var(--error-emphasis, #f85149);
 	}
 
 	.rate-limit-dropdown {
@@ -347,23 +318,24 @@
 		top: calc(100% + 0.5rem);
 		right: 0;
 		width: 320px;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 14px;
-		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+		max-width: calc(100vw - 2rem);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: var(--radius-xl, 10px);
+		box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.35));
 		overflow: hidden;
-		z-index: 100;
+		z-index: var(--z-dropdown, 100);
 	}
 
 	.dropdown-header {
 		padding: 1rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.dropdown-header h4 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.375rem 0;
 	}
 
@@ -374,7 +346,6 @@
 		font-size: 0.75rem;
 	}
 
-	/* Loading State */
 	.limits-loading {
 		display: flex;
 		flex-direction: column;
@@ -382,15 +353,15 @@
 		justify-content: center;
 		padding: 2rem;
 		gap: 0.75rem;
-		color: #64748b;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.8125rem;
 	}
 
 	.loading-spinner {
 		width: 24px;
 		height: 24px;
-		border: 2px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 2px solid var(--border-default, #30363d);
+		border-top-color: var(--primary-500, #e6b800);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -401,7 +372,12 @@
 		}
 	}
 
-	/* No Services State */
+	@media (prefers-reduced-motion: reduce) {
+		.loading-spinner {
+			animation-duration: 2s;
+		}
+	}
+
 	.no-services {
 		display: flex;
 		flex-direction: column;
@@ -413,25 +389,25 @@
 	.no-services-icon {
 		width: 56px;
 		height: 56px;
-		border-radius: 14px;
-		background: rgba(107, 114, 128, 0.1);
+		border-radius: var(--radius-xl, 10px);
+		background: var(--bg-surface, #1c2128);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 1rem;
 	}
 
 	.no-services-title {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.no-services-desc {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1rem 0;
 		line-height: 1.5;
 	}
@@ -439,41 +415,31 @@
 	.connect-btn {
 		display: inline-flex;
 		align-items: center;
-		padding: 0.625rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		min-height: 36px;
+		padding: 0 1.25rem;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		font-size: 0.8125rem;
 		font-weight: 600;
-		border-radius: 8px;
+		border-radius: var(--radius-md, 6px);
 		text-decoration: none;
-		transition: all 0.2s;
+		transition: background-color 0.2s ease;
 	}
 
 	.connect-btn:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+		background: var(--primary-400, #ffd11a);
 	}
 
-	/* Limits List */
 	.limits-list {
 		padding: 0.75rem;
 		max-height: 300px;
 		overflow-y: auto;
 	}
 
-	.limits-list::-webkit-scrollbar {
-		width: 4px;
-	}
-
-	.limits-list::-webkit-scrollbar-thumb {
-		background: rgba(99, 102, 241, 0.3);
-		border-radius: 2px;
-	}
-
 	.limit-item {
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.05);
-		border-radius: 10px;
+		background: var(--bg-surface, #1c2128);
+		border-radius: var(--radius-lg, 8px);
 		margin-bottom: 0.5rem;
 	}
 
@@ -491,7 +457,7 @@
 	.service-name {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.limit-status {
@@ -501,7 +467,7 @@
 
 	.limit-bar-container {
 		height: 4px;
-		background: rgba(99, 102, 241, 0.1);
+		background: var(--bg-base, #0d1117);
 		border-radius: 2px;
 		overflow: hidden;
 		margin-bottom: 0.5rem;
@@ -523,23 +489,23 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		font-size: 0.6875rem;
-		color: #64748b;
+		font-size: 0.75rem;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.percentage {
-		font-size: 0.6875rem;
-		color: #94a3b8;
+		font-size: 0.75rem;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.dropdown-footer {
 		padding: 0.75rem 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-		background: rgba(15, 23, 42, 0.5);
+		border-top: 1px solid var(--border-muted, #21262d);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.footer-note {
-		font-size: 0.6875rem;
-		color: #64748b;
+		font-size: 0.75rem;
+		color: var(--text-secondary, #8b949e);
 	}
 </style>

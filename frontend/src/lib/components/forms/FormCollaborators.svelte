@@ -407,7 +407,7 @@
 		margin: 0;
 		font-size: 1rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.btn-invite {
@@ -484,7 +484,7 @@
 	.loading {
 		padding: 2rem;
 		text-align: center;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.section {
@@ -502,7 +502,7 @@
 		gap: 0.5rem;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 0.75rem;
@@ -513,17 +513,6 @@
 		height: 8px;
 		background: #10b981;
 		border-radius: 50%;
-		animation: pulse 2s infinite;
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.5;
-		}
 	}
 
 	.active-users {
@@ -595,12 +584,12 @@
 	.collab-name {
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.collab-email {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -612,11 +601,11 @@
 	}
 
 	.status {
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.status.online {
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.collab-actions {
@@ -642,7 +631,7 @@
 		justify-content: center;
 		background: none;
 		border: none;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 1.25rem;
 		cursor: pointer;
 		border-radius: 0.25rem;
@@ -651,7 +640,7 @@
 
 	.btn-remove:hover {
 		background: #fee2e2;
-		color: #dc2626;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.empty-state {
@@ -660,14 +649,14 @@
 	}
 
 	.empty-state p {
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		margin: 0 0 1rem 0;
 	}
 
 	.btn-invite-first {
 		padding: 0.5rem 1rem;
 		background: #eff6ff;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		border: 1px solid #3b82f6;
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
@@ -710,13 +699,13 @@
 
 	.activity-time {
 		font-size: 0.6875rem;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		margin-top: 0.125rem;
 	}
 
 	.empty-activity {
 		text-align: center;
-		color: #9ca3af;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		padding: 1rem;
 	}

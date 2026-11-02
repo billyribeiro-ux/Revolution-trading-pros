@@ -90,7 +90,7 @@
 		align-items: flex-start;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.header-content {
@@ -103,18 +103,18 @@
 		gap: 0.75rem;
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem 0;
 	}
 
 	.header-subtitle {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 		margin: 0;
 	}
 
 	.header-subtitle strong {
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		font-family: monospace;
 	}
 
@@ -123,8 +123,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 0.75rem 1.25rem;
-		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		margin-top: 1rem;
 	}
@@ -132,21 +132,21 @@
 	.preview-value {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 	}
 
 	.preview-status {
 		padding: 0.25rem 0.75rem;
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 		border-radius: 6px;
 		font-size: 0.8rem;
 		font-weight: 600;
 	}
 
 	.preview-status.active {
-		background: rgba(16, 185, 129, 0.1);
-		color: #34d399;
+		background: rgba(63, 185, 80, 0.1);
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.header-actions {
@@ -169,7 +169,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		color: white;
 	}
 
@@ -180,21 +180,21 @@
 
 	.btn-ghost {
 		background: transparent;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.btn-ghost:hover {
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.btn-danger {
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 	}
 
 	.btn-danger:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	button:disabled {

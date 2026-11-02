@@ -143,7 +143,7 @@
 	.subscribers-table td {
 		padding: 1rem;
 		text-align: left;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.subscribers-table th {
@@ -151,12 +151,12 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: #64748b;
-		background: rgba(15, 23, 42, 0.4);
+		color: var(--text-tertiary, #6e7681);
+		background: var(--bg-base, #0d1117);
 	}
 
 	.subscribers-table tbody tr:hover {
-		background: rgba(148, 163, 184, 0.05);
+		background: var(--bg-surface, #1c2128);
 	}
 
 	.checkbox-col {
@@ -172,7 +172,7 @@
 	.subscriber-avatar {
 		width: 36px;
 		height: 36px;
-		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		background: var(--primary-500);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -184,12 +184,12 @@
 
 	.subscriber-name {
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.subscriber-email {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.status-badge {
@@ -215,8 +215,8 @@
 	}
 
 	.tag.more {
-		background: rgba(148, 163, 184, 0.15);
-		color: #94a3b8;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.score-bar {
@@ -228,7 +228,7 @@
 	.score-bar .score-fill {
 		height: 6px;
 		width: 60px;
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--bg-hover, #252b33);
 		border-radius: 3px;
 		position: relative;
 	}
@@ -240,13 +240,13 @@
 		top: 0;
 		height: 100%;
 		width: var(--width, 0%);
-		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+		background: var(--primary-500);
 		border-radius: 3px;
 	}
 
 	.score-bar span {
 		font-size: 0.8125rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.row-actions {
@@ -260,10 +260,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 	}
 
@@ -273,6 +273,6 @@
 	}
 
 	.btn-icon.danger {
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 	}
 </style>

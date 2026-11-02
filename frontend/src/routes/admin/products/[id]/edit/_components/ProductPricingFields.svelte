@@ -84,7 +84,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 		font-size: 0.9375rem;
 	}
@@ -93,10 +93,10 @@
 	.form-group input[type='url'] {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.25);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.9375rem;
 		transition: all 0.2s;
 	}
@@ -109,7 +109,7 @@
 
 	.field-error {
 		display: block;
-		color: #f87171;
+		color: var(--error-emphasis, #f85149);
 		font-size: 0.8125rem;
 		margin-top: 0.375rem;
 	}
@@ -129,7 +129,7 @@
 	.price-input .currency {
 		position: absolute;
 		left: 1rem;
-		color: #3b82f6;
+		color: var(--info-emphasis, #58a6ff);
 		font-weight: 600;
 		font-size: 1rem;
 	}

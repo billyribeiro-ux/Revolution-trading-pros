@@ -47,7 +47,7 @@
 		gap: 0.5rem;
 		background: transparent;
 		border: none;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		cursor: pointer;
 		margin-bottom: 1rem;
@@ -56,7 +56,7 @@
 	}
 
 	.back-btn:hover {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.header-content {
@@ -68,12 +68,12 @@
 	.page-header h1 {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.95rem;
 	}
 
@@ -84,15 +84,15 @@
 		padding: 0.75rem 1.5rem;
 		border-radius: 8px;
 		font-weight: 600;
-		border: 1px solid rgba(239, 68, 68, 0.3);
+		border: 1px solid rgba(248, 81, 73, 0.3);
 		cursor: pointer;
 		transition: all 0.2s;
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
+		background: rgba(248, 81, 73, 0.1);
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.btn-danger:hover:not(:disabled) {
-		background: rgba(239, 68, 68, 0.2);
+		background: rgba(248, 81, 73, 0.2);
 	}
 
 	.btn-danger:disabled {

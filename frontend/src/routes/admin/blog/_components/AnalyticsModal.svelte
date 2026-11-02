@@ -111,8 +111,8 @@
 	}
 
 	.modal {
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.3);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 12px;
 		width: 90%;
 		max-width: 600px;
@@ -131,13 +131,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+		border-bottom: 1px solid var(--border-default, #30363d);
 	}
 
 	.modal-header h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -154,8 +154,8 @@
 	}
 
 	.analytics-card {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
 		padding: 1.5rem;
 	}
@@ -163,7 +163,7 @@
 	.analytics-card h3 {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1rem 0;
 	}
 
@@ -172,7 +172,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.75rem 0;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
 
 	.metric-row:last-child {
@@ -180,16 +180,16 @@
 	}
 
 	.metric-row span {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.metric-row strong {
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 600;
 	}
 
 	.loading {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		text-align: center;
 		padding: 2rem;
 	}

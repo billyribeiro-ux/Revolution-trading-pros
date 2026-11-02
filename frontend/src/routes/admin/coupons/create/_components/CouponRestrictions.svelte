@@ -171,8 +171,8 @@
 
 <style>
 	.form-section {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 12px;
 		padding: 1.5rem;
 	}
@@ -183,12 +183,12 @@
 		gap: 0.5rem;
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: #f1f5f9;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 1.25rem 0;
 	}
 
 	.section-description {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		margin: -0.75rem 0 1.25rem 0;
 	}
@@ -202,17 +202,17 @@
 	.restriction-tab {
 		flex: 1;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 2px solid rgba(148, 163, 184, 0.2);
+		background: var(--bg-base, #0d1117);
+		border: 2px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.restriction-tab:hover {
-		border-color: rgba(148, 163, 184, 0.4);
+		border-color: var(--border-default, #30363d);
 	}
 
 	.restriction-tab.active {
@@ -223,16 +223,16 @@
 
 	.restriction-content {
 		padding: 1rem;
-		background: rgba(15, 23, 42, 0.4);
+		background: var(--bg-base, #0d1117);
 		border-radius: 8px;
 	}
 
 	.tab-hint {
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 0.875rem;
 		margin: 0 0 1rem 0;
 		padding: 0.5rem;
-		background: rgba(100, 116, 139, 0.1);
+		background: var(--bg-surface, #1c2128);
 		border-radius: 6px;
 		text-align: center;
 	}
@@ -255,7 +255,7 @@
 	.restriction-header h3 {
 		font-size: 0.95rem;
 		font-weight: 600;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -267,7 +267,7 @@
 	.btn-link {
 		background: none;
 		border: none;
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		font-size: 0.8rem;
 		cursor: pointer;
 		padding: 0;
@@ -288,8 +288,8 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -308,21 +308,21 @@
 
 	.item-name {
 		flex: 1;
-		color: #e2e8f0;
+		color: var(--text-primary, #f0f6fc);
 		font-weight: 500;
 	}
 
 	.item-price {
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.875rem;
 	}
 
 	.no-restrictions-notice {
 		padding: 1rem;
-		background: rgba(59, 130, 246, 0.1);
-		border: 1px solid rgba(59, 130, 246, 0.2);
+		background: rgba(88, 166, 255, 0.1);
+		border: 1px solid rgba(88, 166, 255, 0.2);
 		border-radius: 8px;
-		color: #60a5fa;
+		color: var(--info-emphasis, #58a6ff);
 		text-align: center;
 		font-size: 0.9rem;
 	}
@@ -334,13 +334,13 @@
 		justify-content: center;
 		padding: 2rem;
 		gap: 0.75rem;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.spinner-small {
 		width: 32px;
 		height: 32px;
-		border: 3px solid rgba(148, 163, 184, 0.2);
+		border: 3px solid var(--border-default, #30363d);
 		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
@@ -349,7 +349,7 @@
 	.no-items {
 		padding: 2rem;
 		text-align: center;
-		color: #64748b;
+		color: var(--text-tertiary, #6e7681);
 		font-style: italic;
 	}
 

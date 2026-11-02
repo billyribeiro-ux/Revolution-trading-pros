@@ -39,7 +39,7 @@
 		padding: 12px 20px;
 		background: none;
 		border: none;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 14px;
 		font-weight: 500;
 		cursor: pointer;

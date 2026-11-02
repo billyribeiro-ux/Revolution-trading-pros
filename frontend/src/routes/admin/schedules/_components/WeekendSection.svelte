@@ -61,7 +61,7 @@
 		cursor: pointer;
 		font-size: 14px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.weekend-section summary:hover {
@@ -70,7 +70,7 @@
 
 	.weekend-count {
 		font-size: 12px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-weight: 400;
 	}
 
@@ -112,7 +112,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 32px 16px;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 		font-size: 13px;
 	}
 

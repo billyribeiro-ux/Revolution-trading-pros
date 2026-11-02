@@ -416,13 +416,13 @@
 		margin: 0;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #111827;
+		color: var(--bg-base, #0d1117);
 	}
 
 	.subtitle {
 		margin: 0.25rem 0 0 0;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.generator-content {
@@ -513,7 +513,7 @@
 
 	.option label {
 		font-size: 0.75rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.option input[type='text'],
@@ -563,8 +563,8 @@
 	}
 
 	.code-block {
-		background: #1f2937;
-		color: #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		color: var(--text-primary, #f0f6fc);
 		padding: 1rem;
 		border-radius: 0.5rem;
 		font-size: 0.75rem;
@@ -581,7 +581,7 @@
 		top: 0.5rem;
 		right: 0.5rem;
 		padding: 0.375rem 0.75rem;
-		background: #374151;
+		background: var(--bg-hover, #252b33);
 		color: white;
 		border: none;
 		border-radius: 0.25rem;
@@ -591,7 +591,7 @@
 	}
 
 	.btn-copy:hover {
-		background: #4b5563;
+		background: var(--bg-active, #2d333b);
 	}
 
 	.btn-copy:disabled {
@@ -609,7 +609,7 @@
 	.utm-section summary {
 		cursor: pointer;
 		font-size: 0.875rem;
-		color: #6b7280;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.utm-grid {
