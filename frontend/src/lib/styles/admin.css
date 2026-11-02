@@ -405,6 +405,11 @@
 	flex: 1;
 	padding: var(--space-8, 2rem);
 	overflow-y: auto;
+	/* Reserve the scrollbar's space so content doesn't reflow when a page grows past the
+	   viewport (https://developer.mozilla.org/docs/Web/CSS/scrollbar-gutter). */
+	scrollbar-gutter: stable;
+	/* A scroll container never chains its scroll to the page behind it. */
+	overscroll-behavior: contain;
 	background: var(--admin-bg);
 }
 
@@ -819,7 +824,10 @@
 	opacity: 0;
 	visibility: hidden;
 	transform: translateY(8px);
-	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+	transition:
+		opacity 0.2s ease,
+		visibility 0.2s ease,
+		transform 0.2s ease;
 	z-index: 0;
 	pointer-events: none;
 }
@@ -1028,14 +1036,30 @@
 	background-color: var(--admin-accent-primary);
 	color: var(--admin-btn-primary-text);
 }
-.admin-layout .bg-red-100 { background-color: var(--admin-error-bg); }
-.admin-layout .text-red-800 { color: var(--admin-error); }
-.admin-layout .bg-green-100 { background-color: var(--admin-success-bg); }
-.admin-layout .text-green-800 { color: var(--admin-success); }
-.admin-layout .bg-yellow-100 { background-color: var(--admin-warning-bg); }
-.admin-layout .text-yellow-800 { color: var(--admin-warning); }
-.admin-layout .bg-blue-100 { background-color: var(--admin-info-bg); }
-.admin-layout .text-blue-800 { color: var(--admin-info); }
+.admin-layout .bg-red-100 {
+	background-color: var(--admin-error-bg);
+}
+.admin-layout .text-red-800 {
+	color: var(--admin-error);
+}
+.admin-layout .bg-green-100 {
+	background-color: var(--admin-success-bg);
+}
+.admin-layout .text-green-800 {
+	color: var(--admin-success);
+}
+.admin-layout .bg-yellow-100 {
+	background-color: var(--admin-warning-bg);
+}
+.admin-layout .text-yellow-800 {
+	color: var(--admin-warning);
+}
+.admin-layout .bg-blue-100 {
+	background-color: var(--admin-info-bg);
+}
+.admin-layout .text-blue-800 {
+	color: var(--admin-info);
+}
 .admin-layout .focus\:ring-blue-500:focus,
 .admin-layout .focus\:border-blue-500:focus {
 	--tw-ring-color: var(--admin-accent-primary);

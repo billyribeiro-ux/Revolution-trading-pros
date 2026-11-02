@@ -321,7 +321,8 @@
 		<div class="toolbar">
 			<div class="search-field">
 				<IconSearch class="search-field__icon" />
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"
@@ -372,7 +373,11 @@
 						<div class="template-preview">
 							<div class="stage-preview-list">
 								{#each template.stages.slice(0, 4) as stage, i (i)}
-									<div class="stage-preview" style:background-color={stage.color} style:color={readableOn(stage.color)}>
+									<div
+										class="stage-preview"
+										style:background-color={stage.color}
+										style:color={readableOn(stage.color)}
+									>
 										<div class="stage-preview__body">
 											<div class="stage-preview__title">{stage.title}</div>
 											<div class="stage-preview__lines">
@@ -414,7 +419,11 @@
 							<!-- Labels Preview -->
 							<div class="label-list">
 								{#each template.labels.slice(0, 4) as label, i (i)}
-									<span class="label-pill" style:background-color={label.color} style:color={readableOn(label.color)}>
+									<span
+										class="label-pill"
+										style:background-color={label.color}
+										style:color={readableOn(label.color)}
+									>
 										{label.title}
 									</span>
 								{/each}
@@ -692,7 +701,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding-block: 3rem;
+		/* Reserve roughly one row of template cards so the content below doesn't jump on load. */
+		min-height: 26rem;
 	}
 
 	.spinner,
