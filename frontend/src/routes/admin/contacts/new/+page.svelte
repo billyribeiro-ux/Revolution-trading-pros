@@ -66,6 +66,7 @@
 					type="text"
 					id="first_name"
 					name="first_name"
+					autocomplete="given-name"
 					bind:value={formData.first_name}
 					required
 				/>
@@ -76,6 +77,7 @@
 					type="text"
 					id="last_name"
 					name="last_name"
+					autocomplete="family-name"
 					bind:value={formData.last_name}
 					required
 				/>

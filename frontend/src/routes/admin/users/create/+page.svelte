@@ -1138,7 +1138,9 @@
 						<label for="first_name">First Name *</label>
 						<input
 							id="first_name"
+							name="first_name"
 							type="text"
+							autocomplete="given-name"
 							bind:value={formData.first_name}
 							onblur={generateUsername}
 							class="form-control"
@@ -1148,7 +1150,9 @@
 						<label for="last_name">Last Name *</label>
 						<input
 							id="last_name"
+							name="last_name"
 							type="text"
+							autocomplete="family-name"
 							bind:value={formData.last_name}
 							onblur={generateUsername}
 							class="form-control"
@@ -1159,7 +1163,9 @@
 						<div class="field-with-status">
 							<input
 								id="username"
+								name="username"
 								type="text"
+								autocomplete="username"
 								bind:value={formData.username}
 								oninput={scheduleUsernameValidation}
 								class="form-control"
@@ -1178,7 +1184,9 @@
 						<div class="field-with-status">
 							<input
 								id="email"
+								name="email"
 								type="email"
+								autocomplete="email"
 								bind:value={formData.email}
 								oninput={scheduleEmailValidation}
 								class="form-control"
@@ -1194,7 +1202,7 @@
 					</div>
 					<div class="field-group">
 						<label for="phone">Phone</label>
-						<input id="phone" type="tel" bind:value={formData.phone} class="form-control" />
+						<input id="phone" name="phone" type="tel" autocomplete="tel" bind:value={formData.phone} class="form-control" />
 					</div>
 					<div class="field-group">
 						<label for="employee_id">Employee ID</label>
@@ -1232,7 +1240,9 @@
 						<label for="password">Password *</label>
 						<input
 							id="password"
+							name="password"
 							type={passwordVisible ? 'text' : 'password'}
+							autocomplete="new-password"
 							bind:value={formData.password}
 							oninput={schedulePasswordStrengthCheck}
 							class="form-control"
@@ -1249,7 +1259,9 @@
 						<label for="password_confirm">Confirm Password *</label>
 						<input
 							id="password_confirm"
+							name="password_confirm"
 							type={confirmPasswordVisible ? 'text' : 'password'}
+							autocomplete="new-password"
 							bind:value={formData.password_confirmation}
 							class="form-control"
 						/>

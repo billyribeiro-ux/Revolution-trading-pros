@@ -101,8 +101,8 @@ export default defineConfig(({ mode }) => ({
 						'https://static.cloudflareinsights.com',
 						'https://apis.google.com'
 					],
-					'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
-					'font-src': ['self', 'fonts.gstatic.com', 'data:'],
+					'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
+					'font-src': ['self', 'https://fonts.gstatic.com', 'data:'],
 					'img-src': ['self', 'data:', 'https:', 'blob:'],
 					'worker-src': ['self', ...(isDev ? (['blob:'] as const) : [])],
 					'media-src': [

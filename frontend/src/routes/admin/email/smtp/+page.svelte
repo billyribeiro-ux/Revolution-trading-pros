@@ -216,6 +216,7 @@
 						id="username"
 						name="username"
 						type="text"
+						autocomplete="username"
 						bind:value={settings.username}
 						placeholder="your-email@gmail.com"
 					/>

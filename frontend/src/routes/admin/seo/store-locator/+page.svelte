@@ -422,12 +422,12 @@
 
 				<div class="form-group">
 					<label for="city">City *</label>
-					<input type="text" id="city" name="city" bind:value={formData.city} required />
+					<input type="text" id="city" name="city" autocomplete="address-level2" bind:value={formData.city} required />
 				</div>
 
 				<div class="form-group">
 					<label for="state">State/Province *</label>
-					<input type="text" id="state" name="state" bind:value={formData.state} required />
+					<input type="text" id="state" name="state" autocomplete="address-level1" bind:value={formData.state} required />
 				</div>
 
 				<div class="form-group">
@@ -436,6 +436,7 @@
 						type="text"
 						id="postalCode"
 						name="postalCode"
+						autocomplete="postal-code"
 						bind:value={formData.postalCode}
 						required
 					/>
@@ -443,7 +444,7 @@
 
 				<div class="form-group">
 					<label for="country">Country</label>
-					<input type="text" id="country" name="country" bind:value={formData.country} />
+					<input type="text" id="country" name="country" autocomplete="country-name" bind:value={formData.country} />
 				</div>
 
 				<div class="form-group full-width">

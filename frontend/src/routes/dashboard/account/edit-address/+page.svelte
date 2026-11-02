@@ -68,6 +68,7 @@
 							type="text"
 							id="firstName"
 							name="firstName"
+							autocomplete="given-name"
 							class="form-control"
 							value={address.firstName || ''}
 							required
@@ -79,6 +80,7 @@
 							type="text"
 							id="lastName"
 							name="lastName"
+							autocomplete="family-name"
 							class="form-control"
 							value={address.lastName || ''}
 							required
@@ -92,6 +94,7 @@
 						type="text"
 						id="company"
 						name="company"
+						autocomplete="organization"
 						class="form-control"
 						value={address.company || ''}
 					/>
@@ -99,7 +102,7 @@
 
 				<div class="form-group">
 					<label for="country">Country / Region <span class="required">*</span></label>
-					<select id="country" name="country" class="form-control" required>
+					<select id="country" name="country" autocomplete="country" class="form-control" required>
 						<option value="US" selected={address.country === 'US'}>United States</option>
 						<option value="CA" selected={address.country === 'CA'}>Canada</option>
 						<option value="GB" selected={address.country === 'GB'}>United Kingdom</option>
@@ -112,6 +115,7 @@
 						type="text"
 						id="address1"
 						name="address1"
+						autocomplete="address-line1"
 						class="form-control"
 						placeholder="House number and street name"
 						value={address.address1 || ''}
@@ -124,6 +128,7 @@
 						type="text"
 						id="address2"
 						name="address2"
+						autocomplete="address-line2"
 						class="form-control"
 						placeholder="Apartment, suite, unit, etc. (optional)"
 						value={address.address2 || ''}
@@ -136,6 +141,7 @@
 						type="text"
 						id="city"
 						name="city"
+						autocomplete="address-level2"
 						class="form-control"
 						value={address.city || ''}
 						required
@@ -149,6 +155,7 @@
 							type="text"
 							id="state"
 							name="state"
+							autocomplete="address-level1"
 							class="form-control"
 							value={address.state || ''}
 							required
@@ -160,6 +167,7 @@
 							type="text"
 							id="postcode"
 							name="postcode"
+							autocomplete="postal-code"
 							class="form-control"
 							value={address.postcode || ''}
 							required

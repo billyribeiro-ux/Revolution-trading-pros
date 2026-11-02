@@ -234,6 +234,7 @@
 													class="form-control"
 													name="username"
 													id="login_username"
+													autocomplete="username"
 													bind:value={loginEmail}
 													disabled={isSubmitting}
 												/>
@@ -246,6 +247,7 @@
 													class="form-control"
 													name="password"
 													id="login_password"
+													autocomplete="current-password"
 													bind:value={loginPassword}
 													disabled={isSubmitting}
 												/>
@@ -354,6 +356,7 @@
 												class="form-control"
 												name="email"
 												id="reg_email"
+												autocomplete="email"
 												bind:value={registerEmail}
 												disabled={isSubmitting}
 											/>
@@ -368,6 +371,7 @@
 												class="form-control"
 												name="password"
 												id="reg_password"
+												autocomplete="new-password"
 												bind:value={registerPassword}
 												disabled={isSubmitting}
 											/>
