@@ -383,61 +383,7 @@
 		padding: 2rem;
 	}
 
-	/* Background Effects */
-	.bg-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
-
-	.bg-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.15;
-	}
-
-	.bg-blob-1 {
-		width: 600px;
-		height: 600px;
-		top: -200px;
-		right: -200px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.bg-blob-2 {
-		width: 500px;
-		height: 500px;
-		bottom: -150px;
-		left: -150px;
-		background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
-		animation: float 25s ease-in-out infinite reverse;
-	}
-
-	.bg-blob-3 {
-		width: 400px;
-		height: 400px;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
-		animation: float 30s ease-in-out infinite;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		66% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-	}
+	
 
 	/* Page Header - CENTERED */
 	.page-header {

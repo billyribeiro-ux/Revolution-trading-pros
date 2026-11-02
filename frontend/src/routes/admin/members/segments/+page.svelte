@@ -1105,56 +1105,7 @@
 		z-index: 0;
 	}
 
-	.background-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(100px);
-		opacity: 0.15;
-	}
-
-	.background-blob-1 {
-		width: 600px;
-		height: 600px;
-		top: -200px;
-		right: -200px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.background-blob-2 {
-		width: 500px;
-		height: 500px;
-		bottom: -150px;
-		left: -150px;
-		background: linear-gradient(135deg, var(--primary-600), #1e293b);
-		animation: float 25s ease-in-out infinite reverse;
-	}
-
-	.background-blob-3 {
-		width: 400px;
-		height: 400px;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: linear-gradient(135deg, var(--primary-500), #0f172a);
-		animation: float 30s ease-in-out infinite;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		25% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		50% {
-			transform: translate(0, 20px) scale(0.95);
-		}
-		75% {
-			transform: translate(-30px, -20px) scale(1.02);
-		}
-	}
+	
 
 	.admin-page-container {
 		position: relative;

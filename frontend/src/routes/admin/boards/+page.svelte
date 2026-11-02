@@ -875,32 +875,7 @@
 		z-index: 0;
 	}
 
-	.background-blob {
-		position: absolute;
-		width: 18rem;
-		height: 18rem;
-		border-radius: 999px;
-		filter: blur(80px);
-		opacity: 0.18;
-	}
-
-	.background-blob-1 {
-		top: 5rem;
-		left: 8%;
-		background: #e6b800;
-	}
-
-	.background-blob-2 {
-		top: 18rem;
-		right: 10%;
-		background: #3b82f6;
-	}
-
-	.background-blob-3 {
-		bottom: 4rem;
-		left: 38%;
-		background: #10b981;
-	}
+	
 
 	.boards-header,
 	.boards-content {

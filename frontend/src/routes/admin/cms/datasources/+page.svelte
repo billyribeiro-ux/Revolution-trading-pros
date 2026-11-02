@@ -1354,36 +1354,7 @@
 		overflow: hidden;
 	}
 
-	.background-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(100px);
-		opacity: 0.3;
-	}
-
-	.background-blob-1 {
-		width: 600px;
-		height: 600px;
-		background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-		top: -200px;
-		right: -200px;
-	}
-
-	.background-blob-2 {
-		width: 400px;
-		height: 400px;
-		background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-		bottom: -100px;
-		left: -100px;
-	}
-
-	.background-blob-3 {
-		width: 300px;
-		height: 300px;
-		background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-		top: 40%;
-		left: 30%;
-	}
+	
 
 	/* Header */
 	.page-header {

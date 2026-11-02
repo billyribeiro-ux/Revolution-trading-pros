@@ -914,28 +914,7 @@
 		overflow: hidden;
 	}
 
-	.background-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.12;
-	}
-
-	.background-blob-1 {
-		width: 500px;
-		height: 500px;
-		top: -150px;
-		right: -150px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-	}
-
-	.background-blob-2 {
-		width: 400px;
-		height: 400px;
-		bottom: -100px;
-		left: -100px;
-		background: linear-gradient(135deg, #10b981, #14b8a6);
-	}
+	
 
 	/* Header */
 	.page-header {

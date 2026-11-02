@@ -1304,52 +1304,7 @@
 		z-index: -1;
 	}
 
-	.background-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(100px);
-		opacity: 0.15;
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.background-blob-1 {
-		width: 600px;
-		height: 600px;
-		background: var(--primary-500);
-		top: -200px;
-		right: -200px;
-	}
-
-	.background-blob-2 {
-		width: 400px;
-		height: 400px;
-		background: #143e59;
-		bottom: -100px;
-		left: -100px;
-		animation-delay: -7s;
-	}
-
-	.background-blob-3 {
-		width: 300px;
-		height: 300px;
-		background: var(--primary-500);
-		top: 50%;
-		left: 50%;
-		animation-delay: -14s;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		66% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-	}
+	
 
 	/* Header */
 	.page-header {

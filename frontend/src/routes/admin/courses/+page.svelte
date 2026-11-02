@@ -649,9 +649,7 @@
 		text-rendering: optimizeLegibility;
 	}
 
-	.bg-effects {
-		display: none;
-	}
+	
 
 	/* Centered Header */
 	.page-header {

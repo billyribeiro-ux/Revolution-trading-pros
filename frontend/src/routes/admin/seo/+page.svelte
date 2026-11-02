@@ -516,63 +516,7 @@
 	   Animated Background
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	.animated-bg {
-		position: absolute;
-		inset: 0;
-		overflow: hidden;
-		pointer-events: none;
-	}
-
-	.blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.4;
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.blob-1 {
-		width: 400px;
-		height: 400px;
-		background: linear-gradient(135deg, #10b981, #059669);
-		top: -100px;
-		right: -100px;
-		animation-delay: 0s;
-	}
-
-	.blob-2 {
-		width: 300px;
-		height: 300px;
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-		bottom: 20%;
-		left: -50px;
-		animation-delay: -7s;
-	}
-
-	.blob-3 {
-		width: 350px;
-		height: 350px;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		top: 50%;
-		right: 10%;
-		animation-delay: -14s;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		25% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		50% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-		75% {
-			transform: translate(20px, 30px) scale(1.02);
-		}
-	}
+	
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Header
