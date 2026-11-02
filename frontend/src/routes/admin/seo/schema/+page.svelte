@@ -431,7 +431,6 @@
 
 	.type-card:hover {
 		border-color: var(--primary-600);
-		
 	}
 
 	.type-card--deprecated {
@@ -480,6 +479,10 @@
 	.loading {
 		grid-column: 1 / -1;
 		text-align: center;
+		/* Matches the empty state's height (295px) so the section below doesn't jump on load. */
+		min-height: 18.5rem;
+		display: grid;
+		place-items: center;
 		padding: 3rem;
 		color: var(--text-tertiary, #6e7681);
 	}
