@@ -410,9 +410,7 @@
 </svelte:head>
 
 <div class="admin-site-health">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header Section - Centered -->

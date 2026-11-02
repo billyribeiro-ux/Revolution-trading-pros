@@ -116,9 +116,7 @@
 
 <div class="admin-consent">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="background-effects">
-			</div>
+		
 
 		<header class="header">
 			<div class="header-content">

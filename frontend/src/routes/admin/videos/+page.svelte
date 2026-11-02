@@ -1253,9 +1253,7 @@
 
 <div class="admin-videos">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="background-effects">
-			</div>
+		
 
 		<!-- Success/Error Messages -->
 		<FormBanners {successMessage} {error} onDismissError={() => (error = '')} />

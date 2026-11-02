@@ -553,9 +553,7 @@
 
 <div class="admin-segments">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="background-effects">
-			</div>
+		
 
 		<!-- Header -->
 		<header class="page-header">
@@ -1097,13 +1095,7 @@
 	}
 
 	/* Animated Background Blobs */
-	.background-effects {
-		position: absolute;
-		inset: 0;
-		overflow: hidden;
-		pointer-events: none;
-		z-index: 0;
-	}
+	
 
 	
 

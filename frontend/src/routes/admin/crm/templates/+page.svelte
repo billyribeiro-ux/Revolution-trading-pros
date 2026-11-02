@@ -348,9 +348,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="admin-crm-templates" role="main" aria-label="Email Templates">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header -->

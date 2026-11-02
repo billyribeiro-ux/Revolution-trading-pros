@@ -521,9 +521,7 @@
 <svelte:window onkeydown={hasActiveModal ? handleModalKeydown : undefined} />
 
 <div class="admin-crm-automations">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header -->

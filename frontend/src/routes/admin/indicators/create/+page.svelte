@@ -642,9 +642,7 @@
 </svelte:head>
 
 <div class="admin-indicators-create">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header -->
@@ -1296,13 +1294,7 @@
 	}
 
 	/* Background Effects */
-	.background-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-		z-index: -1;
-	}
+	
 
 	
 

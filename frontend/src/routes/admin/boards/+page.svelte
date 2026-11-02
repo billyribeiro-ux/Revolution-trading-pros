@@ -239,9 +239,7 @@
 </svelte:head>
 
 <div class="admin-boards">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<!-- Header -->
 	<div class="boards-header">
@@ -867,13 +865,7 @@
 		color: #f9fafb;
 	}
 
-	.background-effects {
-		pointer-events: none;
-		position: fixed;
-		inset: 0;
-		overflow: hidden;
-		z-index: 0;
-	}
+	
 
 	
 

@@ -301,9 +301,7 @@
 
 <div class="admin-subscriptions">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="background-effects">
-			</div>
+		
 		<!-- Header - Centered Style -->
 		<header class="page-header">
 			<h1>Subscription Management</h1>
@@ -779,12 +777,7 @@
 	}
 
 	/* Background Effects - Animated Blobs */
-	.background-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
+	
 
 	
 

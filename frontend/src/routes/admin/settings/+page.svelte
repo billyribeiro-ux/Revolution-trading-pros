@@ -778,9 +778,7 @@
 <svelte:head><title>API Settings & Integrations | Admin</title></svelte:head>
 <!-- Apple-grade Settings Dashboard -->
 <div class="admin-settings">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header -->
@@ -1318,12 +1316,7 @@
 	}
 
 	/* Background Effects - fixed position for parallax */
-	.background-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
+	
 
 	
 

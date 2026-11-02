@@ -827,9 +827,7 @@
 </svelte:head>
 
 <div class="admin-blog">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Notifications -->

@@ -316,9 +316,7 @@
 
 <div class="admin-plans">
 	<div class="admin-page-container">
-		<!-- Background Effects -->
-		<div class="background-effects">
-			</div>
+		
 
 		<!-- Header -->
 		<header class="page-header">
@@ -907,12 +905,7 @@
 		padding: 2rem 1rem;
 	}
 
-	.background-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
+	
 
 	
 

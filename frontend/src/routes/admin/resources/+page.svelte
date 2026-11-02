@@ -801,9 +801,7 @@
 </svelte:head>
 
 <div class="admin-resources">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Alerts -->

@@ -367,9 +367,7 @@
 </svelte:head>
 
 <div class="admin-crm-deals">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		<!-- Header -->

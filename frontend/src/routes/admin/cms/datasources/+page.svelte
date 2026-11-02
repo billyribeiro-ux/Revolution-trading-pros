@@ -756,9 +756,7 @@
 {/if}
 
 <div class="admin-datasources">
-	<!-- Animated Background -->
-	<div class="background-effects">
-		</div>
+	
 
 	<div class="admin-page-container">
 		{#if !selectedDatasource}
@@ -1343,16 +1341,7 @@
 	}
 
 	/* Background Effects */
-	.background-effects {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		pointer-events: none;
-		z-index: 0;
-		overflow: hidden;
-	}
+	
 
 	
 

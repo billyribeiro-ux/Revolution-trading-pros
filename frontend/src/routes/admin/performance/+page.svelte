@@ -138,9 +138,7 @@
 
 <div class="admin-performance">
 	<div class="admin-page-container">
-		<!-- Animated Background -->
-		<div class="background-effects">
-			</div>
+		
 
 		<!-- Header -->
 		<div class="page-header">
