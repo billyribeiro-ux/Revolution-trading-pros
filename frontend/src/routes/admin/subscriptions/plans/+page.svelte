@@ -316,8 +316,6 @@
 
 <div class="admin-plans">
 	<div class="admin-page-container">
-		
-
 		<!-- Header -->
 		<header class="page-header">
 			<div class="header-content">
@@ -406,7 +404,8 @@
 			<div class="filters-row">
 				<div class="filter-group">
 					<label for="search">Search</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="text"
 						id="search"
 						name="search"
@@ -559,7 +558,8 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="edit-name">Plan Name</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="text"
 						id="edit-name"
 						name="edit-name"
@@ -571,7 +571,8 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="edit-price">Price ($)</label>
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							type="number"
 							id="edit-price"
 							name="edit-price"
@@ -597,7 +598,8 @@
 						Stripe Price ID
 						<span class="label-hint">Required for payments</span>
 					</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="text"
 						id="edit-stripe"
 						name="edit-stripe"
@@ -625,7 +627,8 @@
 
 				<div class="form-group">
 					<label for="edit-trial">Trial Days</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="number"
 						id="edit-trial"
 						name="edit-trial"
@@ -719,7 +722,8 @@
 					<div class="form-row">
 						<div class="form-group">
 							<label for="price-amount">New Price (USD)</label>
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								id="price-amount"
 								type="number"
 								step="0.01"
@@ -904,10 +908,6 @@
 		margin: 0 auto;
 		padding: 2rem 1rem;
 	}
-
-	
-
-	
 
 	/* Header */
 	.page-header {
@@ -1425,6 +1425,8 @@
 	/* Loading & Empty States */
 	.loading-state,
 	.empty-state {
+		/* One shared minimum so loading -> empty/loaded never moves the help section below. */
+		min-height: 16rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1669,7 +1671,6 @@
 		border: none;
 		color: var(--bg-base, #0d1117);
 	}
-
 
 	.btn-save:disabled,
 	.btn-cancel:disabled {

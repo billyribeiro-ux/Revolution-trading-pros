@@ -19,45 +19,46 @@
 	const { stats, formatNumber }: Props = $props();
 </script>
 
-{#if stats}
-	<div class="stats-grid">
-		<div class="stat-card">
-			<div class="stat-icon"><IconChartBar size={24} /></div>
-			<div class="stat-content">
-				<div class="stat-value">{stats.total}</div>
-				<div class="stat-label">Total Posts</div>
-				<div class="stat-change">+{stats.new_this_month || 0} this month</div>
-			</div>
+<!-- Always rendered (placeholders while loading) so the controls and list below never shift. -->
+<div class="stats-grid" aria-busy={!stats}>
+	<div class="stat-card">
+		<div class="stat-icon"><IconChartBar size={24} /></div>
+		<div class="stat-content">
+			<div class="stat-value">{stats ? stats.total : '—'}</div>
+			<div class="stat-label">Total Posts</div>
+			<div class="stat-change">{stats ? `+${stats.new_this_month || 0} this month` : '—'}</div>
 		</div>
-		<div class="stat-card published">
-			<div class="stat-icon"><IconCheck size={24} /></div>
-			<div class="stat-content">
-				<div class="stat-value">{stats.published}</div>
-				<div class="stat-label">Published</div>
-				<div class="stat-change">{Math.round((stats.published / stats.total) * 100)}%</div>
-			</div>
-		</div>
-		<div class="stat-card draft">
-			<div class="stat-icon"><IconEdit size={24} /></div>
-			<div class="stat-content">
-				<div class="stat-value">{stats.draft}</div>
-				<div class="stat-label">Drafts</div>
-				<div class="stat-change">{stats.scheduled || 0} scheduled</div>
-			</div>
-		</div>
-		<div class="stat-card views">
-			<div class="stat-icon"><IconEye size={24} /></div>
-			<div class="stat-content">
-				<div class="stat-value">{formatNumber(stats.total_views || 0)}</div>
-				<div class="stat-label">Total Views</div>
-				<div class="stat-change">
-					<IconTrendingUp size={16} />
-					{stats.views_growth || 0}%
-				</div>
+	</div>
+	<div class="stat-card published">
+		<div class="stat-icon"><IconCheck size={24} /></div>
+		<div class="stat-content">
+			<div class="stat-value">{stats ? stats.published : '—'}</div>
+			<div class="stat-label">Published</div>
+			<div class="stat-change">
+				{stats ? `${Math.round((stats.published / stats.total) * 100)}%` : '—'}
 			</div>
 		</div>
 	</div>
-{/if}
+	<div class="stat-card draft">
+		<div class="stat-icon"><IconEdit size={24} /></div>
+		<div class="stat-content">
+			<div class="stat-value">{stats ? stats.draft : '—'}</div>
+			<div class="stat-label">Drafts</div>
+			<div class="stat-change">{stats ? `${stats.scheduled || 0} scheduled` : '—'}</div>
+		</div>
+	</div>
+	<div class="stat-card views">
+		<div class="stat-icon"><IconEye size={24} /></div>
+		<div class="stat-content">
+			<div class="stat-value">{stats ? formatNumber(stats.total_views || 0) : '—'}</div>
+			<div class="stat-label">Total Views</div>
+			<div class="stat-change">
+				<IconTrendingUp size={16} />
+				{stats ? `${stats.views_growth || 0}%` : '—'}
+			</div>
+		</div>
+	</div>
+</div>
 
 <style>
 	.stats-grid {
@@ -181,6 +182,6 @@
 			break-inside: avoid;
 			box-shadow: none;
 			border: 1px solid var(--border-default, #30363d);
-	}
+		}
 	}
 </style>

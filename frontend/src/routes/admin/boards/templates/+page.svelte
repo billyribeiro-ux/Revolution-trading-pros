@@ -1,9 +1,9 @@
 <script lang="ts">
 	/** Pick dark or light text for a data-driven hex colour (WCAG relative luminance). */
 	function readableOn(hex: string | undefined | null): string {
-		const m = /^#?([0-9a-f]{6})$/i.exec((hex ?? '').trim());
-		if (!m) return 'var(--text-primary, #f0f6fc)';
-		const n = parseInt(m[1]!, 16);
+		const digits = /^#?([0-9a-f]{6})$/i.exec((hex ?? '').trim())?.[1];
+		if (!digits) return 'var(--text-primary, #f0f6fc)';
+		const n = parseInt(digits, 16);
 		const lin = (v: number) => {
 			const c = v / 255;
 			return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);

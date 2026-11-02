@@ -691,7 +691,7 @@
 
 				<!-- Remember Me & Forgot Password -->
 				<div class="form-row">
-					<label class="checkbox-wrapper">
+					<label class="checkbox-wrapper" for="remember">
 						<input
 							id="remember"
 							name="remember"

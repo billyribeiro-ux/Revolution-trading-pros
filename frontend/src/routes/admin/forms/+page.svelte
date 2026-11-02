@@ -111,7 +111,6 @@
 		}
 	}
 
-
 	@media (max-width: 767.98px) {
 		.admin-forms {
 			padding: 1rem;
