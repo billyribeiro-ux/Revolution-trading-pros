@@ -155,7 +155,4 @@
 		font-weight: 600;
 		transition: transform 0.2s;
 	}
-	.btn-back:hover {
-		transform: translateY(-1px);
-	}
 </style>

@@ -488,7 +488,6 @@
 	}
 
 	.product-card:hover {
-		transform: translateY(-4px);
 		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 		border-color: var(--border-default, #30363d);
 	}

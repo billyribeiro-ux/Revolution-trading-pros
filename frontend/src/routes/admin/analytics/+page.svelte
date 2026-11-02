@@ -597,10 +597,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
-	}
 
 	/* Connection Status */
 	.connection-status {
@@ -745,7 +741,6 @@
 	.service-card:hover {
 		background: var(--bg-elevated, #161b22);
 		border-color: var(--service-color, var(--primary-500));
-		transform: translateY(-2px);
 	}
 
 	.service-icon {

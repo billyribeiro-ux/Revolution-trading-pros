@@ -328,10 +328,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.4);
-	}
 
 	/* Tabs */
 	.tabs {
@@ -379,7 +375,6 @@
 
 	.popup-card:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-4px);
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 	}
 

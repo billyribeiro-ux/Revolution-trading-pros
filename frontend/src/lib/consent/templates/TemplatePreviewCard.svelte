@@ -290,8 +290,8 @@
 		align-items: center;
 		gap: 0.25rem;
 		padding: 0.25rem 0.5rem;
-		background: #22c55e;
-		color: white;
+		background: var(--success-emphasis, #3fb950);
+		color: var(--bg-base, #0d1117);
 		font-size: 0.625rem;
 		font-weight: 600;
 		border-radius: 9999px;
@@ -401,10 +401,10 @@
 
 	.feature {
 		padding: 0.125rem 0.375rem;
-		background: rgba(255, 255, 255, 0.1);
+		background: var(--bg-hover, #252b33);
 		border-radius: 4px;
 		font-size: 0.625rem;
-		color: #94a3b8;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.card-actions {

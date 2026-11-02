@@ -46,7 +46,7 @@
 	.panel-header h3 {
 		font-size: 0.9375rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -61,7 +61,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 0.75rem;
-		background: #f5f5f5;
+		background: var(--bg-hover, #252b33);
 		border: 1px solid transparent;
 		border-radius: 6px;
 		cursor: pointer;
@@ -71,16 +71,16 @@
 	}
 
 	.layer-item:hover {
-		background: #e5e5e5;
+		background: var(--border-default, #30363d);
 	}
 
 	.layer-item.selected {
 		background: #dbeafe;
-		border-color: #3b82f6;
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.layer-item:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 
@@ -90,7 +90,7 @@
 	}
 
 	.layer-index {
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		font-size: 0.75rem;
 	}
 </style>

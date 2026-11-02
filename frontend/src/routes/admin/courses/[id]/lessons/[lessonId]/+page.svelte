@@ -891,10 +891,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-	.btn-upload-video:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
-	}
 	.btn-cancel-upload {
 		margin-top: 12px;
 		padding: 8px 16px;

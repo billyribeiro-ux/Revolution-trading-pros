@@ -1040,10 +1040,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-	}
 
 	/* Stats Grid */
 	.stats-grid {
@@ -1288,7 +1284,6 @@
 
 	.deal-card:hover {
 		border-color: rgba(230, 184, 0, 0.5);
-		transform: translateY(-2px);
 	}
 
 	.deal-card.dragging {
@@ -1758,10 +1753,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-success:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-	}
 
 	.btn-success:disabled {
 		opacity: 0.5;
@@ -1783,10 +1774,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-danger:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-	}
 
 	.btn-danger:disabled {
 		opacity: 0.5;

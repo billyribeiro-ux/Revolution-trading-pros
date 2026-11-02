@@ -13,7 +13,7 @@
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
 	import type { Component } from 'svelte';
-	import { IconPlugConnected, IconArrowRight, IconLock } from '#lib/icons/index.js';
+	import { IconPlugConnected, IconArrowRight, IconLock, IconCheck } from '#lib/icons/index.js';
 
 	interface Props {
 		/** Name of the service that needs to be connected */
@@ -93,7 +93,7 @@
 					<ul class="features-list">
 						{#each features as feature (feature)}
 							<li>
-								<span class="check">✓</span>
+								<span class="check"><IconCheck size={16} aria-hidden="true" /></span>
 								{feature}
 							</li>
 						{/each}
@@ -222,6 +222,7 @@
 	}
 
 	.check {
+		display: inline-flex;
 		color: var(--success-emphasis, #3fb950);
 		font-weight: 600;
 	}
@@ -242,10 +243,6 @@
 		box-shadow: none;
 	}
 
-	.connect-btn:hover {
-		transform: translateY(-3px);
-		box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
-	}
 
 	.connect-btn:active {
 		transform: translateY(-1px);

@@ -181,7 +181,6 @@
 
 	.btn-primary:hover {
 		opacity: 0.9;
-		transform: translateY(-1px);
 	}
 
 	.btn-secondary {

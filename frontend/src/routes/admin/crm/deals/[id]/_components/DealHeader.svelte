@@ -210,10 +210,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
-	}
 
 	.btn-success {
 		display: flex;
@@ -230,10 +226,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-success:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-	}
 
 	.btn-danger-outline {
 		display: flex;

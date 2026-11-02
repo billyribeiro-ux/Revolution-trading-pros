@@ -1926,10 +1926,6 @@
 		transition: all 0.2s ease;
 	}
 
-	.run-tests-btn:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
-	}
 
 	.run-tests-btn:disabled {
 		opacity: 0.5;

@@ -596,7 +596,7 @@
 		height: 3rem;
 		border-radius: 1rem;
 		background: #06b6d4;
-		box-shadow: 0 18px 40px rgb(6 182 212 / 20%);
+		
 	}
 
 	h1,
@@ -691,12 +691,12 @@
 		border: 0;
 		background: #06b6d4;
 		color: #ffffff;
-		box-shadow: 0 18px 42px rgb(6 182 212 / 22%);
+		
 	}
 
 	.primary-button:hover:not(:disabled) {
 		background: #22d3ee;
-		box-shadow: 0 18px 42px rgb(6 182 212 / 35%);
+		
 	}
 
 	.primary-button--large {

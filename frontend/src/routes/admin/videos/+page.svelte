@@ -2231,10 +2231,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.6;
@@ -2946,8 +2942,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: #ff9500;
-		color: #ffffff;
+		background: var(--warning-emphasis, #d29922);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -2955,10 +2951,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-bunny:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
-	}
 
 	.btn-bunny:disabled {
 		opacity: 0.6;

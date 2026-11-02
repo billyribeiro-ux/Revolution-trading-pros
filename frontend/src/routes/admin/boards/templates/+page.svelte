@@ -1,4 +1,17 @@
 <script lang="ts">
+	/** Pick dark or light text for a data-driven hex colour (WCAG relative luminance). */
+	function readableOn(hex: string | undefined | null): string {
+		const m = /^#?([0-9a-f]{6})$/i.exec((hex ?? '').trim());
+		if (!m) return 'var(--text-primary, #f0f6fc)';
+		const n = parseInt(m[1]!, 16);
+		const lin = (v: number) => {
+			const c = v / 255;
+			return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+		};
+		const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+		// Pick whichever of the two text colours has the higher WCAG contrast ratio.
+		return (L + 0.05) / 0.056 > 0.97 / (L + 0.05) ? '#0d1117' : '#f0f6fc';
+	}
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { boardsAPI } from '#lib/api/boards.js';
@@ -359,7 +372,7 @@
 						<div class="template-preview">
 							<div class="stage-preview-list">
 								{#each template.stages.slice(0, 4) as stage, i (i)}
-									<div class="stage-preview" style:background-color={stage.color}>
+									<div class="stage-preview" style:background-color={stage.color} style:color={readableOn(stage.color)}>
 										<div class="stage-preview__body">
 											<div class="stage-preview__title">{stage.title}</div>
 											<div class="stage-preview__lines">
@@ -401,7 +414,7 @@
 							<!-- Labels Preview -->
 							<div class="label-list">
 								{#each template.labels.slice(0, 4) as label, i (i)}
-									<span class="label-pill" style:background-color={label.color}>
+									<span class="label-pill" style:background-color={label.color} style:color={readableOn(label.color)}>
 										{label.title}
 									</span>
 								{/each}
@@ -753,10 +766,7 @@
 	}
 
 	.template-card:hover {
-		box-shadow:
-			0 10px 15px -3px rgba(17, 24, 39, 0.1),
-			0 4px 6px -4px rgba(17, 24, 39, 0.1);
-		transform: translateY(-1px);
+		box-shadow: 0 4px 6px -4px rgba(17, 24, 39, 0.1);
 	}
 
 	.template-card {
@@ -768,7 +778,7 @@
 		display: flex;
 		align-items: flex-end;
 		height: 8rem;
-		background: #e6b800;
+		background: var(--bg-surface, #1c2128);
 		padding: 1rem;
 	}
 
@@ -801,7 +811,7 @@
 
 	.stage-preview__title {
 		overflow: hidden;
-		color: #ffffff;
+		color: inherit;
 		font-size: 0.5rem;
 		font-weight: 500;
 		line-height: 1;
@@ -826,7 +836,7 @@
 	}
 
 	.stage-preview__more-count {
-		color: #ffffff;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}

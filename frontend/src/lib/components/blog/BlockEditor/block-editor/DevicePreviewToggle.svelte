@@ -51,7 +51,7 @@
 <style>
 	.device-preview {
 		display: flex;
-		background: #f0f0f0;
+		background: var(--bg-hover, #252b33);
 		border-radius: 8px;
 		padding: 0.25rem;
 	}
@@ -66,22 +66,22 @@
 		background: transparent;
 		border-radius: 6px;
 		cursor: pointer;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.15s;
 	}
 
 	.device-btn:hover {
-		color: #1a1a1a;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.device-btn.active {
-		background: white;
-		color: #3b82f6;
+		background: var(--bg-elevated, #161b22);
+		color: var(--primary-500, #e6b800);
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
 	.device-btn:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 </style>

@@ -1489,7 +1489,6 @@
 
 	.btn-primary:hover {
 		opacity: 0.9;
-		transform: translateY(-1px);
 	}
 
 	.btn-secondary {
@@ -1598,7 +1597,6 @@
 	}
 
 	.media-grid .media-item:hover {
-		transform: translateY(-2px);
 		border-color: rgba(230, 184, 0, 0.3);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}

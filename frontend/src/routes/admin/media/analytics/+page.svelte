@@ -565,8 +565,8 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 16px 24px;
-		background: rgba(255, 255, 255, 0.8);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+		background: var(--bg-elevated, #161b22);
+		border-bottom: 1px solid var(--border-default, #30363d);
 		position: sticky;
 		top: 0;
 		z-index: 100;
@@ -751,10 +751,6 @@
 		transition: all 0.2s;
 	}
 
-	.not-connected-actions .btn-primary:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
-	}
 
 	.not-connected-actions .btn-secondary {
 		display: inline-flex;

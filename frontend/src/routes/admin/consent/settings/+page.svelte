@@ -311,7 +311,7 @@
 		<div
 			class="test-mode-banner"
 			role="alert"
-			style="background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-weight:600;display:flex;gap:0.5rem;align-items:center;"
+			style="background:var(--warning-soft, rgba(210,153,34,0.15));border:1px solid var(--warning-base, #d29922);color:var(--warning-emphasis, #e3b341);padding:0.75rem 1rem;border-radius:8px;margin-bottom:1rem;font-weight:600;display:flex;gap:0.5rem;align-items:center;"
 		>
 			<IconAlertTriangle size={18} aria-hidden="true" />
 			<span>
@@ -1061,7 +1061,6 @@
 
 	.btn:hover:not(:disabled) {
 		filter: brightness(1.1);
-		transform: translateY(-1px);
 	}
 
 	.tabs {
@@ -1501,14 +1500,14 @@
 		border-radius: 10px;
 		font-size: 0.875rem;
 		font-weight: 500;
-		box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+		
 		animation: slideIn 0.3s ease;
 		z-index: 100001;
 	}
 
 	.notification.error {
 		background: var(--error-base, #da3633);
-		box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+		
 	}
 
 	@keyframes slideIn {

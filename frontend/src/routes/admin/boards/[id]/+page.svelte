@@ -1642,9 +1642,6 @@
 			border-color 0.2s ease;
 	}
 
-	.task-card:hover {
-		box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
-	}
 
 	.task-card.dragging {
 		opacity: 0.5;
@@ -1899,7 +1896,7 @@
 	.task-modal {
 		width: min(100% - 2rem, 48rem);
 		border-radius: 0.75rem;
-		box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+		
 	}
 
 	.task-modal-header {

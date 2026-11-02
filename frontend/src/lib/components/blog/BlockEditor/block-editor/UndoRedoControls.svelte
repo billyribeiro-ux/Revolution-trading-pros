@@ -56,13 +56,13 @@
 		background: transparent;
 		border-radius: 6px;
 		cursor: pointer;
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		transition: all 0.15s;
 	}
 
 	.toolbar-btn:hover:not(:disabled) {
-		background: #f0f0f0;
-		color: #1a1a1a;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.toolbar-btn:disabled {
@@ -71,7 +71,7 @@
 	}
 
 	.toolbar-btn:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 </style>

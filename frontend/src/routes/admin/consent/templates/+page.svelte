@@ -440,7 +440,6 @@
 
 	.btn:hover {
 		filter: brightness(1.1);
-		transform: translateY(-1px);
 	}
 
 	.filters {
@@ -620,7 +619,7 @@
 		border-radius: 10px;
 		font-size: 0.875rem;
 		font-weight: 500;
-		box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+		
 		animation: slideIn 0.3s ease;
 		z-index: 100001;
 	}

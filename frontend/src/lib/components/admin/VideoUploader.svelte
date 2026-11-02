@@ -816,10 +816,6 @@
 		color: var(--bg-base, #0d1117);
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.5;

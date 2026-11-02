@@ -483,7 +483,7 @@
 		height: 3rem;
 		border-radius: 1rem;
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.2);
+		
 	}
 
 	.funnels-header h1 {
@@ -525,7 +525,7 @@
 	.primary-action {
 		border-radius: 0.75rem;
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.25);
+		
 		color: var(--bg-base, #0d1117);
 		font-size: 0.875rem;
 		font-weight: 600;
@@ -535,7 +535,7 @@
 
 	.primary-action:hover:not(:disabled) {
 		background: #a78bfa;
-		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.4);
+		
 	}
 
 	.primary-action:disabled,
@@ -624,7 +624,7 @@
 
 	.state-card__button--primary {
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 10px 15px -3px rgb(139 92 246 / 0.25);
+		
 	}
 
 	.state-card__button--primary:hover {
@@ -680,8 +680,7 @@
 	}
 
 	.funnel-card__header span {
-		background: linear-gradient(90deg, #a78bfa 0%, #c084fc 100%);
-		background-clip: text;
+		color: var(--text-primary, #f0f6fc);
 		color: transparent;
 		font-size: 1.5rem;
 		font-weight: 700;

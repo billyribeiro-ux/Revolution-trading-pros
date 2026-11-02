@@ -755,7 +755,6 @@
 
 	.btn-primary:hover {
 		opacity: 0.9;
-		transform: translateY(-1px);
 	}
 
 	/* Loading State */
@@ -1261,10 +1260,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-create-course:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-	}
 
 	.btn-create-course:disabled {
 		opacity: 0.6;

@@ -943,10 +943,6 @@
 		font-size: 0.9rem;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
-	}
 
 	.btn-secondary {
 		display: flex;
@@ -1278,7 +1274,6 @@
 
 	.template-card:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.template-card.selected {

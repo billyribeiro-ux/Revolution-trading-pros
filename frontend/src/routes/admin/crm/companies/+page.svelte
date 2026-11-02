@@ -431,8 +431,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: var(--primary-500, #e6b800);
+		border: 1px solid var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.9rem;
@@ -477,8 +478,7 @@
 	}
 
 	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
+		background: var(--primary-400, #f0c929);
 	}
 
 	.btn-secondary:disabled {

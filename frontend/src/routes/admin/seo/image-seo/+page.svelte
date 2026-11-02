@@ -144,9 +144,9 @@
 	}
 
 	function getScoreColor(score: number): string {
-		if (score >= 80) return '#10b981';
-		if (score >= 60) return '#f59e0b';
-		return '#ef4444';
+		if (score >= 80) return 'var(--success-emphasis, #3fb950)';
+		if (score >= 60) return 'var(--warning-emphasis, #d29922)';
+		return 'var(--error-emphasis, #f85149)';
 	}
 </script>
 
@@ -628,7 +628,7 @@
 		right: 4px;
 		padding: 2px 8px;
 		border-radius: 4px;
-		color: #ffffff;
+		color: var(--bg-base, #0d1117);
 		font-size: 0.75rem;
 		font-weight: 700;
 	}

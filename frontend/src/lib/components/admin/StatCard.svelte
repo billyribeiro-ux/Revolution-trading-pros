@@ -64,7 +64,6 @@
 	}
 
 	.stat-card:hover {
-		transform: translateY(-2px);
 		box-shadow: var(--admin-card-shadow-hover);
 		border-color: var(--admin-border-interactive);
 	}

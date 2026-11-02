@@ -197,13 +197,9 @@
 		font-size: 0.9375rem;
 		cursor: pointer;
 		transition: all 0.2s;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
+		
 	}
 
-	.btn-embed:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(230, 184, 0, 0.4);
-	}
 
 	.theme-section {
 		margin-bottom: 2rem;

@@ -194,10 +194,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-	}
 
 	.btn-danger-ghost {
 		display: flex;

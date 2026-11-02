@@ -206,7 +206,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem;
-		background: #fef2f2;
+		background: var(--error-soft, rgba(248,81,73,0.15));
 		border: 1px dashed #fecaca;
 		border-radius: 8px;
 		color: #991b1b;
@@ -219,7 +219,7 @@
 		justify-content: center;
 		width: 1.5rem;
 		height: 1.5rem;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(248,81,73,0.15));
 		border-radius: 50%;
 		font-weight: 600;
 		font-size: 0.75rem;
@@ -227,7 +227,7 @@
 
 	.unknown-block code {
 		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-		background: #fee2e2;
+		background: var(--error-soft, rgba(248,81,73,0.15));
 		padding: 0.125rem 0.375rem;
 		border-radius: 0.25rem;
 		font-size: 0.8125rem;

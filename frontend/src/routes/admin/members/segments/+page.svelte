@@ -1240,7 +1240,6 @@
 	.segment-card:hover {
 		background: var(--bg-elevated, #161b22);
 		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-2px);
 		box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.4);
 	}
 
@@ -1492,13 +1491,12 @@
 	.btn-primary {
 		background: var(--primary-500);
 		color: var(--bg-base);
-		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	.btn-primary:hover {
 		background: var(--primary-500, #e6b800);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
+		
 	}
 
 	.btn-secondary {
@@ -1615,9 +1613,7 @@
 		max-width: 500px;
 		max-height: 90vh;
 		overflow-y: auto;
-		box-shadow:
-			0 25px 60px -15px rgba(0, 0, 0, 0.7),
-			0 0 40px -10px rgba(230, 184, 0, 0.1);
+		box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
 	}
 
 	.modal-content.large {

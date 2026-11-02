@@ -3,11 +3,13 @@
 	Extracted from +page.svelte (R8-C) — read-only display, 0 binds.
 -->
 <script lang="ts">
+	import RoomIcon from '#lib/components/admin/RoomIcon.svelte';
 	import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 	import type { RoomStats } from '#lib/api/room-content.js';
 
 	interface RoomBadge {
+		id?: string;
 		name?: string;
 		color?: string;
 		icon?: string;
@@ -30,8 +32,8 @@
 	<div class="header-row">
 		<div class="header-content">
 			<div class="room-badge" style:background={room?.color || '#143E59'}>
-				{#if room?.icon}
-					{room.icon}
+				{#if room?.id}
+					<RoomIcon id={room.id} size={24} />
 				{:else}
 					<IconChartBar size={24} aria-hidden="true" />
 				{/if}

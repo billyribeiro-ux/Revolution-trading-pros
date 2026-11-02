@@ -605,7 +605,7 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--bg-base);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.25);
+		
 	}
 
 	.header-title h1 {
@@ -646,10 +646,6 @@
 		color: var(--bg-base);
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
-	}
 
 	.btn-secondary {
 		background: var(--bg-surface);

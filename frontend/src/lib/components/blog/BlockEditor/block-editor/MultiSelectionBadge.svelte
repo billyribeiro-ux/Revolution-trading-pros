@@ -31,13 +31,11 @@
 		gap: 12px;
 		padding: 12px 20px;
 		background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-		color: white;
+		color: var(--text-primary, #f0f6fc);
 		border-radius: 12px;
 		font-size: 14px;
 		font-weight: 500;
-		box-shadow:
-			0 10px 40px rgba(30, 27, 75, 0.4),
-			0 4px 12px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		z-index: 1000;
 		backdrop-filter: blur(8px);
 	}
@@ -47,7 +45,7 @@
 		background: rgba(255, 255, 255, 0.15);
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 6px;
-		color: white;
+		color: var(--text-primary, #f0f6fc);
 		font-size: 12px;
 		font-weight: 500;
 		cursor: pointer;

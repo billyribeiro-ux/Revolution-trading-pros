@@ -142,7 +142,6 @@
 	}
 
 	.metric-card:hover {
-		transform: translateY(-4px);
 		border-color: var(--admin-border, var(--border-default));
 		box-shadow: var(--admin-card-shadow-hover, 0 8px 32px rgba(0, 0, 0, 0.5));
 	}

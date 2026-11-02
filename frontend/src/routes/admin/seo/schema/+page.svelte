@@ -431,7 +431,7 @@
 
 	.type-card:hover {
 		border-color: var(--primary-600);
-		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.1);
+		
 	}
 
 	.type-card--deprecated {

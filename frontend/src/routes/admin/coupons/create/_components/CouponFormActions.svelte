@@ -71,10 +71,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-save:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 25px rgba(230, 184, 0, 0.3);
-	}
 
 	.btn-save:disabled {
 		opacity: 0.7;

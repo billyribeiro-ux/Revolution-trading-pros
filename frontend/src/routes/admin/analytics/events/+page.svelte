@@ -381,7 +381,7 @@
 		justify-content: center;
 		border-radius: 1rem;
 		background: var(--warning-emphasis, #d29922);
-		box-shadow: 0 12px 26px rgba(245, 158, 11, 0.2);
+		
 		color: #ffffff;
 	}
 
@@ -499,7 +499,7 @@
 	.event-filter-chip--active {
 		border-color: transparent;
 		background: var(--warning-emphasis, #d29922);
-		box-shadow: 0 12px 26px rgba(245, 158, 11, 0.25);
+		
 		color: #ffffff;
 	}
 
@@ -517,7 +517,7 @@
 	.search-button:hover,
 	.search-button:focus-visible {
 		background: var(--warning-emphasis, #d29922);
-		box-shadow: 0 14px 30px rgba(245, 158, 11, 0.4);
+		
 	}
 
 	.distribution-panel {

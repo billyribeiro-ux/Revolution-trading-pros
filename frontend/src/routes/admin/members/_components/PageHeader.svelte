@@ -187,13 +187,12 @@
 	.btn-primary {
 		background: var(--primary-500);
 		color: var(--bg-base);
-		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		background: var(--primary-400);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
+		
 	}
 
 	.btn-primary:disabled {

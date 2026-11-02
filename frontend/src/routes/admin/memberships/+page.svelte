@@ -1328,10 +1328,7 @@
 	.plan-price {
 		font-size: 2rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		background-clip: text;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.plan-cycle {
@@ -1778,10 +1775,7 @@
 	.preview-price {
 		font-size: 2rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		background-clip: text;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.preview-cycle {

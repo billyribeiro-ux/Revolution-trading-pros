@@ -276,10 +276,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-	}
 
 	button:disabled {
 		opacity: 0.6;

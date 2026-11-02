@@ -3565,7 +3565,6 @@
 	.ai-btn:hover:not(:disabled),
 	.ai-btn-large:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.2);
-		transform: translateY(-1px);
 	}
 
 	/* List Editor */
@@ -3634,7 +3633,6 @@
 
 	.add-item:hover {
 		background: rgba(63, 185, 80, 0.2);
-		transform: translateY(-1px);
 	}
 
 	/* Curriculum Builder */
@@ -3870,7 +3868,6 @@
 
 	.add-lesson:hover {
 		background: rgba(63, 185, 80, 0.1);
-		transform: translateY(-1px);
 	}
 
 	.module-footer {
@@ -3919,7 +3916,6 @@
 	.add-module:hover {
 		background: rgba(63, 185, 80, 0.15);
 		border-color: rgba(63, 185, 80, 0.5);
-		transform: translateY(-2px);
 	}
 
 	/* Drip Schedule */
@@ -3978,7 +3974,6 @@
 
 	.pricing-model:hover .model-content {
 		border-color: rgba(63, 185, 80, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.pricing-model.selected .model-content {
@@ -4031,7 +4026,6 @@
 
 	.analyze-btn:hover:not(:disabled) {
 		background: rgba(88, 166, 255, 0.2);
-		transform: translateY(-1px);
 	}
 
 	/* Early Bird Section */
@@ -4179,7 +4173,6 @@
 	.upload-zone:hover {
 		border-color: rgba(63, 185, 80, 0.5);
 		background: rgba(63, 185, 80, 0.05);
-		transform: translateY(-2px);
 	}
 
 	.upload-zone.uploading {
@@ -4294,7 +4287,6 @@
 
 	.remove-btn:hover {
 		background: var(--error-base, #da3633);
-		transform: translateY(-1px);
 	}
 
 	.gallery-grid {
@@ -4315,7 +4307,6 @@
 
 	.gallery-item:hover {
 		border-color: rgba(63, 185, 80, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.gallery-item img {
@@ -4422,7 +4413,6 @@
 
 	.upload-btn:hover {
 		background: var(--bg-hover, #252b33);
-		transform: translateY(-1px);
 	}
 
 	.upload-btn input {
@@ -4554,7 +4544,6 @@
 
 	.btn-primary:hover:not(:disabled) {
 		opacity: 0.9;
-		transform: translateY(-1px);
 	}
 
 	.btn-primary:disabled {

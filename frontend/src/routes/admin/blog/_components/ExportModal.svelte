@@ -198,13 +198,9 @@
 	.btn-primary {
 		background: var(--primary-500);
 		color: var(--bg-base, #0d1117);
-		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+		
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-	}
 
 	.btn-secondary {
 		background: var(--bg-hover, #252b33);

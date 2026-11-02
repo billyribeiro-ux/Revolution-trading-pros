@@ -190,7 +190,6 @@
 	.room-card:hover {
 		border-color: var(--room-color);
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.room-icon {
@@ -294,7 +293,7 @@
 
 	.action-card:hover {
 		border-color: var(--primary-500);
-		box-shadow: 0 4px 20px rgba(230, 184, 0, 0.2);
+		
 	}
 
 	.action-card :global(svg) {

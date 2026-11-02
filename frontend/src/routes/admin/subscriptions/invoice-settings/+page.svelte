@@ -1320,7 +1320,7 @@
 		border: 1px solid var(--border-default, #30363d);
 		border-radius: 0.5rem;
 		background: var(--bg-elevated, #161b22);
-		box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.08);
+		
 		color: var(--text-primary, #f0f6fc);
 		font-size: 6px;
 	}
@@ -1461,7 +1461,7 @@
 		max-width: 800px;
 		margin-inline: auto;
 		background: var(--bg-elevated, #161b22);
-		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+		
 	}
 
 	.icon-button {

@@ -142,7 +142,6 @@
 
 	.btn-action:hover {
 		background: rgba(230, 184, 0, 0.2);
-		transform: translateY(-1px);
 	}
 
 	.loading-state,

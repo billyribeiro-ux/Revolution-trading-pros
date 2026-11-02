@@ -499,7 +499,7 @@
 		place-items: center;
 		border-radius: 1rem;
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 18px 44px rgb(168 85 247 / 0.24);
+		
 	}
 
 	.cohorts-header h1 {
@@ -551,14 +551,9 @@
 	.primary-action {
 		background: var(--primary-500, #e6b800);
 		color: var(--bg-base, #0d1117);
-		box-shadow: 0 16px 36px rgb(168 85 247 / 0.28);
+		
 	}
 
-	.primary-action:hover:not(:disabled),
-	.state-card__button:hover,
-	.cohort-tab:hover {
-		transform: translateY(-1px);
-	}
 
 	.primary-action:disabled {
 		cursor: not-allowed;
@@ -648,7 +643,7 @@
 	.cohort-modal {
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.05);
-		box-shadow: 0 24px 80px rgb(2 6 23 / 0.24);
+		
 	}
 
 	.state-card {
@@ -698,12 +693,12 @@
 
 	.state-card__button--primary {
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 16px 36px rgb(168 85 247 / 0.24);
+		
 	}
 
 	.state-card__button--error {
 		background: var(--error-base, #da3633);
-		box-shadow: 0 16px 36px rgb(220 38 38 / 0.24);
+		
 	}
 
 	.cohort-selector {
@@ -726,7 +721,7 @@
 		border-color: transparent;
 		background: var(--primary-500, #e6b800);
 		color: var(--bg-base, #0d1117);
-		box-shadow: 0 16px 36px rgb(168 85 247 / 0.24);
+		
 	}
 
 	.retention-grid {

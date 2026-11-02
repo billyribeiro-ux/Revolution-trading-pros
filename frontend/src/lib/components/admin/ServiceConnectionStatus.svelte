@@ -548,7 +548,6 @@
 	}
 
 	.connect-button:hover {
-		transform: translateY(-3px);
 		box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color, #e6b800) 40%, transparent);
 	}
 

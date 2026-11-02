@@ -538,10 +538,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-upload:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.4);
-	}
 
 	.btn-upload :global(svg) {
 		width: 20px;

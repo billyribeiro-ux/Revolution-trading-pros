@@ -1434,7 +1434,7 @@
 
 	.board-card:hover {
 		border-color: #e6b800;
-		box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+		
 	}
 
 	.board-card:hover {
@@ -1704,7 +1704,7 @@
 	.modal-panel {
 		width: min(100%, 28rem);
 		border-radius: 0.75rem;
-		box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+		
 	}
 
 	.modal-header,

@@ -426,10 +426,6 @@
 		text-decoration: none;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
-	}
 
 	.btn-secondary {
 		display: flex;

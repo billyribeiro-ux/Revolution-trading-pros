@@ -1400,7 +1400,7 @@
 		background: var(--primary-500);
 		color: var(--bg-base);
 		font-weight: 600;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1424,7 +1424,6 @@
 
 	.stat-card:hover {
 		border-color: rgba(255, 255, 255, 0.2);
-		transform: translateY(-2px);
 	}
 
 	.stat-value {
@@ -1501,7 +1500,6 @@
 
 	.service-card:hover {
 		border-color: rgba(255, 255, 255, 0.2);
-		transform: translateY(-2px);
 	}
 
 	.service-card-header {
@@ -1691,7 +1689,6 @@
 
 	.btn-connect:hover {
 		background: var(--primary-500, #e6b800);
-		transform: translateY(-1px);
 	}
 
 	.btn-disconnect {
@@ -2313,7 +2310,7 @@
 
 	.modal-action--primary {
 		background: var(--warning-emphasis, #d29922);
-		box-shadow: 0 10px 24px rgba(245, 158, 11, 0.2);
+		
 	}
 
 	.modal-action--primary:hover,

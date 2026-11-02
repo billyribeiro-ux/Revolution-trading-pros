@@ -212,10 +212,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.5;

@@ -1315,7 +1315,7 @@
 		background: var(--primary-500);
 		border-radius: 20px;
 		color: var(--bg-base, #0d1117);
-		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	.header-icon :global(svg) {
@@ -2212,10 +2212,6 @@
 		min-width: 180px;
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.6;

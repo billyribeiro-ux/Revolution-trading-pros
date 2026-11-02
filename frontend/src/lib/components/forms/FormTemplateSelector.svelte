@@ -15,6 +15,15 @@
 	import type { FormTemplate } from '#lib/data/formTemplates.js';
 	import { templates } from '#lib/data/formTemplates.js';
 
+	const templateIcons = {
+		mail: IconMail,
+		'chart-bar': IconChartBar,
+		ticket: IconTicket,
+		'message-circle': IconMessageCircle,
+		'shopping-cart': IconShoppingCart,
+		briefcase: IconBriefcase
+	} as const;
+
 	// Svelte 5: Props using $props() rune with callback events
 	interface Props {
 		onSelect?: (template: FormTemplate) => void;
@@ -98,6 +107,7 @@
 			</div>
 		{:else}
 			{#each filteredTemplates as template (template.name)}
+				{@const TemplateIcon = templateIcons[template.icon]}
 				<div
 					class="template-card"
 					role="button"
@@ -105,17 +115,14 @@
 					onclick={() => handleSelect(template)}
 					onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleSelect(template)}
 				>
-					<div class="template-icon">{template.icon}</div>
+					<div class="template-icon"><TemplateIcon size={40} aria-hidden="true" /></div>
 					<div class="template-content">
 						<h3>{template.name}</h3>
 						<p class="template-description">{template.description}</p>
 						<div class="template-meta">
 							<span class="field-count">{template.fields.length} fields</span>
-							<span
-								class="theme-badge"
-								style:background={`${template.theme.colors.primary}20`}
-								style:color={template.theme.colors.primary}
-							>
+							<span class="theme-badge">
+								<span class="theme-swatch" style:background={template.theme.colors.primary}></span>
 								{template.theme.name}
 							</span>
 						</div>
@@ -272,12 +279,10 @@
 
 	.template-card:hover {
 		border-color: rgba(230, 184, 0, 0.4);
-		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
 	}
 
 	.template-icon {
-		font-size: 3rem;
+		color: var(--primary-500, #e6b800);
 		margin-bottom: 1rem;
 	}
 
@@ -308,10 +313,22 @@
 	}
 
 	.theme-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-secondary, #8b949e);
 		padding: 0.25rem 0.625rem;
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 500;
+	}
+
+	.theme-swatch {
+		width: 0.625rem;
+		height: 0.625rem;
+		border-radius: 50%;
+		border: 1px solid var(--border-default, #30363d);
 	}
 
 	.template-preview {

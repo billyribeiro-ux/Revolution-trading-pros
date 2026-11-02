@@ -185,7 +185,7 @@
 		color: var(--bg-base, #0d1117);
 		background: var(--primary-500, #e6b800);
 		font-weight: 600;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.25);
+		
 	}
 
 	.tab-btn.disabled {

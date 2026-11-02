@@ -11,8 +11,6 @@
  */
 
 import { browser } from '$app/env';
-import { redirect } from '@sveltejs/kit';
-import { authStore } from '#lib/stores/auth.svelte.js';
 import pastMembersApi, {
 	type DashboardOverview,
 	type ChurnReason,
@@ -49,7 +47,7 @@ export interface PastMembersPageData {
  * 2. Stream in dashboard data when available
  * 3. Cache results for instant navigation
  */
-export const load: Load = async ({ url }) => {
+export const load: Load = async () => {
 	// Base page data
 	const pageData: PastMembersPageData = {
 		title: 'Past Members Dashboard',
@@ -69,12 +67,8 @@ export const load: Load = async ({ url }) => {
 	// CLIENT-SIDE AUTH CHECK
 	// ═══════════════════════════════════════════════════════════════════════
 
-	const token = authStore.getToken();
-
-	if (!token) {
-		const returnUrl = encodeURIComponent(url.pathname + url.search);
-		redirect(302, `/login?redirect=${returnUrl}`);
-	}
+	// Auth is an httpOnly cookie, so the in-memory token is empty after a reload.
+	// The admin layout guard owns the redirect; a null token here is not "logged out".
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// PARALLEL DATA LOADING WITH CACHING

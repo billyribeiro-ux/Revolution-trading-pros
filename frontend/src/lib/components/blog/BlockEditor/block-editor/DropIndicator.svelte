@@ -41,25 +41,23 @@
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			#3b82f6 5%,
-			#60a5fa 50%,
-			#3b82f6 95%,
+			var(--primary-500, #e6b800) 5%,
+			var(--primary-500, #e6b800) 50%,
+			var(--primary-500, #e6b800) 95%,
 			transparent 100%
 		);
 		border-radius: 2px;
-		box-shadow:
-			0 0 20px rgba(59, 130, 246, 0.6),
-			0 0 40px rgba(59, 130, 246, 0.3);
+		
 	}
 
 	.drop-indicator-dot {
 		position: absolute;
 		width: 12px;
 		height: 12px;
-		background: #3b82f6;
-		border: 2px solid white;
+		background: var(--primary-500, #e6b800);
+		border: 2px solid var(--bg-elevated, #161b22);
 		border-radius: 50%;
-		box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+		
 		animation: dropDotPulse 1s ease-in-out infinite;
 	}
 
@@ -89,9 +87,6 @@
 			transition: none;
 		}
 
-		.drop-indicator-line {
-			box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
-		}
 	}
 
 	/* Dark mode support */

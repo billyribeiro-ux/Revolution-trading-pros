@@ -840,7 +840,7 @@
 		font-weight: 700;
 		color: var(--bg-base, #0d1117);
 		flex-shrink: 0;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	.member-info {

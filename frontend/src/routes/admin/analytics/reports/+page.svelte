@@ -555,7 +555,7 @@
 	.create-button {
 		border: 0;
 		background: #9333ea;
-		box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+		
 		color: #ffffff;
 		padding: 0.5rem 1rem;
 		font-size: 0.875rem;
@@ -694,9 +694,6 @@
 		transition: box-shadow 0.2s ease;
 	}
 
-	.report-card:hover {
-		box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
-	}
 
 	.report-header {
 		align-items: flex-start;

@@ -407,10 +407,6 @@
 		transition: all 0.2s ease;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-	}
 
 	.btn-secondary {
 		display: inline-flex;

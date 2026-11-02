@@ -33,7 +33,7 @@
 	}
 
 	.save-status .saving {
-		color: #3b82f6;
+		color: var(--primary-500, #e6b800);
 		display: flex;
 		align-items: center;
 		gap: 0.375rem;
@@ -48,6 +48,6 @@
 	}
 
 	.save-status .error {
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 </style>

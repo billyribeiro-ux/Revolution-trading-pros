@@ -108,7 +108,6 @@
 
 	.stat-card:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.stat-card.highlight {

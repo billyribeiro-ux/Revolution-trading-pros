@@ -1,4 +1,5 @@
 <script lang="ts">
+	import RoomIcon from '#lib/components/admin/RoomIcon.svelte';
 	/**
 	 * Room Selector Component
 	 * ═══════════════════════════════════════════════════════════════════════════
@@ -177,7 +178,7 @@
 									<Icon name="IconCheck" size={12} />
 								{/if}
 							</div>
-							<span class="room-icon">{room.icon}</span>
+							<span class="room-icon"><RoomIcon id={room.id} /></span>
 							<span class="room-name">{room.name}</span>
 							<span
 								class="room-badge"
@@ -225,7 +226,7 @@
 									<Icon name="IconCheck" size={12} />
 								{/if}
 							</div>
-							<span class="room-icon">{room.icon}</span>
+							<span class="room-icon"><RoomIcon id={room.id} /></span>
 							<span class="room-name">{room.name}</span>
 							<span
 								class="room-badge"
@@ -256,7 +257,7 @@
 						style:color={room.color}
 						style:border-color={`${room.color}40`}
 					>
-						{room.icon}
+						<RoomIcon id={room.id} size={14} />
 						{room.shortName}
 					</span>
 				{/if}
@@ -523,6 +524,7 @@
 	}
 
 	.room-icon {
+		display: inline-flex;
 		font-size: 18px;
 		flex-shrink: 0;
 	}
@@ -564,7 +566,6 @@
 
 	.done-btn:hover {
 		filter: brightness(1.1);
-		transform: translateY(-1px);
 	}
 
 	/* Selected Tags */

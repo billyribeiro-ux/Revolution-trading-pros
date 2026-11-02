@@ -42,21 +42,21 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #f0f0f0;
+		background: var(--bg-hover, #252b33);
 		border-radius: 16px;
-		color: #999;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 1.5rem;
 	}
 
 	.empty-state h2 {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0 0 0.5rem;
 	}
 
 	.empty-state p {
-		color: #666;
+		color: var(--text-secondary, #8b949e);
 		margin: 0 0 1.5rem;
 	}
 
@@ -65,8 +65,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: #3b82f6;
-		color: white;
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
 		border: none;
 		border-radius: 8px;
 		font-size: 0.9375rem;
@@ -76,11 +76,11 @@
 	}
 
 	.btn-add-first:hover {
-		background: #2563eb;
+		background: var(--primary-500, #e6b800);
 	}
 
 	.btn-add-first:focus-visible {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--primary-500, #e6b800);
 		outline-offset: 2px;
 	}
 </style>

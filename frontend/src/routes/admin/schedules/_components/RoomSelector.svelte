@@ -3,6 +3,7 @@
 	Extracted from /admin/schedules in R21-C.
 -->
 <script lang="ts">
+	import RoomIcon from '#lib/components/admin/RoomIcon.svelte';
 	import type { Room } from '#lib/config/rooms.js';
 
 	interface Props {
@@ -34,7 +35,7 @@
 				aria-selected={selectedRoomId === room.id}
 				style:--room-color={room.color}
 			>
-				<span class="room-icon">{room.icon}</span>
+				<span class="room-icon"><RoomIcon id={room.id} /></span>
 				<span class="room-name">{room.shortName}</span>
 			</button>
 		{/each}
@@ -88,6 +89,7 @@
 	}
 
 	.room-icon {
+		display: inline-flex;
 		font-size: 18px;
 	}
 

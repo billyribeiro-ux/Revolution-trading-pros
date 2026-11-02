@@ -142,6 +142,10 @@
 		border-color: rgba(63, 185, 80, 0.3);
 	}
 
+	.stat-card.highlight .stat-label {
+		color: var(--text-secondary, #8b949e);
+	}
+
 	.stat-icon {
 		width: 40px;
 		height: 40px;

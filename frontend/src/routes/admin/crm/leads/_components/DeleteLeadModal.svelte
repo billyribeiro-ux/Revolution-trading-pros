@@ -171,8 +171,4 @@
 		transition: all 0.2s;
 	}
 
-	.btn-danger:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-	}
 </style>

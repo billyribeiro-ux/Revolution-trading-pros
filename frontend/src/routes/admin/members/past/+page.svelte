@@ -949,16 +949,13 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--bg-base, #0d1117);
-		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	.header-title h1 {
 		font-size: 2rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -1096,7 +1093,6 @@
 
 	.period-card:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.period-card.active {
@@ -1415,7 +1411,7 @@
 		color: var(--bg-base);
 		font-weight: 600;
 		cursor: pointer;
-		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1875,14 +1871,10 @@
 		color: var(--bg-base);
 		font-weight: 600;
 		cursor: pointer;
-		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
+		
 		transition: var(--pm-transition);
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.6;

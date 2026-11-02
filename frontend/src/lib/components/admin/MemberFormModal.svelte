@@ -932,11 +932,7 @@
 		border-radius: var(--radius-xl);
 		padding: 3px;
 		background: rgba(230, 184, 0, 0.4);
-		box-shadow:
-			0 0 0 1px rgba(0, 0, 0, 0.5),
-			0 30px 80px -20px rgba(0, 0, 0, 0.8),
-			0 0 60px -15px rgba(230, 184, 0, 0.2),
-			inset 0 1px 0 rgba(255, 255, 255, 0.05);
+		box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 30px 80px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 		animation: frameSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 		max-height: 90vh;
 	}
@@ -1616,17 +1612,12 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		box-shadow:
-			0 4px 16px rgba(230, 184, 0, 0.25),
-			inset 0 1px 0 rgba(255, 255, 255, 0.15);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 	}
 
 	.btn-submit:hover:not(:disabled) {
 		background: var(--primary-500, #e6b800);
-		transform: translateY(-2px);
-		box-shadow:
-			0 8px 24px rgba(230, 184, 0, 0.35),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 	}
 
 	.btn-cancel:disabled,
@@ -1757,17 +1748,12 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.25s ease;
-		box-shadow:
-			0 4px 16px rgba(230, 184, 0, 0.25),
-			inset 0 1px 0 rgba(255, 255, 255, 0.15);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 	}
 
 	.btn-primary:hover {
 		background: var(--primary-500, #e6b800);
-		transform: translateY(-2px);
-		box-shadow:
-			0 8px 24px rgba(230, 184, 0, 0.35),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 	}
 
 	/* ============================================

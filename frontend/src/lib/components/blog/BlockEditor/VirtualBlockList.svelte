@@ -871,12 +871,12 @@
 	}
 
 	.virtual-block-wrapper:hover {
-		background-color: rgba(59, 130, 246, 0.02);
+		background-color: rgba(230, 184, 0, 0.02);
 	}
 
 	.virtual-block-wrapper.is-selected {
-		background-color: rgba(59, 130, 246, 0.05);
-		box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.3);
+		background-color: rgba(230, 184, 0, 0.05);
+		box-shadow: inset 0 0 0 2px rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
 	}
 
@@ -899,11 +899,10 @@
 		top: 0.5rem;
 		left: -3rem;
 		padding: 0.25rem;
-		background: white;
-		border: 1px solid #e5e7eb;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
 		border-radius: 8px;
-		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
 			0 2px 4px -2px rgba(0, 0, 0, 0.1);
 		z-index: 10;
 		opacity: 0;
@@ -928,14 +927,14 @@
 		background: transparent;
 		border: none;
 		border-radius: 4px;
-		color: #6b7280;
+		color: var(--text-secondary, #8b949e);
 		cursor: pointer;
 		transition: all 0.15s ease;
 	}
 
 	.toolbar-btn:hover:not(:disabled) {
-		background: #f3f4f6;
-		color: #1f2937;
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
 	}
 
 	.toolbar-btn:disabled {
@@ -944,14 +943,14 @@
 	}
 
 	.toolbar-btn-danger:hover:not(:disabled) {
-		background: #fef2f2;
-		color: #dc2626;
+		background: var(--error-soft, rgba(248,81,73,0.15));
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.toolbar-divider {
 		width: 1px;
 		height: 20px;
-		background: #e5e7eb;
+		background: var(--border-default, #30363d);
 		margin: 0 0.25rem;
 	}
 
@@ -975,7 +974,7 @@
 		left: 0;
 		right: 0;
 		height: 3px;
-		background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #3b82f6 100%);
+		background: linear-gradient(90deg, var(--primary-500, #e6b800) 0%, var(--primary-500, #e6b800) 50%, var(--primary-500, #e6b800) 100%);
 		border-radius: 2px;
 		z-index: 20;
 		animation: pulse-drop 1s ease-in-out infinite;
@@ -1025,7 +1024,7 @@
 		align-items: center;
 		justify-content: center;
 		height: 200px;
-		color: #9ca3af;
+		color: var(--text-tertiary, #6e7681);
 		text-align: center;
 		font-size: 0.875rem;
 	}
@@ -1043,7 +1042,7 @@
 		border-radius: 8px;
 		font-family: 'SF Mono', 'Fira Code', monospace;
 		font-size: 0.625rem;
-		color: #fff;
+		color: var(--text-primary, #f0f6fc);
 		z-index: 9999;
 		backdrop-filter: blur(8px);
 	}
@@ -1055,7 +1054,7 @@
 	}
 
 	.perf-label {
-		color: #9ca3af;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.perf-value {
@@ -1077,7 +1076,7 @@
 	}
 
 	.virtual-block-list::-webkit-scrollbar-thumb {
-		background: #d1d5db;
+		background: var(--border-default, #30363d);
 		border-radius: 4px;
 	}
 

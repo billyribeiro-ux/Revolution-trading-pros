@@ -841,7 +841,7 @@
 
 	.source-card:hover {
 		border-color: var(--border-default, #30363d);
-		box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+		
 	}
 
 	.source-icon {

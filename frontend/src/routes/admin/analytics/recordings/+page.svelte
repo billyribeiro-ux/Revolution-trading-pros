@@ -493,7 +493,7 @@
 		height: 3rem;
 		border-radius: 1rem;
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 10px 15px -3px rgb(99 102 241 / 0.2);
+		
 	}
 
 	.recordings-header h1 {
@@ -686,7 +686,7 @@
 
 	.state-card__button--primary {
 		background: var(--primary-500, #e6b800);
-		box-shadow: 0 10px 15px -3px rgb(99 102 241 / 0.25);
+		
 	}
 
 	.state-card__button--primary:hover {

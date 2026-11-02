@@ -521,9 +521,6 @@
 		font-size: 0.8rem;
 	}
 
-	.btn:hover {
-		transform: translateY(-1px);
-	}
 
 	.quick-actions {
 		display: flex;
@@ -547,7 +544,6 @@
 	.action-card:hover {
 		background: rgba(88, 166, 255, 0.1);
 		border-color: rgba(88, 166, 255, 0.3);
-		transform: translateY(-2px);
 	}
 
 	.action-icon {

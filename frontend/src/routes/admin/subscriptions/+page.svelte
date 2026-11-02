@@ -820,10 +820,6 @@
 		transition: all 0.3s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(230, 184, 0, 0.3);
-	}
 
 	.stats-grid {
 		display: grid;

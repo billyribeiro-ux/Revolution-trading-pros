@@ -276,10 +276,6 @@
 		color: var(--bg-base);
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
-	}
 
 	.btn-secondary {
 		background: var(--bg-surface, #1c2128);

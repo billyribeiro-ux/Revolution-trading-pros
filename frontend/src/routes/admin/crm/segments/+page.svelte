@@ -470,10 +470,6 @@
 		text-decoration: none;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
-	}
 
 	/* Stats Grid */
 	.stats-grid {
@@ -601,7 +597,6 @@
 
 	.segment-card:hover {
 		border-color: rgba(210, 153, 34, 0.3);
-		transform: translateY(-2px);
 		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 	}
 

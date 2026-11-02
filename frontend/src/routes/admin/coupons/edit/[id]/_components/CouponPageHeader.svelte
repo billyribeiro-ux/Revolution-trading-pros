@@ -173,10 +173,6 @@
 		color: var(--bg-base, #0d1117);
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-	}
 
 	.btn-ghost {
 		background: transparent;

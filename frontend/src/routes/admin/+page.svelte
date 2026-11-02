@@ -1174,7 +1174,6 @@
 
 	.btn-primary:hover {
 		opacity: 0.9;
-		transform: translateY(-1px);
 	}
 
 	.btn-secondary {
@@ -1284,9 +1283,6 @@
 		flex-shrink: 0;
 	}
 
-	.connect-btn:hover {
-		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
-	}
 
 	.panel-badge.not-connected {
 		background: var(--warning-soft);

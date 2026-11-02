@@ -388,8 +388,7 @@
 		font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
 		font-size: 11px;
 		color: #e5e7eb;
-		box-shadow:
-			0 20px 25px -5px rgba(0, 0, 0, 0.3),
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
 			0 10px 10px -5px rgba(0, 0, 0, 0.2);
 		overflow: hidden;
 		user-select: none;
@@ -419,7 +418,7 @@
 		align-items: center;
 		gap: 6px;
 		font-weight: 600;
-		color: #8b5cf6;
+		color: var(--primary-500, #e6b800);
 	}
 
 	.perf-controls {
@@ -437,7 +436,7 @@
 		background: transparent;
 		border: none;
 		border-radius: 4px;
-		color: #9ca3af;
+		color: var(--text-tertiary, #6e7681);
 		cursor: pointer;
 		transition: all 0.15s ease;
 	}
@@ -488,7 +487,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: #9ca3af;
+		color: var(--text-tertiary, #6e7681);
 	}
 
 	.perf-fps-value {
@@ -521,7 +520,7 @@
 	.perf-vital-name {
 		font-size: 9px;
 		font-weight: 600;
-		color: #9ca3af;
+		color: var(--text-tertiary, #6e7681);
 		margin-bottom: 2px;
 	}
 
@@ -532,7 +531,7 @@
 	}
 
 	.perf-vital-pending {
-		color: #6b7280;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	.perf-memory-value {
@@ -579,7 +578,7 @@
 	.perf-op-name {
 		flex: 1;
 		font-size: 10px;
-		color: #9ca3af;
+		color: var(--text-tertiary, #6e7681);
 		text-transform: capitalize;
 		white-space: nowrap;
 		overflow: hidden;
@@ -597,7 +596,7 @@
 	.perf-metric-count {
 		font-size: 9px;
 		font-weight: 400;
-		color: #6b7280;
+		color: var(--text-secondary, #8b949e);
 		margin-left: 2px;
 	}
 
@@ -611,12 +610,12 @@
 
 	.perf-op-status.success {
 		background: rgba(16, 185, 129, 0.2);
-		color: #10b981;
+		color: var(--success-emphasis, #3fb950);
 	}
 
 	.perf-op-status.failure {
 		background: rgba(239, 68, 68, 0.2);
-		color: #ef4444;
+		color: var(--error-emphasis, #f85149);
 	}
 
 	.perf-footer {
@@ -628,7 +627,7 @@
 
 	.perf-shortcut {
 		font-size: 9px;
-		color: #6b7280;
+		color: var(--text-secondary, #8b949e);
 	}
 
 	/* Animations */

@@ -552,7 +552,7 @@
 		background: var(--primary-500);
 		border-radius: 16px;
 		color: var(--bg-base);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
+		
 	}
 
 	.header-text h1 {
@@ -910,7 +910,6 @@
 	}
 
 	.section-card:hover {
-		transform: translateY(-4px);
 		border-color: var(--card-color);
 		box-shadow:
 			0 16px 48px rgba(0, 0, 0, 0.3),

@@ -352,7 +352,7 @@
 		justify-content: center;
 		border-radius: 1rem;
 		background: #f43f5e;
-		box-shadow: 0 12px 26px rgba(244, 63, 94, 0.2);
+		
 		color: #ffffff;
 	}
 
@@ -410,7 +410,7 @@
 
 	.type-button--active {
 		background: #f43f5e;
-		box-shadow: 0 10px 24px rgba(244, 63, 94, 0.25);
+		
 	}
 
 	.loading-state {
@@ -563,7 +563,7 @@
 
 	.setup-link {
 		background: #f43f5e;
-		box-shadow: 0 12px 26px rgba(244, 63, 94, 0.25);
+		
 		color: #ffffff;
 		padding: 0.75rem 1.5rem;
 	}

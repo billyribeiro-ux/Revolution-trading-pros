@@ -18,7 +18,8 @@ export interface FormTemplate {
 	name: string;
 	description: string;
 	category: 'contact' | 'survey' | 'registration' | 'feedback' | 'order' | 'application';
-	icon: string;
+	/** Tabler icon key (see FormTemplateSelector). */
+	icon: 'mail' | 'chart-bar' | 'ticket' | 'message-circle' | 'shopping-cart' | 'briefcase';
 	theme: FormTheme;
 	fields: TemplateField[];
 	settings?: FormSettings;
@@ -136,7 +137,7 @@ export const templates: FormTemplate[] = [
 		name: 'Basic Contact Form',
 		description: 'Simple contact form with name, email, and message',
 		category: 'contact',
-		icon: '📧',
+		icon: 'mail',
 		theme: themes[0],
 		fields: [
 			{
@@ -185,7 +186,7 @@ export const templates: FormTemplate[] = [
 		name: 'Customer Satisfaction Survey',
 		description: 'Gather feedback on customer experience',
 		category: 'survey',
-		icon: '📊',
+		icon: 'chart-bar',
 		theme: themes[3],
 		fields: [
 			{
@@ -254,7 +255,7 @@ export const templates: FormTemplate[] = [
 		name: 'Event Registration',
 		description: 'Register attendees for events, webinars, or workshops',
 		category: 'registration',
-		icon: '🎫',
+		icon: 'ticket',
 		theme: themes[1],
 		fields: [
 			{
@@ -323,7 +324,7 @@ export const templates: FormTemplate[] = [
 		name: 'Product Feedback',
 		description: 'Collect detailed product feedback from users',
 		category: 'feedback',
-		icon: '💭',
+		icon: 'message-circle',
 		theme: themes[0],
 		fields: [
 			{
@@ -381,7 +382,7 @@ export const templates: FormTemplate[] = [
 		name: 'Custom Order Form',
 		description: 'Take custom product or service orders',
 		category: 'order',
-		icon: '🛒',
+		icon: 'shopping-cart',
 		theme: themes[3],
 		fields: [
 			{
@@ -455,7 +456,7 @@ export const templates: FormTemplate[] = [
 		name: 'Job Application',
 		description: 'Collect job applications with resume upload',
 		category: 'application',
-		icon: '💼',
+		icon: 'briefcase',
 		theme: themes[2],
 		fields: [
 			{

@@ -506,7 +506,7 @@
 		place-items: center;
 		border-radius: 1rem;
 		background: var(--success-base, #2ea043);
-		box-shadow: 0 18px 44px rgb(16 185 129 / 0.24);
+		
 	}
 
 	.goals-header h1 {
@@ -562,14 +562,9 @@
 	.primary-action {
 		background: var(--success-base, #2ea043);
 		color: #ffffff;
-		box-shadow: 0 16px 36px rgb(13 148 136 / 0.28);
+		
 	}
 
-	.primary-action:hover:not(:disabled),
-	.state-card__button:hover,
-	.goal-filter:hover {
-		transform: translateY(-1px);
-	}
 
 	.primary-action:disabled {
 		cursor: not-allowed;
@@ -622,7 +617,7 @@
 	.goal-modal {
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background: rgb(255 255 255 / 0.05);
-		box-shadow: 0 24px 80px rgb(2 6 23 / 0.24);
+		
 	}
 
 	.goals-stat {
@@ -672,7 +667,7 @@
 		border-color: rgb(255 255 255 / 0.28);
 		background: var(--bg-elevated, #161b22);
 		color: var(--info-emphasis, #58a6ff);
-		box-shadow: 0 12px 34px rgb(255 255 255 / 0.1);
+		
 	}
 
 	.state-card {
@@ -722,12 +717,12 @@
 
 	.state-card__button--primary {
 		background: var(--success-base, #2ea043);
-		box-shadow: 0 16px 36px rgb(13 148 136 / 0.24);
+		
 	}
 
 	.state-card__button--error {
 		background: var(--error-base, #da3633);
-		box-shadow: 0 16px 36px rgb(220 38 38 / 0.24);
+		
 	}
 
 	.goals-grid {
@@ -748,7 +743,6 @@
 	.goal-card:hover {
 		border-color: rgb(255 255 255 / 0.18);
 		background: rgb(255 255 255 / 0.08);
-		transform: translateY(-2px);
 	}
 
 	.goal-card__header,
@@ -1037,7 +1031,6 @@
 	.type-option.is-selected {
 		border-color: rgba(63, 185, 80, 0.45);
 		background: rgba(63, 185, 80, 0.12);
-		transform: translateY(-1px);
 	}
 
 	:global(.type-option__icon) {

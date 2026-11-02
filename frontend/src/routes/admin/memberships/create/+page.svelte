@@ -523,30 +523,8 @@
 		transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	.membership-card::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		border-radius: 24px;
-		padding: 2px;
-		background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
-		background-size: 300% 300%;
-		-webkit-mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		-webkit-mask-composite: xor;
-		mask-composite: exclude;
-	}
-
 	.membership-card:hover {
-		transform: translateY(-8px) scale(1.02);
-		box-shadow:
-			0 30px 60px -15px rgba(251, 191, 36, 0.4),
-			0 0 0 1px rgba(251, 191, 36, 0.2),
-			0 0 60px rgba(251, 191, 36, 0.2);
+		border-color: var(--primary-500, #e6b800);
 	}
 
 	.card-crown {
@@ -554,7 +532,6 @@
 		justify-content: center;
 		margin-bottom: 20px;
 		color: var(--warning-emphasis, #d29922);
-		filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
 	}
 
 	.card-header {
@@ -579,11 +556,8 @@
 	.amount {
 		font-size: 2.75rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24);
+		color: var(--text-primary, #f0f6fc);
 		background-size: 200% 200%;
-		background-clip: text;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
 	}
 
 	.period {
@@ -880,13 +854,9 @@
 	.btn-primary {
 		background: var(--warning-emphasis, #d29922);
 		color: #1e1b4b;
-		box-shadow: 0 4px 14px rgba(251, 191, 36, 0.25);
+		
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.5;

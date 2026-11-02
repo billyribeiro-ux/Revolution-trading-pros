@@ -1462,10 +1462,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.5;
@@ -1563,7 +1559,6 @@
 
 	.datasource-card:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		transform: translateY(-2px);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 	}
 

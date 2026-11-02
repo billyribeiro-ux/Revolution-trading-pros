@@ -154,7 +154,6 @@
 
 	.btn-primary:hover:not(:disabled) {
 		opacity: 0.9;
-		transform: translateY(-1px);
 	}
 
 	.btn-primary:disabled {

@@ -82,10 +82,6 @@
 		gap: 0.75rem;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(230, 184, 0, 0.4);
-	}
 
 	@media (max-width: 767.98px) {
 		.admin-forms {

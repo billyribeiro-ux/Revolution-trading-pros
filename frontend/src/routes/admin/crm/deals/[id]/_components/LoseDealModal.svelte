@@ -222,10 +222,6 @@
 		transition: all 0.2s;
 	}
 
-	.btn-danger:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-	}
 
 	.btn-danger:disabled {
 		opacity: 0.5;

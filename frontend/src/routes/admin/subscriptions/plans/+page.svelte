@@ -1670,10 +1670,6 @@
 		color: var(--bg-base, #0d1117);
 	}
 
-	.btn-save:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-	}
 
 	.btn-save:disabled,
 	.btn-cancel:disabled {

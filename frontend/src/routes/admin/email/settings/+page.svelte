@@ -390,10 +390,6 @@
 		gap: 0.5rem;
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-1px);
-		box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
-	}
 
 	.btn-secondary {
 		background: var(--bg-hover, #252b33);

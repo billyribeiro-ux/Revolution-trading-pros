@@ -843,16 +843,13 @@
 		align-items: center;
 		justify-content: center;
 		color: #ffffff;
-		box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+		
 	}
 
 	.header-title h1 {
 		font-size: 2rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
-		-webkit-background-clip: text;
-		background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
 
@@ -1120,9 +1117,6 @@
 		text-align: left;
 	}
 
-	.action-card:hover {
-		transform: translateY(-2px);
-	}
 
 	.action-card.reminder:hover {
 		border-color: rgba(88, 166, 255, 0.5);
@@ -1244,7 +1238,7 @@
 		color: #ffffff;
 		font-weight: 600;
 		cursor: pointer;
-		box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+		
 	}
 
 	/* Table */
@@ -1768,14 +1762,10 @@
 		color: #ffffff;
 		font-weight: 600;
 		cursor: pointer;
-		box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+		
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
-	}
 
 	.btn-primary:disabled {
 		opacity: 0.6;

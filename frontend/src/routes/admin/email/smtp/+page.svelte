@@ -399,10 +399,6 @@
 		color: var(--bg-base);
 	}
 
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 20px rgba(230, 184, 0, 0.3);
-	}
 
 	.btn-secondary {
 		background: var(--bg-hover, #252b33);
