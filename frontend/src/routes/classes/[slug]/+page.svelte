@@ -121,6 +121,7 @@
 
 				<!-- Downloads Section - API-driven -->
 				<section class="class-downloads-section">
+					<h2 class="sr-only">Class Curriculum and Downloads</h2>
 					<ClassDownloads courseSlug={slug} title="Class Downloads" />
 				</section>
 			</div>

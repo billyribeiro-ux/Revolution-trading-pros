@@ -196,6 +196,15 @@
 				Your comprehensive guide to major stock market indexes. Understand how indexes work, track
 				market performance, and discover the best ways to gain exposure.
 			</p>
+			<p class="hero__byline">
+				By <a href="/authors/billy-ribeiro">Billy Ribeiro</a> · Updated
+				<time datetime="2026-05-25">May 25, 2026</time> · Reference:
+				<a
+					href="https://www.cboe.com/tradable_products/sp_500/"
+					target="_blank"
+					rel="noopener noreferrer">Cboe S&amp;P 500 Index Specifications</a
+				>
+			</p>
 		</div>
 	</section>
 
@@ -472,6 +481,17 @@
 		line-height: 1.7;
 		max-width: 700px;
 		margin: 0 auto;
+	}
+
+	.hero__byline {
+		font-size: 0.9rem;
+		color: #cbd5e1;
+		margin-top: 1rem;
+	}
+
+	.hero__byline a {
+		color: #60a5fa;
+		text-decoration: underline;
 	}
 
 	/* Sections */

@@ -281,6 +281,7 @@ export type Environment = 'production' | 'staging' | 'development';
 
 export interface RouteSEOContext {
 	pathname: string;
+	searchParams?: URLSearchParams;
 	params: Record<string, string>;
 	env: Environment;
 	isPrivate: boolean;

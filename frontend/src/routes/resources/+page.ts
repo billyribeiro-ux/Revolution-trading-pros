@@ -11,7 +11,9 @@
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb } from '#lib/seo/schemas.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
+
+const SITE = PRODUCTION_ORIGIN;
 
 // Enable static site generation for SEO
 export const prerender = true;
@@ -23,7 +25,7 @@ export const load = () => ({
 	seo: {
 		title: 'Free Trading Resources & Education Tools',
 		description:
-			'Free trading resources, guides, calculators, and tools. Start your trading education with our comprehensive resource library. Position size calculators, trading journal templates, and more.',
+			'Free trading resources, guides, position size calculators, ETF & stock index lists, and educational tools from Revolution Trading Pros.',
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },

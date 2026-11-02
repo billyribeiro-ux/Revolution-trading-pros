@@ -1,34 +1,13 @@
 /**
  * Scanners Landing Page - Load Configuration
  * ═══════════════════════════════════════════════════════════════════════════
- *
- * Google December 2025 SEO Standards:
- * - Static Site Generation (SSG) for optimal performance
- * - Prerendering for instant page loads
- * - Proper hydration strategy
- * - Core Web Vitals optimization
- *
- * Apple ICT 11+ Standards:
- * - Type-safe data loading
- * - Error boundary handling
- * - Progressive enhancement
- *
- * Svelte 5 / SvelteKit (Dec 2025):
- * - No ./$types imports needed in universal load functions
- * - Explicit typing for load function parameters
- *
- * @version 2.0.0
- * @author Revolution Trading Pros
  */
-
-// ═══════════════════════════════════════════════════════════════════════════
-// TYPES - Explicit typing without ./$types (Svelte 5 pattern)
-// ═══════════════════════════════════════════════════════════════════════════
 
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildSoftwareApplication } from '#lib/seo/schemas.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+const SITE = PRODUCTION_ORIGIN;
 
 interface Scanner {
 	id: string;
@@ -41,8 +20,6 @@ interface Scanner {
 	currency: string;
 	features: string[];
 	image: string;
-	rating: number;
-	reviewCount: number;
 	availability: 'InStock';
 	category: string;
 	brand: string;
@@ -85,8 +62,6 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 				'Mobile app access'
 			],
 			image: '/revolution-trading-pros.png',
-			rating: 4.8,
-			reviewCount: 127,
 			availability: 'InStock' as const,
 			category: 'Trading Software',
 			brand: 'Revolution Trading Pros'
@@ -95,18 +70,17 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 
 	const breadcrumbs: Breadcrumb[] = [
 		{ name: 'Home', url: `${SITE}/` },
-		{ name: 'Store', url: `${SITE}/store/scanners` },
-		{ name: 'Scanners', url: `${SITE}/store/scanners` }
+		{ name: 'Market Scanners', url: `${SITE}/store/scanners` }
 	];
 
 	const seo: SEOInput = {
-		title: 'Trading Scanners — Professional Options & Stock Analysis Tools',
+		title: 'Trading Scanners — Options & Stock Tools',
 		description:
 			'Professional trading scanners for options and stock analysis. Real-time scanning, advanced filters, and smart alerts. Starting at $119/month.',
 		canonical: `${SITE}/store/scanners`,
 		og: {
 			type: 'website',
-			image: `${SITE}/images/og/scanners-landing.jpg`,
+			image: `${SITE}/revolution-trading-pros.png`,
 			imageAlt: 'Revolution Trading Pros — Trading Scanners'
 		},
 		jsonld: [
@@ -123,10 +97,6 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 						price: scanner.price,
 						priceCurrency: scanner.currency,
 						url: `${SITE}/store/scanners/${scanner.slug}`
-					},
-					aggregateRating: {
-						ratingValue: scanner.rating,
-						ratingCount: scanner.reviewCount
 					}
 				})
 			)

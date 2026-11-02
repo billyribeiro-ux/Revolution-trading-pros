@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # CLAUDE.md — agent instructions for this repo
 
 This file is read by Claude Code (and other MCP-aware agents) when working
@@ -183,3 +185,18 @@ Both are currently clean at 0/0 — keep them there.
    it's not perfect, consistency beats novelty.
 3. Ask before destructive actions (deleting branches, force-pushing,
    running migrations against prod).
+
+---
+
+## SEO Guardrails (enforced — see docs/seo/SEO_STANDARD.md)
+
+1. Always use the Svelte MCP server (`list-sections` → `get-documentation` → `svelte-autofixer`) before and after writing `.svelte`, `+page.*`, `+layout.*`, `+server.*`, or `hooks.server.*` files. Keep calling `svelte-autofixer` until it returns zero issues.
+2. Never add `export const ssr = false` to any indexable route.
+3. Never use `$app/stores` — use `page` from `$app/state`.
+4. Never emit `<title>`, `<meta name="description">`, `<link rel="canonical">`, or JSON-LD outside the single-source head pattern (`src/lib/seo/Seo.svelte`).
+5. Never serialize JSON-LD without escaping `<` as `\u003c`.
+6. Never emit deprecated Google rich-result types (`FAQPage` on non-gov/health, `HowTo`, `SitelinksSearchBox`, `SpecialAnnouncement`, `CourseInfo`, `EstimatedSalary`, `LearningVideo`, `ClaimReview`, `VehicleListing`, `BookActions`, `PracticeProblems`, `Dataset`).
+7. Never hardcode or fabricate `AggregateRating`, `Review`, prices, availability, author names, credentials, or dates.
+8. Never use `<div onclick>` or `goto()` alone for navigation — always render `<a href="...">`.
+9. Always use `<enhanced:img>` (or explicit `width`/`height` + modern format) and never set `loading="lazy"` on the LCP image.
+10. Run `pnpm --filter revolution-svelte check`, `pnpm --filter revolution-svelte lint`, `pnpm --filter revolution-svelte test:unit`, `pnpm --filter revolution-svelte build`, and `pnpm test:seo` before completing any route or layout change.

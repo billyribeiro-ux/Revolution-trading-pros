@@ -842,7 +842,7 @@
 
 				<!-- Auth Buttons -->
 				{#if !isAuthenticated.current}
-					<a href="/get-started" class="cta-btn">Get Started</a>
+					<a href="/pricing" class="cta-btn">Get Started</a>
 					<a href="/login" class="login-btn">Login</a>
 				{/if}
 			{/if}
@@ -1031,9 +1031,9 @@
 				<button class="mobile-logout" onclick={handleLogout} type="button"> Logout </button>
 			{:else}
 				<a
-					href="/get-started"
+					href="/pricing"
 					class="mobile-cta"
-					onclick={() => handleNavClick('/get-started', 'Get Started')}
+					onclick={() => handleNavClick('/pricing', 'Get Started')}
 				>
 					Get Started
 				</a>

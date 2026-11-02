@@ -37,6 +37,23 @@
 			</ul>
 		</section>
 	{/if}
+
+	<section class="editorial-standards">
+		<h2>Editorial Standards &amp; Trading Methodology</h2>
+		<p>
+			All educational guides, market commentary, and technical indicator documentation published by
+			{data.author.name} at Revolution Trading Pros follow strict risk-first editorial guidelines. Every
+			strategy emphasizes defined invalidation levels, disciplined position sizing, and verifiable
+			market structure rather than hindsight-fitted predictions.
+		</p>
+		<p>
+			Explore our core educational curriculum across <a href="/guides/risk-management"
+				>Risk Management</a
+			>, <a href="/guides/position-sizing">Position Sizing</a>,
+			<a href="/courses">Structured Trading Courses</a>, and
+			<a href="/live-trading-rooms">Live Trading Rooms</a>.
+		</p>
+	</section>
 </article>
 
 <style>

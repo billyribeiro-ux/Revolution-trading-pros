@@ -5,7 +5,9 @@ import type { Post } from '#lib/types/post.js';
 import type { SEOInput } from '#lib/seo/types.js';
 import { articleSchema, breadcrumbSchema, speakableSchema } from '#lib/seo/jsonld.js';
 
-const SITE_URL = 'https://revolutiontradingpros.com';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
+
+const SITE_URL = PRODUCTION_ORIGIN;
 
 export const prerender = false; // Disable prerendering - dynamic content
 // SSR enabled for SEO - blog content should be server-rendered

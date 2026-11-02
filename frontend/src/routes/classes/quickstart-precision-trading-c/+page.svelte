@@ -45,11 +45,13 @@
 				<div id="title-box">
 					<div id="title-header">
 						<h1>Quickstart To Precision Trading</h1>
-						<!-- svelte-ignore a11y_missing_content -->
-						<h3></h3>
 					</div>
 					<div id="title-description">
-						<p></p>
+						<p>
+							Master institutional market structure, multi-timeframe alignment, and high-precision
+							order execution in this foundational trading class led by the Revolution Trading Pros
+							desk.
+						</p>
 					</div>
 				</div>
 			</div>
@@ -226,13 +228,6 @@
 		color: #666666;
 		margin: 0 0 var(--space-3) 0;
 		line-height: 1.2;
-	}
-
-	#title-header h3 {
-		font-size: var(--font-size-lg);
-		font-weight: 400;
-		color: #999999;
-		margin: 0 0 var(--space-4) 0;
 	}
 
 	#title-description {

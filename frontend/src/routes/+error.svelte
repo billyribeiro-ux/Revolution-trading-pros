@@ -100,10 +100,8 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{config.title} — Revolution Trading Pros</title>
-	<meta name="description" content={config.description} />
-</svelte:head>
+<!-- SEO head tags (<title>, <meta name="description">, <meta name="robots" content="noindex, nofollow">)
+     are emitted by the single root <Seo> component in +layout.svelte when page.status >= 400 (REND-04, META-05) -->
 
 <!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
 <div class="error-page">

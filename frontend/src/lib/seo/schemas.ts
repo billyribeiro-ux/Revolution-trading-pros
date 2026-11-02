@@ -22,8 +22,12 @@ import type {
 	JsonLdArticle,
 	JsonLdFAQPage,
 	JsonLdFAQQuestion,
-	JsonLdVideoObject
+	JsonLdVideoObject,
+	WithContext,
+	Thing
 } from './types';
+
+export type SchemaDtsNode = WithContext<Thing> & JsonLdNode;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Breadcrumb
@@ -450,6 +454,7 @@ export interface WebPageInput {
 	datePublished?: string;
 	dateModified: string;
 	pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'ProfilePage';
+	mainEntity?: JsonLdNode;
 }
 
 export function buildWebPage(input: WebPageInput): JsonLdNode {
@@ -460,7 +465,68 @@ export function buildWebPage(input: WebPageInput): JsonLdNode {
 		name: input.name,
 		description: input.description,
 		datePublished: input.datePublished,
-		dateModified: input.dateModified
+		dateModified: input.dateModified,
+		mainEntity: input.mainEntity
+	};
+}
+
+export interface ProfilePageInput {
+	url: string;
+	name: string;
+	description?: string;
+	dateCreated?: string;
+	dateModified?: string;
+	person: PersonInput;
+}
+
+export function buildProfilePage(input: ProfilePageInput): JsonLdNode {
+	const personNode = buildPerson(input.person);
+	const { '@context': _ignored, ...personEntity } = personNode;
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'ProfilePage',
+		url: input.url,
+		name: input.name,
+		description: input.description,
+		dateCreated: input.dateCreated ?? '2025-01-01',
+		dateModified: input.dateModified ?? '2026-05-25',
+		mainEntity: personEntity
+	};
+}
+
+export interface ProductInput {
+	name: string;
+	description: string;
+	url: string;
+	image: string | string[];
+	brandName?: string;
+	offers: {
+		price: number | string;
+		priceCurrency: string;
+		availability?: 'InStock' | 'PreOrder' | 'SoldOut';
+		url?: string;
+	};
+}
+
+export function buildProduct(input: ProductInput): JsonLdNode {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'Product',
+		name: input.name,
+		description: input.description,
+		url: input.url,
+		image: Array.isArray(input.image) ? input.image : [input.image],
+		brand: {
+			'@type': 'Brand',
+			name: input.brandName ?? 'Revolution Trading Pros'
+		},
+		offers: {
+			'@type': 'Offer',
+			price: input.offers.price,
+			priceCurrency: input.offers.priceCurrency,
+			availability: `https://schema.org/${input.offers.availability ?? 'InStock'}`,
+			url: input.offers.url ?? input.url
+		}
 	};
 }
 

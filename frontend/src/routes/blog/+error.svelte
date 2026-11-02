@@ -10,6 +10,7 @@
 	 *
 	 * @version 1.0.0 - January 2026
 	 */
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/env';
@@ -53,8 +54,8 @@
 	);
 
 	// Track error for analytics
-	$effect(() => {
-		if (browser && status >= 400) {
+	onMount(() => {
+		if (status >= 400) {
 			// Log error in development
 			if (import.meta.env.DEV) {
 				console.error(`[Blog Error ${status}]`, errorMessage, page.url.pathname);
@@ -91,11 +92,6 @@
 		}
 	}
 </script>
-
-<svelte:head>
-	<title>{config.title} — Blog</title>
-	<meta name="description" content={config.description} />
-</svelte:head>
 
 <div class="blog-error-container">
 	<div class="error-content">

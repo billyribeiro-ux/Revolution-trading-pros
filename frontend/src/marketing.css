@@ -44,14 +44,14 @@
 	--rtp-text: #f5f5f5; /* primary body text */
 	--rtp-text-soft: #cbd5e1; /* slate-300, secondary headings */
 	--rtp-text-muted: #94a3b8; /* slate-400, the dominant body-muted shade */
-	--rtp-text-subtle: #64748b; /* slate-500, captions, metadata */
-	--rtp-text-dim: #475569; /* slate-600, disabled, separators */
-	--rtp-text-faint: #334155; /* slate-700, decorative slash separators */
+	--rtp-text-subtle: #94a3b8; /* slate-400, captions, metadata (WCAG AA >= 4.5:1) */
+	--rtp-text-dim: #8b9bb4; /* accessible dim text (WCAG AA >= 4.5:1) */
+	--rtp-text-faint: #8b9bb4; /* accessible faint text (WCAG AA >= 4.5:1) */
 
 	/* Legacy token — kept for compatibility with signup/resources/alerts
 	   pages that already reference .text-rtp-muted. Do NOT use in new code;
 	   prefer --rtp-text-muted above. */
-	--rtp-muted: #6b7280;
+	--rtp-muted: #94a3b8;
 
 	/* ── Brand palette ──────────────────────────────────────────────────── */
 	--rtp-primary: #3b82f6; /* blue-500, primary CTA + accent */

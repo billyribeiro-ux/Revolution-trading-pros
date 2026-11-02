@@ -608,7 +608,7 @@
 				You have the tools. Now get the guidance. Join a community of traders who genuinely care
 				about your success.
 			</p>
-			<a class="cta-button primary large" href="/signup">Join Revolution Trading Pros</a>
+			<a class="cta-button primary large" href="/register">Join Revolution Trading Pros</a>
 			<p class="cta-subtext">No spam. No fake alerts. Just real trading.</p>
 		</div>
 	</section>

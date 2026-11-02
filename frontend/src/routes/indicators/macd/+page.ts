@@ -1,7 +1,9 @@
 import type { SEOInput } from '#lib/seo/types.js';
 import { buildBreadcrumb, buildSoftwareApplication } from '#lib/seo/schemas.js';
 
-const SITE = 'https://revolutiontradingpros.com';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
+
+const SITE = PRODUCTION_ORIGIN;
 
 export const prerender = true;
 
@@ -21,7 +23,14 @@ export const load = () => ({
 				description:
 					'A custom MACD indicator implementation used by Revolution Trading Pros traders to filter trends and confirm momentum.',
 				url: `${SITE}/indicators/macd`,
-				applicationCategory: 'FinanceApplication'
+				applicationCategory: 'FinanceApplication',
+				operatingSystem: 'Web, ThinkorSwim, TradingView',
+				image: `${SITE}/revolution-trading-pros.png`,
+				offers: {
+					price: 0,
+					priceCurrency: 'USD',
+					url: `${SITE}/indicators/macd`
+				}
 			})
 		]
 	} satisfies SEOInput

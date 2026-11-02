@@ -27,17 +27,19 @@ export interface OGMeta {
 export function generateStructuredData(): JsonLdNode {
 	return {
 		'@context': 'https://schema.org',
-		'@type': 'WebApplication',
+		'@type': 'SoftwareApplication',
 		name: 'Black-Scholes Options Calculator',
 		description:
-			'The most advanced free options pricing calculator. Real-time Greeks, interactive payoff diagrams, volatility analysis, multi-leg strategy builder, Monte Carlo simulation, and live market data.',
+			'Free institutional Black-Scholes options pricing calculator with real-time Greeks, interactive payoff diagrams, multi-leg strategy builder, and Monte Carlo simulation.',
 		url: 'https://revolutiontradingpros.com/tools/options-calculator',
 		applicationCategory: 'FinanceApplication',
-		operatingSystem: 'Web Browser',
+		operatingSystem: 'Web',
+		image: 'https://revolutiontradingpros.com/revolution-trading-pros.png',
 		offers: {
 			'@type': 'Offer',
-			price: '0',
-			priceCurrency: 'USD'
+			price: 0,
+			priceCurrency: 'USD',
+			url: 'https://revolutiontradingpros.com/tools/options-calculator'
 		},
 		creator: {
 			'@type': 'Organization',

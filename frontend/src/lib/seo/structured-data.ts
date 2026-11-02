@@ -401,6 +401,8 @@ export function generateVideoSchema(data: VideoSchema): object {
 	return schema;
 }
 
+import { serializeJsonLd } from './serializeJsonLd';
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -409,7 +411,7 @@ export function generateVideoSchema(data: VideoSchema): object {
  * Convert schema object to JSON-LD script tag content
  */
 export function toJsonLd(schema: object | object[]): string {
-	return JSON.stringify(schema, null, 0);
+	return serializeJsonLd(schema);
 }
 
 /**

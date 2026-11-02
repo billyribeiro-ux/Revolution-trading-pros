@@ -176,7 +176,7 @@
 						<div class="scope-card__icon" aria-hidden="true">
 							<IconGlobe size={48} stroke={1.2} />
 						</div>
-						<h3 class="scope-card__heading">Scope of Engagement</h3>
+						<h2 class="scope-card__heading">Scope of Engagement</h2>
 						<ul class="scope-card__list">
 							<li class="scope-card__row">
 								<span>&gt; Execution Audit</span>

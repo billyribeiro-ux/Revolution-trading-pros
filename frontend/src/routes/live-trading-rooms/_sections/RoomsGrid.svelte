@@ -5,7 +5,7 @@
 	 * Pricing is per-room (data.rooms[*].price), distinct for each service.
 	 * Extracted from /live-trading-rooms/+page.svelte (Cascade audit, May 2026).
 	 */
-	import { Spring } from 'svelte/motion';
+	import type { Attachment } from 'svelte/attachments';
 
 	interface PricePlan {
 		monthly: number;
@@ -31,25 +31,19 @@
 	}
 	let { rooms }: Props = $props();
 
-	/** Attachment: 3D Tilt Effect (mouse-tracking parallax) — Svelte 5 Spring + {@attach} */
-	function tilt(node: HTMLElement) {
-		const x = new Spring(0, { stiffness: 0.05, damping: 0.25 });
-		const y = new Spring(0, { stiffness: 0.05, damping: 0.25 });
-
-		$effect(() => {
-			node.style.setProperty('--rotX', `${x.current}deg`);
-			node.style.setProperty('--rotY', `${y.current}deg`);
-		});
-
+	/** Attachment: 3D Tilt Effect (mouse-tracking parallax) */
+	const tilt: Attachment<HTMLElement> = (node) => {
 		function handleMove(e: MouseEvent) {
 			const rect = node.getBoundingClientRect();
-			x.target = ((e.clientY - rect.top - rect.height / 2) / rect.height) * -3;
-			y.target = ((e.clientX - rect.left - rect.width / 2) / rect.width) * 3;
+			const rotX = ((e.clientY - rect.top - rect.height / 2) / rect.height) * -3;
+			const rotY = ((e.clientX - rect.left - rect.width / 2) / rect.width) * 3;
+			node.style.setProperty('--rotX', `${rotX}deg`);
+			node.style.setProperty('--rotY', `${rotY}deg`);
 		}
 
 		function handleLeave() {
-			x.target = 0;
-			y.target = 0;
+			node.style.setProperty('--rotX', '0deg');
+			node.style.setProperty('--rotY', '0deg');
 		}
 
 		node.addEventListener('mousemove', handleMove);
@@ -59,7 +53,7 @@
 			node.removeEventListener('mousemove', handleMove);
 			node.removeEventListener('mouseleave', handleLeave);
 		};
-	}
+	};
 </script>
 
 <div
@@ -242,7 +236,7 @@
                                     hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]
                                 `}
 						>
-							<span class="relative z-10">Access Room</span>
+							<span class="relative z-10">Explore {room.name}</span>
 							<svg
 								class="w-4 h-4 relative z-10 transition-transform group-hover/btn:translate-x-1"
 								viewBox="0 0 24 24"

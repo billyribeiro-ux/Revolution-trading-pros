@@ -5,6 +5,8 @@ import { getUser } from '#lib/api/auth.js';
 import type { SEOInput } from '#lib/seo/types.js';
 import type { Load } from '@sveltejs/kit';
 
+export const prerender = false;
+
 const seo: SEOInput = {
 	title: 'Checkout',
 	description: 'Complete your Revolution Trading Pros purchase securely.',

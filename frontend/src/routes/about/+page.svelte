@@ -89,7 +89,7 @@
 			duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+				return `transform: translateY(${(1 - eased) * 20}px);`;
 			}
 		};
 	}
@@ -165,7 +165,7 @@
 	URL: /about
 -->
 
-<div role="main" class="about">
+<div class="about">
 	<div class="about__atmosphere" aria-hidden="true">
 		<div class="about__noise"></div>
 		<div class="about__gradient"></div>
@@ -223,7 +223,7 @@
 						</p>
 
 						<div class="hero__actions">
-							<a href="/join" class="cta cta--primary">
+							<a href="/pricing" class="cta cta--primary">
 								<span class="cta__shimmer" aria-hidden="true"></span>
 								<span class="cta__label">Join The Community</span>
 								<IconArrowRight size={16} class="cta__arrow" />
@@ -409,7 +409,7 @@
 								<div class="member__id">
 									<div class="member__name">{member.name}</div>
 									<div class="member__role-line">
-										{member.role} <span class="member__pipe">|</span>
+										{member.role} <span class="member__pipe" aria-hidden="true">|</span>
 										<span class="member__tag">{member.id}</span>
 									</div>
 								</div>
@@ -548,7 +548,7 @@
 					The market is open. The team is ready. <br />The only thing missing is you.
 				</p>
 				<div class="final-cta__actions">
-					<a href="/join" class="cta cta--primary cta--large">
+					<a href="/pricing" class="cta cta--primary cta--large">
 						<span class="cta__shimmer" aria-hidden="true"></span>
 						<span class="cta__label">Start Your Membership</span>
 						<IconArrowRight size={18} class="cta__arrow" />
@@ -1449,7 +1449,7 @@
 	.feature__subtitle {
 		font-size: 0.625rem;
 		font-family: var(--rtp-font-mono);
-		color: color-mix(in oklab, var(--a-amber-600) 80%, transparent);
+		color: var(--a-amber-400);
 		text-transform: uppercase;
 		letter-spacing: 0.2em;
 		margin-block-end: 1.5rem;
@@ -1653,7 +1653,7 @@
 		color: color-mix(in oklab, #fff 10%, transparent);
 	}
 	.member__tag {
-		color: color-mix(in oklab, var(--rtp-emerald) 50%, transparent);
+		color: var(--rtp-emerald-bright);
 		font-weight: 700;
 	}
 	.member__bio-wrap {

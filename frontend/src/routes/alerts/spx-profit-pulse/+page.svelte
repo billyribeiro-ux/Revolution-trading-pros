@@ -569,8 +569,8 @@
 					<h2 class="perf__title">Recent Performance</h2>
 					<p class="perf__sub">Transparency is our currency. Live log of recent calls.</p>
 				</div>
-				<a href="/performance" class="perf__view-all">
-					View Full Ledger
+				<a href="/alerts" class="perf__view-all">
+					View All Alert Services
 					<svg
 						aria-hidden="true"
 						class="perf__arrow"

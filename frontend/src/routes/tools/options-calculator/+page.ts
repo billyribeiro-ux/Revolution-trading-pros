@@ -11,7 +11,7 @@ export const load: PageLoad = () => {
 	const seo: SEOInput = {
 		title: 'Black-Scholes Options Calculator',
 		description:
-			'The most advanced free Black-Scholes options calculator. Real-time Greeks (Delta, Gamma, Theta, Vega, Rho + second-order), payoff diagrams, strategy builder, Monte Carlo simulation, and live market data.',
+			'Free Black-Scholes options calculator with real-time Greeks (Delta, Gamma, Theta, Vega), payoff diagrams, strategy builder, and Monte Carlo simulation.',
 		og: {
 			title: ogMeta['og:title'],
 			description: ogMeta['og:description'],

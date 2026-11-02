@@ -20,6 +20,7 @@
 
 import type { RequestHandler } from './$types';
 import { API_BASE_URL } from '#lib/api/config.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 import type { Post, PaginatedPosts } from '#lib/types/post.js';
 import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
 
@@ -27,7 +28,7 @@ import { sanitizeBlogContent } from '#lib/utils/sanitize.js';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';
+const SITE_URL = import.meta.env.VITE_SITE_URL || PRODUCTION_ORIGIN;
 const FEED_TITLE = 'Revolution Trading Pros Blog';
 const FEED_DESCRIPTION =
 	'Expert trading education, market analysis, and strategies from Revolution Trading Pros. Master day trading, swing trading, options, and risk management with institutional-grade insights.';

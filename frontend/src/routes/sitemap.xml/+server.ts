@@ -3,19 +3,9 @@
  * Revolution Trading Pros - Sitemap Generator (super-sitemap)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
- * @description super-sitemap is the SOLE sitemap owner.
- * @version 6.0.0 - Dynamic route enumeration (May 2026 SEO audit)
- *
- * Features:
- * - super-sitemap auto-discovers routes from src/routes
- * - additionalPaths populated dynamically: blog posts, indicators, courses,
- *   guides, classes, live trading rooms
- * - Excludes private/noindex routes via excludeRoutePatterns
- * - 1h CDN cache, no browser cache
- * - Alphabetically sorted URLs
- *
- * Constraints (Google):
- * - 50,000 URLs max OR 50MB uncompressed max per sitemap file
+ * @description super-sitemap is the SOLE sitemap owner (`MAP-01`, `MAP-02`, `TOOL-03`).
+ * Every `<loc>` in `/sitemap.xml` returns 200, is indexable (`noindex=false`),
+ * and matches the page's `<link rel="canonical">` byte-for-byte.
  */
 
 import type { RequestHandler } from '@sveltejs/kit';
@@ -23,11 +13,11 @@ import { response } from 'super-sitemap/sveltekit';
 import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 import type { PaginatedPosts } from '#lib/types/post.js';
 import { indicators } from '../indicators/data';
+import { authors } from '#lib/authors/authors.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
-const SITE_URL = 'https://revolutiontradingpros.com';
+const SITE_URL = PRODUCTION_ORIGIN;
 
-// Disable prerender — additionalPaths fetches the live API at request time.
-// 1h CDN cache (s-maxage=3600) is set in headers below.
 export const prerender = false;
 
 const STATIC_SLUGS = {
@@ -42,8 +32,7 @@ async function fetchBlogSlugs(fetch: typeof globalThis.fetch): Promise<string[]>
 	try {
 		const res = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list, { fetch });
 		return res.data.filter((p) => p.indexable !== false).map((p) => `/blog/${p.slug}`);
-	} catch (err) {
-		console.warn('[sitemap] failed to fetch blog posts; skipping blog slugs', err);
+	} catch {
 		return [];
 	}
 }
@@ -51,6 +40,7 @@ async function fetchBlogSlugs(fetch: typeof globalThis.fetch): Promise<string[]>
 export const GET: RequestHandler = async ({ fetch }) => {
 	const blogPaths = await fetchBlogSlugs(fetch);
 	const indicatorPaths = indicators.map((i) => `/indicators/${i.slug}`);
+	const authorPaths = authors.map((a) => `/authors/${a.slug}`);
 	const coursePaths = STATIC_SLUGS.courses.map((s) => `/courses/${s}`);
 	const guidePaths = STATIC_SLUGS.guides.map((s) => `/guides/${s}`);
 	const classPaths = STATIC_SLUGS.classes.map((s) => `/classes/${s}`);
@@ -60,7 +50,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 	return await response({
 		origin: SITE_URL,
 		excludeRoutePatterns: [
-			// Private/auth/admin routes — must never appear in sitemap
+			// Private, auth, admin, checkout, dashboard, and non-indexable routes
 			/^\/account/,
 			/^\/admin/,
 			/^\/api/,
@@ -72,12 +62,17 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			/^\/dashboard/,
 			/^\/embed/,
 			/^\/forgot-password/,
+			/^\/login/,
 			/^\/logout/,
 			/^\/maintenance/,
 			/^\/media/,
 			/^\/my/,
 			/^\/posts/,
+			/^\/register/,
 			/^\/reset-password/,
+			/^\/search/,
+			/^\/settings/,
+			/^\/signup/,
 			/^\/verify-email/,
 			/^\/watchlist/,
 			/^\/learning-center/,
@@ -85,9 +80,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			/^\/alerts\/.*\/checkout/,
 			/^\/tools\/options-calculator\/embed/,
 			/^\/tools\/options-calculator\/shared/,
-			// Technical routes
-			// (v2 strips route groups from route keys, so the old `(dev)` group
-			// pattern can't match — exclude its inner routes directly instead)
+			// Technical & feed endpoints
 			/^\/workbench/,
 			/^\/atom\.xml/,
 			/^\/feed\.xml/,
@@ -126,21 +119,19 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			'/disclaimer',
 			'/indicators',
 			'/live-trading-rooms',
-			'/login',
 			'/mentorship',
 			'/our-mission',
 			'/pricing',
 			'/privacy',
 			'/refund',
-			'/register',
 			'/resources',
-			'/signup',
 			'/store/scanners',
 			'/store/scanners/high-octane-scanner',
 			'/team',
 			'/terms',
 			'/tools/options-calculator',
 			'/tutorials',
+			...authorPaths,
 			...blogPaths,
 			...indicatorPaths,
 			...coursePaths,

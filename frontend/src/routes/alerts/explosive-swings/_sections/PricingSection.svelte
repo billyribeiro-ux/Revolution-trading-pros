@@ -12,21 +12,21 @@
 			price: '97',
 			period: '/mo',
 			btnText: 'Select Monthly',
-			link: '/checkout/monthly-swings',
+			link: '/pricing',
 			tagline: 'Flexibility to cancel anytime'
 		},
 		quarterly: {
 			price: '247',
 			period: '/qtr',
 			btnText: 'Join Quarterly',
-			link: '/checkout/quarterly-swings',
+			link: '/pricing',
 			tagline: 'Save 15% ($8.20 / trading day)'
 		},
 		annual: {
 			price: '927',
 			period: '/yr',
 			btnText: 'Select Annual',
-			link: '/checkout/annual-swings',
+			link: '/pricing',
 			tagline: 'Like getting 2.5 months FREE'
 		}
 	};
@@ -34,7 +34,7 @@
 	function getPlanButtonClass(plan: 'monthly' | 'quarterly' | 'annual'): string[] {
 		return [
 			'relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200',
-			selectedPlan === plan ? 'text-white' : 'text-slate-400 hover:text-white'
+			selectedPlan === plan ? 'text-white' : 'text-slate-300 hover:text-white'
 		];
 	}
 
@@ -52,7 +52,7 @@
 
 		return [
 			'bg-slate-900 p-8 rounded-2xl border transition-all',
-			selectedPlan === plan ? selectedClass : 'border-slate-800 opacity-70 hover:opacity-90'
+			selectedPlan === plan ? selectedClass : 'border-slate-800 opacity-100'
 		];
 	}
 
@@ -61,7 +61,7 @@
 			'bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all',
 			selectedPlan === 'quarterly'
 				? 'border-emerald-500 shadow-emerald-500/20 md:scale-110 opacity-100'
-				: 'border-slate-800 shadow-slate-800/10 md:scale-100 opacity-70 hover:opacity-90'
+				: 'border-slate-800 shadow-slate-800/10 md:scale-100 opacity-100'
 		];
 	}
 </script>
@@ -96,7 +96,7 @@
 				>
 
 				<div
-					class="absolute top-1.5 bottom-1.5 bg-emerald-600 rounded-lg shadow-md transition-all duration-300 ease-out"
+					class="absolute top-1.5 bottom-1.5 bg-emerald-700 rounded-lg shadow-md transition-all duration-300 ease-out"
 					style:left={getSelectorLeft()}
 					style:width="calc(33.33% - 0.4rem)"
 				></div>
@@ -108,9 +108,9 @@
 				<h3 class="text-xl font-bold text-white mb-4">Monthly</h3>
 				<div class="flex items-baseline gap-1 mb-6">
 					<span class="text-4xl font-bold text-white">${pricing.monthly.price}</span>
-					<span class="text-slate-500">{pricing.monthly.period}</span>
+					<span class="text-slate-400">{pricing.monthly.period}</span>
 				</div>
-				<div class="text-xs font-mono text-slate-500 bg-slate-950 p-2 rounded mb-6 text-center">
+				<div class="text-xs font-mono text-slate-300 bg-slate-950 p-2 rounded mb-6 text-center">
 					{pricing.monthly.tagline}
 				</div>
 				<ul class="space-y-4 mb-8 text-sm text-slate-400">
@@ -141,7 +141,7 @@
 				<h3 class="text-2xl font-bold text-white mb-4">Quarterly</h3>
 				<div class="flex items-baseline gap-1 mb-6">
 					<span class="text-5xl font-extrabold text-white">${pricing.quarterly.price}</span>
-					<span class="text-slate-500">{pricing.quarterly.period}</span>
+					<span class="text-slate-400">{pricing.quarterly.period}</span>
 				</div>
 				<div
 					class="text-xs font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded mb-6 text-center border border-emerald-500/30"
@@ -177,7 +177,7 @@
 				<h3 class="text-xl font-bold text-white mb-4">Annual</h3>
 				<div class="flex items-baseline gap-1 mb-6">
 					<span class="text-4xl font-bold text-white">${pricing.annual.price}</span>
-					<span class="text-slate-500">{pricing.annual.period}</span>
+					<span class="text-slate-400">{pricing.annual.period}</span>
 				</div>
 				<div class="text-xs font-mono text-emerald-400 bg-slate-950 p-2 rounded mb-6 text-center">
 					{pricing.annual.tagline}
@@ -205,10 +205,10 @@
 			</div>
 		</div>
 		<div class="mt-12 text-center">
-			<p class="text-slate-500 text-sm">Secure checkout powered by Stripe. Cancel anytime.</p>
+			<p class="text-slate-400 text-sm">Secure checkout powered by Stripe. Cancel anytime.</p>
 		</div>
 
-		<p class="text-center text-slate-500 text-sm mt-6 flex items-center justify-center gap-2">
+		<p class="text-center text-slate-400 text-sm mt-6 flex items-center justify-center gap-2">
 			<svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 				><path
 					stroke-linecap="round"

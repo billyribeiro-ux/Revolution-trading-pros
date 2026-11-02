@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { SEOInput } from '#lib/seo/types.js';
+import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 import { API_BASE_URL as ENV_API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // API base resolves from runtime env (reads .env.local in dev, secrets in prod)
@@ -24,11 +25,11 @@ export const load: PageServerLoad = async ({ fetch }) => {
 			{
 				'@context': 'https://schema.org',
 				'@type': 'FinancialService',
-				'@id': 'https://revolutiontradingpros.com/#financialservice',
+				'@id': `${PRODUCTION_ORIGIN}/#financialservice`,
 				name: 'Revolution Trading Pros',
 				description:
 					'Professional trading education, live trading rooms, custom indicators, and alert services for active traders.',
-				url: 'https://revolutiontradingpros.com',
+				url: PRODUCTION_ORIGIN,
 				serviceType: 'Trading Education',
 				areaServed: 'Worldwide'
 			}

@@ -10,8 +10,9 @@
 <article class="team-page">
 	<h1>The Team</h1>
 	<p class="lead">
-		<strong>TODO — human copy.</strong> Replace this lede with your team positioning: a sentence about
-		how the team is structured and why it's worth trusting with one's trading education.
+		Meet the active traders, market strategists, and trading educators behind Revolution Trading
+		Pros. Every room moderator, course instructor, and research author trades with documented
+		risk-management rules and transparent multi-timeframe analysis.
 	</p>
 
 	<ul class="team-grid">

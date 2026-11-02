@@ -29,9 +29,10 @@
 
 	// Generate pagination URL
 	function getPageUrl(page: number): string {
+		if (page <= 1) return '/tutorials';
 		const params = new URLSearchParams();
 		params.set('page', page.toString());
-		return `?${params.toString()}`;
+		return `/tutorials?${params.toString()}`;
 	}
 
 	// Scroll to section
@@ -84,12 +85,13 @@
 				<div class="fl-separator"></div>
 
 				<div id="think" class="fl-post-grid">
-					{#each tosTutorials as tutorial (tutorial.id)}
+					{#each tosTutorials as tutorial, idx (tutorial.id)}
 						<div class="fl-post-grid-post">
 							<div class="fl-post-image">
 								<a href={tutorial.url} title={tutorial.title}>
 									<img
-										loading="lazy"
+										loading={idx === 0 ? 'eager' : 'lazy'}
+										fetchpriority={idx === 0 ? 'high' : undefined}
 										decoding="async"
 										src={tutorial.thumbnail}
 										alt={tutorial.title}
@@ -106,7 +108,7 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a href={tutorial.url} title={`Read ${tutorial.title}`}>Read {tutorial.title}</a>
 								</div>
 							</div>
 						</div>
@@ -171,7 +173,7 @@
 									<p>{tutorial.excerpt}</p>
 								</div>
 								<div class="fl-post-more-link">
-									<a href={tutorial.url} title="Read More...">Read More...</a>
+									<a href={tutorial.url} title={`Read ${tutorial.title}`}>Read {tutorial.title}</a>
 								</div>
 							</div>
 						</div>

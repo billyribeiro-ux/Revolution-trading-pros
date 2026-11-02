@@ -25,7 +25,6 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import type { PageData } from './+page';
 
 	interface Props {
@@ -35,39 +34,10 @@
 	let { data }: Props = $props();
 
 	const scanners = $derived(data.scanners);
-	const breadcrumbs = $derived(data.breadcrumbs);
-
-	function viewScanner(slug: string) {
-		goto(`/store/scanners/${slug}`);
-	}
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     SEMANTIC HTML5 - Proper heading hierarchy for SEO
-     Google Dec 2025: Semantic structure is a ranking factor
-     ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="scanners-page" itemscope itemtype="https://schema.org/CollectionPage">
 	<div class="container">
-		<!-- Breadcrumb Navigation - SEO & UX -->
-		<nav aria-label="Breadcrumb" class="breadcrumb-nav">
-			<ol itemscope itemtype="https://schema.org/BreadcrumbList">
-				{#each breadcrumbs as crumb, index (crumb.name)}
-					<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-						{#if index < breadcrumbs.length - 1}
-							<a href={crumb.url} itemprop="item">
-								<span itemprop="name">{crumb.name}</span>
-							</a>
-							<meta itemprop="position" content={String(index + 1)} />
-							<span class="breadcrumb-separator" aria-hidden="true">›</span>
-						{:else}
-							<span itemprop="name" aria-current="page">{crumb.name}</span>
-							<meta itemprop="position" content={String(index + 1)} />
-						{/if}
-					</li>
-				{/each}
-			</ol>
-		</nav>
-
 		<!-- Hero Section - Semantic HTML -->
 		<header class="page-header">
 			<h1 itemprop="name">Trading Scanners</h1>
@@ -78,7 +48,7 @@
 
 		<!-- Scanners Grid - Semantic Product Cards -->
 		<div class="scanners-grid" role="list">
-			{#each scanners as scanner (scanner.id)}
+			{#each scanners as scanner, idx (scanner.id)}
 				<article
 					class="scanner-card"
 					role="listitem"
@@ -91,7 +61,8 @@
 								src={scanner.image}
 								alt="{scanner.name} - Professional trading scanner interface"
 								itemprop="image"
-								loading="lazy"
+								loading={idx === 0 ? 'eager' : 'lazy'}
+								fetchpriority={idx === 0 ? 'high' : 'auto'}
 								decoding="async"
 								width="400"
 								height="200"
@@ -100,7 +71,11 @@
 					{/if}
 
 					<div class="scanner-content">
-						<h2 itemprop="name">{scanner.name}</h2>
+						<h2 itemprop="name">
+							<a href="/store/scanners/{scanner.slug}" style="color: inherit; text-decoration: none;">
+								{scanner.name}
+							</a>
+						</h2>
 						<p class="description" itemprop="description">{scanner.description}</p>
 
 						<!-- Features List -->
@@ -125,13 +100,13 @@
 								<span class="interval">/{scanner.interval}</span>
 							</div>
 
-							<button
+							<a
 								class="btn-primary"
-								onclick={() => viewScanner(scanner.slug)}
-								aria-label="Learn more about {scanner.name}"
+								href="/store/scanners/{scanner.slug}"
+								style="display: inline-block; text-decoration: none;"
 							>
-								Learn More
-							</button>
+								Explore {scanner.name}
+							</a>
 						</div>
 					</div>
 				</article>
@@ -145,44 +120,6 @@
 	 * SCANNERS LANDING PAGE STYLES
 	 * Apple ICT 11+ Standards - Modern CSS (Dec 2025)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Breadcrumb Navigation */
-	.breadcrumb-nav {
-		margin-bottom: 32px;
-	}
-
-	.breadcrumb-nav ol {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		font-size: 0.875rem;
-		color: #64748b;
-	}
-
-	.breadcrumb-nav li {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.breadcrumb-nav a {
-		color: #0984ae;
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.breadcrumb-nav a:hover {
-		color: #0a2335;
-		text-decoration: underline;
-	}
-
-	.breadcrumb-separator {
-		color: #cbd5e1;
-		font-weight: 300;
-	}
 
 	/* Main Container */
 	.scanners-page {

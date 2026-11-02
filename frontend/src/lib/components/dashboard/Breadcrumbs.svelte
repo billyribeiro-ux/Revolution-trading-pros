@@ -52,30 +52,8 @@
 		return defaultItems;
 	});
 
-	// Generate JSON-LD schema for SEO. Removing it breaks breadcrumb structured
-	// data (SEO regression).
-	const breadcrumbSchema = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'BreadcrumbList',
-		'@id': `${page?.url?.href ?? ''}#breadcrumb`,
-		itemListElement: breadcrumbItems.map((item: BreadcrumbItem) => ({
-			'@type': 'ListItem',
-			position: item.position,
-			name: item.name,
-			...(item.href && { item: item.href })
-		}))
-	});
-
-	const breadcrumbJsonLd = $derived(JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c'));
-
 	const routeClass = $derived(page.route?.id?.replace(/\//g, '-') ?? 'page');
 </script>
-
-<!-- JSON-LD Schema Markup -->
-<svelte:head>
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -- trusted JSON-LD generated from structured breadcrumb fields and escaped above -->
-	{@html '<script type="application/ld+json">' + breadcrumbJsonLd + '</scr' + 'ipt>'}
-</svelte:head>
 
 <!-- Breadcrumbs Navigation -->
 <nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb navigation">

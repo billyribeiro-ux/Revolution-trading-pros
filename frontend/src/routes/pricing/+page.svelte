@@ -18,7 +18,7 @@
 				'Mobile App Access'
 			],
 			cta: 'Get Started',
-			href: '/signup',
+			href: '/register',
 			highlighted: false
 		},
 		{
@@ -37,7 +37,7 @@
 				'Mobile App Access'
 			],
 			cta: 'Go Pro',
-			href: '/signup?plan=pro',
+			href: '/register?plan=pro',
 			highlighted: true
 		},
 		{
@@ -57,7 +57,7 @@
 				'Direct Trader Line'
 			],
 			cta: 'Go Elite',
-			href: '/signup?plan=elite',
+			href: '/register?plan=elite',
 			highlighted: false
 		}
 	];
@@ -155,7 +155,7 @@
 			<p class="pricing-cta__sub">
 				Join thousands of traders already using Revolution Trading Pros.
 			</p>
-			<a href="/signup" class="pricing-cta__btn">Start Today <IconArrowRight size={18} /></a>
+			<a href="/register" class="pricing-cta__btn">Start Today <IconArrowRight size={18} /></a>
 		</div>
 	</section>
 </div>
@@ -239,7 +239,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.375rem;
-		background: var(--rtp-indigo);
+		background: #4f46e5;
 		color: #fff;
 		font-size: 0.75rem;
 		font-weight: 700;
@@ -330,13 +330,13 @@
 		border-color: var(--rtp-border-strong);
 	}
 	.plan-card__cta--primary {
-		background: var(--rtp-indigo);
-		border-color: var(--rtp-indigo);
+		background: #4f46e5;
+		border-color: #4f46e5;
 		color: #fff;
 	}
 	.plan-card__cta--primary:hover {
-		background: #4f52e0;
-		border-color: #4f52e0;
+		background: #4338ca;
+		border-color: #4338ca;
 	}
 
 	/* ── FAQ ── */
@@ -411,7 +411,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 1rem 2rem;
-		background: var(--rtp-indigo);
+		background: #4f46e5;
 		color: #fff;
 		font-size: 1rem;
 		font-weight: 700;
@@ -420,7 +420,7 @@
 		transition: background 0.2s ease;
 	}
 	.pricing-cta__btn:hover {
-		background: #4f52e0;
+		background: #4338ca;
 	}
 
 	@media (max-width: 900px) {

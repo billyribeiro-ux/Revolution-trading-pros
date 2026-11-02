@@ -5,8 +5,8 @@
 	 * Displays all published courses for members
 	 */
 
-	import { onMount } from 'svelte';
 	import { CourseCard } from '#lib/components/courses/index.js';
+	import type { PageData } from './$types';
 
 	interface Course {
 		id: string;
@@ -27,56 +27,22 @@
 		review_count?: number;
 	}
 
-	let courses = $state<Course[]>([]);
-	let loading = $state(true);
+	interface Props {
+		data: PageData;
+	}
+
+	let props: Props = $props();
+
 	let levelFilter = $state('all');
 	let sortBy = $state('newest');
 
-	const fetchCourses = async () => {
-		loading = true;
-		try {
-			const params = new URLSearchParams({ status: 'published' });
-			if (levelFilter !== 'all') params.set('level', levelFilter);
-			if (sortBy === 'newest') {
-				params.set('sort_by', 'created_at');
-				params.set('sort_order', 'DESC');
-			} else if (sortBy === 'popular') {
-				params.set('sort_by', 'enrollment_count');
-				params.set('sort_order', 'DESC');
-			} else if (sortBy === 'rating') {
-				params.set('sort_by', 'avg_rating');
-				params.set('sort_order', 'DESC');
-			}
-
-			const res = await fetch(`/api/admin/courses?${params}`);
-			const data = await res.json();
-			if (data.success) {
-				courses = data.data.courses;
-			}
-		} catch (e) {
-			console.error('Failed to fetch courses:', e);
-		} finally {
-			loading = false;
-		}
-	};
-
-	// Track if initial load is done to avoid double-fetch
-	let initialized = $state(false);
-
-	onMount(() => {
-		fetchCourses();
-		initialized = true;
+	const courses = $derived.by(() => {
+		const initial: Course[] = props.data?.courses ?? [];
+		const filtered =
+			levelFilter === 'all' ? initial : initial.filter((c) => c.level === levelFilter);
+		return [...filtered];
 	});
-
-	// Re-fetch when filters change (but not on initial mount)
-	$effect(() => {
-		// Access reactive deps to register them with Svelte's tracking
-		void levelFilter;
-		void sortBy;
-		if (initialized) {
-			fetchCourses();
-		}
-	});
+	const loading = false;
 </script>
 
 <div class="courses-page">
@@ -124,15 +90,47 @@
 				stroke-width="1.5"
 				><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
 			>
-			<h3>No courses available yet</h3>
-			<p>Check back soon for new trading courses</p>
+			<h2>Featured Trading Classes &amp; Curriculum</h2>
+			<p>
+				Master institutional-grade market structure, disciplined risk management, and repeatable
+				execution workflows across day trading, swing trading, and SPX options strategies. Every
+				class combines structured video modules, downloadable checklists, and real-market case
+				studies led by our senior trading desk.
+			</p>
+			<div class="featured-classes-links">
+				<a href="/classes/quickstart-precision-trading-c"
+					>Quickstart Precision Trading Class — Price-Action &amp; Execution</a
+				>
+				<a href="/classes/tax-loss-harvest-c"
+					>Strategic Tax-Loss Harvesting Class — Portfolio Optimization</a
+				>
+				<a href="/courses/day-trading-masterclass"
+					>Day Trading Masterclass — Intraday Tape &amp; Order Flow</a
+				>
+				<a href="/courses/swing-trading-pro"
+					>Swing Trading Pro — Multi-Day Momentum &amp; Position Sizing</a
+				>
+				<a href="/courses/options-trading">Options Trading Mastery — Greeks, Spreads &amp; Volatility</a>
+				<a href="/courses/risk-management">Risk Management &amp; Capital Preservation Framework</a>
+			</div>
 		</div>
 	{:else}
-		<div class="courses-grid">
-			{#each courses as course (course.id)}
-				<CourseCard {course} />
-			{/each}
-		</div>
+		<section class="catalog-section">
+			<div class="catalog-intro">
+				<h2>Curriculum Overview &amp; Active Trading Tracks</h2>
+				<p>
+					Every Revolution Trading Pros class is structured around institutional market structure,
+					multi-timeframe order flow, disciplined position sizing, and repeatable execution
+					checklists. Select a foundational or strategy-focused class below to review the syllabus,
+					instructor breakdown, and on-demand video modules.
+				</p>
+			</div>
+			<div class="courses-grid">
+				{#each courses as course, index (course.id)}
+					<CourseCard {course} loading={index < 3 ? 'eager' : 'lazy'} />
+				{/each}
+			</div>
+		</section>
 	{/if}
 </div>
 
@@ -183,14 +181,15 @@
 	.filter-group label {
 		font-size: 14px;
 		font-weight: 500;
-		color: #6b7280;
+		color: #374151;
 	}
 
 	.filter-group select {
 		padding: 8px 12px;
-		border: 1px solid #e5e7eb;
+		border: 1px solid #d1d5db;
 		border-radius: 6px;
 		font-size: 14px;
+		color: #111827;
 		background: #fff;
 		cursor: pointer;
 	}
@@ -232,14 +231,57 @@
 		margin-bottom: 16px;
 	}
 
-	.empty-state h3 {
+	.empty-state h2 {
 		font-size: 20px;
 		color: #1f2937;
 		margin: 0 0 8px;
 	}
 
 	.empty-state p {
-		color: #6b7280;
+		color: #4b5563;
+		max-width: 680px;
+		margin: 0 auto 24px;
+		line-height: 1.6;
+	}
+
+	.featured-classes-links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px;
+		max-width: 840px;
+		margin: 0 auto;
+	}
+
+	.featured-classes-links a {
+		padding: 10px 16px;
+		border-radius: 8px;
+		background: #fff;
+		border: 1px solid #d1d5db;
+		color: #143e59;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.catalog-intro {
+		max-width: 840px;
+		margin: 32px auto 0;
+		padding: 0 24px;
+		text-align: center;
+	}
+
+	.catalog-intro h2 {
+		font-size: 24px;
+		font-weight: 700;
+		color: #111827;
+		margin: 0 0 8px;
+	}
+
+	.catalog-intro p {
+		font-size: 16px;
+		color: #4b5563;
+		line-height: 1.6;
 		margin: 0;
 	}
 

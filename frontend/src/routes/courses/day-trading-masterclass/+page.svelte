@@ -389,7 +389,7 @@
 							<FeatureIcon size={28} stroke={1.5} />
 						</div>
 						<div class="feature-content">
-							<h4>{feature.title}</h4>
+							<h3>{feature.title}</h3>
 							<p>{feature.description}</p>
 						</div>
 					</div>
@@ -876,7 +876,7 @@
 		color: white;
 	}
 
-	.feature-content h4 {
+	.feature-content h3 {
 		font-size: 1.125rem;
 		font-weight: 700;
 		margin-bottom: 0.5rem;

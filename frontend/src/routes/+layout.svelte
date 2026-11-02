@@ -31,6 +31,7 @@
 	import AdminToolbar from '#lib/components/AdminToolbar.svelte';
 	import ClientOnly from '#lib/components/ssr/ClientOnly.svelte';
 	import Seo from '#lib/seo/Seo.svelte';
+	import Breadcrumbs from '#lib/components/seo/Breadcrumbs.svelte';
 	import { resolveSEO } from '#lib/seo/resolve.js';
 	import { createPageSeoContext } from '#lib/seo/page-seo-context.svelte.js';
 	import type { SEOInput, RouteSEOContext, SEODefaults } from '#lib/seo/types.js';
@@ -94,12 +95,25 @@
 		const currentPath = page.url.pathname;
 		const search = building ? '' : page.url.search;
 		const fullPath = currentPath + search;
-		const isPrivate = props.data.seoDefaults.privatePathPrefixes.some((p) =>
-			currentPath.startsWith(p)
+		const isPrivate = props.data.seoDefaults.privatePathPrefixes.some(
+			(p) => currentPath === p || currentPath.startsWith(`${p}/`)
 		);
 		const isSearchPage =
-			props.data.seoDefaults.searchPathPrefixes.some((p) => fullPath.startsWith(p)) ||
+			props.data.seoDefaults.searchPathPrefixes.some(
+				(p) => fullPath === p || fullPath.startsWith(`${p}/`) || fullPath.startsWith(`${p}?`)
+			) ||
 			(!building && (page.url.searchParams.has('q') || page.url.searchParams.has('search')));
+
+		const isErrorPage = page.status >= 400;
+		const errorOverride: SEOInput | null = isErrorPage
+			? {
+					title: page.status === 404 ? 'Page Not Found' : `Error ${page.status}`,
+					description:
+						page.error?.message ||
+						"The page you're looking for doesn't exist or has been moved on Revolution Trading Pros.",
+					robots: { index: false, follow: false }
+				}
+			: null;
 
 		return resolveSEO(
 			{
@@ -107,11 +121,12 @@
 				pathname: currentPath,
 				isPrivate,
 				isSearchPage,
-				isErrorPage: page.status >= 400
+				isErrorPage
 			},
 			props.data.seoDefaults,
 			pageSeo,
-			pageSeoCtx.value ? pageSeoCtx.value() : null
+			pageSeoCtx.value ? pageSeoCtx.value() : null,
+			errorOverride
 		);
 	});
 
@@ -220,6 +235,9 @@
 		     without this the element is not focusable and activating the skip link
 		     leaves focus on <body> — the keyboard user never reaches main. -->
 		<main id="main-content" class="app-main" tabindex="-1">
+			{#if isMarketingPage && page.status < 400}
+				<Breadcrumbs {pathname} leafTitle={resolvedSeo.title} />
+			{/if}
 			{@render props.children()}
 		</main>
 

@@ -55,13 +55,13 @@
 
 				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 				ctx = gsap.context(() => {
-					// Only set initial hidden state for elements NOT yet in viewport
+					// Transform-only entrance for elements NOT yet in viewport (preserves SSR text visibility & contrast)
 					const elements = root.querySelectorAll('[data-gsap]');
 					elements.forEach((el) => {
 						const rect = el.getBoundingClientRect();
 						const isInViewport = rect.top < window.innerHeight * 0.85;
 						if (!isInViewport) {
-							gsap.set(el, { opacity: 0, y: 30 });
+							gsap.set(el, { y: 24 });
 						}
 					});
 
@@ -71,7 +71,6 @@
 							if (cancelled) return;
 
 							gsap.to(batch, {
-								opacity: 1,
 								y: 0,
 								duration: 0.8,
 								ease: 'power3.out',
@@ -506,7 +505,7 @@
 
 			<div data-gsap class="delivery">
 				<div class="delivery__copy">
-					<h4 class="delivery__title">How You Receive Alerts</h4>
+					<h3 class="delivery__title">How You Receive Alerts</h3>
 					<p class="delivery__sub">
 						We ensure you never miss a signal. Notifications are instant and redundant.
 					</p>
@@ -607,7 +606,7 @@
 				<div class="persona">
 					<div class="persona__num">1</div>
 					<div>
-						<h4 class="persona__title">Professionals with Day Jobs</h4>
+						<h3 class="persona__title">Professionals with Day Jobs</h3>
 						<p class="persona__body">
 							You can't watch the screen from 9:30 to 4:00. You need a strategy that lets you enter
 							trades on your lunch break or from your phone without panic.
@@ -617,7 +616,7 @@
 				<div class="persona">
 					<div class="persona__num">2</div>
 					<div>
-						<h4 class="persona__title">Small Account Builders</h4>
+						<h3 class="persona__title">Small Account Builders</h3>
 						<p class="persona__body">
 							You want to grow a $2k - $10k account aggressively but safely, avoiding the "PDT Rule"
 							that restricts day traders.
@@ -627,7 +626,7 @@
 				<div class="persona">
 					<div class="persona__num">3</div>
 					<div>
-						<h4 class="persona__title">Failed Day Traders</h4>
+						<h3 class="persona__title">Failed Day Traders</h3>
 						<p class="persona__body">
 							You've tried scalping and lost money to churn and fees. You're ready for a calmer,
 							more statistical approach to the markets.
@@ -637,7 +636,7 @@
 				<div class="persona">
 					<div class="persona__num">4</div>
 					<div>
-						<h4 class="persona__title">Options Buyers</h4>
+						<h3 class="persona__title">Options Buyers</h3>
 						<p class="persona__body">
 							You understand the power of leverage. You want to turn a 5% stock move into a 50%
 							option gain using safe, defined-risk structures.
@@ -1208,7 +1207,7 @@
 		opacity: 0.7;
 	}
 	.hero__preview-badge-value {
-		color: #059669; /* emerald-600 */
+		color: #047857; /* emerald-700 for WCAG AA contrast on white */
 	}
 
 	/* ─────────────────────────────────────────────────────────────────
@@ -1791,7 +1790,7 @@
 	.perf__disclaimer {
 		text-align: center;
 		font-size: 0.75rem;
-		color: #475569; /* slate-600 — --rtp-text-dim */
+		color: var(--rtp-text-muted);
 		margin-block-start: 1rem;
 		font-style: italic;
 	}
@@ -2018,7 +2017,7 @@
 	.bottom-cta__button {
 		display: inline-block;
 		background: #fff;
-		color: var(--es-emerald-deep);
+		color: #064e3b;
 		padding: 1.25rem 2.5rem;
 		border-radius: var(--rtp-radius-md);
 		font-weight: 700;
@@ -2034,7 +2033,7 @@
 	.bottom-cta__legal {
 		margin-block-start: 1.5rem;
 		font-size: 0.875rem;
-		color: color-mix(in oklab, #d1fae5 70%, transparent);
+		color: #ecfdf5;
 		display: flex;
 		justify-content: center;
 		align-items: center;

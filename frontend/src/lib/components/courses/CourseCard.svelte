@@ -32,6 +32,7 @@
 		showProgress?: boolean;
 		progress?: number;
 		href?: string;
+		loading?: 'eager' | 'lazy';
 		onclick?: () => void;
 	}
 
@@ -41,6 +42,7 @@
 	const variant = $derived(props.variant ?? 'default');
 	const showProgress = $derived(props.showProgress ?? false);
 	const progress = $derived(props.progress ?? 0);
+	const imgLoading = $derived(props.loading ?? 'lazy');
 
 	const formatDuration = (minutes: number | undefined): string => {
 		if (!minutes) return '';
@@ -122,9 +124,9 @@
 		}}
 	>
 		<div class="image-wrap">
-			<img src={imageUrl} alt={props.course.title} loading="lazy" width="400" height="225" />
+			<img src={imageUrl} alt={props.course.title} loading={imgLoading} width="400" height="225" />
 			{#if props.course.card_badge}
-				<span class="badge" style:background-color={props.course.card_badge_color || '#10b981'}
+				<span class="badge" style:background-color={props.course.card_badge_color || '#047857'}
 					>{props.course.card_badge}</span
 				>
 			{/if}
@@ -240,19 +242,19 @@
 		font-size: 11px;
 		font-weight: 600;
 		text-transform: uppercase;
-		color: #6b7280;
+		color: #4b5563;
 	}
 
 	.level--beginner {
-		color: #10b981;
+		color: #047857;
 	}
 
 	.level--intermediate {
-		color: #f59e0b;
+		color: #b45309;
 	}
 
 	.level--advanced {
-		color: #ef4444;
+		color: #b91c1c;
 	}
 
 	.title {
@@ -270,7 +272,7 @@
 
 	.desc {
 		font-size: 13px;
-		color: #6b7280;
+		color: #4b5563;
 		margin: 0;
 		line-height: 1.5;
 		display: -webkit-box;
@@ -296,7 +298,7 @@
 		display: flex;
 		gap: 6px;
 		font-size: 12px;
-		color: #9ca3af;
+		color: #4b5563;
 	}
 
 	.footer {
@@ -324,7 +326,7 @@
 	}
 
 	.count {
-		color: #9ca3af;
+		color: #4b5563;
 		font-weight: 400;
 	}
 
@@ -378,7 +380,7 @@
 	.compact .meta {
 		flex-direction: row;
 		font-size: 12px;
-		color: #9ca3af;
+		color: #4b5563;
 	}
 
 	.progress-ring {
