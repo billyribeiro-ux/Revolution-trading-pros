@@ -4,6 +4,28 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-03 — Admin console-error audit: layout, scroll, shortcuts, baseline DB
+
+Evidence-driven pass over the admin dashboard. Method: every admin route (164 pages; the 38 dynamic ones with placeholder id `1`) was loaded in a clean, extension-free headless Chromium while recording console errors/warnings, uncaught page errors and every HTTP >= 400 response; failures were then traced to a file or endpoint. `/admin` itself is clean (0 console errors, 0 failed requests). The `Unchecked runtime.lastError ... message channel closed` messages seen in a normal browser are Chrome-extension noise (page-level `admin:1`, no app frame).
+
+### Fixed
+
+- **Admin page would not scroll with the pointer over content.** `.admin-content` had `overscroll-behavior: contain` while the _document_ is what scrolls (the shell is `min-height`), so wheel/touch had nowhere to chain. Reproduced at 1440x800 (`/admin`: 1706px tall, wheel left `scrollY` at 0); fixed by removing the property (`lib/styles/admin.css`).
+- **Keyboard-shortcuts dialog crashed the page (`each_key_duplicate`).** The list was keyed by `description`; `search` and `search-alt` are both "Open Command Palette". Keyed by the unique `id` now (`KeyboardShortcutsHelp.svelte`).
+- **Mobile dashboard layout (375px):** the "Connect Service" button was pushed off the card and clipped by `overflow-x: clip`; panel headers collapsed to one-word-per-line. The not-connected banner and `.panel-header` now wrap, the text has a sensible flex basis, and `View Site` is `nowrap` and collapses to an icon (aria-label kept) under 768px; the header title is the one item allowed to shrink (ellipsis). Verified 320/375/480/768/1024/1440 with real element-vs-card geometry, not an overflow check that ignores clipping.
+- **Admin toolbar:** the Quick Access / User dropdown panels read `var(--surface)` / `var(--border)`, which no stylesheet defines, so they rendered fully transparent. Defined (92% opaque slate + blur). "View Site" is only shown inside `/admin`.
+- **Console warnings:** `/admin/popups` GSAP "target not found" (animation now waits for the cards and skips when none), `/admin/seo/analytics` `binding_property_non_reactive` (`dateRange` is `$state`).
+- **`GET /api/admin/cms-v2/settings` returned 500** (admin Settings page failed to load): the `cms_site_settings` singleton row was missing on baseline-bootstrapped databases. Migration `073_seed_baseline_required_defaults.sql` (forward-only, idempotent) restores it, plus the default CRM pipeline/stages the deals board needs.
+- **Fabricated data removed (honest-data rule):** `/admin/seo/image-seo` and `/admin/seo/video-sitemap` rendered invented images/videos/view counts and requested files that don't exist (404s). They now show their existing empty state until a real source is wired.
+
+### Tooling / docs
+
+- `api/scripts/rebaseline-local-db.sh`: rebuilds a drifted LOCAL dev database from the documented baseline (`schema.sql` + `sqlx-seed.sql`), copies rows across, and **renames - never drops - the old database**. Root cause it addresses: a dev DB loaded from an older snapshot had only 11 ledger rows and drifted from `schema.sql`; the app's migrator hit "relation already exists" at migration 014 and logged "Continuing without migrations", silently skipping 015-072 (this produced several 500s/404s). On the repaired DB the migrator reports success and the live schema is identical to `schema.sql` (diff: only the `_sqlx_migrations` ledger table).
+
+### Known gaps (verified, NOT implemented - need product decisions)
+
+The crawl found ~28 admin pages calling endpoints the Rust API never registered (no routes and no tables), confirmed by calling the API directly with an admin token: Boards module (`/api/admin/boards*`, no `board*` tables), CRM logs/manager-roles/exports/imports/double-opt-in/abandoned-carts, `crm/templates/categories` and `crm/webhooks/events` (405), email campaigns/subscribers under `/api/admin/email/*` (orphan client - see header of `lib/api/campaigns.ts`), past-members dashboard, SEO rankings/backlinks/404-errors/schema/GSC/sitemap stats/settings, `invoice-settings`, `organization/locations|onboarding-plans|training-modules`, `analytics/attribution/channels`, and `/api/admin/cms/datasources` (backend mounts it at `/api/cms/datasources`). Each is a product-sized backend feature; the repo's own audit already records them as "build backend or remove page". Also: other migration-seeded default rows (rooms, locales, presets, workflow definitions, ...) are absent on baseline-bootstrapped databases by design (see 073's note on resurrecting deleted rows).
+
 ## [Unreleased] — 2026-11-02 — Backend audit hardening (api/)
 
 Full audit of `api/` (clippy, deny, machete, 845-test suite against Postgres + Redis) and fixes for what it found. Behaviour changes are in the second commit; the first is a mechanical edition-2024 migration.
