@@ -38,4 +38,3 @@ test.describe('Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05)', () =>
 		});
 	}
 });
-

@@ -40,13 +40,13 @@ against a service container.
 
 ## Code style
 
-| Language | Tool | Config |
-|----------|------|--------|
-| TypeScript / Svelte | Prettier 3 | `frontend/.prettierrc` (or root) |
-| TypeScript / Svelte | ESLint 10 | `frontend/eslint.config.js` |
-| Rust | rustfmt | defaults (no `rustfmt.toml` in the repo) |
-| Rust | clippy | `cargo clippy --locked --all-targets -- -D warnings` |
-| All files | EditorConfig | `.editorconfig` (this repo's tabs/spaces rules) |
+| Language            | Tool         | Config                                               |
+| ------------------- | ------------ | ---------------------------------------------------- |
+| TypeScript / Svelte | Prettier 3   | `frontend/.prettierrc` (or root)                     |
+| TypeScript / Svelte | ESLint 10    | `frontend/eslint.config.js`                          |
+| Rust                | rustfmt      | defaults (no `rustfmt.toml` in the repo)             |
+| Rust                | clippy       | `cargo clippy --locked --all-targets -- -D warnings` |
+| All files           | EditorConfig | `.editorconfig` (this repo's tabs/spaces rules)      |
 
 Don't manually format; let the tools do it. Most editors auto-format on save when EditorConfig is detected.
 
@@ -76,6 +76,7 @@ your local constant would collide with an imported name, alias the import
 (`import { API_BASE_URL as ENV_API_BASE_URL } …`) rather than shadowing it.
 
 This way the proxy works against:
+
 - local Docker (`API_BASE_URL=http://localhost:8080` from `frontend/.env.local`)
 - the Cloudflare Pages env in production (`API_BASE_URL` set in dashboard)
 - the Fly fallback for the rare case env vars are unset

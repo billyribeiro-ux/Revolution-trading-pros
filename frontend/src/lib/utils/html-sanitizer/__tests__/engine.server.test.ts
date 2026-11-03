@@ -5,7 +5,7 @@
  * the parser is a build-time concern, so it is pinned here explicitly.
  */
 
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 
 vi.mock('#lib/utils/html-sanitizer/parse-fragment.js', () => import('../parse-fragment.server.js'));
 

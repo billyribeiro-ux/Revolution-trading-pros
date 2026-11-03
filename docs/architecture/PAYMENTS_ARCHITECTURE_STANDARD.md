@@ -49,6 +49,7 @@ Every design decision below derives from these. Violating any is a bug.
 ### What lives where
 
 **In Stripe (managed via Stripe dashboard, NOT custom admin code):**
+
 - Products
 - Prices (one-time + recurring with monthly/quarterly/yearly intervals)
 - Coupons and promotion codes
@@ -59,6 +60,7 @@ Every design decision below derives from these. Violating any is a bug.
 - Refund records and dispute records
 
 **In the application database:**
+
 - Users (your authentication system)
 - One `stripe_customer_id` per user (created lazily on first checkout)
 - Access state table — for each user, what they currently have access to and until when
@@ -67,6 +69,7 @@ Every design decision below derives from these. Violating any is a bug.
 - Application-specific metadata: which course is which, slugs, descriptions, featured flags, sort order, marketing copy
 
 **In the frontend:**
+
 - Display logic only
 - Stripe publishable key (safe to expose)
 - Stripe Elements / Stripe Checkout JS for card collection
@@ -80,18 +83,19 @@ Every design decision below derives from these. Violating any is a bug.
 
 Every sellable item is a **Stripe Product** with one or more **Stripe Prices**.
 
-| What you sell | Stripe Product type | Stripe Prices on it |
-|---|---|---|
-| Course | One-time product | Single price (one-time) |
-| Indicator | One-time product | Single price (one-time) |
-| Trading Room (e.g., "Futures Room") | Recurring product | 3 prices: monthly, quarterly, yearly |
-| Trading Alerts (e.g., "Options Alerts") | Recurring product | 3 prices: monthly, quarterly, yearly |
+| What you sell                           | Stripe Product type | Stripe Prices on it                  |
+| --------------------------------------- | ------------------- | ------------------------------------ |
+| Course                                  | One-time product    | Single price (one-time)              |
+| Indicator                               | One-time product    | Single price (one-time)              |
+| Trading Room (e.g., "Futures Room")     | Recurring product   | 3 prices: monthly, quarterly, yearly |
+| Trading Alerts (e.g., "Options Alerts") | Recurring product   | 3 prices: monthly, quarterly, yearly |
 
 Each trading room is its own Stripe product. Each alert subscription is its own Stripe product. A user might subscribe to multiple rooms and multiple alert services simultaneously.
 
 ### Application database schema
 
 #### `products` — references Stripe products
+
 ```sql
 CREATE TABLE products (
     id BIGSERIAL PRIMARY KEY,
@@ -109,6 +113,7 @@ CREATE TABLE products (
 ```
 
 What's intentionally NOT here:
+
 - No `price` column
 - No `currency` column
 - No `billing_interval` column
@@ -116,6 +121,7 @@ What's intentionally NOT here:
 All of those live in Stripe.
 
 #### `product_prices` — references Stripe prices
+
 ```sql
 CREATE TABLE product_prices (
     id BIGSERIAL PRIMARY KEY,
@@ -134,6 +140,7 @@ CREATE INDEX idx_product_prices_product ON product_prices(product_id) WHERE is_a
 This table answers "which Stripe prices apply to this product, and how should they appear on the pricing page?" It does NOT store the price amount.
 
 When the frontend renders a pricing page, the app:
+
 1. Loads `products` and `product_prices` from the database
 2. For each `stripe_price_id`, fetches the live amount from Stripe (cached briefly, ~5 minutes)
 3. Displays
@@ -188,13 +195,13 @@ CREATE UNIQUE INDEX idx_entitlements_subscription
 
 ### Entitlement semantics by product type
 
-| Product type | `expires_at` | `stripe_subscription_id` | Notes |
-|---|---|---|---|
-| Course | NULL (lifetime) | NULL | One-time purchase. Never revoked except by manual admin action. |
-| Indicator | NULL (lifetime) | NULL | Same as course. |
-| Trading room subscription | Set to `current_period_end` | Set | Renewed by webhook each billing cycle. Revoked when subscription canceled and period ends. |
-| Trading alert subscription | Same as room | Set | Same as room. |
-| Comp (admin-granted free access) | Set or NULL per admin choice | NULL | Operator decides duration. Logged in audit. |
+| Product type                     | `expires_at`                 | `stripe_subscription_id` | Notes                                                                                      |
+| -------------------------------- | ---------------------------- | ------------------------ | ------------------------------------------------------------------------------------------ |
+| Course                           | NULL (lifetime)              | NULL                     | One-time purchase. Never revoked except by manual admin action.                            |
+| Indicator                        | NULL (lifetime)              | NULL                     | Same as course.                                                                            |
+| Trading room subscription        | Set to `current_period_end`  | Set                      | Renewed by webhook each billing cycle. Revoked when subscription canceled and period ends. |
+| Trading alert subscription       | Same as room                 | Set                      | Same as room.                                                                              |
+| Comp (admin-granted free access) | Set or NULL per admin choice | NULL                     | Operator decides duration. Logged in audit.                                                |
 
 ### The single access check
 
@@ -269,19 +276,22 @@ One pattern for all four product types. No exceptions.
 **POST /api/checkout** — one endpoint for ALL product types
 
 Request body (only this — nothing else accepted):
+
 ```json
 { "stripe_price_id": "price_ABC123" }
 ```
 
 Response:
+
 ```json
 {
-  "checkout_url": "https://checkout.stripe.com/c/pay/cs_...",
-  "session_id": "cs_test_..."
+	"checkout_url": "https://checkout.stripe.com/c/pay/cs_...",
+	"session_id": "cs_test_..."
 }
 ```
 
 Forbidden in this endpoint:
+
 - Accepting any monetary amount
 - Accepting `success_url` or `cancel_url` from the client
 - Accepting `customer_id` from the client
@@ -368,17 +378,17 @@ The `PRIMARY KEY` on `event_id` enforces idempotency at the database level.
 
 ### Required event handlers
 
-| Stripe Event | What it triggers |
-|---|---|
-| `checkout.session.completed` | Create `user_entitlement` from `client_reference_id` and price metadata. |
-| `customer.subscription.created` | Idempotent backstop in case checkout webhook missed it. Same logic. |
-| `customer.subscription.updated` | If `cancel_at_period_end` flipped, update entitlement metadata. If price changed, log it. |
-| `customer.subscription.deleted` | Set `revoked_at = NOW()` on the entitlement (period has fully ended). |
-| `invoice.paid` | Extend entitlement's `expires_at` to new `current_period_end`. |
-| `invoice.payment_failed` | Update entitlement metadata to "past_due"; do NOT revoke yet (Stripe handles dunning). |
-| `charge.refunded` | If full refund: revoke entitlement immediately. If partial: log only. |
-| `charge.dispute.created` | Insert into `payment_disputes` table; send admin notification. Do NOT auto-revoke. |
-| `customer.subscription.trial_will_end` | Send "trial ending" notification email if trials are used. |
+| Stripe Event                           | What it triggers                                                                          |
+| -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `checkout.session.completed`           | Create `user_entitlement` from `client_reference_id` and price metadata.                  |
+| `customer.subscription.created`        | Idempotent backstop in case checkout webhook missed it. Same logic.                       |
+| `customer.subscription.updated`        | If `cancel_at_period_end` flipped, update entitlement metadata. If price changed, log it. |
+| `customer.subscription.deleted`        | Set `revoked_at = NOW()` on the entitlement (period has fully ended).                     |
+| `invoice.paid`                         | Extend entitlement's `expires_at` to new `current_period_end`.                            |
+| `invoice.payment_failed`               | Update entitlement metadata to "past_due"; do NOT revoke yet (Stripe handles dunning).    |
+| `charge.refunded`                      | If full refund: revoke entitlement immediately. If partial: log only.                     |
+| `charge.dispute.created`               | Insert into `payment_disputes` table; send admin notification. Do NOT auto-revoke.        |
+| `customer.subscription.trial_will_end` | Send "trial ending" notification email if trials are used.                                |
 
 Unrecognized events return 200 (acknowledged but not acted on).
 
@@ -487,20 +497,20 @@ A user whose subscription has fully ended re-subscribes by going through the ful
 creates a **new** `user_memberships` row. The prior cancelled row is left
 intact for history. Concretely:
 
-* Migration 063 dropped the `(user_id, plan_id)` unique constraint added
-  in 056 and replaced it with a *partial* unique index
+- Migration 063 dropped the `(user_id, plan_id)` unique constraint added
+  in 056 and replaced it with a _partial_ unique index
   `uq_user_memberships_active_plan ON (user_id, plan_id) WHERE status IN
   ('active','trialing','past_due')`. Cancelled / expired / failed rows
   no longer collide with a fresh active row.
-* `handle_checkout_completed` therefore stops upserting on `(user_id,
+- `handle_checkout_completed` therefore stops upserting on `(user_id,
   plan_id)`. It writes a brand-new row with the new
   `stripe_subscription_id`, `current_period_start`, and
   `current_period_end`.
-* The same migration adds a partial unique on `stripe_subscription_id`
+- The same migration adds a partial unique on `stripe_subscription_id`
   (NULLs excluded). The webhook uses
   `ON CONFLICT (stripe_subscription_id) DO UPDATE` purely as
   idempotency for retried `checkout.session.completed` deliveries — it
-  never overwrites a *different* row, because Stripe assigns one
+  never overwrites a _different_ row, because Stripe assigns one
   subscription id per subscription.
 
 After a subscribe → cancel → re-subscribe cycle for the same plan,
@@ -532,6 +542,7 @@ Operator changes a subscription price in the admin UI. The admin UI offers three
 Effect: New checkouts use the new price. Existing subscribers keep their current price forever (grandfathered).
 
 Implementation:
+
 1. Operator clicks "Change Price" on a product in admin UI
 2. Operator enters the new amount (sent to Stripe, NOT stored in app DB)
 3. Operator selects "Apply to new subscribers only"
@@ -548,6 +559,7 @@ Implementation:
 Effect: New checkouts use the new price. Existing subscribers move to the new price on their next billing cycle, with no proration.
 
 Implementation:
+
 1. Same as Option 1 steps 1-3, but operator selects "Apply to all at next renewal"
 2. Backend creates new Stripe Price as in Option 1
 3. Backend updates `product_prices` as in Option 1
@@ -567,6 +579,7 @@ Implementation: Same as Option 2 but `proration_behavior: "create_prorations"`. 
 A button on the product page: "Change subscription price"
 
 Modal opens:
+
 ```
 Current monthly price: $97.00
 Current quarterly price: $260.00
@@ -597,18 +610,19 @@ The operator never sees a database table. They see Stripe-side concepts presente
 
 ### Per product type
 
-| Product type | Refund allowed? | Access on refund |
-|---|---|---|
-| Course | **No.** Full content access on purchase. | N/A |
-| Indicator | **No.** Full content access on purchase. | N/A |
-| Trading room subscription | Cancellation, not refund. User keeps access until period end, no money returned. | Access continues to period end; revoked when Stripe sends `customer.subscription.deleted`. |
-| Trading alert subscription | Same as room. | Same as room. |
+| Product type               | Refund allowed?                                                                  | Access on refund                                                                           |
+| -------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Course                     | **No.** Full content access on purchase.                                         | N/A                                                                                        |
+| Indicator                  | **No.** Full content access on purchase.                                         | N/A                                                                                        |
+| Trading room subscription  | Cancellation, not refund. User keeps access until period end, no money returned. | Access continues to period end; revoked when Stripe sends `customer.subscription.deleted`. |
+| Trading alert subscription | Same as room.                                                                    | Same as room.                                                                              |
 
 ### How "no refunds" is enforced
 
 The frontend does not expose a "request refund" button for courses or indicators.
 
 If an operator manually issues a refund via the Stripe dashboard for a course or indicator (exceptional case):
+
 1. Stripe sends `charge.refunded` webhook
 2. The webhook handler:
    - Inserts a record into a `refunds` audit table
@@ -622,6 +636,7 @@ This is intentional: if an admin overrides policy and issues a refund, access is
 Already covered in Section 7. User-initiated cancellation = `cancel_at_period_end`. No money returned. Access continues to period end.
 
 If an admin issues a "refund this month" gesture for a subscription:
+
 - Stripe sends `charge.refunded` for that invoice
 - The webhook handler revokes the entitlement immediately
 
@@ -630,6 +645,7 @@ If the operator wants to be more generous (let user keep access despite refund),
 ### Disputes (chargebacks)
 
 When a user files a chargeback:
+
 1. Stripe sends `charge.dispute.created` webhook
 2. The webhook handler:
    - Inserts into `payment_disputes` audit table with dispute ID, charge ID, reason, response deadline
@@ -646,6 +662,7 @@ When a user files a chargeback:
 Stripe has a complete coupon and promotion code system. The application does not duplicate it.
 
 Stripe handles:
+
 - Percentage and fixed amount discounts
 - Once / forever / repeating-for-N-months durations
 - Maximum redemptions globally
@@ -730,18 +747,18 @@ Portal capabilities are configured in Stripe dashboard under Settings → Custom
 
 ### What admins can do
 
-| Capability | API endpoint | What happens |
-|---|---|---|
-| Add a new product | `POST /api/admin/products` | Inserts row in `products`. Operator must have already created the Stripe product. |
-| Add a new price reference | `POST /api/admin/products/:id/prices` | Inserts row in `product_prices`. Operator must have already created the Stripe price. |
-| Change a price | `POST /api/admin/products/:id/change-price` | Calls Stripe to create new price + deactivate old; updates `product_prices`. Triggers Section 8 flow. |
-| Comp a user (free access) | `POST /api/admin/users/:id/comp` | Inserts `user_entitlement` with `source = 'comp'`, optional `expires_at`. No Stripe interaction. Audit logged. |
-| Revoke comp access | `POST /api/admin/users/:id/revoke-comp` | Sets `revoked_at` on the comped entitlement. |
-| View subscription details | `GET /api/admin/subscriptions/:id` | Read-only display of Stripe state + DB state. |
-| Cancel a user's subscription (admin override) | `POST /api/admin/subscriptions/:id/cancel` | Calls Stripe `cancel_at_period_end: true`. Audit logged. |
-| Issue refund | `POST /api/admin/orders/:id/refund` | Calls Stripe `refunds.create`. Webhook handler will revoke entitlement. |
-| View payment events | `GET /api/admin/payment-events` | Reads `webhook_events` table. |
-| View dispute queue | `GET /api/admin/disputes` | Reads `payment_disputes` table. |
+| Capability                                    | API endpoint                                | What happens                                                                                                   |
+| --------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Add a new product                             | `POST /api/admin/products`                  | Inserts row in `products`. Operator must have already created the Stripe product.                              |
+| Add a new price reference                     | `POST /api/admin/products/:id/prices`       | Inserts row in `product_prices`. Operator must have already created the Stripe price.                          |
+| Change a price                                | `POST /api/admin/products/:id/change-price` | Calls Stripe to create new price + deactivate old; updates `product_prices`. Triggers Section 8 flow.          |
+| Comp a user (free access)                     | `POST /api/admin/users/:id/comp`            | Inserts `user_entitlement` with `source = 'comp'`, optional `expires_at`. No Stripe interaction. Audit logged. |
+| Revoke comp access                            | `POST /api/admin/users/:id/revoke-comp`     | Sets `revoked_at` on the comped entitlement.                                                                   |
+| View subscription details                     | `GET /api/admin/subscriptions/:id`          | Read-only display of Stripe state + DB state.                                                                  |
+| Cancel a user's subscription (admin override) | `POST /api/admin/subscriptions/:id/cancel`  | Calls Stripe `cancel_at_period_end: true`. Audit logged.                                                       |
+| Issue refund                                  | `POST /api/admin/orders/:id/refund`         | Calls Stripe `refunds.create`. Webhook handler will revoke entitlement.                                        |
+| View payment events                           | `GET /api/admin/payment-events`             | Reads `webhook_events` table.                                                                                  |
+| View dispute queue                            | `GET /api/admin/disputes`                   | Reads `payment_disputes` table.                                                                                |
 
 ### What admins CANNOT do
 
@@ -769,6 +786,7 @@ All admin endpoints require `AdminUser` extractor. Granting `super_admin` or `de
 ### Local webhook delivery
 
 For local development, use Stripe CLI:
+
 ```
 stripe listen --forward-to localhost:8080/api/webhooks/stripe
 ```
@@ -824,21 +842,21 @@ Daily is sufficient. Faster (hourly) if higher accuracy is needed.
 
 The full list of events the system subscribes to in the Stripe dashboard:
 
-| Event | Required | Handler logic |
-|---|---|---|
-| `checkout.session.completed` | Yes | Provision entitlement |
-| `customer.subscription.created` | Yes | Backstop provisioning |
-| `customer.subscription.updated` | Yes | Update entitlement metadata |
-| `customer.subscription.deleted` | Yes | Revoke entitlement |
-| `customer.subscription.trial_will_end` | If trials used | Notify user |
-| `invoice.paid` | Yes | Extend entitlement period |
-| `invoice.payment_failed` | Yes | Mark past_due metadata |
-| `invoice.payment_action_required` | Yes | Notify user (3DS reauth) |
-| `charge.refunded` | Yes | Revoke entitlement |
-| `charge.dispute.created` | Yes | Audit + admin notification |
-| `charge.dispute.closed` | Yes | Update audit |
-| `customer.created` | No | Optional analytics |
-| `customer.updated` | No | Optional sync |
+| Event                                  | Required       | Handler logic               |
+| -------------------------------------- | -------------- | --------------------------- |
+| `checkout.session.completed`           | Yes            | Provision entitlement       |
+| `customer.subscription.created`        | Yes            | Backstop provisioning       |
+| `customer.subscription.updated`        | Yes            | Update entitlement metadata |
+| `customer.subscription.deleted`        | Yes            | Revoke entitlement          |
+| `customer.subscription.trial_will_end` | If trials used | Notify user                 |
+| `invoice.paid`                         | Yes            | Extend entitlement period   |
+| `invoice.payment_failed`               | Yes            | Mark past_due metadata      |
+| `invoice.payment_action_required`      | Yes            | Notify user (3DS reauth)    |
+| `charge.refunded`                      | Yes            | Revoke entitlement          |
+| `charge.dispute.created`               | Yes            | Audit + admin notification  |
+| `charge.dispute.closed`                | Yes            | Update audit                |
+| `customer.created`                     | No             | Optional analytics          |
+| `customer.updated`                     | No             | Optional sync               |
 
 ---
 
@@ -846,22 +864,22 @@ The full list of events the system subscribes to in the Stripe dashboard:
 
 These are non-negotiable. If code violates any of these, it's a bug.
 
-| Forbidden | Why |
-|---|---|
-| Storing prices in the application database | Two sources of truth = inevitable drift |
-| Floating-point math on money | Rounding errors, IEEE 754 precision issues |
-| Accepting prices from the client | Client can submit `$0.01`; trivial bypass |
-| Accepting `success_url` / `cancel_url` from the client | Open redirect attack vector |
-| Bypassing webhook signature verification | Webhook spoofing → free access |
-| Custom coupon table or coupon validation logic | Stripe already does this; duplication = bugs |
-| Custom invoice generation | Stripe handles invoices; duplication = drift |
-| Storing card data anywhere on application servers | PCI scope, regulatory burden |
-| Granting access without a paid Stripe transaction (except via audited admin "comp") | Free access via `reactivate` path bug |
-| Multiple checkout flows for different product types | Surface area for bugs and divergence |
-| Deserializing webhook bodies as `String` instead of `Bytes` | Encoding edge cases breaking HMAC |
-| Swallowing DB errors in webhook handlers (`.ok()`, `let _ =`) | Drift between Stripe and DB with no alert |
-| Looping through subscriptions in app code to apply price changes | Stripe API handles this; doing it in app code is fragile |
-| Building a custom Customer Portal | Stripe portal handles every edge case |
+| Forbidden                                                                           | Why                                                      |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Storing prices in the application database                                          | Two sources of truth = inevitable drift                  |
+| Floating-point math on money                                                        | Rounding errors, IEEE 754 precision issues               |
+| Accepting prices from the client                                                    | Client can submit `$0.01`; trivial bypass                |
+| Accepting `success_url` / `cancel_url` from the client                              | Open redirect attack vector                              |
+| Bypassing webhook signature verification                                            | Webhook spoofing → free access                           |
+| Custom coupon table or coupon validation logic                                      | Stripe already does this; duplication = bugs             |
+| Custom invoice generation                                                           | Stripe handles invoices; duplication = drift             |
+| Storing card data anywhere on application servers                                   | PCI scope, regulatory burden                             |
+| Granting access without a paid Stripe transaction (except via audited admin "comp") | Free access via `reactivate` path bug                    |
+| Multiple checkout flows for different product types                                 | Surface area for bugs and divergence                     |
+| Deserializing webhook bodies as `String` instead of `Bytes`                         | Encoding edge cases breaking HMAC                        |
+| Swallowing DB errors in webhook handlers (`.ok()`, `let _ =`)                       | Drift between Stripe and DB with no alert                |
+| Looping through subscriptions in app code to apply price changes                    | Stripe API handles this; doing it in app code is fragile |
+| Building a custom Customer Portal                                                   | Stripe portal handles every edge case                    |
 
 ---
 
@@ -884,20 +902,20 @@ Any payment system implementation must pass these gates before being considered 
 
 ## 18. Glossary
 
-| Term | Definition |
-|---|---|
-| **Stripe Customer** | A Stripe-side record representing a paying user. Has an ID like `cus_ABC123`. One per user, persistent for life. |
-| **Stripe Product** | A Stripe-side record representing something for sale. Has prices attached. ID like `prod_ABC123`. |
-| **Stripe Price** | A Stripe-side record representing the cost of a product, including currency, amount, and (for subscriptions) recurring interval. ID like `price_ABC123`. |
-| **Stripe Subscription** | A Stripe-side record representing an active recurring billing relationship. ID like `sub_ABC123`. |
-| **Stripe Checkout Session** | A short-lived Stripe-hosted page for collecting payment. ID like `cs_test_...`. |
-| **Stripe Promotion Code** | A customer-facing code that maps to a Stripe Coupon. The coupon defines the discount; the code is what users type. |
-| **Webhook** | An HTTP POST from Stripe to the application, signaling a state change. |
-| **Entitlement** | An application-side record of a user's right to access a product. Granted by webhook, revoked by webhook or admin. |
-| **Idempotency** | Property where processing the same operation multiple times produces the same result as processing it once. |
-| **Proration** | Calculation of a partial-period charge or credit when a subscription changes mid-cycle. Stripe handles this. |
-| **Dunning** | The process of retrying failed payments and notifying customers. Stripe handles this. |
+| Term                        | Definition                                                                                                                                               |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Stripe Customer**         | A Stripe-side record representing a paying user. Has an ID like `cus_ABC123`. One per user, persistent for life.                                         |
+| **Stripe Product**          | A Stripe-side record representing something for sale. Has prices attached. ID like `prod_ABC123`.                                                        |
+| **Stripe Price**            | A Stripe-side record representing the cost of a product, including currency, amount, and (for subscriptions) recurring interval. ID like `price_ABC123`. |
+| **Stripe Subscription**     | A Stripe-side record representing an active recurring billing relationship. ID like `sub_ABC123`.                                                        |
+| **Stripe Checkout Session** | A short-lived Stripe-hosted page for collecting payment. ID like `cs_test_...`.                                                                          |
+| **Stripe Promotion Code**   | A customer-facing code that maps to a Stripe Coupon. The coupon defines the discount; the code is what users type.                                       |
+| **Webhook**                 | An HTTP POST from Stripe to the application, signaling a state change.                                                                                   |
+| **Entitlement**             | An application-side record of a user's right to access a product. Granted by webhook, revoked by webhook or admin.                                       |
+| **Idempotency**             | Property where processing the same operation multiple times produces the same result as processing it once.                                              |
+| **Proration**               | Calculation of a partial-period charge or credit when a subscription changes mid-cycle. Stripe handles this.                                             |
+| **Dunning**                 | The process of retrying failed payments and notifying customers. Stripe handles this.                                                                    |
 
 ---
 
-*End of Payments Architecture Standard v1.0.*
+_End of Payments Architecture Standard v1.0._

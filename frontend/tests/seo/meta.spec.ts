@@ -14,8 +14,9 @@ test.describe('Metadata, Open Graph & Twitter Card Completeness (META-01..07)', 
 			expect(title).not.toMatch(/^(Home|Untitled|Page)$/i);
 
 			const desc =
-				(await page.locator('head meta[name="description"]').first().getAttribute('content'))?.trim() ??
-				'';
+				(
+					await page.locator('head meta[name="description"]').first().getAttribute('content')
+				)?.trim() ?? '';
 			expect(desc.length).toBeGreaterThanOrEqual(50);
 
 			for (const [otherPath, otherTitle] of titles.entries()) {
@@ -64,4 +65,3 @@ test.describe('Metadata, Open Graph & Twitter Card Completeness (META-01..07)', 
 		});
 	}
 });
-

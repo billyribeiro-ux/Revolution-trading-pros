@@ -8,7 +8,7 @@
  * @standards Apple Principal Engineer ICT 7+
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // URL VALIDATION FUNCTIONS (Copy from component for isolated testing)

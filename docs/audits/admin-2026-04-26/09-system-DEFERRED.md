@@ -23,6 +23,7 @@ just the system cluster. It must be decided centrally before any cluster
 implements it.
 
 **Recommended approach when unblocked:**
+
 - Use SvelteKit `csrf` hooks option (enable strict-mode JSON protection once
   SvelteKit ships it) or
 - Issue a per-session CSRF token from `hooks.server.ts` and inject it into
@@ -53,7 +54,7 @@ introducing regressions in unrelated handlers. This must be paired with
 **Current mitigation:** The SvelteKit proxy layer now enforces `requireSuperadmin`
 on all role/password/delete mutations (P0-2 fixed in proxy). The Rust backend
 remains the ultimate gatekeeper — this deferral only means the proxy check is
-the *only* defense-in-depth layer, not that there is none.
+the _only_ defense-in-depth layer, not that there is none.
 
 ---
 

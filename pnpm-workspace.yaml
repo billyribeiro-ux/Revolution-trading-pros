@@ -50,6 +50,20 @@ peerDependencyRules:
     # bits-ui and svelte-toolbelt bump `runed` to `^0.38.0`.
     # (Added 2026-08-30; re-verified against Kit 3.1.0 stable 2026-10-28.)
     runed>@sveltejs/kit: ^3.0.0
+    vite: '*'
+    vitest: '*'
     # The former `vite-plugin-devtools-json>vite: ^8.0.0` rule is gone:
     # vite-plugin-devtools-json 1.1.1+ declares `vite: ^5 || ^6 || ^7 || ^8`
     # itself.
+  allowAny:
+    - vite
+    - vitest
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
+  vitest: 5.0.5
+  vite-plus: 1.4.0
+  '@vitest/browser-playwright': 5.0.5
+  '@vitest/coverage-v8': 5.0.5
+overrides:
+  vite@*: 'catalog:'
+  vitest@*: 'catalog:'

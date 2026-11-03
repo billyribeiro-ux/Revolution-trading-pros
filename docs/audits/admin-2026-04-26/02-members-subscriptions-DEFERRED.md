@@ -112,10 +112,10 @@ delete_member(user_id):
 
 ### What's needed
 
-- `GET    /api/admin/invoice-settings`            → return the singleton row
-- `PUT    /api/admin/invoice-settings`            → update settings JSON
+- `GET    /api/admin/invoice-settings` → return the singleton row
+- `PUT    /api/admin/invoice-settings` → update settings JSON
 - `POST   /api/admin/invoice-settings?action=preview` → render PDF/HTML preview
-- `POST   /api/admin/invoice-settings?action=reset`   → restore defaults
+- `POST   /api/admin/invoice-settings?action=reset` → restore defaults
 - (optional) `POST /api/admin/invoice-settings/logo` → multipart upload
 
 The proxy in `frontend/src/routes/api/admin/invoice-settings/+server.ts`
@@ -186,12 +186,13 @@ Same as D2 — needs its own backend PR with schema work.
 (cross-origin, header auth) and others via `fetch('/api/admin/...')`
 (same-origin proxy, cookie auth). The recent `e2356fa46` cookie-pref
 commit only fixed the proxy side, so the `apiClient` path is now the
-only one that *doesn't* benefit from the canonical cookie-auth flow.
+only one that _doesn't_ benefit from the canonical cookie-auth flow.
 
 ### Why deferred
 
 Pulling out every `apiClient.*` admin call and routing it through the
 proxy layer is a multi-file refactor that touches:
+
 - `lib/api/members.ts`
 - `lib/api/subscriptions.ts`
 - (per spot-check) probably `lib/api/admin.ts` and a few others
@@ -216,11 +217,11 @@ without telling Stripe → same billing-desync class as D1).
 
 ## Summary
 
-| # | Item | Why deferred | Blocker for human |
-|---|---|---|---|
-| D1 | `delete_member` tx + Stripe cancel | Stripe state machine | Yes — design approval |
-| D2 | Invoice Settings backend | Schema + PDF lib choice | Yes — scope decision |
-| D3 | Member CSV import backend | Multipart + job runner | Yes — scope decision |
-| D4 | Past-Members backend | Schema + analytics scope | Yes — scope decision |
-| D5 | apiClient → proxy refactor | Cross-cutting | Yes — own PR |
-| D6 | Tx-wrappers for other multi-table mutations | Same class as D1 | Yes — bundle with D1 |
+| #   | Item                                        | Why deferred             | Blocker for human     |
+| --- | ------------------------------------------- | ------------------------ | --------------------- |
+| D1  | `delete_member` tx + Stripe cancel          | Stripe state machine     | Yes — design approval |
+| D2  | Invoice Settings backend                    | Schema + PDF lib choice  | Yes — scope decision  |
+| D3  | Member CSV import backend                   | Multipart + job runner   | Yes — scope decision  |
+| D4  | Past-Members backend                        | Schema + analytics scope | Yes — scope decision  |
+| D5  | apiClient → proxy refactor                  | Cross-cutting            | Yes — own PR          |
+| D6  | Tx-wrappers for other multi-table mutations | Same class as D1         | Yes — bundle with D1  |

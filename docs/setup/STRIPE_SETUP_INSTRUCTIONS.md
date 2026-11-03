@@ -5,24 +5,30 @@
 ## WHERE TO GET YOUR STRIPE KEYS
 
 ### 1. Go to Stripe Dashboard
+
 Visit: https://dashboard.stripe.com/test/apikeys
 
 ### 2. Toggle to Test Mode (top right)
+
 Make sure you're in **Test Mode** for development
 
 ### 3. Copy Your Keys
 
 **Publishable Key** (starts with `pk_test_`)
+
 - This is safe to use on the client-side
 - Example: `pk_test_51AbCdEfGhIjKlMnOpQrStUvWxYz1234567890`
 
 **Secret Key** (starts with `sk_test_`)
+
 - This is for server-side only - NEVER expose to client
 - Click "Reveal test key" to see it
 - Example: `sk_test_51AbCdEfGhIjKlMnOpQrStUvWxYz1234567890`
 
 ### 4. Get Webhook Secret (Optional for now)
+
 Visit: https://dashboard.stripe.com/test/webhooks
+
 - Create endpoint: `<your-api-host>/api/webhooks/stripe`
 - Copy the signing secret (starts with `whsec_`)
 
@@ -70,6 +76,7 @@ STRIPE_WEBHOOK_SECRET=whsec_YOUR_ACTUAL_SECRET_HERE
 After adding the keys, verify they work:
 
 ### Test Frontend
+
 ```bash
 cd frontend
 npm run dev
@@ -78,6 +85,7 @@ npm run dev
 Visit any page with payment forms - the Stripe integration should load without errors.
 
 ### Test Backend
+
 ```bash
 cd api
 cargo run
@@ -90,6 +98,7 @@ The API should start without Stripe-related errors.
 ## PRODUCTION KEYS (Later)
 
 When ready for production:
+
 1. Toggle to **Live Mode** in Stripe Dashboard
 2. Get live keys (start with `pk_live_` and `sk_live_`)
 3. Update Cloudflare Pages environment variables
@@ -100,12 +109,14 @@ When ready for production:
 ## SECURITY NOTES
 
 ✅ **DO:**
+
 - Keep `.env.local` and `api/.env` in `.gitignore` (already done)
 - Use test keys for development
 - Rotate keys every 90 days
 - Enable MFA on your Stripe account
 
 ❌ **DON'T:**
+
 - Commit API keys to Git
 - Share secret keys in Slack/email
 - Use production keys in development

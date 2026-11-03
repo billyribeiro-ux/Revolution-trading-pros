@@ -1,8 +1,8 @@
 /**
  * svelte-click-to-source
- * 
+ *
  * Alt+Click any element in dev mode → Opens source in your editor
- * 
+ *
  * Architecture:
  * 1. Preprocessor adds data-source="file:line:col" to HTML elements
  * 2. Runtime script highlights elements on hotkey+hover, sends fetch to dev server on click
@@ -15,11 +15,11 @@ import { existsSync } from 'fs';
 import { RUNTIME_SCRIPT } from './runtime';
 
 export interface ClickToSourceOptions {
-  hotkey?: 'alt' | 'ctrl' | 'meta' | 'shift';
-  editor?: 'vscode' | 'cursor' | 'windsurf' | 'webstorm' | 'vim' | 'neovim';
-  highlight?: boolean;
-  highlightColor?: string;
-  enabled?: boolean;
+	hotkey?: 'alt' | 'ctrl' | 'meta' | 'shift';
+	editor?: 'vscode' | 'cursor' | 'windsurf' | 'webstorm' | 'vim' | 'neovim';
+	highlight?: boolean;
+	highlightColor?: string;
+	enabled?: boolean;
 }
 
 const VIRTUAL_MODULE_ID = 'virtual:click-to-source';
@@ -27,149 +27,164 @@ const RESOLVED_VIRTUAL_MODULE_ID = '\0' + VIRTUAL_MODULE_ID;
 const OPEN_ENDPOINT = '/__click-to-source-open';
 
 function detectEditor(): string {
-  const termProgram = process.env.TERM_PROGRAM?.toLowerCase() || '';
-  const editor = process.env.EDITOR?.toLowerCase() || '';
-  const visual = process.env.VISUAL?.toLowerCase() || '';
-  
-  if (termProgram.includes('cursor') || editor.includes('cursor')) return 'cursor';
-  if (termProgram.includes('windsurf') || editor.includes('windsurf')) return 'windsurf';
-  if (editor.includes('nvim') || visual.includes('nvim')) return 'neovim';
-  if (editor.includes('vim') || visual.includes('vim')) return 'vim';
-  if (editor.includes('webstorm') || visual.includes('webstorm')) return 'webstorm';
-  
-  return 'vscode';
+	const termProgram = process.env.TERM_PROGRAM?.toLowerCase() || '';
+	const editor = process.env.EDITOR?.toLowerCase() || '';
+	const visual = process.env.VISUAL?.toLowerCase() || '';
+
+	if (termProgram.includes('cursor') || editor.includes('cursor')) return 'cursor';
+	if (termProgram.includes('windsurf') || editor.includes('windsurf')) return 'windsurf';
+	if (editor.includes('nvim') || visual.includes('nvim')) return 'neovim';
+	if (editor.includes('vim') || visual.includes('vim')) return 'vim';
+	if (editor.includes('webstorm') || visual.includes('webstorm')) return 'webstorm';
+
+	return 'vscode';
 }
 
 function getEditorCommand(editor: string): string {
-  const editorPaths: Record<string, string[]> = {
-    vscode: ['code', '/usr/local/bin/code', '/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'],
-    cursor: ['cursor', '/usr/local/bin/cursor', '/Applications/Cursor.app/Contents/Resources/app/bin/cursor'],
-    windsurf: ['windsurf', '/usr/local/bin/windsurf', '/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf'],
-    webstorm: ['webstorm', '/usr/local/bin/webstorm'],
-    vim: ['vim'],
-    neovim: ['nvim'],
-  };
+	const editorPaths: Record<string, string[]> = {
+		vscode: [
+			'code',
+			'/usr/local/bin/code',
+			'/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'
+		],
+		cursor: [
+			'cursor',
+			'/usr/local/bin/cursor',
+			'/Applications/Cursor.app/Contents/Resources/app/bin/cursor'
+		],
+		windsurf: [
+			'windsurf',
+			'/usr/local/bin/windsurf',
+			'/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf'
+		],
+		webstorm: ['webstorm', '/usr/local/bin/webstorm'],
+		vim: ['vim'],
+		neovim: ['nvim']
+	};
 
-  const paths = editorPaths[editor] || editorPaths.vscode;
-  for (const p of paths) {
-    if (p.startsWith('/') && existsSync(p)) return p;
-  }
-  // Fallback to short name (hope it's in PATH)
-  return paths[0];
+	const paths = editorPaths[editor] || editorPaths.vscode;
+	for (const p of paths) {
+		if (p.startsWith('/') && existsSync(p)) return p;
+	}
+	// Fallback to short name (hope it's in PATH)
+	return paths[0];
 }
 
 export function clickToSource(options: ClickToSourceOptions = {}): Plugin {
-  const {
-    hotkey = 'alt',
-    editor = detectEditor(),
-    highlight = true,
-    highlightColor = '#3b82f6',
-    enabled = true,
-  } = options;
+	const {
+		hotkey = 'alt',
+		editor = detectEditor(),
+		highlight = true,
+		highlightColor = '#3b82f6',
+		enabled = true
+	} = options;
 
-  let isDev = false;
-  let projectRoot = '';
-  const editorCmd = getEditorCommand(editor);
+	let isDev = false;
+	let projectRoot = '';
+	const editorCmd = getEditorCommand(editor);
 
-  return {
-    name: 'vite-plugin-click-to-source',
-    enforce: 'pre',
+	return {
+		name: 'vite-plugin-click-to-source',
+		enforce: 'pre',
 
-    configResolved(config) {
-      isDev = config.command === 'serve';
-      projectRoot = config.root;
-      
-      if (isDev && enabled) {
-        console.log(`[click-to-source] Active. Editor: ${editor} (${editorCmd}). Hotkey: ${hotkey.toUpperCase()}+Click`);
-      }
-    },
+		configResolved(config) {
+			isDev = config.command === 'serve';
+			projectRoot = config.root;
 
-    configureServer(server) {
-      if (!enabled) return;
+			if (isDev && enabled) {
+				console.log(
+					`[click-to-source] Active. Editor: ${editor} (${editorCmd}). Hotkey: ${hotkey.toUpperCase()}+Click`
+				);
+			}
+		},
 
-      server.middlewares.use((req, res, next) => {
-        if (!req.url?.startsWith(OPEN_ENDPOINT)) {
-          return next();
-        }
+		configureServer(server) {
+			if (!enabled) return;
 
-        // Parse URL manually to avoid + being decoded as space
-        const queryString = req.url.split('?')[1] || '';
-        const params = new URLSearchParams(queryString);
-        // URLSearchParams decodes + as space, so re-decode from the raw query
-        const rawFile = queryString.match(/file=([^&]*)/)?.[1];
-        const file = rawFile ? decodeURIComponent(rawFile.replace(/\+/g, '%2B')) : params.get('file');
-        const line = params.get('line') || '1';
-        const col = params.get('col') || '1';
+			server.middlewares.use((req, res, next) => {
+				if (!req.url?.startsWith(OPEN_ENDPOINT)) {
+					return next();
+				}
 
-        if (!file) {
-          res.statusCode = 400;
-          res.end('Missing file parameter');
-          return;
-        }
+				// Parse URL manually to avoid + being decoded as space
+				const queryString = req.url.split('?')[1] || '';
+				const params = new URLSearchParams(queryString);
+				// URLSearchParams decodes + as space, so re-decode from the raw query
+				const rawFile = queryString.match(/file=([^&]*)/)?.[1];
+				const file = rawFile
+					? decodeURIComponent(rawFile.replace(/\+/g, '%2B'))
+					: params.get('file');
+				const line = params.get('line') || '1';
+				const col = params.get('col') || '1';
 
-        const absolutePath = file.startsWith('/') ? file : `${projectRoot}/${file}`;
-        const cmd = `${editorCmd} --goto "${absolutePath}:${line}:${col}"`;
+				if (!file) {
+					res.statusCode = 400;
+					res.end('Missing file parameter');
+					return;
+				}
 
-        console.log(`[click-to-source] Opening: ${absolutePath}:${line}:${col}`);
+				const absolutePath = file.startsWith('/') ? file : `${projectRoot}/${file}`;
+				const cmd = `${editorCmd} --goto "${absolutePath}:${line}:${col}"`;
 
-        exec(cmd, (error) => {
-          if (error) {
-            console.warn(`[click-to-source] Primary command failed:`, error.message);
-            // Fallback: try open -a on Mac with just the file (no --goto)
-            const appName = editor.charAt(0).toUpperCase() + editor.slice(1);
-            const fallbackCmd = `open -a "${appName}" "${absolutePath}"`;
-            console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
-            exec(fallbackCmd, (err2) => {
-              if (err2) {
-                console.error(`[click-to-source] Fallback also failed:`, err2.message);
-              }
-            });
-          }
-        });
+				console.log(`[click-to-source] Opening: ${absolutePath}:${line}:${col}`);
 
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Content-Type', 'application/json');
-        res.statusCode = 200;
-        res.end(JSON.stringify({ ok: true, file: absolutePath, line, col }));
-      });
-    },
+				exec(cmd, (error) => {
+					if (error) {
+						console.warn(`[click-to-source] Primary command failed:`, error.message);
+						// Fallback: try open -a on Mac with just the file (no --goto)
+						const appName = editor.charAt(0).toUpperCase() + editor.slice(1);
+						const fallbackCmd = `open -a "${appName}" "${absolutePath}"`;
+						console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
+						exec(fallbackCmd, (err2) => {
+							if (err2) {
+								console.error(`[click-to-source] Fallback also failed:`, err2.message);
+							}
+						});
+					}
+				});
 
-    resolveId(id) {
-      if (id === VIRTUAL_MODULE_ID) {
-        return RESOLVED_VIRTUAL_MODULE_ID;
-      }
-      return undefined;
-    },
+				res.setHeader('Access-Control-Allow-Origin', '*');
+				res.setHeader('Content-Type', 'application/json');
+				res.statusCode = 200;
+				res.end(JSON.stringify({ ok: true, file: absolutePath, line, col }));
+			});
+		},
 
-    load(id) {
-      if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-        if (!isDev || !enabled) {
-          return 'export default {}';
-        }
-        
-        return RUNTIME_SCRIPT
-          .replace(/__HOTKEY__/g, hotkey)
-          .replace(/__PROJECT_ROOT__/g, projectRoot)
-          .replace(/__HIGHLIGHT_ENABLED__/g, String(highlight))
-          .replace(/__HIGHLIGHT_COLOR__/g, highlightColor)
-          .replace(/__OPEN_ENDPOINT__/g, OPEN_ENDPOINT);
-      }
-      return undefined;
-    },
+		resolveId(id) {
+			if (id === VIRTUAL_MODULE_ID) {
+				return RESOLVED_VIRTUAL_MODULE_ID;
+			}
+			return undefined;
+		},
 
-    transformIndexHtml() {
-      if (!isDev || !enabled) return [];
-      
-      return [
-        {
-          tag: 'script',
-          attrs: { type: 'module' },
-          children: `import '${VIRTUAL_MODULE_ID}'`,
-          injectTo: 'body',
-        },
-      ];
-    },
-  };
+		load(id) {
+			if (id === RESOLVED_VIRTUAL_MODULE_ID) {
+				if (!isDev || !enabled) {
+					return 'export default {}';
+				}
+
+				return RUNTIME_SCRIPT.replace(/__HOTKEY__/g, hotkey)
+					.replace(/__PROJECT_ROOT__/g, projectRoot)
+					.replace(/__HIGHLIGHT_ENABLED__/g, String(highlight))
+					.replace(/__HIGHLIGHT_COLOR__/g, highlightColor)
+					.replace(/__OPEN_ENDPOINT__/g, OPEN_ENDPOINT);
+			}
+			return undefined;
+		},
+
+		transformIndexHtml() {
+			if (!isDev || !enabled) return [];
+
+			return [
+				{
+					tag: 'script',
+					attrs: { type: 'module' },
+					children: `import '${VIRTUAL_MODULE_ID}'`,
+					injectTo: 'body'
+				}
+			];
+		}
+	};
 }
 
 export { createPreprocessor } from './preprocessor';

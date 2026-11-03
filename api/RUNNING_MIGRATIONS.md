@@ -3,7 +3,9 @@
 > **Note (2026-04-28):** Fly.io references in this document are historical. The Fly.io deployment was removed; deploy target is TBD. See `backups/fly-io-removed-2026-04-28.md` for original Fly configuration.
 
 ## Problem
+
 When SQLx compile-time verification fails with errors like:
+
 ```
 error: error returned from database: type "cms_content_type" does not exist
 error: error returned from database: relation "cms_reusable_blocks" does not exist
@@ -12,6 +14,7 @@ error: error returned from database: relation "cms_reusable_blocks" does not exi
 This means **database migrations have not been run on the production database**.
 
 ## Root Cause
+
 SQLx performs compile-time verification by connecting to the database specified in `DATABASE_URL` during compilation. If the schema doesn't match the queries in the code, compilation fails.
 
 ## Solution: Run Migrations via API Endpoint
@@ -25,10 +28,11 @@ curl -X POST <your-api-host>/init-db
 ```
 
 **Expected Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Migrations and bootstrap completed from environment variables"
+	"success": true,
+	"message": "Migrations and bootstrap completed from environment variables"
 }
 ```
 
@@ -68,10 +72,12 @@ After running migrations, verify they succeeded:
 The migrations create the following CMS v2 schema:
 
 ### Enums
+
 - `cms_content_type` - Content type enum (article, page, etc.)
 - `cms_content_status` - Workflow status enum
 
 ### Tables
+
 - `cms_content` - Main content table
 - `cms_revisions` - Content revision history
 - `cms_reusable_blocks` - Reusable content blocks
@@ -83,6 +89,7 @@ The migrations create the following CMS v2 schema:
 - `cms_ai_assist_history` - AI assistance tracking
 
 ### Functions
+
 - `cms_get_content_full()` - Content retrieval with joins
 - Various trigger functions for audit logging
 
@@ -93,10 +100,12 @@ The migrations create the following CMS v2 schema:
 2. **Migration Files Location** - All migration SQL files are in `/api/migrations/`
 
 3. **SQLx Offline Mode** - If you need to bypass compile-time checks temporarily, set:
+
    ```yaml
    env:
      SQLX_OFFLINE: true
    ```
+
    in `.github/workflows/deploy-cloudflare.yml`
 
 4. **Migration Order** - Migrations run in numerical order (001, 002, 003, etc.)
@@ -104,14 +113,17 @@ The migrations create the following CMS v2 schema:
 ## Troubleshooting
 
 ### Error: "Missing or invalid authorization header"
+
 - You tried `/run-migrations` which requires admin auth
 - Use `/init-db` instead (no auth required)
 
 ### Error: "nodename nor servname provided"
+
 - You tried to connect to `.flycast` domain from local machine
 - Use the API endpoint method instead
 
 ### Error: "executable file not found in $PATH"
+
 - The production container doesn't have `sqlx` CLI installed
 - Use the API endpoint method instead
 

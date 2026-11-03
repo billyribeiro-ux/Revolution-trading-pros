@@ -8,12 +8,12 @@
 
 ## Summary
 
-| Severity | Total | Fixed | Deferred | Skipped |
-|----------|-------|-------|----------|---------|
-| P0 | 5 | 4 | 1 (P0-5 partial) | 0 |
-| P1 | 9 | 6 | 3 | 0 |
-| P2 | 8 | 4 | 0 | 4 (nits, see below) |
-| P3 | 8 | 3 | 2 | 3 |
+| Severity | Total | Fixed | Deferred         | Skipped             |
+| -------- | ----- | ----- | ---------------- | ------------------- |
+| P0       | 5     | 4     | 1 (P0-5 partial) | 0                   |
+| P1       | 9     | 6     | 3                | 0                   |
+| P2       | 8     | 4     | 0                | 4 (nits, see below) |
+| P3       | 8     | 3     | 2                | 3                   |
 
 **Privilege-escalation P0s (P0-1, P0-2, P0-3): CLOSED.**
 **pnpm check: passes with 0 errors in the system cluster** (6 pre-existing errors
@@ -41,12 +41,14 @@ also closed here).
 ### P0-2 — No super-admin guard before role/password/delete mutations — FIXED
 
 **Files touched:**
+
 - `frontend/src/lib/server/auth.ts` (created — `requireAdminToken`, `requireAdmin`, `requireSuperadmin`)
 - `frontend/src/routes/api/admin/users/+server.ts` (POST → `requireSuperadmin`)
 - `frontend/src/routes/api/admin/users/[id]/+server.ts` (PUT/DELETE → `requireSuperadmin`, GET → `requireAdmin`)
 
 **Action:** Created a unified auth helper module at `$lib/server/auth.ts` that
 exports three helpers used by all system-cluster proxies:
+
 - `requireAdminToken(event)` — cookie + header fallback, throws 401 if missing
 - `requireAdmin(event)` — requires admin-or-higher role, throws 403
 - `requireSuperadmin(event)` — requires super-admin role, throws 403
@@ -79,6 +81,7 @@ module load, so `last_verified_at` reflects the actual request moment.
 **File created:** `frontend/src/routes/api/admin/connections/[key]/test/+server.ts`
 
 **Action:** Built a proper super-admin-gated proxy that:
+
 - Validates `key` against `/^[a-z][a-z0-9_]*$/` (path-traversal defense, audit P1-4)
 - Caps request body at 64 KiB (audit P1-4)
 - Forwards to `${API_URL}/api/admin/connections/${key}/test` verbatim
@@ -94,6 +97,7 @@ on a phantom 404 endpoint.
 **File:** `frontend/src/routes/admin/users/create/+page.svelte`
 
 **Action (partial):**
+
 - Fixed the validator bug (P1-3): `!usernameAvailable` → `usernameAvailable === false`
   for both username and email checks. Null (unknown) no longer blocks submissions.
 - The 5 `/api/admin/organization/*` proxy stubs are deferred pending confirmation
@@ -136,6 +140,7 @@ intended.
 ### P1-4 — Connection credential payload: no size cap, no key validation — FIXED
 
 **Files:**
+
 - `frontend/src/routes/api/admin/connections/[key]/test/+server.ts` (new file — includes both guards)
 
 Both the `content-length` header check and the `SERVICE_KEY_RE` regex validation
@@ -148,6 +153,7 @@ validation there is a P2 cleanup tracked as a separate nit.
 ### P1-5 — `site-health` and `run-tests` proxies missing — FIXED
 
 **Files created:**
+
 - `frontend/src/routes/api/admin/site-health/+server.ts` (GET proxy, `requireAdmin`)
 - `frontend/src/routes/api/admin/site-health/run-tests/+server.ts` (POST proxy, `requireSuperadmin`)
 
@@ -159,6 +165,7 @@ the frontend receives the upstream 404/405 rather than a fake success.
 ### P1-6 — `$effect` init pattern instead of `onMount` — FIXED
 
 **Files fixed:**
+
 - `frontend/src/routes/admin/users/+page.svelte` — `$effect` → `onMount`
 - `frontend/src/routes/admin/users/edit/[id]/+page.svelte` — `$effect` → `onMount`
 - `frontend/src/routes/admin/users/create/+page.svelte` — `$effect` → `onMount`
@@ -176,6 +183,7 @@ matching commit `34a0bd070`'s migration pattern from CRM/campaigns.
 **File:** `frontend/src/routes/admin/users/create/+page.svelte`
 
 Replaced three unthrottled `$effect` blocks (username, email, password) with:
+
 - Three debounced handler functions (`onUsernameInput`, `onEmailInput`, `onPasswordInput`)
   using a 400ms setTimeout pattern
 - Wired to the corresponding inputs via `oninput={handler}`
@@ -302,6 +310,7 @@ matching the canonical pattern from the connections proxies.
 ## Files touched in this pass
 
 ### Created (new)
+
 - `frontend/src/lib/server/auth.ts`
 - `frontend/src/routes/api/admin/connections/[key]/test/+server.ts`
 - `frontend/src/routes/api/admin/site-health/+server.ts`
@@ -310,6 +319,7 @@ matching the canonical pattern from the connections proxies.
 - `docs/audits/admin-2026-04-26/09-system-RESULTS.md` (this file)
 
 ### Modified
+
 - `frontend/src/routes/api/admin/users/+server.ts`
 - `frontend/src/routes/api/admin/users/[id]/+server.ts`
 - `frontend/src/routes/api/admin/connections/status/+server.ts`
@@ -321,5 +331,6 @@ matching the canonical pattern from the connections proxies.
 - `frontend/src/routes/admin/site-health/+page.svelte`
 
 ### Rust API (`api/src/`)
+
 No Rust files were modified. Rust-layer ACL mirroring is deferred
 (`09-system-DEFERRED.md §DEFERRED-2`).

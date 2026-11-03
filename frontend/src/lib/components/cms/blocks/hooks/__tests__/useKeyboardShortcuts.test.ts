@@ -9,7 +9,7 @@
 // Import setup first to initialize mocks
 import './setup';
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // ============================================================================
 // Import Hook and Types

@@ -170,7 +170,11 @@ export interface CacheConfig {
 }
 
 export type CacheStrategy =
-	'cache-first' | 'network-first' | 'cache-only' | 'network-only' | 'stale-while-revalidate';
+	| 'cache-first'
+	| 'network-first'
+	| 'cache-only'
+	| 'network-only'
+	| 'stale-while-revalidate';
 
 export type RequestPriority = 'low' | 'normal' | 'high' | 'critical';
 
@@ -240,7 +244,12 @@ export interface Membership {
 }
 
 export type MembershipStatus =
-	'active' | 'trial' | 'expired' | 'cancelled' | 'suspended' | 'pending';
+	| 'active'
+	| 'trial'
+	| 'expired'
+	| 'cancelled'
+	| 'suspended'
+	| 'pending';
 
 export interface MembershipPlan {
 	id: number;
@@ -1063,7 +1072,11 @@ class EnterpriseApiClient {
 		}
 
 		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
-		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && configuredWsUrl.startsWith('ws:')) {
+		if (
+			typeof window !== 'undefined' &&
+			window.location.protocol === 'https:' &&
+			configuredWsUrl.startsWith('ws:')
+		) {
 			return;
 		}
 

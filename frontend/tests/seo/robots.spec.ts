@@ -37,4 +37,3 @@ test.describe('Robots.txt, Meta Robots & X-Robots-Tag (BOT-01..05)', () => {
 		expect(robotsContent).toContain('noindex');
 	});
 });
-

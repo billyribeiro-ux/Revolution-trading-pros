@@ -10,6 +10,7 @@
 ## Files reviewed
 
 ### Admin pages (Svelte)
+
 - [`frontend/src/routes/admin/blog/+page.svelte`](../../../frontend/src/routes/admin/blog/+page.svelte) — 3,092 LOC
 - [`frontend/src/routes/admin/blog/create/+page.svelte`](../../../frontend/src/routes/admin/blog/create/+page.svelte) — 1,255 LOC
 - [`frontend/src/routes/admin/blog/edit/[id]/+page.svelte`](../../../frontend/src/routes/admin/blog/edit/[id]/+page.svelte) — 1,398 LOC
@@ -23,6 +24,7 @@
 - [`frontend/src/routes/admin/categories/+page.svelte`](../../../frontend/src/routes/admin/categories/+page.svelte) — 1,768 LOC
 
 ### Admin proxy endpoints (SvelteKit)
+
 - [`frontend/src/routes/api/admin/posts/+server.ts`](../../../frontend/src/routes/api/admin/posts/+server.ts)
 - [`frontend/src/routes/api/admin/posts/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/posts/[...rest]/+server.ts)
 - [`frontend/src/routes/api/admin/posts/stats/+server.ts`](../../../frontend/src/routes/api/admin/posts/stats/+server.ts)
@@ -37,6 +39,7 @@
 - [`frontend/src/routes/api/admin/tags/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/tags/[...rest]/+server.ts)
 
 ### Supporting libs (read for context, not audited as primary scope)
+
 - [`frontend/src/lib/utils/createProxyShim.ts`](../../../frontend/src/lib/utils/createProxyShim.ts)
 - [`frontend/src/lib/api/admin.ts`](../../../frontend/src/lib/api/admin.ts) (categoriesApi, tagsApi)
 
@@ -110,6 +113,7 @@ const fileUrl = prompt('Enter file URL (or leave empty to use course downloads):
 ```
 
 Issues:
+
 1. `prompt()` is **blocked entirely in some browsers** (Chrome blocks it on cross-origin iframes; many embedded webviews and progressive enhancement contexts strip it) — clicking "Add Module" silently does nothing.
 2. There is no validation, no length limit, no slug suggestion, no description, no module assignment — the moment the prompt closes, a row is written to the DB.
 3. Hitting "Cancel" returns `null` → the function early-returns silently — but **hitting OK with an empty string** triggers `title.trim()` only via the prompt's default — and an empty-string title is happily POSTed.
@@ -131,9 +135,9 @@ $effect(() => {
 });
 ```
 
-`generateSlug()` (line 135-142) checks `if (!post.slug && post.title)` — but the effect re-runs on every keystroke of `post.title`. If the user has manually edited the slug to something deliberate and then *adjusts the title* (a very common edit flow), the effect fires, sees `post.slug` is non-empty, and no-ops correctly. **But** if the user clears the slug field for any reason — for instance to retype it — the very next title keystroke clobbers it. There is no debounce, no "user-edited slug" flag, no original-vs-derived comparison.
+`generateSlug()` (line 135-142) checks `if (!post.slug && post.title)` — but the effect re-runs on every keystroke of `post.title`. If the user has manually edited the slug to something deliberate and then _adjusts the title_ (a very common edit flow), the effect fires, sees `post.slug` is non-empty, and no-ops correctly. **But** if the user clears the slug field for any reason — for instance to retype it — the very next title keystroke clobbers it. There is no debounce, no "user-edited slug" flag, no original-vs-derived comparison.
 
-Worse, in [`admin/blog/categories/+page.svelte:379-390`](../../../frontend/src/routes/admin/blog/categories/+page.svelte) and [`admin/categories/+page.svelte:122-126`](../../../frontend/src/routes/admin/categories/+page.svelte), the equivalent effects are *unconditional* on the slug field:
+Worse, in [`admin/blog/categories/+page.svelte:379-390`](../../../frontend/src/routes/admin/blog/categories/+page.svelte) and [`admin/categories/+page.svelte:122-126`](../../../frontend/src/routes/admin/categories/+page.svelte), the equivalent effects are _unconditional_ on the slug field:
 
 ```svelte
 $effect(() => {
@@ -154,6 +158,7 @@ Once the modal is open in **create** mode, every name-keystroke overwrites the s
 ### P1-1 — Course-related proxies omit unauthorized error path; cookie-only auth means token expiry → empty-list grid silently
 
 **Files:**
+
 - [`api/admin/courses/+server.ts:30-46`](../../../frontend/src/routes/api/admin/courses/+server.ts)
 - [`api/admin/courses/[id]/+server.ts:14-41`](../../../frontend/src/routes/api/admin/courses/[id]/+server.ts), `:43-67`, `:69-91`
 - [`api/admin/courses/[id]/publish/+server.ts`](../../../frontend/src/routes/api/admin/courses/[id]/publish/+server.ts)
@@ -165,9 +170,9 @@ Unlike the posts/categories/tags shims which `error(401, 'Unauthorized')` when t
 const token = cookies.get('rtp_access_token');
 // ...
 const response = await fetch(`${BACKEND_URL}/api/admin/courses${queryString}`, {
-    headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-    }
+	headers: {
+		...(token ? { Authorization: `Bearer ${token}` } : {})
+	}
 });
 ```
 
@@ -232,14 +237,15 @@ let courseId = $state('');
 let lessonId = $state('');
 
 onMount(() => {
-    const pathParts = window.location.pathname.split('/');
-    lessonId = pathParts[pathParts.length - 1];
-    courseId = pathParts[pathParts.length - 3];
-    fetchLesson();
+	const pathParts = window.location.pathname.split('/');
+	lessonId = pathParts[pathParts.length - 1];
+	courseId = pathParts[pathParts.length - 3];
+	fetchLesson();
 });
 ```
 
 Same pattern in [`admin/courses/[id]/+page.svelte:84-88`](../../../frontend/src/routes/admin/courses/[id]/+page.svelte). These pages should use SvelteKit's `page.params.id` / `page.params.lessonId` (as `admin/blog/edit/[id]/+page.svelte:60` correctly does). The path-string approach:
+
 - Breaks if any trailing slash is added (split returns an empty final element).
 - Breaks if the URL gains a query string or hash (it doesn't here, but it would silently bake the query into `lessonId`).
 - Doesn't update on client-side navigation between two lessons (the data fetches once on mount, never re-runs when the route changes — sibling navigation requires a hard reload).
@@ -285,7 +291,7 @@ $effect(() => {
 });
 ```
 
-The mount effect awaits `loadRoomsAndTraders`, which sets `selectedRoom = rooms[0]`. The second effect tracks `selectedRoom`; on the first run, `previousRoomId` is `null`, so `loadResources()` is correctly skipped — but the assignment `previousRoomId = selectedRoom.id` happens *inside the effect that read `selectedRoom`*, classic write-while-reading.
+The mount effect awaits `loadRoomsAndTraders`, which sets `selectedRoom = rooms[0]`. The second effect tracks `selectedRoom`; on the first run, `previousRoomId` is `null`, so `loadResources()` is correctly skipped — but the assignment `previousRoomId = selectedRoom.id` happens _inside the effect that read `selectedRoom`_, classic write-while-reading.
 
 `selectRoom()` (line 476-480) also calls `loadResources()` directly, racing with the trailing effect and producing two in-flight requests for the same room when the user clicks a tab.
 
@@ -330,6 +336,7 @@ The interval keeps firing while the tab is in the background. There's no `docume
 ```
 
 The user can paste arbitrary text into the GUID field at line 357 (`bind:value={lesson.bunny_video_guid}`), and that value is interpolated unescaped into the iframe `src`. The Bunny CDN itself will likely 404 garbage, but the input is also susceptible to:
+
 - `https://iframe.mediadelivery.net/embed/abc?..` injection — a `?` or `&` in the GUID gets through and could craft the embed URL.
 - Spaces / newlines pasted in are not validated.
 
@@ -355,7 +362,7 @@ selectedCategories.add(category.id);
 selectedCategories = selectedCategories;
 ```
 
-In Svelte 5, `Set`/`Map` mutations *are* reactive — the self-assignment is unnecessary noise and a dead giveaway that the developer tested in legacy mode. [`admin/categories/+page.svelte:393`](../../../frontend/src/routes/admin/categories/+page.svelte) does it the right way: `selectedIds = new Set(selectedIds);`. Pick one and standardize.
+In Svelte 5, `Set`/`Map` mutations _are_ reactive — the self-assignment is unnecessary noise and a dead giveaway that the developer tested in legacy mode. [`admin/categories/+page.svelte:393`](../../../frontend/src/routes/admin/categories/+page.svelte) does it the right way: `selectedIds = new Set(selectedIds);`. Pick one and standardize.
 
 ### P2-3 — `categoryForm.slug` rune validation regex `/^[a-z0-9-]+$/` rejects valid empty-after-trim cases inconsistently
 
@@ -364,7 +371,7 @@ In Svelte 5, `Set`/`Map` mutations *are* reactive — the self-assignment is unn
 ```ts
 if (!categoryForm.slug.trim()) formErrors.push('Slug is required');
 else if (!/^[a-z0-9-]+$/.test(categoryForm.slug)) {
-    formErrors.push('Slug can only contain lowercase letters, numbers, and hyphens');
+	formErrors.push('Slug can only contain lowercase letters, numbers, and hyphens');
 }
 ```
 
@@ -399,16 +406,16 @@ Same applies to `lesson.content_html` ([`courses/[id]/lessons/[lessonId]/+page.s
 
 ```ts
 function loadDraft() {
-    const draftStr = localStorage.getItem('course-draft');
-    if (draftStr && draftDate) {
-        try {
-            const draft = JSON.parse(draftStr);
-            pendingDraft = { course: draft.course || draft, date };
-            showLoadDraftModal = true;
-        } catch (e) {
-            console.error('Failed to load draft:', e);
-        }
-    }
+	const draftStr = localStorage.getItem('course-draft');
+	if (draftStr && draftDate) {
+		try {
+			const draft = JSON.parse(draftStr);
+			pendingDraft = { course: draft.course || draft, date };
+			showLoadDraftModal = true;
+		} catch (e) {
+			console.error('Failed to load draft:', e);
+		}
+	}
 }
 ```
 
@@ -426,13 +433,13 @@ The fallback `draft.course || draft` will accept a top-level draft that is missi
 
 ```ts
 return () => {
-    if (ws) ws.close();
-    if (refreshInterval) clearInterval(refreshInterval);
-    document.removeEventListener('keydown', handleKeyboard);
+	if (ws) ws.close();
+	if (refreshInterval) clearInterval(refreshInterval);
+	document.removeEventListener('keydown', handleKeyboard);
 };
 ```
 
-`handleKeyboard` is a closure that captures `posts`, `selectedPosts`, etc. via `bulkDelete()`. When the page hot-reloads in dev (or when the admin layout remounts after auth-flow changes), the second mount adds a new listener but `removeEventListener` on the *old* effect uses a different closure each time. Result: leaked listeners that pile up across navigation. Use a stable named function or an `AbortController`-backed listener.
+`handleKeyboard` is a closure that captures `posts`, `selectedPosts`, etc. via `bulkDelete()`. When the page hot-reloads in dev (or when the admin layout remounts after auth-flow changes), the second mount adds a new listener but `removeEventListener` on the _old_ effect uses a different closure each time. Result: leaked listeners that pile up across navigation. Use a stable named function or an `AbortController`-backed listener.
 
 ### P2-8 — Resources page swallows backend failures without surfacing them
 
@@ -464,11 +471,11 @@ Because `generateSlug()` only fires on `onblur` of the title (line 1879) and onl
 
 ```ts
 if (data.success) {
-    course = data.data;
+	course = data.data;
 }
 ```
 
-If the publish endpoint returns *just* the course header (no modules, no downloads, no unassigned lessons), this assignment overwrites the rich tree built up by `fetchCourse`, blanking the Content / Downloads tabs until the user navigates away and back. Same pattern in `saveCourse` line 134.
+If the publish endpoint returns _just_ the course header (no modules, no downloads, no unassigned lessons), this assignment overwrites the rich tree built up by `fetchCourse`, blanking the Content / Downloads tabs until the user navigates away and back. Same pattern in `saveCourse` line 134.
 
 ### P2-11 — Resources page eagerly hard-codes a 6-room `FALLBACK_ROOMS` list; the actual rooms are configurable in the backend
 
@@ -507,7 +514,7 @@ Use `crypto.randomUUID()` (already imported elsewhere) or a monotonic counter. O
 
 ```ts
 onMount(async () => {
-    await Promise.all([loadPost(), loadTags()]);
+	await Promise.all([loadPost(), loadTags()]);
 });
 ```
 
@@ -531,9 +538,9 @@ The "AI Assistant" sidebar button overwrites whatever the user has typed with a 
 
 ```ts
 if (data.success) {
-    course.is_published = !course.is_published;
-    course.status = course.is_published ? 'published' : 'draft';
-    courses = [...courses];
+	course.is_published = !course.is_published;
+	course.status = course.is_published ? 'published' : 'draft';
+	courses = [...courses];
 }
 ```
 
@@ -575,6 +582,7 @@ This is a re-serialize-then-download dance. If the backend export endpoint alrea
 ### P3-13 — Many pages register `$effect` for derived computations that should be `$derived`
 
 Examples:
+
 - [`admin/categories/+page.svelte:128-136`](../../../frontend/src/routes/admin/categories/+page.svelte) — stats computed in an effect, write-while-reading the `categories` rune.
 - [`admin/courses/create/+page.svelte:1566-1571`](../../../frontend/src/routes/admin/courses/create/+page.svelte) — `validateAll()` and `updateCourseDuration()` invoked from effect chains.
 
@@ -585,12 +593,15 @@ Convert to `$derived` to remove implicit-update cascades (the recurring "shadow-
 ## Cross-cutting concerns
 
 ### CC-1 — Auth-cookie inconsistency between proxy generations
+
 Posts, categories, and tags proxies use `cookies.get('rtp_access_token')` AND fall back to `Authorization: Bearer …` from the request header. Courses proxies use cookie-only with no header fallback (and fail open with empty data on missing token, see P1-1). Standardize on the helper in [`createProxyShim.ts`](../../../frontend/src/lib/utils/createProxyShim.ts) or a single auth utility and have every long-form proxy share it.
 
 ### CC-2 — `success`/`data` envelope assumption is inconsistent
+
 Some endpoints return `{ success: true, data: ... }`; others (especially course mutations) return the bare entity, prompting the `data.data || data` defensive coding seen in [`admin/blog/edit/[id]/+page.svelte:125`](../../../frontend/src/routes/admin/blog/edit/[id]/+page.svelte). Pin one envelope shape across the Rust API contract and update the TypeScript type definitions; remove the runtime branches.
 
 ### CC-3 — Three different "categories" surfaces with overlapping but-not-identical schemas
+
 - `admin/blog/categories` operates on `categoriesApi` (full Category type w/ `parent_id`, `meta_*`).
 - `admin/categories` operates on the same `categoriesApi` but with a totally different UI/UX (drag/drop, merge).
 - `admin/blog/+page.svelte` and `admin/blog/create` use a HARD-CODED `predefinedCategories` array of 18 entries with `id: string` (not `number`!) — entirely disconnected from the database categories and the categoriesApi.
@@ -598,12 +609,15 @@ Some endpoints return `{ success: true, data: ... }`; others (especially course 
 This means a post's `categories: string[]` field stores symbolic IDs (`'market-analysis'`) that don't exist in the categories DB table — they're just strings. The "Categories & Tags" admin page and the "Blog" admin page **manage two unrelated concepts** that look identical to the admin. Pick one model.
 
 ### CC-4 — `prompt()` and `alert()` were partially purged
+
 The recent FIX-2026-04-26 sweep replaced `alert()` with `toastStore` in many places — visible in the comment markers throughout `admin/courses/[id]/+page.svelte`. But `prompt()` was missed. Finish the sweep with a `ConfirmationModal`-style input modal (already used elsewhere in the codebase).
 
 ### CC-5 — Long-form admin pages are SSR-disabled with no role check on either side of the wire
-[`admin/+layout.ts`](../../../frontend/src/routes/admin/+layout.ts) sets `ssr=false; prerender=false;` and [`admin/+layout.svelte`](../../../frontend/src/routes/admin/+layout.svelte) checks `isAuthenticated.current` in `onMount` only — there's no role-gate. Anyone with a valid `rtp_access_token` cookie can render the admin UI. Authorization is presumed to be 100% on the Rust side. This is fine in principle but means the *UI* surface (delete buttons, publish buttons, etc.) shows up for non-admin users until they click and get a 403, which is then mishandled per P0-1.
+
+[`admin/+layout.ts`](../../../frontend/src/routes/admin/+layout.ts) sets `ssr=false; prerender=false;` and [`admin/+layout.svelte`](../../../frontend/src/routes/admin/+layout.svelte) checks `isAuthenticated.current` in `onMount` only — there's no role-gate. Anyone with a valid `rtp_access_token` cookie can render the admin UI. Authorization is presumed to be 100% on the Rust side. This is fine in principle but means the _UI_ surface (delete buttons, publish buttons, etc.) shows up for non-admin users until they click and get a 403, which is then mishandled per P0-1.
 
 ### CC-6 — Image upload paths diverge across surfaces
+
 - Blog edit/create uses `mediaApi.uploadFile` with `optimize: true, generate_webp: true`.
 - Course create uses `adminFetch('/api/admin/media/upload', { ... })` with FormData and a 50MB cap.
 - Course `[id]` edit uses a Bunny presigned-URL flow (`upload-url` then PUT to the storage host).
@@ -623,6 +637,7 @@ The blog and resources lists tab around fine, but they hide stale-session and pa
 The proxy layer is otherwise consistently using `$env/dynamic/private` (no hardcoded backend URLs in the in-scope routes — confirmed across all twelve `+server.ts` files audited). XSS surface is mostly limited to admin-trusted HTML being passed through without client-side sanitization (`html` block-type + `lesson.content_html`); the Rust side is presumed to sanitize on render.
 
 **Recommended order of fix:**
+
 1. Strip the wrapping try/catch from posts/categories proxies (P0-1) — 10-line patch, unblocks every other issue.
 2. Standardize the response envelope (CC-2) — kills P0-2 and the `data.data || data` rot.
 3. Replace `prompt()` flows with the existing modal system (P0-3, CC-4).

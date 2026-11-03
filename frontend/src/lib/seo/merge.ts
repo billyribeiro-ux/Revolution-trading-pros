@@ -124,7 +124,7 @@ export function defaultsToInput(defaults: SEODefaults): SEOInput {
  * Later layers override earlier ones.
  */
 export function mergeSEO(...layers: (SEOInput | undefined | null)[]): SEOInput {
-	let result: SEOInput = {};
+	const result: SEOInput = {};
 
 	for (const layer of layers) {
 		if (!layer) continue;
@@ -145,12 +145,14 @@ export function mergeSEO(...layers: (SEOInput | undefined | null)[]): SEOInput {
 
 		// Object fields: deep merge with null-removal
 		result.robots = mergeShallow<RobotsDirectives>(result.robots ?? undefined, layer.robots) as
-			RobotsDirectives | undefined;
+			| RobotsDirectives
+			| undefined;
 
 		result.og = mergeShallow<OpenGraph>(result.og ?? undefined, layer.og) as OpenGraph | undefined;
 
 		result.twitter = mergeShallow<TwitterCard>(result.twitter ?? undefined, layer.twitter) as
-			TwitterCard | undefined;
+			| TwitterCard
+			| undefined;
 
 		result.verification = mergeShallow<VerificationTags>(
 			result.verification ?? undefined,

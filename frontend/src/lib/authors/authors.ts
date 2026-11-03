@@ -22,7 +22,13 @@ export const authors: Author[] = [
 		name: 'Billy Ribeiro',
 		jobTitle: 'Founder & Head Trader',
 		bio: 'Billy Ribeiro is a globally recognized trader and market strategist and creator of the "Move Prior to The Move" price-action system. He leads live trading rooms and risk-management mentorship at Revolution Trading Pros.',
-		knowsAbout: ['Day Trading', 'SPX Options', 'Price Action', 'Market Structure', 'Risk Management']
+		knowsAbout: [
+			'Day Trading',
+			'SPX Options',
+			'Price Action',
+			'Market Structure',
+			'Risk Management'
+		]
 	},
 	{
 		slug: 'freddie-ferber',

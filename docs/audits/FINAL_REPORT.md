@@ -6,26 +6,26 @@ Workflow: feature-branch only; PR-driven merges (operator-mediated, harness-enfo
 
 ## TL;DR
 
-| Item | State |
-|---|---|
-| Batch 4 CLI verification | ✅ Pushed to `origin/batch4-verification-evidence`, **merged to main** as PR #562 |
-| Batch 5a (consolidate-checkout) | ✅ Pushed, **merged to main** as PR #563 |
-| Batch 5b (unify-admin-auth) | ✅ Pushed, **merged to main** as PR #564 |
-| Batch 5c (payments-modules — partial) | ✅ Pushed, **merged to main** as PR #565 |
-| Batch 7 (pre-launch-checks) | ✅ Pushed to `origin/pre-launch-checks` — **PR open, not yet merged** |
-| Batch 6 (Postmark) | Skipped per operator direction (account not active) |
+| Item                                  | State                                                                             |
+| ------------------------------------- | --------------------------------------------------------------------------------- |
+| Batch 4 CLI verification              | ✅ Pushed to `origin/batch4-verification-evidence`, **merged to main** as PR #562 |
+| Batch 5a (consolidate-checkout)       | ✅ Pushed, **merged to main** as PR #563                                          |
+| Batch 5b (unify-admin-auth)           | ✅ Pushed, **merged to main** as PR #564                                          |
+| Batch 5c (payments-modules — partial) | ✅ Pushed, **merged to main** as PR #565                                          |
+| Batch 7 (pre-launch-checks)           | ✅ Pushed to `origin/pre-launch-checks` — **PR open, not yet merged**             |
+| Batch 6 (Postmark)                    | Skipped per operator direction (account not active)                               |
 
 Five PRs total. Four merged on `main` between `9094cac87` (Batch 4) and `f664753ee` (current `origin/main` tip). One PR still open for review (Batch 7).
 
 ## Branches and commits
 
-| Batch | Branch | Tip commit | PR | Diff vs base |
-|---|---|---|---|---|
+| Batch          | Branch                         | Tip commit  | PR            | Diff vs base                                                  |
+| -------------- | ------------------------------ | ----------- | ------------- | ------------------------------------------------------------- |
 | 4 verification | `batch4-verification-evidence` | `20af40858` | #562 (merged) | 2 files: BATCH4_RESULT.md, MERGE_BATCH4.md (197 ins / 15 del) |
-| 5a | `consolidate-checkout` | `4a4c2ef6f` | #563 (merged) | 3 files (92 ins / 380 del) — net **−288** |
-| 5b | `unify-admin-auth` | `1fc2ec202` | #564 (merged) | 4 files (147 ins / 224 del) — net **−77** |
-| 5c (partial) | `payments-modules` | `a8f96d09b` | #565 (merged) | 3 files (164 ins / 7 del) |
-| 7 | `pre-launch-checks` | `add5c46c6` | **open** | 5 files (422 ins / 2 del) |
+| 5a             | `consolidate-checkout`         | `4a4c2ef6f` | #563 (merged) | 3 files (92 ins / 380 del) — net **−288**                     |
+| 5b             | `unify-admin-auth`             | `1fc2ec202` | #564 (merged) | 4 files (147 ins / 224 del) — net **−77**                     |
+| 5c (partial)   | `payments-modules`             | `a8f96d09b` | #565 (merged) | 3 files (164 ins / 7 del)                                     |
+| 7              | `pre-launch-checks`            | `add5c46c6` | **open**      | 5 files (422 ins / 2 del)                                     |
 
 ## origin/main history (since work began)
 
@@ -59,12 +59,12 @@ Recapped here for completeness; full detail in [MERGE_BATCH4.md](MERGE_BATCH4.md
 
 CLI scenarios run against the rebuilt local Docker stack on 2026-04-29:
 
-| Scenario | Status | Notes |
-|---|---|---|
-| 3A sync-to-stripe NULL row | ✅ PASS | HTTP 200, `stripe_coupon_id` populated |
-| 3B sync-to-stripe already-synced | ✅ PASS | HTTP 400 + spec'd error message |
-| 4A min_purchase blocks under-threshold | ✅ PASS on both endpoints | `Order must be at least $50.00 to use this coupon` |
-| 4B min_purchase allows over-threshold | ✅ PASS on `/api/payments/checkout`; PARTIAL on `/api/checkout` | Pre-existing `current_uses` typo aborted the surrounding tx — fix bundled into Batch 5a |
+| Scenario                               | Status                                                          | Notes                                                                                   |
+| -------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 3A sync-to-stripe NULL row             | ✅ PASS                                                         | HTTP 200, `stripe_coupon_id` populated                                                  |
+| 3B sync-to-stripe already-synced       | ✅ PASS                                                         | HTTP 400 + spec'd error message                                                         |
+| 4A min_purchase blocks under-threshold | ✅ PASS on both endpoints                                       | `Order must be at least $50.00 to use this coupon`                                      |
+| 4B min_purchase allows over-threshold  | ✅ PASS on `/api/payments/checkout`; PARTIAL on `/api/checkout` | Pre-existing `current_uses` typo aborted the surrounding tx — fix bundled into Batch 5a |
 
 9 browser-required scenarios (1A, 1B, 2A-2C, 5A-5D) remain PENDING OPERATOR. Detailed walk-through in [BATCH4_RESULT.md](BATCH4_RESULT.md).
 
@@ -92,7 +92,7 @@ CLI scenarios run against the rebuilt local Docker stack on 2026-04-29:
 
 `docs+refactor: payments idempotency annotations + CRM amount → cents`
 
-- 9 `// IDEMPOTENT-BY-X` annotations on every Stripe webhook handler in `payments.rs`. Each handler now states the *exact* mechanism keeping it safe under retry.
+- 9 `// IDEMPOTENT-BY-X` annotations on every Stripe webhook handler in `payments.rs`. Each handler now states the _exact_ mechanism keeping it safe under retry.
 - `crm.rs`: `CreateDealInput.amount: Option<f64>` and `UpdateDealInput.amount: Option<f64>` migrated to `amount_cents: Option<i64>`. INSERT/UPDATE bind via `$N::BIGINT / 100.0` at the SQL boundary.
 
 **Deferred (Batch 5c-ii):** the file split of `payments.rs` (2,186 lines) into modules under 500 lines/file. The full reasoning in [MERGE_BATCH5C.md](MERGE_BATCH5C.md) is: a mass restructure of the entire Stripe webhook surface across 8+ files without behavioural test coverage risks silent regressions in webhook idempotency. Landing the IDEMPOTENT-BY contracts first lets a future split be verified against them. Filed as a follow-up PR rather than skipped.
@@ -113,14 +113,14 @@ PR URL: https://github.com/billyribeiro-ux/Revolution-trading-pros/pull/new/pre-
 
 ## Aggregate stats
 
-| Metric | Value |
-|---|---|
-| Total feature branches pushed | 5 |
-| Total PRs (merged + open) | 5 |
-| Net LOC delta on main (Batches 5a + 5b + 5c) | **−208 lines** (485 ins / 693 del across `*.rs` source) |
+| Metric                                              | Value                                                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Total feature branches pushed                       | 5                                                                                                      |
+| Total PRs (merged + open)                           | 5                                                                                                      |
+| Net LOC delta on main (Batches 5a + 5b + 5c)        | **−208 lines** (485 ins / 693 del across `*.rs` source)                                                |
 | Net LOC delta including Batch 7 + verification docs | +422 (Batch 7 still pending) +197 (Batch 4 docs) = **+619 from main `9094cac87` to PR #565 + open PR** |
-| Migrations added in this work session | 0 (migration 063 was Batch 4, pre-session) |
-| Unit tests added | 8 (`validate_production_secrets_*`) |
+| Migrations added in this work session               | 0 (migration 063 was Batch 4, pre-session)                                                             |
+| Unit tests added                                    | 8 (`validate_production_secrets_*`)                                                                    |
 
 ## What is not merged
 
@@ -132,17 +132,17 @@ PR URL: https://github.com/billyribeiro-ux/Revolution-trading-pros/pull/new/pre-
 
 Documented in [BATCH4_RESULT.md](BATCH4_RESULT.md) with copy-paste commands. None can be run from a CLI-only session.
 
-| ID | Scenario |
-|---|---|
-| 1A | Re-subscribe creates a new row, leaves the cancelled one |
-| 1B | Cannot subscribe to the same plan while already active |
-| 2A | Edit coupon math triggers Stripe recreate |
-| 2B | Edit non-discount field stays DB-only |
-| 2C | Existing sub keeps OLD discount per Stripe semantics |
-| 5A | Duration dropdown present on create page |
-| 5B | Repeating reveals duration_in_months input |
-| 5C | Duration=Once persists correctly |
-| 5D | Repeating edit triggers recreate |
+| ID  | Scenario                                                 |
+| --- | -------------------------------------------------------- |
+| 1A  | Re-subscribe creates a new row, leaves the cancelled one |
+| 1B  | Cannot subscribe to the same plan while already active   |
+| 2A  | Edit coupon math triggers Stripe recreate                |
+| 2B  | Edit non-discount field stays DB-only                    |
+| 2C  | Existing sub keeps OLD discount per Stripe semantics     |
+| 5A  | Duration dropdown present on create page                 |
+| 5B  | Repeating reveals duration_in_months input               |
+| 5C  | Duration=Once persists correctly                         |
+| 5D  | Repeating edit triggers recreate                         |
 
 ### TASK7 re-grading (Batch 7)
 

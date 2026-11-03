@@ -126,7 +126,14 @@ export interface BlockContent {
 	// Embed
 	embedUrl?: string;
 	embedType?:
-		'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'tiktok' | 'soundcloud' | 'spotify' | 'custom';
+		| 'youtube'
+		| 'vimeo'
+		| 'twitter'
+		| 'instagram'
+		| 'tiktok'
+		| 'soundcloud'
+		| 'spotify'
+		| 'custom';
 
 	// Trading
 	symbol?: string;

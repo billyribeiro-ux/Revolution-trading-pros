@@ -37,33 +37,33 @@ yanked = "warn"
 # every advisory in the lockfile is fixed at the source, none is waived.
 # ─────────────────────────────────────────────────────────────────────────
 ignore = [
-    # ── rustls-webpki 0.101.7 — exemptions REMOVED 2026-10-09 ────────────
-    # RUSTSEC-2026-0098/0099/0104 were exempted from 2026-06-08 to 2026-08-30
-    # on the theory that the AWS SDK hard-depended on hyper-rustls 0.24. It
-    # did not: the legacy stack (hyper 0.14, h2 0.3, hyper-rustls 0.24,
-    # rustls 0.21, rustls-webpki 0.101) was opted into by aws-sdk-s3's
-    # *default* `rustls` feature (`aws-smithy-runtime/tls-rustls` →
-    # `aws-smithy-http-client/legacy-rustls-ring` + `hyper-014`), while the
-    # client StorageService actually builds uses `default-https-client`
-    # (hyper 1 + rustls 0.23 on aws-lc). Cargo.toml now sets
-    # `default-features = false` on aws-sdk-s3 and re-lists every other
-    # default feature, which also clears RUSTSEC-2026-0258 (h2 0.3 — no fixed
-    # 0.3.x release exists). Verified: `cargo tree -i` finds none of those five
-    # crates, and cargo-deny reported all three ignores as
-    # `advisory-not-detected` before they were deleted.
+	# ── rustls-webpki 0.101.7 — exemptions REMOVED 2026-10-09 ────────────
+	# RUSTSEC-2026-0098/0099/0104 were exempted from 2026-06-08 to 2026-08-30
+	# on the theory that the AWS SDK hard-depended on hyper-rustls 0.24. It
+	# did not: the legacy stack (hyper 0.14, h2 0.3, hyper-rustls 0.24,
+	# rustls 0.21, rustls-webpki 0.101) was opted into by aws-sdk-s3's
+	# *default* `rustls` feature (`aws-smithy-runtime/tls-rustls` →
+	# `aws-smithy-http-client/legacy-rustls-ring` + `hyper-014`), while the
+	# client StorageService actually builds uses `default-https-client`
+	# (hyper 1 + rustls 0.23 on aws-lc). Cargo.toml now sets
+	# `default-features = false` on aws-sdk-s3 and re-lists every other
+	# default feature, which also clears RUSTSEC-2026-0258 (h2 0.3 — no fixed
+	# 0.3.x release exists). Verified: `cargo tree -i` finds none of those five
+	# crates, and cargo-deny reported all three ignores as
+	# `advisory-not-detected` before they were deleted.
 
-    # ── unmaintained (build-time only) ───────────────────────────────────
-    # The prior proc-macro-error (v1, RUSTSEC-2024-0370), rustls-pemfile
-    # (RUSTSEC-2025-0134) and proc-macro-error2 (RUSTSEC-2026-0173) ignores were
-    # all removed: none of those crates are in the tree any more. The last of
-    # them came in via validator_derive 0.20 and left with the bump to
-    # validator 0.21 (verified 2026-08-14 — cargo-deny reported the ignore as
-    # `advisory-not-detected`).
-    #
-    # NOTE: jsonwebtoken 11 must keep the `aws_lc_rs` feature, not `rust_crypto`.
-    # The pure-Rust backend pulls in `rsa`, which carries RUSTSEC-2023-0071
-    # (Marvin timing sidechannel) with no fixed release — it would land here as
-    # a permanent exemption rather than a tracked one.
+	# ── unmaintained (build-time only) ───────────────────────────────────
+	# The prior proc-macro-error (v1, RUSTSEC-2024-0370), rustls-pemfile
+	# (RUSTSEC-2025-0134) and proc-macro-error2 (RUSTSEC-2026-0173) ignores were
+	# all removed: none of those crates are in the tree any more. The last of
+	# them came in via validator_derive 0.20 and left with the bump to
+	# validator 0.21 (verified 2026-08-14 — cargo-deny reported the ignore as
+	# `advisory-not-detected`).
+	#
+	# NOTE: jsonwebtoken 11 must keep the `aws_lc_rs` feature, not `rust_crypto`.
+	# The pure-Rust backend pulls in `rsa`, which carries RUSTSEC-2023-0071
+	# (Marvin timing sidechannel) with no fixed release — it would land here as
+	# a permanent exemption rather than a tracked one.
 ]
 
 # ────────────────────────────────────────────────────────────────────────
@@ -71,20 +71,20 @@ ignore = [
 # ────────────────────────────────────────────────────────────────────────
 [licenses]
 allow = [
-    "MIT",
-    "Apache-2.0",
-    "Apache-2.0 WITH LLVM-exception",
-    "BSD-2-Clause",
-    "BSD-3-Clause",
-    "ISC",
-    "Unicode-DFS-2016",
-    "Unicode-3.0",
-    "Zlib",
-    "MPL-2.0",
-    "CC0-1.0",
-    "OpenSSL",                   # ring's effective license (clarified below)
-    "BSL-1.0",
-    "CDLA-Permissive-2.0",       # webpki-roots — Mozilla CA bundle redistribution
+	"MIT",
+	"Apache-2.0",
+	"Apache-2.0 WITH LLVM-exception",
+	"BSD-2-Clause",
+	"BSD-3-Clause",
+	"ISC",
+	"Unicode-DFS-2016",
+	"Unicode-3.0",
+	"Zlib",
+	"MPL-2.0",
+	"CC0-1.0",
+	"OpenSSL", # ring's effective license (clarified below)
+	"BSL-1.0",
+	"CDLA-Permissive-2.0" # webpki-roots — Mozilla CA bundle redistribution
 ]
 confidence-threshold = 0.93
 # Crates with hand-rolled / non-SPDX license texts that still need to be

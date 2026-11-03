@@ -11,37 +11,45 @@
 ## Files reviewed
 
 ### Top-level CRM (1 file)
+
 - [`admin/crm/+page.svelte`](../../../frontend/src/routes/admin/crm/+page.svelte) — dashboard
 
 ### Contact cluster (4 files)
+
 - [`admin/contacts/+page.svelte`](../../../frontend/src/routes/admin/contacts/+page.svelte)
 - [`admin/contacts/new/+page.svelte`](../../../frontend/src/routes/admin/contacts/new/+page.svelte)
 - [`admin/crm/contacts/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/contacts/[id]/+page.svelte)
 
 ### Lead cluster (2 files)
+
 - [`admin/crm/leads/+page.svelte`](../../../frontend/src/routes/admin/crm/leads/+page.svelte)
 - [`admin/crm/leads/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/leads/[id]/+page.svelte)
 
 ### Deal cluster (2 files)
+
 - [`admin/crm/deals/+page.svelte`](../../../frontend/src/routes/admin/crm/deals/+page.svelte)
 - [`admin/crm/deals/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte)
 
 ### Tag cluster (2 files)
+
 - [`admin/crm/tags/+page.svelte`](../../../frontend/src/routes/admin/crm/tags/+page.svelte)
 - [`admin/crm/tags/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/tags/[id]/+page.svelte)
 
 ### Webhook cluster (3 files)
+
 - [`admin/crm/webhooks/+page.svelte`](../../../frontend/src/routes/admin/crm/webhooks/+page.svelte)
 - [`admin/crm/webhooks/new/+page.svelte`](../../../frontend/src/routes/admin/crm/webhooks/new/+page.svelte)
 - [`admin/crm/webhooks/[id]/edit/+page.svelte`](../../../frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte)
 
 ### Automation cluster (4 files)
+
 - [`admin/crm/automations/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/+page.svelte)
 - [`admin/crm/automations/new/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/new/+page.svelte)
 - [`admin/crm/automations/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/[id]/+page.svelte)
 - [`admin/crm/automations/[id]/edit/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte)
 
 ### Other listing pages (12 files)
+
 - [`admin/crm/lists/+page.svelte`](../../../frontend/src/routes/admin/crm/lists/+page.svelte)
 - [`admin/crm/segments/+page.svelte`](../../../frontend/src/routes/admin/crm/segments/+page.svelte)
 - [`admin/crm/companies/+page.svelte`](../../../frontend/src/routes/admin/crm/companies/+page.svelte)
@@ -57,6 +65,7 @@
 - [`admin/crm/settings/+page.svelte`](../../../frontend/src/routes/admin/crm/settings/+page.svelte)
 
 ### API proxies (4 files)
+
 - [`api/admin/crm/contacts/+server.ts`](../../../frontend/src/routes/api/admin/crm/contacts/+server.ts)
 - [`api/admin/crm/contacts/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/crm/contacts/[...rest]/+server.ts)
 - [`api/admin/crm/deals/+server.ts`](../../../frontend/src/routes/api/admin/crm/deals/+server.ts)
@@ -70,24 +79,24 @@
 
 The CRM cluster is full of `New X` buttons and `Edit X` links pointing to routes that **do not exist**. Every one of these `<a href>` produces a 404. List of confirmed missing routes:
 
-| Referenced from | Target href | Frontend route exists? |
-|---|---|---|
-| [`templates/+page.svelte:394`](../../../frontend/src/routes/admin/crm/templates/+page.svelte) | `/admin/crm/templates/prebuilt` | **NO** |
-| [`templates/+page.svelte:398`](../../../frontend/src/routes/admin/crm/templates/+page.svelte) | `/admin/crm/templates/new` | **NO** |
-| [`companies/+page.svelte:185`](../../../frontend/src/routes/admin/crm/companies/+page.svelte) | `/admin/crm/companies/new` | **NO** |
-| [`sequences/+page.svelte:360`](../../../frontend/src/routes/admin/crm/sequences/+page.svelte) | `/admin/crm/sequences/new` | **NO** |
-| [`lists/+page.svelte:127`](../../../frontend/src/routes/admin/crm/lists/+page.svelte) | `/admin/crm/lists/new` | **NO** |
-| [`segments/+page.svelte:~`](../../../frontend/src/routes/admin/crm/segments/+page.svelte) | `/admin/crm/segments/new` | **NO** |
-| [`campaigns/+page.svelte:248`](../../../frontend/src/routes/admin/crm/campaigns/+page.svelte) | `/admin/crm/campaigns/new` | **NO** |
-| [`recurring-campaigns/+page.svelte:168`](../../../frontend/src/routes/admin/crm/recurring-campaigns/+page.svelte) | `/admin/crm/recurring-campaigns/new` | **NO** |
-| [`deals/+page.svelte:389`](../../../frontend/src/routes/admin/crm/deals/+page.svelte) | `/admin/crm/deals/new` | **NO** |
-| [`abandoned-carts/+page.svelte:193`](../../../frontend/src/routes/admin/crm/abandoned-carts/+page.svelte) | `/admin/crm/abandoned-carts/settings` | **NO** |
-| [`managers/+page.svelte:129,134`](../../../frontend/src/routes/admin/crm/managers/+page.svelte) | `/admin/crm/managers/add`, `/admin/crm/managers/roles/new` | **NO** |
-| [`import-export/+page.svelte:226`](../../../frontend/src/routes/admin/crm/import-export/+page.svelte) | `/admin/crm/import-export/import/{type}` | **NO** |
-| [`leads/[id]/+page.svelte:418`](../../../frontend/src/routes/admin/crm/leads/[id]/+page.svelte) | `/admin/crm/leads/{leadId}/edit` | **NO** |
-| [`contacts/[id]/+page.svelte:596`](../../../frontend/src/routes/admin/crm/contacts/[id]/+page.svelte) | `/admin/crm/contacts/{contactId}/edit` | **NO** |
-| [`deals/[id]/+page.svelte:409`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte) | `/admin/crm/deals/{dealId}/edit` | **NO** |
-| Multiple list pages | `/admin/crm/lists/[id]` and `/admin/crm/lists/[id]/edit` | **NO** |
+| Referenced from                                                                                                   | Target href                                                | Frontend route exists? |
+| ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------- |
+| [`templates/+page.svelte:394`](../../../frontend/src/routes/admin/crm/templates/+page.svelte)                     | `/admin/crm/templates/prebuilt`                            | **NO**                 |
+| [`templates/+page.svelte:398`](../../../frontend/src/routes/admin/crm/templates/+page.svelte)                     | `/admin/crm/templates/new`                                 | **NO**                 |
+| [`companies/+page.svelte:185`](../../../frontend/src/routes/admin/crm/companies/+page.svelte)                     | `/admin/crm/companies/new`                                 | **NO**                 |
+| [`sequences/+page.svelte:360`](../../../frontend/src/routes/admin/crm/sequences/+page.svelte)                     | `/admin/crm/sequences/new`                                 | **NO**                 |
+| [`lists/+page.svelte:127`](../../../frontend/src/routes/admin/crm/lists/+page.svelte)                             | `/admin/crm/lists/new`                                     | **NO**                 |
+| [`segments/+page.svelte:~`](../../../frontend/src/routes/admin/crm/segments/+page.svelte)                         | `/admin/crm/segments/new`                                  | **NO**                 |
+| [`campaigns/+page.svelte:248`](../../../frontend/src/routes/admin/crm/campaigns/+page.svelte)                     | `/admin/crm/campaigns/new`                                 | **NO**                 |
+| [`recurring-campaigns/+page.svelte:168`](../../../frontend/src/routes/admin/crm/recurring-campaigns/+page.svelte) | `/admin/crm/recurring-campaigns/new`                       | **NO**                 |
+| [`deals/+page.svelte:389`](../../../frontend/src/routes/admin/crm/deals/+page.svelte)                             | `/admin/crm/deals/new`                                     | **NO**                 |
+| [`abandoned-carts/+page.svelte:193`](../../../frontend/src/routes/admin/crm/abandoned-carts/+page.svelte)         | `/admin/crm/abandoned-carts/settings`                      | **NO**                 |
+| [`managers/+page.svelte:129,134`](../../../frontend/src/routes/admin/crm/managers/+page.svelte)                   | `/admin/crm/managers/add`, `/admin/crm/managers/roles/new` | **NO**                 |
+| [`import-export/+page.svelte:226`](../../../frontend/src/routes/admin/crm/import-export/+page.svelte)             | `/admin/crm/import-export/import/{type}`                   | **NO**                 |
+| [`leads/[id]/+page.svelte:418`](../../../frontend/src/routes/admin/crm/leads/[id]/+page.svelte)                   | `/admin/crm/leads/{leadId}/edit`                           | **NO**                 |
+| [`contacts/[id]/+page.svelte:596`](../../../frontend/src/routes/admin/crm/contacts/[id]/+page.svelte)             | `/admin/crm/contacts/{contactId}/edit`                     | **NO**                 |
+| [`deals/[id]/+page.svelte:409`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte)                   | `/admin/crm/deals/{dealId}/edit`                           | **NO**                 |
+| Multiple list pages                                                                                               | `/admin/crm/lists/[id]` and `/admin/crm/lists/[id]/edit`   | **NO**                 |
 
 A user cannot create a single new resource (template, company, sequence, list, segment, campaign, recurring campaign, deal, etc.) from any of these listing pages, nor edit any contact / lead / deal from its detail page. The whole CRUD-create-flow is dead.
 
@@ -99,12 +108,12 @@ Per `feedback_create_not_delete.md`: the fix is to **build the missing pages**, 
 
 ```ts
 function generateSecret() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 32; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    secret = result;
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let result = '';
+	for (let i = 0; i < 32; i++) {
+		result += chars.charAt(Math.floor(Math.random() * chars.length));
+	}
+	secret = result;
 }
 ```
 
@@ -113,7 +122,9 @@ function generateSecret() {
 ```ts
 const bytes = new Uint8Array(24);
 crypto.getRandomValues(bytes);
-secret = btoa(String.fromCharCode(...bytes)).replace(/[+/=]/g, '').slice(0, 32);
+secret = btoa(String.fromCharCode(...bytes))
+	.replace(/[+/=]/g, '')
+	.slice(0, 32);
 ```
 
 ### 3. Leads bulk-delete has no confirmation
@@ -161,12 +172,12 @@ The user sees "Test email sent successfully" but **nothing is actually delivered
 
 ```ts
 $effect(() => {
-    // Track the reactive dependencies   <-- COMMENT ONLY; nothing is actually read
-    if (isInitialized) {
-        untrack(() => {
-            loadSequences();
-        });
-    }
+	// Track the reactive dependencies   <-- COMMENT ONLY; nothing is actually read
+	if (isInitialized) {
+		untrack(() => {
+			loadSequences();
+		});
+	}
 });
 ```
 
@@ -181,6 +192,7 @@ Result: changing the search box or the "All Sequences / Active / Paused" dropdow
 The kanban itself recovers via the client-side `filteredDeals = $derived(...)` filter on line 103, **but** if the user switches `selectedStatus` from `open` → `won` and there are won deals NOT in the open-only initial fetch, they will be invisible. Need an effect that calls `loadData()` on `selectedStatus` change.
 
 Same pattern repeats in:
+
 - [`abandoned-carts/+page.svelte`](../../../frontend/src/routes/admin/crm/abandoned-carts/+page.svelte) — `loadCarts()` only on mount + explicit refresh
 - [`lists/+page.svelte:106`](../../../frontend/src/routes/admin/crm/lists/+page.svelte) — `loadLists()` only on mount; `is_public` filter passed but not re-fired
 - [`tags/+page.svelte:189`](../../../frontend/src/routes/admin/crm/tags/+page.svelte)
@@ -197,9 +209,9 @@ In each case the filter parameter goes to the backend on initial fetch but never
 
 ```ts
 $effect(() => {
-    if (statusFilter !== '') {
-        loadContacts();
-    }
+	if (statusFilter !== '') {
+		loadContacts();
+	}
 });
 ```
 
@@ -213,7 +225,7 @@ The condition `statusFilter !== ''` means switching FROM a value back to "All St
 {@html previewTemplate.content || '<p class="no-content">No content available</p>'}
 ```
 
-`previewTemplate.content` is whatever HTML another admin saved. Admin-to-admin XSS: any admin who can edit templates can inject script that runs in another admin's browser session (steal `rtp_access_token` cookie, etc.). For email-template HTML you typically need to *render* it — the safest path is to render inside an `<iframe sandbox="allow-same-origin">` (no `allow-scripts`), or sanitize via DOMPurify before `@html`.
+`previewTemplate.content` is whatever HTML another admin saved. Admin-to-admin XSS: any admin who can edit templates can inject script that runs in another admin's browser session (steal `rtp_access_token` cookie, etc.). For email-template HTML you typically need to _render_ it — the safest path is to render inside an `<iframe sandbox="allow-same-origin">` (no `allow-scripts`), or sanitize via DOMPurify before `@html`.
 
 ### 9. SSRF risk — webhook URL validator accepts http and private IPs
 
@@ -221,10 +233,12 @@ The condition `statusFilter !== ''` means switching FROM a value back to "All St
 
 ```ts
 function isValidUrl(urlString: string): boolean {
-    try {
-        const url = new URL(urlString);
-        return url.protocol === 'https:' || url.protocol === 'http:';
-    } catch { return false; }
+	try {
+		const url = new URL(urlString);
+		return url.protocol === 'https:' || url.protocol === 'http:';
+	} catch {
+		return false;
+	}
 }
 ```
 
@@ -240,15 +254,15 @@ Tighten frontend to `url.protocol === 'https:'` only, and reject hostnames that 
 
 The recent commit migrated several `$effect(() => loadData())` patterns to `onMount`. The same write-while-reading-tracked-dep risk exists in:
 
-| File | Line | Pattern |
-|---|---|---|
-| [`leads/+page.svelte`](../../../frontend/src/routes/admin/crm/leads/+page.svelte) | 559-573 | identical pattern to the one fixed in `crm/+page.svelte:290` — calls `connections.load()` (writes) and reads `getIsCrmConnected()` inside the same `$effect` |
-| [`managers/+page.svelte`](../../../frontend/src/routes/admin/crm/managers/+page.svelte) | 108-110 | bare `$effect(() => loadData())` — should be `onMount` |
-| [`deals/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte) | 323-326 | bare `$effect(() => loadDeal())` |
-| [`automations/new/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/new/+page.svelte) | 325-327 | bare `$effect(() => loadDependencies())` |
-| [`automations/[id]/edit/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte) | 400-402 | bare `$effect(() => loadFunnel())` |
-| [`automations/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/+page.svelte) | 489-497 | the lifecycle effect — filter-tracker effect at line 459 is fine and should stay `$effect` |
-| [`sequences/+page.svelte`](../../../frontend/src/routes/admin/crm/sequences/+page.svelte) | 325-333 | the lifecycle effect — see issue #5 for the broken filter effect |
+| File                                                                                                              | Line    | Pattern                                                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`leads/+page.svelte`](../../../frontend/src/routes/admin/crm/leads/+page.svelte)                                 | 559-573 | identical pattern to the one fixed in `crm/+page.svelte:290` — calls `connections.load()` (writes) and reads `getIsCrmConnected()` inside the same `$effect` |
+| [`managers/+page.svelte`](../../../frontend/src/routes/admin/crm/managers/+page.svelte)                           | 108-110 | bare `$effect(() => loadData())` — should be `onMount`                                                                                                       |
+| [`deals/[id]/+page.svelte`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte)                       | 323-326 | bare `$effect(() => loadDeal())`                                                                                                                             |
+| [`automations/new/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/new/+page.svelte)             | 325-327 | bare `$effect(() => loadDependencies())`                                                                                                                     |
+| [`automations/[id]/edit/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte) | 400-402 | bare `$effect(() => loadFunnel())`                                                                                                                           |
+| [`automations/+page.svelte`](../../../frontend/src/routes/admin/crm/automations/+page.svelte)                     | 489-497 | the lifecycle effect — filter-tracker effect at line 459 is fine and should stay `$effect`                                                                   |
+| [`sequences/+page.svelte`](../../../frontend/src/routes/admin/crm/sequences/+page.svelte)                         | 325-333 | the lifecycle effect — see issue #5 for the broken filter effect                                                                                             |
 
 These all run once and never again, so functionally they work, but they generate the `state_referenced_locally` (or related) warnings that the migration was intended to clear, and they remain an unintended re-run hazard if any tracked state ever leaks into them.
 
@@ -258,19 +272,25 @@ These all run once and never again, so functionally they work, but they generate
 
 ```ts
 // 1. debounce search
-$effect(() => { /* writes debouncedSearch after 300ms */ });
+$effect(() => {
+	/* writes debouncedSearch after 300ms */
+});
 
 // 2. reload data
 $effect(() => {
-    debouncedSearch; selectedCategory; currentPage; perPage;
-    if (isInitialLoad) return;
-    loadTemplates();
+	debouncedSearch;
+	selectedCategory;
+	currentPage;
+	perPage;
+	if (isInitialLoad) return;
+	loadTemplates();
 });
 
 // 3. reset to page 1 on filter change
 $effect(() => {
-    debouncedSearch; selectedCategory;
-    if (!isInitialLoad) currentPage = 1;
+	debouncedSearch;
+	selectedCategory;
+	if (!isInitialLoad) currentPage = 1;
 });
 ```
 
@@ -282,8 +302,12 @@ When the user types: effect 1 writes `debouncedSearch` → effect 2 fires `loadT
 
 ```ts
 for (const id of selectedTemplates) {
-    try { await crmAPI.deleteEmailTemplate(id); successCount++; }
-    catch { failCount++; }
+	try {
+		await crmAPI.deleteEmailTemplate(id);
+		successCount++;
+	} catch {
+		failCount++;
+	}
 }
 ```
 
@@ -306,10 +330,13 @@ When the backend is down or returns 5xx, the proxy returns `success: true` with 
 ### 14. `automations/[id]` and `automations/[id]/edit` capture `funnelId` in `const`, not `$derived`
 
 [`automations/[id]/+page.svelte:63`](../../../frontend/src/routes/admin/crm/automations/[id]/+page.svelte):
+
 ```ts
 const funnelId = page.params.id ?? '';
 ```
+
 [`automations/[id]/edit/+page.svelte:71`](../../../frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte):
+
 ```ts
 const funnelId = page.params.id ?? '';
 ```
@@ -322,9 +349,9 @@ If the user navigates from `/automations/A` to `/automations/B` without the comp
 
 ```ts
 async function confirmDeleteDeal() {
-    // ...
-    await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
-    await loadData();
+	// ...
+	await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
+	await loadData();
 }
 ```
 
@@ -346,13 +373,15 @@ User clicks the trash icon, sees "Delete deal?" confirmation, says yes — but t
 
 ```ts
 async function updateStatus(newStatus: string) {
-    if (!lead) return;
-    try {
-        await api.patch(`/api/admin/crm/leads/${leadId}/status`, { status: newStatus });
-        lead.status = newStatus as Lead['status'];   // optimistic AFTER await
-        showToast('success', `Status updated to ${newStatus}`);
-        await loadLead();
-    } catch (e) { /* ... */ }
+	if (!lead) return;
+	try {
+		await api.patch(`/api/admin/crm/leads/${leadId}/status`, { status: newStatus });
+		lead.status = newStatus as Lead['status']; // optimistic AFTER await
+		showToast('success', `Status updated to ${newStatus}`);
+		await loadLead();
+	} catch (e) {
+		/* ... */
+	}
 }
 ```
 
@@ -380,8 +409,8 @@ This isn't optimistic — the local mutation runs after the round-trip, and then
 
 ```ts
 return new Response(upstream.body, {
-    status: upstream.status,
-    headers: upstream.headers
+	status: upstream.status,
+	headers: upstream.headers
 });
 ```
 
@@ -405,21 +434,21 @@ The user pastes JSON, `JSON.parse` runs, then the parsed object is POSTed to the
 
 The commit's stated goal was to replace `$effect` with `onMount` in CRM and campaigns where the effect was just an init-on-mount call. Verification sweep:
 
-| Page | Migration done? | Notes |
-|---|---|---|
-| [`crm/+page.svelte:290`](../../../frontend/src/routes/admin/crm/+page.svelte) | Yes | Old `$effect` is commented out at lines 274-289 — should be removed in a follow-up cleanup pass |
-| [`campaigns/+page.svelte:225`](../../../frontend/src/routes/admin/crm/campaigns/+page.svelte) | Yes | Clean `onMount` |
-| [`templates/+page.svelte:358`](../../../frontend/src/routes/admin/crm/templates/+page.svelte) | Yes for the lifecycle effect; the three filter-effects remain (issue #11) |
-| [`leads/+page.svelte:559`](../../../frontend/src/routes/admin/crm/leads/+page.svelte) | **NO** — same pattern that was fixed in `crm/+page.svelte` survives here |
-| [`managers/+page.svelte:108`](../../../frontend/src/routes/admin/crm/managers/+page.svelte) | **NO** |
-| [`deals/[id]/+page.svelte:324`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte) | **NO** |
-| [`automations/new/+page.svelte:325`](../../../frontend/src/routes/admin/crm/automations/new/+page.svelte) | **NO** |
-| [`automations/[id]/edit/+page.svelte:400`](../../../frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte) | **NO** |
-| [`automations/+page.svelte:489`](../../../frontend/src/routes/admin/crm/automations/+page.svelte) | **NO** for lifecycle, OK for filter-tracker at 459 |
-| [`sequences/+page.svelte:325`](../../../frontend/src/routes/admin/crm/sequences/+page.svelte) | **NO** for lifecycle, broken for filter-tracker at 297 (issue #5) |
-| [`contacts/+page.svelte:33,76`](../../../frontend/src/routes/admin/contacts/+page.svelte) | **NO** for lifecycle, broken filter (issue #7) |
-| [`tags/[id]/+page.svelte:148`](../../../frontend/src/routes/admin/crm/tags/[id]/+page.svelte) | **NO** but it is correctly used as a `tagId`-tracker — should remain `$effect` since `tagId` is `$derived` from `page.params` |
-| [`smart-links/+page.svelte:170,191`](../../../frontend/src/routes/admin/crm/smart-links/+page.svelte) | The two filter-effects use `untrack` properly — these are correct and should stay |
+| Page                                                                                                                  | Migration done?                                                                                                               | Notes                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`crm/+page.svelte:290`](../../../frontend/src/routes/admin/crm/+page.svelte)                                         | Yes                                                                                                                           | Old `$effect` is commented out at lines 274-289 — should be removed in a follow-up cleanup pass |
+| [`campaigns/+page.svelte:225`](../../../frontend/src/routes/admin/crm/campaigns/+page.svelte)                         | Yes                                                                                                                           | Clean `onMount`                                                                                 |
+| [`templates/+page.svelte:358`](../../../frontend/src/routes/admin/crm/templates/+page.svelte)                         | Yes for the lifecycle effect; the three filter-effects remain (issue #11)                                                     |
+| [`leads/+page.svelte:559`](../../../frontend/src/routes/admin/crm/leads/+page.svelte)                                 | **NO** — same pattern that was fixed in `crm/+page.svelte` survives here                                                      |
+| [`managers/+page.svelte:108`](../../../frontend/src/routes/admin/crm/managers/+page.svelte)                           | **NO**                                                                                                                        |
+| [`deals/[id]/+page.svelte:324`](../../../frontend/src/routes/admin/crm/deals/[id]/+page.svelte)                       | **NO**                                                                                                                        |
+| [`automations/new/+page.svelte:325`](../../../frontend/src/routes/admin/crm/automations/new/+page.svelte)             | **NO**                                                                                                                        |
+| [`automations/[id]/edit/+page.svelte:400`](../../../frontend/src/routes/admin/crm/automations/[id]/edit/+page.svelte) | **NO**                                                                                                                        |
+| [`automations/+page.svelte:489`](../../../frontend/src/routes/admin/crm/automations/+page.svelte)                     | **NO** for lifecycle, OK for filter-tracker at 459                                                                            |
+| [`sequences/+page.svelte:325`](../../../frontend/src/routes/admin/crm/sequences/+page.svelte)                         | **NO** for lifecycle, broken for filter-tracker at 297 (issue #5)                                                             |
+| [`contacts/+page.svelte:33,76`](../../../frontend/src/routes/admin/contacts/+page.svelte)                             | **NO** for lifecycle, broken filter (issue #7)                                                                                |
+| [`tags/[id]/+page.svelte:148`](../../../frontend/src/routes/admin/crm/tags/[id]/+page.svelte)                         | **NO** but it is correctly used as a `tagId`-tracker — should remain `$effect` since `tagId` is `$derived` from `page.params` |
+| [`smart-links/+page.svelte:170,191`](../../../frontend/src/routes/admin/crm/smart-links/+page.svelte)                 | The two filter-effects use `untrack` properly — these are correct and should stay                                             |
 
 **Verdict:** the refactor is **roughly half done**. The pages explicitly named in the commit message (campaigns, top-level CRM dashboard) are migrated cleanly. The other `$effect → onMount` candidates listed above were not touched.
 
@@ -427,11 +456,11 @@ The commit's stated goal was to replace `$effect` with `onMount` in CRM and camp
 
 ## Summary
 
-| Severity | Count |
-|---|---|
-| P0 | 3 (orphan-link epidemic, `Math.random()` for crypto secrets, leads bulk-delete with no confirmation) |
-| P1 | 6 (fake test-email stub, broken filter effect in sequences, list-page filter re-fetch missing across 7+ pages, contacts filter dead-zone, stored XSS via templates, SSRF-permissive webhook URL validator) |
-| P2 | 8 (incomplete reactivity refactor, double-fetch cascade in templates, non-transactional bulk-delete in templates, stats endpoint silently returns zeros, `funnelId` as `const` in two automation pages, "delete" actually archives in deals, gratuitous `@html` in abandoned-carts, redundant optimistic write in lead status update) |
-| P3 | 7 (native `confirm()` mismatch, no optimistic kanban DnD, dead `stats` rune in smart-links, proxy shim header passthrough, console-error noise, no frontend email rate-limit, unbounded import-JSON parse) |
+| Severity | Count                                                                                                                                                                                                                                                                                                                                 |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0       | 3 (orphan-link epidemic, `Math.random()` for crypto secrets, leads bulk-delete with no confirmation)                                                                                                                                                                                                                                  |
+| P1       | 6 (fake test-email stub, broken filter effect in sequences, list-page filter re-fetch missing across 7+ pages, contacts filter dead-zone, stored XSS via templates, SSRF-permissive webhook URL validator)                                                                                                                            |
+| P2       | 8 (incomplete reactivity refactor, double-fetch cascade in templates, non-transactional bulk-delete in templates, stats endpoint silently returns zeros, `funnelId` as `const` in two automation pages, "delete" actually archives in deals, gratuitous `@html` in abandoned-carts, redundant optimistic write in lead status update) |
+| P3       | 7 (native `confirm()` mismatch, no optimistic kanban DnD, dead `stats` rune in smart-links, proxy shim header passthrough, console-error noise, no frontend email rate-limit, unbounded import-JSON parse)                                                                                                                            |
 
 **Top-line recommendation:** the orphan-link epidemic (issue #1) is the highest-leverage fix — the cluster is non-functional for any creation workflow. The webhook-secret RNG (issue #2) and bulk-delete confirmation (issue #3) are independent footguns that should land in the same hot-fix branch. The reactivity refactor should be completed in a follow-up commit that finishes what `34a0bd070` started.

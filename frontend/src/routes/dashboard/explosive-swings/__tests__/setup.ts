@@ -14,7 +14,7 @@
  * - Utility functions for common test scenarios
  */
 
-import { vi, beforeEach, afterEach } from 'vitest';
+import { vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // ===============================================================================
 // BROWSER API MOCKS

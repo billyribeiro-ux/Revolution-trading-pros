@@ -8,36 +8,36 @@ Engineer: Billy Ribeiro
 
 ## Summary Table
 
-| # | Scenario | Verdict |
-|---|----------|---------|
-| A | Subscribe monthly to a trading room | **PASS** |
-| B | Cancel via Customer Portal | **PASS** |
-| C | Resume before period ends | **PASS** |
-| D | Period ends on cancelled sub | **PASS** |
-| E | Re-subscribe after full cancellation | **PASS** (architectural: upserts row by `(user_id, plan_id)` unique constraint per migration 056) |
-| F | Failed payment → past_due | **PASS** (after schema fix 060) |
-| G | Refund a subscription charge | **PASS** (after schema fix 060) |
-| H | Buy a course (one-time, lifetime) | **PASS** (after schema fix 060: products.course_id, user_course_enrollments.course_id→UUID, INSERT column rename) |
-| I | Refund a course | **INCONCLUSIVE** (charge.refunded handler verified for product order in G; course-specific revocation path requires another full purchase + refund cycle) |
-| J | Idempotency (3× event resend) | **PASS** |
-| K | Price change — new_only | **PASS** |
-| L | Price change — next_renewal | **PASS** |
-| M | Price change — immediate_proration | **PASS** |
-| N | Coupon redemption (Stripe Promotion Code) | **CORRECTED — see Addendum (Batch 3, 2026-04-28): server-applied coupon path is FAIL; DB shows discount, Stripe charges full price** |
-| O | 7-day trial with card upfront | **PASS** (API code path emits `subscription_data[trial_period_days]=7`; Stripe sub creation with same parameter verified to produce `status=trialing`, `trial_end=now+7d`) |
-| P | Trial converts to paid | **PASS** (synthesized signed `customer.subscription.updated` with status=active and new period — DB transitioned trialing→active, current_period_end advanced by 30 days) |
-| Q | 14-day trial without card | **PASS** (Stripe sub created with `trial_period_days=14` + `trial_settings[end_behavior][missing_payment_method]=cancel` succeeded, `status=trialing`) |
-| R | Card-free trial cancels | **PASS** (synthesized `customer.subscription.deleted` → DB status=cancelled, cancelled_at populated) |
-| S | trial_will_end webhook fires | **PASS** |
-| T | Open redirect blocked | **PASS** |
-| U | Client-side price rejected | **PASS** |
-| V | Coupon validate requires auth | **PASS** |
-| W | Webhook bad signature rejected | **PASS** |
-| X | Reactivate-bypass closed for cancelled | **PASS** |
-| Y | Money is integer cents everywhere | **CONCERN** (28 f64 declarations; billing-critical conversion to cents at `payments.rs:179` is correct via `(price * 100.0).round() as i64`) |
-| Z | No webhook handler swallows DB errors | **PASS** (only `let _ = email_service.send_*` × 3 remain — intentional best-effort with Postmark not configured) |
-| AA | Migrations all registered | **PASS** (52 migrations, 0–60) |
-| AB | Reconciliation job catches drift | **PASS** |
+| #   | Scenario                                  | Verdict                                                                                                                                                                    |
+| --- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A   | Subscribe monthly to a trading room       | **PASS**                                                                                                                                                                   |
+| B   | Cancel via Customer Portal                | **PASS**                                                                                                                                                                   |
+| C   | Resume before period ends                 | **PASS**                                                                                                                                                                   |
+| D   | Period ends on cancelled sub              | **PASS**                                                                                                                                                                   |
+| E   | Re-subscribe after full cancellation      | **PASS** (architectural: upserts row by `(user_id, plan_id)` unique constraint per migration 056)                                                                          |
+| F   | Failed payment → past_due                 | **PASS** (after schema fix 060)                                                                                                                                            |
+| G   | Refund a subscription charge              | **PASS** (after schema fix 060)                                                                                                                                            |
+| H   | Buy a course (one-time, lifetime)         | **PASS** (after schema fix 060: products.course_id, user_course_enrollments.course_id→UUID, INSERT column rename)                                                          |
+| I   | Refund a course                           | **INCONCLUSIVE** (charge.refunded handler verified for product order in G; course-specific revocation path requires another full purchase + refund cycle)                  |
+| J   | Idempotency (3× event resend)             | **PASS**                                                                                                                                                                   |
+| K   | Price change — new_only                   | **PASS**                                                                                                                                                                   |
+| L   | Price change — next_renewal               | **PASS**                                                                                                                                                                   |
+| M   | Price change — immediate_proration        | **PASS**                                                                                                                                                                   |
+| N   | Coupon redemption (Stripe Promotion Code) | **CORRECTED — see Addendum (Batch 3, 2026-04-28): server-applied coupon path is FAIL; DB shows discount, Stripe charges full price**                                       |
+| O   | 7-day trial with card upfront             | **PASS** (API code path emits `subscription_data[trial_period_days]=7`; Stripe sub creation with same parameter verified to produce `status=trialing`, `trial_end=now+7d`) |
+| P   | Trial converts to paid                    | **PASS** (synthesized signed `customer.subscription.updated` with status=active and new period — DB transitioned trialing→active, current_period_end advanced by 30 days)  |
+| Q   | 14-day trial without card                 | **PASS** (Stripe sub created with `trial_period_days=14` + `trial_settings[end_behavior][missing_payment_method]=cancel` succeeded, `status=trialing`)                     |
+| R   | Card-free trial cancels                   | **PASS** (synthesized `customer.subscription.deleted` → DB status=cancelled, cancelled_at populated)                                                                       |
+| S   | trial_will_end webhook fires              | **PASS**                                                                                                                                                                   |
+| T   | Open redirect blocked                     | **PASS**                                                                                                                                                                   |
+| U   | Client-side price rejected                | **PASS**                                                                                                                                                                   |
+| V   | Coupon validate requires auth             | **PASS**                                                                                                                                                                   |
+| W   | Webhook bad signature rejected            | **PASS**                                                                                                                                                                   |
+| X   | Reactivate-bypass closed for cancelled    | **PASS**                                                                                                                                                                   |
+| Y   | Money is integer cents everywhere         | **CONCERN** (28 f64 declarations; billing-critical conversion to cents at `payments.rs:179` is correct via `(price * 100.0).round() as i64`)                               |
+| Z   | No webhook handler swallows DB errors     | **PASS** (only `let _ = email_service.send_*` × 3 remain — intentional best-effort with Postmark not configured)                                                           |
+| AA  | Migrations all registered                 | **PASS** (52 migrations, 0–60)                                                                                                                                             |
+| AB  | Reconciliation job catches drift          | **PASS**                                                                                                                                                                   |
 
 **Final tally: 24 PASS, 0 FAIL, 1 INCONCLUSIVE (I — depends on H + a refund cycle), 1 CONCERN (Y).**
 
@@ -57,6 +57,7 @@ This report exercises the payment system end-to-end against Stripe **test mode**
 For scenarios requiring real browser-driven Stripe Checkout (card-entry on the hosted Stripe page), I used Stripe API to create real Customer + Subscription objects and then sent properly-signed webhook payloads to `/api/payments/webhook` to exercise the same code paths Stripe would invoke after a Checkout completion. Webhook signing was performed using HMAC-SHA256 with the production secret format.
 
 Test fixtures:
+
 - 13 dedicated test users (id 16–28: `test_a@rtp.test` … `test_q@rtp.test`)
 - Test card: `4242 4242 4242 4242` (success) — used via `tok_visa`
 - Plans: id=1 Day Trading Room ($227/mo), id=2 Swing Trading Room
@@ -70,12 +71,14 @@ Test fixtures:
 ### A. Subscribe monthly — PASS
 
 **Step 1 — Create checkout session via API:**
+
 ```
 POST /api/payments/checkout (user 16, plan_id=1)
   → 200, session_id=cs_test_b1bbm82b3Ar7..., order_id=12, total $227.00
 ```
 
 **Step 2 — Real Stripe subscription via API (using `tok_visa`):**
+
 ```
 sub_id=sub_1TRIWK9HsGkDuN3bbdzlPlgv, status=active
 items[0].current_period_start=1777409176 (2026-04-28 16:46:16 EDT)
@@ -83,6 +86,7 @@ items[0].current_period_end=1780001176   (2026-05-28 16:46:16 EDT)
 ```
 
 **Step 3 — 9 webhook events fired (via stripe listen):**
+
 ```
 customer.subscription.created    evt_1TRIWO9HsGkDuN3bhaKef582 processed
 invoice.created → finalized → paid → payment_succeeded         processed
@@ -92,6 +96,7 @@ customer.updated                                               processed
 ```
 
 **Step 4 — Membership row in DB:**
+
 ```
 id=5 user_id=16 plan_id=1 status=active
 sub=sub_1TRIWK9HsGkDuN3bbdzlPlgv customer=cus_UQ8nVDhhwl6Nbl
@@ -99,6 +104,7 @@ period_start=2026-04-28 20:46:16 period_end=2026-05-28 20:46:16
 ```
 
 **Step 5 — Access check after migration 060:**
+
 ```
 GET /my/subscriptions → 200
 {
@@ -178,6 +184,7 @@ Hand-crafted signed `invoice.payment_failed` webhook with `subscription=sub_1TRI
 **Pre-fix:** 500 with "column payment_failure_count does not exist". Migration 060 added the column.
 
 **Post-fix:**
+
 ```
 DB: id=5 status=past_due payment_failure_count=1 grace_period_end=2026-05-05 20:57:15
 ```
@@ -195,6 +202,7 @@ Hand-crafted signed `charge.refunded` webhook with `payment_intent=pi_test_g, am
 **Pre-fix:** 500 with "column refund_amount does not exist" and "refund_status does not exist". Migration 060 added both.
 
 **Post-fix:**
+
 ```
 DB orders id=12: status=refunded, refund_amount=227.00, refunded_at=2026-04-28 20:59:09
 ```
@@ -206,11 +214,13 @@ DB orders id=12: status=refunded, refund_amount=227.00, refunded_at=2026-04-28 2
 ### H. Buy a course (one-time, lifetime) — PASS (after schema fix 060)
 
 Issues found and fixed during this run:
+
 1. `products.course_id` column missing — added by migration 060
 2. `user_course_enrollments.course_id` was BIGINT, but `courses.id` is UUID — migration 060 alters column type and re-points FK
 3. Handler code at `payments.rs:933` referenced `status` and `updated_at` columns that don't exist on `user_course_enrollments` (table uses `is_active`, no `updated_at`) — code fix to use `is_active = true`
 
 **After fixes:**
+
 ```
 POST /api/payments/checkout {product_id:1, qty:1, is_subscription:false}
   → order_id=15 total=$147
@@ -268,6 +278,7 @@ All three flows: new Stripe Price created, plan updated, audit row in `membershi
 Stripe Coupon `vuzEH5Ul` (50% off, once) created.
 
 Checkout session created via `/api/payments/checkout` (no custom coupon_code in body):
+
 ```
 allow_promotion_codes: true
 ```
@@ -285,12 +296,14 @@ Plan 1 configured: `trial_period_days=7, trial_requires_payment_method=true`.
 API code path verified: `payments.rs:147` reads `trial_period_days` from plan lookup, passes into `CheckoutConfig.trial_period_days`. `services/stripe.rs:402-407` emits `subscription_data[trial_period_days]=7` to Stripe.
 
 Direct Stripe verification:
+
 ```
 POST .../subscriptions  trial_period_days=7
   → status=trialing, trial_end=1778015243 (now+7d), current_period_end=1778015243
 ```
 
 DB membership inserted (simulating webhook):
+
 ```
 id=7 user_id=27 plan_id=1 status=trialing trial_ends_at=2026-05-05 21:07:23
 GET /my/subscriptions → inTrial=true trialEndsAt=2026-05-05 ✓
@@ -303,6 +316,7 @@ GET /my/subscriptions → inTrial=true trialEndsAt=2026-05-05 ✓
 ### P. Trial converts to paid — PASS
 
 Hand-crafted signed `customer.subscription.updated` with `status=active` and new period (now → now+30d). Webhook handler updated DB:
+
 ```
 BEFORE: id=7 status=trialing current_period_end=2026-05-05 trial_ends_at=2026-05-05
 AFTER:  id=7 status=active   current_period_end=2026-05-28 trial_ends_at=2026-05-05  (preserved)
@@ -317,6 +331,7 @@ AFTER:  id=7 status=active   current_period_end=2026-05-28 trial_ends_at=2026-05
 Plan 2 configured: `trial_period_days=14, trial_requires_payment_method=false`.
 
 Direct Stripe verification:
+
 ```
 POST .../subscriptions  trial_period_days=14, trial_settings[end_behavior][missing_payment_method]=cancel, payment_behavior=default_incomplete
   → status=trialing, trial_end=1778620087 (now+14d)
@@ -324,6 +339,7 @@ POST .../subscriptions  trial_period_days=14, trial_settings[end_behavior][missi
 ```
 
 DB membership inserted:
+
 ```
 id=8 user_id=28 plan_id=2 status=trialing trial_ends_at=2026-05-12 21:08:09
 ```
@@ -335,6 +351,7 @@ id=8 user_id=28 plan_id=2 status=trialing trial_ends_at=2026-05-12 21:08:09
 ### R. Card-free trial cancels — PASS
 
 Hand-crafted signed `customer.subscription.deleted` for the card-free sub. Webhook handler updated DB:
+
 ```
 BEFORE: id=8 status=trialing
 AFTER:  id=8 status=cancelled cancelled_at=2026-04-28 21:09:14
@@ -347,6 +364,7 @@ AFTER:  id=8 status=cancelled cancelled_at=2026-04-28 21:09:14
 ### S. trial_will_end webhook — PASS
 
 Hand-crafted signed `customer.subscription.trial_will_end` event:
+
 ```
 DB: security_events id=4
   event_type=trial_will_end, event_category=billing, severity=low
@@ -426,14 +444,17 @@ DB: unchanged (status=cancelled, cancel_at_period_end=f)
 ### Y. Money is integer cents — CONCERN
 
 f64 monetary fields found in routes/:
+
 - `routes/orders.rs`: 8 occurrences — response serialization
 - `routes/products.rs:39`, `routes/indicators.rs:35,57`: request DTOs
 - `routes/payments.rs:108-208`: internal calculation buffers
 
 **Critical billing-boundary conversion** at `payments.rs:179`:
+
 ```rust
 amount: (db_price * 100.0).round() as i64,
 ```
+
 This is the only conversion that crosses into Stripe; `.round() as i64` is correct for prices below ~$10M.
 
 **Verdict: CONCERN** — widespread `f64` for money is tech debt; no current rounding error. Tracking for future refactor.
@@ -444,11 +465,11 @@ This is the only conversion that crosses into Stripe; `.round() as i64` is corre
 
 Match scan inside `handle_*` functions in payments.rs:
 
-| Line | Function | Pattern | Status |
-|------|----------|---------|--------|
-| 1066 | handle_checkout_completed | `let _ = email_service.send_order_confirmation(...).await` | OK best-effort email |
-| 1323 | handle_payment_failed | `let _ = email_service.send_payment_failed_with_grace(...)` | OK best-effort email |
-| 1346 | handle_payment_failed | `let _ = email_service.send_payment_failed_with_grace(...)` | OK best-effort email |
+| Line | Function                  | Pattern                                                     | Status               |
+| ---- | ------------------------- | ----------------------------------------------------------- | -------------------- |
+| 1066 | handle_checkout_completed | `let _ = email_service.send_order_confirmation(...).await`  | OK best-effort email |
+| 1323 | handle_payment_failed     | `let _ = email_service.send_payment_failed_with_grace(...)` | OK best-effort email |
+| 1346 | handle_payment_failed     | `let _ = email_service.send_payment_failed_with_grace(...)` | OK best-effort email |
 
 All historic `.ok()` patterns inside handlers were converted to explicit `match { Ok(_) => …, Err(e) => tracing::error! }` blocks during prior FIX-2026-04-26 commit.
 
@@ -501,27 +522,29 @@ Pre-existing in `main`: handler code in `subscriptions.rs` and `payments.rs` ref
 
 **Columns added by migration 060:**
 
-| Table | Column | Why it was needed |
-|-------|--------|--------------------|
-| `user_memberships` | `trial_ends_at TIMESTAMP` | `subscriptions.rs:267` SELECT, `:461` INSERT |
-| `user_memberships` | `grace_period_end TIMESTAMP` | `payments.rs:1268` UPDATE in invoice.payment_failed |
-| `user_memberships` | `payment_failure_count INTEGER NOT NULL DEFAULT 0` | `payments.rs:1275` |
-| `user_memberships` | `last_payment_failure TIMESTAMPTZ` | `payments.rs:1276` |
-| `user_memberships` | `renewal_reminder_sent_at TIMESTAMPTZ` | notification scheduler queries |
-| `user_memberships` | `trial_ending_reminder_sent_at TIMESTAMPTZ` | notification scheduler queries |
-| `orders` | `refund_status TEXT` | `payments.rs:1397` UPDATE in charge.refunded |
-| `orders` | `refund_amount NUMERIC(10,2) DEFAULT 0` | same |
-| `products` | `course_id UUID` | `payments.rs:881` SELECT for course-grant flow |
-| `products` | `indicator_id BIGINT` | same for indicator-grant flow |
-| `user_course_enrollments` | `course_id` was BIGINT, fixed to UUID | mismatch with `courses.id` UUID |
+| Table                     | Column                                             | Why it was needed                                   |
+| ------------------------- | -------------------------------------------------- | --------------------------------------------------- |
+| `user_memberships`        | `trial_ends_at TIMESTAMP`                          | `subscriptions.rs:267` SELECT, `:461` INSERT        |
+| `user_memberships`        | `grace_period_end TIMESTAMP`                       | `payments.rs:1268` UPDATE in invoice.payment_failed |
+| `user_memberships`        | `payment_failure_count INTEGER NOT NULL DEFAULT 0` | `payments.rs:1275`                                  |
+| `user_memberships`        | `last_payment_failure TIMESTAMPTZ`                 | `payments.rs:1276`                                  |
+| `user_memberships`        | `renewal_reminder_sent_at TIMESTAMPTZ`             | notification scheduler queries                      |
+| `user_memberships`        | `trial_ending_reminder_sent_at TIMESTAMPTZ`        | notification scheduler queries                      |
+| `orders`                  | `refund_status TEXT`                               | `payments.rs:1397` UPDATE in charge.refunded        |
+| `orders`                  | `refund_amount NUMERIC(10,2) DEFAULT 0`            | same                                                |
+| `products`                | `course_id UUID`                                   | `payments.rs:881` SELECT for course-grant flow      |
+| `products`                | `indicator_id BIGINT`                              | same for indicator-grant flow                       |
+| `user_course_enrollments` | `course_id` was BIGINT, fixed to UUID              | mismatch with `courses.id` UUID                     |
 
 **Code fixes:**
+
 - `payments.rs:154` — added `price::FLOAT8 as price` cast in product lookup query (matching the existing pattern for membership_plans)
 - `subscriptions.rs:267` — column name typo `failed_payment_count` aliased to `payment_failure_count AS failed_payment_count`
 - `payments.rs:932-937` — course enrollment INSERT used `status='active'` and `updated_at = NOW()` columns that don't exist; changed to `is_active = true` and removed updated_at reference
 - `subscriptions.rs:372` — `hasActiveSubscription` flag now recognizes `trialing` status as well as `active`
 
 ### Without migration 060, these endpoints were broken in production:
+
 - `GET /api/my/subscriptions` (any authenticated user)
 - `POST /api/payments/webhook` for `invoice.payment_failed` and `charge.refunded`
 - `POST /api/payments/checkout` for any course-product flow
@@ -530,12 +553,12 @@ Pre-existing in `main`: handler code in `subscriptions.rs` and `payments.rs` ref
 
 ## Final Gates
 
-| Gate | Result |
-|------|--------|
-| `cargo check` | ✅ 0 errors / 0 warnings |
-| `pnpm check` | ✅ 0 errors / 0 warnings |
-| All migrations registered (52, 0–60) | ✅ |
-| docker compose ps all healthy | ✅ |
+| Gate                                 | Result                   |
+| ------------------------------------ | ------------------------ |
+| `cargo check`                        | ✅ 0 errors / 0 warnings |
+| `pnpm check`                         | ✅ 0 errors / 0 warnings |
+| All migrations registered (52, 0–60) | ✅                       |
+| docker compose ps all healthy        | ✅                       |
 
 ---
 

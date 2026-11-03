@@ -1,7 +1,7 @@
 /**
  * Svelte Preprocessor for click-to-source
  * Adds data-source="filepath:line:col" to HTML elements in the markup section only.
- * 
+ *
  * Skips:
  * - <script> and <style> blocks (avoids breaking TypeScript generics)
  * - Special elements: <title>, <script>, <style>, <svelte:*>, <slot>
@@ -12,15 +12,26 @@ import type { PreprocessorGroup } from 'svelte/compiler';
 import MagicString from 'magic-string';
 
 export interface PreprocessorOptions {
-  enabled?: boolean;
+	enabled?: boolean;
 }
 
 // Elements that must NOT receive data-source attributes
 const EXCLUDED_TAGS = new Set([
-  'script', 'style', 'title', 'slot', 'head',
-  'svelte:head', 'svelte:body', 'svelte:window', 'svelte:document',
-  'svelte:component', 'svelte:self', 'svelte:fragment', 'svelte:element',
-  'svelte:options', 'svelte:boundary',
+	'script',
+	'style',
+	'title',
+	'slot',
+	'head',
+	'svelte:head',
+	'svelte:body',
+	'svelte:window',
+	'svelte:document',
+	'svelte:component',
+	'svelte:self',
+	'svelte:fragment',
+	'svelte:element',
+	'svelte:options',
+	'svelte:boundary'
 ]);
 
 /**
@@ -28,91 +39,91 @@ const EXCLUDED_TAGS = new Set([
  * We must not inject data-source attributes inside these blocks.
  */
 function findExcludedRanges(content: string): Array<{ start: number; end: number }> {
-  const ranges: Array<{ start: number; end: number }> = [];
-  const blockRegex = /<(script|style)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
-  let match;
-  while ((match = blockRegex.exec(content)) !== null) {
-    ranges.push({ start: match.index, end: match.index + match[0].length });
-  }
-  return ranges;
+	const ranges: Array<{ start: number; end: number }> = [];
+	const blockRegex = /<(script|style)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
+	let match;
+	while ((match = blockRegex.exec(content)) !== null) {
+		ranges.push({ start: match.index, end: match.index + match[0].length });
+	}
+	return ranges;
 }
 
 function isInsideExcludedRange(
-  pos: number,
-  ranges: Array<{ start: number; end: number }>
+	pos: number,
+	ranges: Array<{ start: number; end: number }>
 ): boolean {
-  return ranges.some((r) => pos >= r.start && pos < r.end);
+	return ranges.some((r) => pos >= r.start && pos < r.end);
 }
 
 export function createPreprocessor(options: PreprocessorOptions = {}): PreprocessorGroup {
-  const { enabled = process.env.NODE_ENV !== 'production' } = options;
+	const { enabled = process.env.NODE_ENV !== 'production' } = options;
 
-  return {
-    name: 'click-to-source-preprocessor',
-    
-    markup({ content, filename }) {
-      if (!enabled || !filename) {
-        return { code: content };
-      }
+	return {
+		name: 'click-to-source-preprocessor',
 
-      if (filename.includes('node_modules') || filename.includes('.svelte-kit')) {
-        return { code: content };
-      }
+		markup({ content, filename }) {
+			if (!enabled || !filename) {
+				return { code: content };
+			}
 
-      try {
-        const s = new MagicString(content);
-        const insertions: Array<{ pos: number; text: string }> = [];
-        const excludedRanges = findExcludedRanges(content);
+			if (filename.includes('node_modules') || filename.includes('.svelte-kit')) {
+				return { code: content };
+			}
 
-        // Match opening HTML tags (lowercase only = native HTML elements)
-        const tagRegex = /<([a-z][a-z0-9-]*)([\s>\/])/gi;
-        let match;
+			try {
+				const s = new MagicString(content);
+				const insertions: Array<{ pos: number; text: string }> = [];
+				const excludedRanges = findExcludedRanges(content);
 
-        while ((match = tagRegex.exec(content)) !== null) {
-          const tagStart = match.index;
-          const tagName = match[1].toLowerCase();
-          const afterTagName = match.index + match[0].length - 1;
+				// Match opening HTML tags (lowercase only = native HTML elements)
+				const tagRegex = /<([a-z][a-z0-9-]*)([\s>/])/gi;
+				let match;
 
-          // Skip if inside <script> or <style> block
-          if (isInsideExcludedRange(tagStart, excludedRanges)) {
-            continue;
-          }
+				while ((match = tagRegex.exec(content)) !== null) {
+					const tagStart = match.index;
+					const tagName = match[1].toLowerCase();
+					const afterTagName = match.index + match[0].length - 1;
 
-          // Skip excluded tags
-          if (EXCLUDED_TAGS.has(tagName)) {
-            continue;
-          }
+					// Skip if inside <script> or <style> block
+					if (isInsideExcludedRange(tagStart, excludedRanges)) {
+						continue;
+					}
 
-          // Calculate line and column
-          const beforeTag = content.slice(0, tagStart);
-          const lines = beforeTag.split('\n');
-          const line = lines.length;
-          const column = lines[lines.length - 1].length + 1;
-          
-          // Create relative path
-          const relativePath = filename.replace(process.cwd() + '/', '');
-          const attr = ` data-source="${relativePath}:${line}:${column}"`;
-          
-          insertions.push({ pos: afterTagName, text: attr });
-        }
+					// Skip excluded tags
+					if (EXCLUDED_TAGS.has(tagName)) {
+						continue;
+					}
 
-        // Apply in reverse order
-        insertions
-          .sort((a, b) => b.pos - a.pos)
-          .forEach(({ pos, text }) => {
-            s.appendLeft(pos, text);
-          });
+					// Calculate line and column
+					const beforeTag = content.slice(0, tagStart);
+					const lines = beforeTag.split('\n');
+					const line = lines.length;
+					const column = lines[lines.length - 1].length + 1;
 
-        return {
-          code: s.toString(),
-          map: s.generateMap({ source: filename, hires: true }),
-        };
-      } catch (error) {
-        console.warn(`[click-to-source] Failed to process ${filename}:`, error);
-        return { code: content };
-      }
-    },
-  };
+					// Create relative path
+					const relativePath = filename.replace(process.cwd() + '/', '');
+					const attr = ` data-source="${relativePath}:${line}:${column}"`;
+
+					insertions.push({ pos: afterTagName, text: attr });
+				}
+
+				// Apply in reverse order
+				insertions
+					.sort((a, b) => b.pos - a.pos)
+					.forEach(({ pos, text }) => {
+						s.appendLeft(pos, text);
+					});
+
+				return {
+					code: s.toString(),
+					map: s.generateMap({ source: filename, hires: true })
+				};
+			} catch (error) {
+				console.warn(`[click-to-source] Failed to process ${filename}:`, error);
+				return { code: content };
+			}
+		}
+	};
 }
 
 export default createPreprocessor;

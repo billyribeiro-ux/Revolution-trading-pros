@@ -30,7 +30,7 @@
  * don't snapshot the entire template — that would be churny.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import {
 	detectEmbed,
 	isEmbedUrl,

@@ -14,25 +14,25 @@ break) an accurate map before they pick the work back up.
 
 ## 0. TL;DR for the dev meeting
 
-| Area | State | One-line |
-|------|-------|----------|
-| Auth — email/password login | ✅ working | Argon2id, JWT pair, httpOnly cookies, Redis revocation |
-| Auth — refresh + rotation | ✅ working | Refresh rotates on every use |
-| Auth — OAuth (Google + Apple) | ⚠ partial | PKCE on Google ✓, Apple uses state+nonce only; tokens travel in URL on callback |
-| Auth — MFA (TOTP) | 🟥 dormant | Service is implemented end-to-end but never called from `login` |
-| Auth — email verification | ⚠ tracked-but-not-enforced | `email_verified_at` is fetched and ignored except at login gate |
-| Auth — password reset | ✅ working | Hashed reset token, 1h TTL |
-| RBAC — backend gate | ✅ enforced | `AdminUser` extractor on every `/admin/*` route |
-| RBAC — frontend admin gate | 🟥 missing | `/admin/+layout.ts` has **no role check** |
-| ABAC — subscription gating | 🟥 not enforced server-side | Public course list serves all published courses regardless of plan |
-| ABAC — banned/inactive users | 🟥 not enforced | `is_active` only inspected by admin list endpoint |
-| CRUD — indicators / courses / cms / payments | ✅ full | three-tier (public/auth/admin) with revisions, Stripe wired |
-| CRUD — trading rooms | ⚠ partial | seed data + read-only routes; no admin CREATE/UPDATE/DELETE |
-| CRUD — user profile / settings | 🟥 missing | no self-service `PUT /users/:id` or change-password endpoint |
-| Products — indicators | ⚠ partial | model + delivery tokens complete; admin upload route disabled in mod.rs |
-| Products — courses | ✅ complete | three-tier, drip, prereqs, quizzes, Bunny Stream, progress |
-| Products — trading rooms | ✅ complete (read) | 6 rooms seeded; alerts/trades/plans + WebSocket real-time |
-| Products — pricing / Stripe | ⚠ partial | `// TODO: Create Stripe checkout session` in `subscriptions.rs:446` |
+| Area                                         | State                       | One-line                                                                        |
+| -------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------- |
+| Auth — email/password login                  | ✅ working                  | Argon2id, JWT pair, httpOnly cookies, Redis revocation                          |
+| Auth — refresh + rotation                    | ✅ working                  | Refresh rotates on every use                                                    |
+| Auth — OAuth (Google + Apple)                | ⚠ partial                   | PKCE on Google ✓, Apple uses state+nonce only; tokens travel in URL on callback |
+| Auth — MFA (TOTP)                            | 🟥 dormant                  | Service is implemented end-to-end but never called from `login`                 |
+| Auth — email verification                    | ⚠ tracked-but-not-enforced  | `email_verified_at` is fetched and ignored except at login gate                 |
+| Auth — password reset                        | ✅ working                  | Hashed reset token, 1h TTL                                                      |
+| RBAC — backend gate                          | ✅ enforced                 | `AdminUser` extractor on every `/admin/*` route                                 |
+| RBAC — frontend admin gate                   | 🟥 missing                  | `/admin/+layout.ts` has **no role check**                                       |
+| ABAC — subscription gating                   | 🟥 not enforced server-side | Public course list serves all published courses regardless of plan              |
+| ABAC — banned/inactive users                 | 🟥 not enforced             | `is_active` only inspected by admin list endpoint                               |
+| CRUD — indicators / courses / cms / payments | ✅ full                     | three-tier (public/auth/admin) with revisions, Stripe wired                     |
+| CRUD — trading rooms                         | ⚠ partial                   | seed data + read-only routes; no admin CREATE/UPDATE/DELETE                     |
+| CRUD — user profile / settings               | 🟥 missing                  | no self-service `PUT /users/:id` or change-password endpoint                    |
+| Products — indicators                        | ⚠ partial                   | model + delivery tokens complete; admin upload route disabled in mod.rs         |
+| Products — courses                           | ✅ complete                 | three-tier, drip, prereqs, quizzes, Bunny Stream, progress                      |
+| Products — trading rooms                     | ✅ complete (read)          | 6 rooms seeded; alerts/trades/plans + WebSocket real-time                       |
+| Products — pricing / Stripe                  | ⚠ partial                   | `// TODO: Create Stripe checkout session` in `subscriptions.rs:446`             |
 
 The DB outage that's blocking login right now ([§7](#7-current-incidents)) is
 **infrastructure**, not code. The `/api/health` route name was also wrong —
@@ -144,13 +144,13 @@ upper/lower/digit/special, no weak patterns.
 
 ### 2.1 Roles in the system
 
-| Role | Source of truth | Notes |
-|------|-----------------|-------|
+| Role                          | Source of truth                                                            | Notes                                                       |
+| ----------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | `super_admin` / `super-admin` | `api/src/middleware/admin.rs:76-77`; `frontend/src/lib/config/roles.ts:68` | Both hyphen and underscore variants are accepted everywhere |
-| `admin` | `api/src/middleware/admin.rs:27-30`; `roles.ts:70` | |
-| `developer` | `admin.rs:30`; `roles.ts:69` | Counts as admin in the backend extractor |
-| `member` | `roles.ts:71` (frontend only) | Not a backend role — derived via membership table |
-| `user` | `api/src/models/user.rs:126` (default) | Anyone authenticated |
+| `admin`                       | `api/src/middleware/admin.rs:27-30`; `roles.ts:70`                         |                                                             |
+| `developer`                   | `admin.rs:30`; `roles.ts:69`                                               | Counts as admin in the backend extractor                    |
+| `member`                      | `roles.ts:71` (frontend only)                                              | Not a backend role — derived via membership table           |
+| `user`                        | `api/src/models/user.rs:126` (default)                                     | Anyone authenticated                                        |
 
 The backend stores `role` as a single nullable string on `users`
 (`models/user.rs:20`). The API response converts that into a `roles: string[]`
@@ -177,8 +177,7 @@ All confirmed to use `AdminUser`.
 `frontend/src/hooks.server.ts:30` defines:
 
 ```ts
-const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout',
-                          '/trading-room', '/admin'];
+const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room', '/admin'];
 ```
 
 The hook ensures **authentication** before any protected route's load
@@ -198,7 +197,7 @@ same `/dashboard`.
 
 `frontend/src/lib/config/roles.ts` ships well-built helpers — `isAdmin`,
 `isSuperadmin`, `hasPermission` (lines 253-352). They're called by
-`AdminToolbar.svelte` and a handful of other components for *UI* gating
+`AdminToolbar.svelte` and a handful of other components for _UI_ gating
 ("hide this button"), but **no route guard uses them**.
 
 ---
@@ -215,6 +214,7 @@ From `api/src/models/user.rs:12-29`:
 - (derived in `UserResponse`) `is_admin`, `permissions`
 
 Missing or off-model:
+
 - `is_active` exists in the SQL (`admin.rs:82` queries it) but is **not
   loaded into the `User` struct** that flows through middleware. Banned
   users keep working tokens until expiry.
@@ -224,15 +224,15 @@ Missing or off-model:
 
 ### 3.2 Where ABAC is and isn't enforced
 
-| Surface | Check that exists | Status |
-|---------|-------------------|--------|
-| Login | email_verified_at must be set (unless dev/superadmin) | ✅ enforced (`auth.rs:623-642`) |
-| Public course list | required_plan_id field exists on courses | 🟥 not consulted by `member_courses.rs:54-86` |
-| Course detail / video URL | Bunny Stream URL served directly | 🟥 no membership check on the read path |
-| Trading rooms | `is_public` on the room | ⚠ checked for visibility, not for join/alert push |
-| Indicator download | Token-based, expiring, IP-bound | ✅ proper ABAC via `IndicatorDownload` (`models/indicator.rs:156-173`) — best-built control in the repo |
-| Banned user | `is_active=false` on row | 🟥 never read by middleware |
-| Email-unverified user | `email_verified_at` NULL | 🟥 only checked at login; cached tokens stay valid |
+| Surface                   | Check that exists                                     | Status                                                                                                  |
+| ------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Login                     | email_verified_at must be set (unless dev/superadmin) | ✅ enforced (`auth.rs:623-642`)                                                                         |
+| Public course list        | required_plan_id field exists on courses              | 🟥 not consulted by `member_courses.rs:54-86`                                                           |
+| Course detail / video URL | Bunny Stream URL served directly                      | 🟥 no membership check on the read path                                                                 |
+| Trading rooms             | `is_public` on the room                               | ⚠ checked for visibility, not for join/alert push                                                       |
+| Indicator download        | Token-based, expiring, IP-bound                       | ✅ proper ABAC via `IndicatorDownload` (`models/indicator.rs:156-173`) — best-built control in the repo |
+| Banned user               | `is_active=false` on row                              | 🟥 never read by middleware                                                                             |
+| Email-unverified user     | `email_verified_at` NULL                              | 🟥 only checked at login; cached tokens stay valid                                                      |
 
 So ownership for paid digital downloads (indicators) is solid. Streamed
 content (videos, course lessons, room alerts) is currently **trust-the-frontend**.
@@ -250,6 +250,7 @@ subscriptions · categories · tags · search · videos · forms / newsletter ·
 media library.
 
 **Partial (4):**
+
 - **Trading rooms** — read-only public + admin reads. No admin
   CREATE/UPDATE/DELETE for rooms themselves. Alerts within a room are full
   CRUD (`room_content.rs:232-280`).
@@ -261,6 +262,7 @@ media library.
   CRUD is missing.
 
 **Routes that look stubbed:**
+
 - `admin_indicators.rs` upload routes are referenced but the wiring in
   `routes/mod.rs:40, 109` looks disabled — admin can manage metadata, can't
   push the actual file.
@@ -295,7 +297,7 @@ media library.
 - **Gap:** the upload pipeline that fills `cdn_url` and the Bunny-Stream
   preview videos isn't wired. `admin_indicators.rs` exists but the upload
   routes appear disabled in `routes/mod.rs`. So today an indicator can be
-  *modeled* but not *delivered*.
+  _modeled_ but not _delivered_.
 
 ### 5.2 Courses — complete
 
@@ -321,6 +323,7 @@ media library.
 ### 5.3 Trading rooms — complete on the read path
 
 Six rooms seeded in `trading_rooms.rs:87-100`+:
+
 1. Day Trading Room
 2. Swing Trading Room
 3. Small Account Mentorship (`room_type: "mentorship"`)
@@ -329,6 +332,7 @@ Six rooms seeded in `trading_rooms.rs:87-100`+:
 6. High Octane Scanner
 
 Per-room data:
+
 - `RoomAlert` (`room_content.rs:67-89`) — alert_type, symbol,
   entry/exit alert linkage, expandable notes.
 - `TradePlan` (`room_content.rs:156-177`) — entry / target / stop /
@@ -344,13 +348,13 @@ Frontend: `/live-trading-rooms/`, `/live-trading-rooms/day-trading/`,
 
 ### 5.4 Other offerings
 
-| Offering | Where it lives | State |
-|----------|----------------|-------|
-| Alert Services (Explosive Swings, SPX Profit Pulse) | `RoomAlert` rows on the relevant rooms; frontend `/alerts/explosive-swings`, `/alerts/spx-profit-pulse` | ✅ wired through trading-room model |
-| Mentorship | `room_type: "mentorship"` on the Small Account room | ⚠ exists as a flag; no scheduling / 1-on-1 model |
-| Newsletter | `models/newsletter.rs:12-37` (with GDPR consent fields), `routes/newsletter.rs` | ⚠ subscribe / token-confirm / unsubscribe wired; `newsletter.rs:251` and `:318` have `// TODO: actually send confirmation email` |
-| Blog / Posts | `models/post.rs:24-48` (rich SEO), `routes/posts.rs`, `frontend/src/routes/blog/`, `frontend/src/routes/posts/`, homepage `LatestBlogsSection` | ✅ complete |
-| Options Calculator | None on `main` at this commit | 🟥 referenced in older git history, not present here |
+| Offering                                            | Where it lives                                                                                                                                 | State                                                                                                                            |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Alert Services (Explosive Swings, SPX Profit Pulse) | `RoomAlert` rows on the relevant rooms; frontend `/alerts/explosive-swings`, `/alerts/spx-profit-pulse`                                        | ✅ wired through trading-room model                                                                                              |
+| Mentorship                                          | `room_type: "mentorship"` on the Small Account room                                                                                            | ⚠ exists as a flag; no scheduling / 1-on-1 model                                                                                 |
+| Newsletter                                          | `models/newsletter.rs:12-37` (with GDPR consent fields), `routes/newsletter.rs`                                                                | ⚠ subscribe / token-confirm / unsubscribe wired; `newsletter.rs:251` and `:318` have `// TODO: actually send confirmation email` |
+| Blog / Posts                                        | `models/post.rs:24-48` (rich SEO), `routes/posts.rs`, `frontend/src/routes/blog/`, `frontend/src/routes/posts/`, homepage `LatestBlogsSection` | ✅ complete                                                                                                                      |
+| Options Calculator                                  | None on `main` at this commit                                                                                                                  | 🟥 referenced in older git history, not present here                                                                             |
 
 ### 5.5 Pricing & Stripe
 
@@ -383,19 +387,19 @@ funnel.
 
 Found in source via grep:
 
-| Location | Note |
-|----------|------|
-| `api/src/routes/subscriptions.rs:446` | `// TODO: Create Stripe checkout session` |
-| `api/src/routes/websocket.rs:344` | `// TODO: Validate JWT tokens` |
-| `api/src/routes/newsletter.rs:251, :318` | `// TODO: Actually send confirmation email` |
-| `api/src/routes/email_templates.rs:384` | `// TODO: Integrate (Postmark/SendGrid/etc.)` |
+| Location                                          | Note                                                                    |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| `api/src/routes/subscriptions.rs:446`             | `// TODO: Create Stripe checkout session`                               |
+| `api/src/routes/websocket.rs:344`                 | `// TODO: Validate JWT tokens`                                          |
+| `api/src/routes/newsletter.rs:251, :318`          | `// TODO: Actually send confirmation email`                             |
+| `api/src/routes/email_templates.rs:384`           | `// TODO: Integrate (Postmark/SendGrid/etc.)`                           |
 | `api/src/routes/admin_videos.rs:323-324, 644-645` | `// TODO` fetch trader/room metadata; this_week/this_month aggregations |
-| `api/src/routes/media.rs:1174` | `// TODO: Integrate scanning service` (malware) |
-| `api/src/routes/oauth.rs:840-844, 1070-1084` | Tokens travel in URL query string; comment acknowledges concern |
-| `api/src/middleware/auth.rs:68-75` | Redis blacklist check **fails open** if Redis is unreachable |
-| `api/src/routes/mod.rs:40, 109` | Indicator file-upload routes appear commented/disabled |
-| `frontend/src/routes/admin/+layout.ts:1-4` | No role check — only disables SSR |
-| `frontend/src/routes/dashboard/+layout.server.ts` | No role-aware redirect |
+| `api/src/routes/media.rs:1174`                    | `// TODO: Integrate scanning service` (malware)                         |
+| `api/src/routes/oauth.rs:840-844, 1070-1084`      | Tokens travel in URL query string; comment acknowledges concern         |
+| `api/src/middleware/auth.rs:68-75`                | Redis blacklist check **fails open** if Redis is unreachable            |
+| `api/src/routes/mod.rs:40, 109`                   | Indicator file-upload routes appear commented/disabled                  |
+| `frontend/src/routes/admin/+layout.ts:1-4`        | No role check — only disables SSR                                       |
+| `frontend/src/routes/dashboard/+layout.server.ts` | No role-aware redirect                                                  |
 
 ---
 
@@ -511,13 +515,13 @@ should match it.
 
 ### 10.2 The four primitives (quick reference)
 
-| Primitive | When to use | Imports |
-|-----------|-------------|---------|
-| `query` | Read dynamic data; deduped + cached per page | `import { query } from '$app/server'` |
-| `query.batch` | Multiple instances on the same page (n+1 killer) | same |
-| `prerender` | Read static-ish data (changes ≤ once per deploy) | `import { prerender } from '$app/server'` |
-| `form` | Mutations, must work without JS | `import { form } from '$app/server'` |
-| `command` | Mutations from event handlers (no `<form>`) | `import { command } from '$app/server'` |
+| Primitive     | When to use                                      | Imports                                   |
+| ------------- | ------------------------------------------------ | ----------------------------------------- |
+| `query`       | Read dynamic data; deduped + cached per page     | `import { query } from '$app/server'`     |
+| `query.batch` | Multiple instances on the same page (n+1 killer) | same                                      |
+| `prerender`   | Read static-ish data (changes ≤ once per deploy) | `import { prerender } from '$app/server'` |
+| `form`        | Mutations, must work without JS                  | `import { form } from '$app/server'`      |
+| `command`     | Mutations from event handlers (no `<form>`)      | `import { command } from '$app/server'`   |
 
 All accept a Valibot/Zod schema as the first argument (we already use
 Valibot — see `frontend/src/lib/shared/schemas/`). Skip with `'unchecked'`
@@ -545,22 +549,22 @@ Ranked by ROI in this codebase:
 
 #### Tier 1 — clear wins (do these first)
 
-| Target | Replaces | Notes |
-|--------|----------|-------|
-| **All `frontend/src/routes/api/auth/*/+server.ts` proxies (12 files)** | The 12 manually-coded fetch proxies that re-stringify cookies and forward bodies | Most fit naturally as `command` (login, register, refresh, logout, forgot-password, reset-password, resend-verification, set-session). `me` becomes a `query`. The proxy logic lives once, in one file (`$lib/server/auth.remote.ts`), instead of 12. |
-| **`/api/posts` listing on the homepage** | The SSR `fetch` in `+page.server.ts` that's currently retry-looping during the DB outage | Convert to `prerender` (rebuild on deploy) — also fixes the homepage hanging when the API is down. |
-| **CMS asset list / page list / categories / tags** | Multiple `+server.ts` proxies under `frontend/src/routes/api/` for read paths | All read-mostly, all heavily deduped on admin pages, all benefit from `query.batch`. |
-| **Indicator + course detail pages** | `+page.server.ts` `load` + `+server.ts` proxy combo | Use `query` with a slug schema; pre-rendered example pages (rsi, macd, day-trading-masterclass, etc.) become `prerender` with `inputs`. |
-| **Any `<form>` that currently submits to `+server.ts`** | Manual fetch-then-redirect handlers | `form` upgrades them with progressive enhancement, schema validation, and field-level error display "for free". |
+| Target                                                                 | Replaces                                                                                 | Notes                                                                                                                                                                                                                                                 |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **All `frontend/src/routes/api/auth/*/+server.ts` proxies (12 files)** | The 12 manually-coded fetch proxies that re-stringify cookies and forward bodies         | Most fit naturally as `command` (login, register, refresh, logout, forgot-password, reset-password, resend-verification, set-session). `me` becomes a `query`. The proxy logic lives once, in one file (`$lib/server/auth.remote.ts`), instead of 12. |
+| **`/api/posts` listing on the homepage**                               | The SSR `fetch` in `+page.server.ts` that's currently retry-looping during the DB outage | Convert to `prerender` (rebuild on deploy) — also fixes the homepage hanging when the API is down.                                                                                                                                                    |
+| **CMS asset list / page list / categories / tags**                     | Multiple `+server.ts` proxies under `frontend/src/routes/api/` for read paths            | All read-mostly, all heavily deduped on admin pages, all benefit from `query.batch`.                                                                                                                                                                  |
+| **Indicator + course detail pages**                                    | `+page.server.ts` `load` + `+server.ts` proxy combo                                      | Use `query` with a slug schema; pre-rendered example pages (rsi, macd, day-trading-masterclass, etc.) become `prerender` with `inputs`.                                                                                                               |
+| **Any `<form>` that currently submits to `+server.ts`**                | Manual fetch-then-redirect handlers                                                      | `form` upgrades them with progressive enhancement, schema validation, and field-level error display "for free".                                                                                                                                       |
 
 #### Tier 2 — solid wins, more invasive
 
-| Target | Replaces | Notes |
-|--------|----------|-------|
-| **Trading-room alerts feed** | The current SvelteKit endpoint that proxies `/api/rooms/:slug/alerts` plus a separate WebSocket subscription | Use `query` for the initial load + an `$effect` that calls `.refresh()` on WebSocket message. Pairs well with `query.batch` if the same page shows alerts for multiple rooms. |
-| **Course player progress updates** | A hand-rolled fetch-and-PUT on every video tick | `command` with debounce; on success use `requested(getEnrollment, 1).refreshAll()` to single-flight-refresh the dashboard. |
-| **Admin CMS page editor** | The big editor page that shotguns reads through several proxies on mount | `query.batch` for the parallel reads + `command` for saves. The autosave story becomes "submit; SvelteKit refreshes the queries; UI re-renders" instead of manual cache busting. |
-| **Watchlist / Favorites / Connections** | The currently-read-only routes | When we add CREATE/UPDATE/DELETE (currently a [§4](#4-crud-coverage) gap) build them as `command`s from day one. |
+| Target                                  | Replaces                                                                                                     | Notes                                                                                                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Trading-room alerts feed**            | The current SvelteKit endpoint that proxies `/api/rooms/:slug/alerts` plus a separate WebSocket subscription | Use `query` for the initial load + an `$effect` that calls `.refresh()` on WebSocket message. Pairs well with `query.batch` if the same page shows alerts for multiple rooms.    |
+| **Course player progress updates**      | A hand-rolled fetch-and-PUT on every video tick                                                              | `command` with debounce; on success use `requested(getEnrollment, 1).refreshAll()` to single-flight-refresh the dashboard.                                                       |
+| **Admin CMS page editor**               | The big editor page that shotguns reads through several proxies on mount                                     | `query.batch` for the parallel reads + `command` for saves. The autosave story becomes "submit; SvelteKit refreshes the queries; UI re-renders" instead of manual cache busting. |
+| **Watchlist / Favorites / Connections** | The currently-read-only routes                                                                               | When we add CREATE/UPDATE/DELETE (currently a [§4](#4-crud-coverage) gap) build them as `command`s from day one.                                                                 |
 
 #### Tier 3 — keep what you have
 
@@ -582,17 +586,17 @@ Verified in `dashboard/explosive-swings/{data,commands}.remote.ts`:
 // data.remote.ts  (queries — reads)
 import * as v from 'valibot';
 import { query, getRequestEvent } from '$app/server';
-import { axumPosts } from '$lib/server/axum';                // server-only API client
+import { axumPosts } from '$lib/server/axum'; // server-only API client
 import { FetchPostsInputSchema } from '$lib/shared/schemas/posts';
 
 export const getPosts = query(FetchPostsInputSchema, async (input) => {
-  return await axumPosts.list(input);
+	return await axumPosts.list(input);
 });
 
 export const getPost = query(v.string(), async (slug) => {
-  const post = await axumPosts.bySlug(slug);
-  if (!post) error(404, 'Not found');
-  return post;
+	const post = await axumPosts.bySlug(slug);
+	if (!post) error(404, 'Not found');
+	return post;
 });
 ```
 
@@ -606,19 +610,19 @@ import { CreatePostInputSchema } from '$lib/shared/schemas/posts';
 import { getPosts } from './data.remote';
 
 async function requireAdmin() {
-  const event = getRequestEvent();
-  const token = event.locals.accessToken ?? event.cookies.get('rtp_access_token');
-  if (!token) error(401, 'Authentication required');
-  if (!(await axumAuth.checkAdminStatus())) error(403, 'Admin access required');
+	const event = getRequestEvent();
+	const token = event.locals.accessToken ?? event.cookies.get('rtp_access_token');
+	if (!token) error(401, 'Authentication required');
+	if (!(await axumAuth.checkAdminStatus())) error(403, 'Admin access required');
 }
 
 export const createPost = command(CreatePostInputSchema, async (input) => {
-  await requireAdmin();
-  const post = await axumPosts.create(input);
+	await requireAdmin();
+	const post = await axumPosts.create(input);
 
-  // Single-flight: refresh any active getPosts(...) instances in the same response
-  await requested(getPosts, 5).refreshAll();
-  return post;
+	// Single-flight: refresh any active getPosts(...) instances in the same response
+	await requested(getPosts, 5).refreshAll();
+	return post;
 });
 ```
 
@@ -702,7 +706,7 @@ path but make the unhappy paths correct.
   `@sveltejs/kit` exactly (currently `^2.x`) and read the changelog before
   upgrading.
 - **`getRequestEvent()` is partially stubbed** in remote-function context
-  — `route`, `params`, `url` refer to the *page that called the remote*,
+  — `route`, `params`, `url` refer to the _page that called the remote_,
   not the remote-function endpoint itself. Don't use them for authz
   decisions. Use cookies / locals / the function arguments.
 - **Don't put a `.remote.ts` file in `src/lib/server/`.** SvelteKit
@@ -723,35 +727,35 @@ path but make the unhappy paths correct.
 (Brief; full citations in the audit-agent transcript that produced this
 doc.)
 
-| Resource | File | C | R | U | D | Auth |
-|----------|------|---|---|---|---|------|
-| Indicators (public) | `routes/indicators.rs` | ❌ | ✓ | ❌ | ❌ | public |
-| Indicators (admin) | `routes/indicators_admin.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Indicators (member) | `routes/member_indicators.rs` | ❌ | ✓ | ❌ | ❌ | auth |
-| Indicator videos | `routes/indicators_admin.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Platform files | `routes/indicators_admin.rs` | ✓ | ✓ | ✓ | ✓ | admin (mounts may be disabled) |
-| Courses (public) | `routes/courses.rs` | ❌ | ✓ | ❌ | ❌ | public |
-| Courses (admin) | `routes/courses_admin.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Courses (member) | `routes/member_courses.rs` | ❌ | ✓ | ✓ (progress) | ❌ | auth |
-| Modules / Lessons / Live sessions / Enrollments / Quizzes | `routes/courses_admin.rs`, `routes/member_courses.rs` | ✓ | ✓ | ✓ | ✓ | admin / auth |
-| Trading rooms | `routes/trading_rooms.rs` | ❌ | ✓ | ❌ | ❌ | public |
-| Room alerts / trades / plans / resources | `routes/room_content.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Posts | `routes/posts.rs` | ✓ | ✓ | ✓ | ✓ | admin (write) / public (read) |
-| Users (admin) | `routes/admin.rs`, `admin_members.rs` | ✓ | ✓ | ✓ | ✓ (ban) | admin |
-| Users (self) | — | ❌ | ❌ | 🟥 missing | ❌ | n/a |
-| Subscription plans | `routes/subscriptions.rs` | ❌ | ✓ | ❌ | ❌ | public |
-| Member subscriptions | `routes/subscriptions.rs` | ✓ | ✓ | ✓ (change) | ✓ (cancel) | auth |
-| Orders | `routes/orders.rs` | ❌ | ✓ | ✓ (status / refund) | ❌ | auth / admin |
-| Coupons | `routes/coupons.rs` | ✓ | ✓ | ✓ | ✓ (deactivate) | admin |
-| Stripe | `routes/payments.rs` | ✓ (checkout — STUB), ✓ (webhook) | ✓ (config) | ❌ | ❌ | public / webhook |
-| CMS pages / assets / revisions / tags / blocks / presets / SEO | `routes/cms_v2*.rs`, `cms_*.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Categories | `routes/categories.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Tags | `routes/tags.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Search | `routes/search.rs` | ❌ | ✓ | ❌ | ❌ | public |
-| Forms / Submissions | `routes/forms.rs` | ✓ | ✓ | ✓ | ✓ | admin (public submit) |
-| Newsletter | `routes/newsletter.rs` | ✓ (subscribe) | ✓ | ❌ | ✓ | public + admin |
-| Email templates | `routes/email_templates.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Videos (admin) | `routes/admin_videos.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| Media library | `routes/media.rs` | ✓ | ✓ | ✓ | ✓ | admin |
-| WebSocket / SSE | `routes/websocket.rs`, `realtime.rs` | n/a | ✓ (subscribe) | n/a | n/a | public (auth TODO) |
-| Watchlist / Favorites / Connections | resp. `.rs` | ❌ | ✓ | ❌ | ❌ | auth |
+| Resource                                                       | File                                                  | C                                | R             | U                   | D              | Auth                           |
+| -------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------- | ------------- | ------------------- | -------------- | ------------------------------ |
+| Indicators (public)                                            | `routes/indicators.rs`                                | ❌                               | ✓             | ❌                  | ❌             | public                         |
+| Indicators (admin)                                             | `routes/indicators_admin.rs`                          | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Indicators (member)                                            | `routes/member_indicators.rs`                         | ❌                               | ✓             | ❌                  | ❌             | auth                           |
+| Indicator videos                                               | `routes/indicators_admin.rs`                          | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Platform files                                                 | `routes/indicators_admin.rs`                          | ✓                                | ✓             | ✓                   | ✓              | admin (mounts may be disabled) |
+| Courses (public)                                               | `routes/courses.rs`                                   | ❌                               | ✓             | ❌                  | ❌             | public                         |
+| Courses (admin)                                                | `routes/courses_admin.rs`                             | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Courses (member)                                               | `routes/member_courses.rs`                            | ❌                               | ✓             | ✓ (progress)        | ❌             | auth                           |
+| Modules / Lessons / Live sessions / Enrollments / Quizzes      | `routes/courses_admin.rs`, `routes/member_courses.rs` | ✓                                | ✓             | ✓                   | ✓              | admin / auth                   |
+| Trading rooms                                                  | `routes/trading_rooms.rs`                             | ❌                               | ✓             | ❌                  | ❌             | public                         |
+| Room alerts / trades / plans / resources                       | `routes/room_content.rs`                              | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Posts                                                          | `routes/posts.rs`                                     | ✓                                | ✓             | ✓                   | ✓              | admin (write) / public (read)  |
+| Users (admin)                                                  | `routes/admin.rs`, `admin_members.rs`                 | ✓                                | ✓             | ✓                   | ✓ (ban)        | admin                          |
+| Users (self)                                                   | —                                                     | ❌                               | ❌            | 🟥 missing          | ❌             | n/a                            |
+| Subscription plans                                             | `routes/subscriptions.rs`                             | ❌                               | ✓             | ❌                  | ❌             | public                         |
+| Member subscriptions                                           | `routes/subscriptions.rs`                             | ✓                                | ✓             | ✓ (change)          | ✓ (cancel)     | auth                           |
+| Orders                                                         | `routes/orders.rs`                                    | ❌                               | ✓             | ✓ (status / refund) | ❌             | auth / admin                   |
+| Coupons                                                        | `routes/coupons.rs`                                   | ✓                                | ✓             | ✓                   | ✓ (deactivate) | admin                          |
+| Stripe                                                         | `routes/payments.rs`                                  | ✓ (checkout — STUB), ✓ (webhook) | ✓ (config)    | ❌                  | ❌             | public / webhook               |
+| CMS pages / assets / revisions / tags / blocks / presets / SEO | `routes/cms_v2*.rs`, `cms_*.rs`                       | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Categories                                                     | `routes/categories.rs`                                | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Tags                                                           | `routes/tags.rs`                                      | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Search                                                         | `routes/search.rs`                                    | ❌                               | ✓             | ❌                  | ❌             | public                         |
+| Forms / Submissions                                            | `routes/forms.rs`                                     | ✓                                | ✓             | ✓                   | ✓              | admin (public submit)          |
+| Newsletter                                                     | `routes/newsletter.rs`                                | ✓ (subscribe)                    | ✓             | ❌                  | ✓              | public + admin                 |
+| Email templates                                                | `routes/email_templates.rs`                           | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Videos (admin)                                                 | `routes/admin_videos.rs`                              | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| Media library                                                  | `routes/media.rs`                                     | ✓                                | ✓             | ✓                   | ✓              | admin                          |
+| WebSocket / SSE                                                | `routes/websocket.rs`, `realtime.rs`                  | n/a                              | ✓ (subscribe) | n/a                 | n/a            | public (auth TODO)             |
+| Watchlist / Favorites / Connections                            | resp. `.rs`                                           | ❌                               | ✓             | ❌                  | ❌             | auth                           |

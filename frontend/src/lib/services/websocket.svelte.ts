@@ -210,7 +210,7 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 	// REACTIVE STATE (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let state = $state<WebSocketState>({
+	const state = $state<WebSocketState>({
 		isConnected: false,
 		isReconnecting: false,
 		lastMessage: null,
@@ -229,7 +229,7 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 	let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 	let heartbeatTimer: ReturnType<typeof setTimeout> | null = null;
 	const messageHandlers = new Set<MessageHandler>();
-	let messageQueue: ClientMessage[] = [];
+	const messageQueue: ClientMessage[] = [];
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPER FUNCTIONS
@@ -248,7 +248,11 @@ export function createWebSocketService(initialRooms: string | string[] = []) {
 		if (!envWsUrl) return '';
 
 		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
-		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && envWsUrl.startsWith('ws:')) {
+		if (
+			typeof window !== 'undefined' &&
+			window.location.protocol === 'https:' &&
+			envWsUrl.startsWith('ws:')
+		) {
 			return '';
 		}
 

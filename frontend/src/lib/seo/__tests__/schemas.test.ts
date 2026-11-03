@@ -6,7 +6,7 @@
  * exact things Google Rich Results validators reject.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import {
 	buildBreadcrumb,
 	buildArticle,

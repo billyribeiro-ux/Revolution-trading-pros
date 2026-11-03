@@ -27,7 +27,11 @@ export const WS_URL = import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL;
 export function getSafeWsUrl(path: string = ''): string | null {
 	const raw = import.meta.env['VITE_WS_URL'] || PRODUCTION_WS_URL;
 	if (!raw) return null;
-	if (typeof window !== 'undefined' && window.location.protocol === 'https:' && raw.startsWith('ws:')) {
+	if (
+		typeof window !== 'undefined' &&
+		window.location.protocol === 'https:' &&
+		raw.startsWith('ws:')
+	) {
 		return null;
 	}
 	const cleanBase = raw.replace(/\/+$/, '');

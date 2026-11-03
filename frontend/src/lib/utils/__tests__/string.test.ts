@@ -16,7 +16,7 @@
  *   - randomString: returns the requested length from the allowed alphabet.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import {
 	truncate,
 	slugify,

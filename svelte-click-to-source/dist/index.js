@@ -1,9 +1,15 @@
-// src/index.ts
 import { exec } from "child_process";
 import { existsSync } from "fs";
-
+import MagicString from "magic-string";
 // src/runtime.ts
-var RUNTIME_SCRIPT = `
+/**
+* Runtime Inspector for click-to-source
+*
+* Injected into the browser in dev mode.
+* On ALT+Click, sends a fetch request to the Vite dev server middleware
+* which opens the file in the editor via CLI command.
+*/
+const RUNTIME_SCRIPT = `
 (function() {
   'use strict';
 
@@ -140,209 +146,196 @@ var RUNTIME_SCRIPT = `
   }
 })();
 `;
-
 // src/preprocessor.ts
-import MagicString from "magic-string";
-var EXCLUDED_TAGS = /* @__PURE__ */ new Set([
-  "script",
-  "style",
-  "title",
-  "slot",
-  "head",
-  "svelte:head",
-  "svelte:body",
-  "svelte:window",
-  "svelte:document",
-  "svelte:component",
-  "svelte:self",
-  "svelte:fragment",
-  "svelte:element",
-  "svelte:options",
-  "svelte:boundary"
+const EXCLUDED_TAGS = /* @__PURE__ */ new Set([
+	"script",
+	"style",
+	"title",
+	"slot",
+	"head",
+	"svelte:head",
+	"svelte:body",
+	"svelte:window",
+	"svelte:document",
+	"svelte:component",
+	"svelte:self",
+	"svelte:fragment",
+	"svelte:element",
+	"svelte:options",
+	"svelte:boundary"
 ]);
+/**
+* Find all ranges in the source that are inside <script> or <style> blocks.
+* We must not inject data-source attributes inside these blocks.
+*/
 function findExcludedRanges(content) {
-  const ranges = [];
-  const blockRegex = /<(script|style)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
-  let match;
-  while ((match = blockRegex.exec(content)) !== null) {
-    ranges.push({ start: match.index, end: match.index + match[0].length });
-  }
-  return ranges;
+	const ranges = [];
+	const blockRegex = /<(script|style)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
+	let match;
+	while ((match = blockRegex.exec(content)) !== null) ranges.push({
+		start: match.index,
+		end: match.index + match[0].length
+	});
+	return ranges;
 }
 function isInsideExcludedRange(pos, ranges) {
-  return ranges.some((r) => pos >= r.start && pos < r.end);
+	return ranges.some((r) => pos >= r.start && pos < r.end);
 }
 function createPreprocessor(options = {}) {
-  const { enabled = process.env.NODE_ENV !== "production" } = options;
-  return {
-    name: "click-to-source-preprocessor",
-    markup({ content, filename }) {
-      if (!enabled || !filename) {
-        return { code: content };
-      }
-      if (filename.includes("node_modules") || filename.includes(".svelte-kit")) {
-        return { code: content };
-      }
-      try {
-        const s = new MagicString(content);
-        const insertions = [];
-        const excludedRanges = findExcludedRanges(content);
-        const tagRegex = /<([a-z][a-z0-9-]*)([\s>\/])/gi;
-        let match;
-        while ((match = tagRegex.exec(content)) !== null) {
-          const tagStart = match.index;
-          const tagName = match[1].toLowerCase();
-          const afterTagName = match.index + match[0].length - 1;
-          if (isInsideExcludedRange(tagStart, excludedRanges)) {
-            continue;
-          }
-          if (EXCLUDED_TAGS.has(tagName)) {
-            continue;
-          }
-          const beforeTag = content.slice(0, tagStart);
-          const lines = beforeTag.split("\n");
-          const line = lines.length;
-          const column = lines[lines.length - 1].length + 1;
-          const relativePath = filename.replace(process.cwd() + "/", "");
-          const attr = ` data-source="${relativePath}:${line}:${column}"`;
-          insertions.push({ pos: afterTagName, text: attr });
-        }
-        insertions.sort((a, b) => b.pos - a.pos).forEach(({ pos, text }) => {
-          s.appendLeft(pos, text);
-        });
-        return {
-          code: s.toString(),
-          map: s.generateMap({ source: filename, hires: true })
-        };
-      } catch (error) {
-        console.warn(`[click-to-source] Failed to process ${filename}:`, error);
-        return { code: content };
-      }
-    }
-  };
+	const { enabled = process.env.NODE_ENV !== "production" } = options;
+	return {
+		name: "click-to-source-preprocessor",
+		markup({ content, filename }) {
+			if (!enabled || !filename) return { code: content };
+			if (filename.includes("node_modules") || filename.includes(".svelte-kit")) return { code: content };
+			try {
+				const s = new MagicString(content);
+				const insertions = [];
+				const excludedRanges = findExcludedRanges(content);
+				const tagRegex = /<([a-z][a-z0-9-]*)([\s>\/])/gi;
+				let match;
+				while ((match = tagRegex.exec(content)) !== null) {
+					const tagStart = match.index;
+					const tagName = match[1].toLowerCase();
+					const afterTagName = match.index + match[0].length - 1;
+					if (isInsideExcludedRange(tagStart, excludedRanges)) continue;
+					if (EXCLUDED_TAGS.has(tagName)) continue;
+					const lines = content.slice(0, tagStart).split("\n");
+					const line = lines.length;
+					const column = lines[lines.length - 1].length + 1;
+					const attr = ` data-source="${filename.replace(process.cwd() + "/", "")}:${line}:${column}"`;
+					insertions.push({
+						pos: afterTagName,
+						text: attr
+					});
+				}
+				insertions.sort((a, b) => b.pos - a.pos).forEach(({ pos, text }) => {
+					s.appendLeft(pos, text);
+				});
+				return {
+					code: s.toString(),
+					map: s.generateMap({
+						source: filename,
+						hires: true
+					})
+				};
+			} catch (error) {
+				console.warn(`[click-to-source] Failed to process ${filename}:`, error);
+				return { code: content };
+			}
+		}
+	};
 }
-
 // src/index.ts
-var VIRTUAL_MODULE_ID = "virtual:click-to-source";
-var RESOLVED_VIRTUAL_MODULE_ID = "\0" + VIRTUAL_MODULE_ID;
-var OPEN_ENDPOINT = "/__click-to-source-open";
+const VIRTUAL_MODULE_ID = "virtual:click-to-source";
+const RESOLVED_VIRTUAL_MODULE_ID = "\0" + VIRTUAL_MODULE_ID;
+const OPEN_ENDPOINT = "/__click-to-source-open";
 function detectEditor() {
-  const termProgram = process.env.TERM_PROGRAM?.toLowerCase() || "";
-  const editor = process.env.EDITOR?.toLowerCase() || "";
-  const visual = process.env.VISUAL?.toLowerCase() || "";
-  if (termProgram.includes("cursor") || editor.includes("cursor")) return "cursor";
-  if (termProgram.includes("windsurf") || editor.includes("windsurf")) return "windsurf";
-  if (editor.includes("nvim") || visual.includes("nvim")) return "neovim";
-  if (editor.includes("vim") || visual.includes("vim")) return "vim";
-  if (editor.includes("webstorm") || visual.includes("webstorm")) return "webstorm";
-  return "vscode";
+	const termProgram = process.env.TERM_PROGRAM?.toLowerCase() || "";
+	const editor = process.env.EDITOR?.toLowerCase() || "";
+	const visual = process.env.VISUAL?.toLowerCase() || "";
+	if (termProgram.includes("cursor") || editor.includes("cursor")) return "cursor";
+	if (termProgram.includes("windsurf") || editor.includes("windsurf")) return "windsurf";
+	if (editor.includes("nvim") || visual.includes("nvim")) return "neovim";
+	if (editor.includes("vim") || visual.includes("vim")) return "vim";
+	if (editor.includes("webstorm") || visual.includes("webstorm")) return "webstorm";
+	return "vscode";
 }
 function getEditorCommand(editor) {
-  const editorPaths = {
-    vscode: ["code", "/usr/local/bin/code", "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"],
-    cursor: ["cursor", "/usr/local/bin/cursor", "/Applications/Cursor.app/Contents/Resources/app/bin/cursor"],
-    windsurf: ["windsurf", "/usr/local/bin/windsurf", "/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf"],
-    webstorm: ["webstorm", "/usr/local/bin/webstorm"],
-    vim: ["vim"],
-    neovim: ["nvim"]
-  };
-  const paths = editorPaths[editor] || editorPaths.vscode;
-  for (const p of paths) {
-    if (p.startsWith("/") && existsSync(p)) return p;
-  }
-  return paths[0];
+	const editorPaths = {
+		vscode: [
+			"code",
+			"/usr/local/bin/code",
+			"/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+		],
+		cursor: [
+			"cursor",
+			"/usr/local/bin/cursor",
+			"/Applications/Cursor.app/Contents/Resources/app/bin/cursor"
+		],
+		windsurf: [
+			"windsurf",
+			"/usr/local/bin/windsurf",
+			"/Applications/Windsurf.app/Contents/Resources/app/bin/windsurf"
+		],
+		webstorm: ["webstorm", "/usr/local/bin/webstorm"],
+		vim: ["vim"],
+		neovim: ["nvim"]
+	};
+	const paths = editorPaths[editor] || editorPaths.vscode;
+	for (const p of paths) if (p.startsWith("/") && existsSync(p)) return p;
+	return paths[0];
 }
 function clickToSource(options = {}) {
-  const {
-    hotkey = "alt",
-    editor = detectEditor(),
-    highlight = true,
-    highlightColor = "#3b82f6",
-    enabled = true
-  } = options;
-  let isDev = false;
-  let projectRoot = "";
-  const editorCmd = getEditorCommand(editor);
-  return {
-    name: "vite-plugin-click-to-source",
-    enforce: "pre",
-    configResolved(config) {
-      isDev = config.command === "serve";
-      projectRoot = config.root;
-      if (isDev && enabled) {
-        console.log(`[click-to-source] Active. Editor: ${editor} (${editorCmd}). Hotkey: ${hotkey.toUpperCase()}+Click`);
-      }
-    },
-    configureServer(server) {
-      if (!enabled) return;
-      server.middlewares.use((req, res, next) => {
-        if (!req.url?.startsWith(OPEN_ENDPOINT)) {
-          return next();
-        }
-        const queryString = req.url.split("?")[1] || "";
-        const params = new URLSearchParams(queryString);
-        const rawFile = queryString.match(/file=([^&]*)/)?.[1];
-        const file = rawFile ? decodeURIComponent(rawFile.replace(/\+/g, "%2B")) : params.get("file");
-        const line = params.get("line") || "1";
-        const col = params.get("col") || "1";
-        if (!file) {
-          res.statusCode = 400;
-          res.end("Missing file parameter");
-          return;
-        }
-        const absolutePath = file.startsWith("/") ? file : `${projectRoot}/${file}`;
-        const cmd = `${editorCmd} --goto "${absolutePath}:${line}:${col}"`;
-        console.log(`[click-to-source] Opening: ${absolutePath}:${line}:${col}`);
-        exec(cmd, (error) => {
-          if (error) {
-            console.warn(`[click-to-source] Primary command failed:`, error.message);
-            const appName = editor.charAt(0).toUpperCase() + editor.slice(1);
-            const fallbackCmd = `open -a "${appName}" "${absolutePath}"`;
-            console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
-            exec(fallbackCmd, (err2) => {
-              if (err2) {
-                console.error(`[click-to-source] Fallback also failed:`, err2.message);
-              }
-            });
-          }
-        });
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Content-Type", "application/json");
-        res.statusCode = 200;
-        res.end(JSON.stringify({ ok: true, file: absolutePath, line, col }));
-      });
-    },
-    resolveId(id) {
-      if (id === VIRTUAL_MODULE_ID) {
-        return RESOLVED_VIRTUAL_MODULE_ID;
-      }
-      return void 0;
-    },
-    load(id) {
-      if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-        if (!isDev || !enabled) {
-          return "export default {}";
-        }
-        return RUNTIME_SCRIPT.replace(/__HOTKEY__/g, hotkey).replace(/__PROJECT_ROOT__/g, projectRoot).replace(/__HIGHLIGHT_ENABLED__/g, String(highlight)).replace(/__HIGHLIGHT_COLOR__/g, highlightColor).replace(/__OPEN_ENDPOINT__/g, OPEN_ENDPOINT);
-      }
-      return void 0;
-    },
-    transformIndexHtml() {
-      if (!isDev || !enabled) return [];
-      return [
-        {
-          tag: "script",
-          attrs: { type: "module" },
-          children: `import '${VIRTUAL_MODULE_ID}'`,
-          injectTo: "body"
-        }
-      ];
-    }
-  };
+	const { hotkey = "alt", editor = detectEditor(), highlight = true, highlightColor = "#3b82f6", enabled = true } = options;
+	let isDev = false;
+	let projectRoot = "";
+	const editorCmd = getEditorCommand(editor);
+	return {
+		name: "vite-plugin-click-to-source",
+		enforce: "pre",
+		configResolved(config) {
+			isDev = config.command === "serve";
+			projectRoot = config.root;
+			if (isDev && enabled) console.log(`[click-to-source] Active. Editor: ${editor} (${editorCmd}). Hotkey: ${hotkey.toUpperCase()}+Click`);
+		},
+		configureServer(server) {
+			if (!enabled) return;
+			server.middlewares.use((req, res, next) => {
+				if (!req.url?.startsWith(OPEN_ENDPOINT)) return next();
+				const queryString = req.url.split("?")[1] || "";
+				const params = new URLSearchParams(queryString);
+				const rawFile = queryString.match(/file=([^&]*)/)?.[1];
+				const file = rawFile ? decodeURIComponent(rawFile.replace(/\+/g, "%2B")) : params.get("file");
+				const line = params.get("line") || "1";
+				const col = params.get("col") || "1";
+				if (!file) {
+					res.statusCode = 400;
+					res.end("Missing file parameter");
+					return;
+				}
+				const absolutePath = file.startsWith("/") ? file : `${projectRoot}/${file}`;
+				const cmd = `${editorCmd} --goto "${absolutePath}:${line}:${col}"`;
+				console.log(`[click-to-source] Opening: ${absolutePath}:${line}:${col}`);
+				exec(cmd, (error) => {
+					if (error) {
+						console.warn(`[click-to-source] Primary command failed:`, error.message);
+						const fallbackCmd = `open -a "${editor.charAt(0).toUpperCase() + editor.slice(1)}" "${absolutePath}"`;
+						console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
+						exec(fallbackCmd, (err2) => {
+							if (err2) console.error(`[click-to-source] Fallback also failed:`, err2.message);
+						});
+					}
+				});
+				res.setHeader("Access-Control-Allow-Origin", "*");
+				res.setHeader("Content-Type", "application/json");
+				res.statusCode = 200;
+				res.end(JSON.stringify({
+					ok: true,
+					file: absolutePath,
+					line,
+					col
+				}));
+			});
+		},
+		resolveId(id) {
+			if (id === VIRTUAL_MODULE_ID) return RESOLVED_VIRTUAL_MODULE_ID;
+		},
+		load(id) {
+			if (id === RESOLVED_VIRTUAL_MODULE_ID) {
+				if (!isDev || !enabled) return "export default {}";
+				return RUNTIME_SCRIPT.replace(/__HOTKEY__/g, hotkey).replace(/__PROJECT_ROOT__/g, projectRoot).replace(/__HIGHLIGHT_ENABLED__/g, String(highlight)).replace(/__HIGHLIGHT_COLOR__/g, highlightColor).replace(/__OPEN_ENDPOINT__/g, OPEN_ENDPOINT);
+			}
+		},
+		transformIndexHtml() {
+			if (!isDev || !enabled) return [];
+			return [{
+				tag: "script",
+				attrs: { type: "module" },
+				children: `import '${VIRTUAL_MODULE_ID}'`,
+				injectTo: "body"
+			}];
+		}
+	};
 }
-var index_default = clickToSource;
-export {
-  clickToSource,
-  createPreprocessor,
-  index_default as default
-};
+export { clickToSource, clickToSource as default, createPreprocessor };

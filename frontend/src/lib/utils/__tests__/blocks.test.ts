@@ -31,7 +31,7 @@
  * extractHeadings, serialize/deserialize round-trip).
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import {
 	createBlock,
 	cloneBlock,

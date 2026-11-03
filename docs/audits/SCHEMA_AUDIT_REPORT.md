@@ -1,4 +1,5 @@
 # FULL-STACK SCHEMA AUDIT REPORT
+
 ## Revolution Trading Pros - February 5, 2026
 
 ---
@@ -7,7 +8,8 @@
 
 **Audit Scope:** Database schema → Rust backend models → Frontend TypeScript interfaces  
 **Critical Finding:** ✅ **Schema alignment is CORRECT** - The 500 error was NOT a schema mismatch  
-**Root Causes Identified:** 
+**Root Causes Identified:**
+
 1. Backend auth middleware using `SELECT *` (FIXED - commit a6487642)
 2. Frontend proxy parsing JSON before checking response.ok (FIXED - commit 6d7cdc77)
 
@@ -16,6 +18,7 @@
 ## 1. DATABASE SCHEMA (Source of Truth)
 
 ### `membership_plans` Table Structure
+
 ```sql
 CREATE TABLE membership_plans (
     id BIGSERIAL PRIMARY KEY,                    -- i64
@@ -35,6 +38,7 @@ CREATE TABLE membership_plans (
 ```
 
 **Additional columns from migrations:**
+
 - `room_id BIGINT` (migration 019)
 - `interval_count INTEGER` (migration 019)
 - `stripe_product_id VARCHAR(255)` (migration 019)
@@ -48,6 +52,7 @@ CREATE TABLE membership_plans (
 ## 2. BACKEND RUST MODEL
 
 ### `MembershipPlanRow` Struct (admin.rs:751)
+
 ```rust
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct MembershipPlanRow {
@@ -68,6 +73,7 @@ pub struct MembershipPlanRow {
 ```
 
 **Query Pattern (admin.rs:820-823):**
+
 ```rust
 sqlx::query_as(
     r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
@@ -83,6 +89,7 @@ sqlx::query_as(
 ## 3. FRONTEND TYPESCRIPT INTERFACES
 
 ### Interface 1: `client.svelte.ts:226`
+
 ```typescript
 export interface MembershipPlan {
     id: number;                     ✅ (i64 → number)
@@ -98,6 +105,7 @@ export interface MembershipPlan {
 ```
 
 ### Interface 2: `admin/memberships/+page.svelte:63`
+
 ```typescript
 interface MembershipPlan {
     id: string;                     ⚠️ (backend: i64 → should be number)
@@ -119,30 +127,31 @@ interface MembershipPlan {
 
 ## 4. SCHEMA ALIGNMENT MATRIX
 
-| Field | Database | Rust Struct | TS (client.ts) | TS (admin page) | Status |
-|-------|----------|-------------|----------------|-----------------|--------|
-| `id` | BIGSERIAL | i64 | number | **string** | ⚠️ Type mismatch |
-| `name` | VARCHAR(255) | String | string | string | ✅ |
-| `slug` | VARCHAR(255) | String | string | string | ✅ |
-| `description` | TEXT | Option<String> | **string** | string? | ⚠️ Non-optional |
-| `price` | DECIMAL(10,2) | f64 | number | number | ✅ |
-| `billing_cycle` | VARCHAR(20) | String | BillingCycle | union | ✅ |
-| `is_active` | BOOLEAN | bool | - | boolean | ⚠️ Missing |
-| `metadata` | JSONB | Option<Value> | - | - | ✅ |
-| `stripe_price_id` | VARCHAR(255) | Option<String> | - | - | ✅ |
-| `features` | JSONB | Option<Value> | **Feature[]** | Feature[] | ⚠️ Type mismatch |
-| `trial_days` | INTEGER | Option<i32> | number? | - | ✅ |
-| `created_at` | TIMESTAMP | NaiveDateTime | - | string | ✅ |
-| `updated_at` | TIMESTAMP | NaiveDateTime | - | string | ✅ |
-| `limits` | - | - | **PlanLimits?** | - | ❌ Frontend only |
-| `subscriber_count` | - | - | - | **number?** | ❌ Frontend only |
-| `revenue` | - | - | - | **number?** | ❌ Frontend only |
+| Field              | Database      | Rust Struct    | TS (client.ts)  | TS (admin page) | Status           |
+| ------------------ | ------------- | -------------- | --------------- | --------------- | ---------------- |
+| `id`               | BIGSERIAL     | i64            | number          | **string**      | ⚠️ Type mismatch |
+| `name`             | VARCHAR(255)  | String         | string          | string          | ✅               |
+| `slug`             | VARCHAR(255)  | String         | string          | string          | ✅               |
+| `description`      | TEXT          | Option<String> | **string**      | string?         | ⚠️ Non-optional  |
+| `price`            | DECIMAL(10,2) | f64            | number          | number          | ✅               |
+| `billing_cycle`    | VARCHAR(20)   | String         | BillingCycle    | union           | ✅               |
+| `is_active`        | BOOLEAN       | bool           | -               | boolean         | ⚠️ Missing       |
+| `metadata`         | JSONB         | Option<Value>  | -               | -               | ✅               |
+| `stripe_price_id`  | VARCHAR(255)  | Option<String> | -               | -               | ✅               |
+| `features`         | JSONB         | Option<Value>  | **Feature[]**   | Feature[]       | ⚠️ Type mismatch |
+| `trial_days`       | INTEGER       | Option<i32>    | number?         | -               | ✅               |
+| `created_at`       | TIMESTAMP     | NaiveDateTime  | -               | string          | ✅               |
+| `updated_at`       | TIMESTAMP     | NaiveDateTime  | -               | string          | ✅               |
+| `limits`           | -             | -              | **PlanLimits?** | -               | ❌ Frontend only |
+| `subscriber_count` | -             | -              | -               | **number?**     | ❌ Frontend only |
+| `revenue`          | -             | -              | -               | **number?**     | ❌ Frontend only |
 
 ---
 
 ## 5. DISCREPANCIES IDENTIFIED
 
 ### Critical Issues: **NONE** ✅
+
 The backend query uses explicit column selection, preventing the original SQLx deserialization error.
 
 ### Minor Type Mismatches:
@@ -174,6 +183,7 @@ The backend query uses explicit column selection, preventing the original SQLx d
 ## 6. ADDITIONAL SCHEMA COLUMNS NOT IN RUST STRUCT
 
 From migration 019, these columns exist in DB but are NOT selected by the query:
+
 - `room_id` - Links plan to trading room
 - `interval_count` - Stripe subscription intervals
 - `stripe_product_id` - Parent Stripe product
@@ -211,6 +221,7 @@ cd frontend && npm run check
 ### Low Priority (Code Quality):
 
 1. **Standardize `id` type in admin page**
+
    ```typescript
    // Change from:
    id: string;
@@ -219,6 +230,7 @@ cd frontend && npm run check
    ```
 
 2. **Make `description` optional in client.ts**
+
    ```typescript
    description?: string;  // Add ? for consistency
    ```
@@ -236,6 +248,7 @@ cd frontend && npm run check
 **Schema Alignment Status:** ✅ **HEALTHY**
 
 The 500 error was **NOT** caused by schema mismatches. The actual causes were:
+
 1. Backend `SELECT * FROM users` returning extra columns (FIXED)
 2. Frontend proxy parsing JSON before checking HTTP status (FIXED)
 
@@ -248,11 +261,13 @@ The `membership_plans` schema is correctly aligned across all layers. Minor type
 ## APPENDIX: Related Tables
 
 ### `user_memberships` (Subscription records)
+
 - Links users to membership_plans
 - Tracks subscription status, billing periods
 - ✅ Properly references membership_plans(id)
 
 ### `membership_features` (Plan features)
+
 - Normalized feature definitions
 - ✅ Foreign key to membership_plans(id)
 - Note: Frontend uses JSONB features field instead

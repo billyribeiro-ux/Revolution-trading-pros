@@ -29,9 +29,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
     ports:
-      - "5432:5432"
+      - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U rtp -d revolution_trading_pros"]
+      test: ['CMD-SHELL', 'pg_isready -U rtp -d revolution_trading_pros']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -48,9 +48,9 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -71,13 +71,13 @@ services:
       # bump (v1.53+ -> v1.56). Without it Meilisearch exits 1 on a volume
       # written by an older minor and `api` (depends_on: service_healthy) never
       # starts. One-way: the upgraded volume cannot be reopened by an older minor.
-      MEILI_UPGRADE_DB: "true"
+      MEILI_UPGRADE_DB: 'true'
     volumes:
       - meili_data:/meili_data
     ports:
-      - "7700:7700"
+      - '7700:7700'
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:7700/health"]
+      test: ['CMD', 'curl', '-fsS', 'http://localhost:7700/health']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -93,7 +93,7 @@ services:
       dockerfile: Dockerfile
     container_name: rtp-api
     ports:
-      - "8080:8080"
+      - '8080:8080'
     # FIX-2026-04-27: load real R2/Stripe/Meili creds (and anything else) from
     # api/.env. The values in the explicit `environment:` block below win on
     # conflict, so docker-compose-managed defaults stay authoritative for DB,
@@ -117,10 +117,10 @@ services:
       MEILISEARCH_HOST: http://meili:7700
       MEILISEARCH_API_KEY: dev-meili-master-key
       JWT_SECRET: ${JWT_SECRET:-development-secret-key-min-32-chars-long-enough-for-hs256}
-      JWT_EXPIRES_IN: "1"
+      JWT_EXPIRES_IN: '1'
       RUST_LOG: info,sqlx=warn,tower_http=debug
       HOST: 0.0.0.0
-      PORT: "8080"
+      PORT: '8080'
       ENVIRONMENT: development
       CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174
     depends_on:
@@ -132,7 +132,7 @@ services:
         condition: service_healthy
     healthcheck:
       # API exposes /health (no /api prefix). /health/detailed checks DB+Redis+storage.
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      test: ['CMD', 'curl', '-fsS', 'http://localhost:8080/health']
       interval: 10s
       timeout: 5s
       retries: 6

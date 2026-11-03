@@ -17,4 +17,3 @@ test.describe('Internationalization & Document Language (I18N-01..03)', () => {
 		});
 	}
 });
-

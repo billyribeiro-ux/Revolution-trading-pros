@@ -9,15 +9,15 @@ webhook events Stripe sends back, and the rollback procedure.
 
 ## The three `apply_to` options
 
-When the admin opens *Subscription Plans → Change Price*, the modal asks who
+When the admin opens _Subscription Plans → Change Price_, the modal asks who
 the new price applies to. The choice is sent to the backend as the JSON
 field `apply_to`.
 
-| `apply_to`              | Plain English                                                                  |
-|-------------------------|--------------------------------------------------------------------------------|
-| `new_only`              | New members only. Existing subscribers stay on the old price (grandfathered). |
-| `next_renewal`          | Everyone, on next renewal. Existing subs migrate at their next billing cycle, with NO proration. Renewal date is preserved. |
-| `immediate_proration`   | Everyone, immediately. Stripe migrates existing subs now and issues a prorated charge or credit on the next invoice. |
+| `apply_to`            | Plain English                                                                                                               |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `new_only`            | New members only. Existing subscribers stay on the old price (grandfathered).                                               |
+| `next_renewal`        | Everyone, on next renewal. Existing subs migrate at their next billing cycle, with NO proration. Renewal date is preserved. |
+| `immediate_proration` | Everyone, immediately. Stripe migrates existing subs now and issues a prorated charge or credit on the next invoice.        |
 
 The modal includes a confirmation step. `immediate_proration` is rendered
 as a destructive action because it triggers real-money movement.
@@ -100,14 +100,14 @@ read from `service_connections` first, env fallback otherwise.
 
 Events you should expect after a price change:
 
-| Event                                                | When                                                            |
-|------------------------------------------------------|-----------------------------------------------------------------|
-| `price.created`                                      | Always (we POST `/v1/prices` in step 4).                        |
-| `customer.subscription.updated`                      | Per migrated subscription (next_renewal / immediate_proration). |
-| `invoice.created` + `invoice.upcoming`               | At each renewal that uses the new price.                        |
-| `invoice.created` (immediate)                        | Right after `immediate_proration`, with proration line items.   |
-| `invoice.payment_succeeded` / `_failed`              | When the prorated invoice is paid (or fails).                   |
-| `invoice.finalized`                                  | When the invoice closes for collection.                         |
+| Event                                   | When                                                            |
+| --------------------------------------- | --------------------------------------------------------------- |
+| `price.created`                         | Always (we POST `/v1/prices` in step 4).                        |
+| `customer.subscription.updated`         | Per migrated subscription (next_renewal / immediate_proration). |
+| `invoice.created` + `invoice.upcoming`  | At each renewal that uses the new price.                        |
+| `invoice.created` (immediate)           | Right after `immediate_proration`, with proration line items.   |
+| `invoice.payment_succeeded` / `_failed` | When the prorated invoice is paid (or fails).                   |
+| `invoice.finalized`                     | When the invoice closes for collection.                         |
 
 The webhook handler currently consumes a subset of these for our internal
 order/membership state. If you add more handlers, register the event types
@@ -122,7 +122,7 @@ Every price change writes a row to `membership_plan_price_history` with
 the **old** Stripe Price ID. To roll back:
 
 1. Open the plan in `/admin/subscriptions/plans` and note the row in the
-   *Recent Price Changes* table you want to revert from.
+   _Recent Price Changes_ table you want to revert from.
 2. SQL approach (until a UI affordance is built):
 
    ```sql

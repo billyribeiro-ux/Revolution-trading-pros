@@ -14,14 +14,7 @@ import type {
 	PopupDisplayRules
 } from './popups.types.js';
 
-export type {
-	Popup,
-	PopupAnimation,
-	PopupButton,
-	PopupContent,
-	PopupDesign,
-	PopupDisplayRules
-};
+export type { Popup, PopupAnimation, PopupButton, PopupContent, PopupDesign, PopupDisplayRules };
 
 // Default popup configuration for easy creation
 export const defaultPopupConfig: Partial<Popup> = {

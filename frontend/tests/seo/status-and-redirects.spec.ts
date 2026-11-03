@@ -27,4 +27,3 @@ test.describe('HTTP Status Codes & Redirects (IDX-01..06)', () => {
 		expect(res.headers()['location']).toBe('/register');
 	});
 });
-

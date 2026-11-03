@@ -1,4 +1,5 @@
 # Explosive Swings Codebase Audit Report
+
 **Generated:** January 25, 2026 at 10:11 AM EST  
 **Auditor:** Claude Opus 4.5 (Apple Principal Engineer ICT Level 7+)  
 **Commit:** bbd1fcaa (Nuclear Refactor - State Integration Complete)
@@ -14,6 +15,7 @@ The Explosive Swings dashboard has undergone a successful nuclear refactor, redu
 ## Section 1: Project Overview
 
 ### 1.1 Framework Versions
+
 ```
 @sveltejs/kit: 2.50.1
 svelte: ^5.48.2
@@ -24,56 +26,62 @@ npm: 10.8.2
 ```
 
 ### 1.2 Project Structure
+
 - **Total Svelte Files:** 33
 - **Total TypeScript Files:** 16
 - **Total Lines of Code:** 17,377
 
 ### 1.3 File Size Distribution (Top 10)
-| File | Lines | Status |
-|------|-------|--------|
-| WeeklyHero.svelte | 1,480 | 🔴 Needs refactor |
-| VideoUploadModal.svelte | 1,365 | 🔴 Needs refactor |
-| TradeEntryModal.svelte | 1,099 | 🔴 Needs refactor |
-| AddTradeModal.svelte | 770 | 🟠 Large |
-| alerts/+page.svelte | 733 | 🟠 Large |
-| AlertCard.svelte | 720 | 🟠 Large |
-| start-here/+page.svelte | 702 | 🟠 Large |
-| ClosePositionModal.svelte | 700 | 🟠 Large |
-| video-library/+page.svelte | 569 | 🟡 Moderate |
-| page.state.svelte.ts | 564 | ✅ Good |
+
+| File                       | Lines | Status            |
+| -------------------------- | ----- | ----------------- |
+| WeeklyHero.svelte          | 1,480 | 🔴 Needs refactor |
+| VideoUploadModal.svelte    | 1,365 | 🔴 Needs refactor |
+| TradeEntryModal.svelte     | 1,099 | 🔴 Needs refactor |
+| AddTradeModal.svelte       | 770   | 🟠 Large          |
+| alerts/+page.svelte        | 733   | 🟠 Large          |
+| AlertCard.svelte           | 720   | 🟠 Large          |
+| start-here/+page.svelte    | 702   | 🟠 Large          |
+| ClosePositionModal.svelte  | 700   | 🟠 Large          |
+| video-library/+page.svelte | 569   | 🟡 Moderate       |
+| page.state.svelte.ts       | 564   | ✅ Good           |
 
 ---
 
 ## Section 2: Design System Audit
 
 ### 2.1 Design Tokens Status
+
 - **Design Tokens File:** ✅ EXISTS (`src/lib/styles/design-tokens.css`, 12,099 bytes)
 - **CSS Variable Usage:** 867 instances
 - **Hardcoded Colors:** 242 instances (🔴 **CRITICAL**)
 
 ### 2.2 CSS Variable Usage by Component (Top 15)
-| Component | var(--) Count |
-|-----------|---------------|
-| PerformanceSummary.svelte | 107 |
-| TradesTable.svelte | 74 |
-| AlertCard.svelte | 69 |
-| WeeklyHero.svelte | 64 |
-| TradeEntryModal.svelte | 54 |
-| VideoUploadModal.svelte | 47 |
-| ClosePositionModal.svelte | 40 |
-| trades/+page.svelte | 37 |
-| ActivePositionCard.svelte | 36 |
-| ErrorBanner.svelte | 35 |
-| PerformanceCard.svelte | 26 |
-| AddTradeModal.svelte | 26 |
-| StatsGrid.svelte | 25 |
-| ResourceLinks.svelte | 24 |
-| ErrorState.svelte | 21 |
+
+| Component                 | var(--) Count |
+| ------------------------- | ------------- |
+| PerformanceSummary.svelte | 107           |
+| TradesTable.svelte        | 74            |
+| AlertCard.svelte          | 69            |
+| WeeklyHero.svelte         | 64            |
+| TradeEntryModal.svelte    | 54            |
+| VideoUploadModal.svelte   | 47            |
+| ClosePositionModal.svelte | 40            |
+| trades/+page.svelte       | 37            |
+| ActivePositionCard.svelte | 36            |
+| ErrorBanner.svelte        | 35            |
+| PerformanceCard.svelte    | 26            |
+| AddTradeModal.svelte      | 26            |
+| StatsGrid.svelte          | 25            |
+| ResourceLinks.svelte      | 24            |
+| ErrorState.svelte         | 21            |
 
 ### 2.3 Hardcoded Color Analysis
+
 **Total Hardcoded Colors:** 242 (excluding placeholders)
 
 **Files with Most Hardcoded Colors:**
+
 - AddTradeModal.svelte
 - AlertCard.svelte
 - ClosePositionModal.svelte
@@ -84,6 +92,7 @@ npm: 10.8.2
 - WeeklyHero.svelte
 
 **Common Hardcoded Values:**
+
 - `#8b5cf6`, `#7c3aed` (purple - needs token)
 - `#059669` (green - should use `--color-profit`)
 - `#1e293b` (dark - should use `--color-text-primary`)
@@ -96,21 +105,24 @@ npm: 10.8.2
 ## Section 3: Svelte 5 Compliance Audit
 
 ### 3.1 Runes Usage
-| Rune | Count | Status |
-|------|-------|--------|
-| `$state` | 103 | ✅ Excellent |
-| `$derived` | 53 | ✅ Good |
-| `$effect` | 11 | ✅ Appropriate |
-| `$props` | 27 | ✅ Good |
+
+| Rune       | Count | Status         |
+| ---------- | ----- | -------------- |
+| `$state`   | 103   | ✅ Excellent   |
+| `$derived` | 53    | ✅ Good        |
+| `$effect`  | 11    | ✅ Appropriate |
+| `$props`   | 27    | ✅ Good        |
 
 ### 3.2 Deprecated Patterns
-| Pattern | Count | Status |
-|---------|-------|--------|
-| `export let` | 0 | ✅ **PERFECT** |
-| Old `on:` handlers | 0 | ✅ **PERFECT** |
-| `$:` reactive statements | 0 | ✅ **PERFECT** |
+
+| Pattern                  | Count | Status         |
+| ------------------------ | ----- | -------------- |
+| `export let`             | 0     | ✅ **PERFECT** |
+| Old `on:` handlers       | 0     | ✅ **PERFECT** |
+| `$:` reactive statements | 0     | ✅ **PERFECT** |
 
 ### 3.3 Compliance Score
+
 **100% Svelte 5 Compliant** - No deprecated patterns detected.
 
 ---
@@ -118,18 +130,22 @@ npm: 10.8.2
 ## Section 4: Type Safety Audit
 
 ### 4.1 Type Safety Metrics
+
 - **`any` Type Usage:** 8 instances (🟢 **EXCELLENT**)
 - **Type Assertions:** Minimal (mostly for component prop compatibility)
 - **Type Imports:** Comprehensive across all modules
 
 ### 4.2 Type Definition Files
+
 - ✅ `types.ts` (454 lines) - Main type definitions
 - ✅ `trades/types.ts` (68 lines) - Trade-specific types
 - ✅ `page.state.svelte.ts` (564 lines) - State module with types
 - ✅ `page.api.ts` (229 lines) - API functions with types
 
 ### 4.3 `any` Usage Locations
+
 All 8 instances are justified type assertions for component prop compatibility:
+
 - `+page.svelte`: Type casts for modal props (5 instances)
 - Component integration points (3 instances)
 
@@ -140,10 +156,12 @@ All 8 instances are justified type assertions for component prop compatibility:
 ## Section 5: Accessibility Audit
 
 ### 5.1 ARIA Attributes
+
 - **Total ARIA Attributes:** 101
 - **Coverage:** Excellent across interactive elements
 
 ### 5.2 Semantic HTML Usage
+
 - ✅ Proper `<button>` elements for clickable actions
 - ✅ `<article>` for card components
 - ✅ `role="progressbar"` with proper aria-valuenow/min/max
@@ -151,6 +169,7 @@ All 8 instances are justified type assertions for component prop compatibility:
 - ✅ Form inputs with proper labels
 
 ### 5.3 Accessibility Score
+
 **WCAG 2.1 AA Compliant** - Strong accessibility implementation maintained throughout refactor.
 
 ---
@@ -158,18 +177,21 @@ All 8 instances are justified type assertions for component prop compatibility:
 ## Section 6: State Management Audit
 
 ### 6.1 Module Status
-| Module | Status | Lines |
-|--------|--------|-------|
-| `page.state.svelte.ts` | ✅ EXISTS & IMPORTED | 564 |
-| `page.api.ts` | ✅ EXISTS | 229 |
-| `data/fallbacks.ts` | ✅ EXISTS | 329 |
-| `utils/formatters.ts` | ✅ EXISTS | 164 |
-| `utils/calculations.ts` | ✅ EXISTS | 133 |
+
+| Module                  | Status               | Lines |
+| ----------------------- | -------------------- | ----- |
+| `page.state.svelte.ts`  | ✅ EXISTS & IMPORTED | 564   |
+| `page.api.ts`           | ✅ EXISTS            | 229   |
+| `data/fallbacks.ts`     | ✅ EXISTS            | 329   |
+| `utils/formatters.ts`   | ✅ EXISTS            | 164   |
+| `utils/calculations.ts` | ✅ EXISTS            | 133   |
 
 ### 6.2 State Module Integration
+
 **Status:** ✅ **FULLY INTEGRATED**
 
 The main `+page.svelte` successfully imports and uses `createPageState()`:
+
 - All reactive state centralized
 - API calls abstracted to `page.api.ts`
 - Derived state computed in state module
@@ -177,7 +199,9 @@ The main `+page.svelte` successfully imports and uses `createPageState()`:
 - Pagination logic encapsulated
 
 ### 6.3 State Module Exports
+
 The state module provides:
+
 - Filter & pagination state
 - Admin state
 - Modal state (5 modals)
@@ -194,12 +218,14 @@ The state module provides:
 ### 7.1 Component Inventory (21 Components)
 
 #### Compact Components (✅ Refactored)
+
 - `ActivePositionCard.svelte` - 269 lines (was 502)
 - `PerformanceCard.svelte` - 194 lines (was 248)
 - `TickerPill.svelte` - 122 lines (was 147)
 - `PerformanceSummary.svelte` - 562 lines (was 614)
 
 #### Large Components (🔴 Need Refactor)
+
 - `WeeklyHero.svelte` - 1,480 lines
 - `VideoUploadModal.svelte` - 1,365 lines
 - `TradeEntryModal.svelte` - 1,099 lines
@@ -208,6 +234,7 @@ The state module provides:
 - `ClosePositionModal.svelte` - 700 lines
 
 #### Medium Components (🟡 Acceptable)
+
 - `VideoGrid.svelte` - 472 lines
 - `ResourceLinks.svelte` - 391 lines
 - `VideoCard.svelte` - 370 lines
@@ -217,6 +244,7 @@ The state module provides:
 - `WeeklyVideoCard.svelte` - 263 lines
 
 #### Small Components (✅ Good)
+
 - `Sidebar.svelte` - 195 lines
 - `ErrorBanner.svelte` - 181 lines
 
@@ -225,6 +253,7 @@ The state module provides:
 ## Section 8: Main Page Audit
 
 ### 8.1 +page.svelte Statistics
+
 - **Current Lines:** 387 (down from 1,750)
 - **Reduction:** 78%
 - **Script Section:** ~90 lines
@@ -232,6 +261,7 @@ The state module provides:
 - **Style Section:** ~97 lines
 
 ### 8.2 Main Page Structure
+
 ```typescript
 // State initialization
 const ps = createPageState();
@@ -250,6 +280,7 @@ onMount(() => ps.initializeData());
 ```
 
 ### 8.3 Main Page Assessment
+
 ✅ **EXCELLENT** - Clean, focused, delegates to state module appropriately.
 
 ---
@@ -257,6 +288,7 @@ onMount(() => ps.initializeData());
 ## Section 9: Routes Audit
 
 ### 9.1 Route Structure
+
 ```
 /dashboard/explosive-swings/
 ├── +page.svelte (387 lines) ✅ Main dashboard
@@ -271,10 +303,12 @@ onMount(() => ps.initializeData());
 ```
 
 ### 9.2 Old Route Cleanup
+
 ✅ **COMPLETE** - `/trade-tracker/` now contains only redirect:
+
 ```typescript
 export const load: PageServerLoad = async () => {
-  throw redirect(301, '/dashboard/explosive-swings/trades');
+	throw redirect(301, '/dashboard/explosive-swings/trades');
 };
 ```
 
@@ -283,13 +317,15 @@ export const load: PageServerLoad = async () => {
 ## Section 10: Shared Utilities Audit
 
 ### 10.1 Utility Modules
-| Module | Lines | Status |
-|--------|-------|--------|
-| `utils/formatters.ts` | 164 | ✅ Good |
-| `utils/calculations.ts` | 133 | ✅ Good |
-| `$lib/utils/auth.ts` | 64 | ✅ Good |
+
+| Module                  | Lines | Status  |
+| ----------------------- | ----- | ------- |
+| `utils/formatters.ts`   | 164   | ✅ Good |
+| `utils/calculations.ts` | 133   | ✅ Good |
+| `$lib/utils/auth.ts`    | 64    | ✅ Good |
 
 ### 10.2 Formatter Functions
+
 - `formatPrice()` - Currency formatting
 - `formatPercent()` - Percentage formatting
 - `formatWinLossRatio()` - Ratio formatting
@@ -297,6 +333,7 @@ export const load: PageServerLoad = async () => {
 - `formatTime()` - Time formatting
 
 ### 10.3 Calculation Functions
+
 - `calculateProgressToTarget()` - Progress calculation
 - `calculatePnL()` - P&L calculation
 - `calculateWinRate()` - Win rate calculation
@@ -307,13 +344,17 @@ export const load: PageServerLoad = async () => {
 ## Section 11: Build & Error Check
 
 ### 11.1 TypeScript Check
+
 ```bash
 npm run check
 ```
+
 **Result:** ✅ **0 errors, 0 warnings**
 
 ### 11.2 Build Status
+
 **Status:** ✅ **PASSING**
+
 - No compilation errors
 - No type errors
 - No Svelte compiler warnings
@@ -441,12 +482,14 @@ npm run check
 ### Immediate Actions (Next 1-2 Days)
 
 1. **Complete Design Token Migration**
+
    ```bash
    # Target: Reduce hardcoded colors from 242 to <10
    # Focus on: Modals, AlertCard, WeeklyHero
    ```
 
 2. **Refactor WeeklyHero Component**
+
    ```bash
    # Target: Reduce from 1,480 to <500 lines
    # Strategy: Extract TradePlan, VideoPlayer, AdminControls
@@ -496,6 +539,7 @@ npm run check
 The Explosive Swings dashboard has successfully completed a nuclear refactor with excellent results:
 
 **Achievements:**
+
 - ✅ Main page reduced by 78% (1,750 → 387 lines)
 - ✅ State management centralized and modular
 - ✅ 100% Svelte 5 compliance (0 deprecated patterns)
@@ -504,6 +548,7 @@ The Explosive Swings dashboard has successfully completed a nuclear refactor wit
 - ✅ Build passing with 0 errors, 0 warnings
 
 **Remaining Work:**
+
 - 🔴 242 hardcoded colors need design token migration
 - 🔴 3 large components need refactoring (>1,000 lines each)
 - 🟠 Modal components need standardization

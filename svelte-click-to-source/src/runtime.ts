@@ -1,6 +1,6 @@
 /**
  * Runtime Inspector for click-to-source
- * 
+ *
  * Injected into the browser in dev mode.
  * On ALT+Click, sends a fetch request to the Vite dev server middleware
  * which opens the file in the editor via CLI command.

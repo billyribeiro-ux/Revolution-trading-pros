@@ -27,33 +27,33 @@ change, no regression risk in the call sites.
 
 ### 1.1 Scale
 
-| Metric | Count |
-|---|---|
-| Admin `+page.svelte` / `+layout.svelte` files | 143 |
-| `$effect(...)` blocks across admin tree | 201 |
-| Admin pages importing `connections.svelte` | 20 |
+| Metric                                                           | Count  |
+| ---------------------------------------------------------------- | ------ |
+| Admin `+page.svelte` / `+layout.svelte` files                    | 143    |
+| `$effect(...)` blocks across admin tree                          | 201    |
+| Admin pages importing `connections.svelte`                       | 20     |
 | Of those, **still using `$effect` to call `connections.load()`** | **13** |
-| Already migrated to `onMount` | 7 |
+| Already migrated to `onMount`                                    | 7      |
 
 ### 1.2 The 13 still-broken sites (CONNECTION-LOAD PATTERN)
 
 Same recipe at every site: `$effect → connections.load() → getIs*Connected() → loadData()`.
 
-| File | Line | Service key |
-|---|---|---|
-| `frontend/src/routes/admin/analytics/cohorts/+page.svelte` | 113 | analytics |
-| `frontend/src/routes/admin/analytics/events/+page.svelte` | 98 | analytics |
-| `frontend/src/routes/admin/analytics/funnels/+page.svelte` | 109 | analytics |
-| `frontend/src/routes/admin/analytics/goals/+page.svelte` | 142 | analytics |
-| `frontend/src/routes/admin/analytics/heatmaps/+page.svelte` | 82 | analytics |
-| `frontend/src/routes/admin/analytics/recordings/+page.svelte` | 109 | analytics |
-| `frontend/src/routes/admin/analytics/reports/+page.svelte` | 149 | analytics |
-| `frontend/src/routes/admin/analytics/segments/+page.svelte` | 143 | analytics |
-| `frontend/src/routes/admin/behavior/+page.svelte` | 83 | behavior |
-| `frontend/src/routes/admin/crm/leads/+page.svelte` | 563 | crm |
-| `frontend/src/routes/admin/site-health/+page.svelte` | 135 | (all + autoRefresh) |
-| `frontend/src/routes/admin/subscriptions/+page.svelte` | 73 | payment |
-| (`frontend/src/routes/admin/seo/+page.svelte:258` is structurally similar but does not call `connections.load()` — only `loadSeoData()`. Re-classified as GOOD.) | 258 | — |
+| File                                                                                                                                                             | Line | Service key         |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------- |
+| `frontend/src/routes/admin/analytics/cohorts/+page.svelte`                                                                                                       | 113  | analytics           |
+| `frontend/src/routes/admin/analytics/events/+page.svelte`                                                                                                        | 98   | analytics           |
+| `frontend/src/routes/admin/analytics/funnels/+page.svelte`                                                                                                       | 109  | analytics           |
+| `frontend/src/routes/admin/analytics/goals/+page.svelte`                                                                                                         | 142  | analytics           |
+| `frontend/src/routes/admin/analytics/heatmaps/+page.svelte`                                                                                                      | 82   | analytics           |
+| `frontend/src/routes/admin/analytics/recordings/+page.svelte`                                                                                                    | 109  | analytics           |
+| `frontend/src/routes/admin/analytics/reports/+page.svelte`                                                                                                       | 149  | analytics           |
+| `frontend/src/routes/admin/analytics/segments/+page.svelte`                                                                                                      | 143  | analytics           |
+| `frontend/src/routes/admin/behavior/+page.svelte`                                                                                                                | 83   | behavior            |
+| `frontend/src/routes/admin/crm/leads/+page.svelte`                                                                                                               | 563  | crm                 |
+| `frontend/src/routes/admin/site-health/+page.svelte`                                                                                                             | 135  | (all + autoRefresh) |
+| `frontend/src/routes/admin/subscriptions/+page.svelte`                                                                                                           | 73   | payment             |
+| (`frontend/src/routes/admin/seo/+page.svelte:258` is structurally similar but does not call `connections.load()` — only `loadSeoData()`. Re-classified as GOOD.) | 258  | —                   |
 
 Verbatim recipe from `behavior/+page.svelte:78-94`:
 
@@ -87,16 +87,16 @@ The auth fan-out from commit `01c4eecfe` exacerbates the volume but is not the r
 
 ### 1.3 GOOD / SAFE sites (already converted)
 
-| File | Line | Note |
-|---|---|---|
-| `frontend/src/routes/admin/+layout.svelte` | 78, 116 | Auth guard + keyboard.init both onMount |
-| `frontend/src/routes/admin/+page.svelte` | 380 | onMount + getIs*Connected (synchronous, fine) |
-| `frontend/src/routes/admin/analytics/+page.svelte` | 140 | onMount with explanation comment |
-| `frontend/src/routes/admin/crm/+page.svelte` | 294 | onMount |
-| `frontend/src/routes/admin/email/campaigns/+page.svelte` | 132 | onMount |
-| `frontend/src/routes/admin/email/settings/+page.svelte` | 45 | onMount |
-| `frontend/src/routes/admin/email/smtp/+page.svelte` | 24 | onMount |
-| `frontend/src/routes/admin/seo/analytics/+page.svelte` | 24 | onMount |
+| File                                                     | Line    | Note                                          |
+| -------------------------------------------------------- | ------- | --------------------------------------------- |
+| `frontend/src/routes/admin/+layout.svelte`               | 78, 116 | Auth guard + keyboard.init both onMount       |
+| `frontend/src/routes/admin/+page.svelte`                 | 380     | onMount + getIs*Connected (synchronous, fine) |
+| `frontend/src/routes/admin/analytics/+page.svelte`       | 140     | onMount with explanation comment              |
+| `frontend/src/routes/admin/crm/+page.svelte`             | 294     | onMount                                       |
+| `frontend/src/routes/admin/email/campaigns/+page.svelte` | 132     | onMount                                       |
+| `frontend/src/routes/admin/email/settings/+page.svelte`  | 45      | onMount                                       |
+| `frontend/src/routes/admin/email/smtp/+page.svelte`      | 24      | onMount                                       |
+| `frontend/src/routes/admin/seo/analytics/+page.svelte`   | 24      | onMount                                       |
 
 ### 1.4 Other $effect classes in admin (sampled)
 
@@ -142,13 +142,13 @@ grep -rA 8 '\$effect' frontend/src/routes/admin --include="*.svelte" \
 
 Re-checked `frontend/src/lib/stores/auth.svelte.ts` against the post-commit-`01c4eecfe` contract:
 
-| Guard | Status | File:Line |
-|---|---|---|
-| `notifyScheduled` flag | INTACT | `auth.svelte.ts:231` |
-| `queueMicrotask` deferral in `notifySubscribers` | INTACT | `auth.svelte.ts:285-303` |
-| Re-entry short-circuit (`if (notifyScheduled) return;`) | INTACT | `auth.svelte.ts:285` |
-| Synchronous initial-snapshot in `subscribe()` | INTACT (and required by Svelte store contract) | `auth.svelte.ts:241-250` |
-| Subscriber array snapshot before iteration (mid-fanout unsubscribe safety) | INTACT | `auth.svelte.ts:292` |
+| Guard                                                                      | Status                                         | File:Line                |
+| -------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------ |
+| `notifyScheduled` flag                                                     | INTACT                                         | `auth.svelte.ts:231`     |
+| `queueMicrotask` deferral in `notifySubscribers`                           | INTACT                                         | `auth.svelte.ts:285-303` |
+| Re-entry short-circuit (`if (notifyScheduled) return;`)                    | INTACT                                         | `auth.svelte.ts:285`     |
+| Synchronous initial-snapshot in `subscribe()`                              | INTACT (and required by Svelte store contract) | `auth.svelte.ts:241-250` |
+| Subscriber array snapshot before iteration (mid-fanout unsubscribe safety) | INTACT                                         | `auth.svelte.ts:292`     |
 
 **No new callers of `notifySubscribers()` were introduced after the
 microtask retrofit.** Callers, exhaustive: `setAuth` (406), `updateToken`
@@ -164,13 +164,13 @@ The auth store is **not currently driving the admin cascade.**
 
 Audited every `*.svelte.ts` in `frontend/src/lib/stores/`:
 
-| Store | Custom subscriber fan-out? | Microtask deferred? | Verdict |
-|---|---|---|---|
-| `auth.svelte.ts` | Yes (lines 225-303) | YES | SAFE |
-| `connections.svelte.ts` | No (uses raw $state getters) | n/a | **CASCADE-PRONE** because `load()` writes `connectionsState` and the helper getters read it without `untrack`. See §6. |
-| `notifications.svelte.ts` | Returns object getters; no internal fanout. WS unsubscribe present (line 184). | n/a | SAFE |
-| `keyboard.svelte.ts` | Module-level $state with `init()` idempotency (line 188, 296) and intentional retain-on-destroy (line 348-354) | n/a | SAFE — this is the defense-in-depth from the prior fix |
-| `cart.svelte.ts`, `crm.svelte.ts`, `email.svelte.ts`, `popups.svelte.ts`, `subscriptions.svelte.ts`, `widgets.svelte.ts`, `workflow.svelte.ts`, `members.svelte.ts`, `media.svelte.ts`, `behavior.svelte.ts`, `analytics.svelte.ts`, `audit­Log.svelte.ts`, `theme.svelte.ts`, `toast.svelte.ts`, `offline.svelte.ts`, `blockState.svelte.ts` | None — pure rune state | n/a | SAFE re: cascade. (Some have setIntervals — see §5.) |
+| Store                                                                                                                                                                                                                                                                                                                                        | Custom subscriber fan-out?                                                                                     | Microtask deferred? | Verdict                                                                                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `auth.svelte.ts`                                                                                                                                                                                                                                                                                                                             | Yes (lines 225-303)                                                                                            | YES                 | SAFE                                                                                                                   |
+| `connections.svelte.ts`                                                                                                                                                                                                                                                                                                                      | No (uses raw $state getters)                                                                                   | n/a                 | **CASCADE-PRONE** because `load()` writes `connectionsState` and the helper getters read it without `untrack`. See §6. |
+| `notifications.svelte.ts`                                                                                                                                                                                                                                                                                                                    | Returns object getters; no internal fanout. WS unsubscribe present (line 184).                                 | n/a                 | SAFE                                                                                                                   |
+| `keyboard.svelte.ts`                                                                                                                                                                                                                                                                                                                         | Module-level $state with `init()` idempotency (line 188, 296) and intentional retain-on-destroy (line 348-354) | n/a                 | SAFE — this is the defense-in-depth from the prior fix                                                                 |
+| `cart.svelte.ts`, `crm.svelte.ts`, `email.svelte.ts`, `popups.svelte.ts`, `subscriptions.svelte.ts`, `widgets.svelte.ts`, `workflow.svelte.ts`, `members.svelte.ts`, `media.svelte.ts`, `behavior.svelte.ts`, `analytics.svelte.ts`, `audit­Log.svelte.ts`, `theme.svelte.ts`, `toast.svelte.ts`, `offline.svelte.ts`, `blockState.svelte.ts` | None — pure rune state                                                                                         | n/a                 | SAFE re: cascade. (Some have setIntervals — see §5.)                                                                   |
 
 So the cascade-prone "fan-out hub" today is **`connections.svelte.ts`,
 not `auth.svelte.ts`.** The previous fix solved the auth pathway; the
@@ -205,7 +205,7 @@ admin `/admin/*` cascade is a different leak that survived the auth fix.
 4. **`$state` arrays mutated with `.push()` and read via `.length`.**
    Searched, no admin sites confused. (Svelte 5 proxy semantics make
    `arr.push(x); arr.length` reactive correctly, so this would only be a
-   *clarity* issue — none flagged.)
+   _clarity_ issue — none flagged.)
 
 5. **Shadow-state via `$effect`** — none found post commit `05acf3231`.
    The `let foo = $state(props.foo); $effect(...)` pattern is gone.
@@ -295,10 +295,10 @@ themselves.
 import { untrack } from 'svelte';
 
 export function getIsAnalyticsConnected(): boolean {
-    return untrack(() => {
-        const services = FEATURE_SERVICES['analytics'];
-        return services?.some((k) => connectionsState.connections[k]?.isConnected) ?? false;
-    });
+	return untrack(() => {
+		const services = FEATURE_SERVICES['analytics'];
+		return services?.some((k) => connectionsState.connections[k]?.isConnected) ?? false;
+	});
 }
 // ...same wrapping for getIsSeoConnected, getIsEmailConnected,
 // getIsPaymentConnected, getIsCrmConnected, getIsFluentConnected,
@@ -339,10 +339,10 @@ getters (mirroring the pattern in `auth.svelte.ts:682-748`):
 
 ```ts
 export const isAnalyticsConnected = {
-    get current() {
-        const services = FEATURE_SERVICES['analytics'];
-        return services?.some((k) => connectionsState.connections[k]?.isConnected) ?? false;
-    }
+	get current() {
+		const services = FEATURE_SERVICES['analytics'];
+		return services?.some((k) => connectionsState.connections[k]?.isConnected) ?? false;
+	}
 };
 ```
 

@@ -7,6 +7,7 @@ needs a locator or command output. If you cannot reproduce a claim, say `NOT-REP
 **Do not edit, commit, push, revert or force anything.** Read-only plus throwaway DB/Redis only.
 
 ## 1. Problems already seen in the report (confirm each, with evidence)
+
 1. **Process breach.** `HEAD == origin/main == 7f6a0f9df`: the 137-file change is committed AND pushed
    directly to `main`. The report says it came from branch `fix/audit-followup-2026-11` "squashed &
    merged"; no such branch exists locally. The instructions were: branch first, no push until asked.
@@ -64,8 +65,10 @@ needs a locator or command output. If you cannot reproduce a claim, say `NOT-REP
    - Also run `cargo deny check` only if `Cargo.lock`/`Cargo.toml` changed in the commit.
 
 ## 2. Spot-check the live behaviour (fresh stack, API on a spare port, tokens via real login)
+
 For these, show the raw status code before/after as far as you can (`git stash` is forbidden – use a
 second worktree at `60288659d` for the "before"):
+
 - no token / member token / admin token against: `GET /api/admin/cms-v2/{settings,menus,menus/1,workflows}`,
   `GET /api/admin/room-content/rooms/<slug>/{alerts,trades,stats}`.
 - `POST /api/admin/members` (and `/api/admin/member-management`): row exists in `users` afterwards.
@@ -77,6 +80,7 @@ second worktree at `60288659d` for the "before"):
   in report) — did the fix change the result? Any new regressions?
 
 ## 3. Browser pass (Playwright, headless Chromium, `page.on('dialog', d => d.accept())`)
+
 Open each page the report says it fixed: `/admin/popups/new`, `/admin/popups/[id]/edit`,
 `/admin/site-health`, `/admin/settings`, `/admin/media`, `/admin/orders`, `/admin/memberships`,
 `/admin/subscriptions/plans`, `/admin/products/[id]/edit`, `/admin/coupons/edit/[id]`,
@@ -85,6 +89,7 @@ Record console errors, the text `NaN`, and a screenshot into `verify-evidence/`.
 pages (out of scope; a replacement editor is being built elsewhere).
 
 ## 4. Deliverable: `verify-report.md` at the repo root
+
 Sections: (1) verdict per report row — `CONFIRMED` / `PARTIAL` / `NOT-REPRODUCED` / `MISLOCATED`;
 (2) corrected locator table; (3) the unmentioned-findings table from §1.4; (4) gate results with exit
 codes; (5) live spot-check table; (6) browser table; (7) regressions found; (8) the git-history

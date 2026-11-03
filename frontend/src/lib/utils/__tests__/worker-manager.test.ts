@@ -27,7 +27,7 @@
  * the implicit behaviour of a partial mock.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 import type { Block } from '#lib/components/cms/blocks/types.js';
 
 // ═══════════════════════════════════════════════════════════════════════════

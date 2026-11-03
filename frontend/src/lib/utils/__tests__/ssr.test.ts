@@ -41,7 +41,7 @@
  *      quality switch on the consumer side, so the mapping is contract.
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // Mock `$app/environment` to a browser=true default — individual tests can
 // override per-call with `vi.doMock` when they need to assert server behaviour.

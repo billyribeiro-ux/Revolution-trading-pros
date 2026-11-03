@@ -10,6 +10,7 @@
 ## P0 Remediation Tasks (Indexing, Crawlability, Canonicals, Rendering, Structured Data Integrity, Spam Prevention)
 
 ### Task P0-1: Unify Canonical Origin & Trailing-Slash Normalization (`URL-02`, `URL-03`, `URL-04`, `MAP-02`, `META-03`)
+
 - **Baseline Failing Rows:** `URL-02` (8 template rows — 49/50 indexable pages), `URL-03` (`ALL`), `URL-04` (`ALL`), `MAP-02` (`ALL`), `META-03` (8 template rows).
 - **Root Cause:**
   1. `[CODE frontend/.env.production:20]` sets `VITE_SITE_URL=https://revolution-trading-pros.pages.dev`, which `[CODE frontend/src/lib/seo/defaults.ts:19]` reads into `SITE_URL`, causing 49/50 indexable pages to emit `<link rel="canonical">`, `og:url`, and `og:image` pointing to `https://revolution-trading-pros.pages.dev/...`.
@@ -26,6 +27,7 @@
 ---
 
 ### Task P0-2: Eliminate Prerender Error Masking, Fix Soft-404s, and Enforce `308` Permanent Redirects (`IDX-03`, `IDX-04`, `IDX-05`, `IDX-06`, `REND-04`)
+
 - **Baseline Failing Rows:** `IDX-03` (`ALL`), `IDX-04` (`ALL`), `IDX-05` (`ALL`), `IDX-06` (`ALL`), `REND-04` (`ALL`).
 - **Root Cause:**
   1. `[CODE frontend/vite.config.ts:63-79]` sets `handleMissingId: 'ignore'`, `handleUnseenRoutes: 'ignore'`, and ignores `status === 404` and `status === 500` in `handleHttpError`.
@@ -46,6 +48,7 @@
 ---
 
 ### Task P0-3: Fix `robots.txt` Asset Blocking & Enforce `X-Robots-Tag` in `hooks.server.ts` (`IDX-07`, `IDX-08`, `IDX-09`)
+
 - **Baseline Failing Rows:** `IDX-07` (`ALL`), `IDX-08` (`ALL`), `IDX-09` (`ALL`).
 - **Root Cause:**
   1. `[CODE frontend/src/routes/robots.txt/+server.ts:60]` contains `Disallow: /_app/`, blocking Googlebot from fetching SvelteKit JS/CSS bundles under `/_app/immutable/`.
@@ -61,6 +64,7 @@
 ---
 
 ### Task P0-4: Fix CSR-Only Content on `/blog`, `/classes`, `/cookie-policy` and Crawlability of Links (`REND-01`, `LINK-01`, `LINK-03`, `LINK-05`)
+
 - **Baseline Failing Rows:** `REND-01` (`static`, `listing`), `LINK-01` (`ALL`), `LINK-03` (`ALL`), `LINK-05` (`listing`).
 - **Root Cause:**
   1. `[CODE frontend/src/routes/blog/+page.svelte:49,197]` ignores `data.posts` loaded by `+page.ts` and re-fetches in `onMount`, rendering `"Loading posts..."` (10 words) in SSR HTML.
@@ -79,6 +83,7 @@
 ---
 
 ### Task P0-5: Single-Source Head Ownership & `<title>` / `<meta name="description">` Compliance (`META-01`, `META-02`, `META-05`, `TOOL-02`)
+
 - **Baseline Failing Rows:** `META-01` (7 template rows — 28 indexable pages), `META-02` (6 template rows — 11 indexable pages), `META-05` (`ALL`), `TOOL-02` (`ALL`).
 - **Root Cause:**
   1. `[CODE frontend/src/lib/seo/defaults.ts:20]` sets `titleTemplate: '%s | Revolution Trading Pros'` (26 chars suffix), causing any page title > 34 chars to exceed the 60-char ceiling (28/50 pages fail, and `/authors/*` have a double brand suffix `"Billy Ribeiro — Revolution Trading Pros | Revolution Trading Pros"`).
@@ -94,6 +99,7 @@
 ---
 
 ### Task P0-6: Visible Breadcrumbs, JSON-LD Content Parity, and Removal of Retired/Fabricated Schema (`SD-03`, `SD-04`, `SD-05`, `SD-06`, `SD-08`, `SD-09`, `SD-10`, `SD-11`, `SD-12`, `SPAM-02`, `TOOL-04`)
+
 - **Baseline Failing Rows:** `SD-03` (7 template rows), `SD-04` (`home`), `SD-05` (7 template rows), `SD-06` (`article`), `SD-08` (`product`), `SD-09` (`profile`), `SD-10` (`ALL`), `SD-11` (`ALL`), `SD-12` (`software`), `SPAM-02` (`ALL`), `TOOL-04` (`ALL`).
 - **Root Cause:**
   1. 43/49 non-home indexable pages emit `BreadcrumbList` in JSON-LD while rendering **zero** visible `<nav aria-label="Breadcrumb">` in the DOM (`domCrumbs=0`).
@@ -116,6 +122,7 @@
 ---
 
 ### Task P0-7: Clean Up `/sitemap.xml` and Unseeded News/Video Sitemaps (`MAP-01`, `MAP-04`, `TOOL-03`)
+
 - **Baseline Failing Rows:** `MAP-01` (`ALL`), `MAP-04` (`ALL`), `TOOL-03` (`ALL`).
 - **Root Cause:**
   1. `[CODE frontend/src/routes/sitemap.xml/+server.ts:108,129,135,137]` includes `/login`, `/register`, and `/signup` (which redirects with 301/308), and omits `/authors/billy-ribeiro`, `/authors/freddie-ferber`, `/authors/shao-wen`.
@@ -130,6 +137,7 @@
 ---
 
 ### Task P0-8: Root `<html>` `lang`/`dir` Transform & Above-the-Fold Image Eager Loading (`SEM-03`, `PERF-03`)
+
 - **Baseline Failing Rows:** `SEM-03` (`ALL`), `PERF-03` (`listing`, `product`, `software`).
 - **Root Cause:**
   1. `[CODE frontend/src/app.html:4]` hardcodes `<html lang="en">` without `dir` and without `%lang%` / `%dir%` placeholders transformed in `hooks.server.ts`.
@@ -146,6 +154,7 @@
 ## P1 & P2 Remediation Tasks (Internal Linking, Headings, Contrast, Preloading, Images, E-E-A-T, CI Suite)
 
 ### Task P1-1: Eliminate Orphan Pages & Improve Generic Anchor Text (`LINK-02`, `LINK-04`)
+
 - **Baseline Failing Rows:** `LINK-02` (`ALL` — 13 orphan pages, 21 unreachable from `/`), `LINK-04` (`ALL`).
 - **Root Cause:**
   1. Marketing navigation/footer and hub pages (`/resources`, `/courses`, `/alerts`, `/live-trading-rooms`, `/about`, `/team`) do not link to `/authors/*`, `/guides/*`, `/resources/etf-stocks-list`, `/resources/stock-indexes-list`, `/tools/options-calculator`, `/classes/*`, `/store/scanners/high-octane-scanner`, `/cookie-policy`, `/tutorials`, `/team`.
@@ -163,6 +172,7 @@
 ---
 
 ### Task P1-2: Fix Heading Hierarchy Skips & WCAG 2 AA Color Contrast (`SEM-02`, `SEM-05`)
+
 - **Baseline Failing Rows:** `SEM-02` (5 template rows — 13 pages), `SEM-05` (4 template rows — 4 pages).
 - **Root Cause:**
   1. 13 indexable pages jump from `<h1>` to `<h3>` or `<h2>` to `<h4>`: `/our-mission`, `/resources`, `/alerts/explosive-swings`, `/live-trading-rooms/day-trading`, `/live-trading-rooms/swing-trading`, `/mentorship`, `/classes/quickstart-precision-trading-c`, `/courses/day-trading-masterclass`, `/courses/swing-trading-pro`, `/guides/exit-strategies`, `/guides/position-sizing`, `/guides/risk-management`, `/resources/etf-stocks-list`.
@@ -176,6 +186,7 @@
 ---
 
 ### Task P1-3: Fix Missing Scanner Image, Enable Font/CSS Preloading, and Configure `@sveltejs/enhanced-img` (`MEDIA-01`, `PERF-02`, `PERF-04`)
+
 - **Baseline Failing Rows:** `MEDIA-01` (`ALL`), `PERF-02` (`ALL`), `PERF-04` (`ALL`).
 - **Root Cause:**
   1. `[CODE frontend/src/routes/store/scanners/+page.ts:86]` and `+page.svelte` reference `/images/scanners/high-octane-scanner.jpg` which does not exist in `frontend/static/` (returns 404).
@@ -191,6 +202,7 @@
 ---
 
 ### Task P1-4: YMYL Author Bylines, Author Bios, and Primary-Source Citations (`YMYL-01`, `YMYL-02`)
+
 - **Baseline Failing Rows:** `YMYL-01` (`article`), `YMYL-02` (`ALL`).
 - **Root Cause:**
   1. `[CODE frontend/src/lib/authors/authors.ts:24,31,38]` leaves `bio: ''` empty on all 3 authors (`billy-ribeiro`, `freddie-ferber`, `shao-wen`).
@@ -204,6 +216,7 @@
 ---
 
 ### Task P1-5: Comprehensive Playwright SEO Regression Test Suite (`OPS-03`)
+
 - **Baseline Failing Rows:** `OPS-03` (`ALL`).
 - **Files to Create:**
   - `frontend/tests/seo/ssr-parity.spec.ts` (`IDX-01`, `REND-01`, `REND-02`, `REND-03`)
@@ -220,4 +233,3 @@
   - Wire `test:seo` script in `frontend/package.json` and root `package.json`.
 - **Requirements Closed:** `OPS-03`.
 - **Verification:** `pnpm test:seo` exits `0` with all spec files passing.
-

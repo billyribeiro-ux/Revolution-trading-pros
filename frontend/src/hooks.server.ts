@@ -24,11 +24,7 @@ import {
 	BACKEND_URL,
 	VITE_ERROR_TRACKING_URL
 } from '$app/env/private';
-import {
-	PRODUCTION_ORIGIN,
-	DEFAULT_LOCALE,
-	isNoindexPath
-} from '#lib/seo/config.js';
+import { PRODUCTION_ORIGIN, DEFAULT_LOCALE, isNoindexPath } from '#lib/seo/config.js';
 
 // API URL for server-side token validation. Precedence matches every
 // +server.ts proxy and lib/server/axum/client.ts.
@@ -531,9 +527,7 @@ const performanceHandler: Handle = async ({ event, resolve }) => {
 		preload: ({ type }) => type === 'font' || type === 'js' || type === 'css',
 		// SEM-03: Transform %lang% and %dir% in app.html
 		transformPageChunk: ({ html }) => {
-			const withLocale = html
-				.replace('%lang%', DEFAULT_LOCALE)
-				.replace('%dir%', 'ltr');
+			const withLocale = html.replace('%lang%', DEFAULT_LOCALE).replace('%dir%', 'ltr');
 			if (import.meta.env.PROD) {
 				return withLocale.replace(/>\s+</g, '> <');
 			}

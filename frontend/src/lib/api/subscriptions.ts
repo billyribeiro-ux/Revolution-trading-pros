@@ -597,7 +597,11 @@ class SubscriptionService {
 		}
 
 		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
-		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && configuredWsUrl.startsWith('ws:')) {
+		if (
+			typeof window !== 'undefined' &&
+			window.location.protocol === 'https:' &&
+			configuredWsUrl.startsWith('ws:')
+		) {
 			return;
 		}
 

@@ -40,22 +40,22 @@ There are two competing dashboard pages that both render inside the admin shell 
 
 Only the second one is reachable via the nav (sidebar `Overview` points to `/admin`, no link points to `/admin/dashboard`; the top-level layout-title map at [+layout.svelte:153](frontend/src/routes/admin/+layout.svelte#L153) doesn't even know about `dashboard`). So `/admin/dashboard` is a discoverability dead-end that still pulls `/api/admin/connections/summary`, `/api/analytics/realtime`, `/api/payments/summary`, `/api/admin/rooms/stats` every 60 s once any user lands on it. Pick one canonical page; either delete the orphan or wire the nav to it.
 
-### P0-2 — Admin shell has *zero* role enforcement; only checks "any session"
+### P0-2 — Admin shell has _zero_ role enforcement; only checks "any session"
 
 [+layout.svelte:78-83](frontend/src/routes/admin/+layout.svelte#L78) only verifies `isAuthenticated.current`:
 
 ```ts
 onMount(() => {
-    if (!browser) return;
-    if (!isAuthenticated.current) {
-        goto('/login?redirect=/admin');
-    }
+	if (!browser) return;
+	if (!isAuthenticated.current) {
+		goto('/login?redirect=/admin');
+	}
 });
 ```
 
-Any authenticated regular user can render every admin page. The check that the user is an admin or superadmin happens *only* inside `AdminToolbar` (used elsewhere) at [AdminToolbar.svelte:194-216](frontend/src/lib/components/AdminToolbar.svelte#L194), which gates the toolbar UI but not the routes. The admin index (`+page.svelte`), the secondary dashboard, and every page under `/admin/*` will fetch admin endpoints with whatever token the user holds — relying entirely on the Rust API to 403. This is a defense-in-depth gap. Add an `isSuperadmin(user.current)` (or `isAdmin(...)`) guard in the layout's onMount, with a 403 redirect to `/`.
+Any authenticated regular user can render every admin page. The check that the user is an admin or superadmin happens _only_ inside `AdminToolbar` (used elsewhere) at [AdminToolbar.svelte:194-216](frontend/src/lib/components/AdminToolbar.svelte#L194), which gates the toolbar UI but not the routes. The admin index (`+page.svelte`), the secondary dashboard, and every page under `/admin/*` will fetch admin endpoints with whatever token the user holds — relying entirely on the Rust API to 403. This is a defense-in-depth gap. Add an `isSuperadmin(user.current)` (or `isAdmin(...)`) guard in the layout's onMount, with a 403 redirect to `/`.
 
-Bonus: the load function at [+layout.ts:1-4](frontend/src/routes/admin/+layout.ts#L1) is just `ssr=false; prerender=false;` — no `parent()` call, no auth check at the load level, so even pages that *do* `await parent()` get nothing useful from the admin layout.
+Bonus: the load function at [+layout.ts:1-4](frontend/src/routes/admin/+layout.ts#L1) is just `ssr=false; prerender=false;` — no `parent()` call, no auth check at the load level, so even pages that _do_ `await parent()` get nothing useful from the admin layout.
 
 ### P0-3 — `+error.svelte` flex-layout breaks on any error
 
@@ -63,11 +63,11 @@ Bonus: the load function at [+layout.ts:1-4](frontend/src/routes/admin/+layout.t
 
 ```css
 .admin-error-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-base);
-    padding: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--bg-base);
+	padding: 2rem;
 }
 ```
 
@@ -90,7 +90,7 @@ const createResponse = await fetch(`${API_BASE_URL}${API_ENDPOINTS.admin.bunny.c
 });
 ```
 
-`API_BASE_URL` resolves to `<your-api-host>` ([api/config.ts:11-17](frontend/src/lib/api/config.ts#L11)). The auth state in this app is held in the `rtp_access_token` cookie scoped to the *frontend* host; cross-origin XHR with `withCredentials` does not transmit that cookie, and even if you set up CORS+SameSite=None the cookie is HttpOnly to the frontend domain, not the API domain. Net: media + bunny uploads from the admin will silently 401 in production unless the backend skips auth for these routes (which would be its own P0). Mirror the pattern used elsewhere — proxy via `frontend/src/routes/api/admin/bunny/...` and `…/media/...` `+server.ts` shims that pull `env.API_BASE_URL || env.BACKEND_URL` from `$env/dynamic/private`.
+`API_BASE_URL` resolves to `<your-api-host>` ([api/config.ts:11-17](frontend/src/lib/api/config.ts#L11)). The auth state in this app is held in the `rtp_access_token` cookie scoped to the _frontend_ host; cross-origin XHR with `withCredentials` does not transmit that cookie, and even if you set up CORS+SameSite=None the cookie is HttpOnly to the frontend domain, not the API domain. Net: media + bunny uploads from the admin will silently 401 in production unless the backend skips auth for these routes (which would be its own P0). Mirror the pattern used elsewhere — proxy via `frontend/src/routes/api/admin/bunny/...` and `…/media/...` `+server.ts` shims that pull `env.API_BASE_URL || env.BACKEND_URL` from `$env/dynamic/private`.
 
 [BunnyVideoUploader.svelte:116](frontend/src/lib/components/admin/BunnyVideoUploader.svelte#L116) and [:164](frontend/src/lib/components/admin/BunnyVideoUploader.svelte#L164) are okay by default (the prop defaults to `/api/admin/bunny`, a relative path), but the `apiBase` prop is `string`-typed and any caller can override it with the cross-origin URL — same shape of bug.
 
@@ -100,16 +100,16 @@ const createResponse = await fetch(`${API_BASE_URL}${API_ENDPOINTS.admin.bunny.c
 
 ```ts
 $effect(() => {
-    if (!browser) return;
-    loadDashboard();
-    refreshInterval = setInterval(loadDashboard, 60000);
-    return () => {
-        if (refreshInterval) clearInterval(refreshInterval);
-    };
+	if (!browser) return;
+	loadDashboard();
+	refreshInterval = setInterval(loadDashboard, 60000);
+	return () => {
+		if (refreshInterval) clearInterval(refreshInterval);
+	};
 });
 ```
 
-`loadDashboard()` writes to `connections`, `metrics`, `roomStats`, `lastUpdated`, `isLoading` — all `$state` runes used elsewhere in the component, including by `$derived` (`connectedCount`, `totalServices`). The cleanup function is only valid for an effect that the runtime *re-runs*; a `$effect` with no tracked deps acts like a self-loop hazard since the runtime can re-evaluate it. The PRINCIPAL-2026-04-26 comment in [+layout.svelte:53-77](frontend/src/routes/admin/+layout.svelte#L53) calls this exact pattern "the classic write-while-reading-tracked-dep pattern that trips effect_update_depth_exceeded" and converts it to `onMount`. This page was missed in that sweep — convert to `onMount` with the same reasoning.
+`loadDashboard()` writes to `connections`, `metrics`, `roomStats`, `lastUpdated`, `isLoading` — all `$state` runes used elsewhere in the component, including by `$derived` (`connectedCount`, `totalServices`). The cleanup function is only valid for an effect that the runtime _re-runs_; a `$effect` with no tracked deps acts like a self-loop hazard since the runtime can re-evaluate it. The PRINCIPAL-2026-04-26 comment in [+layout.svelte:53-77](frontend/src/routes/admin/+layout.svelte#L53) calls this exact pattern "the classic write-while-reading-tracked-dep pattern that trips effect_update_depth_exceeded" and converts it to `onMount`. This page was missed in that sweep — convert to `onMount` with the same reasoning.
 
 ---
 
@@ -139,7 +139,7 @@ These are exactly the autosubscribes that the recent FIX-2026-04-26 pass elimina
 
 [admin/Sidebar.svelte:1-82](frontend/src/lib/components/admin/Sidebar.svelte#L1) is a fully-built nav sidebar that also reads `$authStore` directly ([:134](frontend/src/lib/components/admin/Sidebar.svelte#L134), [:138](frontend/src/lib/components/admin/Sidebar.svelte#L138), [:139](frontend/src/lib/components/admin/Sidebar.svelte#L139)), defines its own `navigation` array (only Dashboard / Forms / SEO — outdated), and calls `authStore.logout()` directly in `handleLogout` at [:64-67](frontend/src/lib/components/admin/Sidebar.svelte#L64). The active sidebar at [`layout/AdminSidebar.svelte`](frontend/src/lib/components/layout/AdminSidebar.svelte) has 6 sections and 26 items; this one has 3. Nothing in the audited scope imports `admin/Sidebar.svelte`. Either delete it or document why both exist; right now it's an orphan that drifts further every release.
 
-### P1-3 — `+page.svelte` admin index ignores the auth token in some headers and sends `Bearer …` *and* `credentials: 'include'`
+### P1-3 — `+page.svelte` admin index ignores the auth token in some headers and sends `Bearer …` _and_ `credentials: 'include'`
 
 [+page.svelte:62-95](frontend/src/routes/admin/+page.svelte#L62):
 
@@ -169,11 +169,11 @@ Drop `headers['Authorization']` here.
 
 ### P1-4 — `localFetch` swallows error bodies; the dashboard error banner says only "Failed to load some statistics"
 
-[+page.svelte:88-90](frontend/src/routes/admin/+page.svelte#L88) throws `new Error(\`HTTP ${response.status}\`)`, not the response body. Every promise-rejection is then caught at [+page.svelte:347-348](frontend/src/routes/admin/+page.svelte#L347) and replaced with the generic banner. Admins debugging a 502 from `/api/admin/coupons` see "Failed to load some statistics" with no path, status, or body. At the very least include `response.statusText` and the failing endpoint in the thrown error.
+[+page.svelte:88-90](frontend/src/routes/admin/+page.svelte#L88) throws `new Error(\`HTTP ${response.status}\`)`, not the response body. Every promise-rejection is then caught at [+page.svelte:347-348](frontend/src/routes/admin/+page.svelte#L347) and replaced with the generic banner. Admins debugging a 502 from `/api/admin/coupons`see "Failed to load some statistics" with no path, status, or body. At the very least include`response.statusText` and the failing endpoint in the thrown error.
 
 ### P1-5 — Dashboard period change races with concurrent fetches
 
-[+page.svelte:368-372](frontend/src/routes/admin/+page.svelte#L368) calls `fetchDashboardStats({ userInitiated: true })` synchronously after setting `selectedPeriod`. There's no abort of the in-flight `Promise.allSettled` from a prior period; the older response can land *after* the newer one and overwrite it (especially when one of the 5 endpoints stalls near `FETCH_TIMEOUT_MS = 10_000`). Add an `AbortController` per call and abort the previous one when `changePeriod` fires.
+[+page.svelte:368-372](frontend/src/routes/admin/+page.svelte#L368) calls `fetchDashboardStats({ userInitiated: true })` synchronously after setting `selectedPeriod`. There's no abort of the in-flight `Promise.allSettled` from a prior period; the older response can land _after_ the newer one and overwrite it (especially when one of the 5 endpoints stalls near `FETCH_TIMEOUT_MS = 10_000`). Add an `AbortController` per call and abort the previous one when `changePeriod` fires.
 
 ### P1-6 — `analyticsConnected = true; seoConnected = true;` is overwritten by `onMount`, but the `fetchDashboardStats` path still hard-codes `true` first
 
@@ -196,7 +196,7 @@ onMount(() => {
 });
 ```
 
-`fetchDashboardStats()` (called inside `onMount`) re-asserts `true` *after* `getIsAnalyticsConnected()` / `getIsSeoConnected()` were just used to set the real values. Net: the "Connect Analytics" CTA path at [:467-484](frontend/src/routes/admin/+page.svelte#L467) is unreachable because `analyticsConnected` is always `true` by the time the template re-runs. Either remove the hard-coded assignment in `fetchDashboardStats` or compute the flag once at the top of the function from the connections store.
+`fetchDashboardStats()` (called inside `onMount`) re-asserts `true` _after_ `getIsAnalyticsConnected()` / `getIsSeoConnected()` were just used to set the real values. Net: the "Connect Analytics" CTA path at [:467-484](frontend/src/routes/admin/+page.svelte#L467) is unreachable because `analyticsConnected` is always `true` by the time the template re-runs. Either remove the hard-coded assignment in `fetchDashboardStats` or compute the flag once at the top of the function from the connections store.
 
 ### P1-7 — `IconChevronDown` `class` prop usage is unsupported on Tabler runes icons
 
@@ -215,15 +215,15 @@ onMount(() => {
 
 ```ts
 if (data.connections) {
-    for (const conn of data.connections) {
-        if (conn.is_connected) {
-            (connections as any)[conn.key] = true;
-        }
-    }
+	for (const conn of data.connections) {
+		if (conn.is_connected) {
+			(connections as any)[conn.key] = true;
+		}
+	}
 }
 ```
 
-Three problems: (1) `as any` discards the `ConnectionStatus` interface — any malformed key from the API silently inserts a new property; (2) deep mutation on a Svelte 5 `$state` object works at runtime but is brittle if the proxy semantics change; (3) once `connections.google_analytics = true`, the code never *un*-sets it on the next refresh, so once-connected services appear connected forever even after an admin disconnects them. Replace with `connections = { ...connections, [conn.key]: conn.is_connected }` filtered by the known ConnectionStatus keys.
+Three problems: (1) `as any` discards the `ConnectionStatus` interface — any malformed key from the API silently inserts a new property; (2) deep mutation on a Svelte 5 `$state` object works at runtime but is brittle if the proxy semantics change; (3) once `connections.google_analytics = true`, the code never _un_-sets it on the next refresh, so once-connected services appear connected forever even after an admin disconnects them. Replace with `connections = { ...connections, [conn.key]: conn.is_connected }` filtered by the known ConnectionStatus keys.
 
 ### P1-9 — `getStatsForRoom` warns on every render for missing rooms
 
@@ -255,7 +255,7 @@ These all do `$effect(() => loadFn())` for one-time init, mirror of the dashboar
 - [VideoChaptersEditor.svelte:50-52](frontend/src/lib/components/admin/VideoChaptersEditor.svelte#L50) — `$effect(() => { loadChapters(); });`
 - [TemplateForm.svelte:30-41](frontend/src/lib/components/admin/TemplateForm.svelte#L30) — sync on prop change (this one is legit — it tracks `template`).
 - [ServiceConnectionStatus.svelte:251-255](frontend/src/lib/components/admin/ServiceConnectionStatus.svelte#L251) — `if (isConnected && onConnected) onConnected();` — fires `onConnected` on every isConnected toggle including initial render; consumers may receive duplicate events.
-- All `*-FormModal.svelte` and `*-DetailDrawer.svelte` files have a `$effect(() => { if (isOpen) document.body.style.overflow = 'hidden'; … })`. This is fine *except* the cleanup `() => { document.body.style.overflow = ''; }` runs on every re-evaluation, including on `isOpen` going from false→false (no-op) — harmless but noisy. The body-scroll-lock should live in the modal close handler, not effect cleanup.
+- All `*-FormModal.svelte` and `*-DetailDrawer.svelte` files have a `$effect(() => { if (isOpen) document.body.style.overflow = 'hidden'; … })`. This is fine _except_ the cleanup `() => { document.body.style.overflow = ''; }` runs on every re-evaluation, including on `isOpen` going from false→false (no-op) — harmless but noisy. The body-scroll-lock should live in the modal close handler, not effect cleanup.
 
 ### P2-2 — `*-FormModal.svelte` "reset on isOpen" pattern overwrites user-entered drafts on re-render
 
@@ -270,11 +270,11 @@ $effect(() => {
 });
 ```
 
-Tracked deps: `isOpen`, `mode`, `course`. If the parent re-creates the `course` object reference (very common with SvelteKit invalidation), the effect re-runs and *blows away the half-typed form*. This pattern repeats in `MemberFormModal.svelte:147`, `ModuleFormModal.svelte:60`, `SubscriptionFormModal.svelte:71`. Use a key-on-id `{#key course?.id}…{/key}` mount/remount pattern, or gate with `untrack(course)` on the field-population branch.
+Tracked deps: `isOpen`, `mode`, `course`. If the parent re-creates the `course` object reference (very common with SvelteKit invalidation), the effect re-runs and _blows away the half-typed form_. This pattern repeats in `MemberFormModal.svelte:147`, `ModuleFormModal.svelte:60`, `SubscriptionFormModal.svelte:71`. Use a key-on-id `{#key course?.id}…{/key}` mount/remount pattern, or gate with `untrack(course)` on the field-population branch.
 
 ### P2-3 — `MemberFormModal.svelte` defines extensive profile fields it never sends
 
-[MemberFormModal.svelte:65-91](frontend/src/lib/components/admin/MemberFormModal.svelte#L65) declares `phone`, `company`, `jobTitle`, `bio`, `timezone`, `subscriptionTier`, `accountStatus`, `expirationDate`, `tags`, `enableTwoFactor`, `emailNotifications`, `smsNotifications`, `marketingEmails`, `adminNotes` — all `$state`-tracked, all rendered into the form. The `// Extended fields would be populated from member data` comment on [:153](frontend/src/lib/components/admin/MemberFormModal.svelte#L153) and the absence of these in the `CreateMemberRequest` payload (the file is 2202 lines, see header at [:1-102](frontend/src/lib/components/admin/MemberFormModal.svelte#L1)) mean the admin types data and clicks Save and *nothing happens to those fields*. Either gut the unused fields with a comment or wire them through. Right now this is data loss.
+[MemberFormModal.svelte:65-91](frontend/src/lib/components/admin/MemberFormModal.svelte#L65) declares `phone`, `company`, `jobTitle`, `bio`, `timezone`, `subscriptionTier`, `accountStatus`, `expirationDate`, `tags`, `enableTwoFactor`, `emailNotifications`, `smsNotifications`, `marketingEmails`, `adminNotes` — all `$state`-tracked, all rendered into the form. The `// Extended fields would be populated from member data` comment on [:153](frontend/src/lib/components/admin/MemberFormModal.svelte#L153) and the absence of these in the `CreateMemberRequest` payload (the file is 2202 lines, see header at [:1-102](frontend/src/lib/components/admin/MemberFormModal.svelte#L1)) mean the admin types data and clicks Save and _nothing happens to those fields_. Either gut the unused fields with a comment or wire them through. Right now this is data loss.
 
 ### P2-4 — `dashboard/+page.svelte` interface omits `sendgrid` (declared) and the API returns it but it's compared against `connections.stripe` only
 
@@ -282,7 +282,7 @@ Tracked deps: `isOpen`, `mode`, `course`. If the parent re-creates the `course` 
 
 ### P2-5 — Loading/no-data flicker on the dashboard index
 
-[+page.svelte:107](frontend/src/routes/admin/+page.svelte#L107) `let isLoading = $state(true)` plus [:152](frontend/src/routes/admin/+page.svelte#L152) `let seoMetrics = { error404Count: { value: null, hits: 0 }, redirections: { count: null, hits: 0 } }` — but `seoMetrics` is *not* a `$state` rune (it's a plain object). Re-rendering does not update the SEO metric panel after `fetchDashboardStats` mutates fields like `seoMetrics.searchTraffic.value = data.seo.search_traffic`. Reactivity is "accidentally" achieved because the same render also flips `isLoading=false`, which *is* a `$state` and triggers the re-render. If `isLoading` is short-circuited (e.g. cached), the SEO panel stays blank. Wrap `seoMetrics` in `$state({...})`.
+[+page.svelte:107](frontend/src/routes/admin/+page.svelte#L107) `let isLoading = $state(true)` plus [:152](frontend/src/routes/admin/+page.svelte#L152) `let seoMetrics = { error404Count: { value: null, hits: 0 }, redirections: { count: null, hits: 0 } }` — but `seoMetrics` is _not_ a `$state` rune (it's a plain object). Re-rendering does not update the SEO metric panel after `fetchDashboardStats` mutates fields like `seoMetrics.searchTraffic.value = data.seo.search_traffic`. Reactivity is "accidentally" achieved because the same render also flips `isLoading=false`, which _is_ a `$state` and triggers the re-render. If `isLoading` is short-circuited (e.g. cached), the SEO panel stays blank. Wrap `seoMetrics` in `$state({...})`.
 
 Same issue applies to `stats` ([:121-128](frontend/src/routes/admin/+page.svelte#L121)), `analytics` ([:131-138](frontend/src/routes/admin/+page.svelte#L131)), and `deviceBreakdown` ([:154](frontend/src/routes/admin/+page.svelte#L154)).
 
@@ -304,9 +304,9 @@ Same issue applies to `stats` ([:121-128](frontend/src/routes/admin/+page.svelte
 
 ```ts
 $effect(() => {
-    if (isConnected && onConnected) {
-        onConnected();
-    }
+	if (isConnected && onConnected) {
+		onConnected();
+	}
 });
 ```
 
@@ -372,9 +372,9 @@ Quick scan suggests imports outpace usage. Typecheck will warn. Low priority.
 
 ## Notable patterns worth keeping
 
-- The **PRINCIPAL-2026-04-26** / **FIX-2026-04-26** comment markers throughout `+layout.svelte` and `AdminSidebar.svelte` are excellent — they tell the next reader *why* the code uses `onMount` instead of `$effect`, with citations. This pattern should be extended to the migrations that still need to happen (AdminToolbar, dashboard/+page).
+- The **PRINCIPAL-2026-04-26** / **FIX-2026-04-26** comment markers throughout `+layout.svelte` and `AdminSidebar.svelte` are excellent — they tell the next reader _why_ the code uses `onMount` instead of `$effect`, with citations. This pattern should be extended to the migrations that still need to happen (AdminToolbar, dashboard/+page).
 - [AdminSidebar.svelte:117-126](frontend/src/lib/components/layout/AdminSidebar.svelte#L117) — `bestActiveHref` longest-prefix selection is a clean, elegant solution to the nested-route active-state problem and beats the typical "if pathname.startsWith(href) and href !== '/'" hack.
-- [+page.svelte:78-94](frontend/src/routes/admin/+page.svelte#L78) — `AbortController` + per-request `setTimeout` for the dashboard fetch is the right idea. (Just re-use the pattern at the *changePeriod* level too — see P1-5.)
+- [+page.svelte:78-94](frontend/src/routes/admin/+page.svelte#L78) — `AbortController` + per-request `setTimeout` for the dashboard fetch is the right idea. (Just re-use the pattern at the _changePeriod_ level too — see P1-5.)
 - [+layout.svelte:557-617](frontend/src/routes/admin/+layout.svelte#L557) — the three-tier responsive layout (full sidebar / compact rail / drawer) in pure CSS with `--admin-sidebar-width` driving the offset is well-engineered and matches the Linear / Vercel pattern the codebase aims for.
 - The split of `connections.svelte` getters (`getIsAnalyticsConnected()`, `getIsSeoConnected()`, …) used by [ConnectionGate.svelte:60-90](frontend/src/lib/components/admin/ConnectionGate.svelte#L60) is a clean abstraction worth preserving.
 - [ConfirmationModal.svelte:50-79](frontend/src/lib/components/admin/ConfirmationModal.svelte#L50) — `variantConfig` table for danger/warning/info/success is a tidy way to keep four icon/color combos consistent across the app.

@@ -13,6 +13,7 @@
 
 **Pattern:** `>200` call sites where `sqlx::query_*().await.unwrap_or_default()` swallows
 DB errors and returns empty results. Worst offenders:
+
 - `api/src/routes/crm.rs` — 15+ occurrences across listing/aggregation handlers.
 - `api/src/routes/courses_admin.rs:154,162,170,179,1062,1419,…` — analytics + dashboards.
 - `api/src/routes/orders.rs:211,386` — order item counts and product metadata join.
@@ -31,6 +32,7 @@ admin, then analytics.
 ### 2. Format-string SQL building without parameter placeholders (MEDIUM)
 
 **Files (verified safe today, but fragile):**
+
 - `api/src/routes/media.rs:198-204` — `ORDER BY {sort_column} {direction} LIMIT {n} OFFSET {n}`.
 - `api/src/routes/cms_assets.rs:593-603` — same pattern.
 - `api/src/routes/admin_popups.rs:96` — count query string-built.
@@ -38,9 +40,10 @@ admin, then analytics.
 - `api/src/routes/member_courses.rs:1145,1163` — order by RANDOM()/sort_order.
 
 **Why fragile:** Today these are guarded by allow-listed columns + integer clamping
-+ hard-coded values, so they’re not exploitable. But the pattern means a future
-contributor who adds a new branch without an allow-list opens an injection vector.
-The class of bug is one careless edit away.
+
+- hard-coded values, so they’re not exploitable. But the pattern means a future
+  contributor who adds a new branch without an allow-list opens an injection vector.
+  The class of bug is one careless edit away.
 
 **Action:** Move all of these to either `query_as!` macros (compile-time checked) or
 explicit `bind()` for limit/offset. Sort columns can stay string-formatted **iff**
@@ -53,6 +56,7 @@ they’re always selected from a const allow-list (document it inline).
 **Evidence:** Only two `pool.begin()` call sites in the entire codebase
 (`api/src/routes/schedules.rs:899`, `api/src/routes/settings.rs:439`), but dozens of
 handlers do sequential `INSERT` / `UPDATE` / `DELETE` on multiple tables. Examples:
+
 - `api/src/routes/connections.rs::delete_connection` — deletes webhooks then connection.
 - `api/src/services/mfa.rs::verify_backup_code` — updates `user_mfa_secrets` and
   later inserts an audit row in `record_mfa_attempt` without a tx.
@@ -71,6 +75,7 @@ Project rule in `CLAUDE.md`: “New mutations that touch >1 table need a `Pool::
 ### 4. Regex compiled per request in hot paths (LOW-MEDIUM perf)
 
 **Files:**
+
 - `api/src/routes/cms_seo.rs:351,354,365,969,1167,1272,1273,1309,1310,1311` — all
   compile constant regexes inside per-call helpers.
 
@@ -100,12 +105,12 @@ mapped to 500 instead of panicking.
 
 ## 30-day action plan
 
-| Week | Track | Deliverable |
-|------|-------|-------------|
-| 1 | DB error handling | Sweep `routes/auth.rs`, `routes/orders.rs`, `routes/checkout.rs`, `routes/payments.rs`, `routes/subscriptions.rs` for `Result.unwrap_or_default()` and replace with `?` propagation. |
-| 2 | Transactions | Add `pool.begin()` to every multi-table mutation in `connections`, `forms`, `organization`, `user`, `services/mfa`. |
-| 3 | SQL safety | Convert format-string ORDER BY/LIMIT in `media.rs`, `cms_assets.rs`, `admin_popups.rs`, `room_resources.rs` to bind-parameter form. |
-| 4 | Perf + observability | Hoist `cms_seo.rs` regexes to `OnceLock`; add Prometheus counters for the now-propagated DB errors so we can see them. |
+| Week | Track                | Deliverable                                                                                                                                                                          |
+| ---- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | DB error handling    | Sweep `routes/auth.rs`, `routes/orders.rs`, `routes/checkout.rs`, `routes/payments.rs`, `routes/subscriptions.rs` for `Result.unwrap_or_default()` and replace with `?` propagation. |
+| 2    | Transactions         | Add `pool.begin()` to every multi-table mutation in `connections`, `forms`, `organization`, `user`, `services/mfa`.                                                                  |
+| 3    | SQL safety           | Convert format-string ORDER BY/LIMIT in `media.rs`, `cms_assets.rs`, `admin_popups.rs`, `room_resources.rs` to bind-parameter form.                                                  |
+| 4    | Perf + observability | Hoist `cms_seo.rs` regexes to `OnceLock`; add Prometheus counters for the now-propagated DB errors so we can see them.                                                               |
 
 ---
 

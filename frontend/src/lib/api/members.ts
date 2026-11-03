@@ -455,7 +455,13 @@ export interface MemberFullDetailsMember {
 	email: string;
 	avatar: string | null;
 	status:
-		'active' | 'trial' | 'churned' | 'never_subscribed' | 'banned' | 'suspended' | 'restricted';
+		| 'active'
+		| 'trial'
+		| 'churned'
+		| 'never_subscribed'
+		| 'banned'
+		| 'suspended'
+		| 'restricted';
 	status_label: string;
 	joined_at: string;
 	total_spent: number;

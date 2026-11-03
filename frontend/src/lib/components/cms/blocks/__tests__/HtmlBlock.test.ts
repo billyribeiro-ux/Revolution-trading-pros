@@ -20,7 +20,7 @@
  * - Accessibility
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vite-plus/test';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import HtmlBlock from '../advanced/HtmlBlock.svelte';
 import type { Block } from '../types';

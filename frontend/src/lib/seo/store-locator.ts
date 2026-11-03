@@ -26,7 +26,13 @@ import { browser } from '$app/env';
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type DayOfWeek =
-	'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+	| 'Monday'
+	| 'Tuesday'
+	| 'Wednesday'
+	| 'Thursday'
+	| 'Friday'
+	| 'Saturday'
+	| 'Sunday';
 
 export type BusinessType =
 	| 'LocalBusiness'

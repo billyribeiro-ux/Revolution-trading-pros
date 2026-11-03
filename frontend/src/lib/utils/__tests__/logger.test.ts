@@ -33,7 +33,7 @@
  *     these tests cover.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vite-plus/test';
 import { logger, perfLogger } from '../logger';
 
 describe('logger (dev mode — vitest default)', () => {

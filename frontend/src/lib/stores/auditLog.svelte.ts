@@ -32,7 +32,13 @@ export type AuditActionType =
 	| 'api_disconnect';
 
 export type AuditCategory =
-	'content' | 'users' | 'settings' | 'security' | 'integrations' | 'commerce' | 'marketing';
+	| 'content'
+	| 'users'
+	| 'settings'
+	| 'security'
+	| 'integrations'
+	| 'commerce'
+	| 'marketing';
 
 export interface AuditLogEntry {
 	id: string;
@@ -89,7 +95,7 @@ function saveToStorage(entries: AuditLogEntry[]) {
 
 // Svelte 5 reactive state
 let entries = $state<AuditLogEntry[]>(browser ? loadFromStorage() : []);
-let isLoading = $state(false);
+const isLoading = $state(false);
 let filters = $state<AuditFilters>({});
 
 // ═══════════════════════════════════════════════════════════════════════════════

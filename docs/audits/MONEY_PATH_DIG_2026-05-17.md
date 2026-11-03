@@ -1,11 +1,11 @@
 # Money-path dig — findings (2026-05-17)
 
 **How found:** after the lint easy-wins were exhausted, dug the surface a
-lint rule *cannot* see: frontend↔Rust money-contract correctness and the
+lint rule _cannot_ see: frontend↔Rust money-contract correctness and the
 i64-cents rule. Method = end-to-end trace (form → API client/normalizer →
 SvelteKit proxy → Rust struct → SQL), not grep counts.
 
-**Headline:** there is a *family* of admin money forms where the frontend
+**Headline:** there is a _family_ of admin money forms where the frontend
 sends a dollar value under a `price`/`discount_value` key, but the Rust
 request struct requires an integer-cents field (`*_cents: i64`). Some
 were fixed in prior batches; one was an unfixed P0; one is still broken.
@@ -18,6 +18,7 @@ were fixed in prior batches; one was an unfixed P0; one is still broken.
 product-catalog/payments app).
 
 **Trace:**
+
 - `src/routes/admin/products/create/+page.svelte:127` (and
   `[id]/edit/+page.svelte:199`) send `price: parseFloat(formData.price)`
   — a **dollar float** (`19.99`), key `price`.
@@ -32,7 +33,7 @@ product-catalog/payments app).
 - Missing required field ⇒ serde rejects ⇒ **every create/update fails**.
 
 **Why P0-4 missed it:** P0-4 (2026-04-26) predates the "Batch 1 cents
-refactor (2026-04-28)" that taught the *coupon* normalizer to convert
+refactor (2026-04-28)" that taught the _coupon_ normalizer to convert
 dollars→cents. Products never got that follow-up. (See F3 — coupons,
 which DID get it, as the contrast that proves the diagnosis.)
 
@@ -55,6 +56,7 @@ the most sensitive surface; wanted eyes on the create-vs-edit-vs-`/price`
 flow before patching).
 
 **Trace:**
+
 - `src/routes/admin/subscriptions/plans/+page.svelte:283-293` builds the
   update body by hand: `fetch('/api/admin/subscriptions/plans/${id}', {
   body: JSON.stringify({ ... price: editingPlan.price ... }) })`.
@@ -71,7 +73,7 @@ flow before patching).
   (Option, no error — the dangerous one).
 
 **Nuance found while tracing (why I didn't blind-patch):** there is a
-*separate* dedicated price-change endpoint used at
+_separate_ dedicated price-change endpoint used at
 `plans/+page.svelte:234` (`POST /plans/${id}/price`). So plan price may
 be intended to flow through that path, with the general create/update
 deliberately price-less. This needs the operator/owner to confirm the
@@ -94,7 +96,7 @@ like the same class. **It is correct** — the "Batch 1 cents refactor
 `CreateCouponRequest` (`api/src/routes/admin.rs:528`) wants
 `discount_value_cents: i64` / `min_purchase_cents` / `max_discount_cents`
 — all produced. **Did not touch working code.** This file is the
-*reference pattern* the product fix copied.
+_reference pattern_ the product fix copied.
 
 ---
 
@@ -107,6 +109,7 @@ is the operator's call** (schema change on fintech prod).
 Migration `061_money_cents_unification.sql` widened
 `courses_enhanced.price_cents`, `indicators.sale_price_cents`,
 `indicators_enhanced.price_cents` → BIGINT. It did **not** widen:
+
 - `courses.price_cents` (`001_initial_schema.sql:126` `INTEGER NOT NULL`)
 - `indicators.price_cents` (`015_consolidated_schema.sql:1074`
   `INTEGER DEFAULT 0`) — 061 widened this table's *sale*_price_cents but
@@ -142,6 +145,6 @@ The product P0 was not an isolated typo — it's one instance of a
 recurring shape on this codebase: **a payload normalizer/form that
 renames fields but doesn't complete the dollars→`*_cents` contract.**
 Coupons got the fix (Batch 1), products didn't (P0-4 predated it),
-subscription-plans never had a normalizer at all. Any *future* admin
+subscription-plans never had a normalizer at all. Any _future_ admin
 money form should be checked against its Rust `*_cents: i64` struct
 before it ships. A lint rule cannot catch this — only the trace can.

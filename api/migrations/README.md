@@ -3,10 +3,10 @@
 This directory holds two **different** things. Read this before touching
 either.
 
-| Artifact | Used by | Never |
-|---|---|---|
+| Artifact            | Used by                                                                                                                                     | Never                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `0*.sql` (60 files) | **Production** & any already-bootstrapped DB. `sqlx::migrate!("./migrations")` in `src/db/mod.rs` embeds & replays them, checksum-verified. | **Never edit/rename/delete a committed `0*.sql`.** sqlx stores a SHA-384 of each; changing one makes the running app refuse to boot (`VersionMismatch`). |
-| `schema.sql` | **Fresh environments only** — CI DB-tests, local first-boot, disaster recovery. One-shot full current schema. | Not loaded by the app. Not applied to production. |
+| `schema.sql`        | **Fresh environments only** — CI DB-tests, local first-boot, disaster recovery. One-shot full current schema.                               | Not loaded by the app. Not applied to production.                                                                                                        |
 
 ## Why `schema.sql` exists (audit G0.3)
 
@@ -23,7 +23,7 @@ empty DB with **0 errors / 204 tables**.
 
 ## Fresh-environment bootstrap (CI / local / DR)
 
-Production keeps using the historical chain unchanged. A *new* empty
+Production keeps using the historical chain unchanged. A _new_ empty
 database is brought to the current schema in **two steps**, then the app
 runs normally:
 
@@ -40,7 +40,7 @@ After that the app boots normally: `sqlx::migrate!` finds every version
 already recorded with a matching checksum and runs **nothing** (proven a
 no-op by `api/tests/g03_schema_baseline_test.rs`). You may equivalently
 set `SKIP_MIGRATIONS=true`, but seeding `_sqlx_migrations` is preferred —
-it keeps the migrator lineage honest and lets *future* migrations
+it keeps the migrator lineage honest and lets _future_ migrations
 (069+) apply normally.
 
 > Filenames here matter: `sqlx::migrate!` scans this directory and
@@ -97,9 +97,9 @@ committed files are never touched) is documented step-by-step in
 ## The ONE remaining owner step (production cutover)
 
 The fresh-env mechanism above is fully shipped and proven. **What is
-*not* done** — and is owner-gated — is migrating the **production**
+_not_ done** — and is owner-gated — is migrating the **production**
 database onto this baseline so prod and fresh envs share one source of
-truth. Until then, prod and the reconstructed baseline are only *believed*
+truth. Until then, prod and the reconstructed baseline are only _believed_
 to match (the reconstruction is type-derived from the app contract, not
 diffed against the live prod schema).
 

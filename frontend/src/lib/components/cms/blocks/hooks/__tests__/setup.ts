@@ -15,7 +15,7 @@
  * replaces runes before runtime. We must mock 'svelte/internal/client' instead.
  */
 
-import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
+import { expect, afterEach, vi, beforeAll, afterAll } from 'vite-plus/test';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import {

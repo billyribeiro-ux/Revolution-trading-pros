@@ -29,7 +29,10 @@ interface CalculateStatsMessage {
 }
 
 type WorkerMessage =
-	ProcessBlocksMessage | ValidateBlockMessage | SanitizeContentMessage | CalculateStatsMessage;
+	| ProcessBlocksMessage
+	| ValidateBlockMessage
+	| SanitizeContentMessage
+	| CalculateStatsMessage;
 
 // Word count helper
 function countWords(text: string | undefined): number {
@@ -193,5 +196,3 @@ self.onmessage = (e: MessageEvent<WorkerMessage>) => {
 		}
 	}
 };
-
-export {};

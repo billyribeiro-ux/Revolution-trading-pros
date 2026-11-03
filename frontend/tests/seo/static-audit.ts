@@ -32,7 +32,11 @@ function walkFiles(dir: string, extFilter?: (f: string) => boolean): string[] {
 	const results: string[] = [];
 	if (!fs.existsSync(dir)) return results;
 	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-		if (entry.name === 'node_modules' || entry.name === '.svelte-kit' || entry.name.startsWith('.')) {
+		if (
+			entry.name === 'node_modules' ||
+			entry.name === '.svelte-kit' ||
+			entry.name.startsWith('.')
+		) {
 			continue;
 		}
 		const full = path.join(dir, entry.name);
@@ -287,7 +291,10 @@ ${formatHits(ratingHits)}
 - **Status:** ${hardcodedOriginHits.length === 0 ? 'PASS (0 hardcoded production origins in `src/routes/`; all routes read `PRODUCTION_ORIGIN` from `#lib/seo/config.js`)' : 'FAIL (routes hardcode `https://revolutiontradingpros.com` instead of reading from single config)'}
 ${formatHits(hardcodedOriginHits)}
 `;
-	const outPath = path.join(repoRoot, isFinal ? 'docs/seo/audit/06-static.md' : 'docs/seo/audit/03-static.md');
+	const outPath = path.join(
+		repoRoot,
+		isFinal ? 'docs/seo/audit/06-static.md' : 'docs/seo/audit/03-static.md'
+	);
 	fs.writeFileSync(outPath, md, 'utf8');
 	console.log(`Wrote ${outPath}`);
 	console.log({
@@ -303,4 +310,3 @@ ${formatHits(hardcodedOriginHits)}
 }
 
 runStaticAudit();
-

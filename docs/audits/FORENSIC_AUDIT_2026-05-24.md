@@ -16,14 +16,14 @@ closed; a live Playwright pass is still owed before they can be marked
 
 ## 1. Quality gates — actual results
 
-| Gate | Result | Detail |
-|---|---|---|
-| `pnpm check` (svelte-check) | ✅ | 4,725 files, **0 errors, 0 warnings** |
-| `pnpm test:unit` (vitest) | ✅ | 57 files, **2,255 passed / 32 skipped / 0 failed** (~35 s) |
-| `cargo check` (api) | ✅ | clean compile (2 m 51 s fresh build) |
-| `cargo clippy` | ⏸ | not re-run this session; last green per May 17 audit |
-| Playwright e2e | ⏸ | needs Docker stack — not booted in this remote container |
-| `svelte-autofixer` MCP | ✅ | clean on edited admin schema page |
+| Gate                        | Result | Detail                                                     |
+| --------------------------- | ------ | ---------------------------------------------------------- |
+| `pnpm check` (svelte-check) | ✅     | 4,725 files, **0 errors, 0 warnings**                      |
+| `pnpm test:unit` (vitest)   | ✅     | 57 files, **2,255 passed / 32 skipped / 0 failed** (~35 s) |
+| `cargo check` (api)         | ✅     | clean compile (2 m 51 s fresh build)                       |
+| `cargo clippy`              | ⏸      | not re-run this session; last green per May 17 audit       |
+| Playwright e2e              | ⏸      | needs Docker stack — not booted in this remote container   |
+| `svelte-autofixer` MCP      | ✅     | clean on edited admin schema page                          |
 
 Trajectory: test count **1,442 (Apr 25) → 1,700 (May 17) → 2,255 (today)** —
 +57 % in a month. Test files 36 → 57.
@@ -51,11 +51,11 @@ working:   clean
 
 ## 3. Repo composition
 
-| Area | LOC | Files |
-|---|---:|---:|
-| Frontend (`frontend/src`) | 76,017 | 1,092 .svelte · 558 SvelteKit route files |
-| Rust API (`api/src`) | 110,538 | (rs) |
-| `docs/audits/` | ~1 MB | 61 markdown files |
+| Area                      |     LOC |                                     Files |
+| ------------------------- | ------: | ----------------------------------------: |
+| Frontend (`frontend/src`) |  76,017 | 1,092 .svelte · 558 SvelteKit route files |
+| Rust API (`api/src`)      | 110,538 |                                      (rs) |
+| `docs/audits/`            |   ~1 MB |                         61 markdown files |
 
 Quality-debt heatmap (frontend):
 
@@ -71,19 +71,19 @@ Quality-debt heatmap (frontend):
 
 Two May 17 P0s are mechanically closed:
 
-| Prior P0 | Status now | Evidence |
-|---|---|---|
-| P0-1 — checkout route mismatch | **Closed** | `api/src/routes/checkout.rs:667-672` mounts `/` → `post(create_checkout)`; `frontend/src/lib/api/cart.ts:1166` docstring confirms it now consumes the `create_checkout` JSON. Owes a live Playwright pass. |
-| P0-3 — webhook multi-table writes non-atomic | **Closed** | `payments.rs` split into `api/src/routes/payments/`; `payments/webhook.rs:192` opens a real `pool.begin().await` transaction. |
+| Prior P0                                     | Status now | Evidence                                                                                                                                                                                                   |
+| -------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0-1 — checkout route mismatch               | **Closed** | `api/src/routes/checkout.rs:667-672` mounts `/` → `post(create_checkout)`; `frontend/src/lib/api/cart.ts:1166` docstring confirms it now consumes the `create_checkout` JSON. Owes a live Playwright pass. |
+| P0-3 — webhook multi-table writes non-atomic | **Closed** | `payments.rs` split into `api/src/routes/payments/`; `payments/webhook.rs:192` opens a real `pool.begin().await` transaction.                                                                              |
 
 ### 🟠 P1 — Repo hygiene (this branch fixes them)
 
-| ID | Item | Status |
-|---|---|---|
-| P1-A | Four macOS-bound Python scripts at repo root (`fix_spx*.py`) + two more in `spx-profit-pulse/` (`fix_gsap.py`, `fix_plans.py`). All six hard-code `/Users/billyribeiro/Desktop/...`. | **Resolved in `eb91d4c`.** Deleted; restorable from git history. |
-| P1-B | Four audit MDs at repo root (`GSAP_*.md` ×2, `RESTORE_AND_MIGRATE_PLAN.md`, `orphans.md`) instead of in `docs/audits/`. | **Resolved in `eb91d4c`.** Moved into `docs/audits/`; `orphans.md` renamed to `ORPHAN_INVENTORY_2026-05-20.md` to match the dated audit convention. |
-| P1-C | `retiredmay26/` parking lot (103 restored files from #743). | **Open.** Either archive under `docs/archived-2026-may/` or delete now that PE7 is stable. |
-| P1-D | `docs/audits/` inflation — 61 MDs, heavy duplication (`BATCH2..7_RESULT.md`, `TASK2..7_RESULT.md`, `AUDIT_REPORT` + `AUDIT_FIX_PLAN` + `AUDIT_FIX_SUMMARY`, etc.). | **Open.** Archive everything older than the most recent forensic audit under `docs/audits/archive/`. |
+| ID   | Item                                                                                                                                                                                 | Status                                                                                                                                              |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1-A | Four macOS-bound Python scripts at repo root (`fix_spx*.py`) + two more in `spx-profit-pulse/` (`fix_gsap.py`, `fix_plans.py`). All six hard-code `/Users/billyribeiro/Desktop/...`. | **Resolved in `eb91d4c`.** Deleted; restorable from git history.                                                                                    |
+| P1-B | Four audit MDs at repo root (`GSAP_*.md` ×2, `RESTORE_AND_MIGRATE_PLAN.md`, `orphans.md`) instead of in `docs/audits/`.                                                              | **Resolved in `eb91d4c`.** Moved into `docs/audits/`; `orphans.md` renamed to `ORPHAN_INVENTORY_2026-05-20.md` to match the dated audit convention. |
+| P1-C | `retiredmay26/` parking lot (103 restored files from #743).                                                                                                                          | **Open.** Either archive under `docs/archived-2026-may/` or delete now that PE7 is stable.                                                          |
+| P1-D | `docs/audits/` inflation — 61 MDs, heavy duplication (`BATCH2..7_RESULT.md`, `TASK2..7_RESULT.md`, `AUDIT_REPORT` + `AUDIT_FIX_PLAN` + `AUDIT_FIX_SUMMARY`, etc.).                   | **Open.** Archive everything older than the most recent forensic audit under `docs/audits/archive/`.                                                |
 
 ### 🟡 P2 — Mild correctness debt (carried over)
 
@@ -105,12 +105,12 @@ Two May 17 P0s are mechanically closed:
 
 ## 5. SEO posture (post-`d0e0933`)
 
-| Google change | Date | Status |
-|---|---|---|
-| FAQ rich results dropped | 2026-05-07 | ✅ All 4 FAQ generators marked `@deprecated` with dev-only `console.warn`. Markup retained for AI/voice. Admin schema picker shows "Deprecated" badge. 12 routes still emit `FAQPage` JSON-LD (semantic only). |
-| Speakable / generative-AI guide | 2026-05-15 | ✅ `speakableSchema()` builder + `JsonLdSpeakable` types exported through `$lib/seo`. **0 routes use it yet** — adoption is the next step. |
-| `hasAdultConsideration` on Product | 2026-05-20 | ✅ Added to `ProductConfig`, defaults to `'no'`. |
-| Broad May 2026 core update | 2026-05-21 | n/a (content-quality focused) |
+| Google change                      | Date       | Status                                                                                                                                                                                                         |
+| ---------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FAQ rich results dropped           | 2026-05-07 | ✅ All 4 FAQ generators marked `@deprecated` with dev-only `console.warn`. Markup retained for AI/voice. Admin schema picker shows "Deprecated" badge. 12 routes still emit `FAQPage` JSON-LD (semantic only). |
+| Speakable / generative-AI guide    | 2026-05-15 | ✅ `speakableSchema()` builder + `JsonLdSpeakable` types exported through `$lib/seo`. **0 routes use it yet** — adoption is the next step.                                                                     |
+| `hasAdultConsideration` on Product | 2026-05-20 | ✅ Added to `ProductConfig`, defaults to `'no'`.                                                                                                                                                               |
+| Broad May 2026 core update         | 2026-05-21 | n/a (content-quality focused)                                                                                                                                                                                  |
 
 **No hardcoded prod URLs in any SvelteKit proxy** (`frontend/src/routes/api/`)
 — CLAUDE.md gate clean.

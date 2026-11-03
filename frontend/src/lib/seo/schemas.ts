@@ -223,7 +223,9 @@ export interface EventInput {
 	endDate?: string;
 	eventStatus?: 'EventScheduled' | 'EventRescheduled' | 'EventCancelled';
 	eventAttendanceMode?:
-		'OnlineEventAttendanceMode' | 'OfflineEventAttendanceMode' | 'MixedEventAttendanceMode';
+		| 'OnlineEventAttendanceMode'
+		| 'OfflineEventAttendanceMode'
+		| 'MixedEventAttendanceMode';
 	location?: { name: string; url?: string };
 	organizer: { name: string; url: string };
 	isLiveBroadcast?: boolean;

@@ -17,17 +17,17 @@ Svelte 5 frontend, Rust + Axum backend).
 
 ## 1. Quality gates — actual results
 
-| Gate | Result | Detail |
-|---|---|---|
-| `pnpm check` (svelte-check) | ✅ | 4,541 files, **0 errors, 0 warnings** |
-| `pnpm test:unit` (vitest) | ✅ | 36 files, **1,700 passed, 32 skipped, 0 failed** (78 s) |
-| `cargo check --locked` | ✅ | clean compile (3m19s) |
-| `cargo clippy --locked --all-targets -D warnings` | ✅ | **clean** — no warnings (2m00s) |
-| `pnpm lint` (eslint) | ✅ | **0 errors**, 1,718 warnings (prior 5 errors fixed; warnings = pre-existing `any`/`!`/`@ts-ignore` debt) |
-| `cargo test --test utils_test --test stripe_test` | ✅ | **utils_test 17/17, stripe_test 15/15, 0 failed** (caveat: these test duplicated copies of logic, not `api/src/` — see P1-10) |
-| Playwright e2e | ⏸ | needs running Docker stack (not booted) |
-| `cargo machete` / `cargo deny` | ⚠ | binaries not installed in this environment |
-| `svelte-autofixer` MCP | ⚠ | **permission-denied** to the audit agents — Svelte-5 autofix coverage gap (CLAUDE.md mandates it; could not run) |
+| Gate                                              | Result | Detail                                                                                                                        |
+| ------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm check` (svelte-check)                       | ✅     | 4,541 files, **0 errors, 0 warnings**                                                                                         |
+| `pnpm test:unit` (vitest)                         | ✅     | 36 files, **1,700 passed, 32 skipped, 0 failed** (78 s)                                                                       |
+| `cargo check --locked`                            | ✅     | clean compile (3m19s)                                                                                                         |
+| `cargo clippy --locked --all-targets -D warnings` | ✅     | **clean** — no warnings (2m00s)                                                                                               |
+| `pnpm lint` (eslint)                              | ✅     | **0 errors**, 1,718 warnings (prior 5 errors fixed; warnings = pre-existing `any`/`!`/`@ts-ignore` debt)                      |
+| `cargo test --test utils_test --test stripe_test` | ✅     | **utils_test 17/17, stripe_test 15/15, 0 failed** (caveat: these test duplicated copies of logic, not `api/src/` — see P1-10) |
+| Playwright e2e                                    | ⏸      | needs running Docker stack (not booted)                                                                                       |
+| `cargo machete` / `cargo deny`                    | ⚠      | binaries not installed in this environment                                                                                    |
+| `svelte-autofixer` MCP                            | ⚠      | **permission-denied** to the audit agents — Svelte-5 autofix coverage gap (CLAUDE.md mandates it; could not run)              |
 
 Type safety and unit tests are at a clean baseline. The environment
 required two fixes before gates could run: frontend `node_modules` was
@@ -38,12 +38,12 @@ scripts (rebuilt at workspace root).
 
 ## 2. Verdict on the prior (2026-05-10) P0 claims
 
-| Prior P0 | Status | Proof |
-|---|---|---|
-| `subscriptions.rs:446` placeholder checkout URL | **FIXED** | `subscriptions.rs:457-473` now calls `create_subscription_checkout`; 502 on Stripe failure, persistence deferred to webhook |
-| Idempotency-Key on every mutating Stripe POST | **FIXED** (keys not persisted — see P2-A) | `stripe.rs:396,546,639,705,754,826,842,867,900,1002,1013,1069,1135,1159,1198,1258,1307,1390` |
-| Webhook multi-table writes wrapped in a transaction | **NOT FIXED** | zero `begin()`/`commit()` in `payments.rs`; `handle_checkout_completed` writes 6+ tables non-atomically |
-| 5 eslint errors | **FIXED** | `svelte-check` 0/0; eslint src warnings driven to 0 in later commits (gate count in §11 addendum) |
+| Prior P0                                            | Status                                    | Proof                                                                                                                       |
+| --------------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `subscriptions.rs:446` placeholder checkout URL     | **FIXED**                                 | `subscriptions.rs:457-473` now calls `create_subscription_checkout`; 502 on Stripe failure, persistence deferred to webhook |
+| Idempotency-Key on every mutating Stripe POST       | **FIXED** (keys not persisted — see P2-A) | `stripe.rs:396,546,639,705,754,826,842,867,900,1002,1013,1069,1135,1159,1198,1258,1307,1390`                                |
+| Webhook multi-table writes wrapped in a transaction | **NOT FIXED**                             | zero `begin()`/`commit()` in `payments.rs`; `handle_checkout_completed` writes 6+ tables non-atomically                     |
+| 5 eslint errors                                     | **FIXED**                                 | `svelte-check` 0/0; eslint src warnings driven to 0 in later commits (gate count in §11 addendum)                           |
 
 The Stripe-checkout and idempotency P0s are genuinely closed. **The
 webhook-atomicity P0 is still open** and is joined by several new
@@ -54,6 +54,7 @@ release-blockers below.
 ## 3. P0 — Release-blocking
 
 ### P0-1 [V] Customer checkout is broken end-to-end (route mismatch)
+
 `frontend/src/routes/checkout/+page.svelte:19` imports `createCheckoutSession`
 from `$lib/api/cart`; `cart.ts:1132` does `POST ${API_URL}/checkout/create-session`
 with a `{cart,provider,returnUrl,cancelUrl}` body. The backend
@@ -70,6 +71,7 @@ calls `POST /api/checkout`). Delete the second dead
 `createCheckoutSession` in `lib/api/checkout.ts:149`.
 
 ### P0-2 [V] Committed superadmin credentials + production env file
+
 `<REDACTED-SUPERADMIN-EMAIL>` / `<REDACTED-PASSWORD>` are hardcoded in
 **four** committed e2e specs: `frontend/tests/e2e/admin/role-gate.spec.ts:33-34`,
 `admin/subscription-checkout.spec.ts:32-33`, `admin-sweep.spec.ts:23,36-37`,
@@ -84,11 +86,12 @@ throws when the env var is unset; treat email-list elevation as
 break-glass only (require DB role + `email_verified_at`).
 
 ### P0-3 [V] `/admin` role gate is client-side only (defense-in-depth gap)
+
 No `frontend/src/routes/admin/+layout.server.ts` exists;
 `admin/+layout.ts` sets `ssr = false`; the role check is a client
 `onMount` redirect in `admin/+layout.svelte:87-103`.
 `hooks.server.ts:32` lists `/admin` in `PROTECTED_ROUTES` but only
-verifies the token resolves to *a user*, never `role`. An authenticated
+verifies the token resolves to _a user_, never `role`. An authenticated
 non-admin is served the admin shell; only JS stands between them and
 `/api/admin/*` calls. The Rust API still enforces RBAC on the data
 (security audit confirms extractors are uniform), so this is a
@@ -99,6 +102,7 @@ is **overstated** and should be corrected. **Fix:** add
 `!locals.user || !ADMIN_ROLES.has(locals.user.role)`.
 
 ### P0-4 Webhook handler multi-table writes are not atomic
+
 `api/src/routes/payments.rs` contains **zero** `pool.begin()`/`tx.commit()`
 across all 2,112 lines. `handle_checkout_completed` (`payments.rs:416-922`)
 writes `orders` (475), `user_memberships` (565), `coupons.usage_count+1`
@@ -112,6 +116,7 @@ prior P0. **Fix:** wrap the handler body in a transaction; only mark
 `processed_at IS NULL` instead of skipping by event-id presence.
 
 ### P0-5 Subscription-plan create/edit drops the price (money-correctness)
+
 Independently re-confirmed from [`MONEY_PATH_DIG_2026-05-17.md`](MONEY_PATH_DIG_2026-05-17.md)
 F2. `frontend/src/routes/admin/subscriptions/plans/+page.svelte:283-293`
 and `subscriptionPlansApi.create/.update` (`lib/api/admin.ts:1248/1257`)
@@ -124,6 +129,7 @@ normalizer); confirm intended flow vs the separate `/plans/:id/price`
 endpoint first.
 
 ### P0-6 [V] Stored-XSS class via unescaped JSON-LD `{@html}`
+
 `SEOHead.svelte:303-318` `stableStringify` sorts keys with
 `JSON.stringify` on values but never escapes `<`, `>`, `/`, U+2028/9;
 output is injected via `{@html}` at `:971`. `seo/SeoHead.svelte:217`
@@ -138,6 +144,7 @@ JSON-LD helper. All ~70 other `{@html}` sinks are DOMPurify-sanitized
 (verified) — this class is the exception.
 
 ### P0-7 Course/video paywall bypass
+
 `api/src/routes/member_courses.rs:255-353` `get_course_player` loads the
 course by slug for any authenticated user, returns all lessons including
 `bunny_video_guid` + downloads, and only sets
@@ -154,6 +161,7 @@ lessons from the response.
 ## 4. P1 — High
 
 ### P1-1 [V] Real Google API key + OAuth client ID committed
+
 `frontend/src/lib/config/trading-rooms.ts:57,116,167,277,336` hardcode
 `calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw'` plus an
 OAuth client ID, duplicated across `dashboard/*-room/+page.svelte` and
@@ -163,6 +171,7 @@ rotate; add Google Cloud API + HTTP-referrer restriction; source from a
 `VITE_` env var, not 8+ literals.
 
 ### P1-2 Stolen access JWT survives logout-all / password-reset / ban
+
 `middleware/auth.rs` + `services/redis.rs:233-256` +
 `auth.rs:1182-1208`: `invalidate_all_user_sessions()` only deletes Redis
 `session:*` keys; access JWTs are blacklisted **only** on single-device
@@ -173,6 +182,7 @@ rotation. **Fix:** per-user `token_version` embedded in the JWT, bumped
 on logout-all/reset/ban, checked in the auth extractor.
 
 ### P1-3 Per-IP rate limits bypassable via spoofed `X-Forwarded-For`
+
 `api/src/routes/auth.rs:48-62` `client_ip()` trusts the client
 `x-forwarded-for`/`x-real-ip` with no trusted-proxy allowlist or
 `ConnectInfo` socket fallback. Rotating the header gives a fresh bucket
@@ -183,6 +193,7 @@ from `ConnectInfo<SocketAddr>`; honor `X-Forwarded-For` only from
 configured trusted-proxy CIDRs.
 
 ### P1-4 Unauthenticated admin/infra endpoints
+
 - `GET /api/admin/coupons/validate/:code` (`admin.rs:1287`, mounted
   `admin.rs:2317`) has **no auth extractor** — the lone gap among 37
   handlers in the file; returns full `CouponRow` incl. `stripe_coupon_id`
@@ -193,10 +204,11 @@ configured trusted-proxy CIDRs.
   `AdminUser` not `SuperAdminUser`.
 - `/monitoring/metrics`, `/metrics/json`, `/health/detailed`
   (`monitoring/mod.rs:155-160`) unauthenticated recon surface.
-**Fix:** add `AdminUser`/`SuperAdminUser` extractors respectively;
-network-ACL the metrics endpoints.
+  **Fix:** add `AdminUser`/`SuperAdminUser` extractors respectively;
+  network-ACL the metrics endpoints.
 
 ### P1-5 Admin analytics serve fabricated data
+
 `admin_members.rs:1119` `analytics_churn_reasons` is 100% hardcoded;
 `analytics_revenue` (`:1073`) hardcodes `avg_order_value_cents: 12750`
 and `revenue_by_month: []`. Operators see invented retention/revenue
@@ -204,6 +216,7 @@ numbers with no "synthetic" indicator. **Fix:** compute from real
 tables or return `501`/`data_available:false`.
 
 ### P1-6 `/api/auth/set-session` sets httpOnly auth cookie from an unauthenticated body
+
 `frontend/src/routes/api/auth/set-session/+server.ts:20-58` writes
 `body.access_token` into `rtp_access_token` with no origin/CSRF/token
 validation — session-fixation / login-CSRF. The OAuth callback comment
@@ -211,6 +224,7 @@ says it's "no longer needed". **Fix:** delete the POST handler, or
 validate the token via `GET /api/auth/me` + add an origin check.
 
 ### P1-7 Money not stored as integer cents at rest
+
 `orders`, `membership_plans.price`, `products.price`, `order_items` are
 `DECIMAL/NUMERIC`; the i64-cents contract exists only in transit, with
 `$n::BIGINT / 100.0` float division on read/write
@@ -221,6 +235,7 @@ money rule. **Fix:** migrate money columns to BIGINT cents; replace the
 refund float accumulation with integer cents.
 
 ### P1-8 `get_subscription` doesn't expand `items` → epoch membership periods
+
 `payments.rs:519-522` calls `get_subscription` (`stripe.rs:794-808`,
 plain `GET` with no `expand[]=items`); the 2026 Stripe API moved period
 timestamps into `items.data[0]`, so `get_current_period()` falls back to
@@ -229,15 +244,17 @@ renewal-reminder/grace logic. **Fix:** add
 `.query(&[("expand[]","items.data")])`.
 
 ### P1-9 [V] CI does not enforce lint/clippy
+
 Root `.github/workflows/ci.yml` has **no eslint gate**; backend clippy is
 `continue-on-error: true` (advisory). `frontend/.github/workflows/ci.yml`
 has a lint job but is **dead** (GitHub only reads root `.github/workflows/`,
 and it uses `npm` in a `pnpm` repo). `pnpm check`, `vitest`, and
-chromium e2e *are* enforced. **Fix:** add an eslint job to the root
+chromium e2e _are_ enforced. **Fix:** add an eslint job to the root
 workflow; drop `continue-on-error` on clippy; delete the dead
 `frontend/.github/workflows/ci.yml`.
 
 ### P1-10 Backend "tests" exercise duplicated logic, not shipped code
+
 The only CI-safe backend tests (`utils_test.rs` 17, `stripe_test.rs` 15)
 test **copied modules** (`stripe_test.rs:4` `mod stripe { …duplicated… }`),
 not `api/src/`. A real regression in `services/stripe.rs` signature
@@ -292,7 +309,7 @@ modules; build a real-JWT admin test harness.
 ## 6. P3 — Hygiene / dead code
 
 - Dead Rust module `courses` (`routes/mod.rs:17`, never mounted — the
-  *only* truly unmounted module; the prior "~25" claim does **not** hold
+  _only_ truly unmounted module; the prior "~25" claim does **not** hold
   at this HEAD). Orphan `cms_scheduler::start_scheduler` (CMS scheduling
   is silently a no-op). `EnvFilter` defaults to `debug` in prod if
   `RUST_LOG` unset (`main.rs:31-33`). Unbounded list queries
@@ -337,7 +354,7 @@ modules; build a real-JWT admin test harness.
   validated LIMIT-OFFSET; all user values `.bind()`-ed. None injectable.
 - **Critical-path transactions:** registration, developer bootstrap, the
   working `create_checkout` handler are properly `begin()`/`commit()`-wrapped
-  (the gap is specifically the *webhook* handlers — P0-4).
+  (the gap is specifically the _webhook_ handlers — P0-4).
 - **Webhook security:** signature is constant-time HMAC-SHA256 over the
   raw unmodified body, fail-closed in prod, ±300 s replay window;
   receipt idempotent via `webhook_events(event_id)` UNIQUE; coupon
@@ -360,14 +377,14 @@ modules; build a real-JWT admin test harness.
 ## 8. Corrections to the 2026-05-10 audit
 
 1. "**Auth gate on /admin is real**" — **overstated.** Server-side it
-   only blocks unauthenticated users; the *role* gate is bypassable
+   only blocks unauthenticated users; the _role_ gate is bypassable
    client-side JS (P0-3).
 2. "**~25 unmounted backend route files**" — **incorrect at this HEAD.**
    Exactly one (`courses`).
 3. "**consent.rs persistence is in-memory**" — **stale.** Now upserts to
    the `settings` table (residual OnceLock fallback only).
 4. "**/api/checkout route works; the subscriptions-plan upgrade flow
-   does not**" — the *customer* `/checkout` page is in fact broken via a
+   does not**" — the _customer_ `/checkout` page is in fact broken via a
    different defect (P0-1, route mismatch); the backend handler is fine.
 
 ---
@@ -426,7 +443,7 @@ All gates resolved. Final ground-truth results:
   warnings (2m00s).
 - `cargo test --test utils_test --test stripe_test`: **utils_test 17/17,
   stripe_test 15/15, 0 failed** (exit 0). Caveat per P1-10: these
-  binaries test *duplicated copies* of the logic, not the shipped
+  binaries test _duplicated copies_ of the logic, not the shipped
   `api/src/` code, so they do not protect against a real regression in
   `services/stripe.rs` / `utils`.
 
@@ -448,16 +465,16 @@ reconstruct the database from zero — production was bootstrapped from
 the Laravel era and the sqlx chain only ever ran as incremental patches
 on top of a pre-existing schema.
 
-| Migration | Failure | State-dependent? |
-|---|---|---|
-| `035_ict7_member_system_complete.sql` | `relation "user_sessions" does not exist` (table never `CREATE`d by any migration; app uses Redis for sessions — vestigial Laravel table) | yes (missing table) |
-| `036_room_resources_ict7_complete.sql` | `column "trading_room_id" does not exist` | yes |
-| `039_resources_ict7_enhanced.sql` | `column r.trading_room_id does not exist` | yes |
-| `041_cms_presets.sql` | `syntax error at or near "WHERE"` | **NO — unconditional SQL syntax error; this migration cannot have applied on any database, incl. prod** |
-| `050_room_fulltext_search_indexes.sql` | `function name "search_room_content" is not unique` | partly (definition conflict) |
-| `051_video_system_ict7_complete.sql` | `column "tags" does not exist` | yes |
-| `053_subscription_notifications_ict7.sql` | `column "trial_ends_at" does not exist` | yes |
-| `054_cms_scheduling_releases.sql` | `column "performed_by" does not exist` | yes |
+| Migration                                 | Failure                                                                                                                                   | State-dependent?                                                                                        |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `035_ict7_member_system_complete.sql`     | `relation "user_sessions" does not exist` (table never `CREATE`d by any migration; app uses Redis for sessions — vestigial Laravel table) | yes (missing table)                                                                                     |
+| `036_room_resources_ict7_complete.sql`    | `column "trading_room_id" does not exist`                                                                                                 | yes                                                                                                     |
+| `039_resources_ict7_enhanced.sql`         | `column r.trading_room_id does not exist`                                                                                                 | yes                                                                                                     |
+| `041_cms_presets.sql`                     | `syntax error at or near "WHERE"`                                                                                                         | **NO — unconditional SQL syntax error; this migration cannot have applied on any database, incl. prod** |
+| `050_room_fulltext_search_indexes.sql`    | `function name "search_room_content" is not unique`                                                                                       | partly (definition conflict)                                                                            |
+| `051_video_system_ict7_complete.sql`      | `column "tags" does not exist`                                                                                                            | yes                                                                                                     |
+| `053_subscription_notifications_ict7.sql` | `column "trial_ends_at" does not exist`                                                                                                   | yes                                                                                                     |
+| `054_cms_scheduling_releases.sql`         | `column "performed_by" does not exist`                                                                                                    | yes                                                                                                     |
 
 **Severity: P0.** No new environment, no disaster-recovery rebuild, and
 no DB-backed integration test is possible. `041`'s hard syntax error

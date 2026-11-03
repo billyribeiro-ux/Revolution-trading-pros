@@ -12,7 +12,14 @@ publish = false
 axum = { version = "0.8.9", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.12.6", features = ["typed-header", "cookie"] }
 tower = "0.5.3"
-tower-http = { version = "0.7.1", features = ["cors", "trace", "compression-gzip", "limit", "set-header", "timeout"] }
+tower-http = { version = "0.7.1", features = [
+	"cors",
+	"trace",
+	"compression-gzip",
+	"limit",
+	"set-header",
+	"timeout"
+] }
 html-escape = "0.3.0"
 # HTML sanitization of author content on public endpoints (utils/html.rs)
 ammonia = "4.2.4"
@@ -21,11 +28,24 @@ ammonia = "4.2.4"
 tokio = { version = "1.54.1", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
-sqlx = { version = "0.9.0", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
+sqlx = { version = "0.9.0", features = [
+	"runtime-tokio",
+	"tls-native-tls",
+	"postgres",
+	"uuid",
+	"chrono",
+	"json",
+	"rust_decimal"
+] }
 rust_decimal = { version = "1.43.0", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
-redis = { version = "1.8.1", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
+redis = { version = "1.8.1", features = [
+	"tokio-comp",
+	"connection-manager",
+	"tls-native-tls",
+	"tokio-native-tls-comp"
+] }
 
 # S3/R2 Storage
 # `default-features = false` drops ONLY the crate's `rustls` feature, which maps
@@ -37,7 +57,12 @@ redis = { version = "1.8.1", features = ["tokio-comp", "connection-manager", "tl
 # weight that carried RUSTSEC-2026-0258 (h2 0.3 has no fixed 0.3.x release)
 # plus the three rustls-webpki 0.101 advisories previously exempted in
 # deny.toml. Every other default feature is re-listed explicitly.
-aws-sdk-s3 = { version = "1.157.0", default-features = false, features = ["sigv4a", "http-1x", "default-https-client", "rt-tokio"] }
+aws-sdk-s3 = { version = "1.157.0", default-features = false, features = [
+	"sigv4a",
+	"http-1x",
+	"default-https-client",
+	"rt-tokio"
+] }
 aws-config = "1.13.0"
 
 # Serialization
@@ -63,18 +88,18 @@ serde_json = "1.0.154"
 # build time; aws-lc-sys builds through its `cc` builder, so cmake is NOT
 # required (the rust:1.99.0-trixie Docker build installs no cmake and succeeds).
 jsonwebtoken = { version = "11.1.0", features = ["aws_lc_rs"] }
-base64 = "0.23.1"  # ICT 7: OAuth PKCE and token encoding
-base32 = "0.5.1"   # ICT 7: TOTP secret encoding
+base64 = "0.23.1" # ICT 7: OAuth PKCE and token encoding
+base32 = "0.5.1" # ICT 7: TOTP secret encoding
 argon2 = "0.6.0"
-bcrypt = "0.19.3"  # Laravel bcrypt compatibility
+bcrypt = "0.19.3" # Laravel bcrypt compatibility
 aes-gcm = "0.11.1" # RUST_DEEP_AUDIT P1-4: AES-256-GCM for service credentials at rest
 rand = "0.10.3"
 hmac = "0.13.0"
-sha1 = "0.11.0"    # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
+sha1 = "0.11.0" # ICT 7: TOTP HMAC-SHA1 (RFC 6238)
 sha2 = "0.11.1"
 hex = "0.4.3"
-subtle = "2.6.1"  # ICT L11+ Security: Constant-time comparison
-md5 = "0.8.1"  # For Bunny.net signature generation
+subtle = "2.6.1" # ICT L11+ Security: Constant-time comparison
+md5 = "0.8.1" # For Bunny.net signature generation
 
 # CSV Export - ICT 7+ Phase 4 Export Functionality
 csv = "1.4.0"
@@ -82,14 +107,14 @@ csv = "1.4.0"
 # Utilities
 uuid = { version = "1.29.0", features = ["v4", "serde"] }
 chrono = { version = "0.4.45", features = ["serde"] }
-regex = "1.13.1"  # ICT 11+: SEO content analysis regex patterns
+regex = "1.13.1" # ICT 11+: SEO content analysis regex patterns
 dotenvy = "0.15.7"
 thiserror = "2.0.21"
 anyhow = "1.0.104"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
 slug = "0.1.6"
-urlencoding = "2.1.3"  # URL encoding for email links
+urlencoding = "2.1.3" # URL encoding for email links
 
 # SSE/Real-time - ICT 11+ CMS Features
 tokio-stream = "0.1.19"
@@ -100,7 +125,13 @@ async-trait = "0.1.92"
 # HTTP Client (for external APIs)
 # NOTE: this repo calls Stripe directly via reqwest (see services/stripe.rs);
 # the `async-stripe` crate is intentionally NOT a dep.
-reqwest = { version = "0.13.5", features = ["json", "rustls", "stream", "form", "query"], default-features = false }
+reqwest = { version = "0.13.5", features = [
+	"json",
+	"rustls",
+	"stream",
+	"form",
+	"query"
+], default-features = false }
 
 # Search (Meilisearch) - Use updated SDK to avoid unmaintained dependencies
 meilisearch-sdk = "0.33.0"

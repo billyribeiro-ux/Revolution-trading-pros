@@ -26,7 +26,7 @@
  *     `255` and `255.00` differently for some symbols.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import {
 	formatExpirationDate,
 	formatPrice,

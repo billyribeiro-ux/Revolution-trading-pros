@@ -40,7 +40,7 @@
  *      duplicate <link rel="preconnect"> in the head.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 
 vi.mock('$app/env', () => ({
 	browser: true,

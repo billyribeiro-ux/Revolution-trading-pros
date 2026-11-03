@@ -12,4 +12,3 @@ The `rust` MCP server (`rust-mcp-server` v0.4.1, targeting `./api`) is configure
 ## Discipline
 
 Run `cargo-check` and `cargo-clippy` after any edit to `api/src/`, and run `cargo-deny-check` whenever adding or updating crates in `api/Cargo.toml`.
-

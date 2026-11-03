@@ -32,7 +32,7 @@
  *   - validate returns errors when @context/@type are missing.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import {
 	generateStructuredData,
 	generateMultipleStructuredData,

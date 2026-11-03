@@ -145,10 +145,10 @@ Two transparent regressions surfaced when test runners moved to current latest:
 
 ## Verification gates as of `05acf3231`
 
-| Gate | Command | Result |
-|------|---------|--------|
-| Typecheck | `pnpm --filter revolution-svelte run check` | 8799 files / **0 errors / 0 warnings** |
-| Unit | `pnpm --filter revolution-svelte test:unit` | **1442 passed**, 32 skipped, 0 errors, 0 unhandled |
+| Gate           | Command                                                                             | Result                                                     |
+| -------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Typecheck      | `pnpm --filter revolution-svelte run check`                                         | 8799 files / **0 errors / 0 warnings**                     |
+| Unit           | `pnpm --filter revolution-svelte test:unit`                                         | **1442 passed**, 32 skipped, 0 errors, 0 unhandled         |
 | E2E (chromium) | `pnpm --filter revolution-svelte exec playwright test tests/e2e --project=chromium` | **85 passed**, 8 skipped (3 fixme + 5 API-gated), 0 failed |
 
 ---
@@ -171,11 +171,11 @@ integration is independent and should keep deploying correctly.
 
 ## Known follow-ups
 
-| # | Item | Severity |
-|---|------|----------|
-| 1 | Investigate why `bits-ui v2` upgrade broke the CMS block-editor toolbar add-block click flow (3 quarantined e2e tests). | Medium |
-| 2 | Update `.github/workflows/deploy-cloudflare.yml` to use pnpm (replace `npm ci` and `cache: 'npm'` blocks). | Medium |
-| 3 | Update `.github/workflows/ci.yml` and `.github/workflows/e2e.yml` similarly. | Medium |
-| 4 | Vitest 4 deprecation warning: `vi.mock("svelte/internal/client")` in `frontend/src/test/svelte-internal-mock.ts` is not at module top level. Currently still hoisted correctly; will become an error in a future Vitest. | Low |
-| 5 | Three `state_referenced_locally`-adjacent CMS blocks now use `$effect`-based prop sync (VideoBlock, AudioBlock, TickerBlock). The Svelte autofixer flags this as malpractice; consider migrating to `$derived` or restructuring once the parent contract is clearer. | Low |
-| 6 | The autofixer also suggests replacing `bind:this={ref}` with `attachment` directives across the shadcn-svelte wrappers. Not done — `bind:this` + `$bindable(null)` is the pattern bits-ui expects parents to use, and changing it would break ref pass-through. Re-evaluate when bits-ui ships attachment-friendly primitives. | Low |
+| #   | Item                                                                                                                                                                                                                                                                                                                           | Severity |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| 1   | Investigate why `bits-ui v2` upgrade broke the CMS block-editor toolbar add-block click flow (3 quarantined e2e tests).                                                                                                                                                                                                        | Medium   |
+| 2   | Update `.github/workflows/deploy-cloudflare.yml` to use pnpm (replace `npm ci` and `cache: 'npm'` blocks).                                                                                                                                                                                                                     | Medium   |
+| 3   | Update `.github/workflows/ci.yml` and `.github/workflows/e2e.yml` similarly.                                                                                                                                                                                                                                                   | Medium   |
+| 4   | Vitest 4 deprecation warning: `vi.mock("svelte/internal/client")` in `frontend/src/test/svelte-internal-mock.ts` is not at module top level. Currently still hoisted correctly; will become an error in a future Vitest.                                                                                                       | Low      |
+| 5   | Three `state_referenced_locally`-adjacent CMS blocks now use `$effect`-based prop sync (VideoBlock, AudioBlock, TickerBlock). The Svelte autofixer flags this as malpractice; consider migrating to `$derived` or restructuring once the parent contract is clearer.                                                           | Low      |
+| 6   | The autofixer also suggests replacing `bind:this={ref}` with `attachment` directives across the shadcn-svelte wrappers. Not done — `bind:this` + `$bindable(null)` is the pattern bits-ui expects parents to use, and changing it would break ref pass-through. Re-evaluate when bits-ui ships attachment-friendly primitives. | Low      |

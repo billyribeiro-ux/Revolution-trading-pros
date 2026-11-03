@@ -41,7 +41,7 @@
  *      passes the FormData through (no JSON.stringify on a Blob).
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // `$app/environment` — browser=true gates the 401 redirect path.
 vi.mock('$app/env', () => ({

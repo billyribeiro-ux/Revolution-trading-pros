@@ -90,7 +90,11 @@ export type BackoffStrategy = 'linear' | 'exponential' | 'fibonacci' | 'jitter';
 
 /** Cache strategies */
 export type CacheStrategy =
-	'cache-first' | 'network-first' | 'stale-while-revalidate' | 'cache-only' | 'network-only';
+	| 'cache-first'
+	| 'network-first'
+	| 'stale-while-revalidate'
+	| 'cache-only'
+	| 'network-only';
 
 /**
  * API Client configuration - Immutable after creation

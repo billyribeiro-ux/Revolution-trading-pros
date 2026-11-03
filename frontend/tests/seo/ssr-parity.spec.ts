@@ -12,7 +12,11 @@ test.describe('SSR Parity & No Competing Head Tags (REND-01..06)', () => {
 			expect(ssrTitleMatch?.[1]?.trim().length).toBeGreaterThan(0);
 
 			const ssrH1Match = ssrHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-			const ssrH1Text = ssrH1Match?.[1]?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() ?? '';
+			const ssrH1Text =
+				ssrH1Match?.[1]
+					?.replace(/<[^>]+>/g, ' ')
+					.replace(/\s+/g, ' ')
+					.trim() ?? '';
 			expect(ssrH1Text.length).toBeGreaterThan(0);
 
 			const ssrCanonicals = ssrHtml.match(/<link[^>]+rel=["']canonical["'][^>]*>/gi) ?? [];
@@ -55,4 +59,3 @@ test.describe('SSR Parity & No Competing Head Tags (REND-01..06)', () => {
 		});
 	}
 });
-

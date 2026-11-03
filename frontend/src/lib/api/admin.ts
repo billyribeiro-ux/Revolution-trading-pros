@@ -55,7 +55,12 @@ import type { PaginatedResponse, PaginationMeta } from './_types';
  * but doesn't pretend to know a shape we don't actually know.
  */
 export type JsonValue =
-	string | number | boolean | null | { [k: string]: JsonValue | undefined } | JsonValue[];
+	| string
+	| number
+	| boolean
+	| null
+	| { [k: string]: JsonValue | undefined }
+	| JsonValue[];
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_VERSION = 'v1';
@@ -337,7 +342,14 @@ export interface CouponCreateData {
 
 	// Legacy aliases (DO NOT WRITE) — kept so existing UI code compiles.
 	type?:
-		'fixed' | 'percentage' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
+		| 'fixed'
+		| 'percentage'
+		| 'bogo'
+		| 'free_shipping'
+		| 'tiered'
+		| 'bundle'
+		| 'cashback'
+		| 'points';
 	value?: number;
 	display_name?: string;
 	internal_notes?: string;
@@ -1564,7 +1576,7 @@ function denormalizeProduct(raw: unknown): Product {
 	const salePrice = rawSale != null && !Number.isNaN(Number(rawSale)) ? Number(rawSale) : null;
 	return {
 		...(src as unknown as Product),
-		type: ((src.type ?? src.product_type ?? 'course') as Product['type']),
+		type: (src.type ?? src.product_type ?? 'course') as Product['type'],
 		slug: String(src.slug ?? meta?.slug ?? ''),
 		price,
 		sale_price: salePrice,

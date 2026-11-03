@@ -1,78 +1,78 @@
 [
-  {
-    "template": "home",
-    "path": "/",
-    "violationCount": 0,
-    "violations": []
-  },
-  {
-    "template": "static",
-    "path": "/about",
-    "violationCount": 1,
-    "violations": [
-      {
-        "id": "color-contrast",
-        "impact": "serious",
-        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-        "nodes": 2
-      }
-    ]
-  },
-  {
-    "template": "listing",
-    "path": "/courses",
-    "violationCount": 1,
-    "violations": [
-      {
-        "id": "color-contrast",
-        "impact": "serious",
-        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-        "nodes": 8
-      }
-    ]
-  },
-  {
-    "template": "product",
-    "path": "/alerts/explosive-swings",
-    "violationCount": 1,
-    "violations": [
-      {
-        "id": "color-contrast",
-        "impact": "serious",
-        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-        "nodes": 34
-      }
-    ]
-  },
-  {
-    "template": "profile",
-    "path": "/authors/billy-ribeiro",
-    "violationCount": 0,
-    "violations": []
-  },
-  {
-    "template": "course",
-    "path": "/courses/day-trading-masterclass",
-    "violationCount": 0,
-    "violations": []
-  },
-  {
-    "template": "article",
-    "path": "/guides/risk-management",
-    "violationCount": 1,
-    "violations": [
-      {
-        "id": "color-contrast",
-        "impact": "serious",
-        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-        "nodes": 2
-      }
-    ]
-  },
-  {
-    "template": "software",
-    "path": "/indicators/rsi",
-    "violationCount": 0,
-    "violations": []
-  }
+	{
+		"template": "home",
+		"path": "/",
+		"violationCount": 0,
+		"violations": []
+	},
+	{
+		"template": "static",
+		"path": "/about",
+		"violationCount": 1,
+		"violations": [
+			{
+				"id": "color-contrast",
+				"impact": "serious",
+				"description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+				"nodes": 2
+			}
+		]
+	},
+	{
+		"template": "listing",
+		"path": "/courses",
+		"violationCount": 1,
+		"violations": [
+			{
+				"id": "color-contrast",
+				"impact": "serious",
+				"description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+				"nodes": 8
+			}
+		]
+	},
+	{
+		"template": "product",
+		"path": "/alerts/explosive-swings",
+		"violationCount": 1,
+		"violations": [
+			{
+				"id": "color-contrast",
+				"impact": "serious",
+				"description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+				"nodes": 34
+			}
+		]
+	},
+	{
+		"template": "profile",
+		"path": "/authors/billy-ribeiro",
+		"violationCount": 0,
+		"violations": []
+	},
+	{
+		"template": "course",
+		"path": "/courses/day-trading-masterclass",
+		"violationCount": 0,
+		"violations": []
+	},
+	{
+		"template": "article",
+		"path": "/guides/risk-management",
+		"violationCount": 1,
+		"violations": [
+			{
+				"id": "color-contrast",
+				"impact": "serious",
+				"description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+				"nodes": 2
+			}
+		]
+	},
+	{
+		"template": "software",
+		"path": "/indicators/rsi",
+		"violationCount": 0,
+		"violations": []
+	}
 ]

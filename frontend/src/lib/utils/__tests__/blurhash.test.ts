@@ -46,7 +46,7 @@
  *      `<VideoCard fallback={DEFAULT_BLURHASHES.video} />` callers.
  */
 
-import { describe, expect, it, vi, beforeAll, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeAll, beforeEach } from 'vite-plus/test';
 
 // Mock the `blurhash` package — jsdom's createImageData returns a zero-byte
 // Uint8ClampedArray (test/setup.ts), so the real `decode()` blows up at

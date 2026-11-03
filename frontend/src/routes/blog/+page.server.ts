@@ -34,4 +34,3 @@ export const load: PageServerLoad = async ({ fetch: svelteKitFetch, url }) => {
 		};
 	}
 };
-

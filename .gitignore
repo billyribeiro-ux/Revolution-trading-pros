@@ -5,7 +5,10 @@ node_modules/
 # Build outputs
 frontend/build/
 frontend/.svelte-kit/
+**/.svelte-kit/
 frontend/dist/
+.vitest/
+**/.vitest/
 
 # Wrangler local state
 **/.wrangler/

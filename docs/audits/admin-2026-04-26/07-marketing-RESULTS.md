@@ -99,6 +99,7 @@ the deferred doc as it's outside the frontend scope of this pass.
 ### P2-9 — `$effect(() => loadForms())` in `popups/new` and `$effect` init in `popups/+page`
 
 **Files:**
+
 - `frontend/src/routes/admin/popups/new/+page.svelte`
 - `frontend/src/routes/admin/popups/+page.svelte`
 
@@ -126,20 +127,20 @@ See `docs/audits/admin-2026-04-26/07-marketing-DEFERRED.md` for:
 
 ## Files modified this pass
 
-| File | Change |
-|------|--------|
+| File                                                    | Change                                       |
+| ------------------------------------------------------- | -------------------------------------------- |
 | `frontend/src/lib/components/admin/TemplateForm.svelte` | Shadow-state → untrack; JSON.parse try/catch |
-| `frontend/src/lib/utils/export.ts` | CSV injection prefix guard in `exportToCSV` |
-| `frontend/src/routes/admin/popups/+page.svelte` | `$effect` + browser guard → `onMount` |
-| `frontend/src/routes/admin/popups/new/+page.svelte` | `$effect` → `onMount` for `loadForms` |
-| `docs/audits/admin-2026-04-26/07-marketing-DEFERRED.md` | Created (deferred items) |
-| `docs/audits/admin-2026-04-26/07-marketing-RESULTS.md` | Created (this file) |
+| `frontend/src/lib/utils/export.ts`                      | CSV injection prefix guard in `exportToCSV`  |
+| `frontend/src/routes/admin/popups/+page.svelte`         | `$effect` + browser guard → `onMount`        |
+| `frontend/src/routes/admin/popups/new/+page.svelte`     | `$effect` → `onMount` for `loadForms`        |
+| `docs/audits/admin-2026-04-26/07-marketing-DEFERRED.md` | Created (deferred items)                     |
+| `docs/audits/admin-2026-04-26/07-marketing-RESULTS.md`  | Created (this file)                          |
 
 ## Files confirmed correct (fixed prior to this pass)
 
-| File | Fix confirmed |
-|------|--------------|
-| `frontend/src/routes/api/admin/email/settings/+server.ts` | Auth, password scrub, backend proxy |
-| `frontend/src/routes/api/admin/forms/+server.ts` | GET/POST proxy, auth, graceful empty |
-| `frontend/src/routes/admin/popups/+page.svelte` | ConfirmationModal wired for delete |
-| `frontend/src/routes/admin/popups/new/+page.svelte` | `{@html sanitizeHtml(...)}` XSS fix |
+| File                                                      | Fix confirmed                        |
+| --------------------------------------------------------- | ------------------------------------ |
+| `frontend/src/routes/api/admin/email/settings/+server.ts` | Auth, password scrub, backend proxy  |
+| `frontend/src/routes/api/admin/forms/+server.ts`          | GET/POST proxy, auth, graceful empty |
+| `frontend/src/routes/admin/popups/+page.svelte`           | ConfirmationModal wired for delete   |
+| `frontend/src/routes/admin/popups/new/+page.svelte`       | `{@html sanitizeHtml(...)}` XSS fix  |

@@ -83,13 +83,13 @@ from the application contract (Rust models / `sqlx` queries in
 
 #### Resulting `room_resources` gap-column types (now created by 036 itself once the cascade is unblocked — code-verified)
 
-| Column | Type | Code evidence (`api/src/routes/room_resources.rs`) |
-|---|---|---|
-| `trading_room_id` | `BIGINT` | struct `RoomResource` L57 `pub trading_room_id: i64` (NOT NULL); joins `trading_rooms.id` (BIGSERIAL). 036 also: `ADD COLUMN trading_room_id BIGINT`. |
-| `content_type` | `VARCHAR/TEXT` | L42 `pub content_type: String` (NOT NULL); bound in INSERT L796. 036: `ADD COLUMN content_type VARCHAR(50)`. |
-| `section` | `TEXT` | L43 `pub section: Option<String>`. 036: `ADD COLUMN section VARCHAR(50)`. |
-| `resource_date` | `DATE` | L59 `pub resource_date: NaiveDate` (NOT NULL); parsed `%Y-%m-%d` L767. 036: `ADD COLUMN resource_date DATE`. |
-| `trader_id` | `BIGINT` | L58 `pub trader_id: Option<i64>`. 036: `ADD COLUMN trader_id BIGINT REFERENCES traders(id)`. |
+| Column            | Type           | Code evidence (`api/src/routes/room_resources.rs`)                                                                                                    |
+| ----------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trading_room_id` | `BIGINT`       | struct `RoomResource` L57 `pub trading_room_id: i64` (NOT NULL); joins `trading_rooms.id` (BIGSERIAL). 036 also: `ADD COLUMN trading_room_id BIGINT`. |
+| `content_type`    | `VARCHAR/TEXT` | L42 `pub content_type: String` (NOT NULL); bound in INSERT L796. 036: `ADD COLUMN content_type VARCHAR(50)`.                                          |
+| `section`         | `TEXT`         | L43 `pub section: Option<String>`. 036: `ADD COLUMN section VARCHAR(50)`.                                                                             |
+| `resource_date`   | `DATE`         | L59 `pub resource_date: NaiveDate` (NOT NULL); parsed `%Y-%m-%d` L767. 036: `ADD COLUMN resource_date DATE`.                                          |
+| `trader_id`       | `BIGINT`       | L58 `pub trader_id: Option<i64>`. 036: `ADD COLUMN trader_id BIGINT REFERENCES traders(id)`.                                                          |
 
 These columns end up in `schema.sql` via 036 (once `traders` exists), so
 they carry 036's exact types — fully consistent with the app contract
@@ -132,27 +132,27 @@ above. No guessing.
 
 ### 2.5 Genuine intra-chain SQL defects (scratch patches)
 
-| File | Defect | Scratch fix |
-|---|---|---|
-| `041_cms_presets.sql` | `CONSTRAINT … UNIQUE (block_type, slug) WHERE deleted_at IS NULL` — a table UNIQUE constraint cannot carry `WHERE` (invalid SQL, state-independent). Later `ON CONFLICT (block_type, slug) WHERE deleted_at IS NULL` upsert needs the matching partial unique index. | Converted to a partial `CREATE UNIQUE INDEX … WHERE deleted_at IS NULL`, **placed in the indexes section above the seed INSERT** so the `ON CONFLICT` resolves. |
-| `050_room_fulltext_search_indexes.sql` | Re-defines `search_room_content(...)` with a changed signature → "function is not unique" on replay. | Scratch prepends `DROP FUNCTION IF EXISTS search_room_content(TEXT,TEXT,TEXT[],INT,INT);`. |
-| `054_cms_scheduling_releases.sql` | References `performed_by` column not present. | Scratch adds `performed_by BIGINT`. |
+| File                                   | Defect                                                                                                                                                                                                                                                               | Scratch fix                                                                                                                                                     |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `041_cms_presets.sql`                  | `CONSTRAINT … UNIQUE (block_type, slug) WHERE deleted_at IS NULL` — a table UNIQUE constraint cannot carry `WHERE` (invalid SQL, state-independent). Later `ON CONFLICT (block_type, slug) WHERE deleted_at IS NULL` upsert needs the matching partial unique index. | Converted to a partial `CREATE UNIQUE INDEX … WHERE deleted_at IS NULL`, **placed in the indexes section above the seed INSERT** so the `ON CONFLICT` resolves. |
+| `050_room_fulltext_search_indexes.sql` | Re-defines `search_room_content(...)` with a changed signature → "function is not unique" on replay.                                                                                                                                                                 | Scratch prepends `DROP FUNCTION IF EXISTS search_room_content(TEXT,TEXT,TEXT[],INT,INT);`.                                                                      |
+| `054_cms_scheduling_releases.sql`      | References `performed_by` column not present.                                                                                                                                                                                                                        | Scratch adds `performed_by BIGINT`.                                                                                                                             |
 
 > All scratch patches live ONLY in throwaway copies under `/tmp/g03work/`
 > during generation. **No committed `api/migrations/0*.sql` was edited**
 > (`git diff --stat -- api/migrations/0*.sql` is empty). The patches are
-> the documented procedure for *regenerating* `schema.sql`, never applied
+> the documented procedure for _regenerating_ `schema.sql`, never applied
 > to production.
 
 ---
 
 ## 3. Prod-safety mechanism
 
-| | Production | Fresh env (CI / local / DR) |
-|---|---|---|
-| Migration source | committed `0*.sql`, replayed by `sqlx::migrate!("./migrations")` (unchanged) | `api/migrations/schema.sql` (one shot) |
-| `_sqlx_migrations` | as the chain wrote it | seeded from `api/migrations/sqlx-seed.sql` (real SHA-384 of each committed file) |
-| App startup | `sqlx::migrate!` replays normally | `sqlx::migrate!` sees all 60 versions applied w/ matching checksums → **no-op** (proven) |
+|                    | Production                                                                   | Fresh env (CI / local / DR)                                                              |
+| ------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Migration source   | committed `0*.sql`, replayed by `sqlx::migrate!("./migrations")` (unchanged) | `api/migrations/schema.sql` (one shot)                                                   |
+| `_sqlx_migrations` | as the chain wrote it                                                        | seeded from `api/migrations/sqlx-seed.sql` (real SHA-384 of each committed file)         |
+| App startup        | `sqlx::migrate!` replays normally                                            | `sqlx::migrate!` sees all 60 versions applied w/ matching checksums → **no-op** (proven) |
 
 Nothing about how the app loads migrations changed. The fresh-env path
 is additive: `schema.sql` + `sqlx-seed.sql`, both shipped in
@@ -197,7 +197,7 @@ The fresh-env mechanism is fully shipped & proven. **Not done, owner-
 gated:** confirming the reconstructed baseline matches the **live
 production** schema and aligning prod's lineage. The reconstruction is
 type-derived from the app contract — until diffed against prod it is
-*believed*, not *verified*, equal.
+_believed_, not _verified_, equal.
 
 ```bash
 # 1. Capture canonical prod schema (maintenance window).
@@ -228,12 +228,12 @@ research project it was before G0.3. Do not run any prod
 
 ## 6. Files delivered / modified
 
-| Path | Status |
-|---|---|
-| `api/migrations/schema.sql` | **new** — reconstructed baseline (60/60 replay, 0-err from-zero, 204 tables) |
-| `api/migrations/sqlx-seed.sql` | **new** — `_sqlx_migrations` seed (60 rows, real SHA-384) |
-| `api/migrations/README.md` | **new** — fresh-env bootstrap + owner runbook |
-| `api/tests/g03_schema_baseline_test.rs` | **new** — gated proof the prod migrator call is a no-op |
-| `docs/audits/G0_3_SCHEMA_BASELINE_2026-05-17.md` | **new** — this note |
-| `docs/audits/REMEDIATION_PLAN_2026-05-17.md` | **modified** — G0.3 row/section/carry-over updated |
-| `api/migrations/0*.sql` (60 files) | **UNTOUCHED** — `git diff --stat` empty |
+| Path                                             | Status                                                                       |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `api/migrations/schema.sql`                      | **new** — reconstructed baseline (60/60 replay, 0-err from-zero, 204 tables) |
+| `api/migrations/sqlx-seed.sql`                   | **new** — `_sqlx_migrations` seed (60 rows, real SHA-384)                    |
+| `api/migrations/README.md`                       | **new** — fresh-env bootstrap + owner runbook                                |
+| `api/tests/g03_schema_baseline_test.rs`          | **new** — gated proof the prod migrator call is a no-op                      |
+| `docs/audits/G0_3_SCHEMA_BASELINE_2026-05-17.md` | **new** — this note                                                          |
+| `docs/audits/REMEDIATION_PLAN_2026-05-17.md`     | **modified** — G0.3 row/section/carry-over updated                           |
+| `api/migrations/0*.sql` (60 files)               | **UNTOUCHED** — `git diff --stat` empty                                      |

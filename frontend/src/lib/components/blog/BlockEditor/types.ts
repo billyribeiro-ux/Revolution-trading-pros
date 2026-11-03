@@ -120,7 +120,14 @@ export interface BlockContent {
 	// Special content
 	embedUrl?: string;
 	embedType?:
-		'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'tiktok' | 'soundcloud' | 'spotify' | 'custom';
+		| 'youtube'
+		| 'vimeo'
+		| 'twitter'
+		| 'instagram'
+		| 'tiktok'
+		| 'soundcloud'
+		| 'spotify'
+		| 'custom';
 
 	// Code content
 	code?: string;

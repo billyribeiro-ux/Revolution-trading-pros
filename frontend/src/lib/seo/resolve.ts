@@ -79,7 +79,11 @@ function normalizeDescription(rawDesc: string, fallbackDesc: string): string {
 /**
  * Ensure an image URL is absolute using `siteUrl`.
  */
-function toAbsoluteImageUrl(img: string | undefined | null, siteUrl: string, fallback: string): string {
+function toAbsoluteImageUrl(
+	img: string | undefined | null,
+	siteUrl: string,
+	fallback: string
+): string {
 	if (!img) return fallback;
 	if (img.startsWith('http://') || img.startsWith('https://')) {
 		// Replace any staging .pages.dev origin with production siteUrl
@@ -111,7 +115,8 @@ export function resolveSEO(
 	const derivedLeafTitle =
 		!isRoot && crumbs.length > 0 ? crumbs[crumbs.length - 1]?.name : undefined;
 	const rawTitle = merged.title ?? derivedLeafTitle ?? defaults.defaultTitle;
-	const titleTemplate = merged.titleTemplate !== undefined ? merged.titleTemplate : defaults.titleTemplate;
+	const titleTemplate =
+		merged.titleTemplate !== undefined ? merged.titleTemplate : defaults.titleTemplate;
 	const title =
 		rawTitle === defaults.defaultTitle ? rawTitle : applyTitleTemplate(rawTitle, titleTemplate);
 
@@ -150,7 +155,9 @@ export function resolveSEO(
 		if (!hasBreadcrumb) {
 			const autoCrumbs = buildBreadcrumbsForPath(context.pathname, title);
 			if (autoCrumbs.length >= 2) {
-				jsonldNodes.push(breadcrumbSchema(autoCrumbs, `${PRODUCTION_ORIGIN}${context.pathname}#breadcrumb`));
+				jsonldNodes.push(
+					breadcrumbSchema(autoCrumbs, `${PRODUCTION_ORIGIN}${context.pathname}#breadcrumb`)
+				);
 			}
 		} else {
 			// Normalize existing BreadcrumbList item URLs to match buildBreadcrumbsForPath

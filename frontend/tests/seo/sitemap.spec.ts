@@ -38,4 +38,3 @@ test.describe('XML Sitemap Integrity (MAP-01..06)', () => {
 		}
 	});
 });
-

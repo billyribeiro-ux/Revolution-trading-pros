@@ -9,11 +9,11 @@ Status at write-time: code complete + gates green; runtime scenarios PENDING OPE
 
 All four gates run from working tree at HEAD of `batch4-coupon-admin-followups` immediately before commit.
 
-| Gate | Result |
-|------|--------|
-| `cargo check` (api/, --locked) | ✅ 0 errors / 0 warnings — `Finished dev profile in 9.30s` |
-| `cargo clippy --no-deps` (api/, --locked) | ✅ 0 errors / 0 warnings — `Finished dev profile in 14.95s` |
-| `pnpm check` (frontend/) | ✅ `0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS` (svelte-check on 5217 files) |
+| Gate                                      | Result                                                                      |
+| ----------------------------------------- | --------------------------------------------------------------------------- |
+| `cargo check` (api/, --locked)            | ✅ 0 errors / 0 warnings — `Finished dev profile in 9.30s`                  |
+| `cargo clippy --no-deps` (api/, --locked) | ✅ 0 errors / 0 warnings — `Finished dev profile in 14.95s`                 |
+| `pnpm check` (frontend/)                  | ✅ `0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS` (svelte-check on 5217 files) |
 
 The Rust gates exercise the workspace under `--locked`; clippy runs without `--no-deps` would also catch dependency-side lints, but the project standard per CLAUDE.md is the `--no-deps` form.
 
@@ -23,49 +23,49 @@ The Rust gates exercise the workspace under `--locked`; clippy runs without `--n
 
 ### Item 1 — Re-subscribe row strategy
 
-| Change | Location |
-|--------|----------|
-| Migration 063 drops `uq_user_memberships_user_plan` and adds partial unique on `(user_id, plan_id) WHERE status IN ('active','trialing','past_due')` | [api/migrations/063_user_memberships_partial_unique.sql](api/migrations/063_user_memberships_partial_unique.sql) |
-| Migration 063 also adds partial unique on `stripe_subscription_id WHERE NOT NULL` (idempotency for retried webhook deliveries) | [api/migrations/063_user_memberships_partial_unique.sql:33-40](api/migrations/063_user_memberships_partial_unique.sql#L33-L40) |
-| `handle_checkout_completed` switched from `ON CONFLICT (user_id, plan_id) DO UPDATE` to `ON CONFLICT (stripe_subscription_id) DO UPDATE` — re-subscription writes a new row rather than overwriting the cancelled one | [api/src/routes/payments.rs:933](api/src/routes/payments.rs#L933) |
-| `PAYMENTS_ARCHITECTURE_STANDARD.md` §7 paragraph "Re-subscription after full cancellation" rewritten to specify the new-row contract | [PAYMENTS_ARCHITECTURE_STANDARD.md:482-510](PAYMENTS_ARCHITECTURE_STANDARD.md#L482-L510) |
+| Change                                                                                                                                                                                                                | Location                                                                                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Migration 063 drops `uq_user_memberships_user_plan` and adds partial unique on `(user_id, plan_id) WHERE status IN ('active','trialing','past_due')`                                                                  | [api/migrations/063_user_memberships_partial_unique.sql](api/migrations/063_user_memberships_partial_unique.sql)               |
+| Migration 063 also adds partial unique on `stripe_subscription_id WHERE NOT NULL` (idempotency for retried webhook deliveries)                                                                                        | [api/migrations/063_user_memberships_partial_unique.sql:33-40](api/migrations/063_user_memberships_partial_unique.sql#L33-L40) |
+| `handle_checkout_completed` switched from `ON CONFLICT (user_id, plan_id) DO UPDATE` to `ON CONFLICT (stripe_subscription_id) DO UPDATE` — re-subscription writes a new row rather than overwriting the cancelled one | [api/src/routes/payments.rs:933](api/src/routes/payments.rs#L933)                                                              |
+| `PAYMENTS_ARCHITECTURE_STANDARD.md` §7 paragraph "Re-subscription after full cancellation" rewritten to specify the new-row contract                                                                                  | [PAYMENTS_ARCHITECTURE_STANDARD.md:482-510](PAYMENTS_ARCHITECTURE_STANDARD.md#L482-L510)                                       |
 
 ### Item 2 — Admin edit-coupon recreate-and-swap
 
-| Change | Location |
-|--------|----------|
-| `update_coupon` snapshots existing math fields, computes `math_changed`, creates a new Stripe Coupon **before** the DB UPDATE if math differs, flips `stripe_coupon_id` in the same UPDATE, then best-effort deletes the old Stripe coupon | [api/src/routes/admin.rs:902-1149](api/src/routes/admin.rs#L902-L1149) |
-| Math-vs-metadata detection compares `discount_type`, `discount_value_cents`, `duration`, `duration_in_months` (and treats a NULL `stripe_coupon_id` as math-changed so a partial mirror gets healed via the same path) | [api/src/routes/admin.rs:986-1006](api/src/routes/admin.rs#L986-L1006) |
-| Orphan rollback: if Stripe create succeeds but the DB UPDATE returns `Err` or `Ok(None)`, the new Stripe coupon is deleted before the handler returns the error | [api/src/routes/admin.rs:1146-1167](api/src/routes/admin.rs#L1146-L1167) |
-| `security_events` audit row written on every successful recreate, capturing `coupon_id`, `old_stripe_coupon_id`, `new_stripe_coupon_id`, `fields_changed`, and the admin's `user_id` | [api/src/routes/admin.rs:1108-1144](api/src/routes/admin.rs#L1108-L1144) |
+| Change                                                                                                                                                                                                                                     | Location                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `update_coupon` snapshots existing math fields, computes `math_changed`, creates a new Stripe Coupon **before** the DB UPDATE if math differs, flips `stripe_coupon_id` in the same UPDATE, then best-effort deletes the old Stripe coupon | [api/src/routes/admin.rs:902-1149](api/src/routes/admin.rs#L902-L1149)   |
+| Math-vs-metadata detection compares `discount_type`, `discount_value_cents`, `duration`, `duration_in_months` (and treats a NULL `stripe_coupon_id` as math-changed so a partial mirror gets healed via the same path)                     | [api/src/routes/admin.rs:986-1006](api/src/routes/admin.rs#L986-L1006)   |
+| Orphan rollback: if Stripe create succeeds but the DB UPDATE returns `Err` or `Ok(None)`, the new Stripe coupon is deleted before the handler returns the error                                                                            | [api/src/routes/admin.rs:1146-1167](api/src/routes/admin.rs#L1146-L1167) |
+| `security_events` audit row written on every successful recreate, capturing `coupon_id`, `old_stripe_coupon_id`, `new_stripe_coupon_id`, `fields_changed`, and the admin's `user_id`                                                       | [api/src/routes/admin.rs:1108-1144](api/src/routes/admin.rs#L1108-L1144) |
 
 ### Item 3 — Coupon backfill admin endpoint
 
-| Change | Location |
-|--------|----------|
+| Change                                                                                                                                                                                               | Location                                                                 |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `POST /api/admin/coupons/:id/sync-to-stripe` — `AdminUser` gate, reads the row, errors with **400** if `stripe_coupon_id` is already set, otherwise creates the Stripe Coupon and writes the id back | [api/src/routes/admin.rs:1190-1310](api/src/routes/admin.rs#L1190-L1310) |
-| 400 already-synced response (per spec) | [api/src/routes/admin.rs:1219-1228](api/src/routes/admin.rs#L1219-L1228) |
-| Re-checks NULL via the read step before the create (idempotent on retry — second writer would hit the duplicate-stripe-id constraint or fall through to the 400 branch) | [api/src/routes/admin.rs:1199-1228](api/src/routes/admin.rs#L1199-L1228) |
-| Route wired | [api/src/routes/admin.rs:2414](api/src/routes/admin.rs#L2414) |
+| 400 already-synced response (per spec)                                                                                                                                                               | [api/src/routes/admin.rs:1219-1228](api/src/routes/admin.rs#L1219-L1228) |
+| Re-checks NULL via the read step before the create (idempotent on retry — second writer would hit the duplicate-stripe-id constraint or fall through to the 400 branch)                              | [api/src/routes/admin.rs:1199-1228](api/src/routes/admin.rs#L1199-L1228) |
+| Route wired                                                                                                                                                                                          | [api/src/routes/admin.rs:2414](api/src/routes/admin.rs#L2414)            |
 
 ### Item 4 — `min_purchase` enforcement
 
-| Change | Location |
-|--------|----------|
+| Change                                                                                                                                                                                                                | Location                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `/api/payments/checkout` validator: fetches `min_purchase_cents`, rejects with 400 `"Order must be at least $X.YY to use this coupon"` when `subtotal_cents < min_purchase_cents` — **before** attaching the discount | [api/src/routes/payments.rs:236-276](api/src/routes/payments.rs#L236-L276) |
-| `/api/checkout` validator: same enforcement in cents | [api/src/routes/checkout.rs:188-243](api/src/routes/checkout.rs#L188-L243) |
-| Both compare `(min_purchase * 100)::BIGINT` from DB against the in-Rust integer `subtotal_cents` — no float math at the boundary | both |
+| `/api/checkout` validator: same enforcement in cents                                                                                                                                                                  | [api/src/routes/checkout.rs:188-243](api/src/routes/checkout.rs#L188-L243) |
+| Both compare `(min_purchase * 100)::BIGINT` from DB against the in-Rust integer `subtotal_cents` — no float math at the boundary                                                                                      | both                                                                       |
 
 `min_purchase` retained (not dropped) because operators may want app-side gating on subtotals which Stripe Coupons cannot enforce natively.
 
 ### Item 5 — Frontend admin coupon form
 
-| Change | Location |
-|--------|----------|
-| `Coupon` and `CouponCreateData` typed with `duration`/`duration_in_months` | [frontend/src/lib/api/admin.ts:124-130](frontend/src/lib/api/admin.ts#L124-L130) |
-| Cents conversion at the API boundary (`discount_value`, `min_purchase`, `max_discount` → `*_cents`) | [frontend/src/lib/api/admin.ts:838-848](frontend/src/lib/api/admin.ts#L838-L848) |
-| Create page: Duration dropdown (`once` / `forever` / `repeating`), conditional `duration_in_months` input, validation that it is `>= 1` when repeating and `null` otherwise | [frontend/src/routes/admin/coupons/create/+page.svelte:510-549](frontend/src/routes/admin/coupons/create/+page.svelte#L510-L549) |
-| Edit page: same UX, plus help-text reminding the operator that editing duration recreates the Stripe Coupon | [frontend/src/routes/admin/coupons/edit/[id]/+page.svelte:601-647](frontend/src/routes/admin/coupons/edit/[id]/+page.svelte#L601-L647) |
+| Change                                                                                                                                                                      | Location                                                                                                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `Coupon` and `CouponCreateData` typed with `duration`/`duration_in_months`                                                                                                  | [frontend/src/lib/api/admin.ts:124-130](frontend/src/lib/api/admin.ts#L124-L130)                                                       |
+| Cents conversion at the API boundary (`discount_value`, `min_purchase`, `max_discount` → `*_cents`)                                                                         | [frontend/src/lib/api/admin.ts:838-848](frontend/src/lib/api/admin.ts#L838-L848)                                                       |
+| Create page: Duration dropdown (`once` / `forever` / `repeating`), conditional `duration_in_months` input, validation that it is `>= 1` when repeating and `null` otherwise | [frontend/src/routes/admin/coupons/create/+page.svelte:510-549](frontend/src/routes/admin/coupons/create/+page.svelte#L510-L549)       |
+| Edit page: same UX, plus help-text reminding the operator that editing duration recreates the Stripe Coupon                                                                 | [frontend/src/routes/admin/coupons/edit/[id]/+page.svelte:601-647](frontend/src/routes/admin/coupons/edit/[id]/+page.svelte#L601-L647) |
 
 List-view duration semantics display (`"10% off, once"` / `"forever"` / `"3 months"`) — **deferred**: existing list view does not yet render the duration column. Backlog candidate for Batch 5.
 
@@ -307,21 +307,21 @@ psql "$DATABASE_URL" -c "
 
 ## Summary
 
-| Scenario | Status |
-|---|---|
-| 1A re-subscribe creates new row | PENDING OPERATOR (browser + Stripe Checkout) |
-| 1B blocked while already active | PENDING OPERATOR (browser + Stripe Checkout) |
-| 2A edit math → recreate | PENDING OPERATOR (admin UI in browser) |
-| 2B edit metadata → DB-only | PENDING OPERATOR (admin UI in browser) |
-| 2C existing sub keeps old discount | PENDING OPERATOR (browser + live sub) |
-| **3A** sync-to-stripe NULL row | **✅ PASS** (CLI, captured below) |
-| **3B** sync-to-stripe already-synced 400 | **✅ PASS** (CLI, captured below) |
-| **4A** min_purchase blocks under | **✅ PASS** on both `/api/checkout` and `/api/payments/checkout` |
-| **4B** min_purchase allows over | **✅ PASS** on `/api/payments/checkout`. **`/api/checkout` blocked by pre-existing unrelated bug** ([api/src/routes/checkout.rs:311](api/src/routes/checkout.rs#L311) references non-existent column `current_uses` instead of `usage_count`). The min_purchase validator itself ran correctly; the 500 fires post-validator inside the order-creation transaction. Filed as Batch 5/6 follow-up. |
-| 5A dropdown present | PENDING OPERATOR (browser) |
-| 5B repeating reveals months input | PENDING OPERATOR (browser) |
-| 5C Once persists correctly | PENDING OPERATOR (browser) |
-| 5D Repeating edit triggers recreate | PENDING OPERATOR (browser) |
+| Scenario                                 | Status                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1A re-subscribe creates new row          | PENDING OPERATOR (browser + Stripe Checkout)                                                                                                                                                                                                                                                                                                                                                      |
+| 1B blocked while already active          | PENDING OPERATOR (browser + Stripe Checkout)                                                                                                                                                                                                                                                                                                                                                      |
+| 2A edit math → recreate                  | PENDING OPERATOR (admin UI in browser)                                                                                                                                                                                                                                                                                                                                                            |
+| 2B edit metadata → DB-only               | PENDING OPERATOR (admin UI in browser)                                                                                                                                                                                                                                                                                                                                                            |
+| 2C existing sub keeps old discount       | PENDING OPERATOR (browser + live sub)                                                                                                                                                                                                                                                                                                                                                             |
+| **3A** sync-to-stripe NULL row           | **✅ PASS** (CLI, captured below)                                                                                                                                                                                                                                                                                                                                                                 |
+| **3B** sync-to-stripe already-synced 400 | **✅ PASS** (CLI, captured below)                                                                                                                                                                                                                                                                                                                                                                 |
+| **4A** min_purchase blocks under         | **✅ PASS** on both `/api/checkout` and `/api/payments/checkout`                                                                                                                                                                                                                                                                                                                                  |
+| **4B** min_purchase allows over          | **✅ PASS** on `/api/payments/checkout`. **`/api/checkout` blocked by pre-existing unrelated bug** ([api/src/routes/checkout.rs:311](api/src/routes/checkout.rs#L311) references non-existent column `current_uses` instead of `usage_count`). The min_purchase validator itself ran correctly; the 500 fires post-validator inside the order-creation transaction. Filed as Batch 5/6 follow-up. |
+| 5A dropdown present                      | PENDING OPERATOR (browser)                                                                                                                                                                                                                                                                                                                                                                        |
+| 5B repeating reveals months input        | PENDING OPERATOR (browser)                                                                                                                                                                                                                                                                                                                                                                        |
+| 5C Once persists correctly               | PENDING OPERATOR (browser)                                                                                                                                                                                                                                                                                                                                                                        |
+| 5D Repeating edit triggers recreate      | PENDING OPERATOR (browser)                                                                                                                                                                                                                                                                                                                                                                        |
 
 The 4 CLI-runnable scenarios were executed against the local Docker stack (`rtp-api` rebuilt with Batch 4 binary, migrations 61-63 applied) on 2026-04-29. Browser-required scenarios remain PENDING OPERATOR.
 
@@ -332,20 +332,24 @@ The 4 CLI-runnable scenarios were executed against the local Docker stack (`rtp-
 ### Scenario 3A — Backfill an unmirrored coupon
 
 **DB seed:**
+
 ```
 docker exec rtp-db psql -U rtp -d revolution_trading_pros -c "
 INSERT INTO coupons (code, description, discount_type, discount_value, duration, is_active, created_at, updated_at)
 VALUES ('BACKFILL3A', 'Scenario 3A backfill', 'percent', 10, 'once', true, NOW(), NOW());"
 ```
+
 Inserted coupon id=12, `stripe_coupon_id IS NULL`.
 
 **Sync call:**
+
 ```
 POST /api/admin/coupons/12/sync-to-stripe
 Authorization: Bearer <admin>
 ```
 
 **Response:**
+
 ```
 HTTP: 200
 {
@@ -362,6 +366,7 @@ HTTP: 200
 ```
 
 **DB after:**
+
 ```
  id |    code    | mirrored | nonempty
 ----+------------+----------+----------
@@ -369,6 +374,7 @@ HTTP: 200
 ```
 
 **API log confirms Stripe write:**
+
 ```
 admin: Mirrored DB coupon into Stripe event="coupon_synced_to_stripe" coupon_id=12 stripe_coupon_id=<8-char-id>
 ```
@@ -382,6 +388,7 @@ admin: Mirrored DB coupon into Stripe event="coupon_synced_to_stripe" coupon_id=
 Re-issued same call against the row from 3A (now mirrored).
 
 **Response:**
+
 ```
 HTTP: 400
 {"error":"Coupon already synced to Stripe; use the edit endpoint to change it"}
@@ -394,30 +401,38 @@ HTTP: 400
 ### Scenario 4A — `min_purchase` blocks under-threshold checkout
 
 **Setup:**
+
 ```
 INSERT INTO coupons (code, discount_type, discount_value, min_purchase, duration, is_active, ...)
 VALUES ('MIN50TEST', 'percent', 10, 50, 'once', true, ...);
 -- Then synced to Stripe via /api/admin/coupons/13/sync-to-stripe -> 200
 ```
+
 Test plan id 7 = "Weekly Watchlist", price $47.00 (4700 cents). min_purchase = $50.00 (5000 cents).
 
 **Call A.1 (`/api/checkout`):**
+
 ```
 POST /api/checkout
 {"items":[{"plan_id":7,"quantity":1}],"coupon_code":"MIN50TEST", ...}
 ```
+
 Response:
+
 ```
 HTTP: 400
 {"error":"Order must be at least $50.00 to use this coupon"}
 ```
 
 **Call A.2 (`/api/payments/checkout`):**
+
 ```
 POST /api/payments/checkout
 {"items":[{"plan_id":7,"name":"Weekly Watchlist","quantity":1,"is_subscription":true}],"coupon_code":"MIN50TEST", ...}
 ```
+
 Response:
+
 ```
 HTTP: 400
 {"error":"Order must be at least $50.00 to use this coupon"}
@@ -432,11 +447,14 @@ HTTP: 400
 Test plan id 2 = "Swing Trading Room", $147.00 (14700 cents) — above the $50 threshold.
 
 **Call B.1 (`/api/payments/checkout`):**
+
 ```
 POST /api/payments/checkout
 {"items":[{"plan_id":2,"name":"Swing Trading Room","quantity":1,"is_subscription":true}],"coupon_code":"MIN50TEST", ...}
 ```
+
 Response:
+
 ```
 HTTP: 200
 {
@@ -446,27 +464,33 @@ HTTP: 200
   "order_number": "ORD-20260429-45EEC29A"
 }
 ```
+
 API log confirms:
+
 ```
 payments: Checkout session created event="checkout_created" order_id=26 user_id=30 amount_cents=14700
 ```
+
 **`/api/payments/checkout` result: ✅ PASS.**
 
 **Call B.2 (`/api/checkout`) — fails on a pre-existing unrelated bug:**
+
 ```
 HTTP: 500
 {"error":"error returned from database: current transaction is aborted, commands ignored until end of transaction block"}
 ```
-Root cause confirmed by code inspection — [api/src/routes/checkout.rs:311](api/src/routes/checkout.rs#L311) references column `current_uses` which does not exist on the `coupons` table (the actual column is `usage_count`). Inside an explicit transaction, the column-not-found error poisons the tx; subsequent statements abort. The Batch 4 `min_purchase` validator runs *before* this transaction is opened and ran correctly (it would have rejected at $47, accepted at $147). The 500 fires later, on the order-row INSERT path, only when a coupon is applied — pure regression in `/api/checkout`'s coupon-usage-increment query, not in Batch 4 code.
+
+Root cause confirmed by code inspection — [api/src/routes/checkout.rs:311](api/src/routes/checkout.rs#L311) references column `current_uses` which does not exist on the `coupons` table (the actual column is `usage_count`). Inside an explicit transaction, the column-not-found error poisons the tx; subsequent statements abort. The Batch 4 `min_purchase` validator runs _before_ this transaction is opened and ran correctly (it would have rejected at $47, accepted at $147). The 500 fires later, on the order-row INSERT path, only when a coupon is applied — pure regression in `/api/checkout`'s coupon-usage-increment query, not in Batch 4 code.
 
 This bug pre-dates Batch 4 (the typo is on a line that wasn't touched in this batch). It is captured in [BATCH4_RESULT.md](BATCH4_RESULT.md) here as a follow-up; Batch 5a (consolidate-checkout) will remove `/api/checkout` entirely, which incidentally eliminates this bug. Batch 5b can carry an explicit fix if the timeline matters.
 
 **`/api/checkout` result with coupon: PARTIAL — min_purchase validator works; downstream tx fails on unrelated pre-existing bug.**
 
 DB column mismatch confirmed:
+
 ```
 docker exec rtp-db psql -U rtp -d revolution_trading_pros -c "\d coupons" | grep -E "current_uses|usage_count"
  usage_count         | integer                     |           |          | 0
 ```
-(no `current_uses` column.)
 
+(no `current_uses` column.)
