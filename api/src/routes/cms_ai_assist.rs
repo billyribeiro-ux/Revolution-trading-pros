@@ -29,7 +29,7 @@ use serde_json::{Value as JsonValue, json};
 use std::{convert::Infallible, time::Duration};
 use uuid::Uuid;
 
-use crate::{AppState, models::User};
+use crate::{AppState, middleware::admin::CmsEditorUser};
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -244,25 +244,6 @@ fn api_error_with_details(
             "details": details
         })),
     )
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// AUTHORIZATION HELPERS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(
-        role,
-        "admin" | "super-admin" | "super_admin" | "editor" | "marketing" | "developer"
-    ) {
-        Ok(())
-    } else {
-        Err(api_error(
-            StatusCode::FORBIDDEN,
-            "Editor access required for AI assist",
-        ))
-    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
@@ -541,10 +522,9 @@ async fn save_history(
 /// Run AI action on text
 async fn ai_assist(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<AiAssistRequest>,
 ) -> ApiResult<AiAssistResponse> {
-    require_cms_editor(&user)?;
     check_rate_limit(&state, user.id).await?;
 
     // Validate request
@@ -645,10 +625,9 @@ async fn ai_assist(
 /// Stream AI response using Server-Sent Events
 async fn ai_assist_stream(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<AiAssistRequest>,
 ) -> Result<Sse<impl Stream<Item = Result<Event, Infallible>>>, (StatusCode, Json<JsonValue>)> {
-    require_cms_editor(&user)?;
     check_rate_limit(&state, user.id).await?;
 
     // Validate request
@@ -860,11 +839,9 @@ async fn ai_assist_stream(
 /// Get user's AI usage history
 async fn get_ai_history(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Query(query): Query<HistoryQuery>,
 ) -> ApiResult<HistoryResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.unwrap_or(50).min(100);
     let offset = query.offset.unwrap_or(0);
 

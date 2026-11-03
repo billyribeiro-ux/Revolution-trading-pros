@@ -76,11 +76,14 @@ async fn list_templates(
     AdminUser(_user): AdminUser,
     Query(query): Query<TemplateListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = (page - 1).saturating_mul(per_page);
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern: Option<String> = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let templates: Vec<EmailTemplateRow> = sqlx::query_as(
         r"
@@ -113,7 +116,7 @@ async fn list_templates(
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "data": templates,
@@ -383,17 +386,18 @@ async fn send_test_email(
 
     // Send test email via Postmark using the template's slug as the alias.
     // Falls back to graceful no-op if POSTMARK_TOKEN is not set.
-    let template: Option<EmailTemplateRow> =
-        sqlx::query_as("SELECT * FROM email_templates WHERE id = $1")
-            .bind(id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": format!("DB error: {}", e)})),
-                )
-            })?;
+    let template: Option<EmailTemplateRow> = sqlx::query_as(
+        "SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1",
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("DB error: {}", e)})),
+        )
+    })?;
 
     let alias = template
         .as_ref()

@@ -26,12 +26,13 @@ pub(super) async fn list_submissions(
     Query(query): Query<SubmissionListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     let submissions: Vec<FormSubmissionRow> = sqlx::query_as(
         r"
-        SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address, user_agent, created_at
+        SELECT id, form_id, data, COALESCE(status, 'unread') as status,
+               ip_address::text as ip_address, user_agent, (created_at AT TIME ZONE 'UTC') as created_at
         FROM form_submissions
         WHERE form_id = $1
           AND ($4::text IS NULL OR status = $4)
@@ -59,7 +60,7 @@ pub(super) async fn list_submissions(
         .bind(query.status.as_deref())
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "submissions": submissions,
@@ -80,7 +81,7 @@ pub(super) async fn get_submission(
     Path((form_id, submission_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let submission: FormSubmissionRow = sqlx::query_as(
-        "SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address, user_agent, created_at FROM form_submissions WHERE id = $1 AND form_id = $2"
+        "SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address::text as ip_address, user_agent, (created_at AT TIME ZONE 'UTC') as created_at FROM form_submissions WHERE id = $1 AND form_id = $2"
     )
     .bind(submission_id)
     .bind(form_id)
@@ -412,7 +413,8 @@ pub(super) async fn export_submissions(
 
     let submissions: Vec<FormSubmissionRow> = sqlx::query_as(
         r"
-        SELECT id, form_id, data, COALESCE(status, 'unread') as status, ip_address, user_agent, created_at
+        SELECT id, form_id, data, COALESCE(status, 'unread') as status,
+               ip_address::text as ip_address, user_agent, (created_at AT TIME ZONE 'UTC') as created_at
         FROM form_submissions
         WHERE form_id = $1
         ORDER BY created_at DESC
@@ -430,13 +432,12 @@ pub(super) async fn export_submissions(
 
     // Get form to know field names
     let form: Option<FormRow> = sqlx::query_as(
-        "SELECT id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at FROM forms WHERE id = $1"
+        "SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings, COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count, (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at FROM forms WHERE id = $1"
     )
     .bind(form_id)
     .fetch_optional(&state.db.pool)
     .await
-    .ok()
-    .flatten();
+    .map_err(crate::utils::errors::db_error)?;
 
     let form = form.ok_or_else(|| {
         (

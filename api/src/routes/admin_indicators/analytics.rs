@@ -23,7 +23,7 @@ pub(super) async fn get_download_analytics(
     .bind(indicator_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     // Downloads by platform
     let by_platform: Vec<(String, i64)> = sqlx::query_as(

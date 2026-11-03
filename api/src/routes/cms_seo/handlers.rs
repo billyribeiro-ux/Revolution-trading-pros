@@ -8,13 +8,13 @@
 use axum::{Json, extract::State, http::StatusCode};
 use std::collections::HashSet;
 
-use crate::{AppState, models::User};
+use crate::{AppState, middleware::admin::CmsEditorUser};
 
 use super::analyzers::{
     analyze_content, analyze_links, analyze_meta_description, analyze_readability, analyze_slug,
     analyze_structure, analyze_title, calculate_grade,
 };
-use super::auth::{check_rate_limit, require_cms_editor};
+use super::auth::check_rate_limit;
 use super::text::{count_words, extract_html_from_blocks, extract_text_from_blocks};
 use super::types::{
     CategoryScores, SeoIssue, SeoIssueSeverity, SeoValidationRequest, SeoValidationResponse,
@@ -25,10 +25,9 @@ use super::{ApiResult, WORDS_PER_MINUTE, api_error};
 /// Validate content for SEO
 pub(super) async fn validate_seo(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<SeoValidationRequest>,
 ) -> ApiResult<SeoValidationResponse> {
-    require_cms_editor(&user)?;
     check_rate_limit(&state, user.id).await?;
 
     // Validate request

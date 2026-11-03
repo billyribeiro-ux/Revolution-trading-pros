@@ -27,9 +27,9 @@ pub struct Webhook {
     pub is_active: bool,
     pub trigger_count: i32,
     pub failure_count: i32,
-    pub last_triggered_at: Option<chrono::NaiveDateTime>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub last_triggered_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,12 +48,17 @@ async fn list_webhooks(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let webhooks: Vec<Webhook> = sqlx::query_as(
         r"
-        SELECT id, name, url, events, is_active, trigger_count, failure_count,
+        SELECT id, name, url, events, COALESCE(is_active, true) AS is_active,
+               COALESCE(trigger_count, 0) AS trigger_count,
+               COALESCE(failure_count, 0) AS failure_count,
                last_triggered_at, created_at, updated_at
         FROM crm_webhooks
         WHERE ($1::text IS NULL OR name ILIKE $1)
@@ -65,7 +70,6 @@ async fn list_webhooks(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -94,8 +98,11 @@ async fn create_webhook(
     let webhook: Webhook = sqlx::query_as(
         r"
         INSERT INTO crm_webhooks (name, url, events, is_active, trigger_count, failure_count, created_at, updated_at)
-        VALUES ($1, $2, $3, true, 0, 0, NOW(), NOW())
-        RETURNING id, name, url, events, is_active, trigger_count, failure_count, last_triggered_at, created_at, updated_at
+        VALUES ($1, $2, COALESCE($3, '[]'::jsonb), true, 0, 0, NOW(), NOW())
+        RETURNING id, name, url, events, COALESCE(is_active, true) AS is_active,
+                  COALESCE(trigger_count, 0) AS trigger_count,
+                  COALESCE(failure_count, 0) AS failure_count,
+                  last_triggered_at, created_at, updated_at
         ",
     )
     .bind(&input.name)
@@ -113,7 +120,7 @@ async fn delete_webhook(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_webhooks WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_webhooks WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -123,6 +130,13 @@ async fn delete_webhook(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Webhook not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Webhook deleted successfully"})))
 }

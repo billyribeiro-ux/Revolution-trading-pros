@@ -97,7 +97,7 @@ pub(super) async fn delete_campaign(
     AdminUser(user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM campaigns WHERE id = $1")
+    let result = sqlx::query("DELETE FROM campaigns WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -107,6 +107,13 @@ pub(super) async fn delete_campaign(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Campaign not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Campaign deleted successfully"})))
 }
@@ -123,24 +130,24 @@ pub(super) async fn products_stats(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let active: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = true")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let draft: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = false")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "total": total.0,
         "active": active.0,
         "draft": draft.0,
         "featured": 0,
-        "total_revenue": 0,
+        "total_revenue_cents": 0_i64,
         "total_sales": 0,
         "data": {
             "total": total.0
@@ -156,36 +163,31 @@ pub(super) async fn dashboard_overview(
     let total_users: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+        .map_err(crate::utils::errors::db_error)?;
 
     let active_subscriptions: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let total_products: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = true")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let total_posts: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'published'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let newsletter_subscribers: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "total_users": total_users.0,
@@ -218,20 +220,20 @@ pub(super) async fn analytics_dashboard(
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let page_views: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM analytics_events WHERE event_type = 'pageview' AND created_at >= NOW() - INTERVAL '30 days'"
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let new_users: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM users WHERE created_at >= NOW() - INTERVAL '30 days'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -256,15 +258,15 @@ pub(super) async fn posts_stats(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
     let published: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'published'")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
     let drafts: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'draft'")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

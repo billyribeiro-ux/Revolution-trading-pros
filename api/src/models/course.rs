@@ -15,61 +15,96 @@ pub struct Course {
     pub id: Uuid,
     pub title: String,
     pub slug: String,
+    #[sqlx(default)]
     pub description: Option<String>,
     pub price_cents: i64,
+    #[sqlx(default)]
     pub instructor_id: Option<i64>,
+    #[sqlx(default)]
     pub is_published: bool,
+    #[sqlx(default)]
     pub thumbnail: Option<String>,
+    #[sqlx(default)]
     pub preview_video_url: Option<String>,
+    #[sqlx(default)]
     pub duration_minutes: Option<i32>,
+    #[sqlx(default)]
     pub level: Option<String>,
+    #[sqlx(default)]
     pub metadata: Option<serde_json::Value>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 
     // Card Display
+    #[sqlx(default)]
     pub card_image_url: Option<String>,
+    #[sqlx(default)]
     pub card_description: Option<String>,
+    #[sqlx(default)]
     pub card_badge: Option<String>,
+    #[sqlx(default)]
     pub card_badge_color: Option<String>,
 
     // Course Details
+    #[sqlx(default)]
     pub what_you_learn: Option<serde_json::Value>,
+    #[sqlx(default)]
     pub requirements: Option<serde_json::Value>,
+    #[sqlx(default)]
     pub target_audience: Option<serde_json::Value>,
 
     // Instructor
+    #[sqlx(default)]
     pub instructor_name: Option<String>,
+    #[sqlx(default)]
     pub instructor_title: Option<String>,
+    #[sqlx(default)]
     pub instructor_avatar_url: Option<String>,
+    #[sqlx(default)]
     pub instructor_bio: Option<String>,
 
     // Pricing & Access
+    #[sqlx(default)]
     pub is_free: Option<bool>,
+    #[sqlx(default)]
     pub is_premium: Option<bool>,
+    #[sqlx(default)]
     pub required_membership_ids: Option<serde_json::Value>,
 
     // Video Integration
+    #[sqlx(default)]
     pub bunny_library_id: Option<i64>,
 
     // SEO
+    #[sqlx(default)]
     pub meta_title: Option<String>,
+    #[sqlx(default)]
     pub meta_description: Option<String>,
+    #[sqlx(default)]
     pub og_image_url: Option<String>,
 
     // Status
+    #[sqlx(default)]
     pub status: Option<String>,
+    #[sqlx(default)]
     pub published_at: Option<NaiveDateTime>,
 
     // Analytics
+    #[sqlx(default)]
     pub enrollment_count: Option<i32>,
+    #[sqlx(default)]
     pub completion_rate: Option<f64>,
+    #[sqlx(default)]
     pub avg_rating: Option<f64>,
+    #[sqlx(default)]
     pub review_count: Option<i32>,
 
     // Counts
+    #[sqlx(default)]
     pub module_count: Option<i32>,
+    #[sqlx(default)]
     pub lesson_count: Option<i32>,
+    #[sqlx(default)]
     pub total_duration_minutes: Option<i32>,
 }
 
@@ -78,23 +113,40 @@ pub struct CourseListItem {
     pub id: Uuid,
     pub title: String,
     pub slug: String,
+    #[sqlx(default)]
     pub description: Option<String>,
+    #[sqlx(default)]
     pub card_image_url: Option<String>,
+    #[sqlx(default)]
     pub card_description: Option<String>,
+    #[sqlx(default)]
     pub card_badge: Option<String>,
+    #[sqlx(default)]
     pub card_badge_color: Option<String>,
+    #[sqlx(default)]
     pub instructor_name: Option<String>,
+    #[sqlx(default)]
     pub instructor_avatar_url: Option<String>,
+    #[sqlx(default)]
     pub level: Option<String>,
     pub price_cents: i64,
+    #[sqlx(default)]
     pub is_free: Option<bool>,
+    #[sqlx(default)]
     pub is_published: bool,
+    #[sqlx(default)]
     pub status: Option<String>,
+    #[sqlx(default)]
     pub module_count: Option<i32>,
+    #[sqlx(default)]
     pub lesson_count: Option<i32>,
+    #[sqlx(default)]
     pub total_duration_minutes: Option<i32>,
+    #[sqlx(default)]
     pub enrollment_count: Option<i32>,
+    #[sqlx(default)]
     pub avg_rating: Option<f64>,
+    #[sqlx(default)]
     pub review_count: Option<i32>,
     pub created_at: NaiveDateTime,
 }
@@ -108,16 +160,24 @@ pub struct CourseModule {
     pub id: i64,
     pub course_id: Uuid,
     pub title: String,
+    #[sqlx(default)]
     pub description: Option<String>,
+    #[sqlx(default)]
     pub sort_order: i32,
+    #[sqlx(default)]
     pub is_published: bool,
+    #[sqlx(default)]
     pub drip_enabled: Option<bool>,
+    #[sqlx(default)]
     pub drip_days: Option<i32>,
+    #[sqlx(default)]
     pub drip_date: Option<NaiveDateTime>,
+    #[sqlx(default)]
     pub lesson_count: Option<i32>,
+    #[sqlx(default)]
     pub total_duration_minutes: Option<i32>,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -128,36 +188,53 @@ pub struct CourseModule {
 pub struct Lesson {
     pub id: Uuid,
     pub course_id: Uuid,
+    #[sqlx(default)]
     pub module_id: Option<i64>,
     pub title: String,
     pub slug: String,
+    #[sqlx(default)]
     pub description: Option<String>,
+    #[sqlx(default)]
     pub video_url: Option<String>,
+    #[sqlx(default)]
     pub duration_minutes: Option<i32>,
+    #[sqlx(default)]
     pub position: i32,
+    #[sqlx(default)]
     pub is_free: bool,
+    #[sqlx(default)]
     pub content: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 
     // Video Integration
+    #[sqlx(default)]
     pub video_id: Option<i64>,
+    #[sqlx(default)]
     pub bunny_video_guid: Option<String>,
+    #[sqlx(default)]
     pub thumbnail_url: Option<String>,
 
     // Content
+    #[sqlx(default)]
     pub content_html: Option<String>,
+    #[sqlx(default)]
     pub resources: Option<serde_json::Value>,
 
     // Access Control
+    #[sqlx(default)]
     pub is_preview: Option<bool>,
+    #[sqlx(default)]
     pub is_published: Option<bool>,
+    #[sqlx(default)]
     pub drip_days: Option<i32>,
 
     // Prerequisites
+    #[sqlx(default)]
     pub prerequisite_lesson_ids: Option<serde_json::Value>,
 
     // Sort
+    #[sqlx(default)]
     pub sort_order: Option<i32>,
 }
 
@@ -165,17 +242,27 @@ pub struct Lesson {
 pub struct LessonListItem {
     pub id: Uuid,
     pub course_id: Uuid,
+    #[sqlx(default)]
     pub module_id: Option<i64>,
     pub title: String,
     pub slug: String,
+    #[sqlx(default)]
     pub description: Option<String>,
+    #[sqlx(default)]
     pub duration_minutes: Option<i32>,
+    #[sqlx(default)]
     pub position: i32,
+    #[sqlx(default)]
     pub sort_order: Option<i32>,
+    #[sqlx(default)]
     pub is_free: bool,
+    #[sqlx(default)]
     pub is_preview: Option<bool>,
+    #[sqlx(default)]
     pub is_published: Option<bool>,
+    #[sqlx(default)]
     pub bunny_video_guid: Option<String>,
+    #[sqlx(default)]
     pub thumbnail_url: Option<String>,
 }
 
@@ -186,29 +273,47 @@ pub struct LessonListItem {
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct CourseDownload {
     pub id: i64,
+    #[sqlx(default)]
     pub course_id: Option<Uuid>,
+    #[sqlx(default)]
     pub module_id: Option<i64>,
+    #[sqlx(default)]
     pub lesson_id: Option<Uuid>,
     pub title: String,
+    #[sqlx(default)]
     pub description: Option<String>,
     pub file_name: String,
     pub file_path: String,
+    #[sqlx(default)]
     pub file_size_bytes: Option<i64>,
+    #[sqlx(default)]
     pub file_type: Option<String>,
+    #[sqlx(default)]
     pub mime_type: Option<String>,
+    #[sqlx(default)]
     pub bunny_file_id: Option<String>,
+    #[sqlx(default)]
     pub storage_zone: Option<String>,
+    #[sqlx(default)]
     pub download_url: Option<String>,
+    #[sqlx(default)]
     pub preview_url: Option<String>,
+    #[sqlx(default)]
     pub category: Option<String>,
+    #[sqlx(default)]
     pub sort_order: Option<i32>,
+    #[sqlx(default)]
     pub is_public: Option<bool>,
+    #[sqlx(default)]
     pub require_enrollment: Option<bool>,
+    #[sqlx(default)]
     pub require_lesson_complete: Option<bool>,
+    #[sqlx(default)]
     pub download_count: Option<i32>,
+    #[sqlx(default)]
     pub uploaded_by: Option<i64>,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -220,28 +325,45 @@ pub struct UserCourseEnrollment {
     pub id: i64,
     pub user_id: i64,
     pub course_id: Uuid,
+    #[sqlx(default)]
     pub current_module_id: Option<i64>,
+    #[sqlx(default)]
     pub current_lesson_id: Option<Uuid>,
+    #[sqlx(default)]
     pub completed_lesson_ids: Option<serde_json::Value>,
+    #[sqlx(default)]
     pub progress_percent: Option<i16>,
+    #[sqlx(default)]
     pub status: Option<String>,
     pub enrolled_at: NaiveDateTime,
+    #[sqlx(default)]
     pub started_at: Option<NaiveDateTime>,
+    #[sqlx(default)]
     pub completed_at: Option<NaiveDateTime>,
+    #[sqlx(default)]
     pub last_accessed_at: Option<NaiveDateTime>,
+    #[sqlx(default)]
     pub access_expires_at: Option<NaiveDateTime>,
+    #[sqlx(default)]
     pub is_lifetime_access: Option<bool>,
+    #[sqlx(default)]
     pub order_id: Option<i64>,
     // CLAUDE.md money rule: every *_cents value is i64 / BIGINT end-to-end.
     // Widened from Option<i32> (audit R17-D, 2026-05-20). Note: this struct
     // maps a legacy schema and is not currently bound to a live column;
     // widening here keeps the type contract aligned with the rule for the
     // day a `price_paid_cents` column is added.
+    #[sqlx(default)]
     pub price_paid_cents: Option<i64>,
+    #[sqlx(default)]
     pub certificate_issued: Option<bool>,
+    #[sqlx(default)]
     pub certificate_url: Option<String>,
+    #[sqlx(default)]
     pub certificate_issued_at: Option<NaiveDateTime>,
+    #[sqlx(default)]
     pub notes: Option<serde_json::Value>,
+    #[sqlx(default)]
     pub bookmarks: Option<serde_json::Value>,
 }
 

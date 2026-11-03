@@ -41,11 +41,15 @@ pub struct MemberEmail {
 /// GET /admin/members/:id/notes - Get member notes
 pub(super) async fn get_member_notes(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberNote>>, (StatusCode, Json<serde_json::Value>)> {
     let notes: Vec<MemberNote> = sqlx::query_as(
-        "SELECT id, user_id, content, created_by, created_at FROM member_notes WHERE user_id = $1 ORDER BY created_at DESC"
+        r"SELECT id, user_id, note AS content, created_by,
+                 (created_at AT TIME ZONE 'UTC') AS created_at
+          FROM member_notes
+          WHERE user_id = $1
+          ORDER BY created_at DESC",
     )
     .bind(member_id)
     .fetch_all(&state.db.pool)
@@ -62,33 +66,33 @@ pub(super) async fn create_member_note(
     Path(member_id): Path<i64>,
     Json(input): Json<CreateNoteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Try to create note, gracefully handle if table doesn't exist
-    let result = sqlx::query(
-        "INSERT INTO member_notes (user_id, content, created_by, created_at) VALUES ($1, $2, $3, NOW())"
+    sqlx::query(
+        "INSERT INTO member_notes (user_id, note, created_by, created_at, updated_at) VALUES ($1, $2, $3, NOW(), NOW())",
     )
     .bind(member_id)
     .bind(&input.content)
     .bind(user.id)
     .execute(&state.db.pool)
-    .await;
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
-    match result {
-        Ok(_) => Ok(Json(json!({"message": "Note created successfully"}))),
-        Err(e) => {
-            tracing::warn!("Failed to create member note (table may not exist): {}", e);
-            Ok(Json(json!({"message": "Note saved (pending sync)"})))
-        }
-    }
+    Ok(Json(json!({"message": "Note created successfully"})))
 }
 
 /// GET /admin/members/:id/emails - Get member email history
 pub(super) async fn get_member_emails(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberEmail>>, (StatusCode, Json<serde_json::Value>)> {
     let emails: Vec<MemberEmail> = sqlx::query_as(
-        "SELECT id, user_id, subject, status, sent_at, created_at FROM member_emails WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50"
+        r"SELECT id, COALESCE(user_id, $1) AS user_id, subject, status,
+                 (sent_at AT TIME ZONE 'UTC') AS sent_at,
+                 created_at
+          FROM email_logs
+          WHERE user_id = $1
+          ORDER BY created_at DESC
+          LIMIT 50",
     )
     .bind(member_id)
     .fetch_all(&state.db.pool)

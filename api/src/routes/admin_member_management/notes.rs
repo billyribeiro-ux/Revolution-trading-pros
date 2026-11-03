@@ -23,7 +23,9 @@ pub(super) async fn get_notes(
 
     let notes: Vec<MemberNote> = sqlx::query_as(
         r"
-        SELECT mn.id, mn.user_id, mn.content, mn.created_by, u.name as created_by_name, mn.created_at
+        SELECT mn.id, mn.user_id, mn.note AS content, mn.created_by,
+               u.name as created_by_name,
+               (mn.created_at AT TIME ZONE 'UTC') AS created_at
         FROM member_notes mn
         LEFT JOIN users u ON u.id = mn.created_by
         WHERE mn.user_id = $1
@@ -55,9 +57,10 @@ pub(super) async fn create_note(
 
     let note: MemberNote = sqlx::query_as(
         r"
-        INSERT INTO member_notes (user_id, content, created_by, created_at)
+        INSERT INTO member_notes (user_id, note, created_by, created_at)
         VALUES ($1, $2, $3, NOW())
-        RETURNING id, user_id, content, created_by, NULL::text as created_by_name, created_at
+        RETURNING id, user_id, note AS content, created_by, NULL::text as created_by_name,
+                  (created_at AT TIME ZONE 'UTC') AS created_at
         ",
     )
     .bind(id)

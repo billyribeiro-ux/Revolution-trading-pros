@@ -94,7 +94,7 @@ pub struct CouponResponse {
     pub id: i64,
     pub code: String,
     pub discount_type: String,
-    pub discount_value: Decimal,
+    pub discount_value_cents: i64,
     pub max_uses: i32,
     pub current_uses: i32,
     pub expires_at: Option<String>,
@@ -103,11 +103,12 @@ pub struct CouponResponse {
 
 impl From<CouponRow> for CouponResponse {
     fn from(row: CouponRow) -> Self {
+        let discount_value_cents = (row.value.to_f64().unwrap_or(0.0) * 100.0).round() as i64;
         Self {
             id: row.id,
             code: row.code,
             discount_type: row.coupon_type,
-            discount_value: row.value,
+            discount_value_cents,
             max_uses: row.max_uses,
             current_uses: row.current_uses,
             expires_at: row.expiry_date.map(|d| d.to_string()),
@@ -161,13 +162,21 @@ async fn validate_coupon(
         }));
     }
 
-    // Find coupon - ICT 11+ Fix: Use Laravel production schema column names
+    // Find coupon using canonical coupons schema columns aliased to Coupon struct
     let coupon: Option<Coupon> = sqlx::query_as(
-        r"SELECT id, code, type, value, max_uses, current_uses,
-                  expiry_date, applicable_products, min_purchase_amount,
+        r#"SELECT id, code,
+                  discount_type AS "type",
+                  discount_value AS value,
+                  (discount_value * 100)::BIGINT AS value_cents,
+                  COALESCE(usage_limit, 0) AS max_uses,
+                  COALESCE(usage_count, 0) AS current_uses,
+                  expires_at AS expiry_date,
+                  applicable_products,
+                  COALESCE(min_purchase, 0) AS min_purchase_amount,
+                  COALESCE((min_purchase * 100)::BIGINT, 0) AS min_purchase_amount_cents,
                   is_active, created_at, updated_at
            FROM coupons
-           WHERE UPPER(code) = $1",
+           WHERE UPPER(code) = $1"#,
     )
     .bind(&code)
     .fetch_optional(&state.db.pool)
@@ -304,34 +313,24 @@ async fn get_user_coupons(
     State(state): State<AppState>,
     user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Get coupons assigned to user or public coupons
     let rows: Vec<CouponRow> = sqlx::query_as::<_, CouponRow>(
-        r"SELECT
+        r#"SELECT
             c.id,
             c.code,
-            c.type,
-            c.value,
-            c.max_uses,
-            c.current_uses,
-            c.expiry_date,
+            c.discount_type AS "type",
+            c.discount_value AS value,
+            COALESCE(c.usage_limit, 0) AS max_uses,
+            COALESCE(c.usage_count, 0) AS current_uses,
+            c.expires_at AS expiry_date,
             c.is_active,
             c.created_at,
             c.updated_at
         FROM coupons c
-        LEFT JOIN user_coupons uc ON uc.coupon_id = c.id AND uc.user_id = $1
         WHERE c.is_active = true
-        AND (c.expiry_date IS NULL OR c.expiry_date > NOW())
-        AND (c.max_uses <= 0 OR c.current_uses < c.max_uses)
-        AND (
-            -- Public coupons (no user assignment table entry required)
-            NOT EXISTS (SELECT 1 FROM user_coupons WHERE coupon_id = c.id)
-            OR
-            -- User-specific coupons
-            uc.user_id = $1
-        )
-        ORDER BY c.expiry_date ASC NULLS LAST, c.created_at DESC",
+        AND (c.expires_at IS NULL OR c.expires_at > NOW())
+        AND (COALESCE(c.usage_limit, 0) <= 0 OR COALESCE(c.usage_count, 0) < c.usage_limit)
+        ORDER BY c.expires_at ASC NULLS LAST, c.created_at DESC"#,
     )
-    .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
     .map_err(|e| {
@@ -358,20 +357,27 @@ async fn list_coupons(
     _admin: AdminUser,
     Query(query): Query<CouponQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let limit = query.limit.unwrap_or(50).min(100);
-    let page = query.page.unwrap_or(0);
-    let offset = page * limit;
+    let limit = query.limit.unwrap_or(50).clamp(1, 100) as i64;
+    let page = query.page.unwrap_or(0).clamp(0, 10_000) as i64;
+    let offset = page.saturating_mul(limit);
 
-    // ICT 7 FIX: Use Laravel production schema column names
     let coupons: Vec<Coupon> = if query.active_only.unwrap_or(false) {
         sqlx::query_as(
-            r"SELECT id, code, type, value, max_uses, current_uses,
-                      expiry_date, applicable_products, min_purchase_amount,
+            r#"SELECT id, code,
+                      discount_type AS "type",
+                      discount_value AS value,
+                      (discount_value * 100)::BIGINT AS value_cents,
+                      COALESCE(usage_limit, 0) AS max_uses,
+                      COALESCE(usage_count, 0) AS current_uses,
+                      expires_at AS expiry_date,
+                      applicable_products,
+                      COALESCE(min_purchase, 0) AS min_purchase_amount,
+                      COALESCE((min_purchase * 100)::BIGINT, 0) AS min_purchase_amount_cents,
                       is_active, created_at, updated_at
                FROM coupons
                WHERE is_active = true
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2",
+               LIMIT $1 OFFSET $2"#,
         )
         .bind(limit)
         .bind(offset)
@@ -386,12 +392,20 @@ async fn list_coupons(
         })?
     } else {
         sqlx::query_as(
-            r"SELECT id, code, type, value, max_uses, current_uses,
-                      expiry_date, applicable_products, min_purchase_amount,
+            r#"SELECT id, code,
+                      discount_type AS "type",
+                      discount_value AS value,
+                      (discount_value * 100)::BIGINT AS value_cents,
+                      COALESCE(usage_limit, 0) AS max_uses,
+                      COALESCE(usage_count, 0) AS current_uses,
+                      expires_at AS expiry_date,
+                      applicable_products,
+                      COALESCE(min_purchase, 0) AS min_purchase_amount,
+                      COALESCE((min_purchase * 100)::BIGINT, 0) AS min_purchase_amount_cents,
                       is_active, created_at, updated_at
                FROM coupons
                ORDER BY created_at DESC
-               LIMIT $1 OFFSET $2",
+               LIMIT $1 OFFSET $2"#,
         )
         .bind(limit)
         .bind(offset)
@@ -409,7 +423,13 @@ async fn list_coupons(
     let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM coupons")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or(0);
+        .map_err(|e| {
+            tracing::error!(target: "coupons", error = %e, "Failed to count coupons");
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Failed to count coupons"})),
+            )
+        })?;
 
     Ok(Json(json!({
         "coupons": coupons,
@@ -452,7 +472,13 @@ async fn create_coupon(
             .bind(&code)
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or(false);
+            .map_err(|e| {
+                tracing::error!(target: "coupons", error = %e, "Failed to check coupon existence");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Failed to check coupon existence"})),
+                )
+            })?;
 
     if exists {
         return Err((
@@ -461,16 +487,23 @@ async fn create_coupon(
         ));
     }
 
-    // ICT 7 FIX: Use Laravel production schema column names
     let coupon: Coupon = sqlx::query_as(
-        r"INSERT INTO coupons (
-            code, type, value, max_uses, current_uses,
-            expiry_date, applicable_products, min_purchase_amount,
+        r#"INSERT INTO coupons (
+            code, discount_type, discount_value, usage_limit, usage_count,
+            expires_at, applicable_products, min_purchase,
             is_active, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, 0, $5, $6, $7, $8, NOW(), NOW())
-        RETURNING id, code, type, value, max_uses, current_uses,
-                  expiry_date, applicable_products, min_purchase_amount,
-                  is_active, created_at, updated_at",
+        RETURNING id, code,
+                  discount_type AS "type",
+                  discount_value AS value,
+                  (discount_value * 100)::BIGINT AS value_cents,
+                  COALESCE(usage_limit, 0) AS max_uses,
+                  COALESCE(usage_count, 0) AS current_uses,
+                  expires_at AS expiry_date,
+                  applicable_products,
+                  COALESCE(min_purchase, 0) AS min_purchase_amount,
+                  COALESCE((min_purchase * 100)::BIGINT, 0) AS min_purchase_amount_cents,
+                  is_active, created_at, updated_at"#,
     )
     .bind(&code)
     .bind(&input.discount_type)
@@ -530,21 +563,28 @@ async fn update_coupon(
         "Admin updating coupon"
     );
 
-    // ICT 7 FIX: Use Laravel production schema column names
     let coupon: Coupon = sqlx::query_as(
-        r"UPDATE coupons SET
-            type = COALESCE($2, type),
-            value = COALESCE($3, value),
-            max_uses = COALESCE($4, max_uses),
-            expiry_date = COALESCE($5, expiry_date),
+        r#"UPDATE coupons SET
+            discount_type = COALESCE($2, discount_type),
+            discount_value = COALESCE($3, discount_value),
+            usage_limit = COALESCE($4, usage_limit),
+            expires_at = COALESCE($5, expires_at),
             applicable_products = COALESCE($6, applicable_products),
-            min_purchase_amount = COALESCE($7, min_purchase_amount),
+            min_purchase = COALESCE($7, min_purchase),
             is_active = COALESCE($8, is_active),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, code, type, value, max_uses, current_uses,
-                  expiry_date, applicable_products, min_purchase_amount,
-                  is_active, created_at, updated_at",
+        RETURNING id, code,
+                  discount_type AS "type",
+                  discount_value AS value,
+                  (discount_value * 100)::BIGINT AS value_cents,
+                  COALESCE(usage_limit, 0) AS max_uses,
+                  COALESCE(usage_count, 0) AS current_uses,
+                  expires_at AS expiry_date,
+                  applicable_products,
+                  COALESCE(min_purchase, 0) AS min_purchase_amount,
+                  COALESCE((min_purchase * 100)::BIGINT, 0) AS min_purchase_amount_cents,
+                  is_active, created_at, updated_at"#,
     )
     .bind(id)
     .bind(&input.discount_type)
@@ -736,7 +776,7 @@ async fn reset_coupon_usage(
     );
 
     let result = sqlx::query(
-        "UPDATE coupons SET current_uses = 0, updated_at = NOW() WHERE id = $1"
+        "UPDATE coupons SET usage_count = 0, updated_at = NOW() WHERE id = $1"
     )
     .bind(id)
     .execute(&state.db.pool)
@@ -769,10 +809,18 @@ async fn get_coupon(
     Path(id): Path<i64>,
 ) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
     let coupon: Coupon = sqlx::query_as(
-        r"SELECT id, code, type, value, max_uses, current_uses,
-                  expiry_date, applicable_products, min_purchase_amount,
+        r#"SELECT id, code,
+                  discount_type AS "type",
+                  discount_value AS value,
+                  (discount_value * 100)::BIGINT AS value_cents,
+                  COALESCE(usage_limit, 0) AS max_uses,
+                  COALESCE(usage_count, 0) AS current_uses,
+                  expires_at AS expiry_date,
+                  applicable_products,
+                  COALESCE(min_purchase, 0) AS min_purchase_amount,
+                  COALESCE((min_purchase * 100)::BIGINT, 0) AS min_purchase_amount_cents,
                   is_active, created_at, updated_at
-           FROM coupons WHERE id = $1",
+           FROM coupons WHERE id = $1"#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)

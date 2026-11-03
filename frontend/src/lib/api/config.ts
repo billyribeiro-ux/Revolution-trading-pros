@@ -313,12 +313,25 @@ export async function apiFetch<T = unknown>(
 	let url: string;
 	if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
 		url = endpoint;
+	} else if (
+		typeof window !== 'undefined' &&
+		(endpoint.startsWith('/api/admin/') ||
+			endpoint === '/api/admin' ||
+			endpoint.startsWith('/admin/') ||
+			endpoint.startsWith('admin/'))
+	) {
+		// Same-origin: hits the SK proxy at /api/admin/* (cookie-authed).
+		if (endpoint.startsWith('/api/')) {
+			url = endpoint;
+		} else {
+			const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+			url = `/api${path}`;
+		}
 	} else if (endpoint.startsWith('/api/')) {
 		url = `${API_BASE_URL}${endpoint}`;
 	} else if (endpoint.startsWith('/admin/') || endpoint.startsWith('admin/')) {
-		// Same-origin: hits the SK proxy at /api/admin/* (cookie-authed).
 		const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-		url = `/api${path}`;
+		url = `${API_BASE_URL}/api${path}`;
 	} else if (endpoint.startsWith('/')) {
 		url = `${API_BASE_URL}/api${endpoint}`;
 	} else {

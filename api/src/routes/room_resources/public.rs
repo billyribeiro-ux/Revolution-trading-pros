@@ -200,7 +200,12 @@ pub(super) async fn list_resources(
         cq = cq.bind(lesson_id);
     }
 
-    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    let total: (i64,) = cq.fetch_one(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let responses: Vec<ResourceResponse> =
         resources.into_iter().map(resource_to_response).collect();

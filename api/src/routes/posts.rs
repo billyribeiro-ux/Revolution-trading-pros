@@ -211,18 +211,20 @@ async fn list_posts(
     State(state): State<AppState>,
     Query(query): Query<PostListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = (page - 1).saturating_mul(per_page);
 
     // Public route always filters to published posts only
     let status = "published".to_string();
 
     // Build query with parameterized bindings for security (ICT 11+ SQL injection prevention)
-    let search_pattern = query
-        .search
-        .as_ref()
-        .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
+    let search_pattern = query.search.as_ref().map(|s| {
+        format!(
+            "%{}%",
+            s.replace('\0', "").replace('%', "\\%").replace('_', "\\_")
+        )
+    });
 
     // Fetch posts with proper parameterized query
     let mut posts: Vec<PostRow> = if let Some(ref pattern) = search_pattern {
@@ -368,7 +370,12 @@ async fn get_post(
     sanitize_for_public(&mut post);
     let (categories, tags) = load_post_taxonomy(&state.db.pool, post.id)
         .await
-        .unwrap_or_default();
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
     let mut value = serde_json::to_value(post).unwrap_or_else(|_| json!({}));
     if let Some(obj) = value.as_object_mut() {
         obj.insert("categories".into(), serde_json::Value::from(categories));
@@ -765,7 +772,12 @@ async fn get_post_by_id(
 
     let (categories, tags) = load_post_taxonomy(&state.db.pool, post.id)
         .await
-        .unwrap_or_default();
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
     let mut value = serde_json::to_value(post).unwrap_or_else(|_| json!({}));
     if let Some(obj) = value.as_object_mut() {
         obj.insert("categories".into(), serde_json::Value::from(categories));
@@ -904,19 +916,27 @@ async fn get_related_posts(
     // (e.g. `archive_post`) instead of being swallowed.
     let related: Vec<PostRow> = sqlx::query_as(
         r"
-        SELECT DISTINCT p.* FROM posts p
-        LEFT JOIN post_tags pt1 ON p.id = pt1.post_id
-        LEFT JOIN post_tags pt2 ON pt1.tag_id = pt2.tag_id AND pt2.post_id = $1
-        LEFT JOIN post_categories pc1 ON p.id = pc1.post_id
-        LEFT JOIN post_categories pc2 ON pc1.category_id = pc2.category_id AND pc2.post_id = $1
+        SELECT p.* FROM posts p
         WHERE p.id != $1
           AND p.status = 'published'
           AND (
-            pt2.post_id IS NOT NULL  -- Has a shared tag
-            OR pc2.post_id IS NOT NULL  -- Has a shared category
+            EXISTS (
+                SELECT 1 FROM post_tags pt1
+                JOIN post_tags pt2 ON pt1.tag_id = pt2.tag_id
+                WHERE pt1.post_id = p.id AND pt2.post_id = $1
+            )
+            OR EXISTS (
+                SELECT 1 FROM post_categories pc1
+                JOIN post_categories pc2 ON pc1.category_id = pc2.category_id
+                WHERE pc1.post_id = p.id AND pc2.post_id = $1
+            )
           )
         ORDER BY
-          CASE WHEN pt2.post_id IS NOT NULL THEN 0 ELSE 1 END,  -- Prioritize shared tags
+          CASE WHEN EXISTS (
+              SELECT 1 FROM post_tags pt1
+              JOIN post_tags pt2 ON pt1.tag_id = pt2.tag_id
+              WHERE pt1.post_id = p.id AND pt2.post_id = $1
+          ) THEN 0 ELSE 1 END,
           p.published_at DESC NULLS LAST
         LIMIT 5
         ",
@@ -964,15 +984,17 @@ async fn admin_list_posts(
     State(state): State<AppState>,
     Query(query): Query<PostListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = (page - 1).saturating_mul(per_page);
 
     // ICT 7: Parameterized search
-    let search_pattern = query
-        .search
-        .as_ref()
-        .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
+    let search_pattern = query.search.as_ref().map(|s| {
+        format!(
+            "%{}%",
+            s.replace('\0', "").replace('%', "\\%").replace('_', "\\_")
+        )
+    });
 
     // Admin can filter by any status (or see all)
     let posts: Vec<PostRow> = match (&query.status, &search_pattern, query.author_id) {

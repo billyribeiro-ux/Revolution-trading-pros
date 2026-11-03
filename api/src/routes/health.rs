@@ -193,11 +193,11 @@ async fn setup_db(
         -- Create password_resets table
         DROP TABLE IF EXISTS password_resets CASCADE;
         CREATE TABLE password_resets (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            id BIGSERIAL PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
-            token VARCHAR(64) NOT NULL UNIQUE,
-            expires_at TIMESTAMPTZ NOT NULL,
-            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            token VARCHAR(255) NOT NULL UNIQUE,
+            expires_at TIMESTAMP NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT NOW()
         );
         CREATE INDEX IF NOT EXISTS idx_password_resets_email ON password_resets(email);
         CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets(token);
@@ -212,7 +212,7 @@ async fn setup_db(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to create table: {e}"),
+                    message: "Database setup failed; see server logs".to_string(),
                 }),
             )
         })?;
@@ -245,7 +245,7 @@ async fn setup_db(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to update bootstrap user: {e}"),
+                    message: "Bootstrap user update failed; see server logs".to_string(),
                 }),
             )
         })?;
@@ -269,7 +269,7 @@ async fn setup_db(
                     axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                     Json(SetupResponse {
                         success: false,
-                        message: format!("Failed to create bootstrap user: {e}"),
+                        message: "Bootstrap user creation failed; see server logs".to_string(),
                     }),
                 )
             })?;
@@ -301,6 +301,17 @@ async fn run_migrations(
     admin: SuperAdminUser,
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
+    let environment = std::env::var("ENVIRONMENT").unwrap_or_else(|_| "production".to_string());
+    if environment != "development" && environment != "dev" {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(SetupResponse {
+                success: false,
+                message: "This endpoint is only available in development mode".to_string(),
+            }),
+        ));
+    }
+
     tracing::info!("Admin {} running migrations", admin.0.email);
     // Migration: Seed membership plans (from migrations/008_seed_membership_plans.sql)
     // This SQL is loaded from the migration file at compile time
@@ -315,7 +326,7 @@ async fn run_migrations(
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to run migration: {e}"),
+                    message: "Migration failed; see server logs".to_string(),
                 }),
             )
         })?;

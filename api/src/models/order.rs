@@ -100,7 +100,7 @@ pub struct CheckoutSession {
     pub order_number: String,
 }
 
-/// Coupon entity - matches Laravel production schema
+/// Coupon entity - matches production schema with integer-cents wire representation
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Coupon {
     pub id: i64,
@@ -108,12 +108,18 @@ pub struct Coupon {
     #[sqlx(rename = "type")]
     #[serde(rename = "type")]
     pub coupon_type: String, // percentage, fixed
+    #[serde(skip_serializing)]
     pub value: Decimal,
+    #[sqlx(default)]
+    pub value_cents: i64,
     pub max_uses: i32,
     pub current_uses: i32,
     pub expiry_date: Option<NaiveDateTime>,
     pub applicable_products: Option<serde_json::Value>,
+    #[serde(skip_serializing)]
     pub min_purchase_amount: Decimal,
+    #[sqlx(default)]
+    pub min_purchase_amount_cents: i64,
     pub is_active: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,

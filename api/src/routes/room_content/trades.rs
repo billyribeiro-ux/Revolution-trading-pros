@@ -328,8 +328,15 @@ pub(super) async fn close_trade(
         )
     })?;
 
-    // Calculate P&L
-    let price_delta = if existing.direction == "long" {
+    if existing.status != "open" {
+        return Err((
+            StatusCode::CONFLICT,
+            Json(json!({"error": format!("Trade is already {}", existing.status)})),
+        ));
+    }
+
+    // Calculate P&L (case-insensitive direction check)
+    let price_delta = if existing.direction.eq_ignore_ascii_case("long") {
         input.exit_price - existing.entry_price
     } else {
         existing.entry_price - input.exit_price
@@ -357,7 +364,7 @@ pub(super) async fn close_trade(
            holding_days = $9,
            notes = COALESCE($10, notes),
            updated_at = NOW()
-           WHERE id = $1 AND deleted_at IS NULL
+           WHERE id = $1 AND status = 'open' AND deleted_at IS NULL
            RETURNING ",
         room_trade_cols!()
     ))
@@ -371,13 +378,19 @@ pub(super) async fn close_trade(
     .bind(pnl_percent)
     .bind(holding_days)
     .bind(&input.notes)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         error!("Failed to close trade: {}", e);
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::CONFLICT,
+            Json(json!({"error": "Trade is already closed or invalidated"})),
         )
     })?;
 

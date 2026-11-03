@@ -13,7 +13,7 @@
 	// FIX-2026-04-26 (P1-5): use SvelteKit router state for params instead of
 	// parsing window.location.pathname (which doesn't react to client-side nav).
 	import { page } from '$app/state';
-	import { beforeNavigate } from '$app/navigation';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import { logger } from '#lib/utils/logger.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
@@ -119,19 +119,17 @@
 	// after each save; compare against current state to know if dirty.
 	let lastSavedSnapshot = $state<string>('');
 	let hasUnsavedChanges = $derived(course ? JSON.stringify(course) !== lastSavedSnapshot : false);
+	let showUnsavedChangesModal = $state(false);
+	let pendingNavigationUrl = $state<string | null>(null);
+	let allowUnsavedNavigation = $state(false);
 
 	beforeNavigate((nav) => {
-		if (nav.shallow) return;
+		if (nav.shallow || allowUnsavedNavigation) return;
 
-		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
-		// nav.cancel() must be called inline, so native confirm() is the only
-		// portable option today.
-		if (
-			hasUnsavedChanges &&
-			!nav.willUnload &&
-			!confirm('You have unsaved changes. Discard and leave?')
-		) {
+		if (hasUnsavedChanges && !nav.willUnload) {
 			nav.cancel();
+			pendingNavigationUrl = nav.to?.url ? `${nav.to.url.pathname}${nav.to.url.search}${nav.to.url.hash}` : '/admin/courses';
+			showUnsavedChangesModal = true;
 		}
 	});
 
@@ -562,6 +560,25 @@
 		showAddLessonModal = false;
 		addLessonTitle = '';
 		pendingAddLessonModuleId = undefined;
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showUnsavedChangesModal}
+	title="Unsaved Changes"
+	message="You have unsaved changes. Discard and leave?"
+	confirmText="Discard & Leave"
+	variant="warning"
+	onConfirm={() => {
+		const target = pendingNavigationUrl || '/admin/courses';
+		showUnsavedChangesModal = false;
+		pendingNavigationUrl = null;
+		allowUnsavedNavigation = true;
+		void goto(target);
+	}}
+	onCancel={() => {
+		showUnsavedChangesModal = false;
+		pendingNavigationUrl = null;
 	}}
 />
 

@@ -91,11 +91,12 @@
 	}
 
 	// Format currency
-	function formatCurrency(amount: number, currency = 'USD'): string {
+	function formatCurrency(amount: number | null | undefined, currency = 'USD'): string {
+		const safe = typeof amount === 'number' && Number.isFinite(amount) ? amount : Number(amount ?? 0) || 0;
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
-			currency
-		}).format(amount);
+			currency: currency || 'USD'
+		}).format(safe);
 	}
 
 	// Format date

@@ -687,7 +687,21 @@ async function executeRequestWithRetry<T>(
 		const contentType = response.headers.get('content-type');
 
 		if (contentType?.includes('application/json')) {
-			data = (await response.json()) as ApiResponse<T> | ApiError;
+			const parsed = (await response.json()) as Record<string, unknown>;
+			if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !('data' in parsed)) {
+				const fallbackData =
+					parsed.products ??
+					parsed.product ??
+					parsed.coupons ??
+					parsed.coupon ??
+					parsed.plans ??
+					parsed.plan ??
+					parsed.users ??
+					parsed.user ??
+					parsed;
+				parsed.data = fallbackData;
+			}
+			data = parsed as unknown as ApiResponse<T> | ApiError;
 		} else {
 			data = { data: await response.text() } as unknown as ApiResponse<T>;
 		}
@@ -876,14 +890,59 @@ function normalizeCouponPayload(
 	return out;
 }
 
+function denormalizeCoupon(raw: unknown): Coupon {
+	if (!raw || typeof raw !== 'object') return raw as Coupon;
+	const src = raw as Record<string, unknown>;
+	const dtype = (src.discount_type ?? src.type ?? 'percentage') as Coupon['discount_type'];
+	const rawCents = src.discount_value_cents;
+	const rawVal = src.discount_value ?? src.value;
+	const discountValue =
+		typeof rawVal === 'number' && !Number.isNaN(rawVal)
+			? rawVal
+			: typeof rawCents === 'number'
+				? rawCents / 100
+				: Number(rawVal ?? 0) || 0;
+	const minPurchase =
+		src.min_purchase !== undefined
+			? (src.min_purchase as number | null)
+			: typeof src.min_purchase_cents === 'number'
+				? src.min_purchase_cents / 100
+				: ((src.minimum_amount as number | null | undefined) ?? null);
+	const maxDiscount =
+		src.max_discount !== undefined
+			? (src.max_discount as number | null)
+			: typeof src.max_discount_cents === 'number'
+				? src.max_discount_cents / 100
+				: ((src.max_discount_amount as number | null | undefined) ?? null);
+	return {
+		...(src as unknown as Coupon),
+		discount_type: dtype,
+		type: dtype,
+		discount_value: discountValue,
+		value: discountValue,
+		min_purchase: minPurchase,
+		minimum_amount: minPurchase,
+		max_discount: maxDiscount,
+		max_discount_amount: maxDiscount
+	};
+}
+
 export const couponsApi = {
 	async list(params?: PaginationParams & FilterParams): Promise<ApiResponse<Coupon[]>> {
 		const query = params ? buildQueryString(params) : '';
-		return makeRequest<Coupon[]>(`/admin/coupons${query}`);
+		const res = await makeRequest<Coupon[]>(`/admin/coupons${query}`);
+		if (Array.isArray(res.data)) {
+			res.data = res.data.map(denormalizeCoupon);
+		}
+		return res;
 	},
 
 	async get(id: number): Promise<ApiResponse<Coupon>> {
-		return makeRequest<Coupon>(`/admin/coupons/${id}`);
+		const res = await makeRequest<Coupon>(`/admin/coupons/${id}`);
+		if (res.data) {
+			res.data = denormalizeCoupon(res.data);
+		}
+		return res;
 	},
 
 	async create(data: CouponCreateData): Promise<ApiResponse<Coupon>> {
@@ -1488,14 +1547,52 @@ function normalizeProductPayload(input: Partial<Product>): Record<string, unknow
 	return out;
 }
 
+function denormalizeProduct(raw: unknown): Product {
+	if (!raw || typeof raw !== 'object') return raw as Product;
+	const src = raw as Record<string, unknown>;
+	const meta =
+		src.metadata && typeof src.metadata === 'object' && !Array.isArray(src.metadata)
+			? (src.metadata as Record<string, unknown>)
+			: undefined;
+	const price =
+		typeof src.price === 'number' && !Number.isNaN(src.price)
+			? src.price
+			: typeof src.price_cents === 'number'
+				? src.price_cents / 100
+				: Number(src.price ?? 0) || 0;
+	const rawSale = src.sale_price ?? meta?.sale_price;
+	const salePrice = rawSale != null && !Number.isNaN(Number(rawSale)) ? Number(rawSale) : null;
+	return {
+		...(src as unknown as Product),
+		type: ((src.type ?? src.product_type ?? 'course') as Product['type']),
+		slug: String(src.slug ?? meta?.slug ?? ''),
+		price,
+		sale_price: salePrice,
+		currency: String(src.currency ?? meta?.currency ?? 'USD'),
+		features: Array.isArray(src.features)
+			? (src.features as string[])
+			: Array.isArray(meta?.features)
+				? (meta.features as string[])
+				: []
+	};
+}
+
 export const productsApi = {
 	async list(params?: PaginationParams & FilterParams): Promise<ApiResponse<Product[]>> {
 		const query = params ? buildQueryString(params) : '';
-		return makeRequest<Product[]>(`/admin/products${query}`);
+		const res = await makeRequest<Product[]>(`/admin/products${query}`);
+		if (Array.isArray(res.data)) {
+			res.data = res.data.map(denormalizeProduct);
+		}
+		return res;
 	},
 
 	async get(id: number): Promise<ApiResponse<Product>> {
-		return makeRequest<Product>(`/admin/products/${id}`);
+		const res = await makeRequest<Product>(`/admin/products/${id}`);
+		if (res.data) {
+			res.data = denormalizeProduct(res.data);
+		}
+		return res;
 	},
 
 	async create(data: Partial<Product>): Promise<ApiResponse<Product>> {
@@ -1503,6 +1600,9 @@ export const productsApi = {
 			method: 'POST',
 			body: JSON.stringify(normalizeProductPayload(data))
 		});
+		if (response.data) {
+			response.data = denormalizeProduct(response.data);
+		}
 		requestManager.clearCache('/admin/products');
 		return response;
 	},
@@ -1512,6 +1612,9 @@ export const productsApi = {
 			method: 'PUT',
 			body: JSON.stringify(normalizeProductPayload(data))
 		});
+		if (response.data) {
+			response.data = denormalizeProduct(response.data);
+		}
 		requestManager.clearCache('/admin/products');
 		return response;
 	},

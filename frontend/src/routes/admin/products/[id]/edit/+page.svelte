@@ -11,7 +11,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { productsApi, AdminApiError, type Product } from '#lib/api/admin.js';
 	import {
 		IconCheck,
@@ -133,20 +133,20 @@
 
 		try {
 			const response = await productsApi.get(productId);
-			const product = response.data;
+			const product = response.data ?? (response as unknown as Product);
 			originalProduct = product;
 
 			// Populate form
-			formData.name = product.name;
-			formData.slug = product.slug;
-			formData.type = product.type;
+			formData.name = product.name || '';
+			formData.slug = product.slug || '';
+			formData.type = product.type || 'indicator';
 			formData.description = product.description || '';
 			formData.long_description = product.long_description || '';
-			formData.price = String(product.price);
+			formData.price = String(product.price ?? 0);
 			formData.sale_price = product.sale_price ? String(product.sale_price) : '';
 			formData.currency = product.currency || 'USD';
 			formData.features = product.features?.length ? [...product.features] : [''];
-			formData.is_active = product.is_active;
+			formData.is_active = product.is_active ?? true;
 			formData.thumbnail = product.thumbnail || '';
 			formData.meta_title = product.meta_title || '';
 			formData.meta_description = product.meta_description || '';
@@ -265,13 +265,9 @@
 		return validationErrors[field]?.[0];
 	}
 
-	// Effect: Load product when ID changes
-	$effect(() => {
-		const id = productId;
-		if (id > 0) {
-			untrack(() => {
-				loadProduct();
-			});
+	onMount(() => {
+		if (productId > 0) {
+			void loadProduct();
 		}
 	});
 </script>

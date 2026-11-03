@@ -47,7 +47,7 @@ pub(super) async fn get_course_analytics(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     // Unique Visitors: distinct sessions (or users) who viewed this course.
     let unique_visitors: (i64,) = sqlx::query_as(
@@ -61,7 +61,7 @@ pub(super) async fn get_course_analytics(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     // Total enrollments — denominator for conversion rate.
     let total_enrollments: (i64,) =
@@ -69,7 +69,7 @@ pub(super) async fn get_course_analytics(
             .bind(course_id)
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     // Conversion Rate = enrollments / unique_visitors * 100. Guarded against /0.
     let conversion_rate = if unique_visitors.0 > 0 {
@@ -86,7 +86,7 @@ pub(super) async fn get_course_analytics(
         FROM (
             SELECT user_id, SUM(watch_time_total_seconds)::bigint AS per_user_total
             FROM user_lesson_progress
-            WHERE course_id = $1
+            WHERE course_id::text = $1::text
             GROUP BY user_id
         ) t
         ",
@@ -94,7 +94,7 @@ pub(super) async fn get_course_analytics(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((None,));
+    .map_err(crate::utils::errors::db_error)?;
     let avg_time_seconds = avg_time.0.unwrap_or(0.0).round() as i64;
 
     // Drop-off Rate = (started_but_not_completed) / started * 100.
@@ -106,7 +106,7 @@ pub(super) async fn get_course_analytics(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
     let dropped: (i64,) = sqlx::query_as(
         "SELECT COUNT(*)::bigint FROM user_course_enrollments
          WHERE course_id = $1
@@ -117,7 +117,7 @@ pub(super) async fn get_course_analytics(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
     let drop_off_rate = if started.0 > 0 {
         (dropped.0 as f64 / started.0 as f64) * 100.0
     } else {
@@ -141,7 +141,7 @@ pub(super) async fn get_course_analytics(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((Some(0.0),));
+    .map_err(crate::utils::errors::db_error)?;
     let revenue_cents = (revenue.0.unwrap_or(0.0) * 100.0).round() as i64;
 
     // Recent Enrollments (last 5) — wires the "Enrollment data coming soon" empty

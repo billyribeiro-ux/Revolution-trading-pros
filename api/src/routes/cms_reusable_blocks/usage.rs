@@ -9,9 +9,8 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
-use super::helpers::require_cms_editor;
 use super::types::{
     ApiResult, ApiResultEmpty, BlockUsageResponse, CmsReusableBlockUsage,
     CmsReusableBlockUsageWithContent, TrackBlockUsageRequest,
@@ -33,11 +32,9 @@ use super::types::{
 )]
 pub(super) async fn get_block_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<BlockUsageResponse> {
-    require_cms_editor(&user)?;
-
     // Verify block exists
     let exists = sqlx::query_scalar!(
         "SELECT EXISTS(SELECT 1 FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL) as \"exists!\"",
@@ -104,11 +101,9 @@ pub(super) async fn get_block_usage(
 )]
 pub(super) async fn track_block_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Json(request): Json<TrackBlockUsageRequest>,
 ) -> Result<(StatusCode, Json<CmsReusableBlockUsage>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Verify block exists
     let block_exists = sqlx::query_scalar!(
         "SELECT EXISTS(SELECT 1 FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL) as \"exists!\"",
@@ -195,11 +190,9 @@ pub(super) async fn track_block_usage(
 )]
 pub(super) async fn remove_block_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     // Get usage record to find the block ID
     let usage = sqlx::query!(
         "SELECT reusable_block_id FROM cms_reusable_block_usage WHERE id = $1",
@@ -258,11 +251,9 @@ pub(super) async fn remove_block_usage(
 )]
 pub(super) async fn detach_block_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsReusableBlockUsage> {
-    require_cms_editor(&user)?;
-
     // Check if already detached
     let existing = sqlx::query!(
         "SELECT is_synced FROM cms_reusable_block_usage WHERE id = $1",

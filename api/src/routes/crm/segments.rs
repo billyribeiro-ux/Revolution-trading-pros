@@ -29,9 +29,9 @@ pub struct ContactSegment {
     pub match_type: String,
     pub contacts_count: i32,
     pub is_active: bool,
-    pub last_synced_at: Option<chrono::NaiveDateTime>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub last_synced_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -51,16 +51,21 @@ async fn list_segments(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let segments: Vec<ContactSegment> = sqlx::query_as(
         r"
-        SELECT id, title, slug, description, conditions, match_type,
-               COALESCE(contacts_count, 0) as contacts_count, is_active,
+        SELECT id, COALESCE(title, name) AS title,
+               COALESCE(slug, LOWER(REPLACE(name, ' ', '-'))) AS slug,
+               description, conditions, COALESCE(match_type, 'all') AS match_type,
+               COALESCE(contacts_count, 0) as contacts_count, COALESCE(is_active, true) AS is_active,
                last_synced_at, created_at, updated_at
         FROM crm_segments
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -69,7 +74,6 @@ async fn list_segments(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -93,9 +97,11 @@ async fn create_segment(
 
     let segment: ContactSegment = sqlx::query_as(
         r"
-        INSERT INTO crm_segments (title, slug, description, conditions, match_type, contacts_count, is_active, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, 0, true, NOW(), NOW())
-        RETURNING id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at
+        INSERT INTO crm_segments (name, title, slug, description, conditions, match_type, contacts_count, is_active, created_at, updated_at)
+        VALUES ($1, $1, $2, $3, COALESCE($4, '[]'::jsonb), $5, 0, true, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(slug, '') AS slug, description, conditions,
+                  COALESCE(match_type, 'all') AS match_type, COALESCE(contacts_count, 0) AS contacts_count,
+                  COALESCE(is_active, true) AS is_active, last_synced_at, created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -116,7 +122,12 @@ async fn get_segment(
     Path(id): Path<i64>,
 ) -> Result<Json<ContactSegment>, (StatusCode, Json<serde_json::Value>)> {
     let segment: ContactSegment = sqlx::query_as(
-        "SELECT id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at FROM crm_segments WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title,
+                 COALESCE(slug, LOWER(REPLACE(name, ' ', '-'))) AS slug,
+                 description, conditions, COALESCE(match_type, 'all') AS match_type,
+                 COALESCE(contacts_count, 0) AS contacts_count, COALESCE(is_active, true) AS is_active,
+                 last_synced_at, created_at, updated_at
+          FROM crm_segments WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -132,7 +143,7 @@ async fn delete_segment(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_segments WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_segments WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -142,6 +153,13 @@ async fn delete_segment(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Segment not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Segment deleted successfully"})))
 }
@@ -155,13 +173,16 @@ async fn sync_segment(
         r"
         UPDATE crm_segments SET last_synced_at = NOW(), updated_at = NOW()
         WHERE id = $1
-        RETURNING id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(slug, '') AS slug, description, conditions,
+                  COALESCE(match_type, 'all') AS match_type, COALESCE(contacts_count, 0) AS contacts_count,
+                  COALESCE(is_active, true) AS is_active, last_synced_at, created_at, updated_at
         ",
     )
     .bind(id)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Segment not found"}))))?;
 
     Ok(Json(segment))
 }
@@ -174,7 +195,12 @@ async fn duplicate_segment(
 ) -> Result<Json<ContactSegment>, (StatusCode, Json<serde_json::Value>)> {
     // Get original segment
     let original: ContactSegment = sqlx::query_as(
-        "SELECT id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at FROM crm_segments WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title,
+                 COALESCE(slug, LOWER(REPLACE(name, ' ', '-'))) AS slug,
+                 description, conditions, COALESCE(match_type, 'all') AS match_type,
+                 COALESCE(contacts_count, 0) AS contacts_count, COALESCE(is_active, true) AS is_active,
+                 last_synced_at, created_at, updated_at
+          FROM crm_segments WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -187,9 +213,11 @@ async fn duplicate_segment(
 
     let segment: ContactSegment = sqlx::query_as(
         r"
-        INSERT INTO crm_segments (title, slug, description, conditions, match_type, contacts_count, is_active, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, 0, false, NOW(), NOW())
-        RETURNING id, title, slug, description, conditions, match_type, contacts_count, is_active, last_synced_at, created_at, updated_at
+        INSERT INTO crm_segments (name, title, slug, description, conditions, match_type, contacts_count, is_active, created_at, updated_at)
+        VALUES ($1, $1, $2, $3, COALESCE($4, '[]'::jsonb), $5, 0, false, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(slug, '') AS slug, description, conditions,
+                  COALESCE(match_type, 'all') AS match_type, COALESCE(contacts_count, 0) AS contacts_count,
+                  COALESCE(is_active, false) AS is_active, last_synced_at, created_at, updated_at
         ",
     )
     .bind(&new_title)

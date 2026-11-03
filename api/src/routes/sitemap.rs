@@ -188,7 +188,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     // Blog posts
     let posts: Vec<(String, DateTime<Utc>)> = match sqlx::query_as(
-        "SELECT slug, COALESCE(updated_at, published_at) as last_modified 
+        "SELECT slug, COALESCE(updated_at, published_at, created_at, NOW()::timestamp) AT TIME ZONE 'UTC' as last_modified 
          FROM posts 
          WHERE status = 'published' 
          ORDER BY published_at DESC",
@@ -215,7 +215,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
 
     // Categories
     let categories: Vec<(String, DateTime<Utc>)> =
-        match sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
+        match sqlx::query_as("SELECT slug, COALESCE(updated_at, created_at, NOW()::timestamp) AT TIME ZONE 'UTC' FROM categories WHERE is_active = true")
             .fetch_all(state.db.pool())
             .await
         {
@@ -237,17 +237,18 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
     }
 
     // Tags
-    let tags: Vec<(String, DateTime<Utc>)> =
-        match sqlx::query_as("SELECT slug, updated_at FROM tags")
-            .fetch_all(state.db.pool())
-            .await
-        {
-            Ok(rows) => rows,
-            Err(e) => {
-                tracing::error!(target: "db", error = %e, "sitemap query failed");
-                return sitemap_unavailable();
-            }
-        };
+    let tags: Vec<(String, DateTime<Utc>)> = match sqlx::query_as(
+        "SELECT slug, COALESCE(created_at, NOW()::timestamp) AT TIME ZONE 'UTC' FROM tags",
+    )
+    .fetch_all(state.db.pool())
+    .await
+    {
+        Ok(rows) => rows,
+        Err(e) => {
+            tracing::error!(target: "db", error = %e, "sitemap query failed");
+            return sitemap_unavailable();
+        }
+    };
 
     for (slug, updated_at) in tags {
         content.push_str(&build_url(
@@ -295,7 +296,7 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
     let offset = (page - 1) * MAX_URLS_PER_SITEMAP;
 
     let posts: Vec<(String, DateTime<Utc>, Option<String>)> = match sqlx::query_as(
-        "SELECT slug, COALESCE(updated_at, published_at) as last_modified, featured_image 
+        "SELECT slug, COALESCE(updated_at, published_at, created_at, NOW()::timestamp) AT TIME ZONE 'UTC' as last_modified, featured_image 
          FROM posts 
          WHERE status = 'published' 
          ORDER BY published_at DESC 
@@ -359,7 +360,7 @@ pub async fn categories(State(state): State<AppState>) -> Response {
         .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
     let categories: Vec<(String, DateTime<Utc>)> =
-        match sqlx::query_as("SELECT slug, updated_at FROM categories WHERE is_active = true")
+        match sqlx::query_as("SELECT slug, COALESCE(updated_at, created_at, NOW()::timestamp) AT TIME ZONE 'UTC' FROM categories WHERE is_active = true")
             .fetch_all(state.db.pool())
             .await
         {
@@ -415,17 +416,18 @@ pub async fn tags_sitemap(State(state): State<AppState>) -> Response {
     let site_url = std::env::var("SITE_URL")
         .unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
 
-    let tags: Vec<(String, DateTime<Utc>)> =
-        match sqlx::query_as("SELECT slug, updated_at FROM tags")
-            .fetch_all(state.db.pool())
-            .await
-        {
-            Ok(rows) => rows,
-            Err(e) => {
-                tracing::error!(target: "db", error = %e, "sitemap query failed");
-                return sitemap_unavailable();
-            }
-        };
+    let tags: Vec<(String, DateTime<Utc>)> = match sqlx::query_as(
+        "SELECT slug, COALESCE(created_at, NOW()::timestamp) AT TIME ZONE 'UTC' FROM tags",
+    )
+    .fetch_all(state.db.pool())
+    .await
+    {
+        Ok(rows) => rows,
+        Err(e) => {
+            tracing::error!(target: "db", error = %e, "sitemap query failed");
+            return sitemap_unavailable();
+        }
+    };
 
     let mut content = build_xml_header(false);
 

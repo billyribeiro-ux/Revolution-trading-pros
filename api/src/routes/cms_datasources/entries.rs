@@ -10,9 +10,8 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
-use super::helpers::require_cms_editor;
 use super::types::{
     ApiResult, ApiResultEmpty, BulkCreateEntriesRequest, CmsDatasourceEntry,
     CmsDatasourceEntrySummary, CreateEntryRequest, ListEntriesQuery, PaginatedEntriesResponse,
@@ -36,12 +35,10 @@ use super::types::{
 )]
 pub(super) async fn list_entries(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Query(query): Query<ListEntriesQuery>,
 ) -> ApiResult<PaginatedEntriesResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.unwrap_or(100).min(1000);
     let offset = query.offset.unwrap_or(0);
     let dimension = query
@@ -149,12 +146,10 @@ pub(super) async fn list_entries(
 )]
 pub(super) async fn create_entry(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Json(request): Json<CreateEntryRequest>,
 ) -> Result<(StatusCode, Json<CmsDatasourceEntry>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Validate
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -248,12 +243,10 @@ pub(super) async fn create_entry(
 )]
 pub(super) async fn bulk_create_entries(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Json(request): Json<BulkCreateEntriesRequest>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     // Verify datasource exists
     let exists: (bool,) = sqlx::query_as(
         "SELECT EXISTS(SELECT 1 FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL)",
@@ -339,12 +332,10 @@ pub(super) async fn bulk_create_entries(
 )]
 pub(super) async fn update_entry(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path((datasource_id, entry_id)): Path<(Uuid, Uuid)>,
     Json(request): Json<UpdateEntryRequest>,
 ) -> ApiResult<CmsDatasourceEntry> {
-    require_cms_editor(&user)?;
-
     let entry: CmsDatasourceEntry = sqlx::query_as(
         r"
         UPDATE cms_datasource_entries
@@ -394,11 +385,9 @@ pub(super) async fn update_entry(
 )]
 pub(super) async fn delete_entry(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path((datasource_id, entry_id)): Path<(Uuid, Uuid)>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     let result =
         sqlx::query("DELETE FROM cms_datasource_entries WHERE id = $1 AND datasource_id = $2")
             .bind(entry_id)
@@ -442,12 +431,10 @@ pub(super) async fn delete_entry(
 )]
 pub(super) async fn reorder_entries(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Json(request): Json<ReorderEntriesRequest>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     // Verify datasource exists
     let exists: (bool,) = sqlx::query_as(
         "SELECT EXISTS(SELECT 1 FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL)",

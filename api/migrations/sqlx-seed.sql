@@ -198,3 +198,6 @@ ON CONFLICT (version) DO NOTHING;
 INSERT INTO _sqlx_migrations (version, description, success, checksum, execution_time)
 VALUES (71, 'mfa_totp_replay_protection', true, '\x559dc6d4f29cd36db89d6848dbb1f7c7920e5039815a918c2396fba83553c9b817b610a7f17b9acea2260f639712808d'::bytea, 0)
 ON CONFLICT (version) DO NOTHING;
+INSERT INTO _sqlx_migrations (version, description, success, checksum, execution_time)
+VALUES (72, 'audit_followup_schema_alignment', true, '\x00b129ccbf534c1affd71ecb58f370c726774d096b8b19a5878ca329ace2905dcfd9a563d198c630e0652ee845a7c386'::bytea, 0)
+ON CONFLICT (version) DO NOTHING;

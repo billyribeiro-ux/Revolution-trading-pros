@@ -78,7 +78,7 @@ pub(super) async fn track_usage(
         .bind(field_name)
         .execute(state.db.pool())
         .await
-        .ok();
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         // Update usage count
         sqlx::query(
@@ -87,7 +87,7 @@ pub(super) async fn track_usage(
         .bind(id)
         .execute(state.db.pool())
         .await
-        .ok();
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
     }
 
     Ok(Json(json!({ "success": true })))

@@ -15,10 +15,10 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
 use super::dto::{CmsPreset, CmsPresetCategory, SaveBlockAsPresetRequest};
-use super::helpers::{ApiResult, ensure_unique_slug, generate_slug, require_cms_editor};
+use super::helpers::{ApiResult, ensure_unique_slug, generate_slug};
 
 /// Duplicate a preset
 #[utoipa::path(
@@ -36,11 +36,9 @@ use super::helpers::{ApiResult, ensure_unique_slug, generate_slug, require_cms_e
 )]
 pub(super) async fn duplicate_preset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> Result<(StatusCode, Json<CmsPreset>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Fetch the original preset
     let original: CmsPreset = sqlx::query_as(
         r"
@@ -134,11 +132,9 @@ pub(super) async fn duplicate_preset(
 )]
 pub(super) async fn apply_preset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsPreset> {
-    require_cms_editor(&user)?;
-
     // Increment usage count and return updated preset
     let preset: CmsPreset = sqlx::query_as(
         r"
@@ -184,11 +180,9 @@ pub(super) async fn apply_preset(
 )]
 pub(super) async fn save_block_as_preset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<SaveBlockAsPresetRequest>,
 ) -> Result<(StatusCode, Json<CmsPreset>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Validate required fields
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")

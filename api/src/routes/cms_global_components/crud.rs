@@ -9,11 +9,14 @@ use axum::{
 use serde_json::{Value as JsonValue, json};
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+    utils::errors::ApiError,
+};
 
 use super::helpers::{
     create_version_record, ensure_unique_slug, generate_slug, get_cms_user_id, require_cms_admin,
-    require_cms_editor,
 };
 use super::types::{
     ApiResult, ApiResultEmpty, CategoryCount, CreateGlobalComponentRequest, GlobalComponent,
@@ -38,11 +41,9 @@ use super::types::{
 )]
 pub(super) async fn list_global_components(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListGlobalComponentsQuery>,
 ) -> ApiResult<PaginatedComponentsResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.unwrap_or(20).min(100);
     let offset = query.offset.unwrap_or(0);
     let include_deleted = query.include_deleted.unwrap_or(false);
@@ -150,11 +151,9 @@ pub(super) async fn list_global_components(
 )]
 pub(super) async fn get_global_component(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<GlobalComponentWithMeta> {
-    require_cms_editor(&user)?;
-
     let component: GlobalComponent = sqlx::query_as(
         r"
         SELECT id, name, slug, description, component_data, category,
@@ -235,11 +234,9 @@ pub(super) async fn get_global_component(
 )]
 pub(super) async fn get_global_component_by_slug(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(slug): Path<String>,
 ) -> ApiResult<GlobalComponent> {
-    require_cms_editor(&user)?;
-
     let component: GlobalComponent = sqlx::query_as(
         r"
         SELECT id, name, slug, description, component_data, category,
@@ -275,11 +272,9 @@ pub(super) async fn get_global_component_by_slug(
 )]
 pub(super) async fn create_global_component(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateGlobalComponentRequest>,
 ) -> Result<(StatusCode, Json<GlobalComponent>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Validate required fields
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -363,12 +358,10 @@ pub(super) async fn create_global_component(
 )]
 pub(super) async fn update_global_component(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateGlobalComponentRequest>,
 ) -> ApiResult<GlobalComponent> {
-    require_cms_editor(&user)?;
-
     // Check if component exists and get current state
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingComponent {
@@ -484,11 +477,9 @@ pub(super) async fn update_global_component(
 )]
 pub(super) async fn delete_global_component(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     // Check if component exists and is not locked
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingComponent {
@@ -548,11 +539,9 @@ pub(super) async fn delete_global_component(
 )]
 pub(super) async fn duplicate_global_component(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> Result<(StatusCode, Json<GlobalComponent>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Fetch the original component
     let original: GlobalComponent = sqlx::query_as(
         r"

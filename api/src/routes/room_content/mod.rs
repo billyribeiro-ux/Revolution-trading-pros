@@ -24,6 +24,7 @@
 
 use axum::{
     Json, Router,
+    extract::{Path, Query, State},
     http::StatusCode,
     routing::{delete, get, post, put},
 };
@@ -32,7 +33,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{AppState, models::User};
+use crate::{AppState, middleware::admin::AdminUser, models::User};
 
 pub mod alerts;
 pub mod stats;
@@ -473,13 +474,62 @@ pub fn public_router() -> Router<AppState> {
 // ADMIN ROUTER (Admin access required)
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+async fn admin_list_trade_plans(
+    state: State<AppState>,
+    AdminUser(user): AdminUser,
+    path: Path<String>,
+    query: Query<ListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    trade_plans::list_trade_plans(state, user, path, query).await
+}
+
+async fn admin_list_alerts(
+    state: State<AppState>,
+    AdminUser(user): AdminUser,
+    path: Path<String>,
+    query: Query<ListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    alerts::list_alerts(state, user, path, query).await
+}
+
+async fn admin_list_trades(
+    state: State<AppState>,
+    AdminUser(user): AdminUser,
+    path: Path<String>,
+    query: Query<TradeListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    trades::list_trades(state, user, path, query).await
+}
+
+async fn admin_get_weekly_video(
+    state: State<AppState>,
+    AdminUser(user): AdminUser,
+    path: Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    weekly_videos::get_weekly_video(state, user, path).await
+}
+
+async fn admin_list_weekly_videos(
+    state: State<AppState>,
+    AdminUser(user): AdminUser,
+    path: Path<String>,
+    query: Query<ListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    weekly_videos::list_weekly_videos(state, user, path, query).await
+}
+
+async fn admin_get_room_stats(
+    state: State<AppState>,
+    AdminUser(user): AdminUser,
+    path: Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    stats::get_room_stats(state, user, path).await
+}
+
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         // Trade Plans CRUD
-        .route(
-            "/rooms/{room_slug}/trade-plan",
-            get(trade_plans::list_trade_plans),
-        )
+        .route("/rooms/{room_slug}/trade-plan", get(admin_list_trade_plans))
         .route("/trade-plan", post(trade_plans::create_trade_plan))
         .route("/trade-plan/{id}", put(trade_plans::update_trade_plan))
         .route("/trade-plan/{id}", delete(trade_plans::delete_trade_plan))
@@ -488,12 +538,12 @@ pub fn admin_router() -> Router<AppState> {
             put(trade_plans::reorder_trade_plans),
         )
         // Alerts CRUD
-        .route("/rooms/{room_slug}/alerts", get(alerts::list_alerts))
+        .route("/rooms/{room_slug}/alerts", get(admin_list_alerts))
         .route("/alerts", post(alerts::create_alert))
         .route("/alerts/{id}", put(alerts::update_alert))
         .route("/alerts/{id}", delete(alerts::delete_alert))
         // Trades CRUD (Trade Tracker)
-        .route("/rooms/{room_slug}/trades", get(trades::list_trades))
+        .route("/rooms/{room_slug}/trades", get(admin_list_trades))
         .route("/trades", post(trades::create_trade))
         .route("/trades/{id}", put(trades::update_trade))
         .route("/trades/{id}/close", put(trades::close_trade))
@@ -502,15 +552,15 @@ pub fn admin_router() -> Router<AppState> {
         // Weekly Videos CRUD
         .route(
             "/rooms/{room_slug}/weekly-video",
-            get(weekly_videos::get_weekly_video),
+            get(admin_get_weekly_video),
         )
         .route(
             "/rooms/{room_slug}/weekly-videos",
-            get(weekly_videos::list_weekly_videos),
+            get(admin_list_weekly_videos),
         )
         .route("/weekly-video", post(weekly_videos::create_weekly_video))
         // Stats
-        .route("/rooms/{room_slug}/stats", get(stats::get_room_stats))
+        .route("/rooms/{room_slug}/stats", get(admin_get_room_stats))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════

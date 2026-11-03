@@ -26,7 +26,7 @@ pub(super) async fn get_memberships(
 ) -> Result<Json<MembershipsResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Try to fetch subscriptions - handle case where table doesn't exist
     // Note: Using user_memberships table (not user_subscriptions)
-    let subscriptions_result: Result<Vec<UserSubscriptionDbRow>, _> = sqlx::query_as(
+    let subscriptions: Vec<UserSubscriptionDbRow> = sqlx::query_as(
         r"
         SELECT s.id, s.user_id, s.plan_id, s.starts_at, s.expires_at, s.status, s.created_at
         FROM user_memberships s
@@ -36,16 +36,8 @@ pub(super) async fn get_memberships(
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
-    .await;
-
-    // If table doesn't exist or query fails, return empty list
-    let subscriptions = match subscriptions_result {
-        Ok(subs) => subs,
-        Err(e) => {
-            tracing::warn!("Failed to fetch subscriptions (table may not exist): {}", e);
-            Vec::new()
-        }
-    };
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
     // Fetch plan details for each subscription
     let mut memberships = Vec::new();
@@ -57,7 +49,7 @@ pub(super) async fn get_memberships(
         .bind(sub.plan_id)
         .fetch_optional(&state.db.pool)
         .await
-        .unwrap_or(None);
+        .map_err(crate::utils::errors::db_error)?;
 
         if let Some(plan) = plan {
             let is_trial = sub.status == "trialing";

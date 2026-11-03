@@ -27,8 +27,8 @@ pub struct EmailTemplate {
     pub category: Option<String>,
     pub thumbnail: Option<String>,
     pub is_global: bool,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,14 +48,19 @@ async fn list_templates(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let templates: Vec<EmailTemplate> = sqlx::query_as(
         r"
-        SELECT id, title, subject, body, category, thumbnail, is_global, created_at, updated_at
+        SELECT id, COALESCE(title, name) AS title, subject,
+               COALESCE(body, content) AS body, category, thumbnail,
+               COALESCE(is_global, false) AS is_global, created_at, updated_at
         FROM crm_templates
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -64,7 +69,6 @@ async fn list_templates(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -85,9 +89,10 @@ async fn create_template(
 ) -> Result<Json<EmailTemplate>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplate = sqlx::query_as(
         r"
-        INSERT INTO crm_templates (title, subject, body, category, is_global, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, false, NOW(), NOW())
-        RETURNING id, title, subject, body, category, thumbnail, is_global, created_at, updated_at
+        INSERT INTO crm_templates (name, title, subject, content, body, category, is_global, created_at, updated_at)
+        VALUES ($1, $1, $2, COALESCE($3, ''), $3, $4, false, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, subject, COALESCE(body, content) AS body,
+                  category, thumbnail, COALESCE(is_global, false) AS is_global, created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -107,13 +112,26 @@ async fn get_template(
     Path(id): Path<i64>,
 ) -> Result<Json<EmailTemplate>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplate = sqlx::query_as(
-        "SELECT id, title, subject, body, category, thumbnail, is_global, created_at, updated_at FROM crm_templates WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title, subject,
+                 COALESCE(body, content) AS body, category, thumbnail,
+                 COALESCE(is_global, false) AS is_global, created_at, updated_at
+          FROM crm_templates WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Template not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Template not found"})),
+        )
+    })?;
 
     Ok(Json(template))
 }
@@ -123,7 +141,7 @@ async fn delete_template(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_templates WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_templates WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -133,6 +151,13 @@ async fn delete_template(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Template not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Template deleted successfully"})))
 }

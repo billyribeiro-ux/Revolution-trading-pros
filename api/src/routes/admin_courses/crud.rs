@@ -29,7 +29,8 @@ pub(super) async fn list_courses(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = params.page.unwrap_or(1).max(1);
     let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
-    let offset = (page - 1) * per_page;
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
+    let search_clean = params.search.as_ref().map(|s| s.replace('\0', ""));
 
     // ICT 7 Grade: SECURE parameterized query with proper SQL injection prevention
     // All user inputs are bound as parameters, never interpolated into SQL
@@ -71,7 +72,7 @@ pub(super) async fn list_courses(
         NaiveDateTime,
     )> = sqlx::query_as(sqlx::AssertSqlSafe(query.as_str()))
         .bind(params.level.as_deref())
-        .bind(params.search.as_deref())
+        .bind(search_clean.as_deref())
         .bind(per_page)
         .bind(offset)
         .fetch_all(&state.db.pool)
@@ -123,7 +124,7 @@ pub(super) async fn list_courses(
         ",
     )
     .bind(params.level.as_deref())
-    .bind(params.search.as_deref())
+    .bind(search_clean.as_deref())
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {

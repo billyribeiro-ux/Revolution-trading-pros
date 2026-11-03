@@ -21,15 +21,21 @@ pub(super) async fn list_forms(
     Query(query): Query<FormListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern: Option<String> = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let forms: Vec<FormRow> = sqlx::query_as(
         r"
-        SELECT id, name, slug, description, fields, settings, is_published,
-               COALESCE(submission_count, 0) as submission_count, created_at, updated_at
+        SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+               COALESCE(is_published, false) as is_published,
+               COALESCE(submission_count, 0) as submission_count,
+               (created_at AT TIME ZONE 'UTC') as created_at,
+               (updated_at AT TIME ZONE 'UTC') as updated_at
         FROM forms
         WHERE ($1::boolean IS NULL OR is_published = $1)
           AND ($2::text IS NULL OR name ILIKE $2 OR description ILIKE $2)
@@ -62,7 +68,7 @@ pub(super) async fn list_forms(
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "data": forms,
@@ -83,8 +89,11 @@ pub(super) async fn get_form(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let form: FormRow = sqlx::query_as(
         r"
-        SELECT id, name, slug, description, fields, settings, is_published,
-               COALESCE(submission_count, 0) as submission_count, created_at, updated_at
+        SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+               COALESCE(is_published, false) as is_published,
+               COALESCE(submission_count, 0) as submission_count,
+               (created_at AT TIME ZONE 'UTC') as created_at,
+               (updated_at AT TIME ZONE 'UTC') as updated_at
         FROM forms WHERE id = $1
         ",
     )
@@ -128,7 +137,9 @@ pub(super) async fn create_form(
         r"
         INSERT INTO forms (name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, 0, NOW(), NOW())
-        RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        RETURNING id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+                  COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count,
+                  (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at
         "
     )
     .bind(&input.name)
@@ -176,7 +187,9 @@ pub(super) async fn update_form(
             is_published = COALESCE($6, is_published),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        RETURNING id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+                  COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count,
+                  (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at
         "
     )
     .bind(id)
@@ -275,7 +288,9 @@ pub(super) async fn publish_form(
         r"
         UPDATE forms SET is_published = true, updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        RETURNING id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+                  COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count,
+                  (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at
         "
     )
     .bind(id)
@@ -299,7 +314,9 @@ pub(super) async fn unpublish_form(
         r"
         UPDATE forms SET is_published = false, updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        RETURNING id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+                  COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count,
+                  (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at
         "
     )
     .bind(id)
@@ -325,7 +342,9 @@ pub(super) async fn duplicate_form(
         SELECT CONCAT(name, ' (Copy)'), CONCAT(slug, '-copy-', EXTRACT(EPOCH FROM NOW())::int),
                description, fields, settings, false, 0, NOW(), NOW()
         FROM forms WHERE id = $1
-        RETURNING id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        RETURNING id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+                  COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count,
+                  (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at
         "
     )
     .bind(id)
@@ -345,17 +364,17 @@ pub(super) async fn form_stats(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM forms")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let published: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM forms WHERE is_published = true")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let total_submissions: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM form_submissions")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "data": {

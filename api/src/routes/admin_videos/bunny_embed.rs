@@ -140,12 +140,12 @@ pub(super) async fn get_transcoding_status(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     #[allow(clippy::type_complexity)]
     let status: Option<(Option<String>, Option<String>, Option<i32>, Option<serde_json::Value>)> = sqlx::query_as(
-        "SELECT bunny_encoding_status, bunny_thumbnail_url, duration, metadata FROM unified_videos WHERE id = $1"
+        "SELECT bunny_encoding_status, COALESCE(bunny_thumbnail_url, thumbnail_url) AS bunny_thumbnail_url, duration, metadata FROM unified_videos WHERE id = $1"
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     match status {
         Some((encoding_status, thumbnail_url, duration, metadata)) => {
@@ -185,7 +185,7 @@ pub(super) async fn generate_thumbnail(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     match video {
         Some((Some(guid), Some(library_id))) => {
@@ -244,7 +244,7 @@ pub(super) async fn get_embed_code(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     match video {
         Some((platform, guid, library_id, title)) => {

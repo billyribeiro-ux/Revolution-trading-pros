@@ -221,7 +221,7 @@ async fn get_content_full(
 ) -> ApiResult<JsonValue> {
     let locale = query.locale.as_deref().unwrap_or("en");
 
-    let content: Option<JsonValue> =
+    let content: Option<Option<JsonValue>> =
         sqlx::query_scalar("SELECT cms_get_content_full($1::cms_content_type, $2, $3, false)")
             .bind(&content_type)
             .bind(&slug)
@@ -231,6 +231,8 @@ async fn get_content_full(
             .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     content
+        .flatten()
+        .filter(|v| !v.is_null())
         .map(Json)
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Content not found"))
 }

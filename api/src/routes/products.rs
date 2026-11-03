@@ -54,9 +54,9 @@ async fn list_products(
     State(state): State<AppState>,
     Query(query): Query<ProductListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = (page - 1).saturating_mul(per_page);
 
     // Public route always filters to active products only
     let is_active = true;
@@ -346,7 +346,7 @@ async fn delete_product(
         "Admin deleting product"
     );
 
-    sqlx::query("DELETE FROM products WHERE id = $1")
+    let result = sqlx::query("DELETE FROM products WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -356,6 +356,13 @@ async fn delete_product(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Product not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Product deleted successfully"})))
 }
@@ -367,7 +374,11 @@ async fn get_user_products(
 ) -> Result<Json<Vec<ProductRow>>, (StatusCode, Json<serde_json::Value>)> {
     let products: Vec<ProductRow> = sqlx::query_as(
         r"
-        SELECT p.* FROM products p
+        SELECT p.id, p.name, p.slug, p.type, p.description, p.long_description,
+               (p.price * 100)::BIGINT AS price_cents, p.is_active, p.metadata,
+               p.thumbnail, p.meta_title, p.meta_description, p.indexable,
+               p.canonical_url, p.created_at, p.updated_at
+        FROM products p
         INNER JOIN user_products up ON p.id = up.product_id
         WHERE up.user_id = $1
         ORDER BY up.purchased_at DESC
@@ -518,12 +529,14 @@ async fn list_products_admin(
     AdminUser(_user): AdminUser,
     Query(query): Query<ProductListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = (page - 1).saturating_mul(per_page);
 
-    // Admin sees ALL products (active and inactive)
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_clean: Option<String> = query.search.as_ref().map(|s| s.replace('\0', ""));
+    let search_pattern: Option<String> = search_clean.as_ref().map(|s| format!("%{s}%"));
+    let product_type_clean: Option<String> =
+        query.product_type.as_ref().map(|s| s.replace('\0', ""));
 
     let products: Vec<ProductRow> = sqlx::query_as(
         r"
@@ -535,7 +548,7 @@ async fn list_products_admin(
         LIMIT $4 OFFSET $5
         ",
     )
-    .bind(query.product_type.as_deref())
+    .bind(product_type_clean.as_deref())
     .bind(query.is_active)
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -558,7 +571,7 @@ async fn list_products_admin(
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
         ",
     )
-    .bind(query.product_type.as_deref())
+    .bind(product_type_clean.as_deref())
     .bind(query.is_active)
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)

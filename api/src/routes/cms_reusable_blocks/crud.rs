@@ -8,9 +8,13 @@ use axum::{
 };
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+    utils::errors::ApiError,
+};
 
-use super::helpers::{ensure_unique_slug, generate_slug, require_cms_admin, require_cms_editor};
+use super::helpers::{ensure_unique_slug, generate_slug, require_cms_admin};
 use super::types::{
     ApiResult, ApiResultEmpty, CmsReusableBlock, CmsReusableBlockCategory, CmsReusableBlockSummary,
     CreateReusableBlockRequest, ListReusableBlocksQuery, PaginatedBlocksResponse, PaginationMeta,
@@ -37,11 +41,9 @@ use serde_json::json;
 )]
 pub(super) async fn list_reusable_blocks(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListReusableBlocksQuery>,
 ) -> ApiResult<PaginatedBlocksResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.unwrap_or(20).min(100);
     let offset = query.offset.unwrap_or(0);
     let include_deleted = query.include_deleted.unwrap_or(false);
@@ -136,11 +138,9 @@ pub(super) async fn list_reusable_blocks(
 )]
 pub(super) async fn get_reusable_block(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsReusableBlock> {
-    require_cms_editor(&user)?;
-
     let block = sqlx::query_as!(
         CmsReusableBlock,
         r#"
@@ -181,11 +181,9 @@ pub(super) async fn get_reusable_block(
 )]
 pub(super) async fn get_reusable_block_by_slug(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(slug): Path<String>,
 ) -> ApiResult<CmsReusableBlock> {
-    require_cms_editor(&user)?;
-
     let block = sqlx::query_as!(
         CmsReusableBlock,
         r#"
@@ -225,11 +223,9 @@ pub(super) async fn get_reusable_block_by_slug(
 )]
 pub(super) async fn create_reusable_block(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateReusableBlockRequest>,
 ) -> Result<(StatusCode, Json<CmsReusableBlock>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Validate required fields
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -307,12 +303,10 @@ pub(super) async fn create_reusable_block(
 )]
 pub(super) async fn update_reusable_block(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateReusableBlockRequest>,
 ) -> ApiResult<CmsReusableBlock> {
-    require_cms_editor(&user)?;
-
     // Check if block exists and is not locked
     let existing = sqlx::query!(
         "SELECT is_locked FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL",
@@ -395,11 +389,9 @@ pub(super) async fn update_reusable_block(
 )]
 pub(super) async fn delete_reusable_block(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     // Check if block exists and is not locked
     let existing = sqlx::query!(
         "SELECT is_locked, name FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL",
@@ -453,11 +445,9 @@ pub(super) async fn delete_reusable_block(
 )]
 pub(super) async fn duplicate_reusable_block(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> Result<(StatusCode, Json<CmsReusableBlock>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Fetch the original block
     let original = sqlx::query_as!(
         CmsReusableBlock,

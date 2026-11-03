@@ -27,7 +27,9 @@ pub(super) async fn list_indicators(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = params.page.unwrap_or(1).max(1);
     let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
-    let offset = (page - 1) * per_page;
+    let offset = (page as i64)
+        .saturating_sub(1)
+        .saturating_mul(per_page as i64);
 
     // ICT 7: Validate platform against allowlist to prevent injection
     let valid_platforms = [
@@ -78,7 +80,7 @@ pub(super) async fn list_indicators(
     .bind(&platform)
     .bind(&search)
     .bind(per_page as i64)
-    .bind(offset as i64)
+    .bind(offset)
     .fetch_all(&state.db.pool)
     .await
     .map_err(|e| {
@@ -102,7 +104,7 @@ pub(super) async fn list_indicators(
     .bind(&search)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let total_pages = ((total.0 as f64) / (per_page as f64)).ceil() as i32;
 
@@ -282,12 +284,18 @@ pub(super) async fn update_indicator(
     .bind(&input.meta_title)
     .bind(&input.meta_description)
     .bind(id)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": format!("Failed to update indicator: {}", e)})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Indicator not found"})),
         )
     })?;
 
@@ -303,7 +311,7 @@ pub(super) async fn delete_indicator(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM indicators WHERE id = $1")
+    let result = sqlx::query("DELETE FROM indicators WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -313,6 +321,13 @@ pub(super) async fn delete_indicator(
                 Json(json!({"error": format!("Failed to delete indicator: {}", e)})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Indicator not found"})),
+        ));
+    }
 
     Ok(Json(json!({
         "success": true,
@@ -336,12 +351,18 @@ pub(super) async fn toggle_indicator(
                meta_title, meta_description, created_at, updated_at",
     )
     .bind(id)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": format!("Failed to toggle indicator: {}", e)})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Indicator not found"})),
         )
     })?;
 

@@ -38,7 +38,7 @@ pub(super) async fn analytics_dashboard(
         sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     // Total views
     let total_views: (i64,) = sqlx::query_as(
@@ -46,7 +46,7 @@ pub(super) async fn analytics_dashboard(
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     // Videos created in period (parameterized to prevent SQL injection)
     let recent_videos: (i64,) = sqlx::query_as(
@@ -55,7 +55,7 @@ pub(super) async fn analytics_dashboard(
     .bind(days)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     // Top videos by views
     let top_videos: Vec<(i64, String, i32)> = sqlx::query_as(
@@ -118,7 +118,7 @@ pub(super) async fn get_video_analytics(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     match video {
         Some((vid, title, thumb, views)) => Ok(Json(json!({

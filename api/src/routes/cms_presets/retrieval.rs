@@ -11,10 +11,10 @@ use axum::{
 };
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
 use super::dto::CmsPreset;
-use super::helpers::{ApiResult, require_cms_editor};
+use super::helpers::ApiResult;
 
 /// Get a preset by ID
 #[utoipa::path(
@@ -34,11 +34,9 @@ use super::helpers::{ApiResult, require_cms_editor};
 )]
 pub(super) async fn get_preset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsPreset> {
-    require_cms_editor(&user)?;
-
     let preset: CmsPreset = sqlx::query_as(
         r"
         SELECT id, block_type, name, slug, description, preset_data,
@@ -79,11 +77,9 @@ pub(super) async fn get_preset(
 )]
 pub(super) async fn get_preset_by_slug(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path((block_type, slug)): Path<(String, String)>,
 ) -> ApiResult<CmsPreset> {
-    require_cms_editor(&user)?;
-
     let preset: CmsPreset = sqlx::query_as(
         r"
         SELECT id, block_type, name, slug, description, preset_data,

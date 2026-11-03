@@ -45,9 +45,52 @@ export const getOrders = query(OrdersArgsSchema, async (args): Promise<OrderList
 	if (!res.ok) error(res.status, 'Failed to load orders');
 
 	const body = await res.json();
+	const rawOrders: Record<string, unknown>[] = Array.isArray(body?.data)
+		? body.data
+		: Array.isArray(body?.orders)
+			? body.orders
+			: [];
+	const data = rawOrders.map((o) => ({
+		...(o as unknown as OrderListResult['data'][number]),
+		total:
+			typeof o.total === 'number' && !Number.isNaN(o.total)
+				? o.total
+				: typeof o.total_cents === 'number'
+					? o.total_cents / 100
+					: Number(o.total ?? 0) || 0
+	}));
+	const rawStats = (body?.stats ?? null) as Record<string, unknown> | null;
+	const stats = rawStats
+		? {
+				total_orders: Number(rawStats.total_orders ?? 0) || 0,
+				completed_orders: Number(rawStats.completed_orders ?? 0) || 0,
+				pending_orders: Number(rawStats.pending_orders ?? 0) || 0,
+				refunded_orders: Number(rawStats.refunded_orders ?? 0) || 0,
+				total_revenue:
+					typeof rawStats.total_revenue === 'number' && !Number.isNaN(rawStats.total_revenue)
+						? rawStats.total_revenue
+						: typeof rawStats.total_revenue_cents === 'number'
+							? rawStats.total_revenue_cents / 100
+							: Number(rawStats.total_revenue ?? 0) || 0,
+				revenue_this_month:
+					typeof rawStats.revenue_this_month === 'number' &&
+					!Number.isNaN(rawStats.revenue_this_month)
+						? rawStats.revenue_this_month
+						: typeof rawStats.revenue_this_month_cents === 'number'
+							? rawStats.revenue_this_month_cents / 100
+							: Number(rawStats.revenue_this_month ?? 0) || 0,
+				average_order_value:
+					typeof rawStats.average_order_value === 'number' &&
+					!Number.isNaN(rawStats.average_order_value)
+						? rawStats.average_order_value
+						: typeof rawStats.average_order_value_cents === 'number'
+							? rawStats.average_order_value_cents / 100
+							: Number(rawStats.average_order_value ?? 0) || 0
+			}
+		: null;
 	return {
-		data: Array.isArray(body?.data) ? body.data : [],
-		stats: body?.stats ?? null,
+		data,
+		stats,
 		pagination: body?.pagination ?? null
 	};
 });

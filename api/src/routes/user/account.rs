@@ -67,12 +67,12 @@ pub(super) async fn deactivate_account(
     if let Some(reason) = &input.reason {
         sqlx::query(
             r"
-            INSERT INTO user_activity_log (user_id, action, description, created_at)
+            INSERT INTO user_activity_log (user_id, action, metadata, created_at)
             VALUES ($1, 'account_deactivation_requested', $2, NOW())
             ",
         )
         .bind(user.id)
-        .bind(reason)
+        .bind(json!({ "reason": reason }))
         .execute(&mut *tx)
         .await
         .map_err(|e| {

@@ -14,13 +14,13 @@ use axum::{
     http::StatusCode,
 };
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
 use super::dto::{
     BlockTypeWithPresets, BlockTypesWithPresetsResponse, CmsPresetSummary, GroupedPresetsResponse,
     ListPresetsQuery, PaginatedPresetsResponse, PaginationMeta, PresetsByCategory,
 };
-use super::helpers::{ApiResult, require_cms_editor};
+use super::helpers::ApiResult;
 
 /// List presets with pagination and filtering
 ///
@@ -41,11 +41,9 @@ use super::helpers::{ApiResult, require_cms_editor};
 )]
 pub(super) async fn list_presets(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListPresetsQuery>,
 ) -> ApiResult<PaginatedPresetsResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.unwrap_or(50).min(200);
     let offset = query.offset.unwrap_or(0);
 
@@ -147,11 +145,9 @@ pub(super) async fn list_presets(
 )]
 pub(super) async fn get_presets_by_block_type(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(block_type): Path<String>,
 ) -> ApiResult<GroupedPresetsResponse> {
-    require_cms_editor(&user)?;
-
     // Fetch all presets for this block type
     let presets: Vec<CmsPresetSummary> = sqlx::query_as(
         r"
@@ -230,10 +226,8 @@ pub(super) async fn get_presets_by_block_type(
 )]
 pub(super) async fn get_block_types_with_presets(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
 ) -> ApiResult<BlockTypesWithPresetsResponse> {
-    require_cms_editor(&user)?;
-
     let block_types: Vec<BlockTypeWithPresets> = sqlx::query_as(
         r"
         SELECT

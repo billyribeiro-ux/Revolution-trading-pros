@@ -45,6 +45,8 @@
 //! request/response types, the `WebhookEvent` helpers used by every
 //! webhook handler, and the router mount.
 
+mod common;
+
 use revolution_api::routes::payments::{RefundRequest, RefundResponse};
 use revolution_api::services::stripe::WebhookEvent;
 
@@ -218,52 +220,11 @@ async fn router_mounts_all_documented_routes() {
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // The router needs `AppState`; we can't construct one without a DB.
-    // BUT axum's `Router::routes()` / `Router::has_routes()` doesn't
-    // exist in stable 0.7. The compile-time guarantee is enough: if
-    // `routes::payments::router()` builds and returns a
-    // `Router<AppState>`, the .route() chain compiled. We assert that
-    // contract here — a regression that breaks the type would fail to
-    // compile this test file.
     let _router: axum::Router<revolution_api::AppState> =
         revolution_api::routes::payments::router();
+    let app = common::setup_test_app().await;
 
-    // Sanity: a free-standing router with NO state can be probed for
-    // 404 vs known paths. We attach a no-op fallback and assert that
-    // attempting an unknown path is a 404 — proving the test harness
-    // shape is sound for future per-route probes once a DB fixture
-    // lands.
-    let probe: axum::Router = axum::Router::new()
-        .route(
-            "/api/payments/refund",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/payments/webhook",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/payments/portal",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/payments/config",
-            axum::routing::get(|| async { "ok" }),
-        )
-        .route(
-            "/api/payments/invoice",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/payments/retry",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/payments/summary",
-            axum::routing::get(|| async { "ok" }),
-        );
-
-    let resp = probe
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
@@ -279,8 +240,7 @@ async fn router_mounts_all_documented_routes() {
         "unknown path must be 404"
     );
 
-    // Each documented route must respond (200 here on the probe shape;
-    // the real router would 401/415/etc. through its extractors).
+    // Each documented POST route on the real router must NOT return 404.
     for path in [
         "/api/payments/refund",
         "/api/payments/webhook",
@@ -288,7 +248,7 @@ async fn router_mounts_all_documented_routes() {
         "/api/payments/invoice",
         "/api/payments/retry",
     ] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -302,12 +262,17 @@ async fn router_mounts_all_documented_routes() {
         assert_ne!(
             resp.status(),
             StatusCode::NOT_FOUND,
-            "{path} must be a mounted route"
+            "{path} must be a mounted route on the real router"
+        );
+        assert_ne!(
+            resp.status(),
+            StatusCode::METHOD_NOT_ALLOWED,
+            "{path} must accept POST on the real router"
         );
     }
 
     for path in ["/api/payments/config", "/api/payments/summary"] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -321,7 +286,12 @@ async fn router_mounts_all_documented_routes() {
         assert_ne!(
             resp.status(),
             StatusCode::NOT_FOUND,
-            "{path} must be a mounted route"
+            "{path} must be a mounted route on the real router"
+        );
+        assert_ne!(
+            resp.status(),
+            StatusCode::METHOD_NOT_ALLOWED,
+            "{path} must accept GET on the real router"
         );
     }
 }

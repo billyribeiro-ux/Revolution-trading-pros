@@ -20,7 +20,7 @@
 	}
 
 	let {
-		value = $bindable(''),
+		value = $bindable(),
 		type = 'text',
 		placeholder = '',
 		label = '',

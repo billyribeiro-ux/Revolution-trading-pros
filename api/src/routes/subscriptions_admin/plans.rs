@@ -28,8 +28,8 @@ pub(super) async fn list_plans(
     Query(query): Query<PlanListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<SubscriptionPlanRow> = sqlx::query_as(
@@ -130,7 +130,27 @@ pub(super) async fn create_plan(
         "Admin creating subscription plan"
     );
 
-    let slug = slug::slugify(&input.name);
+    let trimmed_name = input.name.trim();
+    if trimmed_name.is_empty() {
+        return Err((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(json!({"error": "Plan name must not be empty"})),
+        ));
+    }
+    if input.price_cents < 0 {
+        return Err((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(json!({"error": "price_cents must be non-negative"})),
+        ));
+    }
+
+    let slug = slug::slugify(trimmed_name);
+    if slug.is_empty() {
+        return Err((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(json!({"error": "Plan name must produce a valid non-empty slug"})),
+        ));
+    }
     let features = input.features.unwrap_or(json!([]));
 
     // Cents at the API surface; convert to NUMERIC at SQL boundary
@@ -141,7 +161,7 @@ pub(super) async fn create_plan(
         RETURNING id, name, slug, description, (price * 100)::BIGINT AS price_cents, billing_cycle, is_active, stripe_price_id, features, trial_days, trial_period_days, trial_requires_payment_method, created_at, updated_at
         "
     )
-    .bind(&input.name)
+    .bind(trimmed_name)
     .bind(&slug)
     .bind(&input.description)
     .bind(input.price_cents)
@@ -155,6 +175,14 @@ pub(super) async fn create_plan(
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
+        if let sqlx::Error::Database(ref db_err) = e
+            && db_err.code().as_deref() == Some("23505")
+        {
+            return (
+                StatusCode::CONFLICT,
+                Json(json!({"error": "A plan with this name or slug already exists"})),
+            );
+        }
         tracing::error!("Failed to create plan: {}", e);
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
@@ -182,6 +210,23 @@ pub(super) async fn update_plan(
         plan_id = %id,
         "Admin updating subscription plan"
     );
+
+    if let Some(ref name) = input.name
+        && name.trim().is_empty()
+    {
+        return Err((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(json!({"error": "Plan name must not be empty"})),
+        ));
+    }
+    if let Some(price_cents) = input.price_cents
+        && price_cents < 0
+    {
+        return Err((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(json!({"error": "price_cents must be non-negative"})),
+        ));
+    }
 
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r"

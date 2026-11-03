@@ -11,9 +11,9 @@ use axum::{
 };
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
-use super::helpers::{get_cms_user_id, require_cms_editor};
+use super::helpers::get_cms_user_id;
 use super::types::{ApiResult, GlobalComponentUsage, SyncComponentRequest, sqlx_err};
 
 /// Sync a component instance to the latest version
@@ -32,12 +32,10 @@ use super::types::{ApiResult, GlobalComponentUsage, SyncComponentRequest, sqlx_e
 )]
 pub(super) async fn sync_component_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(_request): Json<SyncComponentRequest>,
 ) -> ApiResult<GlobalComponentUsage> {
-    require_cms_editor(&user)?;
-
     // Check if usage exists and is synced
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingUsage {
@@ -110,11 +108,9 @@ pub(super) async fn sync_component_usage(
 )]
 pub(super) async fn detach_component_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<GlobalComponentUsage> {
-    require_cms_editor(&user)?;
-
     // Check if already detached
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingUsage {
@@ -178,11 +174,9 @@ pub(super) async fn detach_component_usage(
 )]
 pub(super) async fn reattach_component_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<GlobalComponentUsage> {
-    require_cms_editor(&user)?;
-
     // Check if already synced
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingUsage {

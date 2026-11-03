@@ -22,12 +22,16 @@ pub(super) async fn get_form_analytics(
     Path(form_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get form with settings
-    let form: Option<FormRow> = sqlx::query_as("SELECT * FROM forms WHERE id = $1")
-        .bind(form_id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .ok()
-        .flatten();
+    let form: Option<FormRow> = sqlx::query_as(
+        r"SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+                 COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count,
+                 (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at
+          FROM forms WHERE id = $1",
+    )
+    .bind(form_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
     let form = form.ok_or_else(|| {
         (

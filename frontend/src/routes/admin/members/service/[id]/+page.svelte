@@ -122,13 +122,14 @@
 		}
 	}
 
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number | null | undefined): string {
+		const safe = typeof amount === 'number' && Number.isFinite(amount) ? amount : Number(amount ?? 0) || 0;
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
 			minimumFractionDigits: 0,
 			maximumFractionDigits: 0
-		}).format(amount);
+		}).format(safe);
 	}
 
 	function formatDate(dateString: string): string {
@@ -183,22 +184,22 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon purple"><IconUsers size={24} /></div>
-				<div class="stat-value">{stats.total_members}</div>
+				<div class="stat-value">{stats.total_members ?? 0}</div>
 				<div class="stat-label">Total Members</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald"><IconUserCheck size={24} /></div>
-				<div class="stat-value">{stats.active_members}</div>
+				<div class="stat-value">{stats.active_members ?? 0}</div>
 				<div class="stat-label">Active</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon blue"><IconCrown size={24} /></div>
-				<div class="stat-value">{stats.trial_members}</div>
+				<div class="stat-value">{stats.trial_members ?? 0}</div>
 				<div class="stat-label">Trial</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon red"><IconAlertTriangle size={24} /></div>
-				<div class="stat-value">{stats.churned_members}</div>
+				<div class="stat-value">{stats.churned_members ?? 0}</div>
 				<div class="stat-label">Churned</div>
 			</div>
 			<div class="stat-card">

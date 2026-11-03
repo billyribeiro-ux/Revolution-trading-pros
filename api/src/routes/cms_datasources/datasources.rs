@@ -10,9 +10,13 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+    utils::errors::ApiError,
+};
 
-use super::helpers::{ensure_unique_slug, generate_slug, require_cms_admin, require_cms_editor};
+use super::helpers::{ensure_unique_slug, generate_slug, require_cms_admin};
 use super::types::{
     ApiResult, ApiResultEmpty, CmsDatasource, CmsDatasourceSummary, CreateDatasourceRequest,
     ListDatasourcesQuery, PaginatedDatasourcesResponse, PaginationMeta, UpdateDatasourceRequest,
@@ -33,11 +37,9 @@ use super::types::{
 )]
 pub(super) async fn list_datasources(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListDatasourcesQuery>,
 ) -> ApiResult<PaginatedDatasourcesResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.unwrap_or(50).min(200);
     let offset = query.offset.unwrap_or(0);
 
@@ -120,11 +122,9 @@ pub(super) async fn list_datasources(
 )]
 pub(super) async fn get_datasource(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsDatasource> {
-    require_cms_editor(&user)?;
-
     let datasource: CmsDatasource = sqlx::query_as(
         r"
         SELECT id, name, slug, description, icon, color, entry_count,
@@ -161,11 +161,9 @@ pub(super) async fn get_datasource(
 )]
 pub(super) async fn get_datasource_by_slug(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(slug): Path<String>,
 ) -> ApiResult<CmsDatasource> {
-    require_cms_editor(&user)?;
-
     let datasource: CmsDatasource = sqlx::query_as(
         r"
         SELECT id, name, slug, description, icon, color, entry_count,
@@ -201,11 +199,9 @@ pub(super) async fn get_datasource_by_slug(
 )]
 pub(super) async fn create_datasource(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateDatasourceRequest>,
 ) -> Result<(StatusCode, Json<CmsDatasource>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Validate
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -277,12 +273,10 @@ pub(super) async fn create_datasource(
 )]
 pub(super) async fn update_datasource(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateDatasourceRequest>,
 ) -> ApiResult<CmsDatasource> {
-    require_cms_editor(&user)?;
-
     // Check if exists and is not locked/system
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingDatasource {
@@ -377,11 +371,9 @@ pub(super) async fn update_datasource(
 )]
 pub(super) async fn delete_datasource(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     // Check if exists and is not system
     #[derive(Debug, sqlx::FromRow)]
     struct DatasourceCheck {
@@ -439,11 +431,9 @@ pub(super) async fn delete_datasource(
 )]
 pub(super) async fn duplicate_datasource(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> Result<(StatusCode, Json<CmsDatasource>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Fetch original
     let original: CmsDatasource = sqlx::query_as(
         r"

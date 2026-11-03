@@ -51,6 +51,8 @@
 //! request/response types (every `*_cents` field pinned to i64) and 2
 //! tests for the router mount tables.
 
+mod common;
+
 use revolution_api::routes::orders::{
     AdminOrderResponse, AdminOrderStats, OrderDetailResponse, OrderItemDetailResponse,
     RefundOrderRequest,
@@ -288,29 +290,11 @@ async fn user_orders_router_mounts_documented_routes() {
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // The compile-time guarantee: `routes::orders::router()` must
-    // return a `Router<AppState>` whose route chain compiled — i.e.
-    // every handler matches its extractor signature. A regression
-    // that breaks a handler signature would fail to compile this
-    // statement.
     let _router: axum::Router<revolution_api::AppState> = revolution_api::routes::orders::router();
-
-    // Shadow router used to prove the assertion shape — the real
-    // router needs `AppState` (DB + Stripe + Resend), which we
-    // cannot construct in a unit test. The probe uses axum 0.7's
-    // native `:param` path syntax (matchit 0.7) — `:order_number`,
-    // `:id` — which is the form the harness needs for the route
-    // existence assertion below.
-    let probe: axum::Router = axum::Router::new()
-        .route("/api/my/orders", axum::routing::get(|| async { "ok" }))
-        .route(
-            "/api/my/orders/by-number/{order_number}",
-            axum::routing::get(|| async { "ok" }),
-        )
-        .route("/api/my/orders/{id}", axum::routing::get(|| async { "ok" }));
+    let app = common::setup_test_app().await;
 
     // Unknown path → 404.
-    let resp = probe
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
@@ -326,15 +310,14 @@ async fn user_orders_router_mounts_documented_routes() {
         "unknown path must be 404"
     );
 
-    // Each documented path must respond (200 here on the probe; the
-    // real router would 401/404-by-extractor through its body, but
-    // never 404-by-routing).
+    // Each documented path on the real production router must reach the auth
+    // extractor (401 Unauthorized when unauthenticated), never 404 Not Found.
     for path in [
         "/api/my/orders",
         "/api/my/orders/by-number/ORD-123",
         "/api/my/orders/42",
     ] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -345,29 +328,16 @@ async fn user_orders_router_mounts_documented_routes() {
             )
             .await
             .unwrap();
-        assert_ne!(
+        assert_eq!(
             resp.status(),
-            StatusCode::NOT_FOUND,
-            "{path} must be a mounted user-orders route"
+            StatusCode::UNAUTHORIZED,
+            "{path} must be mounted on the real router and require authentication"
         );
     }
 }
 
 // ── 6. Router mount table: admin /admin/orders routes ───────────────
 
-/// `routes::orders::admin_router()` mounts the admin order-management
-/// surface:
-///   - GET  /                              → admin_index
-///   - GET  /{id}                          → admin_show
-///   - POST /{id}/status                   → admin_update_status
-///   - POST /{id}/refund                   → admin_refund
-///   - POST /{id}/cancel                   → admin_cancel
-///   - POST /{id}/fulfill                  → admin_fulfill
-///   - POST /{id}/resend-confirmation      → admin_resend_confirmation
-///
-/// All seven must remain mounted — dropping `/{id}/refund` in
-/// particular silently breaks the admin refund flow with no compile
-/// error.
 #[tokio::test]
 async fn admin_orders_router_mounts_documented_routes() {
     use axum::body::Body;
@@ -377,40 +347,11 @@ async fn admin_orders_router_mounts_documented_routes() {
     // Compile-time: admin_router() returns Router<AppState>.
     let _router: axum::Router<revolution_api::AppState> =
         revolution_api::routes::orders::admin_router();
+    let app = common::setup_test_app().await;
 
-    // Shadow router uses axum 0.7's native `:id` syntax — see
-    // `user_orders_router_mounts_documented_routes` for the
-    // rationale.
-    let probe: axum::Router = axum::Router::new()
-        .route("/api/admin/orders", axum::routing::get(|| async { "ok" }))
-        .route(
-            "/api/admin/orders/{id}",
-            axum::routing::get(|| async { "ok" }),
-        )
-        .route(
-            "/api/admin/orders/{id}/status",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/admin/orders/{id}/refund",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/admin/orders/{id}/cancel",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/admin/orders/{id}/fulfill",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/api/admin/orders/{id}/resend-confirmation",
-            axum::routing::post(|| async { "ok" }),
-        );
-
-    // GET routes.
+    // GET routes on the real production router must reach AdminUser (401 without token).
     for path in ["/api/admin/orders", "/api/admin/orders/42"] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -421,16 +362,14 @@ async fn admin_orders_router_mounts_documented_routes() {
             )
             .await
             .unwrap();
-        assert_ne!(
+        assert_eq!(
             resp.status(),
-            StatusCode::NOT_FOUND,
-            "{path} must be a mounted admin-orders GET route"
+            StatusCode::UNAUTHORIZED,
+            "{path} must be a mounted admin-orders GET route on the real router"
         );
     }
 
-    // POST routes — each verb-distinct mutation surface must be
-    // present. A GET on a POST path is 405 (still not 404), so the
-    // assertion stays "not 404" to keep the probe robust.
+    // POST routes on the real production router must reach AdminUser (401 without token).
     for path in [
         "/api/admin/orders/42/status",
         "/api/admin/orders/42/refund",
@@ -438,7 +377,7 @@ async fn admin_orders_router_mounts_documented_routes() {
         "/api/admin/orders/42/fulfill",
         "/api/admin/orders/42/resend-confirmation",
     ] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -449,10 +388,10 @@ async fn admin_orders_router_mounts_documented_routes() {
             )
             .await
             .unwrap();
-        assert_ne!(
+        assert_eq!(
             resp.status(),
-            StatusCode::NOT_FOUND,
-            "{path} must be a mounted admin-orders POST route"
+            StatusCode::UNAUTHORIZED,
+            "{path} must be a mounted admin-orders POST route on the real router"
         );
     }
 }

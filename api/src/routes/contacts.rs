@@ -77,8 +77,8 @@ async fn list_contacts(
     Query(query): Query<ContactListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(50).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(50).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     // ICT 7: Validate status against allowlist
     let valid_statuses = ["lead", "prospect", "customer", "inactive", "churned"];
@@ -91,7 +91,10 @@ async fn list_contacts(
     });
 
     // ICT 7: Prepare search pattern for ILIKE
-    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     // ICT 7: Use fully parameterized queries
     let contacts: Vec<ContactRow> = sqlx::query_as(
@@ -260,12 +263,18 @@ async fn update_contact(
     .bind(&input.phone)
     .bind(&input.company)
     .bind(&status)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Contact not found"})),
         )
     })?;
 
@@ -278,7 +287,7 @@ async fn delete_contact(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM contacts WHERE id = $1")
+    let result = sqlx::query("DELETE FROM contacts WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -288,6 +297,13 @@ async fn delete_contact(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Contact not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Contact deleted successfully"})))
 }

@@ -60,21 +60,28 @@ pub(super) async fn list_member_filters(
     Query(query): Query<MemberFilterQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(50).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(50).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern: Option<String> = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
-    // Gracefully handle missing table - return empty array instead of 500 error
     let filters: Vec<MemberFilter> = sqlx::query_as(
         r"
-        SELECT id, name, description, filters, is_default, is_public, created_by, created_at, updated_at
+        SELECT id, name, description, filter_config AS filters,
+               COALESCE(is_default, false) AS is_default,
+               COALESCE(is_public, false) AS is_public,
+               created_by,
+               (created_at AT TIME ZONE 'UTC') AS created_at,
+               (updated_at AT TIME ZONE 'UTC') AS updated_at
         FROM member_filters
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_public = $2)
-        ORDER BY is_default DESC, name ASC
+        ORDER BY COALESCE(is_default, false) DESC, name ASC
         LIMIT $3 OFFSET $4
-        "
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_public)
@@ -82,10 +89,12 @@ pub(super) async fn list_member_filters(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_else(|e| {
-        tracing::warn!("Database query failed in list_member_filters (table may not exist): {}", e);
-        Vec::new()
-    });
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: i64 = sqlx::query_as::<_, (i64,)>(
         r"
@@ -99,8 +108,13 @@ pub(super) async fn list_member_filters(
     .bind(query.is_public)
     .fetch_one(&state.db.pool)
     .await
-    .map(|r| r.0)
-    .unwrap_or(0);
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .0;
 
     Ok(Json(json!({
         "filters": filters,
@@ -116,17 +130,33 @@ pub(super) async fn list_member_filters(
 /// GET /admin/members/filters/:id - Get single filter
 pub(super) async fn get_member_filter(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
     let filter: MemberFilter = sqlx::query_as(
-        "SELECT id, name, description, filters, is_default, is_public, created_by, created_at, updated_at FROM member_filters WHERE id = $1"
+        r"SELECT id, name, description, filter_config AS filters,
+                 COALESCE(is_default, false) AS is_default,
+                 COALESCE(is_public, false) AS is_public,
+                 created_by,
+                 (created_at AT TIME ZONE 'UTC') AS created_at,
+                 (updated_at AT TIME ZONE 'UTC') AS updated_at
+          FROM member_filters WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Filter not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Filter not found"})),
+        )
+    })?;
 
     Ok(Json(filter))
 }
@@ -137,14 +167,28 @@ pub(super) async fn create_member_filter(
     AdminUser(user): AdminUser,
     Json(input): Json<CreateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
+    let slug: String = input
+        .name
+        .to_lowercase()
+        .replace(' ', "-")
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
+        .collect();
+
     let filter: MemberFilter = sqlx::query_as(
         r"
-        INSERT INTO member_filters (name, description, filters, is_default, is_public, created_by, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-        RETURNING id, name, description, filters, is_default, is_public, created_by, created_at, updated_at
+        INSERT INTO member_filters (name, slug, description, filter_config, is_default, is_public, created_by, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+        RETURNING id, name, description, filter_config AS filters,
+                  COALESCE(is_default, false) AS is_default,
+                  COALESCE(is_public, false) AS is_public,
+                  created_by,
+                  (created_at AT TIME ZONE 'UTC') AS created_at,
+                  (updated_at AT TIME ZONE 'UTC') AS updated_at
         "
     )
     .bind(&input.name)
+    .bind(&slug)
     .bind(&input.description)
     .bind(&input.filters)
     .bind(input.is_default.unwrap_or(false))
@@ -166,7 +210,7 @@ pub(super) async fn create_member_filter(
 /// PUT /admin/members/filters/:id - Update filter
 pub(super) async fn update_member_filter(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberFilterRequest>,
 ) -> Result<Json<MemberFilter>, (StatusCode, Json<serde_json::Value>)> {
@@ -183,7 +227,7 @@ pub(super) async fn update_member_filter(
     }
     if input.filters.is_some() {
         param_count += 1;
-        set_clauses.push(format!("filters = ${param_count}"));
+        set_clauses.push(format!("filter_config = ${param_count}"));
     }
     if input.is_default.is_some() {
         param_count += 1;
@@ -204,7 +248,7 @@ pub(super) async fn update_member_filter(
     }
 
     let sql = format!(
-        "UPDATE member_filters SET {} WHERE id = $1 RETURNING id, name, description, filters, is_default, is_public, created_by, created_at, updated_at",
+        "UPDATE member_filters SET {} WHERE id = $1 RETURNING id, name, description, filter_config AS filters, COALESCE(is_default, false) AS is_default, COALESCE(is_public, false) AS is_public, created_by, (created_at AT TIME ZONE 'UTC') AS created_at, (updated_at AT TIME ZONE 'UTC') AS updated_at",
         set_clauses.join(", ")
     );
 
@@ -227,19 +271,28 @@ pub(super) async fn update_member_filter(
         query_builder = query_builder.bind(is_public);
     }
 
-    let filter = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
-        if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+    let filter = query_builder
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+                (
+                    StatusCode::CONFLICT,
+                    Json(json!({"error": "Filter with this name already exists"})),
+                )
+            } else {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            }
+        })?
+        .ok_or_else(|| {
             (
-                StatusCode::CONFLICT,
-                Json(json!({"error": "Filter with this name already exists"})),
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Filter not found"})),
             )
-        } else {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        }
-    })?;
+        })?;
 
     Ok(Json(filter))
 }

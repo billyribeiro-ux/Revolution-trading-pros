@@ -63,10 +63,12 @@ pub async fn index(
     Query(params): Query<CategoryQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // ICT Level 7: Parameterized query to prevent SQL injection
-    let search_pattern = params
-        .search
-        .as_ref()
-        .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
+    let search_pattern = params.search.as_ref().map(|s| {
+        format!(
+            "%{}%",
+            s.replace('\0', "").replace('%', "\\%").replace('_', "\\_")
+        )
+    });
 
     // Sort with whitelist validation (ICT 7: prevent injection via sort columns)
     let allowed_columns = ["name", "slug", "created_at", "updated_at", "id"];
@@ -113,9 +115,9 @@ pub async fn index(
     );
 
     // Pagination
-    let per_page = params.per_page.unwrap_or(50).min(500);
-    let page = params.page.unwrap_or(1).max(1);
-    let offset = (page - 1) * per_page;
+    let per_page = params.per_page.unwrap_or(50).clamp(1, 500);
+    let page = params.page.unwrap_or(1).clamp(1, 10_000);
+    let offset = (page - 1).saturating_mul(per_page);
     let fetch_all = params.all.unwrap_or(false);
 
     // Execute with proper parameter binding
@@ -495,11 +497,12 @@ pub async fn destroy(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Check if category has posts
-    let post_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM posts WHERE category_id = $1")
-        .bind(id)
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let post_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM post_categories WHERE category_id = $1")
+            .bind(id)
+            .fetch_one(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if post_count > 0 {
         return Err(ApiError::validation_error(

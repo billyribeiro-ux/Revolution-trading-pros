@@ -68,7 +68,7 @@ interface ProxyError {
 
 type RetryableMethod = 'GET' | 'HEAD' | 'OPTIONS' | 'PUT' | 'DELETE';
 const RETRYABLE_METHODS: RetryableMethod[] = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
-const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504];
+const RETRYABLE_STATUS_CODES = [408, 429, 502, 503, 504];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Utility Functions

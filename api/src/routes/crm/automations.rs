@@ -28,14 +28,14 @@ pub struct AutomationFunnel {
     pub actions_count: i32,
     pub subscribers_count: i32,
     pub conversion_rate: f64,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct CreateAutomationInput {
     pub title: String,
-    pub trigger_type: String,
+    pub trigger_type: Option<String>,
     pub trigger_name: Option<String>,
 }
 
@@ -48,15 +48,21 @@ async fn list_automations(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let automations: Vec<AutomationFunnel> = sqlx::query_as(
         r"
-        SELECT id, title, status, trigger_type, trigger_name, actions_count,
-               subscribers_count, conversion_rate, created_at, updated_at
+        SELECT id, COALESCE(title, name) AS title, COALESCE(status, 'draft') AS status,
+               trigger_type, trigger_name, COALESCE(actions_count, 0) AS actions_count,
+               COALESCE(subscribers_count, 0) AS subscribers_count,
+               COALESCE(conversion_rate, 0)::float8 AS conversion_rate,
+               created_at, updated_at
         FROM crm_automations
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -65,7 +71,6 @@ async fn list_automations(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -84,15 +89,20 @@ async fn create_automation(
     _admin: AdminUser,
     Json(input): Json<CreateAutomationInput>,
 ) -> Result<Json<AutomationFunnel>, (StatusCode, Json<serde_json::Value>)> {
+    let trigger_type = input.trigger_type.unwrap_or_else(|| "manual".to_string());
     let automation: AutomationFunnel = sqlx::query_as(
         r"
-        INSERT INTO crm_automations (title, status, trigger_type, trigger_name, actions_count, subscribers_count, conversion_rate, created_at, updated_at)
-        VALUES ($1, 'draft', $2, $3, 0, 0, 0.0, NOW(), NOW())
-        RETURNING id, title, status, trigger_type, trigger_name, actions_count, subscribers_count, conversion_rate, created_at, updated_at
+        INSERT INTO crm_automations (name, title, status, trigger_type, trigger_name, actions_count, subscribers_count, conversion_rate, created_at, updated_at)
+        VALUES ($1, $1, 'draft', $2, $3, 0, 0, 0.0, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(status, 'draft') AS status,
+                  trigger_type, trigger_name, COALESCE(actions_count, 0) AS actions_count,
+                  COALESCE(subscribers_count, 0) AS subscribers_count,
+                  COALESCE(conversion_rate, 0)::float8 AS conversion_rate,
+                  created_at, updated_at
         ",
     )
     .bind(&input.title)
-    .bind(&input.trigger_type)
+    .bind(&trigger_type)
     .bind(&input.trigger_name)
     .fetch_one(&state.db.pool)
     .await
@@ -107,13 +117,28 @@ async fn get_automation(
     Path(id): Path<i64>,
 ) -> Result<Json<AutomationFunnel>, (StatusCode, Json<serde_json::Value>)> {
     let automation: AutomationFunnel = sqlx::query_as(
-        "SELECT id, title, status, trigger_type, trigger_name, actions_count, subscribers_count, conversion_rate, created_at, updated_at FROM crm_automations WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title, COALESCE(status, 'draft') AS status,
+                 trigger_type, trigger_name, COALESCE(actions_count, 0) AS actions_count,
+                 COALESCE(subscribers_count, 0) AS subscribers_count,
+                 COALESCE(conversion_rate, 0)::float8 AS conversion_rate,
+                 created_at, updated_at
+          FROM crm_automations WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Automation not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Automation not found"})),
+        )
+    })?;
 
     Ok(Json(automation))
 }
@@ -123,7 +148,7 @@ async fn delete_automation(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_automations WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_automations WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -133,6 +158,13 @@ async fn delete_automation(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Automation not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Automation deleted successfully"})))
 }

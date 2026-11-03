@@ -219,7 +219,33 @@
 
 		try {
 			const data = await adminFetch('/api/admin/membership-plans');
-			plans = data?.data || data?.plans || data || [];
+			const rawPlans: Array<Record<string, unknown>> = Array.isArray(data?.data)
+				? data.data
+				: Array.isArray(data?.plans)
+					? data.plans
+					: Array.isArray(data)
+						? data
+						: [];
+			plans = rawPlans.map((p) => {
+				const rawPrice =
+					typeof p.price === 'number' && Number.isFinite(p.price)
+						? p.price
+						: typeof p.price_cents === 'number' && Number.isFinite(p.price_cents)
+							? p.price_cents / 100
+							: Number(p.price ?? 0) || 0;
+				const rawFeatures = Array.isArray(p.features)
+					? p.features.map((f, idx) =>
+							typeof f === 'string'
+								? { feature_code: `feature_${idx + 1}`, feature_name: f, description: '' }
+								: (f as MembershipFeature)
+						)
+					: [];
+				return {
+					...(p as unknown as MembershipPlan),
+					price: rawPrice,
+					features: rawFeatures
+				};
+			});
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load membership plans';
 			logger.error('Load plans error:', err);
@@ -338,7 +364,7 @@
 			billing_cycle: plan.billing_cycle,
 			is_active: plan.is_active,
 			features:
-				plan.features.length > 0
+				Array.isArray(plan.features) && plan.features.length > 0
 					? [...plan.features]
 					: [{ feature_code: 'feature_1', feature_name: '', description: '' }]
 		};
@@ -648,8 +674,8 @@
 											<span>{feature.feature_name}</span>
 										</div>
 									{/each}
-									{#if plan.features.length > 3}
-										<div class="feature-more">+{plan.features.length - 3} more features</div>
+									{#if (plan.features || []).length > 3}
+										<div class="feature-more">+{(plan.features || []).length - 3} more features</div>
 									{/if}
 								</div>
 							</div>
@@ -896,7 +922,7 @@
 						<p class="preview-description">{previewingPlan.description}</p>
 					{/if}
 					<div class="preview-features">
-						{#each previewingPlan.features as feature (feature.feature_code)}
+						{#each previewingPlan.features || [] as feature, i (feature.feature_code || i)}
 							<div class="preview-feature">
 								<IconCheck size={16} />
 								<span>{feature.feature_name}</span>

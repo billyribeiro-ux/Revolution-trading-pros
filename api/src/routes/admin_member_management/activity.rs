@@ -23,13 +23,18 @@ pub(super) async fn get_activity(
     let _ = &admin; // Admin authorization handled by extractor
 
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(25).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(25).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     let activity: Vec<MemberActivity> = if let Some(ref action) = query.action {
         sqlx::query_as(
             r"
-            SELECT id, user_id, action, description, metadata, ip_address, user_agent, created_at
+            SELECT id, user_id, action,
+                   details->>'description' AS description,
+                   details AS metadata,
+                   ip_address::text AS ip_address,
+                   user_agent,
+                   (created_at AT TIME ZONE 'UTC') AS created_at
             FROM user_activity_log
             WHERE user_id = $1 AND action = $2
             ORDER BY created_at DESC
@@ -46,7 +51,12 @@ pub(super) async fn get_activity(
     } else {
         sqlx::query_as(
             r"
-            SELECT id, user_id, action, description, metadata, ip_address, user_agent, created_at
+            SELECT id, user_id, action,
+                   details->>'description' AS description,
+                   details AS metadata,
+                   ip_address::text AS ip_address,
+                   user_agent,
+                   (created_at AT TIME ZONE 'UTC') AS created_at
             FROM user_activity_log
             WHERE user_id = $1
             ORDER BY created_at DESC

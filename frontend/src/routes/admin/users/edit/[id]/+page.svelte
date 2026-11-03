@@ -74,7 +74,8 @@
 			}
 
 			const result = await response.json();
-			const user: AdminUser | undefined = result.data;
+			const user: AdminUser | undefined =
+				result.data ?? result.user ?? (result.id || result.email ? result : undefined);
 
 			if (!user) {
 				error = 'User not found. Please check the user ID and try again.';
@@ -85,7 +86,10 @@
 			formData.first_name = user.first_name || '';
 			formData.last_name = user.last_name || '';
 			formData.email = user.email || '';
-			formData.roles = user.roles?.map((r) => r.name) || [];
+			const rawRoles: Array<string | UserRole> = user.roles ?? result.roles ?? [];
+			formData.roles = Array.isArray(rawRoles)
+				? rawRoles.map((r) => (typeof r === 'string' ? r : r.name)).filter(Boolean)
+				: [];
 		} catch (err) {
 			const e = err as { name?: string; message?: string };
 			if (e?.name === 'TypeError' && e?.message === 'Failed to fetch') {

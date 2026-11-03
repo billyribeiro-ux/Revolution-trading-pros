@@ -6,7 +6,6 @@
 //! to the very next public read, not one TTL later.
 
 // Shared harness; this file uses only the admin-app helper.
-#[allow(dead_code)]
 mod common;
 
 use axum::{

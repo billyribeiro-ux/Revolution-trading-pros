@@ -8,7 +8,7 @@
 //!
 //! @version 1.0.0 - January 27, 2026
 
-use crate::middleware::admin::AdminUser;
+use crate::middleware::admin::{AdminUser, CmsEditorUser};
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
@@ -108,11 +108,9 @@ struct AssignForReviewRequest {
 /// Get workflow status for content
 async fn get_workflow_status(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
 ) -> ApiResult<cms_workflow::WorkflowStatus> {
-    require_editor(&user)?;
-
     let status = cms_workflow::get_or_create_workflow_status(&state.db.pool, content_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -123,12 +121,10 @@ async fn get_workflow_status(
 /// Transition workflow to new stage
 async fn transition_workflow(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Json(input): Json<TransitionWorkflowRequest>,
 ) -> ApiResult<cms_workflow::WorkflowStatus> {
-    require_editor(&user)?;
-
     if input.to_stage == "published" {
         require_admin(&user)?;
     }
@@ -158,12 +154,10 @@ async fn transition_workflow(
 /// Assign content for review
 async fn assign_for_review(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Json(input): Json<AssignForReviewRequest>,
 ) -> ApiResult<cms_workflow::WorkflowStatus> {
-    require_editor(&user)?;
-
     let priority = input.priority.as_deref().and_then(|p| match p {
         "low" => Some(cms_workflow::WorkflowPriority::Low),
         "normal" => Some(cms_workflow::WorkflowPriority::Normal),
@@ -190,10 +184,8 @@ async fn assign_for_review(
 /// Get user's assignments (requires editor access)
 async fn get_my_assignments(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
 ) -> ApiResult<Vec<cms_workflow::WorkflowStatus>> {
-    require_editor(&user)?;
-
     let assignments = cms_workflow::get_user_assignments(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -204,13 +196,11 @@ async fn get_my_assignments(
 /// Get workflow history for content
 async fn get_workflow_history(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Query(query): Query<HistoryQuery>,
 ) -> ApiResult<Vec<cms_workflow::WorkflowHistory>> {
-    require_editor(&user)?;
-
-    let limit = query.limit.unwrap_or(50).min(200);
+    let limit = query.limit.unwrap_or(50).clamp(1, 200);
 
     let history = cms_workflow::get_workflow_history(&state.db.pool, content_id, limit)
         .await
@@ -227,11 +217,9 @@ struct HistoryQuery {
 /// Unassign content
 async fn unassign_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
 ) -> ApiResult<cms_workflow::WorkflowStatus> {
-    require_editor(&user)?;
-
     let status = cms_workflow::unassign_content(&state.db.pool, content_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -252,12 +240,10 @@ struct CreatePreviewTokenRequest {
 /// Generate preview token for content
 async fn create_preview_token(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Json(input): Json<CreatePreviewTokenRequest>,
 ) -> ApiResult<cms_preview::PreviewToken> {
-    require_editor(&user)?;
-
     let expires_in_hours = input.expires_in_hours.unwrap_or(24).clamp(1, 168);
 
     let token = cms_preview::generate_preview_token(
@@ -294,11 +280,9 @@ async fn validate_preview_token(
 /// Get preview tokens for content
 async fn get_content_preview_tokens(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
 ) -> ApiResult<Vec<cms_preview::PreviewToken>> {
-    require_editor(&user)?;
-
     let tokens = cms_preview::get_content_preview_tokens(&state.db.pool, content_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -309,11 +293,9 @@ async fn get_content_preview_tokens(
 /// Revoke preview token
 async fn revoke_preview_token(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(token): Path<Uuid>,
 ) -> ApiResult<JsonValue> {
-    require_editor(&user)?;
-
     let revoked = cms_preview::revoke_preview_token(&state.db.pool, token)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;

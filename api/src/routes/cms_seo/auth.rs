@@ -10,26 +10,9 @@
 use axum::{Json, http::StatusCode};
 use serde_json::{Value as JsonValue, json};
 
-use crate::{AppState, models::User};
+use crate::AppState;
 
-use super::{
-    RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS, api_error, api_error_with_details,
-};
-
-pub(super) fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(
-        role,
-        "admin" | "super-admin" | "super_admin" | "editor" | "marketing" | "developer"
-    ) {
-        Ok(())
-    } else {
-        Err(api_error(
-            StatusCode::FORBIDDEN,
-            "Editor access required for SEO validation",
-        ))
-    }
-}
+use super::{RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_SECONDS, api_error_with_details};
 
 pub(super) async fn check_rate_limit(
     state: &AppState,

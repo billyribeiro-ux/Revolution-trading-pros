@@ -29,11 +29,12 @@
 		statsProgress: number;
 	} = $props();
 
-	function formatBytes(bytes: number): string {
-		if (bytes < 1024) return bytes + ' B';
-		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-		if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(2) + ' MB';
-		return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+	function formatBytes(bytes: number | null | undefined): string {
+		const safe = typeof bytes === 'number' && Number.isFinite(bytes) && bytes >= 0 ? bytes : 0;
+		if (safe < 1024) return safe + ' B';
+		if (safe < 1024 * 1024) return (safe / 1024).toFixed(1) + ' KB';
+		if (safe < 1024 * 1024 * 1024) return (safe / 1024 / 1024).toFixed(2) + ' MB';
+		return (safe / 1024 / 1024 / 1024).toFixed(2) + ' GB';
 	}
 </script>
 
@@ -46,7 +47,7 @@
 					<IconPhoto size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics ? statistics.total_images : '—'}</span>
+					<span class="stat-value">{statistics ? (statistics.total_images ?? 0) : '—'}</span>
 					<span class="stat-label">Total Images</span>
 				</div>
 			</div>
@@ -56,7 +57,7 @@
 					<IconCircleCheck size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics ? statistics.optimized_images : '—'}</span>
+					<span class="stat-value">{statistics ? (statistics.optimized_images ?? 0) : '—'}</span>
 					<span class="stat-label">Optimized</span>
 				</div>
 			</div>
@@ -66,7 +67,7 @@
 					<IconClock size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics ? statistics.pending_optimization : '—'}</span>
+					<span class="stat-value">{statistics ? (statistics.pending_optimization ?? 0) : '—'}</span>
 					<span class="stat-label">Pending</span>
 				</div>
 			</div>
@@ -90,7 +91,7 @@
 					<span class="stat-label">Total Savings</span>
 				</div>
 				<div class="stat-progress">
-					<div class="progress-bar" style:width={`${statsProgress}%`}></div>
+					<div class="progress-bar" style:width={`${Number.isFinite(statsProgress) ? statsProgress : 0}%`}></div>
 				</div>
 			</div>
 		</div>

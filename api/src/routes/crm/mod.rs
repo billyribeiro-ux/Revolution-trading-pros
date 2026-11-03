@@ -109,7 +109,7 @@ async fn get_crm_stats(
         "new_this_month": new_this_month.0,
         "total_leads": total_leads.0,
         "total_deals": 0,
-        "deals_value": 0.0,
+        "deals_value_cents": 0_i64,
         "open_deals": 0,
         "won_deals": 0,
         "lost_deals": 0,

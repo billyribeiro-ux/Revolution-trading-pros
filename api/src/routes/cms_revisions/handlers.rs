@@ -19,7 +19,11 @@ use axum::{
 use chrono::Utc;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, services::cms_content};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+    services::cms_content,
+};
 
 use super::diff::compute_diff;
 use super::dtos::{
@@ -27,7 +31,7 @@ use super::dtos::{
     RevisionCompareResponse, RevisionListQuery, RevisionListResponse, RevisionMetadata,
     RevisionSummary,
 };
-use super::errors::{ApiResult, api_error, require_cms_admin, require_cms_editor};
+use super::errors::{ApiResult, api_error};
 
 /// List all revisions for content
 ///
@@ -53,14 +57,12 @@ use super::errors::{ApiResult, api_error, require_cms_admin, require_cms_editor}
 )]
 pub(super) async fn list_revisions(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Query(query): Query<RevisionListQuery>,
 ) -> ApiResult<RevisionListResponse> {
-    require_cms_editor(&user)?;
-
     // Validate content exists
-    let content = cms_content::get_content(&state.db.pool, content_id)
+    let _content = cms_content::get_content(&state.db.pool, content_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Content not found"))?;
@@ -104,7 +106,7 @@ pub(super) async fn list_revisions(
     .bind(content_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((content.version,));
+    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     let summaries: Vec<RevisionSummary> = revisions
         .into_iter()
@@ -155,11 +157,9 @@ pub(super) async fn list_revisions(
 )]
 pub(super) async fn get_revision(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path((content_id, version)): Path<(Uuid, i32)>,
 ) -> ApiResult<CmsRevisionExtended> {
-    require_cms_editor(&user)?;
-
     let revision: CmsRevisionExtended = sqlx::query_as(
         r"
         SELECT
@@ -213,12 +213,10 @@ pub(super) async fn get_revision(
 )]
 pub(super) async fn compare_revisions(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Query(query): Query<CompareQuery>,
 ) -> ApiResult<RevisionCompareResponse> {
-    require_cms_editor(&user)?;
-
     // Validate version numbers
     if query.v1 <= 0 || query.v2 <= 0 {
         return Err(api_error(
@@ -346,11 +344,9 @@ pub(super) async fn compare_revisions(
 )]
 pub(super) async fn restore_revision(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path((content_id, version)): Path<(Uuid, i32)>,
 ) -> ApiResult<RestoreResponse> {
-    require_cms_admin(&user)?;
-
     // Get CMS user
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
@@ -392,7 +388,7 @@ pub(super) async fn restore_revision(
     .bind(content_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((content.version,));
+    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(RestoreResponse {
         message: format!("Successfully restored content to revision {version}"),

@@ -22,20 +22,27 @@ pub(super) async fn list_public_forms(
     Query(query): Query<FormListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
-    let search_pattern = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let mut forms: Vec<FormRow> = sqlx::query_as(
         r"
-        SELECT id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
+               COALESCE(is_published, false) as is_published,
+               COALESCE(submission_count, 0) as submission_count,
+               (created_at AT TIME ZONE 'UTC') as created_at,
+               (updated_at AT TIME ZONE 'UTC') as updated_at
         FROM forms
         WHERE is_published = true
           AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-        "
+        ",
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -53,7 +60,7 @@ pub(super) async fn list_public_forms(
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or(0);
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -74,19 +81,21 @@ pub(super) async fn get_public_form(
     Path(id_or_slug): Path<String>,
 ) -> Result<Json<FormRow>, (StatusCode, Json<serde_json::Value>)> {
     let form: Option<FormRow> = if let Ok(id) = id_or_slug.parse::<i64>() {
-        sqlx::query_as("SELECT * FROM forms WHERE id = $1 AND is_published = true")
-            .bind(id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .ok()
-            .flatten()
+        sqlx::query_as(
+            "SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings, COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count, (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at FROM forms WHERE id = $1 AND is_published = true",
+        )
+        .bind(id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(crate::utils::errors::db_error)?
     } else {
-        sqlx::query_as("SELECT * FROM forms WHERE slug = $1 AND is_published = true")
-            .bind(&id_or_slug)
-            .fetch_optional(&state.db.pool)
-            .await
-            .ok()
-            .flatten()
+        sqlx::query_as(
+            "SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings, COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count, (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at FROM forms WHERE slug = $1 AND is_published = true",
+        )
+        .bind(&id_or_slug)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(crate::utils::errors::db_error)?
     };
 
     form.map(|mut form| {
@@ -153,13 +162,13 @@ pub(super) async fn submit_form(
     }
 
     // Find form by slug
-    let form: Option<FormRow> =
-        sqlx::query_as("SELECT * FROM forms WHERE slug = $1 AND is_published = true")
-            .bind(&slug)
-            .fetch_optional(&state.db.pool)
-            .await
-            .ok()
-            .flatten();
+    let form: Option<FormRow> = sqlx::query_as(
+        "SELECT id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings, COALESCE(is_published, false) as is_published, COALESCE(submission_count, 0) as submission_count, (created_at AT TIME ZONE 'UTC') as created_at, (updated_at AT TIME ZONE 'UTC') as updated_at FROM forms WHERE slug = $1 AND is_published = true",
+    )
+    .bind(&slug)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
     let form = form.ok_or_else(|| {
         (

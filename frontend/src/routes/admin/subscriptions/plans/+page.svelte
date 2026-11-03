@@ -266,11 +266,12 @@
 		}
 	}
 
-	function formatPrice(price: number): string {
+	function formatPrice(price: number | null | undefined): string {
+		const safe = typeof price === 'number' && Number.isFinite(price) ? price : Number(price ?? 0) || 0;
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD'
-		}).format(price);
+		}).format(safe);
 	}
 
 	function _formatDate(dateString: string): string {

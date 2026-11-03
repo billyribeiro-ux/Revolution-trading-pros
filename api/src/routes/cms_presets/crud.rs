@@ -12,12 +12,15 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+    utils::errors::ApiError,
+};
 
 use super::dto::{CmsPreset, CmsPresetCategory, CreatePresetRequest, UpdatePresetRequest};
 use super::helpers::{
     ApiResult, ApiResultEmpty, ensure_unique_slug, generate_slug, require_cms_admin,
-    require_cms_editor,
 };
 
 /// Create a new preset
@@ -37,11 +40,9 @@ use super::helpers::{
 )]
 pub(super) async fn create_preset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreatePresetRequest>,
 ) -> Result<(StatusCode, Json<CmsPreset>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Validate required fields
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -150,12 +151,10 @@ pub(super) async fn create_preset(
 )]
 pub(super) async fn update_preset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdatePresetRequest>,
 ) -> ApiResult<CmsPreset> {
-    require_cms_editor(&user)?;
-
     // Check if preset exists and is not locked
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingPreset {
@@ -273,11 +272,9 @@ pub(super) async fn update_preset(
 )]
 pub(super) async fn delete_preset(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     // Check if preset exists and is not locked
     #[derive(Debug, sqlx::FromRow)]
     struct DeletePreset {

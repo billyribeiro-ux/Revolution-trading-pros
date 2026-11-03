@@ -11,15 +11,13 @@
 //! Both share the `execute_schedule_action` helper which maps a
 //! `ScheduleAction` onto a `cms_content` row update.
 
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{Json, extract::State};
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
-use crate::{AppState, models::User};
+use crate::{AppState, middleware::admin::AdminUser};
 
-use super::{
-    ApiResult, CmsSchedule, CronExecutionResponse, ScheduleAction, api_error, require_cms_admin,
-};
+use super::{ApiResult, CmsSchedule, CronExecutionResponse, ScheduleAction};
 
 /// Process pending schedules (cron job endpoint)
 #[utoipa::path(
@@ -35,10 +33,8 @@ use super::{
 )]
 pub(super) async fn process_pending_schedules(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
 ) -> ApiResult<CronExecutionResponse> {
-    require_cms_admin(&user)?;
-
     let mut processed = 0;
     let mut successful = 0;
     let mut failed = 0;
@@ -222,10 +218,8 @@ async fn execute_schedule_action(
 )]
 pub(super) async fn process_pending_releases(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
 ) -> ApiResult<CronExecutionResponse> {
-    require_cms_admin(&user)?;
-
     let mut processed = 0;
     let mut successful = 0;
     let mut failed = 0;

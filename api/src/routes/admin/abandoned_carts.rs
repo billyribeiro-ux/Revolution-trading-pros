@@ -8,7 +8,6 @@ use axum::{
     routing::{get, post},
 };
 use chrono::{DateTime, Utc};
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -27,7 +26,7 @@ pub struct AbandonedCartRow {
     pub id: i64,
     pub contact_id: Option<i64>,
     pub email: String,
-    pub cart_total: Option<Decimal>,
+    pub cart_total_cents: Option<i64>,
     pub cart_items: Option<serde_json::Value>,
     pub status: Option<String>,
     pub recovery_email_sent: Option<bool>,
@@ -45,32 +44,33 @@ pub async fn get_dashboard_stats(
         sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'abandoned'")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
-    let total_value: (Option<Decimal>,) =
-        sqlx::query_as("SELECT SUM(cart_total) FROM crm_abandoned_carts")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((None,));
+    let total_value_cents: (i64,) = sqlx::query_as(
+        "SELECT COALESCE(SUM((cart_total * 100)::BIGINT), 0)::BIGINT FROM crm_abandoned_carts",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
     let recovered_count: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM crm_abandoned_carts WHERE status = 'recovered' OR recovered = true",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
-    let recovered_value: (Option<Decimal>,) = sqlx::query_as(
-        "SELECT SUM(cart_total) FROM crm_abandoned_carts WHERE status = 'recovered' OR recovered = true",
+    let recovered_value_cents: (i64,) = sqlx::query_as(
+        "SELECT COALESCE(SUM((cart_total * 100)::BIGINT), 0)::BIGINT FROM crm_abandoned_carts WHERE status = 'recovered' OR recovered = true",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((None,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let total_all: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let recovery_rate = if total_all.0 > 0 {
         (recovered_count.0 as f64 / total_all.0 as f64) * 100.0
@@ -78,33 +78,25 @@ pub async fn get_dashboard_stats(
         0.0
     };
 
-    let total_val_f64 = total_value
-        .0
-        .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
-        .unwrap_or(0.0);
-    let recovered_val_f64 = recovered_value
-        .0
-        .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
-        .unwrap_or(0.0);
-    let avg_cart_value = if total_all.0 > 0 {
-        total_val_f64 / total_all.0 as f64
+    let avg_cart_value_cents: i64 = if total_all.0 > 0 {
+        total_value_cents.0 / total_all.0
     } else {
-        0.0
+        0
     };
 
     let email_sent_count: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts WHERE recovery_email_sent = true")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let stats = json!({
         "total_abandoned": total_abandoned.0,
-        "total_value": total_val_f64,
+        "total_value_cents": total_value_cents.0,
         "recovered_count": recovered_count.0,
-        "recovered_value": recovered_val_f64,
+        "recovered_value_cents": recovered_value_cents.0,
         "recovery_rate": (recovery_rate * 10.0).round() / 10.0,
-        "avg_cart_value": (avg_cart_value * 100.0).round() / 100.0,
+        "avg_cart_value_cents": avg_cart_value_cents,
         "pending_recovery": total_abandoned.0,
         "email_sent_count": email_sent_count.0,
         "clicked_count": 0,
@@ -128,12 +120,12 @@ pub async fn list_abandoned_carts(
     _admin: AdminUser,
     Query(query): Query<CartListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
     let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
-    let offset = (page - 1) * per_page;
+    let offset = (page - 1).saturating_mul(per_page);
 
     let rows: Vec<AbandonedCartRow> = sqlx::query_as(
-        "SELECT id, contact_id, email, cart_total, cart_items, status, recovery_email_sent, recovered, created_at, updated_at \
+        "SELECT id, contact_id, email, COALESCE((cart_total * 100)::BIGINT, 0) AS cart_total_cents, cart_items, status, recovery_email_sent, recovered, created_at, updated_at \
          FROM crm_abandoned_carts \
          ORDER BY created_at DESC \
          LIMIT $1 OFFSET $2",
@@ -147,17 +139,14 @@ pub async fn list_abandoned_carts(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM crm_abandoned_carts")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let last_page = ((total.0 as f64) / (per_page as f64)).ceil() as i64;
 
     let data: Vec<serde_json::Value> = rows
         .into_iter()
         .map(|r| {
-            let cart_val = r
-                .cart_total
-                .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
-                .unwrap_or(0.0);
+            let cart_val_cents = r.cart_total_cents.unwrap_or(0);
             let items = r.cart_items.unwrap_or_else(|| json!([]));
             let created_iso = r
                 .created_at
@@ -171,9 +160,9 @@ pub async fn list_abandoned_carts(
                 "user_email": r.email,
                 "cart_data": {
                     "items": items,
-                    "total": cart_val
+                    "total_cents": cart_val_cents
                 },
-                "cart_value": cart_val,
+                "cart_value_cents": cart_val_cents,
                 "status": r.status.unwrap_or_else(|| "abandoned".to_string()),
                 "recovery_attempts": if r.recovery_email_sent.unwrap_or(false) { 1 } else { 0 },
                 "last_email_at": if r.recovery_email_sent.unwrap_or(false) { Some(&created_iso) } else { None },
@@ -234,7 +223,7 @@ pub async fn get_cart(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let row: Option<AbandonedCartRow> = sqlx::query_as(
-        "SELECT id, contact_id, email, cart_total, cart_items, status, recovery_email_sent, recovered, created_at, updated_at \
+        "SELECT id, contact_id, email, COALESCE((cart_total * 100)::BIGINT, 0) AS cart_total_cents, cart_items, status, recovery_email_sent, recovered, created_at, updated_at \
          FROM crm_abandoned_carts WHERE id = $1",
     )
     .bind(id)
@@ -249,10 +238,7 @@ pub async fn get_cart(
         ));
     };
 
-    let cart_val = r
-        .cart_total
-        .map(|d| d.to_string().parse::<f64>().unwrap_or(0.0))
-        .unwrap_or(0.0);
+    let cart_val_cents = r.cart_total_cents.unwrap_or(0);
     let items = r.cart_items.unwrap_or_else(|| json!([]));
     let created_iso = r
         .created_at
@@ -267,9 +253,9 @@ pub async fn get_cart(
         "user_email": r.email,
         "cart_data": {
             "items": items,
-            "total": cart_val
+            "total_cents": cart_val_cents
         },
-        "cart_value": cart_val,
+        "cart_value_cents": cart_val_cents,
         "status": r.status.unwrap_or_else(|| "abandoned".to_string()),
         "recovery_attempts": if r.recovery_email_sent.unwrap_or(false) { 1 } else { 0 },
         "last_email_at": if r.recovery_email_sent.unwrap_or(false) { Some(&created_iso) } else { None },

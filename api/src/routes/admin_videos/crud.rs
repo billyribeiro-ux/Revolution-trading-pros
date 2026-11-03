@@ -27,8 +27,8 @@ pub(super) async fn list_videos(
     Query(query): Query<VideoListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     // Build parameterized query to prevent SQL injection
     let mut conditions = Vec::new();
@@ -159,7 +159,10 @@ pub(super) async fn list_videos(
         cq = cq.bind(tag_json);
     }
 
-    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    let total: (i64,) = cq
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(crate::utils::errors::db_error)?;
 
     // Fetch related data for each video
     let mut responses = Vec::new();
@@ -169,14 +172,14 @@ pub(super) async fn list_videos(
                 .bind(tid)
                 .fetch_optional(&state.db.pool)
                 .await
-                .unwrap_or(None)
+                .map_err(crate::utils::errors::db_error)?
         } else {
             None
         };
         let rooms: Vec<RoomInfo> = sqlx::query_as(
             r"SELECT tr.id, tr.name, tr.slug
                FROM trading_rooms tr
-               JOIN video_room_assignments vra ON vra.trading_room_id = tr.id
+               JOIN video_room_assignments vra ON vra.room_id = tr.id
                WHERE vra.video_id = $1",
         )
         .bind(video.id)
@@ -229,14 +232,14 @@ pub(super) async fn get_video(
             .bind(tid)
             .fetch_optional(&state.db.pool)
             .await
-            .unwrap_or(None)
+            .map_err(crate::utils::errors::db_error)?
     } else {
         None
     };
     let rooms: Vec<RoomInfo> = sqlx::query_as(
         r"SELECT tr.id, tr.name, tr.slug
            FROM trading_rooms tr
-           JOIN video_room_assignments vra ON vra.trading_room_id = tr.id
+           JOIN video_room_assignments vra ON vra.room_id = tr.id
            WHERE vra.video_id = $1",
     )
     .bind(video.id)
@@ -327,13 +330,14 @@ pub(super) async fn create_video(
     // Handle room assignments
     if let Some(room_ids) = input.room_ids {
         for room_id in room_ids {
-            let _ = sqlx::query(
-                "INSERT INTO video_room_assignments (video_id, trading_room_id) VALUES ($1, $2)",
+            sqlx::query(
+                "INSERT INTO video_room_assignments (video_id, room_id) VALUES ($1, $2) ON CONFLICT (video_id, room_id) DO NOTHING",
             )
             .bind(video.id)
             .bind(room_id)
             .execute(&state.db.pool)
-            .await;
+            .await
+            .map_err(crate::utils::errors::db_error)?;
         }
     }
 
@@ -425,12 +429,21 @@ pub(super) async fn update_video(
 
     query = query.bind(id);
 
-    let video = query.fetch_one(&state.db.pool).await.map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Failed to update video: {}", e)})),
-        )
-    })?;
+    let video = query
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Failed to update video: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Video not found"})),
+            )
+        })?;
 
     Ok(Json(json!({
         "success": true,
@@ -445,16 +458,25 @@ pub(super) async fn delete_video(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("UPDATE unified_videos SET deleted_at = NOW() WHERE id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to delete video: {}", e)})),
-            )
-        })?;
+    let result = sqlx::query(
+        "UPDATE unified_videos SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to delete video: {}", e)})),
+        )
+    })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Video not found"})),
+        ));
+    }
 
     Ok(Json(json!({
         "success": true,
@@ -471,41 +493,41 @@ pub(super) async fn get_stats(
         sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let published: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM unified_videos WHERE is_published = true AND deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let daily_video: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE content_type = 'daily_video' AND deleted_at IS NULL")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let weekly_watchlist: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE content_type = 'weekly_watchlist' AND deleted_at IS NULL")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let learning_center: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE content_type = 'learning_center' AND deleted_at IS NULL")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let room_archive: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE content_type = 'room_archive' AND deleted_at IS NULL")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let total_views: (i64,) = sqlx::query_as(
         "SELECT COALESCE(SUM(views_count), 0) FROM unified_videos WHERE deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(VideoStatsResponse {
         success: true,
@@ -526,7 +548,7 @@ pub(super) async fn get_stats(
                 )
                 .fetch_one(&state.db.pool)
                 .await
-                .unwrap_or((0,));
+                .map_err(crate::utils::errors::db_error)?;
                 r.0
             },
             this_month: {
@@ -536,7 +558,7 @@ pub(super) async fn get_stats(
                 )
                 .fetch_one(&state.db.pool)
                 .await
-                .unwrap_or((0,));
+                .map_err(crate::utils::errors::db_error)?;
                 r.0
             },
         },
@@ -654,22 +676,24 @@ pub(super) async fn bulk_assign(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.clear_existing.unwrap_or(false) {
         // ICT 7: Use parameterized query with ANY() array
-        let _ = sqlx::query("DELETE FROM video_room_assignments WHERE video_id = ANY($1)")
+        sqlx::query("DELETE FROM video_room_assignments WHERE video_id = ANY($1)")
             .bind(&input.video_ids)
             .execute(&state.db.pool)
-            .await;
+            .await
+            .map_err(crate::utils::errors::db_error)?;
     }
 
     for video_id in &input.video_ids {
         for room_id in &input.room_ids {
-            let _ = sqlx::query(
-                "INSERT INTO video_room_assignments (video_id, trading_room_id)
-                 VALUES ($1, $2) ON CONFLICT (video_id, trading_room_id) DO NOTHING",
+            sqlx::query(
+                "INSERT INTO video_room_assignments (video_id, room_id)
+                 VALUES ($1, $2) ON CONFLICT (video_id, room_id) DO NOTHING",
             )
             .bind(video_id)
             .bind(room_id)
             .execute(&state.db.pool)
-            .await;
+            .await
+            .map_err(crate::utils::errors::db_error)?;
         }
     }
 

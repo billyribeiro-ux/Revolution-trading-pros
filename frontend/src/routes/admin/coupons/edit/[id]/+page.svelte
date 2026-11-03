@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '#lib/api/admin.js';
@@ -105,12 +105,9 @@
 	// FIX: wrap state-mutating data loader in `untrack` so the effect
 	// only re-fires when `couponId` actually changes (matches the
 	// precedent in admin/products/[id]/edit).
-	$effect(() => {
-		const id = couponId;
-		if (id) {
-			untrack(() => {
-				loadCoupon();
-			});
+	onMount(() => {
+		if (couponId) {
+			void loadCoupon();
 		}
 	});
 
@@ -124,7 +121,14 @@
 
 		try {
 			const response = await couponsApi.get(couponId);
-			const coupon = response.data;
+			const coupon =
+				response.data ??
+				(response as unknown as { coupon?: Coupon }).coupon ??
+				(response as unknown as Coupon);
+			if (!coupon || !coupon.code) {
+				errors = [{ field: 'general', message: 'Coupon not found', severity: 'error' }];
+				return;
+			}
 			originalCoupon = coupon;
 
 			// FIX-2026-04-26 (P2-11, CC-1): backend returns canonical

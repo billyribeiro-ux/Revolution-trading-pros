@@ -8,9 +8,8 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
-use super::helpers::require_cms_editor;
 use super::types::{ApiResultEmpty, CsvEntryRow};
 
 /// Export entries as CSV
@@ -29,7 +28,7 @@ use super::types::{ApiResultEmpty, CsvEntryRow};
 )]
 pub(super) async fn export_entries_csv(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
 ) -> Result<
     (
@@ -39,8 +38,6 @@ pub(super) async fn export_entries_csv(
     ),
     ApiError,
 > {
-    require_cms_editor(&user)?;
-
     // Get datasource info for filename
     #[derive(Debug, sqlx::FromRow)]
     struct DatasourceSlug {
@@ -115,12 +112,10 @@ pub(super) async fn export_entries_csv(
 )]
 pub(super) async fn import_entries_csv(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     mut multipart: Multipart,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     // Verify datasource exists
     let exists: (bool,) = sqlx::query_as(
         "SELECT EXISTS(SELECT 1 FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL)",

@@ -928,12 +928,14 @@
 						All
 					</button>
 					{#each categoryList as [key, category] (key)}
+						{@const CategoryIcon =
+							typeof category.icon === 'function' ? category.icon : getCategoryIcon(key)}
 						<button
 							onclick={() => (selectedCategory = key)}
 							class={{ 'filter-btn': true, active: selectedCategory === key }}
 						>
-							<category.icon size={16} aria-hidden="true" />
-							{category.name}
+							<CategoryIcon size={16} aria-hidden="true" />
+							{category.name || getCategoryName(key)}
 						</button>
 					{/each}
 				</div>

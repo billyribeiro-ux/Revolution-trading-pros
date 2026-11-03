@@ -30,8 +30,8 @@ pub struct EmailSequence {
     pub emails_sent: i32,
     pub open_rate: f64,
     pub click_rate: f64,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -40,8 +40,8 @@ pub struct Campaign {
     pub title: String,
     pub subject: Option<String>,
     pub status: String,
-    pub scheduled_at: Option<chrono::NaiveDateTime>,
-    pub sent_at: Option<chrono::NaiveDateTime>,
+    pub scheduled_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub sent_at: Option<chrono::DateTime<chrono::Utc>>,
     pub recipients_count: i32,
     pub emails_sent: i32,
     pub opens: i32,
@@ -49,8 +49,8 @@ pub struct Campaign {
     pub open_rate: f64,
     pub click_rate: f64,
     pub template_id: Option<i64>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -61,11 +61,11 @@ pub struct RecurringCampaign {
     pub scheduling_settings: Option<serde_json::Value>,
     pub total_campaigns_sent: i32,
     pub total_emails_sent: i32,
-    pub total_revenue: f64,
-    pub last_sent_at: Option<chrono::NaiveDateTime>,
-    pub next_scheduled_at: Option<chrono::NaiveDateTime>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub total_revenue_cents: i64,
+    pub last_sent_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub next_scheduled_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -92,15 +92,23 @@ async fn list_sequences(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let sequences: Vec<EmailSequence> = sqlx::query_as(
         r"
-        SELECT id, title, status, trigger_type, email_count, total_subscribers,
-               emails_sent, open_rate, click_rate, created_at, updated_at
+        SELECT id, COALESCE(title, name) AS title, COALESCE(status, 'draft') AS status,
+               trigger_type, COALESCE(email_count, 0) AS email_count,
+               COALESCE(total_subscribers, 0) AS total_subscribers,
+               COALESCE(emails_sent, 0) AS emails_sent,
+               COALESCE(open_rate, 0)::float8 AS open_rate,
+               COALESCE(click_rate, 0)::float8 AS click_rate,
+               created_at, updated_at
         FROM crm_sequences
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -109,7 +117,6 @@ async fn list_sequences(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -132,9 +139,15 @@ async fn create_sequence(
 
     let sequence: EmailSequence = sqlx::query_as(
         r"
-        INSERT INTO crm_sequences (title, status, trigger_type, email_count, total_subscribers, emails_sent, open_rate, click_rate, created_at, updated_at)
-        VALUES ($1, $2, $3, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
-        RETURNING id, title, status, trigger_type, email_count, total_subscribers, emails_sent, open_rate, click_rate, created_at, updated_at
+        INSERT INTO crm_sequences (name, title, status, trigger_type, email_count, total_subscribers, emails_sent, open_rate, click_rate, created_at, updated_at)
+        VALUES ($1, $1, $2, $3, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(status, 'draft') AS status,
+                  trigger_type, COALESCE(email_count, 0) AS email_count,
+                  COALESCE(total_subscribers, 0) AS total_subscribers,
+                  COALESCE(emails_sent, 0) AS emails_sent,
+                  COALESCE(open_rate, 0)::float8 AS open_rate,
+                  COALESCE(click_rate, 0)::float8 AS click_rate,
+                  created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -153,13 +166,30 @@ async fn get_sequence(
     Path(id): Path<i64>,
 ) -> Result<Json<EmailSequence>, (StatusCode, Json<serde_json::Value>)> {
     let sequence: EmailSequence = sqlx::query_as(
-        "SELECT id, title, status, trigger_type, email_count, total_subscribers, emails_sent, open_rate, click_rate, created_at, updated_at FROM crm_sequences WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title, COALESCE(status, 'draft') AS status,
+                 trigger_type, COALESCE(email_count, 0) AS email_count,
+                 COALESCE(total_subscribers, 0) AS total_subscribers,
+                 COALESCE(emails_sent, 0) AS emails_sent,
+                 COALESCE(open_rate, 0)::float8 AS open_rate,
+                 COALESCE(click_rate, 0)::float8 AS click_rate,
+                 created_at, updated_at
+          FROM crm_sequences WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Sequence not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Sequence not found"})),
+        )
+    })?;
 
     Ok(Json(sequence))
 }
@@ -169,7 +199,7 @@ async fn delete_sequence(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_sequences WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_sequences WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -179,6 +209,13 @@ async fn delete_sequence(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Sequence not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Sequence deleted successfully"})))
 }
@@ -192,15 +229,23 @@ async fn list_campaigns(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let campaigns: Vec<Campaign> = sqlx::query_as(
         r"
-        SELECT id, title, subject, status, scheduled_at, sent_at, recipients_count,
-               emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at
+        SELECT id, COALESCE(title, name) AS title, subject, COALESCE(status, 'draft') AS status,
+               scheduled_at, sent_at, COALESCE(recipients_count, 0) AS recipients_count,
+               COALESCE(emails_sent, 0) AS emails_sent, COALESCE(opens, 0) AS opens,
+               COALESCE(clicks, 0) AS clicks,
+               COALESCE(open_rate, 0)::float8 AS open_rate,
+               COALESCE(click_rate, 0)::float8 AS click_rate,
+               template_id, created_at, updated_at
         FROM crm_campaigns
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -209,8 +254,12 @@ async fn list_campaigns(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": campaigns,
@@ -225,9 +274,15 @@ async fn create_campaign(
 ) -> Result<Json<Campaign>, (StatusCode, Json<serde_json::Value>)> {
     let campaign: Campaign = sqlx::query_as(
         r"
-        INSERT INTO crm_campaigns (title, subject, status, template_id, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, created_at, updated_at)
-        VALUES ($1, $2, 'draft', $3, 0, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
-        RETURNING id, title, subject, status, scheduled_at, sent_at, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at
+        INSERT INTO crm_campaigns (name, title, subject, status, template_id, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, created_at, updated_at)
+        VALUES ($1, $1, $2, 'draft', $3, 0, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, subject, COALESCE(status, 'draft') AS status,
+                  scheduled_at, sent_at, COALESCE(recipients_count, 0) AS recipients_count,
+                  COALESCE(emails_sent, 0) AS emails_sent, COALESCE(opens, 0) AS opens,
+                  COALESCE(clicks, 0) AS clicks,
+                  COALESCE(open_rate, 0)::float8 AS open_rate,
+                  COALESCE(click_rate, 0)::float8 AS click_rate,
+                  template_id, created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -246,13 +301,30 @@ async fn get_campaign(
     Path(id): Path<i64>,
 ) -> Result<Json<Campaign>, (StatusCode, Json<serde_json::Value>)> {
     let campaign: Campaign = sqlx::query_as(
-        "SELECT id, title, subject, status, scheduled_at, sent_at, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at FROM crm_campaigns WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title, subject, COALESCE(status, 'draft') AS status,
+                 scheduled_at, sent_at, COALESCE(recipients_count, 0) AS recipients_count,
+                 COALESCE(emails_sent, 0) AS emails_sent, COALESCE(opens, 0) AS opens,
+                 COALESCE(clicks, 0) AS clicks,
+                 COALESCE(open_rate, 0)::float8 AS open_rate,
+                 COALESCE(click_rate, 0)::float8 AS click_rate,
+                 template_id, created_at, updated_at
+          FROM crm_campaigns WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Campaign not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Campaign not found"})),
+        )
+    })?;
 
     Ok(Json(campaign))
 }
@@ -262,7 +334,7 @@ async fn delete_campaign(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_campaigns WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_campaigns WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -272,6 +344,13 @@ async fn delete_campaign(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Campaign not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Campaign deleted successfully"})))
 }
@@ -284,21 +363,44 @@ async fn duplicate_campaign(
 ) -> Result<Json<Campaign>, (StatusCode, Json<serde_json::Value>)> {
     // Get original campaign
     let original: Campaign = sqlx::query_as(
-        "SELECT id, title, subject, status, scheduled_at, sent_at, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at FROM crm_campaigns WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title, subject, COALESCE(status, 'draft') AS status,
+                 scheduled_at, sent_at, COALESCE(recipients_count, 0) AS recipients_count,
+                 COALESCE(emails_sent, 0) AS emails_sent, COALESCE(opens, 0) AS opens,
+                 COALESCE(clicks, 0) AS clicks,
+                 COALESCE(open_rate, 0)::float8 AS open_rate,
+                 COALESCE(click_rate, 0)::float8 AS click_rate,
+                 template_id, created_at, updated_at
+          FROM crm_campaigns WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Campaign not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Campaign not found"})),
+        )
+    })?;
 
     let new_title = format!("{} (Copy)", original.title);
 
     let campaign: Campaign = sqlx::query_as(
         r"
-        INSERT INTO crm_campaigns (title, subject, status, template_id, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, created_at, updated_at)
-        VALUES ($1, $2, 'draft', $3, 0, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
-        RETURNING id, title, subject, status, scheduled_at, sent_at, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, template_id, created_at, updated_at
+        INSERT INTO crm_campaigns (name, title, subject, status, template_id, recipients_count, emails_sent, opens, clicks, open_rate, click_rate, created_at, updated_at)
+        VALUES ($1, $1, $2, 'draft', $3, 0, 0, 0, 0, 0.0, 0.0, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, subject, COALESCE(status, 'draft') AS status,
+                  scheduled_at, sent_at, COALESCE(recipients_count, 0) AS recipients_count,
+                  COALESCE(emails_sent, 0) AS emails_sent, COALESCE(opens, 0) AS opens,
+                  COALESCE(clicks, 0) AS clicks,
+                  COALESCE(open_rate, 0)::float8 AS open_rate,
+                  COALESCE(click_rate, 0)::float8 AS click_rate,
+                  template_id, created_at, updated_at
         ",
     )
     .bind(&new_title)
@@ -320,13 +422,21 @@ async fn list_recurring_campaigns(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let campaigns: Vec<RecurringCampaign> = sqlx::query_as(
         r"
-        SELECT id, title, status, scheduling_settings, total_campaigns_sent, total_emails_sent,
-               total_revenue, last_sent_at, next_scheduled_at, created_at, updated_at
+        SELECT id, COALESCE(title, '') AS title, COALESCE(status, 'active') AS status,
+               COALESCE(scheduling_settings, schedule) AS scheduling_settings,
+               COALESCE(total_campaigns_sent, 0) AS total_campaigns_sent,
+               COALESCE(total_emails_sent, 0) AS total_emails_sent,
+               ROUND(COALESCE(total_revenue, 0) * 100)::BIGINT AS total_revenue_cents,
+               last_sent_at, COALESCE(next_scheduled_at, next_run_at) AS next_scheduled_at,
+               created_at, updated_at
         FROM crm_recurring_campaigns
         WHERE ($1::text IS NULL OR title ILIKE $1)
         ORDER BY created_at DESC
@@ -337,7 +447,6 @@ async fn list_recurring_campaigns(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,

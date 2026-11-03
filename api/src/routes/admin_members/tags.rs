@@ -68,15 +68,20 @@ pub(super) async fn list_member_tags(
     Query(query): Query<MemberTagQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(100).min(500);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(100).clamp(1, 500);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern: Option<String> = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
-    // Gracefully handle missing table - return empty array instead of 500 error
     let tags: Vec<MemberTag> = sqlx::query_as(
         r"
-        SELECT id, name, slug, color, description, member_count, created_at, updated_at
+        SELECT id, name, slug, color, description,
+               COALESCE(usage_count, 0) AS member_count,
+               (created_at AT TIME ZONE 'UTC') AS created_at,
+               (updated_at AT TIME ZONE 'UTC') AS updated_at
         FROM member_tags
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
         ORDER BY name ASC
@@ -88,13 +93,12 @@ pub(super) async fn list_member_tags(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_else(|e| {
-        tracing::warn!(
-            "Database query failed in list_member_tags (table may not exist): {}",
-            e
-        );
-        Vec::new()
-    });
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: i64 = sqlx::query_as::<_, (i64,)>(
         r"
@@ -106,8 +110,13 @@ pub(super) async fn list_member_tags(
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .map(|r| r.0)
-    .unwrap_or(0);
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .0;
 
     Ok(Json(json!({
         "tags": tags,
@@ -123,17 +132,31 @@ pub(super) async fn list_member_tags(
 /// GET /admin/members/tags/:id - Get single tag
 pub(super) async fn get_member_tag(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
     let tag: MemberTag = sqlx::query_as(
-        "SELECT id, name, slug, color, description, member_count, created_at, updated_at FROM member_tags WHERE id = $1"
+        r"SELECT id, name, slug, color, description,
+                 COALESCE(usage_count, 0) AS member_count,
+                 (created_at AT TIME ZONE 'UTC') AS created_at,
+                 (updated_at AT TIME ZONE 'UTC') AS updated_at
+          FROM member_tags WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Tag not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Tag not found"})),
+        )
+    })?;
 
     Ok(Json(tag))
 }
@@ -141,7 +164,7 @@ pub(super) async fn get_member_tag(
 /// POST /admin/members/tags - Create new tag
 pub(super) async fn create_member_tag(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Json(input): Json<CreateMemberTagRequest>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
     // Generate slug if not provided
@@ -157,9 +180,12 @@ pub(super) async fn create_member_tag(
 
     let tag: MemberTag = sqlx::query_as(
         r"
-        INSERT INTO member_tags (name, slug, color, description, member_count, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, 0, NOW(), NOW())
-        RETURNING id, name, slug, color, description, member_count, created_at, updated_at
+        INSERT INTO member_tags (name, slug, color, description, usage_count, created_at, updated_at)
+        VALUES ($1, $2, COALESCE($3, '#10b981'), $4, 0, NOW(), NOW())
+        RETURNING id, name, slug, color, description,
+                  COALESCE(usage_count, 0) AS member_count,
+                  (created_at AT TIME ZONE 'UTC') AS created_at,
+                  (updated_at AT TIME ZONE 'UTC') AS updated_at
         "
     )
     .bind(&input.name)
@@ -182,7 +208,7 @@ pub(super) async fn create_member_tag(
 /// PUT /admin/members/tags/:id - Update tag
 pub(super) async fn update_member_tag(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateMemberTagRequest>,
 ) -> Result<Json<MemberTag>, (StatusCode, Json<serde_json::Value>)> {
@@ -216,7 +242,7 @@ pub(super) async fn update_member_tag(
     }
 
     let sql = format!(
-        "UPDATE member_tags SET {} WHERE id = $1 RETURNING id, name, slug, color, description, member_count, created_at, updated_at",
+        "UPDATE member_tags SET {} WHERE id = $1 RETURNING id, name, slug, color, description, COALESCE(usage_count, 0) AS member_count, (created_at AT TIME ZONE 'UTC') AS created_at, (updated_at AT TIME ZONE 'UTC') AS updated_at",
         set_clauses.join(", ")
     );
 
@@ -236,19 +262,28 @@ pub(super) async fn update_member_tag(
         query_builder = query_builder.bind(description);
     }
 
-    let tag = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
-        if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+    let tag = query_builder
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+                (
+                    StatusCode::CONFLICT,
+                    Json(json!({"error": "Tag with this slug already exists"})),
+                )
+            } else {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            }
+        })?
+        .ok_or_else(|| {
             (
-                StatusCode::CONFLICT,
-                Json(json!({"error": "Tag with this slug already exists"})),
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Tag not found"})),
             )
-        } else {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        }
-    })?;
+        })?;
 
     Ok(Json(tag))
 }
@@ -258,7 +293,7 @@ pub(super) async fn update_member_tag(
 /// FIX-2026-04-26 (audit 02 §P1-10): Destructive — super-admin only.
 pub(super) async fn delete_member_tag(
     State(state): State<AppState>,
-    SuperAdminUser(user): SuperAdminUser,
+    SuperAdminUser(_user): SuperAdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query("DELETE FROM member_tags WHERE id = $1")
@@ -290,13 +325,14 @@ pub(super) async fn assign_tag_to_user(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query(
         r"
-        INSERT INTO user_member_tags (user_id, tag_id, created_at)
-        VALUES ($1, $2, NOW())
+        INSERT INTO user_member_tags (user_id, tag_id, added_by, added_at)
+        VALUES ($1, $2, $3, NOW())
         ON CONFLICT (user_id, tag_id) DO NOTHING
         ",
     )
     .bind(input.user_id)
     .bind(input.tag_id)
+    .bind(user.id)
     .execute(&state.db.pool)
     .await
     .map_err(|e| {
@@ -308,12 +344,17 @@ pub(super) async fn assign_tag_to_user(
 
     // Update member count
     sqlx::query(
-        "UPDATE member_tags SET member_count = (SELECT COUNT(*) FROM user_member_tags WHERE tag_id = $1) WHERE id = $1"
+        "UPDATE member_tags SET usage_count = (SELECT COUNT(*)::int FROM user_member_tags WHERE tag_id = $1) WHERE id = $1"
     )
     .bind(input.tag_id)
     .execute(&state.db.pool)
     .await
-    .ok();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({"message": "Tag assigned successfully"})))
 }
@@ -321,7 +362,7 @@ pub(super) async fn assign_tag_to_user(
 /// DELETE /admin/members/tags/unassign - Remove tag from user
 pub(super) async fn unassign_tag_from_user(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Json(input): Json<AssignTagRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     sqlx::query("DELETE FROM user_member_tags WHERE user_id = $1 AND tag_id = $2")
@@ -338,12 +379,17 @@ pub(super) async fn unassign_tag_from_user(
 
     // Update member count
     sqlx::query(
-        "UPDATE member_tags SET member_count = (SELECT COUNT(*) FROM user_member_tags WHERE tag_id = $1) WHERE id = $1"
+        "UPDATE member_tags SET usage_count = (SELECT COUNT(*)::int FROM user_member_tags WHERE tag_id = $1) WHERE id = $1"
     )
     .bind(input.tag_id)
     .execute(&state.db.pool)
     .await
-    .ok();
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({"message": "Tag removed successfully"})))
 }
@@ -360,33 +406,42 @@ pub(super) async fn bulk_assign_tags(
 
     for user_id in &input.user_ids {
         for tag_id in &input.tag_ids {
-            let result = sqlx::query(
+            sqlx::query(
                 r"
-                INSERT INTO user_member_tags (user_id, tag_id, created_at)
-                VALUES ($1, $2, NOW())
+                INSERT INTO user_member_tags (user_id, tag_id, added_by, added_at)
+                VALUES ($1, $2, $3, NOW())
                 ON CONFLICT (user_id, tag_id) DO NOTHING
                 ",
             )
             .bind(user_id)
             .bind(tag_id)
+            .bind(user.id)
             .execute(&state.db.pool)
-            .await;
-
-            if result.is_ok() {
-                assigned_count += 1;
-            }
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+            assigned_count += 1;
         }
     }
 
     // Update member counts for all affected tags
     for tag_id in &input.tag_ids {
         sqlx::query(
-            "UPDATE member_tags SET member_count = (SELECT COUNT(*) FROM user_member_tags WHERE tag_id = $1) WHERE id = $1"
+            "UPDATE member_tags SET usage_count = (SELECT COUNT(*)::int FROM user_member_tags WHERE tag_id = $1) WHERE id = $1"
         )
         .bind(tag_id)
         .execute(&state.db.pool)
         .await
-        .ok();
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
     }
 
     Ok(Json(json!({

@@ -36,22 +36,38 @@ pub struct UnifiedVideoRow {
     pub id: i64,
     pub title: String,
     pub slug: String,
+    #[sqlx(default)]
     pub description: Option<String>,
+    #[sqlx(default)]
     pub video_url: String,
+    #[sqlx(default)]
     pub video_platform: String,
+    #[sqlx(default)]
     pub video_id: Option<String>,
+    #[sqlx(default)]
     pub bunny_video_guid: Option<String>,
+    #[sqlx(default)]
     pub thumbnail_url: Option<String>,
+    #[sqlx(default)]
     pub duration: Option<i32>,
+    #[sqlx(default)]
     pub content_type: String,
+    #[sqlx(default)]
     pub difficulty_level: Option<String>,
+    #[sqlx(default)]
     pub category: Option<String>,
     pub video_date: NaiveDate,
+    #[sqlx(default)]
     pub is_published: bool,
+    #[sqlx(default)]
     pub is_featured: bool,
+    #[sqlx(default)]
     pub tags: Option<serde_json::Value>,
+    #[sqlx(default)]
     pub views_count: i32,
+    #[sqlx(default)]
     pub trader_id: Option<i64>,
+    #[sqlx(default)]
     pub bunny_library_id: Option<i64>,
     pub created_at: chrono::NaiveDateTime,
 }

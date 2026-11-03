@@ -161,13 +161,30 @@
 	}
 
 	function transformHealthData(apiData: Record<string, unknown>): SiteHealthData {
+		const rawChecks = apiData['checks'];
+		let checksList: HealthCheck[] = [];
+		if (Array.isArray(rawChecks)) {
+			checksList = rawChecks.map((check: HealthCheck) => ({
+				...check,
+				lastChecked: check.lastChecked ? new Date(check.lastChecked) : null
+			}));
+		} else if (rawChecks && typeof rawChecks === 'object') {
+			checksList = Object.entries(rawChecks as Record<string, Record<string, unknown>>).map(
+				([key, val]) => ({
+					id: String(val?.id ?? key),
+					name: String(val?.name ?? key.replace(/_/g, ' ')),
+					description: String(val?.description ?? ''),
+					status: ((val?.status as HealthCheck['status']) ?? 'good'),
+					message: String(val?.message ?? val?.status ?? 'OK'),
+					category: ((val?.category as HealthCheck['category']) ?? 'server'),
+					lastChecked: val?.lastChecked ? new Date(String(val.lastChecked)) : new Date()
+				})
+			);
+		}
 		// Transform API response to our format
 		return {
 			overallScore: (apiData['overall_score'] as number) ?? 0,
-			checks: ((apiData['checks'] as HealthCheck[]) ?? []).map((check) => ({
-				...check,
-				lastChecked: check.lastChecked ? new Date(check.lastChecked) : null
-			})),
+			checks: checksList,
 			performance: {
 				responseTime:
 					((apiData['performance'] as Record<string, unknown>)?.['response_time'] as

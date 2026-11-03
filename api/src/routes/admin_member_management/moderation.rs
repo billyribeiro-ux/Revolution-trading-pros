@@ -32,7 +32,7 @@ pub(super) async fn ban_member(
     // Calculate ban expiry
     let banned_until = input
         .duration_days
-        .map(|days| Utc::now().naive_utc() + chrono::Duration::days(days as i64));
+        .map(|days| Utc::now() + chrono::Duration::days(days as i64));
 
     // FIX-2026-04-26 (Priority 5): wrap user_status upsert + activity log in a tx.
     let mut tx = state.db.pool.begin().await.map_err(|e| {
@@ -43,14 +43,15 @@ pub(super) async fn ban_member(
     })?;
 
     // Upsert user status
-    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r"
-        INSERT INTO user_status (user_id, status, banned_until, ban_reason, updated_at)
-        VALUES ($1, 'banned', $2, $3, NOW())
+        INSERT INTO user_status (user_id, status, banned_at, banned_by, ban_expires_at, ban_reason, updated_at)
+        VALUES ($1, 'banned', NOW(), $4, $2, $3, NOW())
         ON CONFLICT (user_id) DO UPDATE SET
             status = 'banned',
-            banned_until = $2,
+            banned_at = NOW(),
+            banned_by = $4,
+            ban_expires_at = $2,
             ban_reason = $3,
             updated_at = NOW()
         ",
@@ -58,6 +59,7 @@ pub(super) async fn ban_member(
     .bind(id)
     .bind(banned_until)
     .bind(&input.reason)
+    .bind(admin.0.id)
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -80,27 +82,33 @@ pub(super) async fn ban_member(
 
     // Log activity
     // Original pool reference: .execute(&state.db.pool)
-    let _ = sqlx::query(
+    sqlx::query(
         r"
-        INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
-        VALUES ($1, 'account_banned', $2, $3, NOW())
+        INSERT INTO user_activity_log (user_id, action, details, created_at)
+        VALUES ($1, 'account_banned', $2, NOW())
         ",
     )
     .bind(id)
-    .bind(format!(
-        "Account banned{}",
-        input
-            .duration_days
-            .map(|d| format!(" for {d} days"))
-            .unwrap_or_default()
-    ))
     .bind(json!({
+        "description": format!(
+            "Account banned{}",
+            input
+                .duration_days
+                .map(|d| format!(" for {d} days"))
+                .unwrap_or_default()
+        ),
         "reason": input.reason,
         "duration_days": input.duration_days,
         "banned_by": admin.0.id
     }))
     .execute(&mut *tx)
-    .await;
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // FIX-2026-04-26 (Priority 5): commit ban transaction.
     tx.commit().await.map_err(|e| {
@@ -137,7 +145,7 @@ pub(super) async fn suspend_member(
 
     let suspended_until = input
         .duration_days
-        .map(|days| Utc::now().naive_utc() + chrono::Duration::days(days as i64));
+        .map(|days| Utc::now() + chrono::Duration::days(days as i64));
 
     // FIX-2026-04-26 (Priority 5): wrap user_status upsert + activity log in a tx.
     let mut tx = state.db.pool.begin().await.map_err(|e| {
@@ -147,14 +155,13 @@ pub(super) async fn suspend_member(
         )
     })?;
 
-    // Original pool reference: .execute(&state.db.pool)
     sqlx::query(
         r"
-        INSERT INTO user_status (user_id, status, banned_until, ban_reason, updated_at)
+        INSERT INTO user_status (user_id, status, ban_expires_at, ban_reason, updated_at)
         VALUES ($1, 'suspended', $2, $3, NOW())
         ON CONFLICT (user_id) DO UPDATE SET
             status = 'suspended',
-            banned_until = $2,
+            ban_expires_at = $2,
             ban_reason = $3,
             updated_at = NOW()
         ",
@@ -183,27 +190,33 @@ pub(super) async fn suspend_member(
         })?;
 
     // Original pool reference: .execute(&state.db.pool)
-    let _ = sqlx::query(
+    sqlx::query(
         r"
-        INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
-        VALUES ($1, 'account_suspended', $2, $3, NOW())
+        INSERT INTO user_activity_log (user_id, action, details, created_at)
+        VALUES ($1, 'account_suspended', $2, NOW())
         ",
     )
     .bind(id)
-    .bind(format!(
-        "Account suspended{}",
-        input
-            .duration_days
-            .map(|d| format!(" for {d} days"))
-            .unwrap_or_default()
-    ))
     .bind(json!({
+        "description": format!(
+            "Account suspended{}",
+            input
+                .duration_days
+                .map(|d| format!(" for {d} days"))
+                .unwrap_or_default()
+        ),
         "reason": input.reason,
         "duration_days": input.duration_days,
         "suspended_by": admin.0.id
     }))
     .execute(&mut *tx)
-    .await;
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // FIX-2026-04-26 (Priority 5): commit suspend transaction.
     tx.commit().await.map_err(|e| {
@@ -242,7 +255,7 @@ pub(super) async fn unban_member(
     sqlx::query(
         r"
         UPDATE user_status
-        SET status = 'active', banned_until = NULL, ban_reason = NULL, updated_at = NOW()
+        SET status = 'active', ban_expires_at = NULL, ban_reason = NULL, updated_at = NOW()
         WHERE user_id = $1
         ",
     )
@@ -268,16 +281,25 @@ pub(super) async fn unban_member(
         })?;
 
     // Original pool reference: .execute(&state.db.pool)
-    let _ = sqlx::query(
+    sqlx::query(
         r"
-        INSERT INTO user_activity_log (user_id, action, description, metadata, created_at)
-        VALUES ($1, 'account_unbanned', 'Account unbanned by admin', $2, NOW())
+        INSERT INTO user_activity_log (user_id, action, details, created_at)
+        VALUES ($1, 'account_unbanned', $2, NOW())
         ",
     )
     .bind(id)
-    .bind(json!({"unbanned_by": admin.0.id}))
+    .bind(json!({
+        "description": "Account unbanned by admin",
+        "unbanned_by": admin.0.id
+    }))
     .execute(&mut *tx)
-    .await;
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // FIX-2026-04-26 (Priority 5): commit unban transaction.
     tx.commit().await.map_err(|e| {

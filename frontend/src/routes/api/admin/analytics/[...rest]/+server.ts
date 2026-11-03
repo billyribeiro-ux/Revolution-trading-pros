@@ -59,7 +59,7 @@ const ALLOWED_QUERY = [
 function upstreamPath(rest: string): string {
 	// SvelteKit's `[...rest]` parameter is unencoded; pass it through as-is to
 	// preserve `/`s in nested paths like `funnels/{key}/dropoff`.
-	return `/api/admin/analytics/${rest}`;
+	return `/api/analytics/${rest}`;
 }
 
 export const GET: RequestHandler = (event) =>

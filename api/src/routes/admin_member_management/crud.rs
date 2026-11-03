@@ -93,7 +93,12 @@ pub(super) async fn get_member_full(
     // Get recent activity
     let activity: Vec<MemberActivity> = sqlx::query_as(
         r"
-        SELECT id, user_id, action, description, metadata, ip_address, user_agent, created_at
+        SELECT id, user_id, action,
+               details->>'description' AS description,
+               details AS metadata,
+               ip_address::text AS ip_address,
+               user_agent,
+               (created_at AT TIME ZONE 'UTC') AS created_at
         FROM user_activity_log
         WHERE user_id = $1
         ORDER BY created_at DESC
@@ -108,7 +113,9 @@ pub(super) async fn get_member_full(
     // Get notes
     let notes: Vec<MemberNote> = sqlx::query_as(
         r"
-        SELECT mn.id, mn.user_id, mn.content, mn.created_by, u.name as created_by_name, mn.created_at
+        SELECT mn.id, mn.user_id, mn.note AS content, mn.created_by,
+               u.name as created_by_name,
+               (mn.created_at AT TIME ZONE 'UTC') AS created_at
         FROM member_notes mn
         LEFT JOIN users u ON u.id = mn.created_by
         WHERE mn.user_id = $1
@@ -123,7 +130,7 @@ pub(super) async fn get_member_full(
     // Get ban status
     let ban_info: Option<(String, Option<NaiveDateTime>, Option<String>)> = sqlx::query_as(
         r"
-        SELECT status, banned_until, ban_reason
+        SELECT status, (ban_expires_at AT TIME ZONE 'UTC') AS banned_until, ban_reason
         FROM user_status
         WHERE user_id = $1
         ",
@@ -131,7 +138,7 @@ pub(super) async fn get_member_full(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     // Calculate stats
     let total_spent_cents: i64 = sqlx::query_scalar(
@@ -401,15 +408,22 @@ pub(super) async fn create_member(
 
     // Log activity
     // Original pool reference: .execute(&state.db.pool)
-    let _ = sqlx::query(
+    sqlx::query(
         r"
-        INSERT INTO user_activity_log (user_id, action, description, created_at)
-        VALUES ($1, 'account_created', 'Account created by admin', NOW())
+        INSERT INTO user_activity_log (user_id, action, details, created_at)
+        VALUES ($1, 'account_created', $2, NOW())
         ",
     )
     .bind(member.id)
+    .bind(json!({"description": "Account created by admin"}))
     .execute(&mut *tx)
-    .await;
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     // FIX-2026-04-26 (Priority 5): commit the create-member transaction.
     tx.commit().await.map_err(|e| {
@@ -594,11 +608,12 @@ pub(super) async fn update_member(
     // Log activity
     let _ = sqlx::query(
         r"
-        INSERT INTO user_activity_log (user_id, action, description, created_at)
-        VALUES ($1, 'profile_updated_by_admin', 'Profile updated by admin', NOW())
+        INSERT INTO user_activity_log (user_id, action, details, created_at)
+        VALUES ($1, 'profile_updated_by_admin', $2, NOW())
         ",
     )
     .bind(id)
+    .bind(json!({"description": "Profile updated by admin"}))
     .execute(&state.db.pool)
     .await;
 
@@ -704,11 +719,12 @@ pub(super) async fn delete_member(
     // Log activity
     let _ = sqlx::query(
         r"
-        INSERT INTO user_activity_log (user_id, action, description, created_at)
-        VALUES ($1, 'account_deleted', 'Account deleted by admin', NOW())
+        INSERT INTO user_activity_log (user_id, action, details, created_at)
+        VALUES ($1, 'account_deleted', $2, NOW())
         ",
     )
     .bind(id)
+    .bind(json!({"description": "Account deleted by admin"}))
     .execute(&state.db.pool)
     .await;
 

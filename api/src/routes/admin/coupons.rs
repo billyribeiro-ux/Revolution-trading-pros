@@ -280,7 +280,7 @@ pub(super) async fn delete_coupon(
                 )
             })?;
 
-    sqlx::query("DELETE FROM coupons WHERE id = $1")
+    let result = sqlx::query("DELETE FROM coupons WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -290,6 +290,13 @@ pub(super) async fn delete_coupon(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        ));
+    }
 
     if let Some(Some(sid)) = stripe_coupon_id
         && let Err(e) = state.services.stripe.delete_coupon(&sid).await

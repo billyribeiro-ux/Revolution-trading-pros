@@ -11,11 +11,11 @@ use axum::{
     http::StatusCode,
 };
 
-use crate::{AppState, models::User};
+use crate::{AppState, middleware::admin::CmsEditorUser};
 
 use super::{
     ApiResult, CalendarEntry, CalendarQuery, CmsScheduleHistory, HistoryListResponse, HistoryQuery,
-    api_error, require_cms_editor,
+    api_error,
 };
 
 /// Get schedule calendar view
@@ -33,11 +33,9 @@ use super::{
 )]
 pub(super) async fn get_calendar(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<CalendarQuery>,
 ) -> ApiResult<Vec<CalendarEntry>> {
-    require_cms_editor(&user)?;
-
     let entries: Vec<CalendarEntry> =
         sqlx::query_as("SELECT * FROM cms_get_schedule_calendar($1, $2, $3)")
             .bind(query.start_date)
@@ -65,11 +63,9 @@ pub(super) async fn get_calendar(
 )]
 pub(super) async fn get_history(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<HistoryQuery>,
 ) -> ApiResult<HistoryListResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.min(100);
 
     let mut sql = String::from("SELECT * FROM cms_schedule_history WHERE 1=1");
@@ -138,7 +134,10 @@ pub(super) async fn get_history(
         count_query = count_query.bind(release_id.to_string());
     }
 
-    let total: (i64,) = count_query.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    let total: (i64,) = count_query
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(HistoryListResponse {
         history,

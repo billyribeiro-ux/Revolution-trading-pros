@@ -49,10 +49,10 @@ pub(super) async fn enroll_user(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let enrollment: UserCourseEnrollment = sqlx::query_as(
-        r"INSERT INTO user_course_enrollments
+        r"INSERT INTO user_course_enrollments_enhanced
            (user_id, course_id, enrollment_source, total_lessons)
            VALUES ($1, $2, $3, $4)
            ON CONFLICT (user_id, course_id) DO UPDATE SET is_active = true
@@ -99,11 +99,11 @@ pub(super) async fn get_enrollments(
         .get("per_page")
         .and_then(|v| v.as_i64())
         .unwrap_or(50)
-        .min(100);
-    let offset = (page - 1) * per_page;
+        .clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     let enrollments: Vec<UserCourseEnrollment> = sqlx::query_as(
-        r"SELECT * FROM user_course_enrollments
+        r"SELECT * FROM user_course_enrollments_enhanced
            WHERE course_id = $1 AND is_active = true
            ORDER BY enrolled_at DESC
            LIMIT $2 OFFSET $3",
@@ -122,12 +122,12 @@ pub(super) async fn get_enrollments(
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND is_active = true",
+        "SELECT COUNT(*) FROM user_course_enrollments_enhanced WHERE course_id = $1 AND is_active = true",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let enrollment_responses: Vec<serde_json::Value> = enrollments
         .iter()
@@ -222,7 +222,7 @@ pub(super) async fn update_lesson_progress(
 
     // Update enrollment last activity
     sqlx::query(
-        "UPDATE user_course_enrollments SET last_lesson_id = $1, last_position_seconds = $2, last_activity_at = NOW() WHERE user_id = $3 AND course_id = $4"
+        "UPDATE user_course_enrollments_enhanced SET last_lesson_id = $1, last_position_seconds = $2, last_activity_at = NOW() WHERE user_id = $3 AND course_id = $4"
     )
     .bind(lesson_id)
     .bind(watch_position)
@@ -245,13 +245,13 @@ pub(super) async fn get_user_progress(
     Path((course_id, user_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let enrollment: Option<UserCourseEnrollment> = sqlx::query_as(
-        "SELECT * FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
+        "SELECT * FROM user_course_enrollments_enhanced WHERE user_id = $1 AND course_id = $2",
     )
     .bind(user_id)
     .bind(course_id)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     let enrollment = enrollment.ok_or_else(|| {
         (

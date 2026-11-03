@@ -13,9 +13,8 @@ use chrono::{DateTime, Utc};
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
-use super::helpers::require_cms_editor;
 use super::types::{
     ApiResult, ApiResultEmpty, ComponentUsageResponse, GlobalComponentUsage,
     GlobalComponentUsageWithContent, TrackComponentUsageRequest, not_found_component, sqlx_err,
@@ -35,11 +34,9 @@ use super::types::{
 )]
 pub(super) async fn get_component_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<ComponentUsageResponse> {
-    require_cms_editor(&user)?;
-
     // Get current version
     #[derive(Debug, sqlx::FromRow)]
     struct CurrentVersion {
@@ -142,11 +139,9 @@ pub(super) async fn get_component_usage(
 )]
 pub(super) async fn track_component_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<TrackComponentUsageRequest>,
 ) -> Result<(StatusCode, Json<GlobalComponentUsage>), ApiError> {
-    require_cms_editor(&user)?;
-
     // Get component and its current version
     #[derive(Debug, sqlx::FromRow)]
     struct ComponentVersion {
@@ -229,11 +224,9 @@ pub(super) async fn track_component_usage(
 )]
 pub(super) async fn remove_component_usage(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     // Get usage record to find the component ID
     #[derive(Debug, sqlx::FromRow)]
     struct UsageRecord {

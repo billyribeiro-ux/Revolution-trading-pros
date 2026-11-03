@@ -41,7 +41,34 @@ export const getPlans = query(async (): Promise<SubscriptionPlan[]> => {
 	const res = await fetch('/api/admin/subscriptions/plans?per_page=100');
 	if (!res.ok) error(res.status, `Failed to load plans: ${res.status}`);
 	const body = await res.json();
-	return Array.isArray(body?.data) ? (body.data as SubscriptionPlan[]) : [];
+	const rawList: Record<string, unknown>[] = Array.isArray(body?.data)
+		? body.data
+		: Array.isArray(body?.plans)
+			? body.plans
+			: Array.isArray(body)
+				? body
+				: [];
+	return rawList.map((p) => {
+		const price =
+			typeof p.price === 'number' && !Number.isNaN(p.price)
+				? p.price
+				: typeof p.price_cents === 'number'
+					? p.price_cents / 100
+					: Number(p.price ?? 0) || 0;
+		const cycle =
+			(p.billing_cycle as string | undefined) ??
+			(p.billing_interval === 'year'
+				? 'annual'
+				: p.billing_interval === 'month'
+					? 'monthly'
+					: (p.billing_interval as string | undefined)) ??
+			'monthly';
+		return {
+			...(p as unknown as SubscriptionPlan),
+			price,
+			billing_cycle: cycle as SubscriptionPlan['billing_cycle']
+		};
+	});
 });
 
 export const getPriceHistory = query(IdSchema, async (planId): Promise<PriceHistoryEntry[]> => {

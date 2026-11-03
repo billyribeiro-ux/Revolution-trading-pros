@@ -36,8 +36,7 @@ pub(super) async fn enroll_user(
     .bind(course_id)
     .fetch_optional(&state.db.pool)
     .await
-    .ok()
-    .flatten();
+    .map_err(crate::utils::errors::db_error)?;
 
     if existing.is_some() {
         return Err((
@@ -61,7 +60,8 @@ pub(super) async fn enroll_user(
             user_id, course_id, status, progress_percent, is_lifetime_access,
             access_expires_at, enrolled_at
         ) VALUES ($1, $2, 'active', 0, $3, $4, NOW())
-        RETURNING id, course_id, user_id, progress_percent, status, enrolled_at
+        RETURNING id, course_id, user_id, progress_percent, COALESCE(status, 'active') AS status,
+                  (enrolled_at AT TIME ZONE 'UTC') AS enrolled_at
         ",
     )
     .bind(input.user_id)
@@ -119,8 +119,10 @@ pub(super) async fn list_enrollments(
         ),
     >(
         r"
-        SELECT e.id, e.user_id, e.progress_percent, e.status, e.enrolled_at,
-               e.completed_at, e.certificate_issued
+        SELECT e.id, e.user_id, e.progress_percent, COALESCE(e.status, 'active') AS status,
+               (e.enrolled_at AT TIME ZONE 'UTC') AS enrolled_at,
+               (e.completed_at AT TIME ZONE 'UTC') AS completed_at,
+               e.certificate_issued
         FROM user_course_enrollments e
         WHERE e.course_id = $1
         ORDER BY e.enrolled_at DESC
@@ -196,21 +198,21 @@ pub(super) async fn get_enrollment_stats(
             .bind(course_id)
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let active: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND status = 'active'",
+        "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND COALESCE(status, 'active') = 'active'",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let completed: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND completed_at IS NOT NULL")
         .bind(course_id)
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     let avg_progress: (Option<f64>,) = sqlx::query_as(
         "SELECT AVG(progress_percent::float) FROM user_course_enrollments WHERE course_id = $1",
@@ -218,13 +220,13 @@ pub(super) async fn get_enrollment_stats(
     .bind(course_id)
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((None,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let certificates: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND certificate_issued = true")
         .bind(course_id)
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,

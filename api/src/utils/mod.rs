@@ -66,6 +66,8 @@ pub struct Claims {
     //     the `*_versioned` constructors below.
     #[serde(default, rename = "tv")]
     pub token_version: i64,
+    #[serde(default)]
+    pub jti: String,
 }
 
 /// ICT L11+ Security Hardening: Password validation rules
@@ -320,6 +322,7 @@ pub fn create_jwt_versioned(
         exp: (now + Duration::hours(expires_in_hours)).timestamp(),
         token_type: "access".to_string(),
         token_version,
+        jti: uuid::Uuid::new_v4().to_string(),
     };
 
     let token = encode(
@@ -357,6 +360,7 @@ pub fn create_refresh_token_versioned(
         exp: (now + Duration::days(7)).timestamp(),
         token_type: "refresh".to_string(),
         token_version,
+        jti: uuid::Uuid::new_v4().to_string(),
     };
 
     let token = encode(

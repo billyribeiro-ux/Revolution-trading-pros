@@ -11,11 +11,9 @@ use axum::{
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
-use crate::{AppState, models::User, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::CmsEditorUser, utils::errors::ApiError};
 
-use super::helpers::{
-    create_version_record, get_cms_user_id, require_cms_admin, require_cms_editor,
-};
+use super::helpers::{create_version_record, get_cms_user_id, require_cms_admin};
 use super::types::{
     ApiResult, GlobalComponent, GlobalComponentVersion, VersionHistoryResponse,
     not_found_component, sqlx_err,
@@ -35,11 +33,9 @@ use super::types::{
 )]
 pub(super) async fn get_version_history(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<VersionHistoryResponse> {
-    require_cms_editor(&user)?;
-
     // Get current version
     #[derive(Debug, sqlx::FromRow)]
     struct CurrentVersion {
@@ -95,11 +91,9 @@ pub(super) async fn get_version_history(
 )]
 pub(super) async fn restore_version(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path((id, version)): Path<(Uuid, i32)>,
 ) -> ApiResult<GlobalComponent> {
-    require_cms_editor(&user)?;
-
     // Check if component exists and is not locked
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingComponent {

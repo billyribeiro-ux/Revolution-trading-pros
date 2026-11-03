@@ -82,9 +82,12 @@ async fn list_contacts(
     Query(filters): Query<ContactFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = filters.page.unwrap_or(1).max(1);
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let offset = (page - 1) * per_page;
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let contacts: Vec<CrmContact> = sqlx::query_as(
         r"
@@ -112,7 +115,6 @@ async fn list_contacts(
         )
     })?;
 
-    let search_pattern2 = filters.search.as_ref().map(|s| format!("%{s}%"));
     let total: (i64,) = sqlx::query_as(
         r"
         SELECT COUNT(*) FROM contacts
@@ -121,10 +123,16 @@ async fn list_contacts(
         ",
     )
     .bind(filters.status.as_deref())
-    .bind(search_pattern2.as_deref())
+    .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(|e| {
+        tracing::error!("CRM contacts count error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": contacts,
@@ -243,9 +251,10 @@ async fn update_contact(
     .bind(&input.status)
     .bind(&tags)
     .bind(&input.custom_fields)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Contact not found"}))))?;
 
     Ok(Json(contact))
 }
@@ -255,7 +264,7 @@ async fn delete_contact(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM contacts WHERE id = $1")
+    let result = sqlx::query("DELETE FROM contacts WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -265,6 +274,13 @@ async fn delete_contact(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Contact not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Contact deleted successfully"})))
 }
@@ -295,9 +311,10 @@ async fn recalculate_contact_score(
         ",
     )
     .bind(id)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Contact not found"}))))?;
 
     Ok(Json(contact))
 }

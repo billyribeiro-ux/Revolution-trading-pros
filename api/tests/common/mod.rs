@@ -1,4 +1,5 @@
 //! Integration-test harness.
+#![allow(dead_code)]
 //!
 //! Stage 1b: the admin/user token helpers no longer return the fake
 //! strings `"test_admin_token"` / `"test_user_token"` (which the real
@@ -101,9 +102,16 @@ pub async fn setup_test_app() -> Router {
         cache_invalidator,
     };
 
+    let uuid_bytes = uuid::Uuid::new_v4().into_bytes();
+    let mock_peer = std::net::SocketAddr::from((
+        [198, 51, 100, uuid_bytes[0].max(1)],
+        u16::from_be_bytes([uuid_bytes[1], uuid_bytes[2]]).max(1024),
+    ));
+
     Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
+        .layer(axum::extract::connect_info::MockConnectInfo(mock_peer))
         .layer(tower_http::cors::CorsLayer::permissive())
         .with_state(state)
 }
@@ -211,7 +219,6 @@ pub async fn body_to_json(response: Response) -> Value {
 
 /// Test user struct.
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub struct TestUser {
     pub id: i64,
     pub email: String,

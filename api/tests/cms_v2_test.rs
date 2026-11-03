@@ -54,6 +54,8 @@
 //! free domain types. The CLAUDE.md i64-only money rule has no surface
 //! to test here. Documented for the auditor's sake.
 
+mod common;
+
 // ── 1. admin_router(): compiles to Router<AppState> and is mountable ─
 
 /// `routes::cms_v2::admin_router()` must return a `Router<AppState>`
@@ -109,103 +111,14 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // Probe router mirrors the mount table at cms_v2.rs:830-892:
-    let probe: axum::Router = axum::Router::new()
-        // Stats
-        .route("/stats", axum::routing::get(|| async { "ok" }))
-        // Asset Folders
-        .route(
-            "/folders",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/folders/{id}",
-            axum::routing::get(|| async { "ok" })
-                .put(|| async { "ok" })
-                .delete(|| async { "ok" }),
-        )
-        // Assets
-        .route(
-            "/assets",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/assets/{id}",
-            axum::routing::get(|| async { "ok" })
-                .put(|| async { "ok" })
-                .delete(|| async { "ok" }),
-        )
-        // Content
-        .route(
-            "/content",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/content/{id}",
-            axum::routing::get(|| async { "ok" })
-                .put(|| async { "ok" })
-                .delete(|| async { "ok" }),
-        )
-        .route(
-            "/content/{id}/status",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/content/{id}/revisions",
-            axum::routing::get(|| async { "ok" }),
-        )
-        .route(
-            "/content/{content_id}/revisions/{revision_number}/restore",
-            axum::routing::post(|| async { "ok" }),
-        )
-        .route(
-            "/content/{content_id}/tags",
-            axum::routing::get(|| async { "ok" }),
-        )
-        .route(
-            "/content/{content_id}/tags/{tag_id}",
-            axum::routing::post(|| async { "ok" }).delete(|| async { "ok" }),
-        )
-        .route(
-            "/content/{content_id}/comments",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/comments/{comment_id}/resolve",
-            axum::routing::post(|| async { "ok" }),
-        )
-        // Tags
-        .route(
-            "/tags",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        // Site Settings
-        .route(
-            "/settings",
-            axum::routing::get(|| async { "ok" }).put(|| async { "ok" }),
-        )
-        // Navigation Menus
-        .route(
-            "/menus",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/menus/{id}",
-            axum::routing::get(|| async { "ok" }).put(|| async { "ok" }),
-        )
-        // Redirects
-        .route(
-            "/redirects",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route("/redirects/{id}", axum::routing::delete(|| async { "ok" }));
+    let app = common::setup_test_app().await;
 
-    // Sanity: unmounted path is 404.
-    let resp = probe
+    // Sanity: unmounted path on the real router is 404.
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
-                .uri("/not-a-cms-route/sub/sub")
+                .uri("/api/admin/cms-v2/not-a-cms-route/sub/sub")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -213,49 +126,55 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
         .unwrap();
     assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 
-    // Spot-check the full surface — every (method, path) pair from the
-    // documented mount table responds NOT 404.
-    let id = "00000000-0000-0000-0000-000000000000"; // Uuid placeholder
+    // Every (method, path) pair on the real /api/admin/cms-v2 router must reach
+    // the auth extractor (401 Unauthorized without a token), never 404.
+    let id = "00000000-0000-0000-0000-000000000000";
     let cases: &[(&str, String)] = &[
-        ("GET", "/stats".to_string()),
-        ("GET", "/folders".to_string()),
-        ("POST", "/folders".to_string()),
-        ("GET", format!("/folders/{id}")),
-        ("PUT", format!("/folders/{id}")),
-        ("DELETE", format!("/folders/{id}")),
-        ("GET", "/assets".to_string()),
-        ("POST", "/assets".to_string()),
-        ("GET", format!("/assets/{id}")),
-        ("PUT", format!("/assets/{id}")),
-        ("DELETE", format!("/assets/{id}")),
-        ("GET", "/content".to_string()),
-        ("POST", "/content".to_string()),
-        ("GET", format!("/content/{id}")),
-        ("PUT", format!("/content/{id}")),
-        ("DELETE", format!("/content/{id}")),
-        ("POST", format!("/content/{id}/status")),
-        ("GET", format!("/content/{id}/revisions")),
-        ("POST", format!("/content/{id}/revisions/3/restore")),
-        ("GET", format!("/content/{id}/tags")),
-        ("POST", format!("/content/{id}/tags/{id}")),
-        ("DELETE", format!("/content/{id}/tags/{id}")),
-        ("GET", format!("/content/{id}/comments")),
-        ("POST", format!("/content/{id}/comments")),
-        ("POST", format!("/comments/{id}/resolve")),
-        ("GET", "/tags".to_string()),
-        ("POST", "/tags".to_string()),
-        ("GET", "/settings".to_string()),
-        ("PUT", "/settings".to_string()),
-        ("GET", "/menus".to_string()),
-        ("POST", "/menus".to_string()),
-        ("GET", format!("/menus/{id}")),
-        ("PUT", format!("/menus/{id}")),
-        ("GET", "/redirects".to_string()),
-        ("POST", "/redirects".to_string()),
-        ("DELETE", format!("/redirects/{id}")),
+        ("GET", "/api/admin/cms-v2/stats".to_string()),
+        ("GET", "/api/admin/cms-v2/folders".to_string()),
+        ("POST", "/api/admin/cms-v2/folders".to_string()),
+        ("GET", format!("/api/admin/cms-v2/folders/{id}")),
+        ("PUT", format!("/api/admin/cms-v2/folders/{id}")),
+        ("DELETE", format!("/api/admin/cms-v2/folders/{id}")),
+        ("GET", "/api/admin/cms-v2/assets".to_string()),
+        ("POST", "/api/admin/cms-v2/assets".to_string()),
+        ("GET", format!("/api/admin/cms-v2/assets/{id}")),
+        ("PUT", format!("/api/admin/cms-v2/assets/{id}")),
+        ("DELETE", format!("/api/admin/cms-v2/assets/{id}")),
+        ("GET", "/api/admin/cms-v2/content".to_string()),
+        ("POST", "/api/admin/cms-v2/content".to_string()),
+        ("GET", format!("/api/admin/cms-v2/content/{id}")),
+        ("PUT", format!("/api/admin/cms-v2/content/{id}")),
+        ("DELETE", format!("/api/admin/cms-v2/content/{id}")),
+        ("POST", format!("/api/admin/cms-v2/content/{id}/status")),
+        ("GET", format!("/api/admin/cms-v2/content/{id}/revisions")),
+        (
+            "POST",
+            format!("/api/admin/cms-v2/content/{id}/revisions/3/restore"),
+        ),
+        ("GET", format!("/api/admin/cms-v2/content/{id}/tags")),
+        ("POST", format!("/api/admin/cms-v2/content/{id}/tags/{id}")),
+        (
+            "DELETE",
+            format!("/api/admin/cms-v2/content/{id}/tags/{id}"),
+        ),
+        ("GET", format!("/api/admin/cms-v2/content/{id}/comments")),
+        ("POST", format!("/api/admin/cms-v2/content/{id}/comments")),
+        ("POST", format!("/api/admin/cms-v2/comments/{id}/resolve")),
+        ("GET", "/api/admin/cms-v2/tags".to_string()),
+        ("POST", "/api/admin/cms-v2/tags".to_string()),
+        ("GET", "/api/admin/cms-v2/settings".to_string()),
+        ("PUT", "/api/admin/cms-v2/settings".to_string()),
+        ("GET", "/api/admin/cms-v2/menus".to_string()),
+        ("POST", "/api/admin/cms-v2/menus".to_string()),
+        ("GET", format!("/api/admin/cms-v2/menus/{id}")),
+        ("PUT", format!("/api/admin/cms-v2/menus/{id}")),
+        ("GET", "/api/admin/cms-v2/redirects".to_string()),
+        ("POST", "/api/admin/cms-v2/redirects".to_string()),
+        ("DELETE", format!("/api/admin/cms-v2/redirects/{id}")),
     ];
     for (method, path) in cases {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -266,45 +185,44 @@ async fn admin_router_mounts_all_documented_admin_cms_routes() {
             )
             .await
             .unwrap();
-        assert_ne!(
+        assert_eq!(
             resp.status(),
-            StatusCode::NOT_FOUND,
-            "{method} {path} must be a mounted admin-cms-v2 route"
+            StatusCode::UNAUTHORIZED,
+            "{method} {path} must be mounted on the real router and require auth (401)"
         );
     }
 }
 
 // ── 4. public_router(): documented public mount-table is complete ────
 
-/// `public_router()` serves the entire public website's content. The
-/// 4 mounted paths are the surface every visitor hits — a regression
-/// here is a homepage-down event.
 #[tokio::test]
 async fn public_router_mounts_all_documented_public_cms_routes() {
     use axum::body::Body;
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // Probe router mirrors cms_v2.rs:895-904:
-    //   GET /content/:content_type/:slug
-    //   GET /settings
-    //   GET /menus
-    //   GET /menus/:slug
-    let probe: axum::Router = axum::Router::new()
-        .route(
-            "/content/{content_type}/{slug}",
-            axum::routing::get(|| async { "ok" }),
-        )
-        .route("/settings", axum::routing::get(|| async { "ok" }))
-        .route("/menus", axum::routing::get(|| async { "ok" }))
-        .route("/menus/{slug}", axum::routing::get(|| async { "ok" }));
+    let app = common::setup_test_app().await;
 
-    // Sanity: a wrong-shape public URL is 404.
-    let resp = probe
+    // Sanity: an extra path segment must not match :content_type/:slug and returns an empty 404.
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
-                .uri("/content/page/about/extra-segment")
+                .uri("/api/cms/content/page/about/extra-segment")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+
+    // GET /api/cms/menus returns 200 OK anonymously on the real router.
+    let resp = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/api/cms/menus")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -312,89 +230,87 @@ async fn public_router_mounts_all_documented_public_cms_routes() {
         .unwrap();
     assert_eq!(
         resp.status(),
-        StatusCode::NOT_FOUND,
-        "an extra path segment must not match the :content_type/:slug pair"
+        StatusCode::OK,
+        "GET /api/cms/menus must be mounted on the real public router and return 200 OK"
     );
 
-    // Each documented public path responds NOT 404 — these are the
-    // routes the public site relies on. A regression that dropped any
-    // of them would be visible to every unauthenticated visitor.
-    let cases: &[(&str, &str)] = &[
-        ("GET", "/content/page/about"),
-        ("GET", "/content/blog_post/launch-2026"),
-        ("GET", "/content/alert_service/swing-trader"),
-        ("GET", "/settings"),
-        ("GET", "/menus"),
-        ("GET", "/menus/footer"),
-    ];
-    for (method, path) in cases {
-        let resp = probe
+    // GET /api/cms/content/:content_type/:slug reaches the real handler (400 on unknown content_type).
+    let resp = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("GET")
+                .uri("/api/cms/content/invalid_type/about")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        resp.status(),
+        StatusCode::BAD_REQUEST,
+        "GET /api/cms/content/:content_type/:slug must reach handler on the real router"
+    );
+
+    // All 4 public routes are mounted as GET-only (POST returns 405 Method Not Allowed on the real router).
+    for path in [
+        "/api/cms/content/page/about",
+        "/api/cms/settings",
+        "/api/cms/menus",
+        "/api/cms/menus/footer",
+    ] {
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
-                    .method(*method)
-                    .uri(*path)
+                    .method("POST")
+                    .uri(path)
                     .body(Body::empty())
                     .unwrap(),
             )
             .await
             .unwrap();
-        assert_ne!(
+        assert_eq!(
             resp.status(),
-            StatusCode::NOT_FOUND,
-            "{method} {path} must be a mounted public-cms-v2 route"
+            StatusCode::METHOD_NOT_ALLOWED,
+            "POST {path} must return 405 on the real router (proving GET route is mounted)"
         );
     }
 }
 
 // ── 5. /content/:id/status is POST-only (not GET / PUT / DELETE) ─────
 
-/// `/content/:id/status` is the workflow-transition endpoint
-/// (draft → in_review → approved → published / archived). It MUST be
-/// POST — any state-mutating workflow op is non-idempotent and must not
-/// be GET-cacheable. A refactor that flipped to GET would compile and
-/// silently expose the publish/unpublish side-effect to cache layers,
-/// proxies, and CSRF.
 #[tokio::test]
 async fn content_status_route_is_post_only() {
     use axum::body::Body;
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // Shape-equivalent probe.
-    let probe: axum::Router = axum::Router::new().route(
-        "/content/{id}/status",
-        axum::routing::post(|| async { "ok" }),
-    );
-
+    let app = common::setup_test_app().await;
     let id = "00000000-0000-0000-0000-000000000000";
 
-    // POST is mounted.
-    let resp = probe
+    // POST is mounted on the real router (returns 401 without token).
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
                 .method("POST")
-                .uri(format!("/content/{id}/status"))
+                .uri(format!("/api/admin/cms-v2/content/{id}/status"))
                 .body(Body::empty())
                 .unwrap(),
         )
         .await
         .unwrap();
-    assert_ne!(resp.status(), StatusCode::NOT_FOUND);
-    assert_ne!(resp.status(), StatusCode::METHOD_NOT_ALLOWED);
+    assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
 
-    // GET / PUT / DELETE on /content/:id/status must each be 405 —
-    // explicit method rejection, not silent fall-through to a generic
-    // 404. A refactor that added GET semantics would fail this
-    // assertion.
+    // GET / PUT / DELETE on /api/admin/cms-v2/content/:id/status must each be 405.
     for method in ["GET", "PUT", "DELETE"] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
                     .method(method)
-                    .uri(format!("/content/{id}/status"))
+                    .uri(format!("/api/admin/cms-v2/content/{id}/status"))
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -403,54 +319,44 @@ async fn content_status_route_is_post_only() {
         assert_eq!(
             resp.status(),
             StatusCode::METHOD_NOT_ALLOWED,
-            "{method} /content/:id/status must be 405 — POST-only workflow transition"
+            "{method} /api/admin/cms-v2/content/:id/status must be 405 — POST-only workflow transition"
         );
     }
 }
 
 // ── 6. /redirects/:id is DELETE-only ─────────────────────────────────
 
-/// `/redirects/:id` only supports DELETE (cms_v2.rs:891). Redirects are
-/// otherwise read via `GET /redirects` (list) and created via
-/// `POST /redirects` — there's intentionally no per-row GET / PUT.
-/// Any read / update flow has to go through the list / re-create
-/// flow. A refactor that silently added GET / PUT to `/redirects/:id`
-/// would change the API contract without a compile error; this test
-/// pins the documented one-verb shape.
 #[tokio::test]
 async fn redirects_id_route_is_delete_only() {
     use axum::body::Body;
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    let probe: axum::Router =
-        axum::Router::new().route("/redirects/{id}", axum::routing::delete(|| async { "ok" }));
-
+    let app = common::setup_test_app().await;
     let id = "00000000-0000-0000-0000-000000000000";
 
-    // DELETE is mounted.
-    let resp = probe
+    // DELETE is mounted on the real router (returns 401 without token).
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
                 .method("DELETE")
-                .uri(format!("/redirects/{id}"))
+                .uri(format!("/api/admin/cms-v2/redirects/{id}"))
                 .body(Body::empty())
                 .unwrap(),
         )
         .await
         .unwrap();
-    assert_ne!(resp.status(), StatusCode::NOT_FOUND);
-    assert_ne!(resp.status(), StatusCode::METHOD_NOT_ALLOWED);
+    assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
 
-    // GET / PUT / POST on /redirects/:id must each be 405.
+    // GET / PUT / POST on /api/admin/cms-v2/redirects/:id must each be 405.
     for method in ["GET", "PUT", "POST"] {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
                     .method(method)
-                    .uri(format!("/redirects/{id}"))
+                    .uri(format!("/api/admin/cms-v2/redirects/{id}"))
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -459,7 +365,7 @@ async fn redirects_id_route_is_delete_only() {
         assert_eq!(
             resp.status(),
             StatusCode::METHOD_NOT_ALLOWED,
-            "{method} /redirects/:id must be 405 — DELETE-only contract"
+            "{method} /api/admin/cms-v2/redirects/:id must be 405 — DELETE-only contract"
         );
     }
 }

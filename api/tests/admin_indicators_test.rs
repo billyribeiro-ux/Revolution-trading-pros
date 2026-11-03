@@ -41,6 +41,8 @@
 //! to `revolution_api::routes::admin_indicators::*` so a future refactor
 //! that breaks the public type contract surfaces here, not in prod.
 
+mod common;
+
 use revolution_api::routes::admin_indicators::{
     CreateFileRequest, CreateIndicatorRequest, CreateVideoRequest, IndicatorFileRow,
     IndicatorQueryParams, IndicatorRow, IndicatorVideoRow, UpdateIndicatorRequest,
@@ -67,66 +69,16 @@ async fn router_mounts_all_documented_indicator_routes_with_correct_methods() {
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // Compile-time contract: admin_indicators::router() returns
-    // Router<AppState>. A regression that breaks any handler signature
-    // (extractor mismatch, missing AppState) fails to compile here.
     let _router: axum::Router<revolution_api::AppState> =
         revolution_api::routes::admin_indicators::router();
+    let app = common::setup_test_app().await;
 
-    // Method-shape probe — mirrors the actual mount table in
-    // admin_indicators.rs:1075-1104:
-    //   GET    /                       → list_indicators
-    //   POST   /                       → create_indicator
-    //   GET    /:id                    → get_indicator
-    //   PUT    /:id                    → update_indicator
-    //   DELETE /:id                    → delete_indicator
-    //   POST   /:id/toggle             → toggle_indicator
-    //   POST   /:id/change-price       → change_indicator_price
-    //   GET    /:id/files              → list_indicator_files
-    //   POST   /:id/files              → create_indicator_file
-    //   PUT    /:id/files/:file_id     → update_indicator_file
-    //   DELETE /:id/files/:file_id     → delete_indicator_file
-    //   GET    /:id/videos             → list_indicator_videos
-    //   POST   /:id/videos             → create_indicator_video
-    //   DELETE /:id/videos/:video_id   → delete_indicator_video
-    //   GET    /:id/analytics          → get_download_analytics
-    let probe: axum::Router = axum::Router::new()
-        .route(
-            "/",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/{id}",
-            axum::routing::get(|| async { "ok" })
-                .put(|| async { "ok" })
-                .delete(|| async { "ok" }),
-        )
-        .route("/{id}/toggle", axum::routing::post(|| async { "ok" }))
-        .route("/{id}/change-price", axum::routing::post(|| async { "ok" }))
-        .route(
-            "/{id}/files",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/{id}/files/{file_id}",
-            axum::routing::put(|| async { "ok" }).delete(|| async { "ok" }),
-        )
-        .route(
-            "/{id}/videos",
-            axum::routing::get(|| async { "ok" }).post(|| async { "ok" }),
-        )
-        .route(
-            "/{id}/videos/{video_id}",
-            axum::routing::delete(|| async { "ok" }),
-        )
-        .route("/{id}/analytics", axum::routing::get(|| async { "ok" }));
-
-    // Sanity: an unmounted path is 404.
-    let resp = probe
+    // Sanity: an unmounted path on the real router is 404.
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
-                .uri("/totally-not-an-indicator-route/sub/sub")
+                .uri("/api/admin/indicators/totally-not-an-indicator-route/sub/sub")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -138,28 +90,25 @@ async fn router_mounts_all_documented_indicator_routes_with_correct_methods() {
         "unknown path must be 404"
     );
 
-    // Each (path, method) pair from the documented mount table must
-    // respond NOT 404. A GET on a POST-only path is 405 (still not
-    // 404), so "not 404" is the robust probe.
     let cases: &[(&str, &str)] = &[
-        ("GET", "/"),
-        ("POST", "/"),
-        ("GET", "/42"),
-        ("PUT", "/42"),
-        ("DELETE", "/42"),
-        ("POST", "/42/toggle"),
-        ("POST", "/42/change-price"),
-        ("GET", "/42/files"),
-        ("POST", "/42/files"),
-        ("PUT", "/42/files/7"),
-        ("DELETE", "/42/files/7"),
-        ("GET", "/42/videos"),
-        ("POST", "/42/videos"),
-        ("DELETE", "/42/videos/7"),
-        ("GET", "/42/analytics"),
+        ("GET", "/api/admin/indicators"),
+        ("POST", "/api/admin/indicators"),
+        ("GET", "/api/admin/indicators/42"),
+        ("PUT", "/api/admin/indicators/42"),
+        ("DELETE", "/api/admin/indicators/42"),
+        ("POST", "/api/admin/indicators/42/toggle"),
+        ("POST", "/api/admin/indicators/42/change-price"),
+        ("GET", "/api/admin/indicators/42/files"),
+        ("POST", "/api/admin/indicators/42/files"),
+        ("PUT", "/api/admin/indicators/42/files/7"),
+        ("DELETE", "/api/admin/indicators/42/files/7"),
+        ("GET", "/api/admin/indicators/42/videos"),
+        ("POST", "/api/admin/indicators/42/videos"),
+        ("DELETE", "/api/admin/indicators/42/videos/7"),
+        ("GET", "/api/admin/indicators/42/analytics"),
     ];
     for (method, path) in cases {
-        let resp = probe
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -170,63 +119,49 @@ async fn router_mounts_all_documented_indicator_routes_with_correct_methods() {
             )
             .await
             .unwrap();
-        assert_ne!(
+        assert_eq!(
             resp.status(),
-            StatusCode::NOT_FOUND,
-            "{method} {path} must be a mounted admin-indicators route"
+            StatusCode::UNAUTHORIZED,
+            "{method} {path} must be mounted on the real router and gated by AdminUser (401 without token)"
         );
     }
 }
 
 // ── 2. /:id/change-price must reject GET (POST-only) ─────────────────
 
-/// `/:id/change-price` is a sensitive money mutation (calls Stripe
-/// to mint a new Price object, then updates the DB pointer + writes
-/// `security_events` audit row). It MUST be POST-only — a refactor that
-/// flipped the method to GET would compile, deserialize, and then
-/// silently expose the Stripe-price-mint side-effect to GET requests
-/// (CSRF-able, cacheable, log-leakable). This test pins POST-only.
 #[tokio::test]
 async fn change_price_route_is_post_only_not_get() {
     use axum::body::Body;
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // Shape-equivalent probe of the actual mount table — POST only.
-    let probe: axum::Router =
-        axum::Router::new().route("/{id}/change-price", axum::routing::post(|| async { "ok" }));
+    let app = common::setup_test_app().await;
 
-    // POST is allowed (NOT 404, NOT 405).
-    let resp = probe
+    // POST is mounted on the real router and reaches AdminUser (401 without token).
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
                 .method("POST")
-                .uri("/42/change-price")
+                .uri("/api/admin/indicators/42/change-price")
                 .body(Body::empty())
                 .unwrap(),
         )
         .await
         .unwrap();
-    assert_ne!(
+    assert_eq!(
         resp.status(),
-        StatusCode::NOT_FOUND,
-        "POST /:id/change-price must be mounted"
-    );
-    assert_ne!(
-        resp.status(),
-        StatusCode::METHOD_NOT_ALLOWED,
-        "POST /:id/change-price must accept POST"
+        StatusCode::UNAUTHORIZED,
+        "POST /api/admin/indicators/:id/change-price must be mounted and require AdminUser"
     );
 
-    // GET on the same path is 405 (Method Not Allowed) — the inverse
-    // method must be explicitly rejected, NOT silently 404.
-    let resp = probe
+    // GET on the same path on the real router is 405 (Method Not Allowed).
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
                 .method("GET")
-                .uri("/42/change-price")
+                .uri("/api/admin/indicators/42/change-price")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -235,7 +170,7 @@ async fn change_price_route_is_post_only_not_get() {
     assert_eq!(
         resp.status(),
         StatusCode::METHOD_NOT_ALLOWED,
-        "GET /:id/change-price must be 405 — POST-only sensitive money mutation"
+        "GET /api/admin/indicators/:id/change-price must be 405 — POST-only sensitive money mutation"
     );
 }
 

@@ -19,19 +19,6 @@ pub(super) fn require_cms_admin(user: &User) -> Result<(), ApiError> {
     }
 }
 
-/// Check if user has CMS editor privileges
-pub(super) fn require_cms_editor(user: &User) -> Result<(), ApiError> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(
-        role,
-        "admin" | "super-admin" | "super_admin" | "editor" | "marketing" | "developer"
-    ) {
-        Ok(())
-    } else {
-        Err(ApiError::new(StatusCode::FORBIDDEN, "Editor access required").with_code("FORBIDDEN"))
-    }
-}
-
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================

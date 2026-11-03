@@ -107,19 +107,19 @@
 	// FIX-2026-04-26 (P1-6): unsaved-changes guard.
 	let lastSavedSnapshot = $state<string>('');
 	let hasUnsavedChanges = $derived(lesson ? JSON.stringify(lesson) !== lastSavedSnapshot : false);
+	let showUnsavedChangesModal = $state(false);
+	let pendingNavigationUrl = $state<string | null>(null);
+	let allowUnsavedNavigation = $state(false);
 
 	beforeNavigate((nav) => {
-		if (nav.shallow) return;
+		if (nav.shallow || allowUnsavedNavigation) return;
 
-		// TODO(modal-confirm): SvelteKit's beforeNavigate is synchronous —
-		// nav.cancel() must be called inline, so native confirm() is the only
-		// portable option today.
-		if (
-			hasUnsavedChanges &&
-			!nav.willUnload &&
-			!confirm('You have unsaved changes. Discard and leave?')
-		) {
+		if (hasUnsavedChanges && !nav.willUnload) {
 			nav.cancel();
+			pendingNavigationUrl = nav.to?.url
+				? `${nav.to.url.pathname}${nav.to.url.search}${nav.to.url.hash}`
+				: `/admin/courses/${courseId}`;
+			showUnsavedChangesModal = true;
 		}
 	});
 
@@ -613,6 +613,25 @@
 		addDownloadStep = 'title';
 		addDownloadTitle = '';
 		addDownloadUrl = '';
+	}}
+/>
+
+<ConfirmationModal
+	isOpen={showUnsavedChangesModal}
+	title="Unsaved Changes"
+	message="You have unsaved changes. Discard and leave?"
+	confirmText="Discard & Leave"
+	variant="warning"
+	onConfirm={() => {
+		const target = pendingNavigationUrl || `/admin/courses/${courseId}`;
+		showUnsavedChangesModal = false;
+		pendingNavigationUrl = null;
+		allowUnsavedNavigation = true;
+		void goto(target);
+	}}
+	onCancel={() => {
+		showUnsavedChangesModal = false;
+		pendingNavigationUrl = null;
 	}}
 />
 

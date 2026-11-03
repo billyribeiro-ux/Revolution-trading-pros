@@ -104,3 +104,41 @@ impl FromRequestParts<AppState> for SuperAdminUser {
         }
     }
 }
+
+/// CMS editor user extractor - requires admin, super_admin, developer, editor, or marketing role
+pub struct CmsEditorUser(pub User);
+
+impl FromRequestParts<AppState> for CmsEditorUser {
+    type Rejection = (StatusCode, &'static str);
+
+    #[allow(clippy::manual_async_fn)]
+    fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> impl std::future::Future<Output = Result<Self, Self::Rejection>> + Send {
+        async move {
+            let user = User::from_request_parts(parts, state).await?;
+            let user_role = user.role.as_deref().unwrap_or("none");
+            let is_editor = matches!(
+                user_role,
+                "admin" | "super_admin" | "super-admin" | "developer" | "editor" | "marketing"
+            );
+            let is_superadmin = state.config.is_superadmin_email_strict(
+                &user.email,
+                user.role.as_deref(),
+                user.email_verified_at.is_some(),
+            );
+            if is_editor || is_superadmin {
+                Ok(CmsEditorUser(user))
+            } else {
+                tracing::warn!(
+                    target: "security",
+                    event = "unauthorized_cms_editor_access",
+                    user_id = %user.id,
+                    "Non-editor user attempted to access CMS endpoint"
+                );
+                Err((StatusCode::FORBIDDEN, "CMS editor access required"))
+            }
+        }
+    }
+}

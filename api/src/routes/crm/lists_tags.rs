@@ -26,8 +26,8 @@ pub struct ContactList {
     pub description: Option<String>,
     pub is_public: bool,
     pub contacts_count: i32,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -38,8 +38,8 @@ pub struct ContactTag {
     pub description: Option<String>,
     pub color: Option<String>,
     pub contacts_count: i32,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -65,15 +65,20 @@ async fn list_contact_lists(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let lists: Vec<ContactList> = sqlx::query_as(
         r"
-        SELECT id, title, slug, description, is_public,
+        SELECT id, COALESCE(title, name) AS title,
+               COALESCE(slug, LOWER(REPLACE(name, ' ', '-'))) AS slug,
+               description, COALESCE(is_public, false) AS is_public,
                COALESCE(contacts_count, 0) as contacts_count, created_at, updated_at
         FROM crm_lists
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
           AND ($2::boolean IS NULL OR is_public = $2)
         ORDER BY created_at DESC
         LIMIT $3
@@ -84,7 +89,6 @@ async fn list_contact_lists(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -107,9 +111,11 @@ async fn create_contact_list(
 
     let list: ContactList = sqlx::query_as(
         r"
-        INSERT INTO crm_lists (title, slug, description, is_public, contacts_count, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, 0, NOW(), NOW())
-        RETURNING id, title, slug, description, is_public, contacts_count, created_at, updated_at
+        INSERT INTO crm_lists (name, title, slug, description, is_public, contacts_count, created_at, updated_at)
+        VALUES ($1, $1, $2, $3, $4, 0, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(slug, '') AS slug, description,
+                  COALESCE(is_public, false) AS is_public, COALESCE(contacts_count, 0) AS contacts_count,
+                  created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -129,13 +135,27 @@ async fn get_contact_list(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let list: ContactList = sqlx::query_as(
-        "SELECT id, title, slug, description, is_public, contacts_count, created_at, updated_at FROM crm_lists WHERE id = $1",
+        r"SELECT id, COALESCE(title, name) AS title,
+                 COALESCE(slug, LOWER(REPLACE(name, ' ', '-'))) AS slug,
+                 description, COALESCE(is_public, false) AS is_public,
+                 COALESCE(contacts_count, 0) AS contacts_count, created_at, updated_at
+          FROM crm_lists WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "List not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "List not found"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "list": list,
@@ -148,7 +168,7 @@ async fn delete_contact_list(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_lists WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_lists WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -158,6 +178,13 @@ async fn delete_contact_list(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "List not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "List deleted successfully"})))
 }
@@ -171,15 +198,20 @@ async fn list_contact_tags(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let tags: Vec<ContactTag> = sqlx::query_as(
         r"
-        SELECT id, title, slug, description, color,
+        SELECT id, COALESCE(title, name) AS title,
+               COALESCE(slug, LOWER(REPLACE(name, ' ', '-'))) AS slug,
+               description, color,
                COALESCE(contacts_count, 0) as contacts_count, created_at, updated_at
         FROM crm_tags
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -188,7 +220,6 @@ async fn list_contact_tags(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -211,9 +242,10 @@ async fn create_contact_tag(
 
     let tag: ContactTag = sqlx::query_as(
         r"
-        INSERT INTO crm_tags (title, slug, description, color, contacts_count, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, 0, NOW(), NOW())
-        RETURNING id, title, slug, description, color, contacts_count, created_at, updated_at
+        INSERT INTO crm_tags (name, title, slug, description, color, contacts_count, created_at, updated_at)
+        VALUES ($1, $1, $2, $3, COALESCE($4, '#6366f1'), 0, NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(slug, '') AS slug, description, color,
+                  COALESCE(contacts_count, 0) AS contacts_count, created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -222,7 +254,13 @@ async fn create_contact_tag(
     .bind(&input.color)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        if e.to_string().contains("duplicate key") || e.to_string().contains("23505") {
+            (StatusCode::CONFLICT, Json(json!({"error": "Tag with this name already exists"})))
+        } else {
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        }
+    })?;
 
     Ok(Json(tag))
 }
@@ -232,7 +270,7 @@ async fn delete_contact_tag(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_tags WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_tags WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -242,6 +280,13 @@ async fn delete_contact_tag(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Tag not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Tag deleted successfully"})))
 }

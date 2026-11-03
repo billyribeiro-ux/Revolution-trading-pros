@@ -159,11 +159,16 @@
 		return typeMap[type] || IconShoppingCart;
 	}
 
-	function formatPrice(price: number, salePrice?: number | null) {
-		if (salePrice && salePrice < price) {
-			return { original: `$${price.toFixed(2)}`, sale: `$${salePrice.toFixed(2)}` };
+	function formatPrice(price: number | null | undefined, salePrice?: number | null) {
+		const safePrice = typeof price === 'number' && Number.isFinite(price) ? price : Number(price ?? 0) || 0;
+		const safeSale =
+			salePrice !== null && salePrice !== undefined && Number.isFinite(Number(salePrice))
+				? Number(salePrice)
+				: null;
+		if (safeSale !== null && safeSale > 0 && safeSale < safePrice) {
+			return { original: `$${safePrice.toFixed(2)}`, sale: `$${safeSale.toFixed(2)}` };
 		}
-		return { original: `$${price.toFixed(2)}`, sale: null };
+		return { original: `$${safePrice.toFixed(2)}`, sale: null };
 	}
 
 	onMount(() => {

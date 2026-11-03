@@ -122,7 +122,7 @@ pub(super) async fn clone_video(
     .bind(new_title)
     .fetch_optional(&state.db.pool)
     .await
-    .unwrap_or(None);
+    .map_err(crate::utils::errors::db_error)?;
 
     match result {
         Some((new_id, slug)) => Ok(Json(
@@ -146,7 +146,7 @@ pub(super) async fn fetch_video_duration(
             .bind(id)
             .fetch_optional(&state.db.pool)
             .await
-            .unwrap_or(None);
+            .map_err(crate::utils::errors::db_error)?;
 
     match duration {
         Some((dur,)) => Ok(Json(json!({

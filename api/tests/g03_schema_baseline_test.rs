@@ -93,7 +93,7 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         })
         .collect();
     files.sort();
-    assert_eq!(files.len(), 63, "expected exactly 63 committed migrations");
+    assert_eq!(files.len(), 64, "expected exactly 64 committed migrations");
 
     for f in &files {
         let bytes = std::fs::read(mig_dir.join(f)).expect("read migration");
@@ -134,7 +134,7 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         .fetch_one(&pool)
         .await
         .expect("count _sqlx_migrations");
-    assert_eq!(applied, 63, "all 63 historical versions marked applied");
+    assert_eq!(applied, 64, "all 64 historical versions marked applied");
 
     let tables: i64 = sqlx::query_scalar(
         "SELECT count(*) FROM information_schema.tables

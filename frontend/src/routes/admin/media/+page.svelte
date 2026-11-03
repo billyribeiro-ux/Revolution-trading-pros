@@ -193,12 +193,11 @@
 			const response = await mediaApi.getStatistics();
 			if (!isComponentMounted || requestGeneration !== statisticsRequestGeneration) return;
 
-			statistics = response.data;
+			statistics = response.data ?? (response as unknown as OptimizationStatistics);
 			if (statistics) {
-				const percent =
-					statistics.total_images > 0
-						? (statistics.optimized_images / statistics.total_images) * 100
-						: 0;
+				const total = statistics.total_images ?? 0;
+				const optimized = statistics.optimized_images ?? 0;
+				const percent = total > 0 ? (optimized / total) * 100 : 0;
 				statsProgress.set(percent);
 			}
 		} catch (e) {

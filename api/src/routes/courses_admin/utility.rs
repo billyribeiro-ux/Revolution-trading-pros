@@ -47,31 +47,33 @@ pub(super) async fn get_course_stats(
         sqlx::query_as("SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let published_courses: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM courses_enhanced WHERE is_published = true AND deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let total_lessons: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM course_lessons")
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(crate::utils::errors::db_error)?;
 
-    let total_enrollments: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE is_active = true")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+    let total_enrollments: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM user_course_enrollments_enhanced WHERE is_active = true",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
-    let completed_enrollments: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE is_completed = true")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
+    let completed_enrollments: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM user_course_enrollments_enhanced WHERE is_completed = true",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "total_courses": total_courses.0,

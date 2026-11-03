@@ -13,34 +13,14 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::AppState;
-use crate::models::User;
+use crate::middleware::admin::AdminUser;
 use crate::models::page_layout::{
     CreatePageLayoutRequest, PageLayout, PageLayoutListItem, PageLayoutQueryParams,
     PageLayoutVersion, PaginatedLayouts, UpdatePageLayoutRequest,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
-// AUTHORIZATION - ICT 7 SECURITY FIX: Added admin authentication
-// ═══════════════════════════════════════════════════════════════════════════════════
-
-/// Check if user has admin privileges (admin, super-admin, or developer role)
-fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
-        Ok(())
-    } else {
-        Err((
-            StatusCode::FORBIDDEN,
-            Json(json!({
-                "error": "Access denied",
-                "message": "This action requires admin privileges"
-            })),
-        ))
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════
-// PAGE LAYOUT CRUD - ICT 7 SECURITY FIX: All endpoints now require authentication
+// PAGE LAYOUT CRUD - ICT 7 SECURITY FIX: All endpoints now require AdminUser
 // and use parameterized queries
 // ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -48,14 +28,14 @@ fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>
 /// ICT 7 SECURITY FIX: Added authentication + parameterized queries for filtering
 async fn list_layouts(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Query(params): Query<PageLayoutQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
-    let page = params.page.unwrap_or(1).max(1);
-    let per_page = params.per_page.unwrap_or(20).min(100);
-    let offset = ((page - 1) * per_page) as i64;
+    let page = params.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = params.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = (page as i64)
+        .saturating_sub(1)
+        .saturating_mul(per_page as i64);
 
     // ICT 7 SECURITY FIX: Use parameterized queries instead of string interpolation
     let layouts: Vec<PageLayoutListItem> = sqlx::query_as(
@@ -121,11 +101,9 @@ async fn list_layouts(
 /// ICT 7 SECURITY FIX: Added authentication
 async fn get_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     let layout: PageLayout = sqlx::query_as(r"SELECT * FROM page_layouts WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db.pool)
@@ -154,11 +132,9 @@ async fn get_layout(
 /// ICT 7 SECURITY FIX: Added authentication
 async fn get_layout_by_course(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     let layout: Option<PageLayout> = sqlx::query_as(
         r"SELECT * FROM page_layouts WHERE course_id = $1 ORDER BY updated_at DESC LIMIT 1",
     )
@@ -183,11 +159,9 @@ async fn get_layout_by_course(
 /// ICT 7 SECURITY FIX: Added authentication + input validation
 async fn create_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(input): Json<CreatePageLayoutRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // Input validation
     if input.title.trim().is_empty() {
         return Err((
@@ -218,7 +192,7 @@ async fn create_layout(
     .bind(&slug)
     .bind(&input.description)
     .bind(&blocks)
-    .bind(user.id)
+    .bind(None::<Uuid>)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
@@ -254,12 +228,10 @@ async fn create_layout(
 /// ICT 7 SECURITY FIX: Added authentication + input validation
 async fn update_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
     Json(input): Json<UpdatePageLayoutRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // Input validation
     if let Some(ref title) = input.title {
         if title.trim().is_empty() {
@@ -283,11 +255,10 @@ async fn update_layout(
                 .bind(id)
                 .fetch_optional(&state.db.pool)
                 .await
-                .ok()
-                .flatten();
+                .map_err(crate::utils::errors::db_error)?;
 
         if let Some(layout) = current {
-            let _ = sqlx::query(
+            sqlx::query(
                 r"
                 INSERT INTO page_layout_versions (layout_id, version, blocks, created_by)
                 VALUES ($1, $2, $3, $4)
@@ -297,9 +268,10 @@ async fn update_layout(
             .bind(id)
             .bind(layout.version.unwrap_or(1))
             .bind(&layout.blocks)
-            .bind(user.id)
+            .bind(None::<Uuid>)
             .execute(&state.db.pool)
-            .await;
+            .await
+            .map_err(crate::utils::errors::db_error)?;
         }
     }
 
@@ -325,7 +297,7 @@ async fn update_layout(
     .bind(&input.status)
     .bind(&input.blocks)
     .bind(id)
-    .bind(user.id)
+    .bind(None::<Uuid>)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
@@ -360,11 +332,9 @@ async fn update_layout(
 /// ICT 7 SECURITY FIX: Added authentication
 async fn delete_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // First check if layout exists
     let exists: Option<(Uuid,)> = sqlx::query_as("SELECT id FROM page_layouts WHERE id = $1")
         .bind(id)
@@ -386,10 +356,11 @@ async fn delete_layout(
     }
 
     // Delete version history first (due to foreign key)
-    let _ = sqlx::query("DELETE FROM page_layout_versions WHERE layout_id = $1")
+    sqlx::query("DELETE FROM page_layout_versions WHERE layout_id = $1")
         .bind(id)
         .execute(&state.db.pool)
-        .await;
+        .await
+        .map_err(crate::utils::errors::db_error)?;
 
     // Delete the layout
     sqlx::query("DELETE FROM page_layouts WHERE id = $1")
@@ -421,21 +392,18 @@ async fn delete_layout(
 /// ICT 7 SECURITY FIX: Added authentication
 async fn publish_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     let layout: PageLayout = sqlx::query_as(
         r"
         UPDATE page_layouts
-        SET status = 'published', published_at = NOW(), updated_at = NOW(), published_by = $2
+        SET status = 'published', published_at = NOW(), updated_at = NOW()
         WHERE id = $1
         RETURNING *
         ",
     )
     .bind(id)
-    .bind(user.id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
@@ -470,11 +438,9 @@ async fn publish_layout(
 /// ICT 7 SECURITY FIX: Added new endpoint for completeness
 async fn unpublish_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     let layout: PageLayout = sqlx::query_as(
         r"
         UPDATE page_layouts
@@ -518,11 +484,9 @@ async fn unpublish_layout(
 /// ICT 7 SECURITY FIX: Added authentication
 async fn get_layout_versions(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     let versions: Vec<PageLayoutVersion> = sqlx::query_as(
         r"
         SELECT * FROM page_layout_versions
@@ -552,11 +516,9 @@ async fn get_layout_versions(
 /// ICT 7 SECURITY FIX: Added authentication
 async fn restore_layout_version(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path((id, version)): Path<(Uuid, i32)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // Validate version number
     if version < 1 {
         return Err((
@@ -590,11 +552,10 @@ async fn restore_layout_version(
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await
-        .ok()
-        .flatten();
+        .map_err(crate::utils::errors::db_error)?;
 
     if let Some(layout) = current {
-        let _ = sqlx::query(
+        sqlx::query(
             r"
             INSERT INTO page_layout_versions (layout_id, version, blocks, created_by)
             VALUES ($1, $2, $3, $4)
@@ -604,9 +565,10 @@ async fn restore_layout_version(
         .bind(id)
         .bind(layout.version.unwrap_or(1))
         .bind(&layout.blocks)
-        .bind(user.id)
+        .bind(None::<Uuid>)
         .execute(&state.db.pool)
-        .await;
+        .await
+        .map_err(crate::utils::errors::db_error)?;
     }
 
     let layout: PageLayout = sqlx::query_as(
@@ -622,7 +584,7 @@ async fn restore_layout_version(
     )
     .bind(&version_data.blocks)
     .bind(id)
-    .bind(user.id)
+    .bind(None::<Uuid>)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
@@ -658,11 +620,9 @@ async fn restore_layout_version(
 /// ICT 7: Added new endpoint for completeness
 async fn duplicate_layout(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    require_admin(&user)?;
-
     // Get the original layout
     let original: PageLayout = sqlx::query_as("SELECT * FROM page_layouts WHERE id = $1")
         .bind(id)
@@ -702,7 +662,7 @@ async fn duplicate_layout(
     .bind(&new_slug)
     .bind(&original.description)
     .bind(&original.blocks)
-    .bind(user.id)
+    .bind(None::<Uuid>)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {

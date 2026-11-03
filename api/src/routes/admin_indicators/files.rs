@@ -21,7 +21,14 @@ pub(super) async fn list_indicator_files(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let files: Vec<IndicatorFileRow> = sqlx::query_as(
         r"
-        SELECT * FROM indicator_files
+        SELECT id::int4 AS id, indicator_id, file_name, original_name,
+               COALESCE(file_path, file_url, '') AS file_path,
+               file_size_bytes, file_type, mime_type, checksum_sha256,
+               COALESCE(platform, '') AS platform, platform_version,
+               storage_provider, storage_bucket, storage_key, cdn_url,
+               version, is_current_version, changelog, display_name,
+               display_order, is_active, download_count
+        FROM indicator_files
         WHERE indicator_id = $1
         ORDER BY platform, display_order, created_at DESC
         ",
@@ -70,7 +77,7 @@ pub(super) async fn create_indicator_file(
 
     // If this is marked as current version, unmark other files for same platform
     if input.version.is_some() {
-        let _ = sqlx::query(
+        sqlx::query(
             r"
             UPDATE indicator_files
             SET is_current_version = false
@@ -80,18 +87,25 @@ pub(super) async fn create_indicator_file(
         .bind(indicator_id)
         .bind(&input.platform)
         .execute(&state.db.pool)
-        .await;
+        .await
+        .map_err(crate::utils::errors::db_error)?;
     }
 
     let file: IndicatorFileRow = sqlx::query_as(
         r"
         INSERT INTO indicator_files (
-            indicator_id, file_name, original_name, file_path, file_size_bytes,
+            indicator_id, file_name, original_name, file_path, file_url, file_size_bytes,
             file_type, mime_type, platform, platform_version, storage_key, cdn_url,
             version, changelog, display_name, display_order, is_current_version, is_active
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, true, true)
-        RETURNING *
+        VALUES ($1, $2, $3, $4, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, true, true)
+        RETURNING id::int4 AS id, indicator_id, file_name, original_name,
+                  COALESCE(file_path, file_url, '') AS file_path,
+                  file_size_bytes, file_type, mime_type, checksum_sha256,
+                  COALESCE(platform, '') AS platform, platform_version,
+                  storage_provider, storage_bucket, storage_key, cdn_url,
+                  version, is_current_version, changelog, display_name,
+                  display_order, is_active, download_count
         ",
     )
     .bind(indicator_id)
@@ -132,20 +146,20 @@ pub(super) async fn update_indicator_file(
     Path((indicator_id, file_id)): Path<(i64, i32)>,
     Json(input): Json<UpdateFileRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let file_id_i64 = file_id as i64;
     // If marking as current version, unmark others first
     if input.is_current_version == Some(true) {
-        let file: Option<(String,)> = sqlx::query_as(
+        let file: Option<(Option<String>,)> = sqlx::query_as(
             "SELECT platform FROM indicator_files WHERE id = $1 AND indicator_id = $2",
         )
-        .bind(file_id)
+        .bind(file_id_i64)
         .bind(indicator_id)
         .fetch_optional(&state.db.pool)
         .await
-        .ok()
-        .flatten();
+        .map_err(crate::utils::errors::db_error)?;
 
-        if let Some((platform,)) = file {
-            let _ = sqlx::query(
+        if let Some((Some(platform),)) = file {
+            sqlx::query(
                 r"
                 UPDATE indicator_files
                 SET is_current_version = false
@@ -154,9 +168,10 @@ pub(super) async fn update_indicator_file(
             )
             .bind(indicator_id)
             .bind(&platform)
-            .bind(file_id)
+            .bind(file_id_i64)
             .execute(&state.db.pool)
-            .await;
+            .await
+            .map_err(crate::utils::errors::db_error)?;
         }
     }
 
@@ -172,7 +187,13 @@ pub(super) async fn update_indicator_file(
             is_active = COALESCE($7, is_active),
             updated_at = NOW()
         WHERE id = $8 AND indicator_id = $9
-        RETURNING *
+        RETURNING id::int4 AS id, indicator_id, file_name, original_name,
+                  COALESCE(file_path, file_url, '') AS file_path,
+                  file_size_bytes, file_type, mime_type, checksum_sha256,
+                  COALESCE(platform, '') AS platform, platform_version,
+                  storage_provider, storage_bucket, storage_key, cdn_url,
+                  version, is_current_version, changelog, display_name,
+                  display_order, is_active, download_count
         ",
     )
     .bind(&input.display_name)
@@ -182,14 +203,20 @@ pub(super) async fn update_indicator_file(
     .bind(&input.changelog)
     .bind(input.is_current_version)
     .bind(input.is_active)
-    .bind(file_id)
+    .bind(file_id_i64)
     .bind(indicator_id)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": format!("Failed to update file: {}", e)})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "File not found"})),
         )
     })?;
 
@@ -207,7 +234,7 @@ pub(super) async fn delete_indicator_file(
     Path((indicator_id, file_id)): Path<(i64, i32)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query("DELETE FROM indicator_files WHERE id = $1 AND indicator_id = $2")
-        .bind(file_id)
+        .bind(file_id as i64)
         .bind(indicator_id)
         .execute(&state.db.pool)
         .await

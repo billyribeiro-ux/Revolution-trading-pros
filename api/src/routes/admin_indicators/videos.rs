@@ -20,7 +20,12 @@ pub(super) async fn list_indicator_videos(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let videos: Vec<IndicatorVideoRow> = sqlx::query_as(
         r"
-        SELECT * FROM indicator_videos
+        SELECT id::int4 AS id, indicator_id, title, description,
+               bunny_video_guid::text AS bunny_video_guid,
+               bunny_library_id::text AS bunny_library_id,
+               embed_url, play_url, thumbnail_url, duration_seconds,
+               display_order, is_featured, is_preview
+        FROM indicator_videos
         WHERE indicator_id = $1
         ORDER BY display_order, id
         ",
@@ -48,20 +53,30 @@ pub(super) async fn create_indicator_video(
     Path(indicator_id): Path<i64>,
     Json(input): Json<CreateVideoRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let video_url = input
+        .play_url
+        .as_deref()
+        .or(input.embed_url.as_deref())
+        .unwrap_or("");
     let video: IndicatorVideoRow = sqlx::query_as(
         r"
         INSERT INTO indicator_videos (
-            indicator_id, title, description, bunny_video_guid, bunny_library_id,
+            indicator_id, title, description, video_url, bunny_video_guid, bunny_library_id,
             embed_url, play_url, thumbnail_url, duration_seconds, display_order,
             is_featured, is_preview
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING *
+        VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::bigint, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING id::int4 AS id, indicator_id, title, description,
+                  bunny_video_guid::text AS bunny_video_guid,
+                  bunny_library_id::text AS bunny_library_id,
+                  embed_url, play_url, thumbnail_url, duration_seconds,
+                  display_order, is_featured, is_preview
         ",
     )
     .bind(indicator_id)
     .bind(&input.title)
     .bind(&input.description)
+    .bind(video_url)
     .bind(&input.bunny_video_guid)
     .bind(&input.bunny_library_id)
     .bind(&input.embed_url)
@@ -94,7 +109,7 @@ pub(super) async fn delete_indicator_video(
     Path((indicator_id, video_id)): Path<(i64, i32)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query("DELETE FROM indicator_videos WHERE id = $1 AND indicator_id = $2")
-        .bind(video_id)
+        .bind(video_id as i64)
         .bind(indicator_id)
         .execute(&state.db.pool)
         .await

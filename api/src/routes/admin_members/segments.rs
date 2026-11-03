@@ -60,15 +60,20 @@ pub(super) async fn list_segments(
     Query(query): Query<SegmentQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(50).min(100);
-    let offset = (page - 1) * per_page;
+    let per_page = query.per_page.unwrap_or(50).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
-    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{s}%"));
+    let search_pattern: Option<String> = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
-    // Gracefully handle missing table - return empty array instead of 500 error
     let segments: Vec<MemberSegment> = sqlx::query_as(
         r"
-        SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at
+        SELECT id, name, slug, description, filter_criteria AS rules,
+               COALESCE(member_count, 0) AS member_count, COALESCE(is_active, true) AS is_active,
+               (created_at AT TIME ZONE 'UTC') AS created_at,
+               (updated_at AT TIME ZONE 'UTC') AS updated_at
         FROM member_segments
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_active = $2)
@@ -82,13 +87,12 @@ pub(super) async fn list_segments(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .unwrap_or_else(|e| {
-        tracing::warn!(
-            "Database query failed in list_segments (table may not exist): {}",
-            e
-        );
-        Vec::new()
-    });
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: i64 = sqlx::query_as::<_, (i64,)>(
         r"
@@ -102,8 +106,13 @@ pub(super) async fn list_segments(
     .bind(query.is_active)
     .fetch_one(&state.db.pool)
     .await
-    .map(|r| r.0)
-    .unwrap_or(0);
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .0;
 
     Ok(Json(json!({
         "segments": segments,
@@ -119,17 +128,31 @@ pub(super) async fn list_segments(
 /// GET /admin/members/segments/:id - Get single segment
 pub(super) async fn get_segment(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
     let segment: MemberSegment = sqlx::query_as(
-        "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE id = $1"
+        r"SELECT id, name, slug, description, filter_criteria AS rules,
+                 COALESCE(member_count, 0) AS member_count, COALESCE(is_active, true) AS is_active,
+                 (created_at AT TIME ZONE 'UTC') AS created_at,
+                 (updated_at AT TIME ZONE 'UTC') AS updated_at
+          FROM member_segments WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Segment not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Segment not found"})),
+        )
+    })?;
 
     Ok(Json(segment))
 }
@@ -137,7 +160,7 @@ pub(super) async fn get_segment(
 /// POST /admin/members/segments - Create new segment
 pub(super) async fn create_segment(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Json(input): Json<CreateSegmentRequest>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
     // Generate slug if not provided
@@ -153,9 +176,12 @@ pub(super) async fn create_segment(
 
     let segment: MemberSegment = sqlx::query_as(
         r"
-        INSERT INTO member_segments (name, slug, description, rules, member_count, is_active, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, 0, $5, NOW(), NOW())
-        RETURNING id, name, slug, description, rules, member_count, is_active, created_at, updated_at
+        INSERT INTO member_segments (name, slug, description, filter_criteria, member_count, is_active, created_at, updated_at)
+        VALUES ($1, $2, $3, COALESCE($4, '{}'::jsonb), 0, $5, NOW(), NOW())
+        RETURNING id, name, slug, description, filter_criteria AS rules,
+                  COALESCE(member_count, 0) AS member_count, COALESCE(is_active, true) AS is_active,
+                  (created_at AT TIME ZONE 'UTC') AS created_at,
+                  (updated_at AT TIME ZONE 'UTC') AS updated_at
         "
     )
     .bind(&input.name)
@@ -179,7 +205,7 @@ pub(super) async fn create_segment(
 /// PUT /admin/members/segments/:id - Update segment
 pub(super) async fn update_segment(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateSegmentRequest>,
 ) -> Result<Json<MemberSegment>, (StatusCode, Json<serde_json::Value>)> {
@@ -201,7 +227,7 @@ pub(super) async fn update_segment(
     }
     if input.rules.is_some() {
         param_count += 1;
-        set_clauses.push(format!("rules = ${param_count}"));
+        set_clauses.push(format!("filter_criteria = ${param_count}"));
     }
     if input.is_active.is_some() {
         param_count += 1;
@@ -218,7 +244,7 @@ pub(super) async fn update_segment(
     }
 
     let sql = format!(
-        "UPDATE member_segments SET {} WHERE id = $1 RETURNING id, name, slug, description, rules, member_count, is_active, created_at, updated_at",
+        "UPDATE member_segments SET {} WHERE id = $1 RETURNING id, name, slug, description, filter_criteria AS rules, COALESCE(member_count, 0) AS member_count, COALESCE(is_active, true) AS is_active, (created_at AT TIME ZONE 'UTC') AS created_at, (updated_at AT TIME ZONE 'UTC') AS updated_at",
         set_clauses.join(", ")
     );
 
@@ -241,19 +267,28 @@ pub(super) async fn update_segment(
         query_builder = query_builder.bind(is_active);
     }
 
-    let segment = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
-        if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+    let segment = query_builder
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+                (
+                    StatusCode::CONFLICT,
+                    Json(json!({"error": "Segment with this slug already exists"})),
+                )
+            } else {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            }
+        })?
+        .ok_or_else(|| {
             (
-                StatusCode::CONFLICT,
-                Json(json!({"error": "Segment with this slug already exists"})),
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Segment not found"})),
             )
-        } else {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        }
-    })?;
+        })?;
 
     Ok(Json(segment))
 }

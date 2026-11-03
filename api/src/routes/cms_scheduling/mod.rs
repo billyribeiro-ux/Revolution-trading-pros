@@ -34,7 +34,7 @@ use sqlx::FromRow;
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
 
-use crate::{AppState, models::User};
+use crate::AppState;
 
 mod calendar_history;
 mod cron;
@@ -56,27 +56,6 @@ pub(super) fn api_error(status: StatusCode, message: &str) -> (StatusCode, Json<
             "timestamp": Utc::now().to_rfc3339()
         })),
     )
-}
-
-pub(super) fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(
-        role,
-        "admin" | "super-admin" | "super_admin" | "editor" | "marketing"
-    ) {
-        Ok(())
-    } else {
-        Err(api_error(StatusCode::FORBIDDEN, "Editor access required"))
-    }
-}
-
-pub(super) fn require_cms_admin(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
-    let role = user.role.as_deref().unwrap_or("user");
-    if matches!(role, "admin" | "super-admin" | "super_admin") {
-        Ok(())
-    } else {
-        Err(api_error(StatusCode::FORBIDDEN, "Admin access required"))
-    }
 }
 
 // =====================================================================================

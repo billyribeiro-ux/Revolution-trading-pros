@@ -17,12 +17,15 @@ use serde_json::{Value as JsonValue, json};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-use crate::{AppState, models::User};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+};
 
 use super::{
     AddReleaseItemRequest, ApiResult, CmsRelease, CmsReleaseItem, CmsReleaseItemExtended,
     CreateReleaseRequest, ListQuery, ReleaseDetailResponse, ReleaseListResponse, ReleaseStatus,
-    UpdateReleaseRequest, api_error, default_timezone, require_cms_admin, require_cms_editor,
+    UpdateReleaseRequest, api_error, default_timezone,
 };
 
 /// Create a new release
@@ -41,11 +44,9 @@ use super::{
 )]
 pub(super) async fn create_release(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(req): Json<CreateReleaseRequest>,
 ) -> ApiResult<CmsRelease> {
-    require_cms_editor(&user)?;
-
     let status = if req.scheduled_at.is_some() {
         ReleaseStatus::Scheduled
     } else {
@@ -109,11 +110,9 @@ pub(super) async fn create_release(
 )]
 pub(super) async fn list_releases(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListQuery>,
 ) -> ApiResult<ReleaseListResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.min(100);
 
     let mut sql = String::from("SELECT * FROM cms_releases WHERE 1=1");
@@ -153,12 +152,12 @@ pub(super) async fn list_releases(
             .bind(status)
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,))
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
     } else {
         sqlx::query_as("SELECT COUNT(*) FROM cms_releases WHERE 1=1")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,))
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
     };
 
     Ok(Json(ReleaseListResponse {
@@ -185,11 +184,9 @@ pub(super) async fn list_releases(
 )]
 pub(super) async fn get_release(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<ReleaseDetailResponse> {
-    require_cms_editor(&user)?;
-
     let release: CmsRelease = sqlx::query_as("SELECT * FROM cms_releases WHERE id = $1")
         .bind(id)
         .fetch_optional(&state.db.pool)
@@ -221,8 +218,7 @@ pub(super) async fn get_release(
             .bind(created_by)
             .fetch_optional(&state.db.pool)
             .await
-            .ok()
-            .flatten()
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
     } else {
         None
     };
@@ -251,12 +247,10 @@ pub(super) async fn get_release(
 )]
 pub(super) async fn update_release(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(req): Json<UpdateReleaseRequest>,
 ) -> ApiResult<CmsRelease> {
-    require_cms_editor(&user)?;
-
     // Determine new status based on scheduled_at
     let new_status = if req.scheduled_at.is_some() {
         Some(ReleaseStatus::Scheduled)
@@ -317,12 +311,10 @@ pub(super) async fn update_release(
 )]
 pub(super) async fn add_release_item(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(release_id): Path<Uuid>,
     Json(req): Json<AddReleaseItemRequest>,
 ) -> ApiResult<CmsReleaseItem> {
-    require_cms_editor(&user)?;
-
     // Verify release exists and is draft/scheduled
     let release: Option<CmsRelease> = sqlx::query_as("SELECT * FROM cms_releases WHERE id = $1")
         .bind(release_id)
@@ -363,7 +355,7 @@ pub(super) async fn add_release_item(
                 .bind(release_id)
                 .fetch_one(&state.db.pool)
                 .await
-                .unwrap_or((None,));
+                .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
         max_order.0.unwrap_or(-1) + 1
     };
 
@@ -412,11 +404,9 @@ pub(super) async fn add_release_item(
 )]
 pub(super) async fn remove_release_item(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path((release_id, item_id)): Path<(Uuid, Uuid)>,
 ) -> Result<StatusCode, (StatusCode, Json<JsonValue>)> {
-    require_cms_editor(&user)?;
-
     let result = sqlx::query(
         r"
         DELETE FROM cms_release_items ri
@@ -460,19 +450,17 @@ pub(super) async fn remove_release_item(
 )]
 pub(super) async fn schedule_release(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(req): Json<ScheduleReleaseRequest>,
 ) -> ApiResult<CmsRelease> {
-    require_cms_editor(&user)?;
-
     // Verify release has items
     let item_count: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM cms_release_items WHERE release_id = $1")
             .bind(id)
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     if item_count.0 == 0 {
         return Err(api_error(
@@ -547,11 +535,9 @@ pub(super) struct ScheduleReleaseRequest {
 )]
 pub(super) async fn cancel_release(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsRelease> {
-    require_cms_editor(&user)?;
-
     let release: CmsRelease = sqlx::query_as(
         r"
         UPDATE cms_releases SET
@@ -593,11 +579,9 @@ pub(super) async fn cancel_release(
 )]
 pub(super) async fn delete_release(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, (StatusCode, Json<JsonValue>)> {
-    require_cms_admin(&user)?;
-
     let result = sqlx::query(
         r"
         DELETE FROM cms_releases

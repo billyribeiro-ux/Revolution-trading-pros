@@ -28,8 +28,8 @@ pub struct SmartLink {
     pub click_count: i32,
     pub unique_clicks: i32,
     pub actions: Option<serde_json::Value>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,15 +48,20 @@ async fn list_smart_links(
     _admin: AdminUser,
     Query(filters): Query<ListFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50).min(100);
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     let links: Vec<SmartLink> = sqlx::query_as(
         r"
-        SELECT id, title, short, target_url, is_active, click_count, unique_clicks,
+        SELECT id, COALESCE(title, name) AS title, COALESCE(short, short_code, '') AS short,
+               COALESCE(target_url, url) AS target_url, COALESCE(is_active, true) AS is_active,
+               COALESCE(click_count, 0) AS click_count, COALESCE(unique_clicks, 0) AS unique_clicks,
                actions, created_at, updated_at
         FROM crm_smart_links
-        WHERE ($1::text IS NULL OR title ILIKE $1)
+        WHERE ($1::text IS NULL OR COALESCE(title, name) ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2
         ",
@@ -65,7 +70,6 @@ async fn list_smart_links(
     .bind(per_page)
     .fetch_all(&state.db.pool)
     .await
-    // FIX-2026-04-26: .unwrap_or_default();
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -88,9 +92,12 @@ async fn create_smart_link(
 
     let link: SmartLink = sqlx::query_as(
         r"
-        INSERT INTO crm_smart_links (title, short, target_url, is_active, click_count, unique_clicks, actions, created_at, updated_at)
-        VALUES ($1, $2, $3, true, 0, 0, $4, NOW(), NOW())
-        RETURNING id, title, short, target_url, is_active, click_count, unique_clicks, actions, created_at, updated_at
+        INSERT INTO crm_smart_links (name, title, short_code, short, url, target_url, is_active, click_count, unique_clicks, actions, created_at, updated_at)
+        VALUES ($1, $1, $2, $2, $3, $3, true, 0, 0, COALESCE($4, '[]'::jsonb), NOW(), NOW())
+        RETURNING id, COALESCE(title, name) AS title, COALESCE(short, short_code, '') AS short,
+                  COALESCE(target_url, url) AS target_url, COALESCE(is_active, true) AS is_active,
+                  COALESCE(click_count, 0) AS click_count, COALESCE(unique_clicks, 0) AS unique_clicks,
+                  actions, created_at, updated_at
         ",
     )
     .bind(&input.title)
@@ -109,7 +116,7 @@ async fn delete_smart_link(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_smart_links WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_smart_links WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -119,6 +126,13 @@ async fn delete_smart_link(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Smart link not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Smart link deleted successfully"})))
 }

@@ -54,13 +54,13 @@ pub struct AbandonedCart {
     pub id: i64,
     pub contact_id: Option<i64>,
     pub email: String,
-    pub cart_total: f64,
+    pub cart_total_cents: i64,
     pub cart_items: Option<serde_json::Value>,
     pub status: String,
     pub recovery_email_sent: bool,
     pub recovered: bool,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -85,9 +85,12 @@ async fn list_leads(
     Query(filters): Query<LeadFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = filters.page.unwrap_or(1).max(1);
-    let per_page = filters.per_page.unwrap_or(25).min(100);
-    let offset = (page - 1) * per_page;
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(25).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
     // Lead statuses from the frontend Lead interface
     let lead_statuses = [
@@ -173,10 +176,10 @@ async fn list_leads(
     )
     .bind(filters.status.as_deref())
     .bind(filters.source.as_deref())
-    .bind(filters.search.as_ref().map(|s| format!("%{s}%")).as_deref())
+    .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     Ok(Json(json!({
         "data": transformed_leads,
@@ -370,9 +373,10 @@ async fn update_lead(
     .bind(&input.status)
     .bind(&tags)
     .bind(&input.custom_fields)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Lead not found"}))))?;
 
     let full_name = match (&lead.first_name, &lead.last_name) {
         (Some(f), Some(l)) => format!("{f} {l}"),
@@ -406,7 +410,7 @@ async fn delete_lead(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM contacts WHERE id = $1")
+    let result = sqlx::query("DELETE FROM contacts WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -416,6 +420,13 @@ async fn delete_lead(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Lead not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Lead deleted successfully"})))
 }

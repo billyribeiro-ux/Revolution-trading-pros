@@ -129,10 +129,17 @@ export default defineConfig(({ mode, command }) => {
 									'ws:',
 									'http://localhost:8080',
 									'http://127.0.0.1:8080',
+									'http://localhost:*',
+									'http://127.0.0.1:*',
 									'http://localhost:5173',
 									'http://localhost:5174',
 									'ws://localhost:8080',
-									'ws://127.0.0.1:8080'
+									'ws://127.0.0.1:8080',
+									'ws://localhost:*',
+									'ws://127.0.0.1:*',
+									...(process.env.VITE_API_URL
+										? ([process.env.VITE_API_URL as `http://localhost:${number}`] as const)
+										: [])
 								] as const)
 							: [])
 					],

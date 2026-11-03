@@ -13,7 +13,7 @@ use axum::{
     Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::get,
+    routing::{get, patch, post},
 };
 use chrono::Datelike;
 use serde::{Deserialize, Serialize};
@@ -168,41 +168,82 @@ pub struct CreateStageInput {
 // HANDLERS - Pipelines (defined but not routed in the pre-split source)
 // ═══════════════════════════════════════════════════════════════════════════
 
+fn decimal_to_cents(val: sqlx::types::Decimal) -> i64 {
+    (val * sqlx::types::Decimal::from(100))
+        .round()
+        .to_string()
+        .parse::<i64>()
+        .unwrap_or(0)
+}
+
+macro_rules! crm_pipeline_cols {
+    () => {
+        "id, name, description, is_default, is_active, color, icon, position, \
+         (created_at AT TIME ZONE 'UTC') AS created_at, \
+         (updated_at AT TIME ZONE 'UTC') AS updated_at"
+    };
+}
+
+macro_rules! crm_stage_cols {
+    () => {
+        "id, pipeline_id, name, description, position, probability, \
+         is_closed_won, is_closed_lost, auto_advance_after_days, color, \
+         (created_at AT TIME ZONE 'UTC') AS created_at, \
+         (updated_at AT TIME ZONE 'UTC') AS updated_at"
+    };
+}
+
+macro_rules! crm_deal_cols {
+    () => {
+        "id, name, contact_id, company_id, pipeline_id, stage_id, owner_id, \
+         amount, currency, probability, status, expected_close_date, close_date, \
+         lost_reason, won_details, priority, source_channel, source_campaign, \
+         tags, custom_fields, \
+         (stage_entered_at AT TIME ZONE 'UTC') AS stage_entered_at, \
+         (closed_at AT TIME ZONE 'UTC') AS closed_at, \
+         (created_at AT TIME ZONE 'UTC') AS created_at, \
+         (updated_at AT TIME ZONE 'UTC') AS updated_at"
+    };
+}
+
 /// GET /admin/crm/pipelines - List all pipelines
 async fn list_pipelines(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let pipelines: Vec<CrmPipeline> = sqlx::query_as(
-        r"
-        SELECT id, name, description, is_default, is_active, color, icon, position, created_at, updated_at
-        FROM crm_pipelines
-        WHERE is_active = true
-        ORDER BY position ASC, created_at ASC
-        ",
-    )
+    let pipelines: Vec<CrmPipeline> = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_pipeline_cols!(),
+        " FROM crm_pipelines WHERE is_active = true ORDER BY position ASC, created_at ASC"
+    ))
     .fetch_all(&state.db.pool)
     .await
     // FIX-2026-04-26: .unwrap_or_default();
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // For each pipeline, get its stages and stats
     let mut result = Vec::new();
     for pipeline in pipelines {
-        let stages: Vec<CrmPipelineStage> = sqlx::query_as(
-            r"
-            SELECT id, pipeline_id, name, description, position, probability,
-                   is_closed_won, is_closed_lost, auto_advance_after_days, color, created_at, updated_at
-            FROM crm_pipeline_stages
-            WHERE pipeline_id = $1
-            ORDER BY position ASC
-            ",
-        )
+        let stages: Vec<CrmPipelineStage> = sqlx::query_as(concat!(
+            "SELECT ",
+            crm_stage_cols!(),
+            " FROM crm_pipeline_stages WHERE pipeline_id = $1 ORDER BY position ASC"
+        ))
         .bind(pipeline.id)
         .fetch_all(&state.db.pool)
         .await
         // FIX-2026-04-26: .unwrap_or_default();
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))? ;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
         let deals_count: (i64,) =
             sqlx::query_as("SELECT COUNT(*) FROM crm_deals WHERE pipeline_id = $1")
@@ -211,13 +252,13 @@ async fn list_pipelines(
                 .await
                 .unwrap_or((0,));
 
-        let total_value: (Option<sqlx::types::Decimal>,) = sqlx::query_as(
-            "SELECT SUM(amount) FROM crm_deals WHERE pipeline_id = $1 AND status = 'open'",
+        let total_value_cents: (i64,) = sqlx::query_as(
+            "SELECT COALESCE(SUM(ROUND(amount * 100)::BIGINT), 0)::BIGINT FROM crm_deals WHERE pipeline_id = $1 AND status = 'open'",
         )
         .bind(pipeline.id)
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((None,));
+        .unwrap_or((0,));
 
         result.push(json!({
             "id": pipeline.id.to_string(),
@@ -229,7 +270,7 @@ async fn list_pipelines(
             "icon": pipeline.icon,
             "position": pipeline.position,
             "deals_count": deals_count.0,
-            "total_value": total_value.0.map(|v| v.to_string()).unwrap_or_else(|| "0".to_string()),
+            "total_value_cents": total_value_cents.0,
             "stages": stages.iter().map(|s| json!({
                 "id": s.id.to_string(),
                 "pipeline_id": s.pipeline_id.to_string(),
@@ -257,24 +298,32 @@ async fn get_pipeline(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let pipeline: CrmPipeline = sqlx::query_as(
-        "SELECT id, name, description, is_default, is_active, color, icon, position, created_at, updated_at FROM crm_pipelines WHERE id = $1",
-    )
+    let pipeline: CrmPipeline = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_pipeline_cols!(),
+        " FROM crm_pipelines WHERE id = $1"
+    ))
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Pipeline not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Pipeline not found"})),
+        )
+    })?;
 
-    let stages: Vec<CrmPipelineStage> = sqlx::query_as(
-        r"
-        SELECT id, pipeline_id, name, description, position, probability,
-               is_closed_won, is_closed_lost, auto_advance_after_days, color, created_at, updated_at
-        FROM crm_pipeline_stages
-        WHERE pipeline_id = $1
-        ORDER BY position ASC
-        ",
-    )
+    let stages: Vec<CrmPipelineStage> = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_stage_cols!(),
+        " FROM crm_pipeline_stages WHERE pipeline_id = $1 ORDER BY position ASC"
+    ))
     .bind(id)
     .fetch_all(&state.db.pool)
     .await
@@ -317,13 +366,12 @@ async fn create_pipeline(
     _admin: AdminUser,
     Json(input): Json<CreatePipelineInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let pipeline: CrmPipeline = sqlx::query_as(
-        r"
-        INSERT INTO crm_pipelines (name, description, is_default, is_active, color, icon, position, created_at, updated_at)
-        VALUES ($1, $2, false, true, $3, $4, (SELECT COALESCE(MAX(position), 0) + 1 FROM crm_pipelines), NOW(), NOW())
-        RETURNING id, name, description, is_default, is_active, color, icon, position, created_at, updated_at
-        ",
-    )
+    let pipeline: CrmPipeline = sqlx::query_as(concat!(
+        "INSERT INTO crm_pipelines (name, description, is_default, is_active, color, icon, position, created_at, updated_at)
+         VALUES ($1, $2, false, true, $3, $4, (SELECT COALESCE(MAX(position), 0) + 1 FROM crm_pipelines), NOW(), NOW())
+         RETURNING ",
+        crm_pipeline_cols!()
+    ))
     .bind(&input.name)
     .bind(&input.description)
     .bind(input.color.unwrap_or_else(|| "#6366f1".to_string()))
@@ -350,26 +398,36 @@ async fn update_pipeline(
     Path(id): Path<i64>,
     Json(input): Json<CreatePipelineInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let pipeline: CrmPipeline = sqlx::query_as(
-        r"
-        UPDATE crm_pipelines SET
+    let pipeline: CrmPipeline = sqlx::query_as(concat!(
+        "UPDATE crm_pipelines SET
             name = $2,
             description = $3,
             color = COALESCE($4, color),
             icon = COALESCE($5, icon),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, description, is_default, is_active, color, icon, position, created_at, updated_at
-        ",
-    )
+        RETURNING ",
+        crm_pipeline_cols!()
+    ))
     .bind(id)
     .bind(&input.name)
     .bind(&input.description)
     .bind(&input.color)
     .bind(&input.icon)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Pipeline not found"})),
+        )
+    })?;
 
     Ok(Json(json!({
         "id": pipeline.id.to_string(),
@@ -388,14 +446,26 @@ async fn delete_pipeline(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Check if it's the default pipeline
-    let pipeline: CrmPipeline = sqlx::query_as(
-        "SELECT id, name, description, is_default, is_active, color, icon, position, created_at, updated_at FROM crm_pipelines WHERE id = $1",
-    )
+    let pipeline: CrmPipeline = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_pipeline_cols!(),
+        " FROM crm_pipelines WHERE id = $1"
+    ))
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Pipeline not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Pipeline not found"})),
+        )
+    })?;
 
     if pipeline.is_default {
         return Err((
@@ -428,15 +498,13 @@ async fn add_pipeline_stage(
     let position = input.position.unwrap_or(0);
     let probability = input.probability.unwrap_or(50);
 
-    let stage: CrmPipelineStage = sqlx::query_as(
-        r"
-        INSERT INTO crm_pipeline_stages (pipeline_id, name, description, position, probability,
+    let stage: CrmPipelineStage = sqlx::query_as(concat!(
+        "INSERT INTO crm_pipeline_stages (pipeline_id, name, description, position, probability,
                                           is_closed_won, is_closed_lost, color, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-        RETURNING id, pipeline_id, name, description, position, probability,
-                  is_closed_won, is_closed_lost, auto_advance_after_days, color, created_at, updated_at
-        ",
-    )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+         RETURNING ",
+        crm_stage_cols!()
+    ))
     .bind(pipeline_id)
     .bind(&input.name)
     .bind(&input.description)
@@ -473,26 +541,25 @@ async fn list_deals(
     Query(filters): Query<DealFilters>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = filters.page.unwrap_or(1).max(1);
-    let per_page = filters.per_page.unwrap_or(25).min(100);
-    let offset = (page - 1) * per_page;
-    let search_pattern = filters.search.as_ref().map(|s| format!("%{s}%"));
+    let per_page = filters.per_page.unwrap_or(25).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
+    let search_pattern = filters
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('\0', "")));
 
-    let deals: Vec<CrmDeal> = sqlx::query_as(
-        r"
-        SELECT id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-               amount, currency, probability, status, expected_close_date, close_date,
-               lost_reason, won_details, priority, source_channel, source_campaign,
-               tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        FROM crm_deals
+    let deals: Vec<CrmDeal> = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_deal_cols!(),
+        " FROM crm_deals
         WHERE ($1::bigint IS NULL OR pipeline_id = $1)
           AND ($2::bigint IS NULL OR stage_id = $2)
           AND ($3::text IS NULL OR status = $3)
           AND ($4::bigint IS NULL OR owner_id = $4)
           AND ($5::text IS NULL OR name ILIKE $5)
         ORDER BY created_at DESC
-        LIMIT $6 OFFSET $7
-        ",
-    )
+        LIMIT $6 OFFSET $7"
+    ))
     .bind(filters.pipeline_id)
     .bind(filters.stage_id)
     .bind(filters.status.as_deref())
@@ -538,7 +605,7 @@ async fn list_deals(
                 "pipeline_id": d.pipeline_id.to_string(),
                 "stage_id": d.stage_id.to_string(),
                 "owner_id": d.owner_id.map(|id| id.to_string()),
-                "amount": d.amount.to_string().parse::<f64>().unwrap_or(0.0),
+                "amount_cents": decimal_to_cents(d.amount),
                 "currency": d.currency,
                 "probability": d.probability,
                 "status": d.status,
@@ -570,21 +637,17 @@ async fn list_deals(
     })))
 }
 
-/// GET /admin/crm/deals/:id - Get a single deal (defined; not routed)
+/// GET /admin/crm/deals/:id - Get a single deal
 async fn get_deal(
     State(state): State<AppState>,
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let deal: CrmDeal = sqlx::query_as(
-        r"
-        SELECT id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-               amount, currency, probability, status, expected_close_date, close_date,
-               lost_reason, won_details, priority, source_channel, source_campaign,
-               tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        FROM crm_deals WHERE id = $1
-        ",
-    )
+    let deal: CrmDeal = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_deal_cols!(),
+        " FROM crm_deals WHERE id = $1"
+    ))
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
@@ -609,7 +672,7 @@ async fn get_deal(
         "pipeline_id": deal.pipeline_id.to_string(),
         "stage_id": deal.stage_id.to_string(),
         "owner_id": deal.owner_id.map(|id| id.to_string()),
-        "amount": deal.amount.to_string().parse::<f64>().unwrap_or(0.0),
+        "amount_cents": decimal_to_cents(deal.amount),
         "currency": deal.currency,
         "probability": deal.probability,
         "status": deal.status,
@@ -647,18 +710,14 @@ async fn create_deal(
         .expected_close_date
         .and_then(|d| chrono::NaiveDate::parse_from_str(&d, "%Y-%m-%d").ok());
 
-    let deal: CrmDeal = sqlx::query_as(
-        r"
-        INSERT INTO crm_deals (name, contact_id, company_id, pipeline_id, stage_id, amount, currency,
-                               probability, status, expected_close_date, priority, source_channel,
-                               source_campaign, tags, custom_fields, stage_entered_at, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7, $8, 'open', $9, $10, $11, $12, $13, $14, NOW(), NOW(), NOW())
-        RETURNING id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-                  amount, currency, probability, status, expected_close_date, close_date,
-                  lost_reason, won_details, priority, source_channel, source_campaign,
-                  tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        ",
-    )
+    let deal: CrmDeal = sqlx::query_as(concat!(
+        "INSERT INTO crm_deals (name, contact_id, company_id, pipeline_id, stage_id, amount, currency,
+                                probability, status, expected_close_date, priority, source_channel,
+                                source_campaign, tags, custom_fields, stage_entered_at, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6::BIGINT / 100.0, $7, $8, 'open', $9, $10, $11, $12, $13, $14, NOW(), NOW(), NOW())
+         RETURNING ",
+        crm_deal_cols!()
+    ))
     .bind(&input.name)
     .bind(input.contact_id)
     .bind(input.company_id)
@@ -682,7 +741,7 @@ async fn create_deal(
         "name": deal.name,
         "pipeline_id": deal.pipeline_id.to_string(),
         "stage_id": deal.stage_id.to_string(),
-        "amount": deal.amount.to_string().parse::<f64>().unwrap_or(0.0),
+        "amount_cents": decimal_to_cents(deal.amount),
         "status": deal.status
     })))
 }
@@ -699,9 +758,8 @@ async fn update_deal(
         .expected_close_date
         .and_then(|d| chrono::NaiveDate::parse_from_str(&d, "%Y-%m-%d").ok());
 
-    let deal: CrmDeal = sqlx::query_as(
-        r"
-        UPDATE crm_deals SET
+    let deal: CrmDeal = sqlx::query_as(concat!(
+        "UPDATE crm_deals SET
             name = COALESCE($2, name),
             amount = COALESCE($3::BIGINT / 100.0, amount),
             probability = COALESCE($4, probability),
@@ -711,12 +769,9 @@ async fn update_deal(
             custom_fields = COALESCE($8, custom_fields),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-                  amount, currency, probability, status, expected_close_date, close_date,
-                  lost_reason, won_details, priority, source_channel, source_campaign,
-                  tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        ",
-    )
+        RETURNING ",
+        crm_deal_cols!()
+    ))
     .bind(id)
     .bind(&input.name)
     .bind(input.amount_cents)
@@ -725,19 +780,25 @@ async fn update_deal(
     .bind(&input.priority)
     .bind(&tags)
     .bind(&input.custom_fields)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await
     .map_err(|e| {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({"error": e.to_string()})),
         )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Deal not found"})),
+        )
     })?;
 
     Ok(Json(json!({
         "id": deal.id.to_string(),
         "name": deal.name,
-        "amount": deal.amount.to_string().parse::<f64>().unwrap_or(0.0),
+        "amount_cents": decimal_to_cents(deal.amount),
         "status": deal.status
     })))
 }
@@ -750,14 +811,26 @@ async fn update_deal_stage(
     Json(input): Json<UpdateDealStageInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get current deal to track stage history
-    let current_deal: CrmDeal = sqlx::query_as(
-        "SELECT id, name, contact_id, company_id, pipeline_id, stage_id, owner_id, amount, currency, probability, status, expected_close_date, close_date, lost_reason, won_details, priority, source_channel, source_campaign, tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at FROM crm_deals WHERE id = $1",
-    )
+    let current_deal: CrmDeal = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_deal_cols!(),
+        " FROM crm_deals WHERE id = $1"
+    ))
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Deal not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Deal not found"})),
+        )
+    })?;
 
     // Record stage history
     let duration = chrono::Utc::now()
@@ -776,22 +849,23 @@ async fn update_deal_stage(
     .bind(duration.num_seconds() as i32)
     .execute(&state.db.pool)
     .await
-    .ok(); // Ignore errors in history tracking
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Update the deal stage
-    let deal: CrmDeal = sqlx::query_as(
-        r"
-        UPDATE crm_deals SET
+    let deal: CrmDeal = sqlx::query_as(concat!(
+        "UPDATE crm_deals SET
             stage_id = $2,
             stage_entered_at = NOW(),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-                  amount, currency, probability, status, expected_close_date, close_date,
-                  lost_reason, won_details, priority, source_channel, source_campaign,
-                  tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        ",
-    )
+        RETURNING ",
+        crm_deal_cols!()
+    ))
     .bind(id)
     .bind(input.stage_id)
     .fetch_one(&state.db.pool)
@@ -824,14 +898,26 @@ async fn win_deal(
         .or_else(|| Some(chrono::Utc::now().date_naive()));
 
     // Get the won stage for this pipeline
-    let deal: CrmDeal = sqlx::query_as(
-        "SELECT id, name, contact_id, company_id, pipeline_id, stage_id, owner_id, amount, currency, probability, status, expected_close_date, close_date, lost_reason, won_details, priority, source_channel, source_campaign, tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at FROM crm_deals WHERE id = $1",
-    )
+    let deal: CrmDeal = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_deal_cols!(),
+        " FROM crm_deals WHERE id = $1"
+    ))
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Deal not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Deal not found"})),
+        )
+    })?;
 
     let won_stage: Option<(i64,)> = sqlx::query_as(
         "SELECT id FROM crm_pipeline_stages WHERE pipeline_id = $1 AND is_closed_won = true LIMIT 1"
@@ -839,14 +925,12 @@ async fn win_deal(
     .bind(deal.pipeline_id)
     .fetch_optional(&state.db.pool)
     .await
-    .ok()
-    .flatten();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     let stage_id = won_stage.map(|s| s.0).unwrap_or(deal.stage_id);
 
-    let updated_deal: CrmDeal = sqlx::query_as(
-        r"
-        UPDATE crm_deals SET
+    let updated_deal: CrmDeal = sqlx::query_as(concat!(
+        "UPDATE crm_deals SET
             status = 'won',
             stage_id = $2,
             won_details = $3,
@@ -855,12 +939,9 @@ async fn win_deal(
             probability = 100,
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-                  amount, currency, probability, status, expected_close_date, close_date,
-                  lost_reason, won_details, priority, source_channel, source_campaign,
-                  tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        ",
-    )
+        RETURNING ",
+        crm_deal_cols!()
+    ))
     .bind(id)
     .bind(stage_id)
     .bind(&input.won_details)
@@ -878,7 +959,7 @@ async fn win_deal(
         "id": updated_deal.id.to_string(),
         "name": updated_deal.name,
         "status": updated_deal.status,
-        "amount": updated_deal.amount.to_string().parse::<f64>().unwrap_or(0.0),
+        "amount_cents": decimal_to_cents(updated_deal.amount),
         "won_details": updated_deal.won_details,
         "close_date": updated_deal.close_date
     })))
@@ -892,14 +973,26 @@ async fn lose_deal(
     Json(input): Json<LoseDealInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get the lost stage for this pipeline
-    let deal: CrmDeal = sqlx::query_as(
-        "SELECT id, name, contact_id, company_id, pipeline_id, stage_id, owner_id, amount, currency, probability, status, expected_close_date, close_date, lost_reason, won_details, priority, source_channel, source_campaign, tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at FROM crm_deals WHERE id = $1",
-    )
+    let deal: CrmDeal = sqlx::query_as(concat!(
+        "SELECT ",
+        crm_deal_cols!(),
+        " FROM crm_deals WHERE id = $1"
+    ))
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Deal not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Deal not found"})),
+        )
+    })?;
 
     let lost_stage: Option<(i64,)> = sqlx::query_as(
         "SELECT id FROM crm_pipeline_stages WHERE pipeline_id = $1 AND is_closed_lost = true LIMIT 1"
@@ -907,14 +1000,12 @@ async fn lose_deal(
     .bind(deal.pipeline_id)
     .fetch_optional(&state.db.pool)
     .await
-    .ok()
-    .flatten();
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     let stage_id = lost_stage.map(|s| s.0).unwrap_or(deal.stage_id);
 
-    let updated_deal: CrmDeal = sqlx::query_as(
-        r"
-        UPDATE crm_deals SET
+    let updated_deal: CrmDeal = sqlx::query_as(concat!(
+        "UPDATE crm_deals SET
             status = 'lost',
             stage_id = $2,
             lost_reason = $3,
@@ -923,12 +1014,9 @@ async fn lose_deal(
             probability = 0,
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, contact_id, company_id, pipeline_id, stage_id, owner_id,
-                  amount, currency, probability, status, expected_close_date, close_date,
-                  lost_reason, won_details, priority, source_channel, source_campaign,
-                  tags, custom_fields, stage_entered_at, closed_at, created_at, updated_at
-        ",
-    )
+        RETURNING ",
+        crm_deal_cols!()
+    ))
     .bind(id)
     .bind(stage_id)
     .bind(&input.lost_reason)
@@ -955,7 +1043,7 @@ async fn delete_deal(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    sqlx::query("DELETE FROM crm_deals WHERE id = $1")
+    let result = sqlx::query("DELETE FROM crm_deals WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -965,6 +1053,13 @@ async fn delete_deal(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    if result.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Deal not found"})),
+        ));
+    }
 
     Ok(Json(json!({"message": "Deal deleted successfully"})))
 }
@@ -1040,26 +1135,26 @@ async fn get_deal_forecast(
     })?;
 
     let deals_count = forecast_deals.len() as i64;
-    let mut commit = 0.0f64;
-    let mut best_case = 0.0f64;
-    let mut pipeline_total = 0.0f64;
+    let mut commit_cents = 0_i64;
+    let mut best_case_cents = 0_i64;
+    let mut pipeline_total_cents = 0_i64;
 
     for (amount, probability) in &forecast_deals {
-        let amt: f64 = amount.to_string().parse().unwrap_or(0.0);
-        pipeline_total += amt;
-        let weighted = amt * (*probability as f64 / 100.0);
+        let amt_cents = decimal_to_cents(*amount);
+        pipeline_total_cents = pipeline_total_cents.saturating_add(amt_cents);
+        let weighted_cents = (amt_cents * (*probability as i64)) / 100;
         if *probability >= 75 {
-            commit += amt;
+            commit_cents = commit_cents.saturating_add(amt_cents);
         }
-        best_case += weighted;
+        best_case_cents = best_case_cents.saturating_add(weighted_cents);
     }
 
     Ok(Json(json!({
         "period": period,
-        "commit": commit,
-        "best_case": best_case,
-        "pipeline": pipeline_total,
-        "worst_case": best_case * 0.6,
+        "commit_cents": commit_cents,
+        "best_case_cents": best_case_cents,
+        "pipeline_cents": pipeline_total_cents,
+        "worst_case_cents": (best_case_cents * 60) / 100,
         "deals_count": deals_count
     })))
 }
@@ -1069,13 +1164,22 @@ async fn get_deal_forecast(
 // ═══════════════════════════════════════════════════════════════════════════
 
 pub(super) fn router() -> Router<AppState> {
-    // Preserve exact pre-split routing: only `/deals` GET was registered
-    // for this sub-domain in the original `crm::router()`. The other deal
-    // and pipeline handlers (create_deal, update_deal, win_deal, lose_deal,
-    // list_pipelines, get_pipeline, create_pipeline, update_pipeline,
-    // delete_pipeline, add_pipeline_stage, update_deal_stage, get_deal,
-    // delete_deal, get_deal_forecast) were defined but unrouted in the
-    // pre-split source. They remain defined here so future router
-    // registrations are a one-line change.
-    Router::new().route("/deals", get(list_deals))
+    Router::new()
+        .route("/pipelines", get(list_pipelines).post(create_pipeline))
+        .route(
+            "/pipelines/{id}",
+            get(get_pipeline)
+                .put(update_pipeline)
+                .delete(delete_pipeline),
+        )
+        .route("/pipelines/{id}/stages", post(add_pipeline_stage))
+        .route("/deals", get(list_deals).post(create_deal))
+        .route("/deals/forecast", get(get_deal_forecast))
+        .route(
+            "/deals/{id}",
+            get(get_deal).put(update_deal).delete(delete_deal),
+        )
+        .route("/deals/{id}/stage", patch(update_deal_stage))
+        .route("/deals/{id}/win", post(win_deal))
+        .route("/deals/{id}/lose", post(lose_deal))
 }

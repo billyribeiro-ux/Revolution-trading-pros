@@ -15,7 +15,7 @@
 	}
 
 	let {
-		value = $bindable(''),
+		value = $bindable(),
 		options = [],
 		placeholder = 'Select...',
 		label = '',

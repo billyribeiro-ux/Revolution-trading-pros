@@ -44,9 +44,9 @@ async fn list_popups(
     State(state): State<AppState>,
     Query(query): Query<ListPopupsQuery>,
 ) -> Result<Json<PopupListResponse>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(20).min(100);
-    let offset = (page - 1) * per_page;
+    let page = query.page.unwrap_or(1).clamp(1, 10_000);
+    let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     // Build parameterized query to prevent SQL injection
     let mut conditions = Vec::new();
@@ -109,31 +109,18 @@ async fn list_popups(
         q = q.bind(popup_type);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{search}%");
+        let clean = search.replace('\0', "");
+        let search_pattern = format!("%{clean}%");
         q = q.bind(search_pattern);
     }
     q = q.bind(per_page);
     q = q.bind(offset);
 
     // Execute queries
-    let popups: Vec<crate::models::popup::Popup> = match q.fetch_all(&state.db.pool).await {
-        Ok(rows) => rows,
-        Err(e) => {
-            // If table doesn't exist, return empty list
-            if e.to_string().contains("does not exist") {
-                return Ok(Json(PopupListResponse {
-                    popups: vec![],
-                    total: 0,
-                    page,
-                    per_page,
-                }));
-            }
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({ "error": format!("Database error: {}", e) })),
-            ));
-        }
-    };
+    let popups: Vec<crate::models::popup::Popup> = q
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(crate::utils::errors::db_error)?;
 
     // Bind parameters for the count query
     let mut cq = sqlx::query_as::<_, (i64,)>(sqlx::AssertSqlSafe(count_sql.as_str()));
@@ -144,11 +131,15 @@ async fn list_popups(
         cq = cq.bind(popup_type);
     }
     if let Some(ref search) = query.search {
-        let search_pattern = format!("%{search}%");
+        let clean = search.replace('\0', "");
+        let search_pattern = format!("%{clean}%");
         cq = cq.bind(search_pattern);
     }
 
-    let total: (i64,) = cq.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    let total: (i64,) = cq
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(crate::utils::errors::db_error)?;
 
     let popup_summaries: Vec<PopupSummary> = popups.iter().map(PopupSummary::from_popup).collect();
 
@@ -340,10 +331,18 @@ async fn update_popup(
     .await;
 
     match result {
-        Ok(_) => Ok(Json(json!({
-            "message": "Popup updated successfully",
-            "id": id
-        }))),
+        Ok(res) => {
+            if res.rows_affected() == 0 {
+                return Err((
+                    StatusCode::NOT_FOUND,
+                    Json(json!({ "error": "Popup not found" })),
+                ));
+            }
+            Ok(Json(json!({
+                "message": "Popup updated successfully",
+                "id": id
+            })))
+        }
         Err(e) => Err((
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({ "error": format!("Failed to update popup: {}", e) })),
@@ -417,17 +416,21 @@ async fn duplicate_popup(
         ",
     )
     .bind(id)
-    .fetch_one(&state.db.pool)
+    .fetch_optional(&state.db.pool)
     .await;
 
     match result {
-        Ok(row) => {
+        Ok(Some(row)) => {
             let new_id: i32 = sqlx::Row::get(&row, "id");
             Ok(Json(json!({
                 "message": "Popup duplicated successfully",
                 "id": new_id
             })))
         }
+        Ok(None) => Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({ "error": "Popup not found" })),
+        )),
         Err(e) => Err((
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(json!({ "error": format!("Failed to duplicate popup: {}", e) })),
@@ -478,7 +481,6 @@ async fn get_popup_analytics(
         )
     })?;
 
-    // Try to get detailed event stats, but provide defaults if table doesn't exist
     let (today_views, week_views, month_views): (i64, i64, i64) = sqlx::query_as(
         r"
         SELECT
@@ -493,10 +495,9 @@ async fn get_popup_analytics(
     .bind(today_start)
     .bind(week_start)
     .bind(month_start)
-    .fetch_optional(&state.db.pool)
+    .fetch_one(&state.db.pool)
     .await
-    .unwrap_or(None)
-    .unwrap_or((0, 0, 0));
+    .map_err(crate::utils::errors::db_error)?;
 
     let (today_conv, week_conv, month_conv): (i64, i64, i64) = sqlx::query_as(
         r"
@@ -512,10 +513,9 @@ async fn get_popup_analytics(
     .bind(today_start)
     .bind(week_start)
     .bind(month_start)
-    .fetch_optional(&state.db.pool)
+    .fetch_one(&state.db.pool)
     .await
-    .unwrap_or(None)
-    .unwrap_or((0, 0, 0));
+    .map_err(crate::utils::errors::db_error)?;
 
     // Device breakdown
     let device_stats: Vec<(String, i64)> = sqlx::query_as(

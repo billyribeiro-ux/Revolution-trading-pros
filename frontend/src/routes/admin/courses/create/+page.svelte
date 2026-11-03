@@ -512,8 +512,13 @@
 	}
 
 	// Complete AI Features System
+	let showReplaceCurriculumModal = $state(false);
 
-	function generateWithAI(field: string) {
+	function generateWithAI(field: string, forceCurriculum = false) {
+		if (field === 'curriculum' && course.modules.length > 0 && !forceCurriculum) {
+			showReplaceCurriculumModal = true;
+			return;
+		}
 		generating = true;
 
 		scheduleTimeout(() => {
@@ -547,18 +552,6 @@
 					break;
 
 				case 'curriculum':
-					// FIX-2026-04-26 (P3-5): require explicit confirmation before
-					// blowing away whatever modules the user has already authored.
-					// Old code silently overwrote without prompt.
-					// TODO(modal-confirm): replace native confirm() with ConfirmationModal —
-					// requires refactoring this sync generate() into a state-driven flow.
-					if (
-						course.modules.length > 0 &&
-						!confirm('This will replace your existing modules with a sample curriculum. Continue?')
-					) {
-						generating = false;
-						return;
-					}
 					course.modules = [
 						{
 							id: generateId(),
@@ -1779,6 +1772,21 @@
 </svelte:head>
 
 <!-- Modals and Notifications -->
+<ConfirmationModal
+	isOpen={showReplaceCurriculumModal}
+	title="Replace Curriculum"
+	message="This will replace your existing modules with a sample curriculum. Continue?"
+	confirmText="Replace"
+	variant="warning"
+	onConfirm={() => {
+		showReplaceCurriculumModal = false;
+		generateWithAI('curriculum', true);
+	}}
+	onCancel={() => {
+		showReplaceCurriculumModal = false;
+	}}
+/>
+
 <PublishWarningModal
 	open={showPublishWarning}
 	onConfirm={() => void confirmPublish()}

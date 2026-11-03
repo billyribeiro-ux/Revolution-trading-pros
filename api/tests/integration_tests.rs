@@ -313,28 +313,35 @@ async fn test_list_products_with_filters() {
 #[tokio::test]
 async fn test_rate_limiting() {
     let app = setup_test_app().await;
+    let email = format!("ratelimit_{}@example.com", uuid::Uuid::new_v4());
 
-    // Make multiple rapid requests
-    for _ in 0..100 {
+    let mut got_rate_limited = false;
+
+    // POST /api/auth/forgot-password enforces a strict per-IP rate limit (3 requests / hour).
+    for _ in 0..10 {
         let response = app
             .clone()
             .oneshot(
                 Request::builder()
-                    .uri("/health")
-                    .body(Body::empty())
+                    .method("POST")
+                    .uri("/api/auth/forgot-password")
+                    .header(header::CONTENT_TYPE, "application/json")
+                    .body(Body::from(json!({ "email": email }).to_string()))
                     .unwrap(),
             )
             .await
             .unwrap();
 
-        // Should eventually hit rate limit
         if response.status() == StatusCode::TOO_MANY_REQUESTS {
-            return; // Test passed
+            got_rate_limited = true;
+            break;
         }
     }
 
-    // If we get here, rate limiting might not be working
-    // But this is acceptable for health endpoint
+    assert!(
+        got_rate_limited,
+        "Expected 429 Too Many Requests from rate-limited endpoint"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

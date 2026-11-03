@@ -50,6 +50,8 @@
 //! refactor that breaks the public type contract surfaces here, not in
 //! prod.
 
+mod common;
+
 use revolution_api::routes::oauth::{
     AppleCallbackBody, GoogleCallbackQuery, OAuthInitResponse, OAuthProvider,
 };
@@ -74,27 +76,15 @@ async fn router_mounts_all_documented_oauth_routes_with_correct_methods() {
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
 
-    // Compile-time contract: oauth::router() returns Router<AppState>.
-    // A regression that breaks the type fails to compile this line.
     let _router: axum::Router<revolution_api::AppState> = revolution_api::routes::oauth::router();
+    let app = common::setup_test_app().await;
 
-    // Method-shape probe — mirrors the actual mount table:
-    //   GET  /google           → google_init
-    //   GET  /google/callback  → google_callback
-    //   GET  /apple            → apple_init
-    //   POST /apple/callback   → apple_callback   ← Apple form_post
-    let probe: axum::Router = axum::Router::new()
-        .route("/google", axum::routing::get(|| async { "ok" }))
-        .route("/google/callback", axum::routing::get(|| async { "ok" }))
-        .route("/apple", axum::routing::get(|| async { "ok" }))
-        .route("/apple/callback", axum::routing::post(|| async { "ok" }));
-
-    // Sanity: an unmounted path is 404.
-    let resp = probe
+    // Sanity: an unmounted path on the real router is 404.
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
-                .uri("/totally-not-an-oauth-route")
+                .uri("/api/auth/totally-not-an-oauth-route")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -106,9 +96,13 @@ async fn router_mounts_all_documented_oauth_routes_with_correct_methods() {
         "unknown path must be 404"
     );
 
-    // Each documented GET route responds (NOT 404).
-    for path in ["/google", "/google/callback", "/apple"] {
-        let resp = probe
+    // Each documented GET route on the real router responds (NOT 404, NOT 405).
+    for path in [
+        "/api/auth/google",
+        "/api/auth/google/callback",
+        "/api/auth/apple",
+    ] {
+        let resp = app
             .clone()
             .oneshot(
                 Request::builder()
@@ -122,18 +116,24 @@ async fn router_mounts_all_documented_oauth_routes_with_correct_methods() {
         assert_ne!(
             resp.status(),
             StatusCode::NOT_FOUND,
-            "{path} must be a mounted GET route"
+            "{path} must be a mounted GET route on the real router"
+        );
+        assert_ne!(
+            resp.status(),
+            StatusCode::METHOD_NOT_ALLOWED,
+            "{path} must accept GET on the real router"
         );
     }
 
-    // /apple/callback is POST-only — load-bearing for Apple form_post.
-    let resp = probe
+    // /api/auth/apple/callback is POST-only on the real router.
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
                 .method("POST")
-                .uri("/apple/callback")
-                .body(Body::empty())
+                .uri("/api/auth/apple/callback")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .body(Body::from("error=user_cancelled_authorize"))
                 .unwrap(),
         )
         .await
@@ -141,18 +141,21 @@ async fn router_mounts_all_documented_oauth_routes_with_correct_methods() {
     assert_ne!(
         resp.status(),
         StatusCode::NOT_FOUND,
-        "/apple/callback must be a mounted POST route"
+        "/api/auth/apple/callback must be a mounted POST route on the real router"
+    );
+    assert_ne!(
+        resp.status(),
+        StatusCode::METHOD_NOT_ALLOWED,
+        "/api/auth/apple/callback must accept POST on the real router"
     );
 
-    // The inverse — GET on /apple/callback — must be 405, proving the
-    // method binding is what the spec requires. If a refactor flipped
-    // the method to GET, this assertion would fail.
-    let resp = probe
+    // GET on /api/auth/apple/callback must be 405 Method Not Allowed on the real router.
+    let resp = app
         .clone()
         .oneshot(
             Request::builder()
                 .method("GET")
-                .uri("/apple/callback")
+                .uri("/api/auth/apple/callback")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -161,7 +164,7 @@ async fn router_mounts_all_documented_oauth_routes_with_correct_methods() {
     assert_eq!(
         resp.status(),
         StatusCode::METHOD_NOT_ALLOWED,
-        "/apple/callback must reject GET (Apple uses POST form_post)"
+        "/api/auth/apple/callback must reject GET (Apple uses POST form_post)"
     );
 }
 

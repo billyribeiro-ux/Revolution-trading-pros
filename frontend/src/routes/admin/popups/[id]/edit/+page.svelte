@@ -25,6 +25,9 @@
 		animation: 'zoom',
 		show_close_button: true,
 		close_on_overlay_click: true,
+		auto_close_after: undefined,
+		start_date: '',
+		end_date: '',
 		has_form: false,
 		trigger_rules: {},
 		frequency_rules: { frequency: 'once_per_session' },
@@ -105,8 +108,17 @@
 		try {
 			initialLoading = true;
 			const response = await popupsApi.get(popupId);
-			if (response.popup) {
-				formData = response.popup;
+			const loadedPopup =
+				response.popup ??
+				(response as unknown as { data?: Popup }).data ??
+				(response as unknown as Popup);
+			if (loadedPopup && typeof loadedPopup === 'object') {
+				formData = {
+					...formData,
+					...loadedPopup,
+					start_date: loadedPopup.start_date ?? '',
+					end_date: loadedPopup.end_date ?? ''
+				};
 			}
 
 			// Extract trigger rules

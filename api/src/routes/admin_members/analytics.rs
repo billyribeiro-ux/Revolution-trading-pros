@@ -267,14 +267,18 @@ pub(super) async fn analytics_churn_reasons(
 /// GET /admin/members/analytics/segments - Segment analytics
 pub(super) async fn analytics_segments(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    AdminUser(_user): AdminUser,
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // P2-D: previously `.unwrap_or_default()` turned a DB fault into an empty
-    // `segments: []` 200 — masking an outage. Propagate via the same house
-    // 500 shape every other query in this file uses.
     let segments: Vec<MemberSegment> = sqlx::query_as(
-        "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE is_active = true ORDER BY member_count DESC LIMIT 10"
+        r"SELECT id, name, slug, description, filter_criteria AS rules,
+                 COALESCE(member_count, 0) AS member_count, COALESCE(is_active, true) AS is_active,
+                 (created_at AT TIME ZONE 'UTC') AS created_at,
+                 (updated_at AT TIME ZONE 'UTC') AS updated_at
+          FROM member_segments
+          WHERE is_active = true
+          ORDER BY member_count DESC
+          LIMIT 10",
     )
     .fetch_all(&state.db.pool)
     .await

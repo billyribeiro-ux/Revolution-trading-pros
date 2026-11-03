@@ -14,12 +14,14 @@ use chrono::Utc;
 use serde_json::{Value as JsonValue, json};
 use uuid::Uuid;
 
-use crate::{AppState, models::User};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
+};
 
 use super::{
     ApiResult, CmsSchedule, CmsScheduleExtended, CreateScheduleRequest, ListQuery,
-    ScheduleListResponse, ScheduleStatus, UpdateScheduleRequest, api_error, require_cms_admin,
-    require_cms_editor,
+    ScheduleListResponse, ScheduleStatus, UpdateScheduleRequest, api_error,
 };
 
 /// Create a new content schedule
@@ -39,11 +41,9 @@ use super::{
 )]
 pub(super) async fn create_schedule(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(req): Json<CreateScheduleRequest>,
 ) -> ApiResult<CmsSchedule> {
-    require_cms_editor(&user)?;
-
     // Verify content exists
     let content_exists: (bool,) =
         sqlx::query_as("SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1)")
@@ -121,11 +121,9 @@ pub(super) async fn create_schedule(
 )]
 pub(super) async fn list_schedules(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListQuery>,
 ) -> ApiResult<ScheduleListResponse> {
-    require_cms_editor(&user)?;
-
     let limit = query.limit.min(100);
 
     // Build dynamic query
@@ -203,7 +201,10 @@ pub(super) async fn list_schedules(
         count_query = count_query.bind(val);
     }
 
-    let total: (i64,) = count_query.fetch_one(&state.db.pool).await.unwrap_or((0,));
+    let total: (i64,) = count_query
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(ScheduleListResponse {
         schedules,
@@ -229,11 +230,9 @@ pub(super) async fn list_schedules(
 )]
 pub(super) async fn get_schedule(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsScheduleExtended> {
-    require_cms_editor(&user)?;
-
     let schedule: CmsScheduleExtended = sqlx::query_as(
         r"
         SELECT
@@ -275,12 +274,10 @@ pub(super) async fn get_schedule(
 )]
 pub(super) async fn update_schedule(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(req): Json<UpdateScheduleRequest>,
 ) -> ApiResult<CmsSchedule> {
-    require_cms_editor(&user)?;
-
     // Verify schedule exists and is pending
     let existing: Option<CmsSchedule> = sqlx::query_as("SELECT * FROM cms_schedules WHERE id = $1")
         .bind(id)
@@ -370,11 +367,9 @@ pub(super) async fn update_schedule(
 )]
 pub(super) async fn cancel_schedule(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsSchedule> {
-    require_cms_editor(&user)?;
-
     let schedule: CmsSchedule = sqlx::query_as(
         r"
         UPDATE cms_schedules SET
@@ -430,11 +425,9 @@ pub(super) async fn cancel_schedule(
 )]
 pub(super) async fn delete_schedule(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, (StatusCode, Json<JsonValue>)> {
-    require_cms_admin(&user)?;
-
     let result = sqlx::query(
         r"
         DELETE FROM cms_schedules

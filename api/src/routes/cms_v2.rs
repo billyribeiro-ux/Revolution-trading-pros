@@ -22,6 +22,7 @@ use uuid::Uuid;
 
 use crate::{
     AppState,
+    middleware::admin::{AdminUser, CmsEditorUser},
     models::{
         User,
         cms::{
@@ -77,10 +78,8 @@ fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> 
 /// List all asset folders
 async fn list_asset_folders(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
 ) -> ApiResult<Vec<CmsAssetFolder>> {
-    require_cms_editor(&user)?;
-
     let folders = cms_content::list_asset_folders(&state.db.pool)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -91,11 +90,9 @@ async fn list_asset_folders(
 /// Get asset folder by ID
 async fn get_asset_folder(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsAssetFolder> {
-    require_cms_editor(&user)?;
-
     let folder = cms_content::get_asset_folder(&state.db.pool, id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
@@ -107,11 +104,9 @@ async fn get_asset_folder(
 /// Create asset folder
 async fn create_asset_folder(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateAssetFolderRequest>,
 ) -> ApiResult<CmsAssetFolder> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -126,12 +121,10 @@ async fn create_asset_folder(
 /// Update asset folder
 async fn update_asset_folder(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateAssetFolderRequest>,
 ) -> ApiResult<CmsAssetFolder> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -152,12 +145,10 @@ struct DeleteFolderQuery {
 
 async fn delete_asset_folder(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
     Query(query): Query<DeleteFolderQuery>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     cms_content::delete_asset_folder(&state.db.pool, id, query.move_to)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -172,11 +163,9 @@ async fn delete_asset_folder(
 /// List assets with pagination and filtering
 async fn list_assets(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<AssetListQuery>,
 ) -> ApiResult<PaginatedResponse<CmsAssetSummary>> {
-    require_cms_editor(&user)?;
-
     let assets = cms_content::list_assets(&state.db.pool, query)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -187,11 +176,9 @@ async fn list_assets(
 /// Get asset by ID
 async fn get_asset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsAsset> {
-    require_cms_editor(&user)?;
-
     let asset = cms_content::get_asset(&state.db.pool, id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
@@ -203,11 +190,9 @@ async fn get_asset(
 /// Create asset (metadata only - upload handled separately)
 async fn create_asset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateAssetRequest>,
 ) -> ApiResult<CmsAsset> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -222,12 +207,10 @@ async fn create_asset(
 /// Update asset metadata
 async fn update_asset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateAssetRequest>,
 ) -> ApiResult<CmsAsset> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -242,11 +225,9 @@ async fn update_asset(
 /// Delete asset (soft delete)
 async fn delete_asset(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     cms_content::delete_asset(&state.db.pool, id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -261,11 +242,9 @@ async fn delete_asset(
 /// List content with pagination and filtering
 async fn list_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ContentListQuery>,
 ) -> ApiResult<PaginatedResponse<CmsContentSummary>> {
-    require_cms_editor(&user)?;
-
     let content = cms_content::list_content(&state.db.pool, query)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -276,11 +255,9 @@ async fn list_content(
 /// Get content by ID
 async fn get_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> ApiResult<CmsContent> {
-    require_cms_editor(&user)?;
-
     let content = cms_content::get_content(&state.db.pool, id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
@@ -327,11 +304,9 @@ async fn get_content_by_slug(
 /// Create content
 async fn create_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateContentRequest>,
 ) -> ApiResult<CmsContent> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -346,12 +321,10 @@ async fn create_content(
 /// Update content
 async fn update_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateContentRequest>,
 ) -> ApiResult<CmsContent> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -366,12 +339,10 @@ async fn update_content(
 /// Transition content status (publish, archive, etc.)
 async fn transition_content_status(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
     Json(request): Json<TransitionStatusRequest>,
 ) -> ApiResult<CmsContent> {
-    require_cms_editor(&user)?;
-
     // Check permissions for publish
     if request.status == CmsContentStatus::Published {
         require_cms_admin(&user)?;
@@ -392,11 +363,9 @@ async fn transition_content_status(
 /// Delete content (soft delete)
 async fn delete_content(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -420,12 +389,10 @@ struct RevisionListQuery {
 /// Get revisions for content
 async fn get_content_revisions(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Query(query): Query<RevisionListQuery>,
 ) -> ApiResult<Vec<CmsRevision>> {
-    require_cms_editor(&user)?;
-
     let revisions =
         cms_content::get_revisions(&state.db.pool, content_id, query.limit.unwrap_or(25))
             .await
@@ -437,11 +404,9 @@ async fn get_content_revisions(
 /// Restore a revision
 async fn restore_revision(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path((content_id, revision_number)): Path<(Uuid, i32)>,
 ) -> ApiResult<CmsContent> {
-    require_cms_admin(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -463,9 +428,10 @@ async fn restore_revision(
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /// List all tags (requires editor access)
-async fn list_tags(State(state): State<AppState>, user: User) -> ApiResult<Vec<CmsTag>> {
-    require_cms_editor(&user)?;
-
+async fn list_tags(
+    State(state): State<AppState>,
+    CmsEditorUser(_user): CmsEditorUser,
+) -> ApiResult<Vec<CmsTag>> {
     let tags = cms_content::list_tags(&state.db.pool)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -476,11 +442,9 @@ async fn list_tags(State(state): State<AppState>, user: User) -> ApiResult<Vec<C
 /// Create tag
 async fn create_tag(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateTagRequest>,
 ) -> ApiResult<CmsTag> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -495,11 +459,9 @@ async fn create_tag(
 /// Get tags for content
 async fn get_content_tags(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
 ) -> ApiResult<Vec<CmsTag>> {
-    require_cms_editor(&user)?;
-
     let tags = cms_content::get_content_tags(&state.db.pool, content_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -510,11 +472,9 @@ async fn get_content_tags(
 /// Add tag to content
 async fn add_tag_to_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path((content_id, tag_id)): Path<(Uuid, Uuid)>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -529,11 +489,9 @@ async fn add_tag_to_content(
 /// Remove tag from content
 async fn remove_tag_from_content(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path((content_id, tag_id)): Path<(Uuid, Uuid)>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     cms_content::remove_tag_from_content(&state.db.pool, content_id, tag_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -548,11 +506,9 @@ async fn remove_tag_from_content(
 /// Get comments for content
 async fn get_content_comments(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(_user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
 ) -> ApiResult<Vec<CmsComment>> {
-    require_cms_editor(&user)?;
-
     let comments = cms_content::get_content_comments(&state.db.pool, content_id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -563,12 +519,10 @@ async fn get_content_comments(
 /// Create comment
 async fn create_comment(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(content_id): Path<Uuid>,
     Json(request): Json<CreateCommentRequest>,
 ) -> ApiResult<CmsComment> {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -584,11 +538,9 @@ async fn create_comment(
 /// Resolve comment
 async fn resolve_comment(
     State(state): State<AppState>,
-    user: User,
+    CmsEditorUser(user): CmsEditorUser,
     Path(comment_id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
@@ -605,8 +557,16 @@ async fn resolve_comment(
 // SITE SETTINGS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-/// Get site settings
-async fn get_site_settings(State(state): State<AppState>) -> ApiResult<CmsSiteSettings> {
+/// Get site settings (admin)
+async fn get_site_settings(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+) -> ApiResult<CmsSiteSettings> {
+    public_get_site_settings(State(state)).await
+}
+
+/// Get site settings (public)
+async fn public_get_site_settings(State(state): State<AppState>) -> ApiResult<CmsSiteSettings> {
     let settings = cms_content::get_site_settings(&state.db.pool)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -617,11 +577,9 @@ async fn get_site_settings(State(state): State<AppState>) -> ApiResult<CmsSiteSe
 /// Update site settings
 async fn update_site_settings(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(request): Json<UpdateSiteSettingsRequest>,
 ) -> ApiResult<CmsSiteSettings> {
-    require_cms_admin(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -638,8 +596,18 @@ async fn update_site_settings(
 // NAVIGATION MENUS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-/// List navigation menus
-async fn list_navigation_menus(State(state): State<AppState>) -> ApiResult<Vec<CmsNavigationMenu>> {
+/// List navigation menus (admin)
+async fn list_navigation_menus(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+) -> ApiResult<Vec<CmsNavigationMenu>> {
+    public_list_navigation_menus(State(state)).await
+}
+
+/// List navigation menus (public)
+async fn public_list_navigation_menus(
+    State(state): State<AppState>,
+) -> ApiResult<Vec<CmsNavigationMenu>> {
     let menus = cms_content::list_navigation_menus(&state.db.pool)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -647,8 +615,17 @@ async fn list_navigation_menus(State(state): State<AppState>) -> ApiResult<Vec<C
     Ok(Json(menus))
 }
 
-/// Get navigation menu by slug
+/// Get navigation menu by slug (admin)
 async fn get_navigation_menu(
+    _admin: AdminUser,
+    State(state): State<AppState>,
+    Path(slug): Path<String>,
+) -> ApiResult<CmsNavigationMenu> {
+    public_get_navigation_menu(State(state), Path(slug)).await
+}
+
+/// Get navigation menu by slug (public)
+async fn public_get_navigation_menu(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> ApiResult<CmsNavigationMenu> {
@@ -663,11 +640,9 @@ async fn get_navigation_menu(
 /// Create navigation menu
 async fn create_navigation_menu(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(request): Json<CreateNavigationMenuRequest>,
 ) -> ApiResult<CmsNavigationMenu> {
-    require_cms_admin(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -682,12 +657,10 @@ async fn create_navigation_menu(
 /// Update navigation menu
 async fn update_navigation_menu(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateNavigationMenuRequest>,
 ) -> ApiResult<CmsNavigationMenu> {
-    require_cms_admin(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -705,9 +678,10 @@ async fn update_navigation_menu(
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /// List redirects
-async fn list_redirects(State(state): State<AppState>, user: User) -> ApiResult<Vec<CmsRedirect>> {
-    require_cms_admin(&user)?;
-
+async fn list_redirects(
+    State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
+) -> ApiResult<Vec<CmsRedirect>> {
     let redirects = cms_content::list_redirects(&state.db.pool)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -718,11 +692,9 @@ async fn list_redirects(State(state): State<AppState>, user: User) -> ApiResult<
 /// Create redirect
 async fn create_redirect(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(user): AdminUser,
     Json(request): Json<CreateRedirectRequest>,
 ) -> ApiResult<CmsRedirect> {
-    require_cms_admin(&user)?;
-
     let cms_user = cms_content::get_cms_user_by_user_id(&state.db.pool, user.id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -737,11 +709,9 @@ async fn create_redirect(
 /// Delete redirect
 async fn delete_redirect(
     State(state): State<AppState>,
-    user: User,
+    AdminUser(_user): AdminUser,
     Path(id): Path<Uuid>,
 ) -> ApiResultEmpty {
-    require_cms_admin(&user)?;
-
     cms_content::delete_redirect(&state.db.pool, id)
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
@@ -754,41 +724,42 @@ async fn delete_redirect(
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /// Get CMS overview statistics
-async fn get_cms_stats(State(state): State<AppState>, user: User) -> ApiResultEmpty {
-    require_cms_editor(&user)?;
-
+async fn get_cms_stats(
+    State(state): State<AppState>,
+    CmsEditorUser(_user): CmsEditorUser,
+) -> ApiResultEmpty {
     let total_content: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM cms_content WHERE deleted_at IS NULL")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let published_content: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM cms_content WHERE status = 'published' AND deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let draft_content: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM cms_content WHERE status = 'draft' AND deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     let total_assets: (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM cms_assets WHERE deleted_at IS NULL")
             .fetch_one(&state.db.pool)
             .await
-            .unwrap_or((0,));
+            .map_err(crate::utils::errors::db_error)?;
 
     let pending_review: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM cms_content WHERE status = 'in_review' AND deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "content": {
@@ -901,8 +872,8 @@ pub fn public_router() -> Router<AppState> {
         // Public content access by type and slug
         .route("/content/{content_type}/{slug}", get(get_content_by_slug))
         // Public site settings
-        .route("/settings", get(get_site_settings))
+        .route("/settings", get(public_get_site_settings))
         // Public navigation menus
-        .route("/menus", get(list_navigation_menus))
-        .route("/menus/{slug}", get(get_navigation_menu))
+        .route("/menus", get(public_list_navigation_menus))
+        .route("/menus/{slug}", get(public_get_navigation_menu))
 }
