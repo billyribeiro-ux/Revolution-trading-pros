@@ -14,6 +14,7 @@ load-bearing about it. Nothing was modified.
 ## Files reviewed
 
 Frontend pages:
+
 - [`frontend/src/routes/admin/products/+page.svelte`](../../../frontend/src/routes/admin/products/+page.svelte)
 - [`frontend/src/routes/admin/products/create/+page.svelte`](../../../frontend/src/routes/admin/products/create/+page.svelte)
 - [`frontend/src/routes/admin/products/[id]/edit/+page.svelte`](../../../frontend/src/routes/admin/products/[id]/edit/+page.svelte)
@@ -24,6 +25,7 @@ Frontend pages:
 - [`frontend/src/routes/admin/cart/abandoned/+page.svelte`](../../../frontend/src/routes/admin/cart/abandoned/+page.svelte)
 
 SvelteKit proxies:
+
 - [`frontend/src/routes/api/admin/products/stats/+server.ts`](../../../frontend/src/routes/api/admin/products/stats/+server.ts)
 - [`frontend/src/routes/api/admin/coupons/+server.ts`](../../../frontend/src/routes/api/admin/coupons/+server.ts)
 - [`frontend/src/routes/api/admin/coupons/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/coupons/[...rest]/+server.ts)
@@ -32,6 +34,7 @@ SvelteKit proxies:
 - [`frontend/src/routes/api/admin/orders/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/orders/[...rest]/+server.ts)
 
 Backend (read for impact analysis only):
+
 - [`api/src/routes/products.rs`](../../../api/src/routes/products.rs)
 - [`api/src/routes/coupons.rs`](../../../api/src/routes/coupons.rs)
 - [`api/src/routes/admin.rs`](../../../api/src/routes/admin.rs) (coupon CRUD §`/admin/coupons`)
@@ -42,6 +45,7 @@ Backend (read for impact analysis only):
 - [`api/migrations/001_initial_schema.sql`](../../../api/migrations/001_initial_schema.sql) (canonical `coupons` table)
 
 Library:
+
 - [`frontend/src/lib/utils/createProxyShim.ts`](../../../frontend/src/lib/utils/createProxyShim.ts)
 - [`frontend/src/lib/api/admin.ts`](../../../frontend/src/lib/api/admin.ts)
 - [`frontend/src/lib/api/abandoned-carts.ts`](../../../frontend/src/lib/api/abandoned-carts.ts)
@@ -67,7 +71,7 @@ There is no `.put(update_coupon)` and no `.get(get_coupon)`. The frontend edit p
 - [`frontend/src/routes/admin/coupons/edit/[id]/+page.svelte:140`](../../../frontend/src/routes/admin/coupons/edit/[id]/+page.svelte#L140) `couponsApi.get(couponId)` → `GET /api/admin/coupons/:id`
 - [`frontend/src/routes/admin/coupons/edit/[id]/+page.svelte:223`](../../../frontend/src/routes/admin/coupons/edit/[id]/+page.svelte#L223) `couponsApi.update(couponId, …)` → `PUT /api/admin/coupons/:id`
 
-Both will 404/405. The edit screen cannot load the coupon and cannot save changes. (A separate `update_coupon` exists in [`api/src/routes/coupons.rs:460`](../../../api/src/routes/coupons.rs#L460), but it is mounted at `/coupons`, not `/admin/coupons` — see [`mod.rs:105`](../../../api/src/routes/mod.rs#L105) — and uses an *incompatible* schema; see P0-2.)
+Both will 404/405. The edit screen cannot load the coupon and cannot save changes. (A separate `update_coupon` exists in [`api/src/routes/coupons.rs:460`](../../../api/src/routes/coupons.rs#L460), but it is mounted at `/coupons`, not `/admin/coupons` — see [`mod.rs:105`](../../../api/src/routes/mod.rs#L105) — and uses an _incompatible_ schema; see P0-2.)
 
 ### P0-2 — Two coupon routers contradict the DB schema; the public one would crash on insert
 
@@ -99,7 +103,7 @@ min_purchase, max_discount, usage_limit, is_active,
 starts_at, expires_at, applicable_products, applicable_plans
 ```
 
-Every renamed key (`type→discount_type`, `value→discount_value`, `minimum_amount→min_purchase`, `max_discount_amount→max_discount`, `valid_from→starts_at`, `valid_until→expires_at`) is dropped because `serde::Deserialize` defaults to `None` for missing fields. Net effect: a coupon is created with `code` + `description`, an *empty* `discount_type` (silently inserted as `""`), `discount_value=0`, no expiration, no usage limit, always-active. Production-grade footgun.
+Every renamed key (`type→discount_type`, `value→discount_value`, `minimum_amount→min_purchase`, `max_discount_amount→max_discount`, `valid_from→starts_at`, `valid_until→expires_at`) is dropped because `serde::Deserialize` defaults to `None` for missing fields. Net effect: a coupon is created with `code` + `description`, an _empty_ `discount_type` (silently inserted as `""`), `discount_value=0`, no expiration, no usage limit, always-active. Production-grade footgun.
 
 ### P0-4 — Product create/edit silently strips `sale_price`, `currency`, `features`, `slug` (and the type filter is broken)
 
@@ -126,7 +130,7 @@ $effect(() => {
 });
 ```
 
-The body is wrapped in `untrack`, so `selectedType` is never read by the effect's dependency tracking. The comment says "Track selectedType for reactivity" but no reference exists. The effect runs exactly once (on mount). Clicking a type tab at [`+page.svelte:215`](../../../frontend/src/routes/admin/products/+page.svelte#L215) updates `selectedType` but never reloads. Replace with explicit click handler `onclick={() => { selectedType = type.value; loadProducts(); }}` or simply read `selectedType` *outside* the `untrack` block.
+The body is wrapped in `untrack`, so `selectedType` is never read by the effect's dependency tracking. The comment says "Track selectedType for reactivity" but no reference exists. The effect runs exactly once (on mount). Clicking a type tab at [`+page.svelte:215`](../../../frontend/src/routes/admin/products/+page.svelte#L215) updates `selectedType` but never reloads. Replace with explicit click handler `onclick={() => { selectedType = type.value; loadProducts(); }}` or simply read `selectedType` _outside_ the `untrack` block.
 
 The same anti-pattern is in [`products/[id]/edit/+page.svelte:262-269`](../../../frontend/src/routes/admin/products/[id]/edit/+page.svelte#L262-L269), where `untrack` makes `productId` re-loads not happen if the user navigates between two product IDs without unmounting.
 
@@ -169,7 +173,7 @@ The backend `ProductType` enum has only `Course/Indicator/Bundle`. The DB column
 const dedupeKey = `${fetchOptions.method || 'GET'}:${endpoint}`;
 ```
 
-Two concurrent `POST /admin/coupons` calls with different bodies share the same key and the second caller receives the *first* request's response. For idempotent GETs this is fine; for `POST/PUT/DELETE` it's a correctness bug. The cache-key building at [`admin.ts:397-401`](../../../frontend/src/lib/api/admin.ts#L397-L401) does include the body and is correctly off for non-GET — but the dedupe path doesn't. Quick fix: include `options.body` in the dedupe key, or skip dedupe entirely for non-GET methods.
+Two concurrent `POST /admin/coupons` calls with different bodies share the same key and the second caller receives the _first_ request's response. For idempotent GETs this is fine; for `POST/PUT/DELETE` it's a correctness bug. The cache-key building at [`admin.ts:397-401`](../../../frontend/src/lib/api/admin.ts#L397-L401) does include the body and is correctly off for non-GET — but the dedupe path doesn't. Quick fix: include `options.body` in the dedupe key, or skip dedupe entirely for non-GET methods.
 
 ---
 
@@ -209,11 +213,11 @@ Also note `unwrap_or(0)` swallows DB errors. Per CLAUDE.md "Don't swallow errors
 
 ```js
 if (!formData.discount_value || formData.discount_value <= 0) {
-    errs.push('Discount value must be greater than 0');
+	errs.push('Discount value must be greater than 0');
 }
 ```
 
-`!NaN` is `true` so this catches `NaN`. But `parseFloat('1e9999') === Infinity` is *not* caught — `Infinity > 0` is true and `Infinity > 100` is true so the `>100` check fires for percentage but for `fixed` an admin can save a coupon with `value: Infinity`. Backend f64 gets `+Inf`, SQL `DECIMAL(10,2)` errors out at 500. Add `Number.isFinite(value)`.
+`!NaN` is `true` so this catches `NaN`. But `parseFloat('1e9999') === Infinity` is _not_ caught — `Infinity > 0` is true and `Infinity > 100` is true so the `>100` check fires for percentage but for `fixed` an admin can save a coupon with `value: Infinity`. Backend f64 gets `+Inf`, SQL `DECIMAL(10,2)` errors out at 500. Add `Number.isFinite(value)`.
 
 Same issue on `min_purchase`, `max_discount`, `usage_limit` — none of which are checked at all.
 
@@ -226,7 +230,7 @@ valid_from: formData.valid_from ? new Date(formData.valid_from).toISOString() : 
 valid_until: formData.valid_until ? new Date(formData.valid_until).toISOString() : undefined,
 ```
 
-If the admin clears the start date in the input, `formData.valid_from === ''`, the field is sent as `undefined`, omitted from JSON, and *not* updated server-side. The user sees the old date persist. To clear a date the admin would have to know to send `null`. Either translate `''` → `null` or surface a "clear" button.
+If the admin clears the start date in the input, `formData.valid_from === ''`, the field is sent as `undefined`, omitted from JSON, and _not_ updated server-side. The user sees the old date persist. To clear a date the admin would have to know to send `null`. Either translate `''` → `null` or surface a "clear" button.
 
 ### P1-7 — `coupon.applicable_plans` is collected in UI but never sent
 
@@ -258,6 +262,7 @@ sqlx::query("DELETE FROM products WHERE id = $1").bind(id).execute(...)
 ```
 
 This is a hard delete in a table referenced by `order_items`, `user_products`, `cart_items`. Either:
+
 - the FK is `ON DELETE CASCADE` and historical orders lose their product reference (audit trail destroyed), or
 - the FK is `ON DELETE RESTRICT` and the delete fails opaquely with "Failed to delete product" toast.
 
@@ -287,11 +292,11 @@ If the admin clicks order A, then quickly clicks order B before A's fetch return
 
 ```ts
 if (!response.ok) {
-    return json(EMPTY_DATA);   // {"coupons": [], "total": 0}
+	return json(EMPTY_DATA); // {"coupons": [], "total": 0}
 }
 ```
 
-The frontend list page treats this as a successful empty response and shows "No coupons yet" → "Create First Coupon" CTA. An admin will *create a duplicate* of an existing coupon because they can't see it. Forward a 5xx as a 5xx so the page can render its retry state ([`admin/coupons/+page.svelte:249-253`](../../../frontend/src/routes/admin/coupons/+page.svelte#L249-L253) already has one). The `[...rest]/+server.ts` shim correctly forwards status codes, so this asymmetry is even more confusing.
+The frontend list page treats this as a successful empty response and shows "No coupons yet" → "Create First Coupon" CTA. An admin will _create a duplicate_ of an existing coupon because they can't see it. Forward a 5xx as a 5xx so the page can render its retry state ([`admin/coupons/+page.svelte:249-253`](../../../frontend/src/routes/admin/coupons/+page.svelte#L249-L253) already has one). The `[...rest]/+server.ts` shim correctly forwards status codes, so this asymmetry is even more confusing.
 
 Also the response shape `{coupons:[], total:0}` doesn't match the page's expected `response.data || []` which checks `.data`, not `.coupons`. The list page will render nothing on 5xx because `coupons = response.data || []` evaluates to `[]` either way, but other consumers will break.
 
@@ -302,8 +307,9 @@ Also the response shape `{coupons:[], total:0}` doesn't match the page's expecte
 ### P2-3 — `productsApi.create`'s feature list and meta fields are sent but ignored
 
 [`products/create/+page.svelte:130`](../../../frontend/src/routes/admin/products/create/+page.svelte#L130) sends `features: validFeatures` but the backend `CreateProduct` struct ([`models/product.rs:67-87`](../../../api/src/models/product.rs#L67-L87)) has no `features` field. There is no `features` column in the products DB schema either (nor `currency`, nor `sale_price`). Either:
+
 - migrate `products` to add these columns, or
-- store them in `metadata: Option<serde_json::Value>` (which the backend *does* accept) — then the frontend should serialize features into metadata.
+- store them in `metadata: Option<serde_json::Value>` (which the backend _does_ accept) — then the frontend should serialize features into metadata.
 
 The same applies to the entire SEO settings panel's interaction with sale_price.
 
@@ -319,7 +325,7 @@ If the backend returns an order with no items array (legacy orders, malformed da
 
 ### P2-5 — `validateForm` per-user-limit check is on create only
 
-[`coupons/create/+page.svelte:233-237`](../../../frontend/src/routes/admin/coupons/create/+page.svelte#L233-L237) checks `usage_limit_per_user > usage_limit`, but the *edit* form ([`coupons/edit/[id]/+page.svelte`](../../../frontend/src/routes/admin/coupons/edit/[id]/+page.svelte)) doesn't even have a `per_user_limit` field. Backend `CreateCouponRequest` doesn't have it either ([`admin.rs:475-488`](../../../api/src/routes/admin.rs#L475-L488)). The UI input at [`coupons/create/+page.svelte:491-501`](../../../frontend/src/routes/admin/coupons/create/+page.svelte#L491-L501) is decorative.
+[`coupons/create/+page.svelte:233-237`](../../../frontend/src/routes/admin/coupons/create/+page.svelte#L233-L237) checks `usage_limit_per_user > usage_limit`, but the _edit_ form ([`coupons/edit/[id]/+page.svelte`](../../../frontend/src/routes/admin/coupons/edit/[id]/+page.svelte)) doesn't even have a `per_user_limit` field. Backend `CreateCouponRequest` doesn't have it either ([`admin.rs:475-488`](../../../api/src/routes/admin.rs#L475-L488)). The UI input at [`coupons/create/+page.svelte:491-501`](../../../frontend/src/routes/admin/coupons/create/+page.svelte#L491-L501) is decorative.
 
 ### P2-6 — `admin_orders` `total_count` query doesn't `JOIN` user/order_items so it's correct count, but pagination `total_pages` calc uses different filtered total_count vs unfiltered — see P1-2.
 
@@ -335,7 +341,7 @@ If the backend returns an order with no items array (legacy orders, malformed da
 
 ### P2-9 — Recovery email modal arms `selectedCarts` for entire page even if you only wanted "one"
 
-[`admin/cart/abandoned/+page.svelte:415-419`](../../../frontend/src/routes/admin/cart/abandoned/+page.svelte#L415-L419) on the "Send First Reminder" quick-action selects every pending cart on the *current page*. If pagination is on page 5, only that page's pendings get selected — admin thinks "Send to 47 carts" actually means "send to my entire pending pool". Misleading. Either confirm with cart count or operate on full backend filter set.
+[`admin/cart/abandoned/+page.svelte:415-419`](../../../frontend/src/routes/admin/cart/abandoned/+page.svelte#L415-L419) on the "Send First Reminder" quick-action selects every pending cart on the _current page_. If pagination is on page 5, only that page's pendings get selected — admin thinks "Send to 47 carts" actually means "send to my entire pending pool". Misleading. Either confirm with cart count or operate on full backend filter set.
 
 ### P2-10 — `discount_value` in coupon list page reads `coupon.value` not `coupon.discount_value`
 
@@ -403,7 +409,7 @@ The orders page formats dates with `Intl.DateTimeFormat` ([`admin/orders/+page.s
 
 ### P3-9 — `formatCurrency(amount: number, currency = 'USD')`
 
-[`admin/orders/+page.svelte:133`](../../../frontend/src/routes/admin/orders/+page.svelte#L133) defaults to `USD` even when the order has a non-USD currency. The signature *takes* currency, but several call sites omit it (line 493, 498). Pass `orderDetail.currency` explicitly everywhere.
+[`admin/orders/+page.svelte:133`](../../../frontend/src/routes/admin/orders/+page.svelte#L133) defaults to `USD` even when the order has a non-USD currency. The signature _takes_ currency, but several call sites omit it (line 493, 498). Pass `orderDetail.currency` explicitly everywhere.
 
 ### P3-10 — `admin/orders` `selectedOrder` and `orderDetail` are two separate sources of truth
 
@@ -427,7 +433,8 @@ Cosmetic; both work, but `Number` is consistent with the products edit page.
 
 ### CC-1 — Two coupon writers, one schema
 
-P0-2 is the load-bearing concern. The admin commerce surface touches the `coupons` table through *two* routers (`admin.rs` and `coupons.rs`) that wrote to disjoint column sets. The list page reads what `admin.rs` writes; the public/auxiliary surface (and the `couponsApi.update` path the edit page calls) writes what `coupons.rs` thinks the table looks like, which is out-of-date with `001_initial_schema.sql`. Resolution path:
+P0-2 is the load-bearing concern. The admin commerce surface touches the `coupons` table through _two_ routers (`admin.rs` and `coupons.rs`) that wrote to disjoint column sets. The list page reads what `admin.rs` writes; the public/auxiliary surface (and the `couponsApi.update` path the edit page calls) writes what `coupons.rs` thinks the table looks like, which is out-of-date with `001_initial_schema.sql`. Resolution path:
+
 1. Pick a single writer (`admin.rs`'s schema is the one the migration matches — keep it).
 2. Delete or stub `coupons.rs`'s admin handlers.
 3. Add the missing PUT handler at `/admin/coupons/:id` and a GET `/admin/coupons/:id` to back the edit page.
@@ -461,22 +468,22 @@ Cross-cutting — see P3-2. Affects abandoned-carts and coupons-create. Easy glo
 
 ### CC-8 — Orphan endpoints
 
-| Endpoint client expects | Backend status |
-|--|--|
-| `GET /api/admin/coupons/:id` | not registered (admin router has no `.get`) |
-| `PUT /api/admin/coupons/:id` | not registered |
-| `POST /api/admin/coupons/validate` | client-side only; admin router has `/coupons/validate/:code` — different shape |
-| `POST /api/admin/coupons/check-code` | not registered |
-| `POST /api/admin/coupons/generate-code` | not registered |
-| `POST /api/admin/coupons/import` | not registered |
-| `POST /api/admin/coupons/test` | not registered |
-| `POST /api/admin/coupons/preview` | not registered |
-| `POST /api/admin/products/bulk-update` | not registered |
-| `POST /api/admin/products/:id/assign-user` | not registered |
-| `POST /api/admin/products/:id/remove-user` | not registered |
-| `GET /api/admin/products/:id/users` | not registered |
-| `GET /api/admin/products/type/:type` | not registered |
-| `GET /api/admin/abandoned-carts` (and all 5 sub-routes) | not registered |
+| Endpoint client expects                                 | Backend status                                                                 |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `GET /api/admin/coupons/:id`                            | not registered (admin router has no `.get`)                                    |
+| `PUT /api/admin/coupons/:id`                            | not registered                                                                 |
+| `POST /api/admin/coupons/validate`                      | client-side only; admin router has `/coupons/validate/:code` — different shape |
+| `POST /api/admin/coupons/check-code`                    | not registered                                                                 |
+| `POST /api/admin/coupons/generate-code`                 | not registered                                                                 |
+| `POST /api/admin/coupons/import`                        | not registered                                                                 |
+| `POST /api/admin/coupons/test`                          | not registered                                                                 |
+| `POST /api/admin/coupons/preview`                       | not registered                                                                 |
+| `POST /api/admin/products/bulk-update`                  | not registered                                                                 |
+| `POST /api/admin/products/:id/assign-user`              | not registered                                                                 |
+| `POST /api/admin/products/:id/remove-user`              | not registered                                                                 |
+| `GET /api/admin/products/:id/users`                     | not registered                                                                 |
+| `GET /api/admin/products/type/:type`                    | not registered                                                                 |
+| `GET /api/admin/abandoned-carts` (and all 5 sub-routes) | not registered                                                                 |
 
 Per the user's standing rule "CREATE, never DELETE — orphan = build the missing side": these need backend handlers, not client-side deletion.
 
@@ -500,6 +507,7 @@ Commerce admin is in worse shape than the structural pieces around it. The `+ser
 None of these are SvelteKit-routing bugs. The proxy plumbing is fine. The contract between the SvelteKit page → SvelteKit proxy → Rust router → DB is what's broken, in two places (frontend↔backend field renames; backend-router↔backend-router schema disagreement).
 
 Recommended next moves, ranked:
+
 1. Fix P0-1, P0-2, P0-3 together — they're one bug ("coupon CRUD never worked end-to-end").
 2. Fix P0-4 — product create/edit either accepts or rejects sale_price/features; pick one.
 3. Fix P0-5 — easy `untrack` removal in two files.

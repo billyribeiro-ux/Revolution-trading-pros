@@ -432,7 +432,14 @@ export interface AnimationConfig {
 }
 
 export type AnimationType =
-	'none' | 'fade' | 'slide' | 'zoom' | 'flip' | 'rotate' | 'bounce' | 'custom';
+	| 'none'
+	| 'fade'
+	| 'slide'
+	| 'zoom'
+	| 'flip'
+	| 'rotate'
+	| 'bounce'
+	| 'custom';
 
 export interface AttentionAnimation {
 	type: 'shake' | 'pulse' | 'bounce' | 'wobble' | 'swing';
@@ -505,7 +512,13 @@ export interface PopupEvent {
 }
 
 export type EventType =
-	'impression' | 'interaction' | 'conversion' | 'close' | 'minimize' | 'error' | 'timeout';
+	| 'impression'
+	| 'interaction'
+	| 'conversion'
+	| 'close'
+	| 'minimize'
+	| 'error'
+	| 'timeout';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Core Service Class
@@ -595,7 +608,11 @@ class PopupEngagementService {
 		}
 
 		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
-		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && configuredWsUrl.startsWith('ws:')) {
+		if (
+			typeof window !== 'undefined' &&
+			window.location.protocol === 'https:' &&
+			configuredWsUrl.startsWith('ws:')
+		) {
 			return;
 		}
 

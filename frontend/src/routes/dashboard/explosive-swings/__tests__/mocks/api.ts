@@ -13,7 +13,7 @@
  * - Helper to create mock fetch implementations
  */
 
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 import type { ApiTrade, ApiWeeklyVideo, QuickStats, PaginationMeta } from '../../types';
 
 // ===============================================================================

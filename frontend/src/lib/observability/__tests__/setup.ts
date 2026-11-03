@@ -3,7 +3,7 @@
  * Uses vi.stubGlobal for proper vitest integration
  */
 
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 
 // Mock localStorage
 const mockLocalStorage = {

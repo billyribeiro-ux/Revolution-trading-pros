@@ -10,6 +10,7 @@ a batch picks them up, it pulls them out of this file into a
 ## Batch 4 candidates
 
 ### 0. Shrink or box `ApiError` instead of raising clippy's error-size bar
+
 **Severity:** P3 (code health; no runtime impact)
 
 Rust 1.98's clippy extended `result_large_err` to `async fn`, so ~150
@@ -29,8 +30,8 @@ and a derived timestamp). Then drop `clippy.toml` back to the default and
 delete the ~12 now-redundant `#[allow(clippy::result_large_err)]`
 attributes still scattered through the routes.
 
-
 ### 1. Admin edit-coupon Stripe-coupon recreation flow
+
 **Severity:** P1 (operators can silently desync coupons)
 
 When admin edits discount math (percent_off, amount_off, duration),
@@ -43,6 +44,7 @@ changing 10% → 15% in our admin UI silently leaves the Stripe coupon at
 10% and customers continue redeeming at 10%.
 
 ### 2. Coupon backfill admin tool
+
 **Severity:** P2 (currently no rows affected; future-proof)
 
 Add admin endpoint `POST /api/admin/coupons/:id/sync-to-stripe` that
@@ -51,6 +53,7 @@ Coupon and stores the id. Useful if a Stripe API outage during create
 left a row half-mirrored, or if rows ever get imported from elsewhere.
 
 ### 3. Frontend admin coupon form fields for `duration` / `duration_in_months`
+
 **Severity:** P1 (form is now incomplete vs. backend contract)
 
 Add a `duration` dropdown (once / forever / repeating) and a
@@ -81,6 +84,7 @@ none is user-visible today unless noted. Paths are relative to
   - **Constraint:** on read paths, notify with `queueMicrotask`. `get()` runs
     inside awaited `$derived`s, so a synchronous write there would throw
     `state_unsafe_mutation`.
+
 - **Optional schema:** `get` and `getStorage` still accept no schema and return
   `envelope.output.data as T`. Every caller passes one today. Make the parameter
   required and delete the unchecked branch.
@@ -261,7 +265,7 @@ HTML for search engines.
 
 Chromium already parses arbitrary elements inside `<select>`/`<option>`
 (the WHATWG customizable-select parser change); parse5 8.0.1 does not. The
-sanitizer drops `select` with its content, but a *malformed* select can still
+sanitizer drops `select` with its content, but a _malformed_ select can still
 end in a different place on the two parsers. Server and browser output then
 differ: both sanitized, with a dev-mode hydration warning at worst. When parse5
 ships the change, bump it, then delete the `<select>` exemption in
@@ -285,6 +289,7 @@ Surfaced while moving everything to its latest release (CHANGELOG.md
 that was out of scope for a dependency upgrade.
 
 ### A. Align the backend Stripe API version with Stripe.js `endive`
+
 **Severity:** P2 (works today; Stripe recommends one release train)
 
 `@stripe/stripe-js` 10 loads Stripe.js `endive`, which makes client-side
@@ -304,6 +309,7 @@ plus `npm install -g corepack@0.36.0` before `corepack enable`), `LOCAL_DEV.md`,
 and `@types/node` (`26.6.6`). See CHANGELOG.md 2026-10-28.
 
 ### C. `@testing-library/jest-dom` types vs Vitest 5
+
 **Severity:** P3 (type-level only; hidden by `skipLibCheck`)
 
 jest-dom 7.0.1 (latest) augments `vitest`'s `Assertion<T>`; Vitest 5 declares
@@ -312,6 +318,7 @@ jest-dom 7.0.1 (latest) augments `vitest`'s `Assertion<T>`; Vitest 5 declares
 Vitest 5-aware release.
 
 ### D. Test-suite hygiene (pre-existing)
+
 **Severity:** P3
 
 - `pnpm test:coverage` fails its 80/80/75/80 thresholds at ~7% coverage on
@@ -324,6 +331,7 @@ Vitest 5-aware release.
   mode deliberately.
 
 ### E. `AIGeneratedBlock.svelte` is a placeholder
+
 **Severity:** P3 (pre-existing)
 
 It simulates output client-side and offers a stale model list (GPT-4,
@@ -331,18 +339,19 @@ GPT-3.5, Claude 3, Claude 2). It does not call `/api/cms/ai/generate`, which
 was the only live Claude integration and now runs on `claude-sonnet-5-5`.
 
 ### F. Rust edition 2021 → 2024 (deliberately not folded into the toolchain bump)
+
 **Severity:** P3 (2021 stays fully supported by every future compiler)
 
 Measured 2026-10-09 on Rust 1.99.0 with
 `RUSTFLAGS="-W rust-2024-compatibility" cargo check --all-targets`:
 
-| Lint | Sites | Where | Auto-fixable |
-|------|-------|-------|--------------|
-| `tail_expr_drop_order` | 26 | `db/mod.rs`, `jobs/{email_reminders,reconcile_stripe}.rs`, `queue/worker.rs` (×7), `routes/{admin_videos/crud,analytics,cms_ai_assist,cms_datasources/import_export,forms/public,media/bulk (×4),media/uploads,subscriptions_admin/price_changes,user/avatar,websocket}.rs`, `services/{mod,redis}.rs` | **No** — temporaries in tail expressions drop earlier; each site needs a semantic review |
-| `if_let_rescope` | 5 | `routes/auth/{login,session}.rs`, `routes/forms/public.rs`, `routes/media/crud.rs`, `routes/newsletter.rs` | Yes (`cargo fix` rewrites to `match`) |
-| `deprecated_safe_2024` | 8 | `tests/common/mod.rs`, `tests/explosive_swings/fixtures.rs` (`std::env::set_var`) | Wraps in `unsafe {}` — prefer passing config explicitly over mutating process env in multi-threaded tests |
-| `edition_2024_expr_fragment_specifier` | 1 | `routes/admin_courses/crud.rs` | Yes |
-| `rust_2024_incompatible_pat` | 1 | `routes/websocket.rs` | Yes |
+| Lint                                   | Sites | Where                                                                                                                                                                                                                                                                                                  | Auto-fixable                                                                                              |
+| -------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `tail_expr_drop_order`                 | 26    | `db/mod.rs`, `jobs/{email_reminders,reconcile_stripe}.rs`, `queue/worker.rs` (×7), `routes/{admin_videos/crud,analytics,cms_ai_assist,cms_datasources/import_export,forms/public,media/bulk (×4),media/uploads,subscriptions_admin/price_changes,user/avatar,websocket}.rs`, `services/{mod,redis}.rs` | **No** — temporaries in tail expressions drop earlier; each site needs a semantic review                  |
+| `if_let_rescope`                       | 5     | `routes/auth/{login,session}.rs`, `routes/forms/public.rs`, `routes/media/crud.rs`, `routes/newsletter.rs`                                                                                                                                                                                             | Yes (`cargo fix` rewrites to `match`)                                                                     |
+| `deprecated_safe_2024`                 | 8     | `tests/common/mod.rs`, `tests/explosive_swings/fixtures.rs` (`std::env::set_var`)                                                                                                                                                                                                                      | Wraps in `unsafe {}` — prefer passing config explicitly over mutating process env in multi-threaded tests |
+| `edition_2024_expr_fragment_specifier` | 1     | `routes/admin_courses/crud.rs`                                                                                                                                                                                                                                                                         | Yes                                                                                                       |
+| `rust_2024_incompatible_pat`           | 1     | `routes/websocket.rs`                                                                                                                                                                                                                                                                                  | Yes                                                                                                       |
 
 A scratch-copy migration (2026-10-09) compiles and passes clippy
 `-D warnings` plus the no-DB tests, but it also needs `cargo clippy --fix` to
@@ -356,6 +365,7 @@ belongs in its own reviewed change with the DB-backed integration tests
 not hidden inside a version-bump diff.
 
 ### G. Backend dependency hygiene (optional, low risk)
+
 **Severity:** P3, except the first bullet (P2)
 
 - **CI runs no `cargo deny check`.** CLAUDE.md makes it a gate, but only
@@ -378,6 +388,7 @@ not hidden inside a version-bump diff.
   client, but the major bump will be its own upgrade.
 
 ### H. `goto()` to routes that do not exist (pre-existing)
+
 **Severity:** P3
 
 Kit 3 rejects `goto()` for URLs that resolve to no page
@@ -401,6 +412,7 @@ from `$app/env` now works in the service worker), so they are removed here.
 See CHANGELOG.md 2026-10-09 and 2026-10-28.
 
 ### 4. Pre-existing a11y failure: form inputs without labels — and the suite audits the wrong page
+
 **Severity:** P2 (pre-existing, not a migration regression)
 
 `tests/accessibility/a11y-audit.spec.ts` → "form inputs should have
@@ -416,6 +428,7 @@ that day, but as a `waitForLoadState` timeout on a cold dev server, not a
 contrast violation.)
 
 ### 5. TypeScript 7
+
 **Severity:** P2 (blocked upstream)
 
 TypeScript 7.0.2 is npm `latest` (`6.0.3` is the latest 6.x release) but cannot
@@ -427,6 +440,7 @@ and add `@typescript/native@npm:typescript@7`, then `svelte-check --tsgo` —
 which is opt-in and experimental. Revisit when the Svelte toolchain peers on 7.
 
 ### 7. Remaining Svelte-5 modernisation surface
+
 **Severity:** P3 (all currently supported; no warnings fired)
 
 Measured 2026-08-14 against the official [Svelte best practices](https://svelte.dev/docs/svelte/best-practices)
@@ -437,11 +451,11 @@ list. The codebase is already fully migrated on the big-ticket items —
 
 What is left, in full:
 
-| Pattern | Count | Recommended replacement | Notes |
-|---------|-------|-------------------------|-------|
-| `svelte/store` imports | 28 files | classes with `$state` fields | The largest remaining item. |
-| `setContext` / `getContext` | 24 calls | `createContext` | Docs prefer it for type safety. |
-| `use:tilt` action | 1 | `{@attach ...}` | The other two `use:` directives are not legacy: `use:enhance` is SvelteKit's own API and `use:emblaCarouselSvelte` is the library's public interface. |
+| Pattern                     | Count    | Recommended replacement      | Notes                                                                                                                                                 |
+| --------------------------- | -------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `svelte/store` imports      | 28 files | classes with `$state` fields | The largest remaining item.                                                                                                                           |
+| `setContext` / `getContext` | 24 calls | `createContext`              | Docs prefer it for type safety.                                                                                                                       |
+| `use:tilt` action           | 1        | `{@attach ...}`              | The other two `use:` directives are not legacy: `use:enhance` is SvelteKit's own API and `use:emblaCarouselSvelte` is the library's public interface. |
 
 None of these emit warnings — `pnpm check:strict` and `pnpm check:a11y` are both
 clean at 0 errors / 0 warnings (re-verified 2026-10-28 on Kit 3.1.0 /

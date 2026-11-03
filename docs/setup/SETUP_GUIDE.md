@@ -1,4 +1,5 @@
 # Setup Guide - Revolution Trading Pros
+
 **Apple Principal Engineer ICT 7 Grade - January 2026**
 
 Complete setup instructions for all services and infrastructure.
@@ -6,6 +7,7 @@ Complete setup instructions for all services and infrastructure.
 ---
 
 ## Table of Contents
+
 1. [Bunny.net Video Streaming](#bunnynet-video-streaming)
 2. [Cloudflare R2 Storage](#cloudflare-r2-storage)
 3. [Stripe Payments](#stripe-payments)
@@ -18,17 +20,20 @@ Complete setup instructions for all services and infrastructure.
 ## Bunny.net Video Streaming
 
 ### Stream Library (Primary Video Hosting)
+
 **Library:** revolution-trading-courses
 **Library ID:** 585929
 **API Key:** 3982c5b8-6dea-4c37-b707db888834-cbb6-4a82
 **CDN:** vz-5a23b520-193.b-cdn.net
 
 ### Storage Zone (Backup/Downloads)
+
 **Zone:** revolution-trading-downloads
 **API Key:** a9fb06e7-4976-4ef5-bbf3d2a9f71d-2d1d-4a2d
 **Hostname:** ny.storage.bunnycdn.com
 
 ### Setup Steps
+
 1. Go to https://bunny.net
 2. Navigate to Stream → Libraries
 3. Copy Library ID and API Key
@@ -40,6 +45,7 @@ Complete setup instructions for all services and infrastructure.
    ```
 
 ### Webhook Configuration
+
 **Endpoint:** `<your-api-host>/api/webhooks/bunny/video-status`
 **Events:** Video encoding complete, upload complete
 
@@ -48,15 +54,18 @@ Complete setup instructions for all services and infrastructure.
 ## Cloudflare R2 Storage
 
 ### Bucket Configuration
+
 **Bucket:** revolution-trading-media
 **Account ID:** 9c72eb0d1b0b7891aca6532fe709cacc
 **Public URL:** https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev
 
 ### API Credentials
+
 **Access Key ID:** 6875e6c6fc0081a7634455b2e22e2d51
 **Secret Access Key:** cfb7f20231faa0fb67823c6208c422a253e8f390a5813719cb0a65dce2bfd9fb
 
 ### Setup Steps
+
 1. Go to Cloudflare Dashboard → R2
 2. Create bucket: `revolution-trading-media`
 3. Generate API token with R2 permissions
@@ -70,6 +79,7 @@ Complete setup instructions for all services and infrastructure.
    ```
 
 ### CLI Setup (Optional)
+
 ```bash
 # Install Wrangler
 npm install -g wrangler
@@ -89,11 +99,13 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ## Stripe Payments
 
 ### Test Mode Credentials
+
 **Secret Key:** `sk_test_xxx` (get from Stripe dashboard)
 **Publishable Key:** `pk_test_xxx` (get from Stripe dashboard)
 **Webhook Secret:** `whsec_xxx` (get from Stripe dashboard)
 
 ### Setup Steps
+
 1. Go to https://dashboard.stripe.com
 2. Toggle to Test Mode
 3. Get API keys from Developers → API keys
@@ -105,8 +117,10 @@ wrangler r2 token create revolution-trading-media-token --read --write
    ```
 
 ### Webhook Configuration
+
 **Endpoint:** `<your-api-host>/api/webhooks/stripe`
 **Events:**
+
 - `checkout.session.completed`
 - `invoice.payment_succeeded`
 - `customer.subscription.updated`
@@ -117,10 +131,12 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ## Database & Redis
 
 ### PostgreSQL (Fly.io)
+
 **App:** <your-db-host>
 **Connection String:** `postgres://postgres:PASSWORD@<your-db-host>:5432/postgres?sslmode=disable`
 
 #### Get Credentials
+
 ```bash
 # Connect to database
 # fly postgres connect — deploy target deferred
@@ -130,9 +146,11 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ```
 
 ### Redis (Upstash)
+
 **URL:** `rediss://default:TOKEN@gorgeous-bullfrog-15191.upstash.io:6379`
 
 #### Get Credentials
+
 1. Go to https://console.upstash.com
 2. Select your Redis database
 3. Copy connection string
@@ -146,6 +164,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ## Course System
 
 ### Database Tables
+
 - `courses_enhanced` - Course catalog
 - `course_sections` - Course modules
 - `course_lessons` - Individual lessons
@@ -153,6 +172,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
 - `user_lesson_progress` - Progress tracking
 
 ### Setup Steps
+
 1. Run migrations: `cd api && sqlx migrate run`
 2. Seed sample courses (optional):
    ```sql
@@ -161,6 +181,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
    ```
 
 ### Video Integration
+
 - Videos stored in Bunny.net Stream
 - `bunny_video_guid` links lessons to videos
 - Automatic encoding status updates via webhook
@@ -170,6 +191,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ## Secrets Configuration
 
 ### Backend Secrets (Fly.io)
+
 ```bash
 # Set individual secrets
 # fly secrets set DATABASE_URL="postgres://..." — deploy target deferred
@@ -181,6 +203,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
 ```
 
 ### Frontend Secrets (Cloudflare Pages)
+
 1. Go to Cloudflare Dashboard → Pages
 2. Select `revolution-trading-pros`
 3. Settings → Environment Variables
@@ -191,6 +214,7 @@ wrangler r2 token create revolution-trading-media-token --read --write
    - `PUBLIC_GA4_MEASUREMENT_ID`
 
 ### Security Best Practices
+
 1. **Never commit `.env` files**
 2. **Rotate secrets every 90 days**
 3. **Use different keys for test/production**

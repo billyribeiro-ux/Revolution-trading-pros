@@ -54,7 +54,7 @@ Spot-checks for cross-cutting issues: [api/src/routes/admin_member_management.rs
 {/if}
 ```
 
-`getIsPaymentConnected` is a function imported from `$lib/stores/connections.svelte`. `!getIsPaymentConnected` evaluates the function reference, which is always truthy → `!fn` is always `false`, so the `{:else if}` branch is never taken… which means the actual page content (the entire `{:else}` block) is also never reached. **The Subscription Management page renders only the `ServiceConnectionStatus` placeholder, no matter what.** The same boolean *is* called correctly elsewhere at [line 77](frontend/src/routes/admin/subscriptions/+page.svelte#L77) and [line 330](frontend/src/routes/admin/subscriptions/+page.svelte#L330), so this is an isolated typo. Fix: `{:else if !getIsPaymentConnected()}`.
+`getIsPaymentConnected` is a function imported from `$lib/stores/connections.svelte`. `!getIsPaymentConnected` evaluates the function reference, which is always truthy → `!fn` is always `false`, so the `{:else if}` branch is never taken… which means the actual page content (the entire `{:else}` block) is also never reached. **The Subscription Management page renders only the `ServiceConnectionStatus` placeholder, no matter what.** The same boolean _is_ called correctly elsewhere at [line 77](frontend/src/routes/admin/subscriptions/+page.svelte#L77) and [line 330](frontend/src/routes/admin/subscriptions/+page.svelte#L330), so this is an isolated typo. Fix: `{:else if !getIsPaymentConnected()}`.
 
 ### P0-2 — Member soft-delete is non-transactional and never tells Stripe to stop charging
 
@@ -100,7 +100,7 @@ await adminFetch('/api/admin/membership-plans', {
 });
 ```
 
-The proxy file [api/admin/membership-plans/+server.ts](frontend/src/routes/api/admin/membership-plans/+server.ts) **only exports `GET`**. Every create/edit/duplicate/delete/toggle in the Membership Plans UI returns a 405 from SvelteKit before it ever reaches Rust. The CRUD that *does* exist in Rust lives at `/admin/subscriptions/plans` ([subscriptions_admin.rs:1101-1110](api/src/routes/subscriptions_admin.rs#L1101)) — wrong base path. Either the proxy needs `POST/PUT/PATCH/DELETE` handlers, or the page needs to be repointed at `/api/admin/subscriptions/plans`.
+The proxy file [api/admin/membership-plans/+server.ts](frontend/src/routes/api/admin/membership-plans/+server.ts) **only exports `GET`**. Every create/edit/duplicate/delete/toggle in the Membership Plans UI returns a 405 from SvelteKit before it ever reaches Rust. The CRUD that _does_ exist in Rust lives at `/admin/subscriptions/plans` ([subscriptions_admin.rs:1101-1110](api/src/routes/subscriptions_admin.rs#L1101)) — wrong base path. Either the proxy needs `POST/PUT/PATCH/DELETE` handlers, or the page needs to be repointed at `/api/admin/subscriptions/plans`.
 
 ### P0-4 — `/admin/subscriptions/plans` page's CRUD/Stripe-price flows hit a proxy that doesn't exist
 
@@ -123,7 +123,7 @@ The only file under `frontend/src/routes/api/admin/subscriptions/` is [plans/sta
 
 There is **no** `frontend/src/routes/api/admin/user-memberships/` directory at all — these are 404s, swallowed by the page's `catch` block which then shows a generic "Failed to extend membership" toast even though the request never landed.
 
-The frontend also calls `GET /api/admin/membership-plans` for the plan picker at [line 328](frontend/src/routes/admin/members/[id]/+page.svelte#L328) — that one *does* exist (the GET-only proxy from P0-3), so the modal opens with plans, but the user can't grant.
+The frontend also calls `GET /api/admin/membership-plans` for the plan picker at [line 328](frontend/src/routes/admin/members/[id]/+page.svelte#L328) — that one _does_ exist (the GET-only proxy from P0-3), so the modal opens with plans, but the user can't grant.
 
 ---
 
@@ -139,7 +139,7 @@ The frontend also calls `GET /api/admin/membership-plans` for the plan picker at
 
 No proxy file exists for any of these (only [api/admin/members/stats/+server.ts](frontend/src/routes/api/admin/members/stats/+server.ts) is present). The calls 404, the `if (response.ok) { … } else { notes = []; }` path silently sets the empty state, and the "Notes" / "Emails" tab appears to legitimately have no data — masking the missing wiring.
 
-Backend routes *do* exist at [admin_members.rs:1306-1307](api/src/routes/admin_members.rs#L1306) (`/admin/members/:id/notes` and `/admin/members/:id/emails`) and at [admin_member_management.rs:1472-1473](api/src/routes/admin_member_management.rs#L1472) (a duplicate notes implementation under `/admin/member-management/:id/notes`). Two backend routes for "notes" doubles the surface but only adds confusion.
+Backend routes _do_ exist at [admin_members.rs:1306-1307](api/src/routes/admin_members.rs#L1306) (`/admin/members/:id/notes` and `/admin/members/:id/emails`) and at [admin_member_management.rs:1472-1473](api/src/routes/admin_member_management.rs#L1472) (a duplicate notes implementation under `/admin/member-management/:id/notes`). Two backend routes for "notes" doubles the surface but only adds confusion.
 
 `addNote()` has a worse failure mode: the `else` branch at [line 202-215](frontend/src/routes/admin/members/[id]/+page.svelte#L202) treats a non-2xx response as success-with-warning ("Note added locally - sync pending") and inserts a fake note with `id: Date.now()` into `notes`. That note will never be on the server and will vanish on refresh, leaving the admin to believe a note was saved when it wasn't.
 
@@ -149,21 +149,21 @@ Backend routes *do* exist at [admin_members.rs:1306-1307](api/src/routes/admin_m
 
 ```ts
 const [metricsRes, growthRes, cohortRes, revenueRes, churnRes, segmentRes] =
-    await Promise.allSettled([
-        fetch(`/api/admin/members/analytics/metrics?range=${dateRange}`),
-        fetch(`/api/admin/members/analytics/growth?range=${dateRange}`),
-        fetch(`/api/admin/members/analytics/cohorts?range=${dateRange}`),
-        fetch(`/api/admin/members/analytics/revenue?range=${dateRange}`),
-        fetch(`/api/admin/members/analytics/churn-reasons?range=${dateRange}`),
-        fetch(`/api/admin/members/analytics/segments?range=${dateRange}`)
-    ]);
+	await Promise.allSettled([
+		fetch(`/api/admin/members/analytics/metrics?range=${dateRange}`),
+		fetch(`/api/admin/members/analytics/growth?range=${dateRange}`),
+		fetch(`/api/admin/members/analytics/cohorts?range=${dateRange}`),
+		fetch(`/api/admin/members/analytics/revenue?range=${dateRange}`),
+		fetch(`/api/admin/members/analytics/churn-reasons?range=${dateRange}`),
+		fetch(`/api/admin/members/analytics/segments?range=${dateRange}`)
+	]);
 ```
 
 None of `/api/admin/members/analytics/*` exist as proxy files, and `grep` finds no `members/analytics` routes in the Rust router either. All six fail, `dataReceived` stays false, and the page surfaces `"Member analytics data is not available. Ensure your analytics service is connected and configured."` as if this were a config issue. This is dead UI shipping in production.
 
 ### P1-3 — Past Members dashboard calls a phantom `/api/admin/past-members-dashboard/*` namespace
 
-[lib/api/past-members-dashboard.ts:22](frontend/src/lib/api/past-members-dashboard.ts#L22) sets `const API_BASE = '/api/admin/past-members-dashboard';` and the file then `fetch`es `/overview`, `/services`, `/campaigns`, `/realtime`, `/bulk-winback`, `/bulk-survey`, `/invalidate-cache` (lines 243-443). None of these proxy directories exist. The *page* ([admin/members/past/+page.svelte](frontend/src/routes/admin/members/past/+page.svelte)) is 1994 lines of UI code that depends entirely on this dead client. The `+page.ts` load function at [past/+page.ts:85-89](frontend/src/routes/admin/members/past/+page.ts#L85) calls four of these and returns an `authError: true` payload on any failure, so the page renders the "session expired" branch in production.
+[lib/api/past-members-dashboard.ts:22](frontend/src/lib/api/past-members-dashboard.ts#L22) sets `const API_BASE = '/api/admin/past-members-dashboard';` and the file then `fetch`es `/overview`, `/services`, `/campaigns`, `/realtime`, `/bulk-winback`, `/bulk-survey`, `/invalidate-cache` (lines 243-443). None of these proxy directories exist. The _page_ ([admin/members/past/+page.svelte](frontend/src/routes/admin/members/past/+page.svelte)) is 1994 lines of UI code that depends entirely on this dead client. The `+page.ts` load function at [past/+page.ts:85-89](frontend/src/routes/admin/members/past/+page.ts#L85) calls four of these and returns an `authError: true` payload on any failure, so the page renders the "session expired" branch in production.
 
 ### P1-4 — Segments page's CRUD calls fall back silently to local-only state
 
@@ -171,9 +171,9 @@ None of `/api/admin/members/analytics/*` exist as proxy files, and `grep` finds 
 
 ```ts
 const [segmentsRes, tagsRes, filtersRes] = await Promise.all([
-    adminFetch('/api/admin/members/segments').catch(() => null),
-    adminFetch('/api/admin/members/tags').catch(() => null),
-    adminFetch('/api/admin/members/filters').catch(() => null)
+	adminFetch('/api/admin/members/segments').catch(() => null),
+	adminFetch('/api/admin/members/tags').catch(() => null),
+	adminFetch('/api/admin/members/filters').catch(() => null)
 ]);
 ```
 
@@ -183,9 +183,9 @@ The deletion paths are also uniquely sketchy — [line 426-433](frontend/src/rou
 
 ```ts
 try {
-    await adminFetch(`/api/admin/members/segments/${segment.id}`, { method: 'DELETE' });
+	await adminFetch(`/api/admin/members/segments/${segment.id}`, { method: 'DELETE' });
 } catch {
-    // Fallback to local state
+	// Fallback to local state
 }
 segments = segments.filter((s) => s.id !== segment.id);
 ```
@@ -335,7 +335,7 @@ Three identical queries each `.unwrap_or((0,))` — if the DB connection drops o
     <button onclick={() => handleCancel(subscription)} …>Cancel</button>
 ```
 
-Every action button bubbles up to the row, so clicking "Cancel" both opens the cancel modal *and* opens the detail drawer. The drawer is then immediately covered by the modal but takes focus from it. Add `e.stopPropagation()` to the inner buttons.
+Every action button bubbles up to the row, so clicking "Cancel" both opens the cancel modal _and_ opens the detail drawer. The drawer is then immediately covered by the modal but takes focus from it. Add `e.stopPropagation()` to the inner buttons.
 
 Same pattern in [admin/members/segments/+page.svelte:622-697](frontend/src/routes/admin/members/segments/+page.svelte#L622) — outer card has `onclick`, action buttons inside don't stop the bubble.
 
@@ -375,7 +375,7 @@ Also the "next" disabled check is `pagination.current_page === pagination.last_p
 
 ```ts
 $effect(() => {
-    loadData();
+	loadData();
 });
 ```
 
@@ -387,12 +387,12 @@ Reads no reactive state but runs in an effect; intent is `onMount`. CLAUDE.md co
 
 ```ts
 function toggleMemberSelection(id: number) {
-    if (selectedMembers.has(id)) {
-        selectedMembers.delete(id);
-    } else {
-        selectedMembers.add(id);
-    }
-    selectedMembers = selectedMembers;        // self-assign to trigger reactivity
+	if (selectedMembers.has(id)) {
+		selectedMembers.delete(id);
+	} else {
+		selectedMembers.add(id);
+	}
+	selectedMembers = selectedMembers; // self-assign to trigger reactivity
 }
 ```
 
@@ -473,22 +473,22 @@ In addition to the P1-7 NaN issue, the gradient class on the `bg-slate-` stat-ri
 
 Counting only this audit's scope, the front-end calls these proxy paths that don't exist:
 
-| Page | Path called | Backend route | Verdict |
-|---|---|---|---|
-| `/admin/subscriptions/plans` | `/api/admin/subscriptions/plans` (GET/PUT) | `subscriptions_admin.rs::plans_router()` | proxy missing |
-| `/admin/subscriptions/plans` | `/api/admin/subscriptions/plans/:id/price` | `subscriptions_admin.rs::change_plan_price` | proxy missing |
-| `/admin/subscriptions/plans` | `/api/admin/subscriptions/plans/:id/price-history` | `subscriptions_admin.rs::list_plan_price_history` | proxy missing |
-| `/admin/memberships` | `POST/PUT/PATCH/DELETE /api/admin/membership-plans/:id?` | `subscriptions_admin.rs::plans_router()` (via `/admin/subscriptions/plans`!) | proxy partial + path mismatch |
-| `/admin/members/[id]` | `/api/admin/user-memberships*` | needs verification | proxy missing |
-| `/admin/members/[id]` | `/api/admin/members/:id/notes` | `admin_members.rs::get_member_notes` | proxy missing |
-| `/admin/members/[id]` | `/api/admin/members/:id/emails` | `admin_members.rs::get_member_emails` | proxy missing |
-| `/admin/members/analytics` | `/api/admin/members/analytics/*` | none | proxy + backend missing |
-| `/admin/members/segments` | `/api/admin/members/{segments,tags,filters}` | none | proxy + backend missing |
-| `/admin/members/past` | `/api/admin/past-members-dashboard/*` | likely a separate `past_members.rs` backend; unverified | proxy missing |
-| `/admin/subscriptions/invoice-settings` | `/api/admin/invoice-settings/*` | none | proxy + backend missing |
-| `/admin/members` (export) | `/api/admin/members/export`, `/api/admin/member-management/export` | possibly `admin_members.rs::export_members` | proxy missing |
+| Page                                    | Path called                                                        | Backend route                                                                | Verdict                       |
+| --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------- |
+| `/admin/subscriptions/plans`            | `/api/admin/subscriptions/plans` (GET/PUT)                         | `subscriptions_admin.rs::plans_router()`                                     | proxy missing                 |
+| `/admin/subscriptions/plans`            | `/api/admin/subscriptions/plans/:id/price`                         | `subscriptions_admin.rs::change_plan_price`                                  | proxy missing                 |
+| `/admin/subscriptions/plans`            | `/api/admin/subscriptions/plans/:id/price-history`                 | `subscriptions_admin.rs::list_plan_price_history`                            | proxy missing                 |
+| `/admin/memberships`                    | `POST/PUT/PATCH/DELETE /api/admin/membership-plans/:id?`           | `subscriptions_admin.rs::plans_router()` (via `/admin/subscriptions/plans`!) | proxy partial + path mismatch |
+| `/admin/members/[id]`                   | `/api/admin/user-memberships*`                                     | needs verification                                                           | proxy missing                 |
+| `/admin/members/[id]`                   | `/api/admin/members/:id/notes`                                     | `admin_members.rs::get_member_notes`                                         | proxy missing                 |
+| `/admin/members/[id]`                   | `/api/admin/members/:id/emails`                                    | `admin_members.rs::get_member_emails`                                        | proxy missing                 |
+| `/admin/members/analytics`              | `/api/admin/members/analytics/*`                                   | none                                                                         | proxy + backend missing       |
+| `/admin/members/segments`               | `/api/admin/members/{segments,tags,filters}`                       | none                                                                         | proxy + backend missing       |
+| `/admin/members/past`                   | `/api/admin/past-members-dashboard/*`                              | likely a separate `past_members.rs` backend; unverified                      | proxy missing                 |
+| `/admin/subscriptions/invoice-settings` | `/api/admin/invoice-settings/*`                                    | none                                                                         | proxy + backend missing       |
+| `/admin/members` (export)               | `/api/admin/members/export`, `/api/admin/member-management/export` | possibly `admin_members.rs::export_members`                                  | proxy missing                 |
 
-P0/P1 above call out the worst of these. CC-1's value is recognizing this is a *systemic* gap, not a per-page bug — the SvelteKit proxy layer for `/admin/{members,member-management,membership-plans,subscriptions}` is roughly 30-40 % implemented relative to what the pages assume.
+P0/P1 above call out the worst of these. CC-1's value is recognizing this is a _systemic_ gap, not a per-page bug — the SvelteKit proxy layer for `/admin/{members,member-management,membership-plans,subscriptions}` is roughly 30-40 % implemented relative to what the pages assume.
 
 ### CC-2 — Two distinct admin client patterns coexist in the same file
 
@@ -519,6 +519,7 @@ The CLAUDE.md rule is unambiguous; the audit found `delete_member` as the most p
 ### CC-5 — Role gate insufficiently granular for billing/PII writes
 
 P1-10 covers the specific issue. A second-pass audit should map every backend route in scope to:
+
 - `requires_auth`
 - `requires_admin`
 - `requires_superadmin`
@@ -532,12 +533,14 @@ P1-10 covers the specific issue. A second-pass audit should map every backend ro
 The Members / Subscriptions / Memberships surface is in worse shape than the recently-clean proxy snapshots imply. The proxy file directory itself looks fine — every existing `+server.ts` already follows the `env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>'` rule and the `rtp_access_token` cookie convention. **The problem is that 70-80 % of the admin pages in this scope call proxy paths that don't have a `+server.ts` at all.** The pages compile, render, and seem to work in dev because Promise.allSettled / `.catch()` quietly swallows the 404s and shows empty states.
 
 The two genuine code-correctness bugs are:
+
 1. The Subscription Management page's connection guard tests a function reference (P0-1) — the page literally never renders its own data block.
 2. `delete_member` lacks a transaction and never tells Stripe the customer is gone (P0-2) — silent data + billing desync.
 
 Everything else falls into three buckets: missing proxy wiring (P0-3 through P1-5), `$effect`-as-onMount / write-while-read cascades (P1-6, P2-9), and accumulated UI polish (duplicate IDs, click-bubbling, divide-by-zero, plaintext password in toast).
 
 Counts:
+
 - **P0** (critical bugs): 5
 - **P1** (high-severity issues): 11
 - **P2** (medium issues): 12

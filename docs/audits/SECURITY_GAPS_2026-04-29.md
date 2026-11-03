@@ -10,22 +10,22 @@
 
 ## Status overview
 
-| ID | Severity | Status | Component |
-|---|---|---|---|
-| C-1 | CRITICAL | ✅ FIXED | OAuth callback URL leaks tokens |
-| C-2 | CRITICAL | ✅ FIXED | Frontend hooks decodes JWT without verify |
-| C-3 | CRITICAL | ⏳ USER ACTION | R2 credentials rotation |
-| H-1 | HIGH | ✅ FIXED | No JWT_SECRET production assertion |
-| H-2 | HIGH | ✅ FIXED | Password reset doesn't invalidate sessions |
-| H-3 | HIGH | ✅ FIXED | JWT blacklist fail-open |
-| H-4 | HIGH | ✅ FIXED | Coupon `usage_count` double-incremented |
-| H-5 | HIGH | ✅ FIXED | Impersonate stub footgun |
-| M-1 | MEDIUM | ✅ FIXED | CSP `'unsafe-inline'` + missing on frontend |
-| M-2 | MEDIUM | ✅ FIXED | `RateLimitService` dead code |
-| M-3 | MEDIUM | ✅ FIXED | `oauth_tokens` schema-only |
-| M-4 | MEDIUM | ✅ FIXED | Bcrypt fallback never migrates to argon2 |
-| L-1 | LOW | ✅ FIXED | Email PII in tracing logs |
-| L-2 | LOW | ✅ FIXED | Verification tokens not deleted at register |
+| ID  | Severity | Status         | Component                                   |
+| --- | -------- | -------------- | ------------------------------------------- |
+| C-1 | CRITICAL | ✅ FIXED       | OAuth callback URL leaks tokens             |
+| C-2 | CRITICAL | ✅ FIXED       | Frontend hooks decodes JWT without verify   |
+| C-3 | CRITICAL | ⏳ USER ACTION | R2 credentials rotation                     |
+| H-1 | HIGH     | ✅ FIXED       | No JWT_SECRET production assertion          |
+| H-2 | HIGH     | ✅ FIXED       | Password reset doesn't invalidate sessions  |
+| H-3 | HIGH     | ✅ FIXED       | JWT blacklist fail-open                     |
+| H-4 | HIGH     | ✅ FIXED       | Coupon `usage_count` double-incremented     |
+| H-5 | HIGH     | ✅ FIXED       | Impersonate stub footgun                    |
+| M-1 | MEDIUM   | ✅ FIXED       | CSP `'unsafe-inline'` + missing on frontend |
+| M-2 | MEDIUM   | ✅ FIXED       | `RateLimitService` dead code                |
+| M-3 | MEDIUM   | ✅ FIXED       | `oauth_tokens` schema-only                  |
+| M-4 | MEDIUM   | ✅ FIXED       | Bcrypt fallback never migrates to argon2    |
+| L-1 | LOW      | ✅ FIXED       | Email PII in tracing logs                   |
+| L-2 | LOW      | ✅ FIXED       | Verification tokens not deleted at register |
 
 13 of 14 fixed in code. C-3 requires you to log into the Cloudflare console — see the C-3 entry below.
 
@@ -42,12 +42,14 @@
 Tokens leaked into Cloudflare access logs, browser history, and Referer headers.
 
 **Now:** The callbacks return an `axum::response::Response` (no longer `Redirect`). On success they call a new helper `oauth_callback_response_with_cookies()` which:
+
 - Sets `rtp_access_token`, `rtp_refresh_token`, and `rtp_session_id` as `HttpOnly; SameSite=Lax; Path=/` cookies on the redirect response. `Secure` is added in production (`state.config.is_production()`).
 - Redirects to `/auth/callback?provider=<google|apple>` with NO credential params.
 
 The frontend `/auth/callback/+page.svelte` was rewritten to no longer read `?token=...` from the URL. It calls `GET /api/auth/me` (cookie-authenticated via `credentials: 'include'`) to confirm the session and fetch the user record.
 
 **Files changed:**
+
 - `api/src/routes/oauth.rs`: imports updated (`HeaderValue`, `IntoResponse`, `Response`); `oauth_callback_response_with_cookies()` added (lines ~563+); `google_callback` and `apple_callback` signatures changed from `Result<Redirect, ...>` to `Result<Response, ...>`; success paths use the new helper; error paths use `Redirect::to(...).into_response()`.
 - `frontend/src/routes/auth/callback/+page.svelte`: script section rewritten. No more URL token parsing, no `set-session` POST, no `replaceState`. Cookies are already set by the backend redirect.
 
@@ -62,6 +64,7 @@ The frontend `/auth/callback/+page.svelte` was rewritten to no longer read `?tok
 **Now:** That entire decode-and-trust block is deleted. On any auth path failure (transient or permanent), `event.locals.user = null` and the user must re-authenticate. The `console.log` that echoed `payload.email` is gone (PII-out-of-logs as a side benefit).
 
 **Files changed:**
+
 - `frontend/src/hooks.server.ts`: lines 263-306 replaced with a one-line `event.locals.user = null` and a single warning log. Old block is documented in a `FIX-C-2` comment for git archeologists.
 
 ---
@@ -73,6 +76,7 @@ The frontend `/auth/callback/+page.svelte` was rewritten to no longer read `?tok
 **Status:** This is the only finding I cannot fix from code. Requires logging into Cloudflare and revoking/rotating an API token.
 
 **What you do:**
+
 1. Open Cloudflare dashboard → R2 → Manage R2 API Tokens.
 2. Find and **revoke** the token whose access key id is `c59b71db89704deb941119ac5324a12a` (this is the value currently in `api/.env`).
 3. Generate a new token with the same scope (read + write on your R2 bucket).
@@ -91,12 +95,14 @@ The frontend `/auth/callback/+page.svelte` was rewritten to no longer read `?tok
 **Was:** `api/src/config/mod.rs:208` read `JWT_SECRET` with no validation. The production-secret validator at lines 314-369 covered Stripe (sk_live_, pk_live_, whsec_) but not JWT. A prod deploy with `JWT_SECRET` accidentally set to the `.env.example` placeholder string `replace-me-with-a-long-random-secret-at-least-32-characters-long` (which is ≥ 32 chars, so a naive length check wouldn't catch it) would boot, sign JWTs with a known string, and let any attacker forge admin JWTs.
 
 **Now:** `validate_production_secrets()` panics at boot if, when `ENVIRONMENT=production`:
+
 - `JWT_SECRET.len() < 32`, OR
 - `JWT_SECRET` (lowercased) contains any of: `replace-me`, `placeholder`, `changeme`, `your-secret-here`.
 
 Both checks come before the existing Stripe checks so they fail first and loudest. The error messages tell the operator exactly what to do (`openssl rand -hex 32`).
 
 **Files changed:**
+
 - `api/src/config/mod.rs`: new check block at the top of `validate_production_secrets()`. `live_config()` test fixture updated to use a real-length test secret. 5 new `#[should_panic]` tests added: short secret, empty secret, literal `.env.example` placeholder, generic `placeholder` substring, `changeme` marker.
 
 **Test evidence:** all 13 config tests pass (`cargo test --lib config`).
@@ -108,6 +114,7 @@ Both checks come before the existing Stripe checks so they fail first and loudes
 **Was:** `reset_password` (auth.rs:1285-1403) updated `password_hash` and deleted the reset row, then returned success. No call to `invalidate_all_user_sessions`, no JWT blacklist, no `security_events` row. A thief holding the user's stolen access/refresh token kept full access for the rest of the token's TTL even after the user reset their password.
 
 **Now:** After the password update + token delete, the handler:
+
 1. Looks up the user's id by email (it had only the email at this point).
 2. Calls `redis.invalidate_all_user_sessions(user_id)` — every Redis session for this user is killed.
 3. Calls `redis.invalidate_user_cache(user_id)` — forces the next request to re-fetch from DB.
@@ -117,6 +124,7 @@ Both checks come before the existing Stripe checks so they fail first and loudes
 All Redis steps are best-effort: a Redis fault is logged but does not roll back the password change (rolling back would be a worse outcome — the password is already changed).
 
 **Files changed:**
+
 - `api/src/routes/auth.rs`: `reset_password` handler tail rewritten.
 
 ---
@@ -130,6 +138,7 @@ All Redis steps are best-effort: a Redis fault is logged but does not roll back 
 The only branch that still proceeds without a blacklist check is when `state.services.redis` is `None` — i.e. Redis is not configured at all. That's a development-time scenario; production-time is caught by `validate_production_secrets` (would need a future check that Redis is configured in prod, called out in the inline comment).
 
 **Files changed:**
+
 - `api/src/middleware/auth.rs`: error branch now returns 401 instead of falling through.
 
 ---
@@ -145,6 +154,7 @@ The only branch that still proceeds without a blacklist check is when `state.ser
 The order-create increment block has been removed (replaced by a `FIX-H-4` comment). The webhook increment is unchanged. A new migration **`065_backfill_coupon_usage.sql`** rebuilds `coupons.usage_count` from `COUNT(orders.id) WHERE orders.status = 'completed'`, correcting historical drift.
 
 **Files changed:**
+
 - `api/src/routes/checkout.rs`: the `if let Some(coupon_id) = applied_coupon_id` block at lines 311-330 replaced with a FIX-H-4 comment + `let _ = applied_coupon_id;` (still used downstream as `orders.coupon_id`).
 - `api/migrations/065_backfill_coupon_usage.sql`: new file. Idempotent UPDATE that recomputes counts from the orders table.
 
@@ -159,6 +169,7 @@ The order-create increment block has been removed (replaced by a `FIX-H-4` comme
 The frontend client wrappers `usersApi.impersonate` (admin.ts:1040-1044) and the enterprise adapter `usersApi.impersonate` (admin-adapter.ts:173-174) are removed. No UI page actually called either, so no end-user-visible feature regression.
 
 **Files changed:**
+
 - `api/src/routes/admin.rs`: handler body and route registration removed.
 - `frontend/src/lib/api/admin.ts`: client wrapper removed.
 - `frontend/src/lib/api/enterprise/admin-adapter.ts`: enterprise wrapper removed.
@@ -170,12 +181,14 @@ The frontend client wrappers `usersApi.impersonate` (admin.ts:1040-1044) and the
 ### M-1 — CSP had `'unsafe-inline'` and missing frontend coverage ✅ FIXED
 
 **Was:**
+
 - `api/src/main.rs:206-207`: API CSP allowed `'unsafe-inline'` in `script-src` and `style-src`. Localhost entries shipped in production builds.
 - `frontend/svelte.config.js:50-95`: frontend CSP was decent but missed Stripe domains and had a duplicated `http://localhost:8080` entry.
 
 **Now:**
 
 API side (main.rs):
+
 - `script-src 'self'` only (no `'unsafe-inline'`).
 - `style-src 'self'` only.
 - `default-src 'none'` (every directive explicit).
@@ -183,11 +196,13 @@ API side (main.rs):
 - Localhost entries removed from `connect-src`.
 
 Frontend side (svelte.config.js):
+
 - Stripe added: `https://js.stripe.com` to `script-src`, `https://api.stripe.com` to `connect-src`, `https://js.stripe.com` and `https://hooks.stripe.com` to `frame-src` (required for Stripe Elements / 3DS).
 - Duplicated `http://localhost:8080` removed from the always-present `connect-src` list (still in the `NODE_ENV === 'development'` branch).
 - `style-src 'unsafe-inline'` retained — Svelte component-scoped styles compile to `style=""` attributes that need it; SvelteKit's `mode: 'auto'` adds nonces to `<style>` blocks but cannot rewrite inline attributes. Removing it would break the UI; explicitly noted in the file comment.
 
 **Files changed:**
+
 - `api/src/main.rs`: CSP `HeaderValue::from_static` rewritten with multi-line strict policy.
 - `frontend/svelte.config.js`: `kit.csp.directives` updated.
 
@@ -198,6 +213,7 @@ Frontend side (svelte.config.js):
 **Was:** `api/src/services/rate_limit.rs` defined a 452-line multi-tier service that was never instantiated anywhere. Login rate-limiting goes through `state.services.redis.check_login_rate_limit` directly. The dead service still wrote `login_rate_limits` table entries in code that was never called.
 
 **Now:**
+
 - `api/src/services/rate_limit.rs` deleted.
 - `api/src/services/mod.rs`: `pub mod rate_limit` declaration removed (replaced by a FIX-M-2 comment explaining why).
 - `api/migrations/067_drop_unused_login_rate_limits.sql` new — drops the empty `login_rate_limits` table.
@@ -223,6 +239,7 @@ If multi-tier rate limiting becomes a real requirement later, design it from scr
 A `bcrypt_rehashed_to_argon2id` audit event is logged on each successful migration, so you can grep your logs for migration progress (or just `SELECT COUNT(*) FROM users WHERE password_hash LIKE '$2%'` to check remaining count).
 
 **Files changed:**
+
 - `api/src/routes/auth.rs`: rehash block added between "clear failed login attempts" and the `is_active` ban check.
 
 ---
@@ -236,6 +253,7 @@ A `bcrypt_rehashed_to_argon2id` audit event is logged on each successful migrati
 **Now:** All `email = %x.email,` lines removed via batch perl pass. `user_id = ...` is retained on every event, so correlation with the user is one DB lookup away (same as before, just without the PII shortcut). The `security_events` table still records the user_id; emails are admin-accessible there under the `AdminUser` extractor's auth.
 
 **Files changed:**
+
 - `api/src/routes/auth.rs`, `api/src/middleware/admin.rs`, `api/src/routes/oauth.rs`: bulk strip.
 - `api/src/routes/admin.rs`: the impersonate handler (which had two email lines) was removed entirely as part of H-5.
 
@@ -248,6 +266,7 @@ A `bcrypt_rehashed_to_argon2id` audit event is logged on each successful migrati
 **Now:** A `DELETE FROM email_verification_tokens WHERE user_id = $1` runs inside the same transaction before the new INSERT. Matches the pattern already used in `resend_verification`. Idempotent — DELETE of zero rows is a no-op.
 
 **Files changed:**
+
 - `api/src/routes/auth.rs`: register handler.
 
 ---
@@ -255,6 +274,7 @@ A `bcrypt_rehashed_to_argon2id` audit event is logged on each successful migrati
 ## Verification
 
 ### Build
+
 ```
 $ cargo check
    Checking revolution-api v0.1.0
@@ -262,6 +282,7 @@ $ cargo check
 ```
 
 ### Tests (backend)
+
 ```
 $ cargo test --test utils_test --test stripe_test --lib config
 running 13 tests
@@ -283,12 +304,14 @@ test result: ok. 13 passed; 0 failed
 ```
 
 ### Typecheck (frontend)
+
 ```
 $ pnpm check
 COMPLETED 5217 FILES 0 ERRORS 0 WARNINGS 0 FILES_WITH_PROBLEMS
 ```
 
 ### What was NOT verified by automated tests
+
 - End-to-end OAuth flow with cookies (requires a real Google/Apple client). Recommended manual smoke test before merging: log in via Google, confirm cookies are set, confirm `/auth/callback?provider=google` URL has no token params, confirm `GET /api/auth/me` returns the user.
 - Password reset session-invalidation A/B (log in on two devices, reset on one, confirm the other 401s on next request). Requires Redis running.
 - Bcrypt rehash migration (only triggers for users with `$2*` hashes; verify by checking `SELECT COUNT(*) FROM users WHERE password_hash LIKE '$2%'` before and after a couple of test logins).
@@ -311,4 +334,4 @@ A second pass covering these is recommended before launch.
 
 ---
 
-*End of report.*
+_End of report._

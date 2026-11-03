@@ -148,9 +148,16 @@ async function runLabPerf(): Promise<void> {
 				totalTransferBytes += size;
 				if (r.initiatorType === 'script' || /\.m?js(\?|$)/.test(r.name)) {
 					jsTransferBytes += size;
-				} else if (r.initiatorType === 'css' || r.initiatorType === 'link' || /\.css(\?|$)/.test(r.name)) {
+				} else if (
+					r.initiatorType === 'css' ||
+					r.initiatorType === 'link' ||
+					/\.css(\?|$)/.test(r.name)
+				) {
 					cssTransferBytes += size;
-				} else if (r.initiatorType === 'img' || /\.(png|jpe?g|webp|avif|svg|gif)(\?|$)/i.test(r.name)) {
+				} else if (
+					r.initiatorType === 'img' ||
+					/\.(png|jpe?g|webp|avif|svg|gif)(\?|$)/i.test(r.name)
+				) {
 					imageTransferBytes += size;
 				}
 				if (/\.(woff2?|ttf|otf)(\?|$)/i.test(r.name)) {
@@ -250,28 +257,35 @@ async function runLabPerf(): Promise<void> {
 		site: PREVIEW_URL,
 		totalPagesScanned: baseline.pages.length,
 		templateLabMetrics: templateResults,
-		pages: baseline.pages.map((p: {
-			path: string;
-			template: string;
-			rawHttp: { finalStatus: number; ttfbMs: number; bodyBytes: number; rawMainWordCount: number };
-			ssrHtml: {
-				title: { charCount: number; tagCount: number };
-				description: { charCount: number; tagCount: number };
-				canonical: { href: string; tagCount: number };
-				imagesMissingAttributes: unknown[];
-			};
-		}) => ({
-			path: p.path,
-			template: p.template,
-			status: p.rawHttp.finalStatus,
-			ttfbMs: p.rawHttp.ttfbMs,
-			htmlBytes: p.rawHttp.bodyBytes,
-			wordCount: p.rawHttp.rawMainWordCount,
-			titleChars: p.ssrHtml.title.charCount,
-			descriptionChars: p.ssrHtml.description.charCount,
-			canonical: p.ssrHtml.canonical.href,
-			imagesMissingDimsOrAlt: p.ssrHtml.imagesMissingAttributes.length
-		}))
+		pages: baseline.pages.map(
+			(p: {
+				path: string;
+				template: string;
+				rawHttp: {
+					finalStatus: number;
+					ttfbMs: number;
+					bodyBytes: number;
+					rawMainWordCount: number;
+				};
+				ssrHtml: {
+					title: { charCount: number; tagCount: number };
+					description: { charCount: number; tagCount: number };
+					canonical: { href: string; tagCount: number };
+					imagesMissingAttributes: unknown[];
+				};
+			}) => ({
+				path: p.path,
+				template: p.template,
+				status: p.rawHttp.finalStatus,
+				ttfbMs: p.rawHttp.ttfbMs,
+				htmlBytes: p.rawHttp.bodyBytes,
+				wordCount: p.rawHttp.rawMainWordCount,
+				titleChars: p.ssrHtml.title.charCount,
+				descriptionChars: p.ssrHtml.description.charCount,
+				canonical: p.ssrHtml.canonical.href,
+				imagesMissingDimsOrAlt: p.ssrHtml.imagesMissingAttributes.length
+			})
+		)
 	};
 
 	const unlighthousePath = path.join(labDir, 'unlighthouse-summary.json');

@@ -6,6 +6,7 @@
 ---
 
 ## 1. `IDX-01` — `export const ssr = false` on Indexable Routes
+
 - **Indexable routes with `ssr === false`:** 0
 - **Status:** PASS (0 indexable routes disable SSR)
 - **All `ssr = false` occurrences in `src/routes/` (all non-indexable):**
@@ -18,8 +19,8 @@
 - `[CODE frontend/src/routes/tools/options-calculator/embed/+page.ts:6]` — `export const ssr = false;`
 - `[CODE frontend/src/routes/tools/options-calculator/shared/+page.ts:6]` — `export const ssr = false;`
 
-
 ## 2. `URL-03` — `trailingSlash` Policy Consistency
+
 - **Route-level `trailingSlash` overrides in `src/routes/`:** 0 (all routes inherit SvelteKit default `'never'`)
 - None (`0` matches)
 
@@ -29,8 +30,8 @@
 - `[CODE frontend/src/lib/seo/__tests__/seo.canonical.test.ts:91]` — `const config: CanonicalConfig = { ...baseConfig, trailingSlash: 'ignore' };`
 - `[CODE frontend/src/lib/seo/defaults.ts:37]` — `trailingSlash: 'never',`
 
-
 ## 3. `IDX-04` — Prerender Error Handlers in `frontend/vite.config.ts`
+
 - **Status:** FAIL — `handleMissingId: 'ignore'`, `handleUnseenRoutes: 'ignore'`, and custom `handleHttpError` ignoring 404s and 500s on `/dashboard` and `/tools/options-calculator`.
 - `[CODE frontend/vite.config.ts:63]` — `handleHttpError: ({ status, path }) => {`
 - `[CODE frontend/vite.config.ts:64]` — `if (status === 404) {`
@@ -39,18 +40,18 @@
 - `[CODE frontend/vite.config.ts:78]` — `handleMissingId: 'ignore',`
 - `[CODE frontend/vite.config.ts:79]` — `handleUnseenRoutes: 'ignore',`
 
-
 ## 4. `I18N-02` — Paraglide Package Check (`@inlang/paraglide-js` vs deprecated `@inlang/paraglide-sveltekit`)
+
 - **Status:** PASS (Single-locale `en` site; deprecated `@inlang/paraglide-sveltekit` is not installed)
 - None (`0` matches)
 
-
 ## 5. `META-05` / `TOOL-01` — Deprecated `$app/stores` Imports in `src/`
+
 - **Status:** PASS (0 non-test files import `$app/stores`)
 - None (`0` matches)
 
-
 ## 6. `META-05` — Duplicate SEO Head Tags in `<svelte:head>` Outside `src/lib/seo/Seo.svelte`
+
 - **Total occurrences outside `Seo.svelte`:** 410
 - **Status:** FAIL (routes/components emit competing `<title>`, `<meta>`, `<link rel="canonical">`, or `application/ld+json`)
 - `[CODE frontend/src/lib/components/SEOHead.svelte:823]` — `<title>{fullTitle}</title>`
@@ -135,8 +136,8 @@
 - `[CODE frontend/src/routes/admin/analytics/heatmaps/+page.svelte:121]` — `<title>Click Heatmaps | Analytics</title>`
 - ... and 330 more occurrences in admin/dashboard routes
 
-
 ## 7. `SD-02` — JSON-LD Serialization & XSS Escaping
+
 - **Occurrences of JSON-LD serialization in non-test `src/` files:**
 - `[CODE frontend/src/lib/components/SEOHead.svelte:6]` — `import { serializeJsonLd } from '#lib/seo/serializeJsonLd.js';`
 - `[CODE frontend/src/lib/components/SEOHead.svelte:263]` — `* canonical serializer in '#lib/seo/serializeJsonLd.js'. The script-tag`
@@ -160,8 +161,8 @@
 - `[CODE frontend/src/lib/seo/video-schema.ts:539]` — `return '<script type="application/ld+json">\n${JSON.stringify(schema, null, 2)}\n</script>';`
 - `[CODE frontend/src/lib/utils/structured-data.ts:1951]` — `return '<script type="application/ld+json">${toJsonLdScript(data)}</script>';`
 
-
 ## 8. `PERF-02` — `<enhanced:img>` vs Raw `<img>` & `enhancedImages()` Vite Plugin
+
 - **`@sveltejs/enhanced-img` in `package.json`:** 0
 - **`enhancedImages()` in `frontend/vite.config.ts`:** 0
 - **`<enhanced:img>` occurrences in `src/`:** 0
@@ -209,31 +210,31 @@
 - `[CODE frontend/src/lib/components/dashboard/WeeklyWatchlist.svelte:187]` — `<img`
 - ... and 161 more raw `<img>` occurrences
 
-
 ## 9. `PERF-04` — Asset Preload Filter in `src/hooks.server.ts`
+
 - **Status:** FAIL (`preload` in `hooks.server.ts:545` returns `type === 'js'`, excluding `type === 'font'` and `type === 'css'`)
 - `[CODE frontend/src/hooks.server.ts:545]` — `preload: ({ type }) => {`
 
-
 ## 10. `PERF-04` — Third-Party `<script src>` Tags Without `async`/`defer`
+
 - **Occurrences in `app.html` and `.svelte` files:**
 - `[CODE frontend/src/routes/dashboard/day-trading-room/+page.svelte:220]` — `<script src="https://apis.google.com/js/api.js"></script>`
 - `[CODE frontend/src/routes/dashboard/small-account-mentorship/+page.svelte:220]` — `<script src="https://apis.google.com/js/api.js"></script>`
 - `[CODE frontend/src/routes/dashboard/swing-trading-room/+page.svelte:196]` — `<script src="https://apis.google.com/js/api.js"></script>`
 
-
 ## 11. `MAP-03` — `<changefreq>` or `<priority>` in Sitemap Generators
+
 - **Occurrences in `src/routes/*sitemap*`:** 0
 - None (`0` matches)
 
-
 ## 12. `SD-11` — Deprecated `FAQPage` / `HowTo` Schema in Non-Admin Routes
+
 - **Occurrences in public routes:** 1
 - **Status:** FAIL (FAQPage restricted to government/health authority sites since Aug 2023 / May 2026)
 - `[CODE frontend/src/routes/tools/options-calculator/+page.ts:25]` — `// FAQPage markup is deliberately left out: Google dropped FAQ rich results`
 
-
 ## 13. `SD-10` / `SPAM-02` — `AggregateRating` / `ratingValue` / `reviewCount` in Source Files
+
 - **Occurrences in non-admin, non-test `src/` files:** 46
 - `[CODE frontend/src/lib/components/SEOHead.svelte:494]` — `'@type': 'AggregateRating',`
 - `[CODE frontend/src/lib/components/SEOHead.svelte:495]` — `ratingValue: productRating,`
@@ -282,8 +283,8 @@
 - `[CODE frontend/src/routes/store/scanners/+page.ts:129]` — `ratingCount: scanner.reviewCount`
 - `[CODE frontend/src/routes/store/scanners/high-octane-scanner/+page.ts:41]` — `ratingValue: 4.8,`
 
-
 ## 14. `URL-02` — Hardcoded Production Origin Outside `src/lib/seo/`
+
 - **Occurrences in `src/routes/`:** 83
 - **Status:** FAIL (routes hardcode `https://revolutiontradingpros.com` instead of reading from single config)
 - `[CODE frontend/src/routes/+page.server.ts:27]` — `'@id': 'https://revolutiontradingpros.com/#financialservice',`
@@ -369,4 +370,3 @@
 - `[CODE frontend/src/routes/tools/options-calculator/embed/+page.svelte:51]` — `href="https://revolutiontradingpros.com/tools/options-calculator"`
 - `[CODE frontend/src/routes/tutorials/+page.server.ts:19]` — `const SITE = 'https://revolutiontradingpros.com';`
 - `[CODE frontend/src/routes/video-sitemap.xml/+server.ts:19]` — `const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://revolutiontradingpros.com';`
-

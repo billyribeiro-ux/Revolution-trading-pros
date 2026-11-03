@@ -13,7 +13,8 @@ export interface MonteCarloWorkerRequest {
 }
 
 export type MonteCarloWorkerResponse =
-	{ ok: true; result: MonteCarloResult } | { ok: false; error: string };
+	| { ok: true; result: MonteCarloResult }
+	| { ok: false; error: string };
 
 self.onmessage = (event: MessageEvent<MonteCarloWorkerRequest>) => {
 	let response: MonteCarloWorkerResponse;

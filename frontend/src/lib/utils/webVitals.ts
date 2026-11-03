@@ -390,7 +390,8 @@ function getNavigationType(): string {
 	if (typeof window === 'undefined') return 'unknown';
 
 	const nav = performance.getEntriesByType('navigation')[0] as
-		PerformanceNavigationTiming | undefined;
+		| PerformanceNavigationTiming
+		| undefined;
 	if (nav) return nav.type;
 
 	// Fallback for older browsers

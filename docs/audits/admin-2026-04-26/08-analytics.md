@@ -9,6 +9,7 @@ _Method:_ Read-only review of every file in the four admin folders plus the sing
 ## Files reviewed
 
 Frontend pages:
+
 - [`frontend/src/routes/admin/analytics/+layout.svelte`](../../../frontend/src/routes/admin/analytics/+layout.svelte)
 - [`frontend/src/routes/admin/analytics/+page.svelte`](../../../frontend/src/routes/admin/analytics/+page.svelte) — Dashboard tab
 - [`frontend/src/routes/admin/analytics/recordings/+page.svelte`](../../../frontend/src/routes/admin/analytics/recordings/+page.svelte)
@@ -25,9 +26,11 @@ Frontend pages:
 - [`frontend/src/routes/admin/dashboard/+page.svelte`](../../../frontend/src/routes/admin/dashboard/+page.svelte)
 
 API proxies:
+
 - [`frontend/src/routes/api/admin/analytics/dashboard/+server.ts`](../../../frontend/src/routes/api/admin/analytics/dashboard/+server.ts) (only proxy that exists in scope)
 
 Supporting files referenced:
+
 - [`frontend/src/lib/api/analytics.ts`](../../../frontend/src/lib/api/analytics.ts) — same-origin client used by every page
 - [`frontend/src/lib/stores/connections.svelte.ts:548`](../../../frontend/src/lib/stores/connections.svelte.ts) — `getIsAnalyticsConnected` / `getIsBehaviorConnected`
 - [`frontend/src/lib/api/config.ts:11`](../../../frontend/src/lib/api/config.ts) — hardcoded `PRODUCTION_API_URL`
@@ -41,6 +44,7 @@ Supporting files referenced:
 `getIsAnalyticsConnected` is a function; `!getIsAnalyticsConnected` evaluates `!function` which is always `false`, so the conditional never enters that branch. The not-connected `<ServiceConnectionStatus />` card never renders, and control falls through to the connected layout where API calls fail silently.
 
 Affected files (cite `file:line`):
+
 - [`recordings/+page.svelte:168`](../../../frontend/src/routes/admin/analytics/recordings/+page.svelte) — `{:else if !getIsAnalyticsConnected}`
 - [`goals/+page.svelte:214`](../../../frontend/src/routes/admin/analytics/goals/+page.svelte) — `{:else if !getIsAnalyticsConnected}`
 - [`cohorts/+page.svelte:200`](../../../frontend/src/routes/admin/analytics/cohorts/+page.svelte) — `{:else if !getIsAnalyticsConnected}`
@@ -103,6 +107,7 @@ Eight files re-introduce the `$effect(() => { … connections.load() … })` pat
 > The previous `$effect` read `getIsAnalyticsConnected()` (which reads the `connectionsState` rune) and then synchronously called `connections.load()` which mutates that same rune. That's the classic write-while-reading-tracked-dep pattern that produces an `effect_update_depth_exceeded` cascade on /admin login.
 
 Files still using the dangerous pattern:
+
 - [`recordings/+page.svelte:107-119`](../../../frontend/src/routes/admin/analytics/recordings/+page.svelte)
 - [`goals/+page.svelte:140-152`](../../../frontend/src/routes/admin/analytics/goals/+page.svelte)
 - [`cohorts/+page.svelte:111-123`](../../../frontend/src/routes/admin/analytics/cohorts/+page.svelte)
@@ -124,12 +129,12 @@ Fix: switch to `onMount(() => { /* init */; return () => { /* cleanup */ }; })` 
 
 ```ts
 $effect(() => {
-    if (!browser) return;
-    loadDashboard();
-    refreshInterval = setInterval(loadDashboard, 60000);
-    return () => {
-        if (refreshInterval) clearInterval(refreshInterval);
-    };
+	if (!browser) return;
+	loadDashboard();
+	refreshInterval = setInterval(loadDashboard, 60000);
+	return () => {
+		if (refreshInterval) clearInterval(refreshInterval);
+	};
 });
 ```
 
@@ -141,12 +146,12 @@ The cleanup correctly clears `refreshInterval` on `$effect` re-run/destroy, but 
 
 ```ts
 export function getIsAnalyticsConnected(): boolean {
-    return untrack(() => {
-        const analyticsServices = FEATURE_SERVICES['analytics'];
-        return (
-            analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false
-        );
-    });
+	return untrack(() => {
+		const analyticsServices = FEATURE_SERVICES['analytics'];
+		return (
+			analyticsServices?.some((key) => connectionsState.connections[key]?.isConnected) ?? false
+		);
+	});
 }
 ```
 
@@ -207,6 +212,7 @@ Fix: whitelist `['1d', '7d', '30d', '90d', '1y']` at the proxy edge.
 ### P2-1 — Duplicate DOM IDs inside loops.
 
 These IDs are emitted once per loop iteration inside an `{#each}`:
+
 - `id="page-step-name"` and `id="page-step-event-name"` — [`funnels/+page.svelte:422,430`](../../../frontend/src/routes/admin/analytics/funnels/+page.svelte) (one per funnel step)
 - `id="page-rule-value"` — [`segments/+page.svelte:564`](../../../frontend/src/routes/admin/analytics/segments/+page.svelte) (one per rule)
 
@@ -244,11 +250,11 @@ In [`funnels/+page.svelte:65-68`](../../../frontend/src/routes/admin/analytics/f
 
 ```ts
 if (data.connections) {
-    for (const conn of data.connections) {
-        if (conn.is_connected) {
-            (connections as any)[conn.key] = true;
-        }
-    }
+	for (const conn of data.connections) {
+		if (conn.is_connected) {
+			(connections as any)[conn.key] = true;
+		}
+	}
 }
 ```
 
@@ -270,7 +276,7 @@ const backendData = await fetchFromBackend(`/api/admin/analytics/dashboard?perio
 
 ### P2-10 — Behavior page directly calls Rust API at `<your-api-host>` instead of going through a proxy.
 
-[`behavior/+page.svelte:48`](../../../frontend/src/routes/admin/behavior/+page.svelte): `await api.get(\`/api/admin/analytics/behavior?period=${selectedPeriod}\`)`. The `api` object from [`config.ts:293`](../../../frontend/src/lib/api/config.ts) prepends `API_BASE_URL` which is hardcoded to `<your-api-host>`. This bypasses the SvelteKit proxy layer that every other page uses, exposing the admin panel to CORS / CORB risk and making local-dev backend swaps impossible.
+[`behavior/+page.svelte:48`](../../../frontend/src/routes/admin/behavior/+page.svelte): `await api.get(\`/api/admin/analytics/behavior?period=${selectedPeriod}\`)`. The `api` object from [`config.ts:293`](../../../frontend/src/lib/api/config.ts) prepends `API_BASE_URL`which is hardcoded to`<your-api-host>`. This bypasses the SvelteKit proxy layer that every other page uses, exposing the admin panel to CORS / CORB risk and making local-dev backend swaps impossible.
 
 ---
 
@@ -319,6 +325,7 @@ Could double-tap into a "Live" toggle. Not urgent.
 ### Chart libs / rendering
 
 None of the audited pages directly import a chart library — every chart is delegated to `KpiGrid`, `FunnelChart`, `CohortMatrix`, `TimeSeriesChart`, `AttributionChart`, `RealTimeWidget`. Those components are out of scope for this audit but should be reviewed separately for:
+
 1. `onDestroy` teardown of any timers / `requestAnimationFrame` / `IntersectionObserver`.
 2. ResizeObserver leaks if chart canvases re-mount on tab switches.
 3. The Overview-tab grid renders 4 panels at once (P3-2) — if any chart has a mount-time cost, that cost is paid 4× even though only one panel is visible.
@@ -340,6 +347,7 @@ Pages talking directly to the Rust API (e.g. `behavior/+page.svelte`, P2-10) byp
 ### PII / privacy
 
 P0-3 documents the recordings PII risk. Beyond that:
+
 - `events/+page.svelte:307-313` displays `event.user_id` raw. If `user_id` is a PII field (email, phone) rather than an opaque hash, this leaks.
 - `events/+page.svelte:317-319` displays raw `event.properties` as JSON — these objects often contain form values, query strings, etc. No allowlist / denylist on what's shown.
 
@@ -352,6 +360,7 @@ The analytics admin surface looks polished but is largely non-functional: only 1
 Underneath, 12 pages re-introduced the `$effect` cascade pattern that the project explicitly migrated away from (P1-1), and connection-status reactivity is silently broken because helpers wrap reads in `untrack()` (P1-3). Performance, behavior, and dashboard pages use placeholder fake numbers and `{#if true}` artifacts.
 
 **Recommended order:**
+
 1. Fix P0-1 with a global find-replace (`!getIsAnalyticsConnected` → `!getIsAnalyticsConnected()`).
 2. Triage P0-2: either delete the unimplemented pages (per `feedback_create_not_delete.md`, build the missing proxies instead) or migrate `analytics.ts` to the direct API client. The "build the missing side" rule applies — these are orphans on the proxy side, so build the proxies.
 3. Address P0-3 with a pre-integration PII redaction policy doc before any session-replay library ships.

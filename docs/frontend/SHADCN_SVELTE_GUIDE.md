@@ -9,6 +9,7 @@ Complete guide for using shadcn-svelte and bits-ui in the Revolution Trading Pro
 ## 📦 Installed Components
 
 ### Core Components
+
 - ✅ **Button** - Primary, secondary, outline, ghost variants
 - ✅ **Dialog** - Modal dialogs with header/footer
 - ✅ **Dropdown Menu** - Context menus and dropdowns
@@ -22,6 +23,7 @@ Complete guide for using shadcn-svelte and bits-ui in the Revolution Trading Pro
 - ✅ **Separator** - Visual dividers
 
 ### Location
+
 All components are in: `src/lib/components/ui/`
 
 ---
@@ -62,7 +64,7 @@ All components are in: `src/lib/components/ui/`
 <script>
   import * as Dialog from '#lib/components/ui/dialog/index.js';
   import { Button } from '#lib/components/ui/button/index.js';
-  
+
   let open = $state(false);
 </script>
 
@@ -70,7 +72,7 @@ All components are in: `src/lib/components/ui/`
   <Dialog.Trigger asChild let:builder>
     <Button builders={[builder]}>Open Dialog</Button>
   </Dialog.Trigger>
-  
+
   <Dialog.Content class="sm:max-w-[425px]">
     <Dialog.Header>
       <Dialog.Title>Edit Profile</Dialog.Title>
@@ -78,7 +80,7 @@ All components are in: `src/lib/components/ui/`
         Make changes to your profile here. Click save when you're done.
       </Dialog.Description>
     </Dialog.Header>
-    
+
     <!-- Your form content here -->
     <div class="grid gap-4 py-4">
       <div class="grid grid-cols-4 items-center gap-4">
@@ -86,7 +88,7 @@ All components are in: `src/lib/components/ui/`
         <input id="name" class="col-span-3" />
       </div>
     </div>
-    
+
     <Dialog.Footer>
       <Button type="submit">Save changes</Button>
     </Dialog.Footer>
@@ -108,11 +110,11 @@ All components are in: `src/lib/components/ui/`
   <DropdownMenu.Trigger asChild let:builder>
     <Button builders={[builder]} variant="outline">Open Menu</Button>
   </DropdownMenu.Trigger>
-  
+
   <DropdownMenu.Content class="w-56">
     <DropdownMenu.Label>My Account</DropdownMenu.Label>
     <DropdownMenu.Separator />
-    
+
     <DropdownMenu.Group>
       <DropdownMenu.Item>
         Profile
@@ -121,9 +123,9 @@ All components are in: `src/lib/components/ui/`
         Settings
       </DropdownMenu.Item>
     </DropdownMenu.Group>
-    
+
     <DropdownMenu.Separator />
-    
+
     <DropdownMenu.Item class="text-red-600">
       Log out
     </DropdownMenu.Item>
@@ -146,11 +148,11 @@ All components are in: `src/lib/components/ui/`
     <Card.Title>Card Title</Card.Title>
     <Card.Description>Card description goes here</Card.Description>
   </Card.Header>
-  
+
   <Card.Content>
     <p>Card content goes here</p>
   </Card.Content>
-  
+
   <Card.Footer class="flex justify-between">
     <Button variant="outline">Cancel</Button>
     <Button>Save</Button>
@@ -165,7 +167,7 @@ All components are in: `src/lib/components/ui/`
 ```svelte
 <script>
   import * as Table from '#lib/components/ui/table/index.js';
-  
+
   const trades = [
     { ticker: 'NVDA', entry: 142.50, exit: 156.00, profit: '+9.5%' },
     { ticker: 'TSLA', entry: 248.00, exit: 265.00, profit: '+6.9%' }
@@ -206,7 +208,7 @@ All components are in: `src/lib/components/ui/`
   import { Label } from '#lib/components/ui/label/index.js';
   import * as Select from '#lib/components/ui/select/index.js';
   import { Textarea } from '#lib/components/ui/textarea/index.js';
-  
+
   let ticker = $state('');
   let notes = $state('');
 </script>
@@ -216,7 +218,7 @@ All components are in: `src/lib/components/ui/`
     <Label for="ticker">Ticker Symbol</Label>
     <Input id="ticker" bind:value={ticker} placeholder="NVDA" />
   </div>
-  
+
   <div class="space-y-2">
     <Label for="type">Alert Type</Label>
     <Select.Root>
@@ -230,12 +232,12 @@ All components are in: `src/lib/components/ui/`
       </Select.Content>
     </Select.Root>
   </div>
-  
+
   <div class="space-y-2">
     <Label for="notes">Notes</Label>
     <Textarea id="notes" bind:value={notes} placeholder="Trade notes..." />
   </div>
-  
+
   <Button type="submit">Create Alert</Button>
 </form>
 ```
@@ -264,6 +266,7 @@ All components are in: `src/lib/components/ui/`
 ## 🎨 Customization
 
 ### Modifying Components
+
 All components are **source code in your project**. Edit them directly:
 
 ```bash
@@ -275,16 +278,17 @@ code src/lib/components/ui/dialog/dialog.svelte
 ```
 
 ### Theme Customization
+
 Edit `src/app.css` to change colors:
 
 ```css
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    /* ... more variables */
-  }
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 222.2 84% 4.9%;
+		--primary: 222.2 47.4% 11.2%;
+		/* ... more variables */
+	}
 }
 ```
 
@@ -295,6 +299,7 @@ Edit `src/app.css` to change colors:
 ### Replace Custom Modals
 
 **Before (Custom Modal):**
+
 ```svelte
 <div class="modal-overlay" class:open={isOpen}>
   <div class="modal-content">
@@ -306,6 +311,7 @@ Edit `src/app.css` to change colors:
 ```
 
 **After (shadcn Dialog):**
+
 ```svelte
 <Dialog.Root bind:open={isOpen}>
   <Dialog.Content>
@@ -321,6 +327,7 @@ Edit `src/app.css` to change colors:
 ```
 
 ### Benefits
+
 - ✅ Automatic accessibility (ARIA, focus trap, keyboard nav)
 - ✅ Consistent styling across app
 - ✅ Less custom CSS to maintain
@@ -352,16 +359,21 @@ npx shadcn-svelte@latest add tooltip
 ## 🎯 Best Practices
 
 ### 1. Use for New Features
+
 Start with shadcn components for new pages/features.
 
 ### 2. Gradual Migration
+
 Don't refactor existing working code. Migrate opportunistically when:
+
 - Adding new features
 - Fixing bugs in modal/form code
 - Building new dashboards
 
 ### 3. Customize as Needed
+
 Edit component source to match your design system:
+
 ```svelte
 <!-- src/lib/components/ui/button/button.svelte -->
 <script>
@@ -375,11 +387,12 @@ Edit component source to match your design system:
 ```
 
 ### 4. Combine with Existing Patterns
+
 ```svelte
 <script>
   import * as Dialog from '#lib/components/ui/dialog/index.js';
   import { Button } from '#lib/components/ui/button/index.js';
-  
+
   // Use with your existing state management
   const ps = createPageState();
 </script>
@@ -394,30 +407,35 @@ Edit component source to match your design system:
 ## 🚨 Important Notes
 
 ### TypeScript
+
 All components are fully typed. Use `$props()` for type safety:
 
 ```svelte
 <script lang="ts">
   import { Button } from '#lib/components/ui/button/index.js';
   import type { Button as ButtonPrimitive } from 'bits-ui';
-  
+
   type Props = ButtonPrimitive.Props & {
     customProp?: string;
   };
-  
+
   const { customProp, ...rest }: Props = $props();
 </script>
 ```
 
 ### Accessibility
+
 Components are WCAG 2.1 AA compliant by default:
+
 - ✅ Keyboard navigation
 - ✅ Screen reader support
 - ✅ Focus management
 - ✅ ARIA attributes
 
 ### Mobile-First
+
 All components are responsive. Customize with Tailwind breakpoints:
+
 ```svelte
 <Dialog.Content class="w-full sm:max-w-[425px] md:max-w-[600px]">
   <!-- Responsive width -->

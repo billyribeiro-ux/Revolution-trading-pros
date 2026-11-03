@@ -1,4 +1,4 @@
-import { afterEach, vi, beforeAll, afterAll } from 'vitest';
+import { afterEach, vi, beforeAll, afterAll } from 'vite-plus/test';
 import { cleanup } from '@testing-library/svelte';
 // `/vitest` entry registers jest-dom matchers at runtime AND extends
 // Vitest's `Assertion` interface with their TypeScript types, so

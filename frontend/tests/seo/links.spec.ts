@@ -37,9 +37,10 @@ test.describe('Internal Linking & Anchor Text Quality (LINK-01..05)', () => {
 			for (const a of anchors) {
 				expect(a.href).not.toMatch(/^javascript:/i);
 				expect(a.href).not.toBe('#');
-				expect(a.text.length, `Empty anchor text for href="${a.href}" on ${sample.path}`).toBeGreaterThan(
-					0
-				);
+				expect(
+					a.text.length,
+					`Empty anchor text for href="${a.href}" on ${sample.path}`
+				).toBeGreaterThan(0);
 				expect(
 					BANNED_ANCHORS.has(a.text.toLowerCase()),
 					`Generic anchor text "${a.text}" for href="${a.href}" on ${sample.path}`
@@ -48,4 +49,3 @@ test.describe('Internal Linking & Anchor Text Quality (LINK-01..05)', () => {
 		});
 	}
 });
-

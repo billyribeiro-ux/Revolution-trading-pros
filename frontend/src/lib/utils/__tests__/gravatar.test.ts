@@ -29,7 +29,7 @@
  * silently on page load.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { getGravatarUrl, getUserAvatarUrl } from '../gravatar';
 
 // ═══════════════════════════════════════════════════════════════════════════

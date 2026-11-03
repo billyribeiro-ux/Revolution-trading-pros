@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { resolveSEO, createSEOContext } from '../resolve';
 import { seoDefaults } from '../defaults';
 import type { SEOInput, RouteSEOContext } from '../types';

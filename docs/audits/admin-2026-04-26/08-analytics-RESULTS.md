@@ -34,11 +34,13 @@ By the time this agent landed, sister fixes had already addressed:
 ## Changes landed in this pass
 
 ### P0-1 — `!getIsBehaviorConnected` (missing parens)
+
 - `frontend/src/routes/admin/behavior/+page.svelte:153` — replaced the bare
   function-reference check with the existing `$derived` value
   `!isBehaviorConnected`.
 
 ### P0-2 — Build the missing analytics proxies (~25 endpoints)
+
 - **New** `frontend/src/lib/server/analytics-proxy.ts` — shared helper.
   - Cookie-first auth via `requireAdmin`.
   - `period` query param validated against an allowlist
@@ -81,6 +83,7 @@ Combined coverage: every analytics endpoint observed across
 `frontend/src/lib/api/analytics.ts` and the page-level `fetch()` calls.**
 
 ### P0-3 — Recordings PII redaction TODO
+
 - `frontend/src/routes/admin/analytics/recordings/+page.svelte` — added a
   detailed top-of-file `TODO(2026-04-26-audit-08-P0-3)` block enumerating
   the redaction policy that MUST land before any session-replay library is
@@ -88,12 +91,14 @@ Combined coverage: every analytics endpoint observed across
   `user_email` etc., honor consent, server-side TTL + delete-by-user_id).
 
 ### P1-1 — `$effect` → `onMount` (the two remaining pages)
+
 - `frontend/src/routes/admin/analytics/attribution/+page.svelte` — converted
   init `$effect(() => { if (browser) loadAttribution(); })` to `onMount`.
 - `frontend/src/routes/admin/performance/+page.svelte` — converted init
   `$effect(() => { if (browser) loadData(); })` to `onMount`.
 
 ### P1-4 — Stop swallowing errors into empty arrays
+
 - `recordings/+page.svelte` — `loadRecordings()` now sets `error = ...`
   when the upstream returns non-OK; the existing error-banner UI surfaces
   it. URL is built via `URLSearchParams` (no concat).
@@ -101,20 +106,24 @@ Combined coverage: every analytics endpoint observed across
 - `goals/+page.svelte` — same fix in `loadGoals()`.
 
 ### P1-6 — Performance page `{#if true}` dead-syntax
+
 - `performance/+page.svelte` — removed the four `{#if true}` wrappers; the
   `{@const}` declarations are replaced by four top-level
   `$derived(getVitalRating(...))` declarations (`lcpRating`, `fidRating`,
   `clsRating`, `inpRating`).
 
 ### P1-7 — Layout nav missing 3 of 10 pages
+
 - `analytics/+layout.svelte` — added Goals, Heatmaps, Recordings entries
   to `navItems`.
 
 ### P1-8 — `period` query param sanitization
+
 - See P0-2 above. Both the catchall and the dashboard proxy now drop
   unknown `period` values, defaulting back to `30d` where appropriate.
 
 ### P2-4 — `as any` cast on cohort response
+
 - `cohorts/+page.svelte` — removed the `as any` cast at the assign site;
   widened the local `Cohort` interface's `type` and `granularity` from
   string-literal unions to `string` (matching the backend wire shape).
@@ -122,6 +131,7 @@ Combined coverage: every analytics endpoint observed across
   of a silent UI break.
 
 ### P2-5 — Date parsing in browser-local TZ (off-by-one bug)
+
 - `recordings/+page.svelte` — `formatDate()` now passes
   `timeZone: 'UTC', timeZoneName: 'short'` so a backend `…T00:00:00Z`
   doesn't read as the previous calendar day in PST. Other pages
@@ -130,11 +140,13 @@ Combined coverage: every analytics endpoint observed across
   calendar-day intent.
 
 ### P2-6 — Period changes don't reset selectedFunnel/Cohort
+
 - `funnels/+page.svelte` — `handlePeriodChange()` resets `selectedFunnel`
   to `null` so the stale-pointer mismatch can't occur.
 - `cohorts/+page.svelte` — same fix for `selectedCohort`.
 
 ### P3-6 — Stub create routes
+
 - **New** `frontend/src/routes/admin/analytics/funnels/create/+page.svelte`
   and `cohorts/create/+page.svelte`. Each is a thin redirect into the
   existing modal flow on the parent list page (`?create=1`).
@@ -146,16 +158,16 @@ Combined coverage: every analytics endpoint observed across
 
 ## Items audited but not changed in this pass
 
-| ID | Why deferred |
-|----|---|
-| P2-1 (duplicate DOM ids in loops) | Multi-file find/replace, low risk; flagged for next sweep. |
-| P2-2 (modal close UX / inert / focus-trap) | Cross-cutting modal-component refactor; should land with the recordings player integration (gated by P0-3 redaction policy). |
-| P2-3 (`alert()` → toast) | 5 sites across goals/cohorts/funnels/segments/reports; mechanical but requires importing `toastStore` per page. |
-| P2-7 (`(connections as any)[conn.key]`) | Lives in `/admin/+page.svelte` and `dashboard/+page.svelte` (now a redirect). Not in this scope. |
-| P2-8 (attribution skips connection gate) | Backend behavior dependent; needs a product call before forcing a gate. |
-| P3-1 (emoji icons in nav) | Cosmetic; matches the existing analytics layout's house style. Migrating would touch the entire nav. |
-| P3-2/3/4 (chart-component teardown / parallelization) | Out of scope per audit (chart components reviewed separately). |
-| P3-5, P3-7, P3-8 | Micro-optimizations; not blocking. |
+| ID                                                    | Why deferred                                                                                                                 |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| P2-1 (duplicate DOM ids in loops)                     | Multi-file find/replace, low risk; flagged for next sweep.                                                                   |
+| P2-2 (modal close UX / inert / focus-trap)            | Cross-cutting modal-component refactor; should land with the recordings player integration (gated by P0-3 redaction policy). |
+| P2-3 (`alert()` → toast)                              | 5 sites across goals/cohorts/funnels/segments/reports; mechanical but requires importing `toastStore` per page.              |
+| P2-7 (`(connections as any)[conn.key]`)               | Lives in `/admin/+page.svelte` and `dashboard/+page.svelte` (now a redirect). Not in this scope.                             |
+| P2-8 (attribution skips connection gate)              | Backend behavior dependent; needs a product call before forcing a gate.                                                      |
+| P3-1 (emoji icons in nav)                             | Cosmetic; matches the existing analytics layout's house style. Migrating would touch the entire nav.                         |
+| P3-2/3/4 (chart-component teardown / parallelization) | Out of scope per audit (chart components reviewed separately).                                                               |
+| P3-5, P3-7, P3-8                                      | Micro-optimizations; not blocking.                                                                                           |
 
 ---
 

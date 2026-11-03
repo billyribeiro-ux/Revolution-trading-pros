@@ -24,7 +24,7 @@
  *     would silently widen the analytics warehouse schema.
  */
 
-import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vite-plus/test';
 import {
 	formatNumber,
 	formatCurrency,

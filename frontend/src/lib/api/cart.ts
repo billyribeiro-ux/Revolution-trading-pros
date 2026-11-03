@@ -289,7 +289,13 @@ export interface CheckoutSession {
 }
 
 export type CheckoutStatus =
-	'pending' | 'processing' | 'requires_action' | 'succeeded' | 'failed' | 'cancelled' | 'expired';
+	| 'pending'
+	| 'processing'
+	| 'requires_action'
+	| 'succeeded'
+	| 'failed'
+	| 'cancelled'
+	| 'expired';
 
 export type PaymentProvider = 'stripe' | 'paypal' | 'square' | 'razorpay' | 'mollie' | 'custom';
 

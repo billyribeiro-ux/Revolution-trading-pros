@@ -19,7 +19,15 @@
 
 // Token types for the lexer
 type TokenType =
-	'NUMBER' | 'PLUS' | 'MINUS' | 'MULTIPLY' | 'DIVIDE' | 'MODULO' | 'LPAREN' | 'RPAREN' | 'EOF';
+	| 'NUMBER'
+	| 'PLUS'
+	| 'MINUS'
+	| 'MULTIPLY'
+	| 'DIVIDE'
+	| 'MODULO'
+	| 'LPAREN'
+	| 'RPAREN'
+	| 'EOF';
 
 interface Token {
 	type: TokenType;

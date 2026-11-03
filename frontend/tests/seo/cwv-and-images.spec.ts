@@ -67,4 +67,3 @@ test.describe('Core Web Vitals (CLS) & Image Hygiene (PERF-01..07)', () => {
 		});
 	}
 });
-

@@ -1,6 +1,7 @@
 # 07 — Marketing / Conversion Audit (Email / Popups / Forms / SEO)
 
 Scope: every file under
+
 - [`frontend/src/routes/admin/email/`](../../../frontend/src/routes/admin/email)
 - [`frontend/src/routes/admin/popups/`](../../../frontend/src/routes/admin/popups)
 - [`frontend/src/routes/admin/forms/`](../../../frontend/src/routes/admin/forms)
@@ -14,6 +15,7 @@ Reviewed read-only. Date: 2026-04-26. Author: principal engineer.
 ## Files reviewed
 
 ### Email (admin pages)
+
 - [`admin/email/campaigns/+page.svelte`](../../../frontend/src/routes/admin/email/campaigns/+page.svelte)
 - [`admin/email/campaigns/[id]/report/+page.svelte`](../../../frontend/src/routes/admin/email/campaigns/[id]/report/+page.svelte)
 - [`admin/email/campaigns/[id]/report/+page.ts`](../../../frontend/src/routes/admin/email/campaigns/[id]/report/+page.ts)
@@ -27,17 +29,20 @@ Reviewed read-only. Date: 2026-04-26. Author: principal engineer.
 - [`lib/components/admin/TemplateForm.svelte`](../../../frontend/src/lib/components/admin/TemplateForm.svelte) (sibling — used by edit/new)
 
 ### Email (proxy endpoints)
+
 - [`api/admin/email/settings/+server.ts`](../../../frontend/src/routes/api/admin/email/settings/+server.ts)
 - [`api/admin/email/templates/+server.ts`](../../../frontend/src/routes/api/admin/email/templates/+server.ts)
 - [`api/admin/email/templates/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/email/templates/[...rest]/+server.ts)
 
 ### Popups
+
 - [`admin/popups/+page.svelte`](../../../frontend/src/routes/admin/popups/+page.svelte)
 - [`admin/popups/new/+page.svelte`](../../../frontend/src/routes/admin/popups/new/+page.svelte)
 - [`admin/popups/[id]/edit/+page.svelte`](../../../frontend/src/routes/admin/popups/[id]/edit/+page.svelte)
 - [`admin/popups/[id]/analytics/+page.svelte`](../../../frontend/src/routes/admin/popups/[id]/analytics/+page.svelte)
 
 ### Forms
+
 - [`admin/forms/+page.svelte`](../../../frontend/src/routes/admin/forms/+page.svelte)
 - [`admin/forms/create/+page.svelte`](../../../frontend/src/routes/admin/forms/create/+page.svelte)
 - [`admin/forms/entries/+page.svelte`](../../../frontend/src/routes/admin/forms/entries/+page.svelte)
@@ -49,6 +54,7 @@ Reviewed read-only. Date: 2026-04-26. Author: principal engineer.
 - [`admin/forms/[id]/analytics/+page.ts`](../../../frontend/src/routes/admin/forms/[id]/analytics/+page.ts)
 
 ### SEO
+
 - [`admin/seo/+page.svelte`](../../../frontend/src/routes/admin/seo/+page.svelte)
 - [`admin/seo/meta/+page.svelte`](../../../frontend/src/routes/admin/seo/meta/+page.svelte)
 - [`admin/seo/redirects/+page.svelte`](../../../frontend/src/routes/admin/seo/redirects/+page.svelte)
@@ -79,14 +85,14 @@ Reviewed read-only. Date: 2026-04-26. Author: principal engineer.
 ```ts
 // Default SMTP settings (in production, these would come from database)
 let emailSettings = {
-    provider: 'smtp',
-    host: '',
-    port: 587,
-    username: '',
-    password: '',
-    encryption: 'tls',
-    from_address: '',
-    from_name: 'Revolution Trading Pros'
+	provider: 'smtp',
+	host: '',
+	port: 587,
+	username: '',
+	password: '',
+	encryption: 'tls',
+	from_address: '',
+	from_name: 'Revolution Trading Pros'
 };
 ```
 
@@ -108,8 +114,8 @@ This is a module-scoped `let` variable. Five separate failures stack here:
 
 ```ts
 return json({
-    ...emailSettings,
-    password: emailSettings.password ? '••••••••' : ''
+	...emailSettings,
+	password: emailSettings.password ? '••••••••' : ''
 });
 ```
 
@@ -125,12 +131,12 @@ Two fixes: (a) never include the password field, even masked, in `GET` responses
 
 ```ts
 if (
-    e.message.includes('SQLSTATE') ||
-    e.message.includes('Column not found') ||
-    e.message.includes('deleted_at')
+	e.message.includes('SQLSTATE') ||
+	e.message.includes('Column not found') ||
+	e.message.includes('deleted_at')
 ) {
-    error =
-        'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
+	error =
+		'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
 }
 ```
 
@@ -201,15 +207,15 @@ The textarea at [L674](../../../frontend/src/routes/admin/popups/new/+page.svelt
 
 ```ts
 async function loadForms() {
-    try {
-        const response = await fetch('/api/admin/forms');
-        if (response.ok) {
-            const data = await response.json();
-            availableForms = data.forms || data || [];
-        }
-    } catch (e) {
-        console.error('Failed to load forms:', e);
-    }
+	try {
+		const response = await fetch('/api/admin/forms');
+		if (response.ok) {
+			const data = await response.json();
+			availableForms = data.forms || data || [];
+		}
+	} catch (e) {
+		console.error('Failed to load forms:', e);
+	}
 }
 ```
 
@@ -305,12 +311,12 @@ Sequential `await` in a `for…of` over potentially hundreds of subscribers. If 
 
 ```ts
 const response = await fetch(`${backendUrl}/api${endpoint}`, {
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...(options?.headers || {})
-    }
+	...options,
+	headers: {
+		'Content-Type': 'application/json',
+		Accept: 'application/json',
+		...(options?.headers || {})
+	}
 });
 
 const data = await response.json();
@@ -329,6 +335,7 @@ const data = await response.json();
 [`admin/seo/redirects/+page.svelte:225-249`](../../../frontend/src/routes/admin/seo/redirects/+page.svelte#L225)
 
 The page lists `is_regex` redirects (rendering a "REGEX" badge at L240) but neither the list page nor the editor (out of scope, in `RedirectEditor.svelte`) is shown to validate the source pattern with `new RegExp()`. A malformed regex committed to the redirect table will:
+
 - Crash whatever Rust route handles redirect dispatch.
 - Or worse, slip through and ReDoS the request handler with a pathological pattern (e.g. `(a+)+$` against a long URL).
 
@@ -389,9 +396,9 @@ Either delete them, or migrate every `/api/admin/<thing>` route off `[...path]` 
 
 ```ts
 async function loadEntities() {
-    // This would load entities (pages, posts, products, etc.)
-    // For now, we'll just create a placeholder
-    entities = [];
+	// This would load entities (pages, posts, products, etc.)
+	// For now, we'll just create a placeholder
+	entities = [];
 }
 ```
 
@@ -443,6 +450,7 @@ Cloudflare Pages preview domain hardcoded in what looks to be sample/seed data. 
 ```
 
 If the form collects PII (`email`, `phone`), this puts it in plain view of anyone with admin access. Acceptable for an admin tool, but two hygiene fixes:
+
 - Redact obvious fields (`password`, `ssn`, `card_number`) before render.
 - Truncate by character count is dumb on multi-byte text. Use a CSS line-clamp instead.
 
@@ -455,6 +463,7 @@ Also, every form-entry rendering path in [`admin/forms/entries/+page.svelte`](..
 `$effect` for a one-shot data load is what `onMount` is for. With no tracked deps the effect runs once on mount, but if any rune accessed inside `loadTemplates` becomes reactive in a refactor, it'll loop. `CLAUDE.md` cites this exact bug class (commit `dad9af2cf` for the dashboard fix; `33112d5a1` for CRM/campaigns).
 
 Same antipattern in:
+
 - [`admin/seo/+page.svelte:258`](../../../frontend/src/routes/admin/seo/+page.svelte#L258)
 - [`admin/seo/keywords/+page.svelte:22`](../../../frontend/src/routes/admin/seo/keywords/+page.svelte#L22)
 - [`admin/seo/404s/+page.svelte:24`](../../../frontend/src/routes/admin/seo/404s/+page.svelte#L24)
@@ -471,12 +480,12 @@ The campaigns page got the right fix on 2026-04-26 ([campaigns/+page.svelte:132-
 
 ```ts
 function toggleSubscriber(id: string) {
-    if (selectedSubscribers.has(id)) {
-        selectedSubscribers.delete(id);
-    } else {
-        selectedSubscribers.add(id);
-    }
-    selectedSubscribers = selectedSubscribers;  // self-assign to trigger reactivity
+	if (selectedSubscribers.has(id)) {
+		selectedSubscribers.delete(id);
+	} else {
+		selectedSubscribers.add(id);
+	}
+	selectedSubscribers = selectedSubscribers; // self-assign to trigger reactivity
 }
 ```
 
@@ -541,14 +550,15 @@ Svelte 5 makes `Set`/`Map` reactive natively when wrapped via `new SvelteSet()`.
 
 ## Summary
 
-| Severity | Count | Worst |
-|---------|-------|-------|
-| P0      | 6     | In-memory plaintext SMTP creds with no auth check ([`api/admin/email/settings/+server.ts`](../../../frontend/src/routes/api/admin/email/settings/+server.ts)) |
-| P1      | 8     | Shadow-state `$effect` shadowing in `TemplateForm` violates Svelte 5 rule from `CLAUDE.md` |
-| P2      | 14    | `_showDeleteModal` style dead-modal state, duplicate routes, stub SEO pages, `JSON.stringify` PII in form-entries preview |
-| P3      | ~14   | Stale migration comments, duplicate input IDs, raw `confirm()`, GSAP replays |
+| Severity | Count | Worst                                                                                                                                                         |
+| -------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0       | 6     | In-memory plaintext SMTP creds with no auth check ([`api/admin/email/settings/+server.ts`](../../../frontend/src/routes/api/admin/email/settings/+server.ts)) |
+| P1       | 8     | Shadow-state `$effect` shadowing in `TemplateForm` violates Svelte 5 rule from `CLAUDE.md`                                                                    |
+| P2       | 14    | `_showDeleteModal` style dead-modal state, duplicate routes, stub SEO pages, `JSON.stringify` PII in form-entries preview                                     |
+| P3       | ~14   | Stale migration comments, duplicate input IDs, raw `confirm()`, GSAP replays                                                                                  |
 
 Top three to fix this week:
+
 1. **P0-1 / P0-2** — delete `api/admin/email/settings/+server.ts`, route `/admin/email/settings` through `[...path]` to a real Rust endpoint with encrypted credential storage and role auth.
 2. **P0-4** — wire up `<ConfirmationModal>` for popup delete (and rename `_showAbTestModal` → `showAbTestModal` with an actual modal). Both are immediate UX bugs reachable from the public admin UI.
 3. **P0-5 / P0-6** — sanitize `{@html formData.content}` in popups; verify or add `/api/admin/forms` proxy used by `loadForms()` in `admin/popups/new`.

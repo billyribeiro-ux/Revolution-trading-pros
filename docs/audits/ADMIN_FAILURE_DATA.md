@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-26
 **Method:** Live HTTP probes against http://localhost:5173 + source code cross-reference
-**Scope:** /admin/*, /dashboard/*, sidebar components, admin shell
+**Scope:** /admin/_, /dashboard/_, sidebar components, admin shell
 **Companion doc:** This sweep extends `ADMIN_DASHBOARD_REPORT.md`. Findings already documented there are referenced as "(B-N — see ADMIN_DASHBOARD_REPORT.md)" rather than re-derived.
 
 ---
@@ -25,27 +25,27 @@
 
 The prior report listed 35 sample probes. Adding a new 19-row sample below covering all top-level dashboard surfaces and three admin subroutes; status patterns are identical to the prior report (303→login). No 5xx, no slow >2s observed.
 
-| Route | HTTP | Latency | Notes |
-|---|---|---|---|
-| `/admin` | 303 | 0.0016s | OK |
-| `/admin/dashboard` | 303 | 0.0011s | OK (duplicate of /admin per prior report) |
-| `/dashboard` | 303 | 0.0015s | OK |
-| `/dashboard/account` | 303 | 0.0026s | OK |
-| `/dashboard/account/orders` | 303 | 0.0029s | OK |
-| `/dashboard/account/subscriptions` | 303 | 0.0023s | OK |
-| `/dashboard/account/payment-methods` | 303 | 0.0024s | OK |
-| `/dashboard/account/coupons` | 303 | 0.0021s | OK |
-| `/dashboard/account/edit-account` | 303 | 0.0025s | OK |
-| `/dashboard/account/edit-address` | 303 | 0.0024s | OK |
-| `/dashboard/classes` | 303 | 0.0010s | OK |
-| `/dashboard/indicators` | 303 | 0.0010s | OK |
-| `/dashboard/explosive-swings` | 303 | 0.0068s | Slowest in sample, still well under 2s |
-| `/dashboard/spx-profit-pulse` | 303 | 0.0046s | OK |
-| `/dashboard/day-trading-room` | 303 | 0.0034s | OK |
-| `/dashboard/swing-trading-room` | 303 | 0.0020s | OK |
-| `/dashboard/small-account-mentorship` | 303 | 0.0032s | OK |
-| `/dashboard/weekly-watchlist` | 303 | 0.0009s | OK |
-| `/dashboard/high-octane-scanner` | 303 | 0.0047s | OK |
+| Route                                 | HTTP | Latency | Notes                                     |
+| ------------------------------------- | ---- | ------- | ----------------------------------------- |
+| `/admin`                              | 303  | 0.0016s | OK                                        |
+| `/admin/dashboard`                    | 303  | 0.0011s | OK (duplicate of /admin per prior report) |
+| `/dashboard`                          | 303  | 0.0015s | OK                                        |
+| `/dashboard/account`                  | 303  | 0.0026s | OK                                        |
+| `/dashboard/account/orders`           | 303  | 0.0029s | OK                                        |
+| `/dashboard/account/subscriptions`    | 303  | 0.0023s | OK                                        |
+| `/dashboard/account/payment-methods`  | 303  | 0.0024s | OK                                        |
+| `/dashboard/account/coupons`          | 303  | 0.0021s | OK                                        |
+| `/dashboard/account/edit-account`     | 303  | 0.0025s | OK                                        |
+| `/dashboard/account/edit-address`     | 303  | 0.0024s | OK                                        |
+| `/dashboard/classes`                  | 303  | 0.0010s | OK                                        |
+| `/dashboard/indicators`               | 303  | 0.0010s | OK                                        |
+| `/dashboard/explosive-swings`         | 303  | 0.0068s | Slowest in sample, still well under 2s    |
+| `/dashboard/spx-profit-pulse`         | 303  | 0.0046s | OK                                        |
+| `/dashboard/day-trading-room`         | 303  | 0.0034s | OK                                        |
+| `/dashboard/swing-trading-room`       | 303  | 0.0020s | OK                                        |
+| `/dashboard/small-account-mentorship` | 303  | 0.0032s | OK                                        |
+| `/dashboard/weekly-watchlist`         | 303  | 0.0009s | OK                                        |
+| `/dashboard/high-octane-scanner`      | 303  | 0.0047s | OK                                        |
 
 (See `ADMIN_DASHBOARD_REPORT.md` §1 for the prior 35-route admin sample.)
 
@@ -69,19 +69,19 @@ When a directory under `frontend/src/routes/api/admin/` has its own `+server.ts`
 
 Curl-confirmed cliffs (each row probed live, all return POST=405 GET=401):
 
-| Path probed | GET | POST | PUT | DELETE | Affected page |
-|---|---|---|---|---|---|
-| `/api/admin/posts/bulk-delete` | 401 | **405** | n/a | 401 | `admin/blog/+page.svelte:302` |
-| `/api/admin/posts/bulk-status` | 401 | **405** | n/a | 401 | `admin/blog/+page.svelte:324` |
-| `/api/admin/posts/123` | 401 | **405** | n/a | 401 | `admin/blog/+page.svelte:354` (DELETE works, but pattern is broken) |
-| `/api/admin/posts/export` | 401 | **405** | n/a | 401 | `admin/blog/+page.svelte:420` |
-| `/api/admin/posts/import` | 401 | **405** | n/a | 401 | `admin/blog/+page.svelte:447` |
-| `/api/admin/categories/{anything}` | 401 | **405** | n/a | 401 | `admin/blog/categories/+page.svelte` |
-| `/api/admin/tags/{anything}` | 401 | **405** | n/a | 401 | (used by tag editors) |
-| `/api/admin/coupons/{anything}` | 401 | **405** | n/a | 401 | `admin/coupons/+page.svelte` |
-| `/api/admin/users/{anything}` | 401 | **405** | n/a | 401 | `admin/users/create/+page.svelte` |
-| `/api/admin/email/templates/{anything}` | 401 | **405** | n/a | 401 | template editors |
-| `/api/admin/crm/contacts/{anything}` | 401 | **405** | n/a | 401 | CRM tag/note adders |
+| Path probed                             | GET | POST    | PUT | DELETE | Affected page                                                       |
+| --------------------------------------- | --- | ------- | --- | ------ | ------------------------------------------------------------------- |
+| `/api/admin/posts/bulk-delete`          | 401 | **405** | n/a | 401    | `admin/blog/+page.svelte:302`                                       |
+| `/api/admin/posts/bulk-status`          | 401 | **405** | n/a | 401    | `admin/blog/+page.svelte:324`                                       |
+| `/api/admin/posts/123`                  | 401 | **405** | n/a | 401    | `admin/blog/+page.svelte:354` (DELETE works, but pattern is broken) |
+| `/api/admin/posts/export`               | 401 | **405** | n/a | 401    | `admin/blog/+page.svelte:420`                                       |
+| `/api/admin/posts/import`               | 401 | **405** | n/a | 401    | `admin/blog/+page.svelte:447`                                       |
+| `/api/admin/categories/{anything}`      | 401 | **405** | n/a | 401    | `admin/blog/categories/+page.svelte`                                |
+| `/api/admin/tags/{anything}`            | 401 | **405** | n/a | 401    | (used by tag editors)                                               |
+| `/api/admin/coupons/{anything}`         | 401 | **405** | n/a | 401    | `admin/coupons/+page.svelte`                                        |
+| `/api/admin/users/{anything}`           | 401 | **405** | n/a | 401    | `admin/users/create/+page.svelte`                                   |
+| `/api/admin/email/templates/{anything}` | 401 | **405** | n/a | 401    | template editors                                                    |
+| `/api/admin/crm/contacts/{anything}`    | 401 | **405** | n/a | 401    | CRM tag/note adders                                                 |
 
 For comparison, paths whose parent dir has **no** `+server.ts` proxy (e.g. `/api/admin/anything-no-parent/bulk-delete`, `/api/admin/seo/metrics`, `/api/admin/orders`) correctly reach the catch-all → backend (404).
 
@@ -95,15 +95,15 @@ For comparison, paths whose parent dir has **no** `+server.ts` proxy (e.g. `/api
 
 Cross-referenced against `api/src/routes/*.rs` (73 files). The following endpoints called by admin pages have **no backend route**:
 
-| Frontend caller | Path called | Backend route exists? | Result on call |
-|---|---|---|---|
-| `admin/dashboard/+page.svelte:98` | `/api/analytics/realtime` | **No** (`api/src/routes/realtime.rs` is unrelated WS realtime) | 404 from backend → "Not Connected" card |
-| `admin/dashboard/+page.svelte:107` | `/api/payments/summary` | **No** (`payments.rs` has no `/summary`) | 404 → "Not Connected" |
-| `admin/dashboard/+page.svelte:120` | `/api/admin/rooms/stats` | **No** | 404 → empty stats card |
-| `admin/seo/+page.svelte:282` | `/api/admin/seo/metrics` | **No** (and the call is commented out per B13) | n/a |
-| `admin/orders/+page.svelte:83,103,177` | `/api/admin/orders` | **No** (`orders.rs` exists but does not register `/admin/orders` mount — verify) | 404 (B5 — see ADMIN_DASHBOARD_REPORT.md) |
-| `admin/consent/settings/+page.svelte:215,229,249` | `/api/admin/consent/settings*` | **No** | 404 → toast "Failed to load settings" → page renders default state forever (NEW) |
-| `admin/site-health/+page.svelte:154,261` | `/api/admin/site-health[/run-tests]` | Verified 401 from backend (route exists) | OK auth-only |
+| Frontend caller                                   | Path called                          | Backend route exists?                                                            | Result on call                                                                   |
+| ------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `admin/dashboard/+page.svelte:98`                 | `/api/analytics/realtime`            | **No** (`api/src/routes/realtime.rs` is unrelated WS realtime)                   | 404 from backend → "Not Connected" card                                          |
+| `admin/dashboard/+page.svelte:107`                | `/api/payments/summary`              | **No** (`payments.rs` has no `/summary`)                                         | 404 → "Not Connected"                                                            |
+| `admin/dashboard/+page.svelte:120`                | `/api/admin/rooms/stats`             | **No**                                                                           | 404 → empty stats card                                                           |
+| `admin/seo/+page.svelte:282`                      | `/api/admin/seo/metrics`             | **No** (and the call is commented out per B13)                                   | n/a                                                                              |
+| `admin/orders/+page.svelte:83,103,177`            | `/api/admin/orders`                  | **No** (`orders.rs` exists but does not register `/admin/orders` mount — verify) | 404 (B5 — see ADMIN_DASHBOARD_REPORT.md)                                         |
+| `admin/consent/settings/+page.svelte:215,229,249` | `/api/admin/consent/settings*`       | **No**                                                                           | 404 → toast "Failed to load settings" → page renders default state forever (NEW) |
+| `admin/site-health/+page.svelte:154,261`          | `/api/admin/site-health[/run-tests]` | Verified 401 from backend (route exists)                                         | OK auth-only                                                                     |
 
 ### 3c. Orphan-proxy cleanup status
 
@@ -169,18 +169,18 @@ Pattern impact: the catch-all proxy at `api/[...path]/+server.ts:178,191-192` re
 
 ## 5. New inert UI / stub data (not in prior report)
 
-| File:line | Symptom | Suggested fix |
-|---|---|---|
-| `frontend/src/lib/components/CommandPalette.svelte:191-194` | "Clear Cache" Quick Action calls `localStorage.clear()` then reloads — wipes the access token, instantly logs the operator out. Misleading label. | Either rename to "Clear Cache & Logout" or scope the clear to non-auth keys (e.g. `Object.keys(localStorage).filter(k => !k.startsWith('rtp_'))`) |
-| `frontend/src/routes/logout/+page.server.ts:39-42` | Deletes `auth_token`, `session_id`, `refresh_token`, `access_token` — none of which are real cookie names in this codebase. The actual `rtp_access_token` and `rtp_refresh_token` are NOT cleared. Session survives the dashboard "Log out" link at `dashboard/+layout.svelte:400` and `dashboard/account/+page.svelte:70`. The internal `fetch('/api/logout', POST)` does delete the right cookies on its own response, but those Set-Cookie headers don't propagate to the user-facing redirect response. | Replace cookie names with `rtp_access_token` and `rtp_refresh_token`, or have the page.server.ts delegate entirely to `goto('/api/auth/set-session', {method:'DELETE'})` then redirect. |
-| `frontend/src/lib/components/admin/CourseDetailDrawer.svelte:512` | "Recent Enrollments" empty-state literally reads "Enrollment data coming soon" | Either fetch enrollments or hide the section |
-| `frontend/src/lib/components/admin/CourseDetailDrawer.svelte:524,528,532,542,550,588` | Analytics tab shows literal `-` for Total Views, Unique Visitors, Conversion Rate, Avg Time on Course, Drop-off Rate; "Coming soon" for Revenue. 6 dead metrics. | Wire to backend or hide tab |
-| `frontend/src/routes/dashboard/[room_slug]/video/[slug]/+page.svelte:32,37,42` | Three trading-rooms dropdown entries with `href: '#', // TODO: Provide URL` | Provide real hrefs or hide the dropdown |
-| `frontend/src/routes/dashboard/[room_slug]/daily-videos/+page.svelte:39,44,49` | Same three `href: '#'` TODO entries | Same fix |
-| `frontend/src/routes/dashboard/+layout.svelte:330,332,337,344` | SPX Profit Pulse "Meet Jonathan" submenu links to `/dashboard/spx-profit-pulse/jonathan-mckeever*` paths — only `billy-ribeiro/` exists in the directory tree. 4 broken sidebar links per logged-in SPX member. | Either rename `billy-ribeiro/` → `jonathan-mckeever/` or fix the layout's hardcoded slugs |
-| `frontend/src/lib/components/PopupDisplay.svelte:432` | Shows literal text "Form integration coming soon..." | Wire popup → form mapping or hide form-typed popups |
-| `frontend/src/routes/admin/seo/store-locator/+page.svelte:209` | `alert(JSON.stringify(schema, null, 2))` — debug alert shipped to admin operators | Replace with a Modal that shows formatted JSON |
-| `frontend/src/lib/components/blog/BlockEditor/AssetManager.svelte:1134` | `onclick={() => {}}` — second known empty handler in repo (B14 was the first) | Wire the action or remove the button |
+| File:line                                                                             | Symptom                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Suggested fix                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frontend/src/lib/components/CommandPalette.svelte:191-194`                           | "Clear Cache" Quick Action calls `localStorage.clear()` then reloads — wipes the access token, instantly logs the operator out. Misleading label.                                                                                                                                                                                                                                                                                                                                                           | Either rename to "Clear Cache & Logout" or scope the clear to non-auth keys (e.g. `Object.keys(localStorage).filter(k => !k.startsWith('rtp_'))`)                                       |
+| `frontend/src/routes/logout/+page.server.ts:39-42`                                    | Deletes `auth_token`, `session_id`, `refresh_token`, `access_token` — none of which are real cookie names in this codebase. The actual `rtp_access_token` and `rtp_refresh_token` are NOT cleared. Session survives the dashboard "Log out" link at `dashboard/+layout.svelte:400` and `dashboard/account/+page.svelte:70`. The internal `fetch('/api/logout', POST)` does delete the right cookies on its own response, but those Set-Cookie headers don't propagate to the user-facing redirect response. | Replace cookie names with `rtp_access_token` and `rtp_refresh_token`, or have the page.server.ts delegate entirely to `goto('/api/auth/set-session', {method:'DELETE'})` then redirect. |
+| `frontend/src/lib/components/admin/CourseDetailDrawer.svelte:512`                     | "Recent Enrollments" empty-state literally reads "Enrollment data coming soon"                                                                                                                                                                                                                                                                                                                                                                                                                              | Either fetch enrollments or hide the section                                                                                                                                            |
+| `frontend/src/lib/components/admin/CourseDetailDrawer.svelte:524,528,532,542,550,588` | Analytics tab shows literal `-` for Total Views, Unique Visitors, Conversion Rate, Avg Time on Course, Drop-off Rate; "Coming soon" for Revenue. 6 dead metrics.                                                                                                                                                                                                                                                                                                                                            | Wire to backend or hide tab                                                                                                                                                             |
+| `frontend/src/routes/dashboard/[room_slug]/video/[slug]/+page.svelte:32,37,42`        | Three trading-rooms dropdown entries with `href: '#', // TODO: Provide URL`                                                                                                                                                                                                                                                                                                                                                                                                                                 | Provide real hrefs or hide the dropdown                                                                                                                                                 |
+| `frontend/src/routes/dashboard/[room_slug]/daily-videos/+page.svelte:39,44,49`        | Same three `href: '#'` TODO entries                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Same fix                                                                                                                                                                                |
+| `frontend/src/routes/dashboard/+layout.svelte:330,332,337,344`                        | SPX Profit Pulse "Meet Jonathan" submenu links to `/dashboard/spx-profit-pulse/jonathan-mckeever*` paths — only `billy-ribeiro/` exists in the directory tree. 4 broken sidebar links per logged-in SPX member.                                                                                                                                                                                                                                                                                             | Either rename `billy-ribeiro/` → `jonathan-mckeever/` or fix the layout's hardcoded slugs                                                                                               |
+| `frontend/src/lib/components/PopupDisplay.svelte:432`                                 | Shows literal text "Form integration coming soon..."                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Wire popup → form mapping or hide form-typed popups                                                                                                                                     |
+| `frontend/src/routes/admin/seo/store-locator/+page.svelte:209`                        | `alert(JSON.stringify(schema, null, 2))` — debug alert shipped to admin operators                                                                                                                                                                                                                                                                                                                                                                                                                           | Replace with a Modal that shows formatted JSON                                                                                                                                          |
+| `frontend/src/lib/components/blog/BlockEditor/AssetManager.svelte:1134`               | `onclick={() => {}}` — second known empty handler in repo (B14 was the first)                                                                                                                                                                                                                                                                                                                                                                                                                               | Wire the action or remove the button                                                                                                                                                    |
 
 Native `alert()` count under `frontend/src/routes/admin/`: **50** total uses. Native `confirm()` count: **11**. Most use cases are "save/delete confirmation" where the repo elsewhere has `ConfirmationModal.svelte`. (See ADMIN_DASHBOARD_REPORT.md B20 for a concrete cluster in `courses/[id]/+page.svelte`.)
 
@@ -202,22 +202,22 @@ TradingRoomSidebar (`frontend/src/lib/components/dashboard/TradingRoomSidebar.sv
 
 ## 7. Reactivity smell verification (Phase 7)
 
-| Site | Expected | Found | Status |
-|---|---|---|---|
-| `frontend/src/routes/admin/+layout.svelte:71-77` auth guard converted to onMount | yes | onMount at line 78, old $effect at lines 66-70 commented per FIX-2026-04-26 marker | ✅ |
-| `frontend/src/lib/components/layout/AdminSidebar.svelte:130, 196, 199` uses `user.current` not `$user` | yes | `user.current` at lines 138, 204, 207 (line numbers shifted slightly; no `$user` autosubscribe in file) | ✅ |
-| `frontend/src/routes/signup/+page.svelte:25-30` uses onMount not $effect | yes | onMount at line 36 (line shifted from 25-30 → 36); old $effect commented at lines 31-35. **Note:** line 37 still uses `$authStore` legacy autosubscribe — `legacy_pre_subscribe` still wires at component init, mitigating but not eliminating the original cascade. Low-severity smell. | ⚠ partial |
-| `frontend/src/routes/account/sessions/+page.svelte:33-50` uses onMount | yes | onMount at line 50; old $effect commented 40-49. **Note:** lines 52, 56 still use `$isAuthenticated` and `$authStore` legacy autosubscribe inside onMount. Same caveat as signup. Low-severity smell. | ⚠ partial |
-| `frontend/src/lib/stores/keyboard.svelte.ts:295-330` `init` doesn't self-spread; `destroy` doesn't reset `isInitialized` | yes | `init` at 295 — no `storeState = { ...storeState, ... }`; `destroy` at 345 has `// Old: isInitialized = false;` commented out. | ✅ |
-| New $effect blocks reading `$store` legacy autosubscribe | none | Audited 152 `$effect` blocks across `routes/admin/`, `routes/dashboard/`, `lib/components/`. Only stale matches were the COMMENTED-OUT `$effect` blocks in `admin/+layout.svelte:66-70` (kept per FIX-2026-04-26 marker). No active offenders found. | ✅ |
+| Site                                                                                                                     | Expected | Found                                                                                                                                                                                                                                                                                    | Status    |
+| ------------------------------------------------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `frontend/src/routes/admin/+layout.svelte:71-77` auth guard converted to onMount                                         | yes      | onMount at line 78, old $effect at lines 66-70 commented per FIX-2026-04-26 marker                                                                                                                                                                                                       | ✅        |
+| `frontend/src/lib/components/layout/AdminSidebar.svelte:130, 196, 199` uses `user.current` not `$user`                   | yes      | `user.current` at lines 138, 204, 207 (line numbers shifted slightly; no `$user` autosubscribe in file)                                                                                                                                                                                  | ✅        |
+| `frontend/src/routes/signup/+page.svelte:25-30` uses onMount not $effect                                                 | yes      | onMount at line 36 (line shifted from 25-30 → 36); old $effect commented at lines 31-35. **Note:** line 37 still uses `$authStore` legacy autosubscribe — `legacy_pre_subscribe` still wires at component init, mitigating but not eliminating the original cascade. Low-severity smell. | ⚠ partial |
+| `frontend/src/routes/account/sessions/+page.svelte:33-50` uses onMount                                                   | yes      | onMount at line 50; old $effect commented 40-49. **Note:** lines 52, 56 still use `$isAuthenticated` and `$authStore` legacy autosubscribe inside onMount. Same caveat as signup. Low-severity smell.                                                                                    | ⚠ partial |
+| `frontend/src/lib/stores/keyboard.svelte.ts:295-330` `init` doesn't self-spread; `destroy` doesn't reset `isInitialized` | yes      | `init` at 295 — no `storeState = { ...storeState, ... }`; `destroy` at 345 has `// Old: isInitialized = false;` commented out.                                                                                                                                                           | ✅        |
+| New $effect blocks reading `$store` legacy autosubscribe                                                                 | none     | Audited 152 `$effect` blocks across `routes/admin/`, `routes/dashboard/`, `lib/components/`. Only stale matches were the COMMENTED-OUT `$effect` blocks in `admin/+layout.svelte:66-70` (kept per FIX-2026-04-26 marker). No active offenders found.                                     | ✅        |
 
 **One-shot $effect anti-pattern (CLAUDE.md flag):** these still ship and should be migrated to `onMount`:
 
-| File:line | $effect body |
-|---|---|
-| `frontend/src/routes/admin/users/+page.svelte:14` | `loadUsers()` |
-| `frontend/src/routes/admin/blog/+page.svelte:136` | `loadPosts()` after browser guard |
-| `frontend/src/routes/admin/courses/+page.svelte:276` | `if (browser) fetchCourses()` |
+| File:line                                                | $effect body                                                   |
+| -------------------------------------------------------- | -------------------------------------------------------------- |
+| `frontend/src/routes/admin/users/+page.svelte:14`        | `loadUsers()`                                                  |
+| `frontend/src/routes/admin/blog/+page.svelte:136`        | `loadPosts()` after browser guard                              |
+| `frontend/src/routes/admin/courses/+page.svelte:276`     | `if (browser) fetchCourses()`                                  |
 | `frontend/src/routes/admin/connections/+page.svelte:282` | async init wrapper, reads `connections` and `categories` runes |
 
 (Last three are reiterations from the prior report's "honorable mentions"; first three were called out in §3 deep-dives.)
@@ -228,13 +228,13 @@ TradingRoomSidebar (`frontend/src/lib/components/dashboard/TradingRoomSidebar.sv
 
 Probed the assets referenced in the marketing-home and login HTML payloads:
 
-| URL | Status | Referenced from | Notes |
-|---|---|---|---|
-| `/favicon.png` | 200 | layout `<link rel="icon">` | OK |
-| `/manifest.json` | 200 | `<link rel="manifest">` | OK |
-| `/atom.xml` | 200 | feed link | OK |
-| `/feed.xml` | 200 | feed link | OK |
-| `/revolution-trading-pros.png` | 200 | brand logo (admin sidebar, login) | OK |
+| URL                            | Status | Referenced from                   | Notes |
+| ------------------------------ | ------ | --------------------------------- | ----- |
+| `/favicon.png`                 | 200    | layout `<link rel="icon">`        | OK    |
+| `/manifest.json`               | 200    | `<link rel="manifest">`           | OK    |
+| `/atom.xml`                    | 200    | feed link                         | OK    |
+| `/feed.xml`                    | 200    | feed link                         | OK    |
+| `/revolution-trading-pros.png` | 200    | brand logo (admin sidebar, login) | OK    |
 
 **Zero static-asset 404s observed in the dev SSR HTML.** The login page does reference `/register` (which exists at `frontend/src/routes/register/+page.svelte`, 1237 LOC) — confirmed reachable; SEE §10 for the `/register` vs `/signup` duplication finding.
 

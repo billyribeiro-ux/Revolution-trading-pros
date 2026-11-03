@@ -2,14 +2,14 @@
 
 Documentation for the Revolution Trading Pros monorepo.
 
-| Folder | Purpose | Read this when |
-|--------|---------|----------------|
-| [`development/`](development/) | Local dev runbook | You're picking the project up from a fresh clone or after time away |
-| [`architecture/`](architecture/) | System design, auth flow, public service URLs | You need a map of how the pieces fit |
-| [`setup/`](setup/) | Production deployment + Stripe + R2 setup | You're deploying or wiring up a 3rd-party service |
-| [`audits/`](audits/) | End-to-end audits (latest: `SEO_AND_SVELTE_AUDIT_2026-10-28.md`) | You want to know what's broken / what's been done / what's next |
-| [`frontend/`](frontend/) | Frontend-specific guides (responsive admin, footer audit, remote-functions migration) | You're working on the SvelteKit side |
-| [`audits/`](audits/) (incident/forensic reports) | Older incident and forensic reports live in `audits/` — there is no separate `forensics/` folder | You're investigating "why was this done this way?" |
+| Folder                                           | Purpose                                                                                          | Read this when                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| [`development/`](development/)                   | Local dev runbook                                                                                | You're picking the project up from a fresh clone or after time away |
+| [`architecture/`](architecture/)                 | System design, auth flow, public service URLs                                                    | You need a map of how the pieces fit                                |
+| [`setup/`](setup/)                               | Production deployment + Stripe + R2 setup                                                        | You're deploying or wiring up a 3rd-party service                   |
+| [`audits/`](audits/)                             | End-to-end audits (latest: `SEO_AND_SVELTE_AUDIT_2026-10-28.md`)                                 | You want to know what's broken / what's been done / what's next     |
+| [`frontend/`](frontend/)                         | Frontend-specific guides (responsive admin, footer audit, remote-functions migration)            | You're working on the SvelteKit side                                |
+| [`audits/`](audits/) (incident/forensic reports) | Older incident and forensic reports live in `audits/` — there is no separate `forensics/` folder | You're investigating "why was this done this way?"                  |
 
 ## Where to start
 

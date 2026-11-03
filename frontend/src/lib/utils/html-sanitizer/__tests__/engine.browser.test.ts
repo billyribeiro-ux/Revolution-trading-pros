@@ -9,7 +9,7 @@
  */
 
 import type { Nodes } from 'hast';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 import { extractText, sanitizeWithPolicy } from '#lib/utils/html-sanitizer/engine.js';
 import { parseHtmlFragment as parseInBrowser } from '../parse-fragment.browser.js';
 import { parseHtmlFragment as parseOnServer } from '../parse-fragment.server.js';

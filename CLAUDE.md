@@ -10,16 +10,16 @@ truth.
 
 ## Read first
 
-| Doc | When |
-|-----|------|
-| [README.md](README.md) | First time in the repo |
-| [docs/development/LOCAL_DEV.md](docs/development/LOCAL_DEV.md) | Booting the local stack |
-| [docs/development/ENV_VARS.md](docs/development/ENV_VARS.md) | Setting any env var |
+| Doc                                                                                              | When                                                                                                            |
+| ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| [README.md](README.md)                                                                           | First time in the repo                                                                                          |
+| [docs/development/LOCAL_DEV.md](docs/development/LOCAL_DEV.md)                                   | Booting the local stack                                                                                         |
+| [docs/development/ENV_VARS.md](docs/development/ENV_VARS.md)                                     | Setting any env var                                                                                             |
 | [docs/audits/SEO_AND_SVELTE_AUDIT_2026-10-28.md](docs/audits/SEO_AND_SVELTE_AUDIT_2026-10-28.md) | Full SEO architecture (`src/lib/seo/`), Google Oct 2026 compliance, and Svelte 5.57 / SvelteKit 3.1 conventions |
-| [frontend/src/lib/seo/README.md](frontend/src/lib/seo/README.md) | Adding or editing route SEO metadata (`page.data.seo`), JSON-LD schemas, canonicals, or sitemaps |
-| [docs/audits/FORENSIC_AUDIT_2026-05-24.md](docs/audits/FORENSIC_AUDIT_2026-05-24.md) | Quick "what's the state of this codebase?" |
-| [docs/audits/FULL_REPO_AUDIT_2026-05-17.md](docs/audits/FULL_REPO_AUDIT_2026-05-17.md) | Picking the next thing to fix (P0/P1 findings + the prior audit's backlog still apply for P2/P3 work) |
-| [docs/audits/REPO_STATE_2026-04-25.md](docs/audits/REPO_STATE_2026-04-25.md) | Stale (~30 days, 13 PRs out of date) but useful for "why is this branch shaped this way?" history |
+| [frontend/src/lib/seo/README.md](frontend/src/lib/seo/README.md)                                 | Adding or editing route SEO metadata (`page.data.seo`), JSON-LD schemas, canonicals, or sitemaps                |
+| [docs/audits/FORENSIC_AUDIT_2026-05-24.md](docs/audits/FORENSIC_AUDIT_2026-05-24.md)             | Quick "what's the state of this codebase?"                                                                      |
+| [docs/audits/FULL_REPO_AUDIT_2026-05-17.md](docs/audits/FULL_REPO_AUDIT_2026-05-17.md)           | Picking the next thing to fix (P0/P1 findings + the prior audit's backlog still apply for P2/P3 work)           |
+| [docs/audits/REPO_STATE_2026-04-25.md](docs/audits/REPO_STATE_2026-04-25.md)                     | Stale (~30 days, 13 PRs out of date) but useful for "why is this branch shaped this way?" history               |
 
 ---
 
@@ -137,7 +137,7 @@ is TBD (Fly.io references stripped on 2026-04-28).
   propagate via `?`.
 - Adding or bumping a crate is not done until `cargo deny check` passes.
   It gates advisories, licences and sources, and it is the only gate that
-  catches a *transitive* crate arriving with an unpatched RUSTSEC advisory
+  catches a _transitive_ crate arriving with an unpatched RUSTSEC advisory
   — which is exactly how `rsa` (RUSTSEC-2023-0071) tried to enter the tree
   behind jsonwebtoken 11. Prefer a clean backend over a `deny.toml`
   exemption; add an exemption only when it is genuinely unreachable and say
@@ -148,10 +148,16 @@ is TBD (Fly.io references stripped on 2026-04-28).
 Run the gates locally:
 
 ```bash
+# Vite+ Unified Toolchain (Workspace Root)
+vp check                                   # oxfmt + oxlint + tsgolint typecheck
+vp test                                    # vitest (via test.projects)
+vp build                                   # vite build (frontend)
+vp pack                                    # tsdown library build (svelte-click-to-source)
+
 # Frontend
 pnpm --filter revolution-svelte check      # typecheck, must be 0 errors / 0 warnings
 pnpm --filter revolution-svelte lint       # eslint, must be 0 errors
-pnpm --filter revolution-svelte test:unit  # vitest
+pnpm --filter revolution-svelte test:unit  # vitest (vp test run)
 cd frontend && pnpm test:a11y              # playwright a11y suite
 cd frontend && pnpm build                  # catches env/config errors typecheck can't
 

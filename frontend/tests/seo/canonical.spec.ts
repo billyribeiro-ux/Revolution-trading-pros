@@ -26,4 +26,3 @@ test.describe('Canonical URL Hygiene & Tracking Param Stripping (URL-01..05)', (
 		expect(href).toBe('https://revolutiontradingpros.com/pricing');
 	});
 });
-

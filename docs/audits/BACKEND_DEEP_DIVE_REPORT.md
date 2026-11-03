@@ -8,11 +8,11 @@ findings cite `file:line`. Verification gates re-run on 2026-04-26.
 ## Executive summary
 
 | Severity | Count |
-|----------|-------|
-| Critical | 4 |
-| High | 8 |
-| Medium | 12 |
-| Low | 9 |
+| -------- | ----- |
+| Critical | 4     |
+| High     | 8     |
+| Medium   | 12    |
+| Low      | 9     |
 
 **Top 5 findings**
 
@@ -58,6 +58,7 @@ findings cite `file:line`. Verification gates re-run on 2026-04-26.
 ### Password hashing
 
 `hash_password()` at `api/src/utils/mod.rs:146-164`. Uses Argon2id with:
+
 - Memory: 65536 KiB (64 MiB)
 - Iterations: 3
 - Parallelism: 4
@@ -82,17 +83,18 @@ called at `auth.rs:538`. **Verdict: GOOD.**
 `jsonwebtoken::decode` with `&Validation::default()`. By
 `jsonwebtoken` 9.x defaults that means:
 
-| Claim | Validated? |
-|-------|-----------|
-| `exp` | yes |
-| `nbf` | no (not in default required claims) |
-| `iss` | no |
-| `aud` | no |
-| `sub` | format only |
-| `algorithm` | HS256 only |
-| `leeway` | 60s |
+| Claim       | Validated?                          |
+| ----------- | ----------------------------------- |
+| `exp`       | yes                                 |
+| `nbf`       | no (not in default required claims) |
+| `iss`       | no                                  |
+| `aud`       | no                                  |
+| `sub`       | format only                         |
+| `algorithm` | HS256 only                          |
+| `leeway`    | 60s                                 |
 
 **Findings:**
+
 - No `iss` / `aud` validation. If `JWT_SECRET` is ever shared across
   another service, tokens are interchangeable.
 - No `token_type` enforcement at decode time. Although the `Claims`
@@ -111,6 +113,7 @@ called at `auth.rs:538`. **Verdict: GOOD.**
 ### Session token rotation
 
 Refresh route at `api/src/routes/auth.rs:719-784`:
+
 - New access token issued: yes (line 753).
 - New refresh token issued: yes (line 768) — comment claims "token
   rotation for security" but the **old refresh token is not blacklisted
@@ -123,6 +126,7 @@ Refresh route at `api/src/routes/auth.rs:719-784`:
 
 `api/src/routes/auth.rs:478-514` checks login rate limit via Redis.
 **No rate-limit on:**
+
 - `register` (line 62)
 - `forgot_password` (line 898)
 - `reset_password` (line 971)
@@ -138,6 +142,7 @@ trivial. **Verdict: HIGH.**
 
 User-enumeration timing equalization is implemented for login (dummy
 hash at `auth.rs:538`). However:
+
 - Error message difference at `auth.rs:107-117`: `register` returns
   `"Email already registered"` for an existing email — direct
   enumeration. **Verdict: MEDIUM.**
@@ -184,6 +189,7 @@ User-supplied query strings interpolated directly into SQL:
   with house style).
 
 The naive `.replace('\'', "''")` is **insufficient**:
+
 - Postgres E-strings (`E'...'`) treat `\'` as a literal apostrophe
   inside a doubled-up-quote string.
 - Comments (`--`, `/* */`) bypass the rest of the WHERE.
@@ -251,15 +257,15 @@ LIMIT/OFFSET to bound parameters.
 
 Multi-write Stripe webhook handler with **no transaction wrapper**:
 
-| Line | Statement | Error handling |
-|------|-----------|---------------|
-| 583-601 | `UPDATE orders SET status='completed', ...` | `.map_err(...)?` |
-| 627-651 | `INSERT INTO user_memberships ... ON CONFLICT DO UPDATE` | `.ok()` swallow |
-| 658-664 | `UPDATE coupons SET usage_count = usage_count + 1` | `.ok()` swallow |
-| 720-732 | `INSERT INTO user_products ... ON CONFLICT DO UPDATE` | `.ok()` swallow |
-| 747-758 | `INSERT INTO user_course_enrollments ... ON CONFLICT` | `.ok()` swallow |
-| 774-785 | `INSERT INTO user_indicator_access ... ON CONFLICT` | `.ok()` swallow |
-| 817-828 | duplicate `INSERT INTO user_indicator_access` | `.ok()` swallow |
+| Line    | Statement                                                | Error handling   |
+| ------- | -------------------------------------------------------- | ---------------- |
+| 583-601 | `UPDATE orders SET status='completed', ...`              | `.map_err(...)?` |
+| 627-651 | `INSERT INTO user_memberships ... ON CONFLICT DO UPDATE` | `.ok()` swallow  |
+| 658-664 | `UPDATE coupons SET usage_count = usage_count + 1`       | `.ok()` swallow  |
+| 720-732 | `INSERT INTO user_products ... ON CONFLICT DO UPDATE`    | `.ok()` swallow  |
+| 747-758 | `INSERT INTO user_course_enrollments ... ON CONFLICT`    | `.ok()` swallow  |
+| 774-785 | `INSERT INTO user_indicator_access ... ON CONFLICT`      | `.ok()` swallow  |
+| 817-828 | duplicate `INSERT INTO user_indicator_access`            | `.ok()` swallow  |
 
 Plus an external Stripe API call at `payments.rs:610` (`get_subscription`)
 in the middle, between the order update and the membership insert. If
@@ -449,6 +455,7 @@ exploitability** since SQL is parameterized.
 ## 9. Sensitive data leakage
 
 ### println! / dbg!
+
 - `api/src/bin/bootstrap_dev.rs` uses `println!` / `eprintln!` (lines
   67-104+). Acceptable for a CLI bootstrap binary.
 - No `println!` in server code paths.
@@ -461,7 +468,7 @@ exploitability** since SQL is parameterized.
   `{:?}` on the `jsonwebtoken::errors::Error` type — that error type
   does NOT include the token in its Debug, so verdict GOOD.
 - `api/src/routes/auth.rs:1077` logs `Password reset completed for: {}`
-  + `input.email`. Email-only is acceptable for security audit.
+  - `input.email`. Email-only is acceptable for security audit.
 - 47 tracing calls log `email = %user.email` or similar. PII in logs
   is unavoidable for security audit but should be reviewed for GDPR
   compliance (acceptable in `target: "security_audit"` scope; flag
@@ -492,6 +499,7 @@ Run via `cargo metadata` and `Cargo.lock` analysis:
 ### `reqwest` features
 
 `Cargo.toml:76`:
+
 ```
 reqwest = { version = "0.11", features = ["json", "rustls-tls", "stream"], default-features = false }
 ```
@@ -499,12 +507,12 @@ reqwest = { version = "0.11", features = ["json", "rustls-tls", "stream"], defau
 Default features are off — good. But `reqwest 0.11` is the source of
 the deferred CVEs in `deny.toml:39-63`:
 
-| Advisory | Fix |
-|----------|-----|
+| Advisory                                              | Fix               |
+| ----------------------------------------------------- | ----------------- |
 | RUSTSEC-2026-0098 (rustls-webpki URI name-constraint) | bump reqwest 0.12 |
-| RUSTSEC-2026-0099 (rustls-webpki DNS wildcard) | bump reqwest 0.12 |
-| RUSTSEC-2026-0104 (rustls-webpki CRL panic) | bump reqwest 0.12 |
-| RUSTSEC-2025-0134 (rustls-pemfile unmaintained) | bump reqwest 0.12 |
+| RUSTSEC-2026-0099 (rustls-webpki DNS wildcard)        | bump reqwest 0.12 |
+| RUSTSEC-2026-0104 (rustls-webpki CRL panic)           | bump reqwest 0.12 |
+| RUSTSEC-2025-0134 (rustls-pemfile unmaintained)       | bump reqwest 0.12 |
 
 All 4 are gated by `reqwest 0.11 → 0.12`. The project also has 5
 aws-lc-rs/aws-lc-sys advisories ignored for the same lifecycle reason.
@@ -516,6 +524,7 @@ runtime issue today.**
 ### Profile
 
 `Cargo.toml:93-97`:
+
 ```
 [profile.release]
 lto = true

@@ -4,7 +4,7 @@
  * strategy's), and a shared setup restores everything it carries.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 import { CalculatorState } from '../calculator.svelte.js';
 import { priceOption } from '../../engine/black-scholes.js';
 import { decodeState, encodeState } from '../../utils/share-utils.js';

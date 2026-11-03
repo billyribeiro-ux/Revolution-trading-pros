@@ -32,7 +32,7 @@
  *      - failed import surfaces via `store.error`.
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // SvelteKit's `$app/environment` exports `browser`. In jsdom the default
 // stub leaves it undefined; the lazyLoad helpers fork on `browser === true`,

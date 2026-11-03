@@ -16,7 +16,7 @@
  * without requiring a Svelte component context.
  */
 
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // REACTIVE STATE MOCK

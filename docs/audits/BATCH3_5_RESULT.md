@@ -22,6 +22,7 @@ Stripe Session: amount_total=$47.00 amount_discount=$0       ❌ customer charge
 
 Two endpoints (`POST /api/payments/checkout`, `POST /api/checkout`) shared
 the same defect:
+
 1. Computed discount in Rust → wrote it to `orders.discount`/`orders.total`
 2. Sent Stripe a LineItem at the **full** DB price (no discount told to Stripe)
 3. Set `allow_promotion_codes: false` whenever a coupon code was supplied,
@@ -111,13 +112,13 @@ lands as a recreate (Stripe Coupons are immutable).
 
 ## Code changes
 
-| File | Change |
-|------|--------|
-| `api/migrations/062_coupons_stripe_mirror.sql` | new — mirror columns + constraints |
-| `api/src/services/stripe.rs` | new types: `StripeCoupon`, `CreateStripeCouponRequest`, `DiscountSpec`, `StripeSessionTotalDetails` + breakdown; new methods: `create_coupon`, `retrieve_coupon`, `delete_coupon`, `retrieve_checkout_session`; `CheckoutConfig.discounts[]` field; serializer for `discounts[][coupon]` / `discounts[][promotion_code]` with mutual-exclusion enforcement |
-| `api/src/routes/payments.rs` | removed app-side discount math; new server-applied path looks up DB coupon → attaches `discounts[]`; `allow_promotion_codes` toggled by `discounts.is_empty()`; `handle_checkout_completed` re-fetches session with discount expansion and writes actual amounts to `orders` |
-| `api/src/routes/checkout.rs` | identical pattern: server-applied vs Stripe-side, no app math |
-| `api/src/routes/admin.rs` | `create_coupon` validates duration semantics, calls Stripe `create_coupon`, stores `stripe_coupon_id`; rolls back orphan Stripe coupon if DB INSERT fails. `delete_coupon` deletes DB row then Stripe coupon. `CouponRow` and `CreateCouponRequest` carry the new fields. All 6 SELECT/RETURNING projections include the new columns. |
+| File                                           | Change                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api/migrations/062_coupons_stripe_mirror.sql` | new — mirror columns + constraints                                                                                                                                                                                                                                                                                                                         |
+| `api/src/services/stripe.rs`                   | new types: `StripeCoupon`, `CreateStripeCouponRequest`, `DiscountSpec`, `StripeSessionTotalDetails` + breakdown; new methods: `create_coupon`, `retrieve_coupon`, `delete_coupon`, `retrieve_checkout_session`; `CheckoutConfig.discounts[]` field; serializer for `discounts[][coupon]` / `discounts[][promotion_code]` with mutual-exclusion enforcement |
+| `api/src/routes/payments.rs`                   | removed app-side discount math; new server-applied path looks up DB coupon → attaches `discounts[]`; `allow_promotion_codes` toggled by `discounts.is_empty()`; `handle_checkout_completed` re-fetches session with discount expansion and writes actual amounts to `orders`                                                                               |
+| `api/src/routes/checkout.rs`                   | identical pattern: server-applied vs Stripe-side, no app math                                                                                                                                                                                                                                                                                              |
+| `api/src/routes/admin.rs`                      | `create_coupon` validates duration semantics, calls Stripe `create_coupon`, stores `stripe_coupon_id`; rolls back orphan Stripe coupon if DB INSERT fails. `delete_coupon` deletes DB row then Stripe coupon. `CouponRow` and `CreateCouponRequest` carry the new fields. All 6 SELECT/RETURNING projections include the new columns.                      |
 
 ---
 

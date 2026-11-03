@@ -56,7 +56,7 @@ new-feature backends) live in the DEFERRED doc.
 ### P0-5 — Products page filter buttons now refetch on click
 
 - `frontend/src/routes/admin/products/+page.svelte` reads `selectedType`
-  *outside* the `untrack` block so the effect's dependency tracker sees
+  _outside_ the `untrack` block so the effect's dependency tracker sees
   it. The fetch itself stays in `untrack` to avoid re-firing when
   `products` is rewritten.
 

@@ -17,15 +17,15 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "Cloudflare Pages branch (production / preview / staging / pr-N)"
+        description: 'Cloudflare Pages branch (production / preview / staging / pr-N)'
         required: false
-        default: "preview"
+        default: 'preview'
   pull_request:
     branches: [main, develop]
     paths:
-      - "frontend/**"
-      - ".github/workflows/deploy-cloudflare.yml"
-      - "pnpm-lock.yaml"
+      - 'frontend/**'
+      - '.github/workflows/deploy-cloudflare.yml'
+      - 'pnpm-lock.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,8 +35,8 @@ concurrency:
 # (pnpm@12.16.1), so this workflow, ci.yml, and local always use the exact
 # same pnpm. One source of truth, no drift.
 env:
-  NODE_VERSION: "26.13.0"
-  GIT_CONFIG_COUNT: "1"
+  NODE_VERSION: '26.13.0'
+  GIT_CONFIG_COUNT: '1'
   GIT_CONFIG_KEY_0: init.defaultBranch
   GIT_CONFIG_VALUE_0: main
   CLOUDFLARE_PROJECT_NAME: revolution-trading-pros

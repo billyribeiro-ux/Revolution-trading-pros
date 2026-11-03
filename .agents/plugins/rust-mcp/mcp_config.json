@@ -1,12 +1,8 @@
 {
-  "mcpServers": {
-    "rust": {
-      "command": "rust-mcp-server",
-      "args": [
-        "--workspace",
-        "./api"
-      ]
-    }
-  }
+	"mcpServers": {
+		"rust": {
+			"command": "rust-mcp-server",
+			"args": ["--workspace", "./api"]
+		}
+	}
 }
-

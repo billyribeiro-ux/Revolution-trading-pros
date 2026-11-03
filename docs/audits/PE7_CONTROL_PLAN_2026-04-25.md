@@ -12,16 +12,16 @@ blocked from `main`.**
 
 ## 1. The 8 invariants (cannot regress)
 
-| # | Invariant | How verified |
-|---|-----------|--------------|
-| 1 | `pnpm check` reports `0 errors / 0 warnings / 0 files-with-problems`. | `pnpm --filter revolution-svelte check` |
-| 2 | `cargo build --locked --release` succeeds with 0 warnings. | `cd api && cargo build --locked --release` |
-| 3 | `cargo clippy --locked -- -D warnings` succeeds. | `cd api && cargo clippy --locked -- -D warnings` |
-| 4 | `cargo fmt --check` is clean. | `cd api && cargo fmt --check` |
-| 5 | `cargo test --test utils_test --test stripe_test` is 32/32 green. | `cd api && cargo test --test utils_test --test stripe_test` |
-| 6 | Zero `!important` declarations in any CSS or `<style>`. | `grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' \| wc -l` → must be **0** |
-| 7 | `mcp__svelte__svelte-autofixer` returns `{"issues":[],"suggestions":[]}` on every Svelte file edited. | per-file inspection during edit |
-| 8 | No new `unwrap_or_default()` on any `Result<T, E>` in `api/src/`. | `grep -rn '\.unwrap_or_default()' api/src \| <inspect each — false-alarm-tolerant for Option<T>>` |
+| #   | Invariant                                                                                             | How verified                                                                                              |
+| --- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 1   | `pnpm check` reports `0 errors / 0 warnings / 0 files-with-problems`.                                 | `pnpm --filter revolution-svelte check`                                                                   |
+| 2   | `cargo build --locked --release` succeeds with 0 warnings.                                            | `cd api && cargo build --locked --release`                                                                |
+| 3   | `cargo clippy --locked -- -D warnings` succeeds.                                                      | `cd api && cargo clippy --locked -- -D warnings`                                                          |
+| 4   | `cargo fmt --check` is clean.                                                                         | `cd api && cargo fmt --check`                                                                             |
+| 5   | `cargo test --test utils_test --test stripe_test` is 32/32 green.                                     | `cd api && cargo test --test utils_test --test stripe_test`                                               |
+| 6   | Zero `!important` declarations in any CSS or `<style>`.                                               | `grep -rn ': .*!important;' frontend/src --include='*.css' --include='*.svelte' \| wc -l` → must be **0** |
+| 7   | `mcp__svelte__svelte-autofixer` returns `{"issues":[],"suggestions":[]}` on every Svelte file edited. | per-file inspection during edit                                                                           |
+| 8   | No new `unwrap_or_default()` on any `Result<T, E>` in `api/src/`.                                     | `grep -rn '\.unwrap_or_default()' api/src \| <inspect each — false-alarm-tolerant for Option<T>>`         |
 
 If any of the 8 fails, the change does not merge. No exceptions, no
 "we'll fix it later." Fix it before merge or revert.
@@ -48,6 +48,7 @@ client instantiation flows through it. **No raw `env::var("...")` calls
 in route handlers.**
 
 Currently in scope:
+
 - ✅ Connections table exists (`api/src/routes/connections.rs`).
 - ✅ Admin Settings UI exists (`frontend/src/routes/admin/settings/+page.svelte:265`).
 - ⏳ Stripe runtime client to read from DB (in flight, agent
@@ -67,6 +68,7 @@ an `admin_audit_log` table with:
 - `created_at`
 
 Currently in scope:
+
 - ❌ `admin_audit_log` table does not exist. Backlog item, not blocking.
 
 ### 2C. Every multi-table mutation is transactional
@@ -84,7 +86,7 @@ sites in waves.
 ### 2E. Every admin price/inventory mutation has a 3-way grandfathering choice
 
 "New only / Next renewal / Immediate with proration" — applies to
-subscription prices, but the *pattern* (admin chooses scope of effect)
+subscription prices, but the _pattern_ (admin chooses scope of effect)
 applies to every mutation that affects existing customers. Document each
 choice in the UI with plain-English tooltips. (Stripe agent in flight
 ships this.)

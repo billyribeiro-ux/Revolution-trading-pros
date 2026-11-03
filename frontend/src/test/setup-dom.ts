@@ -5,7 +5,7 @@
  * files that opt into `// @vitest-environment node` — server-only code that must
  * not depend on a DOM — share the rest of the setup.
  */
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 
 // Mock window.matchMedia (use plain function, not vi.fn(), so mockReset doesn't strip it)
 Object.defineProperty(window, 'matchMedia', {

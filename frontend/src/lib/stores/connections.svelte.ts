@@ -26,7 +26,12 @@ import { getAuthToken } from '#lib/stores/auth.svelte.js';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export type ConnectionState =
-	'connected' | 'disconnected' | 'error' | 'expired' | 'pending' | 'connecting';
+	| 'connected'
+	| 'disconnected'
+	| 'error'
+	| 'expired'
+	| 'pending'
+	| 'connecting';
 
 export interface ConnectionStatus {
 	key: string;

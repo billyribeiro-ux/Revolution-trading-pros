@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vite-plus/test';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import ParagraphBlock from '../content/ParagraphBlock.svelte';
 import type { Block } from '../types';

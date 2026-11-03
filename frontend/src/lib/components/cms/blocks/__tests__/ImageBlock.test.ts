@@ -23,7 +23,7 @@
 // Import setup first to ensure proper test environment
 import './setup';
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vite-plus/test';
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/svelte';
 import { BlockStateManager, createBlockId, type BlockId } from '#lib/stores/blockState.svelte.js';
 import type { Block } from '../types';

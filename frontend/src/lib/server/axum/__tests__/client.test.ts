@@ -6,7 +6,7 @@
  * @version 1.0.0
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Mocks — Must be before imports

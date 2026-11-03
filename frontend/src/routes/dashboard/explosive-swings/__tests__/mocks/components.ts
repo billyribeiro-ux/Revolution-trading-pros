@@ -13,7 +13,7 @@
  * - Type-safe component mock factories
  */
 
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 
 // ===============================================================================
 // MOCK COMPONENT FACTORY

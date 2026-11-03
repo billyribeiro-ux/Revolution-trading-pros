@@ -10,7 +10,7 @@
  * real worker module.
  */
 
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vite-plus/test';
 import { logger } from '#lib/utils/logger.js';
 import { CalculatorState } from '../calculator.svelte.js';
 import type {

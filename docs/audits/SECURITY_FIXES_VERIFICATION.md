@@ -1,6 +1,9 @@
 # SECURITY_FIXES_VERIFICATION.md
+
 # Branch: payments-fix-2026-04
+
 # Date: 2026-04-28
+
 # Verified by: re-reading source + compiler gates
 
 ---
@@ -99,12 +102,12 @@ No code path sets `status='active'` without a confirmed Stripe response.
 // line 228–232: pre-flight guard — redirect before API call
 // For fully cancelled subs: redirect to checkout — backend refuses to grant free access.
 if (sub.status === 'cancelled' && !sub.cancelAtPeriodEnd) {
-    goto(`/pricing?plan=${sub.planId}`);
-    return;
+	goto(`/pricing?plan=${sub.planId}`);
+	return;
 }
 // line 246–248: backstop — handles the API's 400 response
 if (data.resubscribe && data.plan_id) {
-    goto(`/pricing?plan=${data.plan_id}`);
+	goto(`/pricing?plan=${data.plan_id}`);
 }
 ```
 
@@ -413,21 +416,21 @@ cause Stripe to retry the refund event and re-run the (already-applied) orders u
 
 ## Summary table
 
-| # | Check | Result |
-|---|-------|--------|
-| 1 | Branch is payments-fix-2026-04 | **PASS** |
-| 2 | `cargo check` 0 errors 0 warnings | **PASS** |
-| 3 | `pnpm check` 0 errors 0 warnings 5215 files | **PASS** |
-| 4 | Fix 1.1 — reactivate: no free-access path for fully-cancelled subs | **PASS** |
-| 5 | Fix 1.1 — frontend redirects fully-cancelled subs to /pricing | **PASS** |
-| 6 | Fix 1.2 — price removed from CheckoutItem; DB lookup only | **PASS** |
-| 7 | Fix 1.3 — open redirect blocked in payments.rs | **PASS** |
-| 8 | Fix 1.3 — open redirect blocked in checkout.rs | **PASS** |
-| 9 | Fix 1.4 — coupon validate requires JWT (`_user: User`) | **PASS** |
-| 10 | Fix 1.5 — webhook uses `Bytes`; `from_utf8` not `from_utf8_lossy` | **PASS** |
-| 11 | Fix 1.6 — idempotency table + ON CONFLICT DO NOTHING handler | **PASS** |
-| 12 | Fix 1.7 — subscription_updated / subscription_deleted use `map_err` not `.ok()` | **PASS** |
-| 13 | Fix 1.8 — charge.dispute.created handler + payment_disputes table | **PASS** |
+| #   | Check                                                                           | Result   |
+| --- | ------------------------------------------------------------------------------- | -------- |
+| 1   | Branch is payments-fix-2026-04                                                  | **PASS** |
+| 2   | `cargo check` 0 errors 0 warnings                                               | **PASS** |
+| 3   | `pnpm check` 0 errors 0 warnings 5215 files                                     | **PASS** |
+| 4   | Fix 1.1 — reactivate: no free-access path for fully-cancelled subs              | **PASS** |
+| 5   | Fix 1.1 — frontend redirects fully-cancelled subs to /pricing                   | **PASS** |
+| 6   | Fix 1.2 — price removed from CheckoutItem; DB lookup only                       | **PASS** |
+| 7   | Fix 1.3 — open redirect blocked in payments.rs                                  | **PASS** |
+| 8   | Fix 1.3 — open redirect blocked in checkout.rs                                  | **PASS** |
+| 9   | Fix 1.4 — coupon validate requires JWT (`_user: User`)                          | **PASS** |
+| 10  | Fix 1.5 — webhook uses `Bytes`; `from_utf8` not `from_utf8_lossy`               | **PASS** |
+| 11  | Fix 1.6 — idempotency table + ON CONFLICT DO NOTHING handler                    | **PASS** |
+| 12  | Fix 1.7 — subscription_updated / subscription_deleted use `map_err` not `.ok()` | **PASS** |
+| 13  | Fix 1.8 — charge.dispute.created handler + payment_disputes table               | **PASS** |
 
 ---
 

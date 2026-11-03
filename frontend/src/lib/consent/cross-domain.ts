@@ -49,7 +49,10 @@ let messageListener: ((event: MessageEvent) => void) | null = null;
  * Message types for postMessage
  */
 type CrossDomainMessageType =
-	'consent_request' | 'consent_response' | 'consent_update' | 'consent_sync';
+	| 'consent_request'
+	| 'consent_response'
+	| 'consent_update'
+	| 'consent_sync';
 
 /**
  * Cross-domain message structure

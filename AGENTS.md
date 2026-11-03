@@ -26,12 +26,13 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 ## Verified Stack (`frontend/package.json` & `pnpm-lock.yaml`)
 
+- `vite-plus`: `1.4.0` (`vp` unified toolchain: Vite 8.3.5, Rolldown 1.2.15, Vitest 5.0.5, tsdown 0.23.1, Oxlint 1.89.0, Oxfmt 0.74.0)
 - `svelte`: `5.57.3` (Svelte 5 Runes: `$props`, `$state`, `$derived`, `$effect`)
 - `@sveltejs/kit`: `3.1.0`
 - `@sveltejs/adapter-cloudflare`: `8.0.0`
 - `@sveltejs/enhanced-img`: `0.10.2`
-- `vite`: `8.3.5`
-- `typescript`: `6.0.0`
+- `vite`: `catalog:` (`npm:@voidzero-dev/vite-plus-core@1.4.0`)
+- `typescript`: `6.0.3`
 - `super-sitemap`: `2.0.6`
 - `schema-dts`: `2.0.0`
 - **Version-specific API notes:**
@@ -100,6 +101,10 @@ After completing the code, ask the user if they want a playground link. Only cal
 Run from the repository root (`/Users/billyribeiro/dev/revolution-trading-pros`):
 
 ```bash
+vp check
+vp test
+vp build
+vp pack
 pnpm --filter revolution-svelte check
 pnpm --filter revolution-svelte lint
 pnpm --filter revolution-svelte test:unit

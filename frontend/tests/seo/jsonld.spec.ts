@@ -50,7 +50,10 @@ test.describe('Structured Data / JSON-LD Validity & Visible Parity (SD-01..15)',
 			}
 
 			for (const n of allNodes) {
-				expect(n['aggregateRating'], `Fabricated aggregateRating on ${sample.path}`).toBeUndefined();
+				expect(
+					n['aggregateRating'],
+					`Fabricated aggregateRating on ${sample.path}`
+				).toBeUndefined();
 			}
 
 			if (sample.path === '/') {
@@ -63,9 +66,7 @@ test.describe('Structured Data / JSON-LD Validity & Visible Parity (SD-01..15)',
 			}
 
 			if (sample.template === 'article') {
-				const hasArticle = types.some((t) =>
-					['Article', 'BlogPosting', 'NewsArticle'].includes(t)
-				);
+				const hasArticle = types.some((t) => ['Article', 'BlogPosting', 'NewsArticle'].includes(t));
 				expect(hasArticle).toBe(true);
 				await expect(page.locator('time[datetime]').first()).toBeVisible();
 			}
@@ -90,4 +91,3 @@ test.describe('Structured Data / JSON-LD Validity & Visible Parity (SD-01..15)',
 		});
 	}
 });
-

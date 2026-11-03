@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { normalizeCanonical } from '../canonical';
 import type { CanonicalConfig } from '../types';
 

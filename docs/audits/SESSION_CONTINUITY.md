@@ -11,6 +11,7 @@ issue class found was missing `{#each}` key expressions. All fixed,
 all committed, all clean at `pnpm check` (0 errors / 0 warnings / 5215 files).
 
 Commits landed:
+
 ```
 8ef40b48f fix(svelte): autofixer pass — routes/ (non-admin) keyed {#each} blocks  ← stragglers
 b23a97213 fix(svelte): autofixer pass — routes/ (non-admin) keyed {#each} blocks
@@ -27,11 +28,13 @@ cd30995a9 fix(svelte): autofixer pass — lib/components/ + lib/ keyed {#each} b
 Source of truth: `docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md` §9
 
 ### Tier 0 — blocking (do these first)
+
 - [ ] **Fly Postgres** — DB outage from prior audit. Nothing works until login works.
 - [ ] **CMS toolbar** — `frontend/src/routes/cms/editor/+page.svelte:113` — headline feature can't author content.
 - [ ] **Stripe Checkout-Session creation** — `api/src/routes/subscriptions.rs:446` — revenue blocker.
 
 ### Tier 1 — under a day each, high payoff
+
 - [ ] Frontend `/admin` role gate — `frontend/src/routes/admin/+layout.server.ts`
 - [ ] Favorites proxy cookie fix — `frontend/src/routes/api/favorites/+server.ts:32`
 - [ ] WebSocket JWT validation — `api/src/websocket.rs:344`
@@ -43,6 +46,7 @@ Source of truth: `docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md` §9
 - [ ] Fix `SETUP_GUIDE.md:75` doc drift
 
 ### Tier 2 — ~a week
+
 - [ ] Wrap multi-step admin mutations in transactions (`grant_membership`, `bulk_assign_tags`, role updates)
 - [ ] Migrate `admin.rs` to `AdminUser` extractor uniformly
 - [ ] Activate MFA at login (service is complete, just not wired at login)
@@ -58,6 +62,7 @@ Source of truth: `docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md` §9
 - [ ] Fix 30+ static GSAP imports — convert to dynamic-import per page
 
 ### Tier 3 — larger efforts
+
 - [ ] Test coverage: `routes/auth.rs`, `routes/oauth.rs`, `routes/checkout.rs`, `services/mfa.rs`, `services/cms_workflow.rs`
 - [ ] E2E specs: sign-up, login, OAuth, logout, password reset, subscribe, indicator purchase, course enrollment
 - [ ] Lighthouse CI + perf budget
@@ -77,6 +82,7 @@ Source of truth: `docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25.md` §9
 5. Run `pnpm check` after every fix batch before declaring clean.
 
 ## Current branch state
+
 - Branch: `main`
 - Ahead of `origin/main` by 5 commits (not pushed yet)
 - Working tree: clean (only untracked `ADMIN_SYSTEM_DISCOVERY.md`)

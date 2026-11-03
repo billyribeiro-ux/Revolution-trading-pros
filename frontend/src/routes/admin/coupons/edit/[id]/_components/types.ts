@@ -10,7 +10,14 @@ export interface ValidationError {
 }
 
 export type CouponDiscountType =
-	'fixed' | 'percentage' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
+	| 'fixed'
+	| 'percentage'
+	| 'bogo'
+	| 'free_shipping'
+	| 'tiered'
+	| 'bundle'
+	| 'cashback'
+	| 'points';
 
 export type CouponDuration = 'once' | 'forever' | 'repeating';
 

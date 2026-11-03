@@ -14,7 +14,7 @@
  * - Event simulation helpers
  */
 
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 
 // ===============================================================================
 // COMPONENT RENDERING HELPERS

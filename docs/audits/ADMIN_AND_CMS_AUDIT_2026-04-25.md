@@ -4,6 +4,7 @@
 
 **Auditor:** Claude (Opus 4.7) · **Date:** 2026-04-25 · **Commit:** `08cf8605c`
 **Scope:** four parallel read-only sweeps —
+
 - backend admin (`api/src/routes/admin*.rs` + `routes/{courses,indicators,subscriptions}_admin.rs` + `middleware/admin.rs` + `migrate.rs` + `security.rs` + `settings.rs`),
 - headless CMS v2 (`api/src/routes/cms_*.rs` + `services/cms_*.rs` + `frontend/src/routes/cms/` + `frontend/src/lib/components/cms/`),
 - frontend admin + dashboard surfaces (`frontend/src/routes/{admin,dashboard,account,my}/**`),
@@ -19,20 +20,20 @@ Pairs with [`PRODUCT_AND_AUTH_AUDIT_2026-04-25.md`](PRODUCT_AND_AUTH_AUDIT_2026-
 
 Ranked by user impact:
 
-| # | Issue | Where | Impact |
-|---|-------|-------|--------|
-| 1 | **CMS editor can't add blocks.** The toolbar `<button onclick={() => addBlock(type)}>` fires nothing after the bits-ui v2 upgrade. Three e2e tests are quarantined as `test.fixme` because of this. | [`frontend/src/routes/cms/editor/+page.svelte:113`](frontend/src/routes/cms/editor/+page.svelte#L113) | Critical — the CMS is the headline feature; right now you can open the editor but cannot author. |
-| 2 | **Stripe Checkout-Session creation is a stub.** `// TODO: Create Stripe checkout session` at `subscriptions.rs:446`. The funnel cannot collect money via the standard self-serve path. | `api/src/routes/subscriptions.rs:446` | Critical — revenue-blocking. |
-| 3 | **`/admin` has no frontend role gate.** `/admin/+layout.ts` is just `ssr=false; prerender=false`. Any logged-in user can mount the admin UI; backend rejects the data calls but the UI loads anyway. | [`frontend/src/routes/admin/+layout.ts:1-4`](frontend/src/routes/admin/+layout.ts#L1-L4) | High — defense-in-depth gap, not exploitable but ugly. |
-| 4 | **Favorites proxy reads the wrong cookie.** Reads `session` instead of `rtp_access_token`, so every favorites request goes out unauthenticated. | [`frontend/src/routes/api/favorites/+server.ts:32`](frontend/src/routes/api/favorites/+server.ts#L32) | High — feature is broken in prod. |
-| 5 | **WebSocket accepts any client.** `// TODO: Validate JWT tokens` at `websocket.rs:344`. Anyone with the URL can subscribe to the live alert stream. | `api/src/routes/websocket.rs:344` | High — leaks paid content. |
-| 6 | **Admin auth pattern is split.** `admin.rs` mostly uses `User + require_admin()`; the rest of `admin_*.rs` modules use the `AdminUser` extractor. Two paths to maintain, two ways to get role checks wrong. | `api/src/middleware/admin.rs` + `api/src/routes/admin.rs` | High — maintenance + audit risk. |
-| 7 | **No transactions on multi-step admin mutations.** `grant_membership`, `bulk_assign_tags`, etc. can leave the DB partially updated. | `api/src/routes/admin.rs:958-1037`, `admin_members.rs:948-992` | High — data integrity. |
-| 8 | **14 hardcoded `<your-api-host>` URLs in the frontend.** Spread across `+page.server.ts` files, `lib/server/watchlist.ts`, `hooks.server.ts:24`, `lib/api/config.ts`. Migration to a different API URL today touches 14 files. | inventory in [§5.4](#54-hardcoded-urls) | Medium — bites on every env change. |
-| 9 | **Three separate retry implementations.** Catch-all proxy, Axum client, `lib/api/admin.ts`. Three places to debug a retry storm. | [§5.5](#55-retry-and-circuit-breaker) | Medium. |
-| 10 | **Production API reports `environment: "development"`.** Which probably relaxes cookie / CORS / log defaults. | observed live | Medium — security hygiene. |
-| 11 | **Existing `.remote.ts` files have correctness issues.** Hard-coded refresh keys + unawaited `.refresh()` promises. | [`commands.remote.ts:71, 89`](frontend/src/routes/dashboard/explosive-swings/commands.remote.ts) | Medium — already detailed in the previous audit. |
-| 12 | **CMS AI-assist wired in backend, no frontend UI.** | `api/src/routes/cms_ai_assist.rs` | Low — feature dormant. |
+| #   | Issue                                                                                                                                                                                                                          | Where                                                                                                 | Impact                                                                                           |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1   | **CMS editor can't add blocks.** The toolbar `<button onclick={() => addBlock(type)}>` fires nothing after the bits-ui v2 upgrade. Three e2e tests are quarantined as `test.fixme` because of this.                            | [`frontend/src/routes/cms/editor/+page.svelte:113`](frontend/src/routes/cms/editor/+page.svelte#L113) | Critical — the CMS is the headline feature; right now you can open the editor but cannot author. |
+| 2   | **Stripe Checkout-Session creation is a stub.** `// TODO: Create Stripe checkout session` at `subscriptions.rs:446`. The funnel cannot collect money via the standard self-serve path.                                         | `api/src/routes/subscriptions.rs:446`                                                                 | Critical — revenue-blocking.                                                                     |
+| 3   | **`/admin` has no frontend role gate.** `/admin/+layout.ts` is just `ssr=false; prerender=false`. Any logged-in user can mount the admin UI; backend rejects the data calls but the UI loads anyway.                           | [`frontend/src/routes/admin/+layout.ts:1-4`](frontend/src/routes/admin/+layout.ts#L1-L4)              | High — defense-in-depth gap, not exploitable but ugly.                                           |
+| 4   | **Favorites proxy reads the wrong cookie.** Reads `session` instead of `rtp_access_token`, so every favorites request goes out unauthenticated.                                                                                | [`frontend/src/routes/api/favorites/+server.ts:32`](frontend/src/routes/api/favorites/+server.ts#L32) | High — feature is broken in prod.                                                                |
+| 5   | **WebSocket accepts any client.** `// TODO: Validate JWT tokens` at `websocket.rs:344`. Anyone with the URL can subscribe to the live alert stream.                                                                            | `api/src/routes/websocket.rs:344`                                                                     | High — leaks paid content.                                                                       |
+| 6   | **Admin auth pattern is split.** `admin.rs` mostly uses `User + require_admin()`; the rest of `admin_*.rs` modules use the `AdminUser` extractor. Two paths to maintain, two ways to get role checks wrong.                    | `api/src/middleware/admin.rs` + `api/src/routes/admin.rs`                                             | High — maintenance + audit risk.                                                                 |
+| 7   | **No transactions on multi-step admin mutations.** `grant_membership`, `bulk_assign_tags`, etc. can leave the DB partially updated.                                                                                            | `api/src/routes/admin.rs:958-1037`, `admin_members.rs:948-992`                                        | High — data integrity.                                                                           |
+| 8   | **14 hardcoded `<your-api-host>` URLs in the frontend.** Spread across `+page.server.ts` files, `lib/server/watchlist.ts`, `hooks.server.ts:24`, `lib/api/config.ts`. Migration to a different API URL today touches 14 files. | inventory in [§5.4](#54-hardcoded-urls)                                                               | Medium — bites on every env change.                                                              |
+| 9   | **Three separate retry implementations.** Catch-all proxy, Axum client, `lib/api/admin.ts`. Three places to debug a retry storm.                                                                                               | [§5.5](#55-retry-and-circuit-breaker)                                                                 | Medium.                                                                                          |
+| 10  | **Production API reports `environment: "development"`.** Which probably relaxes cookie / CORS / log defaults.                                                                                                                  | observed live                                                                                         | Medium — security hygiene.                                                                       |
+| 11  | **Existing `.remote.ts` files have correctness issues.** Hard-coded refresh keys + unawaited `.refresh()` promises.                                                                                                            | [`commands.remote.ts:71, 89`](frontend/src/routes/dashboard/explosive-swings/commands.remote.ts)      | Medium — already detailed in the previous audit.                                                 |
+| 12  | **CMS AI-assist wired in backend, no frontend UI.**                                                                                                                                                                            | `api/src/routes/cms_ai_assist.rs`                                                                     | Low — feature dormant.                                                                           |
 
 The good news: the **data models** and **route shapes** are mostly correct. The
 gaps are at the seams — frontend gates missing, mutations not transactional,
@@ -46,24 +47,25 @@ toolbar wired wrong, money flow stubbed.
 
 77 route modules total; 12 are admin-flavored. Per-module summary:
 
-| File | Lines | Routes (count) | Auth pattern | Notes |
-|------|-------|----------------|--------------|-------|
-| `routes/admin.rs` | 1678 | ~25 | mixed: `User + require_admin()`, **plus** `AdminUser` on `list_all_plans` (line 815) | the kitchen sink — dashboard, users, memberships, campaigns, coupons, settings |
-| `routes/admin_courses.rs` | 2312 | full course/module/lesson/live-session/enrollment CRUD | `AdminUser` extractor uniformly | most complete admin module |
-| `routes/admin_indicators.rs` | 915 | indicator + files + videos + analytics CRUD | `AdminUser` extractor uniformly | upload pipeline disabled in `routes/mod.rs` (see prior audit) |
-| `routes/admin_videos.rs` | 1858 | video + series + watch-history CRUD | `AdminUser` | several `// TODO` placeholders for trader/room metadata |
-| `routes/admin_members.rs` | 1308 | segments, member tags, analytics, notes, emails | `User + require_admin()` | bulk tag assignment is loop-not-tx |
-| `routes/admin_member_management.rs` | 1393 | member CRUD | `AdminUser` | clean |
-| `routes/admin_popups.rs` | 856 | popup CRUD | `AdminUser` | clean |
-| `routes/admin_page_layouts.rs` | 766 | page layout CRUD | `AdminUser` | clean |
-| `routes/courses_admin.rs` | (~2000) | parallel admin path for courses | `AdminUser` | overlaps with `admin_courses.rs`; both are mounted |
-| `routes/indicators_admin.rs` | (~1500) | parallel admin path for indicators | `AdminUser` | overlaps with `admin_indicators.rs` |
-| `routes/subscriptions_admin.rs` | 723 | subscription admin | `AdminUser` | clean |
-| `routes/migrate.rs` | 58 | one-shot deploy tasks | `AdminUser` | safe |
+| File                                | Lines   | Routes (count)                                         | Auth pattern                                                                         | Notes                                                                          |
+| ----------------------------------- | ------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `routes/admin.rs`                   | 1678    | ~25                                                    | mixed: `User + require_admin()`, **plus** `AdminUser` on `list_all_plans` (line 815) | the kitchen sink — dashboard, users, memberships, campaigns, coupons, settings |
+| `routes/admin_courses.rs`           | 2312    | full course/module/lesson/live-session/enrollment CRUD | `AdminUser` extractor uniformly                                                      | most complete admin module                                                     |
+| `routes/admin_indicators.rs`        | 915     | indicator + files + videos + analytics CRUD            | `AdminUser` extractor uniformly                                                      | upload pipeline disabled in `routes/mod.rs` (see prior audit)                  |
+| `routes/admin_videos.rs`            | 1858    | video + series + watch-history CRUD                    | `AdminUser`                                                                          | several `// TODO` placeholders for trader/room metadata                        |
+| `routes/admin_members.rs`           | 1308    | segments, member tags, analytics, notes, emails        | `User + require_admin()`                                                             | bulk tag assignment is loop-not-tx                                             |
+| `routes/admin_member_management.rs` | 1393    | member CRUD                                            | `AdminUser`                                                                          | clean                                                                          |
+| `routes/admin_popups.rs`            | 856     | popup CRUD                                             | `AdminUser`                                                                          | clean                                                                          |
+| `routes/admin_page_layouts.rs`      | 766     | page layout CRUD                                       | `AdminUser`                                                                          | clean                                                                          |
+| `routes/courses_admin.rs`           | (~2000) | parallel admin path for courses                        | `AdminUser`                                                                          | overlaps with `admin_courses.rs`; both are mounted                             |
+| `routes/indicators_admin.rs`        | (~1500) | parallel admin path for indicators                     | `AdminUser`                                                                          | overlaps with `admin_indicators.rs`                                            |
+| `routes/subscriptions_admin.rs`     | 723     | subscription admin                                     | `AdminUser`                                                                          | clean                                                                          |
+| `routes/migrate.rs`                 | 58      | one-shot deploy tasks                                  | `AdminUser`                                                                          | safe                                                                           |
 
 ### 1.2 Auth posture — the split pattern
 
 Two extractors live in `middleware/admin.rs`:
+
 - `AdminUser` (lines 11-95): role ∈ {`admin`, `super_admin`, `super-admin`, `developer`} OR email in `SUPERADMIN_EMAILS`.
 - `SuperAdminUser` (lines 76-77): role ∈ {`super_admin`, `super-admin`}.
 
@@ -81,13 +83,13 @@ validated at checkout, no auth required. No rate limit on it though.
 
 ### 1.3 Stubs and TODOs (concrete file:line)
 
-| Location | Issue | Severity |
-|----------|-------|----------|
-| `api/src/routes/admin_videos.rs:323-324, 366-367, 644-645, 662-663` | `let trader = None; // TODO`, `let rooms = vec![]; // TODO`, `this_week: 0 // TODO`, `traders: [] // TODO` — analytics returns hard-coded zeros | Medium |
-| `api/src/routes/admin.rs:1218` | `.unwrap_or_default()` after a failing query in `list_campaigns` — silent failure | Medium |
-| `api/src/routes/admin.rs:1288-1351` | Multiple `.unwrap_or((0,))` on critical stats queries — admin sees "0 users" instead of an error when the DB hiccups | Medium |
-| `api/src/routes/admin.rs:1484-1540` | `impersonate_user` returns a placeholder string `format!("impersonate_{}_{}", …)` — not a real JWT | High (feature is dead) |
-| `api/src/routes/admin_members.rs:114-120` | `.ok()` swallows missing-table errors; admin sees empty list when schema has drifted | Medium |
+| Location                                                            | Issue                                                                                                                                           | Severity               |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `api/src/routes/admin_videos.rs:323-324, 366-367, 644-645, 662-663` | `let trader = None; // TODO`, `let rooms = vec![]; // TODO`, `this_week: 0 // TODO`, `traders: [] // TODO` — analytics returns hard-coded zeros | Medium                 |
+| `api/src/routes/admin.rs:1218`                                      | `.unwrap_or_default()` after a failing query in `list_campaigns` — silent failure                                                               | Medium                 |
+| `api/src/routes/admin.rs:1288-1351`                                 | Multiple `.unwrap_or((0,))` on critical stats queries — admin sees "0 users" instead of an error when the DB hiccups                            | Medium                 |
+| `api/src/routes/admin.rs:1484-1540`                                 | `impersonate_user` returns a placeholder string `format!("impersonate_{}_{}", …)` — not a real JWT                                              | High (feature is dead) |
+| `api/src/routes/admin_members.rs:114-120`                           | `.ok()` swallows missing-table errors; admin sees empty list when schema has drifted                                                            | Medium                 |
 
 ### 1.4 Database integrity
 
@@ -143,22 +145,22 @@ validated at checkout, no auth required. No rate limit on it though.
 under `services/cms_*.rs`. Schema lives in 8 SQL migrations
 (`014, 023, 024, 027, 029, 041_presets, 041_scheduling, 042_datasources`).
 
-| Module | Purpose | State |
-|--------|---------|-------|
-| `cms_v2.rs` | core CRUD: content, assets, folders, revisions, tags, comments | ✅ |
-| `cms_v2_enterprise.rs` | release bundles, multi-content workflows | ✅ |
-| `cms_assets.rs` | asset CRUD (split from v2 for clarity) | ✅ |
-| `cms_revisions.rs` | revision list + restore (`require_cms_admin` on restore) | ✅ |
-| `cms_scheduling.rs` | cron-driven publish / unpublish | ✅ |
-| `cms_seo.rs` | SEO validation (title/desc lengths, density, readability) | ✅ |
-| `cms_global_components.rs` | site-wide reusable components | ✅ |
-| `cms_reusable_blocks.rs` | block library | ⚠ — sync/detach mentioned in header, no route handlers |
-| `cms_presets.rs` | block presets (30+ seeded in migration 041) | ⚠ — backend only, no frontend integration |
-| `cms_datasources.rs` | option lists (countries, US states, symbols, palettes) | ⚠ — CSV import/export mentioned, no routes |
-| `cms_delivery.rs` | public read API (`GET /content/:type/:slug`) | ✅ |
-| `cms_ai_assist.rs` | Claude Sonnet 4 integration | ⚠ — backend wired, no frontend UI |
-| `cms_workflow.rs` (service) | status transitions | ✅ |
-| `cms_audit.rs` (service) | structured audit log | ✅ |
+| Module                      | Purpose                                                        | State                                                  |
+| --------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ |
+| `cms_v2.rs`                 | core CRUD: content, assets, folders, revisions, tags, comments | ✅                                                     |
+| `cms_v2_enterprise.rs`      | release bundles, multi-content workflows                       | ✅                                                     |
+| `cms_assets.rs`             | asset CRUD (split from v2 for clarity)                         | ✅                                                     |
+| `cms_revisions.rs`          | revision list + restore (`require_cms_admin` on restore)       | ✅                                                     |
+| `cms_scheduling.rs`         | cron-driven publish / unpublish                                | ✅                                                     |
+| `cms_seo.rs`                | SEO validation (title/desc lengths, density, readability)      | ✅                                                     |
+| `cms_global_components.rs`  | site-wide reusable components                                  | ✅                                                     |
+| `cms_reusable_blocks.rs`    | block library                                                  | ⚠ — sync/detach mentioned in header, no route handlers |
+| `cms_presets.rs`            | block presets (30+ seeded in migration 041)                    | ⚠ — backend only, no frontend integration              |
+| `cms_datasources.rs`        | option lists (countries, US states, symbols, palettes)         | ⚠ — CSV import/export mentioned, no routes             |
+| `cms_delivery.rs`           | public read API (`GET /content/:type/:slug`)                   | ✅                                                     |
+| `cms_ai_assist.rs`          | Claude Sonnet 4 integration                                    | ⚠ — backend wired, no frontend UI                      |
+| `cms_workflow.rs` (service) | status transitions                                             | ✅                                                     |
+| `cms_audit.rs` (service)    | structured audit log                                           | ✅                                                     |
 
 ### 2.2 Block taxonomy
 
@@ -193,6 +195,7 @@ e2e tests `tests/e2e/block-editor.spec.ts:13, :25, :38` are quarantined
 because of this.
 
 **Fix path:**
+
 1. Read what `<button>` (or `<Button>`) the editor toolbar actually renders
    today (not yet inspected — flagged as next step).
 2. If it's a bits-ui Button, switch to bits-ui v2's recommended event
@@ -205,6 +208,7 @@ because of this.
 ### 2.4 What's missing in the editor
 
 The block taxonomy is rich but the editor itself is minimal:
+
 - ✗ no drag-and-drop reorder
 - ✗ no undo/redo (no history stack in the BlockStateManager)
 - ✗ no autosave
@@ -246,7 +250,7 @@ These are the most complete part of the CMS:
 - **Limits:** 50 MB per upload (`services/cms_upload.rs:38-66`).
 - **Allowed types:** JPEG/PNG/GIF/WebP/AVIF/SVG, MP4/WebM/MOV, PDF/Word/Excel/CSV.
 - **Folder model:** hierarchical with `parent_id`, `path`, `depth`, color
-  + icon + `is_public` + `allowed_roles`. Soft delete via `deleted_at`.
+  - icon + `is_public` + `allowed_roles`. Soft delete via `deleted_at`.
 - **Asset metadata:** alt text, caption, credits, SEO title/description,
   tags, image variants, blurhash, dominant color, Bunny video bindings,
   usage count, last-used.
@@ -275,21 +279,21 @@ These are the most complete part of the CMS:
 
 Counts after walking the route tree:
 
-| Surface | `+page.svelte` files | Top-level state |
-|---------|---------------------|-----------------|
-| `frontend/src/routes/admin/**` | ~27 | mixed (most pages are full-CRUD; a few stubs) |
-| `frontend/src/routes/dashboard/**` | ~15 | working but with hardcoded TODOs |
-| `frontend/src/routes/account/**` | 2 | read-only (no edit UI — by design, see prior audit) |
-| `frontend/src/routes/my/**` | 4 | view-only |
+| Surface                            | `+page.svelte` files | Top-level state                                     |
+| ---------------------------------- | -------------------- | --------------------------------------------------- |
+| `frontend/src/routes/admin/**`     | ~27                  | mixed (most pages are full-CRUD; a few stubs)       |
+| `frontend/src/routes/dashboard/**` | ~15                  | working but with hardcoded TODOs                    |
+| `frontend/src/routes/account/**`   | 2                    | read-only (no edit UI — by design, see prior audit) |
+| `frontend/src/routes/my/**`        | 4                    | view-only                                           |
 
 ### 3.2 Auth gates (frontend)
 
-| Surface | Layout file | Authn? | Authz? | Verdict |
-|---------|-------------|--------|--------|---------|
-| `/admin` | [`admin/+layout.ts:1-4`](frontend/src/routes/admin/+layout.ts#L1-L4) | via hooks.server.ts | **none** | ✗ broken — any authenticated user lands here |
-| `/dashboard` | `dashboard/+layout.server.ts:41-50` | via hooks.server.ts | **none** | ⚠ — admin / member share `/dashboard`; UX-only issue |
-| `/account` | none (covered by hooks PROTECTED_ROUTES) | yes | none | ⚠ — same as dashboard |
-| `/my/*` | none (covered by hooks PROTECTED_ROUTES) | yes | none | ⚠ |
+| Surface      | Layout file                                                          | Authn?              | Authz?   | Verdict                                              |
+| ------------ | -------------------------------------------------------------------- | ------------------- | -------- | ---------------------------------------------------- |
+| `/admin`     | [`admin/+layout.ts:1-4`](frontend/src/routes/admin/+layout.ts#L1-L4) | via hooks.server.ts | **none** | ✗ broken — any authenticated user lands here         |
+| `/dashboard` | `dashboard/+layout.server.ts:41-50`                                  | via hooks.server.ts | **none** | ⚠ — admin / member share `/dashboard`; UX-only issue |
+| `/account`   | none (covered by hooks PROTECTED_ROUTES)                             | yes                 | none     | ⚠ — same as dashboard                                |
+| `/my/*`      | none (covered by hooks PROTECTED_ROUTES)                             | yes                 | none     | ⚠                                                    |
 
 `hooks.server.ts:30` defines `PROTECTED_ROUTES = ['/dashboard', '/account',
 '/checkout', '/trading-room', '/admin']` and validates the JWT, but **never
@@ -298,21 +302,21 @@ exist; no route guard uses them.
 
 ### 3.3 CRUD UI coverage (frontend admin)
 
-| Resource | List | Detail | Create | Edit | Delete | Notes |
-|----------|------|--------|--------|------|--------|-------|
-| Members | ✅ | ✅ drawer | ✅ modal | ✅ modal | ✅ | full CRUD |
-| Categories | ✅ | inline | ✅ modal | ✅ modal | ✅ + merge | best-built |
-| Courses | ✅ | ✅ drawer | ✅ Builder | ✅ Builder | ✅ | full |
-| Indicators | ✅ | ✅ drawer | ✅ Builder | ✅ Builder | ✅ | full |
-| Coupons | ✅ | inline | ✅ modal | ✅ modal | ✅ | full |
-| Trading Rooms | ✅ | ✅ drawer | partial | ✅ modal | ✅ | partial create UI |
-| Email templates | ✅ | inline | ✅ form | ✅ form | ✅ | full |
-| Blog posts | ✅ | ✅ editor | ✅ editor | ✅ editor | ✅ | full |
-| Subscriptions | ✅ | ✅ drawer | ✅ modal | ✅ modal | ✗ | no cancel/delete UI |
-| Users | ✅ | ✗ | ✗ | ✗ | ✅ | list + delete only |
-| Products | ✅ | ✗ | ✗ | ✗ | ✅ | list + delete only |
-| Orders | ✅ | ✗ | ✗ | ✗ | ✗ | view only |
-| Member Segments | ✅ | ✅ drawer | ✅ form | ✗ "Coming soon" | ✅ | edit is a stub (`segments/+page.svelte:114-115`) |
+| Resource        | List | Detail    | Create     | Edit            | Delete     | Notes                                            |
+| --------------- | ---- | --------- | ---------- | --------------- | ---------- | ------------------------------------------------ |
+| Members         | ✅   | ✅ drawer | ✅ modal   | ✅ modal        | ✅         | full CRUD                                        |
+| Categories      | ✅   | inline    | ✅ modal   | ✅ modal        | ✅ + merge | best-built                                       |
+| Courses         | ✅   | ✅ drawer | ✅ Builder | ✅ Builder      | ✅         | full                                             |
+| Indicators      | ✅   | ✅ drawer | ✅ Builder | ✅ Builder      | ✅         | full                                             |
+| Coupons         | ✅   | inline    | ✅ modal   | ✅ modal        | ✅         | full                                             |
+| Trading Rooms   | ✅   | ✅ drawer | partial    | ✅ modal        | ✅         | partial create UI                                |
+| Email templates | ✅   | inline    | ✅ form    | ✅ form         | ✅         | full                                             |
+| Blog posts      | ✅   | ✅ editor | ✅ editor  | ✅ editor       | ✅         | full                                             |
+| Subscriptions   | ✅   | ✅ drawer | ✅ modal   | ✅ modal        | ✗          | no cancel/delete UI                              |
+| Users           | ✅   | ✗         | ✗          | ✗               | ✅         | list + delete only                               |
+| Products        | ✅   | ✗         | ✗          | ✗               | ✅         | list + delete only                               |
+| Orders          | ✅   | ✗         | ✗          | ✗               | ✗          | view only                                        |
+| Member Segments | ✅   | ✅ drawer | ✅ form    | ✗ "Coming soon" | ✅         | edit is a stub (`segments/+page.svelte:114-115`) |
 
 ### 3.4 Form patterns — three different approaches
 
@@ -328,24 +332,25 @@ The frontend talks to the backend in three incompatible shapes:
 
 There are **zero** uses of SvelteKit `<form use:enhance>` or remote-function
 `form()` outside the explosive-swings dashboard. The convention this codebase
-has chosen is fine — but the *inconsistency* between admin and `/my/*` is
+has chosen is fine — but the _inconsistency_ between admin and `/my/*` is
 not.
 
 ### 3.5 Stubs and dead UI
 
-| Page / element | File | Symptom |
-|----------------|------|---------|
-| Member segment "Edit" | `admin/members/segments/+page.svelte:114-115` | `toastStore.info('… - Coming soon')` |
-| Dashboard trading-room dropdown links | `dashboard/+page.svelte:62-75` | three entries `href: '#'` with `// TODO: Provide URL` |
-| Analytics heatmaps page | `admin/analytics/heatmaps/+page.svelte` | placeholder visualization |
+| Page / element                        | File                                          | Symptom                                               |
+| ------------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
+| Member segment "Edit"                 | `admin/members/segments/+page.svelte:114-115` | `toastStore.info('… - Coming soon')`                  |
+| Dashboard trading-room dropdown links | `dashboard/+page.svelte:62-75`                | three entries `href: '#'` with `// TODO: Provide URL` |
+| Analytics heatmaps page               | `admin/analytics/heatmaps/+page.svelte`       | placeholder visualization                             |
 
 No deleted pages still referenced in nav. No Lorem-ipsum.
 
 ### 3.6 Component patterns
 
 Every admin component sampled uses the **legacy** Svelte 5 `let props = $props()`
-+ shadow-state pattern (e.g. `AdminCard.svelte:34`, `MemberFormModal.svelte`,
-`SubscriptionFormModal.svelte`, `CourseBuilder.svelte`, `IndicatorBuilder.svelte`).
+
+- shadow-state pattern (e.g. `AdminCard.svelte:34`, `MemberFormModal.svelte`,
+  `SubscriptionFormModal.svelte`, `CourseBuilder.svelte`, `IndicatorBuilder.svelte`).
 
 We migrated 41 of these to the destructured `$bindable()` form for the
 shadcn-svelte wrappers in commit `05acf3231`. **The admin / dashboard
@@ -359,11 +364,11 @@ flag every remaining `state_referenced_locally` warning.
 
 ### 4.1 Three connection patterns coexist
 
-| Pattern | File count | Where | Notes |
-|---------|-----------|-------|-------|
-| Catch-all proxy `/api/[...path]/+server.ts` | 1 generic + ~96 specialized | `frontend/src/routes/api/**` | retry + circuit breaker; consistent error shape; **bypassed** by both other patterns |
-| Direct fetch in `+page.server.ts` `load` | 61 files | scattered | mostly hits `event.fetch('/api/...')`, but **14 files hardcode `<your-api-host>/...` directly** |
-| `.remote.ts` (Svelte 5 Remote Functions) | 2 | `dashboard/explosive-swings/{data,commands}.remote.ts` | only fully-typed end-to-end pattern |
+| Pattern                                     | File count                  | Where                                                  | Notes                                                                                           |
+| ------------------------------------------- | --------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| Catch-all proxy `/api/[...path]/+server.ts` | 1 generic + ~96 specialized | `frontend/src/routes/api/**`                           | retry + circuit breaker; consistent error shape; **bypassed** by both other patterns            |
+| Direct fetch in `+page.server.ts` `load`    | 61 files                    | scattered                                              | mostly hits `event.fetch('/api/...')`, but **14 files hardcode `<your-api-host>/...` directly** |
+| `.remote.ts` (Svelte 5 Remote Functions)    | 2                           | `dashboard/explosive-swings/{data,commands}.remote.ts` | only fully-typed end-to-end pattern                                                             |
 
 ### 4.2 The catch-all proxy
 
@@ -431,15 +436,15 @@ that it would be a non-breaking refactor.
 
 ### 4.6 Concrete bugs surfaced by the integration audit
 
-| # | Bug | File:line | Severity |
-|---|-----|-----------|----------|
-| A | Favorites proxy reads wrong cookie | `frontend/src/routes/api/favorites/+server.ts:32` — `cookies.get('session')` should be `cookies.get('rtp_access_token')` | **High — feature broken in prod** |
-| B | Env-var precedence mismatch | catch-all uses `VITE_API_URL || BACKEND_URL`; Axum client uses `API_BASE_URL || VITE_API_URL || BACKEND_URL` | High — silent split-brain in dev |
-| C | Hardcoded fly.dev URLs | 14 files (§4.4) | Medium |
-| D | Retry implemented 3× | proxy + client + admin.ts (§4.5) | Medium |
-| E | Watchlist endpoint **bypasses the proxy entirely** | `frontend/src/routes/api/watchlist/...` direct-fetches `<your-api-host>/api/watchlist/entries` | Medium |
-| F | Logout proxy returns 200 even when backend logout fails | `frontend/src/routes/api/logout/+server.ts:50` | Low — defensive cookie deletion is intentional |
-| G | Token-refresh logic exists in 3 places that must stay in sync | hooks.server.ts + auth store + `lib/api/auth.ts` | Low — already documented in source comments |
+| #   | Bug                                                           | File:line                                                                                                                | Severity                                       |
+| --- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| A   | Favorites proxy reads wrong cookie                            | `frontend/src/routes/api/favorites/+server.ts:32` — `cookies.get('session')` should be `cookies.get('rtp_access_token')` | **High — feature broken in prod**              |
+| B   | Env-var precedence mismatch                                   | catch-all uses `VITE_API_URL                                                                                             |                                                | BACKEND_URL`; Axum client uses `API_BASE_URL |     | VITE_API_URL |     | BACKEND_URL` | High — silent split-brain in dev |
+| C   | Hardcoded fly.dev URLs                                        | 14 files (§4.4)                                                                                                          | Medium                                         |
+| D   | Retry implemented 3×                                          | proxy + client + admin.ts (§4.5)                                                                                         | Medium                                         |
+| E   | Watchlist endpoint **bypasses the proxy entirely**            | `frontend/src/routes/api/watchlist/...` direct-fetches `<your-api-host>/api/watchlist/entries`                           | Medium                                         |
+| F   | Logout proxy returns 200 even when backend logout fails       | `frontend/src/routes/api/logout/+server.ts:50`                                                                           | Low — defensive cookie deletion is intentional |
+| G   | Token-refresh logic exists in 3 places that must stay in sync | hooks.server.ts + auth store + `lib/api/auth.ts`                                                                         | Low — already documented in source comments    |
 
 Bug A is the most user-visible: the Favorites button on the site has been
 silently failing for whoever's been testing it.
@@ -464,12 +469,12 @@ cleanest wins for the next sweep:
 
 ### 5.1 The four worst offenders, ranked
 
-| # | Where | Cost to fix |
-|---|-------|------------|
-| 1 | CMS toolbar add-block (bits-ui v2 regression) | 1-2 hours of investigation, one file edit |
-| 2 | Stripe Checkout-Session stub | half-day for the happy path; another half-day for retries / webhook validation |
-| 3 | `/admin` frontend role gate missing | one new `+layout.server.ts`, ten lines |
-| 4 | Favorites proxy wrong cookie | one-line edit |
+| #   | Where                                         | Cost to fix                                                                    |
+| --- | --------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1   | CMS toolbar add-block (bits-ui v2 regression) | 1-2 hours of investigation, one file edit                                      |
+| 2   | Stripe Checkout-Session stub                  | half-day for the happy path; another half-day for retries / webhook validation |
+| 3   | `/admin` frontend role gate missing           | one new `+layout.server.ts`, ten lines                                         |
+| 4   | Favorites proxy wrong cookie                  | one-line edit                                                                  |
 
 ### 5.2 The slow hum
 

@@ -20,27 +20,29 @@ and concurrency hygiene (zero `std::sync` guards held across `.await`; bounded c
 genuinely solid. See **Positives** at the end — they are extensive and should be preserved.
 
 The findings cluster in three places: **(a)** the member-indicator download/license paths
-(home-grown token signing that bypasses its own checks), **(b)** the *outbound* subscription
+(home-grown token signing that bypasses its own checks), **(b)** the _outbound_ subscription
 mutation paths (DB updated without telling Stripe), and **(c)** a systemic habit of swallowing
 database errors with `.unwrap_or_default()`, in violation of this repo's own CLAUDE.md rule.
 
-| Severity | Count | Headline items |
-|----------|-------|----------------|
-| **P0** | 3 | Download IDOR (live); forgeable download tokens (empty secret); `ORDER BY` injection (latent/dead-code) |
-| **P1** | 7 | `cancel_subscription` never calls Stripe; subscribe race; forgeable license keys; plaintext stored credentials; 2× WebSocket leaks; ~107 swallowed DB errors |
-| **P2** | 9 | Redis `KEYS` stall + broken L1 glob; TOTP replay; pagination overflow; UTF-8 panic; proration drift; refund `amount` default; uncapped service LIMIT; N+1; WS dup off-by-one |
-| **P3** | 7 | dev-mode webhook bypass; OAuth-state TOCTOU; fail-open IP limit; no graceful shutdown; `INFINITY`→`null`; misc swallows |
+| Severity | Count | Headline items                                                                                                                                                               |
+| -------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **P0**   | 3     | Download IDOR (live); forgeable download tokens (empty secret); `ORDER BY` injection (latent/dead-code)                                                                      |
+| **P1**   | 7     | `cancel_subscription` never calls Stripe; subscribe race; forgeable license keys; plaintext stored credentials; 2× WebSocket leaks; ~107 swallowed DB errors                 |
+| **P2**   | 9     | Redis `KEYS` stall + broken L1 glob; TOTP replay; pagination overflow; UTF-8 panic; proration drift; refund `amount` default; uncapped service LIMIT; N+1; WS dup off-by-one |
+| **P3**   | 7     | dev-mode webhook bypass; OAuth-state TOCTOU; fail-open IP limit; no graceful shutdown; `INFINITY`→`null`; misc swallows                                                      |
 
 ---
 
 ## P0 — Fix first
 
-### P0-1 · IDOR: download token not bound to the requested file *(exploitable today)*
+### P0-1 · IDOR: download token not bound to the requested file _(exploitable today)_
+
 `api/src/routes/member_indicators/downloads.rs:166–199`
 
 `download_file` loads the token row — which **carries the authorized `file_id`** (`download.1`) —
 but then serves the file by the **URL path** `file_id`, never comparing the two and never
 re-verifying the token hash:
+
 ```rust
 // SELECT id, file_id, download_count, max_downloads ... WHERE download_token = $1
 let download: Option<(i32, i32, Option<i32>, Option<i32>)> = ...;   // download.1 = authorized file
@@ -48,6 +50,7 @@ let download: Option<(i32, i32, Option<i32>, Option<i32>)> = ...;   // download.
 let file = sqlx::query_as("SELECT * FROM indicator_files WHERE id = $1")
     .bind(file_id)   // <-- Path((slug, file_id)), NOT download.1
 ```
+
 Any member holding **one** valid, unexpired token (for a file they legitimately own) can change
 `:file_id` in the URL and download **any file of any indicator**, bypassing the ownership check in
 `generate_download_url`.
@@ -55,11 +58,14 @@ Any member holding **one** valid, unexpired token (for a file they legitimately 
 `(user_id, file_id, expiry, secret)` before streaming.
 
 ### P0-2 · Forgeable download tokens — empty signing secret over public inputs
+
 `api/src/routes/member_indicators/downloads.rs:96–104`
+
 ```rust
 let secret = std::env::var("MEMBER_INDICATOR_SECRET").unwrap_or_default(); // "" if unset
 let token  = sha256(format!("{user_id}{file_id}{expiry_timestamp}{secret}"));
 ```
+
 `MEMBER_INDICATOR_SECRET` is referenced **only** in this file — `Config` never reads or
 boot-validates it (unlike `JWT_SECRET`). If unset, the token is `SHA256` of entirely
 attacker-known values → anyone can mint valid tokens offline. Even when set, it is a bare
@@ -68,16 +74,19 @@ attacker-known values → anyone can mint valid tokens offline. Even when set, i
 `validate_production_secrets()` if empty or `< 32` chars (mirror `JWT_SECRET`, `config/mod.rs:496`);
 switch to HMAC-SHA256.
 
-> *Note:* the empty-secret default at `downloads.rs:96` / `license.rs:26` was changed from
+> _Note:_ the empty-secret default at `downloads.rs:96` / `license.rs:26` was changed from
 > `unwrap_or_else(|_| "".to_string())` to `unwrap_or_default()` in the prior idiomatic-cleanup
 > commit — that was a faithful refactor of **identical** behavior (both yield `""`). The security
 > defect (defaulting at all) predates and survives it; it is fixed by the change above.
 
-### P0-3 · SQL injection via unvalidated `ORDER BY {sort_by}` *(latent — currently dead code)*
+### P0-3 · SQL injection via unvalidated `ORDER BY {sort_by}` _(latent — currently dead code)_
+
 `api/src/domain/content/repository.rs:229`
+
 ```rust
 ORDER BY {sort_by} {order_direction}   // sort_by = query.sort_by (HTTP), interpolated raw
 ```
+
 `order_direction` is normalized to ASC/DESC (safe); `sort_by` is interpolated verbatim from a
 `Deserialize` query field with no allowlist → arbitrary `ORDER BY` subquery injection.
 **Mitigant:** `PgContentRepository` is **not wired to any route** (grep: it appears only in its own
@@ -91,6 +100,7 @@ handlers already do.
 ## P1 — High
 
 ### P1-1 · `cancel_subscription` updates the DB but never calls Stripe → billing continues
+
 `api/src/routes/subscriptions/lifecycle.rs:230–248`
 Both branches only `UPDATE user_memberships`; there is no `stripe.cancel_subscription(...)`. Stripe
 remains the billing source of truth, so the card is charged next cycle. Worse, the nightly
@@ -102,6 +112,7 @@ at `:307` and `change_plan`, which correctly route through Stripe.)
 `stripe_subscription_id` is absent.
 
 ### P1-2 · `create_subscription` check-then-act race (double subscribe)
+
 `api/src/routes/subscriptions/lifecycle.rs:51–71` (and free-path INSERT `:146–163`)
 A non-transactional `SELECT ... WHERE status IN ('active','trialing')` then act, with **no unique
 index** on live memberships per user. Two concurrent requests / a double-click both read `None` and
@@ -110,6 +121,7 @@ both create subscriptions.
 and rely on `ON CONFLICT` instead of check-then-act.
 
 ### P1-3 · Forgeable / weak license keys — empty signing secret
+
 `api/src/routes/member_indicators/license.rs:25–41`
 Same unvalidated `MEMBER_LICENSE_SECRET.unwrap_or_default()` problem; key = `SHA256(user-indicator-ts)[..16]`
 (64 bits) from a non-secret formula. Impact is bounded (validation also checks a stored
@@ -117,6 +129,7 @@ ownership row), but the shareable license artifact should be a CSPRNG value or k
 **Fix:** generate via `rand` (as the other token helpers in `utils/mod.rs` do) and boot-validate the secret.
 
 ### P1-4 · Third-party credentials stored as base64 (≈ plaintext at rest)
+
 `api/src/routes/connections/crypto.rs:8–24`, `api/src/services/credential_resolver.rs:256–261`
 `encrypt_credentials` base64-encodes JSON (the comment admits "placeholder … use AES-256-GCM").
 `service_connections.credentials_encrypted` holds **live** Stripe secret keys; any DB read / backup /
@@ -125,14 +138,16 @@ replica leak yields them directly.
 ciphertext+nonce envelope.
 
 ### P1-5 · WebSocket room-forwarder tasks orphaned on disconnect (task + count leak)
+
 `api/src/routes/websocket.rs:443–451` (cleanup `:578–590`)
 Each subscribed room spawns a detached forwarder whose `JoinHandle` is dropped. On disconnect only
 `send`/`receive`/`heartbeat` handles are stopped; the forwarders are never aborted and only exit on
-the *next* room broadcast finding the mpsc closed. On quiet rooms the task + its `broadcast::Receiver`
+the _next_ room broadcast finding the mpsc closed. On quiet rooms the task + its `broadcast::Receiver`
 linger indefinitely, and the connection count drifts.
 **Fix:** track forwarder handles in a per-connection `JoinSet` and `.abort()` them in cleanup.
 
 ### P1-6 · `room_senders` map grows unbounded (client-controlled keys)
+
 `api/src/routes/websocket.rs:257–275`
 `unsubscribe_room` deliberately keeps the `broadcast::Sender` ("for potential reconnections") when
 the count hits zero, so the map is append-only over process lifetime. Room slugs are
@@ -141,26 +156,28 @@ client-supplied, so subscribing to N distinct slugs retains N 1000-slot channels
 validate slugs against a known-room allowlist.
 
 ### P1-7 · Systemic: ~107 SQLx `Result`s swallowed with `.unwrap_or_default()` across ~47 files
+
 Directly violates CLAUDE.md ("Don't swallow errors with `unwrap_or_default()` on `Result<T,E>` —
 propagate via `?`"). A DB error (pool exhaustion, deadlock, dropped conn) becomes an empty
 `Vec`/default returned as **`200 OK`**, masking outages and serving incomplete data as authoritative.
 Member-facing / data-integrity examples:
+
 - `routes/member_courses/player.rs:162,169,176` — lessons / downloads / progress: a DB error renders a **paid course empty** to the member.
 - `routes/videos.rs:442,469,483,528`; `routes/coupons.rs:292` (user coupons → "none"); `routes/members.rs:306,790`; `admin_member_management/crud.rs` (5); `indicators_admin.rs` (8); `room_resources/admin_crud.rs` (8); `member_courses/quizzes.rs` (4); and more.
-**Fix:** mechanical sweep to `.map_err(|e| { error!(...); ApiError::... })?`, matching the webhook
-handlers' propagation style (which is exemplary). Prioritize member/payment-facing handlers first.
+  **Fix:** mechanical sweep to `.map_err(|e| { error!(...); ApiError::... })?`, matching the webhook
+  handlers' propagation style (which is exemplary). Prioritize member/payment-facing handlers first.
 
 ---
 
 ## P2 — Medium
 
 - **P2-1 · Redis invalidation stalls + silently no-ops L1.** `services/redis.rs:589` uses blocking
-  `KEYS` (O(N), stalls the single-threaded server for *all* clients) despite a comment claiming
+  `KEYS` (O(N), stalls the single-threaded server for _all_ clients) despite a comment claiming
   `SCAN`; and the L1 `PatternMatcher` (`cache/service.rs:633`) only honors the **first** `*`, while
   every pattern in `cache/keys.rs` has 2+ wildcards → L1 invalidation matches **nothing**, serving
   stale alerts/trades until TTL. **Fix:** cursor-based `SCAN`; real glob matching.
 - **P2-2 · TOTP code replay within the ±1-period (90s) window.** `services/mfa.rs:257–285` never
-  records the consumed counter (backup codes *are* single-use). **Fix:** persist last-accepted
+  records the consumed counter (backup codes _are_ single-use). **Fix:** persist last-accepted
   `time/period` per user, reject `<=`.
 - **P2-3 · Pagination offset overflow.** `(page-1)*per_page` with unbounded `page: i64` on ~25 list
   endpoints (`posts.rs:201`, `members.rs:90`, `videos.rs:174`, `indicators_admin.rs:35`, …). Release
@@ -170,7 +187,7 @@ handlers' propagation style (which is exemplary). Prioritize member/payment-faci
   behind a **byte**-length guard; a multibyte char near the end panics the handler. **Fix:** slice on
   a char boundary.
 - **P2-5 · Proration whole-day truncation.** `routes/subscriptions/change_plan.rs:96–104` uses
-  `num_days()` + integer division for the *preview* credit; diverges from Stripe's actual proration
+  `num_days()` + integer division for the _preview_ credit; diverges from Stripe's actual proration
   shown to the user. **Fix:** compute in seconds, or surface Stripe's upcoming-invoice preview.
 - **P2-6 · Refund webhook defaults `charge.amount` to 0.** `routes/payments/webhook_refund.rs:30–32`
   — a malformed/absent `amount` makes any nonzero refund look "full" (`refund >= 0`) and revokes all
@@ -213,7 +230,7 @@ handlers' propagation style (which is exemplary). Prioritize member/payment-faci
 ## Positives (verified — preserve these)
 
 - **Stripe webhook core:** constant-time signature verify with 5-min timestamp tolerance over exact
-  bytes (`services/stripe.rs:956`), `webhook_events`-PK idempotency that correctly *reprocesses* a
+  bytes (`services/stripe.rs:956`), `webhook_events`-PK idempotency that correctly _reprocesses_ a
   partially-processed event, and full single-transaction atomicity with `?`-propagation; rejects
   before any DB write; prod-with-no-secret returns 500. Idempotency keys on refunds.
 - **Money types:** `i64` cents end-to-end; DB `NUMERIC` with exact `::BIGINT / 100.0` (numeric, not
@@ -226,7 +243,7 @@ handlers' propagation style (which is exemplary). Prioritize member/payment-faci
   `AdminUser`/`SuperAdminUser` extractors enforce DB role; email allowlist only honors verified accounts.
 - **CSPRNG** for all sessions/tokens/state/nonce/PKCE/TOTP/backup codes; **constant-time** compares
   via `subtle`. Spoof-resistant client-IP via trusted-proxy CIDR allowlist.
-- **SQL:** every *live* dynamic builder (`room_analytics`, `room_search`, `cms_audit`, `oauth/user`'s
+- **SQL:** every _live_ dynamic builder (`room_analytics`, `room_search`, `cms_audit`, `oauth/user`'s
   `AssertSqlSafe`, `schedules/admin`, ~12 `ORDER BY` sites) is correctly parameterized — interpolates
   only `$N` placeholders or hardcoded/allowlisted identifiers, never user values.
 - **Concurrency:** **zero** `std::sync` guards held across `.await`; all shared state on

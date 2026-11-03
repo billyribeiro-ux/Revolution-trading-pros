@@ -2,7 +2,6 @@
 	"name": "revolution-trading-pros-monorepo",
 	"version": "2.0.0",
 	"private": true,
-	"packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
 	"scripts": {
 		"dev:all": "docker compose up -d db redis meili && concurrently --names \"api,web\" --prefix-colors \"yellow,cyan\" \"cd api && cargo run\" \"pnpm --filter revolution-svelte dev\"",
 		"dev:reset": "docker compose down -v && docker volume rm revolution-trading-pros_postgres_data revolution-trading-pros_meili_data 2>/dev/null || true && docker compose up -d db redis meili && echo '✅ Volumes wiped. Run pnpm dev:all to start fresh.'",
@@ -21,13 +20,16 @@
 		"api:lint": "cd api && cargo machete && cargo deny check && cargo clippy --locked --all-targets -- -D warnings",
 		"api:lint:machete": "cd api && cargo machete",
 		"api:lint:deny": "cd api && cargo deny check",
-		"api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings"
+		"api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings",
+		"prepare": "vp config"
+	},
+	"devDependencies": {
+		"concurrently": "^10.0.6",
+		"vite-plus": "catalog:"
 	},
 	"engines": {
 		"node": ">=26.13.0",
 		"pnpm": ">=12.16.1"
 	},
-	"devDependencies": {
-		"concurrently": "^10.0.6"
-	}
+	"packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1"
 }

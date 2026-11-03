@@ -50,30 +50,30 @@ Then open [http://localhost:5173](http://localhost:5173) and log in at
 
 ## Docs
 
-| Where | What |
-|-------|------|
-| [`docs/development/LOCAL_DEV.md`](docs/development/LOCAL_DEV.md) | Boot the stack from a fresh clone in 10 min |
-| [`docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md`](docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md) | Stack reference, public URLs, full auth flow |
-| [`docs/audits/`](docs/audits/) | All audits, newest first — start with `SEO_AND_SVELTE_AUDIT_2026-10-28.md` and `PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md` |
-| [`docs/setup/`](docs/setup/) | Production deployment + Stripe + R2 setup |
-| [`docs/frontend/`](docs/frontend/) | Frontend-specific guides (admin responsive, footer audit, remote-functions migration) |
-| [`docs/audits/`](docs/audits/) (incident/forensic reports) | Older incident and forensic reports also live in `docs/audits/` — there is no separate `docs/forensics/` directory |
+| Where                                                                                                    | What                                                                                                                    |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [`docs/development/LOCAL_DEV.md`](docs/development/LOCAL_DEV.md)                                         | Boot the stack from a fresh clone in 10 min                                                                             |
+| [`docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md`](docs/architecture/SYSTEM_ARCHITECTURE_AND_AUTH.md) | Stack reference, public URLs, full auth flow                                                                            |
+| [`docs/audits/`](docs/audits/)                                                                           | All audits, newest first — start with `SEO_AND_SVELTE_AUDIT_2026-10-28.md` and `PRINCIPAL_ENGINEER_AUDIT_2026-07-19.md` |
+| [`docs/setup/`](docs/setup/)                                                                             | Production deployment + Stripe + R2 setup                                                                               |
+| [`docs/frontend/`](docs/frontend/)                                                                       | Frontend-specific guides (admin responsive, footer audit, remote-functions migration)                                   |
+| [`docs/audits/`](docs/audits/) (incident/forensic reports)                                               | Older incident and forensic reports also live in `docs/audits/` — there is no separate `docs/forensics/` directory      |
 
 ## Stack
 
-| Layer | Technology | Where it runs |
-|-------|-----------|---------------|
-| Frontend | SvelteKit 3 / Svelte 5 / Vite 8 | Cloudflare Pages (prod), `pnpm dev` (local) |
-| Backend | Rust 1.99 + Axum 0.8 | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
-| Database | PostgreSQL 18 + sqlx 0.9 | prod target TBD, Docker (local) |
-| Cache / sessions / rate-limit / JWT blacklist | Redis 8 | Upstash (prod), Docker (local) |
-| Object storage | Cloudflare R2 (S3-compatible) | Cloudflare |
-| Search | Meilisearch | Meilisearch Cloud |
-| Email | Postmark | Postmark |
-| Payments | Stripe | external |
-| Video / large file CDN | Bunny.net | Bunny |
-| Realtime | WebSockets + SSE | same API process (deploy target TBD) |
-| Error tracking | Sentry | Sentry SaaS |
+| Layer                                         | Technology                      | Where it runs                                                |
+| --------------------------------------------- | ------------------------------- | ------------------------------------------------------------ |
+| Frontend                                      | SvelteKit 3 / Svelte 5 / Vite 8 | Cloudflare Pages (prod), `pnpm dev` (local)                  |
+| Backend                                       | Rust 1.99 + Axum 0.8            | prod target TBD (Fly.io stripped 2026-04-28), Docker (local) |
+| Database                                      | PostgreSQL 18 + sqlx 0.9        | prod target TBD, Docker (local)                              |
+| Cache / sessions / rate-limit / JWT blacklist | Redis 8                         | Upstash (prod), Docker (local)                               |
+| Object storage                                | Cloudflare R2 (S3-compatible)   | Cloudflare                                                   |
+| Search                                        | Meilisearch                     | Meilisearch Cloud                                            |
+| Email                                         | Postmark                        | Postmark                                                     |
+| Payments                                      | Stripe                          | external                                                     |
+| Video / large file CDN                        | Bunny.net                       | Bunny                                                        |
+| Realtime                                      | WebSockets + SSE                | same API process (deploy target TBD)                         |
+| Error tracking                                | Sentry                          | Sentry SaaS                                                  |
 
 ## Development commands
 
@@ -105,22 +105,22 @@ cd api && cargo test --test utils_test \
 
 ## Status of the system (2026-10-28, Node 26.13.0 LTS + SvelteKit 3.1.0 + full dependency sweep)
 
-| Gate | Status |
-|------|--------|
-| Frontend typecheck (svelte-check 4.7.7) | ✅ 0 errors / 0 warnings |
-| Frontend strict typecheck (`check:strict`, `--fail-on-warnings`) | ✅ 0 / 0 |
-| Frontend a11y compiler gate (`check:a11y`) | ✅ 0 / 0 |
-| Frontend lint (eslint 10.13.0) | ✅ 0 errors (4 pre-existing `no-useless-escape` warnings) |
-| Frontend format (prettier 3.9.10) | ✅ clean |
-| Frontend unit (vitest 5.0.5) | ✅ 2,778 passed / 32 skipped (63 files) |
-| Frontend production build + prerender + service worker | ✅ |
-| Post-build HTML SEO audit (`node scripts/seo-audit.ts`) | ✅ 76/76 prerendered pages passed, 0 errors / 0 warnings |
-| Frontend a11y suite (playwright) | ⚠️ 1 pre-existing failure — see BACKLOG.md item 4 |
-| Backend `cargo fmt` + `clippy -D warnings` (Rust 1.99.1) | ✅ clean |
-| Backend `cargo deny check` + `cargo machete` | ✅ clean, no advisory exemptions / no unused deps |
-| Backend no-DB tests (router smoke, utils, stripe) | ✅ 51 pass |
-| SSR on the Cloudflare runtime | ✅ 0 × 5xx across 62 top-level routes (fixed 2026-10-10) |
-| Production deploy | ⚠️ backend target TBD (Fly.io stripped 2026-04-28) |
+| Gate                                                             | Status                                                    |
+| ---------------------------------------------------------------- | --------------------------------------------------------- |
+| Frontend typecheck (svelte-check 4.7.7)                          | ✅ 0 errors / 0 warnings                                  |
+| Frontend strict typecheck (`check:strict`, `--fail-on-warnings`) | ✅ 0 / 0                                                  |
+| Frontend a11y compiler gate (`check:a11y`)                       | ✅ 0 / 0                                                  |
+| Frontend lint (eslint 10.13.0)                                   | ✅ 0 errors (4 pre-existing `no-useless-escape` warnings) |
+| Frontend format (prettier 3.9.10)                                | ✅ clean                                                  |
+| Frontend unit (vitest 5.0.5)                                     | ✅ 2,778 passed / 32 skipped (63 files)                   |
+| Frontend production build + prerender + service worker           | ✅                                                        |
+| Post-build HTML SEO audit (`node scripts/seo-audit.ts`)          | ✅ 76/76 prerendered pages passed, 0 errors / 0 warnings  |
+| Frontend a11y suite (playwright)                                 | ⚠️ 1 pre-existing failure — see BACKLOG.md item 4         |
+| Backend `cargo fmt` + `clippy -D warnings` (Rust 1.99.1)         | ✅ clean                                                  |
+| Backend `cargo deny check` + `cargo machete`                     | ✅ clean, no advisory exemptions / no unused deps         |
+| Backend no-DB tests (router smoke, utils, stripe)                | ✅ 51 pass                                                |
+| SSR on the Cloudflare runtime                                    | ✅ 0 × 5xx across 62 top-level routes (fixed 2026-10-10)  |
+| Production deploy                                                | ⚠️ backend target TBD (Fly.io stripped 2026-04-28)        |
 
 > SvelteKit 3 is on the stable release line (`@sveltejs/kit` 3.1.0,
 > `@sveltejs/adapter-cloudflare` 8.0.1) and no deprecated Kit API remains in

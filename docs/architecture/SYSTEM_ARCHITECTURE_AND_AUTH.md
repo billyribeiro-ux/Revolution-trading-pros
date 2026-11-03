@@ -11,20 +11,20 @@ code wins and this doc needs updating.
 
 ## 1. Stack at a glance
 
-| Layer | Technology | Hosting | Path in repo |
-|-------|-----------|---------|--------------|
-| Frontend | SvelteKit 2 + Svelte 5 (runes) + Vite 7 | Cloudflare Pages | [`frontend/`](frontend/) |
-| Backend API | Rust + Axum 0.7 | Fly.io | [`api/`](api/) |
-| Workspace package mgr | pnpm 10.33.2 | — | root [`pnpm-workspace.yaml`](pnpm-workspace.yaml) |
-| Database | PostgreSQL (Fly.io managed) | Fly.io | accessed via `sqlx` 0.8 |
-| Cache + sessions / rate limit / blacklist | Redis (Upstash) | Upstash | accessed via `redis` 0.27 |
-| Object storage | Cloudflare R2 (S3-compatible) | Cloudflare | `aws-sdk-s3` 1.65 |
-| Search | Meilisearch | Meilisearch Cloud | `meilisearch` SDK |
-| Email | Postmark | Postmark | direct HTTPS |
-| Payments | Stripe + PayPal | external | `stripe` Rust + `@stripe/stripe-js` on web |
-| Video / large file CDN | Bunny.net (Stream + Storage) | Bunny | direct HTTPS |
-| Realtime | Axum WebSockets + Server-Sent Events | same Fly.io app | `routes/websocket.rs`, `routes/realtime.rs` |
-| Error tracking | Sentry | Sentry SaaS | `@sentry/sveltekit` (frontend) |
+| Layer                                     | Technology                              | Hosting           | Path in repo                                      |
+| ----------------------------------------- | --------------------------------------- | ----------------- | ------------------------------------------------- |
+| Frontend                                  | SvelteKit 2 + Svelte 5 (runes) + Vite 7 | Cloudflare Pages  | [`frontend/`](frontend/)                          |
+| Backend API                               | Rust + Axum 0.7                         | Fly.io            | [`api/`](api/)                                    |
+| Workspace package mgr                     | pnpm 10.33.2                            | —                 | root [`pnpm-workspace.yaml`](pnpm-workspace.yaml) |
+| Database                                  | PostgreSQL (Fly.io managed)             | Fly.io            | accessed via `sqlx` 0.8                           |
+| Cache + sessions / rate limit / blacklist | Redis (Upstash)                         | Upstash           | accessed via `redis` 0.27                         |
+| Object storage                            | Cloudflare R2 (S3-compatible)           | Cloudflare        | `aws-sdk-s3` 1.65                                 |
+| Search                                    | Meilisearch                             | Meilisearch Cloud | `meilisearch` SDK                                 |
+| Email                                     | Postmark                                | Postmark          | direct HTTPS                                      |
+| Payments                                  | Stripe + PayPal                         | external          | `stripe` Rust + `@stripe/stripe-js` on web        |
+| Video / large file CDN                    | Bunny.net (Stream + Storage)            | Bunny             | direct HTTPS                                      |
+| Realtime                                  | Axum WebSockets + Server-Sent Events    | same Fly.io app   | `routes/websocket.rs`, `routes/realtime.rs`       |
+| Error tracking                            | Sentry                                  | Sentry SaaS       | `@sentry/sveltekit` (frontend)                    |
 
 The two ends communicate over HTTPS only. The frontend never embeds API
 credentials at build time — it talks to the API through SvelteKit `+server.ts`
@@ -33,12 +33,12 @@ forward bodies.
 
 ### Public service URLs
 
-| Purpose | URL |
-|---------|-----|
-| Production frontend | `https://revolution-trading-pros.pages.dev` |
-| Production API | `<your-api-host>` |
-| WebSocket | `<your-api-host-ws>` |
-| R2 public bucket | `https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev` |
+| Purpose             | URL                                                   |
+| ------------------- | ----------------------------------------------------- |
+| Production frontend | `https://revolution-trading-pros.pages.dev`           |
+| Production API      | `<your-api-host>`                                     |
+| WebSocket           | `<your-api-host-ws>`                                  |
+| R2 public bucket    | `https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev` |
 
 These are pinned in [`frontend/wrangler.toml`](frontend/wrangler.toml) and
 [`.env.example`](.env.example).
@@ -89,13 +89,13 @@ the security-header layer wrap the whole router via `tower-http`.
 
 ### Datastores reached from the API
 
-| Store | Used for |
-|-------|----------|
-| PostgreSQL | source of truth: users, content, orders, audit log, MFA secrets |
-| Redis (Upstash) | sessions, rate limits, JWT revocation list, real-time room state |
-| R2 | uploaded media, CMS assets, exports |
-| Bunny Stream + Storage | course videos, large downloads |
-| Meilisearch | full-text search across CMS, indicators, posts |
+| Store                  | Used for                                                         |
+| ---------------------- | ---------------------------------------------------------------- |
+| PostgreSQL             | source of truth: users, content, orders, audit log, MFA secrets  |
+| Redis (Upstash)        | sessions, rate limits, JWT revocation list, real-time room state |
+| R2                     | uploaded media, CMS assets, exports                              |
+| Bunny Stream + Storage | course videos, large downloads                                   |
+| Meilisearch            | full-text search across CMS, indicators, posts                   |
 
 ---
 
@@ -134,13 +134,13 @@ frontend/src/
 
 ### Build / dev commands (run from `frontend/`)
 
-| Command | Purpose |
-|---------|---------|
-| `pnpm dev` | Vite dev server on `:5173` |
-| `pnpm build` | Production build (`.svelte-kit/cloudflare`) |
-| `pnpm check` | `svelte-kit sync && svelte-check` (typecheck) |
-| `pnpm test:unit` | Vitest |
-| `pnpm exec playwright test tests/e2e --project=chromium` | E2E |
+| Command                                                  | Purpose                                       |
+| -------------------------------------------------------- | --------------------------------------------- |
+| `pnpm dev`                                               | Vite dev server on `:5173`                    |
+| `pnpm build`                                             | Production build (`.svelte-kit/cloudflare`)   |
+| `pnpm check`                                             | `svelte-kit sync && svelte-check` (typecheck) |
+| `pnpm test:unit`                                         | Vitest                                        |
+| `pnpm exec playwright test tests/e2e --project=chromium` | E2E                                           |
 
 ---
 
@@ -165,11 +165,11 @@ Reasons documented in the code:
 
 ### 5.1 Token strategy
 
-| Token | Issued by | Stored as | Lifetime | Purpose |
-|-------|-----------|-----------|----------|---------|
-| Access JWT | API `POST /api/auth/login`, `/refresh`, OAuth callbacks | `httpOnly` cookie `rtp_access_token` (`SameSite=Lax`, `Secure` in prod) | `expires_in` from API (~1h default) | Bearer to API |
-| Refresh JWT | API on login + every refresh | `httpOnly` cookie `rtp_refresh_token` | 30 days | Mint new access tokens |
-| MFA-pending JWT | API when MFA is required mid-login | returned in body, **not** set as cookie | short | Tied to a single MFA verification |
+| Token           | Issued by                                               | Stored as                                                               | Lifetime                            | Purpose                           |
+| --------------- | ------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------- | --------------------------------- |
+| Access JWT      | API `POST /api/auth/login`, `/refresh`, OAuth callbacks | `httpOnly` cookie `rtp_access_token` (`SameSite=Lax`, `Secure` in prod) | `expires_in` from API (~1h default) | Bearer to API                     |
+| Refresh JWT     | API on login + every refresh                            | `httpOnly` cookie `rtp_refresh_token`                                   | 30 days                             | Mint new access tokens            |
+| MFA-pending JWT | API when MFA is required mid-login                      | returned in body, **not** set as cookie                                 | short                               | Tied to a single MFA verification |
 
 JWT signing is HMAC, secret in `JWT_SECRET`. Library: `jsonwebtoken` 9.2 on the
 API side. Verification helper: [`api/src/middleware/auth.rs`](api/src/middleware/auth.rs).
@@ -254,28 +254,29 @@ code challenges are generated server-side; nothing leaks into the browser.
   same `rtp_*` cookies.
 
 Routes:
+
 - Rust: [`api/src/routes/oauth.rs`](api/src/routes/oauth.rs)
 - Frontend proxies: [`frontend/src/routes/api/auth/google/`](frontend/src/routes/api/auth/google/),
   [`frontend/src/routes/api/auth/apple/`](frontend/src/routes/api/auth/apple/)
 
 ### 5.7 Endpoint map
 
-| Method | Path | Purpose | Where |
-|--------|------|---------|-------|
-| POST | `/api/auth/register` | create account | `auth.rs:62` |
-| POST | `/api/auth/login` | password login → JWT pair | `auth.rs:465` |
-| POST | `/api/auth/refresh` | rotate refresh + access JWT | `auth.rs:719` |
-| GET  | `/api/auth/me` | current user (requires Bearer) | `auth.rs:787` |
-| POST | `/api/auth/logout` | revoke current session | `auth.rs:809` |
-| POST | `/api/auth/logout-all` | revoke every session | `auth.rs:866` |
-| POST | `/api/auth/forgot-password` | email a reset token | `auth.rs` |
-| POST | `/api/auth/reset-password` | consume reset token | `auth.rs` |
-| GET  | `/api/auth/verify-email` | confirm email | `auth.rs:229` |
-| POST | `/api/auth/resend-verification` | re-issue verify email | `auth.rs` |
-| GET  | `/api/oauth/google` | start Google flow | `oauth.rs` |
-| GET  | `/api/oauth/google/callback` | Google return | `oauth.rs` |
-| GET  | `/api/oauth/apple` | start Apple flow | `oauth.rs` |
-| POST | `/api/oauth/apple/callback` | Apple return (form_post) | `oauth.rs` |
+| Method | Path                            | Purpose                        | Where         |
+| ------ | ------------------------------- | ------------------------------ | ------------- |
+| POST   | `/api/auth/register`            | create account                 | `auth.rs:62`  |
+| POST   | `/api/auth/login`               | password login → JWT pair      | `auth.rs:465` |
+| POST   | `/api/auth/refresh`             | rotate refresh + access JWT    | `auth.rs:719` |
+| GET    | `/api/auth/me`                  | current user (requires Bearer) | `auth.rs:787` |
+| POST   | `/api/auth/logout`              | revoke current session         | `auth.rs:809` |
+| POST   | `/api/auth/logout-all`          | revoke every session           | `auth.rs:866` |
+| POST   | `/api/auth/forgot-password`     | email a reset token            | `auth.rs`     |
+| POST   | `/api/auth/reset-password`      | consume reset token            | `auth.rs`     |
+| GET    | `/api/auth/verify-email`        | confirm email                  | `auth.rs:229` |
+| POST   | `/api/auth/resend-verification` | re-issue verify email          | `auth.rs`     |
+| GET    | `/api/oauth/google`             | start Google flow              | `oauth.rs`    |
+| GET    | `/api/oauth/google/callback`    | Google return                  | `oauth.rs`    |
+| GET    | `/api/oauth/apple`              | start Apple flow               | `oauth.rs`    |
+| POST   | `/api/oauth/apple/callback`     | Apple return (form_post)       | `oauth.rs`    |
 
 Frontend mirror (each is a thin proxy):
 
@@ -307,11 +308,11 @@ Implemented in [`api/src/services/mfa.rs`](api/src/services/mfa.rs).
 Implemented in [`frontend/src/hooks.server.ts`](frontend/src/hooks.server.ts).
 
 ```ts
-const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout',
-                          '/trading-room', '/admin'];
+const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room', '/admin'];
 ```
 
 For every request:
+
 1. Read `rtp_access_token` cookie (and `Authorization` header for direct API
    hits).
 2. If present, validate via API (`GET /api/auth/me`) and populate
@@ -329,10 +330,10 @@ Admin pages additionally check `event.locals.user.role === 'admin'` inside
 Two layers in [`api/src/middleware/`](api/src/middleware/):
 
 1. **`auth.rs`** — extracts `Authorization: Bearer <jwt>`, verifies signature
-   + expiry, hashes the token and checks the **Redis revocation list**, then
-   inserts the resolved `User` into request extensions. Routes typed as
-   `async fn handler(user: User, …)` get auth automatically by virtue of the
-   `FromRequestParts` impl.
+   - expiry, hashes the token and checks the **Redis revocation list**, then
+     inserts the resolved `User` into request extensions. Routes typed as
+     `async fn handler(user: User, …)` get auth automatically by virtue of the
+     `FromRequestParts` impl.
 2. **`admin.rs`** — runs after `auth` and rejects any non-admin user with
    `403`.
 

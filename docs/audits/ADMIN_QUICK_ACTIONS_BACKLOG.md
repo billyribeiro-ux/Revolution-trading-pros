@@ -13,14 +13,14 @@ uses, and the work required to give it a real home.
 
 ## Aliased tiles — current behaviour
 
-| Tile | Intended route | Alias (current) | Notes |
-|------|----------------|-----------------|-------|
-| Notifications | `/admin/notifications` | `/admin/popups` | Popups overlap conceptually (in-app overlays). A dedicated push/email/SMS notification centre is owed. |
-| Links | `/admin/links` | `/admin/seo` | SEO already covers redirects and internal-link management; a standalone link manager is owed once we ship UTM tagging + short links. |
-| Filters | `/admin/filters` | `/admin/categories` | Filters and categories share data plumbing today. Once filter rules diverge from taxonomy, split this. |
-| Broadcast | `/admin/broadcast` | `/admin/email` | Broadcast is a special-case email send. Promote to its own route when we add SMS / push channels. |
-| Global | `/admin/international` | `/admin/settings` | i18n / locale config currently lives under settings; carve out its own surface when locale count > 2. |
-| Alerts | `/admin/alerts` | `/admin/indicators` | Trading alerts and indicators share state today. Once user-facing alert subscriptions ship, give them a dedicated admin page. |
+| Tile          | Intended route         | Alias (current)     | Notes                                                                                                                                |
+| ------------- | ---------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Notifications | `/admin/notifications` | `/admin/popups`     | Popups overlap conceptually (in-app overlays). A dedicated push/email/SMS notification centre is owed.                               |
+| Links         | `/admin/links`         | `/admin/seo`        | SEO already covers redirects and internal-link management; a standalone link manager is owed once we ship UTM tagging + short links. |
+| Filters       | `/admin/filters`       | `/admin/categories` | Filters and categories share data plumbing today. Once filter rules diverge from taxonomy, split this.                               |
+| Broadcast     | `/admin/broadcast`     | `/admin/email`      | Broadcast is a special-case email send. Promote to its own route when we add SMS / push channels.                                    |
+| Global        | `/admin/international` | `/admin/settings`   | i18n / locale config currently lives under settings; carve out its own surface when locale count > 2.                                |
+| Alerts        | `/admin/alerts`        | `/admin/indicators` | Trading alerts and indicators share state today. Once user-facing alert subscriptions ship, give them a dedicated admin page.        |
 
 ---
 

@@ -16,17 +16,17 @@ Svelte 5 frontend, Rust + Axum backend, supporting infrastructure.
 
 ## 1. Quality gates — actual results
 
-| Gate                                     | Result | Detail                                                                          |
-| ---------------------------------------- | ------ | ------------------------------------------------------------------------------- |
-| `pnpm check` (svelte-check)              | ✅     | 5,217 files, 0 errors, 0 warnings                                               |
-| `pnpm vitest run`                        | ✅     | 36 files, 1,700 passed, 32 skipped, 0 failed (100.4 s)                          |
-| `pnpm lint` (eslint)                     | ❌     | **5 errors**, 2,237 warnings — see §2                                           |
-| `cargo check --locked`                   | ✅     | clean compile (4m 26s)                                                          |
-| `cargo clippy --locked --all-targets -D warnings` | ✅ | clean — no warnings                                                          |
-| `cargo test --no-run --locked`           | ✅     | every test binary compiles                                                      |
-| `cargo machete`                          | ⚠     | tool not installed in this environment                                          |
-| `cargo deny check`                       | ⚠     | tool not installed in this environment                                          |
-| Playwright e2e                           | ⏸     | requires running stack (Docker stack not started in this audit; deferred)       |
+| Gate                                              | Result | Detail                                                                    |
+| ------------------------------------------------- | ------ | ------------------------------------------------------------------------- |
+| `pnpm check` (svelte-check)                       | ✅     | 5,217 files, 0 errors, 0 warnings                                         |
+| `pnpm vitest run`                                 | ✅     | 36 files, 1,700 passed, 32 skipped, 0 failed (100.4 s)                    |
+| `pnpm lint` (eslint)                              | ❌     | **5 errors**, 2,237 warnings — see §2                                     |
+| `cargo check --locked`                            | ✅     | clean compile (4m 26s)                                                    |
+| `cargo clippy --locked --all-targets -D warnings` | ✅     | clean — no warnings                                                       |
+| `cargo test --no-run --locked`                    | ✅     | every test binary compiles                                                |
+| `cargo machete`                                   | ⚠      | tool not installed in this environment                                    |
+| `cargo deny check`                                | ⚠      | tool not installed in this environment                                    |
+| Playwright e2e                                    | ⏸      | requires running stack (Docker stack not started in this audit; deferred) |
 
 **Net assessment:** type safety is at zero, Rust is at zero clippy debt, unit
 tests pass in full. The only failing gate is `pnpm lint`, and it's failing on
@@ -39,13 +39,13 @@ five very small, fix-in-an-hour items. This is a healthy baseline.
 All five are real, all five are trivially fixable, and none would land in
 runtime code paths used by end users.
 
-| # | File | Line | Rule | Diagnosis |
-|---|------|------|------|-----------|
-| 1 | `frontend/src/lib/server/auth.ts` | 79 | `no-undef` (`App`) | `App.Locals` is a SvelteKit ambient type — eslint config is missing the `App` global declaration. |
-| 2 | `frontend/src/lib/server/auth.ts` | 101 | `no-undef` (`App`) | Same as #1. |
-| 3 | `frontend/src/routes/(dev)/workbench/ComponentTree.svelte` | 27 | `svelte/no-unnecessary-state-wrap` | `let expandedFolders = $state<SvelteSet<string>>(new SvelteSet(['root']))` — `SvelteSet` is already reactive; the `$state` wrapper is dead. The official Svelte MCP autofixer flagged the identical issue. Fix: drop the `$state` wrapper. |
-| 4 | `frontend/src/routes/(dev)/workbench/ComponentTree.svelte` | 28 | `svelte/no-unnecessary-state-wrap` | Same as #3, on `favorites`. |
-| 5 | `frontend/src/routes/admin/indicators/create/+page.svelte` | 287 | `preserve-caught-error` | Re-thrown error drops `cause`. Fix: `throw new Error(msg, { cause: err })`. |
+| #   | File                                                       | Line | Rule                               | Diagnosis                                                                                                                                                                                                                                  |
+| --- | ---------------------------------------------------------- | ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `frontend/src/lib/server/auth.ts`                          | 79   | `no-undef` (`App`)                 | `App.Locals` is a SvelteKit ambient type — eslint config is missing the `App` global declaration.                                                                                                                                          |
+| 2   | `frontend/src/lib/server/auth.ts`                          | 101  | `no-undef` (`App`)                 | Same as #1.                                                                                                                                                                                                                                |
+| 3   | `frontend/src/routes/(dev)/workbench/ComponentTree.svelte` | 27   | `svelte/no-unnecessary-state-wrap` | `let expandedFolders = $state<SvelteSet<string>>(new SvelteSet(['root']))` — `SvelteSet` is already reactive; the `$state` wrapper is dead. The official Svelte MCP autofixer flagged the identical issue. Fix: drop the `$state` wrapper. |
+| 4   | `frontend/src/routes/(dev)/workbench/ComponentTree.svelte` | 28   | `svelte/no-unnecessary-state-wrap` | Same as #3, on `favorites`.                                                                                                                                                                                                                |
+| 5   | `frontend/src/routes/admin/indicators/create/+page.svelte` | 287  | `preserve-caught-error`            | Re-thrown error drops `cause`. Fix: `throw new Error(msg, { cause: err })`.                                                                                                                                                                |
 
 **Volume of warnings (2,237)** is overwhelmingly `no-console` in `frontend/scripts/*.ts` and `frontend/tests/*.ts` — these are dev/test artifacts, not production code. The eslint config could be relaxed for those folders (override block restricting `no-console` to `src/lib`, `src/routes`).
 
@@ -255,7 +255,7 @@ Updated successor to §9 of `docs/audits/DISTINGUISHED_ENGINEER_AUDIT_2026-04-25
 
 The user requested an investigation of "every single file, function end to end."
 The repo has ≈1,827 source files. No human or agent reads every file in
-detail in a single pass; what we did is run *every* available end-to-end
+detail in a single pass; what we did is run _every_ available end-to-end
 quality gate (which transitively touches every file the build sees), plus
 four parallel specialized surveys that each sampled the integration points
 and traced the critical paths in their domain. Where a finding cites a

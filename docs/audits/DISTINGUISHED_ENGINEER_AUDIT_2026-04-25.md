@@ -7,6 +7,7 @@
 **Scope:** six parallel read-only sweeps + live verification of all four test gates.
 
 This report is the third in the series. Read first:
+
 1. [`PRODUCT_AND_AUTH_AUDIT_2026-04-25.md`](PRODUCT_AND_AUTH_AUDIT_2026-04-25.md) — auth, RBAC/ABAC, CRUD coverage, products, remote-functions plan
 2. [`ADMIN_AND_CMS_AUDIT_2026-04-25.md`](ADMIN_AND_CMS_AUDIT_2026-04-25.md) — backend admin, CMS v2, frontend admin/dashboard, integration
 3. **this doc** — anti-patterns, test gaps, dead code, perf, security hygiene, a11y/SEO/observability/i18n
@@ -21,15 +22,15 @@ plan PRs.
 
 ### 0.1 Test-gate results
 
-| Gate | Command | Result | Time |
-|------|---------|--------|------|
-| **Frontend typecheck** | `pnpm --filter revolution-svelte run check` | **8799 files / 0 errors / 0 warnings** | ~30s |
-| **Frontend unit (vitest)** | `pnpm --filter revolution-svelte test:unit` | **1442 passed / 32 skipped / 0 errors / 0 unhandled** | 6.0s (post-cache) |
-| **Frontend e2e (playwright chromium)** | `pnpm exec playwright test tests/e2e --project=chromium` | **85 passed / 8 skipped / 0 failed** | 29.5s |
-| **Backend cargo check** | `cargo check` | clean compile | 1m 8s |
-| **Backend cargo test --no-run** | `cargo test --no-run` | clean compile (5 test binaries built) | 1m 53s |
-| **Backend cargo unit tests (no-DB)** | `cargo test --test utils_test --test stripe_test` | **17 passed / 0 failed** | 0.5s |
-| **Backend integration / e2e** | `cargo test --test integration_tests` etc. | **NOT RUN** (Fly DB unreachable) | — |
+| Gate                                   | Command                                                  | Result                                                | Time              |
+| -------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------- | ----------------- |
+| **Frontend typecheck**                 | `pnpm --filter revolution-svelte run check`              | **8799 files / 0 errors / 0 warnings**                | ~30s              |
+| **Frontend unit (vitest)**             | `pnpm --filter revolution-svelte test:unit`              | **1442 passed / 32 skipped / 0 errors / 0 unhandled** | 6.0s (post-cache) |
+| **Frontend e2e (playwright chromium)** | `pnpm exec playwright test tests/e2e --project=chromium` | **85 passed / 8 skipped / 0 failed**                  | 29.5s             |
+| **Backend cargo check**                | `cargo check`                                            | clean compile                                         | 1m 8s             |
+| **Backend cargo test --no-run**        | `cargo test --no-run`                                    | clean compile (5 test binaries built)                 | 1m 53s            |
+| **Backend cargo unit tests (no-DB)**   | `cargo test --test utils_test --test stripe_test`        | **17 passed / 0 failed**                              | 0.5s              |
+| **Backend integration / e2e**          | `cargo test --test integration_tests` etc.               | **NOT RUN** (Fly DB unreachable)                      | —                 |
 
 The 8 e2e skips: 3 are `test.fixme` for the CMS toolbar regression (well
 known, see prior audit); 5 are conditional skips because admin / accessibility
@@ -49,38 +50,38 @@ clean again.
 This is the canonical list. Every item is hyperlinked to its full section
 below.
 
-| # | Finding | Where | Severity |
-|---|---------|-------|----------|
-| 1 | **CMS editor toolbar broken** — `<button onclick={…addBlock(type)}>` doesn't fire after bits-ui v2 upgrade. Three e2e tests are `test.fixme` because of this. | [`frontend/src/routes/cms/editor/+page.svelte:113`](frontend/src/routes/cms/editor/+page.svelte#L113) | **Critical** |
-| 2 | **Stripe Checkout-Session creation is a `// TODO` stub** — funnel can't take money via self-serve | `api/src/routes/subscriptions.rs:446` | **Critical** |
-| 3 | **15+ `let _ = sqlx::query(…)`** in `cms_scheduling.rs` and `admin_courses.rs:1829` — schedule release logic silently fails, no audit trail | [§3.A2](#3-anti-patterns-rust-backend) | **High — data integrity** |
-| 4 | **WebSocket has no JWT validation** — anyone with the URL subscribes to live alerts | `api/src/routes/websocket.rs:344` | **High — paid content leak** |
-| 5 | **`/admin` frontend has no role gate** — confirmed in this sweep again | `frontend/src/routes/admin/+layout.ts:1-4` | **High — defense-in-depth** |
-| 6 | **Favorites proxy reads wrong cookie** | `frontend/src/routes/api/favorites/+server.ts:32` | **High — feature broken in prod** |
-| 7 | **4 unsanitized `{@html …}` components** — PostContentField, AccordionTabField, MobileResponsiveTable, VideoTranscript | [§7.B1](#7-security-hygiene) | **High — XSS** |
-| 8 | **30+ static `gsap` imports** ship the full library on every page that touches the options-calculator routes | [§5](#5-performance) | **High — bundle bloat** |
-| 9 | **N+1 INSERT in orders + course-section reorder + lesson reorder** | `orders.rs:917-931`, `courses_admin.rs:715-725, 898-910` | **High — perf** |
-| 10 | **Test coverage ~23% measured by hand** — auth, OAuth, checkout, admin routes have **zero** integration tests | [§4](#4-test-coverage) | **High — regression risk** |
-| 11 | **194 `as any` + 29 `@ts-ignore/expect-error`** | [§3.B1, B2](#3-anti-patterns-typescript--svelte-frontend) | **Medium** |
-| 12 | **OAuth tokens travel in URL query string on callback** | `api/src/routes/oauth.rs:840-854` | Medium |
-| 13 | **No transactions on multi-step admin mutations** (already documented in prior audit) | `admin.rs:958-1037` | Medium |
-| 14 | **Mixed admin auth pattern** — `User+require_admin()` vs `AdminUser` extractor (already documented) | `admin.rs` vs `admin_*.rs` | Medium |
-| 15 | **14 hardcoded fly.dev URLs** (already documented) | spread across frontend | Medium |
-| 16 | **3 retry implementations** (already documented) | catch-all + Axum + admin.ts | Medium |
-| 17 | **MFA dormant** — service complete, login never branches on `mfa_enabled` | `api/src/services/mfa.rs` | Medium |
-| 18 | **No rate limit on register / forgot-password / reset-password endpoints** — only login is rate-limited | `api/src/routes/auth.rs` | Medium |
-| 19 | **186 `console.log`** in frontend production code (some in `hooks.server.ts:157, 222, 233, 281, 300` leaking auth flow details) | [§3.B4](#3-anti-patterns-typescript--svelte-frontend) | Medium |
-| 20 | **92 `<img>` without `alt`** out of 103 — 11% compliance | [§8.A](#8-accessibility-seo-observability-i18n) | Medium |
-| 21 | **3,983 of 4,131 icons (~96%) lack `aria-hidden`** | [§8.A](#8-accessibility-seo-observability-i18n) | Medium |
-| 22 | **No skip-link to main content** | `hooks.server.ts` lacks the markup | Medium |
-| 23 | **i18n score 1/10** — no Paraglide, all hardcoded English, all dates/numbers `'en-US'`, prices `$`-only | [§8.D](#8-accessibility-seo-observability-i18n) | Low (depends on roadmap) |
-| 24 | **2 unused frontend deps** — `vivus`, `lottie-web` | [§6.A](#6-dead-code-and-unused-dependencies) | Low |
-| 25 | **1 doc drift** — `SETUP_GUIDE.md:75` still says `npm install` | `SETUP_GUIDE.md:75` | Low |
-| 26 | **`#[allow(dead_code)]` × 13 + 3 commented-out modules** in routes/mod.rs | [§6.B](#6-dead-code-and-unused-dependencies) | Low |
-| 27 | **No Lighthouse CI / no perf budget** | repo lacks both configs | Low |
-| 28 | **`SITEMAP_CACHE` static `RwLock<HashMap>` with no TTL** — sitemap can serve stale forever | `api/src/routes/sitemap.rs:29-30` | Low |
-| 29 | **`Regex::new(...)` per request** — should be `LazyLock` / `once_cell` | `api/src/routes/cms_seo.rs:351` | Low |
-| 30 | **CSP allows `'unsafe-inline'` for scripts** — could tighten to nonces | `frontend/svelte.config.js:54-61`; backend `main.rs:189-190` | Low |
+| #   | Finding                                                                                                                                                       | Where                                                                                                 | Severity                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------- |
+| 1   | **CMS editor toolbar broken** — `<button onclick={…addBlock(type)}>` doesn't fire after bits-ui v2 upgrade. Three e2e tests are `test.fixme` because of this. | [`frontend/src/routes/cms/editor/+page.svelte:113`](frontend/src/routes/cms/editor/+page.svelte#L113) | **Critical**                      |
+| 2   | **Stripe Checkout-Session creation is a `// TODO` stub** — funnel can't take money via self-serve                                                             | `api/src/routes/subscriptions.rs:446`                                                                 | **Critical**                      |
+| 3   | **15+ `let _ = sqlx::query(…)`** in `cms_scheduling.rs` and `admin_courses.rs:1829` — schedule release logic silently fails, no audit trail                   | [§3.A2](#3-anti-patterns-rust-backend)                                                                | **High — data integrity**         |
+| 4   | **WebSocket has no JWT validation** — anyone with the URL subscribes to live alerts                                                                           | `api/src/routes/websocket.rs:344`                                                                     | **High — paid content leak**      |
+| 5   | **`/admin` frontend has no role gate** — confirmed in this sweep again                                                                                        | `frontend/src/routes/admin/+layout.ts:1-4`                                                            | **High — defense-in-depth**       |
+| 6   | **Favorites proxy reads wrong cookie**                                                                                                                        | `frontend/src/routes/api/favorites/+server.ts:32`                                                     | **High — feature broken in prod** |
+| 7   | **4 unsanitized `{@html …}` components** — PostContentField, AccordionTabField, MobileResponsiveTable, VideoTranscript                                        | [§7.B1](#7-security-hygiene)                                                                          | **High — XSS**                    |
+| 8   | **30+ static `gsap` imports** ship the full library on every page that touches the options-calculator routes                                                  | [§5](#5-performance)                                                                                  | **High — bundle bloat**           |
+| 9   | **N+1 INSERT in orders + course-section reorder + lesson reorder**                                                                                            | `orders.rs:917-931`, `courses_admin.rs:715-725, 898-910`                                              | **High — perf**                   |
+| 10  | **Test coverage ~23% measured by hand** — auth, OAuth, checkout, admin routes have **zero** integration tests                                                 | [§4](#4-test-coverage)                                                                                | **High — regression risk**        |
+| 11  | **194 `as any` + 29 `@ts-ignore/expect-error`**                                                                                                               | [§3.B1, B2](#3-anti-patterns-typescript--svelte-frontend)                                             | **Medium**                        |
+| 12  | **OAuth tokens travel in URL query string on callback**                                                                                                       | `api/src/routes/oauth.rs:840-854`                                                                     | Medium                            |
+| 13  | **No transactions on multi-step admin mutations** (already documented in prior audit)                                                                         | `admin.rs:958-1037`                                                                                   | Medium                            |
+| 14  | **Mixed admin auth pattern** — `User+require_admin()` vs `AdminUser` extractor (already documented)                                                           | `admin.rs` vs `admin_*.rs`                                                                            | Medium                            |
+| 15  | **14 hardcoded fly.dev URLs** (already documented)                                                                                                            | spread across frontend                                                                                | Medium                            |
+| 16  | **3 retry implementations** (already documented)                                                                                                              | catch-all + Axum + admin.ts                                                                           | Medium                            |
+| 17  | **MFA dormant** — service complete, login never branches on `mfa_enabled`                                                                                     | `api/src/services/mfa.rs`                                                                             | Medium                            |
+| 18  | **No rate limit on register / forgot-password / reset-password endpoints** — only login is rate-limited                                                       | `api/src/routes/auth.rs`                                                                              | Medium                            |
+| 19  | **186 `console.log`** in frontend production code (some in `hooks.server.ts:157, 222, 233, 281, 300` leaking auth flow details)                               | [§3.B4](#3-anti-patterns-typescript--svelte-frontend)                                                 | Medium                            |
+| 20  | **92 `<img>` without `alt`** out of 103 — 11% compliance                                                                                                      | [§8.A](#8-accessibility-seo-observability-i18n)                                                       | Medium                            |
+| 21  | **3,983 of 4,131 icons (~96%) lack `aria-hidden`**                                                                                                            | [§8.A](#8-accessibility-seo-observability-i18n)                                                       | Medium                            |
+| 22  | **No skip-link to main content**                                                                                                                              | `hooks.server.ts` lacks the markup                                                                    | Medium                            |
+| 23  | **i18n score 1/10** — no Paraglide, all hardcoded English, all dates/numbers `'en-US'`, prices `$`-only                                                       | [§8.D](#8-accessibility-seo-observability-i18n)                                                       | Low (depends on roadmap)          |
+| 24  | **2 unused frontend deps** — `vivus`, `lottie-web`                                                                                                            | [§6.A](#6-dead-code-and-unused-dependencies)                                                          | Low                               |
+| 25  | **1 doc drift** — `SETUP_GUIDE.md:75` still says `npm install`                                                                                                | `SETUP_GUIDE.md:75`                                                                                   | Low                               |
+| 26  | **`#[allow(dead_code)]` × 13 + 3 commented-out modules** in routes/mod.rs                                                                                     | [§6.B](#6-dead-code-and-unused-dependencies)                                                          | Low                               |
+| 27  | **No Lighthouse CI / no perf budget**                                                                                                                         | repo lacks both configs                                                                               | Low                               |
+| 28  | **`SITEMAP_CACHE` static `RwLock<HashMap>` with no TTL** — sitemap can serve stale forever                                                                    | `api/src/routes/sitemap.rs:29-30`                                                                     | Low                               |
+| 29  | **`Regex::new(...)` per request** — should be `LazyLock` / `once_cell`                                                                                        | `api/src/routes/cms_seo.rs:351`                                                                       | Low                               |
+| 30  | **CSP allows `'unsafe-inline'` for scripts** — could tighten to nonces                                                                                        | `frontend/svelte.config.js:54-61`; backend `main.rs:189-190`                                          | Low                               |
 
 The first 10 are the worst by impact-per-hour-of-fix. Items 11-22 are the
 "slow hum" — none of them block a release alone, together they're why the
@@ -91,6 +92,7 @@ codebase feels slippery.
 ## 1. Methodology
 
 Six independent agents ran read-only sweeps in parallel:
+
 - **Anti-patterns / code smells** (Rust + TS + repo hygiene)
 - **Test coverage** (vitest + playwright + cargo)
 - **Dead code / unused deps / doc drift**
@@ -225,16 +227,16 @@ clippy `clippy::clone_on_ref_ptr`/`clone_on_copy` pass and a rule sweep.
 
 #### A9. Production TODOs in routes (20+ instances, the biggest by impact)
 
-| Location | Note |
-|----------|------|
-| `routes/subscriptions.rs:446` | Stripe Checkout-Session creation |
-| `routes/websocket.rs:344` | JWT validation on the WS handshake |
-| `routes/health.rs:320` | "Re-enable when migration file is created" |
-| `routes/newsletter.rs:251, 318` | "Actually send confirmation email" |
-| `routes/media.rs:1174` | Malware scanning integration |
-| `routes/admin_videos.rs:323-324, 366-367, 644-645, 662-663` | Trader/room metadata, weekly/monthly aggregates |
-| `routes/mod.rs:40, 109` | `// TODO: Fix SQLx tuple decoding issues` (admin-indicators-enhanced disabled) |
-| `routes/connections.rs:near GA4 placeholder` | GA4 measurement-ID placeholder marker |
+| Location                                                    | Note                                                                           |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `routes/subscriptions.rs:446`                               | Stripe Checkout-Session creation                                               |
+| `routes/websocket.rs:344`                                   | JWT validation on the WS handshake                                             |
+| `routes/health.rs:320`                                      | "Re-enable when migration file is created"                                     |
+| `routes/newsletter.rs:251, 318`                             | "Actually send confirmation email"                                             |
+| `routes/media.rs:1174`                                      | Malware scanning integration                                                   |
+| `routes/admin_videos.rs:323-324, 366-367, 644-645, 662-663` | Trader/room metadata, weekly/monthly aggregates                                |
+| `routes/mod.rs:40, 109`                                     | `// TODO: Fix SQLx tuple decoding issues` (admin-indicators-enhanced disabled) |
+| `routes/connections.rs:near GA4 placeholder`                | GA4 measurement-ID placeholder marker                                          |
 
 #### A10. `Regex::new(...)` per request
 
@@ -268,6 +270,7 @@ Bypasses the proxy/auth/CSRF/rate-limit layer the rest of the system
 relies on.
 
 Sample call sites:
+
 - `lib/options-calculator/components/growth/LeadCaptureModal.svelte:76` — `fetch('/api/newsletter/subscribe')`
 - `lib/components/ClassDownloads.svelte:99` — `fetch(url, { credentials: 'include' })`
 - `lib/components/PopupModal.svelte:601` — `fetch(currentPopup.formAction)`
@@ -279,12 +282,14 @@ Sample call sites:
 #### B4. `console.log` in production code (186 instances)
 
 Including auth flow details:
+
 - `hooks.server.ts:157, 222, 233, 281, 300` — token issues and refresh
   failures with full token IDs visible in browser DevTools.
 
 #### B5. `onMount` for data fetching (50+ instances)
 
 Should be `load` / `query` / `prerender`. Sample:
+
 - `RateLimitIndicator.svelte:143`
 - `RelatedVideos.svelte:72`
 - `FormCollaborators.svelte:207`
@@ -312,58 +317,58 @@ Should be `load` / `query` / `prerender`. Sample:
 
 ### 4.1 Inventory
 
-| Layer | Files | Test count | Pass status |
-|-------|-------|-----------|-------------|
-| Vitest unit/component | 34 | 1442 (32 skipped) | ✅ all green |
-| Playwright frontend e2e | 10 specs | ~91 | ✅ 85 / 8 skipped / 0 failed |
-| Playwright blog-editor e2e | 6 specs | ~279 | ✅ |
-| Cargo (Rust) | 24 files | 99 functions | partial — 17 utils+stripe pass; integration tests need DB |
+| Layer                      | Files    | Test count        | Pass status                                               |
+| -------------------------- | -------- | ----------------- | --------------------------------------------------------- |
+| Vitest unit/component      | 34       | 1442 (32 skipped) | ✅ all green                                              |
+| Playwright frontend e2e    | 10 specs | ~91               | ✅ 85 / 8 skipped / 0 failed                              |
+| Playwright blog-editor e2e | 6 specs  | ~279              | ✅                                                        |
+| Cargo (Rust)               | 24 files | 99 functions      | partial — 17 utils+stripe pass; integration tests need DB |
 
 ### 4.2 What's NOT tested — the gap matrix
 
-| Surface | Lines | Tests | Status |
-|---------|-------|-------|--------|
-| `routes/auth.rs` (login/register/refresh/logout/reset-password/verify-email) | 1103 | 0 | 🟥 **CRITICAL** |
-| `routes/oauth.rs` (Google + Apple flows) | 1100 | 0 | 🟥 |
-| `routes/checkout.rs` | 536 | 0 | 🟥 |
-| `routes/admin.rs` | 2892 | 0 | 🟥 |
-| `routes/admin_courses.rs` | 1211 | 0 | 🟥 |
-| `routes/admin_indicators.rs` | 1302 | 0 | 🟥 |
-| `routes/admin_members.rs` | 2680 | 0 | 🟥 |
-| `routes/admin_videos.rs` | 1300 | 0 | 🟥 |
-| `routes/admin_member_management.rs` | 1700 | 0 | 🟥 |
-| `middleware/admin.rs` (AdminUser extractor) | — | 0 | 🟥 |
-| `middleware/auth.rs` (JWT verify + blacklist) | — | 0 | 🟥 |
-| `services/mfa.rs` (TOTP + backup codes) | — | 0 | 🟥 |
-| `services/cms_audit.rs` | — | 0 | 🟥 |
-| `services/cms_workflow.rs` | — | 0 | 🟥 |
-| `services/cms_scheduler.rs` | — | 0 | 🟥 |
-| `routes/cms_delivery.rs` | — | 0 | 🟥 |
-| `routes/cms_revisions.rs` | — | 0 | 🟥 |
-| `LoginForm.svelte` / Register / PasswordReset | — | 0 | 🟥 |
-| `hooks.server.ts` (auth gate) | — | 0 | 🟥 |
-| 12 auth proxy `+server.ts` files | — | 0 | 🟥 |
-| 27 admin pages + 15 dashboard pages (component-level) | — | 0 | 🟥 |
-| `data.remote.ts` / `commands.remote.ts` (explosive-swings) | — | 0 | 🟥 |
+| Surface                                                                      | Lines | Tests | Status          |
+| ---------------------------------------------------------------------------- | ----- | ----- | --------------- |
+| `routes/auth.rs` (login/register/refresh/logout/reset-password/verify-email) | 1103  | 0     | 🟥 **CRITICAL** |
+| `routes/oauth.rs` (Google + Apple flows)                                     | 1100  | 0     | 🟥              |
+| `routes/checkout.rs`                                                         | 536   | 0     | 🟥              |
+| `routes/admin.rs`                                                            | 2892  | 0     | 🟥              |
+| `routes/admin_courses.rs`                                                    | 1211  | 0     | 🟥              |
+| `routes/admin_indicators.rs`                                                 | 1302  | 0     | 🟥              |
+| `routes/admin_members.rs`                                                    | 2680  | 0     | 🟥              |
+| `routes/admin_videos.rs`                                                     | 1300  | 0     | 🟥              |
+| `routes/admin_member_management.rs`                                          | 1700  | 0     | 🟥              |
+| `middleware/admin.rs` (AdminUser extractor)                                  | —     | 0     | 🟥              |
+| `middleware/auth.rs` (JWT verify + blacklist)                                | —     | 0     | 🟥              |
+| `services/mfa.rs` (TOTP + backup codes)                                      | —     | 0     | 🟥              |
+| `services/cms_audit.rs`                                                      | —     | 0     | 🟥              |
+| `services/cms_workflow.rs`                                                   | —     | 0     | 🟥              |
+| `services/cms_scheduler.rs`                                                  | —     | 0     | 🟥              |
+| `routes/cms_delivery.rs`                                                     | —     | 0     | 🟥              |
+| `routes/cms_revisions.rs`                                                    | —     | 0     | 🟥              |
+| `LoginForm.svelte` / Register / PasswordReset                                | —     | 0     | 🟥              |
+| `hooks.server.ts` (auth gate)                                                | —     | 0     | 🟥              |
+| 12 auth proxy `+server.ts` files                                             | —     | 0     | 🟥              |
+| 27 admin pages + 15 dashboard pages (component-level)                        | —     | 0     | 🟥              |
+| `data.remote.ts` / `commands.remote.ts` (explosive-swings)                   | —     | 0     | 🟥              |
 
 ### 4.3 Critical user flows — coverage table
 
-| Flow | E2E test? |
-|------|-----------|
-| Sign up | ❌ |
-| Login (email/password) | ⚠ smoke loads `/login`, doesn't submit |
-| OAuth (Google) | ❌ |
-| OAuth (Apple) | ❌ |
-| Logout | ❌ |
-| Password reset | ❌ |
-| Subscribe / checkout / payment | ❌ |
-| Buy an indicator | ❌ |
-| Enroll in course | ❌ |
-| Watch course video | ❌ |
-| Receive trade alert | ✅ (explosive-swings/admin.spec.ts — fixtures-mocked) |
-| Add to favorites / watchlist | ❌ |
-| Admin grants membership | ⚠ partial (fixtures only) |
-| Admin publishes CMS content | ❌ |
+| Flow                           | E2E test?                                             |
+| ------------------------------ | ----------------------------------------------------- |
+| Sign up                        | ❌                                                    |
+| Login (email/password)         | ⚠ smoke loads `/login`, doesn't submit                |
+| OAuth (Google)                 | ❌                                                    |
+| OAuth (Apple)                  | ❌                                                    |
+| Logout                         | ❌                                                    |
+| Password reset                 | ❌                                                    |
+| Subscribe / checkout / payment | ❌                                                    |
+| Buy an indicator               | ❌                                                    |
+| Enroll in course               | ❌                                                    |
+| Watch course video             | ❌                                                    |
+| Receive trade alert            | ✅ (explosive-swings/admin.spec.ts — fixtures-mocked) |
+| Add to favorites / watchlist   | ❌                                                    |
+| Admin grants membership        | ⚠ partial (fixtures only)                             |
+| Admin publishes CMS content    | ❌                                                    |
 
 ### 4.4 Estimated overall coverage
 
@@ -400,20 +405,20 @@ dashboard (most of the e2e tests).
 
 ### 5.1 Bundle composition (heavy deps that ship to browser)
 
-| Dep | Approx KB (min+gzip) | Static import? | Notes |
-|-----|----------------------|----------------|-------|
-| `gsap` | ~370 | **30+ static imports** across `options-calculator/*` | Worst offender |
-| `three` | ~500 (with @threlte) | guarded by dynamic Scene3D wrapper | OK |
-| `lightweight-charts` | ~200 | dashboard pages | acceptable on dashboard |
-| `d3` + 7 sub-modules | ~150 | 25 import sites | spread over admin analytics |
-| `html2canvas` | ~120 | dynamic via options-calculator export | OK |
-| `lottie-web` | ~80 | **unused** (dep declared, no imports) | Drop |
-| `vivus` | ~20 | **unused** | Drop |
-| `typed.js` | ~35 | static in auth/TypedHeadline | OK |
-| `embla-carousel` + `-svelte` | small | ✅ used | OK |
-| `canvas-confetti` | ~8 | dynamic in register | OK |
-| `blurhash` | ~2 | image placeholders | OK |
-| `@anthropic-ai/sdk` | server-only | ✓ confirmed isolated to `api/cms/ai/generate/+server.ts` | OK |
+| Dep                          | Approx KB (min+gzip) | Static import?                                           | Notes                       |
+| ---------------------------- | -------------------- | -------------------------------------------------------- | --------------------------- |
+| `gsap`                       | ~370                 | **30+ static imports** across `options-calculator/*`     | Worst offender              |
+| `three`                      | ~500 (with @threlte) | guarded by dynamic Scene3D wrapper                       | OK                          |
+| `lightweight-charts`         | ~200                 | dashboard pages                                          | acceptable on dashboard     |
+| `d3` + 7 sub-modules         | ~150                 | 25 import sites                                          | spread over admin analytics |
+| `html2canvas`                | ~120                 | dynamic via options-calculator export                    | OK                          |
+| `lottie-web`                 | ~80                  | **unused** (dep declared, no imports)                    | Drop                        |
+| `vivus`                      | ~20                  | **unused**                                               | Drop                        |
+| `typed.js`                   | ~35                  | static in auth/TypedHeadline                             | OK                          |
+| `embla-carousel` + `-svelte` | small                | ✅ used                                                  | OK                          |
+| `canvas-confetti`            | ~8                   | dynamic in register                                      | OK                          |
+| `blurhash`                   | ~2                   | image placeholders                                       | OK                          |
+| `@anthropic-ai/sdk`          | server-only          | ✓ confirmed isolated to `api/cms/ai/generate/+server.ts` | OK                          |
 
 ### 5.2 N+1 patterns (top 10)
 
@@ -507,6 +512,7 @@ routers.
 ### 7.A Re-confirmed open issues from prior audits
 
 All still open at `52e64a3b2`:
+
 - WebSocket no JWT validation (`websocket.rs:344`)
 - OAuth tokens via URL query string (`oauth.rs:840-854`)
 - Redis blacklist fails open (`middleware/auth.rs:60+`)
@@ -518,16 +524,16 @@ All still open at `52e64a3b2`:
 
 #### B1. Unsanitized `{@html …}` in 4 components — XSS risk
 
-| Component | What renders | Sanitized? |
-|-----------|-------------|------------|
-| `PopupDisplay.svelte` | popup content | ✅ via `sanitizePopupContent` |
-| `VideoEmbed.svelte` | overlay markup | ✅ via `sanitizeVideoOverlay` |
-| `VideoTranscript.svelte` | search-highlighted transcript | ⚠ via custom `highlightSearch` formatter — verify it escapes attacker input |
-| `PostContentField.svelte` | post body | 🟥 `{@html content || …}` raw |
-| `AccordionTabField.svelte` | section content | 🟥 `{@html section.content}` raw |
-| `MobileResponsiveTable.svelte` | cell value | 🟥 `{@html getValue(...)}` raw |
-| `SEOHead.svelte` | JSON-LD `<script>` | ✅ generated server-side |
-| `Breadcrumbs.svelte` | self-built `<scr+ipt>` | ✅ self-generated |
+| Component                      | What renders                  | Sanitized?                                                                  |
+| ------------------------------ | ----------------------------- | --------------------------------------------------------------------------- |
+| `PopupDisplay.svelte`          | popup content                 | ✅ via `sanitizePopupContent`                                               |
+| `VideoEmbed.svelte`            | overlay markup                | ✅ via `sanitizeVideoOverlay`                                               |
+| `VideoTranscript.svelte`       | search-highlighted transcript | ⚠ via custom `highlightSearch` formatter — verify it escapes attacker input |
+| `PostContentField.svelte`      | post body                     | 🟥 `{@html content                                                          |     | …}` raw |
+| `AccordionTabField.svelte`     | section content               | 🟥 `{@html section.content}` raw                                            |
+| `MobileResponsiveTable.svelte` | cell value                    | 🟥 `{@html getValue(...)}` raw                                              |
+| `SEOHead.svelte`               | JSON-LD `<script>`            | ✅ generated server-side                                                    |
+| `Breadcrumbs.svelte`           | self-built `<scr+ipt>`        | ✅ self-generated                                                           |
 
 Three of these (PostContentField, AccordionTabField, MobileResponsiveTable)
 render content that could be user-controlled with no sanitization —
@@ -539,6 +545,7 @@ classic stored-XSS shape.
 Redis → L1 in-memory → L2 DB). It's only applied to **login**.
 
 Missing on:
+
 - `register` — spam / enumeration
 - `forgot-password` — brute force email enumeration
 - `reset-password` — token brute force
@@ -576,23 +583,23 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 
 ### 7.D Top 15 security concerns (severity-ranked)
 
-| # | Issue | Where | Severity |
-|---|-------|-------|----------|
-| 1 | 4 unsanitized `{@html}` components | §7.B1 | High |
-| 2 | OAuth tokens via URL | `oauth.rs:840-854` | High |
-| 3 | WebSocket no JWT | `websocket.rs:344` | High |
-| 4 | `/admin` no frontend role gate | `admin/+layout.ts` | Medium |
-| 5 | MFA dormant | `services/mfa.rs` (not called) | Medium |
-| 6 | Redis blacklist fails open | `middleware/auth.rs` | Medium |
-| 7 | No rate limit on password-reset | `routes/auth.rs` | Medium |
-| 8 | No rate limit on register | `routes/auth.rs` | Medium |
-| 9 | CSP `unsafe-inline` for scripts | both configs | Low |
-| 10 | Dual auth pattern in admin | `admin.rs` vs `admin_*.rs` | Low |
-| 11 | Password-rule UX | `auth.rs:80` | Low |
-| 12 | CORS credentials globally allowed | `main.rs:161` | Low |
-| 13 | Bootstrap CLI uses raw process::Command | `bin/bootstrap_dev.rs:167` | Low (deploy-only) |
-| 14 | console.log of auth flow in hooks | `hooks.server.ts` | Low |
-| 15 | No Content-Encoding on large CSV exports | `routes/export.rs` | Very Low (perf, not sec) |
+| #   | Issue                                    | Where                          | Severity                 |
+| --- | ---------------------------------------- | ------------------------------ | ------------------------ |
+| 1   | 4 unsanitized `{@html}` components       | §7.B1                          | High                     |
+| 2   | OAuth tokens via URL                     | `oauth.rs:840-854`             | High                     |
+| 3   | WebSocket no JWT                         | `websocket.rs:344`             | High                     |
+| 4   | `/admin` no frontend role gate           | `admin/+layout.ts`             | Medium                   |
+| 5   | MFA dormant                              | `services/mfa.rs` (not called) | Medium                   |
+| 6   | Redis blacklist fails open               | `middleware/auth.rs`           | Medium                   |
+| 7   | No rate limit on password-reset          | `routes/auth.rs`               | Medium                   |
+| 8   | No rate limit on register                | `routes/auth.rs`               | Medium                   |
+| 9   | CSP `unsafe-inline` for scripts          | both configs                   | Low                      |
+| 10  | Dual auth pattern in admin               | `admin.rs` vs `admin_*.rs`     | Low                      |
+| 11  | Password-rule UX                         | `auth.rs:80`                   | Low                      |
+| 12  | CORS credentials globally allowed        | `main.rs:161`                  | Low                      |
+| 13  | Bootstrap CLI uses raw process::Command  | `bin/bootstrap_dev.rs:167`     | Low (deploy-only)        |
+| 14  | console.log of auth flow in hooks        | `hooks.server.ts`              | Low                      |
+| 15  | No Content-Encoding on large CSV exports | `routes/export.rs`             | Very Low (perf, not sec) |
 
 ### 7.E A 1-day hardening sprint
 
@@ -651,7 +658,7 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 - ✅ **Error boundaries** — `lib/components/patterns/ErrorBoundary.svelte`
   uses `<svelte:boundary>`; nested `BlockErrorBoundary.svelte` for the CMS.
 - ✅ **Health endpoint** — `/health` simple + `/health/detailed` checks DB
-  + Redis + storage with latency.
+  - Redis + storage with latency.
 - ✅ **Web Vitals** — LCP, CLS, INP tracked in `hooks.client.ts`, reported to GTM.
 - ✅ **Server-Timing** header — basic per-request total duration.
 - ⚠ **Frontend logger** is no-op in prod (good for security, bad for
@@ -668,12 +675,13 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 - ⚠ `Intl.DateTimeFormat` and `Intl.NumberFormat` are used (good!) but
   every call hardcodes `'en-US'`.
 - ❌ Currency hardcoded to USD with `$` symbol literal.
-- ✅ The infra to *add* i18n (locale-aware formatters, SEOHead supports
+- ✅ The infra to _add_ i18n (locale-aware formatters, SEOHead supports
   `ogAlternateLocales`) is present — it's just not wired.
 
 ### 8.E Quick wins per dimension
 
 **A11y (top 5):**
+
 1. Add `alt` to 92 images (~3 h)
 2. Add `aria-hidden="true"` to ~3900 decorative icons in a sweep (~2 h)
 3. Add skip-to-main-content link in `+layout.svelte` (30 min)
@@ -681,6 +689,7 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 5. `aria-live` on toast container + form-error containers (1 h)
 
 **SEO (top 5):**
+
 1. Populate dynamic descriptions for indicators / courses / blog posts (2 h)
 2. Audit title pattern across 10 public routes (1 h)
 3. Validate Article / Course schema with Google Rich Results test (2 h)
@@ -688,6 +697,7 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 5. Verify `super-sitemap` regenerates after content changes (30 min)
 
 **Observability (top 5):**
+
 1. Propagate `X-Request-ID` from frontend → backend (1 h)
 2. Sentry breadcrumbs for nav / form submit / click (1 h)
 3. Surface cache hit/miss metrics on Prometheus endpoint (1 h)
@@ -695,6 +705,7 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 5. Alert on web-vitals regression beyond budget (2 h)
 
 **i18n (top 5):**
+
 1. Install Paraglide (2 h)
 2. Extract 20 highest-traffic strings to messages (2 h)
 3. Make formatters locale-aware (1 h)
@@ -708,11 +719,13 @@ expose us to CSRF on any handler that takes form-encoded bodies.
 Combining this audit with the prior two, in priority order:
 
 ### Tier 0 — blocking
+
 1. **Restore Fly Postgres** (the DB outage from §7 of the prior audit). Nothing matters until login works.
 2. **Fix the CMS toolbar** (`cms/editor/+page.svelte:113`) — the headline feature can't author content.
 3. **Wire Stripe Checkout-Session creation** (`subscriptions.rs:446`) — revenue blocker.
 
 ### Tier 1 — under a day each, big payoff
+
 4. Frontend `/admin` role gate (`admin/+layout.server.ts`)
 5. Favorites proxy cookie fix (`api/favorites/+server.ts:32`)
 6. WebSocket JWT validation (`websocket.rs:344`)
@@ -725,6 +738,7 @@ Combining this audit with the prior two, in priority order:
 13. Fix `SETUP_GUIDE.md:75` doc drift
 
 ### Tier 2 — a week
+
 14. Wrap multi-step admin mutations in transactions (`grant_membership`, `bulk_assign_tags`, role updates)
 15. Migrate `admin.rs` to the `AdminUser` extractor uniformly
 16. Activate MFA at login (the service is complete)
@@ -740,6 +754,7 @@ Combining this audit with the prior two, in priority order:
 26. Fix the 30+ static GSAP imports — dynamic-import per page
 
 ### Tier 3 — a month
+
 27. Test coverage for `routes/auth.rs`, `routes/oauth.rs`, `routes/checkout.rs`, `services/mfa.rs`, `services/cms_workflow.rs`
 28. E2E specs for sign-up, login, OAuth, logout, password reset, subscribe, indicator purchase, course enrollment
 29. Lighthouse CI + perf budget
@@ -750,6 +765,7 @@ Combining this audit with the prior two, in priority order:
 34. i18n with Paraglide
 
 ### Tier 4 — when ready
+
 35. SuperAdmin impersonation real JWT (currently placeholder string at `admin.rs:1508-1510`)
 36. N+1 fixes (orders.rs:917, courses_admin.rs:715, 898)
 37. Trading-rooms admin CRUD UI (model exists; no editor)

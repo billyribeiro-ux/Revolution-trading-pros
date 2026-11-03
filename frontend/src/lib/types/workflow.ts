@@ -1,5 +1,12 @@
 export type NodeType =
-	'trigger' | 'condition' | 'action' | 'delay' | 'branch' | 'parallel' | 'merge' | 'end';
+	| 'trigger'
+	| 'condition'
+	| 'action'
+	| 'delay'
+	| 'branch'
+	| 'parallel'
+	| 'merge'
+	| 'end';
 
 export type WorkflowStatus = 'active' | 'paused' | 'archived';
 

@@ -6,10 +6,10 @@ Actions**. The two workflows in this repo (`ci.yml`,
 
 ## Secrets actually used
 
-| Secret | Workflow | Purpose |
-|--------|----------|---------|
-| `CLOUDFLARE_API_TOKEN` | `deploy-cloudflare.yml` (job `build-and-deploy`) | Cloudflare API token with "Pages: Edit" permission |
-| `CLOUDFLARE_ACCOUNT_ID` | `deploy-cloudflare.yml` (job `build-and-deploy`) | Cloudflare account ID |
+| Secret                  | Workflow                                         | Purpose                                            |
+| ----------------------- | ------------------------------------------------ | -------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | `deploy-cloudflare.yml` (job `build-and-deploy`) | Cloudflare API token with "Pages: Edit" permission |
+| `CLOUDFLARE_ACCOUNT_ID` | `deploy-cloudflare.yml` (job `build-and-deploy`) | Cloudflare account ID                              |
 
 `ci.yml` uses no secrets at all.
 
@@ -54,4 +54,5 @@ secrets or jobs exist in the current workflows. If a future workflow
 needs a new secret, add it to the table above in the same change.
 
 ---
+
 **Last updated:** 2026-07-19

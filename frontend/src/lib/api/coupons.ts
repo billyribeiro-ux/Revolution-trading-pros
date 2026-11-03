@@ -144,7 +144,14 @@ export interface Coupon {
 }
 
 export type CouponType =
-	'percentage' | 'fixed' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
+	| 'percentage'
+	| 'fixed'
+	| 'bogo'
+	| 'free_shipping'
+	| 'tiered'
+	| 'bundle'
+	| 'cashback'
+	| 'points';
 
 export interface Campaign {
 	id: string;
@@ -605,7 +612,11 @@ class CouponManagementService {
 		}
 
 		// Never attempt insecure ws:// on https:// origin (avoids Mixed Content & CSP violations)
-		if (typeof window !== 'undefined' && window.location.protocol === 'https:' && configuredWsUrl.startsWith('ws:')) {
+		if (
+			typeof window !== 'undefined' &&
+			window.location.protocol === 'https:' &&
+			configuredWsUrl.startsWith('ws:')
+		) {
 			return;
 		}
 

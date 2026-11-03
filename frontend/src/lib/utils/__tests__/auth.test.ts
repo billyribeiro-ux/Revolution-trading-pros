@@ -30,7 +30,7 @@
  *      two formats).
  */
 
-import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vite-plus/test';
 import { checkAdminStatus, checkAuthStatus } from '../auth';
 
 // Helper to build a mock Response object

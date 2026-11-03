@@ -11,41 +11,42 @@
 
 All 24 primary sidebar links route to **fully implemented** pages (>50 LOC, real data fetching, real UI). No dead links.
 
-| Section | Label | href | Route exists | State |
-|---------|-------|------|:-:|---|
-| (Root) | Overview | `/admin` | ✓ | Production dashboard |
-| Members | All Members | `/admin/members` | ✓ | List + filter + drawer |
-| Members | Segments | `/admin/members/segments` | ✓ | Has dynamic detail route |
-| Members | Subscriptions | `/admin/subscriptions` | ✓ | Real |
-| Members | Products | `/admin/products` | ✓ | Real |
-| Members | Coupons | `/admin/coupons` | ✓ | Real (UX issues — see UIUX audit) |
-| Content | Blog Posts | `/admin/blog` | ✓ | Full editor UI |
-| Content | Courses | `/admin/courses` | ✓ | With lessons |
-| Content | Indicators | `/admin/indicators` | ✓ | Builder |
-| Content | Trading Rooms | `/admin/trading-rooms` | ✓ | Real |
-| Content | Resources | `/admin/resources` | ✓ | Real |
-| Content | Categories | `/admin/blog/categories` | ✓ | Real |
-| Content | Media Library | `/admin/media` | ✓ | With analytics |
-| Content | Videos | `/admin/videos` | ✓ | Real |
-| Content | Popups | `/admin/popups` | ✓ | CRUD + analytics |
-| Content | Forms | `/admin/forms` | ✓ | Submissions |
-| Marketing | Campaigns | `/admin/email/campaigns` | ✓ | With reports |
-| Marketing | Email Templates | `/admin/email/templates` | ✓ | Preview/edit |
-| Marketing | Email Settings | `/admin/email/smtp` | ✓ | Real |
-| Marketing | SEO | `/admin/seo` | ✓ | Multiple subroutes |
-| Analytics | Dashboard | `/admin/analytics` | ✓ | 11 sub-routes (mostly stubbed APIs — see Analytics audit) |
-| Analytics | Behavior | `/admin/behavior` | ✓ | Real |
-| Analytics | CRM | `/admin/crm` | ✓ | 20+ subroutes |
-| System | Site Health | `/admin/site-health` | ✓ | Real |
-| System | Connections | `/admin/connections` | ✓ | Real |
-| System | Admin Users | `/admin/users` | ✓ | List + delete only (no create UI — see UIUX audit) |
-| System | Settings | `/admin/settings` | ✓ | OAuth + connections |
+| Section   | Label           | href                      | Route exists | State                                                     |
+| --------- | --------------- | ------------------------- | :----------: | --------------------------------------------------------- |
+| (Root)    | Overview        | `/admin`                  |      ✓       | Production dashboard                                      |
+| Members   | All Members     | `/admin/members`          |      ✓       | List + filter + drawer                                    |
+| Members   | Segments        | `/admin/members/segments` |      ✓       | Has dynamic detail route                                  |
+| Members   | Subscriptions   | `/admin/subscriptions`    |      ✓       | Real                                                      |
+| Members   | Products        | `/admin/products`         |      ✓       | Real                                                      |
+| Members   | Coupons         | `/admin/coupons`          |      ✓       | Real (UX issues — see UIUX audit)                         |
+| Content   | Blog Posts      | `/admin/blog`             |      ✓       | Full editor UI                                            |
+| Content   | Courses         | `/admin/courses`          |      ✓       | With lessons                                              |
+| Content   | Indicators      | `/admin/indicators`       |      ✓       | Builder                                                   |
+| Content   | Trading Rooms   | `/admin/trading-rooms`    |      ✓       | Real                                                      |
+| Content   | Resources       | `/admin/resources`        |      ✓       | Real                                                      |
+| Content   | Categories      | `/admin/blog/categories`  |      ✓       | Real                                                      |
+| Content   | Media Library   | `/admin/media`            |      ✓       | With analytics                                            |
+| Content   | Videos          | `/admin/videos`           |      ✓       | Real                                                      |
+| Content   | Popups          | `/admin/popups`           |      ✓       | CRUD + analytics                                          |
+| Content   | Forms           | `/admin/forms`            |      ✓       | Submissions                                               |
+| Marketing | Campaigns       | `/admin/email/campaigns`  |      ✓       | With reports                                              |
+| Marketing | Email Templates | `/admin/email/templates`  |      ✓       | Preview/edit                                              |
+| Marketing | Email Settings  | `/admin/email/smtp`       |      ✓       | Real                                                      |
+| Marketing | SEO             | `/admin/seo`              |      ✓       | Multiple subroutes                                        |
+| Analytics | Dashboard       | `/admin/analytics`        |      ✓       | 11 sub-routes (mostly stubbed APIs — see Analytics audit) |
+| Analytics | Behavior        | `/admin/behavior`         |      ✓       | Real                                                      |
+| Analytics | CRM             | `/admin/crm`              |      ✓       | 20+ subroutes                                             |
+| System    | Site Health     | `/admin/site-health`      |      ✓       | Real                                                      |
+| System    | Connections     | `/admin/connections`      |      ✓       | Real                                                      |
+| System    | Admin Users     | `/admin/users`            |      ✓       | List + delete only (no create UI — see UIUX audit)        |
+| System    | Settings        | `/admin/settings`         |      ✓       | OAuth + connections                                       |
 
 ---
 
 ## 2. Active-state detection — broken on nested routes (HIGH)
 
 **File:** `AdminSidebar.svelte:108`
+
 ```svelte
 let currentPath = $derived(page.url.pathname);
 class:active={currentPath === item.href}
@@ -53,14 +54,15 @@ class:active={currentPath === item.href}
 
 The exact-match comparison fails for any deep route:
 
-| User on | Expected highlight | Actual |
-|---------|---------------------|--------|
-| `/admin/members` | All Members | ✓ |
-| `/admin/members/123` | All Members | ✗ none |
-| `/admin/members/segments` | Segments | ✗ none |
-| `/admin/blog/post-slug/edit` | Blog Posts | ✗ none |
+| User on                      | Expected highlight | Actual |
+| ---------------------------- | ------------------ | ------ |
+| `/admin/members`             | All Members        | ✓      |
+| `/admin/members/123`         | All Members        | ✗ none |
+| `/admin/members/segments`    | Segments           | ✗ none |
+| `/admin/blog/post-slug/edit` | Blog Posts         | ✗ none |
 
 **Fix shape (longest-prefix match):**
+
 ```svelte
 let bestActiveHref = $derived.by(() => {
     const allHrefs = menuSections.flatMap((s) => s.items.map((i) => i.href));
@@ -129,14 +131,14 @@ The sidebar shows all 24 items to every user. The backend rejects non-admin requ
 
 ## 6. Accessibility — missing ARIA (MEDIUM)
 
-| Attribute | Required | Was | Now |
-|-----------|----------|-----|-----|
-| `<nav aria-label="…">` on the sidebar | yes | missing | ✅ "Admin primary navigation" |
-| `aria-current="page"` on the active link | yes | missing | ✅ wired to `bestActiveHref` |
-| `aria-hidden="true"` on decorative icons | yes | missing | ✅ added on every nav-item icon, avatar, and exit button |
-| `<nav role="navigation">` | implicit on `<nav>`, but explicit when needed | not needed | n/a |
-| Skip-to-content link | global concern | exists in `app.html` | unchanged |
-| `Esc` closes mobile drawer | yes | missing | not yet wired (see TODO below) |
+| Attribute                                | Required                                      | Was                  | Now                                                      |
+| ---------------------------------------- | --------------------------------------------- | -------------------- | -------------------------------------------------------- |
+| `<nav aria-label="…">` on the sidebar    | yes                                           | missing              | ✅ "Admin primary navigation"                            |
+| `aria-current="page"` on the active link | yes                                           | missing              | ✅ wired to `bestActiveHref`                             |
+| `aria-hidden="true"` on decorative icons | yes                                           | missing              | ✅ added on every nav-item icon, avatar, and exit button |
+| `<nav role="navigation">`                | implicit on `<nav>`, but explicit when needed | not needed           | n/a                                                      |
+| Skip-to-content link                     | global concern                                | exists in `app.html` | unchanged                                                |
+| `Esc` closes mobile drawer               | yes                                           | missing              | not yet wired (see TODO below)                           |
 
 **Status:** ✅ four of five fixed in this audit pass. Esc-to-close on the mobile drawer is documented as a follow-up.
 
@@ -148,10 +150,18 @@ The sidebar shows all 24 items to every user. The backend rejects non-admin requ
 
 ```css
 @media (max-width: 1024px) {
-    .admin-sidebar { transform: translateX(-100%); }
-    .admin-sidebar.open { transform: translateX(0); }
-    .close-btn { display: block; }
-    .sidebar-overlay { display: block; }
+	.admin-sidebar {
+		transform: translateX(-100%);
+	}
+	.admin-sidebar.open {
+		transform: translateX(0);
+	}
+	.close-btn {
+		display: block;
+	}
+	.sidebar-overlay {
+		display: block;
+	}
 }
 ```
 
@@ -163,11 +173,11 @@ No issues. Not changed.
 
 ## 8. Visual polish — minor
 
-| Issue | File:line | Severity | Fix |
-|-------|-----------|----------|-----|
-| Two "IconMail" icons for Email Templates + Email Settings — visually identical | `AdminSidebar.svelte:80-81` | low | use `IconMailOpen` or `IconMailbox` for one of them |
-| `.size-sm` action-dropdown buttons drop to 28×28 on mobile — below WCAG 2.2 AA touch target | `ActionsDropdown.svelte:147-149` | low | force `min-width: 44px; min-height: 44px;` on `(hover: none)` |
-| `width: 240px` hardcoded in sidebar CSS while `+layout.svelte:243` reads `var(--admin-sidebar-width, 240px)` | `AdminSidebar.svelte:173` | low | switch to the CSS var |
+| Issue                                                                                                        | File:line                        | Severity | Fix                                                           |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------- | -------- | ------------------------------------------------------------- |
+| Two "IconMail" icons for Email Templates + Email Settings — visually identical                               | `AdminSidebar.svelte:80-81`      | low      | use `IconMailOpen` or `IconMailbox` for one of them           |
+| `.size-sm` action-dropdown buttons drop to 28×28 on mobile — below WCAG 2.2 AA touch target                  | `ActionsDropdown.svelte:147-149` | low      | force `min-width: 44px; min-height: 44px;` on `(hover: none)` |
+| `width: 240px` hardcoded in sidebar CSS while `+layout.svelte:243` reads `var(--admin-sidebar-width, 240px)` | `AdminSidebar.svelte:173`        | low      | switch to the CSS var                                         |
 
 **Status:** documented; not blocking, batched into the upcoming "color + breakpoint sweep".
 

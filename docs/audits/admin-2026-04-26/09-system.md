@@ -92,6 +92,7 @@ The single-user proxy ships an in-memory `mockUsers` table that is consulted whe
 ### P0-2 — No `isSuperadmin` guard before role assignment / password reset / delete (PRIVILEGE ESCALATION)
 
 **Files:**
+
 - [`frontend/src/routes/api/admin/users/+server.ts:69-96`](../../../frontend/src/routes/api/admin/users/+server.ts) (POST create)
 - [`frontend/src/routes/api/admin/users/[id]/+server.ts:134-179, 182-212`](../../../frontend/src/routes/api/admin/users/%5Bid%5D/+server.ts) (PUT/DELETE)
 - [`frontend/src/routes/api/admin/users/[...rest]/+server.ts:7`](../../../frontend/src/routes/api/admin/users/%5B...rest%5D/+server.ts) (catch-all)
@@ -154,6 +155,7 @@ Compounds with P1-1 (orphan endpoint — see below): nothing in the codebase eve
 ### P0-4 — Settings/Connections pages call `/api/admin/connections/{key}/test` which has no `+server.ts` handler
 
 **Files:**
+
 - [`frontend/src/routes/admin/settings/+page.svelte:540`](../../../frontend/src/routes/admin/settings/+page.svelte) — `adminFetch('/api/admin/connections/${selectedService.key}/test', …)`
 - [`frontend/src/routes/admin/connections/+page.svelte:178`](../../../frontend/src/routes/admin/connections/+page.svelte) — same
 - Directory tree under `frontend/src/routes/api/admin/connections/[key]/` contains only `connect/` and `disconnect/`. There is no `test/+server.ts`.
@@ -170,23 +172,25 @@ This call goes through SvelteKit's catch-all routing; with no proxy file, the re
 
 ```ts
 const [deptRes, teamsRes, managersRes, locationsRes, trainingRes, onboardingRes] =
-    await Promise.allSettled([
-        fetch('/api/admin/organization/departments'),
-        fetch('/api/admin/organization/teams'),
-        fetch('/api/admin/users?role=manager&limit=50'),
-        fetch('/api/admin/organization/locations'),
-        fetch('/api/admin/organization/training-modules'),
-        fetch('/api/admin/organization/onboarding-plans')
-    ]);
+	await Promise.allSettled([
+		fetch('/api/admin/organization/departments'),
+		fetch('/api/admin/organization/teams'),
+		fetch('/api/admin/users?role=manager&limit=50'),
+		fetch('/api/admin/organization/locations'),
+		fetch('/api/admin/organization/training-modules'),
+		fetch('/api/admin/organization/onboarding-plans')
+	]);
 ```
 
 There is **no** `frontend/src/routes/api/admin/organization/` directory. Five of these six fetches will 404 every render. The page silently falls back to hard-coded defaults (lines 404-448), masking the bug.
 
 Plus lines 696-697 and 723-724 call:
+
 ```
 /api/admin/users/check-username?username=…
 /api/admin/users/check-email?email=…
 ```
+
 Neither exists in `routes/api/admin/users/` (only `+server.ts`, `[...rest]`, and `[id]`). The catch-all `[...rest]` will catch `check-username` but only because of the SvelteKit POST=405 shim (which forwards to backend at `/api/admin/users/check-username`) — which in turn has to exist on the Rust side. Audit cannot confirm. Most likely all three return 404 silently, so `usernameAvailable`/`emailAvailable` stay `null` and validation lets duplicate usernames through (see P1-3).
 
 **Action:** Either build the missing endpoints or strip the form down to fields the backend actually supports. Fingers-crossed-it-works is unacceptable for the user creation flow.
@@ -237,13 +241,14 @@ This is the same root cause as P0-1 but framed for write paths.
 ```
 
 When `usernameAvailable === null`, `validateForm()` line 570:
+
 ```ts
 } else if (!usernameAvailable) {
     errors.push({ field: 'username', message: 'Username is already taken', severity: 'error' });
 }
 ```
 
-`!null === true` — so this branch fires and *blocks* legitimate submissions when the check endpoint is missing, while the comment claims the opposite ("Don't block user"). Both behaviors are wrong: when you don't know, you should let the server be the source of truth, but the validator's `!usernameAvailable` is buggy. Same defect for email at line 578.
+`!null === true` — so this branch fires and _blocks_ legitimate submissions when the check endpoint is missing, while the comment claims the opposite ("Don't block user"). Both behaviors are wrong: when you don't know, you should let the server be the source of truth, but the validator's `!usernameAvailable` is buggy. Same defect for email at line 578.
 
 **Action:** Change to `usernameAvailable === false` for both checks. Then test the create flow end-to-end.
 
@@ -256,12 +261,12 @@ When `usernameAvailable === null`, `validateForm()` line 570:
 ```ts
 const body = await request.json();
 const res = await fetch(`${API_URL}/api/admin/connections/${key}/connect`, {
-    method: 'POST',
-    headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
+	method: 'POST',
+	headers: {
+		Authorization: `Bearer ${token}`,
+		'Content-Type': 'application/json'
+	},
+	body: JSON.stringify(body)
 });
 ```
 
@@ -277,6 +282,7 @@ Same notes apply to `/disconnect` ([disconnect/+server.ts:21](../../../frontend/
 ### P1-5 — `site-health/+page.svelte` calls `/api/admin/site-health` and `/api/admin/site-health/run-tests` — neither exists as a proxy
 
 **Files:**
+
 - [`frontend/src/routes/admin/site-health/+page.svelte:154`](../../../frontend/src/routes/admin/site-health/+page.svelte) — `await adminFetch('/api/admin/site-health')`
 - [`frontend/src/routes/admin/site-health/+page.svelte:261`](../../../frontend/src/routes/admin/site-health/+page.svelte) — `await adminFetch('/api/admin/site-health/run-tests', { method: 'POST' })`
 - No directory `frontend/src/routes/api/admin/site-health/` exists.
@@ -303,13 +309,14 @@ Per CREATE-not-DELETE, build the proxy. Until then, this page should display "Co
 
 ```ts
 $effect(() => {
-    loadUsers();
+	loadUsers();
 });
 ```
 
 Per recent commit `34a0bd070` ("replace $effect with onMount to resolve write-while-reading cascade issues"), this pattern was systematically migrated for CRM/campaigns. The same defect lives here: `loadUsers()` writes to `users`, `loading`, `error` state — all of which can become tracked dependencies of the parent component's reactive graph. `$effect` runs on every component re-instantiation including HMR; `onMount` runs once.
 
 **Action:** Convert to `onMount`. Same fix to apply at:
+
 - [`admin/users/edit/[id]/+page.svelte:24-26`](../../../frontend/src/routes/admin/users/edit/%5Bid%5D/+page.svelte)
 - [`admin/users/create/+page.svelte:375-379`](../../../frontend/src/routes/admin/users/create/+page.svelte)
 - [`admin/connections/+page.svelte:282-308`](../../../frontend/src/routes/admin/connections/+page.svelte)
@@ -326,25 +333,25 @@ The admin layout already corrected its own auth-guard $effect (see comments at l
 
 ```ts
 $effect(() => {
-    if (formData.username) {
-        checkUsernameAvailability();
-    }
+	if (formData.username) {
+		checkUsernameAvailability();
+	}
 });
 
 $effect(() => {
-    if (formData.email) {
-        checkEmailAvailability();
-    }
+	if (formData.email) {
+		checkEmailAvailability();
+	}
 });
 
 $effect(() => {
-    if (formData.password) {
-        checkPasswordStrength(formData.password);
-    }
+	if (formData.password) {
+		checkPasswordStrength(formData.password);
+	}
 });
 ```
 
-`checkUsernameAvailability` writes to `usernameAvailable`, `checkingUsername`. `checkPasswordStrength` writes to `passwordStrength` *and* awaits `checkBreachDatabase`. Each effect fires on every keystroke and dispatches an unthrottled fetch. No debouncing — typing "billy" fires 5 username-availability checks. Combined with P1-3's fail-open broken validator, this is a flood-the-server pattern.
+`checkUsernameAvailability` writes to `usernameAvailable`, `checkingUsername`. `checkPasswordStrength` writes to `passwordStrength` _and_ awaits `checkBreachDatabase`. Each effect fires on every keystroke and dispatches an unthrottled fetch. No debouncing — typing "billy" fires 5 username-availability checks. Combined with P1-3's fail-open broken validator, this is a flood-the-server pattern.
 
 **Action:** Debounce input (300-500ms). Migrate to event-driven (`oninput` handler with throttle) rather than reactive `$effect`.
 
@@ -356,8 +363,8 @@ $effect(() => {
 
 ```ts
 if (formData.password) {
-    payload.password = formData.password;
-    payload.password_confirmation = formData.password_confirmation;
+	payload.password = formData.password;
+	payload.password_confirmation = formData.password_confirmation;
 }
 ```
 
@@ -382,19 +389,23 @@ SvelteKit ships built-in CSRF protection that checks `Origin` against the host o
 ### P2-1 — Inconsistent auth-extraction pattern across proxies
 
 The connections endpoints use the canonical pattern:
+
 ```ts
 const token = cookies.get('rtp_access_token');
 if (!token) error(401, 'Unauthorized');
 ```
+
 ([connections/+server.ts:17-18](../../../frontend/src/routes/api/admin/connections/+server.ts), [connect/+server.ts:18-19](../../../frontend/src/routes/api/admin/connections/%5Bkey%5D/connect/+server.ts), [disconnect/+server.ts:18-19](../../../frontend/src/routes/api/admin/connections/%5Bkey%5D/disconnect/+server.ts), [createProxyShim.ts:52-53](../../../frontend/src/lib/utils/createProxyShim.ts))
 
 The users endpoints use the **fallback** pattern:
+
 ```ts
 const cookieToken = cookies.get('rtp_access_token');
 const headerToken = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
 const token = cookieToken || headerToken;
 if (!token) error(401, 'Unauthorized');
 ```
+
 ([users/+server.ts:45-49](../../../frontend/src/routes/api/admin/users/+server.ts), [users/[id]/+server.ts:90-93](../../../frontend/src/routes/api/admin/users/%5Bid%5D/+server.ts) — repeated 3×)
 
 The fallback to header isn't bad per se (allows server-side internal callers), but the pattern divergence makes auditing harder. Either standardize on one (preferably cookie-only, since the SvelteKit hook is the only supported auth-token producer) or extract to a single helper.
@@ -407,7 +418,7 @@ The fallback to header isn't bad per se (allows server-side internal callers), b
 
 ```ts
 if (status >= 400) {
-    error(status, 'Failed to create user');
+	error(status, 'Failed to create user');
 }
 ```
 
@@ -441,6 +452,7 @@ if (!res.ok) error(res.status as Parameters<typeof error>[0], `Backend returned 
 ```
 
 `error()` accepts only 4xx/5xx codes. Backend can return e.g. `502` and that's fine; but a malformed proxy that tries to forward `200` (`!res.ok` false branch is taken so this can't happen, but for safety on `connect/disconnect`) — the cast bypasses the type system. Wrap in:
+
 ```ts
 const status: number = res.status >= 400 && res.status <= 599 ? res.status : 500;
 error(status as 400 | 500, …);
@@ -532,10 +544,10 @@ Two checkboxes with the same `id` is invalid HTML. Screen readers and label clic
 
 ```ts
 async function uploadProfilePhoto(file: File): Promise<string> {
-    const formData = new FormData();
-    formData.append('photo', file);
-    // Mock upload - would be real API call
-    return 'https://example.com/photo.jpg';
+	const formData = new FormData();
+	formData.append('photo', file);
+	// Mock upload - would be real API call
+	return 'https://example.com/photo.jpg';
 }
 ```
 
@@ -547,8 +559,8 @@ Every created user's `profile_photo` field is set to `https://example.com/photo.
 
 ```ts
 async function checkBreachDatabase(password: string): Promise<boolean> {
-    const commonPasswords = ['password', '123456', 'qwerty', 'admin', 'letmein'];
-    return commonPasswords.includes(password.toLowerCase());
+	const commonPasswords = ['password', '123456', 'qwerty', 'admin', 'letmein'];
+	return commonPasswords.includes(password.toLowerCase());
 }
 ```
 
@@ -586,39 +598,45 @@ Fine for ≤44 services, but if the catalog grows, build a `Map<key, Service>` d
 
 **Verdict: 65% consistent — acceptable but spot fixes needed.**
 
-Commit message claimed: *"update authorization handling across admin API routes to prefer rtp_access_token cookie"*. Checking each proxy in this cluster:
+Commit message claimed: _"update authorization handling across admin API routes to prefer rtp_access_token cookie"_. Checking each proxy in this cluster:
 
-| File | Pattern | Notes |
-| --- | --- | --- |
-| [`api/admin/users/+server.ts:42-49, 69-76`](../../../frontend/src/routes/api/admin/users/+server.ts) | cookie + header fallback | Documented FIX-2026-04-26 marker. Good. |
-| [`api/admin/users/[id]/+server.ts:90-93, 140-143, 187-190`](../../../frontend/src/routes/api/admin/users/%5Bid%5D/+server.ts) | cookie + header fallback | Same pattern, repeated 3×. Should be a helper. |
-| [`api/admin/users/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/users/%5B...rest%5D/+server.ts) → [`createProxyShim.ts:52`](../../../frontend/src/lib/utils/createProxyShim.ts) | cookie-only | No header fallback. |
-| [`api/admin/connections/+server.ts:17, 29`](../../../frontend/src/routes/api/admin/connections/+server.ts) | cookie-only | Clean pattern. |
-| [`api/admin/connections/[key]/connect/+server.ts:18`](../../../frontend/src/routes/api/admin/connections/%5Bkey%5D/connect/+server.ts) | cookie-only | Clean pattern. |
-| [`api/admin/connections/[key]/disconnect/+server.ts:18`](../../../frontend/src/routes/api/admin/connections/%5Bkey%5D/disconnect/+server.ts) | cookie-only | Clean pattern. |
-| [`api/admin/connections/status/+server.ts`](../../../frontend/src/routes/api/admin/connections/status/+server.ts) | **NONE** | P0-3: no auth at all. The commit missed this file. |
+| File                                                                                                                                                                                            | Pattern                  | Notes                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------- |
+| [`api/admin/users/+server.ts:42-49, 69-76`](../../../frontend/src/routes/api/admin/users/+server.ts)                                                                                            | cookie + header fallback | Documented FIX-2026-04-26 marker. Good.            |
+| [`api/admin/users/[id]/+server.ts:90-93, 140-143, 187-190`](../../../frontend/src/routes/api/admin/users/%5Bid%5D/+server.ts)                                                                   | cookie + header fallback | Same pattern, repeated 3×. Should be a helper.     |
+| [`api/admin/users/[...rest]/+server.ts`](../../../frontend/src/routes/api/admin/users/%5B...rest%5D/+server.ts) → [`createProxyShim.ts:52`](../../../frontend/src/lib/utils/createProxyShim.ts) | cookie-only              | No header fallback.                                |
+| [`api/admin/connections/+server.ts:17, 29`](../../../frontend/src/routes/api/admin/connections/+server.ts)                                                                                      | cookie-only              | Clean pattern.                                     |
+| [`api/admin/connections/[key]/connect/+server.ts:18`](../../../frontend/src/routes/api/admin/connections/%5Bkey%5D/connect/+server.ts)                                                          | cookie-only              | Clean pattern.                                     |
+| [`api/admin/connections/[key]/disconnect/+server.ts:18`](../../../frontend/src/routes/api/admin/connections/%5Bkey%5D/disconnect/+server.ts)                                                    | cookie-only              | Clean pattern.                                     |
+| [`api/admin/connections/status/+server.ts`](../../../frontend/src/routes/api/admin/connections/status/+server.ts)                                                                               | **NONE**                 | P0-3: no auth at all. The commit missed this file. |
 
 Two divergences from the pure cookie-only pattern:
+
 1. The users endpoints add a header fallback. Defensible (allows server-to-server testing) but undocumented elsewhere — pick one and write it down.
 2. `connections/status` has zero auth. The commit's title "across admin API routes" should have caught it; it didn't because nothing calls it (orphan, P1-1).
 
 **Recommendation:** Extract a single helper:
+
 ```ts
 // $lib/server/auth.ts
 export function requireAdminToken(event: RequestEvent): string {
-    const cookieToken = event.cookies.get('rtp_access_token');
-    const headerToken = event.request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
-    const token = cookieToken || headerToken;
-    if (!token) throw error(401, 'Unauthorized');
-    return token;
+	const cookieToken = event.cookies.get('rtp_access_token');
+	const headerToken = event.request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const token = cookieToken || headerToken;
+	if (!token) throw error(401, 'Unauthorized');
+	return token;
 }
 
-export function requireSuperadmin(event: RequestEvent): { token: string; user: App.Locals['user'] } {
-    const token = requireAdminToken(event);
-    if (event.locals.user?.role !== 'super-admin') throw error(403, 'Forbidden');
-    return { token, user: event.locals.user };
+export function requireSuperadmin(event: RequestEvent): {
+	token: string;
+	user: App.Locals['user'];
+} {
+	const token = requireAdminToken(event);
+	if (event.locals.user?.role !== 'super-admin') throw error(403, 'Forbidden');
+	return { token, user: event.locals.user };
 }
 ```
+
 Use `requireSuperadmin` in users PUT/DELETE/POST and in connection mutations. Use `requireAdminToken` for read-only GETs.
 
 ---
@@ -634,6 +652,7 @@ This cluster has the highest blast radius in the admin surface and is the **leas
 A 4th systemic issue is `$effect`-driven mount logic that should be `onMount` (P1-6) — directly tracked in commit `34a0bd070` for sister surfaces but not yet applied here.
 
 **Recommended sequence:**
+
 1. Strip `mockUsers` from `users/[id]/+server.ts`. (P0-1, P1-2)
 2. Add `requireSuperadmin` helper and apply it to all role/credential-mutating proxies. (P0-2, P1-4, P1-8)
 3. Lock down or delete `connections/status/+server.ts`. (P0-3, P1-1)

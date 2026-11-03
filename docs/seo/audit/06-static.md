@@ -6,6 +6,7 @@
 ---
 
 ## 1. `IDX-01` — `export const ssr = false` on Indexable Routes
+
 - **Indexable routes with `ssr === false`:** 0
 - **Status:** PASS (0 indexable routes disable SSR)
 - **All `ssr = false` occurrences in `src/routes/` (all non-indexable):**
@@ -18,8 +19,8 @@
 - `[CODE frontend/src/routes/tools/options-calculator/embed/+page.ts:6]` — `export const ssr = false;`
 - `[CODE frontend/src/routes/tools/options-calculator/shared/+page.ts:6]` — `export const ssr = false;`
 
-
 ## 2. `URL-03` — `trailingSlash` Policy Consistency
+
 - **Route-level `trailingSlash` overrides in `src/routes/`:** 0 (all routes inherit SvelteKit default `'never'`)
 - None (`0` matches)
 
@@ -28,32 +29,32 @@
 - `[CODE frontend/src/lib/seo/__tests__/seo.canonical.test.ts:85]` — `const config: CanonicalConfig = { ...baseConfig, trailingSlash: 'always' };`
 - `[CODE frontend/src/lib/seo/__tests__/seo.canonical.test.ts:91]` — `const config: CanonicalConfig = { ...baseConfig, trailingSlash: 'ignore' };`
 
-
 ## 3. `IDX-04` — Prerender Error Handlers in `frontend/vite.config.ts`
+
 - **Status:** PASS (`handleHttpError: 'fail'`, `handleMissingId: 'fail'`, `handleUnseenRoutes: 'fail'`)
 - `[CODE frontend/vite.config.ts:65]` — `handleHttpError: 'fail',`
 - `[CODE frontend/vite.config.ts:66]` — `handleMissingId: 'fail',`
 - `[CODE frontend/vite.config.ts:67]` — `handleUnseenRoutes: 'fail',`
 
-
 ## 4. `I18N-02` — Paraglide Package Check (`@inlang/paraglide-js` vs deprecated `@inlang/paraglide-sveltekit`)
+
 - **Status:** PASS (Single-locale `en` site; deprecated `@inlang/paraglide-sveltekit` is not installed)
 - None (`0` matches)
 
-
 ## 5. `META-05` / `TOOL-01` — Deprecated `$app/stores` Imports in `src/`
+
 - **Status:** PASS (0 non-test files import `$app/stores`)
 - None (`0` matches)
 
-
 ## 6. `META-05` — Duplicate SEO Head Tags in `<svelte:head>` Outside `src/lib/seo/Seo.svelte`
+
 - **Occurrences on indexable routes outside `Seo.svelte`:** 0
 - **Occurrences on non-indexable (`noindex`) admin/dashboard/account routes:** 345
 - **Status:** PASS (0 indexable routes emit competing `<title>`, `<meta>`, `<link rel="canonical">`, or `application/ld+json`; unused `SEOHead.svelte` and `SeoHead.svelte` removed)
 - None (`0` matches)
 
-
 ## 7. `SD-02` — JSON-LD Serialization & XSS Escaping
+
 - **Occurrences of JSON-LD serialization in non-test `src/` files:**
 - `[CODE frontend/src/lib/seo/Seo.svelte:20]` — `import { safeJsonLdSerialize, toGraph } from './jsonld';`
 - `[CODE frontend/src/lib/seo/Seo.svelte:29]` — `seo.jsonld.length > 0 ? safeJsonLdSerialize(toGraph(seo.jsonld)) : null`
@@ -73,8 +74,8 @@
 - `[CODE frontend/src/lib/seo/video-schema.ts:541]` — `return '<script type="application/ld+json">\n${serializeJsonLd(schema)}\n</script>';`
 - `[CODE frontend/src/lib/utils/structured-data.ts:1951]` — `return '<script type="application/ld+json">${toJsonLdScript(data)}</script>';`
 
-
 ## 8. `PERF-02` — `<enhanced:img>` vs Raw `<img>` & `enhancedImages()` Vite Plugin
+
 - **`@sveltejs/enhanced-img` in `package.json`:** 1
 - **`enhancedImages()` in `frontend/vite.config.ts`:** 2
 - **`<enhanced:img>` occurrences in `src/`:** 1
@@ -122,31 +123,31 @@
 - `[CODE frontend/src/lib/components/dashboard/WeeklyWatchlist.svelte:187]` — `<img`
 - ... and 161 more raw `<img>` occurrences
 
-
 ## 9. `PERF-04` — Asset Preload Filter in `src/hooks.server.ts`
+
 - **Status:** PASS (`preload: ({ type }) => type === 'font' || type === 'js' || type === 'css'`)
 - `[CODE frontend/src/hooks.server.ts:531]` — `preload: ({ type }) => type === 'font' || type === 'js' || type === 'css',`
 
-
 ## 10. `PERF-04` — Third-Party `<script src>` Tags Without `async`/`defer`
+
 - **Occurrences in `app.html` and `.svelte` files:**
 - `[CODE frontend/src/routes/dashboard/day-trading-room/+page.svelte:220]` — `<script src="https://apis.google.com/js/api.js" async defer></script>`
 - `[CODE frontend/src/routes/dashboard/small-account-mentorship/+page.svelte:220]` — `<script src="https://apis.google.com/js/api.js" async defer></script>`
 - `[CODE frontend/src/routes/dashboard/swing-trading-room/+page.svelte:196]` — `<script src="https://apis.google.com/js/api.js" async defer></script>`
 
-
 ## 11. `MAP-03` — `<changefreq>` or `<priority>` in Sitemap Generators
+
 - **Occurrences in `src/routes/*sitemap*`:** 0
 - None (`0` matches)
 
-
 ## 12. `SD-11` — Deprecated `FAQPage` / `HowTo` Schema in Non-Admin Routes
+
 - **Occurrences in public routes:** 0
 - **Status:** PASS (0 public routes emit deprecated `FAQPage` or `HowTo` schema)
 - None (`0` matches)
 
-
 ## 13. `SD-10` / `SPAM-02` — `AggregateRating` / `ratingValue` / `reviewCount` in Source Files
+
 - **Occurrences in public route files (`src/routes/`):** 0
 - **Occurrences in library helper definitions (`src/lib/`):** 37
 - **Status:** PASS (0 hardcoded `AggregateRating` in public route files)
@@ -188,9 +189,8 @@
 - `[CODE frontend/src/lib/utils/structured-data.ts:1837]` — `ratingValue: service.ratingValue,`
 - `[CODE frontend/src/lib/utils/structured-data.ts:1838]` — `reviewCount: service.reviewCount || 0`
 
-
 ## 14. `URL-02` — Hardcoded Production Origin Outside `src/lib/seo/`
+
 - **Occurrences in `src/routes/`:** 0
 - **Status:** PASS (0 hardcoded production origins in `src/routes/`; all routes read `PRODUCTION_ORIGIN` from `#lib/seo/config.js`)
 - None (`0` matches)
-

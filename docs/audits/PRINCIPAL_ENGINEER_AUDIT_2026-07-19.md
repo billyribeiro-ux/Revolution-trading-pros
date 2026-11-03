@@ -29,21 +29,22 @@ API panics on boot; paid file downloads are unauthenticated), and the same five
 engineering standards are re-implemented 3–5 different ways because nothing mechanical
 enforces convergence.
 
-| Subsystem | Grade | P0 | P1 | P2 | P3 |
-|---|---|---|---|---|---|
-| Rust routes/handlers | C | 2 | 2 | 3 | 6 |
-| Rust services/models/DB | B+ | 0 | 2 | 6 | 8 |
-| Frontend lib layer | B− | 0 | 4 | 9 | ~14 |
-| Public routes + proxies | B− | 0 | 3 | 6 | 7 |
-| Admin + CRM routes | B− | 0 | 2 | 6 | 5 |
-| Workspace / CI / docs | C+ | 0 | 4 | 11 | 16 |
-| **Total** | **B−** | **2** | **17** | **41** | **~56** |
+| Subsystem               | Grade  | P0    | P1     | P2     | P3      |
+| ----------------------- | ------ | ----- | ------ | ------ | ------- |
+| Rust routes/handlers    | C      | 2     | 2      | 3      | 6       |
+| Rust services/models/DB | B+     | 0     | 2      | 6      | 8       |
+| Frontend lib layer      | B−     | 0     | 4      | 9      | ~14     |
+| Public routes + proxies | B−     | 0     | 3      | 6      | 7       |
+| Admin + CRM routes      | B−     | 0     | 2      | 6      | 5       |
+| Workspace / CI / docs   | C+     | 0     | 4      | 11     | 16      |
+| **Total**               | **B−** | **2** | **17** | **41** | **~56** |
 
 ---
 
 ## P0 — production-blocking (fix before anything else)
 
 ### P0-1 · The API cannot boot: unfinished axum 0.7→0.8 route-syntax migration
+
 `api/Cargo.toml` pins `axum = 0.8.9`, but **233 route definitions across 58 files** still
 use axum-0.7 `/:param` syntax (`grep -rE '\.route\("[^"]*/:' api/src/routes` → 233;
 `without_v07_checks` appears **0** times). axum 0.8's `Router::route()` **panics at router
@@ -61,6 +62,7 @@ then add a permanent gate: a `#[test]` that constructs `api_router()` (this clas
 failure is invisible to type-checking and will recur on every framework bump otherwise).
 
 ### P0-2 · Paywall bypass: premium file URLs served unauthenticated
+
 `api/src/routes/room_resources/download.rs:23` — `generate_secure_download`
 (POST `/room-resources/:id/secure-download`) has **no auth extractor** and returns the raw
 `resource.file_url` for any resource id, premium included. `download.rs:79` —
@@ -78,8 +80,9 @@ mandatory on `download_resource`.
 ## P1 — high severity (17)
 
 ### Rust API
+
 1. **IDOR via spoofable `x-user-id` header** — `room_resources/public.rs:502,554,597,630,667,700`
-   trusts a client-supplied header for per-user favorites/access-log reads *and writes*
+   trusts a client-supplied header for per-user favorites/access-log reads _and writes_
    (nothing anywhere sets that header; verified). Any caller can write or delete another
    user's data. `routes/favorites.rs` shows the correct pattern (`User` extractor).
 2. **Unauthenticated watch-progress upsert** — `admin_videos/analytics.rs:145`
@@ -94,6 +97,7 @@ mandatory on `download_resource`.
    timeout (also an SSRF-adjacent surface).
 
 ### Frontend
+
 5. **`lib/api/client.svelte.ts` is SSR-unsafe** — module-load singleton (`:1626`) starts two
    unguarded `setInterval`s (`:1473`, `:1523`) that run in the Node SSR process, and holds
    user/membership state in process-global stores (`:1633-1637`) — a cross-request
@@ -134,6 +138,7 @@ mandatory on `download_resource`.
     `members` already demonstrate the correct server-paginated pattern.
 
 ### Workspace / CI / docs
+
 14. **The canonical test gate is fiction** — `pnpm exec playwright test tests/e2e` is
     mandated by CLAUDE.md, README (×2), CONTRIBUTING, and LOCAL_DEV, but `frontend/tests/e2e/`
     was deleted 2026-05-19. Every contributor following the docs hits "no tests found."
@@ -233,20 +238,20 @@ commit `05acf3231` which no longer resolves.
 
 ## Mechanical gates (this tree, this audit)
 
-| Gate | Result |
-|---|---|
-| `svelte-check` (typecheck) | ✅ 0 errors / 0 warnings (4,745 files) |
-| ESLint (frontend, full) | ✅ clean |
-| Prettier `format:check` | ❌ 156 files drifted |
-| Vitest unit | ✅ 2,272 passed / 32 skipped |
-| Frontend production build | ✅ |
-| `svelte-autofixer` (root layout, PopupDisplay, maintenance page) | ✅ 0 issues; `client.svelte.ts` flagged legacy stores |
-| `cargo check` | ✅ (but cannot catch P0-1) |
-| `cargo clippy --locked --all-targets -- -D warnings` | ✅ clean |
-| `cargo test` (utils, stripe, crypto) | ✅ 22 passed |
-| `cargo machete` | ✅ no unused dependencies |
-| `cargo deny` | ⚠️ not runnable in this container; **not in CI either** (P2) |
-| API boot | ❌ **panics — P0-1** |
+| Gate                                                             | Result                                                       |
+| ---------------------------------------------------------------- | ------------------------------------------------------------ |
+| `svelte-check` (typecheck)                                       | ✅ 0 errors / 0 warnings (4,745 files)                       |
+| ESLint (frontend, full)                                          | ✅ clean                                                     |
+| Prettier `format:check`                                          | ❌ 156 files drifted                                         |
+| Vitest unit                                                      | ✅ 2,272 passed / 32 skipped                                 |
+| Frontend production build                                        | ✅                                                           |
+| `svelte-autofixer` (root layout, PopupDisplay, maintenance page) | ✅ 0 issues; `client.svelte.ts` flagged legacy stores        |
+| `cargo check`                                                    | ✅ (but cannot catch P0-1)                                   |
+| `cargo clippy --locked --all-targets -- -D warnings`             | ✅ clean                                                     |
+| `cargo test` (utils, stripe, crypto)                             | ✅ 22 passed                                                 |
+| `cargo machete`                                                  | ✅ no unused dependencies                                    |
+| `cargo deny`                                                     | ⚠️ not runnable in this container; **not in CI either** (P2) |
+| API boot                                                         | ❌ **panics — P0-1**                                         |
 
 ---
 
@@ -296,14 +301,14 @@ commit `05acf3231` which no longer resolves.
    exactly what automation removes.
 5. **Kill the dead weight** — 21 CRM stubs → 1 component; `enhanced-client*` (1,068 lines);
    unmounted Rust routes (2,700 lines); orphaned `svelte-click-to-source`; `retiredmay26/`
-   + `Implementation/` (33 MB); self-redirecting endpoints; the bypassed CRM proxies.
-   Every orphan costs a future engineer an hour of "is this load-bearing?"
+   - `Implementation/` (33 MB); self-redirecting endpoints; the bypassed CRM proxies.
+     Every orphan costs a future engineer an hour of "is this load-bearing?"
 6. **Truth in data:** never serve simulated prices unmarked; move canonical URLs to one
    env-driven origin (currently canonicalizing to a staging domain); finish the
    cents-everywhere money migration; make `logger.error` actually report in production.
 
 ---
 
-*Per-subsystem detail (including the full P3 inventories and file-review lists) was
+_Per-subsystem detail (including the full P3 inventories and file-review lists) was
 produced by six parallel auditors during this audit; the findings above are the complete
-P0/P1 set and the consolidated P2/P3 themes, each spot-verified at the cited locations.*
+P0/P1 set and the consolidated P2/P3 themes, each spot-verified at the cited locations._

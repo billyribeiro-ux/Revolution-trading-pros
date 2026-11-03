@@ -7,12 +7,12 @@ Status: code complete + gates green; verification scenarios A-H all PASS or PART
 
 ## Gate evidence
 
-| Gate | Result |
-|---|---|
-| `cargo check` (api/, --locked) | ✅ 0/0 |
-| `cargo clippy --no-deps` (api/, --locked) | ✅ 0/0 |
-| `cargo test config::tests --lib` | ✅ 8/8 (Batch 7 tests still passing — Config struct extension didn't regress) |
-| `pnpm check` (frontend/) | ✅ 0 errors / 0 warnings (5217 files) |
+| Gate                                      | Result                                                                        |
+| ----------------------------------------- | ----------------------------------------------------------------------------- |
+| `cargo check` (api/, --locked)            | ✅ 0/0                                                                        |
+| `cargo clippy --no-deps` (api/, --locked) | ✅ 0/0                                                                        |
+| `cargo test config::tests --lib`          | ✅ 8/8 (Batch 7 tests still passing — Config struct extension didn't regress) |
+| `pnpm check` (frontend/)                  | ✅ 0 errors / 0 warnings (5217 files)                                         |
 
 ---
 
@@ -26,19 +26,19 @@ Status: code complete + gates green; verification scenarios A-H all PASS or PART
   - 11 legacy `if let Some(ref email_service) = state.services.email` call sites mechanically updated to direct refs (auth.rs, payments.rs, user.rs, forms.rs, subscriptions.rs).
 - **11 spec triggers wired** via `send_transactional`:
 
-| # | Trigger | Template alias | Location |
-|---|---|---|---|
-| 1 | `register` | `welcome` | [api/src/routes/auth.rs](api/src/routes/auth.rs) |
-| 2 | `register` | `email-verification` | [api/src/routes/auth.rs](api/src/routes/auth.rs) |
-| 3 | `forgot_password` | `password-reset` | [api/src/routes/auth.rs](api/src/routes/auth.rs) |
-| 4 | `handle_checkout_completed` (subscription) | `subscription-confirmation` | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 5 | `handle_checkout_completed` (one-time) | `receipt` | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 6 | `handle_subscription_deleted` | `subscription-canceled` | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 7 | `handle_payment_failed` | `failed-payment` | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 8 | `handle_refund` | `refund-confirmation` | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 9 | `handle_dispute_created` | `dispute-created` (admin) | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 10 | `handle_trial_will_end` | `trial-ending` | [api/src/routes/payments.rs](api/src/routes/payments.rs) |
-| 11 | Daily scheduler (09:00 UTC) | `subscription-renewal-reminder` + `trial-ending` (de-duped) | [api/src/jobs/email_reminders.rs](api/src/jobs/email_reminders.rs) |
+| #   | Trigger                                    | Template alias                                              | Location                                                           |
+| --- | ------------------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------ |
+| 1   | `register`                                 | `welcome`                                                   | [api/src/routes/auth.rs](api/src/routes/auth.rs)                   |
+| 2   | `register`                                 | `email-verification`                                        | [api/src/routes/auth.rs](api/src/routes/auth.rs)                   |
+| 3   | `forgot_password`                          | `password-reset`                                            | [api/src/routes/auth.rs](api/src/routes/auth.rs)                   |
+| 4   | `handle_checkout_completed` (subscription) | `subscription-confirmation`                                 | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 5   | `handle_checkout_completed` (one-time)     | `receipt`                                                   | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 6   | `handle_subscription_deleted`              | `subscription-canceled`                                     | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 7   | `handle_payment_failed`                    | `failed-payment`                                            | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 8   | `handle_refund`                            | `refund-confirmation`                                       | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 9   | `handle_dispute_created`                   | `dispute-created` (admin)                                   | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 10  | `handle_trial_will_end`                    | `trial-ending`                                              | [api/src/routes/payments.rs](api/src/routes/payments.rs)           |
+| 11  | Daily scheduler (09:00 UTC)                | `subscription-renewal-reminder` + `trial-ending` (de-duped) | [api/src/jobs/email_reminders.rs](api/src/jobs/email_reminders.rs) |
 
 - **Daily scheduler** at 09:00 UTC, mirrors `reconcile_stripe::spawn_scheduler` shape. Two queries:
   - Renewal reminders: subs renewing in 6-8 days, 24h dedup against `email_logs.template_alias='subscription-renewal-reminder'`.
@@ -63,6 +63,7 @@ $ docker compose build api
 $ docker compose up -d api
  Container rtp-api Started
 ```
+
 API became healthy in ~5s.
 
 ### B. Startup log shows the disabled message — ✅ PASS
@@ -71,6 +72,7 @@ API became healthy in ~5s.
 $ docker logs rtp-api 2>&1 | grep EmailService
 INFO email: EmailService disabled: POSTMARK_TOKEN not set; emails will be logged but not sent event="email_service_disabled"
 ```
+
 Exact spec wording.
 
 ### C. Register a test user → no error — ✅ PASS
@@ -91,6 +93,7 @@ HTTP: 200
   1 | batch6-test-1777468704@example.com | welcome            | skipped_no_token | t
   2 | batch6-test-1777468704@example.com | email-verification | skipped_no_token | t
 ```
+
 Two rows, both `skipped_no_token`, both with `queued_at` set. Per spec.
 
 ### E. forgot_password → 1 row — ✅ PASS (after fix)
@@ -104,7 +107,9 @@ $ curl -sS -X POST http://localhost:8080/api/auth/forgot-password \
 {"message":"If your email is registered, you will receive a password reset link shortly.","success":true}
 HTTP: 200
 ```
+
 Then:
+
 ```
  id |              to_email              | template_alias |      status
 ----+------------------------------------+----------------+------------------
@@ -134,6 +139,7 @@ The webhook handler is wired and gated identically to the scenarios that DID com
 ### G. Admin diagnostic endpoints — ✅ PASS
 
 `GET /api/admin/email/status`:
+
 ```json
 {
   "admin_notification_email_set": false,
@@ -146,9 +152,11 @@ The webhook handler is wired and gated identically to the scenarios that DID com
 }
 HTTP: 200
 ```
+
 `postmark_token_set: false`, `last_24h_skipped > 0` ✓ matches spec.
 
 `GET /api/admin/email/logs?limit=10`:
+
 ```json
 {
   "limit": 10,
@@ -160,19 +168,20 @@ HTTP: 200
 }
 HTTP: 200
 ```
+
 Newest first, full model JSONB visible for retry analysis. (One pass during verification surfaced a `TIMESTAMPTZ` vs `NaiveDateTime` mismatch on the logs query; fixed before commit so the response now decodes cleanly.)
 
 ### H. Auth + webhook flows still work — ✅ PASS
 
 Fresh user end-to-end smoke:
 
-| Step | HTTP | Notes |
-|---|---|---|
-| Register | 200 | welcome + email-verification queued (skipped) |
-| Login (after verify) | 200 | token issued |
-| Forgot-password | 200 | password-reset queued (skipped) |
-| Checkout session create | 200 | Stripe URL returned |
-| `email_logs` final state | 3 rows for this user | all `skipped_no_token` |
+| Step                     | HTTP                 | Notes                                         |
+| ------------------------ | -------------------- | --------------------------------------------- |
+| Register                 | 200                  | welcome + email-verification queued (skipped) |
+| Login (after verify)     | 200                  | token issued                                  |
+| Forgot-password          | 200                  | password-reset queued (skipped)               |
+| Checkout session create  | 200                  | Stripe URL returned                           |
+| `email_logs` final state | 3 rows for this user | all `skipped_no_token`                        |
 
 Nothing broke.
 
@@ -203,15 +212,15 @@ No code change required. The same call paths begin actually delivering.
 
 ## Status summary
 
-| Scenario | Status |
-|---|---|
-| A | ✅ PASS |
-| B | ✅ PASS |
-| C | ✅ PASS |
-| D | ✅ PASS |
-| E | ✅ PASS (after pre-existing schema bug fix bundled into this branch) |
-| F | ⚠️ PARTIAL — CLI portion PASS; full webhook-driven email send requires browser checkout completion |
-| G | ✅ PASS (both `/email/status` and `/email/logs`) |
-| H | ✅ PASS |
+| Scenario | Status                                                                                             |
+| -------- | -------------------------------------------------------------------------------------------------- |
+| A        | ✅ PASS                                                                                            |
+| B        | ✅ PASS                                                                                            |
+| C        | ✅ PASS                                                                                            |
+| D        | ✅ PASS                                                                                            |
+| E        | ✅ PASS (after pre-existing schema bug fix bundled into this branch)                               |
+| F        | ⚠️ PARTIAL — CLI portion PASS; full webhook-driven email send requires browser checkout completion |
+| G        | ✅ PASS (both `/email/status` and `/email/logs`)                                                   |
+| H        | ✅ PASS                                                                                            |
 
 7 of 8 fully PASS via CLI; F is PASS-by-construction but requires browser interaction to verify end-to-end.

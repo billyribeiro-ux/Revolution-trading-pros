@@ -114,10 +114,7 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 	}
 
 	const title =
-		courseData?.course?.meta_title ||
-		courseData?.course?.title ||
-		staticFallback?.title ||
-		slug;
+		courseData?.course?.meta_title || courseData?.course?.title || staticFallback?.title || slug;
 	const description =
 		courseData?.course?.meta_description ||
 		courseData?.course?.description ||

@@ -6,7 +6,7 @@
  * rejection of every injection vector an attacker might try.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { safeMathEval, tryMathEval, SafeMathError } from '../safe-math-parser';
 
 // ============================================================================

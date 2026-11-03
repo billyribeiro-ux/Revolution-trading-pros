@@ -28,17 +28,17 @@ causes:
 
 ## Scope (executed in order)
 
-| Step | Description | Status |
-|------|------------|--------|
-| B1 | Ghost-column queries → JOIN `membership_plans` | ✅ |
-| B2 | `admin_member_management::get_member_full` | ✅ |
-| A2 | Admin route DTOs (`admin.rs`, `admin_orders.rs`, `subscriptions_admin.rs`) → `*_cents` | ✅ |
-| B4 | `/api/admin/members/analytics/overview` 404 | ✅ phantom — endpoint never existed, frontend never calls it |
-| C1 | `courses_enhanced.price_cents` INTEGER → BIGINT | ✅ via migration 061 |
-| 061 | Drop `indicators.price` (NUMERIC) + widen INTEGER cents columns | ✅ applied |
-| A6 | `indicators.rs` + `admin_indicators.rs` + models → cents | ✅ |
-| – | `user.rs` `MembershipPlanDbRow.price` → `price_cents`, `UserMembershipResponse.price` → `priceCents` | ✅ (downstream of A2) |
-| – | Two clippy warnings in `reconcile_stripe.rs` cleaned up | ✅ |
+| Step | Description                                                                                          | Status                                                       |
+| ---- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| B1   | Ghost-column queries → JOIN `membership_plans`                                                       | ✅                                                           |
+| B2   | `admin_member_management::get_member_full`                                                           | ✅                                                           |
+| A2   | Admin route DTOs (`admin.rs`, `admin_orders.rs`, `subscriptions_admin.rs`) → `*_cents`               | ✅                                                           |
+| B4   | `/api/admin/members/analytics/overview` 404                                                          | ✅ phantom — endpoint never existed, frontend never calls it |
+| C1   | `courses_enhanced.price_cents` INTEGER → BIGINT                                                      | ✅ via migration 061                                         |
+| 061  | Drop `indicators.price` (NUMERIC) + widen INTEGER cents columns                                      | ✅ applied                                                   |
+| A6   | `indicators.rs` + `admin_indicators.rs` + models → cents                                             | ✅                                                           |
+| –    | `user.rs` `MembershipPlanDbRow.price` → `price_cents`, `UserMembershipResponse.price` → `priceCents` | ✅ (downstream of A2)                                        |
+| –    | Two clippy warnings in `reconcile_stripe.rs` cleaned up                                              | ✅                                                           |
 
 ---
 
@@ -71,13 +71,13 @@ possible.
 
 Post-migration schema (verified via `\d` introspection):
 
-| Table | Column | Type |
-|------|------|------|
-| courses_enhanced | price_cents | bigint ✅ |
-| indicators | price_cents | bigint ✅ |
-| indicators | sale_price_cents | bigint ✅ |
-| indicators_enhanced | price_cents | bigint ✅ |
-| membership_plans | price | numeric *(intentional display cache; Rust converts at SQL boundary)* |
+| Table               | Column           | Type                                                                 |
+| ------------------- | ---------------- | -------------------------------------------------------------------- |
+| courses_enhanced    | price_cents      | bigint ✅                                                            |
+| indicators          | price_cents      | bigint ✅                                                            |
+| indicators          | sale_price_cents | bigint ✅                                                            |
+| indicators_enhanced | price_cents      | bigint ✅                                                            |
+| membership_plans    | price            | numeric _(intentional display cache; Rust converts at SQL boundary)_ |
 
 ---
 
@@ -106,20 +106,20 @@ TOTAL_USERS: 14
 
 Live curl results (logged in as super_admin via JWT):
 
-| Endpoint | Field | Before (zeroes) | After |
-|---------|-------|--------|-------|
-| `/api/admin/members/stats` | `revenue.mrr_cents` | $0 | **22700¢** ✅ |
-| `/api/admin/members/stats` | `revenue.total_cents` | $0 | **107200¢** ✅ |
-| `/api/admin/members/stats` | `subscriptions.active` | 0 | **1** ✅ |
-| `/api/admin/members/analytics/metrics` | `mrr_cents` | $0 | **22700¢** ✅ |
-| `/api/admin/members/analytics/metrics` | `avg_ltv_cents` | $0 | **45000¢** ✅ |
-| `/api/admin/members/analytics/revenue` | `arr_cents` | $0 | **272400¢** ✅ |
-| `/api/admin/members/analytics/revenue` | `mrr_cents` | $0 | **22700¢** ✅ |
-| `/api/admin/orders/stats` | `total_revenue_cents` | $0 | **108200¢** ✅ |
-| `/api/admin/orders/stats` | `total_orders` | 0 | **18** ✅ |
-| `/api/admin/membership-plans[].price_cents` | – | f64 dollars | **i64 cents (4700, …)** ✅ |
-| `/api/admin/indicators[].price_cents` | – | f64 dollars | **i64 cents (7900)** ✅ |
-| `/api/indicators` (public) | `data.indicators[].price_cents` | error / dollars | **i64 cents (7900)** ✅ |
+| Endpoint                                    | Field                           | Before (zeroes) | After                      |
+| ------------------------------------------- | ------------------------------- | --------------- | -------------------------- |
+| `/api/admin/members/stats`                  | `revenue.mrr_cents`             | $0              | **22700¢** ✅              |
+| `/api/admin/members/stats`                  | `revenue.total_cents`           | $0              | **107200¢** ✅             |
+| `/api/admin/members/stats`                  | `subscriptions.active`          | 0               | **1** ✅                   |
+| `/api/admin/members/analytics/metrics`      | `mrr_cents`                     | $0              | **22700¢** ✅              |
+| `/api/admin/members/analytics/metrics`      | `avg_ltv_cents`                 | $0              | **45000¢** ✅              |
+| `/api/admin/members/analytics/revenue`      | `arr_cents`                     | $0              | **272400¢** ✅             |
+| `/api/admin/members/analytics/revenue`      | `mrr_cents`                     | $0              | **22700¢** ✅              |
+| `/api/admin/orders/stats`                   | `total_revenue_cents`           | $0              | **108200¢** ✅             |
+| `/api/admin/orders/stats`                   | `total_orders`                  | 0               | **18** ✅                  |
+| `/api/admin/membership-plans[].price_cents` | –                               | f64 dollars     | **i64 cents (4700, …)** ✅ |
+| `/api/admin/indicators[].price_cents`       | –                               | f64 dollars     | **i64 cents (7900)** ✅    |
+| `/api/indicators` (public)                  | `data.indicators[].price_cents` | error / dollars | **i64 cents (7900)** ✅    |
 
 `mrr_cents` matches ground truth exactly. `total_revenue_cents` from
 `/admin/orders/stats` (108200¢) matches the DB sum exactly; the

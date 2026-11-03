@@ -5,7 +5,7 @@
  * Apple Principal Engineer ICT 7+ Standard
  */
 
-import { expect, afterEach, vi, beforeAll, afterAll, beforeEach } from 'vitest';
+import { expect, afterEach, vi, beforeAll, afterAll, beforeEach } from 'vite-plus/test';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { BlockStateManager } from '#lib/stores/blockState.svelte.js';

@@ -23,7 +23,7 @@
  * We mock it to keep API_URL deterministic across tests.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vite-plus/test';
 
 // SvelteKit 3: `$env/dynamic/private` became `$app/env/private`, and the
 // variables are named exports rather than properties of an `env` object.

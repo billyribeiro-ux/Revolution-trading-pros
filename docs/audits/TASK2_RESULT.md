@@ -42,6 +42,7 @@ Fix: added `#[serde(default)]` on both fields. They default to `0i64`
 The `INSERT INTO user_memberships ... ON CONFLICT (user_id, plan_id) DO UPDATE`
 in `handle_checkout_completed` requires a unique constraint that did not exist.
 Every membership creation attempt returned:
+
 ```
 there is no unique or exclusion constraint matching the ON CONFLICT specification
 ```
@@ -79,11 +80,13 @@ payment_method_data[card][token]=tok_visa
 ```
 
 Webhook event received:
+
 ```
 evt_1TRH5k9HsGkDuN3b5m8E8MMl | checkout.session.completed | processed_at: 2026-04-28 19:14:44.95
 ```
 
 API log:
+
 ```
 INFO payments: Order completed via Stripe event="order_completed" order_id=6 subscription_id=Some("sub_1TRH5f9HsGkDuN3bjsGiQMfh")
 ```
@@ -106,11 +109,13 @@ stripe events resend evt_1TRH5k9HsGkDuN3b5m8E8MMl
 ```
 
 API log on second delivery:
+
 ```
 INFO payments: Duplicate webhook event — skipping event_id=evt_1TRH5k9HsGkDuN3b5m8E8MMl
 ```
 
 DB count after resend:
+
 ```sql
 SELECT COUNT(*) FROM user_memberships WHERE user_id = 2 AND plan_id = 1;
 -- 1
@@ -147,6 +152,7 @@ from the subscription top level to `items.data[0]`. The original `#[serde(defaul
 workaround stored Unix epoch (1970) in `user_memberships`.
 
 **Fix in `api/src/services/stripe.rs`**:
+
 - Added `current_period_start`/`current_period_end` fields to `StripeSubscriptionItem`
 - Added `StripeSubscriptionItemList` wrapper struct
 - Added `items: Option<StripeSubscriptionItemList>` to `StripeSubscription`
@@ -154,6 +160,7 @@ workaround stored Unix epoch (1970) in `user_memberships`.
   falls back to top-level fields (handles older fixtures/mocks)
 
 **Fix in `api/src/routes/payments.rs`**:
+
 - `handle_checkout_completed`: replaced `sub.current_period_start` / `sub.current_period_end`
   with `sub.get_current_period()`
 - `handle_subscription_updated`: same replacement
@@ -200,21 +207,21 @@ SELECT version FROM _sqlx_migrations WHERE version = 56;
 
 ## Final Gates (Follow-ups)
 
-| Gate | Result |
-|------|--------|
-| `cargo check` | ✅ 0 errors |
-| `pnpm check` | ✅ 0 errors / 0 warnings |
-| `current_period_start` in DB | ✅ 2026-04-28 (not 1970) |
-| `current_period_end` in DB | ✅ 2026-05-28 (not 1970) |
+| Gate                                | Result                      |
+| ----------------------------------- | --------------------------- |
+| `cargo check`                       | ✅ 0 errors                 |
+| `pnpm check`                        | ✅ 0 errors / 0 warnings    |
+| `current_period_start` in DB        | ✅ 2026-04-28 (not 1970)    |
+| `current_period_end` in DB          | ✅ 2026-05-28 (not 1970)    |
 | Migration 056 in `_sqlx_migrations` | ✅ version=56, success=true |
 
 ---
 
 ## Files Changed (this session)
 
-| File | Change |
-|------|--------|
-| `api/src/services/stripe.rs` | `StripeSubscriptionItem` + `StripeSubscriptionItemList` structs; `items` field + `get_current_period()` on `StripeSubscription` |
-| `api/src/routes/payments.rs` | Both period-timestamp callers use `get_current_period()` |
-| `api/migrations/056_user_memberships_unique.sql` | New migration (idempotent) |
-| `TASK2_RESULT.md` | This file |
+| File                                             | Change                                                                                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `api/src/services/stripe.rs`                     | `StripeSubscriptionItem` + `StripeSubscriptionItemList` structs; `items` field + `get_current_period()` on `StripeSubscription` |
+| `api/src/routes/payments.rs`                     | Both period-timestamp callers use `get_current_period()`                                                                        |
+| `api/migrations/056_user_memberships_unique.sql` | New migration (idempotent)                                                                                                      |
+| `TASK2_RESULT.md`                                | This file                                                                                                                       |

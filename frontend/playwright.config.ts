@@ -46,9 +46,7 @@ export default defineConfig({
 		}
 	],
 	webServer: {
-		command: BASE_URL.includes(':4173')
-			? 'pnpm preview --port 4173 --host 127.0.0.1'
-			: 'pnpm dev',
+		command: BASE_URL.includes(':4173') ? 'pnpm preview --port 4173 --host 127.0.0.1' : 'pnpm dev',
 		url: BASE_URL,
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000

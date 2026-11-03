@@ -11,6 +11,7 @@ instructions. Each entry notes the recommendation and the reasons for deferral.
 ## D1 — Duplicate route: `/admin/email/settings` vs `/admin/email/smtp`
 
 **Files:**
+
 - `frontend/src/routes/admin/email/settings/+page.svelte`
 - `frontend/src/routes/admin/email/smtp/+page.svelte`
 
@@ -32,11 +33,12 @@ any external docs before redirecting, to avoid breaking bookmarks.
 ## D2 — Duplicate route: `/admin/seo/404s` vs `/admin/seo/404-monitor`
 
 **Files:**
+
 - `frontend/src/routes/admin/seo/404s/+page.svelte`
 - `frontend/src/routes/admin/seo/404-monitor/+page.svelte`
 
 **Situation:** Both pages display 404 error logs with bulk-delete. They use
-*different* API clients: `seoApi.list404s()` vs raw `fetch('/api/seo/404-logs')`.
+_different_ API clients: `seoApi.list404s()` vs raw `fetch('/api/seo/404-logs')`.
 This means two backend routes serve the same data with divergent error handling.
 
 **Recommendation:** Keep `/admin/seo/404-monitor` (it uses the newer raw-fetch
@@ -75,13 +77,13 @@ The following SEO admin pages are placeholders with no real data loading.
 They are deferred because implementation requires backend endpoints that do
 not yet exist:
 
-| Page | Issue |
-|------|-------|
-| `admin/seo/meta/+page.svelte` | `loadEntities()` always returns `[]` (P2-4) |
-| `admin/seo/+page.svelte` | `loadSeoData()` is a no-op comment (P2-5) |
-| `admin/seo/keywords/+page.svelte` | "Add Keyword" buttons have no `onclick` (P2-6) |
-| `admin/seo/schema/+page.svelte` | "Add Schema" links to `schema/create` route that doesn't exist (P2-13) |
-| `admin/seo/store-locator/+page.svelte` | Hardcodes Cloudflare Pages preview domain (P2-7) |
+| Page                                   | Issue                                                                  |
+| -------------------------------------- | ---------------------------------------------------------------------- |
+| `admin/seo/meta/+page.svelte`          | `loadEntities()` always returns `[]` (P2-4)                            |
+| `admin/seo/+page.svelte`               | `loadSeoData()` is a no-op comment (P2-5)                              |
+| `admin/seo/keywords/+page.svelte`      | "Add Keyword" buttons have no `onclick` (P2-6)                         |
+| `admin/seo/schema/+page.svelte`        | "Add Schema" links to `schema/create` route that doesn't exist (P2-13) |
+| `admin/seo/store-locator/+page.svelte` | Hardcodes Cloudflare Pages preview domain (P2-7)                       |
 
 **Recommendation:** Hide unimplemented features behind a `FEATURE_FLAG_SEO`
 env var until backend APIs are ready, rather than shipping no-op UIs that

@@ -10,17 +10,18 @@
 
 Five surgical architectural changes resolve the entire family of recurring admin defects:
 
-| # | Change | Files | Resolves |
-|---|---|---|---|
-| 1 | Harden `connections.svelte.ts::load()` with in-flight Promise guard + `untrack()` shield on getters | 1 file (~25 LOC) | All 13 `effect_update_depth_exceeded` cascades |
-| 2 | Replace `/logout/+page.server.ts` cookie names | 1 file (4 LOC) | Session-survives-logout security bug |
-| 3 | Add `[...rest]/+server.ts` POST-handler shims at 7 parent-proxy folders | 7 files (~30 LOC each, copy-paste) | The "POST=405 cliff" that breaks 9 blog actions + 6 other admin features |
-| 4 | Codemod 23 admin proxies from header-only auth to canonical `cookies.get('rtp_access_token')` | 23 files (~5 LOC each) | Cookie-fresh-but-localStorage-empty 401s |
-| 5 | Fix dashboard SPX-Profit-Pulse submenu slugs | 1 file (4 LOC) | 4 broken sidebar links per SPX member |
+| #   | Change                                                                                              | Files                              | Resolves                                                                 |
+| --- | --------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| 1   | Harden `connections.svelte.ts::load()` with in-flight Promise guard + `untrack()` shield on getters | 1 file (~25 LOC)                   | All 13 `effect_update_depth_exceeded` cascades                           |
+| 2   | Replace `/logout/+page.server.ts` cookie names                                                      | 1 file (4 LOC)                     | Session-survives-logout security bug                                     |
+| 3   | Add `[...rest]/+server.ts` POST-handler shims at 7 parent-proxy folders                             | 7 files (~30 LOC each, copy-paste) | The "POST=405 cliff" that breaks 9 blog actions + 6 other admin features |
+| 4   | Codemod 23 admin proxies from header-only auth to canonical `cookies.get('rtp_access_token')`       | 23 files (~5 LOC each)             | Cookie-fresh-but-localStorage-empty 401s                                 |
+| 5   | Fix dashboard SPX-Profit-Pulse submenu slugs                                                        | 1 file (4 LOC)                     | 4 broken sidebar links per SPX member                                    |
 
 **Total file touch:** ~33 files. **Estimated effort:** 90 minutes for an agent. **Blast radius:** Low — every change is comment-out-don't-delete, behavior-preserving on the happy path.
 
 Findings that are NOT included (require user decision):
+
 - Build vs delete `/admin/consent/settings` (no backend exists — same orphan-API-client decision shape as `boards.ts`/`behavior.ts`/`bing-seo.ts`/`campaigns.ts`)
 - Build vs delete `/admin/dashboard` duplicate
 - Build vs delete `/admin/orders` and `/admin/blog/*` missing endpoints
@@ -111,10 +112,10 @@ async load(force = false): Promise<void> {
 import { untrack } from 'svelte';
 
 export function getIsAnalyticsConnected(): boolean {
-    return untrack(() => {
-        const services = FEATURE_SERVICES['analytics'];
-        return services?.some((k) => connectionsState.connections[k]?.isConnected) ?? false;
-    });
+	return untrack(() => {
+		const services = FEATURE_SERVICES['analytics'];
+		return services?.some((k) => connectionsState.connections[k]?.isConnected) ?? false;
+	});
 }
 ```
 
@@ -123,6 +124,7 @@ Apply the same wrapping to: `getIsSeoConnected`, `getIsEmailConnected`, `getIsPa
 `$derived(getXConnected())` continues to work — `$derived` installs tracking at the proxy boundary, before `untrack` runs inside the helper body. Verified by Svelte 5 semantics; no regression risk.
 
 ### Verification
+
 - `pnpm check` → 0/0/0
 - Manually load `/admin/site-health` (was the worst cascade offender per CASCADE_ROOT_CAUSE_REPORT.md §1.5) → no `effect_update_depth_exceeded` in console
 - Manually load `/admin/email/campaigns` → cascade gone (already partially fixed at the page level; confirms architectural fix supersedes the page-level workaround)
@@ -139,6 +141,7 @@ Apply the same wrapping to: `getIsSeoConnected`, `getIsEmailConnected`, `getIsPa
 ### Edit
 
 Find lines 39-42:
+
 ```ts
 cookies.delete('auth_token', { path: '/' });
 cookies.delete('session_id', { path: '/' });
@@ -147,6 +150,7 @@ cookies.delete('access_token', { path: '/' });
 ```
 
 Replace with:
+
 ```ts
 // FIX-2026-04-26: cookie names corrected. Old code (kept for one revision per
 // FIX-2026-04-26 marker — delete in follow-up):
@@ -159,6 +163,7 @@ cookies.delete('rtp_refresh_token', { path: '/' });
 ```
 
 ### Verification
+
 - Login as test user
 - Click "Log out" from dashboard sidebar
 - Inspect cookies in DevTools → `rtp_access_token` and `rtp_refresh_token` are gone
@@ -169,6 +174,7 @@ cookies.delete('rtp_refresh_token', { path: '/' });
 ## Change 3 — POST=405 cliff fix
 
 **Affected paths (7 parent-proxy folders that block POST sub-paths):**
+
 - `frontend/src/routes/api/admin/posts/`
 - `frontend/src/routes/api/admin/categories/`
 - `frontend/src/routes/api/admin/tags/`
@@ -196,21 +202,23 @@ import type { RequestHandler } from './$types';
 
 const API_URL = env.API_BASE_URL || env.BACKEND_URL || '<your-api-host>';
 
-const proxy = (method: string): RequestHandler => async ({ params, request, cookies, fetch, url }) => {
-    const token = cookies.get('rtp_access_token');
-    if (!token) error(401, 'Unauthorized');
+const proxy =
+	(method: string): RequestHandler =>
+	async ({ params, request, cookies, fetch, url }) => {
+		const token = cookies.get('rtp_access_token');
+		if (!token) error(401, 'Unauthorized');
 
-    const targetPath = `/api/admin/posts/${params.rest}${url.search}`;
-    const headers: Record<string, string> = {
-        Authorization: `Bearer ${token}`,
-    };
-    const ct = request.headers.get('content-type');
-    if (ct) headers['Content-Type'] = ct;
+		const targetPath = `/api/admin/posts/${params.rest}${url.search}`;
+		const headers: Record<string, string> = {
+			Authorization: `Bearer ${token}`
+		};
+		const ct = request.headers.get('content-type');
+		if (ct) headers['Content-Type'] = ct;
 
-    const body = method === 'GET' || method === 'HEAD' ? undefined : await request.text();
-    const res = await fetch(`${API_URL}${targetPath}`, { method, headers, body });
-    return new Response(res.body, { status: res.status, headers: res.headers });
-};
+		const body = method === 'GET' || method === 'HEAD' ? undefined : await request.text();
+		const res = await fetch(`${API_URL}${targetPath}`, { method, headers, body });
+		return new Response(res.body, { status: res.status, headers: res.headers });
+	};
 
 export const GET = proxy('GET');
 export const POST = proxy('POST');
@@ -222,7 +230,9 @@ export const DELETE = proxy('DELETE');
 Repeat for the 6 other folders, replacing `posts` with the folder name in `targetPath`. The handler is identical otherwise — extract to a shared helper if desired (`frontend/src/lib/utils/createProxyShim.ts`) to avoid 7 copies, but for the architectural-fix pass keep them inline so each folder's behavior is locally readable.
 
 ### Verification
+
 Probe with curl:
+
 ```sh
 /usr/bin/curl -sX POST -o /dev/null -w "%{http_code}\n" -H "Cookie: rtp_access_token=fake" http://localhost:5173/api/admin/posts/bulk-delete
 # Pre-fix: 405. Post-fix: 401 (correct — fake token rejected by backend).
@@ -235,6 +245,7 @@ Run for each affected folder.
 ## Change 4 — Cookie-name codemod across 23 admin proxies
 
 **Files:** 23 admin proxies still using legacy `request.headers.get('Authorization')` only. Full list in `ADMIN_FAILURE_DATA.md §4`. Sample:
+
 - `api/admin/posts/+server.ts:43,66,90,119`
 - `api/admin/users/+server.ts:43,64`
 - `api/admin/users/[id]/+server.ts:90,134,174`
@@ -274,6 +285,7 @@ PER USER RULE: comment out the old auth lines with FIX-2026-04-26 markers, add t
 ### Verification
 
 Grep verification:
+
 ```sh
 grep -rl "request.headers.get('Authorization')" frontend/src/routes/api/admin/ | grep -v node_modules
 # Should return 0 (or only files with explicit "intentional" comments)
@@ -296,7 +308,9 @@ Find lines 330, 332, 337, 344 — each has an href with `jonathan-mckeever`. Rep
 PER USER RULE: comment-out marker.
 
 ### Verification
+
 Curl each path:
+
 ```sh
 for p in /dashboard/spx-profit-pulse/billy-ribeiro /dashboard/spx-profit-pulse/billy-ribeiro/start-here /dashboard/spx-profit-pulse/billy-ribeiro/learning-center /dashboard/spx-profit-pulse/billy-ribeiro/premium-videos; do
   /usr/bin/curl -sL -o /dev/null -w "%{http_code}  $p\n" "http://localhost:5173$p"
@@ -336,6 +350,7 @@ Output: Markdown summary per Change, file count, gate verbatim final lines.
 ### Stage B — Final verification (I run)
 
 After agent completes:
+
 1. `pnpm check`, `pnpm build`, `cargo` gates as above.
 2. SSR probe sample admin routes via curl.
 3. Surface diff summary + open items list.
@@ -361,19 +376,19 @@ rm -rf frontend/src/routes/api/admin/{posts,categories,tags,coupons,users,crm/co
 
 These are real bugs but require product decisions before code can land:
 
-| Bug | Decision needed |
-|---|---|
-| `/admin/consent/settings` — no backend | Build `consent.rs` OR remove page from admin nav |
-| `/admin/dashboard` duplicate page (orphan endpoints) | Remove duplicate OR build the 3 missing endpoints |
-| `/admin/orders` — no backend | Build `admin_orders.rs` OR remove |
-| Blog admin's 9 endpoints (B6 in ADMIN_DASHBOARD_REPORT) | Build OR remove features |
-| 7 dashboard server loaders with `// TODO: Implement new video fetching approach` | Wire to new video API OR document the hold |
-| CourseDetailDrawer dead metrics tab | Wire OR hide |
-| 50 `alert()` + 11 `confirm()` calls | Mass-replace with ConfirmationModal/Modal |
-| `/register` vs `/signup` duplicate | Pick one, redirect the other |
-| CommandPalette "Clear Cache" logs out | Rename OR scope to non-auth localStorage keys |
-| Native admin `alert()` debug at `seo/store-locator/+page.svelte:209` | Replace with Modal |
-| Reqwest 0.11 → 0.12 backend migration | Schedule effort window |
+| Bug                                                                              | Decision needed                                   |
+| -------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `/admin/consent/settings` — no backend                                           | Build `consent.rs` OR remove page from admin nav  |
+| `/admin/dashboard` duplicate page (orphan endpoints)                             | Remove duplicate OR build the 3 missing endpoints |
+| `/admin/orders` — no backend                                                     | Build `admin_orders.rs` OR remove                 |
+| Blog admin's 9 endpoints (B6 in ADMIN_DASHBOARD_REPORT)                          | Build OR remove features                          |
+| 7 dashboard server loaders with `// TODO: Implement new video fetching approach` | Wire to new video API OR document the hold        |
+| CourseDetailDrawer dead metrics tab                                              | Wire OR hide                                      |
+| 50 `alert()` + 11 `confirm()` calls                                              | Mass-replace with ConfirmationModal/Modal         |
+| `/register` vs `/signup` duplicate                                               | Pick one, redirect the other                      |
+| CommandPalette "Clear Cache" logs out                                            | Rename OR scope to non-auth localStorage keys     |
+| Native admin `alert()` debug at `seo/store-locator/+page.svelte:209`             | Replace with Modal                                |
+| Reqwest 0.11 → 0.12 backend migration                                            | Schedule effort window                            |
 
 These are tracked as the next-phase backlog. Do NOT attempt in this plan — landing the architectural fixes first gives the codebase a clean baseline before product decisions are made.
 

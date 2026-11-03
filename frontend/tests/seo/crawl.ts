@@ -222,7 +222,10 @@ async function fetchWithManualRedirects(
 	const mainEl = doc.querySelector('main') ?? doc.body;
 	const rawMainText = mainEl ? (mainEl.textContent ?? '') : '';
 	const rawMainWordCount = countWords(rawMainText);
-	const bodyHash = crypto.createHash('sha256').update(rawMainText.replace(/\s+/g, ' ').trim()).digest('hex');
+	const bodyHash = crypto
+		.createHash('sha256')
+		.update(rawMainText.replace(/\s+/g, ' ').trim())
+		.digest('hex');
 
 	return {
 		htmlBody,
@@ -306,10 +309,17 @@ function parseSsrHtml(html: string): SsrHtmlResult {
 		};
 	});
 
-	const breadcrumbNav = doc.querySelector('nav[aria-label*="Breadcrumb" i], [aria-label*="breadcrumb" i], .breadcrumbs');
+	const breadcrumbNav = doc.querySelector(
+		'nav[aria-label*="Breadcrumb" i], [aria-label*="breadcrumb" i], .breadcrumbs'
+	);
 	const breadcrumbs: Array<{ text: string; href: string | null }> = breadcrumbNav
 		? [...breadcrumbNav.querySelectorAll('a, li, span')]
-				.filter((el) => el.tagName === 'A' || el.classList.contains('current') || el.getAttribute('aria-current') === 'page')
+				.filter(
+					(el) =>
+						el.tagName === 'A' ||
+						el.classList.contains('current') ||
+						el.getAttribute('aria-current') === 'page'
+				)
 				.map((el) => ({
 					text: (el.textContent ?? '').trim(),
 					href: el.tagName === 'A' ? el.getAttribute('href') : null
@@ -609,7 +619,11 @@ async function main(): Promise<void> {
 		const outSet = new Set<string>();
 		for (const link of p.renderedDom.links) {
 			if (!link.isInternal) continue;
-			if (link.href.startsWith('#') || link.href.startsWith('mailto:') || link.href.startsWith('tel:')) {
+			if (
+				link.href.startsWith('#') ||
+				link.href.startsWith('mailto:') ||
+				link.href.startsWith('tel:')
+			) {
 				continue;
 			}
 			try {
@@ -650,7 +664,8 @@ async function main(): Promise<void> {
 
 	// Check HTTP status of all internal links discovered
 	const brokenInternalLinks: Array<{ path: string; status: number }> = [];
-	const redirectInternalLinks: Array<{ path: string; status: number; location: string | null }> = [];
+	const redirectInternalLinks: Array<{ path: string; status: number; location: string | null }> =
+		[];
 	for (const intPath of [...allDiscoveredInternalPaths].sort()) {
 		const existing = pages.find((p) => p.path === intPath);
 		if (existing) {
@@ -777,7 +792,12 @@ async function main(): Promise<void> {
 		template: string;
 		path: string;
 		violationCount: number;
-		violations: Array<{ id: string; impact: string | null | undefined; description: string; nodes: number }>;
+		violations: Array<{
+			id: string;
+			impact: string | null | undefined;
+			description: string;
+			nodes: number;
+		}>;
 	}> = [];
 
 	const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -789,7 +809,11 @@ async function main(): Promise<void> {
 		await desktopPage.waitForTimeout(200);
 		const desktopData = await desktopPage.evaluate(() => {
 			const mainEl = document.querySelector('main') ?? document.body;
-			const words = (mainEl?.textContent ?? '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean).length;
+			const words = (mainEl?.textContent ?? '')
+				.replace(/\s+/g, ' ')
+				.trim()
+				.split(' ')
+				.filter(Boolean).length;
 			const h1 = document.querySelector('h1')?.textContent?.trim() ?? null;
 			return { words, h1 };
 		});
@@ -816,7 +840,11 @@ async function main(): Promise<void> {
 		await mobilePage.waitForTimeout(200);
 		const mobileData = await mobilePage.evaluate(() => {
 			const mainEl = document.querySelector('main') ?? document.body;
-			const words = (mainEl?.textContent ?? '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean).length;
+			const words = (mainEl?.textContent ?? '')
+				.replace(/\s+/g, ' ')
+				.trim()
+				.split(' ')
+				.filter(Boolean).length;
 			const h1 = document.querySelector('h1')?.textContent?.trim() ?? null;
 			return { words, h1 };
 		});
@@ -848,8 +876,7 @@ async function main(): Promise<void> {
 	const homePage = pages.find((p) => p.path === '/');
 	const footerPolicyLinks = ['privacy', 'terms', 'disclaimer', 'refund', 'contact'].map((slug) => ({
 		slug,
-		presentOnHome:
-			homePage?.renderedDom.links.some((l) => l.href.includes(`/${slug}`)) ?? false
+		presentOnHome: homePage?.renderedDom.links.some((l) => l.href.includes(`/${slug}`)) ?? false
 	}));
 
 	const pagesWithSelfServingAggregateRating = pages
@@ -869,9 +896,15 @@ async function main(): Promise<void> {
 			orphanIndexablePageCount: orphanIndexablePages.length,
 			brokenInternalLinkCount: brokenInternalLinks.length,
 			soft404FailureCount: soft404Probes.filter((p) => p.isSoft404 || !p.hasNoindex).length,
-			pagesWithMultipleTitles: indexablePages.filter((p) => p.ssrHtml.title.tagCount !== 1).map((p) => p.path),
-			pagesWithMultipleDescriptions: indexablePages.filter((p) => p.ssrHtml.description.tagCount !== 1).map((p) => p.path),
-			pagesWithMultipleCanonicals: indexablePages.filter((p) => p.ssrHtml.canonical.tagCount !== 1).map((p) => p.path),
+			pagesWithMultipleTitles: indexablePages
+				.filter((p) => p.ssrHtml.title.tagCount !== 1)
+				.map((p) => p.path),
+			pagesWithMultipleDescriptions: indexablePages
+				.filter((p) => p.ssrHtml.description.tagCount !== 1)
+				.map((p) => p.path),
+			pagesWithMultipleCanonicals: indexablePages
+				.filter((p) => p.ssrHtml.canonical.tagCount !== 1)
+				.map((p) => p.path),
 			pagesMissingH1: indexablePages
 				.filter((p) => p.ssrHtml.headings.filter((h) => h.level === 1).length !== 1)
 				.map((p) => ({
@@ -923,4 +956,3 @@ main().catch((err) => {
 	console.error(err);
 	process.exit(1);
 });
-

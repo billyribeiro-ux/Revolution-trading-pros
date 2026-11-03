@@ -7,6 +7,7 @@ Method: read every file in scope, cross-reference against repo conventions in `C
 ## Files reviewed
 
 Frontend pages
+
 - [`frontend/src/routes/admin/videos/+page.svelte`](../../../frontend/src/routes/admin/videos/+page.svelte) (3626 lines)
 - [`frontend/src/routes/admin/media/+page.svelte`](../../../frontend/src/routes/admin/media/+page.svelte) (2797 lines)
 - [`frontend/src/routes/admin/media/analytics/+page.svelte`](../../../frontend/src/routes/admin/media/analytics/+page.svelte) (1398 lines)
@@ -20,6 +21,7 @@ Frontend pages
 - [`frontend/src/routes/admin/indicators/create/+page.svelte`](../../../frontend/src/routes/admin/indicators/create/+page.svelte) (2273 lines)
 
 API proxies
+
 - [`frontend/src/routes/api/admin/bunny/uploads/+server.ts`](../../../frontend/src/routes/api/admin/bunny/uploads/+server.ts)
 - [`frontend/src/routes/api/admin/bunny/create-video/+server.ts`](../../../frontend/src/routes/api/admin/bunny/create-video/+server.ts)
 - [`frontend/src/routes/api/admin/bunny/upload/+server.ts`](../../../frontend/src/routes/api/admin/bunny/upload/+server.ts)
@@ -92,25 +94,28 @@ await adminFetch(`/api/admin/indicators/${indicatorId}/files`, {
 [`admin/videos/+page.svelte:955-974`](../../../frontend/src/routes/admin/videos/+page.svelte#L955-L974)
 
 ```ts
-$effect(() => {                  // (A) init
-    if (!browser) return;
-    const init = async () => {
-        await loadRoomsAndTraders();
-        if (selectedRoom) {
-            await loadVideos();
-        }
-    };
-    init();
+$effect(() => {
+	// (A) init
+	if (!browser) return;
+	const init = async () => {
+		await loadRoomsAndTraders();
+		if (selectedRoom) {
+			await loadVideos();
+		}
+	};
+	init();
 });
 
-$effect(() => {                  // (B) react to room change
-    if (selectedRoom && !isLoadingRooms) {
-        loadVideos();
-    }
+$effect(() => {
+	// (B) react to room change
+	if (selectedRoom && !isLoadingRooms) {
+		loadVideos();
+	}
 });
 ```
 
 Plus `selectRoom()` at [`videos/+page.svelte:287-291`](../../../frontend/src/routes/admin/videos/+page.svelte#L287-L291) also calls `loadVideos()`. Sequence on first visit:
+
 1. (A) loads rooms, sets `selectedRoom`, calls `loadVideos()` — fetch #1.
 2. Selecting `selectedRoom` triggers (B) — fetch #2.
 3. `isLoadingRooms` flipping `true→false` re-runs (B) — fetch #3.
@@ -122,12 +127,24 @@ When the user clicks a different tab, `selectRoom()` directly calls `loadVideos(
 [`trading-rooms/[slug]/+page.svelte:300-322`](../../../frontend/src/routes/admin/trading-rooms/[slug]/+page.svelte#L300-L322)
 
 ```ts
-$effect(() => { tradePlanEntries = data.initialData?.tradePlan ?? []; });
-$effect(() => { alerts = data.initialData?.alerts ?? []; });
-$effect(() => { currentVideo = data.initialData?.weeklyVideo ?? null; });
-$effect(() => { roomStats = data.initialData?.roomStats ?? null; });
-$effect(() => { trades = data.initialData?.trades ?? []; });
-$effect(() => { videoResources = data.initialData?.videoResources ?? []; });
+$effect(() => {
+	tradePlanEntries = data.initialData?.tradePlan ?? [];
+});
+$effect(() => {
+	alerts = data.initialData?.alerts ?? [];
+});
+$effect(() => {
+	currentVideo = data.initialData?.weeklyVideo ?? null;
+});
+$effect(() => {
+	roomStats = data.initialData?.roomStats ?? null;
+});
+$effect(() => {
+	trades = data.initialData?.trades ?? [];
+});
+$effect(() => {
+	videoResources = data.initialData?.videoResources ?? [];
+});
 ```
 
 This is exactly the pattern `CLAUDE.md` calls out:
@@ -144,11 +161,11 @@ These six effects shadow the `data` prop into local state. Any time `data` is re
 ```ts
 const sessionToken = cookies.get('session_token');
 if (!sessionToken) {
-    redirect(302, '/login?redirect=/admin/trading-rooms/' + slug);
+	redirect(302, '/login?redirect=/admin/trading-rooms/' + slug);
 }
 ```
 
-The canonical cookie set by the login proxy is `rtp_access_token` (per recent commit `e2356fa46` and the convention in CLAUDE.md). `session_token` is never set anywhere I can find. Either every authenticated admin gets redirected to `/login` on every SSR pass (in which case the page is unusable), or this check is silently no-opping because the cookie *also* gets some legacy value somewhere. Either way it is wrong.
+The canonical cookie set by the login proxy is `rtp_access_token` (per recent commit `e2356fa46` and the convention in CLAUDE.md). `session_token` is never set anywhere I can find. Either every authenticated admin gets redirected to `/login` on every SSR pass (in which case the page is unusable), or this check is silently no-opping because the cookie _also_ gets some legacy value somewhere. Either way it is wrong.
 
 Also the parallel `fetch()` calls below it (lines 38-47) do not forward any auth cookie, so the SSR-only API requests likely all 401 silently and the user is rescued only by the second client-side load.
 
@@ -161,11 +178,11 @@ Also the parallel `fetch()` calls below it (lines 38-47) do not forward any auth
 // const session = cookies.get('session');
 const session = cookies.get('rtp_access_token');
 if (session) {
-    headers['Cookie'] = `session=${session}`;
+	headers['Cookie'] = `session=${session}`;
 }
 ```
 
-The fix half-replaced the read but kept the write. The backend now receives `Cookie: session=<jwt>` — the backend extracts auth from a Bearer header or its own JWT cookie name, not a cookie named `session`. The neighbouring proxies ([`bunny/create-video/+server.ts:34-46`](../../../frontend/src/routes/api/admin/bunny/create-video/+server.ts#L34-L46), [`bunny/upload/+server.ts:51-59`](../../../frontend/src/routes/api/admin/bunny/upload/+server.ts#L51-L59), [`bunny/video-status/[guid]/+server.ts:33-40`](../../../frontend/src/routes/api/admin/bunny/video-status/[guid]/+server.ts#L33-L40)) all correctly send `Authorization: Bearer ${accessToken}`. This proxy alone is broken and silently 401s the backend, then masks the failure by returning a fake empty success (`{ success: true, data: [] }`) at line 60-63. The "Bunny Uploads" admin list will *always* show empty.
+The fix half-replaced the read but kept the write. The backend now receives `Cookie: session=<jwt>` — the backend extracts auth from a Bearer header or its own JWT cookie name, not a cookie named `session`. The neighbouring proxies ([`bunny/create-video/+server.ts:34-46`](../../../frontend/src/routes/api/admin/bunny/create-video/+server.ts#L34-L46), [`bunny/upload/+server.ts:51-59`](../../../frontend/src/routes/api/admin/bunny/upload/+server.ts#L51-L59), [`bunny/video-status/[guid]/+server.ts:33-40`](../../../frontend/src/routes/api/admin/bunny/video-status/[guid]/+server.ts#L33-L40)) all correctly send `Authorization: Bearer ${accessToken}`. This proxy alone is broken and silently 401s the backend, then masks the failure by returning a fake empty success (`{ success: true, data: [] }`) at line 60-63. The "Bunny Uploads" admin list will _always_ show empty.
 
 ---
 
@@ -213,13 +230,13 @@ No `AbortController`, no cleanup if the user navigates away mid-upload. The comp
 
 ```ts
 xhr.upload.addEventListener('progress', async (e) => {
-    if (e.lengthComputable) {
-        const progress = Math.round((e.loaded / e.total) * 100);
-        await bulkUploadApi.updateItemStatus(itemId, {
-            status: 'uploading',
-            progress_percent: progress
-        });
-    }
+	if (e.lengthComputable) {
+		const progress = Math.round((e.loaded / e.total) * 100);
+		await bulkUploadApi.updateItemStatus(itemId, {
+			status: 'uploading',
+			progress_percent: progress
+		});
+	}
 });
 ```
 
@@ -230,13 +247,18 @@ Every progress event (XHR fires these many times per second on slow uplinks) iss
 [`admin/indicators/+page.svelte:96-114`](../../../frontend/src/routes/admin/indicators/+page.svelte#L96-L114)
 
 ```ts
-onMount(() => { fetchIndicators(); });
+onMount(() => {
+	fetchIndicators();
+});
 
 $effect(() => {
-    clearTimeout(searchDebounceTimer);
-    searchDebounceTimer = setTimeout(() => {
-        untrack(() => { page = 1; fetchIndicators(); });
-    }, 300);
+	clearTimeout(searchDebounceTimer);
+	searchDebounceTimer = setTimeout(() => {
+		untrack(() => {
+			page = 1;
+			fetchIndicators();
+		});
+	}, 300);
 });
 ```
 
@@ -248,9 +270,9 @@ The `$effect` body always reads `search` and `statusFilter` (those are the comme
 
 ```ts
 const response = await fetch(`/api/admin/indicators/${indicatorId}/files`, {
-    method: 'POST',
-    body: formData,
-    credentials: 'include'
+	method: 'POST',
+	body: formData,
+	credentials: 'include'
 });
 ```
 
@@ -272,12 +294,12 @@ xhr.withCredentials = true;
 [`admin/media/analytics/+page.svelte:115-117`](../../../frontend/src/routes/admin/media/analytics/+page.svelte#L115-L117)
 
 ```ts
-fetch('/api/media/analytics/overview'),
-fetch(`/api/media/analytics/bandwidth?range=${timeRange}`),
-fetch('/api/media/analytics/formats')
+(fetch('/api/media/analytics/overview'),
+	fetch(`/api/media/analytics/bandwidth?range=${timeRange}`),
+	fetch('/api/media/analytics/formats'));
 ```
 
-There is no `frontend/src/routes/api/media/analytics/...` and no `/api/admin/media/analytics`. These all 404 in production. The page handles failure by showing a "Connection error" message ([line 156-163](../../../frontend/src/routes/admin/media/analytics/+page.svelte#L156-L163)), so this fails silently — the dashboard simply *never* shows real data.
+There is no `frontend/src/routes/api/media/analytics/...` and no `/api/admin/media/analytics`. These all 404 in production. The page handles failure by showing a "Connection error" message ([line 156-163](../../../frontend/src/routes/admin/media/analytics/+page.svelte#L156-L163)), so this fails silently — the dashboard simply _never_ shows real data.
 
 ### P1-9. `WeeklyVideoUploader.svelte` cleanup-less polling of `roomSlug` change
 
@@ -285,13 +307,13 @@ There is no `frontend/src/routes/api/media/analytics/...` and no `/api/admin/med
 
 ```ts
 $effect(() => {
-    if (roomSlug) {
-        untrack(() => loadVideos());
-    }
+	if (roomSlug) {
+		untrack(() => loadVideos());
+	}
 });
 ```
 
-Two issues. (1) `untrack` here means `loadVideos()` will not pick up subsequent changes to `roomSlug`; the `if (roomSlug)` outside `untrack` is the only dependency, so any later mutation that changes truthiness *won't* (e.g. slug going from `"a"` to `"b"`). This is mostly fine because `roomSlug` is a prop, but mishandling — typical correct form is `untrack` only the function call, with the dep read **outside** `untrack` (that part is right) but you still need the read of the new value, which is happening. So the logic is OK, but the pattern is fragile. (2) No abort on unmount; `loadVideos` continues even after the parent destroys the component.
+Two issues. (1) `untrack` here means `loadVideos()` will not pick up subsequent changes to `roomSlug`; the `if (roomSlug)` outside `untrack` is the only dependency, so any later mutation that changes truthiness _won't_ (e.g. slug going from `"a"` to `"b"`). This is mostly fine because `roomSlug` is a prop, but mishandling — typical correct form is `untrack` only the function call, with the dep read **outside** `untrack` (that part is right) but you still need the read of the new value, which is happening. So the logic is OK, but the pattern is fragile. (2) No abort on unmount; `loadVideos` continues even after the parent destroys the component.
 
 ### P1-10. `videos/+page.svelte` `$effect` on `formData.video_url` mutates `formData.video_platform` on every render
 
@@ -299,17 +321,17 @@ Two issues. (1) `untrack` here means `loadVideos()` will not pick up subsequent 
 
 ```ts
 $effect(() => {
-    if (formData.video_url) {
-        formData.video_platform = detectPlatform(formData.video_url);
-    }
+	if (formData.video_url) {
+		formData.video_platform = detectPlatform(formData.video_url);
+	}
 });
 ```
 
-This effect reads `formData.video_url`, writes `formData.video_platform`. It shares the reactive container with `formData` itself, so any other write to `formData.*` in the component will retrigger this effect (since `$state(formData)` is a deep-tracked proxy, and the effect dependency is on the *URL property* — Svelte 5 fine-grained tracking should narrow this, but combined with the manual reset in `openUploadModal()` and `openEditModal()` you're guaranteed extra effect runs). Better: write the `video_platform` once when the user types/blurs the URL field instead of via reactive coupling.
+This effect reads `formData.video_url`, writes `formData.video_platform`. It shares the reactive container with `formData` itself, so any other write to `formData.*` in the component will retrigger this effect (since `$state(formData)` is a deep-tracked proxy, and the effect dependency is on the _URL property_ — Svelte 5 fine-grained tracking should narrow this, but combined with the manual reset in `openUploadModal()` and `openEditModal()` you're guaranteed extra effect runs). Better: write the `video_platform` once when the user types/blurs the URL field instead of via reactive coupling.
 
 ### P1-11. Mock-data fallbacks in `traders` and `videos` proxies will leak in production
 
-[`api/admin/trading-rooms/traders/+server.ts:19-84`](../../../frontend/src/routes/api/admin/trading-rooms/traders/+server.ts#L19-L84) and [`api/admin/trading-rooms/videos/+server.ts:19-120`](../../../frontend/src/routes/api/admin/trading-rooms/videos/+server.ts#L19-L120) ship 84 lines and 120 lines of *hardcoded mock data* that are returned as a fallback if the backend call doesn't return `success: true`. They flag the response with `_mock: true` but the admin UI does not check the flag — mock traders Mike/Sarah/James/Emily will silently appear in the dropdown if the backend hiccups. Same for the videos. This means a 5xx on the backend is invisible in the UI; the admin sees "all is well" with phantom data.
+[`api/admin/trading-rooms/traders/+server.ts:19-84`](../../../frontend/src/routes/api/admin/trading-rooms/traders/+server.ts#L19-L84) and [`api/admin/trading-rooms/videos/+server.ts:19-120`](../../../frontend/src/routes/api/admin/trading-rooms/videos/+server.ts#L19-L120) ship 84 lines and 120 lines of _hardcoded mock data_ that are returned as a fallback if the backend call doesn't return `success: true`. They flag the response with `_mock: true` but the admin UI does not check the flag — mock traders Mike/Sarah/James/Emily will silently appear in the dropdown if the backend hiccups. Same for the videos. This means a 5xx on the backend is invisible in the UI; the admin sees "all is well" with phantom data.
 
 ### P1-12. `trading-rooms/[slug]/+page.svelte` SSR-rehydration `$effect` overwrites client edits
 
@@ -317,14 +339,18 @@ This effect reads `formData.video_url`, writes `formData.video_platform`. It sha
 
 ```ts
 $effect(() => {
-    if (!browser) return;
-    const currentSlug = slug;
-    if (currentSlug && data.slug !== currentSlug) {
-        untrack(() => {
-            loadTradePlan(); loadAlerts(); loadWeeklyVideo();
-            loadRoomStats(); loadTrades(); loadVideoResources();
-        });
-    }
+	if (!browser) return;
+	const currentSlug = slug;
+	if (currentSlug && data.slug !== currentSlug) {
+		untrack(() => {
+			loadTradePlan();
+			loadAlerts();
+			loadWeeklyVideo();
+			loadRoomStats();
+			loadTrades();
+			loadVideoResources();
+		});
+	}
 });
 ```
 
@@ -352,9 +378,11 @@ The branch `data.slug !== currentSlug` is unreachable in normal navigation: `slu
 
 ```ts
 const roomSlugToId: Record<string, number> = {
-    'day-trading-room': 1, 'swing-trading-room': 2,
-    'small-account-mentorship': 3, 'spx-profit-pulse': 4,
-    'explosive-swing': 5  // singular — but config has 'explosive-swings' (plural)
+	'day-trading-room': 1,
+	'swing-trading-room': 2,
+	'small-account-mentorship': 3,
+	'spx-profit-pulse': 4,
+	'explosive-swing': 5 // singular — but config has 'explosive-swings' (plural)
 };
 ```
 
@@ -365,7 +393,9 @@ const roomSlugToId: Record<string, number> = {
 [`admin/videos/+page.svelte:320-322`](../../../frontend/src/routes/admin/videos/+page.svelte#L320-L322)
 
 ```ts
-video_date: typeof video.video_date === 'string' ? video.video_date.split('T')[0] : video.video_date
+video_date: typeof video.video_date === 'string'
+	? video.video_date.split('T')[0]
+	: video.video_date;
 ```
 
 If the API returns a Date-like or a number, this passes it through to a date input, which expects `YYYY-MM-DD`. Easy to silently produce an invalid HTML date input value.
@@ -413,7 +443,7 @@ If the admin manually edits the slug field, the next character typed into the na
 - `[`admin/media/+page.svelte:217, 231, 255, 267`](../../../frontend/src/routes/admin/media/+page.svelte#L217)` — `uploadQueue = uploadQueue` reactive-trigger hack is the legacy Svelte 4 idiom; in Svelte 5 with `$state` proxies this is unnecessary noise.
 - [`admin/indicators/[id]/+page.svelte:14`](../../../frontend/src/routes/admin/indicators/[id]/+page.svelte#L14) — uses `import { adminFetch }` but light/dark themed inline styles still use legacy `#143e59` and `#fff` hardcoded values; doesn't honor the no-global-theme rule.
 - [`api/admin/bunny/upload/+server.ts:32`](../../../frontend/src/routes/api/admin/bunny/upload/+server.ts#L32) — default library ID `585929` hardcoded. Should come from env var.
-- [`admin/indicators/create/+page.svelte:259-269`](../../../frontend/src/routes/admin/indicators/create/+page.svelte#L259-L269) — on upload failure, falls back to `URL.createObjectURL(file)` which is a *blob: URL valid only for the current tab*. If the indicator is then saved, the persisted `file_url` is a dead-on-reload local URL.
+- [`admin/indicators/create/+page.svelte:259-269`](../../../frontend/src/routes/admin/indicators/create/+page.svelte#L259-L269) — on upload failure, falls back to `URL.createObjectURL(file)` which is a _blob: URL valid only for the current tab_. If the indicator is then saved, the persisted `file_url` is a dead-on-reload local URL.
 - The proxy at `bunny/uploads/+server.ts` (older style: missing the `API_BASE_URL || BACKEND_URL ||` chain) only uses `env.BACKEND_URL`; the rest of the proxies use `env.API_BASE_URL || env.BACKEND_URL || ...`. Inconsistent and a potential prod-only break.
 - [`admin/indicators/[id]/+page.svelte:225`](../../../frontend/src/routes/admin/indicators/[id]/+page.svelte#L225) — console.error variants leak unhandled rejections; user sees nothing for `_e` ignored failures.
 
@@ -435,11 +465,11 @@ The commit message "new video fetching approach across learning center and tradi
 
 ## Summary
 
-| Severity | Count | Highlights |
-|---|---|---|
-| P0 | 9 | Weekly-video uploader writes `VIDEO_LIBRARY_ID` literal into URLs (P0-1); broken upload sequence calls non-existent `upload_url` (P0-2); 100% of `/api/admin/indicators/*` is orphaned (P0-4); `+page.server.ts` SSR redirects on wrong cookie (P0-8); shadow-state pattern reintroduced in 6 effects (P0-7); triple video-fetch on init (P0-6); `bunny/uploads` proxy ships forwarded JWT under wrong cookie name (P0-9); `indicators/create` posts integer indices as platform FKs (P0-5). |
-| P1 | 12 | Status proxy hides errors as "processing" forever (P1-1); progress XHR fires hundreds of HTTP per upload (P1-4); media uploads bypass proxy convention (P1-7); analytics page hits non-existent endpoints (P1-8); 100+ lines of mock data leak silently into prod responses on backend failure (P1-11). |
-| P2 | 10 | Slug-clobber on every name keystroke (P2-8); fake-success fallbacks throughout (P2-9); proxy slug mismatch `explosive-swing` vs `explosive-swings` (P2-4); hardcoded library ID (covered in P3). |
-| P3 | 11 | Mixed icon-import conventions, redundant `$derived` on constants, dead state, blob-URL fallbacks for failed uploads, `uploadQueue = uploadQueue` Svelte-4 idioms. |
+| Severity | Count | Highlights                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0       | 9     | Weekly-video uploader writes `VIDEO_LIBRARY_ID` literal into URLs (P0-1); broken upload sequence calls non-existent `upload_url` (P0-2); 100% of `/api/admin/indicators/*` is orphaned (P0-4); `+page.server.ts` SSR redirects on wrong cookie (P0-8); shadow-state pattern reintroduced in 6 effects (P0-7); triple video-fetch on init (P0-6); `bunny/uploads` proxy ships forwarded JWT under wrong cookie name (P0-9); `indicators/create` posts integer indices as platform FKs (P0-5). |
+| P1       | 12    | Status proxy hides errors as "processing" forever (P1-1); progress XHR fires hundreds of HTTP per upload (P1-4); media uploads bypass proxy convention (P1-7); analytics page hits non-existent endpoints (P1-8); 100+ lines of mock data leak silently into prod responses on backend failure (P1-11).                                                                                                                                                                                      |
+| P2       | 10    | Slug-clobber on every name keystroke (P2-8); fake-success fallbacks throughout (P2-9); proxy slug mismatch `explosive-swing` vs `explosive-swings` (P2-4); hardcoded library ID (covered in P3).                                                                                                                                                                                                                                                                                             |
+| P3       | 11    | Mixed icon-import conventions, redundant `$derived` on constants, dead state, blob-URL fallbacks for failed uploads, `uploadQueue = uploadQueue` Svelte-4 idioms.                                                                                                                                                                                                                                                                                                                            |
 
 **Most urgent:** P0-1, P0-2, P0-3 (weekly-video upload is silently 100% broken right now); P0-4 (entire indicators surface 404s in production); P0-7 (CLAUDE.md-banned anti-pattern reintroduced — typecheck gate violation per the repo policy); P0-8 (per-room admin pages may be 100% redirecting to login).

@@ -10,7 +10,7 @@
  * source characters (a literal one is itself a JS line terminator).
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { serializeJsonLd } from '../serializeJsonLd';
 
 const U2028 = String.fromCharCode(0x2028);

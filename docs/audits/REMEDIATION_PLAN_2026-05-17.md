@@ -22,7 +22,7 @@ Staged, root-cause remediation of every finding in
   Bunny are tagged **🐰** below.
 - **No live DB / Docker stack / Playwright in this environment.**
   Stage 1 builds the verification substrate (real-module tests +
-  real-JWT integration harness + blocking CI) *first* so every later
+  real-JWT integration harness + blocking CI) _first_ so every later
   stage is provable, not asserted.
 - **Owner-decision gates** (Stage 0) must be signed off before the
   irreversible actions they guard. They are tracked, not silently
@@ -33,68 +33,68 @@ Staged, root-cause remediation of every finding in
 Findings are not fixed one-by-one; they are collapsed into clusters
 that share a root cause and a single corrective change.
 
-| Cluster | Root cause | Findings |
-|---|---|---|
-| **A — Secret exposure** | secrets in VCS + email-string used as an authz boundary | P0-2, P1-1, P2-H, L1/L2, security-M1 |
-| **B — Auth authority** | missing server-side authority + no token lifecycle | P0-3, P1-2, P1-3, P1-4, P1-6, P2-F, security-M3 |
-| **C — Payments/money integrity** | non-atomic webhook + money-as-float + contract drift | P0-1, P0-4, P0-5, P1-7, P1-8, P2-A, P2-B, P2-C, P2-I |
-| **D — Output safety** | hand-rolled serialization into HTML | P0-6 |
-| **E — Data exposure / paywall** 🐰 | read endpoint with no entitlement filter | P0-7 |
-| **F — Honest data / observability** | stubbed data shipped as real; errors swallowed | P1-5, P2-D, P3 log-level |
-| **G — Egress boundary** | server fetch to caller-influenced URL | P2-E |
-| **H — CI/test enforcement** | gates advisory; tests exercise copies | P1-9, P1-10 |
-| **I — Persistence correctness** | process-local fallback masking DB failure | P3 consent OnceLock |
-| **J — Structural debt** | duplication, dead code, oversized units | P2-G, P2-J, all P3 hygiene |
+| Cluster                             | Root cause                                              | Findings                                             |
+| ----------------------------------- | ------------------------------------------------------- | ---------------------------------------------------- |
+| **A — Secret exposure**             | secrets in VCS + email-string used as an authz boundary | P0-2, P1-1, P2-H, L1/L2, security-M1                 |
+| **B — Auth authority**              | missing server-side authority + no token lifecycle      | P0-3, P1-2, P1-3, P1-4, P1-6, P2-F, security-M3      |
+| **C — Payments/money integrity**    | non-atomic webhook + money-as-float + contract drift    | P0-1, P0-4, P0-5, P1-7, P1-8, P2-A, P2-B, P2-C, P2-I |
+| **D — Output safety**               | hand-rolled serialization into HTML                     | P0-6                                                 |
+| **E — Data exposure / paywall** 🐰  | read endpoint with no entitlement filter                | P0-7                                                 |
+| **F — Honest data / observability** | stubbed data shipped as real; errors swallowed          | P1-5, P2-D, P3 log-level                             |
+| **G — Egress boundary**             | server fetch to caller-influenced URL                   | P2-E                                                 |
+| **H — CI/test enforcement**         | gates advisory; tests exercise copies                   | P1-9, P1-10                                          |
+| **I — Persistence correctness**     | process-local fallback masking DB failure               | P3 consent OnceLock                                  |
+| **J — Structural debt**             | duplication, dead code, oversized units                 | P2-G, P2-J, all P3 hygiene                           |
 
 ## Master tracking matrix
 
 Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 🐰 Bunny-deferred verification.
 
-| ID | Cluster | Stage | Status |
-|---|---|---|---|
-| P0-2 secret/cred exposure | A | 0 | ☑ (PR #587 — env-sourced via `_creds.ts`/`.env`; literals gone, `pnpm check` 0/0. Rotation owner-deferred per owner: not in prod, rotate later, no history rewrite) |
-| P1-1 Google key committed | A | 0 | ☑ (PR #587 — centralized to one env-overridable `google.ts`; literal in 1 place. Rotation + Google Cloud restriction owner-deferred) |
-| Bunny account restore | — | 0 | ☐ ⏸ (Errol — external; code paths done, live smoke deferred) |
-| R2 rotation (carried from CHANGELOG C-3) | A | 0 | ☐ ⏸ (owner-external rotation; no in-tree literal to source) |
-| 🔴 P0 schema not reproducible (G0.3, 8/60 migrations fail fresh) | — | 0 | ☑ (PR #587 — reconstructed prod-safe `api/migrations/schema.sql`+`sqlx-seed.sql`; verified 60/60 replay, from-zero 0 err/204 tables, gated no-op proof test, `0*.sql` byte-identical. ONE bounded owner cutover step remains — see G0_3 note) |
-| P2-H email-verify bypass | A | 2 | ☑ (PR #584 — bypass requires `email_verified_at`+DB role; email-list secondary only) |
-| security-M1 email elevation | A | 2 | ☑ (PR #584 strict helpers + #586 admin-extractor companion) |
-| P1-9 CI not enforcing | H | 1 | ☑ (eslint+clippy blocking; dead workflow removed; pnpm single-source) |
-| P1-10 tests test copies | H | 1 | ◐ (1a: no-DB tests bind real crate ✓ #574; 1b: real-JWT DB harness **now UNBLOCKED by G0.3 #587** — `schema.sql`+seed gives a fresh DB; activation pending) |
-| CI fmt-red since 4420d1d | H | 1 | ☑ (pre-existing `cargo fmt` drift in stripe.rs:826/842 fixed) |
-| P0-3 /admin gate client-only | B | 2 | ☑ (PR #576 — server +layout.server.ts gate, DRY isAdminRole) |
-| P1-2 token revocation | B | 2 | ☑ (PR #583 per-user token_version epoch + #584 ban-path; Redis runtime authority. Durable DB-column = G0.3-gated follow-up) |
-| P1-3 spoofable client IP | B | 2 | ☑ (PR #579 — ConnectInfo + trusted-proxy CIDR, 19 no-DB tests) |
-| P1-4 unauth endpoints | B | 2 | ☑ (PR #579 — AdminUser/SuperAdminUser + MONITORING_TOKEN) |
-| P1-6 set-session | B | 2 | ☑ (PR #576 — insecure POST deleted) |
-| P2-F proxy RBAC | B | 2 | ☑ (PR #578 — 51 proxies onto requireAdmin/requireSuperadmin) |
-| security-M3 refresh TTL | B | 2 | ☑ (folded into PR #583 — token_version epoch covers C1/M3; refresh() re-checks before rotation) |
-| CI red root causes (pnpm/toolchain/OOM-heap/API host/prerender SQLITE_BUSY) | H | 1 | ☑ (PR #579/#580/#581 + #585 prerender concurrency:1 — Backend+Cloudflare green; Frontend SQLITE_BUSY root-caused+fixed) |
-| P1-7 money→cents schema | C | 3 | ☐ (UNBLOCKED by G0.3 #587; not yet done — highest-risk money-schema, needs dedicated careful pass) |
-| P2-I migration 068 / sqlx state | C | 3 | ☐ (UNBLOCKED by G0.3 #587; not yet done) |
-| P0-1 checkout contract | C | 3 | ☑ (PR #582 — real CheckoutRequest contract, dead client removed) |
-| P0-4 webhook atomicity | C | 3 | ☑ (PR #582 — single-tx webhook, dedup on processed_at, Stripe-retry reprocesses) |
-| P2-A persisted idempotency | C | 3 | ☑ (PR #582 — deterministic SHA-256 refund Idempotency-Key) |
-| P2-C webhook DB errors swallowed | C | 3 | ☑ (PR #582 — ?/500 propagation) |
-| P0-5 plan price normalizer | C | 3 | ☑ (PR #582 — normalizePlanPayload, /price flow preserved) |
-| P1-8 expand=items | C | 3 | ☑ (PR #582 — get_subscription expand[]=items.data) |
-| P2-B refund authz | C | 3 | ☑ (PR #582 — AdminUser-gated create_refund) |
-| P0-6 JSON-LD XSS | D | 4 | ☑ (PR #579 — canonical serializeJsonLd, all 5 sites; +10 tests) |
-| P0-7 course paywall | E | 4 | ☑ (PR #579 — 403 + per-lesson entitlement + GUID withholding; 🐰 live deferred) |
-| P1-5 fabricated analytics | F | 5 | ☑ (PR #579 — real revenue/AOV; honest 501 for churn) |
-| P2-D unwrap_or_default swallow | F | 5 | ☑ (PR #579 — ?-propagated 500s) |
-| P3 log-level default | F | 5 | ☑ (PR #582 — EnvFilter debug→info) |
-| P2-E webhook SSRF | G | 5 | ☑ (PR #579 — https-only + private-range block; +16 tests) |
-| P3 consent OnceLock | I | 5 | ◐ (UNBLOCKED by G0.3; agent in flight — replace process-local fallback with fail-closed DB authority) |
-| P2-G SW auth-HTML cache | J | 6 | ☑ (PR #582 — isPrivatePath guard) |
-| P2-J component collisions | J | 6 | ◐ (agent in flight — canonicalize/rename, behavior-preserving) |
-| P3 dead module/components | J | 6 | ☑ (PR #582 — courses.rs/cms_scheduler.rs + 7 dead components deleted) |
-| P3 mega-components | J | 6 | ☐ (open — large decomposition; dedicated careful pass) |
-| P3 a11y suppressions | J | 6 | ◐ (10 fixed at source PR #582; ~77 `svelte-ignore a11y` remain — open) |
-| P3 /signup vs /register | J | 6 | ☐ (open — route duplication, both exist) |
-| P3 ~36MB cruft | J | 6 | ☑ (PR #581 — 161 files/~36MB; + PR #587 dropped 268K PII scrape) |
-| P3 stale comments / X-XSS hdr | J | 6 | ☑ (PR #582 X-XSS removed; PR #587 Laravel-rot comments exterminated) |
+| ID                                                                          | Cluster | Stage | Status                                                                                                                                                                                                                                        |
+| --------------------------------------------------------------------------- | ------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0-2 secret/cred exposure                                                   | A       | 0     | ☑ (PR #587 — env-sourced via `_creds.ts`/`.env`; literals gone, `pnpm check` 0/0. Rotation owner-deferred per owner: not in prod, rotate later, no history rewrite)                                                                           |
+| P1-1 Google key committed                                                   | A       | 0     | ☑ (PR #587 — centralized to one env-overridable `google.ts`; literal in 1 place. Rotation + Google Cloud restriction owner-deferred)                                                                                                          |
+| Bunny account restore                                                       | —       | 0     | ☐ ⏸ (Errol — external; code paths done, live smoke deferred)                                                                                                                                                                                  |
+| R2 rotation (carried from CHANGELOG C-3)                                    | A       | 0     | ☐ ⏸ (owner-external rotation; no in-tree literal to source)                                                                                                                                                                                   |
+| 🔴 P0 schema not reproducible (G0.3, 8/60 migrations fail fresh)            | —       | 0     | ☑ (PR #587 — reconstructed prod-safe `api/migrations/schema.sql`+`sqlx-seed.sql`; verified 60/60 replay, from-zero 0 err/204 tables, gated no-op proof test, `0*.sql` byte-identical. ONE bounded owner cutover step remains — see G0_3 note) |
+| P2-H email-verify bypass                                                    | A       | 2     | ☑ (PR #584 — bypass requires `email_verified_at`+DB role; email-list secondary only)                                                                                                                                                          |
+| security-M1 email elevation                                                 | A       | 2     | ☑ (PR #584 strict helpers + #586 admin-extractor companion)                                                                                                                                                                                   |
+| P1-9 CI not enforcing                                                       | H       | 1     | ☑ (eslint+clippy blocking; dead workflow removed; pnpm single-source)                                                                                                                                                                         |
+| P1-10 tests test copies                                                     | H       | 1     | ◐ (1a: no-DB tests bind real crate ✓ #574; 1b: real-JWT DB harness **now UNBLOCKED by G0.3 #587** — `schema.sql`+seed gives a fresh DB; activation pending)                                                                                   |
+| CI fmt-red since 4420d1d                                                    | H       | 1     | ☑ (pre-existing `cargo fmt` drift in stripe.rs:826/842 fixed)                                                                                                                                                                                 |
+| P0-3 /admin gate client-only                                                | B       | 2     | ☑ (PR #576 — server +layout.server.ts gate, DRY isAdminRole)                                                                                                                                                                                  |
+| P1-2 token revocation                                                       | B       | 2     | ☑ (PR #583 per-user token_version epoch + #584 ban-path; Redis runtime authority. Durable DB-column = G0.3-gated follow-up)                                                                                                                   |
+| P1-3 spoofable client IP                                                    | B       | 2     | ☑ (PR #579 — ConnectInfo + trusted-proxy CIDR, 19 no-DB tests)                                                                                                                                                                                |
+| P1-4 unauth endpoints                                                       | B       | 2     | ☑ (PR #579 — AdminUser/SuperAdminUser + MONITORING_TOKEN)                                                                                                                                                                                     |
+| P1-6 set-session                                                            | B       | 2     | ☑ (PR #576 — insecure POST deleted)                                                                                                                                                                                                           |
+| P2-F proxy RBAC                                                             | B       | 2     | ☑ (PR #578 — 51 proxies onto requireAdmin/requireSuperadmin)                                                                                                                                                                                  |
+| security-M3 refresh TTL                                                     | B       | 2     | ☑ (folded into PR #583 — token_version epoch covers C1/M3; refresh() re-checks before rotation)                                                                                                                                               |
+| CI red root causes (pnpm/toolchain/OOM-heap/API host/prerender SQLITE_BUSY) | H       | 1     | ☑ (PR #579/#580/#581 + #585 prerender concurrency:1 — Backend+Cloudflare green; Frontend SQLITE_BUSY root-caused+fixed)                                                                                                                       |
+| P1-7 money→cents schema                                                     | C       | 3     | ☐ (UNBLOCKED by G0.3 #587; not yet done — highest-risk money-schema, needs dedicated careful pass)                                                                                                                                            |
+| P2-I migration 068 / sqlx state                                             | C       | 3     | ☐ (UNBLOCKED by G0.3 #587; not yet done)                                                                                                                                                                                                      |
+| P0-1 checkout contract                                                      | C       | 3     | ☑ (PR #582 — real CheckoutRequest contract, dead client removed)                                                                                                                                                                              |
+| P0-4 webhook atomicity                                                      | C       | 3     | ☑ (PR #582 — single-tx webhook, dedup on processed_at, Stripe-retry reprocesses)                                                                                                                                                              |
+| P2-A persisted idempotency                                                  | C       | 3     | ☑ (PR #582 — deterministic SHA-256 refund Idempotency-Key)                                                                                                                                                                                    |
+| P2-C webhook DB errors swallowed                                            | C       | 3     | ☑ (PR #582 — ?/500 propagation)                                                                                                                                                                                                               |
+| P0-5 plan price normalizer                                                  | C       | 3     | ☑ (PR #582 — normalizePlanPayload, /price flow preserved)                                                                                                                                                                                     |
+| P1-8 expand=items                                                           | C       | 3     | ☑ (PR #582 — get_subscription expand[]=items.data)                                                                                                                                                                                            |
+| P2-B refund authz                                                           | C       | 3     | ☑ (PR #582 — AdminUser-gated create_refund)                                                                                                                                                                                                   |
+| P0-6 JSON-LD XSS                                                            | D       | 4     | ☑ (PR #579 — canonical serializeJsonLd, all 5 sites; +10 tests)                                                                                                                                                                               |
+| P0-7 course paywall                                                         | E       | 4     | ☑ (PR #579 — 403 + per-lesson entitlement + GUID withholding; 🐰 live deferred)                                                                                                                                                               |
+| P1-5 fabricated analytics                                                   | F       | 5     | ☑ (PR #579 — real revenue/AOV; honest 501 for churn)                                                                                                                                                                                          |
+| P2-D unwrap_or_default swallow                                              | F       | 5     | ☑ (PR #579 — ?-propagated 500s)                                                                                                                                                                                                               |
+| P3 log-level default                                                        | F       | 5     | ☑ (PR #582 — EnvFilter debug→info)                                                                                                                                                                                                            |
+| P2-E webhook SSRF                                                           | G       | 5     | ☑ (PR #579 — https-only + private-range block; +16 tests)                                                                                                                                                                                     |
+| P3 consent OnceLock                                                         | I       | 5     | ◐ (UNBLOCKED by G0.3; agent in flight — replace process-local fallback with fail-closed DB authority)                                                                                                                                         |
+| P2-G SW auth-HTML cache                                                     | J       | 6     | ☑ (PR #582 — isPrivatePath guard)                                                                                                                                                                                                             |
+| P2-J component collisions                                                   | J       | 6     | ◐ (agent in flight — canonicalize/rename, behavior-preserving)                                                                                                                                                                                |
+| P3 dead module/components                                                   | J       | 6     | ☑ (PR #582 — courses.rs/cms_scheduler.rs + 7 dead components deleted)                                                                                                                                                                         |
+| P3 mega-components                                                          | J       | 6     | ☐ (open — large decomposition; dedicated careful pass)                                                                                                                                                                                        |
+| P3 a11y suppressions                                                        | J       | 6     | ◐ (10 fixed at source PR #582; ~77 `svelte-ignore a11y` remain — open)                                                                                                                                                                        |
+| P3 /signup vs /register                                                     | J       | 6     | ☐ (open — route duplication, both exist)                                                                                                                                                                                                      |
+| P3 ~36MB cruft                                                              | J       | 6     | ☑ (PR #581 — 161 files/~36MB; + PR #587 dropped 268K PII scrape)                                                                                                                                                                              |
+| P3 stale comments / X-XSS hdr                                               | J       | 6     | ☑ (PR #582 X-XSS removed; PR #587 Laravel-rot comments exterminated)                                                                                                                                                                          |
 
 ---
 
@@ -147,7 +147,7 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
   This **unblocks Stage 1b activation** and DB-backed verification for
   CI/local/DR via `api/migrations/README.md`.
   **Remaining owner-gated step (the only one):** a coordinated
-  maintenance-window cutover of the *production* DB onto this baseline —
+  maintenance-window cutover of the _production_ DB onto this baseline —
   `pg_dump --schema-only` prod, `diff` vs this `schema.sql`, reconcile
   any prod-only objects, reset prod's `_sqlx_migrations` lineage. The
   exact runbook + diff command is in
@@ -161,7 +161,7 @@ Status: ☐ todo · ◐ in progress · ☑ done · ⏸ blocked on owner gate ·
 
 ---
 
-## Stage 1 — Verification substrate (Cluster H) — *do first*
+## Stage 1 — Verification substrate (Cluster H) — _do first_
 
 **Goal:** make every later stage provable in CI, not asserted. You
 cannot principal-engineer a payments rewrite without a real test
@@ -189,7 +189,7 @@ harness.
   HS256 JWT via the production `revolution_api::utils::create_jwt`, and
   `setup_test_app` calls `db.migrate()`. The harness is correct, but
   running it surfaced **🔴 P0 G0.3**: a fresh DB cannot migrate (8/60
-  migrations fail; see Stage 0). This is the *honest* boundary — the
+  migrations fail; see Stage 0). This is the _honest_ boundary — the
   old fake-token harness hid it. **Stage 1b activation (and the
   Postgres-in-CI integration job) is blocked by G0.3** and is NOT
   wired into CI (a permanently-red gate would defeat Stage 1's
@@ -226,7 +226,7 @@ lifecycle.
   survives" class: per-user `token_version` (i64) in DB + Redis,
   embedded as a JWT claim, checked in the `User` extractor; bumped on
   logout-all / password-reset / ban. One change closes access-token
-  *and* refresh-token survival.
+  _and_ refresh-token survival.
 - ☐ **P1-3** Replace `client_ip()` with
   `ConnectInfo<SocketAddr>`-derived peer IP; honor `X-Forwarded-For`
   only from a configured trusted-proxy CIDR allowlist.
@@ -433,6 +433,7 @@ prerender path — never in the Cloudflare production build.
 
 **Root-cause fix options (follow-up; touch adapter/prerender or 3rd-party
 versions, outside the audit's app-code remediation scope):**
+
 1. Eliminate build-time `platform` emulation: guard every
    `event.platform` access behind `building` from `$app/environment`,
    or set `export const prerender = false` on the specific prerendered
@@ -449,12 +450,14 @@ a route-level trace + adapter behavior change, and the user scoped this
 class as "isolate, then root-cause later."
 
 ### CI-2 — `Build + Deploy` (secondary `deploy-cloudflare.yml`) red
+
 Owner-gated: needs repo secrets `CLOUDFLARE_API_TOKEN` /
 `CLOUDFLARE_ACCOUNT_ID`, or disable this redundant secondary workflow
 (the primary Cloudflare Pages git-integration deploy is green). Also
 still hardcodes the stale `PNPM_VERSION: "10.33.2"`. Pre-existing.
 
 ### Carry-over owner-gated
+
 🔴→◐ G0.3 — reconstructed baseline `api/migrations/schema.sql` shipped
 (proven 60/60 replay + from-zero load 0 err/204 tables + embedded-migrator
 no-op test). **Only the prod-DB maintenance-window cutover remains

@@ -13,7 +13,7 @@
 // Import setup first to initialize globals
 import './setup';
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vite-plus/test';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Mock SvelteKit modules

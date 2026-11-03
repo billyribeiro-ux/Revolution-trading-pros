@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 import { mergeSEO, defaultsToInput } from '../merge';
 import { seoDefaults } from '../defaults';
 import type { SEOInput } from '../types';

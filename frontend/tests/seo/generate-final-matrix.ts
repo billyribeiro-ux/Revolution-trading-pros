@@ -109,7 +109,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (all static marketing, author, and indicator routes prerendered via +layout.js and entries())',
+		failingTargets:
+			'None (all static marketing, author, and indicator routes prerendered via +layout.js and entries())',
 		evidence: `[CODE frontend/src/routes/+layout.js:1] [CMD pnpm --filter revolution-svelte build -> exit 0]`
 	});
 
@@ -118,7 +119,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (authors/[slug] and indicators/[id] export prerender = true and entries())',
+		failingTargets:
+			'None (authors/[slug] and indicators/[id] export prerender = true and entries())',
 		evidence: `[CODE frontend/src/routes/authors/[slug]/+page.ts:10-14] [CODE frontend/src/routes/indicators/[id]/+page.ts:9-19] [CMD pnpm --filter revolution-svelte build -> prerendered /authors/* and /indicators/*]`
 	});
 
@@ -127,7 +129,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (handleHttpError: "fail", handleMissingId: "fail", handleUnseenRoutes: "fail")',
+		failingTargets:
+			'None (handleHttpError: "fail", handleMissingId: "fail", handleUnseenRoutes: "fail")',
 		evidence: `[CODE frontend/vite.config.ts:64-68] [CMD pnpm --filter revolution-svelte build -> exit 0]`
 	});
 
@@ -139,7 +142,10 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: soft404Fails.length === 0 ? 'PASS' : 'FAIL',
-		failingTargets: soft404Fails.length === 0 ? 'None' : soft404Fails.map((p: { path: string }) => p.path).join(', '),
+		failingTargets:
+			soft404Fails.length === 0
+				? 'None'
+				: soft404Fails.map((p: { path: string }) => p.path).join(', '),
 		evidence: `[HTTP http://127.0.0.1:4173/indicators/__nonexistent_slug_seo_test__ -> 404, x-robots-tag="noindex, nofollow"] [HTTP http://127.0.0.1:4173/classes/__nonexistent_slug_seo_test__ -> 404] [CODE frontend/src/routes/indicators/[id]/+page.ts:24] [CODE frontend/src/routes/classes/[slug]/+page.server.ts:112]`
 	});
 
@@ -157,7 +163,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (/robots.txt allows /_app/, uses valid User-agent tokens, and points Sitemap to https://revolutiontradingpros.com/sitemap.xml)',
+		failingTargets:
+			'None (/robots.txt allows /_app/, uses valid User-agent tokens, and points Sitemap to https://revolutiontradingpros.com/sitemap.xml)',
 		evidence: `[HTTP http://127.0.0.1:4173/robots.txt -> 200 text/plain] [CODE frontend/src/routes/robots.txt/+server.ts:1-95]`
 	});
 
@@ -166,7 +173,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (AI_SEARCH_OPT_OUT config separates AI search bots OAI-SearchBot/PerplexityBot/ChatGPT-User from AI training bots GPTBot/Google-Extended/ClaudeBot)',
+		failingTargets:
+			'None (AI_SEARCH_OPT_OUT config separates AI search bots OAI-SearchBot/PerplexityBot/ChatGPT-User from AI training bots GPTBot/Google-Extended/ClaudeBot)',
 		evidence: `[CODE frontend/src/lib/seo/config.ts:15-43] [CODE frontend/src/routes/robots.txt/+server.ts:52-77]`
 	});
 
@@ -175,7 +183,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (hooks.server.ts sets X-Robots-Tag: noindex, nofollow on non-production origins, NOINDEX_PREFIXES, and status >= 400)',
+		failingTargets:
+			'None (hooks.server.ts sets X-Robots-Tag: noindex, nofollow on non-production origins, NOINDEX_PREFIXES, and status >= 400)',
 		evidence: `[HTTP http://127.0.0.1:4173/ -> x-robots-tag="noindex, nofollow"] [CODE frontend/src/hooks.server.ts:472-484]`
 	});
 
@@ -209,7 +218,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (TRAILING_SLASH = "never" enforced consistently across canonicals, internal links, JSON-LD, and sitemap)',
+		failingTargets:
+			'None (TRAILING_SLASH = "never" enforced consistently across canonicals, internal links, JSON-LD, and sitemap)',
 		evidence: `[HTTP http://127.0.0.1:4173/about -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/canonical.ts:126]`
 	});
 
@@ -221,7 +231,10 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: qpFails.length === 0 ? 'PASS' : 'FAIL',
-		failingTargets: qpFails.length === 0 ? 'None' : qpFails.map((q: { requested: string }) => q.requested).join(', '),
+		failingTargets:
+			qpFails.length === 0
+				? 'None'
+				: qpFails.map((q: { requested: string }) => q.requested).join(', '),
 		evidence: `[HTTP http://127.0.0.1:4173/about?utm_source=x&fbclid=y -> canonical="https://revolutiontradingpros.com/about"] [CODE frontend/src/lib/seo/canonical.ts:43-82]`
 	});
 
@@ -257,7 +270,7 @@ function buildFinalMatrix(): void {
 			sev: 'P0',
 			template: t,
 			status: vp?.parityPass ? 'PASS' : 'FAIL',
-			failingTargets: vp?.parityPass ? 'None' : vp?.path ?? t,
+			failingTargets: vp?.parityPass ? 'None' : (vp?.path ?? t),
 			evidence: `[HTTP http://127.0.0.1:4173${vp?.path} -> desktopWords=${vp?.desktopWords}, mobileWords=${vp?.mobileWords}, h1="${vp?.desktopH1}"]`
 		});
 	}
@@ -267,7 +280,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (+error.svelte delegates head tags to root <Seo> which sets robots noindex, nofollow when page.status >= 400)',
+		failingTargets:
+			'None (+error.svelte delegates head tags to root <Seo> which sets robots noindex, nofollow when page.status >= 400)',
 		evidence: `[CODE frontend/src/routes/+error.svelte:1-95] [CODE frontend/src/routes/+layout.svelte:122-146]`
 	});
 
@@ -336,7 +350,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (indexable pages emit index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1)',
+		failingTargets:
+			'None (indexable pages emit index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1)',
 		evidence: `[HTTP http://127.0.0.1:4173/ -> meta[name="robots"]="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"]`
 	});
 
@@ -345,7 +360,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (deleted legacy SEOHead.svelte and SeoHead.svelte; removed competing <svelte:head> from error pages and Breadcrumbs.svelte; all 50 indexable pages emit 1 title, 1 description, 1 canonical via Seo.svelte)',
+		failingTargets:
+			'None (deleted legacy SEOHead.svelte and SeoHead.svelte; removed competing <svelte:head> from error pages and Breadcrumbs.svelte; all 50 indexable pages emit 1 title, 1 description, 1 canonical via Seo.svelte)',
 		evidence: `[CODE frontend/src/lib/seo/Seo.svelte:1-135] [HTTP http://127.0.0.1:4173/ -> title.tagCount=1, description.tagCount=1, canonical.tagCount=1]`
 	});
 
@@ -355,7 +371,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (<header>, <nav>, <main id="main-content">, <footer> present on all marketing layouts)',
+		failingTargets:
+			'None (<header>, <nav>, <main id="main-content">, <footer> present on all marketing layouts)',
 		evidence: `[CODE frontend/src/routes/+layout.svelte:215-232]`
 	});
 
@@ -387,7 +404,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (<html lang="%lang%" dir="%dir%"> in app.html transformed in hooks.server.ts)',
+		failingTargets:
+			'None (<html lang="%lang%" dir="%dir%"> in app.html transformed in hooks.server.ts)',
 		evidence: `[CODE frontend/src/app.html:4] [CODE frontend/src/hooks.server.ts:461-466] [HTTP http://127.0.0.1:4173/ -> html[lang]="en", html[dir]="ltr"]`
 	});
 
@@ -396,7 +414,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (<meta charset="utf-8">, <meta name="viewport" content="width=device-width, initial-scale=1">, <link rel="icon" href="/favicon.png"> in app.html)',
+		failingTargets:
+			'None (<meta charset="utf-8">, <meta name="viewport" content="width=device-width, initial-scale=1">, <link rel="icon" href="/favicon.png"> in app.html)',
 		evidence: `[CODE frontend/src/app.html:5-7,29]`
 	});
 
@@ -438,7 +457,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (serializeJsonLd escapes <, >, & as \\u003c, \\u003e, \\u0026 + U+2028/U+2029 across all JSON-LD paths)',
+		failingTargets:
+			'None (serializeJsonLd escapes <, >, & as \\u003c, \\u003e, \\u0026 + U+2028/U+2029 across all JSON-LD paths)',
 		evidence: `[CODE frontend/src/lib/seo/serializeJsonLd.ts:150-169] [CODE frontend/src/lib/seo/structured-data.ts:625] [CODE frontend/src/lib/seo/video-schema.ts:541]`
 	});
 
@@ -466,7 +486,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'home',
 		status: 'PASS',
-		failingTargets: 'None (Organization + WebSite JSON-LD emitted on / without retired SearchAction)',
+		failingTargets:
+			'None (Organization + WebSite JSON-LD emitted on / without retired SearchAction)',
 		evidence: `[CODE frontend/src/lib/seo/defaults.ts:87-116] [CODE frontend/src/lib/seo/resolve.ts:264-281]`
 	});
 
@@ -556,7 +577,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (0 indexable pages emit retired FAQPage, HowTo, SitelinksSearchBox, SpecialAnnouncement, CourseInfo, etc.)',
+		failingTargets:
+			'None (0 indexable pages emit retired FAQPage, HowTo, SitelinksSearchBox, SpecialAnnouncement, CourseInfo, etc.)',
 		evidence: `[CODE frontend/src/lib/seo/defaults.ts:87-116] [HTTP http://127.0.0.1:4173/ -> 0 retired schema types]`
 	});
 
@@ -565,7 +587,8 @@ function buildFinalMatrix(): void {
 		sev: 'P2',
 		template: 'course',
 		status: 'PASS',
-		failingTargets: 'None (/courses/* and /classes/* emit Course with name, description, provider, hasCourseInstance)',
+		failingTargets:
+			'None (/courses/* and /classes/* emit Course with name, description, provider, hasCourseInstance)',
 		evidence: `[CODE frontend/src/routes/courses/day-trading-masterclass/+page.ts:25-39]`
 	});
 
@@ -587,7 +610,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'N-A',
-		failingTargets: 'None (gated member content is noindex; public marketing pages are not paywalled)',
+		failingTargets:
+			'None (gated member content is noindex; public marketing pages are not paywalled)',
 		evidence: `[CODE frontend/src/lib/seo/config.ts:62-97]`
 	});
 
@@ -613,7 +637,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: (finalData.derivedChecks?.canonicalMismatches?.length ?? 0) === 0 ? 'PASS' : 'FAIL',
-		failingTargets: 'None (every sitemap <loc> matches the page <link rel="canonical"> byte-for-byte)',
+		failingTargets:
+			'None (every sitemap <loc> matches the page <link rel="canonical"> byte-for-byte)',
 		evidence: `[HTTP http://127.0.0.1:4173/sitemap.xml -> 100% canonical parity across all 50 indexable URLs]`
 	});
 
@@ -632,10 +657,11 @@ function buildFinalMatrix(): void {
 		template: 'ALL',
 		status:
 			(finalData.sitemaps?.news?.locs?.length ?? 0) === 0 &&
-				(finalData.sitemaps?.video?.locs?.length ?? 0) === 0
+			(finalData.sitemaps?.video?.locs?.length ?? 0) === 0
 				? 'PASS'
 				: 'FAIL',
-		failingTargets: 'None (removed fabricated URLs/video IDs from news-sitemap.xml and video-sitemap.xml and added X-Robots-Tag: noindex)',
+		failingTargets:
+			'None (removed fabricated URLs/video IDs from news-sitemap.xml and video-sitemap.xml and added X-Robots-Tag: noindex)',
 		evidence: `[CODE frontend/src/routes/news-sitemap.xml/+server.ts:1-25] [CODE frontend/src/routes/video-sitemap.xml/+server.ts:1-25]`
 	});
 
@@ -655,7 +681,10 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: orphans.length === 0 ? 'PASS' : 'FAIL',
-		failingTargets: orphans.length === 0 ? 'None (0 orphan indexable pages; all 50 indexable URLs reachable within <=3 clicks from /)' : orphans.join(', '),
+		failingTargets:
+			orphans.length === 0
+				? 'None (0 orphan indexable pages; all 50 indexable URLs reachable within <=3 clicks from /)'
+				: orphans.join(', '),
 		evidence: `[CMD node frontend/tests/seo/crawl.ts -> docs/seo/audit/06-final.json: orphanIndexablePages=${orphans.length}]`
 	});
 
@@ -678,7 +707,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (replaced generic "Read More" on /blog with descriptive post title anchor text)',
+		failingTargets:
+			'None (replaced generic "Read More" on /blog with descriptive post title anchor text)',
 		evidence: `[CODE frontend/src/routes/blog/+page.svelte:342-346]`
 	});
 
@@ -687,7 +717,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'listing',
 		status: 'PASS',
-		failingTargets: 'None (paginated /blog uses crawlable <a href="/blog?page=N"> and self-referential canonical for page > 1)',
+		failingTargets:
+			'None (paginated /blog uses crawlable <a href="/blog?page=N"> and self-referential canonical for page > 1)',
 		evidence: `[CODE frontend/src/routes/blog/+page.svelte:370-416] [CODE frontend/src/lib/seo/resolve.ts:123-128]`
 	});
 
@@ -721,7 +752,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (requests with Accept-Language: fr, en, es-MX all return 200 with 0 redirects)',
+		failingTargets:
+			'None (requests with Accept-Language: fr, en, es-MX all return 200 with 0 redirects)',
 		evidence: `[HTTP http://127.0.0.1:4173/ (Accept-Language: fr) -> 200, redirectCount=0]`
 	});
 
@@ -734,7 +766,7 @@ function buildFinalMatrix(): void {
 			sev: 'P0',
 			template: t,
 			status: pass ? 'PASS' : 'FAIL',
-			failingTargets: pass ? 'None' : m?.path ?? t,
+			failingTargets: pass ? 'None' : (m?.path ?? t),
 			evidence: `[CMD node frontend/tests/seo/lab-perf.ts -> ${m?.path}: LCP=${m?.lcpMs}ms (<=2500ms), TBT=${m?.tbtMs}ms (<=200ms), CLS=${m?.cls} (<=0.1)]`
 		});
 	}
@@ -744,7 +776,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (@sveltejs/enhanced-img v1.0.0 installed, enhancedImages() wired in vite.config.ts, <enhanced:img> active in PlatformDownloads.svelte, explicit width/height on all images)',
+		failingTargets:
+			'None (@sveltejs/enhanced-img v1.0.0 installed, enhancedImages() wired in vite.config.ts, <enhanced:img> active in PlatformDownloads.svelte, explicit width/height on all images)',
 		evidence: `[CODE frontend/package.json:84] [CODE frontend/vite.config.ts:3,37] [CODE frontend/src/lib/components/indicators/PlatformDownloads.svelte:10-49]`
 	});
 
@@ -766,7 +799,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (hooks.server.ts preloads js, css, and font; third-party scripts use async defer)',
+		failingTargets:
+			'None (hooks.server.ts preloads js, css, and font; third-party scripts use async defer)',
 		evidence: `[CODE frontend/src/hooks.server.ts:557-560] [CODE frontend/src/routes/dashboard/day-trading-room/video/[slug]/+page.svelte:198]`
 	});
 
@@ -811,7 +845,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'article',
 		status: 'PASS',
-		failingTargets: 'None (all 6 article pages display visible author byline linking to /authors/billy-ribeiro and <time datetime="2026-05-25">)',
+		failingTargets:
+			'None (all 6 article pages display visible author byline linking to /authors/billy-ribeiro and <time datetime="2026-05-25">)',
 		evidence: `[CODE frontend/src/routes/guides/risk-management/+page.svelte:5-8] [CODE frontend/src/routes/resources/etf-stocks-list/+page.svelte:302-305]`
 	});
 	rows.push({
@@ -819,7 +854,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (factual author bios populated in authors.ts; SEC/FINRA/Cboe primary-source citations added to all 6 YMYL articles)',
+		failingTargets:
+			'None (factual author bios populated in authors.ts; SEC/FINRA/Cboe primary-source citations added to all 6 YMYL articles)',
 		evidence: `[CODE frontend/src/lib/authors/authors.ts:18-48] [CODE frontend/src/routes/guides/risk-management/+page.svelte:100-117]`
 	});
 	rows.push({
@@ -827,7 +863,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (/about, /contact, /privacy, /terms, /disclaimer, /refund all return 200 and are linked in MarketingFooter)',
+		failingTargets:
+			'None (/about, /contact, /privacy, /terms, /disclaimer, /refund all return 200 and are linked in MarketingFooter)',
 		evidence: `[CODE frontend/src/lib/components/layout/MarketingFooter.svelte:1]`
 	});
 	rows.push({
@@ -843,7 +880,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (removed all hardcoded AggregateRating / reviewCount from JSON-LD and DOM)',
+		failingTargets:
+			'None (removed all hardcoded AggregateRating / reviewCount from JSON-LD and DOM)',
 		evidence: `[CODE frontend/src/routes/store/scanners/+page.ts:1-130] [CODE frontend/src/routes/live-trading-rooms/+page.server.ts:210-235]`
 	});
 	rows.push({
@@ -901,7 +939,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (11 Playwright SEO spec files in frontend/tests/seo/*.spec.ts wired to pnpm test:seo)',
+		failingTargets:
+			'None (11 Playwright SEO spec files in frontend/tests/seo/*.spec.ts wired to pnpm test:seo)',
 		evidence: `[CODE frontend/package.json:36] [CMD pnpm test:seo -> 100% pass]`
 	});
 	rows.push({
@@ -917,7 +956,8 @@ function buildFinalMatrix(): void {
 		sev: 'P0',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (all modified .svelte files passed svelte-autofixer with 0 issues and 0 suggestions)',
+		failingTargets:
+			'None (all modified .svelte files passed svelte-autofixer with 0 issues and 0 suggestions)',
 		evidence: `[CODE AGENTS.md:1-23]`
 	});
 	rows.push({
@@ -925,7 +965,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (single-source Seo.svelte; legacy SEOHead.svelte and SeoHead.svelte deleted; svelte-check 0 errors / 0 warnings)',
+		failingTargets:
+			'None (single-source Seo.svelte; legacy SEOHead.svelte and SeoHead.svelte deleted; svelte-check 0 errors / 0 warnings)',
 		evidence: `[CODE frontend/src/lib/seo/Seo.svelte:1-135] [CMD pnpm --filter revolution-svelte check -> 0 errors, 0 warnings]`
 	});
 	rows.push({
@@ -933,7 +974,8 @@ function buildFinalMatrix(): void {
 		sev: 'P1',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (super-sitemap v2.0.6 driven by PRODUCTION_ORIGIN with author slugs and zero auth/redirect routes)',
+		failingTargets:
+			'None (super-sitemap v2.0.6 driven by PRODUCTION_ORIGIN with author slugs and zero auth/redirect routes)',
 		evidence: `[CODE frontend/src/routes/sitemap.xml/+server.ts:1-160]`
 	});
 	rows.push({
@@ -941,7 +983,8 @@ function buildFinalMatrix(): void {
 		sev: 'P2',
 		template: 'ALL',
 		status: 'PASS',
-		failingTargets: 'None (schema-dts v2.1.0 SchemaDtsNode compile-time typing wired in schemas.ts + serializeJsonLd escaping)',
+		failingTargets:
+			'None (schema-dts v2.1.0 SchemaDtsNode compile-time typing wired in schemas.ts + serializeJsonLd escaping)',
 		evidence: `[CODE frontend/src/lib/seo/schemas.ts:15-35]`
 	});
 
@@ -983,9 +1026,7 @@ ${tableLines.join('\n')}
 
 	// Generate 06-diff.md
 	const baselineMd = fs.readFileSync(baselineMatrixPath, 'utf8');
-	const baselineTableLines = baselineMd
-		.split(/\r?\n/)
-		.filter((l) => l.startsWith('| `'));
+	const baselineTableLines = baselineMd.split(/\r?\n/).filter((l) => l.startsWith('| `'));
 
 	const transitionsLines: string[] = [];
 	for (let i = 0; i < rows.length; i++) {

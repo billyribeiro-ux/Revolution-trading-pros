@@ -2,14 +2,14 @@
 
 ## What was deleted
 
-| File | Lines | Tracking | How |
-|---|---|---|---|
-| `BLOG_SYSTEM_REPORT.md` | ~890 | tracked (committed by user during the session) | `git rm` |
-| `BLOG_SYSTEM_AUDIT.md` | ~440 | tracked | `git rm` |
-| `BLOG_FIXES_RESULT.md` | ~600 | tracked | `git rm` |
-| `BLOG_FIXES_RESULT_V2.md` | ~270 | tracked | `git rm` |
-| `BLOG_FIXES_RESULT_V3.md` | ~290 | tracked | `git rm` |
-| `/tmp/analytics-415-diagnosis.md` | ~75 | untracked | `rm` |
+| File                              | Lines | Tracking                                       | How      |
+| --------------------------------- | ----- | ---------------------------------------------- | -------- |
+| `BLOG_SYSTEM_REPORT.md`           | ~890  | tracked (committed by user during the session) | `git rm` |
+| `BLOG_SYSTEM_AUDIT.md`            | ~440  | tracked                                        | `git rm` |
+| `BLOG_FIXES_RESULT.md`            | ~600  | tracked                                        | `git rm` |
+| `BLOG_FIXES_RESULT_V2.md`         | ~270  | tracked                                        | `git rm` |
+| `BLOG_FIXES_RESULT_V3.md`         | ~290  | tracked                                        | `git rm` |
+| `/tmp/analytics-415-diagnosis.md` | ~75   | untracked                                      | `rm`     |
 
 Total: 5 tracked files removed via `git rm`, 1 untracked tmp file removed via `rm`. ~2,565 lines of working-arc documentation excised; the substance is now in `CHANGELOG.md`.
 
@@ -98,12 +98,12 @@ D  BLOG_SYSTEM_REPORT.md
 
 ## Final gates
 
-| Gate | Result |
-|---|---|
-| `pnpm check` | 5,215 files / 0 errors / 0 warnings |
-| `cargo check` (api) | clean |
-| `docker compose ps` | rtp-api / rtp-db / rtp-redis all healthy |
-| Working tree | dirty as expected — review and commit yourself |
+| Gate                | Result                                         |
+| ------------------- | ---------------------------------------------- |
+| `pnpm check`        | 5,215 files / 0 errors / 0 warnings            |
+| `cargo check` (api) | clean                                          |
+| `docker compose ps` | rtp-api / rtp-db / rtp-redis all healthy       |
+| Working tree        | dirty as expected — review and commit yourself |
 
 ## Next step
 

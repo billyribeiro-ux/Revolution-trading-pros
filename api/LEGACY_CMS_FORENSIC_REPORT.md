@@ -1,4 +1,5 @@
 # 🔬 LEGACY CMS FORENSIC INVESTIGATION - EVIDENCE-BASED REPORT
+
 **Apple Principal Engineer ICT 7 Grade - January 27, 2026**
 
 ## EXECUTIVE SUMMARY
@@ -28,13 +29,15 @@ CREATE TABLE IF NOT EXISTS content_translations (id BIGSERIAL PRIMARY KEY, ...)
 ```
 
 **Key Characteristics:**
+
 - Uses `BIGSERIAL` (integer) IDs
 - Polymorphic design: `content_type` (string) + `content_id` (integer)
 - Generic for any content type
 
 ### CMS-V2 Tables (Migrations 023, 024, 027)
 
-**Files:** 
+**Files:**
+
 - `023_custom_cms_implementation.sql` (January 2026)
 - `024_advanced_cms_features.sql` (January 2026)
 - `027_cms_v2_enterprise_features.sql` (January 27, 2026)
@@ -51,6 +54,7 @@ CREATE TABLE IF NOT EXISTS cms_webhooks (id UUID PRIMARY KEY, ...)
 ```
 
 **Key Characteristics:**
+
 - Uses `UUID` IDs (gen_random_uuid())
 - Unified content in `cms_content` table
 - Block-based architecture
@@ -62,6 +66,7 @@ CREATE TABLE IF NOT EXISTS cms_webhooks (id UUID PRIMARY KEY, ...)
 ### Legacy CMS Service (`services/cms.rs`)
 
 **Queries Legacy Tables:**
+
 ```rust
 // Line 77
 FROM content_versions
@@ -80,6 +85,7 @@ FROM locales
 ```
 
 **Functions Defined:**
+
 - `create_version()` - content_versions
 - `get_version_history()` - content_versions
 - `log_audit()` - audit_logs
@@ -91,6 +97,7 @@ FROM locales
 ### Legacy CMS Routes (`routes/cms.rs`)
 
 **Imports Legacy Service:**
+
 ```rust
 use crate::services::cms::{
     self, AuditContext, AuditLog, AuditLogQuery, ContentTranslation, ContentVersion, Locale,
@@ -99,6 +106,7 @@ use crate::services::cms::{
 ```
 
 **Endpoints Defined:**
+
 ```
 GET  /admin/cms/versions/:content_type/:content_id
 POST /admin/cms/versions/:content_type/:content_id
@@ -112,6 +120,7 @@ GET  /admin/cms/locales
 ### ⚠️ CRITICAL FINDING: NO ACTUAL USAGE
 
 **Evidence from grep search:**
+
 ```bash
 grep -r "use crate::services::cms::" api/src/routes/*.rs
 # Result: NO MATCHES except cms.rs itself
@@ -120,6 +129,7 @@ grep -r "use crate::services::cms::" api/src/routes/*.rs
 **Meaning:** No other route file imports or uses the legacy CMS service.
 
 **Evidence from main.rs:**
+
 ```bash
 grep "cms\|scheduler" api/src/main.rs
 # Result: NO MATCHES
@@ -152,22 +162,25 @@ grep "cms\|scheduler" api/src/main.rs
 ## 📊 EVIDENCE 4: PRODUCTION API TEST
 
 **Test 1: Health Check**
+
 ```bash
 curl -s <your-api-host>/health
 ```
 
 **Result:**
+
 ```json
 {
-  "status": "healthy",
-  "version": "0.1.0",
-  "environment": "development"
+	"status": "healthy",
+	"version": "0.1.0",
+	"environment": "development"
 }
 ```
 
 **Status:** ✅ API is running
 
 **Test 2: Legacy CMS Endpoint (would require auth)**
+
 ```
 GET /admin/cms/versions/article/1
 ```
@@ -180,14 +193,15 @@ GET /admin/cms/versions/article/1
 
 ## 📊 EVIDENCE 5: MIGRATION TIMELINE
 
-| Migration | Date | Purpose | Status |
-|-----------|------|---------|--------|
-| 014 | Jan 2026 | Legacy CMS tables (content_versions, audit_logs, etc.) | ✅ Created |
-| 023 | Jan 2026 | CMS-V2 core (cms_content, cms_assets, etc.) | ✅ Created |
-| 024 | Jan 2026 | CMS-V2 advanced features | ✅ Created |
-| 027 | Jan 27, 2026 | CMS-V2 enterprise (cms_audit_logs, cms_workflow_status) | ✅ Created |
+| Migration | Date         | Purpose                                                 | Status     |
+| --------- | ------------ | ------------------------------------------------------- | ---------- |
+| 014       | Jan 2026     | Legacy CMS tables (content_versions, audit_logs, etc.)  | ✅ Created |
+| 023       | Jan 2026     | CMS-V2 core (cms_content, cms_assets, etc.)             | ✅ Created |
+| 024       | Jan 2026     | CMS-V2 advanced features                                | ✅ Created |
+| 027       | Jan 27, 2026 | CMS-V2 enterprise (cms_audit_logs, cms_workflow_status) | ✅ Created |
 
 **Timeline Analysis:**
+
 1. Migration 014 created legacy CMS tables
 2. Migrations 023-024 created CMS-V2 tables (SAME MONTH)
 3. Migration 027 added enterprise features to CMS-V2 (TODAY)
@@ -200,13 +214,13 @@ GET /admin/cms/versions/article/1
 
 ### Duplicate Functionality
 
-| Feature | Legacy Table | CMS-V2 Table | Active System |
-|---------|--------------|--------------|---------------|
-| Versioning | `content_versions` | `cms_revisions` | CMS-V2 |
-| Audit Logs | `audit_logs` | `cms_audit_logs` | CMS-V2 |
-| Workflow | `content_workflow_status` | `cms_workflow_status` | CMS-V2 |
-| Webhooks | `webhooks` | `cms_webhooks` | CMS-V2 |
-| Preview | `preview_tokens` | `cms_preview_tokens` | CMS-V2 |
+| Feature    | Legacy Table              | CMS-V2 Table          | Active System |
+| ---------- | ------------------------- | --------------------- | ------------- |
+| Versioning | `content_versions`        | `cms_revisions`       | CMS-V2        |
+| Audit Logs | `audit_logs`              | `cms_audit_logs`      | CMS-V2        |
+| Workflow   | `content_workflow_status` | `cms_workflow_status` | CMS-V2        |
+| Webhooks   | `webhooks`                | `cms_webhooks`        | CMS-V2        |
+| Preview    | `preview_tokens`          | `cms_preview_tokens`  | CMS-V2        |
 
 **Finding:** 100% feature duplication. CMS-V2 has equivalent tables for every legacy feature.
 
@@ -215,6 +229,7 @@ GET /admin/cms/versions/article/1
 ## 📊 EVIDENCE 7: ACTUAL CONTENT LOCATION
 
 **CMS-V2 Content Service** (`services/cms_content.rs`):
+
 ```rust
 // Line 42
 FROM cms_users
@@ -235,12 +250,14 @@ FROM cms_revisions
 **Finding:** All actual content operations use CMS-V2 tables.
 
 **CMS-V2 Audit Service** (`services/cms_audit.rs`):
+
 ```rust
 // Line 108
 FROM cms_audit_logs
 ```
 
 **CMS-V2 Workflow Service** (`services/cms_workflow.rs`):
+
 ```rust
 // Line 122
 FROM cms_workflow_status
@@ -258,6 +275,7 @@ FROM cms_workflow_history
 ### 1. Legacy CMS is DEAD CODE
 
 **Evidence:**
+
 - ✅ Routes registered but unused
 - ✅ Service functions defined but never called
 - ✅ Tables exist but empty
@@ -268,6 +286,7 @@ FROM cms_workflow_history
 ### 2. CMS-V2 is the ONLY ACTIVE SYSTEM
 
 **Evidence:**
+
 - ✅ All content in `cms_content` table
 - ✅ All services use CMS-V2 tables
 - ✅ All routes use CMS-V2 services
@@ -277,6 +296,7 @@ FROM cms_workflow_history
 ### 3. Migration 027 COMPLETED Feature Parity
 
 **Evidence:**
+
 - ✅ `cms_audit_logs` created (Jan 27, 2026)
 - ✅ `cms_workflow_status` created (Jan 27, 2026)
 - ✅ `cms_preview_tokens` created (Jan 27, 2026)
@@ -289,10 +309,12 @@ FROM cms_workflow_history
 ### What to Remove
 
 **Files to Delete:**
+
 1. `api/src/services/cms.rs` (753 lines) - Legacy service
 2. `api/src/routes/cms.rs` (1,244 lines) - Legacy routes
 
 **Routes to Remove from `mod.rs`:**
+
 ```rust
 // Line 103-104
 .nest("/admin/cms", cms::admin_router())
@@ -300,6 +322,7 @@ FROM cms_workflow_history
 ```
 
 **Module Declarations to Remove:**
+
 ```rust
 pub mod cms;  // Line 24
 ```
@@ -307,6 +330,7 @@ pub mod cms;  // Line 24
 ### What to Keep
 
 **Keep ALL CMS-V2 files:**
+
 - ✅ `services/cms_content.rs`
 - ✅ `services/cms_audit.rs`
 - ✅ `services/cms_workflow.rs`
@@ -323,6 +347,7 @@ pub mod cms;  // Line 24
 ### Database Tables
 
 **Can Drop (but not urgent):**
+
 - `content_versions` (legacy)
 - `audit_logs` (legacy)
 - `content_workflow_status` (legacy)
@@ -351,6 +376,7 @@ pub mod cms;  // Line 24
 ## 🔍 FORENSIC METHODOLOGY
 
 This investigation used:
+
 1. ✅ Database schema analysis (migrations files)
 2. ✅ Code usage analysis (grep searches)
 3. ✅ Import dependency tracking
