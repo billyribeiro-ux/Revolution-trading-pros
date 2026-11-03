@@ -46,10 +46,10 @@
 	let comparison: SeoComparison | null = $state(null);
 	let loading = $state(false);
 
-	let dateRange = {
+	let dateRange = $state({
 		start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
 		end: new Date().toISOString().split('T')[0]
-	};
+	});
 
 	onMount(async () => {
 		// Load connection status first

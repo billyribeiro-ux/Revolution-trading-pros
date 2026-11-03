@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import {
 		IconPlus,
 		IconEdit,
@@ -33,6 +33,10 @@
 	// every reactive re-render.
 	onMount(async () => {
 		await loadPopups();
+		// Wait for the cards to be in the DOM, and skip entirely when there are none
+		// (empty list / failed load) - GSAP warns "target .popup-card not found" otherwise.
+		await tick();
+		if (!document.querySelector('.popup-card')) return;
 		const { gsap } = await import('gsap');
 		gsap.from('.popup-card', {
 			opacity: 0,
