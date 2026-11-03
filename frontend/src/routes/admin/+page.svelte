@@ -1230,9 +1230,13 @@
 	/* Not Connected Banner Styles */
 	.not-connected-banner {
 		display: flex;
+		/* Wrap instead of overflowing: the icon + text + non-shrinking button row needs
+		   ~440px, more than a phone's card has. Without wrap the button was pushed past
+		   the card and clipped by .admin-dashboard's overflow-x: clip. */
+		flex-wrap: wrap;
 		align-items: center;
-		gap: 1.5rem;
-		padding: 2rem;
+		gap: 1rem 1.5rem;
+		padding: clamp(1rem, 4vw, 2rem);
 		background: var(--warning-soft);
 		border: 1px dashed var(--warning-base);
 		border-radius: 12px;
@@ -1252,7 +1256,10 @@
 	}
 
 	.not-connected-text {
-		flex: 1;
+		/* Basis keeps the copy readable (never a one-word-per-line column); when the row
+		   can't hold it plus the icon, the text drops below the icon and the button follows. */
+		flex: 1 1 14rem;
+		min-width: 0;
 	}
 
 	.not-connected-text h3 {
@@ -1281,6 +1288,9 @@
 		font-weight: 600;
 		transition: all 0.2s;
 		flex-shrink: 0;
+		max-width: 100%;
+		min-width: 0;
+		justify-content: center;
 	}
 
 
@@ -1320,8 +1330,12 @@
 
 	.panel-header {
 		display: flex;
+		/* Wrap so the status badge/link drops under the title on narrow cards instead of
+		   squeezing the title into a one-word-per-line column. */
+		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: center;
+		gap: 0.75rem 1rem;
 		margin-bottom: 1.5rem;
 	}
 
@@ -1329,6 +1343,8 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+		flex: 1 1 14rem;
+		min-width: 0;
 	}
 
 	.panel-title h2 {
@@ -1350,6 +1366,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.panel-icon.analytics-icon {

@@ -20,6 +20,7 @@
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconPlugConnected from '@tabler/icons-svelte-runes/icons/plug-connected';
 	import IconCommand from '@tabler/icons-svelte-runes/icons/command';
+	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
 
 	// PRINCIPAL-2026-04-26: onMount imported for auth-guard conversion (see line ~52).
 	import { onMount } from 'svelte';
@@ -331,7 +332,10 @@
 					</button>
 				</div>
 
-				<a href="/" class="view-site-btn" title="View main website">View Site</a>
+				<a href="/" class="view-site-btn" title="View main website" aria-label="View Site">
+						<IconWorld size={18} aria-hidden="true" class="view-site-icon" />
+						<span class="view-site-label">View Site</span>
+					</a>
 			</div>
 		</header>
 

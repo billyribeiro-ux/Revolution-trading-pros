@@ -214,7 +214,17 @@
 	z-index: var(--z-sticky, 200);
 }
 
+.header-title {
+	/* Takes the slack and is the one header item allowed to shrink (ellipsis), so the
+	   action cluster never gets pushed past the viewport. */
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
 .header-title h1 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	font-family: var(--font-display, inherit);
 	font-size: var(--text-xl, 1.25rem);
 	font-weight: var(--font-semibold, 600);
@@ -384,6 +394,9 @@
 .view-site-btn {
 	display: inline-flex;
 	align-items: center;
+	gap: var(--space-2, 0.5rem);
+	white-space: nowrap;
+	flex-shrink: 0;
 	padding: 0 var(--space-4, 1rem);
 	background: var(--admin-accent-bg);
 	color: var(--admin-accent-primary);
@@ -400,6 +413,16 @@
 	color: var(--admin-btn-primary-text);
 }
 
+.view-site-btn .view-site-icon {
+	display: none;
+}
+
+@media (max-width: 767.98px) {
+	.admin-layout .view-site-btn .view-site-icon {
+		display: block;
+	}
+}
+
 /* Admin Main Content Host */
 .admin-content {
 	flex: 1;
@@ -408,8 +431,11 @@
 	/* Reserve the scrollbar's space so content doesn't reflow when a page grows past the
 	   viewport (https://developer.mozilla.org/docs/Web/CSS/scrollbar-gutter). */
 	scrollbar-gutter: stable;
-	/* A scroll container never chains its scroll to the page behind it. */
-	overscroll-behavior: contain;
+	/* No `overscroll-behavior: contain` here. This element is a scroll container only
+	   because of overflow-y: auto, but the page (document) is what scrolls - the shell is
+	   min-height, so .admin-content is never taller than its content. `contain` stops
+	   scroll chaining to the viewport, so with the pointer over the content the wheel/touch
+	   scroll had nowhere to go and the page would not scroll. */
 	background: var(--admin-bg);
 }
 
@@ -875,6 +901,21 @@
 		display: none;
 	}
 
+	/* "View Site" collapses to its icon (aria-label keeps the name) */
+	.admin-layout .view-site-label {
+		display: none;
+	}
+
+	.admin-layout .view-site-btn {
+		padding: 0;
+		width: var(--admin-control-height);
+		justify-content: center;
+	}
+
+	.admin-header .header-actions {
+		gap: var(--space-2, 0.5rem);
+	}
+
 	.admin-layout .search-trigger {
 		min-width: 0;
 		width: var(--admin-control-height);
@@ -906,10 +947,6 @@
 
 	.admin-layout .admin-content {
 		padding: var(--space-4, 1rem);
-	}
-
-	.admin-layout .view-site-btn {
-		padding: 0 var(--space-3, 0.75rem);
 	}
 
 	.admin-layout .admin-table th,

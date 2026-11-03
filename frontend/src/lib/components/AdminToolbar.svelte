@@ -39,6 +39,7 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
 	import { browser } from '$app/env';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	// FIX P1-1 (audits/admin-2026-04-26/01-shell-and-dashboard.md):
 	// Replaced legacy `$authStore` / `$userStore` autosubscribes throughout
@@ -215,6 +216,12 @@
 			permission: 'settings.view'
 		}
 	];
+
+	// "View Site" only makes sense from inside the admin area; on any public page the
+	// user is already looking at the site.
+	const isInAdminArea = $derived(
+		page.url.pathname === '/admin' || page.url.pathname.startsWith('/admin/')
+	);
 
 	// Computed State (Reactive) - Using Centralized Role System
 
@@ -728,19 +735,21 @@
 
 			<!-- Right Section -->
 			<div class="toolbar-right">
-				<!-- View Site Button -->
-				<button
-					class="toolbar-button"
-					onclick={() => navigateTo('/')}
-					title="View public site"
-					aria-label="View public site"
-					disabled={isLoading}
-				>
-					<IconEye size={18} aria-hidden="true" />
-					<span class="button-text">View Site</span>
-				</button>
+				<!-- View Site Button (admin area only; redundant when already on the public site) -->
+				{#if isInAdminArea}
+					<button
+						class="toolbar-button"
+						onclick={() => navigateTo('/')}
+						title="View public site"
+						aria-label="View public site"
+						disabled={isLoading}
+					>
+						<IconEye size={18} aria-hidden="true" />
+						<span class="button-text">View Site</span>
+					</button>
 
-				<div class="toolbar-divider" role="separator" aria-hidden="true"></div>
+					<div class="toolbar-divider" role="separator" aria-hidden="true"></div>
+				{/if}
 
 				<!-- User Menu -->
 				<div class="user-menu">
@@ -847,6 +856,13 @@
 		--toolbar-bg-end: #0f172a;
 		--toolbar-border: rgba(59, 130, 246, 0.3);
 		--toolbar-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+		/* Dropdown panel. `.dropdown-menu` reads --surface / --border, which no stylesheet
+		   defined, so the declaration was invalid at computed-value time and the menu
+		   rendered fully transparent. Slightly translucent (92%) with a backdrop blur on
+		   .dropdown-menu so the page behind never competes with the item text. */
+		--surface: rgba(30, 41, 59, 0.92);
+		--border: rgba(148, 163, 184, 0.3);
 
 		--text-primary: #f1f5f9;
 		--text-secondary: #cbd5e1;
@@ -1074,6 +1090,8 @@
 		left: 0;
 		min-width: 220px;
 		background: var(--surface);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);

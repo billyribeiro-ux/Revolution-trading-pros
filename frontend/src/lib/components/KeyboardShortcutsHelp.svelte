@@ -91,7 +91,7 @@
 					<div class="shortcut-group">
 						<h3 class="group-title">{category}</h3>
 						<div class="shortcuts-list">
-							{#each shortcuts as shortcut (shortcut.description)}
+							{#each shortcuts as shortcut (shortcut.id)}
 								<div class="shortcut-item">
 									<span class="shortcut-description">{shortcut.description}</span>
 									<div class="shortcut-keys">
