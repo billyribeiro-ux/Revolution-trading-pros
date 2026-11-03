@@ -54,53 +54,10 @@
 		loading = true;
 		try {
 			// In production, fetch from API
-			videos = [
-				{
-					id: 1,
-					title: 'Day Trading Masterclass - Complete Course Overview',
-					pageUrl: '/courses/day-trading-masterclass',
-					platform: 'youtube',
-					videoId: 'dQw4w9WgXcQ',
-					thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-					duration: 3600,
-					publishedAt: '2025-10-15T10:00:00Z',
-					views: 15420
-				},
-				{
-					id: 2,
-					title: 'Swing Trading Pro - Master Multi-Day Positions',
-					pageUrl: '/courses/swing-trading-pro',
-					platform: 'vimeo',
-					videoId: '123456789',
-					thumbnail: 'https://vumbnail.com/123456789.jpg',
-					duration: 5400,
-					publishedAt: '2025-09-20T14:00:00Z',
-					views: 8320
-				},
-				{
-					id: 3,
-					title: 'Options Trading Fundamentals',
-					pageUrl: '/courses/options-trading',
-					platform: 'youtube',
-					videoId: 'OPTIONS123',
-					thumbnail: 'https://img.youtube.com/vi/OPTIONS123/maxresdefault.jpg',
-					duration: 7200,
-					publishedAt: '2025-11-01T09:00:00Z',
-					views: 22150
-				},
-				{
-					id: 4,
-					title: 'Live Day Trading Room',
-					pageUrl: '/live-trading-rooms/day-trading',
-					platform: 'youtube',
-					videoId: 'LIVE123',
-					thumbnail: 'https://img.youtube.com/vi/LIVE123/maxresdefault.jpg',
-					duration: 0,
-					publishedAt: '2025-11-25T13:30:00Z',
-					views: 3240,
-					isLive: true
-				}
-			];
+			// No video-indexing backend exists yet; rather than inventing videos, titles, view
+			// counts and thumbnails (which also requested non-existent YouTube thumbnails), leave
+			// the list empty so the page renders its honest empty state.
+			videos = [];
 		} finally {
 			loading = false;
 		}

@@ -62,41 +62,12 @@
 	async function loadImages() {
 		loading = true;
 		try {
-			// In production, scan content for images
-			const sampleImages: ImageMetadata[] = [
-				{
-					src: '/images/courses/day-trading-masterclass.jpg',
-					alt: '',
-					width: 1200,
-					height: 630
-				},
-				{
-					src: '/images/blog/SP500_Analysis_2025.png',
-					alt: 'Stock chart',
-					width: 800,
-					height: 600
-				},
-				{
-					src: '/images/team/john_smith_headshot.jpg',
-					alt: '',
-					width: 400,
-					height: 400
-				},
-				{
-					src: '/images/indicators/RSI-indicator-example.webp',
-					alt: '',
-					width: 1000,
-					height: 500
-				},
-				{
-					src: '/images/123456.jpg',
-					alt: '',
-					width: 600,
-					height: 400
-				}
-			];
+			// No image-scanning backend exists yet, so there is nothing real to list. Showing
+			// invented files here misled operators (and fired 404s for images that don't exist),
+			// so render the empty state until a media/content scan endpoint is wired up.
+			const scannedImages: ImageMetadata[] = [];
 
-			images = processImages(sampleImages, settings);
+			images = processImages(scannedImages, settings);
 		} finally {
 			loading = false;
 		}
