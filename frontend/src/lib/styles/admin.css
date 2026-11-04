@@ -132,6 +132,19 @@
 	color: inherit;
 }
 
+/* Viewport scrollbar.
+   The `.admin-layout ::-webkit-scrollbar` rules below can't reach the page's own scrollbar:
+   it belongs to <html>, an ANCESTOR of .admin-layout. Measured on /admin at 1440px: html
+   had `color-scheme: normal` and `scrollbar-color: auto` (transparent html/body background),
+   so Chrome drew its default light-grey thumb on a mid-grey track beside the #0d1117 page.
+   Colour it from the same tokens as the page (track = page background, thumb = the subtle
+   border colour) so it recedes. :has() keeps this to admin pages only - marketing/dashboard
+   routes are untouched even though this stylesheet stays loaded after navigation. */
+html:has(.admin-layout) {
+	color-scheme: dark;
+	scrollbar-color: var(--border-default, #30363d) var(--bg-base, #0d1117);
+}
+
 /* Custom Scrollbars in Admin */
 .admin-layout ::-webkit-scrollbar {
 	width: 8px;
