@@ -15,7 +15,6 @@ use crate::{
     middleware::admin::{AdminUser, SuperAdminUser},
 };
 
-use super::audit::log_connection_audit;
 use super::crypto::{decrypt_credentials, encrypt_credentials, mask_credentials};
 use super::definitions::{get_categories, get_service_definitions};
 use super::{ConnectServiceRequest, ListQuery, ServiceConnection};
@@ -470,218 +469,78 @@ pub(super) async fn test_connection(
     ))
 }
 
-/// POST /admin/connections/:key/disconnect - Disconnect a service
-#[tracing::instrument(skip(state, admin))]
+/// Credential removal, dependent webhooks and its audit receipt commit together.
+async fn revoke_connection(
+    state: AppState,
+    admin: SuperAdminUser,
+    key: String,
+    query: ListQuery,
+    remove: bool,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let environment = query.environment.as_deref().unwrap_or("production");
+    if !["production", "sandbox"].contains(&environment) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid environment"})),
+        ));
+    }
+    let mut tx = state
+        .db
+        .pool()
+        .begin()
+        .await
+        .map_err(crate::utils::errors::db_error)?;
+    let connection:Option<ServiceConnection>=sqlx::query_as("SELECT * FROM service_connections WHERE service_key=$1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,id DESC LIMIT 1 FOR UPDATE")
+        .bind(&key).bind(environment).fetch_optional(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+    let connection = connection.ok_or((
+        StatusCode::NOT_FOUND,
+        Json(json!({"error":"Connection not found"})),
+    ))?;
+    let action = if remove {
+        sqlx::query("DELETE FROM integration_webhooks WHERE connection_id=$1")
+            .bind(connection.id)
+            .execute(&mut *tx)
+            .await
+            .map_err(crate::utils::errors::db_error)?;
+        sqlx::query("DELETE FROM service_connections WHERE id=$1")
+            .bind(connection.id)
+            .execute(&mut *tx)
+            .await
+            .map_err(crate::utils::errors::db_error)?;
+        "connection.deleted"
+    } else {
+        sqlx::query("UPDATE service_connections SET credentials_encrypted=NULL,status='disconnected',health_score=0,health_status=NULL,webhook_url=NULL,webhook_secret=NULL,updated_at=NOW() WHERE id=$1").bind(connection.id).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+        sqlx::query("UPDATE integration_webhooks SET is_active=FALSE,updated_at=NOW() WHERE connection_id=$1").bind(connection.id).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+        "connection.disconnected"
+    };
+    sqlx::query("INSERT INTO admin_audit_logs(admin_id,admin_email,action,entity_type,entity_id,old_value) VALUES($1,$2,$3,'service_connection',$4,$5)")
+        .bind(admin.0.id).bind(&admin.0.email).bind(action).bind(connection.id).bind(json!({"service_key":key,"environment":connection.environment,"status":connection.status}).to_string())
+        .execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+    tx.commit().await.map_err(crate::utils::errors::db_error)?;
+    state
+        .services
+        .credentials
+        .invalidate(&key, environment)
+        .await;
+    Ok(Json(
+        json!({"success":true,"message":if remove{"Connection deleted"}else{"Connection disconnected"}}),
+    ))
+}
 pub(super) async fn disconnect_service(
     State(state): State<AppState>,
     admin: SuperAdminUser,
     Path(key): Path<String>,
     Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let environment = query.environment.as_deref().unwrap_or("production");
-    if !["production", "sandbox"].contains(&environment) {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error":"Invalid environment"})),
-        ));
-    }
-    // Validate key
-    if key.contains(';') || key.contains("--") || key.len() > 100 {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": "Invalid service key"})),
-        ));
-    }
-
-    // Get connection for audit
-    let connection: Option<ServiceConnection> =
-        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,id DESC LIMIT 1")
-            .bind(&key)
-            .bind(environment)
-            .fetch_optional(state.db.pool())
-            .await
-            .map_err(crate::utils::errors::db_error)?;
-
-    let Some(connection) = connection else {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Connection not found"})),
-        ));
-    };
-
-    // Clear credentials and update status
-    sqlx::query(
-        r"
-        UPDATE service_connections
-        SET credentials_encrypted = NULL,
-            status = 'disconnected',
-            health_score = 0,
-            health_status = NULL,
-            webhook_url = NULL,
-            webhook_secret = NULL,
-            updated_at = NOW()
-        WHERE id = $1
-        ",
-    )
-    .bind(connection.id)
-    .execute(state.db.pool())
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
-
-    // Audit log
-    log_connection_audit(
-        state.db.pool(),
-        admin.0.id,
-        &admin.0.email,
-        "connection.disconnected",
-        "service_connection",
-        Some(connection.id),
-        Some(json!({"service_key": key, "was_connected": true})),
-        None,
-        None,
-    )
-    .await;
-
-    // PE7 invariant 2A: drop cached creds. Disconnecting an environment must
-    // immediately stop the runtime from using its keys.
-    state
-        .services
-        .credentials
-        .invalidate(&key, connection.environment.as_deref().unwrap_or(""))
-        .await;
-
-    tracing::info!(
-        admin_id = admin.0.id,
-        service_key = %key,
-        "Service disconnected"
-    );
-
-    Ok(Json(json!({
-        "success": true,
-        "message": format!("Service {} disconnected", key)
-    })))
+    revoke_connection(state, admin, key, query, false).await
 }
-
-/// DELETE /admin/connections/:key - Delete a connection entirely
-#[tracing::instrument(skip(state, admin))]
 pub(super) async fn delete_connection(
     State(state): State<AppState>,
     admin: SuperAdminUser,
     Path(key): Path<String>,
     Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let environment = query.environment.as_deref().unwrap_or("production");
-    if !["production", "sandbox"].contains(&environment) {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error":"Invalid environment"})),
-        ));
-    }
-    // Validate key
-    if key.contains(';') || key.contains("--") || key.len() > 100 {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": "Invalid service key"})),
-        ));
-    }
-
-    // Get connection for audit
-    let connection: Option<ServiceConnection> =
-        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,id DESC LIMIT 1")
-            .bind(&key)
-            .bind(environment)
-            .fetch_optional(state.db.pool())
-            .await
-            .map_err(crate::utils::errors::db_error)?;
-
-    let Some(connection) = connection else {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Connection not found"})),
-        ));
-    };
-
-    // ICT 7 SAFETY: wrap multi-table mutation in a transaction so a crash mid-flow
-    // can't leave webhook rows orphaned with their parent connection already gone
-    // (or vice-versa).
-    let mut tx = state.db.pool().begin().await.map_err(|e| {
-        tracing::error!("tx start (delete_connection): {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    // Delete associated webhooks first
-    sqlx::query("DELETE FROM integration_webhooks WHERE connection_id = $1")
-        .bind(connection.id)
-        .execute(&mut *tx)
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to delete integration_webhooks: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Failed to delete webhooks"})),
-            )
-        })?;
-
-    // Delete connection
-    sqlx::query("DELETE FROM service_connections WHERE id = $1")
-        .bind(connection.id)
-        .execute(&mut *tx)
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to delete service_connection: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
-
-    tx.commit().await.map_err(|e| {
-        tracing::error!("tx commit (delete_connection): {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    // Audit log (best-effort, fire-and-forget after the tx is durably committed)
-    log_connection_audit(
-        state.db.pool(),
-        admin.0.id,
-        &admin.0.email,
-        "connection.deleted",
-        "service_connection",
-        Some(connection.id),
-        Some(json!({"service_key": key, "name": connection.name})),
-        None,
-        None,
-    )
-    .await;
-
-    // PE7 invariant 2A: invalidate cached creds.
-    state
-        .services
-        .credentials
-        .invalidate(&key, connection.environment.as_deref().unwrap_or(""))
-        .await;
-
-    tracing::info!(
-        admin_id = admin.0.id,
-        service_key = %key,
-        "Service connection deleted"
-    );
-
-    Ok(Json(json!({
-        "success": true,
-        "message": format!("Connection {} deleted", key)
-    })))
+    revoke_connection(state, admin, key, query, true).await
 }
 
 /// GET /admin/connections/categories - Get connection categories

@@ -8,7 +8,7 @@ test('unavailable identity service denies private rendering without decoding cla
 }) => {
 	expect(baseURL).toBe('http://127.0.0.1:5275');
 	const headers = { Cookie: 'rtp_access_token=unverified-outage-fixture' };
-	for (const path of ['/admin', '/my/courses']) {
+	for (const path of ['/admin', '/my/courses', '/api/admin/connections']) {
 		const response = await request.get(path, { headers, maxRedirects: 0 });
 		expect(response.status(), 'Requires the isolated verification API to be offline').toBe(503);
 		expect(response.headers()['cache-control']).toBe('no-store');

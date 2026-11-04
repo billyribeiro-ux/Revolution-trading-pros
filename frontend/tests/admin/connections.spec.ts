@@ -5,6 +5,7 @@ import { createServer, type Server } from 'node:http';
 // This fixture performs read-only acknowledgments; it never sends an email.
 let adapter: Server;
 let submissions = 0;
+test.describe.configure({ mode: 'serial' });
 test.beforeAll(async () => {
 	adapter = createServer((request, response) => {
 		if (request.method !== 'GET' || request.url !== '/sendgrid/v3/scopes') {
@@ -98,4 +99,38 @@ test('real connection checks, durable states, scoped configuration and failure r
 	await page.getByLabel('Environment', { exact: true }).selectOption('production');
 	await expect(service.getByText('Provider returned HTTP 401', { exact: true })).toBeVisible();
 	expect(failures).toEqual([]);
+});
+
+test('controlled list failure stays visible and Retry loads real saved state', async ({
+	page,
+	baseURL
+}) => {
+	expect(baseURL).toBe('http://127.0.0.1:5274');
+	expect(
+		(
+			await page.request.post('/api/auth/login', {
+				data: { email: 'admin@admin-completion.test', password: 'OnlyForDisposableTest123!' }
+			})
+		).ok()
+	).toBe(true);
+	let injected = 0;
+	await page.route('**/api/admin/connections?environment=production', (route) => {
+		if (injected++ === 0)
+			return route.fulfill({
+				status: 503,
+				contentType: 'application/json',
+				body: '{"error":"Fixture connection listing unavailable"}'
+			});
+		return route.continue();
+	});
+	await page.goto('/admin/connections', { waitUntil: 'networkidle' });
+	await expect(
+		page.getByRole('alert').filter({ hasText: 'Fixture connection listing unavailable' })
+	).toBeVisible();
+	await page.getByRole('button', { name: 'Retry connections', exact: true }).click();
+	await expect(page.getByRole('heading', { name: 'Built-in Features', exact: true })).toBeVisible();
+	await expect(
+		page.getByRole('alert').filter({ hasText: 'Fixture connection listing unavailable' })
+	).not.toBeVisible();
+	expect(injected).toBeGreaterThanOrEqual(2);
 });

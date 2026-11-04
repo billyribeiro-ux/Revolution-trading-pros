@@ -675,8 +675,8 @@
 			"route": "/admin/connections",
 			"files": ["frontend/src/routes/admin/connections/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"gap": "Core provider save/test/receipts/environment scope repaired; standalone status mock, extended catalog, native SMTP configuration, Bunny optional stream/region, legacy NULL environment/runtime provider consumption and webhook execution remain open",
+			"status": "Core provider workflow verified locally; module incomplete",
 			"imports": [
 				"$app/state",
 				"svelte",
@@ -715,7 +715,7 @@
 				"@tabler/icons-svelte-runes/icons/file-text",
 				"@tabler/icons-svelte-runes/icons/info-circle"
 			],
-			"evidence": "Source inspection only",
+			"evidence": "Fresh connections_r31 passed14.07s; atomic revoke expanded r32 passed14.57s; browser4 2passed8.7s (before latest auth hook); no live-provider verification",
 			"static_navigation": {
 				"status": "navigation only verified; workflow still requires proof",
 				"evidence": "docs/admin/static-navigation-results.json"
@@ -3898,6 +3898,7 @@
 		"frontend/src/routes/api/admin/cms/datasources/+server.ts",
 		"frontend/src/routes/api/admin/cms/datasources/[...path]/+server.ts",
 		"frontend/src/routes/api/admin/connections/+server.ts",
+		"frontend/src/routes/api/admin/connections/[key]/+server.ts",
 		"frontend/src/routes/api/admin/connections/[key]/connect/+server.ts",
 		"frontend/src/routes/api/admin/connections/[key]/disconnect/+server.ts",
 		"frontend/src/routes/api/admin/connections/[key]/test/+server.ts",
@@ -3986,6 +3987,7 @@
 		"frontend/src/routes/api/analytics/pageview/+server.ts",
 		"frontend/src/routes/api/analytics/performance/+server.ts",
 		"frontend/src/routes/api/analytics/track/+server.ts",
+		"frontend/src/routes/api/analytics/web-vitals/+server.ts",
 		"frontend/src/routes/api/auth/apple/+server.ts",
 		"frontend/src/routes/api/auth/apple/callback/+server.ts",
 		"frontend/src/routes/api/auth/forgot-password/+server.ts",
@@ -4052,8 +4054,7 @@
 		"frontend/src/routes/tools/options-calculator/api/quote/+server.ts",
 		"frontend/src/routes/tools/options-calculator/api/search/+server.ts",
 		"frontend/src/routes/tools/options-calculator/api/treasury/+server.ts",
-		"frontend/src/routes/video-sitemap.xml/+server.ts",
-		"frontend/src/routes/api/analytics/web-vitals/+server.ts"
+		"frontend/src/routes/video-sitemap.xml/+server.ts"
 	],
 	"api_clients": [
 		"frontend/src/lib/api/_types.ts",
@@ -4241,6 +4242,7 @@
 		"api/src/routes/connections/definitions.rs",
 		"api/src/routes/connections/handlers.rs",
 		"api/src/routes/connections/mod.rs",
+		"api/src/routes/connections/probe.rs",
 		"api/src/routes/connections/webhooks.rs",
 		"api/src/routes/consent.rs",
 		"api/src/routes/contacts.rs",
@@ -4348,6 +4350,7 @@
 		"api/src/routes/payments/webhook_invoice.rs",
 		"api/src/routes/payments/webhook_refund.rs",
 		"api/src/routes/payments/webhook_subscription.rs",
+		"api/src/routes/performance.rs",
 		"api/src/routes/popups.rs",
 		"api/src/routes/posts.rs",
 		"api/src/routes/products.rs",
@@ -4412,8 +4415,7 @@
 		"api/src/routes/users.rs",
 		"api/src/routes/videos.rs",
 		"api/src/routes/watchlist.rs",
-		"api/src/routes/websocket.rs",
-		"api/src/routes/performance.rs"
+		"api/src/routes/websocket.rs"
 	],
 	"services_jobs_workers": [
 		"api/src/jobs/email_reminders.rs",

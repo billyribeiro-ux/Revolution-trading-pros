@@ -42,6 +42,19 @@ export interface AdminFetchOptions extends Omit<RequestInit, 'headers'> {
 	rawResponse?: boolean;
 }
 
+function responseErrorMessage(data: unknown, status: number): string {
+	if (data && typeof data === 'object') {
+		const payload = data as Record<string, unknown>;
+		if (typeof payload.message === 'string' && payload.message.trim()) return payload.message;
+		if (typeof payload.error === 'string' && payload.error.trim()) return payload.error;
+		if (payload.error && typeof payload.error === 'object') {
+			const error = payload.error as Record<string, unknown>;
+			if (typeof error.message === 'string' && error.message.trim()) return error.message;
+		}
+	}
+	return `Request failed with status ${status}`;
+}
+
 /**
  * Authenticated fetch for admin API endpoints
  * Automatically includes Bearer token and handles 401 responses
@@ -121,9 +134,9 @@ export async function adminFetch<T = any>(
 			// Throw error for non-OK responses
 			if (!response.ok) {
 				throw new AdminApiError(
-					data.message || `Request failed with status ${response.status}`,
+					responseErrorMessage(data, response.status),
 					response.status,
-					data.errors
+					data?.errors
 				);
 			}
 

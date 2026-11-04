@@ -181,12 +181,25 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	// routes explicitly marked prerender=false (or conceal missing destinations).
 	if (building) return resolve(event);
 	let refreshedCookie: string | undefined;
+	const isAdminApi = pathname === '/api/admin' || pathname.startsWith('/api/admin/');
 	function privateRedirect(location: string): Response {
+		if (isAdminApi)
+			return Response.json(
+				{
+					message: location.includes('admin_required')
+						? 'Admin access required'
+						: 'Authentication required'
+				},
+				{
+					status: location.includes('admin_required') ? 403 : 401,
+					headers: privateAuthHeaders(refreshedCookie)
+				}
+			);
 		return privateAuthRedirect(event, location, refreshedCookie);
 	}
 
 	// Check if this is a protected route
-	const isProtectedRoute = isAuthenticatedPath(pathname);
+	const isProtectedRoute = isAuthenticatedPath(pathname) || isAdminApi;
 
 	if (!isProtectedRoute) {
 		// Not a protected route - but still try to get user if token exists
@@ -350,6 +363,11 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		event.locals.user = null;
 		const headers = privateAuthHeaders(refreshedCookie);
 		headers.set('Retry-After', '5');
+		if (isAdminApi)
+			return Response.json(
+				{ message: 'Authentication service is temporarily unavailable. Please retry.' },
+				{ status: 503, headers }
+			);
 		return new Response('Authentication service is temporarily unavailable. Please retry.', {
 			status: 503,
 			headers
@@ -358,7 +376,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 	// Protect the HTML request as well as layout data, including CSR admin pages.
 	if (
-		(pathname === '/admin' || pathname.startsWith('/admin/')) &&
+		(pathname === '/admin' || pathname.startsWith('/admin/') || isAdminApi) &&
 		event.locals.user &&
 		!isAdminRole(event.locals.user.role)
 	) {

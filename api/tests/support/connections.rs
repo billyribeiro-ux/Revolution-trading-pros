@@ -268,5 +268,69 @@ pub(super) async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
         adapter.requests.lock().unwrap().len() >= 16,
         "Actual provider requests required"
     );
+    let restored=request(api,"POST","/api/admin/connections/sendgrid/connect",Some(&token),json!({"credentials":{"api_key":"fixture-good","from_email":"sender@example.test"},"environment":"production"})).await;
+    assert_eq!(restored.1["verified"], true, "{restored:?}");
+    let connection_id:i64=sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key='sendgrid' AND environment='production'").fetch_one(pool).await.unwrap();
+    sqlx::query("INSERT INTO integration_webhooks(connection_id,name,url,events) VALUES($1,'Atomic revoke fixture','https://fixture.example.test/receiver','[]')").bind(connection_id).execute(pool).await.unwrap();
+    sqlx::raw_sql("CREATE FUNCTION admin_move_connection_audit_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action IN ('connection.disconnected','connection.deleted') THEN RAISE EXCEPTION 'controlled audit outage'; END IF; RETURN NEW; END $$; CREATE TRIGGER admin_move_connection_audit_failure BEFORE INSERT ON admin_audit_logs FOR EACH ROW EXECUTE FUNCTION admin_move_connection_audit_failure();").execute(pool).await.unwrap();
+    for (method, path) in [
+        ("POST", "/api/admin/connections/sendgrid/disconnect"),
+        ("DELETE", "/api/admin/connections/sendgrid"),
+    ] {
+        let failure = request(api, method, path, Some(&token), Value::Null).await;
+        assert_eq!(failure.0, StatusCode::INTERNAL_SERVER_ERROR, "{failure:?}");
+        let state: (String, bool) = sqlx::query_as(
+            "SELECT status,credentials_encrypted IS NOT NULL FROM service_connections WHERE id=$1",
+        )
+        .bind(connection_id)
+        .fetch_one(pool)
+        .await
+        .unwrap();
+        assert_eq!(
+            state,
+            ("connected".into(), true),
+            "Failed audit must roll back credential revocation"
+        );
+        let active: bool =
+            sqlx::query_scalar("SELECT is_active FROM integration_webhooks WHERE connection_id=$1")
+                .bind(connection_id)
+                .fetch_one(pool)
+                .await
+                .unwrap();
+        assert!(active, "Dependent webhook mutation must roll back too");
+    }
+    sqlx::raw_sql("DROP TRIGGER admin_move_connection_audit_failure ON admin_audit_logs; DROP FUNCTION admin_move_connection_audit_failure();").execute(pool).await.unwrap();
+    let revoked = request(
+        api,
+        "POST",
+        "/api/admin/connections/sendgrid/disconnect",
+        Some(&token),
+        Value::Null,
+    )
+    .await;
+    assert_eq!(revoked.0, StatusCode::OK, "{revoked:?}");
+    let active: bool =
+        sqlx::query_scalar("SELECT is_active FROM integration_webhooks WHERE connection_id=$1")
+            .bind(connection_id)
+            .fetch_one(pool)
+            .await
+            .unwrap();
+    assert!(!active);
+    let deleted = request(
+        api,
+        "DELETE",
+        "/api/admin/connections/sendgrid",
+        Some(&token),
+        Value::Null,
+    )
+    .await;
+    assert_eq!(deleted.0, StatusCode::OK, "{deleted:?}");
+    let hooks: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM integration_webhooks WHERE connection_id=$1")
+            .bind(connection_id)
+            .fetch_one(pool)
+            .await
+            .unwrap();
+    assert_eq!(hooks, 0);
     server.abort();
 }

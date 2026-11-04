@@ -401,19 +401,23 @@
 			</div>
 		</header>
 
-		<label for="connection-environment">Environment</label>
-		<select
-			id="connection-environment"
-			bind:value={listEnvironment}
-			onchange={() => void fetchConnections()}
-		>
-			<option value="production">Production</option>
-			<option value="sandbox">Sandbox</option>
-		</select>
+		<div class="connection-scope">
+			<label for="connection-environment">Environment</label>
+			<select
+				id="connection-environment"
+				bind:value={listEnvironment}
+				onchange={() => void fetchConnections()}
+			>
+				<option value="production">Production</option>
+				<option value="sandbox">Sandbox</option>
+			</select>
+		</div>
 		{#if loadError}
-			<div role="alert">
+			<div role="alert" class="connection-error">
 				<p>{loadError}</p>
-				<button onclick={() => void fetchConnections()}>Retry connections</button>
+				<button class="btn-configure" onclick={() => void fetchConnections()}
+					>Retry connections</button
+				>
 			</div>
 		{/if}
 		{#if isLoading}
@@ -427,7 +431,7 @@
 					<p class="loading-text">Loading connections...</p>
 				</div>
 			</div>
-		{:else}
+		{:else if !loadError || connections.length > 0}
 			<!-- Built-in Features Section -->
 			{#if builtInServices.length > 0}
 				<section
@@ -897,6 +901,31 @@
 {/if}
 
 <style>
+	.connection-scope {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 1.5rem 0;
+	}
+	.connection-scope select {
+		color: inherit;
+		background: var(--admin-bg-secondary, #1f242b);
+		border: 1px solid var(--admin-border, #353b44);
+		border-radius: 0.5rem;
+		padding: 0.5rem 0.75rem;
+	}
+	.connection-error {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin: 1rem 0;
+		padding: 1rem;
+		border: 1px solid #b45353;
+		border-radius: 0.75rem;
+		background: #b4535314;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Connections Page - Admin Design System Aligned Styles
 	 * Uses RTP Admin color tokens from tokens/colors.css

@@ -21,6 +21,9 @@ test('production private routes enforce authentication and do not become static 
 		expect(response.headers()['cache-control']).toBe('no-store');
 		expect(response.headers()['x-robots-tag']).toContain('noindex');
 	}
+	const anonymousApi = await request.get('/api/admin/connections');
+	expect(anonymousApi.status()).toBe(401);
+	expect(anonymousApi.headers()['cache-control']).toBe('no-store');
 	const dataRedirect = await request.get('/admin/__data.json', { maxRedirects: 0 });
 	expect(dataRedirect.status()).toBe(200);
 	expect(await dataRedirect.json()).toMatchObject({ type: 'redirect', status: 303 });
@@ -41,6 +44,7 @@ test('production private routes enforce authentication and do not become static 
 	const denied = await request.get('/admin', { maxRedirects: 0 });
 	expect(denied.status()).toBe(303);
 	expect(denied.headers().location).toBe('/?error=admin_required');
+	expect((await request.get('/api/admin/connections')).status()).toBe(403);
 
 	const login = await request.post('/api/auth/login', {
 		data: { email: 'admin@admin-completion.test', password: 'OnlyForDisposableTest123!' }

@@ -412,3 +412,35 @@ describe('adminApi.* wrappers', () => {
 		expect(fetchSpy.mock.calls[2]?.[1]?.method).toBe('DELETE');
 	});
 });
+
+describe('adminFetch — Rust error and verification receipts', () => {
+	beforeEach(() => {
+		setAuthToken('fixture-token');
+		clearGotoCalls();
+	});
+	afterEach(() => vi.restoreAllMocks());
+	it('preserves useful Rust and Svelte errors, including malformed error envelopes', async () => {
+		const fetchSpy = vi.spyOn(globalThis, 'fetch');
+		for (const [payload, message] of [
+			[{ error: 'Provider connection unavailable' }, 'Provider connection unavailable'],
+			[{ message: 'Validation rejected' }, 'Validation rejected'],
+			[{ error: { message: 'Nested provider error' } }, 'Nested provider error'],
+			[null, 'Request failed with status 503'],
+			[{ error: { unrelated: true } }, 'Request failed with status 503']
+		] as const) {
+			fetchSpy.mockResolvedValue(fakeResponse({ body: payload, status: 503 }));
+			await expect(adminFetch('/api/admin/connections')).rejects.toMatchObject({
+				name: 'AdminApiError',
+				message,
+				status: 503
+			});
+		}
+	});
+	it('retains domain verification rejection on successful HTTP without fabricating a transport error', async () => {
+		const payload = { success: false, error: 'Provider returned HTTP 401', status: 'rejected' };
+		vi.spyOn(globalThis, 'fetch').mockResolvedValue(fakeResponse({ body: payload }));
+		expect(
+			await adminFetch('/api/admin/connections/sendgrid/test', { method: 'POST', body: 'null' })
+		).toEqual(payload);
+	});
+});
