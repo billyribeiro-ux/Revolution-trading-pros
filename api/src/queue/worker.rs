@@ -14,6 +14,7 @@ use anyhow::Result;
 use chrono::Utc;
 use hmac::{Hmac, KeyInit, Mac};
 use reqwest::Client;
+#[cfg(test)]
 use serde::Serialize;
 use sha2::Sha256;
 use sqlx::PgPool;
@@ -33,7 +34,8 @@ static HTTP_CLIENT: LazyLock<Client> = LazyLock::new(|| {
         .expect("static reqwest Client must build")
 });
 
-/// Postmark email payload
+/// Controlled test payload for the shared provider-acknowledgment contract.
+#[cfg(test)]
 #[derive(Serialize)]
 struct PostmarkEmail {
     #[serde(rename = "From")]
@@ -48,47 +50,15 @@ struct PostmarkEmail {
     message_stream: String,
 }
 
-/// Send an email via Postmark API
-async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<()> {
-    fn configured(keys: &[&str]) -> String {
-        keys.iter()
-            .find_map(|key| {
-                std::env::var(key)
-                    .ok()
-                    .filter(|value| !value.trim().is_empty())
-                    .map(|value| value.trim().to_owned())
-            })
-            .unwrap_or_default()
-    }
-    let postmark_token = configured(&["POSTMARK_TOKEN", "POSTMARK_API_KEY"]);
-    let from_email = configured(&["POSTMARK_FROM_EMAIL", "EMAIL_FROM_ADDRESS", "FROM_EMAIL"]);
-
-    if postmark_token.is_empty() {
-        anyhow::bail!("Postmark is unavailable: configure POSTMARK_TOKEN or POSTMARK_API_KEY");
-    }
-
-    if from_email.trim().is_empty() {
-        anyhow::bail!("Configure POSTMARK_FROM_EMAIL, EMAIL_FROM_ADDRESS or FROM_EMAIL");
-    }
-    send_email_request(
-        &HTTP_CLIENT,
-        crate::services::campaign_mailer::endpoint(
-            &std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".into()),
-            std::env::var("POSTMARK_TEST_ENDPOINT").ok().as_deref(),
-        )?
-        .as_str(),
-        &postmark_token,
-        PostmarkEmail {
-            from: from_email,
-            to: to.to_string(),
-            subject: subject.to_string(),
-            html_body: body.to_string(),
-            message_stream: "outbound".to_string(),
-        },
-    )
-    .await
+/// Production jobs resolve the saved provider configuration at execution time.
+async fn send_email(db: &Database, to: &str, subject: &str, body: &str) -> Result<()> {
+    let config = crate::config::Config::from_env()?;
+    let sender = crate::services::email::EmailService::from_env(&config.app_url)
+        .with_runtime(db.pool.clone(), &config);
+    sender.send(to, subject, body, None).await
 }
 
+#[cfg(test)]
 async fn send_email_request(
     client: &Client,
     endpoint: &str,
@@ -482,7 +452,7 @@ pub async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid
     let Some(job) = job else {
         return Ok(None);
     };
-    match process_job(&job).await {
+    match process_job(db, &job).await {
         Ok(()) => {
             sqlx::query("UPDATE jobs SET status='completed',completed_at=NOW(),reserved_at=NULL,error=NULL WHERE id=$1 AND attempts=$2 AND status='processing'")
                 .bind(job.id).bind(job.attempts).execute(&db.pool).await?;
@@ -502,7 +472,7 @@ pub async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid
 }
 
 /// Process a single job based on its type
-async fn process_job(job: &Job) -> anyhow::Result<()> {
+async fn process_job(db: &Database, job: &Job) -> anyhow::Result<()> {
     tracing::info!("Processing job: {} ({})", job.id, job.job_type);
 
     match job.job_type.as_str() {
@@ -516,7 +486,7 @@ async fn process_job(job: &Job) -> anyhow::Result<()> {
             }
 
             tracing::info!("Sending email to: {} - {}", to, subject);
-            send_email_via_postmark(to, subject, body).await
+            send_email(db, to, subject, body).await
         }
         "process_payment" | "generate_report" | "sync_data" | "reindex_search"
         | "send_notification" => {

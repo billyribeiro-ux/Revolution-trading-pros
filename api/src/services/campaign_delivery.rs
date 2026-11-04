@@ -166,9 +166,11 @@ pub async fn run(state: crate::AppState) {
             tracing::error!(%error,"Unable to recover expired campaign leases");
             continue;
         }
-        let mailer = match callback_url(&state.config.app_url)
-            .and_then(|_| CampaignMailer::from_env(&state.config.environment))
-        {
+        let configured = match callback_url(&state.config.app_url) {
+            Ok(_) => CampaignMailer::from_state(&state).await,
+            Err(error) => Err(error),
+        };
+        let mailer = match configured {
             Ok(mailer) => mailer,
             Err(error) => {
                 if let Err(db_error)=sqlx::query("UPDATE crm_campaigns SET status='paused',pause_reason='provider_unavailable',last_error=$1,updated_at=NOW() WHERE status IN ('scheduled','sending') AND scheduled_at<=NOW()").bind(error.to_string()).execute(&state.db.pool).await{tracing::error!(%db_error,"Unable to record unavailable campaign provider");}

@@ -191,31 +191,23 @@ pub(super) async fn get_connections_status(
                     (true, Some(chrono::Utc::now()), None)
                 }
                 _ => {
-                    let verified: Option<chrono::DateTime<chrono::Utc>> = if state
-                        .services
-                        .email
-                        .is_enabled()
-                    {
-                        sqlx::query_scalar("SELECT MAX(sent_at) FROM email_logs WHERE provider='postmark' AND provider_message_id IS NOT NULL AND status='sent' AND sent_at>NOW()-INTERVAL '15 minutes'")
-                            .fetch_one(state.db.pool()).await.map_err(crate::utils::errors::db_error)?
-                    } else {
-                        None
-                    };
-                    let error = if verified.is_some() {
-                        None
-                    } else {
-                        Some(
-                            state
-                                .services
-                                .email
-                                .configuration_error()
-                                .unwrap_or_else(|| {
-                                    "Email configured; no recent provider-acknowledged receipt"
-                                        .into()
-                                }),
-                        )
-                    };
-                    (verified.is_some(), verified, error)
+                    match crate::services::smtp::load(&state).await {
+                        Ok(Some(stored))=>{
+                            let verified=if stored.value["status"]=="verified" {stored.value["last_verified_at"].as_str().and_then(|value|chrono::DateTime::parse_from_rfc3339(value).ok()).map(|value|value.with_timezone(&chrono::Utc))}else{None};
+                            let error=if verified.is_some(){None}else{Some("SMTP configuration requires a successful connection check".to_string())};
+                            (verified.is_some(),verified,error)
+                        }
+                        Ok(None)=>{
+                            let email=state.services.email.resolved().await.map_err(|_|(StatusCode::SERVICE_UNAVAILABLE,Json(json!({"error":"Email configuration is unavailable"}))))?;
+                            let verified:Option<chrono::DateTime<chrono::Utc>>=if email.is_enabled() {
+                                sqlx::query_scalar("SELECT MAX(sent_at) FROM email_logs WHERE provider='postmark' AND provider_message_id IS NOT NULL AND status='sent' AND sent_at>NOW()-INTERVAL '15 minutes'")
+                                    .fetch_one(state.db.pool()).await.map_err(crate::utils::errors::db_error)?
+                            }else{None};
+                            let error=if verified.is_some(){None}else{Some(email.configuration_error().unwrap_or_else(||"Email configured; no recent provider-acknowledged receipt".into()))};
+                            (verified.is_some(),verified,error)
+                        }
+                        Err(_)=>(false,None,Some("SMTP configuration is unavailable; restore its configuration before use".to_string())),
+                    }
                 }
             };
             let mut value = def.clone();

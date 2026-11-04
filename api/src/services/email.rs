@@ -24,6 +24,24 @@ mod provider_tests {
         atomic::{AtomicUsize, Ordering},
     };
 
+    #[test]
+    fn capability_values_are_redacted_only_in_logs() {
+        let original = serde_json::json!({"name":"Fixture recipient","verification_link":"https://example.test/verify?token=fixture-private", "nested":{"token":"fixture-private","expires":60},"app_url":"https://example.test"});
+        let logged = redacted_model(&original);
+        assert_eq!(logged["verification_link"], "[redacted]");
+        assert_eq!(logged["nested"]["token"], "[redacted]");
+        assert_eq!(logged["nested"]["expires"], 60);
+        assert_eq!(logged["name"], original["name"]);
+        assert_eq!(logged["app_url"], original["app_url"]);
+        assert!(
+            original["verification_link"]
+                .as_str()
+                .unwrap()
+                .contains("fixture-private")
+        );
+        assert!(!logged.to_string().contains("fixture-private"));
+    }
+
     #[tokio::test]
     async fn missing_configuration_is_not_reported_as_success() {
         let sender = EmailService::new("", "sender@example.test", "http://127.0.0.1");
@@ -121,6 +139,37 @@ fn build_http_client() -> Client {
         .expect("static bounded email client must build")
 }
 
+/// Capability-bearing confirmation/reset values are delivered but never copied to logs.
+fn redacted_model(model: &serde_json::Value) -> serde_json::Value {
+    match model {
+        serde_json::Value::Object(fields) => serde_json::Value::Object(
+            fields
+                .iter()
+                .map(|(key, value)| {
+                    let normalized = key.to_ascii_lowercase();
+                    let secret = normalized.contains("token")
+                        || normalized.contains("password")
+                        || normalized.contains("secret")
+                        || normalized.ends_with("_link")
+                        || normalized.ends_with("_url") && normalized != "app_url";
+                    (
+                        key.clone(),
+                        if secret {
+                            serde_json::json!("[redacted]")
+                        } else {
+                            redacted_model(value)
+                        },
+                    )
+                })
+                .collect(),
+        ),
+        serde_json::Value::Array(items) => {
+            serde_json::Value::Array(items.iter().map(redacted_model).collect())
+        }
+        value => value.clone(),
+    }
+}
+
 /// Transactional email submission with persisted, truthful provider states.
 /// Missing configuration is unavailable; only acknowledged acceptance is sent.
 #[derive(Clone)]
@@ -132,6 +181,15 @@ pub struct EmailService {
     from_email: String,
     from_name: String,
     app_url: String,
+    smtp: Option<super::smtp::SmtpSettings>,
+    runtime: Option<RuntimeConfiguration>,
+}
+
+#[derive(Clone)]
+struct RuntimeConfiguration {
+    pool: PgPool,
+    encryption_key: String,
+    environment: String,
 }
 
 #[derive(Serialize)]
@@ -186,7 +244,59 @@ impl EmailService {
             from_email: from_email.to_string(),
             from_name: "Revolution Trading Pros".to_string(),
             app_url: app_url.trim_end_matches('/').to_string(),
+            smtp: None,
+            runtime: None,
         }
+    }
+
+    /// Bind application instances to durable configuration. Explicit standalone
+    /// test clients remain independent unless the caller deliberately binds them.
+    pub fn with_runtime(mut self, pool: PgPool, config: &crate::config::Config) -> Self {
+        self.runtime = Some(RuntimeConfiguration {
+            pool,
+            encryption_key: config.credentials_encryption_key.clone(),
+            environment: config.environment.clone(),
+        });
+        self
+    }
+    pub async fn resolved(&self) -> Result<Self> {
+        let mut service = self.clone();
+        service.runtime = None;
+        if let Some(runtime) = &self.runtime {
+            let stored = super::smtp::load_from(
+                &runtime.pool,
+                &runtime.encryption_key,
+                &runtime.environment,
+            )
+            .await
+            .map_err(|_| anyhow::anyhow!("Email configuration storage is unavailable"))?;
+            if let Some(stored) = stored {
+                if stored.value["status"] != "verified"
+                    || stored.value["last_verified_at"]
+                        .as_str()
+                        .is_none_or(|value| chrono::DateTime::parse_from_rfc3339(value).is_err())
+                {
+                    anyhow::bail!("Saved SMTP configuration requires a successful connection check")
+                }
+                service.from_email = stored.settings.from_address.clone();
+                service.from_name = stored.settings.from_name.clone();
+                service.smtp = Some(stored.settings);
+            }
+        }
+        Ok(service)
+    }
+    pub fn provider(&self) -> &'static str {
+        if self.smtp.is_some() {
+            "smtp"
+        } else {
+            "postmark"
+        }
+    }
+    pub(crate) fn smtp_settings(&self) -> Option<&super::smtp::SmtpSettings> {
+        self.smtp.as_ref()
+    }
+    pub fn from_name(&self) -> &str {
+        &self.from_name
     }
 
     /// Read explicit credentials and sender aliases; use the validated local
@@ -240,13 +350,16 @@ impl EmailService {
         self.token.is_some()
     }
     pub fn configuration_error(&self) -> Option<String> {
+        if self.smtp.is_some() {
+            return None;
+        }
         self.configuration().err().map(|error| error.to_string())
     }
 
     /// True when explicit credentials, sender and endpoint are usable. Used by the admin
     /// `/api/admin/email/status` diagnostic.
     pub fn is_enabled(&self) -> bool {
-        self.configuration().is_ok()
+        self.smtp.is_some() || self.configuration().is_ok()
     }
 
     /// Configured from-email. Read by `/api/admin/email/status`.
@@ -271,78 +384,226 @@ impl EmailService {
         {
             anyhow::bail!("Invalid email template alias");
         }
-        let log_id:i64=sqlx::query_scalar("INSERT INTO email_logs(email,to_email,subject,template_type,template_alias,model,status,provider,queued_at,created_at) VALUES($1,$1,$2,LEFT($3,50),$3,$4,'queued','postmark',NOW(),NOW()) RETURNING id").bind(to).bind(format!("[template:{template_alias}]")).bind(template_alias).bind(&model).fetch_one(pool).await?;
-        let (token, endpoint) = match self.configuration() {
-            Ok(configuration) => configuration,
+        let resolved = self.resolved().await;
+        let provider = resolved
+            .as_ref()
+            .map(Self::provider)
+            .unwrap_or("configuration");
+        let logged_model = redacted_model(&model);
+        let log_id:i64=sqlx::query_scalar("INSERT INTO email_logs(email,to_email,subject,template_type,template_alias,model,status,provider,queued_at,created_at) VALUES($1,$1,$2,LEFT($3,50),$3,$4,'queued',$5,NOW(),NOW()) RETURNING id")
+            .bind(to).bind(format!("[template:{template_alias}]")).bind(template_alias).bind(logged_model).bind(provider).fetch_one(pool).await?;
+        let service = match resolved {
+            Ok(service) => service,
             Err(error) => {
-                sqlx::query("UPDATE email_logs SET status='unavailable',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1").bind(log_id).bind(error.to_string()).execute(pool).await?;
+                Self::unavailable(pool, log_id, &error).await?;
                 return Err(error);
             }
         };
-        let mut endpoint = endpoint.clone();
-        endpoint.set_path(&format!(
-            "{}/withTemplate",
-            endpoint.path().trim_end_matches('/')
-        ));
-        let from = Identity {
-            name: self.from_name.clone(),
-            email: self.from_email.clone(),
-        }
-        .formatted()?;
-        let body = PostmarkTemplateEmail {
-            from,
-            to,
-            template_alias,
-            template_model: &model,
-            message_stream: "outbound",
+        let outcome = if let Some(smtp) = &service.smtp {
+            let brand = if service.from_name.is_empty() {
+                &service.from_email
+            } else {
+                &service.from_name
+            };
+            let rendered = match super::transactional_templates::load(
+                pool,
+                template_alias,
+                model,
+                &service.app_url,
+                brand,
+            )
+            .await
+            {
+                Ok(rendered) => rendered,
+                Err(error) => {
+                    let database = error
+                        .chain()
+                        .any(|cause| cause.downcast_ref::<sqlx::Error>().is_some());
+                    if database {
+                        let error = anyhow::anyhow!("Email template storage is unavailable");
+                        Self::unavailable(pool, log_id, &error).await?;
+                        return Err(error);
+                    }
+                    return Self::record_outcome(
+                        pool,
+                        log_id,
+                        Submission::Rejected {
+                            reason: error.to_string(),
+                            retryable: false,
+                        },
+                    )
+                    .await
+                    .map(|_| ());
+                }
+            };
+            let from = Identity {
+                name: service.from_name.clone(),
+                email: service.from_email.clone(),
+            };
+            super::smtp_message::submit(
+                smtp,
+                super::smtp_message::Message {
+                    to,
+                    subject: &rendered.subject,
+                    html: Some(&rendered.html),
+                    text: rendered.text.as_deref(),
+                    from: &from,
+                    reply_to: None,
+                    unsubscribe: None,
+                },
+            )
+            .await
+        } else {
+            let (token, endpoint) = match service.configuration() {
+                Ok(configuration) => configuration,
+                Err(error) => {
+                    Self::unavailable(pool, log_id, &error).await?;
+                    return Err(error);
+                }
+            };
+            let mut endpoint = endpoint.clone();
+            endpoint.set_path(&format!(
+                "{}/withTemplate",
+                endpoint.path().trim_end_matches('/')
+            ));
+            let from = Identity {
+                name: service.from_name.clone(),
+                email: service.from_email.clone(),
+            }
+            .formatted()?;
+            let body = PostmarkTemplateEmail {
+                from,
+                to,
+                template_alias,
+                template_model: &model,
+                message_stream: "outbound",
+            };
+            submit_request(&service.client, &endpoint, token, &body).await
         };
-        match submit_request(&self.client, &endpoint, token, &body).await {
+        Self::record_outcome(pool, log_id, outcome)
+            .await
+            .map(|_| ())
+    }
+    async fn unavailable(pool: &PgPool, id: i64, error: &anyhow::Error) -> Result<()> {
+        sqlx::query("UPDATE email_logs SET status='unavailable',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1")
+            .bind(id).bind(error.to_string()).execute(pool).await?;
+        Ok(())
+    }
+    async fn record_outcome(pool: &PgPool, id: i64, outcome: Submission) -> Result<String> {
+        match outcome {
             Submission::Accepted { message_id } => {
-                if sqlx::query("UPDATE email_logs SET status='sent',sent_at=NOW(),provider_message_id=$2,error=NULL,error_message=NULL WHERE id=$1").bind(log_id).bind(&message_id).execute(pool).await.is_err(){return Err(UncertainSubmission(format!("Provider accepted message {message_id}, but its local receipt could not be persisted; reconcile before retrying")).into());}
-                Ok(())
+                if sqlx::query("UPDATE email_logs SET status='sent',sent_at=NOW(),provider_message_id=$2,error=NULL,error_message=NULL WHERE id=$1")
+                    .bind(id).bind(&message_id).execute(pool).await.is_err() {
+                    return Err(UncertainSubmission(format!("Provider accepted message {message_id}, but its local receipt could not be persisted; reconcile before retrying")).into());
+                }
+                Ok(message_id)
             }
             Submission::Rejected { reason, retryable } => {
-                sqlx::query("UPDATE email_logs SET status='failed',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1").bind(log_id).bind(&reason).execute(pool).await?;
+                sqlx::query("UPDATE email_logs SET status='failed',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1").bind(id).bind(&reason).execute(pool).await?;
                 Err(RejectedSubmission { reason, retryable }.into())
             }
             Submission::Uncertain { reason } => {
-                sqlx::query("UPDATE email_logs SET status='delivery_unknown',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1").bind(log_id).bind(&reason).execute(pool).await?;
+                sqlx::query("UPDATE email_logs SET status='delivery_unknown',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1").bind(id).bind(&reason).execute(pool).await?;
                 Err(UncertainSubmission(reason).into())
             }
         }
     }
-
-    /// Submit an existing raw email and require actual provider acknowledgment.
+    /// Record runtime-bound raw submissions and require the provider's real acknowledgment.
+    pub async fn send_receipt(
+        &self,
+        to: &str,
+        subject: &str,
+        html: &str,
+        text: Option<&str>,
+    ) -> Result<String> {
+        crate::utils::errors::validate_email(to)
+            .map_err(|_| anyhow::anyhow!("Invalid recipient email"))?;
+        if subject.trim().is_empty()
+            || subject.chars().count() > 500
+            || subject.contains(['\r', '\n', '\0'])
+            || html.contains('\0')
+            || html.len() > 4_000_000
+            || text.is_some_and(|text| text.len() > 4_000_000 || text.contains('\0'))
+        {
+            anyhow::bail!("Invalid email subject or body");
+        }
+        let resolved = self.resolved().await;
+        let provider = resolved
+            .as_ref()
+            .map(Self::provider)
+            .unwrap_or("configuration");
+        let log = if let Some(runtime) = &self.runtime {
+            Some(sqlx::query_scalar::<_,i64>("INSERT INTO email_logs(email,to_email,subject,template_type,status,provider,queued_at,created_at) VALUES($1,$1,$2,'raw','queued',$3,NOW(),NOW()) RETURNING id")
+                .bind(to).bind(subject).bind(provider).fetch_one(&runtime.pool).await?)
+        } else {
+            None
+        };
+        let service = match resolved {
+            Ok(service) => service,
+            Err(error) => {
+                if let (Some(runtime), Some(id)) = (&self.runtime, log) {
+                    Self::unavailable(&runtime.pool, id, &error).await?;
+                }
+                return Err(error);
+            }
+        };
+        let outcome = if let Some(smtp) = &service.smtp {
+            let from = Identity {
+                name: service.from_name.clone(),
+                email: service.from_email.clone(),
+            };
+            super::smtp_message::submit(
+                smtp,
+                super::smtp_message::Message {
+                    to,
+                    subject,
+                    html: Some(html),
+                    text,
+                    from: &from,
+                    reply_to: None,
+                    unsubscribe: None,
+                },
+            )
+            .await
+        } else {
+            let (token, endpoint) = match service.configuration() {
+                Ok(configuration) => configuration,
+                Err(error) => {
+                    if let (Some(runtime), Some(id)) = (&self.runtime, log) {
+                        Self::unavailable(&runtime.pool, id, &error).await?;
+                    }
+                    return Err(error);
+                }
+            };
+            let from = Identity {
+                name: service.from_name.clone(),
+                email: service.from_email.clone(),
+            }
+            .formatted()?;
+            let email = PostmarkEmail {
+                from,
+                to: to.into(),
+                subject: subject.into(),
+                html_body: html.into(),
+                text_body: text.map(str::to_owned),
+                message_stream: "outbound".into(),
+            };
+            submit_request(&service.client, endpoint, token, &email).await
+        };
+        if let (Some(runtime), Some(id)) = (&self.runtime, log) {
+            Self::record_outcome(&runtime.pool, id, outcome).await
+        } else {
+            outcome.into_result()
+        }
+    }
     pub async fn send(
         &self,
         to: &str,
         subject: &str,
-        html_body: &str,
-        text_body: Option<&str>,
+        html: &str,
+        text: Option<&str>,
     ) -> Result<()> {
-        let (token, endpoint) = self.configuration()?;
-        crate::utils::errors::validate_email(to)
-            .map_err(|_| anyhow::anyhow!("Invalid recipient email"))?;
-        if subject.is_empty() || subject.contains(['\r', '\n', '\0']) || html_body.contains('\0') {
-            anyhow::bail!("Invalid email subject or body");
-        }
-        let from = Identity {
-            name: self.from_name.clone(),
-            email: self.from_email.clone(),
-        }
-        .formatted()?;
-        let email = PostmarkEmail {
-            from,
-            to: to.into(),
-            subject: subject.into(),
-            html_body: html_body.into(),
-            text_body: text_body.map(str::to_owned),
-            message_stream: "outbound".into(),
-        };
-        submit_request(&self.client, endpoint, token, &email)
-            .await
-            .into_result()
-            .map(|_| ())
+        self.send_receipt(to, subject, html, text).await.map(|_| ())
     }
 
     /// Send email verification email

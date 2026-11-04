@@ -59,11 +59,18 @@ pub enum Submission {
 }
 #[derive(Clone)]
 pub struct CampaignMailer {
-    client: Client,
-    endpoint: Url,
-    token: String,
+    provider: Provider,
     default_sender: Identity,
-    stream: String,
+}
+#[derive(Clone)]
+enum Provider {
+    Postmark {
+        client: Client,
+        endpoint: Url,
+        token: String,
+        stream: String,
+    },
+    Smtp(super::smtp::SmtpSettings),
 }
 #[derive(Serialize)]
 #[serde(rename_all = "PascalCase")]
@@ -121,7 +128,29 @@ pub(crate) fn endpoint(environment: &str, override_url: Option<&str>) -> Result<
 }
 impl CampaignMailer {
     pub fn stream(&self) -> &str {
-        &self.stream
+        match &self.provider {
+            Provider::Postmark { stream, .. } => stream,
+            Provider::Smtp(_) => "smtp",
+        }
+    }
+    pub fn provider(&self) -> &'static str {
+        match self.provider {
+            Provider::Postmark { .. } => "postmark",
+            Provider::Smtp(_) => "smtp",
+        }
+    }
+    pub async fn from_state(state: &crate::AppState) -> Result<Self> {
+        let email = state.services.email.resolved().await?;
+        if let Some(settings) = email.smtp_settings() {
+            return Ok(Self {
+                provider: Provider::Smtp(settings.clone()),
+                default_sender: Identity {
+                    name: email.from_name().to_string(),
+                    email: email.from_email().to_string(),
+                },
+            });
+        }
+        Self::from_env(&state.config.environment)
     }
     pub fn sender(&self) -> &Identity {
         &self.default_sender
@@ -181,11 +210,13 @@ impl CampaignMailer {
             .redirect(reqwest::redirect::Policy::none())
             .build()?;
         Ok(Self {
-            client,
-            endpoint,
-            token: token.to_string(),
+            provider: Provider::Postmark {
+                client,
+                endpoint,
+                token: token.to_string(),
+                stream: stream.to_string(),
+            },
             default_sender,
-            stream: stream.to_string(),
         })
     }
     fn payload(&self, message: Message) -> Result<Payload> {
@@ -249,11 +280,18 @@ impl CampaignMailer {
             ],
             track_opens: true,
             track_links: "HtmlAndText",
-            message_stream: self.stream.clone(),
+            message_stream: self.stream().to_string(),
             metadata: message.metadata,
         })
     }
     pub async fn submit(&self, message: Message) -> Submission {
+        let from = message
+            .from
+            .as_ref()
+            .unwrap_or(&self.default_sender)
+            .clone();
+        let reply = message.reply_to.clone();
+        let unsubscribe = message.unsubscribe_url.clone();
         let payload = match self.payload(message) {
             Ok(payload) => payload,
             Err(error) => {
@@ -263,7 +301,29 @@ impl CampaignMailer {
                 };
             }
         };
-        submit_request(&self.client, &self.endpoint, &self.token, &payload).await
+        match &self.provider {
+            Provider::Postmark {
+                client,
+                endpoint,
+                token,
+                ..
+            } => submit_request(client, endpoint, token, &payload).await,
+            Provider::Smtp(settings) => {
+                super::smtp_message::submit(
+                    settings,
+                    super::smtp_message::Message {
+                        to: &payload.to,
+                        subject: &payload.subject,
+                        html: payload.html_body.as_deref(),
+                        text: payload.text_body.as_deref(),
+                        from: &from,
+                        reply_to: reply.as_ref(),
+                        unsubscribe: Some(&unsubscribe),
+                    },
+                )
+                .await
+            }
+        }
     }
 }
 

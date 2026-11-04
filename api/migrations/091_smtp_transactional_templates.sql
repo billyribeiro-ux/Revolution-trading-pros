@@ -1,5 +1,9 @@
 -- Local counterparts of the aliases already used by application workflows.
 -- Preserve existing operator-authored templates; SMTP renders the active stored row.
+-- A valid SMTP Message-ID may exceed the previous provider-specific UUID limit.
+ALTER TABLE email_logs ALTER COLUMN subject TYPE TEXT,
+                       ALTER COLUMN provider_message_id TYPE TEXT;
+
 INSERT INTO email_templates(name,slug,subject,html_content,text_content,template_type,variables,is_active)
 VALUES
 ('Welcome','welcome','Welcome to {{brand_name}}',

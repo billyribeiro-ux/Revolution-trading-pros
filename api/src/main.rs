@@ -67,7 +67,8 @@ async fn main() -> anyhow::Result<()> {
     }
 
     // Initialize services
-    let services = Services::new(&config).await?;
+    let mut services = Services::new(&config).await?;
+    services.email = services.email.with_runtime(db.pool.clone(), &config);
     tracing::info!("Services initialized");
 
     // Background job processor - ICT11+ Production Ready

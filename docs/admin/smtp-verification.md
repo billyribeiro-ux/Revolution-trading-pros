@@ -1,6 +1,6 @@
 # SMTP settings verification — implementation in progress
 
-The settings workflow now has real backend handlers and local protocol evidence. Application mail and campaign delivery still use the earlier Postmark path; SMTP runtime delivery is not complete. Source-wide phase one remains open and copying is forbidden.
+The settings workflow now has real backend handlers and local protocol evidence. Application transactional/raw mail and generic email jobs now select verified saved SMTP configuration, with actual runtime proof. Campaign/newsletter outbox delivery remains Postmark-only and is not complete. Source-wide phase one remains open and copying is forbidden.
 
 ## Implemented
 
@@ -29,3 +29,9 @@ Primary transport contract: [Lettre asynchronous SMTP transport](https://docs.rs
 Wire saved SMTP configuration into raw transactional email, template rendering/defaults, queued email and campaign provider selection, with acknowledged acceptance and uncertain outcomes recorded accurately. Complete native SMTP connection status and actual delivery/tracking workflows. Verify process restart and representative workers after that wiring.
 
 External verification needs an authorized SMTP relay, validated TLS identity, credentials/relay permissions, sender identity, and controlled test recipient. The local development protocol fixture establishes implementation behavior only. Real TLS/account access, message acceptance and inbox delivery have not been verified.
+
+## Runtime delivery follow-up
+
+**Fresh smtp_r41 passed44.74s**, `/tmp/admin-move-smtp-r41.log`, including migration091, actual local-template API submission, newsletter confirmation, queued sender configuration recovery, SMTP250/550/disconnection outcomes, no automatic resend of unknown work, current provider diagnostics, cold API-state reload and no environment fallback during storage failure. Migration091 seeds the12 existing application aliases without replacing operator rows and accommodates valid SMTP Message-ID/subject lengths.
+
+SMTP MIME wire tests2passed; template renderer tests2passed; full Rust library163passed/1existing scanner ignore. These show actual local protocol behavior, not external account access or inbox delivery. Confirmation/reset capability values are redacted in stored log models and remain intact in the actual message. A further no-Postmark regression for confirmation outcome classification is compiling and not yet passed.

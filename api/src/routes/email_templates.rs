@@ -384,8 +384,7 @@ async fn send_test_email(
         "Admin sending test email"
     );
 
-    // Send test email via Postmark using the template's slug as the alias.
-    // Falls back to graceful no-op if POSTMARK_TOKEN is not set.
+    // Resolve the active provider and require a persisted submission acknowledgment.
     let template: Option<EmailTemplateRow> = sqlx::query_as(
         "SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1",
     )
@@ -399,13 +398,21 @@ async fn send_test_email(
         )
     })?;
 
-    let alias = template
-        .as_ref()
-        .map(|t| t.slug.clone())
-        .unwrap_or_else(|| format!("template-{id}"));
+    let template = template.ok_or((
+        StatusCode::NOT_FOUND,
+        Json(json!({"error":"Template not found"})),
+    ))?;
+    if !template.is_active {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Template is inactive"})),
+        ));
+    }
+    let alias = template.slug;
 
     let model = serde_json::json!({
         "recipient": &email,
+        "name": user.name,
         "admin_name": user.name,
         "template_id": id,
         "app_url": state.config.app_url,
@@ -422,7 +429,7 @@ async fn send_test_email(
             "message": format!("Test email sent to {}", email),
             "template_id": id,
             "alias": alias,
-            "email_service_enabled": state.services.email.is_enabled(),
+            "email_service_enabled": true,
         }))),
         Err(e) => Err((
             StatusCode::INTERNAL_SERVER_ERROR,

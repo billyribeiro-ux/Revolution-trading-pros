@@ -469,14 +469,6 @@ pub(crate) async fn request_confirmation(state: &AppState, id: i64) -> Result<Va
             "accepted",
             "Confirmation submitted to the email provider; waiting for recipient confirmation",
         ),
-        Err(ref e) if !state.services.email.is_enabled() => {
-            tracing::warn!(subscriber_id = id, "Confirmation provider is unavailable");
-            let _ = e;
-            (
-                "unavailable",
-                "Subscriber saved as pending; configure email delivery to send confirmation",
-            )
-        }
         Err(ref e)
             if e.downcast_ref::<crate::services::campaign_mailer::UncertainSubmission>()
                 .is_some() =>
@@ -484,6 +476,23 @@ pub(crate) async fn request_confirmation(state: &AppState, id: i64) -> Result<Va
             (
                 "unknown",
                 "Confirmation submission is unconfirmed; check the inbox before requesting another message",
+            )
+        }
+        Err(ref e)
+            if e.downcast_ref::<crate::services::campaign_mailer::RejectedSubmission>()
+                .is_none()
+                && !state
+                    .services
+                    .email
+                    .resolved()
+                    .await
+                    .is_ok_and(|email| email.is_enabled()) =>
+        {
+            tracing::warn!(subscriber_id = id, "Confirmation provider is unavailable");
+            let _ = e;
+            (
+                "unavailable",
+                "Subscriber saved as pending; configure email delivery to send confirmation",
             )
         }
         Err(e) => {

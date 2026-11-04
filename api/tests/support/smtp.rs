@@ -10,7 +10,12 @@ use std::sync::{
 };
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
-pub(super) async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
+pub(super) async fn proof(
+    api: &Router,
+    pool: &PgPool,
+    tokens: &[String],
+    postmark: &super::Adapter,
+) {
     assert_eq!(std::env::var("ENVIRONMENT").as_deref(), Ok("development"));
     let listener = tokio::net::TcpListener::bind("127.0.0.1:19025")
         .await
@@ -254,4 +259,5 @@ pub(super) async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
         .unwrap();
     assert_eq!(outage.0, StatusCode::SERVICE_UNAVAILABLE, "{outage:?}");
     server.abort();
+    super::smtp_delivery_proof::proof(api, pool, &token, &tokens[0], postmark).await;
 }

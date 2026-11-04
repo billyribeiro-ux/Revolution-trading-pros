@@ -9,6 +9,8 @@ mod crm_webhook_proof;
 mod email_subscriber_proof;
 #[path = "support/performance.rs"]
 mod performance_proof;
+#[path = "support/smtp_delivery.rs"]
+mod smtp_delivery_proof;
 #[path = "support/smtp.rs"]
 mod smtp_proof;
 use axum::{
@@ -129,6 +131,7 @@ async fn app(db: Database, email: Option<EmailService>) -> Router {
     if let Some(email) = email {
         services.email = email;
     }
+    services.email = services.email.with_runtime(db.pool.clone(), &config);
     let cache = services.cache.clone();
     let state = AppState {
         db,
@@ -1695,6 +1698,6 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     email_subscriber_proof::proof(&api, &disabled_app, &pool, &tokens, &adapter).await;
     authorization_parity_proof::proof(&api, &pool).await;
     connections_proof::proof(&api, &pool, &tokens).await;
-    smtp_proof::proof(&api, &pool, &tokens).await;
+    smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();
 }

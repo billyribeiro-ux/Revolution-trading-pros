@@ -463,11 +463,22 @@ pub(super) async fn get_email_status(
         )
     })?;
 
+    let resolved = state.services.email.resolved().await;
+    let (enabled, configuration_error, from_email, provider) = match resolved {
+        Ok(email) => (
+            email.is_enabled(),
+            email.configuration_error(),
+            email.from_email().to_string(),
+            Some(email.provider()),
+        ),
+        Err(error) => (false, Some(error.to_string()), String::new(), None),
+    };
     Ok(Json(json!({
+        "provider":provider,
         "postmark_token_set": state.services.email.is_token_configured(),
-        "email_service_enabled":state.services.email.is_enabled(),
-        "email_configuration_error":state.services.email.configuration_error(),
-        "from_email": state.services.email.from_email(),
+        "email_service_enabled":enabled,
+        "email_configuration_error":configuration_error,
+        "from_email":from_email,
         "admin_notification_email_set": state.config.admin_notification_email.is_some(),
         "last_24h_sent": counts.sent,
         "last_24h_failed": counts.failed,
