@@ -5,6 +5,7 @@ use sqlx::PgPool;
 use std::io::{self, Write};
 
 pub struct Rendered {
+    pub template_id: Option<i64>,
     pub subject: String,
     pub html: String,
     pub text: Option<String>,
@@ -48,6 +49,23 @@ fn render(template: &str, model: &Value, html: bool, limit: usize) -> Result<Str
 pub async fn load(
     pool: &PgPool,
     alias: &str,
+    model: Value,
+    app_url: &str,
+    brand: &str,
+) -> Result<Rendered> {
+    let row:Option<(i64,String,String,Option<String>)>=sqlx::query_as("SELECT id,subject,html_content,text_content FROM email_templates WHERE slug=$1 AND is_active=true").bind(alias).fetch_optional(pool).await?;
+    let (id, subject, html, text) =
+        row.ok_or_else(|| anyhow!("An active local email template is required for this alias"))?;
+    let mut rendered = render_content(&subject, &html, text.as_deref(), model, app_url, brand)?;
+    rendered.template_id = Some(id);
+    Ok(rendered)
+}
+
+/// Preview, explicit admin tests and SMTP application mail use identical rules.
+pub fn render_content(
+    subject: &str,
+    html: &str,
+    text: Option<&str>,
     mut model: Value,
     app_url: &str,
     brand: &str,
@@ -57,21 +75,19 @@ pub async fn load(
         .ok_or_else(|| anyhow!("Email template model must be an object"))?;
     object.entry("app_url").or_insert_with(|| json!(app_url));
     object.entry("brand_name").or_insert_with(|| json!(brand));
-    let row:Option<(String,String,Option<String>)>=sqlx::query_as("SELECT subject,html_content,text_content FROM email_templates WHERE slug=$1 AND is_active=true").bind(alias).fetch_optional(pool).await?;
-    let (subject, html, text) =
-        row.ok_or_else(|| anyhow!("An active local email template is required for this alias"))?;
-    let subject = render(&subject, &model, false, 4096)?;
+    let subject = render(subject, &model, false, 4096)?;
     if subject.trim().is_empty()
         || subject.chars().count() > 500
         || subject.contains(['\r', '\n', '\0'])
     {
         bail!("Rendered email subject is invalid")
     }
-    let html = render(&html, &model, true, 4_000_000)?;
+    let html = render(html, &model, true, 4_000_000)?;
     let text = text
-        .map(|value| render(&value, &model, false, 4_000_000))
+        .map(|value| render(value, &model, false, 4_000_000))
         .transpose()?;
     Ok(Rendered {
+        template_id: None,
         subject,
         html,
         text,

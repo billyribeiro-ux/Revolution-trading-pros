@@ -376,7 +376,11 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 	// Protect the HTML request as well as layout data, including CSR admin pages.
 	if (
-		(pathname === '/admin' || pathname.startsWith('/admin/') || isAdminApi) &&
+		(pathname === '/admin' ||
+			pathname.startsWith('/admin/') ||
+			pathname === '/email' ||
+			pathname.startsWith('/email/') ||
+			isAdminApi) &&
 		event.locals.user &&
 		!isAdminRole(event.locals.user.role)
 	) {
@@ -411,9 +415,9 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	headers.set('X-Frame-Options', 'SAMEORIGIN');
 
 	// Referrer policy - balance between privacy and analytics
-	const newsletterCallback = ['/newsletter/confirm', '/newsletter/unsubscribe'].includes(
-		event.url.pathname
-	);
+	const newsletterCallback =
+		['/newsletter/confirm', '/newsletter/unsubscribe'].includes(event.url.pathname) ||
+		event.url.pathname.startsWith('/api/newsletter/tracking/');
 	headers.set(
 		'Referrer-Policy',
 		newsletterCallback ? 'no-referrer' : 'strict-origin-when-cross-origin'
@@ -423,6 +427,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		'/api/admin',
 		'/api/oauth',
 		'/admin',
+		'/email',
 		'/dashboard',
 		'/account',
 		'/checkout',

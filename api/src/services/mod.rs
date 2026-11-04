@@ -7,6 +7,7 @@ pub mod bunny;
 pub mod campaign_delivery;
 pub mod campaign_mailer;
 pub mod campaign_render;
+pub mod campaign_tracking;
 pub mod cms_audit;
 pub mod cms_content;
 pub mod cms_preview;

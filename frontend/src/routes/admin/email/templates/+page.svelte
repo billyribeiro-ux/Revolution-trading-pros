@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	/**
 	 * Email Templates - Apple ICT7 Principal Engineer Grade
 	 *
@@ -11,7 +11,7 @@
 	 *
 	 */
 
-	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '#lib/api/admin.js';
+	import { emailTemplatesApi, isEmailTemplate, type EmailTemplate } from '#lib/api/admin.js';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { IconEdit, IconTrash, IconEye, IconPlus, IconRefresh } from '#lib/icons/index.js';
@@ -23,6 +23,11 @@
 	let loading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
+	let pageNumber = $state(1),
+		total = $state(0);
+	const perPage = 20;
+	const pageCount = $derived(Math.max(1, Math.ceil(total / perPage)));
+	let generation = 0;
 
 	// Confirmation modal state (replaces native confirm())
 	let showDeleteTemplateModal = $state(false);
@@ -44,48 +49,58 @@
 
 	// Lifecycle - Svelte 5 $effect
 
+	let searchTimer: ReturnType<typeof setTimeout> | undefined;
 	onMount(() => {
-		loadTemplates();
+		void loadTemplates();
+	});
+	function search(value: string) {
+		searchQuery = value;
+		pageNumber = 1;
+		generation++;
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => void loadTemplates(), 250);
+	}
+	async function changePage(next: number) {
+		pageNumber = Math.max(1, Math.min(pageCount, next));
+		await loadTemplates();
+	}
+	onDestroy(() => {
+		clearTimeout(searchTimer);
+		generation++;
 	});
 
 	// Data Loading
 
-	async function loadTemplates() {
+	async function loadTemplates(requestedPage = pageNumber, query = searchQuery) {
+		const current = ++generation;
 		loading = true;
 		error = '';
 		try {
-			const response = await emailTemplatesApi.list();
-			templates = response.data || [];
-		} catch (e: unknown) {
-			if (e instanceof AdminApiError) {
-				if (e.status === 401) {
-					goto('/login');
-					return;
-				}
-				// Handle SQL errors with user-friendly messages
-				if (
-					e.message.includes('SQLSTATE') ||
-					e.message.includes('Column not found') ||
-					e.message.includes('deleted_at')
-				) {
-					error =
-						'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
-				} else {
-					error = e.message;
-				}
-			} else if (
-				e instanceof Error &&
-				(e.message?.includes('SQLSTATE') || e.message?.includes('deleted_at'))
-			) {
-				// Handle raw SQL errors
-				error =
-					'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
-			} else {
-				error = 'Failed to load templates. Please refresh the page or contact support.';
+			const response = await emailTemplatesApi.list({
+				page: requestedPage,
+				per_page: perPage,
+				search: query
+			});
+			if (
+				!Array.isArray(response.data) ||
+				!response.data.every(isEmailTemplate) ||
+				typeof response.meta?.total !== 'number' ||
+				!Number.isSafeInteger(response.meta.total) ||
+				response.meta.total < 0
+			)
+				throw new Error('Invalid email template list response');
+			if (current !== generation) return;
+			templates = response.data;
+			total = response.meta.total;
+			if (pageNumber > pageCount) {
+				pageNumber = pageCount;
+				await loadTemplates();
 			}
-			console.error('Failed to load templates:', e);
+		} catch (cause) {
+			if (current === generation)
+				error = cause instanceof Error ? cause.message : 'Unable to load templates';
 		} finally {
-			loading = false;
+			if (current === generation) loading = false;
 		}
 	}
 
@@ -103,7 +118,7 @@
 		pendingDeleteTemplateId = null;
 		try {
 			await emailTemplatesApi.delete(id);
-			templates = templates.filter((t) => t.id !== id);
+			await loadTemplates();
 			toastStore.success('Template deleted successfully');
 		} catch (e) {
 			toastStore.error('Failed to delete template');
@@ -117,10 +132,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Email Templates | Admin | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="templates-page">
 	<div class="page-header">
 		<div class="header-left">
@@ -129,16 +140,18 @@
 		</div>
 		<div class="header-actions">
 			<div class="search-box">
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"
 					placeholder="Search templates..."
-					bind:value={searchQuery}
+					value={searchQuery}
+					oninput={(event) => search(event.currentTarget.value)}
 					class="search-input"
 				/>
 			</div>
-			<button class="btn-secondary" onclick={loadTemplates} disabled={loading}>
+			<button class="btn-secondary" onclick={() => void loadTemplates()} disabled={loading}>
 				<IconRefresh size={18} />
 				Refresh
 			</button>
@@ -155,10 +168,10 @@
 			<p>Loading templates...</p>
 		</div>
 	{:else if error}
-		<div class="alert alert-error">
+		<div class="alert alert-error" role="alert">
 			<div class="error-content">
 				<span>{error}</span>
-				<button class="btn-retry" onclick={loadTemplates}>Retry</button>
+				<button class="btn-retry" onclick={() => void loadTemplates()}>Retry</button>
 			</div>
 		</div>
 	{:else if filteredTemplates.length === 0}
@@ -175,7 +188,7 @@
 		</div>
 	{:else}
 		<div class="templates-count">
-			Showing {filteredTemplates.length} of {templates.length} templates
+			Showing {filteredTemplates.length} of {total} templates · Page {pageNumber} of {pageCount}
 		</div>
 		<table class="templates-table">
 			<thead>
@@ -227,6 +240,18 @@
 				{/each}
 			</tbody>
 		</table>
+	{/if}
+	{#if !error && total > 0}
+		<nav aria-label="Email template pages">
+			<button disabled={loading || pageNumber <= 1} onclick={() => void changePage(pageNumber - 1)}
+				>Previous templates</button
+			>
+			<span>Page {pageNumber} of {pageCount}</span>
+			<button
+				disabled={loading || pageNumber >= pageCount}
+				onclick={() => void changePage(pageNumber + 1)}>Next templates</button
+			>
+		</nav>
 	{/if}
 </div>
 

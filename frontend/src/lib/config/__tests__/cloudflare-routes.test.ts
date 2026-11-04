@@ -42,7 +42,14 @@ it('keeps every public HTML/asset exclusion within budget while data/unknown/pri
 	}
 });
 it('rejects private prerendered pages, static files and redirects instead of bypassing runtime authentication', () => {
-	for (const path of ['/admin', '/dashboard/account', '/my/courses', '/checkout/plan']) {
+	for (const path of [
+		'/admin',
+		'/email',
+		'/email/private',
+		'/dashboard/account',
+		'/my/courses',
+		'/checkout/plan'
+	]) {
 		expect(() => planCloudflareRoutes({ ...base, prerenderedPaths: [path] })).toThrow(
 			'Authenticated path'
 		);

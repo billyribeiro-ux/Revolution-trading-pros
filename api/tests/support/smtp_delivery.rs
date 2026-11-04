@@ -2,6 +2,7 @@
 use super::{Adapter as PostmarkAdapter, app, request};
 use axum::{Router, http::StatusCode};
 use base64::{Engine as _, engine::general_purpose::STANDARD};
+use http_body_util::BodyExt;
 use serde_json::{Value, json};
 use sqlx::PgPool;
 use std::sync::{
@@ -9,6 +10,7 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tower::ServiceExt;
 
 #[derive(Clone, Default)]
 struct Relay {
@@ -155,6 +157,12 @@ pub(super) async fn proof(
         previous,
         "Unverified SMTP must not fall back to environment credentials"
     );
+    let pending_state = super::state(db.clone(), None).await;
+    assert!(
+        revolution_api::services::campaign_mailer::CampaignMailer::from_state(&pending_state)
+            .await
+            .is_err()
+    );
     let checked = request(
         api,
         "POST",
@@ -204,6 +212,38 @@ pub(super) async fn proof(
             .iter()
             .any(|body| body.contains("<p>Hello ") && body.contains("&amp; fixture</p>"))
     );
+    for (mode, outcome) in [(1, "rejected"), (2, "unknown")] {
+        relay.mode.store(mode, Ordering::SeqCst);
+        let address = format!("smtp-template-outcome-{mode}@example.test");
+        let before = relay.messages.lock().unwrap().len();
+        let sent = request(
+            api,
+            "POST",
+            &format!("/api/admin/email/templates/{id}/test"),
+            Some(admin),
+            json!({"email":address}),
+        )
+        .await;
+        assert_eq!(sent.0, StatusCode::BAD_GATEWAY, "{sent:?}");
+        assert_eq!(sent.1["submission_status"], outcome);
+        assert_eq!(relay.messages.lock().unwrap().len(), before + 1);
+        let status: String = sqlx::query_scalar(
+            "SELECT status FROM email_logs WHERE to_email=$1 ORDER BY id DESC LIMIT 1",
+        )
+        .bind(address)
+        .fetch_one(pool)
+        .await
+        .unwrap();
+        assert_eq!(
+            status,
+            if mode == 1 {
+                "failed"
+            } else {
+                "delivery_unknown"
+            }
+        );
+    }
+    relay.mode.store(0, Ordering::SeqCst);
     let subscribed = request(
         api,
         "POST",
@@ -310,6 +350,7 @@ pub(super) async fn proof(
     assert_eq!(smtp["is_connected"], true);
     assert!(smtp["connection"]["last_verified_at"].is_string());
 
+    campaign_proof(api, &db, admin, &relay).await;
     // Selecting SMTP must work when the Postmark service has no credentials,
     // including an unknown submission that must never be reported as unavailable.
     let no_postmark = app(
@@ -378,4 +419,238 @@ pub(super) async fn proof(
         "Storage failure must never reactivate environment credentials"
     );
     server.abort();
+}
+
+async fn tracking(
+    api: &Router,
+    method: &str,
+    path: &str,
+) -> (StatusCode, axum::http::HeaderMap, Vec<u8>) {
+    let response = api
+        .clone()
+        .oneshot(
+            axum::http::Request::builder()
+                .method(method)
+                .uri(path)
+                .extension(axum::extract::ConnectInfo(std::net::SocketAddr::from((
+                    [127, 0, 0, 1],
+                    45001,
+                ))))
+                .body(axum::body::Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let status = response.status();
+    let headers = response.headers().clone();
+    let bytes = response
+        .into_body()
+        .collect()
+        .await
+        .unwrap()
+        .to_bytes()
+        .to_vec();
+    (status, headers, bytes)
+}
+
+async fn campaign_proof(
+    api: &Router,
+    db: &revolution_api::db::Database,
+    admin: &str,
+    relay: &Relay,
+) {
+    use revolution_api::services::{
+        campaign_delivery, campaign_mailer::CampaignMailer, email::EmailService,
+    };
+    let pool = &db.pool;
+    let state = super::state(
+        db.clone(),
+        Some(EmailService::new(
+            "",
+            "unused@example.test",
+            "http://127.0.0.1:5274",
+        )),
+    )
+    .await;
+    let mailer = CampaignMailer::from_state(&state).await.unwrap();
+    assert_eq!(mailer.provider(), "smtp");
+    assert_eq!(mailer.sender().email, "smtp-runtime@example.test");
+    // Prior campaigns have completed their assertions; isolate worker claims.
+    sqlx::query("UPDATE crm_campaigns SET status='paused',pause_reason='manual' WHERE status IN ('sending','scheduled')").execute(pool).await.unwrap();
+    for (mode, expected) in [(0, "accepted"), (1, "failed"), (2, "unknown")] {
+        relay.mode.store(mode, Ordering::SeqCst);
+        let tag = format!("smtp-campaign-{mode}");
+        let email = format!("{tag}@example.test");
+        sqlx::query("INSERT INTO newsletter_subscribers(email,status,confirmed_at,tags,source) VALUES($1,'confirmed',NOW(),$2,'smtp-fixture')")
+            .bind(&email).bind(json!([tag])).execute(pool).await.unwrap();
+        let queued = request(api, "POST", "/api/newsletter/bulk-send", Some(admin), json!({"subject":format!("SMTP campaign {mode}"),"html_content":"<!doctype html><html><head><style>.fixture{color:red}</style></head><body><a href='https://target.example.test/offers?one=1&amp;two=2#details'>Offer</a></body></html>","text_content":"Plain alternative https://target.example.test/plain","segment":tag,"rate_limit":100})).await;
+        assert_eq!(queued.0, StatusCode::ACCEPTED, "{queued:?}");
+        let campaign: i64 = queued.1["job"]["campaign_id"]
+            .as_str()
+            .unwrap()
+            .parse()
+            .unwrap();
+        let before = relay.messages.lock().unwrap().len();
+        assert!(
+            campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+                .await
+                .unwrap()
+        );
+        assert_eq!(relay.messages.lock().unwrap().len(), before + 1);
+        let receipt: Value = sqlx::query_scalar(
+            "SELECT to_jsonb(d) FROM crm_campaign_deliveries d WHERE campaign_id=$1",
+        )
+        .bind(campaign)
+        .fetch_one(pool)
+        .await
+        .unwrap();
+        assert_eq!(receipt["status"], expected);
+        assert_eq!(receipt["provider"], "smtp");
+        assert_eq!(receipt["provider_stream"], "smtp");
+        assert!(receipt["delivered_at"].is_null());
+        let raw = relay.messages.lock().unwrap()[before].clone();
+        assert!(raw.contains("List-Unsubscribe-Post: List-Unsubscribe=One-Click"));
+        let decoded = bodies(&raw);
+        let html = decoded.iter().find(|body| body.contains("<html>")).unwrap();
+        assert!(html.contains("<style>.fixture{color:red}</style>"));
+        assert!(html.contains("/tracking/open/"));
+        assert!(decoded.iter().any(|body| {
+            body.contains("Plain alternative http://127.0.0.1:5274/api/newsletter/tracking/click/")
+        }));
+        let token = receipt["tracking_token"].as_str().unwrap();
+        let open = format!("/api/newsletter/tracking/open/{token}");
+        let head = tracking(api, "HEAD", &open).await;
+        assert_eq!(head.0, StatusCode::OK);
+        assert!(head.2.is_empty());
+        assert!(
+            sqlx::query_scalar::<_, bool>(
+                "SELECT opened_at IS NULL FROM crm_campaign_deliveries WHERE campaign_id=$1"
+            )
+            .bind(campaign)
+            .fetch_one(pool)
+            .await
+            .unwrap()
+        );
+        let cold = app(db.clone(), None).await;
+        for _ in 0..2 {
+            let observed = tracking(&cold, "GET", &open).await;
+            assert_eq!(observed.0, StatusCode::OK);
+            assert_eq!(observed.1["content-type"], "image/gif");
+            assert!(
+                observed.1["cache-control"]
+                    .to_str()
+                    .unwrap()
+                    .contains("no-store")
+            );
+            assert!(observed.2.starts_with(b"GIF89a"));
+        }
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM crm_campaign_events WHERE delivery_id=$1 AND record_type='Open'",
+        )
+        .bind(uuid::Uuid::parse_str(receipt["id"].as_str().unwrap()).unwrap())
+        .fetch_one(pool)
+        .await
+        .unwrap();
+        assert_eq!(count, if mode == 1 { 0 } else { 1 });
+        let (link, target): (uuid::Uuid, String) = sqlx::query_as("SELECT id,target FROM crm_campaign_tracking_links WHERE delivery_id=$1 AND target LIKE '%/offers%' LIMIT 1").bind(uuid::Uuid::parse_str(receipt["id"].as_str().unwrap()).unwrap()).fetch_one(pool).await.unwrap();
+        assert_eq!(
+            target,
+            "https://target.example.test/offers?one=1&two=2#details"
+        );
+        let click = format!("/api/newsletter/tracking/click/{link}");
+        assert_eq!(tracking(&cold, "HEAD", &click).await.0, StatusCode::FOUND);
+        assert!(
+            sqlx::query_scalar::<_, bool>(
+                "SELECT clicked_at IS NULL FROM crm_campaign_deliveries WHERE campaign_id=$1"
+            )
+            .bind(campaign)
+            .fetch_one(pool)
+            .await
+            .unwrap()
+        );
+        for _ in 0..2 {
+            let observed = tracking(&cold, "GET", &click).await;
+            assert_eq!(observed.0, StatusCode::FOUND);
+            assert_eq!(observed.1["location"], target);
+            assert_eq!(observed.1["referrer-policy"], "no-referrer");
+        }
+        let current: Value =
+            sqlx::query_scalar("SELECT to_jsonb(c) FROM crm_campaigns c WHERE id=$1")
+                .bind(campaign)
+                .fetch_one(pool)
+                .await
+                .unwrap();
+        assert_eq!(current["opens"], if mode == 1 { 0 } else { 1 });
+        assert_eq!(current["clicks"], if mode == 1 { 0 } else { 1 });
+        assert_eq!(current["emails_sent"], if mode == 0 { 1 } else { 0 });
+        let persisted: (String, Option<String>, bool) = sqlx::query_as("SELECT status,provider_message_id,delivered_at IS NULL FROM crm_campaign_deliveries WHERE campaign_id=$1").bind(campaign).fetch_one(pool).await.unwrap();
+        assert_eq!(persisted.0, expected);
+        assert!(persisted.2);
+        if mode == 0 {
+            sqlx::query(
+                "ALTER TABLE crm_campaign_events RENAME TO smtp_tracking_events_unavailable",
+            )
+            .execute(pool)
+            .await
+            .unwrap();
+            let unavailable = tracking(&cold, "GET", &open).await;
+            sqlx::query(
+                "ALTER TABLE smtp_tracking_events_unavailable RENAME TO crm_campaign_events",
+            )
+            .execute(pool)
+            .await
+            .unwrap();
+            assert_eq!(unavailable.0, StatusCode::SERVICE_UNAVAILABLE);
+
+            assert!(raw.contains(&format!(
+                "Message-ID: <{}>\r\n",
+                receipt["provider_message_id"].as_str().unwrap()
+            )));
+            assert!(
+                campaign_delivery::unsubscribe(
+                    pool,
+                    uuid::Uuid::parse_str(receipt["unsubscribe_token"].as_str().unwrap()).unwrap()
+                )
+                .await
+                .unwrap()
+            );
+            let consent: String =
+                sqlx::query_scalar("SELECT status FROM newsletter_subscribers WHERE email=$1")
+                    .bind(&email)
+                    .fetch_one(pool)
+                    .await
+                    .unwrap();
+            assert_eq!(consent, "unsubscribed");
+        } else {
+            assert!(receipt["provider_message_id"].is_null());
+            if mode == 2 {
+                let wrong_provider = request(api, "POST", "/api/webhooks/postmark/campaigns", Some("only-a-disposable-webhook-fixture-secret"), json!({"RecordType":"Delivery","MessageStream":"fixture-broadcast","MessageID":"unrelated-postmark-fixture","Recipient":email,"DeliveredAt":chrono::Utc::now().to_rfc3339(),"Metadata":{"delivery_id":receipt["id"]}})).await;
+                assert_eq!(wrong_provider.0, StatusCode::OK);
+                let status: String = sqlx::query_scalar(
+                    "SELECT status FROM crm_campaign_deliveries WHERE campaign_id=$1",
+                )
+                .bind(campaign)
+                .fetch_one(pool)
+                .await
+                .unwrap();
+                assert_eq!(
+                    status, "unknown",
+                    "A different provider cannot reconcile SMTP acceptance"
+                );
+                assert_eq!(current["pause_reason"], "uncertain_submission");
+            }
+        }
+        assert!(
+            !campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+                .await
+                .unwrap()
+        );
+        assert_eq!(relay.messages.lock().unwrap().len(), before + 1);
+    }
+    let unknown = format!("/api/newsletter/tracking/open/{}", uuid::Uuid::new_v4());
+    assert_eq!(
+        tracking(api, "GET", &unknown).await.0,
+        StatusCode::NOT_FOUND
+    );
+    relay.mode.store(0, Ordering::SeqCst);
 }

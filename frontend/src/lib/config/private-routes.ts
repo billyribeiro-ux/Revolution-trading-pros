@@ -5,6 +5,7 @@ export const AUTHENTICATED_PREFIXES = [
 	'/checkout',
 	'/trading-room',
 	'/admin',
+	'/email',
 	'/my'
 ] as const;
 export function isAuthenticatedPath(pathname: string): boolean {

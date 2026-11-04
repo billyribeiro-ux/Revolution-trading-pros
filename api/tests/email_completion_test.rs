@@ -7,6 +7,12 @@ mod connections_proof;
 mod crm_webhook_proof;
 #[path = "support/email_subscribers.rs"]
 mod email_subscriber_proof;
+#[path = "support/email_template_catalog.rs"]
+mod email_template_catalog_proof;
+#[path = "support/email_template_policy.rs"]
+mod email_template_policy_proof;
+#[path = "support/email_templates_workflows.rs"]
+mod email_templates_workflows;
 #[path = "support/performance.rs"]
 mod performance_proof;
 #[path = "support/smtp_delivery.rs"]
@@ -117,7 +123,7 @@ async fn credential_fixture(
         "webhook_digest":credentials.webhook_secret.as_ref().map(|value|hex::encode(sha2::Sha256::digest(value.as_bytes())))}),
     )
 }
-async fn app(db: Database, email: Option<EmailService>) -> Router {
+async fn state(db: Database, email: Option<EmailService>) -> AppState {
     let mut config = Config::from_env().unwrap();
     config.redis_url = "redis://127.0.0.1:1".into();
     config.meilisearch_host = "http://127.0.0.1:1".into();
@@ -133,7 +139,7 @@ async fn app(db: Database, email: Option<EmailService>) -> Router {
     }
     services.email = services.email.with_runtime(db.pool.clone(), &config);
     let cache = services.cache.clone();
-    let state = AppState {
+    AppState {
         db,
         services,
         config,
@@ -141,7 +147,10 @@ async fn app(db: Database, email: Option<EmailService>) -> Router {
         ws_manager: routes::websocket::WsConnectionManager::new(),
         cache: cache.clone(),
         cache_invalidator: CacheInvalidator::new(cache),
-    };
+    }
+}
+async fn app(db: Database, email: Option<EmailService>) -> Router {
+    let state = state(db, email).await;
     Router::new()
         .route(
             "/fixture/superadmin",
@@ -1697,6 +1706,9 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     performance_proof::proof(&api, &pool, &tokens).await;
     email_subscriber_proof::proof(&api, &disabled_app, &pool, &tokens, &adapter).await;
     authorization_parity_proof::proof(&api, &pool).await;
+    email_templates_workflows::proof(&api, &pool, &tokens, &adapter).await;
+    email_template_policy_proof::proof(&api, &pool, &tokens[0], &adapter).await;
+    email_template_catalog_proof::proof(&api, &pool, &tokens, &adapter).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

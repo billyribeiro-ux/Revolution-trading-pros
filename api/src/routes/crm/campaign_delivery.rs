@@ -226,7 +226,7 @@ async fn deliveries(
     }
     campaigns::row(&state.db.pool, id).await?;
     let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2)").bind(id).bind(&filters.status).fetch_one(&state.db.pool).await.map_err(db)?;
-    let data:Vec<Value>=sqlx::query_scalar("SELECT to_jsonb(receipt) FROM (SELECT id,email,display_name,status,attempt_count,attempts_remaining,due_at,provider_message_id,last_error,sender_identity,provider_stream,accepted_at,delivered_at,opened_at,clicked_at,bounced_at,complained_at,unsubscribed_at,created_at,updated_at FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2) ORDER BY created_at,id LIMIT $3 OFFSET $4) receipt").bind(id).bind(filters.status).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&state.db.pool).await.map_err(db)?;
+    let data:Vec<Value>=sqlx::query_scalar("SELECT to_jsonb(receipt) FROM (SELECT id,email,display_name,status,attempt_count,attempts_remaining,due_at,provider_message_id,last_error,sender_identity,provider,provider_stream,accepted_at,delivered_at,opened_at,clicked_at,bounced_at,complained_at,unsubscribed_at,created_at,updated_at FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2) ORDER BY created_at,id LIMIT $3 OFFSET $4) receipt").bind(id).bind(filters.status).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&state.db.pool).await.map_err(db)?;
     Ok(Json(
         json!({"data":data,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":(total+size-1)/size}}),
     ))

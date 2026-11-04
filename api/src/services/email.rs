@@ -379,7 +379,7 @@ impl EmailService {
         crate::utils::errors::validate_email(to)
             .map_err(|_| anyhow::anyhow!("Invalid recipient email"))?;
         if template_alias.is_empty()
-            || template_alias.chars().count() > 100
+            || template_alias.chars().count() > 255
             || template_alias.contains(['\r', '\n', '\0'])
         {
             anyhow::bail!("Invalid email template alias");
@@ -399,7 +399,27 @@ impl EmailService {
                 return Err(error);
             }
         };
-        let outcome = if let Some(smtp) = &service.smtp {
+        let policy: (Option<bool>,Option<bool>,bool,Option<i64>) = match sqlx::query_as("SELECT t.is_active,t.local_content_authoritative,r.alias IS NOT NULL,t.id FROM (SELECT $1::text AS alias) n LEFT JOIN email_templates t ON t.slug=n.alias LEFT JOIN email_template_revocations r ON r.alias=n.alias").bind(template_alias).fetch_one(pool).await {
+            Ok(policy)=>policy,
+            Err(_)=>{
+                let error=anyhow::anyhow!("Email template delivery policy is unavailable");
+                Self::unavailable(pool,log_id,&error).await?;
+                return Err(error);
+            }
+        };
+        if policy.2 || policy.1.is_some() && policy.0 != Some(true) {
+            return Self::record_outcome(
+                pool,
+                log_id,
+                Submission::Rejected {
+                    reason: "Email template is inactive or its alias was removed".into(),
+                    retryable: false,
+                },
+            )
+            .await
+            .map(|_| ());
+        }
+        let outcome = if service.smtp.is_some() || policy.1 == Some(true) {
             let brand = if service.from_name.is_empty() {
                 &service.from_email
             } else {
@@ -436,24 +456,50 @@ impl EmailService {
                     .map(|_| ());
                 }
             };
-            let from = Identity {
-                name: service.from_name.clone(),
-                email: service.from_email.clone(),
-            };
-            super::smtp_message::submit(
-                smtp,
-                super::smtp_message::Message {
+            if Self::template_context(pool, log_id, rendered.template_id, Some(&rendered.subject))
+                .await
+                .is_err()
+            {
+                let error = anyhow::anyhow!("Template delivery receipt storage is unavailable");
+                Self::unavailable(pool, log_id, &error).await?;
+                return Err(error);
+            }
+            match service
+                .submit_raw(
                     to,
-                    subject: &rendered.subject,
-                    html: Some(&rendered.html),
-                    text: rendered.text.as_deref(),
-                    from: &from,
-                    reply_to: None,
-                    unsubscribe: None,
-                },
-            )
-            .await
+                    &rendered.subject,
+                    &rendered.html,
+                    rendered.text.as_deref(),
+                )
+                .await
+            {
+                Ok(outcome) => outcome,
+                Err(error) => {
+                    Self::unavailable(pool, log_id, &error).await?;
+                    return Err(error);
+                }
+            }
         } else {
+            if Self::template_context(pool, log_id, policy.3, None)
+                .await
+                .is_err()
+            {
+                let error = anyhow::anyhow!("Template delivery receipt storage is unavailable");
+                Self::unavailable(pool, log_id, &error).await?;
+                return Err(error);
+            }
+            if template_alias.chars().count() > 100 {
+                return Self::record_outcome(
+                    pool,
+                    log_id,
+                    Submission::Rejected {
+                        reason: "Hosted template alias exceeds its supported limit".into(),
+                        retryable: false,
+                    },
+                )
+                .await
+                .map(|_| ());
+            }
             let (token, endpoint) = match service.configuration() {
                 Ok(configuration) => configuration,
                 Err(error) => {
@@ -466,11 +512,18 @@ impl EmailService {
                 "{}/withTemplate",
                 endpoint.path().trim_end_matches('/')
             ));
-            let from = Identity {
+            let identity = Identity {
                 name: service.from_name.clone(),
                 email: service.from_email.clone(),
             }
-            .formatted()?;
+            .formatted();
+            let from = match identity {
+                Ok(from) => from,
+                Err(error) => {
+                    Self::unavailable(pool, log_id, &error).await?;
+                    return Err(error);
+                }
+            };
             let body = PostmarkTemplateEmail {
                 from,
                 to,
@@ -483,6 +536,22 @@ impl EmailService {
         Self::record_outcome(pool, log_id, outcome)
             .await
             .map(|_| ())
+    }
+    async fn template_context(
+        pool: &PgPool,
+        log: i64,
+        template: Option<i64>,
+        subject: Option<&str>,
+    ) -> Result<()> {
+        sqlx::query(
+            "UPDATE email_logs SET email_template_id=$2,subject=COALESCE($3,subject) WHERE id=$1",
+        )
+        .bind(log)
+        .bind(template)
+        .bind(subject)
+        .execute(pool)
+        .await?;
+        Ok(())
     }
     async fn unavailable(pool: &PgPool, id: i64, error: &anyhow::Error) -> Result<()> {
         sqlx::query("UPDATE email_logs SET status='unavailable',sent_at=NULL,error=$2,error_message=$2 WHERE id=$1")
@@ -516,6 +585,33 @@ impl EmailService {
         html: &str,
         text: Option<&str>,
     ) -> Result<String> {
+        self.send_labeled_receipt(to, subject, html, text, None)
+            .await
+    }
+    pub async fn send_template_receipt(
+        &self,
+        to: &str,
+        alias: &str,
+        rendered: &super::transactional_templates::Rendered,
+        model: &serde_json::Value,
+    ) -> Result<String> {
+        self.send_labeled_receipt(
+            to,
+            &rendered.subject,
+            &rendered.html,
+            rendered.text.as_deref(),
+            Some((alias, model, rendered.template_id)),
+        )
+        .await
+    }
+    async fn send_labeled_receipt(
+        &self,
+        to: &str,
+        subject: &str,
+        html: &str,
+        text: Option<&str>,
+        template: Option<(&str, &serde_json::Value, Option<i64>)>,
+    ) -> Result<String> {
         crate::utils::errors::validate_email(to)
             .map_err(|_| anyhow::anyhow!("Invalid recipient email"))?;
         if subject.trim().is_empty()
@@ -533,8 +629,11 @@ impl EmailService {
             .map(Self::provider)
             .unwrap_or("configuration");
         let log = if let Some(runtime) = &self.runtime {
-            Some(sqlx::query_scalar::<_,i64>("INSERT INTO email_logs(email,to_email,subject,template_type,status,provider,queued_at,created_at) VALUES($1,$1,$2,'raw','queued',$3,NOW(),NOW()) RETURNING id")
-                .bind(to).bind(subject).bind(provider).fetch_one(&runtime.pool).await?)
+            Some(sqlx::query_scalar::<_,i64>("INSERT INTO email_logs(email,to_email,subject,template_type,template_alias,model,email_template_id,status,provider,queued_at,created_at) VALUES($1,$1,$2,LEFT(COALESCE($4,'raw'),50),$4,$5,$6,'queued',$3,NOW(),NOW()) RETURNING id")
+                .bind(to).bind(subject).bind(provider)
+                .bind(template.map(|(alias,_,_)|alias)).bind(template.map(|(_,model,_)|redacted_model(model)))
+                .bind(template.and_then(|(_,_,id)|id))
+                .fetch_one(&runtime.pool).await?)
         } else {
             None
         };
@@ -547,12 +646,34 @@ impl EmailService {
                 return Err(error);
             }
         };
-        let outcome = if let Some(smtp) = &service.smtp {
-            let from = Identity {
-                name: service.from_name.clone(),
-                email: service.from_email.clone(),
-            };
-            super::smtp_message::submit(
+        let outcome = match service.submit_raw(to, subject, html, text).await {
+            Ok(outcome) => outcome,
+            Err(error) => {
+                if let (Some(runtime), Some(id)) = (&self.runtime, log) {
+                    Self::unavailable(&runtime.pool, id, &error).await?;
+                }
+                return Err(error);
+            }
+        };
+        if let (Some(runtime), Some(id)) = (&self.runtime, log) {
+            Self::record_outcome(&runtime.pool, id, outcome).await
+        } else {
+            outcome.into_result()
+        }
+    }
+    async fn submit_raw(
+        &self,
+        to: &str,
+        subject: &str,
+        html: &str,
+        text: Option<&str>,
+    ) -> Result<Submission> {
+        let from = Identity {
+            name: self.from_name.clone(),
+            email: self.from_email.clone(),
+        };
+        if let Some(smtp) = &self.smtp {
+            return Ok(super::smtp_message::submit(
                 smtp,
                 super::smtp_message::Message {
                     to,
@@ -564,37 +685,18 @@ impl EmailService {
                     unsubscribe: None,
                 },
             )
-            .await
-        } else {
-            let (token, endpoint) = match service.configuration() {
-                Ok(configuration) => configuration,
-                Err(error) => {
-                    if let (Some(runtime), Some(id)) = (&self.runtime, log) {
-                        Self::unavailable(&runtime.pool, id, &error).await?;
-                    }
-                    return Err(error);
-                }
-            };
-            let from = Identity {
-                name: service.from_name.clone(),
-                email: service.from_email.clone(),
-            }
-            .formatted()?;
-            let email = PostmarkEmail {
-                from,
-                to: to.into(),
-                subject: subject.into(),
-                html_body: html.into(),
-                text_body: text.map(str::to_owned),
-                message_stream: "outbound".into(),
-            };
-            submit_request(&service.client, endpoint, token, &email).await
-        };
-        if let (Some(runtime), Some(id)) = (&self.runtime, log) {
-            Self::record_outcome(&runtime.pool, id, outcome).await
-        } else {
-            outcome.into_result()
+            .await);
         }
+        let (token, endpoint) = self.configuration()?;
+        let email = PostmarkEmail {
+            from: from.formatted()?,
+            to: to.into(),
+            subject: subject.into(),
+            html_body: html.into(),
+            text_body: text.map(str::to_owned),
+            message_stream: "outbound".into(),
+        };
+        Ok(submit_request(&self.client, endpoint, token, &email).await)
     }
     pub async fn send(
         &self,

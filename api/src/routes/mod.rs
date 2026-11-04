@@ -3,6 +3,7 @@
 
 pub mod auth;
 pub mod campaign_events;
+pub mod campaign_tracking;
 pub mod categories;
 pub mod health;
 pub mod media;
@@ -103,6 +104,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/posts", posts::admin_router())
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
+        .nest("/newsletter/tracking", campaign_tracking::router())
         .nest("/webhooks", campaign_events::router())
         .nest("/admin", admin::router())
         .nest("/admin/products", products::admin_router()) // Admin product CRUD

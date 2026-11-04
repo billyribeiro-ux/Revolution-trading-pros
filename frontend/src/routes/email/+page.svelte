@@ -45,10 +45,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Email Marketing | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="email-dashboard">
 	<!-- Header -->
 	<div class="dashboard-header">
@@ -313,7 +309,12 @@
 								<div class="template-info">
 									<h3 class="template-name">{template.name}</h3>
 									<p class="template-category">{template.category}</p>
-									<div class="template-usage">Used {template.usage_count} times</div>
+									<div
+										class="template-usage"
+										title="Provider-accepted messages linked to this template"
+									>
+										Recorded acceptances: {template.usage_count}
+									</div>
 								</div>
 
 								<div class="template-actions">

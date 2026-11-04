@@ -42,8 +42,6 @@ import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { authStore } from '#lib/stores/auth.svelte.js';
 import type { User } from '#lib/stores/auth.svelte.js';
 import { logger } from '#lib/utils/logger.js';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { PaginatedResponse, PaginationMeta } from './_types';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -167,6 +165,8 @@ export interface Coupon {
 	stackable?: boolean;
 }
 
+export type EmailTemplateVariable = string | ({ key: string } & Record<string, JsonValue>);
+
 export interface EmailTemplate {
 	id: number;
 	name: string;
@@ -174,12 +174,51 @@ export interface EmailTemplate {
 	subject: string;
 	body: string;
 	body_html?: string;
-	body_text?: string;
+	body_text?: string | null;
 	email_type?: string;
-	variables: string[];
+	description?: string | null;
+	category?: string;
+	thumbnail?: string | null;
+	design_json?: JsonValue;
+	is_public?: boolean;
+	tags?: string[];
+	usage_count?: number;
+	variables: EmailTemplateVariable[];
 	is_active: boolean;
 	created_at: string;
 	updated_at: string;
+}
+
+export function isEmailTemplateVariables(value: unknown): value is EmailTemplate['variables'] {
+	return (
+		Array.isArray(value) &&
+		value.every(
+			(item: unknown) =>
+				typeof item === 'string' ||
+				(item !== null && typeof item === 'object' && 'key' in item && typeof item.key === 'string')
+		)
+	);
+}
+export function isEmailTemplate(value: unknown): value is EmailTemplate {
+	if (value === null || typeof value !== 'object') return false;
+	return (
+		'id' in value &&
+		typeof value.id === 'number' &&
+		Number.isSafeInteger(value.id) &&
+		value.id > 0 &&
+		'name' in value &&
+		typeof value.name === 'string' &&
+		'slug' in value &&
+		typeof value.slug === 'string' &&
+		'subject' in value &&
+		typeof value.subject === 'string' &&
+		'body' in value &&
+		typeof value.body === 'string' &&
+		'variables' in value &&
+		isEmailTemplateVariables(value.variables) &&
+		'is_active' in value &&
+		typeof value.is_active === 'boolean'
+	);
 }
 
 export interface Form {
@@ -573,12 +612,16 @@ class RequestManager {
 			return result;
 		} catch (error) {
 			// Update circuit breaker
-			this.circuitBreaker.failures++;
-			this.circuitBreaker.lastFailure = Date.now();
-
-			if (this.circuitBreaker.failures >= CIRCUIT_BREAKER_THRESHOLD) {
-				this.circuitBreaker.isOpen = true;
-				logger.error('[API] Circuit breaker opened due to repeated failures');
+			if (error instanceof AdminApiError && error.isClientError) {
+				// Validation/auth rejections are responses from an available service.
+				this.circuitBreaker.failures = 0;
+			} else {
+				this.circuitBreaker.failures++;
+				this.circuitBreaker.lastFailure = Date.now();
+				if (this.circuitBreaker.failures >= CIRCUIT_BREAKER_THRESHOLD) {
+					this.circuitBreaker.isOpen = true;
+					logger.error('[API] Circuit breaker opened due to repeated failures');
+				}
 			}
 
 			throw error;
@@ -696,41 +739,53 @@ async function executeRequestWithRetry<T>(
 			throw new ApiRateLimitError(retryAfter, url);
 		}
 
-		// Parse response. The wire shape is whatever the backend emits; we
-		// trust the caller's `<T>` once we've confirmed 2xx + JSON content-type.
-		let data: ApiResponse<T> | ApiError;
 		const contentType = response.headers.get('content-type');
-
-		if (contentType?.includes('application/json')) {
-			const parsed = (await response.json()) as Record<string, unknown>;
-			if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !('data' in parsed)) {
-				const fallbackData =
-					parsed.products ??
-					parsed.product ??
-					parsed.coupons ??
-					parsed.coupon ??
-					parsed.plans ??
-					parsed.plan ??
-					parsed.users ??
-					parsed.user ??
-					parsed;
-				parsed.data = fallbackData;
-			}
-			data = parsed as unknown as ApiResponse<T> | ApiError;
-		} else {
-			data = { data: await response.text() } as unknown as ApiResponse<T>;
-		}
-
-		// Handle errors
+		const parsed: unknown = contentType?.includes('application/json')
+			? await response.json()
+			: await response.text();
 		if (!response.ok) {
-			const errBody = data as ApiError;
-			throw new AdminApiError(
-				errBody.message || `Request failed with status ${response.status}`,
-				response.status,
-				errBody,
-				url
-			);
+			let message = `Request failed with status ${response.status}`;
+			if (typeof parsed === 'string' && parsed.trim()) message = parsed.slice(0, 1000);
+			else if (parsed && typeof parsed === 'object') {
+				if ('message' in parsed && typeof parsed.message === 'string' && parsed.message.trim())
+					message = parsed.message;
+				else if ('error' in parsed) {
+					if (typeof parsed.error === 'string' && parsed.error.trim()) message = parsed.error;
+					else if (
+						parsed.error &&
+						typeof parsed.error === 'object' &&
+						'message' in parsed.error &&
+						typeof parsed.error.message === 'string' &&
+						parsed.error.message.trim()
+					)
+						message = parsed.error.message;
+				}
+			}
+			const details =
+				parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+					? (parsed as ApiError)
+					: { message };
+			throw new AdminApiError(message, response.status, details, url);
 		}
+		let data: ApiResponse<T>;
+		if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+			if ('data' in parsed) data = parsed as ApiResponse<T>;
+			else {
+				const raw = parsed as Record<string, unknown>;
+				const fallback =
+					raw.products ??
+					raw.product ??
+					raw.coupons ??
+					raw.coupon ??
+					raw.plans ??
+					raw.plan ??
+					raw.users ??
+					raw.user ??
+					raw;
+				// Keep the original record serializable; never set record.data=record.
+				data = { ...raw, data: fallback } as ApiResponse<T>;
+			}
+		} else data = { data: parsed } as ApiResponse<T>;
 
 		// Cache successful GET responses
 		if (options.method === 'GET' || !options.method) {
@@ -747,7 +802,12 @@ async function executeRequestWithRetry<T>(
 		}
 
 		// Determine if we should retry
-		if (error instanceof AdminApiError && error.shouldRetry && retriesLeft > 0) {
+		if (
+			['GET', 'HEAD'].includes((options.method || 'GET').toUpperCase()) &&
+			error instanceof AdminApiError &&
+			error.shouldRetry &&
+			retriesLeft > 0
+		) {
 			const delay = RETRY_DELAY_BASE * Math.pow(2, MAX_RETRIES - retriesLeft);
 			logger.warn(
 				`[API] Retrying request to ${endpoint} after ${delay}ms (${retriesLeft} retries left)`
@@ -1194,19 +1254,29 @@ export const emailTemplatesApi = {
 	async preview(
 		id: number,
 		data: Record<string, JsonValue>
-	): Promise<ApiResponse<{ html: string }>> {
-		return makeRequest<{ html: string }>(`/admin/email/templates/${id}/preview`, {
-			method: 'POST',
-			body: JSON.stringify(data),
-			skipCache: true
-		});
+	): Promise<ApiResponse<{ html: string; subject: string; text: string | null }>> {
+		return makeRequest<{ html: string; subject: string; text: string | null }>(
+			`/admin/email/templates/${id}/preview`,
+			{
+				method: 'POST',
+				body: JSON.stringify({ data }),
+				skipCache: true
+			}
+		);
 	},
 
-	async sendTest(id: number, email: string): Promise<ApiResponse<void>> {
-		return makeRequest<void>(`/admin/email/templates/${id}/test`, {
-			method: 'POST',
-			body: JSON.stringify({ email })
-		});
+	async sendTest(
+		id: number,
+		email: string,
+		data: Record<string, JsonValue> = {}
+	): Promise<ApiResponse<{ submission_status: string; provider_message_id?: string }>> {
+		return makeRequest<{ submission_status: string; provider_message_id?: string }>(
+			`/admin/email/templates/${id}/test`,
+			{
+				method: 'POST',
+				body: JSON.stringify({ email, data })
+			}
+		);
 	}
 };
 

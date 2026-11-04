@@ -71,7 +71,7 @@ fn identity(settings: &Value, prefix: &str) -> Option<Identity> {
             .into(),
     })
 }
-fn callback_url(app_url: &str) -> Result<reqwest::Url> {
+pub(crate) fn callback_url(app_url: &str) -> Result<reqwest::Url> {
     let parsed = reqwest::Url::parse(app_url)?;
     if !matches!(parsed.scheme(), "http" | "https")
         || parsed.host_str().is_none()
@@ -104,7 +104,7 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
         ("delivery_id".into(), job.id.to_string()),
     ]);
     let sender_identity = from.as_ref().unwrap_or(mailer.sender()).formatted().ok();
-    let owned=sqlx::query("UPDATE crm_campaign_deliveries SET sender_identity=$3,provider_stream=$4 WHERE id=$1 AND lease_token=$2 AND status='processing' AND lease_expires_at>NOW()").bind(job.id).bind(job.lease).bind(sender_identity).bind(mailer.stream()).execute(pool).await?;
+    let owned=sqlx::query("UPDATE crm_campaign_deliveries SET sender_identity=$3,provider_stream=$4,provider=$5 WHERE id=$1 AND lease_token=$2 AND status='processing' AND lease_expires_at>NOW()").bind(job.id).bind(job.lease).bind(sender_identity).bind(mailer.stream()).bind(mailer.provider()).execute(pool).await?;
     if owned.rows_affected() != 1 {
         return Err(anyhow!(
             "Campaign lease changed before provider submission; no request was sent"
@@ -112,6 +112,25 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
     }
     let body = super::campaign_render::render(&job.definition, app_url, unsubscribe.as_str());
     let outcome = if let Ok(body) = body {
+        let plain = job.definition["type"] == "plain_text";
+        let text = job.definition["text_body"]
+            .as_str()
+            .filter(|text| !text.is_empty())
+            .map(|text| format!("{text}\n\nUnsubscribe: {}", unsubscribe.as_str()));
+        let (body, text_body) = if mailer.provider() == "smtp" {
+            super::campaign_tracking::prepare(
+                pool,
+                job.id,
+                &body,
+                text.as_deref(),
+                plain,
+                app_url,
+                unsubscribe.as_str(),
+            )
+            .await?
+        } else {
+            (body, text)
+        };
         mailer
             .submit(Message {
                 to: job.email,
@@ -120,11 +139,8 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
                     .unwrap_or("")
                     .into(),
                 body,
-                plain_text: job.definition["type"] == "plain_text",
-                text_body: job.definition["text_body"]
-                    .as_str()
-                    .filter(|text| !text.is_empty())
-                    .map(|text| format!("{text}\n\nUnsubscribe: {}", unsubscribe.as_str())),
+                plain_text: plain,
+                text_body,
                 from,
                 reply_to: identity(settings, "reply_to"),
                 unsubscribe_url: unsubscribe.to_string(),
@@ -170,16 +186,25 @@ pub async fn run(state: crate::AppState) {
             Ok(_) => CampaignMailer::from_state(&state).await,
             Err(error) => Err(error),
         };
-        let mailer = match configured {
-            Ok(mailer) => mailer,
+        match configured {
+            Ok(_) => {}
             Err(error) => {
                 if let Err(db_error)=sqlx::query("UPDATE crm_campaigns SET status='paused',pause_reason='provider_unavailable',last_error=$1,updated_at=NOW() WHERE status IN ('scheduled','sending') AND scheduled_at<=NOW()").bind(error.to_string()).execute(&state.db.pool).await{tracing::error!(%db_error,"Unable to record unavailable campaign provider");}
                 continue;
             }
-        };
+        }
         // Configuration recovery resumes only provider-paused work, never manual or uncertain work.
         if let Err(error)=sqlx::query("UPDATE crm_campaigns SET status=CASE WHEN scheduled_at>NOW() THEN 'scheduled' ELSE 'sending' END,pause_reason=NULL,last_error=NULL,updated_at=NOW() WHERE status='paused' AND pause_reason='provider_unavailable'").execute(&state.db.pool).await{tracing::error!(%error,"Unable to recover campaign provider state");continue;}
         for _ in 0..25 {
+            // A batch can take minutes. Re-read saved configuration before each
+            // claim so rotation/revocation takes effect for the next recipient.
+            let mailer = match CampaignMailer::from_state(&state).await {
+                Ok(mailer) => mailer,
+                Err(error) => {
+                    tracing::warn!(%error, "Campaign configuration changed; no next recipient was claimed");
+                    break;
+                }
+            };
             match process_one(&state.db.pool, &mailer, &state.config.app_url).await {
                 Ok(true) => {}
                 Ok(false) => break,

@@ -11,6 +11,13 @@
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
 import type { JsonValue, QueryParams } from './_types';
+import {
+	catalogTemplateId,
+	catalogTemplateEnvelope,
+	catalogTemplatePage,
+	catalogTemplateWrite,
+	catalogTemplateDeleted
+} from './email-template-catalog.js';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '';
@@ -46,11 +53,15 @@ export interface EmailCampaign {
 export interface EmailTemplate {
 	id: string;
 	name: string;
+	slug: string;
+	subject: string;
+	is_active: boolean;
+	variables?: JsonValue[];
 	description?: string;
 	category: string;
 	thumbnail?: string;
 	html_content: string;
-	plain_text_content?: string;
+	plain_text_content?: string | null;
 	/**
 	 * Builder-state blob (grapesjs / mjml / homegrown JSON). Shape varies by
 	 * template editor; treat as opaque JSON on the client and round-trip it
@@ -423,30 +434,46 @@ class EmailAPI {
 		page?: number;
 		per_page?: number;
 	}): Promise<{ templates: EmailTemplate[]; total: number }> {
-		return this.request('GET', '/admin/email/templates', undefined, params);
+		return catalogTemplatePage(
+			await this.request('GET', '/admin/email/templates', undefined, params)
+		);
 	}
 
 	async getTemplate(id: string): Promise<{ template: EmailTemplate }> {
-		return this.request('GET', `/admin/email/templates/${id}`);
+		return catalogTemplateEnvelope(
+			await this.request('GET', `/admin/email/templates/${catalogTemplateId(id)}`)
+		);
 	}
 
 	async createTemplate(data: Partial<EmailTemplate>): Promise<{ template: EmailTemplate }> {
-		return this.request('POST', '/admin/email/templates', data);
+		return catalogTemplateEnvelope(
+			await this.request('POST', '/admin/email/templates', catalogTemplateWrite(data, true))
+		);
 	}
 
 	async updateTemplate(
 		id: string,
 		data: Partial<EmailTemplate>
 	): Promise<{ template: EmailTemplate }> {
-		return this.request('PUT', `/admin/email/templates/${id}`, data);
+		return catalogTemplateEnvelope(
+			await this.request(
+				'PUT',
+				`/admin/email/templates/${catalogTemplateId(id)}`,
+				catalogTemplateWrite(data)
+			)
+		);
 	}
 
 	async deleteTemplate(id: string): Promise<{ success: boolean }> {
-		return this.request('DELETE', `/admin/email/templates/${id}`);
+		return catalogTemplateDeleted(
+			await this.request('DELETE', `/admin/email/templates/${catalogTemplateId(id)}`)
+		);
 	}
 
 	async duplicateTemplate(id: string): Promise<{ template: EmailTemplate }> {
-		return this.request('POST', `/admin/email/templates/${id}/duplicate`);
+		return catalogTemplateEnvelope(
+			await this.request('POST', `/admin/email/templates/${catalogTemplateId(id)}/duplicate`)
+		);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

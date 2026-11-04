@@ -1,24 +1,17 @@
 <script lang="ts">
-	import { emailTemplatesApi, AdminApiError, type EmailTemplate } from '#lib/api/admin.js';
+	import {
+		emailTemplatesApi,
+		isEmailTemplateVariables,
+		isEmailTemplate,
+		AdminApiError,
+		type EmailTemplate
+	} from '#lib/api/admin.js';
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconX } from '#lib/icons/index.js';
 	import { untrack } from 'svelte';
 
-	/**
-	 * Edit/Create form for email templates.
-	 *
-	 * `template` prop shape note (R26-A audit):
-	 * The edit page at `routes/admin/email/templates/edit/[id]/+page.svelte`
-	 * loads the template via `apiFetch(...)` which returns the raw backend
-	 * envelope `{ data: EmailTemplate, message?: string }`. The page does
-	 * NOT unwrap before passing to this form. To keep this component robust
-	 * to either shape (raw envelope OR pre-unwrapped row) without breaking
-	 * the existing page, the prop is typed as `EmailTemplate` but we
-	 * defensively unwrap a `.data` envelope at the boundary. The previous
-	 * `template?: any` + `(template as any).id` was masking the fact that
-	 * `template.name ?? ''` read `undefined` from the envelope and rendered
-	 * empty fields on every edit — see LB-R26-1 in the report.
-	 */
+	/** The keyed edit route supplies a validated row; legacy data envelopes remain supported. */
+
 	type TemplateEnvelope = { data: Partial<EmailTemplate> } & Partial<EmailTemplate>;
 
 	interface Props {
@@ -57,8 +50,8 @@
 	let name = $state(seed?.name ?? '');
 	let slug = $state(seed?.slug ?? '');
 	let subject = $state(seed?.subject ?? '');
-	let email_type = $state(seed?.email_type ?? '');
-	let body_html = $state(seed?.body_html ?? '');
+	let email_type = $state(seed?.email_type ?? 'transactional');
+	let body_html = $state(seed?.body_html ?? seed?.body ?? '');
 	let body_text = $state(seed?.body_text ?? '');
 	let variables = $state(seed?.variables ? JSON.stringify(seed.variables, null, 2) : '');
 	let is_active = $state(seed?.is_active ?? true);
@@ -67,36 +60,48 @@
 	let error = $state('');
 
 	async function handleSubmit() {
+		if (loading) return;
 		loading = true;
 		error = '';
-		const payload = {
-			name,
-			slug,
-			subject,
-			email_type,
-			body_html,
-			body_text: body_text || undefined,
-			variables: variables ? JSON.parse(variables) : [],
-			is_active
-		};
 		try {
+			const parsed: unknown = variables ? JSON.parse(variables) : [];
+			if (!isEmailTemplateVariables(parsed))
+				throw new Error('Variables must be a JSON array of names or objects with a key.');
+			const payload = {
+				name,
+				slug,
+				subject,
+				email_type,
+				body_html,
+				body_text,
+				variables: parsed,
+				is_active
+			};
 			if (isEdit) {
 				const existingId = template?.id;
 				if (existingId === undefined) {
 					throw new Error('Cannot update template: missing id');
 				}
 				const response = await emailTemplatesApi.update(existingId, payload);
+				if (!isEmailTemplate(response.data))
+					throw new Error(
+						'Invalid saved email template response. Reload the list before retrying.'
+					);
 				onsaved?.({ id: response.data.id });
 			} else {
 				const response = await emailTemplatesApi.create(payload);
+				if (!isEmailTemplate(response.data))
+					throw new Error(
+						'Invalid saved email template response. Reload the list before retrying.'
+					);
 				onsaved?.({ id: response.data.id });
 			}
-			goto('/admin/email/templates');
+			await goto('/admin/email/templates');
 		} catch (e) {
 			if (e instanceof AdminApiError) {
 				error = e.message;
 			} else {
-				error = 'Failed to save template';
+				error = e instanceof Error ? e.message : 'Failed to save template';
 			}
 			console.error('Failed to save template:', e);
 		} finally {
@@ -109,13 +114,9 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{isEdit ? 'Edit' : 'New'} Email Template | Admin | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="template-form">
 	{#if error}
-		<p class="alert alert-error">{error}</p>
+		<p class="alert alert-error" role="alert">{error}</p>
 	{/if}
 	<form
 		onsubmit={(e: SubmitEvent) => {
@@ -131,6 +132,10 @@
 			<div class="field">
 				<label for="slug">Slug</label>
 				<input id="slug" type="text" bind:value={slug} placeholder="auto-generated if empty" />
+				<small
+					>The slug identifies this template in application messages. Saving content updates those
+					messages.</small
+				>
 			</div>
 			<div class="field full">
 				<label for="subject">Subject</label>

@@ -2,10 +2,6 @@
 	import TemplateForm from '#lib/components/admin/TemplateForm.svelte';
 </script>
 
-<svelte:head>
-	<title>New Email Template | Admin | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="new-template-page">
 	<TemplateForm isEdit={false} />
 </div>

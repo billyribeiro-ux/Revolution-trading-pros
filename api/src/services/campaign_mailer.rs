@@ -1,4 +1,4 @@
-//! Bounded Postmark submission for CRM broadcasts. Acceptance is not inbox delivery.
+//! Bounded Postmark/SMTP submission for broadcasts. Acceptance is not inbox delivery.
 use anyhow::{Result, anyhow, bail};
 use reqwest::{Client, Url};
 use serde::Serialize;
