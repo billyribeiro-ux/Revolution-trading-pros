@@ -121,6 +121,7 @@ const initialEmailState: MemberEmailState = {
 // State (Svelte 5 Runes)
 // ═══════════════════════════════════════════════════════════════════════════
 
+let memberLoadGeneration = 0;
 let membersState = $state<MembersState>({ ...initialMembersState });
 let churnedState = $state<ChurnedState>({ ...initialChurnedState });
 let serviceMembersState = $state<ServiceMembersState>({ ...initialServiceMembersState });
@@ -131,6 +132,9 @@ let memberEmailState = $state<MemberEmailState>({ ...initialEmailState });
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const membersStore = {
+	get error() {
+		return membersState.error;
+	},
 	get state() {
 		return membersState;
 	},
@@ -164,17 +168,20 @@ export const membersStore = {
 	 * ICT 7 Grade: API client handles request deduplication automatically
 	 */
 	async loadMembers(filters?: MemberFilters) {
+		const generation = ++memberLoadGeneration;
 		const newFilters = filters ? { ...membersState.filters, ...filters } : membersState.filters;
 
 		membersState = {
 			...membersState,
 			loading: true,
+			members: [],
 			error: null,
 			filters: newFilters
 		};
 
 		try {
 			const response = await membersApi.getMembers(newFilters);
+			if (generation !== memberLoadGeneration) return;
 			membersState = {
 				...membersState,
 				members: response.members,
@@ -182,6 +189,7 @@ export const membersStore = {
 				loading: false
 			};
 		} catch (error) {
+			if (generation !== memberLoadGeneration) return;
 			membersState = {
 				...membersState,
 				error: error instanceof Error ? error.message : 'Failed to load members',

@@ -230,7 +230,7 @@ pub(super) async fn update_segment(
             "System segment definitions cannot be changed; create a custom segment instead",
         ));
     }
-    let row:MemberSegment=sqlx::query_as(segment_sql!("UPDATE member_segments SET name=COALESCE($2,name),slug=COALESCE($3,slug),description=COALESCE($4,description),filter_criteria=COALESCE($5,filter_criteria),is_dynamic=CASE WHEN $5::jsonb IS NOT NULL THEN true ELSE is_dynamic END,is_active=COALESCE($6,is_active),updated_at=NOW() WHERE id=$1 RETURNING ",""))
+    let row:MemberSegment=sqlx::query_as(segment_sql!("UPDATE member_segments SET name=COALESCE($2,name),slug=COALESCE($3,slug),description=COALESCE($4,description),authoring_version=CASE WHEN $5::jsonb IS NOT NULL AND filter_criteria IS DISTINCT FROM $5::jsonb THEN authoring_version+1 ELSE authoring_version END,filter_criteria=COALESCE($5,filter_criteria),is_dynamic=CASE WHEN $5::jsonb IS NOT NULL THEN true ELSE is_dynamic END,is_active=COALESCE($6,is_active),updated_at=NOW() WHERE id=$1 RETURNING ",""))
     .bind(id).bind(input.name).bind(selected).bind(input.description).bind(conditions.map(|v|value!(v))).bind(input.is_active).fetch_one(&mut *tx).await.map_err(storage)?;
     record(&mut tx, admin.0.id, id, "Member segment updated").await?;
     tx.commit().await.map_err(storage)?;
@@ -260,4 +260,106 @@ pub(super) async fn delete_segment(
     record(&mut tx, admin.0.id, id, "Member segment deleted").await?;
     tx.commit().await.map_err(storage)?;
     Ok(Json(value!({"deleted":true,"id":id})))
+}
+
+pub(super) async fn segment_analytics(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<Value>, ApiError> {
+    Ok(Json(evaluation::analytics(&state.db.pool, id).await?))
+}
+fn csv_cell(value: String) -> String {
+    if matches!(
+        value
+            .trim_start_matches(|c: char| c.is_whitespace() || c == '\u{feff}')
+            .chars()
+            .next(),
+        Some('=' | '+' | '-' | '@')
+    ) {
+        format!("'{value}")
+    } else {
+        value
+    }
+}
+pub(super) async fn export_segment(
+    State(state): State<AppState>,
+    admin: AdminUser,
+    Path(id): Path<i64>,
+) -> Result<axum::response::Response, ApiError> {
+    use axum::{
+        http::{HeaderMap, HeaderValue, StatusCode, header},
+        response::IntoResponse,
+    };
+    let definition = evaluation::load(&state.db.pool, id, false).await?;
+    let mut query = evaluation::segment_query(
+        "SELECT jsonb_build_object('id',m.id,'name',m.name,'email',m.email,'status',m.status,'total_spent',m.total_spent::text,'joined_at',m.joined_at)",
+        &definition,
+    )?;
+    query.push(" ORDER BY m.id LIMIT 100001");
+    let rows: Vec<Value> = query
+        .build_query_scalar()
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(storage)?;
+    if rows.len() > 100000 {
+        return Err(ApiError::new(
+            StatusCode::PAYLOAD_TOO_LARGE,
+            "Segment export exceeds100000 members; narrow the segment conditions",
+        ));
+    }
+    let mut writer = csv::WriterBuilder::new()
+        .terminator(csv::Terminator::CRLF)
+        .from_writer(Vec::new());
+    let fields = ["id", "name", "email", "status", "total_spent", "joined_at"];
+    let encode = |_| errors::internal_error("Unable to encode segment CSV");
+    writer.write_record(fields).map_err(encode)?;
+    for row in &rows {
+        let record = fields.map(|field| {
+            csv_cell(row[field].as_str().map(str::to_string).unwrap_or_else(|| {
+                if row[field].is_null() {
+                    String::new()
+                } else {
+                    row[field].to_string()
+                }
+            }))
+        });
+        writer.write_record(record).map_err(encode)?;
+    }
+    let bytes = writer
+        .into_inner()
+        .map_err(|_| errors::internal_error("Unable to finish segment CSV"))?;
+    if bytes.len() > 32 * 1024 * 1024 {
+        return Err(ApiError::new(
+            StatusCode::PAYLOAD_TOO_LARGE,
+            "Segment export exceeds32MiB; narrow the segment conditions",
+        ));
+    }
+    let mut tx = state.db.pool.begin().await.map_err(storage)?;
+    crate::services::crm_logs::record(
+        &mut tx,
+        "info",
+        "system",
+        "Member segment export prepared",
+        value!({"member_segment_id":id,"rows":rows.len(),"authoring_version":definition.version}),
+        Some(admin.0.id),
+    )
+    .await
+    .map_err(storage)?;
+    tx.commit().await.map_err(storage)?;
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        header::CONTENT_TYPE,
+        HeaderValue::from_static("text/csv; charset=utf-8"),
+    );
+    headers.insert(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("private, no-store"),
+    );
+    headers.insert(
+        header::CONTENT_DISPOSITION,
+        HeaderValue::from_str(&format!("attachment; filename=\"member-segment-{id}.csv\""))
+            .map_err(|_| errors::internal_error("Unable to name segment export"))?,
+    );
+    Ok((headers, bytes).into_response())
 }

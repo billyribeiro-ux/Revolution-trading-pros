@@ -22,7 +22,12 @@
 		IconRefresh,
 		IconExternalLink
 	} from '#lib/icons/index.js';
-	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import {
+		getSegmentMembers,
+		getSegmentAnalytics,
+		type SegmentAnalytics,
+		type SegmentMemberPreview as MemberPreview
+	} from '#lib/api/member-segments.js';
 	import { goto } from '$app/navigation';
 
 	// FIX-2026-04-26 (audit 02 §P1-4): keep `memberCount` nullable so admins
@@ -43,26 +48,6 @@
 		field: string;
 		operator: string;
 		value: string | number;
-	}
-
-	interface MemberPreview {
-		id: number;
-		name: string;
-		email: string;
-		avatar?: string;
-		status: string;
-		total_spent: number;
-		joined_at: string;
-	}
-
-	interface SegmentAnalytics {
-		total_members: number;
-		growth_30d: number;
-		avg_spending: number;
-		avg_lifetime_days: number;
-		email_open_rate: number;
-		conversion_rate: number;
-		top_products: { name: string; count: number }[];
 	}
 
 	interface SegmentData {
@@ -136,23 +121,16 @@
 
 	async function loadSegmentData(currentSegment: Segment, _version: number): Promise<SegmentData> {
 		try {
-			// Parallel requests for member preview and analytics
-			const [membersRes, analyticsRes] = await Promise.all([
-				adminFetch(`/api/admin/members?segment=${currentSegment.id}&per_page=5`).catch(() => null),
-				adminFetch(`/api/admin/members/segments/${currentSegment.id}/analytics`).catch(() => null)
+			const [memberPreviews, analytics] = await Promise.all([
+				getSegmentMembers(currentSegment.id),
+				getSegmentAnalytics(currentSegment.id)
 			]);
-
-			return {
-				memberPreviews: membersRes?.members || generateMockMembers(),
-				analytics: analyticsRes || generateMockAnalytics(currentSegment),
-				error: ''
-			};
-		} catch (err) {
-			console.error('Segment load error:', err);
+			return { memberPreviews, analytics, error: '' };
+		} catch (error) {
 			return {
 				memberPreviews: [],
 				analytics: null,
-				error: err instanceof Error ? err.message : 'Failed to load segment data'
+				error: error instanceof Error ? error.message : 'Unable to load segment details'
 			};
 		}
 	}
@@ -161,68 +139,8 @@
 		reloadToken += 1;
 	}
 
-	function generateMockMembers(): MemberPreview[] {
-		return [
-			{
-				id: 1,
-				name: 'John Smith',
-				email: 'john@example.com',
-				status: 'active',
-				total_spent: 1250,
-				joined_at: '2024-01-15'
-			},
-			{
-				id: 2,
-				name: 'Sarah Johnson',
-				email: 'sarah@example.com',
-				status: 'active',
-				total_spent: 890,
-				joined_at: '2024-02-20'
-			},
-			{
-				id: 3,
-				name: 'Mike Davis',
-				email: 'mike@example.com',
-				status: 'trial',
-				total_spent: 450,
-				joined_at: '2024-03-10'
-			},
-			{
-				id: 4,
-				name: 'Emily Wilson',
-				email: 'emily@example.com',
-				status: 'active',
-				total_spent: 2100,
-				joined_at: '2023-11-05'
-			},
-			{
-				id: 5,
-				name: 'David Brown',
-				email: 'david@example.com',
-				status: 'active',
-				total_spent: 675,
-				joined_at: '2024-04-01'
-			}
-		];
-	}
-
-	function generateMockAnalytics(currentSegment: Segment): SegmentAnalytics {
-		return {
-			total_members: currentSegment.memberCount || 0,
-			growth_30d: Math.floor(Math.random() * 20) - 5,
-			avg_spending: Math.floor(Math.random() * 1000) + 200,
-			avg_lifetime_days: Math.floor(Math.random() * 365) + 30,
-			email_open_rate: Math.floor(Math.random() * 40) + 20,
-			conversion_rate: Math.floor(Math.random() * 15) + 3,
-			top_products: [
-				{ name: 'Pro Membership', count: Math.floor(Math.random() * 500) + 100 },
-				{ name: 'Trading Course', count: Math.floor(Math.random() * 300) + 50 },
-				{ name: 'Indicator Pack', count: Math.floor(Math.random() * 200) + 30 }
-			]
-		};
-	}
-
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number | null): string {
+		if (amount === null) return '—';
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
@@ -321,21 +239,29 @@
 							class={[
 								'stat',
 								{
-									positive: analytics.growth_30d > 0,
-									negative: analytics.growth_30d < 0
+									positive: (analytics.growth_30d ?? 0) > 0,
+									negative: (analytics.growth_30d ?? 0) < 0
 								}
 							]}
 						>
-							{#if analytics.growth_30d >= 0}
+							{#if analytics.growth_30d === null}
+								<IconClock size={20} />
+							{:else if analytics.growth_30d >= 0}
 								<IconTrendingUp size={20} />
 							{:else}
 								<IconTrendingDown size={20} />
 							{/if}
 							<div class="stat-content">
 								<span class="stat-value"
-									>{analytics.growth_30d > 0 ? '+' : ''}{analytics.growth_30d}%</span
+									>{analytics.growth_30d === null
+										? '—'
+										: `${analytics.growth_30d > 0 ? '+' : ''}${analytics.growth_30d}%`}</span
 								>
-								<span class="stat-label">30d Growth</span>
+								<span
+									class="stat-label"
+									title="Compares captured counts for unchanged segment conditions; unavailable without a comparable30-day baseline"
+									>30d Growth</span
+								>
 							</div>
 						</div>
 					{/if}
@@ -508,15 +434,35 @@
 									</div>
 									<div class="analytics-card">
 										<span class="analytics-label">Avg. Lifetime</span>
-										<span class="analytics-value">{analytics.avg_lifetime_days} days</span>
+										<span class="analytics-value"
+											>{analytics.avg_lifetime_days === null
+												? '—'
+												: `${analytics.avg_lifetime_days} days`}</span
+										>
 									</div>
 									<div class="analytics-card">
-										<span class="analytics-label">Email Open Rate</span>
-										<span class="analytics-value">{analytics.email_open_rate}%</span>
+										<span
+											class="analytics-label"
+											title="Recorded open signals divided by accepted messages; signals do not establish human engagement"
+											>Email Open Rate</span
+										>
+										<span class="analytics-value"
+											>{analytics.email_open_rate === null
+												? '—'
+												: `${analytics.email_open_rate}%`}</span
+										>
 									</div>
 									<div class="analytics-card">
-										<span class="analytics-label">Conversion Rate</span>
-										<span class="analytics-value">{analytics.conversion_rate}%</span>
+										<span
+											class="analytics-label"
+											title="Share of matching members with positive completed USD spending"
+											>Conversion Rate</span
+										>
+										<span class="analytics-value"
+											>{analytics.conversion_rate === null
+												? '—'
+												: `${analytics.conversion_rate}%`}</span
+										>
 									</div>
 								</div>
 							</section>

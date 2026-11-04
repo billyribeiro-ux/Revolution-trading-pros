@@ -129,16 +129,17 @@ pub async fn index(
             conditions: vec![],
             static_id: None,
             is_system: false,
+            version: 1,
         }
     };
-    if let Some(status) = &params.status {
-        if !status.is_empty() {
-            definition.conditions.push(Condition {
-                field: "status".into(),
-                operator: "eq".into(),
-                value: serde_json::json!(status),
-            });
-        }
+    if let Some(status) = &params.status
+        && !status.is_empty()
+    {
+        definition.conditions.push(Condition {
+            field: "status".into(),
+            operator: "eq".into(),
+            value: serde_json::json!(status),
+        });
     }
     if let Some(tag) = params.tag {
         if tag <= 0 {

@@ -144,10 +144,12 @@ pub struct Definition {
     pub conditions: Vec<Condition>,
     pub static_id: Option<i64>,
     pub is_system: bool,
+    pub version: i64,
 }
 pub async fn load(pool: &PgPool, id: i64, active_only: bool) -> Result<Definition, ApiError> {
-    let row:Option<(Option<Value>,bool,bool,bool)>=sqlx::query_as("SELECT filter_criteria,COALESCE(is_dynamic,false),COALESCE(is_active,false),is_system FROM member_segments WHERE id=$1").bind(id).fetch_optional(pool).await.map_err(storage)?;
-    let (value, dynamic, active, is_system) = row.ok_or_else(|| ApiError::not_found("Segment"))?;
+    let row:Option<(Option<Value>,bool,bool,bool,i64)>=sqlx::query_as("SELECT filter_criteria,COALESCE(is_dynamic,false),COALESCE(is_active,false),is_system,authoring_version FROM member_segments WHERE id=$1").bind(id).fetch_optional(pool).await.map_err(storage)?;
+    let (value, dynamic, active, is_system, version) =
+        row.ok_or_else(|| ApiError::not_found("Segment"))?;
     if active_only && !active {
         return Err(invalid("Select an active member segment"));
     }
@@ -160,6 +162,7 @@ pub async fn load(pool: &PgPool, id: i64, active_only: bool) -> Result<Definitio
         },
         conditions,
         is_system,
+        version,
     })
 }
 pub fn segment_query(
@@ -186,4 +189,88 @@ pub fn storage(error: sqlx::Error) -> ApiError {
         }
     }
     crate::utils::errors::service_unavailable("Member segmentation storage is unavailable")
+}
+
+pub async fn observe(
+    pool: &PgPool,
+    id: i64,
+    definition: &Definition,
+    total: i64,
+) -> Result<(), ApiError> {
+    let saved=sqlx::query("INSERT INTO member_segment_observations(segment_id,authoring_version,member_count) SELECT id,authoring_version,$3 FROM member_segments WHERE id=$1 AND authoring_version=$2 ON CONFLICT(segment_id,authoring_version,observed_date) DO UPDATE SET member_count=EXCLUDED.member_count,observed_at=NOW()")
+        .bind(id).bind(definition.version).bind(total).execute(pool).await.map_err(storage)?;
+    if saved.rows_affected() != 1 {
+        return Err(crate::utils::errors::conflict(
+            "Segment changed; reload before reviewing its analytics",
+        ));
+    }
+    Ok(())
+}
+pub async fn analytics(pool: &PgPool, id: i64) -> Result<Value, ApiError> {
+    let definition = load(pool, id, false).await?;
+    let mut query = segment_query("WITH selected AS (SELECT m.*", &definition)?;
+    query.push("), messages AS (SELECT d.opened_at FROM crm_campaign_deliveries d WHERE d.status='accepted' AND EXISTS(SELECT 1 FROM selected s WHERE LOWER(s.email)=LOWER(d.email)) UNION ALL SELECT e.opened_at FROM email_logs e WHERE e.status IN ('sent','delivered','opened','clicked','bounced') AND EXISTS(SELECT 1 FROM selected s WHERE LOWER(s.email)=LOWER(e.to_email))) SELECT jsonb_build_object('total_members',COUNT(*),'avg_spending',ROUND(AVG(total_spent),2),'avg_lifetime_days',ROUND(AVG(days_since_signup),1),'conversion_rate',ROUND(100.0*COUNT(*) FILTER(WHERE total_spent>0)/NULLIF(COUNT(*),0),1),'email_open_rate',(SELECT ROUND(100.0*COUNT(*) FILTER(WHERE opened_at IS NOT NULL)/NULLIF(COUNT(*),0),1) FROM messages),'accepted_messages',(SELECT COUNT(*) FROM messages),'open_signals',(SELECT COUNT(*) FROM messages WHERE opened_at IS NOT NULL)) FROM selected");
+    let mut data: Value = query
+        .build_query_scalar()
+        .fetch_one(pool)
+        .await
+        .map_err(storage)?;
+    let total = data["total_members"]
+        .as_i64()
+        .ok_or_else(|| crate::utils::errors::internal_error("Invalid member analytics count"))?;
+    observe(pool, id, &definition, total).await?;
+    let baseline:Option<i64>=sqlx::query_scalar("SELECT member_count FROM member_segment_observations WHERE segment_id=$1 AND authoring_version=$2 AND observed_at<=NOW()-INTERVAL '30 days' AND observed_at>=NOW()-INTERVAL '31 days' ORDER BY observed_at DESC LIMIT 1").bind(id).bind(definition.version).fetch_optional(pool).await.map_err(storage)?;
+    data["growth_30d"] = baseline
+        .filter(|count| *count > 0)
+        .map(|count| {
+            serde_json::json!((((total - count) as f64 / count as f64) * 1000.0).round() / 10.0)
+        })
+        .unwrap_or(Value::Null);
+    data["baseline_count"] = serde_json::json!(baseline);
+    data["observed_at"] = serde_json::json!(chrono::Utc::now());
+    data["authoring_version"] = serde_json::json!(definition.version);
+    let mut products = segment_query("WITH selected AS (SELECT m.id", &definition)?;
+    products.push(") SELECT jsonb_build_object('name',p.name,'count',COUNT(DISTINCT o.user_id)) FROM selected s JOIN orders o ON o.user_id=s.id JOIN order_items item ON item.order_id=o.id JOIN products p ON p.id=item.product_id WHERE o.status IN ('completed','paid') GROUP BY p.id,p.name ORDER BY COUNT(DISTINCT o.user_id) DESC,p.id LIMIT 10");
+    data["top_products"] = Value::Array(
+        products
+            .build_query_scalar()
+            .fetch_all(pool)
+            .await
+            .map_err(storage)?,
+    );
+    Ok(data)
+}
+pub async fn run_observations(pool: PgPool) {
+    let mut interval = tokio::time::interval(std::time::Duration::from_secs(3600));
+    interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+    loop {
+        interval.tick().await;
+        let ids: Vec<i64> = match sqlx::query_scalar(
+            "SELECT id FROM member_segments WHERE is_active=true ORDER BY id",
+        )
+        .fetch_all(&pool)
+        .await
+        {
+            Ok(ids) => ids,
+            Err(error) => {
+                tracing::error!(%error,"Unable to list member segment observation jobs");
+                continue;
+            }
+        };
+        for id in ids {
+            let result = async {
+                let definition = load(&pool, id, true).await?;
+                let total = segment_query("SELECT COUNT(*)", &definition)?
+                    .build_query_scalar()
+                    .fetch_one(&pool)
+                    .await
+                    .map_err(storage)?;
+                observe(&pool, id, &definition, total).await
+            }
+            .await;
+            if let Err(error) = result {
+                tracing::error!(segment_id=id,message=%error.message,"Member segment observation failed");
+            }
+        }
+    }
 }

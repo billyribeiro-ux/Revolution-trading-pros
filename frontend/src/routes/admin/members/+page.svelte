@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/env';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '#lib/stores/members.svelte.js';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
@@ -71,6 +72,7 @@
 
 	// Error state
 	let initError = $state('');
+	let memberListError = $derived(membersStore.error);
 
 	// Enterprise member management state
 	let showCreateModal = $state(false);
@@ -105,8 +107,68 @@
 
 		const init = async () => {
 			initError = '';
+			const query = page.url.searchParams;
+			const initial: MemberFilters = {
+				segment: undefined,
+				tag: undefined,
+				search: undefined,
+				status: undefined,
+				product_id: undefined,
+				plan_id: undefined,
+				date_from: undefined,
+				date_to: undefined,
+				spending_tier: undefined,
+				page: 1,
+				per_page: 25,
+				sort_by: 'created_at',
+				sort_dir: 'desc'
+			};
+			try {
+				for (const key of [
+					'segment',
+					'tag',
+					'product_id',
+					'plan_id',
+					'page',
+					'per_page'
+				] as const) {
+					const value = query.get(key);
+					if (value !== null) {
+						if (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value) < 1)
+							throw new Error('Invalid member filter URL');
+						initial[key] = Number(value);
+					}
+				}
+				for (const key of ['search', 'date_from', 'date_to', 'sort_by'] as const)
+					initial[key] = query.get(key) || undefined;
+				const status = query.get('status'),
+					tier = query.get('spending_tier'),
+					direction = query.get('sort_dir');
+				if (status) {
+					if (!['active', 'trial', 'churned', 'never_subscribed'].includes(status))
+						throw new Error('Invalid member status filter');
+					initial.status = status as MemberFilters['status'];
+				}
+				if (tier) {
+					if (!['whale', 'high', 'medium', 'low'].includes(tier))
+						throw new Error('Invalid member spending filter');
+					initial.spending_tier = tier as MemberFilters['spending_tier'];
+				}
+				if (direction) {
+					if (direction !== 'asc' && direction !== 'desc')
+						throw new Error('Invalid member sort direction');
+					initial.sort_dir = direction;
+				}
+			} catch (error) {
+				initError = error instanceof Error ? error.message : 'Invalid member filters';
+				return;
+			}
+			searchQuery = initial.search || '';
+			statusFilter = initial.status || '';
+			serviceFilter = initial.product_id || '';
+			spendingFilter = initial.spending_tier || '';
 			const results = await Promise.allSettled([
-				membersStore.loadMembers(),
+				membersStore.loadMembers(initial),
 				membersStore.loadStats(),
 				membersStore.loadServices(),
 				emailStore.loadTemplates()
@@ -454,17 +516,14 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Members Management | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="admin-members">
-	
-
 	<div class="admin-page-container">
 		<!-- Error Banner -->
-		{#if initError}
-			<ErrorBanner message={initError} onRefresh={() => window.location.reload()} />
+		{#if initError || memberListError}
+			<ErrorBanner
+				message={initError || memberListError || 'Unable to load members'}
+				onRefresh={() => window.location.reload()}
+			/>
 		{/if}
 
 		<!-- Header - Centered Style -->
@@ -492,7 +551,8 @@
 		<div class="toolbar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input autocomplete="email"
+				<input
+					autocomplete="email"
 					id="search-members"
 					name="search-members"
 					type="text"
@@ -820,8 +880,6 @@
 		margin: 0 auto;
 		padding: 2rem;
 	}
-
-
 
 	/* Toolbar */
 	.stats-slot.pending {
@@ -1184,12 +1242,10 @@
 	.btn-primary {
 		background: var(--primary-500);
 		color: var(--bg-base);
-		
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		background: var(--primary-400);
-		
 	}
 
 	.btn-primary:disabled {

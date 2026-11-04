@@ -64,6 +64,8 @@ pub fn router() -> Router<AppState> {
                 .put(segments::update_segment)
                 .delete(segments::delete_segment),
         )
+        .route("/segments/{id}/analytics", get(segments::segment_analytics))
+        .route("/segments/{id}/export", get(segments::export_segment))
         // Tags
         .route(
             "/tags",

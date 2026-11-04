@@ -117,6 +117,9 @@ async fn main() -> anyhow::Result<()> {
     tokio::spawn(revolution_api::services::crm_webhooks::run(
         state.db.pool.clone(),
     ));
+    tokio::spawn(
+        revolution_api::services::member_segmentation::run_observations(state.db.pool.clone()),
+    );
     tokio::spawn(revolution_api::services::campaign_delivery::run(
         state.clone(),
     ));

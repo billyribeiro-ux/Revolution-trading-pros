@@ -10,7 +10,13 @@
 	 *
 	 */
 
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import {
+		listMemberSegments,
+		saveMemberSegment,
+		deleteMemberSegment,
+		exportMemberSegment
+	} from '#lib/api/member-segments.js';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
@@ -40,6 +46,23 @@
 	// State - Svelte 5 Runes
 
 	let loading = $state(true);
+	let loadGeneration = 0;
+	let loadErrors = $state({ segments: '', tags: '', saved: '' });
+	let editSegmentId = $state<number | undefined>(undefined);
+	let editSegmentType = $state<'smart' | 'static'>('smart');
+	let savingSegment = $state(false);
+	let segmentError = $state('');
+	let actionError = $state('');
+	let exportError = $state('');
+	let isExporting = $state(false);
+	let savingAction = $state(false);
+	let editTagId = $state<number | undefined>(undefined);
+	let segmentPage = $state(1);
+	let segmentTotal = $state(0);
+	let segmentSearch = $state('');
+	onDestroy(() => {
+		loadGeneration++;
+	});
 	let activeTab = $state<'segments' | 'tags' | 'saved'>('segments');
 
 	// Segments
@@ -103,7 +126,7 @@
 		name: string;
 		filters: Record<string, string | number>;
 		createdAt: string;
-		usageCount: number;
+		usageCount: number | null;
 	}
 
 	// Condition field options
@@ -177,128 +200,84 @@
 
 	// Data Loading - Real API Integration
 
-	async function loadData() {
-		loading = true;
-		try {
-			// Parallel API calls for better performance
-			const [segmentsRes, tagsRes, filtersRes] = await Promise.all([
-				adminFetch('/api/admin/members/segments').catch(() => null),
-				adminFetch('/api/admin/members/tags').catch(() => null),
-				adminFetch('/api/admin/members/filters').catch(() => null)
-			]);
-
-			// Process segments response
-			if (segmentsRes?.segments) {
-				segments = segmentsRes.segments;
-			} else {
-				// Fallback to default system segments if API not available
-				segments = [
-					{
-						id: 1,
-						name: 'High Value Customers',
-						description: 'Customers with LTV > $500',
-						type: 'smart',
-						conditions: [{ field: 'total_spent', operator: 'gt', value: 500 }],
-						memberCount: 847,
-						lastUpdated: new Date(Date.now() - 3600000).toISOString(),
-						isSystem: false
-					},
-					{
-						id: 2,
-						name: 'At Risk of Churn',
-						description: 'No activity in 30+ days',
-						type: 'smart',
-						conditions: [
-							{ field: 'days_since_last_order', operator: 'gt', value: 30 },
-							{ field: 'subscription_status', operator: 'eq', value: 'active' }
-						],
-						memberCount: 620,
-						lastUpdated: new Date(Date.now() - 7200000).toISOString(),
-						isSystem: false
-					},
-					{
-						id: 3,
-						name: 'Active Subscribers',
-						description: 'All active paid subscribers',
-						type: 'smart',
-						conditions: [{ field: 'subscription_status', operator: 'eq', value: 'active' }],
-						memberCount: 8420,
-						lastUpdated: new Date(Date.now() - 1800000).toISOString(),
-						isSystem: true
-					},
-					{
-						id: 4,
-						name: 'Trial Users',
-						description: 'Members on free trial',
-						type: 'smart',
-						conditions: [{ field: 'status', operator: 'eq', value: 'trial' }],
-						memberCount: 2690,
-						lastUpdated: new Date(Date.now() - 3600000).toISOString(),
-						isSystem: true
-					},
-					{
-						id: 5,
-						name: 'Engaged Email Subscribers',
-						description: 'Opened email in last 7 days',
-						type: 'smart',
-						conditions: [{ field: 'email_engagement', operator: 'eq', value: 'engaged' }],
-						memberCount: 3250,
-						lastUpdated: new Date(Date.now() - 86400000).toISOString(),
-						isSystem: false
-					}
-				];
-			}
-
-			// Process tags response
-			if (tagsRes?.tags) {
-				tags = tagsRes.tags;
-			} else {
-				tags = [
-					{ id: 1, name: 'VIP', color: '#6366f1', memberCount: 156 },
-					{ id: 2, name: 'High Value', color: '#22c55e', memberCount: 423 },
-					{ id: 3, name: 'At Risk', color: '#ef4444', memberCount: 89 },
-					{ id: 4, name: 'New', color: '#3b82f6', memberCount: 312 },
-					{ id: 5, name: 'Engaged', color: '#14b8a6', memberCount: 567 },
-					{ id: 6, name: 'Support Priority', color: '#f97316', memberCount: 34 },
-					{ id: 7, name: 'Enterprise', color: '#8b5cf6', memberCount: 78 },
-					{ id: 8, name: 'Referrer', color: '#ec4899', memberCount: 145 }
-				];
-			}
-
-			// Process saved filters response
-			if (filtersRes?.filters) {
-				savedFilters = filtersRes.filters;
-			} else {
-				savedFilters = [
-					{
-						id: 1,
-						name: 'High spenders this month',
-						filters: { spending_tier: 'whale', date_from: '2024-12-01' },
-						createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-						usageCount: 12
-					},
-					{
-						id: 2,
-						name: 'New signups last week',
-						filters: { status: 'active', date_from: '2024-12-18' },
-						createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-						usageCount: 8
-					},
-					{
-						id: 3,
-						name: 'Churned with high LTV',
-						filters: { status: 'churned', spending_tier: 'high' },
-						createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
-						usageCount: 23
-					}
-				];
-			}
-		} catch (error) {
-			console.error('Failed to load segments data:', error);
-			toastStore.error('Failed to load data. Using cached data.');
-		} finally {
-			loading = false;
+	function object(value: unknown): Record<string, unknown> {
+		if (!value || typeof value !== 'object' || Array.isArray(value))
+			throw new Error('Invalid member configuration response');
+		return value as Record<string, unknown>;
+	}
+	function integer(value: unknown): number {
+		if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0)
+			throw new Error('Invalid member configuration count');
+		return value;
+	}
+	function text(value: unknown): string {
+		if (typeof value !== 'string') throw new Error('Invalid member configuration text');
+		return value;
+	}
+	function tag(value: unknown): Tag {
+		const row = object(value);
+		return {
+			id: integer(row.id),
+			name: text(row.name),
+			color: row.color === null ? '#64748b' : text(row.color),
+			memberCount: integer(row.member_count)
+		};
+	}
+	function savedFilter(value: unknown): SavedFilter {
+		const row = object(value),
+			filters = object(row.filters);
+		const fields: Record<string, string | number> = {};
+		for (const [key, value] of Object.entries(filters)) {
+			if (typeof value !== 'string' && (typeof value !== 'number' || !Number.isFinite(value)))
+				throw new Error('Invalid saved member filter');
+			fields[key] = value;
 		}
+		return {
+			id: integer(row.id),
+			name: text(row.name),
+			filters: fields,
+			createdAt: text(row.created_at),
+			usageCount: row.usage_count === undefined ? null : integer(row.usage_count)
+		};
+	}
+	async function loadData(page = segmentPage) {
+		const generation = ++loadGeneration;
+		loading = true;
+		loadErrors = { segments: '', tags: '', saved: '' };
+		const results = await Promise.allSettled([
+			listMemberSegments({ page, per_page: 20, search: segmentSearch.trim() || undefined }),
+			adminFetch<unknown>('/api/admin/members/tags?per_page=100'),
+			adminFetch<unknown>('/api/admin/members/filters?per_page=100')
+		]);
+		if (generation !== loadGeneration) return;
+		const [segmentResult, tagResult, filterResult] = results;
+		try {
+			if (segmentResult.status === 'rejected') throw segmentResult.reason;
+			segments = segmentResult.value.segments;
+			segmentTotal = segmentResult.value.total;
+			segmentPage = segmentResult.value.page;
+		} catch (error) {
+			loadErrors.segments =
+				error instanceof Error ? error.message : 'Unable to load member segments';
+		}
+		try {
+			if (tagResult.status === 'rejected') throw tagResult.reason;
+			const value = object(tagResult.value);
+			if (!Array.isArray(value.tags)) throw new Error('Invalid member tag list');
+			tags = value.tags.map(tag);
+		} catch (error) {
+			loadErrors.tags = error instanceof Error ? error.message : 'Unable to load member tags';
+		}
+		try {
+			if (filterResult.status === 'rejected') throw filterResult.reason;
+			const value = object(filterResult.value);
+			if (!Array.isArray(value.filters)) throw new Error('Invalid saved member filter list');
+			savedFilters = value.filters.map(savedFilter);
+		} catch (error) {
+			loadErrors.saved =
+				error instanceof Error ? error.message : 'Unable to load saved member filters';
+		}
+		loading = false;
 	}
 
 	function formatNumber(num: number | null | undefined): string {
@@ -329,57 +308,72 @@
 		newSegment.conditions = newSegment.conditions.filter((_, i) => i !== index);
 	}
 
-	function handleCreateSegment() {
-		if (!newSegment.name) {
-			toastStore.error('Please enter a segment name');
-			return;
-		}
-		if (newSegment.conditions.length === 0) {
-			toastStore.error('Please add at least one condition');
-			return;
-		}
-
-		// FIX-2026-04-26 (audit 02 §P3-2 / §P1-4): the previous body forged a
-		// `Math.random() * 1000 + 100` member count. We now leave the count
-		// `null` so the UI renders "—" until the backend reports the real
-		// audience size (the create endpoint may not return it yet).
-		const segment: Segment = {
-			id: segments.length + 1,
-			name: newSegment.name,
-			description: newSegment.description,
-			type: 'smart',
-			conditions: newSegment.conditions,
-			memberCount: null,
-			lastUpdated: new Date().toISOString(),
-			isSystem: false
-		};
-
-		segments = [...segments, segment];
-		showCreateSegmentModal = false;
+	function beginCreateSegment() {
+		editSegmentId = undefined;
+		editSegmentType = 'smart';
 		newSegment = { name: '', description: '', conditions: [] };
-		toastStore.success('Segment created successfully');
+		segmentError = '';
+		showCreateSegmentModal = true;
+	}
+	async function handleCreateSegment() {
+		if (savingSegment) return;
+		segmentError = '';
+		if (!newSegment.name.trim() || (!newSegment.conditions.length && editSegmentType === 'smart')) {
+			segmentError = 'Enter a name and at least one condition';
+			return;
+		}
+		savingSegment = true;
+		try {
+			const saved = await saveMemberSegment(
+				{ ...newSegment, type: editSegmentType },
+				editSegmentId
+			);
+			segments =
+				editSegmentId === undefined
+					? [saved, ...segments]
+					: segments.map((row) => (row.id === saved.id ? saved : row));
+			showCreateSegmentModal = false;
+			toastStore.success(editSegmentId === undefined ? 'Segment created' : 'Segment updated');
+			await loadData();
+		} catch (error) {
+			segmentError = error instanceof Error ? error.message : 'Unable to save member segment';
+		} finally {
+			savingSegment = false;
+		}
 	}
 
-	function handleCreateTag() {
-		if (!newTag.name) {
-			toastStore.error('Please enter a tag name');
+	function beginTag(tag?: Tag) {
+		editTagId = tag?.id;
+		newTag = tag ? { name: tag.name, color: tag.color } : { name: '', color: '#6366f1' };
+		actionError = '';
+		showCreateTagModal = true;
+	}
+	async function handleCreateTag() {
+		if (savingAction) return;
+		actionError = '';
+		if (!newTag.name.trim()) {
+			actionError = 'Enter a tag name';
 			return;
 		}
-
-		// FIX-2026-04-26 (audit 02 §P1-4): leave count null until the backend
-		// reports it — `0` is a real, distinct value here ("tag exists, no
-		// members tagged").
-		const tag: Tag = {
-			id: tags.length + 1,
-			name: newTag.name,
-			color: newTag.color,
-			memberCount: null
-		};
-
-		tags = [...tags, tag];
-		showCreateTagModal = false;
-		newTag = { name: '', color: '#E6B800' };
-		toastStore.success('Tag created successfully');
+		savingAction = true;
+		try {
+			const saved = tag(
+				await adminFetch<unknown>(
+					`/api/admin/members/tags${editTagId === undefined ? '' : `/${editTagId}`}`,
+					{ method: editTagId === undefined ? 'POST' : 'PUT', body: JSON.stringify(newTag) }
+				)
+			);
+			tags =
+				editTagId === undefined
+					? [saved, ...tags]
+					: tags.map((row) => (row.id === saved.id ? saved : row));
+			showCreateTagModal = false;
+			toastStore.success(editTagId === undefined ? 'Tag created' : 'Tag updated');
+		} catch (error) {
+			actionError = error instanceof Error ? error.message : 'Unable to save tag';
+		} finally {
+			savingAction = false;
+		}
 	}
 
 	// Enterprise drawer handlers
@@ -395,8 +389,15 @@
 
 	function handleEditSegment(segment: Segment) {
 		closeSegmentDrawer();
-		// TODO: Open edit modal
-		toastStore.info(`Editing "${segment.name}" - Coming soon`);
+		editSegmentId = segment.id;
+		editSegmentType = segment.type;
+		newSegment = {
+			name: segment.name,
+			description: segment.description,
+			conditions: segment.conditions.map((rule) => ({ ...rule }))
+		};
+		segmentError = '';
+		showCreateSegmentModal = true;
 	}
 
 	function handleExportSegment(segment: Segment) {
@@ -438,7 +439,7 @@
 			// failure, leave UI in place, and call `loadData()` to re-sync.
 			if (targetType === 'segment') {
 				const segment = targetItem as Segment;
-				await adminFetch(`/api/admin/members/segments/${segment.id}`, { method: 'DELETE' });
+				await deleteMemberSegment(segment.id);
 				segments = segments.filter((s) => s.id !== segment.id);
 				toastStore.success('Segment deleted');
 
@@ -514,47 +515,78 @@
 		goto(`/admin/members?segment=${segment.id}`);
 	}
 
-	function exportSegmentData(segment: Segment) {
-		// Export segment members as CSV
-		toastStore.success(
-			`Exporting ${formatNumber(segment.memberCount)} members from "${segment.name}"...`
-		);
-		// TODO: Implement actual CSV export
+	async function exportSegmentData(segment: Segment) {
+		if (isExporting) return;
+		isExporting = true;
+		exportError = '';
+		try {
+			const blob = await exportMemberSegment(segment.id);
+			const url = URL.createObjectURL(blob),
+				link = document.createElement('a');
+			link.href = url;
+			link.download = `member-segment-${segment.id}.csv`;
+			document.body.append(link);
+			link.click();
+			link.remove();
+			setTimeout(() => URL.revokeObjectURL(url), 1000);
+		} catch (error) {
+			exportError = error instanceof Error ? error.message : 'Unable to export member segment';
+		} finally {
+			isExporting = false;
+		}
 	}
 
-	function _viewSegmentAnalytics(segment: Segment) {
-		// Show analytics modal or navigate to analytics page
-		toastStore.info(`Analytics for "${segment.name}" - Coming soon`);
-		// TODO: Implement analytics view
-	}
-
-	function handleSaveFilter() {
-		if (!newFilter.name) {
-			toastStore.error('Please enter a filter name');
+	async function handleSaveFilter() {
+		if (savingAction) return;
+		actionError = '';
+		if (!newFilter.name.trim()) {
+			actionError = 'Enter a filter name';
 			return;
 		}
-		const filter: SavedFilter = {
-			id: savedFilters.length + 1,
-			name: newFilter.name,
-			filters: newFilter.filters,
-			createdAt: new Date().toISOString(),
-			usageCount: 0
-		};
-		savedFilters = [...savedFilters, filter];
-		showSaveFilterModal = false;
-		newFilter = { name: '', filters: {} };
-		toastStore.success('Filter saved successfully');
+		savingAction = true;
+		try {
+			const saved = savedFilter(
+				await adminFetch<unknown>('/api/admin/members/filters', {
+					method: 'POST',
+					body: JSON.stringify(newFilter)
+				})
+			);
+			savedFilters = [saved, ...savedFilters];
+			showSaveFilterModal = false;
+			newFilter = { name: '', filters: {} };
+			toastStore.success('Filter saved');
+		} catch (error) {
+			actionError = error instanceof Error ? error.message : 'Unable to save filter';
+		} finally {
+			savingAction = false;
+		}
+	}
+	async function duplicateFilter(filter: SavedFilter) {
+		if (savingAction) return;
+		savingAction = true;
+		try {
+			const saved = savedFilter(
+				await adminFetch<unknown>('/api/admin/members/filters', {
+					method: 'POST',
+					body: JSON.stringify({
+						name: `${filter.name.slice(0, 248)} (Copy)`,
+						filters: filter.filters
+					})
+				})
+			);
+			savedFilters = [saved, ...savedFilters];
+			toastStore.success('Filter duplicated');
+		} catch (error) {
+			toastStore.error(error instanceof Error ? error.message : 'Unable to duplicate filter');
+		} finally {
+			savingAction = false;
+		}
 	}
 </script>
 
-<svelte:head>
-	<title>Member Segments | Revolution Trading Pros</title>
-</svelte:head>
-
 <div class="admin-segments">
 	<div class="admin-page-container">
-		
-
+		{#if exportError}<p role="alert">{exportError}</p>{/if}
 		<!-- Header -->
 		<header class="page-header">
 			<button class="back-btn" onclick={() => goto('/admin/members')}>
@@ -566,7 +598,7 @@
 			<p class="subtitle">Organize members with segments, tags, and filters</p>
 
 			<div class="header-actions">
-				<button class="btn-secondary" onclick={loadData}>
+				<button class="btn-secondary" onclick={() => loadData()}>
 					<IconRefresh size={18} />
 					Refresh
 				</button>
@@ -599,12 +631,12 @@
 
 			<div class="tab-actions">
 				{#if activeTab === 'segments'}
-					<button class="btn-primary" onclick={() => (showCreateSegmentModal = true)}>
+					<button class="btn-primary" onclick={beginCreateSegment}>
 						<IconPlus size={18} />
 						New Segment
 					</button>
 				{:else if activeTab === 'tags'}
-					<button class="btn-primary" onclick={() => (showCreateTagModal = true)}>
+					<button class="btn-primary" onclick={() => beginTag()}>
 						<IconPlus size={18} />
 						New Tag
 					</button>
@@ -618,9 +650,25 @@
 					<div class="skeleton skeleton-card"></div>
 				{/each}
 			</div>
+		{:else if loadErrors[activeTab]}
+			<div role="alert" class="empty-state">
+				<p>{loadErrors[activeTab]}</p>
+				<button class="btn-secondary" onclick={() => loadData()}>Retry</button>
+			</div>
 		{:else}
 			<!-- Segments Tab -->
 			{#if activeTab === 'segments'}
+				<form
+					onsubmit={(event) => {
+						event.preventDefault();
+						void loadData(1);
+					}}
+					class="segment-search"
+				>
+					<label>Search segments<input type="search" bind:value={segmentSearch} /></label>
+					<button class="btn-secondary" type="submit">Search</button>
+				</form>
+				{#if !segments.length}<p class="empty-state">No matching member segments.</p>{/if}
 				<div class="segments-grid">
 					{#each segments as segment (segment.id)}
 						<div
@@ -721,7 +769,10 @@
 											class="btn-icon"
 											type="button"
 											title="Edit"
-											onclick={(e) => e.stopPropagation()}
+											onclick={(e) => {
+												e.stopPropagation();
+												handleEditSegment(segment);
+											}}
 										>
 											<IconEdit size={16} />
 										</button>
@@ -742,6 +793,19 @@
 						</div>
 					{/each}
 				</div>
+				<nav class="segment-search" aria-label="Member segment pages">
+					<button
+						class="btn-secondary"
+						disabled={segmentPage <= 1}
+						onclick={() => loadData(segmentPage - 1)}>Previous segments</button
+					>
+					<span>Page {segmentPage} · {segmentTotal} segments</span>
+					<button
+						class="btn-secondary"
+						disabled={segmentPage * 20 >= segmentTotal}
+						onclick={() => loadData(segmentPage + 1)}>Next segments</button
+					>
+				</nav>
 			{/if}
 
 			<!-- Tags Tab -->
@@ -768,7 +832,7 @@
 									<IconUsers size={14} />
 									View Members
 								</button>
-								<button class="btn-icon" type="button" title="Edit">
+								<button class="btn-icon" type="button" title="Edit" onclick={() => beginTag(tag)}>
 									<IconEdit size={16} />
 								</button>
 								<button
@@ -794,7 +858,11 @@
 								<h3>{filter.name}</h3>
 								<div class="filter-meta">
 									<span>Created {formatDate(filter.createdAt)}</span>
-									<span>Used {filter.usageCount} times</span>
+									<span
+										>{filter.usageCount === null
+											? 'Usage history unavailable'
+											: `Recorded uses: ${filter.usageCount}`}</span
+									>
 								</div>
 							</div>
 
@@ -814,7 +882,13 @@
 								>
 									Apply Filter
 								</button>
-								<button class="btn-icon" type="button" title="Duplicate">
+								<button
+									class="btn-icon"
+									type="button"
+									title="Duplicate"
+									disabled={savingAction}
+									onclick={() => duplicateFilter(filter)}
+								>
 									<IconCopy size={16} />
 								</button>
 								<button
@@ -856,16 +930,18 @@
 	>
 		<div class="modal-content large" role="document">
 			<div class="modal-header">
-				<h2>Create Smart Segment</h2>
+				<h2>{editSegmentId === undefined ? 'Create Smart Segment' : 'Edit Segment'}</h2>
 				<button class="close-btn" onclick={() => (showCreateSegmentModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body">
+				{#if segmentError}<p role="alert">{segmentError}</p>{/if}
 				<div class="form-group">
 					<label for="segment-name">Segment Name</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						id="segment-name"
 						name="segment-name"
 						type="text"
@@ -876,7 +952,8 @@
 
 				<div class="form-group">
 					<label for="segment-description">Description</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						id="segment-description"
 						name="segment-description"
 						type="text"
@@ -893,7 +970,11 @@
 
 					{#each newSegment.conditions as condition, index (index)}
 						<div class="condition-row">
-							<select id="segments-condition-field" name="segments_condition_field" bind:value={condition.field}>
+							<select
+								id="segments-condition-field"
+								name="segments_condition_field"
+								bind:value={condition.field}
+							>
 								{#each conditionFields as field (field.value)}
 									<option value={field.value}>
 										{#if field.value === 'total_spent'}
@@ -904,13 +985,18 @@
 								{/each}
 							</select>
 
-							<select id="segments-condition-operator" name="segments_condition_operator" bind:value={condition.operator}>
+							<select
+								id="segments-condition-operator"
+								name="segments_condition_operator"
+								bind:value={condition.operator}
+							>
 								{#each conditionOperators[condition.field] || [] as op (op.value)}
 									<option value={op.value}>{op.label}</option>
 								{/each}
 							</select>
 
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								id="page-condition-value"
 								name="page-condition-value"
 								type="text"
@@ -935,9 +1021,13 @@
 				<button class="btn-secondary" onclick={() => (showCreateSegmentModal = false)}>
 					Cancel
 				</button>
-				<button class="btn-primary" onclick={handleCreateSegment}>
+				<button class="btn-primary" disabled={savingSegment} onclick={handleCreateSegment}>
 					<IconCheck size={18} />
-					Create Segment
+					{savingSegment
+						? 'Saving...'
+						: editSegmentId === undefined
+							? 'Create Segment'
+							: 'Save Segment'}
 				</button>
 			</div>
 		</div>
@@ -958,16 +1048,18 @@
 	>
 		<div class="modal-content" role="document">
 			<div class="modal-header">
-				<h2>Create New Tag</h2>
+				<h2>{editTagId === undefined ? 'Create New Tag' : 'Edit Tag'}</h2>
 				<button class="close-btn" onclick={() => (showCreateTagModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body">
+				{#if actionError}<p role="alert">{actionError}</p>{/if}
 				<div class="form-group">
 					<label for="tag-name">Tag Name</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						id="tag-name"
 						name="tag-name"
 						type="text"
@@ -1005,9 +1097,9 @@
 
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showCreateTagModal = false)}> Cancel </button>
-				<button class="btn-primary" onclick={handleCreateTag}>
+				<button class="btn-primary" disabled={savingAction} onclick={handleCreateTag}>
 					<IconCheck size={18} />
-					Create Tag
+					{savingAction ? 'Saving...' : editTagId === undefined ? 'Create Tag' : 'Save Tag'}
 				</button>
 			</div>
 		</div>
@@ -1035,9 +1127,11 @@
 			</div>
 
 			<div class="modal-body">
+				{#if actionError}<p role="alert">{actionError}</p>{/if}
 				<div class="form-group">
 					<label for="filter-name">Filter Name</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						id="filter-name"
 						name="filter-name"
 						type="text"
@@ -1055,7 +1149,7 @@
 				<button class="btn-secondary" onclick={() => (showSaveFilterModal = false)}>
 					Cancel
 				</button>
-				<button class="btn-primary" onclick={handleSaveFilter}>
+				<button class="btn-primary" disabled={savingAction} onclick={handleSaveFilter}>
 					<IconCheck size={18} />
 					Save Filter
 				</button>
@@ -1087,6 +1181,26 @@
 />
 
 <style>
+	.segment-search {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1rem;
+		margin-block: 1rem;
+	}
+	.segment-search label {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+	}
+	.segment-search input {
+		background: var(--bg-tertiary);
+		color: var(--text-primary);
+		border: 1px solid var(--border-color);
+		padding: 0.5rem;
+		border-radius: 0.4rem;
+	}
+
 	/* Root Container */
 	.admin-segments {
 		position: relative;
@@ -1095,9 +1209,6 @@
 	}
 
 	/* Animated Background Blobs */
-	
-
-	
 
 	.admin-page-container {
 		position: relative;
@@ -1491,12 +1602,10 @@
 	.btn-primary {
 		background: var(--primary-500);
 		color: var(--bg-base);
-		
 	}
 
 	.btn-primary:hover {
 		background: var(--primary-500, #e6b800);
-		
 	}
 
 	.btn-secondary {

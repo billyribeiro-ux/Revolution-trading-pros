@@ -115,6 +115,8 @@ export interface EmailTemplate {
 }
 
 export interface MemberFilters {
+	segment?: number;
+	tag?: number;
 	search?: string;
 	status?: 'active' | 'trial' | 'churned' | 'never_subscribed';
 	product_id?: number;
