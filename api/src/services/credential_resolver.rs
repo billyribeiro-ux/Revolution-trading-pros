@@ -31,7 +31,10 @@ const CACHE_TTL: Duration = Duration::from_secs(60);
 
 /// Provider scope used by request-time application clients.
 pub fn runtime_environment(config: &Config) -> &'static str {
-    if config.environment == "production" {
+    runtime_environment_for(&config.environment)
+}
+pub fn runtime_environment_for(environment: &str) -> &'static str {
+    if environment == "production" {
         "production"
     } else {
         "sandbox"

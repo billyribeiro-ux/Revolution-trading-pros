@@ -115,12 +115,11 @@ impl SmtpSettings {
         }
         Ok(encrypted)
     }
-    fn decrypted(blob: &str, state: &AppState) -> Result<Self> {
+    fn decrypted(blob: &str, key: &str, environment: &str) -> Result<Self> {
         if !blob.starts_with("v1:") {
             bail!("Stored SMTP configuration is invalid")
         }
-        let mut map =
-            crate::utils::crypto::decrypt_map(&state.config.credentials_encryption_key, blob);
+        let mut map = crate::utils::crypto::decrypt_map(key, blob);
         let mut take = |key: &str| {
             map.remove(key)
                 .ok_or_else(|| anyhow!("Stored SMTP configuration cannot be decrypted"))
@@ -135,7 +134,7 @@ impl SmtpSettings {
             from_address: take("from_address")?,
             from_name: take("from_name")?,
         };
-        settings.validate(&state.config.environment)?;
+        settings.validate(environment)?;
         Ok(settings)
     }
     pub async fn transport(&self) -> Result<AsyncSmtpTransport<Tokio1Executor>> {
@@ -189,15 +188,30 @@ pub struct StoredSmtp {
     pub value: Value,
 }
 pub fn settings_key(state: &AppState) -> String {
+    key_for(&state.config.environment)
+}
+fn key_for(environment: &str) -> String {
     format!(
         "email.smtp.{}",
-        super::credential_resolver::runtime_environment(&state.config)
+        super::credential_resolver::runtime_environment_for(environment)
     )
 }
 pub async fn load(state: &AppState) -> Result<Option<StoredSmtp>> {
+    load_from(
+        &state.db.pool,
+        &state.config.credentials_encryption_key,
+        &state.config.environment,
+    )
+    .await
+}
+pub async fn load_from(
+    pool: &sqlx::PgPool,
+    key: &str,
+    environment: &str,
+) -> Result<Option<StoredSmtp>> {
     let value: Option<Value> = sqlx::query_scalar("SELECT value FROM settings WHERE key=$1")
-        .bind(settings_key(state))
-        .fetch_optional(&state.db.pool)
+        .bind(key_for(environment))
+        .fetch_optional(pool)
         .await?;
     value
         .map(|value| {
@@ -206,7 +220,7 @@ pub async fn load(state: &AppState) -> Result<Option<StoredSmtp>> {
                 .ok_or_else(|| anyhow!("Stored SMTP configuration is invalid"))?
                 .to_string();
             Ok(StoredSmtp {
-                settings: SmtpSettings::decrypted(&blob, state)?,
+                settings: SmtpSettings::decrypted(&blob, key, environment)?,
                 blob,
                 value,
             })
@@ -258,7 +272,11 @@ pub async fn save(state: &AppState, mut input: SmtpSettings, actor: i64) -> Resu
                 .ok_or_else(|| anyhow!("Stored SMTP configuration is invalid"))?
                 .to_string();
             Ok::<_, anyhow::Error>(StoredSmtp {
-                settings: SmtpSettings::decrypted(&blob, state)?,
+                settings: SmtpSettings::decrypted(
+                    &blob,
+                    &state.config.credentials_encryption_key,
+                    &state.config.environment,
+                )?,
                 blob,
                 value,
             })

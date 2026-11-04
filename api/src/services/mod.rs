@@ -36,9 +36,11 @@ pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics Service
 pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content
 pub mod search;
 pub mod smtp;
+pub mod smtp_message;
 pub mod storage;
 pub mod stripe;
 pub mod subscription_service;
+pub mod transactional_templates;
 
 use crate::cache::{CacheInvalidator, CacheService};
 use crate::config::Config;
