@@ -1,9 +1,9 @@
 //! Database module - Fly.io PostgreSQL connection
 //! ICT 7 Principal Engineer Grade - Secure Bootstrap System with Resilient Connection Retry
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use argon2::PasswordHash;
-use sqlx::{PgPool, postgres::PgPoolOptions};
+use sqlx::{Connection, PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
 
 use crate::config::Config;
@@ -118,9 +118,47 @@ impl Database {
         Ok(pool)
     }
 
-    /// Run database migrations
+    /// Initialize an empty database atomically, then apply forward migrations.
+    /// Existing schemas are never baselined or marked applied automatically.
     pub async fn migrate(&self) -> Result<()> {
-        sqlx::migrate!("./migrations").run(&self.pool).await?;
+        let mut tx = self.pool.begin().await?;
+        // Serialize first boot across API replicas. Transaction-scoped locking
+        // releases even if initialization fails or the process disconnects.
+        sqlx::query("SELECT pg_advisory_xact_lock(728194630126)")
+            .execute(&mut *tx)
+            .await?;
+        let has_schema: bool = sqlx::query_scalar(
+            "SELECT EXISTS (SELECT 1 FROM information_schema.tables
+             WHERE table_schema = 'public' AND table_name <> '_sqlx_migrations')",
+        )
+        .fetch_one(&mut *tx)
+        .await?;
+        if !has_schema {
+            sqlx::raw_sql(include_str!("../../migrations/schema.sql"))
+                .execute(&mut *tx)
+                .await
+                .context("Failed to initialize empty database schema")?;
+            // The schema dump clears search_path. Restore it before seeding
+            // the historical ledger and returning this connection to the pool.
+            sqlx::query("SELECT pg_catalog.set_config('search_path', 'public', false)")
+                .execute(&mut *tx)
+                .await?;
+            sqlx::raw_sql(include_str!("../../migrations/sqlx-seed.sql"))
+                .execute(&mut *tx)
+                .await
+                .context("Failed to initialize baseline migration ledger")?;
+        }
+        tx.commit().await?;
+        // SQLx can retain a session advisory lock when migration validation
+        // returns early (for example a checksum mismatch). Never return that
+        // connection to the pool: close the dedicated connection on both paths.
+        let mut connection = self.pool.acquire().await?.detach();
+        let migration_result = sqlx::migrate!("./migrations")
+            .run_direct(None, &mut connection, false)
+            .await;
+        let close_result = connection.close().await;
+        migration_result.context("Required database migrations failed; API startup aborted")?;
+        close_result?;
         Ok(())
     }
 

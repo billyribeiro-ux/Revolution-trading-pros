@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
 	import {
 		IconEye,
 		IconCursor,
@@ -11,8 +10,6 @@
 		IconPlay,
 		IconClick
 	} from '#lib/icons/index.js';
-	import { connections, getIsBehaviorConnected } from '#lib/stores/connections.svelte.js';
-	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 
 	type PeriodOption = {
@@ -27,7 +24,6 @@
 	];
 
 	let isLoading = $state(true);
-	let connectionLoading = $state(true);
 	let error = $state('');
 	let selectedPeriod: PeriodOption['value'] = $state('7d');
 
@@ -97,39 +93,15 @@
 		];
 	}
 
-	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
-	let isBehaviorConnected = $derived(getIsBehaviorConnected());
-
-	// FIX-2026-04-26 (P1-1): onMount replaces the $effect cascade pattern.
 	onMount(() => {
-		if (!browser) return;
-
-		void initializeBehaviorPage();
+		void loadData();
 	});
-
-	async function initializeBehaviorPage(): Promise<void> {
-		try {
-			await connections.load();
-		} catch (e) {
-			if (import.meta.env.DEV) {
-				console.error('[Behavior] Failed to load connection status:', e);
-			}
-		} finally {
-			connectionLoading = false;
-		}
-
-		if (getIsBehaviorConnected()) {
-			await loadData();
-		} else {
-			isLoading = false;
-		}
-	}
 </script>
 
 <!--
 	URL: /admin/behavior
 -->
-<svelte:head><title>Behavior Tracking - Admin Dashboard</title></svelte:head>
+
 
 <div class="admin-behavior">
 	<div class="admin-page-container">
@@ -139,7 +111,6 @@
 		<header class="page-header">
 			<h1>Behavior Tracking</h1>
 			<p class="subtitle">Analyze user interactions, clicks, scrolls, and session recordings</p>
-			{#if isBehaviorConnected}
 				<div class="header-actions">
 					<div class="period-selector">
 						{#each periodOptions as option (option.value)}
@@ -155,27 +126,10 @@
 						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 					</button>
 				</div>
-			{/if}
 		</header>
 
-		<!-- Connection Check -->
-		{#if connectionLoading}
+		{#if isLoading}
 			<SkeletonLoader variant="dashboard" />
-		{:else if !isBehaviorConnected}
-			<ApiNotConnected
-				serviceName="Behavior Analytics"
-				description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."
-				serviceKey="google_analytics"
-				icon={IconEye}
-				color="#10b981"
-				features={[
-					'Track user sessions and interactions',
-					'Record and replay user sessions',
-					'Generate click and scroll heatmaps',
-					'Analyze page engagement metrics',
-					'Identify UX issues and opportunities'
-				]}
-			/>
 		{:else}
 			{#if error}
 				<div class="error-banner">{error}</div>

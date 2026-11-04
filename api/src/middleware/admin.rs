@@ -8,6 +8,31 @@ use axum::{
 
 use crate::{AppState, models::User};
 
+#[derive(serde::Deserialize)]
+struct RolePolicy {
+    admin: Vec<String>,
+    superadmin: Vec<String>,
+}
+
+static ROLE_POLICY: std::sync::LazyLock<RolePolicy> = std::sync::LazyLock::new(|| {
+    serde_json::from_str(include_str!("../../role-policy.json"))
+        .expect("committed role policy must be valid")
+});
+
+pub fn is_admin_role(role: Option<&str>) -> bool {
+    ROLE_POLICY
+        .admin
+        .iter()
+        .any(|r| r.eq_ignore_ascii_case(role.unwrap_or_default()))
+}
+
+pub fn is_superadmin_role(role: Option<&str>) -> bool {
+    ROLE_POLICY
+        .superadmin
+        .iter()
+        .any(|r| r.eq_ignore_ascii_case(role.unwrap_or_default()))
+}
+
 /// Admin user extractor - requires admin, super_admin, or developer role
 pub struct AdminUser(pub User);
 
@@ -25,10 +50,7 @@ impl FromRequestParts<AppState> for AdminUser {
 
             // Check if user has admin role (includes developer)
             let user_role = user.role.as_deref().unwrap_or("none");
-            let is_admin = user_role == "admin"
-                || user_role == "super_admin"
-                || user_role == "super-admin"
-                || user_role == "developer";
+            let is_admin = is_admin_role(user.role.as_deref());
 
             // security-M1: email-list is only honored on a verified, DB-role'd
             // account — never as a standalone identity claim.
@@ -79,8 +101,7 @@ impl FromRequestParts<AppState> for SuperAdminUser {
             let user = User::from_request_parts(parts, state).await?;
 
             // Check if user has super_admin role
-            let is_super_admin = user.role.as_deref() == Some("super_admin")
-                || user.role.as_deref() == Some("super-admin");
+            let is_super_admin = is_superadmin_role(user.role.as_deref());
 
             // security-M1: email-list is only honored on a verified, DB-role'd
             // account — never as a standalone identity claim.
@@ -118,11 +139,8 @@ impl FromRequestParts<AppState> for CmsEditorUser {
     ) -> impl std::future::Future<Output = Result<Self, Self::Rejection>> + Send {
         async move {
             let user = User::from_request_parts(parts, state).await?;
-            let user_role = user.role.as_deref().unwrap_or("none");
-            let is_editor = matches!(
-                user_role,
-                "admin" | "super_admin" | "super-admin" | "developer" | "editor" | "marketing"
-            );
+            let is_editor = is_admin_role(user.role.as_deref())
+                || matches!(user.role.as_deref(), Some("editor" | "marketing"));
             let is_superadmin = state.config.is_superadmin_email_strict(
                 &user.email,
                 user.role.as_deref(),

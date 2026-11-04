@@ -113,6 +113,8 @@ fn media_pk_is_i64_bigserial() {
         is_optimized: Some(false),
         width: Some(1920),
         height: Some(1080),
+        scan_status: "pending".into(),
+        scan_result: None,
         created_at: Some(Utc::now()),
         updated_at: Some(Utc::now()),
     };
@@ -159,6 +161,8 @@ fn media_size_is_i64_bigint_for_large_files() {
         is_optimized: Some(false),
         width: None,
         height: None,
+        scan_status: "pending".into(),
+        scan_result: None,
         created_at: None,
         updated_at: None,
     };
@@ -213,6 +217,8 @@ fn media_width_height_i32_reserved_exception() {
         is_optimized: Some(true),
         width: Some(7680), // 8K UHD width — well within i32
         height: Some(4320),
+        scan_status: "pending".into(),
+        scan_result: None,
         created_at: None,
         updated_at: None,
     };
@@ -548,7 +554,9 @@ fn bulk_dtos_use_vec_i64_update_optional() {
         is_clean: true,
         threat_name: None,
         scan_provider: "stub".to_string(),
-        scanned_at: "2026-05-20T00:00:00Z".to_string(),
+        scanned_at: Some("2026-05-20T00:00:00Z".to_string()),
+        status: "clean".into(),
+        error: None,
     };
     let wire = serde_json::to_value(&scan).expect("serialize MalwareScanResult");
     assert_eq!(wire["is_clean"].as_bool(), Some(true));

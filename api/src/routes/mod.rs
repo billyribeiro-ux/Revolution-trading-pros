@@ -21,6 +21,7 @@ pub mod search;
 // pub mod indicators; // Legacy - replaced by member_indicators
 pub mod admin;
 pub mod analytics;
+pub mod behavior;
 pub mod checkout;
 pub mod cms_delivery;
 pub mod cms_revisions;
@@ -83,6 +84,8 @@ use axum::Router;
 /// Build the API router with all routes
 pub fn api_router() -> Router<AppState> {
     Router::new()
+        .nest("/behavior", behavior::public_router())
+        .nest("/analytics", behavior::analytics_router())
         .nest("/auth", auth::router())
         .nest("/auth", oauth::router()) // ICT 7: Google & Apple OAuth routes
         .nest("/users", users::router())

@@ -15,6 +15,7 @@ pub mod credential_resolver; // PE7 invariant 2A: DB-backed credential lookup wi
 pub mod email;
 pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
 pub mod export; // ICT 7+ Phase 4: Export Functionality
+pub mod malware;
 pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
 pub mod order_service;
 // FIX-M-2 (2026-04-29): rate_limit module removed. The RateLimitService

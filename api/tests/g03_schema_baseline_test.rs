@@ -63,63 +63,14 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         .await
         .expect("restore search_path");
 
-    // Step 2: seed _sqlx_migrations with the REAL SHA-384 of every
-    // committed migration file (exactly what sqlx::migrate! embedded).
-    sqlx::query(
-        r"CREATE TABLE IF NOT EXISTS public._sqlx_migrations (
-               version        BIGINT PRIMARY KEY,
-               description    TEXT        NOT NULL,
-               installed_on   TIMESTAMPTZ NOT NULL DEFAULT now(),
-               success        BOOLEAN     NOT NULL,
-               checksum       BYTEA       NOT NULL,
-               execution_time BIGINT      NOT NULL
-           )",
-    )
-    .execute(&pool)
-    .await
-    .expect("create _sqlx_migrations");
-
-    let mut files: Vec<_> = std::fs::read_dir(&mig_dir)
-        .expect("read migrations dir")
-        .filter_map(|e| e.ok())
-        .map(|e| e.file_name().to_string_lossy().into_owned())
-        .filter(|n| {
-            n.ends_with(".sql")
-                && n != "schema.sql"
-                && n.chars()
-                    .next()
-                    .map(|c| c.is_ascii_digit())
-                    .unwrap_or(false)
-        })
-        .collect();
-    files.sort();
-    assert_eq!(files.len(), 64, "expected exactly 64 committed migrations");
-
-    for f in &files {
-        let bytes = std::fs::read(mig_dir.join(f)).expect("read migration");
-        let digits: String = f.chars().take_while(|c| c.is_ascii_digit()).collect();
-        let version: i64 = digits.parse().expect("version prefix");
-        let desc = f
-            .trim_start_matches(|c: char| c.is_ascii_digit())
-            .trim_start_matches('_')
-            .trim_end_matches(".sql")
-            .to_string();
-        // sqlx uses SHA-384 of the migration SQL for its checksum.
-        use sha2::{Digest, Sha384};
-        let checksum = Sha384::digest(&bytes).to_vec();
-        sqlx::query(
-            "INSERT INTO public._sqlx_migrations
-                 (version, description, success, checksum, execution_time)
-             VALUES ($1, $2, true, $3, 0)
-             ON CONFLICT (version) DO NOTHING",
-        )
-        .bind(version)
-        .bind(&desc)
-        .bind(&checksum)
+    // Seed only the versions represented by schema.sql. Never mark new
+    // forward migrations applied without executing their DDL/default inserts.
+    let seed_sql = std::fs::read_to_string(mig_dir.join("sqlx-seed.sql"))
+        .expect("baseline migration ledger must exist");
+    sqlx::raw_sql(sqlx::AssertSqlSafe(seed_sql.as_str()))
         .execute(&pool)
         .await
-        .expect("seed _sqlx_migrations row");
-    }
+        .expect("seed the historical ledger");
 
     // Step 3: run the EXACT embedded migrator the app runs at startup.
     // If any seeded checksum disagreed with the embedded migration sqlx
@@ -134,7 +85,25 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
         .fetch_one(&pool)
         .await
         .expect("count _sqlx_migrations");
-    assert_eq!(applied, 64, "all 64 historical versions marked applied");
+    let expected = sqlx::migrate!("./migrations").iter().count() as i64;
+    assert_eq!(
+        applied, expected,
+        "all baseline and forward migrations applied"
+    );
+    let defaults: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM cms_site_settings")
+        .fetch_one(&pool)
+        .await
+        .expect("structural defaults");
+    assert_eq!(
+        defaults, 1,
+        "forward defaults migration must actually execute"
+    );
+    let scan_column: bool = sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='media' AND column_name='scan_status')")
+        .fetch_one(&pool).await.expect("forward schema column");
+    assert!(
+        scan_column,
+        "forward schema migration must actually execute"
+    );
 
     let tables: i64 = sqlx::query_scalar(
         "SELECT count(*) FROM information_schema.tables

@@ -17,6 +17,7 @@
  */
 
 import { browser } from '$app/env';
+import { isAdminRole, isSuperadminRole } from './role-policy.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Environment-Based Configuration (ICT 7)
@@ -259,14 +260,7 @@ export function isSuperadmin(
 	if (user.email && isSuperadminEmail(user.email)) return true;
 
 	// Check roles
-	if (
-		user.roles?.some(
-			(role) =>
-				role.toLowerCase() === ROLES.SUPERADMIN ||
-				role.toLowerCase() === 'super_admin' ||
-				role.toLowerCase() === 'superadmin'
-		)
-	) {
+	if (user.roles?.some(isSuperadminRole)) {
 		return true;
 	}
 
@@ -308,13 +302,7 @@ export function isAdmin(
 	if (user.is_admin) return true;
 
 	// Check roles
-	if (
-		user.roles?.some((role) =>
-			['admin', 'administrator', 'super-admin', 'super_admin', 'superadmin'].includes(
-				role.toLowerCase()
-			)
-		)
-	) {
+	if (user.roles?.some(isAdminRole)) {
 		return true;
 	}
 

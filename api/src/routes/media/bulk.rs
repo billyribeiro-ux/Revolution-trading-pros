@@ -40,7 +40,7 @@ pub(super) async fn bulk_delete(
         let media: Option<Media> = sqlx::query_as(
             "SELECT id, filename, original_filename, mime_type, size, path, url,
                     title, alt_text, caption, description, collection, is_optimized,
-                    width, height, created_at, updated_at
+                    width, height, scan_status, scan_result, created_at, updated_at
              FROM media WHERE id = $1",
         )
         .bind(id)

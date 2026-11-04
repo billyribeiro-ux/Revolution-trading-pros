@@ -26,6 +26,8 @@ pub struct Media {
     pub is_optimized: Option<bool>,
     pub width: Option<i32>,
     pub height: Option<i32>,
+    pub scan_status: String,
+    pub scan_result: Option<serde_json::Value>,
     pub created_at: Option<DateTime<Utc>>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -112,10 +114,12 @@ pub struct CleanupResult {
 }
 
 /// Malware scan result
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MalwareScanResult {
     pub is_clean: bool,
     pub threat_name: Option<String>,
     pub scan_provider: String,
-    pub scanned_at: String,
+    pub scanned_at: Option<String>,
+    pub status: String,
+    pub error: Option<String>,
 }

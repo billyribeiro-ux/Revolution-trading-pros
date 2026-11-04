@@ -147,7 +147,7 @@ pub(super) async fn index(
     let query = format!(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
-                width, height, created_at, updated_at
+                width, height, scan_status, scan_result, created_at, updated_at
          FROM media WHERE 1=1{} ORDER BY {} {} LIMIT ${} OFFSET ${}",
         where_clause,
         sort_column,
@@ -192,7 +192,7 @@ pub(super) async fn show(
     let media: Option<Media> = sqlx::query_as(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
-                width, height, created_at, updated_at
+                width, height, scan_status, scan_result, created_at, updated_at
          FROM media WHERE id = $1",
     )
     .bind(id)
@@ -261,7 +261,7 @@ pub(super) async fn update(
         "UPDATE media SET {} WHERE id = ${}
          RETURNING id, filename, original_filename, mime_type, size, path, url,
                    title, alt_text, caption, description, collection, is_optimized,
-                   width, height, created_at, updated_at",
+                   width, height, scan_status, scan_result, created_at, updated_at",
         updates.join(", "),
         param_count
     );
@@ -311,7 +311,7 @@ pub(super) async fn destroy(
     let media: Option<Media> = sqlx::query_as(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
-                width, height, created_at, updated_at
+                width, height, scan_status, scan_result, created_at, updated_at
          FROM media WHERE id = $1",
     )
     .bind(id)

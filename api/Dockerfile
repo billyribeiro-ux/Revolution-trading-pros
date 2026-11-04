@@ -30,6 +30,7 @@ RUN cargo build --release && rm -rf src
 COPY src ./src
 COPY migrations ./migrations
 COPY .sqlx ./.sqlx
+COPY role-policy.json ./role-policy.json
 
 # Build the actual application with SQLx offline mode
 ENV SQLX_OFFLINE=true

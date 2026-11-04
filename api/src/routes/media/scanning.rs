@@ -1,10 +1,4 @@
-//! Media scanning — malware scan hook + per-file scan endpoint.
-//!
-//! R27-B split: separated because the scanning surface is a clear
-//! integration seam (ClamAV / VirusTotal / GuardDuty) distinct from
-//! CRUD, uploads, and bulk operations. The `scan_for_malware` helper
-//! is exposed at module scope so future code (e.g. a post-upload
-//! hook) can call it without going through the HTTP layer.
+//! Scan actual stored objects through ClamAV and persist truthful verdicts.
 
 use axum::{
     extract::{Path, State},
@@ -12,80 +6,109 @@ use axum::{
 };
 
 use super::dto::{MalwareScanResult, Media};
-use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
+use crate::{AppState, middleware::admin::AdminUser, services::malware, utils::errors::ApiError};
 
-/// Hook for malware scanning integration
-/// In production, integrate with ClamAV, VirusTotal API, or cloud malware scanning service
-pub(super) async fn scan_for_malware(
-    _data: &[u8],
-    _filename: &str,
-) -> Result<MalwareScanResult, ApiError> {
-    // ICT 7 TODO: Integrate with actual malware scanning service
-    // Options:
-    // 1. ClamAV (self-hosted): clamd socket connection
-    // 2. VirusTotal API: https://www.virustotal.com/api/v3/files
-    // 3. AWS GuardDuty Malware Protection
-    // 4. Google Cloud Security Scanner
-
-    // For now, return a placeholder that indicates scanning is not yet implemented
-    // This should be replaced with actual integration
-    tracing::warn!(
-        target: "security",
-        "Malware scanning not yet implemented - file uploaded without scan"
-    );
-
-    Ok(MalwareScanResult {
-        is_clean: true, // Default to allowing - replace with actual scan
-        threat_name: None,
-        scan_provider: "not_implemented".to_string(),
-        scanned_at: chrono::Utc::now().to_rfc3339(),
-    })
+pub(super) async fn scan_for_malware(data: &[u8]) -> MalwareScanResult {
+    let address = std::env::var("CLAMD_ADDRESS").ok();
+    malware::scan(address.as_deref(), data).await
 }
 
-/// POST /admin/media/scan/:id - Trigger malware scan for a specific file
-/// ICT 7 SECURITY: AdminUser authentication required
-#[tracing::instrument(skip(state, _admin))]
+pub(super) async fn persist_result(
+    state: &AppState,
+    id: i64,
+    result: &MalwareScanResult,
+) -> Result<(), ApiError> {
+    sqlx::query(
+        "UPDATE media SET scan_status = $2, scan_result = $3, updated_at = NOW() WHERE id = $1",
+    )
+    .bind(id)
+    .bind(&result.status)
+    .bind(
+        serde_json::to_value(result)
+            .map_err(|_| ApiError::internal_error("Cannot serialize scan result"))?,
+    )
+    .execute(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    Ok(())
+}
+
+pub(super) async fn scan_stored(
+    state: &AppState,
+    media: &Media,
+) -> Result<MalwareScanResult, ApiError> {
+    // Claim the scan, preventing overlapping results from replacing a newer
+    // verdict. A pending row with no result is an upload awaiting its first scan.
+    let claimed = sqlx::query("UPDATE media SET scan_status = 'pending', scan_result = '{\"status\":\"pending\",\"is_clean\":false}'::jsonb, updated_at = NOW() WHERE id = $1 AND NOT (scan_status = 'pending' AND scan_result IS NOT NULL AND updated_at > NOW() - INTERVAL '2 minutes')")
+        .bind(media.id).execute(state.db.pool()).await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    if claimed.rows_affected() == 0 {
+        return Err(ApiError::new(
+            axum::http::StatusCode::CONFLICT,
+            "A scan is already pending",
+        ));
+    }
+    let address = std::env::var("CLAMD_ADDRESS")
+        .ok()
+        .filter(|s| !s.trim().is_empty());
+    let result = if address.is_none() {
+        malware::unsuccessful("unavailable", "CLAMD_ADDRESS is not configured")
+    } else if let Some(path) = &media.path {
+        match state.services.storage.download_for_scan(path).await {
+            Ok(data) => malware::scan(address.as_deref(), &data).await,
+            Err(error) => {
+                tracing::warn!(media_id = media.id, %error, "Cannot retrieve object for scanning");
+                malware::unsuccessful("failed", "Cannot retrieve stored object for scanning")
+            }
+        }
+    } else {
+        malware::unsuccessful("failed", "Media has no storage object key")
+    };
+    persist_result(state, media.id, &result).await?;
+    // Direct uploads reject infected bytes before storage. For a previously
+    // uploaded object, remove its publicly accessible copy on detection.
+    if result.status == "infected" {
+        if let Some(path) = &media.path {
+            state.services.storage.delete(path).await.map_err(|error| {
+                tracing::error!(media_id = media.id, %error, "Infected object removal failed");
+                ApiError::internal_error("Threat detected; object removal failed")
+            })?;
+        }
+        sqlx::query("UPDATE media SET url = NULL WHERE id = $1")
+            .bind(media.id)
+            .execute(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    }
+    Ok(result)
+}
+
+/// POST /admin/media/scan/{id}; GET /admin/media/{id} exposes persisted status.
 pub(super) async fn scan_media_file(
     State(state): State<AppState>,
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Get media record
-    let media: Option<Media> = sqlx::query_as(
+    let media: Media = sqlx::query_as(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
-                width, height, created_at, updated_at
+                width, height, scan_status, scan_result, created_at, updated_at
          FROM media WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
     .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    let media = match media {
-        Some(m) => m,
-        None => return Err(ApiError::not_found("Media not found")),
-    };
-
-    // In production, you would:
-    // 1. Download the file from R2
-    // 2. Send to malware scanner
-    // 3. Store scan result in database
-    // 4. Quarantine if threat found
-
-    let scan_result = scan_for_malware(&[], &media.filename).await?;
-
+    .map_err(|e| ApiError::database_error(&e.to_string()))?
+    .ok_or_else(|| ApiError::not_found("Media not found"))?;
+    let scan_result = scan_stored(&state, &media).await?;
     Ok(Json(serde_json::json!({
-        "success": true,
-        "data": {
-            "media_id": id,
-            "filename": media.filename,
-            "scan_result": scan_result
-        },
-        "message": if scan_result.is_clean {
-            "File scan complete - no threats detected"
-        } else {
-            "WARNING: Potential threat detected"
+        "success": matches!(scan_result.status.as_str(), "clean" | "infected"),
+        "data": { "media_id": id, "filename": media.filename, "scan_result": scan_result },
+        "message": match scan_result.status.as_str() {
+            "clean" => "File scanned; no threats detected",
+            "infected" => "Threat detected; stored object removed",
+            "unavailable" => "Scanner unavailable; file has not been scanned",
+            _ => "Scan failed; file has no clean verdict"
         }
     })))
 }

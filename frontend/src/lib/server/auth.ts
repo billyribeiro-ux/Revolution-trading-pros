@@ -26,37 +26,8 @@
 
 import { error, type RequestEvent } from '@sveltejs/kit';
 
-/**
- * Names that count as super-admin in `event.locals.user.role`.
- * Mirrors the list in `#lib/config/roles.ts:isSuperadmin` so server and client
- * agree.
- */
-const SUPERADMIN_ROLE_VALUES = new Set(['super-admin', 'super_admin', 'superadmin']);
-
-/**
- * Names that count as admin (or higher) in `event.locals.user.role`.
- */
-const ADMIN_ROLE_VALUES = new Set([
-	'admin',
-	'administrator',
-	'super-admin',
-	'super_admin',
-	'superadmin'
-]);
-
-/**
- * Canonical server-side role predicates. These are the single source of
- * truth for "is this role privileged?" on the server — consumed by the
- * proxy guards below AND by `routes/admin/+layout.server.ts` so the page
- * gate and the API gate can never drift apart.
- */
-export function isAdminRole(role: string | null | undefined): boolean {
-	return ADMIN_ROLE_VALUES.has((role ?? '').toLowerCase());
-}
-
-export function isSuperadminRole(role: string | null | undefined): boolean {
-	return SUPERADMIN_ROLE_VALUES.has((role ?? '').toLowerCase());
-}
+import { isAdminRole, isSuperadminRole } from '#lib/config/role-policy.js';
+export { isAdminRole, isSuperadminRole } from '#lib/config/role-policy.js';
 
 /**
  * Read the canonical `rtp_access_token` cookie, falling back to the

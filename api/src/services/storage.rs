@@ -72,6 +72,36 @@ impl StorageService {
     }
 
     /// Delete a file from R2
+    pub async fn download_for_scan(&self, key: &str) -> Result<Vec<u8>> {
+        tokio::time::timeout(std::time::Duration::from_secs(30), async {
+            let response = self
+                .client
+                .get_object()
+                .bucket(&self.bucket)
+                .key(key)
+                .send()
+                .await?;
+            let limit = super::malware::MAX_SCAN_BYTES;
+            if response
+                .content_length()
+                .is_some_and(|size| size > limit as i64)
+            {
+                anyhow::bail!("Object exceeds scan size limit");
+            }
+            let mut body = response.body;
+            let mut data = Vec::new();
+            while let Some(chunk) = body.try_next().await? {
+                if data.len() + chunk.len() > limit {
+                    anyhow::bail!("Object exceeds scan size limit");
+                }
+                data.extend_from_slice(&chunk);
+            }
+            Ok(data)
+        })
+        .await?
+    }
+
+    /// Delete a file from R2
     pub async fn delete(&self, key: &str) -> Result<()> {
         self.client
             .delete_object()

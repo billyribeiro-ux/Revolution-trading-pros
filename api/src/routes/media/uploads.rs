@@ -154,7 +154,7 @@ pub(super) async fn confirm_upload(
         )
         RETURNING id, filename, original_filename, mime_type, size, path, url,
                   title, alt_text, caption, description, collection, is_optimized,
-                  width, height, created_at, updated_at
+                  width, height, scan_status, scan_result, created_at, updated_at
         ",
     )
     .bind(&filename)
@@ -174,11 +174,8 @@ pub(super) async fn confirm_upload(
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-    Ok(Json(serde_json::json!({
-        "success": true,
-        "data": media,
-        "message": "Media uploaded successfully"
-    })))
+    super::scanning::scan_stored(&state, &media).await?;
+    super::crud::show(State(state), _admin, axum::extract::Path(media.id)).await
 }
 
 /// POST /admin/media/upload - Direct multipart file upload
@@ -270,6 +267,13 @@ pub(super) async fn direct_upload(
             ));
         }
 
+        let scan = super::scanning::scan_for_malware(&data).await;
+        if scan.status == "infected" {
+            return Err(ApiError::validation_error(
+                "Malware detected; file was not uploaded",
+            ));
+        }
+
         // Upload to R2
         let folder = "uploads";
         let public_url = storage
@@ -285,7 +289,7 @@ pub(super) async fn direct_upload(
         let stored_filename = file_key.split('/').last().unwrap_or(&file_key).to_string();
 
         // Insert into database
-        let media: Media = sqlx::query_as(
+        let mut media: Media = sqlx::query_as(
             r"
             INSERT INTO media (
                 filename, original_filename, mime_type, size, path, url,
@@ -296,7 +300,7 @@ pub(super) async fn direct_upload(
             )
             RETURNING id, filename, original_filename, mime_type, size, path, url,
                       title, alt_text, caption, description, collection, is_optimized,
-                      width, height, created_at, updated_at
+                      width, height, scan_status, scan_result, created_at, updated_at
             ",
         )
         .bind(&stored_filename)
@@ -309,6 +313,12 @@ pub(super) async fn direct_upload(
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
+        super::scanning::persist_result(&state, media.id, &scan).await?;
+        media.scan_status = scan.status.clone();
+        media.scan_result = Some(
+            serde_json::to_value(scan)
+                .map_err(|_| ApiError::internal_error("Cannot serialize scan result"))?,
+        );
         uploaded_files.push(media);
     }
 

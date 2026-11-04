@@ -1,0 +1,4 @@
+{
+	"admin": ["admin", "administrator", "developer", "super-admin", "super_admin", "superadmin"],
+	"superadmin": ["super-admin", "super_admin", "superadmin"]
+}

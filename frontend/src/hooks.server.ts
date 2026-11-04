@@ -1,5 +1,6 @@
 import { redirect, isRedirect } from '@sveltejs/kit';
 import { building } from '$app/env';
+import { isAdminRole } from '#lib/config/role-policy.js';
 
 /**
  * SvelteKit Server Hooks - Auth, Security Headers & Performance
@@ -110,7 +111,7 @@ const maintenanceHandler: Handle = async ({ event, resolve }) => {
 					if (res.ok) {
 						const json = await res.json();
 						const role = (json.data || json)?.role as string | undefined;
-						if (role === 'admin' || role === 'superadmin') {
+						if (isAdminRole(role)) {
 							return resolve(event);
 						}
 					}

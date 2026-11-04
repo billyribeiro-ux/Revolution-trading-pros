@@ -1,3 +1,5 @@
+import { isAdminRole } from '#lib/config/role-policy.js';
+
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Shared Authentication Utilities
@@ -25,8 +27,6 @@ interface AuthResponseFormatB {
 
 type AuthResponse = AuthResponseFormatA & AuthResponseFormatB;
 
-const ADMIN_ROLES = ['admin', 'super_admin'] as const;
-
 /**
  * Check if current user has admin privileges
  * Handles multiple response formats for backward compatibility
@@ -45,12 +45,11 @@ export async function checkAdminStatus(): Promise<boolean> {
 
 		// Check Format A (direct properties)
 		if (data.is_admin === true) return true;
-		if (data.role && ADMIN_ROLES.includes(data.role as (typeof ADMIN_ROLES)[number])) return true;
+		if (isAdminRole(data.role)) return true;
 
 		// Check Format B (nested under user)
 		if (data.user?.is_admin === true) return true;
-		if (data.user?.role && ADMIN_ROLES.includes(data.user.role as (typeof ADMIN_ROLES)[number]))
-			return true;
+		if (isAdminRole(data.user?.role)) return true;
 
 		return false;
 	} catch (error) {
