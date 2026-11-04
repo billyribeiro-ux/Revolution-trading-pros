@@ -65,7 +65,24 @@ pub(super) async fn get_connections_status(
         let key = def["key"].as_str().unwrap_or("");
         let is_builtin = def["is_builtin"].as_bool().unwrap_or(false);
 
-        if let Some(db_conn) = db_connections.iter().find(|c| c.service_key == key) {
+        if let Some(db_conn) = db_connections
+            .iter()
+            .find(|c| c.service_key == key && !is_builtin)
+        {
+            let verified = db_conn.status == "connected"
+                && db_conn.health_status.as_deref() == Some("verified")
+                && db_conn.environment.as_deref() == Some(environment);
+            let status = if db_conn.status == "connected" && !verified {
+                "pending"
+            } else {
+                db_conn.status.as_str()
+            };
+            let health = if verified { db_conn.health_score } else { 0 };
+            let last_error = if db_conn.status == "connected" && !verified {
+                Some("Legacy connection requires provider verification".to_string())
+            } else {
+                db_conn.last_error.clone()
+            };
             // Merge database connection with definition
             let masked_creds = db_conn.credentials_encrypted.as_ref().map(|e| {
                 mask_credentials(&decrypt_credentials(
@@ -85,26 +102,26 @@ pub(super) async fn get_connections_status(
                 "signup_url": def["signup_url"],
                 "is_oauth": def["is_oauth"],
                 "is_builtin": def["is_builtin"],
-                "is_connected": db_conn.status == "connected",
-                "status": db_conn.status,
-                "health_score": db_conn.health_score,
+                "is_connected": verified,
+                "status": status,
+                "health_score": health,
                 "environments": def["environments"],
                 "fields": def["fields"],
                 "connection": {
                     "id": db_conn.id,
                     "service_key": db_conn.service_key,
-                    "status": db_conn.status,
-                    "health_score": db_conn.health_score,
-                    "health_status": db_conn.health_status,
+                    "status": status,
+                    "health_score": health,
+                    "health_status": if verified {Some("verified")}else{db_conn.health_status.as_deref().filter(|status|*status!="healthy")},
                     "environment": db_conn.environment,
                     "credentials": masked_creds,
                     "settings": db_conn.settings,
                     "webhook_url": db_conn.webhook_url,
-                    "connected_at": db_conn.connected_at,
-                    "last_verified_at": db_conn.last_verified_at,
+                    "connected_at": if verified {db_conn.connected_at}else{None},
+                    "last_verified_at": if verified {db_conn.last_verified_at}else{None},
                     "api_calls_today": db_conn.api_calls_today,
                     "api_calls_total": db_conn.api_calls_total,
-                    "last_error": db_conn.last_error
+                    "last_error": last_error
                 }
             }));
         } else if is_builtin {

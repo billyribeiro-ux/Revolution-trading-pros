@@ -523,7 +523,7 @@
 								{#if service.connection}
 									<div class="connection-stats">
 										<div class="stat-row">
-											<span class="stat-label">Health</span>
+											<span class="stat-label">Last check</span>
 											<span
 												class={{
 													'stat-value': true,
@@ -534,7 +534,7 @@
 													'health-low': service.connection.health_score < 70
 												}}
 											>
-												{service.connection.health_score}%
+												{service.connection.health_status === 'verified' ? 'Passed' : 'Unverified'}
 											</span>
 										</div>
 										<div class="stat-row">

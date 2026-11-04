@@ -335,8 +335,21 @@ impl StripeService {
 
     /// Set webhook secret for signature verification
     pub fn with_webhook_secret(mut self, secret: &str) -> Self {
-        self.webhook_secret = Some(secret.to_string());
+        self.webhook_secret = if secret.trim().is_empty() || secret == "whsec_placeholder" {
+            None
+        } else {
+            Some(secret.to_string())
+        };
         self
+    }
+
+    fn ensure_configured(&self) -> Result<()> {
+        if self.secret_key.trim().is_empty() || self.secret_key == "sk_test_placeholder" {
+            return Err(anyhow!(
+                "Stripe credentials are unavailable; configure and verify this environment's connection"
+            ));
+        }
+        Ok(())
     }
 
     /// Create or retrieve Stripe customer
@@ -346,6 +359,7 @@ impl StripeService {
         name: Option<&str>,
         metadata: Option<HashMap<String, String>>,
     ) -> Result<StripeCustomer> {
+        self.ensure_configured()?;
         // First, try to find existing customer
         let search_params = [("email", email), ("limit", "1")];
 
@@ -404,6 +418,7 @@ impl StripeService {
         &self,
         config: CheckoutConfig,
     ) -> Result<StripeCheckoutSession> {
+        self.ensure_configured()?;
         let mut form_params: Vec<(String, String)> = vec![];
 
         // Customer email
@@ -565,6 +580,7 @@ impl StripeService {
         success_url: &str,
         cancel_url: &str,
     ) -> Result<String> {
+        self.ensure_configured()?;
         let config = CheckoutConfig {
             customer_email: customer_email.to_string(),
             customer_name: None,
@@ -597,6 +613,7 @@ impl StripeService {
 
     /// Retrieve checkout session details
     pub async fn get_checkout_session(&self, session_id: &str) -> Result<StripeCheckoutSession> {
+        self.ensure_configured()?;
         let response: StripeCheckoutSession = self
             .client
             .get(format!("{STRIPE_API_BASE}/checkout/sessions/{session_id}"))
@@ -617,6 +634,7 @@ impl StripeService {
         customer_id: &str,
         return_url: &str,
     ) -> Result<String> {
+        self.ensure_configured()?;
         let params = [("customer", customer_id), ("return_url", return_url)];
 
         let response: StripeBillingPortal = self
@@ -642,6 +660,7 @@ impl StripeService {
     /// flip the pointer; the old one can be deleted to stop future
     /// redemptions (already-redeemed subscriptions keep their discount).
     pub async fn create_coupon(&self, req: CreateStripeCouponRequest) -> Result<StripeCoupon> {
+        self.ensure_configured()?;
         if req.percent_off.is_some() == req.amount_off_cents.is_some() {
             return Err(anyhow!(
                 "Stripe coupon: must set exactly one of percent_off or amount_off_cents"
@@ -713,6 +732,7 @@ impl StripeService {
     /// checkout time to verify a DB-mirrored coupon still exists in Stripe
     /// before attaching it).
     pub async fn retrieve_coupon(&self, coupon_id: &str) -> Result<StripeCoupon> {
+        self.ensure_configured()?;
         let response = self
             .client
             .get(format!("{STRIPE_API_BASE}/coupons/{coupon_id}"))
@@ -734,6 +754,7 @@ impl StripeService {
     /// subscriptions that already have the discount keep it for the
     /// remainder of its `duration`.
     pub async fn delete_coupon(&self, coupon_id: &str) -> Result<()> {
+        self.ensure_configured()?;
         let response = self
             .client
             .delete(format!("{STRIPE_API_BASE}/coupons/{coupon_id}"))
@@ -759,6 +780,7 @@ impl StripeService {
         &self,
         session_id: &str,
     ) -> Result<StripeCheckoutSession> {
+        self.ensure_configured()?;
         let response: StripeCheckoutSession = self
             .client
             .get(format!("{STRIPE_API_BASE}/checkout/sessions/{session_id}"))
@@ -787,6 +809,7 @@ impl StripeService {
     /// `retrieve_checkout_session` already expand nested objects) so the period
     /// timestamps are present in the response.
     pub async fn get_subscription(&self, subscription_id: &str) -> Result<StripeSubscription> {
+        self.ensure_configured()?;
         let response: StripeSubscription = self
             .client
             .get(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
@@ -807,6 +830,7 @@ impl StripeService {
         subscription_id: &str,
         immediately: bool,
     ) -> Result<StripeSubscription> {
+        self.ensure_configured()?;
         if immediately {
             let response: StripeSubscription = self
                 .client
@@ -843,6 +867,7 @@ impl StripeService {
         subscription_id: &str,
         params: &[(&str, &str)],
     ) -> Result<StripeSubscription> {
+        self.ensure_configured()?;
         let response: StripeSubscription = self
             .client
             .post(format!("{STRIPE_API_BASE}/subscriptions/{subscription_id}"))
@@ -879,6 +904,7 @@ impl StripeService {
         amount: Option<i64>,
         reason: Option<&str>,
     ) -> Result<StripeRefund> {
+        self.ensure_configured()?;
         // Deterministic per (payment_intent, amount). A full refund and a
         // distinct partial-refund amount get distinct keys (they are distinct
         // logical operations); a retry of the same logical refund reuses it.
@@ -906,6 +932,7 @@ impl StripeService {
         reason: Option<&str>,
         logical_op: &str,
     ) -> Result<StripeRefund> {
+        self.ensure_configured()?;
         let mut params: Vec<(&str, String)> =
             vec![("payment_intent", payment_intent_id.to_string())];
 
@@ -1019,6 +1046,7 @@ impl StripeService {
         customer_id: &str,
         payment_method_id: &str,
     ) -> Result<()> {
+        self.ensure_configured()?;
         // Attach payment method to customer
         self.client
             .post(format!(
@@ -1054,6 +1082,7 @@ impl StripeService {
         &self,
         subscription_id: &str,
     ) -> Result<RetryPaymentResult> {
+        self.ensure_configured()?;
         // Get the latest open invoice for this subscription
         #[derive(Deserialize)]
         struct InvoiceList {
@@ -1126,6 +1155,7 @@ impl StripeService {
         &self,
         customer_id: &str,
     ) -> Result<Vec<StripePaymentMethod>> {
+        self.ensure_configured()?;
         let response: PaymentMethodsList = self
             .client
             .get(format!("{STRIPE_API_BASE}/payment_methods"))
@@ -1151,6 +1181,7 @@ impl StripeService {
         payment_method_id: &str,
         customer_id: &str,
     ) -> Result<StripePaymentMethod> {
+        self.ensure_configured()?;
         let response: StripePaymentMethod = self
             .client
             .post(format!(
@@ -1174,6 +1205,7 @@ impl StripeService {
         &self,
         payment_method_id: &str,
     ) -> Result<StripePaymentMethod> {
+        self.ensure_configured()?;
         let response: StripePaymentMethod = self
             .client
             .post(format!(
@@ -1193,6 +1225,7 @@ impl StripeService {
     /// Retrieve a specific payment method
     /// GET /v1/payment_methods/{id}
     pub async fn get_payment_method(&self, payment_method_id: &str) -> Result<StripePaymentMethod> {
+        self.ensure_configured()?;
         let response: StripePaymentMethod = self
             .client
             .get(format!(
@@ -1214,6 +1247,7 @@ impl StripeService {
 
     /// Create a new Stripe Product. Returns the product ID.
     pub async fn create_product(&self, name: &str) -> Result<String> {
+        self.ensure_configured()?;
         let response = self
             .client
             .post(format!("{STRIPE_API_BASE}/products"))
@@ -1251,6 +1285,7 @@ impl StripeService {
         currency: &str,
         billing_interval: &str,
     ) -> Result<StripePrice> {
+        self.ensure_configured()?;
         let mut params: Vec<(String, String)> = vec![
             ("product".to_string(), product_id.to_string()),
             ("unit_amount".to_string(), unit_amount_cents.to_string()),
@@ -1301,6 +1336,7 @@ impl StripeService {
 
     /// Retrieve a Stripe Price by ID.
     pub async fn get_price(&self, price_id: &str) -> Result<StripePrice> {
+        self.ensure_configured()?;
         let response = self
             .client
             .get(format!("{STRIPE_API_BASE}/prices/{price_id}"))
@@ -1323,6 +1359,7 @@ impl StripeService {
     /// Mark a Stripe Price as inactive. Existing subscriptions on this price
     /// are unaffected.
     pub async fn deactivate_price(&self, price_id: &str) -> Result<()> {
+        self.ensure_configured()?;
         self.client
             .post(format!("{STRIPE_API_BASE}/prices/{price_id}"))
             .basic_auth(&self.secret_key, None::<&str>)
@@ -1341,6 +1378,7 @@ impl StripeService {
         &self,
         subscription_id: &str,
     ) -> Result<Vec<StripeSubscriptionItem>> {
+        self.ensure_configured()?;
         #[derive(Deserialize)]
         struct ItemsResp {
             data: Vec<StripeSubscriptionItem>,
@@ -1381,6 +1419,7 @@ impl StripeService {
         new_price_id: &str,
         proration_behavior: &str,
     ) -> Result<()> {
+        self.ensure_configured()?;
         let items = self.list_subscription_items(subscription_id).await?;
         let item = items.first().ok_or_else(|| {
             anyhow!("Subscription {subscription_id} has no items; cannot migrate price")
@@ -1429,6 +1468,7 @@ impl StripeService {
     /// List all subscriptions with the given status, paginated.
     /// Returns every subscription page until Stripe says has_more=false.
     pub async fn list_subscriptions(&self, status: &str) -> Result<Vec<StripeSubscription>> {
+        self.ensure_configured()?;
         #[derive(Deserialize)]
         struct Page {
             data: Vec<StripeSubscription>,
@@ -1476,6 +1516,7 @@ impl StripeService {
         &self,
         customer_id: &str,
     ) -> Result<Option<String>> {
+        self.ensure_configured()?;
         let response: serde_json::Value = self
             .client
             .get(format!("{STRIPE_API_BASE}/customers/{customer_id}"))

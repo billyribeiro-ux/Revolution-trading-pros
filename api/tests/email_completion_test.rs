@@ -91,6 +91,28 @@ async fn superadmin_fixture(
 ) -> StatusCode {
     StatusCode::NO_CONTENT
 }
+// Test-only digest inspection; never mounted by production and never returns a secret.
+async fn credential_fixture(
+    State(state): State<AppState>,
+    _user: revolution_api::middleware::admin::SuperAdminUser,
+    axum::extract::Query(query): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Json<Value> {
+    use sha2::Digest;
+    let credentials = state
+        .services
+        .credentials
+        .resolve(
+            state.db.pool(),
+            "stripe",
+            query.get("environment").map(String::as_str).unwrap_or(""),
+        )
+        .await;
+    Json(
+        json!({"source":credentials.source,"environment":credentials.environment,
+        "secret_digest":credentials.credentials.get("secret_key").map(|value|hex::encode(sha2::Sha256::digest(value.as_bytes()))),
+        "webhook_digest":credentials.webhook_secret.as_ref().map(|value|hex::encode(sha2::Sha256::digest(value.as_bytes())))}),
+    )
+}
 async fn app(db: Database, email: Option<EmailService>) -> Router {
     let mut config = Config::from_env().unwrap();
     config.redis_url = "redis://127.0.0.1:1".into();
@@ -116,6 +138,10 @@ async fn app(db: Database, email: Option<EmailService>) -> Router {
         .route(
             "/fixture/superadmin",
             axum::routing::get(superadmin_fixture),
+        )
+        .route(
+            "/fixture/credential-source",
+            axum::routing::get(credential_fixture),
         )
         .nest("/api", routes::api_router())
         .with_state(state)

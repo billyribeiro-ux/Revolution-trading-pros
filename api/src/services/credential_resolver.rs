@@ -3,29 +3,18 @@
 //! Resolves third-party service credentials (Stripe today; SendGrid, Bunny.net,
 //! etc. later) at REQUEST time, not at startup.
 //!
-//! Lookup order:
-//!   1. `service_connections` table where service_key='stripe' AND
-//!      environment matches the current scope (or any-env if unset).
-//!   2. Env-var fallback (config::Config) — keeps dev workflows working when
-//!      the admin has not pasted keys into /admin/settings yet.
-//!
-//! Cache:
-//!   - 60-second TTL keyed by (service, environment).
-//!   - `tokio::sync::RwLock<HashMap<...>>` (no extra deps; project already has
-//!     tokio "full"). Reads are common, writes rare.
-//!   - `invalidate(service, environment)` is called by connections.rs's
-//!     connect/disconnect/test handlers so admins don't wait 60s for a paste
-//!     to take effect.
-//!
-//! Discipline:
-//!   - Never log secret_key / webhook_secret values. Boundary log only the
-//!     SOURCE ("db"|"env") so we can debug "is admin's paste being read?".
-//!   - On DB error, emit a warning and fall back to env. We do NOT fail the
-//!     request just because the connections table is unreachable — that
-//!     would brick payments during a partial DB outage.
+//! A named production/sandbox row is authoritative, including revocation.
+//! Legacy unscoped or unverified rows require explicit provider verification.
+//! Environment keys are used only when no applicable row exists and their mode
+//! matches the requested provider scope. Database failures never reactivate keys.
+//! Cache invalidation advances a generation so an in-flight old lookup cannot
+//! repopulate credentials after rotation/revocation. Secret values are never logged.
 
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::sync::{
+    Arc,
+    atomic::{AtomicU64, Ordering},
+};
 use std::time::{Duration, Instant};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD};
@@ -41,7 +30,7 @@ use crate::services::stripe::StripeService;
 const CACHE_TTL: Duration = Duration::from_secs(60);
 
 /// Resolved credential set for a single service/environment pair.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct ResolvedCreds {
     /// Service key (e.g. "stripe").
     pub service: String,
@@ -51,8 +40,24 @@ pub struct ResolvedCreds {
     pub credentials: HashMap<String, String>,
     /// Optional webhook signing secret stored alongside the row.
     pub webhook_secret: Option<String>,
-    /// Where these creds came from. "db" or "env".
+    /// Origin: db, env, blocked configuration, or unavailable storage.
     pub source: &'static str,
+}
+
+impl std::fmt::Debug for ResolvedCreds {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("ResolvedCreds")
+            .field("service", &self.service)
+            .field("environment", &self.environment)
+            .field(
+                "credential_fields",
+                &self.credentials.keys().collect::<Vec<_>>(),
+            )
+            .field("webhook_secret_set", &self.webhook_secret.is_some())
+            .field("source", &self.source)
+            .finish()
+    }
 }
 
 #[derive(Clone)]
@@ -68,6 +73,7 @@ struct CacheEntry {
 pub struct CredentialResolver {
     config: Arc<Config>,
     cache: Arc<RwLock<HashMap<String, CacheEntry>>>,
+    generation: Arc<AtomicU64>,
 }
 
 impl CredentialResolver {
@@ -75,23 +81,34 @@ impl CredentialResolver {
         Self {
             config: Arc::new(config),
             cache: Arc::new(RwLock::new(HashMap::new())),
+            generation: Arc::new(AtomicU64::new(0)),
         }
     }
 
     /// Resolve credentials for `(service, environment)`. Cache hit returns
     /// fast; cache miss queries the DB then falls back to env.
     pub async fn resolve(&self, pool: &PgPool, service: &str, environment: &str) -> ResolvedCreds {
+        let Some(environment) = self.scope(environment) else {
+            return self.empty(service, environment, "blocked");
+        };
         let key = cache_key(service, environment);
-
-        // Fast path: cached and fresh.
-        if let Some(hit) = self.cache_get(&key).await {
-            return hit;
+        for _ in 0..3 {
+            let generation = self.generation.load(Ordering::Acquire);
+            if let Some(hit) = self.cache_get(&key).await {
+                return hit;
+            }
+            let resolved = self.fetch_fresh(pool, service, environment).await;
+            if resolved.source == "unavailable" {
+                return resolved;
+            }
+            if self
+                .cache_put_current(key.clone(), resolved.clone(), generation)
+                .await
+            {
+                return resolved;
+            }
         }
-
-        // Slow path: query DB, fall back to env.
-        let resolved = self.fetch_fresh(pool, service, environment).await;
-        self.cache_put(key, resolved.clone()).await;
-        resolved
+        self.empty(service, environment, "unavailable")
     }
 
     /// Build a `StripeService` ready for outbound calls. Convenience wrapper
@@ -111,21 +128,41 @@ impl CredentialResolver {
         }
     }
 
-    /// Drop any cached entry for `(service, environment)` so the next call
-    /// reads fresh from the DB. Called by connections.rs after a save/test.
-    pub async fn invalidate(&self, service: &str, environment: &str) {
-        let key = cache_key(service, environment);
-        self.cache.write().await.remove(&key);
-        // Also nuke the unscoped variant — admins commonly paste keys without
-        // selecting an environment, and we want both lookups to repoll.
-        if !environment.is_empty() {
-            self.cache.write().await.remove(&cache_key(service, ""));
+    /// Invalidate all aliases/scopes for this service before another read returns.
+    pub async fn invalidate(&self, service: &str, _environment: &str) {
+        self.generation.fetch_add(1, Ordering::AcqRel);
+        let prefix = format!("{service}|");
+        self.cache
+            .write()
+            .await
+            .retain(|key, _| !key.starts_with(&prefix));
+    }
+    pub async fn clear(&self) {
+        self.generation.fetch_add(1, Ordering::AcqRel);
+        self.cache.write().await.clear();
+    }
+    fn scope<'a>(&'a self, environment: &'a str) -> Option<&'a str> {
+        match environment {
+            "production" => Some("production"),
+            "sandbox" | "development" | "staging" | "test" => Some("sandbox"),
+            "" => {
+                if self.config.environment == "production" {
+                    Some("production")
+                } else {
+                    Some("sandbox")
+                }
+            }
+            _ => None,
         }
     }
-
-    /// Clear the entire cache. Used by tests and after env-var hot-swaps.
-    pub async fn clear(&self) {
-        self.cache.write().await.clear();
+    fn empty(&self, service: &str, environment: &str, source: &'static str) -> ResolvedCreds {
+        ResolvedCreds {
+            service: service.into(),
+            environment: environment.into(),
+            credentials: HashMap::new(),
+            webhook_secret: None,
+            source,
+        }
     }
 
     // ── internals ──────────────────────────────────────────────────────────
@@ -139,8 +176,11 @@ impl CredentialResolver {
         Some(entry.creds.clone())
     }
 
-    async fn cache_put(&self, key: String, creds: ResolvedCreds) {
+    async fn cache_put_current(&self, key: String, creds: ResolvedCreds, generation: u64) -> bool {
         let mut guard = self.cache.write().await;
+        if self.generation.load(Ordering::Acquire) != generation {
+            return false;
+        }
         guard.insert(
             key,
             CacheEntry {
@@ -148,78 +188,62 @@ impl CredentialResolver {
                 fetched_at: Instant::now(),
             },
         );
+        true
+    }
+    #[cfg(test)]
+    async fn cache_put(&self, key: String, creds: ResolvedCreds) {
+        self.cache_put_current(key, creds, self.generation.load(Ordering::Acquire))
+            .await;
     }
 
     async fn fetch_fresh(&self, pool: &PgPool, service: &str, environment: &str) -> ResolvedCreds {
-        // Try the DB first. We accept either an exact env match OR a row
-        // with NULL environment — that's the "set-and-forget" default for
-        // admins who don't toggle test/live.
-        let row: Result<Option<DbCreds>, sqlx::Error> = sqlx::query_as::<_, DbCreds>(
-            r"
-            SELECT credentials_encrypted, webhook_secret, environment
-            FROM service_connections
-            WHERE service_key = $1
-              AND status = 'connected'
-              AND ($2::text = '' OR environment = $2 OR environment IS NULL)
-            ORDER BY (environment = $2) DESC NULLS LAST,
-                     last_verified_at DESC NULLS LAST
-            LIMIT 1
-            ",
-        )
-        .bind(service)
-        .bind(environment)
-        .fetch_optional(pool)
-        .await;
-
+        let row=sqlx::query_as::<_,DbCreds>("SELECT credentials_encrypted,webhook_secret,environment,status,health_status FROM service_connections WHERE service_key=$1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,last_verified_at DESC NULLS LAST,id DESC LIMIT 1")
+            .bind(service).bind(environment).fetch_optional(pool).await;
         match row {
             Ok(Some(db)) => {
+                if db.environment.as_deref() != Some(environment)
+                    || db.status != "connected"
+                    || db.health_status.as_deref() != Some("verified")
+                {
+                    return self.empty(service, environment, "blocked");
+                }
                 let credentials = db
                     .credentials_encrypted
                     .as_deref()
-                    .map(|e| {
+                    .map(|encrypted| {
                         crate::utils::crypto::decrypt_map(
                             &self.config.credentials_encryption_key,
-                            e,
+                            encrypted,
                         )
                     })
                     .unwrap_or_default();
-
-                tracing::debug!(
-                    target: "credentials",
-                    service = %service,
-                    environment = %environment,
-                    source = "db",
-                    "resolved credentials from database"
-                );
-
+                if credentials.is_empty()
+                    || (service == "stripe"
+                        && credentials
+                            .get("secret_key")
+                            .is_none_or(|value| value.trim().is_empty()))
+                {
+                    return self.empty(service, environment, "blocked");
+                }
+                let webhook_secret = credentials
+                    .get("webhook_secret")
+                    .filter(|value| !value.is_empty())
+                    .cloned()
+                    .or(db.webhook_secret.filter(|value| !value.is_empty()));
                 return ResolvedCreds {
-                    service: service.to_string(),
-                    environment: environment.to_string(),
+                    service: service.into(),
+                    environment: environment.into(),
                     credentials,
-                    webhook_secret: db.webhook_secret,
+                    webhook_secret,
                     source: "db",
                 };
             }
-            Ok(None) => {
-                tracing::debug!(
-                    target: "credentials",
-                    service = %service,
-                    environment = %environment,
-                    source = "env",
-                    "no DB row; falling back to env"
-                );
-            }
-            Err(e) => {
-                tracing::warn!(
-                    target: "credentials",
-                    service = %service,
-                    environment = %environment,
-                    error = %e,
-                    "DB lookup failed; falling back to env"
-                );
+            Ok(None) => {}
+            Err(error) => {
+                tracing::warn!(target:"credentials",service,environment,error=%error,"Credential storage unavailable; refusing environment fallback");
+                return self.empty(service, environment, "unavailable");
             }
         }
-
         self.env_fallback(service, environment)
     }
 
@@ -227,20 +251,44 @@ impl CredentialResolver {
         let mut credentials = HashMap::new();
         let mut webhook_secret = None;
 
+        let Some(environment) = self.scope(environment) else {
+            return self.empty(service, environment, "blocked");
+        };
         if service == "stripe" {
+            let expected = if environment == "production" {
+                "sk_live_"
+            } else {
+                "sk_test_"
+            };
+            if self.config.stripe_secret_key == "sk_test_placeholder"
+                || !self.config.stripe_secret_key.starts_with(expected)
+            {
+                return self.empty(service, environment, "blocked");
+            }
             if !self.config.stripe_secret_key.is_empty() {
                 credentials.insert(
                     "secret_key".to_string(),
                     self.config.stripe_secret_key.clone(),
                 );
             }
-            if !self.config.stripe_publishable_key.is_empty() {
+            let public_prefix = if environment == "production" {
+                "pk_live_"
+            } else {
+                "pk_test_"
+            };
+            if self
+                .config
+                .stripe_publishable_key
+                .starts_with(public_prefix)
+            {
                 credentials.insert(
                     "publishable_key".to_string(),
                     self.config.stripe_publishable_key.clone(),
                 );
             }
-            if !self.config.stripe_webhook_secret.is_empty() {
+            if !self.config.stripe_webhook_secret.is_empty()
+                && self.config.stripe_webhook_secret != "whsec_placeholder"
+            {
                 webhook_secret = Some(self.config.stripe_webhook_secret.clone());
             }
         }
@@ -263,8 +311,9 @@ fn cache_key(service: &str, environment: &str) -> String {
 struct DbCreds {
     credentials_encrypted: Option<String>,
     webhook_secret: Option<String>,
-    #[allow(dead_code)]
     environment: Option<String>,
+    status: String,
+    health_status: Option<String>,
 }
 
 #[cfg(test)]
@@ -381,5 +430,61 @@ mod tests {
         assert!(resolver.cache_get(&key).await.is_some());
         resolver.invalidate("stripe", "production").await;
         assert!(resolver.cache_get(&key).await.is_none());
+    }
+    #[test]
+    fn scope_normalizes_application_environments_without_mixing_live_keys() {
+        let resolver = CredentialResolver::new(dummy_config("sk_test_fixture"));
+        assert_eq!(resolver.scope("development"), Some("sandbox"));
+        assert_eq!(resolver.scope("staging"), Some("sandbox"));
+        assert!(
+            resolver
+                .env_fallback("stripe", "production")
+                .credentials
+                .is_empty()
+        );
+        assert!(
+            resolver
+                .env_fallback("stripe", "unrecognized")
+                .credentials
+                .is_empty()
+        );
+        let live = CredentialResolver::new(dummy_config("sk_live_fixture"));
+        assert!(
+            live.env_fallback("stripe", "sandbox")
+                .credentials
+                .is_empty()
+        );
+        assert!(
+            live.env_fallback("stripe", "production")
+                .credentials
+                .contains_key("secret_key")
+        );
+        assert!(
+            !live
+                .env_fallback("stripe", "production")
+                .credentials
+                .contains_key("publishable_key")
+        );
+        let debug = format!("{:?}", resolver.env_fallback("stripe", "sandbox"));
+        assert!(!debug.contains("sk_test_fixture"));
+        assert!(!debug.contains("whsec_test"));
+    }
+    #[tokio::test]
+    async fn invalidation_prevents_a_stale_fetch_repopulating_the_cache() {
+        let resolver = CredentialResolver::new(dummy_config("sk_test_fixture"));
+        let generation = resolver.generation.load(Ordering::Acquire);
+        let old = resolver.env_fallback("stripe", "sandbox");
+        resolver.invalidate("stripe", "development").await;
+        assert!(
+            !resolver
+                .cache_put_current(cache_key("stripe", "sandbox"), old, generation)
+                .await
+        );
+        assert!(
+            resolver
+                .cache_get(&cache_key("stripe", "sandbox"))
+                .await
+                .is_none()
+        );
     }
 }
