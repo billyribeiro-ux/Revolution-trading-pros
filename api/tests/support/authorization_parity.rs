@@ -3,6 +3,19 @@ use axum::{Router, http::StatusCode};
 use serde_json::Value;
 use sqlx::PgPool;
 pub(super) async fn proof(api: &Router, pool: &PgPool) {
+    use tower::ServiceExt;
+    let anonymous = api
+        .clone()
+        .oneshot(
+            axum::http::Request::builder()
+                .uri("/api/auth/me")
+                .body(axum::body::Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(anonymous.status(), StatusCode::UNAUTHORIZED);
+    assert_eq!(anonymous.headers()["cache-control"], "no-store");
     let id:i64=sqlx::query_scalar("INSERT INTO users(email,name,password_hash,role,email_verified_at) VALUES('configured-auth-proof@example.test','Configured authorization fixture','not-a-login-password','user',NOW()) RETURNING id").fetch_one(pool).await.unwrap();
     let token =
         revolution_api::utils::create_jwt(id, &std::env::var("JWT_SECRET").unwrap(), 1).unwrap();
@@ -83,6 +96,19 @@ pub(super) async fn proof(api: &Router, pool: &PgPool) {
             );
         }
     }
+    let authenticated = api
+        .clone()
+        .oneshot(
+            axum::http::Request::builder()
+                .uri("/api/auth/me")
+                .header("Authorization", format!("Bearer {token}"))
+                .body(axum::body::Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(authenticated.status(), StatusCode::OK);
+    assert_eq!(authenticated.headers()["cache-control"], "no-store");
     // A role revocation is effective on the next request with the same JWT.
     sqlx::query("UPDATE users SET role='user',email_verified_at=NOW() WHERE id=$1")
         .bind(id)

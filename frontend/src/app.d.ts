@@ -59,7 +59,14 @@ declare global {
 			accessToken?: string | null;
 			/** Authentication method to get current session */
 			auth: () => Promise<{
-				user: { id: number; email: string; name?: string; role?: string } | null;
+				user: {
+					id: number;
+					email: string;
+					name?: string;
+					role?: string;
+					is_superadmin?: boolean;
+					is_developer?: boolean;
+				} | null;
 			} | null>;
 		}
 		interface PageData {

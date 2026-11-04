@@ -35,6 +35,14 @@ mod verify;
 // resolving `routes::auth::resolve_client_ip` at the same path.
 pub use helpers::resolve_client_ip;
 
+async fn private_response(mut response: axum::response::Response) -> axum::response::Response {
+    response.headers_mut().insert(
+        axum::http::header::CACHE_CONTROL,
+        axum::http::HeaderValue::from_static("no-store"),
+    );
+    response
+}
+
 /// Build the auth router
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -48,9 +56,12 @@ pub fn router() -> Router<AppState> {
         .route("/reset-password", post(password::reset_password))
         .route("/verify-email", get(verify::verify_email))
         .route("/resend-verification", post(verify::resend_verification))
+        .layer(axum::middleware::map_response(private_response))
 }
 
 /// Router for /logout at top level (frontend compatibility)
 pub fn logout_router() -> Router<AppState> {
-    Router::new().route("/", post(session::logout))
+    Router::new()
+        .route("/", post(session::logout))
+        .layer(axum::middleware::map_response(private_response))
 }

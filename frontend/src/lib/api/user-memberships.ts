@@ -54,6 +54,8 @@ export interface UserMembership {
 	slug: string;
 	status: MembershipStatus;
 	membershipType?: MembershipSubscriptionType;
+	/** Effective privileged access, distinct from a purchased subscription. */
+	accessSource?: 'privileged';
 	icon?: string;
 	startDate?: string;
 	nextBillingDate?: string;
@@ -423,9 +425,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 			if (plansResponse.ok) {
 				const plans = extractProductArray(await plansResponse.json(), 'plans');
-				if (plans.length > 0) {
-					return transformDeveloperProducts(plans);
-				}
+				return transformDeveloperProducts(plans);
 			}
 
 			// STRATEGY 2: Fallback to products proxy endpoint
@@ -437,15 +437,10 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 			if (productsResponse.ok) {
 				const products = extractProductArray(await productsResponse.json(), 'products');
-				if (products.length > 0) {
-					return transformDeveloperProducts(products);
-				}
+				return transformDeveloperProducts(products);
 			}
 
-			// STRATEGY 3: Return mock data — backend not ready yet (expected)
-			return getDeveloperMockMemberships();
-		} catch (_error) {
-			return getDeveloperMockMemberships();
+			throw new Error('Membership catalog is unavailable; privileged access could not be loaded');
 		} finally {
 			developerMembershipsPromise = null;
 		}
@@ -466,10 +461,12 @@ function extractProductArray(
 	primaryKey: 'plans' | 'products'
 ): DeveloperRawProduct[] {
 	if (Array.isArray(body)) return body as DeveloperRawProduct[];
-	if (typeof body !== 'object' || body === null) return [];
+	if (typeof body !== 'object' || body === null)
+		throw new Error('Membership catalog returned an invalid response');
 	const obj = body as Record<string, unknown>;
 	const candidate = obj[primaryKey] ?? obj.data;
-	return Array.isArray(candidate) ? (candidate as DeveloperRawProduct[]) : [];
+	if (!Array.isArray(candidate)) throw new Error('Membership catalog returned an invalid response');
+	return candidate as DeveloperRawProduct[];
 }
 
 /**
@@ -497,7 +494,6 @@ function transformDeveloperProducts(products: DeveloperRawProduct[]): UserMember
 	const memberships: UserMembership[] = products.map((item) => {
 		const name = item.name || item.title || 'Unnamed Membership';
 		const slug = item.slug || `membership-${item.id}`;
-		const price = item.price || item.price_monthly || 0;
 
 		let membershipType: MembershipType = 'trading-room';
 		const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
@@ -545,10 +541,8 @@ function transformDeveloperProducts(products: DeveloperRawProduct[]): UserMember
 			status: 'active' as MembershipStatus,
 			membershipType: 'complimentary' as MembershipSubscriptionType,
 			icon,
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price,
-			interval: 'monthly' as BillingInterval,
+			accessSource: 'privileged',
+			price: 0,
 			roomLabel: name,
 			features: Array.isArray(item.features) ? item.features.map(String) : []
 		};
@@ -572,112 +566,6 @@ function getDefaultIcon(type: MembershipType): string {
 		'premium-report': 'file-text'
 	};
 	return iconMap[type] || 'chart-line';
-}
-
-/**
- * ICT 11+ PATTERN: Mock memberships for development/fallback
- * Ensures developers always have access even if API is down
- */
-function getDeveloperMockMemberships(): UserMembershipsResponse {
-	const mockMemberships: UserMembership[] = [
-		// ═══════════════════════════════════════════════════════════════════════════
-		// TRADING ROOMS (3)
-		// ═══════════════════════════════════════════════════════════════════════════
-		{
-			id: 'day-trading-room',
-			name: 'Day Trading Room',
-			type: 'trading-room',
-			slug: 'day-trading-room',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'bolt',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly'
-		},
-		{
-			id: 'swing-trading-room',
-			name: 'Swing Trading Room',
-			type: 'trading-room',
-			slug: 'swing-trading-room',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'trending-up',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly'
-		},
-		// ═══════════════════════════════════════════════════════════════════════════
-		// ALERT SERVICES (2)
-		// ═══════════════════════════════════════════════════════════════════════════
-		{
-			id: 'spx-profit-pulse',
-			name: 'SPX Profit Pulse',
-			type: 'alert-service',
-			slug: 'spx-profit-pulse',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'bell',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly',
-			accessUrl: 'https://live.simplertrading.com/spx-profit-pulse'
-		},
-		{
-			id: 'explosive-swings',
-			name: 'Explosive Swings',
-			type: 'alert-service',
-			slug: 'explosive-swings',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'rocket',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly',
-			accessUrl: 'https://live.simplertrading.com/explosive-swings'
-		},
-		// ═══════════════════════════════════════════════════════════════════════════
-		// COURSES / MENTORSHIP (1)
-		// ═══════════════════════════════════════════════════════════════════════════
-		{
-			id: 'small-account-mentorship',
-			name: 'Small Account Mentorship',
-			type: 'course',
-			slug: 'small-account-mentorship',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'school',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 0,
-			interval: 'monthly',
-			accessUrl: '/live-trading-rooms/small-accounts-room'
-		},
-		// ═══════════════════════════════════════════════════════════════════════════
-		// INDICATORS / SCANNERS (1) - High Octane Scanner Only
-		// ═══════════════════════════════════════════════════════════════════════════
-		{
-			id: 'high-octane-scanner',
-			name: 'High Octane Scanner',
-			type: 'indicator',
-			slug: 'high-octane-scanner',
-			status: 'active',
-			membershipType: 'complimentary',
-			icon: 'chart-candle',
-			startDate: new Date().toISOString(),
-			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-			price: 119,
-			interval: 'monthly'
-		}
-		// NOTE: Weekly Watchlist is in the Tools section, not memberships cards
-	];
-
-	const enhanced = enhanceMemberships(mockMemberships);
-	return categorizeMemberships(enhanced);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

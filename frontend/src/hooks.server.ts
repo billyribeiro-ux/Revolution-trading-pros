@@ -431,7 +431,22 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		'Referrer-Policy',
 		newsletterCallback ? 'no-referrer' : 'strict-origin-when-cross-origin'
 	);
-	if (newsletterCallback) headers.set('Cache-Control', 'no-store');
+	const privateAuthPath = [
+		'/api/auth',
+		'/api/admin',
+		'/api/oauth',
+		'/admin',
+		'/dashboard',
+		'/account',
+		'/checkout'
+	].some((prefix) => event.url.pathname === prefix || event.url.pathname.startsWith(`${prefix}/`));
+	if (
+		newsletterCallback ||
+		event.locals.user ||
+		privateAuthPath ||
+		event.request.headers.has('Authorization')
+	)
+		headers.set('Cache-Control', 'no-store');
 
 	// Permissions Policy - disable unnecessary browser features
 	headers.set(
