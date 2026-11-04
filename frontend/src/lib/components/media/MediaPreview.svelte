@@ -80,7 +80,7 @@
 		editOverrides = {
 			...editOverrides,
 			[item.id]: {
-				...(editOverrides[item.id] ?? {}),
+				...editOverrides[item.id],
 				[field]: value
 			}
 		};
@@ -116,7 +116,8 @@
 		}
 	}
 
-	function formatBytes(bytes: number): string {
+	function formatBytes(bytes: number | null): string {
+		if (bytes === null) return 'Unknown';
 		if (bytes < 1024) return bytes + ' B';
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
 		return (bytes / 1024 / 1024).toFixed(2) + ' MB';
@@ -186,14 +187,17 @@
 						<div class="preview-image">
 							{#if item.file_type === 'image'}
 								<img
-									src={selectedVariant?.url || item.url}
+									src={selectedVariant?.preview_url ||
+										selectedVariant?.url ||
+										item.preview_url ||
+										item.url}
 									alt={item.alt_text || item.filename}
 									width={selectedVariant?.width ?? item.width ?? undefined}
 									height={selectedVariant?.height ?? item.height ?? undefined}
 									loading="lazy"
 								/>
 							{:else if item.file_type === 'video'}
-								<video controls src={item.url}>
+								<video controls src={item.preview_url || item.url}>
 									<track kind="captions" />
 								</video>
 							{:else}
@@ -309,7 +313,11 @@
 							<div class="info-section">
 								<h3>Actions</h3>
 								<div class="action-buttons">
-									<a href={item.url} download={item.filename} class="btn-secondary btn-sm">
+									<a
+										href={item.preview_url || item.url}
+										download={item.filename}
+										class="btn-secondary btn-sm"
+									>
 										Download Original
 									</a>
 									<button type="button" class="btn-danger btn-sm" onclick={handleDelete}>
@@ -335,7 +343,7 @@
 							>
 								<div class="variant-preview">
 									<img
-										src={variant.url}
+										src={variant.preview_url || variant.url}
 										alt="{variant.type} variant"
 										loading="lazy"
 										width={variant.width}

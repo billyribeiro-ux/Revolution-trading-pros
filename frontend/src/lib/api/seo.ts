@@ -623,7 +623,9 @@ class SeoManagementService {
 		this.setupWebSocket();
 		this.startRankTracking();
 		this.startAlertMonitoring();
-		this.loadInitialData();
+		void this.loadInitialData().catch((error) =>
+			logger.error('[SeoService] Background loadInitialData failed', { error })
+		);
 
 		// audit 2026-05-20: removed singleton-init startup-noise log (per R5-E "Initialized" pattern)
 	}
@@ -733,7 +735,9 @@ class SeoManagementService {
 	private handleCrawlComplete(_data: unknown): void {
 		// Payload isn't read — we just refresh local technical issues on
 		// any crawl-complete event.
-		this.loadTechnicalIssues();
+		void this.loadTechnicalIssues().catch((error) =>
+			logger.error('[SeoService] Background loadTechnicalIssues failed', { error })
+		);
 	}
 
 	private handleNew404(error404: Error404): void {
@@ -781,11 +785,15 @@ class SeoManagementService {
 		if (!browser) return;
 
 		// Initial check
-		this.checkRankings();
+		void this.checkRankings().catch((error) =>
+			logger.error('[SeoService] Background checkRankings failed', { error })
+		);
 
 		// Periodic checks
 		this.rankCheckInterval = window.setInterval(() => {
-			this.checkRankings();
+			void this.checkRankings().catch((error) =>
+				logger.error('[SeoService] Background checkRankings failed', { error })
+			);
 		}, RANK_CHECK_INTERVAL);
 	}
 
@@ -806,7 +814,9 @@ class SeoManagementService {
 
 		// Periodic checks
 		this.alertCheckInterval = window.setInterval(() => {
-			this.checkAlerts();
+			void this.checkAlerts().catch((error) =>
+				logger.error('[SeoService] Background checkAlerts failed', { error })
+			);
 		}, ALERT_CHECK_INTERVAL);
 	}
 

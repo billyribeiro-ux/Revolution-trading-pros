@@ -77,6 +77,7 @@ class TelemetryService {
 	private logs: LogEntry[] = [];
 	private currentTraceId: string | null = null;
 	private flushInterval: number | null = null;
+	private isFlushing = false;
 	private config = {
 		endpoint: import.meta.env['VITE_TELEMETRY_ENDPOINT'] || 'http://localhost:4318',
 		serviceName: 'revolution-trading-frontend',
@@ -103,12 +104,12 @@ class TelemetryService {
 	private initialize(): void {
 		// Start periodic flush
 		this.flushInterval = window.setInterval(() => {
-			this.flush();
+			void this.flush();
 		}, this.config.flushIntervalMs);
 
 		// Flush on page unload
 		window.addEventListener('beforeunload', () => {
-			this.flush();
+			void this.flush();
 		});
 
 		// Capture unhandled errors
@@ -221,7 +222,7 @@ class TelemetryService {
 
 		// Auto-flush if batch is full
 		if (this.metrics.length >= this.config.maxBatchSize) {
-			this.flush();
+			void this.flush();
 		}
 	}
 
@@ -266,7 +267,7 @@ class TelemetryService {
 
 		// Auto-flush on error/fatal
 		if (level === 'error' || level === 'fatal') {
-			this.flush();
+			void this.flush();
 		}
 	}
 
@@ -383,6 +384,7 @@ class TelemetryService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	private async flush(): Promise<void> {
+		if (this.isFlushing) return;
 		if (!browser) return;
 
 		const spans = Array.from(this.spans.values()).filter((s) => s.endTime);
@@ -393,6 +395,7 @@ class TelemetryService {
 			return;
 		}
 
+		this.isFlushing = true;
 		try {
 			// Send to telemetry backend
 			await this.sendTelemetry({
@@ -408,10 +411,12 @@ class TelemetryService {
 
 			// Clear sent data
 			spans.forEach((span) => this.spans.delete(span.spanId));
-			this.metrics = [];
-			this.logs = [];
+			this.metrics.splice(0, metrics.length);
+			this.logs.splice(0, logs.length);
 		} catch (error) {
 			logger.error('[Telemetry] Failed to flush', { error });
+		} finally {
+			this.isFlushing = false;
 		}
 	}
 
@@ -429,19 +434,14 @@ class TelemetryService {
 			return;
 		}
 
-		try {
-			await fetch(`${this.config.endpoint}/v1/traces`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data),
-				keepalive: true
-			});
-		} catch (error) {
-			// Silently fail to avoid affecting user experience
-			logger.error('[Telemetry] Send failed', { error });
-		}
+		const response = await fetch(`${this.config.endpoint}/v1/traces`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(data),
+			keepalive: true
+		});
+		if (!response.ok)
+			throw new Error(`Telemetry collector rejected the batch (HTTP ${response.status})`);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -468,7 +468,7 @@ class TelemetryService {
 		if (this.flushInterval) {
 			clearInterval(this.flushInterval);
 		}
-		this.flush();
+		void this.flush();
 	}
 }
 

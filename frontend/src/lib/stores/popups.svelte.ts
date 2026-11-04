@@ -175,11 +175,13 @@ export const popupStore = {
 
 		// Send to backend API
 		if (browser) {
-			import('#lib/api/popups.js').then(({ recordPopupImpression }) => {
-				recordPopupImpression(popupId).catch((err) => {
-					console.error('Failed to record impression:', err);
-				});
-			});
+			void import('#lib/api/popups.js')
+				.then(({ recordPopupImpression }) => {
+					recordPopupImpression(popupId).catch((err) => {
+						console.error('Failed to record impression:', err);
+					});
+				})
+				.catch((error: unknown) => console.error('Failed to load popup analytics:', error));
 		}
 	},
 
@@ -194,17 +196,19 @@ export const popupStore = {
 	recordConversion(popupId: string, data?: Record<string, JsonValue>) {
 		// Send to backend API
 		if (browser) {
-			import('#lib/api/popups.js').then(({ recordPopupConversion }) => {
-				// `data` is a freeform JSON payload (callers pass `{ formData,
-				// variant, submissionTime, ... }`); pass through unchanged so
-				// the wire shape stays flat — see LB-1 in R23-A report for the
-				// `ConversionData`-envelope drift.
-				recordPopupConversion(popupId, data as Parameters<typeof recordPopupConversion>[1]).catch(
-					(err) => {
-						console.error('Failed to record conversion:', err);
-					}
-				);
-			});
+			void import('#lib/api/popups.js')
+				.then(({ recordPopupConversion }) => {
+					// `data` is a freeform JSON payload (callers pass `{ formData,
+					// variant, submissionTime, ... }`); pass through unchanged so
+					// the wire shape stays flat — see LB-1 in R23-A report for the
+					// `ConversionData`-envelope drift.
+					recordPopupConversion(popupId, data as Parameters<typeof recordPopupConversion>[1]).catch(
+						(err) => {
+							console.error('Failed to record conversion:', err);
+						}
+					);
+				})
+				.catch((error: unknown) => console.error('Failed to load popup analytics:', error));
 		}
 	},
 

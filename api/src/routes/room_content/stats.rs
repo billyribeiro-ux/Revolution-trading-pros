@@ -25,7 +25,7 @@ struct StatsResponse {
 
 /// Get room stats
 /// ICT 7+ Phase 2: Redis cached with 5 minute TTL
-pub(super) async fn get_room_stats(
+pub(crate) async fn get_room_stats(
     State(state): State<AppState>,
     user: User,
     Path(room_slug): Path<String>,

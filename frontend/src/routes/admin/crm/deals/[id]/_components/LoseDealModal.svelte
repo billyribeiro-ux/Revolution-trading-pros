@@ -36,7 +36,7 @@
 		<div class="modal-body">
 			<div class="deal-summary">
 				<p class="summary-name">{deal.name}</p>
-				<p class="summary-value">{formatCurrency(deal.amount)}</p>
+				<p class="summary-value">{formatCurrency(deal.amount, deal.currency)}</p>
 			</div>
 			<div class="form-group">
 				<label for="lost-reason">Lost Reason <span class="required">*</span></label>
@@ -221,7 +221,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.btn-danger:disabled {
 		opacity: 0.5;

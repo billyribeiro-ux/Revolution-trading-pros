@@ -11,7 +11,7 @@
 		subscribers: EmailSubscriber[];
 		selectedSubscribers: Set<string>;
 		getStatusColor: (status: string) => string;
-		formatDate: (dateStr: string | undefined) => string;
+		formatDate: (dateStr: string | null | undefined) => string;
 		ontoggleAll: () => void;
 		ontoggleOne: (id: string) => void;
 		onaction: (action: RowAction) => void;
@@ -19,7 +19,7 @@
 
 	let {
 		subscribers,
-		selectedSubscribers = $bindable(),
+		selectedSubscribers,
 		getStatusColor,
 		formatDate,
 		ontoggleAll,
@@ -33,10 +33,10 @@
 		<tr>
 			<th class="checkbox-col">
 				<input
-					id="page-checkbox"
-					name="page-checkbox"
+					aria-label="Select all visible subscribers"
 					type="checkbox"
-					checked={selectedSubscribers.size === subscribers.length}
+					checked={subscribers.length > 0 &&
+						subscribers.every((s) => selectedSubscribers.has(s.id))}
 					onchange={ontoggleAll}
 				/>
 			</th>
@@ -54,8 +54,7 @@
 			<tr>
 				<td class="checkbox-col">
 					<input
-						id="page-checkbox"
-						name="page-checkbox"
+						aria-label={`Select ${subscriber.email}`}
 						type="checkbox"
 						checked={selectedSubscribers.has(subscriber.id)}
 						onchange={() => ontoggleOne(subscriber.id)}
@@ -68,7 +67,7 @@
 						</div>
 						<div>
 							<div class="subscriber-name">
-								{subscriber.first_name || ''}
+								{subscriber.first_name || subscriber.display_name || ''}
 								{subscriber.last_name || ''}
 							</div>
 							<div class="subscriber-email">{subscriber.email || ''}</div>
@@ -79,6 +78,9 @@
 					<span class={['status-badge', getStatusColor(subscriber.status)]}>
 						{subscriber.status}
 					</span>
+					{#if subscriber.status === 'pending' && subscriber.confirmation}<small
+							>Confirmation: {subscriber.confirmation.status}</small
+						>{/if}
 				</td>
 				<td>
 					<div class="tags-list">
@@ -91,10 +93,11 @@
 					</div>
 				</td>
 				<td>
-					<div class="score-bar">
-						<div class="score-fill" style:width={`${subscriber.email_score}%`}></div>
-						<span>{subscriber.email_score}</span>
-					</div>
+					{#if subscriber.email_score === null}<span>Unavailable</span>{:else}
+						<div class="score-bar">
+							<div class="score-fill" style:width={`${subscriber.email_score}%`}></div>
+							<span>{subscriber.email_score}</span>
+						</div>{/if}
 				</td>
 				<td>{formatDate(subscriber.subscribed_at)}</td>
 				<td>
@@ -105,15 +108,19 @@
 						{#if subscriber.status === 'subscribed'}
 							<button
 								class="btn-icon small"
+								aria-label={`Unsubscribe ${subscriber.email}`}
 								title="Unsubscribe"
 								onclick={() => onaction({ type: 'unsubscribe', id: subscriber.id })}
 							>
 								<IconX size={16} />
 							</button>
-						{:else if subscriber.status === 'unsubscribed'}
+						{:else}
 							<button
 								class="btn-icon small"
-								title="Resubscribe"
+								aria-label={`Request confirmation for ${subscriber.email}`}
+								title={subscriber.status === 'pending'
+									? 'Resend confirmation'
+									: 'Request confirmation'}
 								onclick={() => onaction({ type: 'resubscribe', id: subscriber.id })}
 							>
 								<IconCheck size={16} />
@@ -121,6 +128,7 @@
 						{/if}
 						<button
 							class="btn-icon small danger"
+							aria-label={`Delete ${subscriber.email}`}
 							title="Delete"
 							onclick={() => onaction({ type: 'delete', id: subscriber.id })}
 						>

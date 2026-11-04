@@ -1,3 +1,4 @@
+import { SvelteSet } from 'svelte/reactivity';
 import { browser } from '$app/env';
 import { goto } from '$app/navigation';
 import { logger } from '#lib/utils/logger.js';
@@ -11,8 +12,7 @@ import {
 	getHighestRole,
 	SUPERADMIN_EMAILS,
 	ROLES,
-	PERMISSIONS,
-	type PermissionType
+	PERMISSIONS
 } from '#lib/config/roles.js';
 
 /**
@@ -49,6 +49,8 @@ export interface User {
 	permissions?: string[];
 	role?: string; // Rust API sends single role
 	is_admin?: boolean;
+	is_superadmin?: boolean;
+	is_developer?: boolean;
 	avatar?: string;
 	avatar_url?: string; // Rust API format
 	mfa_enabled?: boolean; // Rust API
@@ -180,7 +182,9 @@ function createSafeUser(user: User): User {
 		roles: user?.roles ?? (user?.role ? [user.role] : []),
 		...(user?.role !== undefined && { role: user.role }),
 		permissions: user?.permissions ?? [],
-		is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
+		is_admin: user?.is_admin ?? checkIsAdmin(user),
+		is_superadmin: user?.is_superadmin === true,
+		is_developer: user?.is_developer === true,
 		...((user?.avatar ?? user?.avatar_url) ? { avatar: user?.avatar ?? user?.avatar_url } : {}),
 		...(user?.avatar_url !== undefined && { avatar_url: user.avatar_url }),
 		...(user?.mfa_enabled !== undefined && { mfa_enabled: user.mfa_enabled })
@@ -237,7 +241,7 @@ class AuthStoreClass {
 	private refreshPromise: Promise<void> | null = null;
 
 	// Subscribers for backward compatibility with $store syntax
-	private subscribers = new Set<Subscriber<AuthStateSnapshot>>();
+	private subscribers = new SvelteSet<Subscriber<AuthStateSnapshot>>();
 
 	// Microtask coalescing — when multiple state mutations happen in the same
 	// tick (e.g. setUser → setLoading → completeInitialization on the post-login
@@ -530,7 +534,7 @@ class AuthStoreClass {
 	/**
 	 * Check if user has a specific permission
 	 */
-	hasPermission(permission: PermissionType | string): boolean {
+	hasPermission(permission: string): boolean {
 		return checkHasPermission(getSafeUser(this._user), permission);
 	}
 

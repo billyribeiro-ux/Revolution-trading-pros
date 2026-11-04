@@ -278,8 +278,8 @@ pub(super) async fn login(
     // is NOT on any env list (legitimate verified-admin login preserved).
     let email_verified = user.email_verified_at.is_some();
     let db_role = user.role.as_deref();
-    let has_db_developer_role = db_role == Some("developer");
-    let has_db_superadmin_role = db_role == Some("super_admin") || db_role == Some("super-admin");
+    let has_db_developer_role = db_role.is_some_and(|r| r.eq_ignore_ascii_case("developer"));
+    let has_db_superadmin_role = crate::middleware::admin::is_superadmin_role(db_role);
 
     let is_developer = email_verified
         && (has_db_developer_role
@@ -411,7 +411,7 @@ pub(super) async fn login(
         access_token: token, // Frontend prefers access_token
         refresh_token,
         session_id,
-        user: user.into(),
+        user: crate::models::UserResponse::from_authenticated(user, &state.config),
         expires_in: state.config.jwt_expires_in * 3600, // Convert hours to seconds
     }))
 }

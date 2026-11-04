@@ -402,7 +402,7 @@ pub(crate) async fn ensure_room_access(
     user: &User,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("");
-    if matches!(role, "admin" | "super_admin" | "super-admin" | "developer") {
+    if crate::middleware::admin::is_admin_role(Some(role)) {
         return Ok(());
     }
     let has_membership: Option<(i64,)> = sqlx::query_as(

@@ -30,11 +30,13 @@
 	} = $props();
 
 	function formatBytes(bytes: number | null | undefined): string {
-		const safe = typeof bytes === 'number' && Number.isFinite(bytes) && bytes >= 0 ? bytes : 0;
-		if (safe < 1024) return safe + ' B';
-		if (safe < 1024 * 1024) return (safe / 1024).toFixed(1) + ' KB';
-		if (safe < 1024 * 1024 * 1024) return (safe / 1024 / 1024).toFixed(2) + ' MB';
-		return (safe / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+		if (typeof bytes !== 'number' || !Number.isFinite(bytes)) return 'Unknown';
+		const size = Math.abs(bytes),
+			sign = bytes < 0 ? '−' : '';
+		if (size < 1024) return sign + size + ' B';
+		if (size < 1024 * 1024) return sign + (size / 1024).toFixed(1) + ' KB';
+		if (size < 1024 * 1024 * 1024) return sign + (size / 1024 / 1024).toFixed(2) + ' MB';
+		return sign + (size / 1024 / 1024 / 1024).toFixed(2) + ' GB';
 	}
 </script>
 
@@ -67,7 +69,8 @@
 					<IconClock size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics ? (statistics.pending_optimization ?? 0) : '—'}</span>
+					<span class="stat-value">{statistics ? (statistics.pending_optimization ?? 0) : '—'}</span
+					>
 					<span class="stat-label">Pending</span>
 				</div>
 			</div>
@@ -87,11 +90,16 @@
 					<IconBolt size={24} aria-hidden="true" />
 				</div>
 				<div class="stat-info">
-					<span class="stat-value">{statistics ? formatBytes(statistics.total_savings_bytes) : '—'}</span>
+					<span class="stat-value"
+						>{statistics ? formatBytes(statistics.total_savings_bytes) : '—'}</span
+					>
 					<span class="stat-label">Total Savings</span>
 				</div>
 				<div class="stat-progress">
-					<div class="progress-bar" style:width={`${Number.isFinite(statsProgress) ? statsProgress : 0}%`}></div>
+					<div
+						class="progress-bar"
+						style:width={`${Number.isFinite(statsProgress) ? statsProgress : 0}%`}
+					></div>
 				</div>
 			</div>
 		</div>

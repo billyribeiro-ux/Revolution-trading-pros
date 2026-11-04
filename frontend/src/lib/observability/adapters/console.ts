@@ -389,7 +389,8 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 		if (typeof value === 'object') {
 			return JSON.stringify(value, null, 2);
 		}
-		return String(value);
+		if (typeof value === 'function') return `[Function ${value.name || 'anonymous'}]`;
+		return String(value as string | number | boolean | bigint | symbol);
 	}
 }
 

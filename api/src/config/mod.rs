@@ -429,12 +429,21 @@ impl Config {
             )
             .context("Invalid TRUSTED_PROXY_CIDRS")?,
 
-            postmark_token: std::env::var("POSTMARK_TOKEN")
-                .ok()
-                .filter(|s| !s.trim().is_empty()),
-            from_email: std::env::var("POSTMARK_FROM_EMAIL")
-                .or_else(|_| std::env::var("FROM_EMAIL"))
-                .unwrap_or_else(|_| "noreply@example.com".to_string()),
+            postmark_token: ["POSTMARK_TOKEN", "POSTMARK_API_KEY"]
+                .iter()
+                .find_map(|key| {
+                    std::env::var(key)
+                        .ok()
+                        .filter(|value| !value.trim().is_empty())
+                }),
+            from_email: ["POSTMARK_FROM_EMAIL", "EMAIL_FROM_ADDRESS", "FROM_EMAIL"]
+                .iter()
+                .find_map(|key| {
+                    std::env::var(key)
+                        .ok()
+                        .filter(|value| !value.trim().is_empty())
+                })
+                .unwrap_or_default(),
             app_url: std::env::var("APP_URL")
                 .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string()),
             admin_notification_email: std::env::var("ADMIN_NOTIFICATION_EMAIL")
@@ -703,10 +712,7 @@ impl Config {
         if !self.superadmin_emails.contains(&email.to_lowercase()) {
             return false;
         }
-        matches!(
-            role,
-            Some("super_admin") | Some("super-admin") | Some("admin") | Some("developer")
-        )
+        crate::middleware::admin::is_admin_role(role)
     }
 
     /// security-M1 (FULL_REPO_AUDIT_2026-05-17): strict developer check.
@@ -727,10 +733,7 @@ impl Config {
         if !self.developer_emails.contains(&email.to_lowercase()) {
             return false;
         }
-        matches!(
-            role,
-            Some("super_admin") | Some("super-admin") | Some("admin") | Some("developer")
-        )
+        crate::middleware::admin::is_admin_role(role)
     }
 
     // ── security-M1 — COMPANION IMPLEMENTED ──────────────────────────────
@@ -760,6 +763,55 @@ mod tests {
     /// Secret values are assembled at runtime from prefix + body to
     /// avoid tripping GitHub's push-protection secret scanner on the
     /// literal `sk_live_<24+ chars>` regex.
+    #[test]
+    fn configured_privilege_requires_verified_shared_db_role_for_every_alias() {
+        let mut config = live_config();
+        config.superadmin_emails = vec!["configured@example.test".into()];
+        config.developer_emails = config.superadmin_emails.clone();
+        for role in [
+            "admin",
+            "ADMIN",
+            "administrator",
+            "developer",
+            "super_admin",
+            "super-admin",
+            "superadmin",
+        ] {
+            for verified in [false, true] {
+                assert_eq!(
+                    config.is_superadmin_email_strict(
+                        "Configured@example.test",
+                        Some(role),
+                        verified
+                    ),
+                    verified,
+                    "{role}"
+                );
+                assert_eq!(
+                    config.is_developer_email_strict(
+                        "Configured@example.test",
+                        Some(role),
+                        verified
+                    ),
+                    verified,
+                    "{role}"
+                );
+            }
+            assert!(!config.is_superadmin_email_strict("other@example.test", Some(role), true));
+        }
+        for role in [
+            None,
+            Some("user"),
+            Some("member"),
+            Some("editor"),
+            Some("marketing"),
+            Some("manager"),
+        ] {
+            assert!(!config.is_superadmin_email_strict("configured@example.test", role, true));
+            assert!(!config.is_developer_email_strict("configured@example.test", role, true));
+        }
+    }
+
     fn live_config() -> Config {
         // Build clearly-synthetic test values that satisfy each prefix
         // gate without producing a literal that looks like a real key.

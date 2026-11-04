@@ -8,6 +8,7 @@
  * @version 2.0.0 - Svelte 5 Runes Migration
  */
 import { browser } from '$app/env';
+import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 import { mediaApi, type MediaFile, type MediaFolder, type UploadProgress } from '#lib/api/media.js';
 
@@ -49,7 +50,7 @@ const initialMediaState: MediaState = {
 	files: [],
 	folders: [],
 	currentFolder: null,
-	selectedFiles: new Set(),
+	selectedFiles: new SvelteSet(),
 	viewMode: 'grid',
 	sortBy: 'date',
 	sortOrder: 'desc',
@@ -66,7 +67,7 @@ const initialMediaState: MediaState = {
 };
 
 const initialUploadState: UploadState = {
-	uploads: new Map(),
+	uploads: new SvelteMap(),
 	isUploading: false,
 	totalProgress: 0
 };
@@ -76,6 +77,7 @@ const initialUploadState: UploadState = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 let mediaState = $state<MediaState>({ ...initialMediaState });
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
 
 export const mediaStore = {
 	get state() {
@@ -161,8 +163,14 @@ export const mediaStore = {
 	// ───────────────────────────────────────────────────────────────────
 
 	setCurrentFolder(folderId: string | null) {
-		mediaState = { ...mediaState, currentFolder: folderId, selectedFiles: new Set() };
-		this.loadFiles(1);
+		mediaState = { ...mediaState, currentFolder: folderId, selectedFiles: new SvelteSet() };
+		void this.loadFiles(1).catch((error: unknown) => {
+			mediaState = {
+				...mediaState,
+				isLoading: false,
+				error: error instanceof Error ? error.message : 'Unable to refresh media'
+			};
+		});
 	},
 
 	// ───────────────────────────────────────────────────────────────────
@@ -170,19 +178,19 @@ export const mediaStore = {
 	// ───────────────────────────────────────────────────────────────────
 
 	selectFile(id: string) {
-		const newSelected = new Set(mediaState.selectedFiles);
+		const newSelected = new SvelteSet(mediaState.selectedFiles);
 		newSelected.add(id);
 		mediaState = { ...mediaState, selectedFiles: newSelected };
 	},
 
 	deselectFile(id: string) {
-		const newSelected = new Set(mediaState.selectedFiles);
+		const newSelected = new SvelteSet(mediaState.selectedFiles);
 		newSelected.delete(id);
 		mediaState = { ...mediaState, selectedFiles: newSelected };
 	},
 
 	toggleFileSelection(id: string) {
-		const newSelected = new Set(mediaState.selectedFiles);
+		const newSelected = new SvelteSet(mediaState.selectedFiles);
 		if (newSelected.has(id)) {
 			newSelected.delete(id);
 		} else {
@@ -194,12 +202,12 @@ export const mediaStore = {
 	selectAll() {
 		mediaState = {
 			...mediaState,
-			selectedFiles: new Set(mediaState.files.map((f) => f.id))
+			selectedFiles: new SvelteSet(mediaState.files.map((f) => f.id))
 		};
 	},
 
 	deselectAll() {
-		mediaState = { ...mediaState, selectedFiles: new Set() };
+		mediaState = { ...mediaState, selectedFiles: new SvelteSet() };
 	},
 
 	// ───────────────────────────────────────────────────────────────────
@@ -215,12 +223,24 @@ export const mediaStore = {
 
 	setSortBy(sortBy: 'name' | 'date' | 'size' | 'type') {
 		mediaState = { ...mediaState, sortBy };
-		this.loadFiles(1);
+		void this.loadFiles(1).catch((error: unknown) => {
+			mediaState = {
+				...mediaState,
+				isLoading: false,
+				error: error instanceof Error ? error.message : 'Unable to refresh media'
+			};
+		});
 	},
 
 	setSortOrder(order: 'asc' | 'desc') {
 		mediaState = { ...mediaState, sortOrder: order };
-		this.loadFiles(1);
+		void this.loadFiles(1).catch((error: unknown) => {
+			mediaState = {
+				...mediaState,
+				isLoading: false,
+				error: error instanceof Error ? error.message : 'Unable to refresh media'
+			};
+		});
 	},
 
 	// ───────────────────────────────────────────────────────────────────
@@ -230,14 +250,27 @@ export const mediaStore = {
 	setSearchQuery(query: string) {
 		mediaState = { ...mediaState, searchQuery: query };
 		// Debounce search
-		setTimeout(() => {
-			this.loadFiles(1);
+		if (searchTimer) clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => {
+			void this.loadFiles(1).catch((error: unknown) => {
+				mediaState = {
+					...mediaState,
+					isLoading: false,
+					error: error instanceof Error ? error.message : 'Unable to refresh media'
+				};
+			});
 		}, 300);
 	},
 
 	setFilterType(type: string | null) {
 		mediaState = { ...mediaState, filterType: type };
-		this.loadFiles(1);
+		void this.loadFiles(1).catch((error: unknown) => {
+			mediaState = {
+				...mediaState,
+				isLoading: false,
+				error: error instanceof Error ? error.message : 'Unable to refresh media'
+			};
+		});
 	},
 
 	// ───────────────────────────────────────────────────────────────────
@@ -249,7 +282,7 @@ export const mediaStore = {
 		mediaState = {
 			...mediaState,
 			files: mediaState.files.filter((f) => f.id !== id),
-			selectedFiles: new Set([...mediaState.selectedFiles].filter((fid) => fid !== id))
+			selectedFiles: new SvelteSet([...mediaState.selectedFiles].filter((fid) => fid !== id))
 		};
 	},
 
@@ -262,7 +295,7 @@ export const mediaStore = {
 		mediaState = {
 			...mediaState,
 			files: mediaState.files.filter((f) => !ids.includes(f.id)),
-			selectedFiles: new Set()
+			selectedFiles: new SvelteSet()
 		};
 	},
 
@@ -272,7 +305,7 @@ export const mediaStore = {
 		if (ids.length === 0) return;
 
 		await mediaApi.bulkMove(ids, folderId);
-		this.loadFiles();
+		await this.loadFiles();
 		this.deselectAll();
 	},
 
@@ -355,7 +388,7 @@ export const uploadStore = {
 			generate_webp?: boolean;
 		}
 	) {
-		const uploadMap = new Map<string, UploadProgress>();
+		const uploadMap = new SvelteMap<string, UploadProgress>();
 
 		files.forEach((file) => {
 			const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -375,12 +408,12 @@ export const uploadStore = {
 		// Upload files sequentially or in parallel
 		for (const [id, upload] of uploadMap.entries()) {
 			try {
-				const newUploads = new Map(uploadState.uploads);
+				const newUploads = new SvelteMap(uploadState.uploads);
 				newUploads.set(id, { ...upload, status: 'uploading' });
 				uploadState = { ...uploadState, uploads: newUploads };
 
 				const result = await mediaApi.uploadFile(upload.file, options, (progress) => {
-					const progressUploads = new Map(uploadState.uploads);
+					const progressUploads = new SvelteMap(uploadState.uploads);
 					const current = progressUploads.get(id);
 					if (current) {
 						progressUploads.set(id, { ...current, progress });
@@ -388,7 +421,7 @@ export const uploadStore = {
 					uploadState = { ...uploadState, uploads: progressUploads };
 				});
 
-				const completeUploads = new Map(uploadState.uploads);
+				const completeUploads = new SvelteMap(uploadState.uploads);
 				completeUploads.set(id, {
 					...upload,
 					status: 'complete',
@@ -398,9 +431,9 @@ export const uploadStore = {
 				uploadState = { ...uploadState, uploads: completeUploads };
 
 				// Refresh media list
-				mediaStore.loadFiles();
+				await mediaStore.loadFiles();
 			} catch (error) {
-				const errorUploads = new Map(uploadState.uploads);
+				const errorUploads = new SvelteMap(uploadState.uploads);
 				errorUploads.set(id, {
 					...upload,
 					status: 'error',
@@ -414,7 +447,7 @@ export const uploadStore = {
 
 		// Clear completed uploads after 5 seconds
 		setTimeout(() => {
-			const cleanUploads = new Map(uploadState.uploads);
+			const cleanUploads = new SvelteMap(uploadState.uploads);
 			for (const [id, upload] of cleanUploads.entries()) {
 				if (upload.status === 'complete') {
 					cleanUploads.delete(id);
@@ -429,7 +462,7 @@ export const uploadStore = {
 	},
 
 	removeUpload(id: string) {
-		const newUploads = new Map(uploadState.uploads);
+		const newUploads = new SvelteMap(uploadState.uploads);
 		newUploads.delete(id);
 		uploadState = { ...uploadState, uploads: newUploads };
 	}

@@ -35,13 +35,14 @@ export interface MediaFile {
 	collection?: string;
 	file_type: 'image' | 'video' | 'audio' | 'document' | 'other';
 	mime_type: string;
-	file_size: number;
+	file_size: number | null;
 	/** Alias for file_size */
 	size?: number;
 	file_path: string;
 	url: string;
 	cdn_url?: string;
 	thumbnail_url?: string;
+	preview_url?: string;
 	width?: number;
 	height?: number;
 	/** Computed dimensions object */
@@ -52,15 +53,17 @@ export interface MediaFile {
 	metadata: MediaMetadata;
 	ai_metadata?: AIMetadata;
 	exif?: Record<string, unknown>;
-	versions: MediaVersion[];
+	versions?: MediaVersion[];
+	content_version?: number;
 	variants?: MediaVariant[];
 	/** Custom properties for extensibility */
 	custom_properties?: Record<string, unknown>;
-	usage_count: number;
+	usage_count: number | null;
 	is_optimized: boolean;
 	has_webp: boolean;
-	processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
-	created_by: number;
+	processing_status?: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+	scan_status?: 'pending' | 'clean' | 'infected' | 'failed' | 'unavailable';
+	created_by: number | null;
 	created_at: string;
 	updated_at: string;
 	uploaded_at?: string;
@@ -95,9 +98,9 @@ export interface MediaVersion {
 	version_number: number;
 	file_path: string;
 	url: string;
-	file_size: number;
+	file_size: number | null;
 	changes: string;
-	created_by: number;
+	created_by: number | null;
 	created_at: string;
 }
 
@@ -137,6 +140,8 @@ export interface MediaUsage {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface MediaVariant {
+	id?: number;
+	preview_url?: string;
 	type: string;
 	size: string | null;
 	width: number;
@@ -181,7 +186,7 @@ export interface OptimizationJob {
 	optimized_size: number | null;
 	savings_percent: number | null;
 	savings_bytes: number;
-	processing_time: string;
+	processing_time: number | null;
 	error: string | null;
 	started_at: string | null;
 	completed_at: string | null;
@@ -198,10 +203,10 @@ export interface OptimizationStatistics {
 	total_size: number;
 	total_videos: number;
 	total_documents: number;
-	total_downloads: number;
-	total_views: number;
+	total_downloads: number | null;
+	total_views: number | null;
 	needs_optimization: number;
-	unused_files: number;
+	unused_files: number | null;
 	storage_by_type: Record<string, { count: number; size: number; human_size: string }>;
 	job_stats: {
 		pending: number;
@@ -259,6 +264,86 @@ export interface BulkActionResult {
 	success: number;
 	failed: number;
 	errors: Array<{ id: string; error: string }>;
+}
+
+export interface RawMedia {
+	content_version?: number;
+	id: number;
+	filename: string;
+	original_filename: string | null;
+	mime_type: string | null;
+	size: number | null;
+	path: string | null;
+	url: string | null;
+	title: string | null;
+	alt_text: string | null;
+	caption: string | null;
+	description: string | null;
+	collection: string | null;
+	width: number | null;
+	height: number | null;
+	is_optimized: boolean | null;
+	tags?: string[];
+	metadata?: MediaMetadata;
+	created_by?: number | null;
+	has_webp?: boolean;
+	processing_status?: MediaFile['processing_status'] | null;
+	scan_status?: MediaFile['scan_status'];
+	created_at: string | null;
+	updated_at: string | null;
+}
+
+export function mediaFromApi(raw: RawMedia): MediaFile {
+	const mime = raw.mime_type ?? '';
+	const fileType = mime.startsWith('image/')
+		? 'image'
+		: mime.startsWith('video/')
+			? 'video'
+			: mime.startsWith('audio/')
+				? 'audio'
+				: /^(application|text)\//.test(mime)
+					? 'document'
+					: 'other';
+	return {
+		id: String(raw.id),
+		filename: raw.original_filename || raw.filename,
+		original_filename: raw.original_filename || raw.filename,
+		title: raw.title ?? '',
+		alt_text: raw.alt_text ?? '',
+		caption: raw.caption ?? '',
+		description: raw.description ?? '',
+		collection: raw.collection ?? '',
+		file_type: fileType,
+		mime_type: mime,
+		file_size: raw.size,
+		size: raw.size ?? undefined,
+		file_path: raw.path ?? '',
+		preview_url:
+			raw.scan_status === 'infected'
+				? undefined
+				: `/api/admin/media/content/${raw.id}${raw.content_version === undefined ? '' : `?revision=${raw.content_version}`}`,
+		url: raw.scan_status === 'infected' ? '' : (raw.url ?? ''),
+		width: raw.width ?? undefined,
+		height: raw.height ?? undefined,
+		dimensions: raw.width && raw.height ? { width: raw.width, height: raw.height } : undefined,
+		tags: raw.tags ?? [],
+		metadata: raw.metadata ?? {},
+		content_version: raw.content_version,
+		usage_count: null,
+		is_optimized: raw.is_optimized === true,
+		has_webp: raw.has_webp === true,
+		processing_status: raw.processing_status ?? undefined,
+		scan_status: raw.scan_status,
+		created_by: raw.created_by ?? null,
+		created_at: raw.created_at ?? '',
+		updated_at: raw.updated_at ?? ''
+	};
+}
+
+function uploadedFile(response: { success: boolean; data: RawMedia[] }) {
+	const file = response.data[0];
+	if (!response.success || !file) throw new Error('Upload did not return a stored media record');
+	return { success: true, file: mediaFromApi(file) };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -370,11 +455,29 @@ class MediaApiClient {
 			total_pages: number;
 		};
 	}> {
-		return this.request('GET', '/admin/media/files', undefined, params);
+		const { file_type, optimized, ...query } = params ?? {};
+		const result = await this.request<{
+			data: RawMedia[];
+			meta: { current_page: number; per_page: number; total: number; last_page: number };
+		}>('GET', '/admin/media/files', undefined, {
+			...query,
+			type: file_type,
+			is_optimized: optimized
+		});
+		return {
+			files: result.data.map(mediaFromApi),
+			pagination: {
+				page: result.meta.current_page,
+				per_page: result.meta.per_page,
+				total: result.meta.total,
+				total_pages: Math.max(1, result.meta.last_page)
+			}
+		};
 	}
 
 	async getFile(id: string): Promise<{ file: MediaFile }> {
-		return this.request('GET', `/admin/media/files/${id}`);
+		const result = await this.request<{ data: RawMedia }>('GET', `/admin/media/${id}`);
+		return { file: mediaFromApi(result.data) };
 	}
 
 	async updateFile(
@@ -387,15 +490,27 @@ class MediaApiClient {
 			folder_id?: string;
 		}
 	): Promise<{ success: boolean; file: MediaFile }> {
-		return this.request('PUT', `/admin/media/files/${id}`, data);
+		const result = await this.request<{ success: boolean; data: RawMedia }>(
+			'PUT',
+			`/admin/media/${id}`,
+			data
+		);
+		return { success: result.success, file: mediaFromApi(result.data) };
 	}
 
 	async deleteFile(id: string, force: boolean = false): Promise<{ success: boolean }> {
-		return this.request('DELETE', `/admin/media/files/${id}`, undefined, { force });
+		return this.request('DELETE', `/admin/media/${id}`, undefined, { force });
 	}
 
 	async bulkDelete(ids: string[], force: boolean = false): Promise<BulkActionResult> {
-		return this.request('POST', '/admin/media/bulk/delete', { ids, force });
+		const result = await this.request<{
+			data: { deleted: number; failed: number; details: Array<{ id: number; error: string }> };
+		}>('POST', '/admin/media/bulk-delete', { ids: ids.map(Number), force });
+		return {
+			success: result.data.deleted,
+			failed: result.data.failed,
+			errors: result.data.details.map((item) => ({ id: String(item.id), error: item.error }))
+		};
 	}
 
 	async bulkMove(ids: string[], folder_id: string): Promise<BulkActionResult> {
@@ -438,7 +553,15 @@ class MediaApiClient {
 			return this.uploadWithProgress(formData, onProgress);
 		}
 
-		return this.request('POST', '/admin/media/upload', formData, undefined, true);
+		return uploadedFile(
+			await this.request<{ success: boolean; data: RawMedia[] }>(
+				'POST',
+				'/admin/media/upload',
+				formData,
+				undefined,
+				true
+			)
+		);
 	}
 
 	private uploadWithProgress(
@@ -459,7 +582,13 @@ class MediaApiClient {
 
 			xhr.addEventListener('load', () => {
 				if (xhr.status >= 200 && xhr.status < 300) {
-					resolve(JSON.parse(xhr.responseText));
+					try {
+						resolve(
+							uploadedFile(JSON.parse(xhr.responseText) as { success: boolean; data: RawMedia[] })
+						);
+					} catch (error) {
+						reject(error instanceof Error ? error : new Error('Invalid upload response'));
+					}
 				} else {
 					reject(new Error(`Upload failed: ${xhr.status}`));
 				}
@@ -576,15 +705,29 @@ class MediaApiClient {
 		ids: string[],
 		options: { preset?: string; priority?: number } = {}
 	): Promise<BulkActionResult> {
-		return this.request('POST', '/admin/media/bulk/optimize', { ids, ...options });
+		const result = await this.request<{
+			success: number;
+			failed: number;
+			errors: Array<{ media_id: number; message: string }>;
+		}>('POST', '/admin/media/bulk/optimize', { ids: ids.map(Number), ...options });
+		return {
+			...result,
+			errors: result.errors.map((item) => ({ id: String(item.media_id), error: item.message }))
+		};
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// Versioning
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getVersions(id: string): Promise<{ versions: MediaVersion[] }> {
-		return this.request('GET', `/admin/media/files/${id}/versions`);
+	async getVersions(
+		id: string,
+		params?: { page?: number; per_page?: number }
+	): Promise<{
+		versions: MediaVersion[];
+		meta: { current_page: number; last_page: number; total: number };
+	}> {
+		return this.request('GET', `/admin/media/files/${id}/versions`, undefined, params);
 	}
 
 	async createVersion(
@@ -603,7 +746,11 @@ class MediaApiClient {
 		id: string,
 		versionId: string
 	): Promise<{ success: boolean; file: MediaFile }> {
-		return this.request('POST', `/admin/media/files/${id}/versions/${versionId}/restore`);
+		const result = await this.request<{ success: boolean; data: RawMedia }>(
+			'POST',
+			`/admin/media/files/${id}/versions/${versionId}/restore`
+		);
+		return { success: result.success, file: mediaFromApi(result.data) };
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -696,7 +843,7 @@ class MediaApiClient {
 	async optimizeImage(
 		id: string,
 		options: { preset?: string; immediate?: boolean; priority?: number } = {}
-	): Promise<{ success: boolean; data: MediaFile | OptimizationJob; message: string }> {
+	): Promise<{ success: boolean; data: OptimizationJob; message: string }> {
 		return this.request('POST', `/admin/media/files/${id}/optimize`, options);
 	}
 
@@ -751,7 +898,20 @@ class MediaApiClient {
 	 * Get media variants
 	 */
 	async getVariants(id: string): Promise<{ success: boolean; data: MediaVariant[] }> {
-		return this.request('GET', `/admin/media/files/${id}/variants`);
+		const result = await this.request<{ success: boolean; data: MediaVariant[] }>(
+			'GET',
+			`/admin/media/files/${id}/variants`
+		);
+		return {
+			...result,
+			data: result.data.map((variant) => ({
+				...variant,
+				preview_url:
+					variant.id === undefined
+						? undefined
+						: `/api/admin/media/content/${id}?variant_id=${variant.id}`
+			}))
+		};
 	}
 
 	/**
@@ -827,9 +987,9 @@ class MediaApiClient {
 	async optimize(
 		id: string,
 		options: { preset?: string } = {}
-	): Promise<{ success: boolean; data: MediaFile }> {
+	): Promise<{ success: boolean; data: OptimizationJob }> {
 		const result = await this.optimizeImage(id, options);
-		return { success: result.success, data: result.data as MediaFile };
+		return { success: result.success, data: result.data };
 	}
 
 	/**

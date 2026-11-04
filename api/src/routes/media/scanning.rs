@@ -37,6 +37,23 @@ pub(super) async fn scan_stored(
     state: &AppState,
     media: &Media,
 ) -> Result<MalwareScanResult, ApiError> {
+    if media.scan_status == "infected" {
+        crate::services::media_jobs::quarantine(state, media.id)
+            .await
+            .map_err(|error| {
+                tracing::error!(%error,"Infected media cleanup failed");
+                ApiError::new(
+                    axum::http::StatusCode::SERVICE_UNAVAILABLE,
+                    "Threat detected; stored object removal failed",
+                )
+            })?;
+        return media
+            .scan_result
+            .clone()
+            .and_then(|value| serde_json::from_value(value).ok())
+            .filter(|result: &MalwareScanResult| result.status == "infected" && !result.is_clean)
+            .ok_or_else(|| ApiError::internal_error("Infected verdict is unavailable"));
+    }
     // Claim the scan, preventing overlapping results from replacing a newer
     // verdict. A pending row with no result is an upload awaiting its first scan.
     let claimed = sqlx::query("UPDATE media SET scan_status = 'pending', scan_result = '{\"status\":\"pending\",\"is_clean\":false}'::jsonb, updated_at = NOW() WHERE id = $1 AND NOT (scan_status = 'pending' AND scan_result IS NOT NULL AND updated_at > NOW() - INTERVAL '2 minutes')")
@@ -68,17 +85,15 @@ pub(super) async fn scan_stored(
     // Direct uploads reject infected bytes before storage. For a previously
     // uploaded object, remove its publicly accessible copy on detection.
     if result.status == "infected" {
-        if let Some(path) = &media.path {
-            state.services.storage.delete(path).await.map_err(|error| {
-                tracing::error!(media_id = media.id, %error, "Infected object removal failed");
-                ApiError::internal_error("Threat detected; object removal failed")
-            })?;
-        }
-        sqlx::query("UPDATE media SET url = NULL WHERE id = $1")
-            .bind(media.id)
-            .execute(state.db.pool())
+        crate::services::media_jobs::quarantine(state, media.id)
             .await
-            .map_err(|e| ApiError::database_error(&e.to_string()))?;
+            .map_err(|error| {
+                tracing::error!(%error,"Infected media cleanup failed");
+                ApiError::new(
+                    axum::http::StatusCode::SERVICE_UNAVAILABLE,
+                    "Threat detected; stored object removal failed",
+                )
+            })?;
     }
     Ok(result)
 }

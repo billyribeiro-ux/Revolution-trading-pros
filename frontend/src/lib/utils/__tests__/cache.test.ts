@@ -245,7 +245,9 @@ describe('memoize', () => {
 	it('honours a custom keyFn (collapses logically-equal args)', () => {
 		// keyFn returns the SAME string regardless of order → cache hit.
 		const inner = vi.fn((a: number, b: number) => a + b);
-		const memo = memoize(inner, { keyFn: (a, b) => [a, b].sort().join(',') });
+		const memo = memoize(inner, {
+			keyFn: (a, b) => [a, b].sort((left, right) => left - right).join(',')
+		});
 		expect(memo(1, 2)).toBe(3);
 		expect(memo(2, 1)).toBe(3); // cached — keyFn yields the same string
 		expect(inner).toHaveBeenCalledTimes(1);

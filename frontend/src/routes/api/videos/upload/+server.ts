@@ -234,7 +234,7 @@ async function handleDirectUpload(request: Request, token?: string) {
 
 		const response = await fetch(`${API_URL}/videos/upload`, {
 			method: 'POST',
-			headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+			headers: token ? { Authorization: `Bearer ${token}` } : {},
 			body: backendFormData
 		});
 

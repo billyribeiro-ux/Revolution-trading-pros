@@ -161,7 +161,7 @@ function ensurePersistedCartLoaded(): void {
 // ═══════════════════════════════════════════════════════════════════════════
 
 let cartState = $state<CartState>({ items: [] });
-let serializedCartState = $derived(JSON.stringify(cartState));
+const serializedCartState = $derived(JSON.stringify(cartState));
 
 // Save to localStorage whenever cart changes (skip initial run to prevent hydration issues)
 if (browser) {

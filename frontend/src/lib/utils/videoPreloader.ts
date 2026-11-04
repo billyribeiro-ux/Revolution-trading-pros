@@ -1,3 +1,4 @@
+import { logger } from '#lib/utils/logger.js';
 /**
  * Video Preloader Service - Zero-Latency Video Loading
  * ═══════════════════════════════════════════════════════════════════════════
@@ -144,10 +145,10 @@ class VideoPreloader {
 
 						if (videoId && libraryId) {
 							// Light preload when entering viewport
-							this.preload(
+							void this.preload(
 								{ videoId, libraryId, thumbnailUrl },
 								{ thumbnail: true, manifest: false, segments: 0 }
-							);
+							).catch((error: unknown) => logger.warn('[Video] Preload failed', error));
 						}
 					}
 				});
@@ -192,11 +193,11 @@ class VideoPreloader {
 
 		// Debounce to avoid preloading on quick mouse movements
 		const timeout = window.setTimeout(() => {
-			this.preload(video, {
+			void this.preload(video, {
 				thumbnail: true,
 				manifest: true,
 				segments: 2 // Preload first 2 segments for instant playback
-			});
+			}).catch((error: unknown) => logger.warn('[Video] Preload failed', error));
 			this.hoverTimeouts.delete(key);
 		}, delay);
 

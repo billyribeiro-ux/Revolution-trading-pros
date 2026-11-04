@@ -18,7 +18,7 @@
 //! not run in the standard no-DB test set. It creates only its own
 //! objects in that throwaway DB.
 //!
-//!   G03_VERIFY_DB_URL=postgres://postgres@/g03verify?host=/tmp&port=55433 \
+//!   G03_VERIFY_DB_URL=postgres://postgres@127.0.0.1:55433/admin_move_verify_baseline \
 //!     cargo test --test g03_schema_baseline_test -- --nocapture
 
 use std::path::Path;
@@ -29,6 +29,17 @@ async fn schema_and_seed_apply_forward_schema_and_defaults() {
         eprintln!("G03_VERIFY_DB_URL not set — skipping (gated DB proof).");
         return;
     };
+
+    let parsed = reqwest::Url::parse(&db_url).expect("valid disposable database URL");
+    assert_eq!(
+        parsed.host_str(),
+        Some("127.0.0.1"),
+        "baseline proof is local only"
+    );
+    assert!(
+        parsed.path().starts_with("/admin_move_verify"),
+        "baseline proof requires an explicitly disposable admin_move_verify database"
+    );
 
     let mig_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("migrations");
     let schema_sql = std::fs::read_to_string(mig_dir.join("schema.sql"))

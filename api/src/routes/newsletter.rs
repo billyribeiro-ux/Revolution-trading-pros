@@ -41,6 +41,9 @@ fn generate_secure_token(subscriber_id: i64, email: &str, action: &str, secret: 
 
 /// Verify and decode a secure token
 fn verify_secure_token(token: &str, action: &str, secret: &[u8]) -> Option<(i64, String)> {
+    if token.len() > 2048 {
+        return None;
+    }
     let parts: Vec<&str> = token.split(':').collect();
     if parts.len() != 2 {
         return None;
@@ -131,23 +134,14 @@ pub struct SubscriberListQuery {
     pub search: Option<String>,
 }
 
-/// Bulk email request (admin)
-#[derive(Debug, Deserialize)]
-pub struct BulkEmailRequest {
-    pub template_id: Option<i64>,
-    pub subject: String,
-    pub html_content: String,
-    pub text_content: Option<String>,
-    pub segment: Option<String>, // "all", "confirmed", or tag name
-    pub rate_limit: Option<i32>, // emails per minute, default 100
-}
+pub use crate::services::newsletter_delivery::BulkEmailRequest;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EMAIL VALIDATION - RFC 5322 compliant
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// Validate email address format
-fn is_valid_email(email: &str) -> bool {
+pub(crate) fn is_valid_email(email: &str) -> bool {
     // Basic validation: contains @, has parts before and after, reasonable length
     if email.len() > 254 || email.len() < 5 {
         return false;
@@ -187,6 +181,57 @@ fn sanitize_email(email: &str) -> String {
 // PUBLIC ENDPOINTS
 // ═══════════════════════════════════════════════════════════════════════════
 
+fn subscriber_db(error: sqlx::Error) -> (StatusCode, Json<serde_json::Value>) {
+    tracing::error!(%error,"Unable to persist subscription request");
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({"error":"Unable to save subscription request"})),
+    )
+}
+async fn submit_confirmation(
+    state: &AppState,
+    id: i64,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let receipt = crate::routes::email_subscribers::request_confirmation(state, id)
+        .await
+        .map_err(|e| {
+            let (status, body) = e.into_response_tuple();
+            (status, Json(json!({"error":body.0.message})))
+        })?;
+    if receipt["status"] == "accepted" {
+        return Ok(Json(
+            json!({"message":"Please check your email to confirm your subscription","status":"pending","delivery_status":"accepted"}),
+        ));
+    }
+    let status = if receipt["status"] == "unavailable" {
+        StatusCode::SERVICE_UNAVAILABLE
+    } else {
+        StatusCode::BAD_GATEWAY
+    };
+    Err((
+        status,
+        Json(
+            json!({"error":receipt["message"],"status":"pending","delivery_status":receipt["status"]}),
+        ),
+    ))
+}
+
+/// The confirmation link is created only on the server and never returned to admin clients.
+pub(crate) async fn send_confirmation(
+    state: &AppState,
+    id: i64,
+    email: &str,
+    name: Option<&str>,
+) -> anyhow::Result<()> {
+    let token = generate_secure_token(id, email, "confirm", &get_token_secret());
+    let model = json!({"name":name.unwrap_or("Subscriber"),"confirm_url":format!("{}/newsletter/confirm?token={}",state.config.app_url.trim_end_matches('/'),token),"app_url":state.config.app_url});
+    state
+        .services
+        .email
+        .send_transactional(&state.db.pool, email, "newsletter-confirmation", model)
+        .await
+}
+
 /// Subscribe to newsletter (public) - with email validation and GDPR consent
 async fn subscribe(
     State(state): State<AppState>,
@@ -201,6 +246,29 @@ async fn subscribe(
         return Err((
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "Invalid email address format"})),
+        ));
+    }
+
+    if input
+        .name
+        .as_ref()
+        .is_some_and(|v| v.chars().count() > 255 || v.chars().any(char::is_control))
+        || input
+            .source
+            .as_ref()
+            .is_some_and(|v| v.chars().count() > 100 || v.chars().any(char::is_control))
+        || input.tags.as_ref().is_some_and(|values| {
+            values.len() > 100
+                || values.iter().any(|v| {
+                    v.trim().is_empty()
+                        || v.chars().count() > 100
+                        || v.chars().any(char::is_control)
+                })
+        })
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Subscriber name, source or tags exceed their allowed bounds"})),
         ));
     }
 
@@ -222,15 +290,21 @@ async fn subscribe(
         .and_then(|h| h.to_str().ok())
         .map(|s| s.to_string());
 
+    let mut tx = state.db.pool.begin().await.map_err(subscriber_db)?;
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtextextended(LOWER($1),89201))")
+        .bind(&email)
+        .execute(&mut *tx)
+        .await
+        .map_err(subscriber_db)?;
     // Check if already subscribed
     let existing: Option<SubscriberRow> = sqlx::query_as(
         r"SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                       COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                       confirmed_at, unsubscribed_at, created_at, updated_at
-               FROM newsletter_subscribers WHERE LOWER(email) = $1",
+               FROM newsletter_subscribers WHERE LOWER(email) = $1 ORDER BY updated_at DESC NULLS LAST,id DESC LIMIT 1",
     )
     .bind(&email)
-    .fetch_optional(&state.db.pool)
+    .fetch_optional(&mut *tx)
     .await
     .map_err(|e| {
         tracing::error!("Database error checking subscriber: {}", e);
@@ -241,59 +315,19 @@ async fn subscribe(
     })?;
 
     if let Some(subscriber) = existing {
-        if subscriber.status == "confirmed" {
+        if subscriber.status == "confirmed"
+            && subscriber.confirmed_at.is_some()
+            && subscriber.unsubscribed_at.is_none()
+        {
             return Ok(Json(
                 json!({"message": "Already subscribed", "status": "confirmed"}),
             ));
         }
 
-        // Generate new confirmation token and resend
-        let token = generate_secure_token(subscriber.id, &email, "confirm", &get_token_secret());
-        let confirm_url = format!(
-            "{}/newsletter/confirm?token={}",
-            state.config.app_url, token
-        );
-
-        let email_model = serde_json::json!({
-            "name": subscriber.name.as_deref().unwrap_or("Subscriber"),
-            "confirm_url": confirm_url,
-            "app_url": state.config.app_url,
-        });
-        match state
-            .services
-            .email
-            .send_transactional(
-                &state.db.pool,
-                &email,
-                "newsletter-confirmation",
-                email_model,
-            )
-            .await
-        {
-            Err(e) => {
-                tracing::warn!(
-                    target: "newsletter",
-                    event = "confirmation_resend_email_failed",
-                    subscriber_id = %subscriber.id,
-                    error = %e,
-                    "Failed to resend newsletter confirmation email"
-                );
-            }
-            _ => {
-                tracing::info!(
-                    target: "newsletter",
-                    event = "confirmation_resent",
-                    subscriber_id = %subscriber.id,
-                    email = %email,
-                    "Resending confirmation email"
-                );
-            }
-        }
-
-        return Ok(Json(json!({
-            "message": "Confirmation email resent. Please check your inbox.",
-            "status": "pending"
-        })));
+        // A new explicit subscription request restores pending, not confirmed.
+        sqlx::query("UPDATE newsletter_subscribers SET status='pending',name=COALESCE($2,name),gdpr_consent=true,consent_ip=$3,consent_source=COALESCE($4,consent_source),updated_at=NOW() WHERE id=$1").bind(subscriber.id).bind(&input.name).bind(&ip_address).bind(&input.source).execute(&mut *tx).await.map_err(|error|{tracing::error!(%error,"Unable to save subscription request");(StatusCode::INTERNAL_SERVER_ERROR,Json(json!({"error":"Unable to save subscription request"})))})?;
+        tx.commit().await.map_err(subscriber_db)?;
+        return submit_confirmation(&state, subscriber.id).await;
     }
 
     // Create new subscriber with GDPR consent tracking
@@ -317,7 +351,7 @@ async fn subscribe(
     .bind(&tags)
     .bind(&ip_address)
     .bind(&user_agent)
-    .fetch_one(&state.db.pool)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| {
         if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
@@ -334,55 +368,8 @@ async fn subscribe(
         }
     })?;
 
-    // Generate secure confirmation token
-    let confirm_token =
-        generate_secure_token(subscriber.id, &email, "confirm", &get_token_secret());
-
-    tracing::info!(
-        target: "newsletter",
-        event = "subscribe",
-        subscriber_id = %subscriber.id,
-        email = %email,
-        source = ?input.source,
-        gdpr_consent = true,
-        "New newsletter subscription (pending confirmation)"
-    );
-
-    // Send confirmation email via Postmark (graceful no-op if POSTMARK_TOKEN unset)
-    let confirm_url = format!(
-        "{}/newsletter/confirm?token={}",
-        state.config.app_url, confirm_token
-    );
-    let email_model = serde_json::json!({
-        "name": subscriber.name.as_deref().unwrap_or("Subscriber"),
-        "confirm_url": confirm_url,
-        "app_url": state.config.app_url,
-    });
-    if let Err(e) = state
-        .services
-        .email
-        .send_transactional(
-            &state.db.pool,
-            &email,
-            "newsletter-confirmation",
-            email_model,
-        )
-        .await
-    {
-        tracing::warn!(
-            target: "newsletter",
-            event = "confirmation_email_failed",
-            subscriber_id = %subscriber.id,
-            error = %e,
-            "Failed to send newsletter confirmation email — subscriber created but email not delivered"
-        );
-    }
-
-    Ok(Json(json!({
-        "message": "Please check your email to confirm your subscription",
-        "status": "pending",
-        "gdpr_consent_recorded": true
-    })))
+    tx.commit().await.map_err(subscriber_db)?;
+    submit_confirmation(&state, subscriber.id).await
 }
 
 /// Confirm subscription - uses cryptographic token verification
@@ -396,7 +383,6 @@ async fn confirm(
             tracing::warn!(
                 target: "security",
                 event = "invalid_confirm_token",
-                token = %query.token,
                 "Invalid or tampered confirmation token"
             );
             (
@@ -405,15 +391,21 @@ async fn confirm(
             )
         })?;
 
+    let mut tx = state.db.pool.begin().await.map_err(subscriber_db)?;
+    sqlx::query("SELECT pg_advisory_xact_lock(hashtextextended(LOWER($1),89201))")
+        .bind(&email)
+        .execute(&mut *tx)
+        .await
+        .map_err(subscriber_db)?;
     // Verify subscriber exists and email matches
     let result = sqlx::query(
         r"UPDATE newsletter_subscribers
-           SET status = 'confirmed', confirmed_at = NOW(), updated_at = NOW()
-           WHERE id = $1 AND LOWER(email) = LOWER($2) AND status = 'pending'",
+           SET status = 'confirmed', confirmed_at = NOW(), unsubscribed_at=NULL, gdpr_consent=true, consent_source='email_confirmation', updated_at = NOW()
+           WHERE id = $1 AND LOWER(email) = LOWER($2) AND status = 'pending' AND id=(SELECT id FROM newsletter_subscribers WHERE LOWER(email)=LOWER($2) ORDER BY updated_at DESC NULLS LAST,id DESC LIMIT 1)",
     )
     .bind(subscriber_id)
     .bind(&email)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
     .map_err(|e| {
         tracing::error!("Database error confirming subscription: {}", e);
@@ -424,12 +416,19 @@ async fn confirm(
     })?;
 
     if result.rows_affected() == 0 {
+        let already:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM newsletter_subscribers WHERE id=$1 AND LOWER(email)=LOWER($2) AND status='confirmed' AND confirmed_at IS NOT NULL AND unsubscribed_at IS NULL)").bind(subscriber_id).bind(&email).fetch_one(&mut *tx).await.map_err(|_|(StatusCode::INTERNAL_SERVER_ERROR,Json(json!({"error":"Unable to verify subscription"}))))?;
+        if already {
+            return Ok(Json(
+                json!({"message":"Subscription already confirmed","status":"confirmed"}),
+            ));
+        }
         return Err((
             StatusCode::NOT_FOUND,
-            Json(json!({"error": "Invalid token, already confirmed, or subscriber not found"})),
+            Json(json!({"error":"Subscription is not pending or no longer exists"})),
         ));
     }
 
+    tx.commit().await.map_err(subscriber_db)?;
     tracing::info!(
         target: "newsletter",
         event = "confirmed",
@@ -449,13 +448,30 @@ async fn unsubscribe(
     State(state): State<AppState>,
     Query(query): Query<UnsubscribeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    if let Ok(token) = uuid::Uuid::parse_str(&query.token) {
+        return match crate::services::campaign_delivery::unsubscribe(&state.db.pool, token).await {
+            Ok(true) => Ok(Json(
+                json!({"status":"unsubscribed","message":"Your newsletter subscription has been cancelled."}),
+            )),
+            Ok(false) => Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({"error":"Subscription link not found"})),
+            )),
+            Err(error) => {
+                tracing::error!(%error,"Unable to persist campaign unsubscribe");
+                Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error":"Unable to save unsubscribe request"})),
+                ))
+            }
+        };
+    }
     // Verify cryptographic token
     let (subscriber_id, email) =
         verify_secure_token(&query.token, "unsubscribe", &get_token_secret()).ok_or_else(|| {
             tracing::warn!(
                 target: "security",
                 event = "invalid_unsubscribe_token",
-                token = %query.token,
                 "Invalid or tampered unsubscribe token"
             );
             (
@@ -464,6 +480,18 @@ async fn unsubscribe(
             )
         })?;
 
+    if query
+        .reason
+        .as_ref()
+        .is_some_and(|v| v.chars().count() > 2000 || v.chars().any(char::is_control))
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(
+                json!({"error":"Unsubscribe reason must be at most 2000 characters without controls"}),
+            ),
+        ));
+    }
     // Store unsubscribe reason if provided (GDPR audit)
     let metadata = query
         .reason
@@ -473,10 +501,10 @@ async fn unsubscribe(
     let result = sqlx::query(
         r"UPDATE newsletter_subscribers
            SET status = 'unsubscribed',
-               unsubscribed_at = NOW(),
+               unsubscribed_at = COALESCE(unsubscribed_at, NOW()),
                updated_at = NOW(),
-               metadata = COALESCE($3, metadata)
-           WHERE id = $1 AND LOWER(email) = LOWER($2)",
+               metadata = COALESCE(metadata,'{}'::jsonb) || COALESCE($3,'{}'::jsonb)
+           WHERE LOWER(email) = LOWER($2) AND EXISTS(SELECT 1 FROM newsletter_subscribers owner WHERE owner.id=$1 AND LOWER(owner.email)=LOWER($2))",
     )
     .bind(subscriber_id)
     .bind(&email)
@@ -530,34 +558,42 @@ async fn list_subscribers(
         "Admin listing newsletter subscribers"
     );
 
-    let page = query.page.unwrap_or(1).max(1);
-    let per_page = query.per_page.unwrap_or(50).min(100);
-    let offset = (page - 1) * per_page;
-
-    // SECURITY: Use parameterized queries - NO string interpolation
-    // Validate status is one of allowed values
+    let page = query.page.unwrap_or(1);
+    let per_page = query.per_page.unwrap_or(50);
     let valid_statuses = ["pending", "confirmed", "unsubscribed"];
-    let status_filter: Option<&str> = query
-        .status
-        .as_ref()
-        .filter(|s| valid_statuses.contains(&s.as_str()))
-        .map(|s| s.as_str());
-
-    // Search pattern for ILIKE (parameterized)
-    let search_pattern: Option<String> = query
+    if page < 1
+        || !(1..=100).contains(&per_page)
+        || query
+            .status
+            .as_deref()
+            .is_some_and(|v| !valid_statuses.contains(&v))
+        || query
+            .search
+            .as_ref()
+            .is_some_and(|v| v.chars().count() > 500 || v.chars().any(char::is_control))
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(
+                json!({"error":"Use a positive page, page size 1–100, a supported status and search of at most 500 characters"}),
+            ),
+        ));
+    }
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
+    let status_filter = query.status.as_deref();
+    let search_pattern = query
         .search
         .as_ref()
-        .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
-
+        .map(|s| format!("%{}%", crate::utils::escape_like(s)));
     let subscribers: Vec<SubscriberRow> = sqlx::query_as(
         r"
         SELECT id, email, name, status, source, ip_address, user_agent, tags, metadata,
                COALESCE(gdpr_consent, false) as gdpr_consent, consent_ip, consent_source,
                confirmed_at, unsubscribed_at, created_at, updated_at
-        FROM newsletter_subscribers
+        FROM (SELECT DISTINCT ON (LOWER(email)) * FROM newsletter_subscribers ORDER BY LOWER(email),updated_at DESC NULLS LAST,id DESC) canonical
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::text IS NULL OR email ILIKE $2 OR name ILIKE $2)
-        ORDER BY created_at DESC
+        ORDER BY created_at DESC,id DESC
         LIMIT $3 OFFSET $4
         ",
     )
@@ -578,7 +614,7 @@ async fn list_subscribers(
     let total: (i64,) = sqlx::query_as(
         r"
         SELECT COUNT(*)
-        FROM newsletter_subscribers
+        FROM (SELECT DISTINCT ON (LOWER(email)) * FROM newsletter_subscribers ORDER BY LOWER(email),updated_at DESC NULLS LAST,id DESC) canonical
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::text IS NULL OR email ILIKE $2 OR name ILIKE $2)
         ",
@@ -587,7 +623,7 @@ async fn list_subscribers(
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(subscriber_db)?;
 
     Ok(Json(json!({
         "data": subscribers,
@@ -621,7 +657,7 @@ async fn get_stats(
             COUNT(*) FILTER (WHERE status = 'pending') as pending,
             COUNT(*) FILTER (WHERE status = 'unsubscribed') as unsubscribed,
             COUNT(*) FILTER (WHERE gdpr_consent = true) as with_consent
-        FROM newsletter_subscribers
+        FROM (SELECT DISTINCT ON (LOWER(email)) * FROM newsletter_subscribers ORDER BY LOWER(email),updated_at DESC NULLS LAST,id DESC) canonical
         ",
     )
     .fetch_one(&state.db.pool)
@@ -636,11 +672,11 @@ async fn get_stats(
 
     // Recent signups (last 7 days)
     let recent: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM newsletter_subscribers WHERE created_at > NOW() - INTERVAL '7 days'",
+        "SELECT COUNT(*) FROM (SELECT DISTINCT ON (LOWER(email)) * FROM newsletter_subscribers ORDER BY LOWER(email),updated_at DESC NULLS LAST,id DESC) canonical WHERE created_at > NOW() - INTERVAL '7 days'",
     )
     .fetch_one(&state.db.pool)
     .await
-    .unwrap_or((0,));
+    .map_err(subscriber_db)?;
 
     Ok(Json(json!({
         "total": stats.0,
@@ -655,42 +691,18 @@ async fn get_stats(
     })))
 }
 
-/// Delete subscriber (admin only) - GDPR right to erasure
+/// Delete a canonical newsletter profile and case variants; delivery history is retained.
 async fn delete_subscriber(
     State(state): State<AppState>,
-    AdminUser(user): AdminUser,
+    _admin: AdminUser,
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    tracing::info!(
-        target: "security",
-        event = "admin_delete_subscriber",
-        admin_id = %user.id,
-        subscriber_id = %id,
-        "Admin deleting subscriber (GDPR erasure)"
-    );
-
-    let result = sqlx::query("DELETE FROM newsletter_subscribers WHERE id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
+    crate::routes::email_subscribers::delete_identity(&state, id)
         .await
         .map_err(|e| {
-            tracing::error!("Database error deleting subscriber: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Database error"})),
-            )
-        })?;
-
-    if result.rows_affected() == 0 {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Subscriber not found"})),
-        ));
-    }
-
-    Ok(Json(json!({
-        "message": "Subscriber deleted successfully (GDPR erasure complete)"
-    })))
+            let (status, body) = e.into_response_tuple();
+            (status, Json(json!({"error":body.0.message})))
+        })
 }
 
 /// Export subscriber data (admin only) - GDPR data portability
@@ -737,73 +749,15 @@ async fn export_subscriber(
     })))
 }
 
-/// Send bulk email (admin only) - with rate limiting
+/// Commit recipient/content snapshots before returning a queue receipt.
 async fn send_bulk_email(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
     Json(input): Json<BulkEmailRequest>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let rate_limit = input.rate_limit.unwrap_or(100).min(500); // Max 500/minute
-
-    tracing::info!(
-        target: "security",
-        event = "admin_bulk_email",
-        admin_id = %user.id,
-        subject = %input.subject,
-        rate_limit = %rate_limit,
-        "Admin initiating bulk email send"
-    );
-
-    // Get recipient count based on segment
-    let segment = input.segment.as_deref().unwrap_or("confirmed");
-
-    let recipient_count: (i64,) = match segment {
-        "all" => {
-            sqlx::query_as(
-                "SELECT COUNT(*) FROM newsletter_subscribers WHERE status != 'unsubscribed'",
-            )
-            .fetch_one(&state.db.pool)
-            .await
-        }
-        "confirmed" => {
-            sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
-                .fetch_one(&state.db.pool)
-                .await
-        }
-        tag => sqlx::query_as(
-            "SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed' AND tags ? $1",
-        )
-        .bind(tag)
-        .fetch_one(&state.db.pool)
-        .await,
-    }
-    .map_err(|e| {
-        tracing::error!("Database error counting recipients: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    // Estimate send time
-    let estimated_minutes = (recipient_count.0 as f64 / rate_limit as f64).ceil() as i64;
-
-    // In production, this would queue the job for background processing
-    // For now, return the job summary
-
-    Ok(Json(json!({
-        "message": "Bulk email job queued successfully",
-        "job": {
-            "subject": input.subject,
-            "segment": segment,
-            "recipient_count": recipient_count.0,
-            "rate_limit_per_minute": rate_limit,
-            "estimated_duration_minutes": estimated_minutes,
-            "status": "queued",
-            "initiated_by": user.id
-        },
-        "note": "Emails will be sent in background with rate limiting"
-    })))
+) -> Result<(StatusCode, Json<serde_json::Value>), crate::utils::errors::ApiError> {
+    let queued =
+        crate::services::newsletter_delivery::queue(&state.db.pool, user.id, input).await?;
+    Ok((StatusCode::ACCEPTED, Json(queued)))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -815,7 +769,7 @@ pub fn public_router() -> Router<AppState> {
     Router::new()
         .route("/subscribe", post(subscribe))
         .route("/confirm", get(confirm))
-        .route("/unsubscribe", get(unsubscribe))
+        .route("/unsubscribe", get(unsubscribe).post(unsubscribe_post))
 }
 
 /// Admin newsletter routes (requires AdminUser)
@@ -834,11 +788,29 @@ pub fn router() -> Router<AppState> {
         // Public routes
         .route("/subscribe", post(subscribe))
         .route("/confirm", get(confirm))
-        .route("/unsubscribe", get(unsubscribe))
+        .route("/unsubscribe", get(unsubscribe).post(unsubscribe_post))
         // Admin routes (now properly protected)
         .route("/subscribers", get(list_subscribers))
         .route("/subscribers/{id}", delete(delete_subscriber))
         .route("/subscribers/{id}/export", get(export_subscriber))
         .route("/stats", get(get_stats))
         .route("/bulk-send", post(send_bulk_email))
+}
+#[derive(Deserialize)]
+struct OneClick {
+    #[serde(rename = "List-Unsubscribe")]
+    action: String,
+}
+async fn unsubscribe_post(
+    state: State<AppState>,
+    query: Query<UnsubscribeQuery>,
+    axum::Form(form): axum::Form<OneClick>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    if form.action != "One-Click" {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid one-click unsubscribe request"})),
+        ));
+    }
+    unsubscribe(state, query).await
 }

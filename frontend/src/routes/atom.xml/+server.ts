@@ -109,6 +109,15 @@ function formatISO8601(dateStr: string | Date): string {
  * @param blocks - Content blocks array
  * @returns HTML string
  */
+// Feed text may be primitive legacy content; malformed objects are not text.
+function blockText(value: unknown): string {
+	return typeof value === 'string'
+		? value
+		: typeof value === 'number' || typeof value === 'boolean'
+			? String(value)
+			: '';
+}
+
 function contentBlocksToHtml(blocks: unknown[] | null): string {
 	if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
 		return '';
@@ -129,35 +138,41 @@ function contentBlocksToHtml(blocks: unknown[] | null): string {
 			// Handle common block types
 			switch (block.type) {
 				case 'paragraph':
-					return `<p>${block.content || block.text || ''}</p>`;
+					return `<p>${blockText(block.content) || blockText(block.text)}</p>`;
 				case 'heading':
 				case 'header':
-					const level = block.level || 2;
-					return `<h${level}>${block.content || block.text || ''}</h${level}>`;
+					const level =
+						typeof block.level === 'number' &&
+						Number.isInteger(block.level) &&
+						block.level >= 1 &&
+						block.level <= 6
+							? block.level
+							: 2;
+					return `<h${level}>${blockText(block.content) || blockText(block.text)}</h${level}>`;
 				case 'image':
-					const src = block.url || block.src || '';
-					const alt = block.alt || block.caption || '';
-					return `<figure><img src="${src}" alt="${escapeXml(String(alt))}" />${block.caption ? `<figcaption>${escapeXml(String(block.caption))}</figcaption>` : ''}</figure>`;
+					const src = blockText(block.url) || blockText(block.src);
+					const alt = blockText(block.alt) || blockText(block.caption);
+					return `<figure><img src="${escapeXml(src)}" alt="${escapeXml(alt)}" />${block.caption ? `<figcaption>${escapeXml(blockText(block.caption))}</figcaption>` : ''}</figure>`;
 				case 'list':
 					const tag = block.style === 'ordered' ? 'ol' : 'ul';
 					const listItems = Array.isArray(block.items) ? (block.items as unknown[]) : [];
-					const items = listItems.map((item) => `<li>${String(item)}</li>`).join('');
+					const items = listItems.map((item) => `<li>${blockText(item)}</li>`).join('');
 					return `<${tag}>${items}</${tag}>`;
 				case 'quote':
 				case 'blockquote':
-					return `<blockquote>${block.content || block.text || ''}</blockquote>`;
+					return `<blockquote>${blockText(block.content) || blockText(block.text)}</blockquote>`;
 				case 'code':
-					return `<pre><code>${escapeXml(String(block.content || block.code || ''))}</code></pre>`;
+					return `<pre><code>${escapeXml(blockText(block.content) || blockText(block.code))}</code></pre>`;
 				case 'html':
 				case 'raw':
-					return block.content || block.html || '';
+					return blockText(block.content) || blockText(block.html);
 				default:
 					// Fallback: try to extract content
 					if (block.content) {
-						return `<p>${block.content}</p>`;
+						return `<p>${blockText(block.content)}</p>`;
 					}
 					if (block.text) {
-						return `<p>${block.text}</p>`;
+						return `<p>${blockText(block.text)}</p>`;
 					}
 					return '';
 			}

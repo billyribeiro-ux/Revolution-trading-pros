@@ -241,7 +241,6 @@
 		transition: all 0.2s;
 	}
 
-
 	.btn-primary:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;

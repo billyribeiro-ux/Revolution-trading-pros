@@ -165,7 +165,9 @@ export interface EmailSubscriber {
 	email: string;
 	first_name?: string;
 	last_name?: string;
-	status: 'subscribed' | 'unsubscribed' | 'bounced' | 'complained';
+	status: 'pending' | 'subscribed' | 'unsubscribed' | 'bounced' | 'complained';
+	display_name?: string | null;
+	confirmation?: ConfirmationReceipt | null;
 	tags: string[];
 	/**
 	 * Subscriber custom fields (account-defined schema). Values are JSON
@@ -173,13 +175,34 @@ export interface EmailSubscriber {
 	 * JSON, narrow at the read site.
 	 */
 	custom_fields: Record<string, JsonValue>;
-	email_score: number;
+	email_score: number | null;
 	last_opened_at?: string;
 	last_clicked_at?: string;
-	subscribed_at: string;
+	subscribed_at: string | null;
 	unsubscribed_at?: string;
 	created_at: string;
 	updated_at: string;
+}
+
+export interface SubscriberWrite {
+	email?: string;
+	first_name?: string;
+	last_name?: string;
+	tags?: string[];
+	custom_fields?: Record<string, JsonValue>;
+}
+export interface ConfirmationReceipt {
+	status: 'processing' | 'accepted' | 'unavailable' | 'failed' | 'unknown';
+	message?: string;
+	requested_at?: string;
+}
+export interface SubscriberStats {
+	total: number;
+	subscribed: number;
+	pending: number;
+	unsubscribed: number;
+	bounced: number;
+	complained: number;
 }
 
 export interface EmailStats {
@@ -318,8 +341,22 @@ class EmailAPI {
 		const response = await fetch(url, fetchOptions);
 
 		if (!response.ok) {
-			const error = await response.json().catch(() => ({ message: 'Request failed' }));
-			throw new Error(error.message || `HTTP ${response.status}`);
+			const payload: unknown = await response.json().catch(() => null);
+			let message = `HTTP ${response.status}`;
+			if (payload && typeof payload === 'object') {
+				if ('message' in payload && typeof payload.message === 'string') message = payload.message;
+				else if ('error' in payload) {
+					if (typeof payload.error === 'string') message = payload.error;
+					else if (
+						payload.error &&
+						typeof payload.error === 'object' &&
+						'message' in payload.error &&
+						typeof payload.error.message === 'string'
+					)
+						message = payload.error.message;
+				}
+			}
+			throw new Error(message);
 		}
 
 		return response.json();
@@ -564,15 +601,24 @@ class EmailAPI {
 		return this.request('GET', `/admin/email/subscribers/${id}`);
 	}
 
-	async createSubscriber(data: Partial<EmailSubscriber>): Promise<{ subscriber: EmailSubscriber }> {
+	async createSubscriber(
+		data: SubscriberWrite
+	): Promise<{ subscriber: EmailSubscriber; confirmation: ConfirmationReceipt }> {
 		return this.request('POST', '/admin/email/subscribers', data);
 	}
 
 	async updateSubscriber(
 		id: string,
-		data: Partial<EmailSubscriber>
+		data: SubscriberWrite
 	): Promise<{ subscriber: EmailSubscriber }> {
 		return this.request('PUT', `/admin/email/subscribers/${id}`, data);
+	}
+
+	async getSubscriberStats(): Promise<SubscriberStats> {
+		return this.request('GET', '/admin/email/subscribers/stats');
+	}
+	async bulkDeleteSubscribers(ids: string[]): Promise<{ success: boolean; deleted: number }> {
+		return this.request('POST', '/admin/email/subscribers/bulk-delete', { ids });
 	}
 
 	async deleteSubscriber(id: string): Promise<{ success: boolean }> {
@@ -591,7 +637,9 @@ class EmailAPI {
 		return this.request('POST', `/admin/email/subscribers/${id}/unsubscribe`);
 	}
 
-	async resubscribe(id: string): Promise<{ success: boolean }> {
+	async resubscribe(
+		id: string
+	): Promise<{ success: boolean; subscriber: EmailSubscriber; confirmation: ConfirmationReceipt }> {
 		return this.request('POST', `/admin/email/subscribers/${id}/resubscribe`);
 	}
 

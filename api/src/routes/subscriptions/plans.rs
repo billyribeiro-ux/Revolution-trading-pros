@@ -21,7 +21,7 @@ use crate::{
 ///
 /// Read-through cached (60s, see `cache_ttl::PLANS`); admin plan writes
 /// invalidate it. Checkout reads `membership_plans` directly, never this cache.
-pub(super) async fn list_plans(
+pub(crate) async fn list_plans(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
     let pool = state.db.pool.clone();
@@ -54,7 +54,7 @@ pub(super) async fn list_plans(
 ///
 /// Only found plans are cached: caching 404s would let callers fill the
 /// cache with arbitrary slugs.
-pub(super) async fn get_plan(
+pub(crate) async fn get_plan(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<MembershipPlanRow>, (StatusCode, Json<serde_json::Value>)> {

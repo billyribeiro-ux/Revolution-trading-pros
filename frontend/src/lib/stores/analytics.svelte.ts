@@ -9,6 +9,7 @@
  */
 
 import { browser } from '$app/env';
+import { SvelteDate } from 'svelte/reactivity';
 import {
 	analyticsApi,
 	type DashboardData,
@@ -113,7 +114,7 @@ export const analyticsStore = {
 				...analyticsState,
 				dashboard: data,
 				isLoading: false,
-				lastUpdated: new Date().toISOString()
+				lastUpdated: new SvelteDate().toISOString()
 			};
 		} catch (error) {
 			analyticsState = {
@@ -143,14 +144,14 @@ export const analyticsStore = {
 	startRealtimeUpdates(intervalMs: number = 10000) {
 		if (!browser) return;
 
-		this.loadRealtime();
+		void this.loadRealtime();
 
 		if (realtimeInterval) {
 			clearInterval(realtimeInterval);
 		}
 
 		realtimeInterval = setInterval(() => {
-			this.loadRealtime();
+			void this.loadRealtime();
 		}, intervalMs);
 	},
 
@@ -167,7 +168,7 @@ export const analyticsStore = {
 
 	setPeriod(period: string) {
 		analyticsState = { ...analyticsState, selectedPeriod: period };
-		this.loadDashboard(period);
+		void this.loadDashboard(period);
 	},
 
 	// ───────────────────────────────────────────────────────────────────
@@ -287,7 +288,7 @@ function trackClick(element: HTMLElement, eventName?: string) {
 		category: 'click'
 	};
 
-	track(name, properties);
+	void track(name, properties);
 }
 
 // Track scroll depth
@@ -309,7 +310,7 @@ function setupScrollTracking() {
 
 					// Track milestones
 					if ([25, 50, 75, 90, 100].includes(scrollPercentage)) {
-						track('scroll_depth', {
+						void track('scroll_depth', {
 							depth: scrollPercentage,
 							category: 'engagement'
 						});
@@ -334,7 +335,7 @@ function setupScrollTracking() {
 function trackFormSubmit(formId: string, formData?: EventProperties) {
 	if (!trackingConfig.autoTrackFormSubmissions) return;
 
-	track('form_submit', {
+	void track('form_submit', {
 		form_id: formId,
 		...(formData && { form_data: formData }),
 		category: 'conversion'

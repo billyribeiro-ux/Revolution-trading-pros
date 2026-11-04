@@ -48,7 +48,9 @@
  * @license MIT
  */
 
-import { writable, derived } from 'svelte/store';
+// Public fields are store inputs consumed with subscriptions/get; keep that API.
+import * as stores from 'svelte/store';
+import { SvelteMap, SvelteDate } from 'svelte/reactivity';
 import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import { logger } from '#lib/utils/logger.js';
 import type { JsonValue } from './_types';
@@ -403,13 +405,13 @@ class EnterpriseApiClient {
 
 	// Request management
 	private requestQueue: RequestQueueItem[] = [];
-	private activeRequests = new Map<string, Promise<unknown>>();
-	private requestCache = new Map<string, { data: unknown; expiry: number }>();
+	private activeRequests = new SvelteMap<string, Promise<unknown>>();
+	private requestCache = new SvelteMap<string, { data: unknown; expiry: number }>();
 	private rateLimiter = new RateLimiter(RATE_LIMIT);
 	private circuitBreaker = new CircuitBreaker();
 
 	// Batch processing — items are operation descriptors enqueued by `batch()`
-	private batchQueue: Map<string, BatchOperation[]> = new Map();
+	private batchQueue: Map<string, BatchOperation[]> = new SvelteMap();
 
 	// Performance tracking
 	private metrics: PerformanceMetrics = {
@@ -423,28 +425,30 @@ class EnterpriseApiClient {
 	};
 
 	// Stores
-	public loading = writable(false);
-	public error = writable<ApiError | null>(null);
-	public online = writable(true);
-	public performance = writable(this.metrics);
-	public user = writable<User | null>(null);
-	public memberships = writable<Membership[]>([]);
-	public products = writable<Product[]>([]);
+	public loading = stores.writable(false);
+	public error = stores.writable<ApiError | null>(null);
+	public online = stores.writable(true);
+	public performance = stores.writable(this.metrics);
+	public user = stores.writable<User | null>(null);
+	public memberships = stores.writable<Membership[]>([]);
+	public products = stores.writable<Product[]>([]);
 
 	// Derived stores
-	public isAuthenticated = derived(this.user, ($user) => $user !== null);
+	public isAuthenticated = stores.derived(this.user, ($user) => $user !== null);
 
-	public activeMembership = derived(this.memberships, ($memberships) =>
+	public activeMembership = stores.derived(this.memberships, ($memberships) =>
 		$memberships.find((m) => m.status === 'active')
 	);
 
-	public hasActiveSubscription = derived(
+	public hasActiveSubscription = stores.derived(
 		this.activeMembership,
 		($membership) => $membership !== undefined
 	);
 
 	private constructor() {
-		this.initialize();
+		void this.initialize().catch((error: unknown) =>
+			this.recordBackgroundFailure(error, 'initialize')
+		);
 	}
 
 	static getInstance(): EnterpriseApiClient {
@@ -457,6 +461,25 @@ class EnterpriseApiClient {
 	/**
 	 * Initialize client
 	 */
+	private recordBackgroundFailure(error: unknown, operation: string): void {
+		const message =
+			error instanceof Error
+				? error.message
+				: error &&
+					  typeof error === 'object' &&
+					  'message' in error &&
+					  typeof error.message === 'string'
+					? error.message
+					: `Background ${operation} failed`;
+		const status =
+			error && typeof error === 'object' && 'status' in error && typeof error.status === 'number'
+				? error.status
+				: 0;
+		this.error.set({ message, status, code: 'BACKGROUND_FAILURE' });
+		this.loading.set(false);
+		logger.error(`[API] Background ${operation} failed`, { error });
+	}
+
 	private async initialize(): Promise<void> {
 		// Load tokens from storage
 		this.loadTokens();
@@ -769,7 +792,7 @@ class EnterpriseApiClient {
 			errors,
 			status: response.status,
 			code,
-			timestamp: new Date().toISOString(),
+			timestamp: new SvelteDate().toISOString(),
 			requestId
 		};
 
@@ -1464,7 +1487,9 @@ class EnterpriseApiClient {
 
 		window.addEventListener('online', () => {
 			this.online.set(true);
-			this.processQueuedRequests();
+			void this.processQueuedRequests().catch((error: unknown) =>
+				this.recordBackgroundFailure(error, 'offline queue')
+			);
 		});
 
 		window.addEventListener('offline', () => {
@@ -1490,7 +1515,9 @@ class EnterpriseApiClient {
 	private startRequestProcessor(): void {
 		// Process batch requests
 		setInterval(() => {
-			this.processBatchRequests();
+			void this.processBatchRequests().catch((error: unknown) =>
+				this.recordBackgroundFailure(error, 'batch queue')
+			);
 		}, BATCH_DELAY);
 	}
 

@@ -63,7 +63,7 @@ pub(super) async fn presets(
             .map_err(db)?;
     Ok(Json(json!({"success":true,"data":rows})))
 }
-async fn preset(state: &AppState, slug: Option<&str>) -> Result<Preset, ApiError> {
+pub(super) async fn preset(state: &AppState, slug: Option<&str>) -> Result<Preset, ApiError> {
     let row: Preset = sqlx::query_as("SELECT * FROM media_optimization_presets WHERE ($1::text IS NULL AND is_default) OR slug=$1 LIMIT 1")
         .bind(slug).fetch_optional(state.db.pool()).await.map_err(db)?.ok_or_else(||ApiError::validation_error("Unknown optimization preset"))?;
     row.validate()
@@ -83,13 +83,15 @@ async fn enqueue(
         return Err(ApiError::validation_error("Priority must be from 0 to 10"));
     }
     let mut tx = state.db.pool().begin().await.map_err(db)?;
-    let media: Option<(Option<String>, Option<String>, String)> =
-        sqlx::query_as("SELECT mime_type,path,scan_status FROM media WHERE id=$1 FOR UPDATE")
-            .bind(media_id)
-            .fetch_optional(&mut *tx)
-            .await
-            .map_err(db)?;
-    let (mime, path, scan) = media.ok_or_else(|| ApiError::not_found("Media not found"))?;
+    let media: Option<(Option<String>, Option<String>, String, i64)> = sqlx::query_as(
+        "SELECT mime_type,path,scan_status,content_version FROM media WHERE id=$1 FOR UPDATE",
+    )
+    .bind(media_id)
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(db)?;
+    let (mime, path, scan, source_version) =
+        media.ok_or_else(|| ApiError::not_found("Media not found"))?;
     if !matches!(
         mime.as_deref(),
         Some("image/jpeg" | "image/png" | "image/webp" | "image/gif" | "image/avif")
@@ -109,8 +111,8 @@ async fn enqueue(
     let id = if let Some(id) = id {
         id
     } else {
-        sqlx::query_scalar("INSERT INTO media_optimization_jobs(media_id,preset,priority) VALUES($1,$2,$3) RETURNING id")
-            .bind(media_id).bind(json!(preset)).bind(priority).fetch_one(&mut *tx).await.map_err(db)?
+        sqlx::query_scalar("INSERT INTO media_optimization_jobs(media_id,preset,priority,source_version) VALUES($1,$2,$3,$4) RETURNING id")
+            .bind(media_id).bind(json!(preset)).bind(priority).bind(source_version).fetch_one(&mut *tx).await.map_err(db)?
     };
     tx.commit().await.map_err(db)?;
     Ok(id)
@@ -167,7 +169,7 @@ pub(super) async fn variants(
     if scan.as_deref() == Some("infected") {
         return Err(ApiError::validation_error("Infected media is quarantined"));
     }
-    let rows: Vec<Value> = sqlx::query_scalar("SELECT to_jsonb(v)-'path' || jsonb_build_object('lqip',NULL,'blurhash',NULL) FROM media_variants v WHERE media_id=$1 AND job_id=(SELECT MAX(job_id) FROM media_variants WHERE media_id=$1) ORDER BY width DESC,id")
+    let rows: Vec<Value> = sqlx::query_scalar("SELECT to_jsonb(v)-'path' || jsonb_build_object('lqip',NULL,'blurhash',NULL) FROM media_variants v WHERE media_id=$1 AND source_version=(SELECT content_version FROM media WHERE id=$1) AND job_id=(SELECT MAX(job_id) FROM media_variants WHERE media_id=$1 AND source_version=(SELECT content_version FROM media WHERE id=$1)) ORDER BY width DESC,id")
         .bind(id).fetch_all(state.db.pool()).await.map_err(db)?;
     Ok(Json(json!({"success":true,"data":rows})))
 }

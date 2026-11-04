@@ -218,7 +218,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	// REACTIVE STATE (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let state = $state<RealtimeState>({
+	const state = $state<RealtimeState>({
 		isConnected: false,
 		isReconnecting: false,
 		realtimeAlertIds: new SvelteSet(),
@@ -229,6 +229,14 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 		latestStats: null,
 		recentAlerts: []
 	});
+
+	function refreshInBackground(task: Promise<unknown> | void): void {
+		void Promise.resolve(task).catch((error: unknown) => {
+			state.error =
+				error instanceof Error ? error : new Error('Unable to refresh live trading data');
+			logger.error('[Realtime] Background refresh failed', { error });
+		});
+	}
 
 	// WebSocket service instance
 	let ws: WebSocketService | null = null;
@@ -346,7 +354,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// Refresh trades list
 		if (pageStateRef?.fetchAllTrades) {
-			pageStateRef.fetchAllTrades();
+			refreshInBackground(pageStateRef.fetchAllTrades());
 		}
 
 		// Call external callback
@@ -372,10 +380,10 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// Refresh trades and stats
 		if (pageStateRef?.fetchAllTrades) {
-			pageStateRef.fetchAllTrades();
+			refreshInBackground(pageStateRef.fetchAllTrades());
 		}
 		if (pageStateRef?.fetchStats) {
-			pageStateRef.fetchStats();
+			refreshInBackground(pageStateRef.fetchStats());
 		}
 
 		// Call external callback
@@ -404,7 +412,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// Refresh trades
 		if (pageStateRef?.fetchAllTrades) {
-			pageStateRef.fetchAllTrades();
+			refreshInBackground(pageStateRef.fetchAllTrades());
 		}
 
 		// Call external callback
@@ -432,10 +440,10 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// Refresh trades and stats
 		if (pageStateRef?.fetchAllTrades) {
-			pageStateRef.fetchAllTrades();
+			refreshInBackground(pageStateRef.fetchAllTrades());
 		}
 		if (pageStateRef?.fetchStats) {
-			pageStateRef.fetchStats();
+			refreshInBackground(pageStateRef.fetchStats());
 		}
 
 		showToast({
@@ -474,7 +482,7 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 	 */
 	function handleTradePlanEvent(): void {
 		if (pageStateRef?.fetchTradePlan) {
-			pageStateRef.fetchTradePlan();
+			refreshInBackground(pageStateRef.fetchTradePlan());
 		}
 	}
 
@@ -597,7 +605,9 @@ export function createRealtimeState(roomSlug: string = ROOM_SLUG) {
 
 		// Request notification permission
 		if ('Notification' in window && Notification.permission === 'default') {
-			Notification.requestPermission();
+			void Notification.requestPermission().catch((error: unknown) =>
+				logger.warn('[Realtime] Notification permission request failed', { error })
+			);
 		}
 	}
 

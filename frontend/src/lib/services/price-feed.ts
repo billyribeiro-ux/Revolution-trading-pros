@@ -187,7 +187,7 @@ class PriceFeedService {
 
 		// Fetch prices for new tickers immediately
 		if (newTickers.length > 0) {
-			this.fetchPrices(newTickers);
+			void this.fetchPrices(newTickers);
 		}
 
 		// Start polling if not already running
@@ -335,7 +335,7 @@ class PriceFeedService {
 
 		this.pollingInterval = setInterval(() => {
 			if (this.subscribedTickers.size > 0) {
-				this.fetchPrices(Array.from(this.subscribedTickers));
+				void this.fetchPrices(Array.from(this.subscribedTickers));
 			}
 		}, interval);
 	}
@@ -366,7 +366,7 @@ class PriceFeedService {
 
 		this.reconnectTimeout = setTimeout(() => {
 			if (this.subscribedTickers.size > 0) {
-				this.fetchPrices(Array.from(this.subscribedTickers));
+				void this.fetchPrices(Array.from(this.subscribedTickers));
 			}
 		}, delay);
 	}

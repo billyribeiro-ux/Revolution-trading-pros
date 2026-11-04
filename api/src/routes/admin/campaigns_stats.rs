@@ -435,6 +435,8 @@ pub(super) async fn get_email_status(
         sent: i64,
         failed: i64,
         skipped: i64,
+        unavailable: i64,
+        unknown: i64,
         // Migration 064 added sent_at as TIMESTAMPTZ.
         last_send_at: Option<chrono::DateTime<chrono::Utc>>,
     }
@@ -446,6 +448,8 @@ pub(super) async fn get_email_status(
                    AS failed,
                COUNT(*) FILTER (WHERE status = 'skipped_no_token' AND queued_at > NOW() - INTERVAL '24 hours')
                    AS skipped,
+               COUNT(*) FILTER (WHERE status='unavailable' AND queued_at>NOW()-INTERVAL '24 hours') AS unavailable,
+               COUNT(*) FILTER (WHERE status='delivery_unknown' AND queued_at>NOW()-INTERVAL '24 hours') AS unknown,
                MAX(sent_at) FILTER (WHERE status = 'sent') AS last_send_at
            FROM email_logs",
     )
@@ -460,12 +464,16 @@ pub(super) async fn get_email_status(
     })?;
 
     Ok(Json(json!({
-        "postmark_token_set": state.services.email.is_enabled(),
+        "postmark_token_set": state.services.email.is_token_configured(),
+        "email_service_enabled":state.services.email.is_enabled(),
+        "email_configuration_error":state.services.email.configuration_error(),
         "from_email": state.services.email.from_email(),
         "admin_notification_email_set": state.config.admin_notification_email.is_some(),
         "last_24h_sent": counts.sent,
         "last_24h_failed": counts.failed,
         "last_24h_skipped": counts.skipped,
+        "last_24h_unavailable":counts.unavailable,
+        "last_24h_unknown":counts.unknown,
         "last_send_at": counts.last_send_at.map(|t| t.to_rfc3339()),
     })))
 }

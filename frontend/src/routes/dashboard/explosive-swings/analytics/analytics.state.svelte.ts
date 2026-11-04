@@ -1,3 +1,4 @@
+import { SvelteDate } from 'svelte/reactivity';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - Analytics State Module
@@ -156,8 +157,8 @@ const API_BASE = '/api/analytics/room';
  * Get date range based on preset period
  */
 function getDateRangeForPeriod(period: TimePeriod): DateRange {
-	const to = new Date();
-	const from = new Date();
+	const to = new SvelteDate();
+	const from = new SvelteDate();
 
 	switch (period) {
 		case '30d':
@@ -442,7 +443,7 @@ export function createAnalyticsState() {
 		if (period === selectedPeriod) return;
 		selectedPeriod = period;
 		dateRange = getDateRangeForPeriod(period);
-		fetchAll();
+		void fetchAll();
 	}
 
 	/**
@@ -450,14 +451,14 @@ export function createAnalyticsState() {
 	 */
 	function setDateRange(range: DateRange) {
 		dateRange = range;
-		fetchAll();
+		void fetchAll();
 	}
 
 	/**
 	 * Initialize dashboard data
 	 */
 	function initializeData() {
-		fetchAll();
+		void fetchAll();
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

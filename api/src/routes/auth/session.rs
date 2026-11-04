@@ -19,8 +19,8 @@ use crate::{
 
 /// Get current user (requires auth)
 /// GET /api/auth/me
-pub(super) async fn me(user: User) -> Json<UserResponse> {
-    Json(user.into())
+pub(super) async fn me(State(state): State<AppState>, user: User) -> Json<UserResponse> {
+    Json(UserResponse::from_authenticated(user, &state.config))
 }
 
 fn revocation_error(error: anyhow::Error) -> (StatusCode, Json<serde_json::Value>) {

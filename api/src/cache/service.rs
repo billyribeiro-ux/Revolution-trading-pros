@@ -89,6 +89,8 @@ impl CachedValue {
 /// Metrics are exposed via the monitoring endpoint.
 #[derive(Debug, Default)]
 pub struct CacheMetrics {
+    /// Entries removed to enforce the L1 capacity limit (excluding TTL expiry).
+    pub evictions: AtomicU64,
     /// Total cache hits (L1 + L2)
     pub hits: AtomicU64,
     /// L1 (in-memory) cache hits
@@ -176,6 +178,7 @@ impl CacheMetrics {
     /// Get metrics as a JSON-serializable snapshot
     pub fn snapshot(&self) -> CacheMetricsSnapshot {
         CacheMetricsSnapshot {
+            evictions: self.evictions.load(Ordering::Relaxed),
             hits: self.hits.load(Ordering::Relaxed),
             l1_hits: self.l1_hits.load(Ordering::Relaxed),
             l2_hits: self.l2_hits.load(Ordering::Relaxed),
@@ -193,6 +196,7 @@ impl CacheMetrics {
 /// Serializable snapshot of cache metrics
 #[derive(Debug, Clone, Serialize)]
 pub struct CacheMetricsSnapshot {
+    pub evictions: u64,
     pub hits: u64,
     pub l1_hits: u64,
     pub l2_hits: u64,
@@ -554,12 +558,14 @@ impl CacheService {
                     .map(|(k, v)| (k.clone(), v.created_at))
                     .collect();
                 entries.sort_by_key(|a| a.1);
+                let mut evicted = 0;
                 for (key, _) in entries.into_iter().take(to_remove) {
-                    cache.remove(&key);
+                    evicted += u64::from(cache.remove(&key).is_some());
                 }
+                self.metrics.evictions.fetch_add(evicted, Ordering::Relaxed);
                 tracing::debug!(
                     target: "cache",
-                    evicted = %to_remove,
+                    evicted,
                     "L1 cache eviction"
                 );
             }
@@ -619,6 +625,18 @@ impl CacheService {
     pub async fn local_cache_size(&self) -> usize {
         let cache = self.local_cache.read().await;
         cache.len()
+    }
+
+    /// Live entry count and serialized key/value bytes, excluding allocator overhead.
+    pub async fn local_cache_stats(&self) -> (usize, usize) {
+        self.local_cache
+            .read()
+            .await
+            .iter()
+            .filter(|(_, value)| !value.is_expired())
+            .fold((0, 0), |(count, bytes), (key, value)| {
+                (count + 1, bytes + key.len() + value.data.len())
+            })
     }
 }
 
@@ -754,5 +772,31 @@ mod tests {
         // Verify deletion
         let result: Option<String> = cache.get("test_key").await;
         assert!(result.is_none());
+    }
+    #[tokio::test]
+    async fn reports_live_payload_bytes_and_actual_capacity_evictions() {
+        let cache = CacheService::new(None, Some(1));
+        cache
+            .set("a", &"one", Duration::from_secs(60))
+            .await
+            .unwrap();
+        assert_eq!(cache.local_cache_stats().await, (1, 6));
+        cache
+            .set("b", &"two", Duration::from_millis(1))
+            .await
+            .unwrap();
+        assert_eq!(cache.metrics_snapshot().evictions, 1);
+        tokio::time::sleep(Duration::from_millis(10)).await;
+        assert_eq!(cache.local_cache_stats().await, (0, 0));
+        cache
+            .set("c", &"three", Duration::from_secs(60))
+            .await
+            .unwrap();
+        assert_eq!(
+            cache.metrics_snapshot().evictions,
+            1,
+            "TTL expiry is not capacity eviction"
+        );
+        assert_eq!(cache.local_cache_stats().await, (1, 8));
     }
 }

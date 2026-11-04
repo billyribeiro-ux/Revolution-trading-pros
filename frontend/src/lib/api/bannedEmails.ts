@@ -393,7 +393,7 @@ class BannedEmailManagementService {
 		this.startSync();
 
 		// Load initial data
-		this.loadInitialData();
+		void this.loadInitialData();
 	}
 
 	/**
@@ -510,11 +510,11 @@ class BannedEmailManagementService {
 		if (!browser) return;
 
 		// Initial sync
-		this.syncData();
+		void this.syncData();
 
 		// Periodic sync
 		this.syncInterval = window.setInterval(() => {
-			this.syncData();
+			void this.syncData();
 		}, SYNC_INTERVAL);
 	}
 

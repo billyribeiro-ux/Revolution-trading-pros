@@ -744,6 +744,16 @@ export class EnterpriseClient {
 	// Utilities
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	private queryText(value: unknown): string {
+		if (value === null || value === undefined) return '';
+		if (Array.isArray(value)) return value.map((item) => this.queryText(item)).join(',');
+		if (value instanceof Date) return value.toString();
+		if (typeof value === 'object') return JSON.stringify(value);
+		if (typeof value === 'function')
+			throw new TypeError('Query parameters cannot contain functions');
+		return String(value as string | number | boolean | bigint | symbol);
+	}
+
 	private buildUrl(endpoint: string, params?: Record<string, unknown>): string {
 		const base = endpoint.startsWith('http') ? '' : this.config.baseUrl;
 		let url = `${base}${endpoint}`;
@@ -752,7 +762,7 @@ export class EnterpriseClient {
 			const searchParams = new URLSearchParams();
 			for (const [key, value] of Object.entries(params)) {
 				if (value !== null && value !== undefined) {
-					searchParams.append(key, String(value));
+					searchParams.append(key, this.queryText(value));
 				}
 			}
 			url += `?${searchParams.toString()}`;

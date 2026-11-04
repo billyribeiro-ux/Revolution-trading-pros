@@ -48,6 +48,7 @@
  * @license MIT
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '#lib/stores/auth.svelte.js';
@@ -559,12 +560,14 @@ class CouponManagementService {
 			const token = this.getAuthToken();
 			const response = await fetch(url, {
 				...fetchOptions,
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json',
-					...(token && { Authorization: `Bearer ${token}` }),
-					...fetchOptions.headers
-				}
+				headers: mergeHeaders(
+					{
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+						...(token && { Authorization: `Bearer ${token}` })
+					},
+					fetchOptions.headers
+				)
 			});
 
 			if (!response.ok) {
@@ -930,7 +933,9 @@ class CouponManagementService {
 		this.stopAnalyticsCollection();
 
 		this.analyticsInterval = window.setInterval(() => {
-			this.updateAnalytics();
+			void this.updateAnalytics().catch((error) =>
+				logger.error('[CouponService] Background analytics failed', { error })
+			);
 		}, ANALYTICS_INTERVAL);
 	}
 
@@ -1282,7 +1287,10 @@ class CouponManagementService {
 		});
 
 		// Monitor operation progress
-		this.monitorBulkOperation(operation.id);
+		void this.monitorBulkOperation(operation.id).catch((error: unknown) => {
+			this.error.set(errorMessage(error));
+			this.showNotification(`Bulk operation monitoring failed: ${errorMessage(error)}`, 'error');
+		});
 
 		return operation;
 	}
@@ -1313,11 +1321,19 @@ class CouponManagementService {
 				);
 			} else {
 				// Check again in 2 seconds
-				setTimeout(checkStatus, 2000);
+				setTimeout(() => {
+					void checkStatus().catch((error: unknown) => {
+						this.error.set(errorMessage(error));
+						this.showNotification(
+							`Bulk operation monitoring failed: ${errorMessage(error)}`,
+							'error'
+						);
+					});
+				}, 2000);
 			}
 		};
 
-		checkStatus();
+		await checkStatus();
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

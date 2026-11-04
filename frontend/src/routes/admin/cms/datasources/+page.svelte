@@ -303,8 +303,8 @@
 				body: JSON.stringify({
 					name: datasourceForm.name,
 					slug: datasourceForm.slug || undefined,
-					description: datasourceForm.description || undefined,
-					icon: datasourceForm.icon || undefined,
+					description: datasourceForm.description,
+					icon: datasourceForm.icon,
 					color: datasourceForm.color || undefined
 				})
 			});
@@ -540,8 +540,8 @@
 			const result = await response.json();
 			if (!isComponentMounted || selectedDatasource?.id !== datasourceId) return;
 			showToastMessage(
-				`Import completed: ${result.created} created, ${result.skipped} skipped`,
-				'success'
+				`Import completed: ${result.created} created, ${result.updated ?? 0} updated, ${result.skipped} skipped, ${result.errors ?? 0} errors`,
+				result.errors ? 'error' : 'success'
 			);
 			showImportModal = false;
 			importFile = null;

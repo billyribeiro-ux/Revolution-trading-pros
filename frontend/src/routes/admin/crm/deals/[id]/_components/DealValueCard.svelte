@@ -12,7 +12,7 @@
 <div class="value-card">
 	<div class="value-main">
 		<span class="value-label">Deal Value</span>
-		<span class="value-amount">{formatCurrency(deal.amount)}</span>
+		<span class="value-amount">{formatCurrency(deal.amount, deal.currency)}</span>
 	</div>
 	<div class="value-stats">
 		<div class="value-stat">
@@ -24,7 +24,7 @@
 		</div>
 		<div class="value-stat">
 			<span class="stat-label">Weighted Value</span>
-			<span class="stat-value">{formatCurrency(deal.weighted_value)}</span>
+			<span class="stat-value">{formatCurrency(deal.weighted_value, deal.currency)}</span>
 		</div>
 		<div class="value-stat">
 			<span class="stat-label">Expected Close</span>

@@ -207,3 +207,71 @@ pub struct PublicEntryResponse {
     pub name: String,
     pub value: String,
 }
+
+impl CreateDatasourceRequest {
+    pub(super) fn validate(&self) -> Result<(), crate::utils::errors::ApiError> {
+        super::helpers::text(&self.name, "Name", 100, true)?;
+        for (value, field, max) in [
+            (&self.description, "Description", 1_000_000),
+            (&self.icon, "Icon", 50),
+            (&self.color, "Color", 20),
+        ] {
+            if let Some(value) = value {
+                super::helpers::text(value, field, max, false)?;
+            }
+        }
+        Ok(())
+    }
+}
+impl UpdateDatasourceRequest {
+    pub(super) fn validate(&self) -> Result<(), crate::utils::errors::ApiError> {
+        if let Some(name) = &self.name {
+            super::helpers::text(name, "Name", 100, true)?;
+        }
+        for (value, field, max) in [
+            (&self.description, "Description", 1_000_000),
+            (&self.icon, "Icon", 50),
+            (&self.color, "Color", 20),
+        ] {
+            if let Some(value) = value {
+                super::helpers::text(value, field, max, false)?;
+            }
+        }
+        Ok(())
+    }
+}
+impl CreateEntryRequest {
+    pub(super) fn validate(&self) -> Result<(), crate::utils::errors::ApiError> {
+        super::helpers::text(&self.name, "Entry name", 255, true)?;
+        super::helpers::text(&self.value, "Entry value", 500, true)?;
+        if let Some(value) = &self.dimension {
+            super::helpers::text(value, "Dimension", 50, true)?;
+        }
+        if let Some(value) = &self.metadata {
+            super::helpers::metadata(value)?;
+        }
+        Ok(())
+    }
+}
+impl UpdateEntryRequest {
+    pub(super) fn validate(&self) -> Result<(), crate::utils::errors::ApiError> {
+        for (value, field, max) in [
+            (&self.name, "Entry name", 255),
+            (&self.value, "Entry value", 500),
+            (&self.dimension, "Dimension", 50),
+        ] {
+            if let Some(value) = value {
+                super::helpers::text(value, field, max, true)?;
+            }
+        }
+        if self.sort_order.is_some_and(|value| value < 0) {
+            return Err(crate::utils::errors::ApiError::validation_error(
+                "Sort order must not be negative",
+            ));
+        }
+        if let Some(value) = &self.metadata {
+            super::helpers::metadata(value)?;
+        }
+        Ok(())
+    }
+}

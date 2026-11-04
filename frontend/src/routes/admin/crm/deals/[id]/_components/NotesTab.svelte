@@ -103,7 +103,6 @@
 		transition: all 0.2s;
 	}
 
-
 	.empty-state {
 		display: flex;
 		flex-direction: column;

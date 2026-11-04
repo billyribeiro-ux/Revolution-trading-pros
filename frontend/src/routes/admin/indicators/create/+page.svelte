@@ -317,7 +317,8 @@
 						canvas.toBlob(
 							(blob) => {
 								revokeObjectUrl();
-								blob ? resolve(blob) : reject(new Error('Failed to create blob'));
+								if (blob) resolve(blob);
+								else reject(new Error('Failed to create blob'));
 							},
 							'image/jpeg',
 							quality
@@ -643,8 +644,6 @@
 </svelte:head>
 
 <div class="admin-indicators-create">
-	
-
 	<div class="admin-page-container">
 		<!-- Header -->
 		<header class="page-header">
@@ -672,7 +671,8 @@
 
 					<div class="form-group">
 						<label for="name">Indicator Name <span class="required">*</span></label>
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							id="name"
 							name="name"
 							type="text"
@@ -690,7 +690,8 @@
 
 					<div class="form-group">
 						<label for="subtitle">Subtitle / Tagline</label>
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							id="subtitle"
 							name="subtitle"
 							type="text"
@@ -712,7 +713,8 @@
 
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								id="version"
 								name="version"
 								type="text"
@@ -750,7 +752,8 @@
 									<button type="button" class="tag-remove" onclick={() => removeTag(tag)}>×</button>
 								</span>
 							{/each}
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								id="tags-input"
 								name="tags-input"
 								type="text"
@@ -878,7 +881,8 @@
 
 										<!-- Installation Notes -->
 										<div class="form-group compact">
-											<input autocomplete="off"
+											<input
+												autocomplete="off"
 												id="page-pf-installation-notes"
 												name="page-pf-installation-notes"
 												type="text"
@@ -911,7 +915,12 @@
 							{#each documentationFiles as doc, index (index)}
 								<div class="doc-item">
 									<div class="doc-header">
-										<select id="create-doc-doc-type" name="create_doc_doc_type" bind:value={doc.doc_type} class="doc-type-select">
+										<select
+											id="create-doc-doc-type"
+											name="create_doc_doc_type"
+											bind:value={doc.doc_type}
+											class="doc-type-select"
+										>
 											{#each DOC_TYPES as dt (dt.id)}
 												<option value={dt.id}>{dt.name}</option>
 											{/each}
@@ -923,7 +932,8 @@
 										>
 									</div>
 
-									<input autocomplete="off"
+									<input
+										autocomplete="off"
 										id="page-doc-title"
 										name="page-doc-title"
 										type="text"
@@ -1008,7 +1018,8 @@
 							<label for="price">Price (USD)</label>
 							<div class="price-input">
 								<span class="currency">$</span>
-								<input autocomplete="off"
+								<input
+									autocomplete="off"
 									id="price"
 									name="price"
 									type="number"
@@ -1295,9 +1306,6 @@
 	}
 
 	/* Background Effects */
-	
-
-	
 
 	/* Header */
 	.page-header {
@@ -1315,7 +1323,6 @@
 		background: var(--primary-500);
 		border-radius: 20px;
 		color: var(--bg-base, #0d1117);
-		
 	}
 
 	.header-icon :global(svg) {
@@ -2211,7 +2218,6 @@
 		color: var(--bg-base, #0d1117);
 		min-width: 180px;
 	}
-
 
 	.btn-primary:disabled {
 		opacity: 0.6;

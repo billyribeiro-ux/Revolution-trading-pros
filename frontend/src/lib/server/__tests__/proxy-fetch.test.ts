@@ -262,9 +262,10 @@ describe('fetchBackend', () => {
 
 		await fetchBackend('/api/test', { headers: { Authorization: 'Bearer x' } });
 		const [, options] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-		expect(options.headers['Content-Type']).toBe('application/json');
-		expect(options.headers['Accept']).toBe('application/json');
-		expect(options.headers['Authorization']).toBe('Bearer x');
+		const headers = new Headers(options.headers);
+		expect(headers.get('Content-Type')).toBe('application/json');
+		expect(headers.get('Accept')).toBe('application/json');
+		expect(headers.get('Authorization')).toBe('Bearer x');
 	});
 
 	it('returns null on non-2xx response (NEGATIVE)', async () => {

@@ -31,6 +31,7 @@
 
 import { onDestroy, untrack } from 'svelte';
 import { browser } from '$app/env';
+import { logger } from '#lib/utils/logger.js';
 import { getApiClient, type RequestOptions } from './client';
 import { type ApiError, isApiError, isRetryableError, UnknownError } from './errors';
 import { getCache, type CacheConfig } from './cache';
@@ -80,7 +81,7 @@ export interface QueryOptions<T = unknown> {
 /** Mutation configuration options */
 export interface MutationOptions<TData = unknown, TVariables = unknown> {
 	/** Called before mutation executes */
-	onMutate?: (variables: TVariables) => Promise<unknown> | unknown;
+	onMutate?: (variables: TVariables) => unknown;
 	/** Called on successful mutation */
 	onSuccess?: (data: TData, variables: TVariables, context: unknown) => void;
 	/** Called on mutation error */
@@ -383,11 +384,23 @@ export function createQuery<T>(
 		await executeFetch(true);
 	}
 
+	function backgroundFetch(): void {
+		void executeFetch().catch((cause: unknown) => {
+			if (isDestroyed) return;
+			const failure = isApiError(cause)
+				? cause
+				: new UnknownError(cause instanceof Error ? cause.message : 'Background query failed');
+			state.setError(failure);
+			state.setIdle();
+			logger.error('[Query] Background refresh failed', { error: cause });
+		});
+	}
+
 	// Initial fetch
 	if (browser && enabled) {
 		// Use untrack to avoid creating reactive dependencies
 		untrack(() => {
-			executeFetch();
+			backgroundFetch();
 		});
 	}
 
@@ -395,7 +408,7 @@ export function createQuery<T>(
 	if (browser && refetchInterval > 0) {
 		intervalId = setInterval(() => {
 			if (state.isStale || !state.dataUpdatedAt) {
-				executeFetch();
+				backgroundFetch();
 			}
 		}, refetchInterval);
 	}
@@ -404,7 +417,7 @@ export function createQuery<T>(
 	if (browser && refetchOnFocus) {
 		const handleFocus = () => {
 			if (state.isStale) {
-				executeFetch();
+				backgroundFetch();
 			}
 		};
 		window.addEventListener('focus', handleFocus);
@@ -417,7 +430,7 @@ export function createQuery<T>(
 	// Set up reconnect listener
 	if (browser && refetchOnReconnect) {
 		const handleOnline = () => {
-			executeFetch();
+			backgroundFetch();
 		};
 		window.addEventListener('online', handleOnline);
 
@@ -858,17 +871,32 @@ export function createInfiniteQuery<T, TPageParam = number>(
 		await fetchPage(initialPageParam, 'refresh');
 	}
 
+	function backgroundPage(): void {
+		void fetchPage(initialPageParam, 'refresh').catch((cause: unknown) => {
+			if (isDestroyed) return;
+			error = isApiError(cause)
+				? cause
+				: new UnknownError(cause instanceof Error ? cause.message : 'Background page query failed');
+			status = 'error';
+			errorUpdatedAt = Date.now();
+			isFetching = false;
+			isFetchingNextPage = false;
+			isFetchingPreviousPage = false;
+			logger.error('[Query] Background page refresh failed', { error: cause });
+		});
+	}
+
 	// Initial fetch
 	if (browser && enabled) {
 		untrack(() => {
-			fetchPage(initialPageParam, 'refresh');
+			backgroundPage();
 		});
 	}
 
 	// Polling
 	if (browser && refetchInterval > 0) {
 		intervalId = setInterval(() => {
-			fetchPage(initialPageParam, 'refresh');
+			backgroundPage();
 		}, refetchInterval);
 	}
 

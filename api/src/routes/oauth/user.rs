@@ -317,7 +317,7 @@ pub(super) async fn create_oauth_auth_response(
         access_token: token,
         refresh_token,
         session_id: session_id.to_string(),
-        user: user.into(),
+        user: crate::models::UserResponse::from_authenticated(user, &state.config),
         expires_in: state.config.jwt_expires_in * 3600,
     })
 }

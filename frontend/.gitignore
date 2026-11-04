@@ -52,3 +52,6 @@ coverage/
 
 .vitest/
 .svelte-kit-admin-verify/
+
+# Isolated production verification output
+.svelte-kit-admin-build/

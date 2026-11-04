@@ -102,7 +102,9 @@ export async function adminFetch<T = any>(
 		if (response.status === 401 && !skipAuthRedirect && browser) {
 			// Redirect to login with return URL
 			const returnUrl = encodeURIComponent(window.location.pathname);
-			goto(resolve(`login?redirect=${returnUrl}`));
+			void goto(resolve(`login?redirect=${returnUrl}`)).catch((error: unknown) =>
+				console.error('Login redirect failed:', error)
+			);
 			throw new AdminApiError('Unauthorized', 401);
 		}
 

@@ -63,7 +63,7 @@
 		formOverrides = {
 			...formOverrides,
 			[modalKey]: {
-				...(formOverrides[modalKey] ?? {}),
+				...formOverrides[modalKey],
 				[field]: value
 			}
 		};

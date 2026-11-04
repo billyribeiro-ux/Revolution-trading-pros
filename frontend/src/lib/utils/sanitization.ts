@@ -452,7 +452,9 @@ export function sanitizeFilename(filename: string): string {
 		// Remove null bytes
 		.replace(/\0/g, '')
 		// Remove control characters
-		.replace(/[\x00-\x1f\x7f]/g, '')
+		.replace(/\p{Cc}/gu, (character) =>
+			character.charCodeAt(0) <= 0x1f || character.charCodeAt(0) === 0x7f ? '' : character
+		)
 		// Remove Windows reserved characters
 		.replace(/[<>:"|?*]/g, '-')
 		// Remove percentage signs (prevents URL encoding attacks)

@@ -140,6 +140,8 @@ pub struct UserResponse {
     pub avatar_url: Option<String>,
     pub mfa_enabled: bool,
     pub is_admin: bool,
+    pub is_superadmin: bool,
+    pub is_developer: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
@@ -188,8 +190,39 @@ impl From<User> for UserResponse {
             avatar_url: user.avatar_url,
             mfa_enabled: user.mfa_enabled.unwrap_or(false),
             is_admin,
+            is_superadmin: crate::middleware::admin::is_superadmin_role(user.role.as_deref()),
+            is_developer: user
+                .role
+                .as_deref()
+                .is_some_and(|r| r.eq_ignore_ascii_case("developer")),
             created_at: user.created_at,
             updated_at: user.updated_at,
         }
+    }
+}
+
+impl UserResponse {
+    /// Effective capabilities use the same verified DB identity as server extractors.
+    /// The account's persisted role remains visible and unchanged.
+    pub fn from_authenticated(user: User, config: &crate::config::Config) -> Self {
+        let is_superadmin = crate::middleware::admin::is_superadmin_role(user.role.as_deref())
+            || config.is_superadmin_email_strict(
+                &user.email,
+                user.role.as_deref(),
+                user.email_verified_at.is_some(),
+            );
+        let is_developer = user
+            .role
+            .as_deref()
+            .is_some_and(|r| r.eq_ignore_ascii_case("developer"))
+            || config.is_developer_email_strict(
+                &user.email,
+                user.role.as_deref(),
+                user.email_verified_at.is_some(),
+            );
+        let mut response = Self::from(user);
+        response.is_superadmin = is_superadmin;
+        response.is_developer = is_developer;
+        response
     }
 }

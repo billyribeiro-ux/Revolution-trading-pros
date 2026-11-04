@@ -44,7 +44,7 @@ struct TradesResponse {
 
 /// List trades for a room
 /// ICT 7+ Phase 2: Redis cached with 5 minute TTL
-pub(super) async fn list_trades(
+pub(crate) async fn list_trades(
     State(state): State<AppState>,
     user: User,
     Path(room_slug): Path<String>,

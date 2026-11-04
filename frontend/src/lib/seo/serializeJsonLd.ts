@@ -147,8 +147,6 @@ function stableJsonStringify(value: unknown): string {
  * @param node A JSON-LD node, array of nodes, or plain object/graph.
  * @returns Injection-safe JSON text for use inside a `<script>` element.
  */
-export function serializeJsonLd(
-	node: Record<string, unknown> | Array<Record<string, unknown>> | unknown
-): string {
+export function serializeJsonLd(node: unknown): string {
 	return escapeForScriptContext(stableJsonStringify(node));
 }

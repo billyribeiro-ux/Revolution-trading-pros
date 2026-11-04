@@ -39,8 +39,13 @@ pub(super) async fn list_entries(
     Path(datasource_id): Path<Uuid>,
     Query(query): Query<ListEntriesQuery>,
 ) -> ApiResult<PaginatedEntriesResponse> {
-    let limit = query.limit.unwrap_or(100).min(1000);
-    let offset = query.offset.unwrap_or(0);
+    let (limit, offset) = super::helpers::pagination(query.limit, query.offset, 100, 1000)?;
+    if let Some(search) = &query.search {
+        super::helpers::text(search, "Search", 500, false)?;
+    }
+    if let Some(dimension) = &query.dimension {
+        super::helpers::text(dimension, "Dimension", 50, false)?;
+    }
     let dimension = query
         .dimension
         .clone()
@@ -54,7 +59,7 @@ pub(super) async fn list_entries(
     .bind(datasource_id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     if !exists.0 {
         return Err(
@@ -77,7 +82,7 @@ pub(super) async fn list_entries(
     .bind(&search_pattern)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     let total = count_result.0;
 
@@ -100,7 +105,7 @@ pub(super) async fn list_entries(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     // Get available dimensions
     let dimensions: Vec<String> = sqlx::query_scalar(
@@ -114,7 +119,7 @@ pub(super) async fn list_entries(
     .bind(datasource_id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     Ok(Json(PaginatedEntriesResponse {
         data: entries,
@@ -146,10 +151,12 @@ pub(super) async fn list_entries(
 )]
 pub(super) async fn create_entry(
     State(state): State<AppState>,
-    CmsEditorUser(_user): CmsEditorUser,
+    CmsEditorUser(user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Json(request): Json<CreateEntryRequest>,
 ) -> Result<(StatusCode, Json<CmsDatasourceEntry>), ApiError> {
+    request.validate()?;
+    super::helpers::require_writable(&state.db.pool, datasource_id, &user).await?;
     // Validate
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -167,7 +174,7 @@ pub(super) async fn create_entry(
     .bind(datasource_id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     if !exists.0 {
         return Err(
@@ -188,7 +195,7 @@ pub(super) async fn create_entry(
     .bind(&dimension)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     let new_id = Uuid::new_v4();
     let entry: CmsDatasourceEntry = sqlx::query_as(
@@ -243,10 +250,11 @@ pub(super) async fn create_entry(
 )]
 pub(super) async fn bulk_create_entries(
     State(state): State<AppState>,
-    CmsEditorUser(_user): CmsEditorUser,
+    CmsEditorUser(user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Json(request): Json<BulkCreateEntriesRequest>,
 ) -> ApiResultEmpty {
+    super::helpers::require_writable(&state.db.pool, datasource_id, &user).await?;
     // Verify datasource exists
     let exists: (bool,) = sqlx::query_as(
         "SELECT EXISTS(SELECT 1 FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL)",
@@ -254,7 +262,7 @@ pub(super) async fn bulk_create_entries(
     .bind(datasource_id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     if !exists.0 {
         return Err(
@@ -262,6 +270,14 @@ pub(super) async fn bulk_create_entries(
         );
     }
 
+    if request.entries.len() > 1000 {
+        return Err(ApiError::validation_error(
+            "At most 1000 entries can be added in one batch",
+        ));
+    }
+    for entry in &request.entries {
+        entry.validate()?;
+    }
     let mut created_count = 0;
     let mut skipped_count = 0;
 
@@ -332,10 +348,12 @@ pub(super) async fn bulk_create_entries(
 )]
 pub(super) async fn update_entry(
     State(state): State<AppState>,
-    CmsEditorUser(_user): CmsEditorUser,
+    CmsEditorUser(user): CmsEditorUser,
     Path((datasource_id, entry_id)): Path<(Uuid, Uuid)>,
     Json(request): Json<UpdateEntryRequest>,
 ) -> ApiResult<CmsDatasourceEntry> {
+    request.validate()?;
+    super::helpers::require_writable(&state.db.pool, datasource_id, &user).await?;
     let entry: CmsDatasourceEntry = sqlx::query_as(
         r"
         UPDATE cms_datasource_entries
@@ -358,7 +376,7 @@ pub(super) async fn update_entry(
     .bind(&request.metadata)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(ApiError::from)?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Entry not found").with_code("NOT_FOUND")
     })?;
@@ -385,18 +403,17 @@ pub(super) async fn update_entry(
 )]
 pub(super) async fn delete_entry(
     State(state): State<AppState>,
-    CmsEditorUser(_user): CmsEditorUser,
+    CmsEditorUser(user): CmsEditorUser,
     Path((datasource_id, entry_id)): Path<(Uuid, Uuid)>,
 ) -> ApiResultEmpty {
+    super::helpers::require_writable(&state.db.pool, datasource_id, &user).await?;
     let result =
         sqlx::query("DELETE FROM cms_datasource_entries WHERE id = $1 AND datasource_id = $2")
             .bind(entry_id)
             .bind(datasource_id)
             .execute(&state.db.pool)
             .await
-            .map_err(|e: sqlx::Error| {
-                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?;
+            .map_err(ApiError::from)?;
 
     if result.rows_affected() == 0 {
         return Err(ApiError::new(StatusCode::NOT_FOUND, "Entry not found").with_code("NOT_FOUND"));
@@ -431,41 +448,60 @@ pub(super) async fn delete_entry(
 )]
 pub(super) async fn reorder_entries(
     State(state): State<AppState>,
-    CmsEditorUser(_user): CmsEditorUser,
+    CmsEditorUser(user): CmsEditorUser,
     Path(datasource_id): Path<Uuid>,
     Json(request): Json<ReorderEntriesRequest>,
 ) -> ApiResultEmpty {
-    // Verify datasource exists
-    let exists: (bool,) = sqlx::query_as(
-        "SELECT EXISTS(SELECT 1 FROM cms_datasources WHERE id = $1 AND deleted_at IS NULL)",
-    )
-    .bind(datasource_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-
-    if !exists.0 {
-        return Err(
-            ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
-        );
+    super::helpers::require_writable(&state.db.pool, datasource_id, &user).await?;
+    let selected: std::collections::HashSet<Uuid> = request.entry_ids.iter().copied().collect();
+    if selected.len() != request.entry_ids.len() || selected.len() > 2000 {
+        return Err(ApiError::validation_error(
+            "Provide at most 2000 distinct entry IDs",
+        ));
     }
-
-    // Update sort orders
-    for (i, entry_id) in request.entry_ids.iter().enumerate() {
-        sqlx::query(
-            "UPDATE cms_datasource_entries SET sort_order = $1 WHERE id = $2 AND datasource_id = $3",
-        )
-        .bind(i as i32)
-        .bind(entry_id)
-        .bind(datasource_id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    if selected.is_empty() {
+        return Ok(Json(
+            json!({"message":"No entries reordered","reordered_count":0}),
+        ));
     }
-
-    tracing::info!("Entries reordered in datasource {}", datasource_id);
-
-    Ok(Json(json!({
-        "message": "Entries reordered successfully"
-    })))
+    let mut tx = state.db.pool.begin().await.map_err(|error| {
+        tracing::error!(%error,"Unable to reorder entries");
+        ApiError::database_error("Unable to reorder entries")
+    })?;
+    let flags:Option<(bool,bool)>=sqlx::query_as("SELECT is_locked,is_system FROM cms_datasources WHERE id=$1 AND deleted_at IS NULL FOR UPDATE").bind(datasource_id).fetch_optional(&mut *tx).await?;
+    let (locked, system) = flags.ok_or_else(|| ApiError::not_found("Datasource not found"))?;
+    if locked || system {
+        super::helpers::require_cms_admin(&user)?;
+    }
+    let selected_rows:Vec<(Uuid,String)>=sqlx::query_as("SELECT id,COALESCE(dimension,'default') FROM cms_datasource_entries WHERE datasource_id=$1 AND id=ANY($2)").bind(datasource_id).bind(&request.entry_ids).fetch_all(&mut *tx).await?;
+    if selected_rows.len() != selected.len() {
+        return Err(ApiError::validation_error(
+            "Every reordered entry must belong to this datasource",
+        ));
+    }
+    let dimension = &selected_rows[0].1;
+    if selected_rows.iter().any(|row| &row.1 != dimension) {
+        return Err(ApiError::validation_error(
+            "Reorder entries within one dimension at a time",
+        ));
+    }
+    let mut order:Vec<Uuid>=sqlx::query_scalar("SELECT id FROM cms_datasource_entries WHERE datasource_id=$1 AND COALESCE(dimension,'default')=$2 ORDER BY sort_order,name,id FOR UPDATE").bind(datasource_id).bind(dimension).fetch_all(&mut *tx).await?;
+    let mut next = request.entry_ids.iter();
+    for id in &mut order {
+        if selected.contains(id) {
+            *id = *next.next().ok_or_else(|| {
+                ApiError::validation_error("Entry order changed; reload before reordering")
+            })?;
+        }
+    }
+    if next.next().is_some() {
+        return Err(ApiError::validation_error(
+            "Entry order changed; reload before reordering",
+        ));
+    }
+    sqlx::query("WITH ordered AS(SELECT id,(ordinality-1)::int position FROM unnest($2::uuid[]) WITH ORDINALITY input(id,ordinality)) UPDATE cms_datasource_entries entry SET sort_order=ordered.position,updated_at=NOW() FROM ordered WHERE entry.datasource_id=$1 AND entry.id=ordered.id").bind(datasource_id).bind(&order).execute(&mut *tx).await?;
+    tx.commit().await?;
+    Ok(Json(
+        json!({"message":"Entries reordered successfully","reordered_count":selected.len()}),
+    ))
 }

@@ -2,6 +2,7 @@
 //! Apple ICT 11+ Principal Engineer Grade - January 2026
 
 pub mod auth;
+pub mod campaign_events;
 pub mod categories;
 pub mod health;
 pub mod media;
@@ -30,8 +31,10 @@ pub mod cms_v2_enterprise;
 pub mod contacts;
 pub mod coupons;
 pub mod courses_admin;
+pub mod email_subscribers;
 pub mod newsletter;
 pub mod orders;
+pub mod performance;
 pub mod posts;
 pub mod realtime;
 pub mod schedules;
@@ -99,11 +102,14 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/posts", posts::admin_router())
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
+        .nest("/webhooks", campaign_events::router())
         .nest("/admin", admin::router())
         .nest("/admin/products", products::admin_router()) // Admin product CRUD
         .nest("/checkout", checkout::router())
         .nest("/videos", videos::router())
         .nest("/analytics", analytics::router())
+        .nest("/analytics", performance::public_router())
+        .nest("/performance", performance::admin_router())
         .nest("/contacts", contacts::router())
         .nest("/coupons", coupons::router())
         .nest("/security", security::router())
@@ -154,6 +160,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/forms", forms::public_router())
         .nest("/admin/forms", forms::admin_router())
         // Email Templates Admin - ICT 7 Grade
+        .nest("/admin/email/subscribers", email_subscribers::router())
         .nest("/admin/email/templates", email_templates::admin_router())
         // Email Settings - frontend compatibility
         .nest("/admin/email", email_templates::admin_router())

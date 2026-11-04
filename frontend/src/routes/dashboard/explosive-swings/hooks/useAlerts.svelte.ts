@@ -1,3 +1,4 @@
+import { onMount } from 'svelte';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - useAlerts Hook
@@ -180,14 +181,14 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
 	function nextPage(): void {
 		if (hasNextPage) {
 			currentPage++;
-			fetchAlerts();
+			void fetchAlerts();
 		}
 	}
 
 	function prevPage(): void {
 		if (hasPrevPage) {
 			currentPage--;
-			fetchAlerts();
+			void fetchAlerts();
 		}
 	}
 
@@ -201,7 +202,7 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
 		if (newFilter === selectedFilter) return;
 		selectedFilter = newFilter;
 		currentPage = 1;
-		fetchAlerts();
+		void fetchAlerts();
 	}
 
 	function prependAlert(alert: FormattedAlert): void {
@@ -217,17 +218,15 @@ export function useAlerts(options: UseAlertsOptions = {}): UseAlertsReturn {
 	// EFFECTS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auto-refresh effect
-	$effect(() => {
+	// Options are captured when the hook is created. Start work after mount and
+	// release its timer when the component is removed.
+	onMount(() => {
+		void fetchAlerts();
 		if (!autoRefresh) return;
-
-		const interval = setInterval(fetchAlerts, refreshInterval);
+		const interval = setInterval(() => {
+			void fetchAlerts();
+		}, refreshInterval);
 		return () => clearInterval(interval);
-	});
-
-	// Initial fetch effect
-	$effect(() => {
-		fetchAlerts();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

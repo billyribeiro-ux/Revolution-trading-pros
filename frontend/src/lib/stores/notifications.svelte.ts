@@ -1,3 +1,5 @@
+import { SvelteDate } from 'svelte/reactivity';
+import { logger } from '#lib/utils/logger.js';
 /**
  * Revolution Trading Pros - Enterprise Notification Store (Svelte 5 Runes)
  * ======================================================
@@ -58,7 +60,7 @@ function getInitialState(): NotificationState {
 				return {
 					notifications: parsed.notifications.map((n: Notification) => ({
 						...n,
-						timestamp: new Date(n.timestamp)
+						timestamp: new SvelteDate(n.timestamp)
 					})),
 					isLoading: false,
 					hasNewNotifications: parsed.notifications.some((n: Notification) => !n.read)
@@ -162,7 +164,7 @@ function initWebSocket(userId?: string) {
 				priority: notification.priority,
 				title: notification.title,
 				message: notification.message,
-				timestamp: new Date(notification.timestamp),
+				timestamp: new SvelteDate(notification.timestamp),
 				read: notification.read,
 				dismissed: notification.dismissed,
 				...(notification.action && {
@@ -208,7 +210,7 @@ export const notificationStore = {
 			priority: notification.priority || 'normal',
 			title: notification.title,
 			message: notification.message,
-			timestamp: notification.timestamp || new Date(),
+			timestamp: notification.timestamp || new SvelteDate(),
 			read: notification.read ?? false,
 			dismissed: notification.dismissed ?? false,
 			...(notification.action && { action: notification.action }),
@@ -233,7 +235,9 @@ export const notificationStore = {
 
 		// Show browser notification for urgent
 		if (browser && notification.priority === 'urgent') {
-			showBrowserNotification(newNotification);
+			void showBrowserNotification(newNotification).catch((error: unknown) =>
+				logger.error('Browser notification failed:', error)
+			);
 		}
 
 		return newNotification.id;

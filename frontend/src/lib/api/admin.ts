@@ -38,6 +38,7 @@
  * @license MIT
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { authStore } from '#lib/stores/auth.svelte.js';
 import type { User } from '#lib/stores/auth.svelte.js';
 import { logger } from '#lib/utils/logger.js';
@@ -473,8 +474,8 @@ class RequestManager {
 	 */
 	private getCacheKey(endpoint: string, options?: RequestInit): string {
 		const method = options?.method || 'GET';
-		const body = options?.body || '';
-		return `${method}:${endpoint}:${body}`;
+		// Only GET responses use this cache; Fetch forbids GET request bodies.
+		return `${method}:${endpoint}`;
 	}
 
 	/**
@@ -640,12 +641,14 @@ async function makeRequest<T = unknown>(
 				{
 					...fetchOptions,
 					credentials: 'include',
-					headers: {
-						'Content-Type': 'application/json',
-						Accept: 'application/json',
-						...(token ? { Authorization: `Bearer ${token}` } : {}),
-						...fetchOptions.headers
-					}
+					headers: mergeHeaders(
+						{
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+							...(token ? { Authorization: `Bearer ${token}` } : {})
+						},
+						fetchOptions.headers
+					)
 				},
 				retries,
 				endpoint,
@@ -1574,13 +1577,17 @@ function denormalizeProduct(raw: unknown): Product {
 				: Number(src.price ?? 0) || 0;
 	const rawSale = src.sale_price ?? meta?.sale_price;
 	const salePrice = rawSale != null && !Number.isNaN(Number(rawSale)) ? Number(rawSale) : null;
+	const slug = src.slug ?? meta?.slug ?? '';
+	const currency = src.currency ?? meta?.currency ?? 'USD';
+	if (typeof slug !== 'string' || typeof currency !== 'string')
+		throw new TypeError('Product slug and currency must be text');
 	return {
 		...(src as unknown as Product),
 		type: (src.type ?? src.product_type ?? 'course') as Product['type'],
-		slug: String(src.slug ?? meta?.slug ?? ''),
+		slug,
 		price,
 		sale_price: salePrice,
-		currency: String(src.currency ?? meta?.currency ?? 'USD'),
+		currency,
 		features: Array.isArray(src.features)
 			? (src.features as string[])
 			: Array.isArray(meta?.features)

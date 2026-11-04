@@ -20,13 +20,19 @@ use serde_json::json;
 use crate::{AppState, middleware::admin::AdminUser};
 
 pub mod automations;
+mod campaign_audience;
+mod campaign_delivery;
+mod campaigns;
 pub mod companies;
 pub mod contacts;
+mod deal_activity;
+mod deal_mutations;
 pub mod deals_pipelines;
 pub mod import_export;
 pub mod leads;
 mod list_members;
 pub mod lists_tags;
+mod logs;
 mod segment_rules;
 pub mod segments;
 pub mod sequences_campaigns;
@@ -78,11 +84,13 @@ pub fn router() -> Router<AppState> {
         // Sub-domain routers (each owns its own paths)
         .merge(leads::router())
         .merge(deals_pipelines::router())
+        .merge(deal_activity::router())
         .merge(contacts::router())
         .merge(lists_tags::router())
         .merge(list_members::router())
         .merge(segments::router())
         .merge(sequences_campaigns::router())
+        .merge(campaigns::router())
         .merge(automations::router())
         .merge(smart_links::router())
         .merge(templates::router())
@@ -90,4 +98,5 @@ pub fn router() -> Router<AppState> {
         .merge(companies::router())
         .merge(import_export::router())
         .merge(settings::router())
+        .merge(logs::router())
 }

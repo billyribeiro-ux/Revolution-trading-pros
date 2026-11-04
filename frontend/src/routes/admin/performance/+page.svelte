@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconGauge,
@@ -28,6 +27,11 @@
 
 	// State
 	let loading = $state(true);
+	let loadError = $state('');
+	let urlFilter = $state('');
+	let deviceFilter = $state('all');
+	let daysFilter = $state(28);
+	let requestSequence = 0;
 	let dashboard = $state<PerformanceDashboard | null>(null);
 	let coreWebVitals = $state<CoreWebVitals | null>(null);
 	let recommendations = $state<OptimizationRecommendation[]>([]);
@@ -37,26 +41,33 @@
 	// `$effect` for one-shot init. Matches the migration done in commit
 	// 34a0bd070 across the analytics tree.
 	onMount(() => {
-		if (browser) void loadData();
+		void loadData();
 	});
 
 	async function loadData(): Promise<void> {
+		const sequence = ++requestSequence;
 		loading = true;
+		loadError = '';
 		try {
+			const filters = {
+				url: urlFilter.trim() || undefined,
+				device: deviceFilter,
+				days: daysFilter
+			};
 			const [dashboardData, recommendationsData] = await Promise.all([
-				bingSeoApi.getPerformanceDashboard().catch(() => null),
-				bingSeoApi
-					.getRecommendations()
-					.catch(() => ({ recommendations: [], cdn: null, core_web_vitals: null }))
+				bingSeoApi.getPerformanceDashboard(filters),
+				bingSeoApi.getRecommendations(filters)
 			]);
-
+			if (sequence !== requestSequence) return;
 			dashboard = dashboardData;
-			recommendations = recommendationsData.recommendations || [];
-			coreWebVitals = dashboardData?.core_web_vitals || null;
-		} catch (err) {
-			console.error('Failed to load performance data:', err);
+			recommendations = recommendationsData.recommendations;
+			coreWebVitals = dashboardData.core_web_vitals;
+		} catch (cause) {
+			if (sequence === requestSequence)
+				loadError =
+					cause instanceof Error ? cause.message : 'Unable to load performance measurements';
 		} finally {
-			loading = false;
+			if (sequence === requestSequence) loading = false;
 		}
 	}
 
@@ -64,9 +75,11 @@
 		warmingCaches = true;
 		try {
 			const result = await bingSeoApi.warmCaches();
-			toastStore.success(
-				`Caches warmed! Views: ${result.views}, Routes: ${result.routes}, Configs: ${result.configs}`
-			);
+			if (result.success)
+				toastStore.success(
+					`Warmed ${result.total} cached responses across ${result.rooms} rooms and ${result.plans} plan pages.`
+				);
+			else toastStore.error(`Warmed ${result.total} responses; ${result.errors.join('; ')}`);
 			await loadData();
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to warm caches');
@@ -75,7 +88,7 @@
 		}
 	}
 
-	function getVitalRating(rating: string | undefined): {
+	function getVitalRating(rating: string | null | undefined): {
 		color: VitalRatingColor;
 		icon: typeof IconCheck;
 		label: string;
@@ -103,14 +116,14 @@
 		return ['vital-rating', `vital-rating--${color}`];
 	}
 
-	function formatMs(ms: number | undefined): string {
-		if (!ms) return '-';
+	function formatMs(ms: number | null | undefined): string {
+		if (ms == null) return 'Unavailable';
 		if (ms < 1000) return `${ms.toFixed(0)}ms`;
 		return `${(ms / 1000).toFixed(2)}s`;
 	}
 
-	function formatPercent(value: number | undefined): string {
-		if (value === undefined) return '-';
+	function formatPercent(value: number | null | undefined): string {
+		if (value == null) return 'Unavailable';
 		return `${value.toFixed(1)}%`;
 	}
 
@@ -132,14 +145,8 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Performance Dashboard | Admin</title>
-</svelte:head>
-
 <div class="admin-performance">
 	<div class="admin-page-container">
-		
-
 		<!-- Header -->
 		<div class="page-header">
 			<div class="header-content">
@@ -170,12 +177,45 @@
 			</div>
 		</div>
 
+		<form
+			class="header-actions"
+			onsubmit={(event) => {
+				event.preventDefault();
+				void loadData();
+			}}
+		>
+			<label
+				>Page URL <input
+					type="url"
+					bind:value={urlFilter}
+					placeholder="All observed pages"
+				/></label
+			>
+			<label
+				>Device <select bind:value={deviceFilter}
+					><option value="all">All devices</option><option value="desktop">Desktop</option><option
+						value="mobile">Mobile</option
+					><option value="unknown">Unknown</option></select
+				></label
+			>
+			<label
+				>Window <select bind:value={daysFilter}
+					><option value={7}>7 days</option><option value={28}>28 days</option><option value={90}
+						>90 days</option
+					></select
+				></label
+			>
+			<button class="btn-secondary" type="submit" disabled={loading}>Apply filters</button>
+		</form>
 		{#if loading}
 			<div class="loading-grid">
 				{#each [1, 2, 3, 4] as _, i (i)}
 					<div class="skeleton skeleton-metric"></div>
 				{/each}
 			</div>
+		{:else if loadError}
+			<p role="alert">{loadError}</p>
+			<button class="btn-secondary" onclick={() => void loadData()}>Retry measurements</button>
 		{:else}
 			<!-- Core Web Vitals -->
 			<div class="section">
@@ -184,8 +224,8 @@
 					Core Web Vitals
 				</h2>
 				<p class="section-description">
-					Google's metrics for user experience. Aim for "Good" on all metrics to boost search
-					rankings.
+					First-party browser observations at the 75th percentile over the selected window. Missing
+					measurements remain unavailable; these are not external field-data scores.
 				</p>
 
 				<!-- FIX-2026-04-26 (audit 08-analytics §P1-6): the four `{#if true}`
@@ -195,7 +235,9 @@
 				<div class="vitals-grid">
 					<div class="vital-card">
 						<div class="vital-header">
-							<span class="vital-name">LCP</span>
+							<span class="vital-name">LCP</span><span
+								>{coreWebVitals?.sample_counts.LCP ?? 0} samples</span
+							>
 							<span class="vital-label">Largest Contentful Paint</span>
 						</div>
 						<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
@@ -208,8 +250,10 @@
 
 					<div class="vital-card">
 						<div class="vital-header">
-							<span class="vital-name">FID</span>
-							<span class="vital-label">First Input Delay</span>
+							<span class="vital-name">FID</span><span
+								>{coreWebVitals?.sample_counts.FID ?? 0} samples</span
+							>
+							<span class="vital-label">First Input Delay (legacy)</span>
 						</div>
 						<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
 						<div class={getVitalRatingClasses(fidRating.color)}>
@@ -221,10 +265,12 @@
 
 					<div class="vital-card">
 						<div class="vital-header">
-							<span class="vital-name">CLS</span>
+							<span class="vital-name">CLS</span><span
+								>{coreWebVitals?.sample_counts.CLS ?? 0} samples</span
+							>
 							<span class="vital-label">Cumulative Layout Shift</span>
 						</div>
-						<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
+						<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) ?? 'Unavailable'}</div>
 						<div class={getVitalRatingClasses(clsRating.color)}>
 							<clsRating.icon size={16} />
 							{clsRating.label}
@@ -234,7 +280,9 @@
 
 					<div class="vital-card">
 						<div class="vital-header">
-							<span class="vital-name">INP</span>
+							<span class="vital-name">INP</span><span
+								>{coreWebVitals?.sample_counts.INP ?? 0} samples</span
+							>
 							<span class="vital-label">Interaction to Next Paint</span>
 						</div>
 						<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
@@ -255,6 +303,7 @@
 							<IconServer size={24} />
 						</div>
 						<h3>Server</h3>
+						<p>Host sample: {dashboard?.server.status ?? 'Unavailable'}</p>
 					</div>
 					<div class="metric-content">
 						<div class="metric-row">
@@ -320,23 +369,27 @@
 						<h3>Database</h3>
 					</div>
 					<div class="metric-content">
+						{#if dashboard?.database.query_statistics_requirement}<p>
+								{dashboard.database.query_statistics_requirement}
+							</p>{/if}
 						<div class="metric-stat">
 							<span class="stat-value"
-								>{dashboard?.database?.query_count?.toLocaleString() || 0}</span
+								>{dashboard?.database?.query_count?.toLocaleString() ?? 'Unavailable'}</span
 							>
-							<span class="stat-label">Total Queries</span>
+							<span class="stat-label">Recorded Statement Calls</span>
 						</div>
 						<div class="metric-stat">
-							<span class="stat-value">{dashboard?.database?.slow_queries || 0}</span>
-							<span class="stat-label">Slow Queries</span>
+							<span class="stat-value">{dashboard?.database?.slow_queries ?? 'Unavailable'}</span>
+							<span class="stat-label">Calls in Statements Averaging ≥100ms</span>
 						</div>
 						<div class="metric-stat">
-							<span class="stat-value">{dashboard?.database?.connection_pool || 0}</span>
+							<span class="stat-value">{dashboard?.database?.connection_pool ?? 'Unavailable'}</span
+							>
 							<span class="stat-label">Connection Pool</span>
 						</div>
 						<div class="metric-stat">
 							<span class="stat-value">{formatMs(dashboard?.database?.avg_query_time)}</span>
-							<span class="stat-label">Avg Query Time</span>
+							<span class="stat-label">Mean Statement Execution</span>
 						</div>
 					</div>
 				</div>
@@ -347,6 +400,7 @@
 							<IconActivity size={24} />
 						</div>
 						<h3>Cache</h3>
+						<p>API process counters and live serialized data.</p>
 					</div>
 					<div class="metric-content">
 						<div class="metric-row">
@@ -361,11 +415,11 @@
 						</div>
 						<div class="metric-stat">
 							<span class="stat-value">{dashboard?.cache?.memory_used || '-'}</span>
-							<span class="stat-label">Memory Used</span>
+							<span class="stat-label">Serialized Cache Data</span>
 						</div>
 						<div class="metric-stat">
 							<span class="stat-value">{dashboard?.cache?.keys_count?.toLocaleString() || 0}</span>
-							<span class="stat-label">Cached Keys</span>
+							<span class="stat-label">Live L1 Cached Keys</span>
 						</div>
 						<div class="metric-stat">
 							<span class="stat-value">{dashboard?.cache?.evictions?.toLocaleString() || 0}</span>
@@ -385,8 +439,8 @@
 				{#if recommendations.length === 0}
 					<div class="empty-state">
 						<IconCheck size={48} stroke={1} />
-						<h3>All Good!</h3>
-						<p>No immediate optimizations recommended</p>
+						<h3>No suggestions from recorded observations</h3>
+						<p>Unmeasured metrics remain unavailable. Recommendations use only recorded samples.</p>
 					</div>
 				{:else}
 					<div class="recommendations-list">

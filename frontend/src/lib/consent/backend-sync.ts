@@ -232,7 +232,7 @@ export function debouncedSync(consent: ConsentState, userId?: string): void {
 	}
 
 	syncTimeout = setTimeout(() => {
-		syncConsentToBackend(consent, userId);
+		void syncConsentToBackend(consent, userId);
 	}, config.debounceMs);
 }
 

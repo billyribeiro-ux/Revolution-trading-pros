@@ -55,6 +55,22 @@ pub struct ProcessedImage {
     pub content_type: String,
 }
 
+#[derive(Debug)]
+pub struct ProcessorResponseError {
+    pub status: u16,
+    pub message: String,
+}
+impl std::fmt::Display for ProcessorResponseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Image processor returned {}: {}",
+            self.status, self.message
+        )
+    }
+}
+impl std::error::Error for ProcessorResponseError {}
+
 impl MediaProcessorService {
     /// Missing URL disables this integration. Enabled configuration is strict;
     /// provider availability is checked on use so unrelated modules can start.
@@ -120,6 +136,7 @@ impl MediaProcessorService {
     }
     pub async fn inspect(&self, data: Bytes) -> Result<ImageInfo> {
         validate_input(&data)?;
+        let input_size = data.len() as u64;
         let response = self
             .client
             .post(self.base.join("inspect")?)
@@ -132,6 +149,9 @@ impl MediaProcessorService {
         let info: ImageInfo =
             serde_json::from_slice(&bytes).context("Invalid image inspection response")?;
         validate_info(&info)?;
+        if info.size != input_size {
+            bail!("Processor inspection size differs from submitted bytes");
+        }
         Ok(info)
     }
     pub async fn process(&self, data: Bytes, options: &ProcessOptions) -> Result<ProcessedImage> {
@@ -191,6 +211,9 @@ impl MediaProcessorService {
         let bytes = read_bounded(response, MAX_BYTES).await?;
         info.size = bytes.len() as u64;
         validate_info(&info)?;
+        if info.format != options.format && !(info.format == "heif" && options.format == "avif") {
+            bail!("Processor format differs from requested encoding");
+        }
         Ok(ProcessedImage {
             bytes,
             info,
@@ -214,6 +237,7 @@ fn validate_info(info: &ImageInfo) -> Result<()> {
         || info.pages > 256
         || pixels.is_none_or(|pixels| pixels > MAX_PIXELS)
         || info.size == 0
+        || info.animated != (info.pages > 1)
         || info.size > MAX_BYTES as u64
     {
         bail!("Processor returned image dimensions or size outside configured limits");
@@ -226,6 +250,7 @@ fn validate_info(info: &ImageInfo) -> Result<()> {
     }
     Ok(())
 }
+
 async fn response_error(mut response: Response) -> anyhow::Error {
     let status = response.status();
     let mut bytes = Vec::new();
@@ -242,7 +267,11 @@ async fn response_error(mut response: Response) -> anyhow::Error {
         .ok()
         .and_then(|v| v["error"].as_str().map(str::to_owned))
         .unwrap_or_else(|| "Image processor request failed".into());
-    anyhow::anyhow!("Image processor returned {status}: {message}")
+    ProcessorResponseError {
+        status: status.as_u16(),
+        message,
+    }
+    .into()
 }
 async fn read_bounded(mut response: Response, limit: usize) -> Result<Bytes> {
     if !response.status().is_success() {
@@ -259,4 +288,60 @@ async fn read_bounded(mut response: Response, limit: usize) -> Result<Bytes> {
         data.extend_from_slice(&chunk);
     }
     Ok(Bytes::from(data))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn strict_configuration_accepts_prefixes_and_rejects_ambiguous_urls_or_tokens() {
+        let token = "a".repeat(32);
+        assert_eq!(
+            MediaProcessorService::new("http://127.0.0.1:19010/internal", token.clone())
+                .unwrap()
+                .url(),
+            "http://127.0.0.1:19010/internal/"
+        );
+        for url in [
+            "file:///tmp/image",
+            "http://user:pass@localhost/",
+            "http://localhost/?key=secret",
+            "http://localhost/#fragment",
+        ] {
+            assert!(MediaProcessorService::new(url, token.clone()).is_err());
+        }
+        for bad in [
+            "".into(),
+            "a".repeat(31),
+            "a".repeat(257),
+            format!("{}{}", "a".repeat(32), char::from(10)),
+            "é".repeat(32),
+        ] {
+            assert!(MediaProcessorService::new("http://localhost/", bad).is_err());
+        }
+    }
+    #[test]
+    fn inspection_validation_rejects_overflow_and_inconsistent_frames() {
+        let mut info = ImageInfo {
+            format: "png".into(),
+            width: 100,
+            height: 50,
+            pages: 1,
+            animated: false,
+            size: 123,
+        };
+        assert!(validate_info(&info).is_ok());
+        info.width = u32::MAX;
+        info.height = u32::MAX;
+        info.pages = 256;
+        assert!(validate_info(&info).is_err());
+        info.width = 100;
+        info.height = 50;
+        info.pages = 2;
+        assert!(validate_info(&info).is_err());
+        info.animated = true;
+        assert!(validate_info(&info).is_ok());
+        info.size = 0;
+        assert!(validate_info(&info).is_err());
+    }
 }

@@ -48,6 +48,7 @@
  * @license MIT
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { browser } from '$app/env';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '#lib/stores/auth.svelte.js';
@@ -523,12 +524,14 @@ class SubscriptionService {
 		try {
 			const response = await fetch(url, {
 				...options,
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json',
-					Authorization: `Bearer ${this.getAuthToken()}`,
-					...options.headers
-				},
+				headers: mergeHeaders(
+					{
+						'Content-Type': 'application/json',
+						Accept: 'application/json',
+						Authorization: `Bearer ${this.getAuthToken()}`
+					},
+					options.headers
+				),
 				credentials: 'include',
 				signal: controller.signal
 			});
@@ -720,10 +723,12 @@ class SubscriptionService {
 
 		// Show notification for failures
 		if (payment.status === 'failed') {
-			this.showNotification(
-				`Payment failed for subscription ${payment.metadata?.['subscriptionId']}`,
-				'error'
-			);
+			const reference = payment.metadata?.['subscriptionId'];
+			const message =
+				typeof reference === 'string' || typeof reference === 'number'
+					? `Payment failed for subscription ${reference}`
+					: 'A subscription payment failed';
+			this.showNotification(message, 'error');
 		}
 	}
 
@@ -746,11 +751,11 @@ class SubscriptionService {
 		if (!browser) return;
 
 		// Initial load
-		this.loadMetrics();
+		void this.loadMetrics();
 
 		// Periodic updates
 		window.setInterval(() => {
-			this.loadMetrics();
+			void this.loadMetrics();
 		}, METRICS_INTERVAL);
 	}
 
@@ -781,7 +786,7 @@ class SubscriptionService {
 		});
 	}
 
-	private async processRetryQueue(): Promise<void> {
+	private processRetryQueue(): void {
 		if (!browser) return;
 
 		setInterval(async () => {

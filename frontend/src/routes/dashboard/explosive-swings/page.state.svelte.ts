@@ -1,3 +1,4 @@
+import { SvelteDate } from 'svelte/reactivity';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - Page State Module
@@ -187,7 +188,7 @@ export function createPageState() {
 					ticker: t.ticker,
 					percentageGain: t.pnl_percent ?? 0,
 					isWinner: (t.pnl_percent ?? 0) > 0,
-					closedAt: new Date(t.exit_date ?? t.entry_date),
+					closedAt: new SvelteDate(t.exit_date ?? t.entry_date),
 					entryPrice: t.entry_price,
 					exitPrice: t.exit_price ?? t.entry_price
 				}))
@@ -206,11 +207,11 @@ export function createPageState() {
 					targets: [],
 					stopLoss: { price: t.entry_price * 0.95, percentFromEntry: -5 },
 					progressToTarget1: 0,
-					triggeredAt: new Date(t.entry_date),
+					triggeredAt: new SvelteDate(t.entry_date),
 					notes: t.notes,
 					wasUpdated: (t as ApiTradeWithUpdates).was_updated ?? false,
 					updatedAt: (t as ApiTradeWithUpdates).updated_at
-						? new Date((t as ApiTradeWithUpdates).updated_at as string)
+						? new SvelteDate((t as ApiTradeWithUpdates).updated_at as string)
 						: undefined
 				}))
 			: fallbackData.activePositions
@@ -219,7 +220,7 @@ export function createPageState() {
 	// Helper to safely validate dates before calling toLocaleDateString
 	function isValidDate(dateValue: string | number | Date | null | undefined): boolean {
 		if (!dateValue) return false;
-		const date = new Date(dateValue);
+		const date = new SvelteDate(dateValue);
 		return date instanceof Date && !isNaN(date.getTime());
 	}
 
@@ -229,7 +230,7 @@ export function createPageState() {
 			return fallbackData.weeklyContent;
 		}
 
-		const publishedDate = new Date(apiWeeklyVideo.published_at);
+		const publishedDate = new SvelteDate(apiWeeklyVideo.published_at);
 
 		return {
 			title:
@@ -366,7 +367,7 @@ export function createPageState() {
 		trackFilterApplied('alert_type', filter);
 		selectedFilter = filter;
 		currentPage = 1;
-		fetchAlerts();
+		void fetchAlerts();
 	}
 
 	async function goToPage(page: number) {
@@ -575,8 +576,8 @@ export function createPageState() {
 
 	function handlePositionUpdated() {
 		// Refresh positions data
-		fetchAllTrades();
-		fetchStats();
+		void fetchAllTrades();
+		void fetchStats();
 	}
 
 	function openInvalidatePositionModal(position: ActivePosition) {

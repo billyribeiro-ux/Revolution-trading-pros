@@ -54,14 +54,23 @@ pub(super) fn query(
     rules: &[Condition],
     match_type: &str,
 ) -> Result<QueryBuilder<Postgres>, ApiError> {
+    let mut query = QueryBuilder::new(prefix);
+    query.push(" WHERE ");
+    append_group(&mut query, rules, match_type)?;
+    Ok(query)
+}
+
+pub(super) fn append_group(
+    query: &mut QueryBuilder<Postgres>,
+    rules: &[Condition],
+    match_type: &str,
+) -> Result<(), ApiError> {
     if !matches!(match_type, "all" | "any") || rules.len() > 50 {
         return Err(invalid("Use match_type all/any and at most 50 rules"));
     }
-    let mut query = QueryBuilder::new(prefix);
-    query.push(" WHERE ");
     if rules.is_empty() {
         query.push(if match_type == "all" { "TRUE" } else { "FALSE" });
-        return Ok(query);
+        return Ok(());
     }
     // Mixed connectors are evaluated left-to-right; a rule's logic connects it
     // to the preceding group. Without overrides, match_type supplies all/any.
@@ -82,10 +91,10 @@ pub(super) fn query(
                 _ => " OR ",
             });
         }
-        append(&mut query, rule)?;
+        append(query, rule)?;
         query.push(")");
     }
-    Ok(query)
+    Ok(())
 }
 
 fn append(query: &mut QueryBuilder<Postgres>, rule: &Condition) -> Result<(), ApiError> {

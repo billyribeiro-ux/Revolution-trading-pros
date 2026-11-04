@@ -1,3 +1,5 @@
+import { SvelteMap, SvelteDate, SvelteSet } from 'svelte/reactivity';
+import { onMount } from 'svelte';
 /**
  * Explosive Swings - useTrades Hook
  *
@@ -160,11 +162,22 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 
 	// Price feed service for real-time price updates
 	const priceFeed = enableRealTimePrices ? getPriceFeed() : null;
-	// Reassign-only (replaced wholesale by the price-feed callback, never mutated
-	// in place), so plain Map in $state is correct — $state makes the reassignment
-	// reactive. (svelte-autofixer's "use SvelteMap" is a false positive here: that
-	// applies to in-place .set/.delete mutations, which this never does.)
-	let realTimePrices = $state<Map<string, PriceData>>(new Map());
+	const realTimePrices = new SvelteMap<string, PriceData>();
+	let priceFeedMounted = false;
+	let subscribedTickers: string[] = [];
+	function reconcilePriceSubscriptions() {
+		if (!priceFeed || !priceFeedMounted) return;
+		const next = [
+			...new SvelteSet(
+				allTrades
+					.filter((trade) => trade.status === 'open')
+					.map((trade) => trade.ticker.toUpperCase())
+			)
+		];
+		priceFeed.unsubscribe(subscribedTickers.filter((ticker) => !next.includes(ticker)));
+		priceFeed.subscribe(next.filter((ticker) => !subscribedTickers.includes(ticker)));
+		subscribedTickers = next;
+	}
 
 	// REACTIVE STATE
 
@@ -220,10 +233,10 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 					percentFromEntry: Math.round(stopPercent * 100) / 100
 				},
 				progressToTarget1: Math.round(progressToTarget1),
-				triggeredAt: new Date(t.entry_date),
+				triggeredAt: new SvelteDate(t.entry_date),
 				notes: t.notes,
 				wasUpdated: tradeExt.was_updated ?? false,
-				updatedAt: tradeExt.updated_at ? new Date(tradeExt.updated_at) : undefined
+				updatedAt: tradeExt.updated_at ? new SvelteDate(tradeExt.updated_at) : undefined
 			};
 		})
 	);
@@ -235,7 +248,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			ticker: t.ticker,
 			percentageGain: t.pnl_percent ?? 0,
 			isWinner: (t.pnl_percent ?? 0) > 0,
-			closedAt: new Date(t.exit_date ?? t.entry_date),
+			closedAt: new SvelteDate(t.exit_date ?? t.entry_date),
 			entryPrice: t.entry_price,
 			exitPrice: t.exit_price ?? t.entry_price
 		}))
@@ -265,6 +278,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 			}
 
 			allTrades = response.data;
+			reconcilePriceSubscriptions();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to fetch trades';
 			logger.error('Failed to fetch trades', { error: e });
@@ -282,7 +296,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 				`/api/admin/trades/${tradeId}/close`,
 				{
 					exit_price: exitData.exitPrice,
-					exit_date: exitData.exitDate || new Date().toISOString(),
+					exit_date: exitData.exitDate || new SvelteDate().toISOString(),
 					notes: exitData.notes
 				}
 			);
@@ -374,6 +388,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 
 			// Remove from local state optimistically
 			allTrades = allTrades.filter((t) => String(t.id) !== String(tradeId));
+			reconcilePriceSubscriptions();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to delete trade';
 			logger.error('Failed to delete trade', { error: e });
@@ -399,7 +414,7 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 					target2: tradeData.target2,
 					target3: tradeData.target3,
 					notes: tradeData.notes,
-					entry_date: new Date().toISOString()
+					entry_date: new SvelteDate().toISOString()
 				}
 			);
 
@@ -424,36 +439,31 @@ export function useTrades(options: UseTradesOptions = {}): UseTradesReturn {
 
 	// EFFECTS
 
-	// Auto-refresh effect
-	$effect(() => {
+	// Options are captured when the hook is created. Start work after mount and
+	// release its timer when the component is removed.
+	onMount(() => {
+		void fetchTrades();
 		if (!autoRefresh) return;
-
-		const interval = setInterval(fetchTrades, refreshInterval);
+		const interval = setInterval(() => {
+			void fetchTrades();
+		}, refreshInterval);
 		return () => clearInterval(interval);
 	});
 
-	// Initial fetch effect
-	$effect(() => {
-		fetchTrades();
-	});
-
-	// Real-time price subscription effect
-	$effect(() => {
-		if (!priceFeed || openTrades.length === 0) return;
-
-		// Subscribe to price updates for all open position tickers
-		const tickers = openTrades.map((t) => t.ticker.toUpperCase());
-		priceFeed.subscribe(tickers);
-
-		// Register callback for price updates
+	// External feed callbacks update prices without re-registering on each quote.
+	onMount(() => {
+		if (!priceFeed) return;
+		priceFeedMounted = true;
+		reconcilePriceSubscriptions();
 		const unsubscribe = priceFeed.onUpdate((prices) => {
-			realTimePrices = prices;
+			realTimePrices.clear();
+			for (const [ticker, price] of prices) realTimePrices.set(ticker, price);
 		});
-
-		// Cleanup: unsubscribe when positions change or component unmounts
 		return () => {
+			priceFeedMounted = false;
 			unsubscribe();
-			priceFeed.unsubscribe(tickers);
+			priceFeed.unsubscribe(subscribedTickers);
+			subscribedTickers = [];
 		};
 	});
 

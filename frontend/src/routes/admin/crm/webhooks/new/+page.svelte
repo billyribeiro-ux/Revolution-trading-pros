@@ -38,7 +38,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = $state(new SvelteSet<WebhookEvent>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	const selectedEvents = new SvelteSet<WebhookEvent>();
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});
@@ -72,22 +72,8 @@
 			availableEvents = await crmAPI.getWebhookEvents();
 		} catch (_err) {
 			showToast('error', 'Failed to load webhook events');
-			// Provide default events as fallback
-			availableEvents = {
-				contact_created: 'Contact Created',
-				contact_updated: 'Contact Updated',
-				contact_deleted: 'Contact Deleted',
-				tag_applied: 'Tag Applied',
-				tag_removed: 'Tag Removed',
-				list_applied: 'List Applied',
-				list_removed: 'List Removed',
-				email_opened: 'Email Opened',
-				email_clicked: 'Email Clicked',
-				contact_unsubscribed: 'Contact Unsubscribed',
-				deal_created: 'Deal Created',
-				deal_won: 'Deal Won',
-				deal_lost: 'Deal Lost'
-			};
+			error = 'Unable to load supported events. Reload this page to try again.';
+			availableEvents = {};
 		} finally {
 			isLoadingEvents = false;
 		}
@@ -132,15 +118,17 @@
 			await crmAPI.createWebhook({
 				name: name.trim(),
 				url: url.trim(),
-				secret: secret.trim() || undefined,
+				secret: secret.trim(),
 				is_active: isActive,
 				events: Array.from(selectedEvents),
-				headers: Object.keys(headers).length > 0 ? headers : undefined
+				headers
 			});
 
 			showToast('success', 'Webhook created successfully');
 			setTimeout(() => {
-				void goto('/admin/crm/webhooks');
+				void goto('/admin/crm/webhooks').catch((err: unknown) => {
+					error = err instanceof Error ? err.message : 'Navigation failed';
+				});
 			}, 1000);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to create webhook';
@@ -168,7 +156,8 @@
 	}
 
 	function selectAllEvents() {
-		selectedEvents = new SvelteSet(Object.keys(availableEvents) as WebhookEvent[]);
+		selectedEvents.clear();
+		for (const event of Object.keys(availableEvents) as WebhookEvent[]) selectedEvents.add(event);
 	}
 
 	function clearAllEvents() {
@@ -216,10 +205,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Create Webhook - FluentCRM Pro</title>
-</svelte:head>
-
 <div class="webhook-form-page">
 	<!-- Header -->
 	<header class="page-header">
@@ -239,7 +224,7 @@
 		class="webhook-form"
 		onsubmit={(e) => {
 			e.preventDefault();
-			handleSubmit();
+			void handleSubmit();
 		}}
 	>
 		<!-- Basic Info Section -->
@@ -250,7 +235,8 @@
 				<label for="name">
 					Webhook Name <span class="required">*</span>
 				</label>
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					type="text"
 					id="name"
 					name="name"
@@ -267,7 +253,8 @@
 				<label for="url">
 					Webhook URL <span class="required">*</span>
 				</label>
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					type="url"
 					id="url"
 					name="url"
@@ -285,7 +272,8 @@
 			<div class="form-group">
 				<label for="secret"> Secret Key (Optional) </label>
 				<div class="input-with-action">
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="text"
 						id="secret"
 						name="secret"
@@ -352,6 +340,7 @@
 							type="button"
 							class={['event-chip', { selected: selectedEvents.has(webhookEvent) }]}
 							onclick={() => toggleEvent(webhookEvent)}
+							aria-pressed={selectedEvents.has(webhookEvent)}
 						>
 							{#if selectedEvents.has(webhookEvent)}
 								<IconCheck size={14} />
@@ -380,16 +369,20 @@
 				<div class="headers-list">
 					{#each customHeaders as header, index (index)}
 						<div class="header-row">
-							<input autocomplete="off"
-								id="page-header-name"
+							<input
+								autocomplete="off"
+								id={`header-name-${index}`}
+								aria-label={`Header name ${index + 1}`}
 								name="page-header-name"
 								type="text"
 								placeholder="Header Name"
 								value={header.key}
 								oninput={(e) => updateHeaderKey(index, e.currentTarget.value)}
 							/>
-							<input autocomplete="off"
-								id="page-header-value"
+							<input
+								autocomplete="off"
+								id={`header-value-${index}`}
+								aria-label={`Header value ${index + 1}`}
 								name="page-header-value"
 								type="text"
 								placeholder="Header Value"
@@ -443,7 +436,11 @@
 					{/if}
 				</div>
 				<span class="toast-message">{toast.message}</span>
-				<button class="toast-dismiss" onclick={() => dismissToast(toast.id)}>
+				<button
+					class="toast-dismiss"
+					aria-label="Dismiss notification"
+					onclick={() => dismissToast(toast.id)}
+				>
 					<IconX size={16} />
 				</button>
 			</div>
@@ -648,6 +645,7 @@
 	   Toggle Switch
 	   ===================================================== */
 	.toggle-label {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
@@ -655,7 +653,18 @@
 	}
 
 	.toggle-input {
-		display: none;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+		z-index: 1;
+	}
+	.toggle-input:focus-visible + .toggle-switch {
+		outline: 2px solid var(--primary-400, #ffd11a);
+		outline-offset: 3px;
 	}
 
 	.toggle-switch {
@@ -855,7 +864,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.btn-submit:disabled {
 		opacity: 0.6;

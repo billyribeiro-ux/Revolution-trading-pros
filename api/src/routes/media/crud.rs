@@ -13,7 +13,6 @@ use axum::{
 };
 
 use super::dto::{Media, MediaQuery, UpdateMedia};
-use super::helpers::format_bytes;
 use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 /// GET /admin/media - List all media with filtering and pagination
@@ -39,7 +38,7 @@ pub(super) async fn index(
             .collect();
         if !sanitized.is_empty() {
             conditions.push(format!(
-                "(filename ILIKE ${} OR title ILIKE ${} OR alt_text ILIKE ${})",
+                "(original_filename ILIKE ${0} OR filename ILIKE ${0} OR title ILIKE ${1} OR alt_text ILIKE ${2})",
                 param_idx,
                 param_idx + 1,
                 param_idx + 2
@@ -54,6 +53,9 @@ pub(super) async fn index(
 
     // Type filter - whitelist validation
     if let Some(media_type) = &params.r#type {
+        if media_type == "document" {
+            conditions.push("(mime_type LIKE 'application/%' OR mime_type LIKE 'text/%')".into());
+        }
         let allowed_types = ["image", "video", "audio", "application", "text"];
         if allowed_types.contains(&media_type.as_str()) {
             conditions.push(format!("mime_type LIKE ${param_idx}"));
@@ -87,7 +89,20 @@ pub(super) async fn index(
 
     // Optimization filter - boolean, safe
     if let Some(is_optimized) = params.is_optimized {
-        conditions.push(format!("is_optimized = {is_optimized}"));
+        conditions.push(format!("COALESCE(is_optimized,FALSE) = {is_optimized}"));
+    }
+    if params.needs_optimization == Some(true) {
+        conditions.push("mime_type LIKE 'image/%' AND NOT COALESCE(is_optimized,FALSE)".into());
+    }
+    if let Some(status) = &params.processing_status {
+        if !matches!(
+            status.as_str(),
+            "pending" | "processing" | "completed" | "failed" | "cancelled"
+        ) {
+            return Err(ApiError::validation_error("Invalid processing status"));
+        }
+        // Value is an exhaustive status whitelist; latest attempt controls the filter.
+        conditions.push(format!("(SELECT status FROM media_optimization_jobs WHERE media_id=media.id ORDER BY id DESC LIMIT 1) = '{status}'"));
     }
 
     // Sorting - whitelist validation (no user input in query)
@@ -115,7 +130,10 @@ pub(super) async fn index(
 
     // Pagination - validated integers
     let per_page = params.per_page.unwrap_or(24).clamp(1, 100);
-    let page = params.page.unwrap_or(1).max(1);
+    let page = params.page.unwrap_or(1);
+    if !(1..=1_000_000).contains(&page) {
+        return Err(ApiError::validation_error("Page must be from 1 to 1000000"));
+    }
     let offset = (page - 1) * per_page;
 
     // Build query with conditions
@@ -167,11 +185,11 @@ pub(super) async fn index(
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-    let last_page = (total as f64 / per_page as f64).ceil() as i64;
+    let last_page = ((total as f64 / per_page as f64).ceil() as i64).max(1);
 
     Ok(Json(serde_json::json!({
         "success": true,
-        "data": media,
+        "data": super::helpers::present(&state, media).await?,
         "meta": {
             "current_page": page,
             "last_page": last_page,
@@ -201,7 +219,9 @@ pub(super) async fn show(
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     match media {
-        Some(m) => Ok(Json(serde_json::json!({ "success": true, "data": m }))),
+        Some(m) => Ok(Json(
+            serde_json::json!({ "success": true, "data": super::helpers::present(&state, vec![m]).await?.pop() }),
+        )),
         None => Err(ApiError::not_found("Media not found")),
     }
 }
@@ -215,87 +235,13 @@ pub(super) async fn update(
     Path(id): Path<i64>,
     Json(payload): Json<UpdateMedia>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Check if exists
-    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM media WHERE id = $1)")
-        .bind(id)
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    if !exists {
-        return Err(ApiError::not_found("Media not found"));
-    }
-
-    // Build dynamic update
-    let mut updates = Vec::new();
-    let mut param_count = 1;
-
-    if payload.title.is_some() {
-        updates.push(format!("title = ${param_count}"));
-        param_count += 1;
-    }
-    if payload.alt_text.is_some() {
-        updates.push(format!("alt_text = ${param_count}"));
-        param_count += 1;
-    }
-    if payload.caption.is_some() {
-        updates.push(format!("caption = ${param_count}"));
-        param_count += 1;
-    }
-    if payload.description.is_some() {
-        updates.push(format!("description = ${param_count}"));
-        param_count += 1;
-    }
-    if payload.collection.is_some() {
-        updates.push(format!("collection = ${param_count}"));
-        param_count += 1;
-    }
-
-    if updates.is_empty() {
-        return Err(ApiError::validation_error("No fields to update"));
-    }
-
-    updates.push(format!("updated_at = NOW()"));
-
-    let query_str = format!(
-        "UPDATE media SET {} WHERE id = ${}
-         RETURNING id, filename, original_filename, mime_type, size, path, url,
-                   title, alt_text, caption, description, collection, is_optimized,
-                   width, height, scan_status, scan_result, created_at, updated_at",
-        updates.join(", "),
-        param_count
-    );
-
-    let mut query = sqlx::query_as::<_, Media>(sqlx::AssertSqlSafe(query_str.as_str()));
-
-    if let Some(title) = payload.title {
-        query = query.bind(title);
-    }
-    if let Some(alt_text) = payload.alt_text {
-        query = query.bind(alt_text);
-    }
-    if let Some(caption) = payload.caption {
-        query = query.bind(caption);
-    }
-    if let Some(description) = payload.description {
-        query = query.bind(description);
-    }
-    if let Some(collection) = payload.collection {
-        query = query.bind(collection);
-    }
-
-    query = query.bind(id);
-
-    let media = query
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    Ok(Json(serde_json::json!({
-        "success": true,
-        "data": media,
-        "message": "Media updated successfully"
-    })))
+    super::helpers::validate_metadata(&payload)?;
+    let media: Media = sqlx::query_as("UPDATE media SET title=COALESCE($2,title),alt_text=COALESCE($3,alt_text),caption=COALESCE($4,caption),description=COALESCE($5,description),collection=COALESCE($6,collection),tags=COALESCE($7,tags),updated_at=NOW() WHERE id=$1 RETURNING id,filename,original_filename,mime_type,size,path,url,title,alt_text,caption,description,collection,is_optimized,width,height,scan_status,scan_result,created_at,updated_at")
+        .bind(id).bind(payload.title).bind(payload.alt_text).bind(payload.caption).bind(payload.description).bind(payload.collection).bind(payload.tags.map(|tags|serde_json::json!(tags)))
+        .fetch_optional(state.db.pool()).await.map_err(|e|ApiError::database_error(&e.to_string()))?.ok_or_else(||ApiError::not_found("Media not found"))?;
+    Ok(Json(
+        serde_json::json!({"success":true,"data":super::helpers::present(&state,vec![media]).await?.pop(),"message":"Media updated"}),
+    ))
 }
 
 /// DELETE /admin/media/:id - Delete media item
@@ -327,60 +273,29 @@ pub(super) async fn statistics(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Total count
-    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM media")
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
-
-    // Total size
-    let total_size: i64 = sqlx::query_scalar("SELECT COALESCE(SUM(size), 0) FROM media")
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
-
-    // By type
-    let images: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE mime_type LIKE 'image/%'")
-            .fetch_one(state.db.pool())
-            .await
-            .unwrap_or(0);
-
-    let videos: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE mime_type LIKE 'video/%'")
-            .fetch_one(state.db.pool())
-            .await
-            .unwrap_or(0);
-
-    let documents: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM media WHERE mime_type LIKE 'application/%' OR mime_type LIKE 'text/%'"
-    )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
-
-    // Optimized count
-    let optimized: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE is_optimized = true")
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
-
-    Ok(Json(serde_json::json!({
-        "success": true,
-        "data": {
-            "total_count": total,
-            "total_size": total_size,
-            "total_size_formatted": format_bytes(total_size),
-            "by_type": {
-                "images": images,
-                "videos": videos,
-                "documents": documents
-            },
-            "optimization": {
-                "optimized": optimized,
-                "unoptimized": total - optimized,
-                "percentage": if total > 0 { (optimized * 100) / total } else { 0 }
-            }
-        }
-    })))
+    let data: serde_json::Value = sqlx::query_scalar(r"
+        WITH media_totals AS (
+            SELECT COUNT(*) total, COALESCE(SUM(size),0) bytes,
+                COUNT(*) FILTER(WHERE mime_type LIKE 'image/%') images,
+                COUNT(*) FILTER(WHERE mime_type LIKE 'video/%') videos,
+                COUNT(*) FILTER(WHERE mime_type LIKE 'application/%' OR mime_type LIKE 'text/%') documents,
+                COUNT(*) FILTER(WHERE mime_type LIKE 'image/%' AND is_optimized) optimized
+            FROM media
+        ), variants AS (SELECT COUNT(*) count,COALESCE(SUM(file_size),0) bytes FROM media_variants), physical AS (SELECT COALESCE(SUM(bytes),0) bytes FROM (SELECT path,MAX(bytes) bytes FROM (SELECT path,size bytes FROM media UNION ALL SELECT snapshot->>'path',(snapshot->>'size')::bigint FROM media_versions UNION ALL SELECT path,file_size FROM media_variants) objects WHERE path IS NOT NULL GROUP BY path) stored),
+        latest AS (SELECT DISTINCT ON(j.media_id) original_size,optimized_size FROM media_optimization_jobs j JOIN media m ON m.id=j.media_id AND m.content_version=j.source_version WHERE j.status='completed' ORDER BY j.media_id,j.id DESC),
+        jobs AS (SELECT jsonb_build_object('pending',COUNT(*) FILTER(WHERE status='pending'),'processing',COUNT(*) FILTER(WHERE status='processing'),'completed',COUNT(*) FILTER(WHERE status='completed'),'failed',COUNT(*) FILTER(WHERE status='failed'),'total_savings_bytes',COALESCE(SUM(original_size-optimized_size) FILTER(WHERE status='completed'),0),'avg_processing_time_ms',COALESCE(AVG(processing_time_ms) FILTER(WHERE status='completed'),0)) data FROM media_optimization_jobs),
+        types AS (SELECT split_part(COALESCE(mime_type,'other'),'/',1) type,COUNT(*) count,COALESCE(SUM(size),0) bytes FROM media GROUP BY 1)
+        SELECT jsonb_build_object(
+            'total_files',m.total,'total_count',m.total,'total_size',m.bytes,'total_storage',(SELECT bytes FROM physical),
+            'total_images',m.images,'total_videos',m.videos,'total_documents',m.documents,
+            'optimized_images',m.optimized,'needs_optimization',m.images-m.optimized,'pending_optimization',m.images-m.optimized,
+            'total_variants',v.count,'total_savings_bytes',(SELECT COALESCE(SUM(original_size-optimized_size),0) FROM latest),
+            'total_downloads',NULL,'total_views',NULL,'unused_files',NULL,
+            'storage_by_type',(SELECT COALESCE(jsonb_object_agg(type,jsonb_build_object('count',count,'size',bytes,'human_size',pg_size_pretty(bytes))), '{}') FROM types),
+            'job_stats',jobs.data,
+            'by_type',jsonb_build_object('images',m.images,'videos',m.videos,'documents',m.documents),
+            'optimization',jsonb_build_object('optimized',m.optimized,'unoptimized',m.images-m.optimized,'percentage',CASE WHEN m.images>0 THEN m.optimized*100/m.images ELSE 0 END)
+        ) FROM media_totals m CROSS JOIN variants v CROSS JOIN jobs
+    ").fetch_one(state.db.pool()).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
+    Ok(Json(serde_json::json!({"success":true,"data":data})))
 }

@@ -307,7 +307,9 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 
 		// If consent just granted and not yet loaded, initialize
 		if (consent.analytics && !previousConsent && this._state === 'ready') {
-			this._performInitialization({ projectId: this._projectId });
+			void this._performInitialization({ projectId: this._projectId }).catch((error: unknown) => {
+				logger.error('[Clarity] Initialization failed', error);
+			});
 		}
 
 		if (this._config?.debug) {

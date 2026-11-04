@@ -87,6 +87,7 @@ export function requireSuperadmin(event: RequestEvent): {
 	const token = requireAdminToken(event);
 	const user = event.locals.user;
 	if (!user) error(403, 'Forbidden');
-	if (!isSuperadminRole(user.role)) error(403, 'Forbidden');
+	if (!isSuperadminRole(user.role) && !(isAdminRole(user.role) && user.is_superadmin === true))
+		error(403, 'Forbidden');
 	return { token, user };
 }

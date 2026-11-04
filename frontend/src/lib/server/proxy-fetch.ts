@@ -37,6 +37,7 @@
  *   the "client posted `null`" 500-NPE class (R18-A §2) at zero runtime cost.
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
 // CLAUDE.md hard rule — API_BASE_URL primary, BACKEND_URL fallback,
@@ -66,11 +67,13 @@ export async function fetchBackend(
 		if (logTag) console.info(`${logTag} Fetching: ${url}`);
 		const response = await fetch(url, {
 			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
+			headers: mergeHeaders(
+				{
+					'Content-Type': 'application/json',
+					Accept: 'application/json'
+				},
+				options.headers
+			)
 		});
 
 		if (!response.ok) {
@@ -136,11 +139,13 @@ export async function fetchBackendWithStatus(
 	try {
 		const response = await fetch(url, {
 			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
+			headers: mergeHeaders(
+				{
+					'Content-Type': 'application/json',
+					Accept: 'application/json'
+				},
+				options.headers
+			)
 		});
 
 		// Tolerate empty 204 / non-JSON 5xx bodies. The 6 R21-A migration

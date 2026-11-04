@@ -40,8 +40,8 @@ function parseEmailList(envVar: string | undefined): readonly string[] {
 
 /**
  * Superadmin emails - loaded from environment variable
- * These users have FULL unrestricted access to everything.
- * They bypass all permission checks and can access any feature.
+ * Legacy display configuration; it never grants access. Effective elevation is
+ * returned by the authenticated API using server SUPERADMIN_EMAILS and verified DB roles.
  *
  * @security Configure via VITE_SUPERADMIN_EMAILS environment variable
  * @example VITE_SUPERADMIN_EMAILS=admin@example.com,superadmin@example.com
@@ -52,7 +52,7 @@ export const SUPERADMIN_EMAILS: readonly string[] = browser
 
 /**
  * Developer emails - loaded from environment variable
- * These users bypass email verification and get all memberships unlocked.
+ * Legacy display configuration; it never bypasses email verification or grants access.
  * They experience the platform as a regular member (not admin) with full access for testing.
  *
  * @security Configure via VITE_DEVELOPER_EMAILS environment variable
@@ -82,6 +82,7 @@ export type RoleType = (typeof ROLES)[keyof typeof ROLES];
 export const ROLE_HIERARCHY: readonly RoleType[] = Object.freeze([
 	ROLES.USER,
 	ROLES.MEMBER,
+	ROLES.DEVELOPER,
 	ROLES.ADMIN,
 	ROLES.SUPERADMIN
 ]);
@@ -248,19 +249,37 @@ export function isDeveloperEmail(email: string | null | undefined): boolean {
 	return DEVELOPER_EMAILS.includes(email.toLowerCase());
 }
 
+export interface RoleIdentity {
+	email?: string;
+	role?: string;
+	roles?: string[];
+	permissions?: string[];
+	is_admin?: boolean;
+	/** Server-derived effective capability, populated by authenticated API responses. */
+	is_superadmin?: boolean;
+	is_developer?: boolean;
+}
+function identityRoles(user: RoleIdentity): string[] {
+	return [...new Set([...(user.roles ?? []), ...(user.role ? [user.role] : [])])];
+}
+function canonicalRole(role: string): RoleType | undefined {
+	if (isSuperadminRole(role)) return ROLES.SUPERADMIN;
+	if (role.toLowerCase() === ROLES.DEVELOPER) return ROLES.DEVELOPER;
+	if (isAdminRole(role)) return ROLES.ADMIN;
+	return Object.values(ROLES).find((r) => r === role.toLowerCase());
+}
+
 /**
  * Check if a user has superadmin access
  */
-export function isSuperadmin(
-	user: { email?: string; roles?: string[] } | null | undefined
-): boolean {
+export function isSuperadmin(user: RoleIdentity | null | undefined): boolean {
 	if (!user) return false;
 
-	// Check email first (highest priority) - with null check
-	if (user.email && isSuperadminEmail(user.email)) return true;
+	// Only the authenticated API can confirm configured-email elevation.
+	if (user.is_superadmin === true && identityRoles(user).some(isAdminRole)) return true;
 
 	// Check roles
-	if (user.roles?.some(isSuperadminRole)) {
+	if (identityRoles(user).some(isSuperadminRole)) {
 		return true;
 	}
 
@@ -270,19 +289,16 @@ export function isSuperadmin(
 /**
  * Check if a user has developer access
  */
-export function isDeveloper(
-	user: { email?: string; role?: string; roles?: string[] } | null | undefined
-): boolean {
+export function isDeveloper(user: RoleIdentity | null | undefined): boolean {
 	if (!user) return false;
 
-	// Check email first (highest priority)
-	if (user.email && isDeveloperEmail(user.email)) return true;
+	if (user.is_developer === true && identityRoles(user).some(isAdminRole)) return true;
 
 	// Check role field
 	if (user.role?.toLowerCase() === ROLES.DEVELOPER) return true;
 
 	// Check roles array
-	if (user.roles?.some((role) => role.toLowerCase() === ROLES.DEVELOPER)) return true;
+	if (identityRoles(user).some((role) => role.toLowerCase() === ROLES.DEVELOPER)) return true;
 
 	return false;
 }
@@ -290,19 +306,16 @@ export function isDeveloper(
 /**
  * Check if a user has admin access (admin or superadmin)
  */
-export function isAdmin(
-	user: { email?: string; roles?: string[]; is_admin?: boolean } | null | undefined
-): boolean {
+export function isAdmin(user: RoleIdentity | null | undefined): boolean {
 	if (!user) return false;
 
 	// Superadmin is always admin
 	if (isSuperadmin(user)) return true;
 
-	// Check is_admin flag
-	if (user.is_admin) return true;
+	// The compatibility is_admin flag cannot grant access without an eligible DB role.
 
 	// Check roles
-	if (user.roles?.some(isAdminRole)) {
+	if (identityRoles(user).some(isAdminRole)) {
 		return true;
 	}
 
@@ -313,10 +326,7 @@ export function isAdmin(
  * Check if a user has a specific permission
  * Superadmin always returns true
  */
-export function hasPermission(
-	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined,
-	permission: PermissionType | string
-): boolean {
+export function hasPermission(user: RoleIdentity | null | undefined, permission: string): boolean {
 	if (!user) return false;
 
 	// Superadmin has all permissions
@@ -326,10 +336,10 @@ export function hasPermission(
 	if (user.permissions?.includes(permission)) return true;
 
 	// Check role-based permissions
-	if (user.roles) {
-		for (const role of user.roles) {
-			const roleKey = role.toLowerCase() as RoleType;
-			const rolePerms = ROLE_PERMISSIONS[roleKey];
+	{
+		for (const role of identityRoles(user)) {
+			const roleKey = canonicalRole(role);
+			const rolePerms = roleKey ? ROLE_PERMISSIONS[roleKey] : undefined;
 			if (rolePerms?.includes(permission as PermissionType)) {
 				return true;
 			}
@@ -343,8 +353,8 @@ export function hasPermission(
  * Check if a user has any of the specified permissions
  */
 export function hasAnyPermission(
-	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined,
-	permissions: (PermissionType | string)[]
+	user: RoleIdentity | null | undefined,
+	permissions: string[]
 ): boolean {
 	return permissions.some((p) => hasPermission(user, p));
 }
@@ -353,8 +363,8 @@ export function hasAnyPermission(
  * Check if a user has all of the specified permissions
  */
 export function hasAllPermissions(
-	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined,
-	permissions: (PermissionType | string)[]
+	user: RoleIdentity | null | undefined,
+	permissions: string[]
 ): boolean {
 	return permissions.every((p) => hasPermission(user, p));
 }
@@ -362,9 +372,7 @@ export function hasAllPermissions(
 /**
  * Get all permissions for a user
  */
-export function getUserPermissions(
-	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined
-): PermissionType[] {
+export function getUserPermissions(user: RoleIdentity | null | undefined): PermissionType[] {
 	if (!user) return [];
 
 	// Superadmin has all permissions
@@ -378,10 +386,10 @@ export function getUserPermissions(
 	}
 
 	// Add role-based permissions
-	if (user.roles) {
-		for (const role of user.roles) {
-			const roleKey = role.toLowerCase() as RoleType;
-			const rolePerms = ROLE_PERMISSIONS[roleKey];
+	{
+		for (const role of identityRoles(user)) {
+			const roleKey = canonicalRole(role);
+			const rolePerms = roleKey ? ROLE_PERMISSIONS[roleKey] : undefined;
 			if (rolePerms) {
 				rolePerms.forEach((p) => permissions.add(p));
 			}
@@ -394,21 +402,17 @@ export function getUserPermissions(
 /**
  * Get the highest role for a user
  */
-export function getHighestRole(
-	user: { email?: string; roles?: string[] } | null | undefined
-): RoleType {
+export function getHighestRole(user: RoleIdentity | null | undefined): RoleType {
 	if (!user) return ROLES.USER;
 
-	// Superadmin email always gets superadmin role - with null check
-	if (user.email && isSuperadminEmail(user.email)) return ROLES.SUPERADMIN;
-
-	if (!user.roles || user.roles.length === 0) return ROLES.USER;
+	if (isSuperadmin(user)) return ROLES.SUPERADMIN;
+	if (isDeveloper(user)) return ROLES.DEVELOPER;
 
 	let highestIndex = 0;
 
-	for (const role of user.roles) {
-		const normalizedRole = role.toLowerCase().replace('_', '-') as RoleType;
-		const index = ROLE_HIERARCHY.indexOf(normalizedRole);
+	for (const role of identityRoles(user)) {
+		const normalizedRole = canonicalRole(role);
+		const index = normalizedRole ? ROLE_HIERARCHY.indexOf(normalizedRole) : -1;
 		if (index > highestIndex) {
 			highestIndex = index;
 		}

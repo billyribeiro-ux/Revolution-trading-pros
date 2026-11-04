@@ -1,3 +1,4 @@
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 /**
  * Dashboard Articles API
  * ═══════════════════════════════════════════════════════════════════════════
@@ -60,14 +61,13 @@ export interface ArticleParams {
 async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
 	const token = typeof window !== 'undefined' ? getAuthToken() : null;
 
-	const headers: Record<string, string> = {
-		'Content-Type': 'application/json',
-		Accept: 'application/json',
-		...((options.headers as Record<string, string>) || {})
-	};
+	const headers = mergeHeaders(
+		{ 'Content-Type': 'application/json', Accept: 'application/json' },
+		options.headers
+	);
 
 	if (token) {
-		headers['Authorization'] = `Bearer ${token}`;
+		headers.set('Authorization', `Bearer ${token}`);
 	}
 
 	const response = await fetch(endpoint, {

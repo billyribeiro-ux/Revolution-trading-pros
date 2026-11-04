@@ -7,11 +7,18 @@ export function generateSessionId(): string {
 }
 
 export function generateVisitorId(): string {
-	const stored = localStorage.getItem('behavior_visitor_id');
-	if (stored) return stored;
-
-	const visitorId = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-	localStorage.setItem('behavior_visitor_id', visitorId);
+	try {
+		const stored = localStorage.getItem('behavior_visitor_id');
+		if (stored) return stored;
+	} catch {
+		// Browser storage can be unavailable in private browsing.
+	}
+	const visitorId = `visitor_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+	try {
+		localStorage.setItem('behavior_visitor_id', visitorId);
+	} catch {
+		// Keep an in-memory identifier for this tracker when persistence is disabled.
+	}
 	return visitorId;
 }
 

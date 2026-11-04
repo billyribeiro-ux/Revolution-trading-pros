@@ -31,9 +31,7 @@ pub(super) async fn public_get_entries(
             .bind(&slug)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e: sqlx::Error| {
-                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?
+            .map_err(ApiError::from)?
             .ok_or_else(|| {
                 ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
             })?;
@@ -52,7 +50,7 @@ pub(super) async fn public_get_entries(
     .bind(&dimension)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     Ok(Json(PublicDatasourceResponse {
         slug,

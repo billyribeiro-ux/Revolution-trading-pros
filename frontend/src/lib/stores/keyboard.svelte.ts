@@ -317,7 +317,9 @@ export const keyboard = {
 							settings: '/admin/settings'
 						};
 						if (pathMap[path]) {
-							goto(pathMap[path]);
+							void goto(pathMap[path]).catch((error: unknown) =>
+								console.error('Keyboard navigation failed:', error)
+							);
 						}
 					}
 				})

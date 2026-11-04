@@ -24,9 +24,13 @@ async function runMigrations() {
 		console.log('Migrations completed successfully!');
 	} catch (err) {
 		console.error('Migration error:', err.message);
+		process.exitCode = 1;
 	} finally {
 		await client.end();
 	}
 }
 
-runMigrations();
+void runMigrations().catch((error) => {
+	console.error('Migration runner failed:', error.message);
+	process.exitCode = 1;
+});

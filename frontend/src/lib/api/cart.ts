@@ -611,7 +611,9 @@ class CheckoutCartService {
 
 		// If authenticated, sync with server
 		if (this.getAuthToken()) {
-			this.syncWithServer();
+			void this.syncWithServer().catch((error) =>
+				logger.error('[CheckoutService] Background syncWithServer failed', { error })
+			);
 		}
 	}
 
@@ -637,12 +639,16 @@ class CheckoutCartService {
 		if (!browser) return;
 
 		// Initial sync
-		this.syncWithServer();
+		void this.syncWithServer().catch((error) =>
+			logger.error('[CheckoutService] Background syncWithServer failed', { error })
+		);
 
 		// Periodic sync
 		this.syncInterval = window.setInterval(() => {
 			if (this.getAuthToken()) {
-				this.syncWithServer();
+				void this.syncWithServer().catch((error) =>
+					logger.error('[CheckoutService] Background syncWithServer failed', { error })
+				);
 			}
 		}, CART_SYNC_INTERVAL);
 	}
@@ -669,6 +675,7 @@ class CheckoutCartService {
 				})
 			});
 
+			if (!response.ok) throw new Error(`Cart synchronization failed (HTTP ${response.status})`);
 			if (response.ok) {
 				const serverCart = await response.json();
 
@@ -715,7 +722,9 @@ class CheckoutCartService {
 		if (!browser) return;
 
 		this.priceUpdateInterval = window.setInterval(() => {
-			this.checkPriceUpdates();
+			void this.checkPriceUpdates().catch((error) =>
+				logger.error('[CheckoutService] Background checkPriceUpdates failed', { error })
+			);
 		}, PRICE_UPDATE_INTERVAL);
 	}
 
@@ -733,6 +742,7 @@ class CheckoutCartService {
 				body: JSON.stringify({ itemIds })
 			});
 
+			if (!response.ok) throw new Error(`Price check failed (HTTP ${response.status})`);
 			if (response.ok) {
 				const prices = await response.json();
 				this.updatePrices(prices);
@@ -771,7 +781,9 @@ class CheckoutCartService {
 		if (!browser) return;
 
 		this.inventoryCheckInterval = window.setInterval(() => {
-			this.checkInventory();
+			void this.checkInventory().catch((error) =>
+				logger.error('[CheckoutService] Background checkInventory failed', { error })
+			);
 		}, INVENTORY_CHECK_INTERVAL);
 	}
 
@@ -789,6 +801,7 @@ class CheckoutCartService {
 				body: JSON.stringify({ items })
 			});
 
+			if (!response.ok) throw new Error(`Inventory check failed (HTTP ${response.status})`);
 			if (response.ok) {
 				const inventory = await response.json();
 				this.updateInventory(inventory);
@@ -846,7 +859,9 @@ class CheckoutCartService {
 		const hasItems = get(this.hasItems);
 		if (hasItems) {
 			this.abandonmentTimer = window.setTimeout(() => {
-				this.handleCartAbandonment();
+				void this.handleCartAbandonment().catch((error) =>
+					logger.error('[CheckoutService] Background handleCartAbandonment failed', { error })
+				);
 			}, ABANDONMENT_THRESHOLD);
 		}
 	}
@@ -1588,7 +1603,9 @@ class CheckoutCartService {
 
 		// Flush buffer periodically
 		if (this.analyticsBuffer.length >= 10) {
-			this.flushAnalytics();
+			void this.flushAnalytics().catch((error) =>
+				logger.error('[CheckoutService] Background flushAnalytics failed', { error })
+			);
 		}
 	}
 
@@ -1599,13 +1616,15 @@ class CheckoutCartService {
 		this.analyticsBuffer = [];
 
 		try {
-			await fetch(`${API_URL}/analytics/events`, {
+			const response = await fetch(`${API_URL}/analytics/events`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
+				keepalive: true,
 				body: JSON.stringify({ events })
 			});
+			if (!response.ok) throw new Error(`Analytics submission failed (HTTP ${response.status})`);
 		} catch (error) {
 			logger.error('[CheckoutService] Failed to send analytics', { error });
 			// Re-add events to buffer
@@ -1625,7 +1644,9 @@ class CheckoutCartService {
 
 		// Flush analytics on page unload
 		window.addEventListener('beforeunload', () => {
-			this.flushAnalytics();
+			void this.flushAnalytics().catch((error) =>
+				logger.error('[CheckoutService] Background flushAnalytics failed', { error })
+			);
 		});
 	}
 
@@ -1650,7 +1671,9 @@ class CheckoutCartService {
 		}
 
 		// Flush any remaining analytics
-		this.flushAnalytics();
+		void this.flushAnalytics().catch((error) =>
+			logger.error('[CheckoutService] Background flushAnalytics failed', { error })
+		);
 	}
 }
 

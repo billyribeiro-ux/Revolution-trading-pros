@@ -78,7 +78,8 @@
 		return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
 	}
 
-	function formatNumber(num: number): string {
+	function formatNumber(num: number | null): string {
+		if (num === null) return 'Not measured';
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
 		if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
 		return num.toString();
@@ -244,7 +245,7 @@
 						<span class="usage-label">Views</span>
 					</div>
 					<div class="usage-item">
-						<span class="usage-value">{statistics.unused_files}</span>
+						<span class="usage-value">{statistics.unused_files ?? 'Not measured'}</span>
 						<span class="usage-label">Unused Files</span>
 					</div>
 					<div class="usage-item">

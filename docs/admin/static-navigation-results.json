@@ -1,0 +1,1063 @@
+{
+	"scope": "Static in-scope pages only; excluded editor routes omitted; dynamic fixture routes and actual workflows remain separate requirements",
+	"results": [
+		{
+			"route": "/admin",
+			"status": 200,
+			"finalPath": "/admin",
+			"headings": ["Dashboard", "Analytics Dashboard"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics",
+			"status": 200,
+			"finalPath": "/admin/analytics",
+			"headings": ["Analytics", "Analytics Dashboard"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/attribution",
+			"status": 200,
+			"finalPath": "/admin/analytics/attribution",
+			"headings": ["Attribution", "Attribution Analysis"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/analytics/attribution/channels"]
+		},
+		{
+			"route": "/admin/analytics/cohorts",
+			"status": 200,
+			"finalPath": "/admin/analytics/cohorts",
+			"headings": ["Cohorts", "Cohort Analysis"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/cohorts/create",
+			"status": 200,
+			"finalPath": "/admin/analytics/cohorts",
+			"headings": ["Cohorts", "Cohort Analysis"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/events",
+			"status": 200,
+			"finalPath": "/admin/analytics/events",
+			"headings": ["Events", "Event Explorer"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/funnels",
+			"status": 200,
+			"finalPath": "/admin/analytics/funnels",
+			"headings": ["Funnels", "Conversion Funnels"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/funnels/create",
+			"status": 200,
+			"finalPath": "/admin/analytics/funnels",
+			"headings": ["Funnels", "Conversion Funnels"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/goals",
+			"status": 200,
+			"finalPath": "/admin/analytics/goals",
+			"headings": ["Goals", "Conversion Goals"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/heatmaps",
+			"status": 200,
+			"finalPath": "/admin/analytics/heatmaps",
+			"headings": ["Heatmaps", "Click Heatmaps"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/recordings",
+			"status": 200,
+			"finalPath": "/admin/analytics/recordings",
+			"headings": ["Recordings", "Session Recordings"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/reports",
+			"status": 200,
+			"finalPath": "/admin/analytics/reports",
+			"headings": ["Reports", "Reports"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/analytics/segments",
+			"status": 200,
+			"finalPath": "/admin/analytics/segments",
+			"headings": ["Segments", "User Segments"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/behavior",
+			"status": 200,
+			"finalPath": "/admin/behavior",
+			"headings": ["Behavior Tracking", "Behavior Tracking"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/blog",
+			"status": 200,
+			"finalPath": "/admin/blog",
+			"headings": ["Blog Posts", "Blog Posts"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/blog/categories",
+			"status": 200,
+			"finalPath": "/admin/blog/categories",
+			"headings": ["Categories", "Categories & Tags"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/boards",
+			"status": 200,
+			"finalPath": "/admin/boards",
+			"headings": ["Boards", "Project Boards"],
+			"errors": [],
+			"failedRequests": [
+				"404 /api/admin/boards",
+				"404 /api/admin/boards/folders",
+				"404 /api/admin/boards/dashboard",
+				"404 /api/admin/boards/my-tasks",
+				"404 /api/admin/boards/tasks-due-today",
+				"404 /api/admin/boards/overdue-tasks"
+			]
+		},
+		{
+			"route": "/admin/boards/import",
+			"status": 200,
+			"finalPath": "/admin/boards/import",
+			"headings": ["Import", "Import Board"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/boards/reports",
+			"status": 200,
+			"finalPath": "/admin/boards/reports",
+			"headings": ["Reports", "Board Reports"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/boards"]
+		},
+		{
+			"route": "/admin/boards/settings",
+			"status": 200,
+			"finalPath": "/admin/boards/settings",
+			"headings": ["Settings", "Board Settings"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/boards/settings", "404 /api/admin/boards/settings/storage"]
+		},
+		{
+			"route": "/admin/boards/templates",
+			"status": 200,
+			"finalPath": "/admin/boards/templates",
+			"headings": ["Email Templates", "Board Templates"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/boards/templates"]
+		},
+		{
+			"route": "/admin/boards/time-tracking",
+			"status": 200,
+			"finalPath": "/admin/boards/time-tracking",
+			"headings": ["Time tracking", "Time Tracking"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/boards", "404 /api/admin/boards/time-entries"]
+		},
+		{
+			"route": "/admin/cart/abandoned",
+			"status": 200,
+			"finalPath": "/admin/cart/abandoned",
+			"headings": ["Abandoned", "Cart Recovery Center"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/categories",
+			"status": 200,
+			"finalPath": "/admin/categories",
+			"headings": ["Categories", " Categories"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/cms/datasources",
+			"status": 200,
+			"finalPath": "/admin/cms/datasources",
+			"headings": ["Datasources", " Datasources"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/cms/datasources"]
+		},
+		{
+			"route": "/admin/connections",
+			"status": 200,
+			"finalPath": "/admin/connections",
+			"headings": ["API Connections", "Connections"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/consent",
+			"status": 200,
+			"finalPath": "/admin/consent",
+			"headings": ["Consent", "Consent Analytics Dashboard"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/consent/settings",
+			"status": 200,
+			"finalPath": "/admin/consent/settings",
+			"headings": ["Settings", "Consent Management Settings"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/consent/templates",
+			"status": 200,
+			"finalPath": "/admin/consent/templates",
+			"headings": ["Email Templates", "Banner Templates"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/contacts",
+			"status": 200,
+			"finalPath": "/admin/contacts",
+			"headings": ["Contacts", "Contacts"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/contacts/new",
+			"status": 200,
+			"finalPath": "/admin/contacts/new",
+			"headings": ["New", "Add New Contact"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/coupons",
+			"status": 200,
+			"finalPath": "/admin/coupons",
+			"headings": ["Coupons", "Coupons Management"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/coupons/create",
+			"status": 200,
+			"finalPath": "/admin/coupons/create",
+			"headings": ["Create", "Create New Coupon"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/courses",
+			"status": 200,
+			"finalPath": "/admin/courses",
+			"headings": ["Courses", "Courses"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/courses/create",
+			"status": 200,
+			"finalPath": "/admin/courses/create",
+			"headings": ["Create", "Create New Course"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm",
+			"status": 200,
+			"finalPath": "/admin/crm",
+			"headings": ["CRM", "CRM Contacts"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/abandoned-carts",
+			"status": 200,
+			"finalPath": "/admin/crm/abandoned-carts",
+			"headings": ["Abandoned carts", "Abandoned Carts"],
+			"errors": [],
+			"failedRequests": [
+				"404 /api/admin/crm/abandoned-carts/stats",
+				"404 /api/admin/crm/abandoned-carts"
+			]
+		},
+		{
+			"route": "/admin/crm/automations",
+			"status": 200,
+			"finalPath": "/admin/crm/automations",
+			"headings": ["Automations", "Automation Funnels"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/automations/new",
+			"status": 200,
+			"finalPath": "/admin/crm/automations/new",
+			"headings": ["New", " Create New Automation"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/campaigns",
+			"status": 200,
+			"finalPath": "/admin/crm/campaigns",
+			"headings": ["Email Campaigns", " Email Campaigns"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/campaigns/new",
+			"status": 200,
+			"finalPath": "/admin/crm/campaigns/new",
+			"headings": ["New", "New Campaign"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/companies",
+			"status": 200,
+			"finalPath": "/admin/crm/companies",
+			"headings": ["Companies", "CRM Companies"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/companies/new",
+			"status": 200,
+			"finalPath": "/admin/crm/companies/new",
+			"headings": ["New", "New Company"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/contacts/new",
+			"status": 200,
+			"finalPath": "/admin/crm/contacts/new",
+			"headings": ["New", "New Contact"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/deals",
+			"status": 200,
+			"finalPath": "/admin/crm/deals",
+			"headings": ["Deals", " Deal Pipeline"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/deals/new",
+			"status": 200,
+			"finalPath": "/admin/crm/deals/new",
+			"headings": ["New", "New Deal"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/import-export",
+			"status": 200,
+			"finalPath": "/admin/crm/import-export",
+			"headings": ["Import export", "Import / Export"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/crm/exports", "404 /api/admin/crm/imports"]
+		},
+		{
+			"route": "/admin/crm/import-export/new",
+			"status": 200,
+			"finalPath": "/admin/crm/import-export/new",
+			"headings": ["New", "New Import"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/leads",
+			"status": 200,
+			"finalPath": "/admin/crm/leads",
+			"headings": ["Leads", " Lead Management"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/lists",
+			"status": 200,
+			"finalPath": "/admin/crm/lists",
+			"headings": ["Lists", "Contact Lists"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/lists/new",
+			"status": 200,
+			"finalPath": "/admin/crm/lists/new",
+			"headings": ["New", "New Contact List"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/logs",
+			"status": 200,
+			"finalPath": "/admin/crm/logs",
+			"headings": ["Logs", "System Logs"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/crm/logs/stats", "404 /api/admin/crm/logs"]
+		},
+		{
+			"route": "/admin/crm/managers",
+			"status": 200,
+			"finalPath": "/admin/crm/managers",
+			"headings": ["Managers", "Manager Permissions"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/crm/manager-roles"]
+		},
+		{
+			"route": "/admin/crm/managers/new",
+			"status": 200,
+			"finalPath": "/admin/crm/managers/new",
+			"headings": ["New", "Add New Manager"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/recurring-campaigns",
+			"status": 200,
+			"finalPath": "/admin/crm/recurring-campaigns",
+			"headings": ["Recurring campaigns", "Recurring Campaigns"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/recurring-campaigns/new",
+			"status": 200,
+			"finalPath": "/admin/crm/recurring-campaigns/new",
+			"headings": ["New", "Create New Recurring Campaign"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/segments",
+			"status": 200,
+			"finalPath": "/admin/crm/segments",
+			"headings": ["Segments", " Dynamic Segments"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/segments/new",
+			"status": 200,
+			"finalPath": "/admin/crm/segments/new",
+			"headings": ["New", "New Segment"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/sequences",
+			"status": 200,
+			"finalPath": "/admin/crm/sequences",
+			"headings": ["Sequences", "Email Sequences"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/sequences/new",
+			"status": 200,
+			"finalPath": "/admin/crm/sequences/new",
+			"headings": ["New", "Create New Sequence"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/settings",
+			"status": 200,
+			"finalPath": "/admin/crm/settings",
+			"headings": ["Settings", "CRM Settings"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/smart-links",
+			"status": 200,
+			"finalPath": "/admin/crm/smart-links",
+			"headings": ["Smart links", "Smart Links"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/tags",
+			"status": 200,
+			"finalPath": "/admin/crm/tags",
+			"headings": ["Tags", "Contact Tags"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/templates",
+			"status": 200,
+			"finalPath": "/admin/crm/templates",
+			"headings": ["Email Templates", "Email Templates"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/templates/new",
+			"status": 200,
+			"finalPath": "/admin/crm/templates/new",
+			"headings": ["New", "New Email Template"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/templates/prebuilt",
+			"status": 200,
+			"finalPath": "/admin/crm/templates/prebuilt",
+			"headings": ["Prebuilt", "Prebuilt Email Templates"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/webhooks",
+			"status": 200,
+			"finalPath": "/admin/crm/webhooks",
+			"headings": ["Webhooks", "Webhooks"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/crm/webhooks/new",
+			"status": 200,
+			"finalPath": "/admin/crm/webhooks/new",
+			"headings": ["New", "Create New Webhook"],
+			"errors": [],
+			"failedRequests": ["405 /api/admin/crm/webhooks/events"]
+		},
+		{
+			"route": "/admin/dashboard",
+			"status": 200,
+			"finalPath": "/admin",
+			"headings": ["Dashboard", "Analytics Dashboard"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/email/campaigns",
+			"status": 200,
+			"finalPath": "/admin/email/campaigns",
+			"headings": ["Email Campaigns", "Email Campaigns"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/email/campaigns/stats", "400 /api/admin/email/campaigns"]
+		},
+		{
+			"route": "/admin/email/settings",
+			"status": 200,
+			"finalPath": "/admin/email/settings",
+			"headings": ["Settings", "Email Settings"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/email/smtp",
+			"status": 200,
+			"finalPath": "/admin/email/smtp",
+			"headings": ["Email Settings", "SMTP Email Configuration"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/email/subscribers",
+			"status": 200,
+			"finalPath": "/admin/email/subscribers",
+			"headings": ["Subscribers", "Email Subscribers"],
+			"errors": [],
+			"failedRequests": [
+				"400 /api/admin/email/subscribers",
+				"404 /api/admin/email/subscribers/stats"
+			]
+		},
+		{
+			"route": "/admin/email/templates",
+			"status": 200,
+			"finalPath": "/admin/email/templates",
+			"headings": ["Email Templates", "Email Templates"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/email/templates/new",
+			"status": 200,
+			"finalPath": "/admin/email/templates/new",
+			"headings": ["New"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/forms",
+			"status": 200,
+			"finalPath": "/admin/forms",
+			"headings": ["Forms", "Forms"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/forms/create",
+			"status": 200,
+			"finalPath": "/admin/forms/create",
+			"headings": ["Create"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/forms/entries",
+			"status": 200,
+			"finalPath": "/admin/forms/entries",
+			"headings": ["Entries", "Form Entries"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/indicators",
+			"status": 200,
+			"finalPath": "/admin/indicators",
+			"headings": ["Indicators", "Indicators"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/indicators/create",
+			"status": 200,
+			"finalPath": "/admin/indicators/create",
+			"headings": ["Create", "Create New Indicator"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/media",
+			"status": 200,
+			"finalPath": "/admin/media",
+			"headings": ["Media Library", "Media Library"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/media/analytics",
+			"status": 200,
+			"finalPath": "/admin/media/analytics",
+			"headings": ["Analytics", "Bandwidth Analytics"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/members",
+			"status": 200,
+			"finalPath": "/admin/members",
+			"headings": ["Members", "Members Command Center"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/members/analytics",
+			"status": 200,
+			"finalPath": "/admin/members/analytics",
+			"headings": ["Analytics", "Member Analytics"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/members/churned",
+			"status": 200,
+			"finalPath": "/admin/members/churned",
+			"headings": ["Churned", "Win-Back Center"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/members/past",
+			"status": 200,
+			"finalPath": "/admin/members/past",
+			"headings": ["Past", "Past Members Dashboard"],
+			"errors": [],
+			"failedRequests": [
+				"404 /api/admin/past-members-dashboard/services",
+				"404 /api/admin/past-members-dashboard/campaigns",
+				"404 /api/admin/past-members-dashboard/churn-reasons",
+				"404 /api/admin/past-members-dashboard/overview"
+			]
+		},
+		{
+			"route": "/admin/members/segments",
+			"status": 200,
+			"finalPath": "/admin/members/segments",
+			"headings": ["Segments", "Member Segments"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/members/subscriptions",
+			"status": 200,
+			"finalPath": "/admin/members/subscriptions",
+			"headings": ["Subscriptions", "Member Subscriptions"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/memberships",
+			"status": 200,
+			"finalPath": "/admin/memberships",
+			"headings": ["Memberships", "Membership Plans"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/memberships/create",
+			"status": 200,
+			"finalPath": "/admin/memberships/create",
+			"headings": ["Create", " Create Membership Plan"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/orders",
+			"status": 200,
+			"finalPath": "/admin/orders",
+			"headings": ["Orders", "Orders Management"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/performance",
+			"status": 200,
+			"finalPath": "/admin/performance",
+			"headings": ["Performance", "Performance Dashboard"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/popups",
+			"status": 200,
+			"finalPath": "/admin/popups",
+			"headings": ["Popups", "Popup Manager"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/popups/new",
+			"status": 200,
+			"finalPath": "/admin/popups/new",
+			"headings": ["New", "Create New Popup"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/products",
+			"status": 200,
+			"finalPath": "/admin/products",
+			"headings": ["Products", "Products Management"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/products/create",
+			"status": 200,
+			"finalPath": "/admin/products/create",
+			"headings": ["Create", "Create New Product"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/resources",
+			"status": 200,
+			"finalPath": "/admin/resources",
+			"headings": ["Resources", "Room Resources"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/schedules",
+			"status": 200,
+			"finalPath": "/admin/schedules",
+			"headings": ["Schedules", "Trading Room Schedules"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo",
+			"status": 200,
+			"finalPath": "/admin/seo",
+			"headings": ["SEO Settings", "SEO Command Center"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/404-monitor",
+			"status": 200,
+			"finalPath": "/admin/seo/404-monitor",
+			"headings": ["404 monitor", "404 Error Monitor"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/404s",
+			"status": 200,
+			"finalPath": "/admin/seo/404s",
+			"headings": ["404s", "404 Error Monitor"],
+			"errors": [],
+			"failedRequests": [
+				"404 /api/admin/404-errors",
+				"404 /api/admin/seo/rankings/check",
+				"404 /api/admin/seo/backlinks",
+				"404 /api/admin/seo/rankings"
+			]
+		},
+		{
+			"route": "/admin/seo/analysis",
+			"status": 200,
+			"finalPath": "/admin/seo/analysis",
+			"headings": ["Analysis", "SEO Analysis"],
+			"errors": [],
+			"failedRequests": [
+				"404 /api/admin/seo/rankings/check",
+				"404 /api/admin/404-errors",
+				"404 /api/admin/seo/backlinks",
+				"404 /api/admin/seo/rankings"
+			]
+		},
+		{
+			"route": "/admin/seo/analytics",
+			"status": 200,
+			"finalPath": "/admin/seo/analytics",
+			"headings": ["Analytics", "SEO Analytics"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/bing",
+			"status": 200,
+			"finalPath": "/admin/seo/bing",
+			"headings": ["Bing", "Bing SEO & IndexNow"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/image-seo",
+			"status": 200,
+			"finalPath": "/admin/seo/image-seo",
+			"headings": ["Image seo", " Image SEO"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/keywords",
+			"status": 200,
+			"finalPath": "/admin/seo/keywords",
+			"headings": ["Keywords", "Keyword Tracking"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/meta",
+			"status": 200,
+			"finalPath": "/admin/seo/meta",
+			"headings": ["Meta", "SEO Meta Manager"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/news-sitemap",
+			"status": 200,
+			"finalPath": "/admin/seo/news-sitemap",
+			"headings": ["News sitemap", " Google News Sitemap"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/redirects",
+			"status": 200,
+			"finalPath": "/admin/seo/redirects",
+			"headings": ["Redirects", "Redirect Manager"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/reports",
+			"status": 200,
+			"finalPath": "/admin/seo/reports",
+			"headings": ["Reports", " SEO Email Reports"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/schema",
+			"status": 200,
+			"finalPath": "/admin/seo/schema",
+			"headings": ["Schema", "Schema Markup Builder"],
+			"errors": [],
+			"failedRequests": ["404 /api/seo/schema"]
+		},
+		{
+			"route": "/admin/seo/search-console",
+			"status": 200,
+			"finalPath": "/admin/seo/search-console",
+			"headings": ["Search console", " Google Search Console"],
+			"errors": [],
+			"failedRequests": ["404 /api/seo/gsc/status"]
+		},
+		{
+			"route": "/admin/seo/settings",
+			"status": 200,
+			"finalPath": "/admin/seo/settings",
+			"headings": ["Settings", "SEO Settings"],
+			"errors": [],
+			"failedRequests": ["404 /api/seo/settings/grouped"]
+		},
+		{
+			"route": "/admin/seo/sitemap",
+			"status": 200,
+			"finalPath": "/admin/seo/sitemap",
+			"headings": ["Sitemap", "XML Sitemap"],
+			"errors": [],
+			"failedRequests": ["404 /api/seo/sitemap/stats"]
+		},
+		{
+			"route": "/admin/seo/store-locator",
+			"status": 200,
+			"finalPath": "/admin/seo/store-locator",
+			"headings": ["Store locator", " Store Locator & Local SEO"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/seo/video-sitemap",
+			"status": 200,
+			"finalPath": "/admin/seo/video-sitemap",
+			"headings": ["Video sitemap", " Google Video Sitemap"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/settings",
+			"status": 200,
+			"finalPath": "/admin/settings",
+			"headings": ["Settings", "Settings & Integrations"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/site-health",
+			"status": 200,
+			"finalPath": "/admin/site-health",
+			"headings": ["Site Health", "Site Health"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/subscriptions",
+			"status": 200,
+			"finalPath": "/admin/subscriptions",
+			"headings": ["Subscriptions", "Subscription Management"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/subscriptions/invoice-settings",
+			"status": 200,
+			"finalPath": "/admin/subscriptions/invoice-settings",
+			"headings": ["Invoice settings", "Invoice Customization"],
+			"errors": [],
+			"failedRequests": ["404 /api/admin/invoice-settings"]
+		},
+		{
+			"route": "/admin/subscriptions/plans",
+			"status": 200,
+			"finalPath": "/admin/subscriptions/plans",
+			"headings": ["Plans", "Subscription Plans"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/trading-rooms",
+			"status": 200,
+			"finalPath": "/admin/trading-rooms",
+			"headings": ["Trading rooms", "Trading Rooms Content"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/users",
+			"status": 200,
+			"finalPath": "/admin/users",
+			"headings": ["Admin Users", "Users Management"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/users/create",
+			"status": 200,
+			"finalPath": "/admin/users/create",
+			"headings": ["Create", "Create User"],
+			"errors": [],
+			"failedRequests": [
+				"404 /api/admin/organization/onboarding-plans",
+				"404 /api/admin/organization/training-modules",
+				"404 /api/admin/organization/locations"
+			]
+		},
+		{
+			"route": "/admin/videos",
+			"status": 200,
+			"finalPath": "/admin/videos",
+			"headings": ["Videos", "Trading Room Videos"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/watchlist",
+			"status": 200,
+			"finalPath": "/admin/watchlist",
+			"headings": ["Watchlist", "Weekly Watchlist"],
+			"errors": [],
+			"failedRequests": []
+		},
+		{
+			"route": "/admin/watchlist/create",
+			"status": 200,
+			"finalPath": "/admin/watchlist/create",
+			"headings": ["Create", "Create Weekly Watchlist"],
+			"errors": [],
+			"failedRequests": []
+		}
+	],
+	"repaired_followups": {
+		"/admin/cms/datasources": "Full local browser workflow7.8s; API/email_r15 scope assertions; not a rerun of all127pages",
+		"/admin/crm/logs": "Persisted operational queue/provider events, filters/pages, security-independent clear; browser12.0s",
+		"/admin/dashboard": "HTTP307to/admin, leafSSRenabled; browseraliasproof6.5s",
+		"/admin/analytics/cohorts/create": "HTTP307preserving?create=1; actualdialogverified inaliasproof6.5s",
+		"/admin/analytics/funnels/create": "HTTP307preserving?create=1; actualdialogverified inaliasproof6.5s",
+		"/admin/crm/webhooks/new": "Events endpoint repaired; full authenticated create/edit/reload, activation, history, unavailable DNS and delete browser proof 11.6s. Not a rerun of the historical whole-admin sweep.",
+		"/admin/performance": "The original static sweep missed its invalid URL constructor because no network call occurred and console capture was absent. Corrected actual measured workflow now has native SDK/browser proof 5.0s and explicit failure browser 2.7s; not a rerun of all pages.",
+		"/admin/email/subscribers": "Fresh DB subscribers_r24 13.68s; actual newsletter identity/consent/provider receipts, filtered pages/CSV and atomic bulk deletion. Browser3 7.3s including reload, pagination and proxy access rejection. Historical sweep retained; not a rerun of all pages."
+	}
+}

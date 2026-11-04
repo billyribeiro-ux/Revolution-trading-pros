@@ -795,7 +795,7 @@ describe('createPageState()', () => {
 			vi.mocked(getWeeklyVideo).mockResolvedValue(null);
 
 			const state = createPageState();
-			state.initializeData();
+			await state.initializeData();
 
 			await flushPromises();
 

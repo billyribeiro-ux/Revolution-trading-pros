@@ -52,6 +52,8 @@ declare global {
 				email: string;
 				name?: string;
 				role?: string;
+				is_superadmin?: boolean;
+				is_developer?: boolean;
 			} | null;
 			/** Access token for server-side API calls (from httpOnly cookie) */
 			accessToken?: string | null;

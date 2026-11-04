@@ -102,7 +102,7 @@ function md5Sync(string: string): string {
 		const temp1 = messageLength + 8;
 		const temp2 = (temp1 - (temp1 % 64)) / 64;
 		const numberOfWords = (temp2 + 1) * 16;
-		const wordArray: number[] = new Array(numberOfWords - 1);
+		const wordArray: number[] = Array.from({ length: numberOfWords }, () => 0);
 		let bytePosition: number;
 		let byteCount = 0;
 

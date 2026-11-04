@@ -127,6 +127,8 @@ export const NOINDEX_PREFIXES = [
 	'/maintenance',
 	'/media',
 	'/my',
+	'/newsletter/confirm',
+	'/newsletter/unsubscribe',
 	'/popup-advanced-demo',
 	'/popup-demo',
 	'/posts',

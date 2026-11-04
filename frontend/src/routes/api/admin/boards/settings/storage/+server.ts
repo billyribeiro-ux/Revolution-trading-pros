@@ -20,6 +20,7 @@
  * @version 1.0.0
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { error as kitError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
@@ -41,11 +42,13 @@ async function callBackend(endpoint: string, options?: RequestInit): Promise<Bac
 	try {
 		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
 			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options?.headers
-			}
+			headers: mergeHeaders(
+				{
+					'Content-Type': 'application/json',
+					Accept: 'application/json'
+				},
+				options?.headers
+			)
 		});
 		let parsed: unknown = null;
 		const text = await response.text();

@@ -39,7 +39,7 @@
 		<div class="modal-body">
 			<div class="deal-summary">
 				<p class="summary-name">{deal.name}</p>
-				<p class="summary-value">{formatCurrency(deal.amount)}</p>
+				<p class="summary-value">{formatCurrency(deal.amount, deal.currency)}</p>
 			</div>
 			<div class="form-group">
 				<label for="win-details">Win Details (optional)</label>
@@ -215,7 +215,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.btn-success:disabled {
 		opacity: 0.5;

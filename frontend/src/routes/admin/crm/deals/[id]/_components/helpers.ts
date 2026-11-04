@@ -7,19 +7,20 @@
 
 import type { Stage } from '#lib/crm/types.js';
 
-export function formatCurrency(amount: number | undefined): string {
-	if (!amount) return '$0';
+export function formatCurrency(amount: number | undefined, currency = 'USD'): string {
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency: 'USD',
-		minimumFractionDigits: 0,
-		maximumFractionDigits: 0
-	}).format(amount);
+		currency,
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
+	}).format(amount ?? 0);
 }
 
 export function formatDate(dateString: string | undefined): string {
 	if (!dateString) return 'N/A';
-	return new Date(dateString).toLocaleDateString('en-US', {
+	return new Date(
+		/^\d{4}-\d{2}-\d{2}$/.test(dateString) ? `${dateString}T00:00:00` : dateString
+	).toLocaleDateString('en-US', {
 		year: 'numeric',
 		month: 'short',
 		day: 'numeric'
@@ -47,11 +48,11 @@ export function getStageColor(stage: Stage | null | undefined): string {
 export function getPriorityColor(priority: string | undefined): string {
 	const colors: Record<string, string> = {
 		low: '#64748b',
-		normal: '#3b82f6',
+		medium: '#3b82f6',
 		high: '#f59e0b',
 		urgent: '#ef4444'
 	};
-	return colors[priority || 'normal'] || colors.normal;
+	return colors[priority || 'medium'] || colors.medium;
 }
 
 export function getStatusBadge(status: string | undefined): {

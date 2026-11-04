@@ -75,7 +75,8 @@ export class CommandManager {
 		try {
 			this.currentIndex++;
 			const command = this.history[this.currentIndex];
-			(command.redo ?? command.execute)();
+			if (command.redo) command.redo();
+			else command.execute();
 			this.notifyChange();
 			return true;
 		} finally {

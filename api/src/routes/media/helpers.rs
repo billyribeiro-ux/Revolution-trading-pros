@@ -4,6 +4,86 @@
 //! statistics handlers. They have no router-facing surface, so they
 //! stay `pub(super)`.
 
+pub(super) fn allowed_upload_type(mime: &str) -> bool {
+    matches!(
+        mime,
+        "image/jpeg"
+            | "image/png"
+            | "image/webp"
+            | "image/gif"
+            | "image/avif"
+            | "video/mp4"
+            | "video/webm"
+            | "video/quicktime"
+            | "application/pdf"
+            | "application/msword"
+            | "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            | "application/vnd.ms-excel"
+            | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            | "text/plain"
+            | "text/csv"
+    )
+}
+
+pub(super) fn validate_metadata(
+    data: &super::dto::UpdateMedia,
+) -> Result<(), crate::utils::errors::ApiError> {
+    use crate::utils::errors::ApiError;
+    for (value, max) in [
+        (&data.title, 500),
+        (&data.alt_text, 1000),
+        (&data.caption, 2000),
+        (&data.description, 10000),
+        (&data.collection, 50),
+    ] {
+        if value
+            .as_ref()
+            .is_some_and(|v| v.chars().count() > max || v.contains('\0'))
+        {
+            return Err(ApiError::validation_error(
+                "Media metadata exceeds length limits or contains a null character",
+            ));
+        }
+    }
+    if data.tags.as_ref().is_some_and(|tags| {
+        tags.len() > 50
+            || tags
+                .iter()
+                .any(|tag| tag.trim().is_empty() || tag.chars().count() > 100 || tag.contains('\0'))
+    }) {
+        return Err(ApiError::validation_error(
+            "Use at most 50 nonempty tags of 100 characters each",
+        ));
+    }
+    Ok(())
+}
+
+/// Enrich the existing public DTO without changing editor upload compatibility.
+pub(super) async fn present(
+    state: &crate::AppState,
+    media: Vec<super::dto::Media>,
+) -> Result<Vec<serde_json::Value>, crate::utils::errors::ApiError> {
+    use crate::utils::errors::ApiError;
+    let ids: Vec<i64> = media.iter().map(|m| m.id).collect();
+    let extras: Vec<(i64,serde_json::Value)> = sqlx::query_as("SELECT id,jsonb_build_object('content_version',content_version,'tags',tags,'metadata',metadata,'created_by',created_by,'processing_status',(SELECT status FROM media_optimization_jobs WHERE media_id=media.id AND source_version=media.content_version ORDER BY id DESC LIMIT 1),'has_webp',EXISTS(SELECT 1 FROM media_variants WHERE media_id=media.id AND source_version=media.content_version AND format='webp')) FROM media WHERE id=ANY($1)")
+        .bind(ids).fetch_all(state.db.pool()).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
+    let mut extras: std::collections::HashMap<_, _> = extras.into_iter().collect();
+    media
+        .into_iter()
+        .map(|m| {
+            let extra = extras.remove(&m.id);
+            let mut value = serde_json::to_value(m)
+                .map_err(|_| ApiError::internal_error("Cannot serialize media"))?;
+            if let (Some(object), Some(serde_json::Value::Object(extra))) =
+                (value.as_object_mut(), extra)
+            {
+                object.extend(extra);
+            }
+            Ok(value)
+        })
+        .collect()
+}
+
 pub(super) async fn delete_media(
     state: &crate::AppState,
     id: i64,
@@ -15,6 +95,8 @@ pub(super) async fn delete_media(
         .bind(id).fetch_optional(&mut *tx).await.map_err(db)?.ok_or_else(||ApiError::not_found("Media not found"))?;
     let deletion = async {
         crate::services::media_jobs::delete_variants(state, &mut tx, id).await?;
+        let paths: Vec<String> = sqlx::query_scalar("SELECT DISTINCT snapshot->>'path' FROM media_versions WHERE media_id=$1 AND snapshot->>'path' IS NOT NULL").bind(id).fetch_all(&mut *tx).await?;
+        for path in paths { state.services.storage.delete(&path).await?; }
         if let Some(path) = &media.path {
             state.services.storage.delete(path).await?;
         }
@@ -52,6 +134,9 @@ pub(super) fn validate_file_signature(data: &[u8], content_type: &str) -> bool {
         }
         "image/gif" => data.len() >= 6 && (data[..6] == *b"GIF87a" || data[..6] == *b"GIF89a"),
         "image/webp" => data.len() >= 12 && data[..4] == *b"RIFF" && data[8..12] == *b"WEBP",
+        "image/avif" => {
+            data.len() >= 12 && data[4..8] == *b"ftyp" && matches!(&data[8..12], b"avif" | b"avis")
+        }
         "image/svg+xml" => {
             // SVG is text-based, check for XML or SVG tag
             let text = String::from_utf8_lossy(&data[..data.len().min(1000)]);

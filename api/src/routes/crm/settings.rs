@@ -1,16 +1,10 @@
 //! CRM settings, managers, and system-log handlers
 //! (split from `crm.rs` lines 1646-1709).
 
-use axum::{
-    Json, Router,
-    extract::{Query, State},
-    http::StatusCode,
-    routing::get,
-};
+use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use serde::Deserialize;
 use serde_json::json;
 
-use super::ListFilters;
 use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -271,18 +265,6 @@ async fn list_managers(
     })))
 }
 
-async fn get_system_logs(
-    State(_state): State<AppState>,
-    _admin: AdminUser,
-    Query(filters): Query<ListFilters>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let per_page = filters.per_page.unwrap_or(50);
-    Ok(Json(json!({
-        "data": [],
-        "meta": { "total": 0, "per_page": per_page }
-    })))
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════
@@ -299,5 +281,4 @@ pub(super) fn router() -> Router<AppState> {
             get(get_email_preferences).post(save_email_preferences),
         )
         .route("/managers", get(list_managers))
-        .route("/system-logs", get(get_system_logs))
 }

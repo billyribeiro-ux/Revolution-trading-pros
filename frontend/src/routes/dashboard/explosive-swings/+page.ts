@@ -8,3 +8,6 @@
  */
 
 // SSR inherited from dashboard layout (+layout.server.ts)
+
+// This authenticated dashboard reads current session data at request time.
+export const prerender = false;

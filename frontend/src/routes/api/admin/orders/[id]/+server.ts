@@ -39,9 +39,10 @@ function buildHandler(method: 'GET' | 'PUT' | 'DELETE'): RequestHandler {
 		const accept = request.headers.get('accept');
 		if (accept) headers['Accept'] = accept;
 
-		const body = method === 'GET' ? undefined : await request.text();
+		const options: RequestInit = { method, headers };
+		if (method !== 'GET') options.body = await request.text();
 
-		const upstream = await fetch(target, { method, headers, body });
+		const upstream = await fetch(target, options);
 
 		return new Response(upstream.body, {
 			status: upstream.status,

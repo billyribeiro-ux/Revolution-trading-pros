@@ -59,6 +59,14 @@
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
+	let currency = $state('USD');
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let totalDeals = $state(0);
+	let filteredValue = $state(0);
+	let filteredWeightedValue = $state(0);
+	let requestGeneration = 0;
+	let outcomeStageId = $state<string | undefined>(undefined);
 	let viewMode = $state<'kanban' | 'list'>('kanban');
 	let selectedStatus = $state<'open' | 'won' | 'lost' | 'all'>('open');
 
@@ -94,17 +102,7 @@
 
 	let stages = $derived(selectedPipeline?.stages || []);
 
-	let filteredDeals = $derived(
-		deals.filter((deal) => {
-			const matchesSearch =
-				!searchQuery ||
-				deal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				deal.contact?.full_name?.toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesStatus = selectedStatus === 'all' || deal.status === selectedStatus;
-			const matchesPipeline = !selectedPipeline || deal.pipeline_id === selectedPipeline.id;
-			return matchesSearch && matchesStatus && matchesPipeline;
-		})
-	);
+	let filteredDeals = $derived(deals);
 
 	let dealsByStage = $derived(
 		stages.reduce(
@@ -117,60 +115,72 @@
 	);
 
 	let pipelineStats = $derived({
-		totalValue: filteredDeals.reduce((sum, d) => sum + d.amount, 0),
-		weightedValue: filteredDeals.reduce((sum, d) => sum + d.weighted_value, 0),
-		dealsCount: filteredDeals.length
+		totalValue: filteredValue,
+		weightedValue: filteredWeightedValue,
+		dealsCount: totalDeals
 	});
-
-	// API FUNCTIONS
-
 	async function loadData() {
+		const generation = ++requestGeneration;
 		isLoading = true;
 		error = '';
-
 		try {
-			const [dealsRes, pipelinesRes] = await Promise.allSettled([
-				crmAPI.getDeals({ status: selectedStatus !== 'all' ? selectedStatus : undefined }),
-				crmAPI.getPipelines()
-			]);
-
-			if (dealsRes.status === 'fulfilled') {
-				deals = dealsRes.value?.data || [];
+			if (!/^[A-Z]{3}$/.test(currency))
+				throw new Error('Currency must be a three-letter uppercase code.');
+			const available = await crmAPI.getPipelines();
+			if (generation !== requestGeneration) return;
+			pipelines = available;
+			selectedPipeline =
+				available.find((p) => p.id === selectedPipeline?.id) ??
+				available.find((p) => p.is_default) ??
+				available[0] ??
+				null;
+			const response = await crmAPI.getDeals({
+				page: currentPage,
+				per_page: 25,
+				search: searchQuery,
+				pipeline_id: selectedPipeline?.id,
+				currency,
+				status: selectedStatus === 'all' ? undefined : selectedStatus
+			});
+			if (generation !== requestGeneration) return;
+			totalPages = Math.max(1, response.meta.total_pages ?? 1);
+			totalDeals = response.meta.total;
+			if (currentPage > totalPages) {
+				currentPage = totalPages;
+				await loadData();
+				return;
 			}
-
-			if (pipelinesRes.status === 'fulfilled') {
-				pipelines = pipelinesRes.value || [];
-				if (pipelines.length > 0 && !selectedPipeline) {
-					selectedPipeline = pipelines.find((p) => p.is_default) || pipelines[0];
-				}
-			}
-
-			// Calculate stats
-			const openDeals = deals.filter((d) => d.status === 'open');
-			const wonDeals = deals.filter((d) => d.status === 'won');
-			const lostDeals = deals.filter((d) => d.status === 'lost');
-
+			deals = response.data;
+			const summary = response.summaries.find((row) => row.currency === currency);
+			const open = summary?.open_deals ?? 0,
+				won = summary?.won_deals ?? 0,
+				lost = summary?.lost_deals ?? 0;
+			filteredValue = summary?.filtered_value ?? 0;
+			filteredWeightedValue = summary?.filtered_weighted_value ?? 0;
 			stats = {
-				totalDeals: deals.length,
-				openDeals: openDeals.length,
-				wonDeals: wonDeals.length,
-				lostDeals: lostDeals.length,
-				totalValue: openDeals.reduce((sum, d) => sum + d.amount, 0),
-				weightedValue: openDeals.reduce((sum, d) => sum + d.weighted_value, 0),
-				avgDealSize:
-					openDeals.length > 0
-						? openDeals.reduce((sum, d) => sum + d.amount, 0) / openDeals.length
-						: 0,
-				winRate:
-					wonDeals.length + lostDeals.length > 0
-						? (wonDeals.length / (wonDeals.length + lostDeals.length)) * 100
-						: 0
+				totalDeals: summary?.total_deals ?? 0,
+				openDeals: open,
+				wonDeals: won,
+				lostDeals: lost,
+				totalValue: summary?.open_value ?? 0,
+				weightedValue: summary?.weighted_value ?? 0,
+				avgDealSize: open ? (summary?.open_value ?? 0) / open : 0,
+				winRate: won + lost ? (won / (won + lost)) * 100 : 0
 			};
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load deals';
+		} catch (cause) {
+			if (generation === requestGeneration)
+				error = cause instanceof Error ? cause.message : 'Failed to load deals';
 		} finally {
-			isLoading = false;
+			if (generation === requestGeneration) isLoading = false;
 		}
+	}
+	function applyFilters() {
+		currentPage = 1;
+		void loadData();
+	}
+	async function changePage(next: number) {
+		currentPage = next;
+		await loadData();
 	}
 
 	async function updateDealStage(dealId: string, stageId: string) {
@@ -187,7 +197,7 @@
 		processingAction = true;
 
 		try {
-			await crmAPI.winDeal(selectedDeal.id, winDetails || undefined);
+			await crmAPI.winDeal(selectedDeal.id, winDetails || undefined, undefined, outcomeStageId);
 			showWinModal = false;
 			selectedDeal = null;
 			winDetails = '';
@@ -204,7 +214,7 @@
 		processingAction = true;
 
 		try {
-			await crmAPI.loseDeal(selectedDeal.id, lostReason);
+			await crmAPI.loseDeal(selectedDeal.id, lostReason, outcomeStageId);
 			showLoseModal = false;
 			selectedDeal = null;
 			lostReason = '';
@@ -228,7 +238,7 @@
 		pendingDeleteDeal = null;
 
 		try {
-			await crmAPI.updateDeal(deal.id, { status: 'abandoned' });
+			await crmAPI.deleteDeal(deal.id);
 			await loadData();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete deal';
@@ -262,7 +272,14 @@
 		dragOverStage = null;
 
 		if (draggingDeal && draggingDeal.stage_id !== stageId) {
-			await updateDealStage(draggingDeal.id, stageId);
+			const target = stages.find((s) => s.id === stageId);
+			if (target?.is_closed_won) {
+				openWinModal(draggingDeal);
+				outcomeStageId = stageId;
+			} else if (target?.is_closed_lost) {
+				openLoseModal(draggingDeal);
+				outcomeStageId = stageId;
+			} else await updateDealStage(draggingDeal.id, stageId);
 		}
 		draggingDeal = null;
 	}
@@ -274,18 +291,20 @@
 
 	// HELPERS
 
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number, code = currency): string {
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
-			currency: 'USD',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
+			currency: code,
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
 		}).format(amount);
 	}
 
 	function formatDate(dateString: string | undefined): string {
 		if (!dateString) return 'N/A';
-		return new Date(dateString).toLocaleDateString('en-US', {
+		return new Date(
+			/^\d{4}-\d{2}-\d{2}$/.test(dateString) ? `${dateString}T00:00:00` : dateString
+		).toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric'
 		});
@@ -300,11 +319,11 @@
 	function getPriorityColor(priority: string): string {
 		const colors: Record<string, string> = {
 			low: '#64748b',
-			normal: '#3b82f6',
+			medium: '#3b82f6',
 			high: '#f59e0b',
 			urgent: '#ef4444'
 		};
-		return colors[priority] || colors.normal;
+		return colors[priority] || colors.medium;
 	}
 
 	function getBadgeBackground(color: string): string {
@@ -340,16 +359,19 @@
 
 	async function handleStatusChange(event: Event) {
 		selectedStatus = (event.currentTarget as HTMLSelectElement).value as typeof selectedStatus;
+		currentPage = 1;
 		await loadData();
 	}
 
 	function openWinModal(deal: Deal) {
+		outcomeStageId = undefined;
 		selectedDeal = deal;
 		winDetails = '';
 		showWinModal = true;
 	}
 
 	function openLoseModal(deal: Deal) {
+		outcomeStageId = undefined;
 		selectedDeal = deal;
 		lostReason = '';
 		showLoseModal = true;
@@ -362,13 +384,7 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Deals | CRM - Admin Dashboard</title>
-</svelte:head>
-
 <div class="admin-crm-deals">
-	
-
 	<div class="admin-page-container">
 		<!-- Header -->
 		<header class="page-header">
@@ -464,24 +480,50 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					type="text"
 					id="search-deals"
 					name="search"
 					placeholder="Search deals..."
 					bind:value={searchQuery}
+					onkeydown={(event) => {
+						if (event.key === 'Enter') applyFilters();
+					}}
 				/>
 			</div>
 
+			<button class="btn-secondary" onclick={applyFilters}>Search</button>
+			<label
+				>Currency <input
+					aria-label="Currency filter"
+					bind:value={currency}
+					maxlength={3}
+					size={3}
+					onchange={applyFilters}
+				/></label
+			>
 			{#if pipelines.length > 0}
-				<select id="deals-selectedpipeline" name="deals_selectedpipeline" class="filter-select" bind:value={selectedPipeline}>
+				<select
+					id="deals-selectedpipeline"
+					name="deals_selectedpipeline"
+					class="filter-select"
+					bind:value={selectedPipeline}
+					onchange={applyFilters}
+				>
 					{#each pipelines as pipeline (pipeline.id)}
 						<option value={pipeline}>{pipeline.name}</option>
 					{/each}
 				</select>
 			{/if}
 
-			<select id="deals-selectedstatus" name="deals_selectedstatus" class="filter-select" value={selectedStatus} onchange={handleStatusChange}>
+			<select
+				id="deals-selectedstatus"
+				name="deals_selectedstatus"
+				class="filter-select"
+				value={selectedStatus}
+				onchange={handleStatusChange}
+			>
 				<option value="all">All Status</option>
 				<option value="open">Open</option>
 				<option value="won">Won</option>
@@ -528,9 +570,9 @@
 						<div class="column-header" style:border-color={getStageColor(stage)}>
 							<div class="column-title">
 								<span class="stage-name">{stage.name}</span>
-								<span class="stage-count">{stageDeals.length}</span>
+								<span class="stage-count">{stageDeals.length} on this page</span>
 							</div>
-							<div class="column-value">{formatCurrency(stageValue)}</div>
+							<div class="column-value">{formatCurrency(stageValue)} on this page</div>
 							{#if stage.probability > 0}
 								<div class="column-probability">{stage.probability}% probability</div>
 							{/if}
@@ -555,7 +597,7 @@
 										</a>
 
 										<div class="deal-amount">
-											{formatCurrency(deal.amount)}
+											{formatCurrency(deal.amount, deal.currency)}
 										</div>
 
 										{#if deal.contact}
@@ -578,7 +620,7 @@
 											{/if}
 										</div>
 
-										{#if deal.priority && deal.priority !== 'normal'}
+										{#if deal.priority && deal.priority !== 'medium'}
 											<span
 												class="priority-badge"
 												style:background={getPriorityBackground(deal.priority)}
@@ -655,7 +697,7 @@
 									<td>
 										<a href="/admin/crm/deals/{deal.id}" class="deal-link">
 											<span class="deal-title">{deal.name}</span>
-											{#if deal.priority && deal.priority !== 'normal'}
+											{#if deal.priority && deal.priority !== 'medium'}
 												<span
 													class="priority-badge small"
 													style:background={getPriorityBackground(deal.priority)}
@@ -687,7 +729,7 @@
 										</span>
 									</td>
 									<td class="amount-cell">
-										{formatCurrency(deal.amount)}
+										{formatCurrency(deal.amount, deal.currency)}
 									</td>
 									<td>
 										<div class="probability-bar">
@@ -730,15 +772,10 @@
 											<a href="/admin/crm/deals/{deal.id}/edit" class="btn-icon" title="Edit">
 												<IconEdit size={16} />
 											</a>
-											<!--
-												Audit P2 #15: this button used to say "Delete" but the
-												confirmDeleteDeal handler only soft-archives by setting
-												status: 'abandoned'. Renamed to "Archive" so the UI
-												matches what the action actually does.
-											-->
+
 											<button
 												class="btn-icon danger"
-												title="Archive"
+												title="Delete"
 												onclick={() => deleteDeal(deal)}
 											>
 												<IconTrash size={16} />
@@ -752,12 +789,23 @@
 
 					<div class="table-footer">
 						<span class="results-count">
-							Showing {filteredDeals.length} of {deals.length} deals
+							Showing {filteredDeals.length} of {totalDeals} matching deals
 						</span>
 					</div>
 				{/if}
 			</div>
 		{/if}
+		<nav aria-label="Deal pages" class="table-footer">
+			<button
+				class="btn-secondary"
+				disabled={currentPage <= 1 || isLoading}
+				onclick={() => void changePage(currentPage - 1)}>Previous</button
+			><span>Page {currentPage} of {totalPages} · {totalDeals} matching deals</span><button
+				class="btn-secondary"
+				disabled={currentPage >= totalPages || isLoading}
+				onclick={() => void changePage(currentPage + 1)}>Next</button
+			>
+		</nav>
 	</div>
 	<!-- End admin-page-container -->
 </div>
@@ -793,7 +841,7 @@
 			<div class="modal-body">
 				<div class="deal-summary">
 					<p class="deal-name">{selectedDeal.name}</p>
-					<p class="deal-value">{formatCurrency(selectedDeal.amount)}</p>
+					<p class="deal-value">{formatCurrency(selectedDeal.amount, selectedDeal.currency)}</p>
 				</div>
 				<div class="form-group">
 					<label for="win-details">Win Details (optional)</label>
@@ -859,7 +907,7 @@
 			<div class="modal-body">
 				<div class="deal-summary">
 					<p class="deal-name">{selectedDeal.name}</p>
-					<p class="deal-value">{formatCurrency(selectedDeal.amount)}</p>
+					<p class="deal-value">{formatCurrency(selectedDeal.amount, selectedDeal.currency)}</p>
 				</div>
 				<div class="form-group">
 					<label for="lost-reason">Lost Reason <span class="required">*</span></label>
@@ -901,11 +949,11 @@
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
-	title="Archive Deal"
+	title="Delete Deal"
 	message={pendingDeleteDeal
-		? `Archive "${pendingDeleteDeal.name}"? It will be marked as abandoned and removed from active pipelines (you can restore it later from the abandoned filter).`
+		? `Delete "${pendingDeleteDeal.name}" and its recorded notes and stage history? This cannot be undone.`
 		: ''}
-	confirmText="Archive"
+	confirmText="Delete"
 	variant="danger"
 	onConfirm={confirmDeleteDeal}
 	onCancel={() => {
@@ -1039,7 +1087,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	/* Stats Grid */
 	.stats-grid {
@@ -1753,7 +1800,6 @@
 		transition: all 0.2s;
 	}
 
-
 	.btn-success:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
@@ -1773,7 +1819,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.btn-danger:disabled {
 		opacity: 0.5;

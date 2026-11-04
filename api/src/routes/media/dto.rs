@@ -38,7 +38,10 @@ pub struct MediaQuery {
     pub r#type: Option<String>,
     pub collection: Option<String>,
     pub images_only: Option<bool>,
+    #[serde(alias = "optimized")]
     pub is_optimized: Option<bool>,
+    pub needs_optimization: Option<bool>,
+    pub processing_status: Option<String>,
     #[serde(alias = "sort")]
     pub sort_by: Option<String>,
     #[serde(alias = "order")]
@@ -48,12 +51,14 @@ pub struct MediaQuery {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct UpdateMedia {
     pub title: Option<String>,
     pub alt_text: Option<String>,
     pub caption: Option<String>,
     pub description: Option<String>,
     pub collection: Option<String>,
+    pub tags: Option<Vec<String>>,
 }
 
 /// Request for presigned upload URL

@@ -358,19 +358,15 @@
 		ctx.restore();
 
 		// Convert to blob
-		canvas.toBlob(
-			(blob) => {
-				if (blob) {
-					dispatch('crop', {
-						blob,
-						cropArea,
-						aspectRatio: selectedRatio
-					});
-				}
-			},
-			'image/jpeg',
-			0.95
-		);
+		canvas.toBlob((blob) => {
+			if (blob) {
+				dispatch('crop', {
+					blob,
+					cropArea,
+					aspectRatio: selectedRatio
+				});
+			}
+		}, 'image/png');
 	}
 </script>
 
@@ -573,6 +569,7 @@
 				</span>
 			</div>
 			<div class="footer-actions">
+				<span>Static PNG; original retained in version history.</span>
 				<button class="btn-cancel" onclick={() => dispatch('cancel')}> Cancel </button>
 				<button class="btn-crop" onclick={handleCrop}> Apply Crop </button>
 			</div>

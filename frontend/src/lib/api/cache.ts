@@ -316,7 +316,7 @@ export class RequestCache implements Disposable {
 
 		let count = 0;
 
-		for (const key of [...this.cache.keys()]) {
+		for (const key of this.cache.keys()) {
 			if (regex.test(key)) {
 				this.cache.delete(key);
 				const index = this.accessOrder.indexOf(key);

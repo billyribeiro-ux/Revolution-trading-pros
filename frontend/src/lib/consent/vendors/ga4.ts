@@ -52,13 +52,15 @@ function enableSilentHistoryMode(): () => void {
 	if (!browser) return () => {};
 
 	// Store original methods
-	const originalPushState = history.pushState;
-	const originalReplaceState = history.replaceState;
+	const originalPushState = Object.getOwnPropertyDescriptor(history, 'pushState');
+	const pushState = history.pushState.bind(history);
+	const originalReplaceState = Object.getOwnPropertyDescriptor(history, 'replaceState');
+	const replaceState = history.replaceState.bind(history);
 
 	// Create silent wrappers that don't trigger SvelteKit's warning detection
 	// SvelteKit checks the call stack - by using bind, we break the detection
-	const silentPushState = originalPushState.bind(history);
-	const silentReplaceState = originalReplaceState.bind(history);
+	const silentPushState = pushState;
+	const silentReplaceState = replaceState;
 
 	// Mark as "external" to prevent SvelteKit warning
 	(
@@ -75,8 +77,10 @@ function enableSilentHistoryMode(): () => void {
 
 	// Return cleanup function
 	return () => {
-		history.pushState = originalPushState;
-		history.replaceState = originalReplaceState;
+		if (originalPushState) Object.defineProperty(history, 'pushState', originalPushState);
+		else Reflect.deleteProperty(history, 'pushState');
+		if (originalReplaceState) Object.defineProperty(history, 'replaceState', originalReplaceState);
+		else Reflect.deleteProperty(history, 'replaceState');
 	};
 }
 

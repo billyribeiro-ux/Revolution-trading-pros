@@ -250,7 +250,7 @@ if (browser) {
 	});
 
 	// Then fetch from server (async, will update store when ready)
-	fetchExperimentConfig();
+	void fetchExperimentConfig();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

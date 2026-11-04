@@ -333,7 +333,10 @@ class AuthenticationService {
 		// Store in queue for deduplication
 		if (fetchOptions.method === 'GET') {
 			this.requestQueue.set(requestKey, requestPromise);
-			requestPromise.finally(() => this.requestQueue.delete(requestKey));
+			void requestPromise.then(
+				() => this.requestQueue.delete(requestKey),
+				() => this.requestQueue.delete(requestKey)
+			);
 		}
 
 		return requestPromise;
@@ -1138,17 +1141,17 @@ class AuthenticationService {
 
 		// Check session periodically
 		this.sessionCheckInterval = window.setInterval(() => {
-			this.checkSession();
+			void this.checkSession();
 		}, SESSION_CHECK_INTERVAL);
 
 		// Create and store handler references for cleanup
 		this.visibilityChangeHandler = (): void => {
 			if (!document.hidden) {
-				this.checkSession();
+				void this.checkSession();
 			}
 		};
 		this.onlineHandler = (): void => {
-			this.checkSession();
+			void this.checkSession();
 		};
 
 		// Add event listeners with stored references

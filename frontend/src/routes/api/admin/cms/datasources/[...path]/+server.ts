@@ -7,7 +7,7 @@
  * `#lib/stores/auth.svelte.js`. That coupled the surface to a CORS contract no other
  * admin surface needs, made token-rotation drift, and broke 401-redirect parity.
  *
- * This proxy is a thin pass-through to `/api/admin/cms/datasources/...` on the
+ * This proxy is a thin pass-through to `/api/cms/datasources/...` on the
  * backend, attaching the canonical `rtp_access_token` cookie as a Bearer token —
  * matching every other proxy in this audit.
  *
@@ -25,7 +25,7 @@ const PROD_BACKEND = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 function buildUpstreamUrl(pathSegments: string, search: string): string {
 	const cleanPath = pathSegments ? `/${pathSegments}` : '';
-	return `${PROD_BACKEND}/api/admin/cms/datasources${cleanPath}${search}`;
+	return `${PROD_BACKEND}/api/cms/datasources${cleanPath}${search}`;
 }
 
 async function proxy(
@@ -43,7 +43,7 @@ async function proxy(
 	if (contentType) upstreamHeaders['Content-Type'] = contentType;
 
 	let body: BodyInit | undefined;
-	if (method !== 'GET' && method !== 'HEAD' && method !== 'DELETE') {
+	if (method !== 'GET' && method !== 'HEAD') {
 		// Forward raw body so multipart/form-data and JSON are both handled correctly.
 		body = await event.request.arrayBuffer();
 	}
@@ -53,7 +53,8 @@ async function proxy(
 		response = await fetch(url, {
 			method,
 			headers: upstreamHeaders,
-			body
+			body,
+			signal: AbortSignal.timeout(15_000)
 		});
 	} catch (err) {
 		console.warn(`CMS datasources backend unreachable for ${method} ${url}:`, err);
@@ -63,20 +64,23 @@ async function proxy(
 				error: 'CMS datasources backend is not reachable.',
 				_degraded: true
 			}),
-			{ status: 503, headers: { 'Content-Type': 'application/json' } }
+			{ status: 503, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } }
 		);
 	}
 
 	// Pass through status, body, and Content-Type / Content-Disposition (CSV export
 	// relies on the latter for the download filename).
-	const passHeaders: Record<string, string> = {};
+	const passHeaders: Record<string, string> = { 'Cache-Control': 'no-store' };
 	const ct = response.headers.get('Content-Type');
 	if (ct) passHeaders['Content-Type'] = ct;
 	const cd = response.headers.get('Content-Disposition');
 	if (cd) passHeaders['Content-Disposition'] = cd;
 
 	const buf = await response.arrayBuffer();
-	return new Response(buf, { status: response.status, headers: passHeaders });
+	return new Response([204, 205, 304].includes(response.status) ? null : buf, {
+		status: response.status,
+		headers: passHeaders
+	});
 }
 
 export const GET: RequestHandler = (event) => {

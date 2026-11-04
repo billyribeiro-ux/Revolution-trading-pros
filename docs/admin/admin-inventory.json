@@ -13,7 +13,11 @@
 				"$app/env",
 				"#lib/stores/connections.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics",
@@ -47,7 +51,11 @@
 				"#lib/components/ExportButton.svelte",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/attribution",
@@ -64,7 +72,11 @@
 				"#lib/components/analytics/AttributionChart.svelte",
 				"#lib/components/analytics/PeriodSelector.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/cohorts",
@@ -86,16 +98,27 @@
 				"@tabler/icons-svelte-runes/icons/x",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/cohorts/create",
-			"files": ["frontend/src/routes/admin/analytics/cohorts/create/+page.svelte"],
+			"files": [
+				"frontend/src/routes/admin/analytics/cohorts/create/+page.svelte",
+				"frontend/src/routes/admin/analytics/cohorts/create/+page.server.ts"
+			],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "$app/env", "$app/navigation"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/events",
@@ -114,7 +137,11 @@
 				"@tabler/icons-svelte-runes/icons/search",
 				"@tabler/icons-svelte-runes/icons/alert-circle"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/funnels",
@@ -139,16 +166,27 @@
 				"@tabler/icons-svelte-runes/icons/trash",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/funnels/create",
-			"files": ["frontend/src/routes/admin/analytics/funnels/create/+page.svelte"],
+			"files": [
+				"frontend/src/routes/admin/analytics/funnels/create/+page.svelte",
+				"frontend/src/routes/admin/analytics/funnels/create/+page.server.ts"
+			],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "$app/env", "$app/navigation"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/goals",
@@ -172,7 +210,11 @@
 				"@tabler/icons-svelte-runes/icons/clock",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/heatmaps",
@@ -190,7 +232,11 @@
 				"@tabler/icons-svelte-runes/icons/alert-circle",
 				"@tabler/icons-svelte-runes/icons/photo"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/recordings",
@@ -211,7 +257,11 @@
 				"@tabler/icons-svelte-runes/icons/device-tablet",
 				"@tabler/icons-svelte-runes/icons/device-mobile"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/reports",
@@ -232,7 +282,11 @@
 				"#lib/components/admin/ServiceConnectionStatus.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/analytics/segments",
@@ -255,7 +309,11 @@
 				"@tabler/icons-svelte-runes/icons/x",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/behavior",
@@ -267,7 +325,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "#lib/icons/index.js", "#lib/components/SkeletonLoader.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/blog",
@@ -294,7 +356,11 @@
 				"./_components/StatsGrid.svelte",
 				", {\n\t\t\t\tmethod: "
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/blog/categories",
@@ -317,7 +383,11 @@
 				"./_components/ToastNotification.svelte",
 				"./_components/types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/blog/create",
@@ -394,7 +464,11 @@
 				"#lib/icons/index.js",
 				" class="
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/boards/[id]",
@@ -428,7 +502,11 @@
 				";\n\t\t} finally {\n\t\t\tloading = false;\n\t\t}\n\t}\n\n\t// FIX-2026-04-26 (P1-5): track the in-flight setTimeout so we can cancel on\n\t// unmount. Previously, navigating away during an import left poll() recursing\n\t// forever, calling `importJob = job` against a defunct component (Svelte 5\n\t// raises `state_unsafe_mutation` warnings).\n\tlet pollTimer: ReturnType<typeof setTimeout> | null = null;\n\tlet pollCancelled = false;\n\n\tasync function pollImportStatus() {\n\t\tif (!importJob) return;\n\t\tpollCancelled = false;\n\n\t\tconst poll = async () => {\n\t\t\tif (pollCancelled || !importJob) return;\n\t\t\ttry {\n\t\t\t\tconst job = await boardsAPI.getImportJob(importJob.id);\n\t\t\t\tif (pollCancelled) return;\n\t\t\t\timportJob = job;\n\n\t\t\t\tif (job.status === ",
 				"}\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t<button type="
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/boards/reports",
@@ -437,7 +515,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "#lib/api/boards.js", "#lib/boards/types.js", "#lib/icons/index.js"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/boards/settings",
@@ -452,7 +534,11 @@
 				"#lib/stores/toast.svelte.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/boards/templates",
@@ -468,7 +554,11 @@
 				"#lib/utils/logger.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/boards/time-tracking",
@@ -483,7 +573,11 @@
 				"#lib/boards/types.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/cart/abandoned",
@@ -499,7 +593,11 @@
 				"#lib/icons/index.js",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/categories",
@@ -532,7 +630,11 @@
 				"#lib/api/admin.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/cms/datasources",
@@ -563,7 +665,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				");\n\n\t\t\tconst result = await response.json();\n\t\t\tif (!isComponentMounted || selectedDatasource?.id !== datasourceId) return;\n\t\t\tshowToastMessage(\n\t\t\t\t`Import completed: ${result.created} created, ${result.skipped} skipped`,\n\t\t\t\t"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/connections",
@@ -609,7 +715,11 @@
 				"@tabler/icons-svelte-runes/icons/file-text",
 				"@tabler/icons-svelte-runes/icons/info-circle"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/consent",
@@ -633,7 +743,11 @@
 				"@tabler/icons-svelte-runes/icons/refresh",
 				"@tabler/icons-svelte-runes/icons/download"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/consent/settings",
@@ -657,7 +771,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/utils/logger.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/consent/templates",
@@ -684,7 +802,11 @@
 				"#lib/consent/templates/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/contacts",
@@ -701,7 +823,11 @@
 				"#lib/crm/types.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/contacts/new",
@@ -710,7 +836,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["$app/navigation", "#lib/icons/index.js", "#lib/api/crm.js"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/coupons",
@@ -732,7 +862,11 @@
 				"./_components/CouponsStatsBar.svelte",
 				"./_components/types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/coupons/create",
@@ -754,7 +888,11 @@
 				"./_components/CouponFormActions.svelte",
 				"./_components/types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/coupons/edit/[id]",
@@ -812,7 +950,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/courses/[id]",
@@ -881,7 +1023,11 @@
 				"./_components/PageHeader.svelte",
 				"./_components/FormBanners.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm",
@@ -898,7 +1044,11 @@
 				"#lib/api/config.js",
 				"#lib/components/SkeletonLoader.svelte"
 			],
-			"evidence": "Six-workflow authenticated browser run without external CRM credentials; real contact/deal stats regression r11"
+			"evidence": "Six-workflow authenticated browser run without external CRM credentials; real contact/deal stats regression r11",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/abandoned-carts",
@@ -922,7 +1072,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/automations",
@@ -938,7 +1092,11 @@
 				"#lib/api/crm.js",
 				"#lib/crm/types.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/automations/[id]",
@@ -1035,14 +1193,21 @@
 				"#lib/api/crm.js",
 				"#lib/crm/types.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/campaigns",
-			"files": ["frontend/src/routes/admin/crm/campaigns/+page.svelte"],
+			"files": [
+				"frontend/src/routes/admin/crm/campaigns/+page.svelte",
+				"frontend/src/routes/admin/crm/campaigns/+page.ts"
+			],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"gap": "Authoring, full duplication, list/report and persistence repaired; recipients preview, delivery/scheduling/retries/tracking remain in progress",
+			"status": "authoring verified; delivery incomplete",
 			"imports": [
 				"svelte",
 				"#lib/icons/index.js",
@@ -1050,25 +1215,51 @@
 				"#lib/stores/toast.svelte.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r21 full regression 46.72s; Chromium campaign authoring 7.2s; Svelte 0/0 and Rust checks",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
+		},
+		{
+			"route": "/admin/crm/campaigns/[id]",
+			"files": [
+				"frontend/src/routes/admin/crm/campaigns/[id]/+page.svelte",
+				"frontend/src/routes/admin/crm/campaigns/[id]/+page.ts"
+			],
+			"expected": "Persist existing workflow, enforce authorization and show actual results",
+			"gap": "Authoring, full duplication, list/report and persistence repaired; recipients preview, delivery/scheduling/retries/tracking remain in progress",
+			"status": "authoring verified; delivery incomplete",
+			"imports": ["$app/state", "./CampaignReport.svelte"],
+			"evidence": "Fresh r21 full regression 46.72s; Chromium campaign authoring 7.2s; Svelte 0/0 and Rust checks"
 		},
 		{
 			"route": "/admin/crm/campaigns/[id]/edit",
-			"files": ["frontend/src/routes/admin/crm/campaigns/[id]/edit/+page.svelte"],
+			"files": [
+				"frontend/src/routes/admin/crm/campaigns/[id]/edit/+page.svelte",
+				"frontend/src/routes/admin/crm/campaigns/[id]/edit/+page.ts"
+			],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "ComingSoonStub renders instead of workflow",
-			"status": "gap confirmed",
+			"gap": "Authoring, full duplication, list/report and persistence repaired; recipients preview, delivery/scheduling/retries/tracking remain in progress",
+			"status": "authoring verified; delivery incomplete",
 			"imports": ["$app/state", "#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r21 full regression 46.72s; Chromium campaign authoring 7.2s; Svelte 0/0 and Rust checks"
 		},
 		{
 			"route": "/admin/crm/campaigns/new",
-			"files": ["frontend/src/routes/admin/crm/campaigns/new/+page.svelte"],
+			"files": [
+				"frontend/src/routes/admin/crm/campaigns/new/+page.svelte",
+				"frontend/src/routes/admin/crm/campaigns/new/+page.ts"
+			],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "ComingSoonStub renders instead of workflow",
-			"status": "gap confirmed",
+			"gap": "Authoring, full duplication, list/report and persistence repaired; recipients preview, delivery/scheduling/retries/tracking remain in progress",
+			"status": "authoring verified; delivery incomplete",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r21 full regression 46.72s; Chromium campaign authoring 7.2s; Svelte 0/0 and Rust checks",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/companies",
@@ -1088,7 +1279,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "r5/r8 disposable-DB regressions and authenticated company create/edit/reload/view/duplicate/delete browser test passed"
+			"evidence": "r5/r8 disposable-DB regressions and authenticated company create/edit/reload/view/duplicate/delete browser test passed",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/companies/[id]",
@@ -1130,7 +1325,11 @@
 			"gap": "Association/statistics APIs remain incomplete; core CRUD, search/filter/pagination, and currency contract repaired",
 			"status": "Core workflows verified; module incomplete",
 			"imports": ["#lib/components/admin/crm/CompanyForm.svelte"],
-			"evidence": "r5/r8 disposable-DB regressions and authenticated company create/edit/reload/view/duplicate/delete browser test passed"
+			"evidence": "r5/r8 disposable-DB regressions and authenticated company create/edit/reload/view/duplicate/delete browser test passed",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/contacts/[id]",
@@ -1187,14 +1386,18 @@
 				"frontend/src/routes/admin/crm/contacts/new/+page.svelte",
 				"frontend/src/routes/admin/crm/contacts/new/+page.ts"
 			],
-			"imports": ["#lib/components/admin/crm/ContactForm.svelte"]
+			"imports": ["#lib/components/admin/crm/ContactForm.svelte"],
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/deals",
 			"files": ["frontend/src/routes/admin/crm/deals/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"gap": "Core deal create/edit/read/delete, null clearing, transactional stage/outcome history, actual notes, pagination/search/currency summaries repaired; owner/pipeline/legacy page audit open",
+			"status": "core workflows verified; module audit open",
 			"imports": [
 				"svelte",
 				"@tabler/icons-svelte-runes/icons/briefcase",
@@ -1222,14 +1425,18 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r18/r19/r20 integration proofs; full nine-workflow Chromium batch 50.3s; Svelte 0/0 and Rust check/build/clippy",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/deals/[id]",
 			"files": ["frontend/src/routes/admin/crm/deals/[id]/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"gap": "Core deal create/edit/read/delete, null clearing, transactional stage/outcome history, actual notes, pagination/search/currency summaries repaired; owner/pipeline/legacy page audit open",
+			"status": "core workflows verified; module audit open",
 			"imports": [
 				"$app/state",
 				"$app/navigation",
@@ -1256,25 +1463,29 @@
 				"./_components/Toast.svelte",
 				"./_components/helpers"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r18/r19/r20 integration proofs; full nine-workflow Chromium batch 50.3s; Svelte 0/0 and Rust check/build/clippy"
 		},
 		{
 			"route": "/admin/crm/deals/[id]/edit",
 			"files": ["frontend/src/routes/admin/crm/deals/[id]/edit/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "ComingSoonStub renders instead of workflow",
-			"status": "gap confirmed",
+			"gap": "Core deal create/edit/read/delete, null clearing, transactional stage/outcome history, actual notes, pagination/search/currency summaries repaired; owner/pipeline/legacy page audit open",
+			"status": "core workflows verified; module audit open",
 			"imports": ["$app/state", "#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r18/r19/r20 integration proofs; full nine-workflow Chromium batch 50.3s; Svelte 0/0 and Rust check/build/clippy"
 		},
 		{
 			"route": "/admin/crm/deals/new",
 			"files": ["frontend/src/routes/admin/crm/deals/new/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "ComingSoonStub renders instead of workflow",
-			"status": "gap confirmed",
+			"gap": "Core deal create/edit/read/delete, null clearing, transactional stage/outcome history, actual notes, pagination/search/currency summaries repaired; owner/pipeline/legacy page audit open",
+			"status": "core workflows verified; module audit open",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh r18/r19/r20 integration proofs; full nine-workflow Chromium batch 50.3s; Svelte 0/0 and Rust check/build/clippy",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/import-export",
@@ -1306,7 +1517,11 @@
 				")}\n\t\t>\n\t\t\t<IconUpload size={18} />\n\t\t\tImport\n\t\t</button>\n\t\t<button\n\t\t\tclass={{\n\t\t\t\ttab: true,\n\t\t\t\tactive: activeTab === ",
 				"}\n\t\t<!-- Import Section -->\n\t\t<div class="
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/import-export/new",
@@ -1315,7 +1530,11 @@
 			"gap": "ComingSoonStub renders instead of workflow",
 			"status": "gap confirmed",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/leads",
@@ -1341,7 +1560,11 @@
 				"#lib/utils/logger.js",
 				"svelte"
 			],
-			"evidence": "Six-workflow authenticated browser run without external CRM credentials; real contact/deal stats regression r11"
+			"evidence": "Six-workflow authenticated browser run without external CRM credentials; real contact/deal stats regression r11",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/leads/[id]",
@@ -1388,7 +1611,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "r6/r8 disposable-DB regression plus list create/edit/reload/add/remove browser test; removing list membership preserves contacts"
+			"evidence": "r6/r8 disposable-DB regression plus list create/edit/reload/add/remove browser test; removing list membership preserves contacts",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/lists/[id]",
@@ -1424,7 +1651,11 @@
 			"gap": "Create/edit/member contracts repaired; broader CRM automation and subscription behavior remain separate open workflows",
 			"status": "CRUD and membership workflows verified",
 			"imports": ["#lib/components/admin/crm/ListForm.svelte"],
-			"evidence": "r6/r8 disposable-DB regression plus list create/edit/reload/add/remove browser test; removing list membership preserves contacts"
+			"evidence": "r6/r8 disposable-DB regression plus list create/edit/reload/add/remove browser test; removing list membership preserves contacts",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/logs",
@@ -1454,7 +1685,11 @@
 				"#lib/crm/types.js",
 				">Import</option>\n\t\t\t<option value="
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/managers",
@@ -1476,7 +1711,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/managers/[id]/edit",
@@ -1494,7 +1733,11 @@
 			"gap": "ComingSoonStub renders instead of workflow",
 			"status": "gap confirmed",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/recurring-campaigns",
@@ -1519,7 +1762,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/recurring-campaigns/[id]/edit",
@@ -1537,14 +1784,18 @@
 			"gap": "ComingSoonStub renders instead of workflow",
 			"status": "gap confirmed",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/segments",
 			"files": ["frontend/src/routes/admin/crm/segments/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"gap": "Dynamic rules, persisted CRUD and current matching contacts implemented; source-wide completion remains open",
+			"status": "Core workflow verified",
 			"imports": [
 				"svelte",
 				"#lib/icons/index.js",
@@ -1552,14 +1803,29 @@
 				"#lib/stores/toast.svelte.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
+		},
+		{
+			"route": "/admin/crm/segments/[id]",
+			"files": [
+				"frontend/src/routes/admin/crm/segments/[id]/+page.svelte",
+				"frontend/src/routes/admin/crm/segments/[id]/+page.ts"
+			],
+			"expected": "Show live rule-matching contacts with search and pagination",
+			"gap": "Dynamic rules, persisted CRUD and current matching contacts implemented; source-wide completion remains open",
+			"status": "Core workflow verified",
+			"imports": []
 		},
 		{
 			"route": "/admin/crm/segments/[id]/edit",
 			"files": ["frontend/src/routes/admin/crm/segments/[id]/edit/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "ComingSoonStub renders instead of workflow",
-			"status": "gap confirmed",
+			"gap": "Dynamic rules, persisted CRUD and current matching contacts implemented; source-wide completion remains open",
+			"status": "Core workflow verified",
 			"imports": ["$app/state", "#lib/components/admin/ComingSoonStub.svelte"],
 			"evidence": "Source inspection only"
 		},
@@ -1567,10 +1833,14 @@
 			"route": "/admin/crm/segments/new",
 			"files": ["frontend/src/routes/admin/crm/segments/new/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "ComingSoonStub renders instead of workflow",
-			"status": "gap confirmed",
+			"gap": "Dynamic rules, persisted CRUD and current matching contacts implemented; source-wide completion remains open",
+			"status": "Core workflow verified",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/sequences",
@@ -1587,7 +1857,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/sequences/[id]/edit",
@@ -1605,7 +1879,11 @@
 			"gap": "ComingSoonStub renders instead of workflow",
 			"status": "gap confirmed",
 			"imports": ["#lib/components/admin/ComingSoonStub.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/settings",
@@ -1624,7 +1902,11 @@
 				"#lib/api/crm.js",
 				"#lib/crm/types.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/smart-links",
@@ -1639,7 +1921,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/tags",
@@ -1654,7 +1940,11 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/tags/[id]",
@@ -1707,7 +1997,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/utils/sanitize.js"
 			],
-			"evidence": "r7/r8 DB regression and template create/edit/reload/preview/duplicate/delete browser test passed; prebuilt fixture verified at API only"
+			"evidence": "r7/r8 DB regression and template create/edit/reload/preview/duplicate/delete browser test passed; prebuilt fixture verified at API only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/templates/[id]/edit",
@@ -1731,7 +2025,11 @@
 			"gap": "Create/edit, category, pagination, prebuilt and duplicate endpoints repaired; library bulk/export and full design workflow still require browser coverage",
 			"status": "Core workflows verified; remaining coverage open",
 			"imports": ["#lib/components/admin/crm/TemplateForm.svelte"],
-			"evidence": "r7/r8 DB regression and template create/edit/reload/preview/duplicate/delete browser test passed; prebuilt fixture verified at API only"
+			"evidence": "r7/r8 DB regression and template create/edit/reload/preview/duplicate/delete browser test passed; prebuilt fixture verified at API only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/templates/prebuilt",
@@ -1749,14 +2047,21 @@
 				"#lib/api/crm.js",
 				"#lib/crm/types.js",
 				"#lib/utils/api-error-message.js"
-			]
+			],
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/webhooks",
-			"files": ["frontend/src/routes/admin/crm/webhooks/+page.svelte"],
-			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"files": [
+				"frontend/src/routes/admin/crm/webhooks/+page.svelte",
+				"frontend/src/routes/admin/crm/webhooks/+page.ts"
+			],
+			"expected": "Persist webhook configuration; deliver signed events with bounded retries and actual history",
+			"gap": "Real external receiver verification pending; broader source gate open",
+			"status": "Established workflows implemented and locally verified; no real external receiver verification",
 			"imports": [
 				"svelte",
 				"@tabler/icons-svelte-runes/icons/webhook",
@@ -1777,14 +2082,21 @@
 				"#lib/crm/types.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh API/email_r19 passed 12.47s; local HTTP receiver verifies exact HMAC bytes, retries/exhaustion, claims/leases, all 13 real event sources, rollback, permissions and persistence. Browser create/edit/reload/activation/history/unavailable receiver/delete passed 11.6s; Svelte MCP clean.",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/crm/webhooks/[id]/edit",
-			"files": ["frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte"],
-			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"files": [
+				"frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.svelte",
+				"frontend/src/routes/admin/crm/webhooks/[id]/edit/+page.ts"
+			],
+			"expected": "Persist webhook configuration; deliver signed events with bounded retries and actual history",
+			"gap": "Real external receiver verification pending; broader source gate open",
+			"status": "Established workflows implemented and locally verified; no real external receiver verification",
 			"imports": [
 				"svelte/reactivity",
 				"$app/state",
@@ -1804,14 +2116,29 @@
 				"#lib/crm/types.js",
 				"#lib/utils/webhookSecurity.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh API/email_r19 passed 12.47s; local HTTP receiver verifies exact HMAC bytes, retries/exhaustion, claims/leases, all 13 real event sources, rollback, permissions and persistence. Browser create/edit/reload/activation/history/unavailable receiver/delete passed 11.6s; Svelte MCP clean."
+		},
+		{
+			"route": "/admin/crm/webhooks/[id]/logs",
+			"imports": [],
+			"expected": "Persist webhook configuration; deliver signed events with bounded retries and actual history",
+			"gap": "Real external receiver verification pending; broader source gate open",
+			"status": "Established workflows implemented and locally verified; no real external receiver verification",
+			"evidence": "Fresh API/email_r19 passed 12.47s; local HTTP receiver verifies exact HMAC bytes, retries/exhaustion, claims/leases, all 13 real event sources, rollback, permissions and persistence. Browser create/edit/reload/activation/history/unavailable receiver/delete passed 11.6s; Svelte MCP clean.",
+			"files": [
+				"frontend/src/routes/admin/crm/webhooks/[id]/logs/+page.svelte",
+				"frontend/src/routes/admin/crm/webhooks/[id]/logs/+page.ts"
+			]
 		},
 		{
 			"route": "/admin/crm/webhooks/new",
-			"files": ["frontend/src/routes/admin/crm/webhooks/new/+page.svelte"],
-			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"files": [
+				"frontend/src/routes/admin/crm/webhooks/new/+page.svelte",
+				"frontend/src/routes/admin/crm/webhooks/new/+page.ts"
+			],
+			"expected": "Persist webhook configuration; deliver signed events with bounded retries and actual history",
+			"gap": "Real external receiver verification pending; broader source gate open",
+			"status": "Established workflows implemented and locally verified; no real external receiver verification",
 			"imports": [
 				"svelte/reactivity",
 				"$app/navigation",
@@ -1829,16 +2156,27 @@
 				"#lib/crm/types.js",
 				"#lib/utils/webhookSecurity.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Fresh API/email_r19 passed 12.47s; local HTTP receiver verifies exact HMAC bytes, retries/exhaustion, claims/leases, all 13 real event sources, rollback, permissions and persistence. Browser create/edit/reload/activation/history/unavailable receiver/delete passed 11.6s; Svelte MCP clean.",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/dashboard",
-			"files": ["frontend/src/routes/admin/dashboard/+page.svelte"],
+			"files": [
+				"frontend/src/routes/admin/dashboard/+page.svelte",
+				"frontend/src/routes/admin/dashboard/+page.server.ts"
+			],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "$app/env", "$app/navigation"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/campaigns",
@@ -1859,7 +2197,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/api/campaigns.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/campaigns/[id]/report",
@@ -1900,7 +2242,11 @@
 				"#lib/stores/connections.svelte.js",
 				"#lib/components/admin/ServiceConnectionStatus.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/smtp",
@@ -1914,7 +2260,11 @@
 				"#lib/stores/connections.svelte.js",
 				"#lib/components/admin/ServiceConnectionStatus.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/subscribers",
@@ -1937,7 +2287,11 @@
 				"./_components/Pagination.svelte",
 				"./_components/AddSubscriberModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/templates",
@@ -1953,7 +2307,11 @@
 				"#lib/icons/index.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/templates/edit/[id]",
@@ -1977,7 +2335,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["#lib/components/admin/TemplateForm.svelte"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/email/templates/preview/[id]",
@@ -2006,7 +2368,11 @@
 				"@tabler/icons-svelte-runes/icons/plus",
 				"#lib/api/forms.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/forms/[id]/analytics",
@@ -2089,7 +2455,11 @@
 				"#lib/api/forms.js",
 				"#lib/data/formTemplates.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/forms/entries",
@@ -2104,7 +2474,11 @@
 				"#lib/api/forms.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/indicators",
@@ -2124,7 +2498,11 @@
 				"#lib/utils/adminFetch.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/indicators/[id]",
@@ -2176,14 +2554,18 @@
 				"@tabler/icons-svelte-runes/icons/alert-triangle",
 				"@tabler/icons-svelte-runes/icons/circle-check"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/media",
 			"files": ["frontend/src/routes/admin/media/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"gap": "Core uploads, metadata, scanner, image jobs and crop/replacement/version restoration implemented and verified. AI, folder/usage/analytics, legacy Sharp aliases, remaining actions and robustness checks remain open.",
+			"status": "Core media workflows verified; module incomplete",
 			"imports": [
 				"@tabler/icons-svelte-runes/icons/photo",
 				"@tabler/icons-svelte-runes/icons/movie",
@@ -2220,7 +2602,11 @@
 				"@tabler/icons-svelte-runes/icons/download",
 				"@tabler/icons-svelte-runes/icons/trash"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/media/analytics",
@@ -2251,7 +2637,11 @@
 				"@tabler/icons-svelte-runes/icons/circle-check-filled",
 				"@tabler/icons-svelte-runes/icons/info-circle"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/members",
@@ -2286,7 +2676,11 @@
 				"./_components/PageHeader.svelte",
 				":\n\t\t\t\tshowImportModal = true;\n\t\t\t\tbreak;\n\t\t\tcase "
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/members/[id]",
@@ -2331,7 +2725,11 @@
 				"./analytics.remote",
 				"./analytics.types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/members/churned",
@@ -2348,7 +2746,11 @@
 				"#lib/stores/toast.svelte.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/members/past",
@@ -2370,7 +2772,11 @@
 				"#lib/utils/logger.js",
 				"./+page"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/members/segments",
@@ -2389,7 +2795,11 @@
 				"zero",
 				"${segment.name}"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/members/service/[id]",
@@ -2425,7 +2835,11 @@
 				"#lib/stores/subscriptions.svelte.js",
 				"#lib/utils/logger.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/memberships",
@@ -2441,7 +2855,11 @@
 				"#lib/utils/adminFetch.js",
 				"#lib/utils/logger.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/memberships/create",
@@ -2450,7 +2868,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["$app/navigation", "#lib/icons/index.js", "#lib/utils/adminFetch.js"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/orders",
@@ -2471,14 +2893,21 @@
 				"./_components/OrdersTable.svelte",
 				"./_components/OrderDetailModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/performance",
-			"files": ["frontend/src/routes/admin/performance/+page.svelte"],
-			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
-			"gap": "Workflow trace and authenticated browser verification pending",
-			"status": "unverified",
+			"files": [
+				"frontend/src/routes/admin/performance/+page.svelte",
+				"frontend/src/routes/admin/performance/+page.ts"
+			],
+			"expected": "Persist actual browser observations and report measured host/cache/database/p75 data, filters, warming and failures",
+			"gap": "Optional pg_stat_statements setup; wider source completion gate remains open",
+			"status": "Established workflows implemented and locally verified; statement statistics optional and explicitly configured",
 			"imports": [
 				"svelte",
 				"$app/env",
@@ -2486,7 +2915,11 @@
 				"#lib/icons/index.js",
 				"#lib/api/bing-seo.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "API perf_r22 13.59s with actual pg_stat_statements and populated cache/close invalidation; perf_r23 13.26s without extension; native SDK/browser5 5.0s; controlled failure browser 2.7s; broad fresh r31 46.45s; client/proxy/delivery/event regressions and current gates recorded in performance-verification.md.",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/popups",
@@ -2502,7 +2935,11 @@
 				"#lib/utils/logger.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/popups/[id]/analytics",
@@ -2567,7 +3004,11 @@
 				"@tabler/icons-svelte-runes/icons/player-play",
 				"@tabler/icons-svelte-runes/icons/star"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/products",
@@ -2583,7 +3024,11 @@
 				"#lib/components/SkeletonLoader.svelte",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/products/[id]/edit",
@@ -2628,7 +3073,11 @@
 				"./_components/ProductPreviewCard.svelte",
 				"./_components/types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/resources",
@@ -2652,7 +3101,11 @@
 				"./_components/BulkOperationsModal.svelte",
 				"./_components/ResourceFormModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/schedules",
@@ -2678,7 +3131,11 @@
 				"./_components/types",
 				"./schedules.remote"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo",
@@ -2695,7 +3152,11 @@
 				"@tabler/icons-svelte-runes/icons/brand-bing",
 				"#lib/stores/connections.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/404-monitor",
@@ -2711,7 +3172,11 @@
 				"./monitor.remote",
 				"./monitor.types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/404s",
@@ -2727,7 +3192,11 @@
 				"#lib/icons/index.js",
 				"#lib/components/admin/ConfirmationModal.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/analysis",
@@ -2746,7 +3215,11 @@
 				"#lib/api/forms.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/analytics",
@@ -2761,7 +3234,11 @@
 				"#lib/components/admin/ServiceConnectionStatus.svelte",
 				"#lib/utils/logger.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/bing",
@@ -2775,7 +3252,11 @@
 				"#lib/icons/index.js",
 				"#lib/api/bing-seo.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/image-seo",
@@ -2790,7 +3271,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/keywords",
@@ -2804,7 +3289,11 @@
 				"#lib/utils/logger.js",
 				"./keywords.remote"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/meta",
@@ -2818,7 +3307,11 @@
 				"#lib/components/seo/SeoMetaEditor.svelte",
 				"svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/news-sitemap",
@@ -2827,7 +3320,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "#lib/icons/index.js", "#lib/stores/toast.svelte.js"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/redirects",
@@ -2843,7 +3340,11 @@
 				"./redirects.remote",
 				"./redirects.types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/reports",
@@ -2858,7 +3359,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/schema",
@@ -2872,7 +3377,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/search-console",
@@ -2886,7 +3395,11 @@
 				"#lib/stores/toast.svelte.js",
 				"#lib/utils/logger.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/settings",
@@ -2895,7 +3408,11 @@
 			"gap": "Workflow trace and authenticated browser verification pending",
 			"status": "unverified",
 			"imports": ["svelte", "#lib/icons/index.js", "#lib/stores/toast.svelte.js"],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/sitemap",
@@ -2909,7 +3426,11 @@
 				"#lib/stores/toast.svelte.js",
 				"#lib/utils/logger.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/store-locator",
@@ -2925,7 +3446,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/seo/video-sitemap",
@@ -2939,7 +3464,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/settings",
@@ -2971,7 +3500,11 @@
 				"@tabler/icons-svelte-runes/icons/alert-triangle",
 				"@tabler/icons-svelte-runes/icons/check"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/site-health",
@@ -3015,7 +3548,11 @@
 				"#lib/stores/connections.svelte.js",
 				"#lib/stores/toast.svelte.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/subscriptions",
@@ -3041,7 +3578,11 @@
 				"@tabler/icons-svelte-runes/icons/trending-down",
 				"@tabler/icons-svelte-runes/icons/chart-bar"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/subscriptions/invoice-settings",
@@ -3064,7 +3605,11 @@
 				"@tabler/icons-svelte-runes/icons/loader-2",
 				"#lib/utils/sanitize.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/subscriptions/plans",
@@ -3086,7 +3631,11 @@
 				"./plans.remote",
 				"./plans.types"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/trading-rooms",
@@ -3108,7 +3657,11 @@
 				"@tabler/icons-svelte-runes/icons/chart-line",
 				"@tabler/icons-svelte-runes/icons/school"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/trading-rooms/[slug]",
@@ -3165,7 +3718,11 @@
 				"#lib/components/admin/ConfirmationModal.svelte",
 				"#lib/components/SkeletonLoader.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/users/create",
@@ -3182,7 +3739,11 @@
 				"#lib/icons/index.js",
 				"#lib/icons/index.js"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "contract/runtime issues observed",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/users/edit/[id]",
@@ -3225,7 +3786,11 @@
 				"./_components/PageHeader.svelte",
 				"./_components/AnalyticsPanel.svelte"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/watchlist",
@@ -3251,7 +3816,11 @@
 				"@tabler/icons-svelte-runes/icons/check",
 				"@tabler/icons-svelte-runes/icons/x"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		},
 		{
 			"route": "/admin/watchlist/[slug]/edit",
@@ -3295,7 +3864,11 @@
 				"@tabler/icons-svelte-runes/icons/check",
 				"@tabler/icons-svelte-runes/icons/alert-circle"
 			],
-			"evidence": "Source inspection only"
+			"evidence": "Source inspection only",
+			"static_navigation": {
+				"status": "navigation only verified; workflow still requires proof",
+				"evidence": "docs/admin/static-navigation-results.json"
+			}
 		}
 	],
 	"sveltekit_endpoints": [
@@ -3344,6 +3917,7 @@
 		"frontend/src/routes/api/admin/media/ai/alt-text/[id]/+server.ts",
 		"frontend/src/routes/api/admin/media/ai/analyze/[id]/+server.ts",
 		"frontend/src/routes/api/admin/media/analytics/[...rest]/+server.ts",
+		"frontend/src/routes/api/admin/media/content/[id]/+server.ts",
 		"frontend/src/routes/api/admin/media/upload/+server.ts",
 		"frontend/src/routes/api/admin/member-management/+server.ts",
 		"frontend/src/routes/api/admin/member-management/[id]/+server.ts",
@@ -3380,8 +3954,8 @@
 		"frontend/src/routes/api/admin/site-settings/+server.ts",
 		"frontend/src/routes/api/admin/subscriptions/plans/+server.ts",
 		"frontend/src/routes/api/admin/subscriptions/plans/[id]/+server.ts",
-		"frontend/src/routes/api/admin/subscriptions/plans/[id]/price/+server.ts",
 		"frontend/src/routes/api/admin/subscriptions/plans/[id]/price-history/+server.ts",
+		"frontend/src/routes/api/admin/subscriptions/plans/[id]/price/+server.ts",
 		"frontend/src/routes/api/admin/subscriptions/plans/stats/+server.ts",
 		"frontend/src/routes/api/admin/tags/+server.ts",
 		"frontend/src/routes/api/admin/tags/[...rest]/+server.ts",
@@ -3452,7 +4026,22 @@
 		"frontend/src/routes/api/watchlist/[slug]/+server.ts",
 		"frontend/src/routes/api/weekly-video/[slug]/+server.ts",
 		"frontend/src/routes/api/weekly-video/[slug]/upload/+server.ts",
-		"frontend/src/routes/api/weekly-video/[slug]/upload/status/[guid]/+server.ts"
+		"frontend/src/routes/api/weekly-video/[slug]/upload/status/[guid]/+server.ts",
+		"frontend/src/routes/atom.xml/+server.ts",
+		"frontend/src/routes/feed.xml/+server.ts",
+		"frontend/src/routes/manifest.json/+server.ts",
+		"frontend/src/routes/news-sitemap.xml/+server.ts",
+		"frontend/src/routes/newsletter/unsubscribe/+server.ts",
+		"frontend/src/routes/robots.txt/+server.ts",
+		"frontend/src/routes/sitemap.xml/+server.ts",
+		"frontend/src/routes/tools/options-calculator/api/chain/+server.ts",
+		"frontend/src/routes/tools/options-calculator/api/expirations/+server.ts",
+		"frontend/src/routes/tools/options-calculator/api/historical-vol/+server.ts",
+		"frontend/src/routes/tools/options-calculator/api/quote/+server.ts",
+		"frontend/src/routes/tools/options-calculator/api/search/+server.ts",
+		"frontend/src/routes/tools/options-calculator/api/treasury/+server.ts",
+		"frontend/src/routes/video-sitemap.xml/+server.ts",
+		"frontend/src/routes/api/analytics/web-vitals/+server.ts"
 	],
 	"api_clients": [
 		"frontend/src/lib/api/_types.ts",
@@ -3572,6 +4161,7 @@
 		"api/src/routes/auth/verify.rs",
 		"api/src/routes/behavior.rs",
 		"api/src/routes/bunny_upload.rs",
+		"api/src/routes/campaign_events.rs",
 		"api/src/routes/categories.rs",
 		"api/src/routes/checkout.rs",
 		"api/src/routes/cms_ai_assist.rs",
@@ -3652,13 +4242,21 @@
 		"api/src/routes/courses_admin/sections.rs",
 		"api/src/routes/courses_admin/utility.rs",
 		"api/src/routes/crm/automations.rs",
+		"api/src/routes/crm/campaign_audience.rs",
+		"api/src/routes/crm/campaign_delivery.rs",
+		"api/src/routes/crm/campaigns.rs",
 		"api/src/routes/crm/companies.rs",
 		"api/src/routes/crm/contacts.rs",
+		"api/src/routes/crm/deal_activity.rs",
+		"api/src/routes/crm/deal_mutations.rs",
 		"api/src/routes/crm/deals_pipelines.rs",
 		"api/src/routes/crm/import_export.rs",
 		"api/src/routes/crm/leads.rs",
+		"api/src/routes/crm/list_members.rs",
 		"api/src/routes/crm/lists_tags.rs",
+		"api/src/routes/crm/logs.rs",
 		"api/src/routes/crm/mod.rs",
+		"api/src/routes/crm/segment_rules.rs",
 		"api/src/routes/crm/segments.rs",
 		"api/src/routes/crm/sequences_campaigns.rs",
 		"api/src/routes/crm/settings.rs",
@@ -3678,12 +4276,15 @@
 		"api/src/routes/indicators.rs",
 		"api/src/routes/indicators_admin.rs",
 		"api/src/routes/media/bulk.rs",
+		"api/src/routes/media/content.rs",
 		"api/src/routes/media/crud.rs",
 		"api/src/routes/media/dto.rs",
 		"api/src/routes/media/helpers.rs",
 		"api/src/routes/media/mod.rs",
+		"api/src/routes/media/processing.rs",
 		"api/src/routes/media/scanning.rs",
 		"api/src/routes/media/uploads.rs",
+		"api/src/routes/media/versions.rs",
 		"api/src/routes/member_courses/certificates.rs",
 		"api/src/routes/member_courses/entitlement.rs",
 		"api/src/routes/member_courses/mod.rs",
@@ -3799,23 +4400,38 @@
 		"api/src/routes/users.rs",
 		"api/src/routes/videos.rs",
 		"api/src/routes/watchlist.rs",
-		"api/src/routes/websocket.rs"
+		"api/src/routes/websocket.rs",
+		"api/src/routes/performance.rs"
 	],
 	"services_jobs_workers": [
+		"api/src/jobs/email_reminders.rs",
+		"api/src/jobs/mod.rs",
+		"api/src/jobs/reconcile_stripe.rs",
+		"api/src/queue/mod.rs",
+		"api/src/queue/worker.rs",
 		"api/src/services/analytics.rs",
 		"api/src/services/bunny.rs",
+		"api/src/services/campaign_delivery.rs",
+		"api/src/services/campaign_mailer.rs",
+		"api/src/services/campaign_render.rs",
 		"api/src/services/cms_audit.rs",
 		"api/src/services/cms_content.rs",
 		"api/src/services/cms_preview.rs",
+		"api/src/services/cms_scheduler.rs",
 		"api/src/services/cms_upload.rs",
 		"api/src/services/cms_webhooks.rs",
 		"api/src/services/cms_workflow.rs",
 		"api/src/services/credential_resolver.rs",
+		"api/src/services/crm_logs.rs",
 		"api/src/services/email.rs",
 		"api/src/services/event_broadcaster.rs",
 		"api/src/services/export.rs",
+		"api/src/services/malware.rs",
+		"api/src/services/media_jobs.rs",
+		"api/src/services/media_processor.rs",
 		"api/src/services/mfa.rs",
 		"api/src/services/mod.rs",
+		"api/src/services/newsletter_delivery.rs",
 		"api/src/services/order_service.rs",
 		"api/src/services/redis.rs",
 		"api/src/services/room_analytics.rs",
@@ -3824,11 +4440,7 @@
 		"api/src/services/storage.rs",
 		"api/src/services/stripe.rs",
 		"api/src/services/subscription_service.rs",
-		"api/src/jobs/email_reminders.rs",
-		"api/src/jobs/mod.rs",
-		"api/src/jobs/reconcile_stripe.rs",
-		"api/src/queue/mod.rs",
-		"api/src/queue/worker.rs"
+		"api/src/services/crm_webhooks.rs"
 	],
 	"backend_route_declarations": [
 		{
@@ -3860,11 +4472,6 @@
 			"file": "api/src/routes/admin/abandoned_carts.rs",
 			"line": 332,
 			"declaration": ".route(\"/{id}/send-recovery\", post(send_recovery))"
-		},
-		{
-			"file": "api/src/routes/admin/mod.rs",
-			"line": 39,
-			"declaration": ".nest(\"/abandoned-carts\", abandoned_carts::router())"
 		},
 		{
 			"file": "api/src/routes/admin/mod.rs",
@@ -4130,11 +4737,6 @@
 			"file": "api/src/routes/admin_courses/mod.rs",
 			"line": 158,
 			"declaration": ".route("
-		},
-		{
-			"file": "api/src/routes/admin_courses/mod.rs",
-			"line": 162,
-			"declaration": ".merge(taxonomy_router())"
 		},
 		{
 			"file": "api/src/routes/admin_courses/mod.rs",
@@ -4768,11 +5370,6 @@
 		},
 		{
 			"file": "api/src/routes/bunny_upload.rs",
-			"line": 568,
-			"declaration": ".nest(\"/upload\", upload_router)"
-		},
-		{
-			"file": "api/src/routes/bunny_upload.rs",
 			"line": 569,
 			"declaration": ".route(\"/video-status/{guid}\", get(get_video_status))"
 		},
@@ -4780,6 +5377,11 @@
 			"file": "api/src/routes/bunny_upload.rs",
 			"line": 570,
 			"declaration": ".route(\"/uploads\", get(list_uploads))"
+		},
+		{
+			"file": "api/src/routes/campaign_events.rs",
+			"line": 187,
+			"declaration": ".route(\"/postmark/campaigns\", post(receive))"
 		},
 		{
 			"file": "api/src/routes/categories.rs",
@@ -5702,78 +6304,143 @@
 			"declaration": ".route("
 		},
 		{
+			"file": "api/src/routes/crm/campaign_delivery.rs",
+			"line": 174,
+			"declaration": ".route(\"/campaigns/{id}/send\", post(send))"
+		},
+		{
+			"file": "api/src/routes/crm/campaign_delivery.rs",
+			"line": 175,
+			"declaration": ".route(\"/campaigns/{id}/schedule\", post(schedule))"
+		},
+		{
+			"file": "api/src/routes/crm/campaign_delivery.rs",
+			"line": 176,
+			"declaration": ".route(\"/campaigns/{id}/pause\", post(pause))"
+		},
+		{
+			"file": "api/src/routes/crm/campaign_delivery.rs",
+			"line": 177,
+			"declaration": ".route(\"/campaigns/{id}/resume\", post(resume))"
+		},
+		{
+			"file": "api/src/routes/crm/campaign_delivery.rs",
+			"line": 178,
+			"declaration": ".route(\"/campaigns/{id}/deliveries\", get(deliveries))"
+		},
+		{
+			"file": "api/src/routes/crm/campaigns.rs",
+			"line": 407,
+			"declaration": ".route(\"/campaigns\", get(list).post(create))"
+		},
+		{
+			"file": "api/src/routes/crm/campaigns.rs",
+			"line": 408,
+			"declaration": ".route(\"/campaigns/stats\", get(stats))"
+		},
+		{
+			"file": "api/src/routes/crm/campaigns.rs",
+			"line": 409,
+			"declaration": ".route(\"/campaigns/{id}\", get(get_one).put(update).delete(delete))"
+		},
+		{
+			"file": "api/src/routes/crm/campaigns.rs",
+			"line": 410,
+			"declaration": ".route(\"/campaigns/{id}/duplicate\", post(duplicate))"
+		},
+		{
+			"file": "api/src/routes/crm/campaigns.rs",
+			"line": 411,
+			"declaration": ".route(\"/campaigns/{id}/recipients\", get(recipients))"
+		},
+		{
 			"file": "api/src/routes/crm/companies.rs",
-			"line": 180,
+			"line": 267,
 			"declaration": ".route(\"/companies\", get(list_companies).post(create_company))"
 		},
 		{
 			"file": "api/src/routes/crm/companies.rs",
-			"line": 181,
-			"declaration": ".route(\"/companies/{id}\", get(get_company).delete(delete_company))"
+			"line": 268,
+			"declaration": ".route("
+		},
+		{
+			"file": "api/src/routes/crm/companies.rs",
+			"line": 272,
+			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/contacts.rs",
-			"line": 328,
+			"line": 453,
 			"declaration": ".route(\"/contacts\", get(list_contacts).post(create_contact))"
 		},
 		{
 			"file": "api/src/routes/crm/contacts.rs",
-			"line": 329,
+			"line": 454,
 			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/contacts.rs",
-			"line": 333,
+			"line": 458,
 			"declaration": ".route(\"/contacts/{id}/timeline\", get(get_contact_timeline))"
 		},
 		{
 			"file": "api/src/routes/crm/contacts.rs",
-			"line": 334,
+			"line": 459,
 			"declaration": ".route("
 		},
 		{
+			"file": "api/src/routes/crm/deal_activity.rs",
+			"line": 105,
+			"declaration": ".route(\"/deals/{id}/notes\", get(notes).post(add_note))"
+		},
+		{
+			"file": "api/src/routes/crm/deal_activity.rs",
+			"line": 106,
+			"declaration": ".route(\"/deals/{id}/timeline\", get(timeline))"
+		},
+		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1168,
+			"line": 1048,
 			"declaration": ".route(\"/pipelines\", get(list_pipelines).post(create_pipeline))"
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1169,
+			"line": 1049,
 			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1175,
+			"line": 1055,
 			"declaration": ".route(\"/pipelines/{id}/stages\", post(add_pipeline_stage))"
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1176,
+			"line": 1056,
 			"declaration": ".route(\"/deals\", get(list_deals).post(create_deal))"
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1177,
+			"line": 1057,
 			"declaration": ".route(\"/deals/forecast\", get(get_deal_forecast))"
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1178,
+			"line": 1058,
 			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1182,
+			"line": 1062,
 			"declaration": ".route(\"/deals/{id}/stage\", patch(update_deal_stage))"
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1183,
+			"line": 1063,
 			"declaration": ".route(\"/deals/{id}/win\", post(win_deal))"
 		},
 		{
 			"file": "api/src/routes/crm/deals_pipelines.rs",
-			"line": 1184,
+			"line": 1064,
 			"declaration": ".route(\"/deals/{id}/lose\", post(lose_deal))"
 		},
 		{
@@ -5793,172 +6460,102 @@
 		},
 		{
 			"file": "api/src/routes/crm/leads.rs",
-			"line": 545,
+			"line": 566,
 			"declaration": ".route(\"/leads\", get(list_leads).post(create_lead))"
 		},
 		{
 			"file": "api/src/routes/crm/leads.rs",
-			"line": 546,
+			"line": 567,
 			"declaration": ".route(\"/leads/stats\", get(get_lead_stats))"
 		},
 		{
 			"file": "api/src/routes/crm/leads.rs",
-			"line": 547,
-			"declaration": ".route(\"/leads/{id}\", put(update_lead).delete(delete_lead))"
+			"line": 568,
+			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/leads.rs",
-			"line": 549,
+			"line": 573,
 			"declaration": ".route(\"/leads/bulk-delete\", post(bulk_delete_leads))"
 		},
 		{
 			"file": "api/src/routes/crm/leads.rs",
-			"line": 550,
+			"line": 574,
 			"declaration": ".route(\"/leads/bulk-status\", post(bulk_update_lead_status))"
 		},
 		{
 			"file": "api/src/routes/crm/leads.rs",
-			"line": 551,
+			"line": 575,
 			"declaration": ".route("
 		},
 		{
+			"file": "api/src/routes/crm/list_members.rs",
+			"line": 149,
+			"declaration": "Router::new().route("
+		},
+		{
 			"file": "api/src/routes/crm/lists_tags.rs",
-			"line": 300,
+			"line": 344,
 			"declaration": ".route(\"/lists\", get(list_contact_lists).post(create_contact_list))"
 		},
 		{
 			"file": "api/src/routes/crm/lists_tags.rs",
-			"line": 301,
+			"line": 345,
 			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/lists_tags.rs",
-			"line": 305,
+			"line": 351,
 			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/lists_tags.rs",
-			"line": 309,
+			"line": 355,
 			"declaration": ".route(\"/contact-tags/{id}\", delete(delete_contact_tag))"
 		},
 		{
 			"file": "api/src/routes/crm/mod.rs",
-			"line": 129,
+			"line": 82,
 			"declaration": ".route(\"/stats\", get(get_crm_stats))"
 		},
 		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 131,
-			"declaration": ".merge(leads::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 132,
-			"declaration": ".merge(deals_pipelines::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 133,
-			"declaration": ".merge(contacts::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 134,
-			"declaration": ".merge(lists_tags::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 135,
-			"declaration": ".merge(segments::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 136,
-			"declaration": ".merge(sequences_campaigns::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 137,
-			"declaration": ".merge(automations::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 138,
-			"declaration": ".merge(smart_links::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 139,
-			"declaration": ".merge(templates::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 140,
-			"declaration": ".merge(webhooks::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 141,
-			"declaration": ".merge(companies::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 142,
-			"declaration": ".merge(import_export::router())"
-		},
-		{
-			"file": "api/src/routes/crm/mod.rs",
-			"line": 143,
-			"declaration": ".merge(settings::router())"
-		},
-		{
 			"file": "api/src/routes/crm/segments.rs",
-			"line": 241,
+			"line": 342,
 			"declaration": ".route(\"/segments\", get(list_segments).post(create_segment))"
 		},
 		{
 			"file": "api/src/routes/crm/segments.rs",
-			"line": 242,
-			"declaration": ".route(\"/segments/{id}\", get(get_segment).delete(delete_segment))"
+			"line": 343,
+			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/segments.rs",
-			"line": 243,
+			"line": 347,
+			"declaration": ".route(\"/segments/{id}/contacts\", get(contacts))"
+		},
+		{
+			"file": "api/src/routes/crm/segments.rs",
+			"line": 348,
 			"declaration": ".route(\"/segments/{id}/sync\", post(sync_segment))"
 		},
 		{
 			"file": "api/src/routes/crm/segments.rs",
-			"line": 244,
+			"line": 349,
 			"declaration": ".route(\"/segments/{id}/duplicate\", post(duplicate_segment))"
 		},
 		{
 			"file": "api/src/routes/crm/sequences_campaigns.rs",
-			"line": 469,
+			"line": 280,
 			"declaration": ".route(\"/sequences\", get(list_sequences).post(create_sequence))"
 		},
 		{
 			"file": "api/src/routes/crm/sequences_campaigns.rs",
-			"line": 470,
+			"line": 281,
 			"declaration": ".route(\"/sequences/{id}\", get(get_sequence).delete(delete_sequence))"
 		},
 		{
 			"file": "api/src/routes/crm/sequences_campaigns.rs",
-			"line": 471,
-			"declaration": ".route(\"/campaigns\", get(list_campaigns).post(create_campaign))"
-		},
-		{
-			"file": "api/src/routes/crm/sequences_campaigns.rs",
-			"line": 472,
-			"declaration": ".route(\"/campaigns/{id}\", get(get_campaign).delete(delete_campaign))"
-		},
-		{
-			"file": "api/src/routes/crm/sequences_campaigns.rs",
-			"line": 473,
-			"declaration": ".route(\"/campaigns/{id}/duplicate\", post(duplicate_campaign))"
-		},
-		{
-			"file": "api/src/routes/crm/sequences_campaigns.rs",
-			"line": 474,
+			"line": 282,
 			"declaration": ".route(\"/recurring-campaigns\", get(list_recurring_campaigns))"
 		},
 		{
@@ -5998,13 +6595,28 @@
 		},
 		{
 			"file": "api/src/routes/crm/templates.rs",
-			"line": 171,
+			"line": 200,
 			"declaration": ".route(\"/templates\", get(list_templates).post(create_template))"
 		},
 		{
 			"file": "api/src/routes/crm/templates.rs",
-			"line": 172,
-			"declaration": ".route(\"/templates/{id}\", get(get_template).delete(delete_template))"
+			"line": 201,
+			"declaration": ".route(\"/templates/categories\", get(categories))"
+		},
+		{
+			"file": "api/src/routes/crm/templates.rs",
+			"line": 202,
+			"declaration": ".route(\"/templates/prebuilt\", get(prebuilt))"
+		},
+		{
+			"file": "api/src/routes/crm/templates.rs",
+			"line": 203,
+			"declaration": ".route("
+		},
+		{
+			"file": "api/src/routes/crm/templates.rs",
+			"line": 209,
+			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/crm/webhooks.rs",
@@ -6333,57 +6945,122 @@
 		},
 		{
 			"file": "api/src/routes/media/mod.rs",
-			"line": 47,
+			"line": 50,
 			"declaration": ".route(\"/\", get(crud::index))"
 		},
 		{
 			"file": "api/src/routes/media/mod.rs",
-			"line": 48,
+			"line": 51,
 			"declaration": ".route(\"/files\", get(crud::index)) // Frontend uses /admin/media/files"
 		},
 		{
 			"file": "api/src/routes/media/mod.rs",
-			"line": 49,
-			"declaration": ".route(\"/upload\", post(uploads::direct_upload))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
-			"line": 50,
-			"declaration": ".route(\"/presigned-upload\", post(uploads::presigned_upload))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
-			"line": 51,
-			"declaration": ".route(\"/confirm-upload\", post(uploads::confirm_upload))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
 			"line": 52,
-			"declaration": ".route(\"/statistics\", get(crud::statistics))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
-			"line": 53,
-			"declaration": ".route(\"/bulk-delete\", post(bulk::bulk_delete))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
-			"line": 54,
-			"declaration": ".route(\"/bulk-update\", post(bulk::bulk_update))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
-			"line": 55,
-			"declaration": ".route(\"/cleanup-orphans\", post(bulk::cleanup_orphaned_files))"
-		},
-		{
-			"file": "api/src/routes/media/mod.rs",
-			"line": 56,
-			"declaration": ".route(\"/scan/{id}\", post(scanning::scan_media_file))"
+			"declaration": ".route("
 		},
 		{
 			"file": "api/src/routes/media/mod.rs",
 			"line": 57,
+			"declaration": ".route(\"/presigned-upload\", post(uploads::presigned_upload))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 58,
+			"declaration": ".route(\"/confirm-upload\", post(uploads::confirm_upload))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 59,
+			"declaration": ".route(\"/statistics\", get(crud::statistics))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 60,
+			"declaration": ".route(\"/content/{id}\", get(content::content))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 61,
+			"declaration": ".route("
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 65,
+			"declaration": ".route("
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 71,
+			"declaration": ".route("
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 75,
+			"declaration": ".route(\"/processor/health\", get(processing::health))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 76,
+			"declaration": ".route(\"/presets\", get(processing::presets))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 77,
+			"declaration": ".route(\"/queue/status\", get(processing::queue))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 78,
+			"declaration": ".route(\"/jobs/{id}\", get(processing::job))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 79,
+			"declaration": ".route(\"/files/{id}/optimize\", post(processing::optimize))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 80,
+			"declaration": ".route(\"/files/{id}/regenerate\", post(processing::optimize))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 81,
+			"declaration": ".route(\"/files/{id}/variants\", get(processing::variants))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 82,
+			"declaration": ".route(\"/bulk/optimize\", post(processing::bulk_optimize))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 83,
+			"declaration": ".route(\"/optimize-all\", post(processing::optimize_all))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 84,
+			"declaration": ".route(\"/bulk-delete\", post(bulk::bulk_delete))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 85,
+			"declaration": ".route(\"/bulk-update\", post(bulk::bulk_update))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 86,
+			"declaration": ".route(\"/cleanup-orphans\", post(bulk::cleanup_orphaned_files))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 87,
+			"declaration": ".route(\"/scan/{id}\", post(scanning::scan_media_file))"
+		},
+		{
+			"file": "api/src/routes/media/mod.rs",
+			"line": 88,
 			"declaration": ".route("
 		},
 		{
@@ -6562,573 +7239,83 @@
 			"declaration": "Router::new().route(\"/run-schedule-migration\", post(run_schedule_migration))"
 		},
 		{
-			"file": "api/src/routes/mod.rs",
-			"line": 87,
-			"declaration": ".nest(\"/behavior\", behavior::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 88,
-			"declaration": ".nest(\"/analytics\", behavior::analytics_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 89,
-			"declaration": ".nest(\"/auth\", auth::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 90,
-			"declaration": ".nest(\"/auth\", oauth::router()) // ICT 7: Google & Apple OAuth routes"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 91,
-			"declaration": ".nest(\"/users\", users::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 92,
-			"declaration": ".nest(\"/user\", user::router()) // Singular /user routes for frontend"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 94,
-			"declaration": ".nest(\"/payments\", payments::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 95,
-			"declaration": ".nest(\"/search\", search::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 96,
-			"declaration": ".nest(\"/products\", products::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 97,
-			"declaration": "// .nest(\"/indicators\", indicators::router()) // Removed - replaced by member_indicators"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 98,
-			"declaration": ".nest(\"/posts\", posts::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 99,
-			"declaration": ".nest(\"/admin/posts\", posts::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 100,
-			"declaration": ".nest(\"/subscriptions\", subscriptions::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 101,
-			"declaration": ".nest(\"/newsletter\", newsletter::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 102,
-			"declaration": ".nest(\"/admin\", admin::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 103,
-			"declaration": ".nest(\"/admin/products\", products::admin_router()) // Admin product CRUD"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 104,
-			"declaration": ".nest(\"/checkout\", checkout::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 105,
-			"declaration": ".nest(\"/videos\", videos::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 106,
-			"declaration": ".nest(\"/analytics\", analytics::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 107,
-			"declaration": ".nest(\"/contacts\", contacts::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 108,
-			"declaration": ".nest(\"/coupons\", coupons::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 109,
-			"declaration": ".nest(\"/security\", security::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 110,
-			"declaration": ".nest(\"/schedules\", schedules::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 111,
-			"declaration": ".nest(\"/admin/schedules\", schedules::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 113,
-			"declaration": ".nest(\"/admin/courses-enhanced\", courses_admin::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 114,
-			"declaration": "// .nest(\"/admin/indicators-enhanced\", indicators_admin::router()) // TODO: Fix SQLx issues"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 115,
-			"declaration": ".nest(\"/migrate\", migrate::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 116,
-			"declaration": ".nest(\"/my/orders\", orders::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 117,
-			"declaration": ".nest(\"/my/subscriptions\", subscriptions::my_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 118,
-			"declaration": ".nest(\"/logout\", auth::logout_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 120,
-			"declaration": ".nest(\"/admin/cms-v2\", cms_v2::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 121,
-			"declaration": ".nest(\"/cms\", cms_v2::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 123,
-			"declaration": ".nest(\"/admin/cms-v2/enterprise\", cms_v2_enterprise::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 124,
-			"declaration": ".merge(cms_v2_enterprise::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 126,
-			"declaration": ".nest(\"/cms\", cms_revisions::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 128,
-			"declaration": ".nest(\"/delivery\", cms_delivery::delivery_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 130,
-			"declaration": ".nest(\"/realtime\", realtime::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 132,
-			"declaration": ".nest(\"/ws\", websocket::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 133,
-			"declaration": ".nest(\"/popups\", popups::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 134,
-			"declaration": ".nest(\"/admin/popups\", admin_popups::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 135,
-			"declaration": ".nest(\"/trading-rooms\", trading_rooms::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 136,
-			"declaration": ".nest(\"/admin/trading-rooms\", trading_rooms::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 140,
-			"declaration": ".nest(\"/admin/rooms\", trading_rooms::admin_rooms_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 141,
-			"declaration": ".nest(\"/admin/courses\", admin_courses::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 142,
-			"declaration": ".nest(\"/courses\", member_courses::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 143,
-			"declaration": ".nest(\"/my/courses\", member_courses::member_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 145,
-			"declaration": ".nest(\"/admin/indicators\", admin_indicators::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 147,
-			"declaration": ".nest(\"/admin/videos\", admin_videos::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 149,
-			"declaration": ".nest(\"/video-advanced\", admin_videos::analytics_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 150,
-			"declaration": ".nest(\"/admin/page-layouts\", admin_page_layouts::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 152,
-			"declaration": ".nest(\"/admin/media\", media::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 154,
-			"declaration": ".nest(\"/forms\", forms::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 155,
-			"declaration": ".nest(\"/admin/forms\", forms::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 157,
-			"declaration": ".nest(\"/admin/email/templates\", email_templates::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 159,
-			"declaration": ".nest(\"/admin/email\", email_templates::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 161,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 165,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 169,
-			"declaration": ".nest(\"/indicators\", member_indicators::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 170,
-			"declaration": ".nest(\"/my/indicators\", member_indicators::member_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 171,
-			"declaration": ".nest(\"/download\", member_indicators::download_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 173,
-			"declaration": ".nest(\"/room-content\", room_content::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 174,
-			"declaration": ".nest(\"/admin/room-content\", room_content::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 176,
-			"declaration": ".nest(\"/room-search\", room_search::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 178,
-			"declaration": ".nest(\"/analytics\", room_analytics::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 180,
-			"declaration": ".nest(\"/watchlist\", watchlist::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 182,
-			"declaration": ".nest(\"/room-resources\", room_resources::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 183,
-			"declaration": ".nest(\"/admin/room-resources\", room_resources::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 185,
-			"declaration": ".nest(\"/admin/bunny\", bunny_upload::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 187,
-			"declaration": ".nest(\"/admin/crm\", crm::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 189,
-			"declaration": ".nest(\"/admin/connections\", connections::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 191,
-			"declaration": ".nest(\"/admin/consent\", consent::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 193,
-			"declaration": ".nest(\"/admin/orders\", admin_orders::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 195,
-			"declaration": ".nest(\"/admin/members\", admin_members::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 197,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 202,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 206,
-			"declaration": ".nest(\"/admin/organization/teams\", organization::teams_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 207,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 212,
-			"declaration": ".nest(\"/favorites\", favorites::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 214,
-			"declaration": ".nest(\"/export\", export::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 216,
-			"declaration": ".nest(\"/cms/ai\", cms_ai_assist::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 218,
-			"declaration": ".nest(\"/cms/seo\", cms_seo::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 220,
-			"declaration": ".nest(\"/cms/reusable-blocks\", cms_reusable_blocks::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 221,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 226,
-			"declaration": ".nest(\"/cms/presets\", cms_presets::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 227,
-			"declaration": ".nest(\"/cms/presets/public\", cms_presets::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 229,
-			"declaration": ".nest(\"/cms/assets\", cms_assets::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 231,
-			"declaration": ".nest(\"/cms/scheduling\", cms_scheduling::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 233,
-			"declaration": ".nest(\"/cms/datasources\", cms_datasources::admin_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 234,
-			"declaration": ".nest(\"/cms/datasources/public\", cms_datasources::public_router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 236,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 240,
-			"declaration": ".nest("
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 245,
-			"declaration": ".nest(\"/admin/reconciliation\", reconciliation::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 246,
-			"declaration": ".merge(robots::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 247,
-			"declaration": ".merge(sitemap::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 248,
-			"declaration": ".merge(categories::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 249,
-			"declaration": ".merge(tags::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 250,
-			"declaration": ".merge(redirects::router())"
-		},
-		{
-			"file": "api/src/routes/mod.rs",
-			"line": 251,
-			"declaration": ".merge(members::router())"
-		},
-		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 816,
+			"line": 876,
 			"declaration": ".route(\"/subscribe\", post(subscribe))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 817,
+			"line": 877,
 			"declaration": ".route(\"/confirm\", get(confirm))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 818,
-			"declaration": ".route(\"/unsubscribe\", get(unsubscribe))"
+			"line": 878,
+			"declaration": ".route(\"/unsubscribe\", get(unsubscribe).post(unsubscribe_post))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 824,
+			"line": 884,
 			"declaration": ".route(\"/subscribers\", get(list_subscribers))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 825,
+			"line": 885,
 			"declaration": ".route(\"/subscribers/{id}\", delete(delete_subscriber))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 826,
+			"line": 886,
 			"declaration": ".route(\"/subscribers/{id}/export\", get(export_subscriber))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 827,
+			"line": 887,
 			"declaration": ".route(\"/stats\", get(get_stats))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 828,
+			"line": 888,
 			"declaration": ".route(\"/bulk-send\", post(send_bulk_email))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 835,
+			"line": 895,
 			"declaration": ".route(\"/subscribe\", post(subscribe))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 836,
+			"line": 896,
 			"declaration": ".route(\"/confirm\", get(confirm))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 837,
-			"declaration": ".route(\"/unsubscribe\", get(unsubscribe))"
+			"line": 897,
+			"declaration": ".route(\"/unsubscribe\", get(unsubscribe).post(unsubscribe_post))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 839,
+			"line": 899,
 			"declaration": ".route(\"/subscribers\", get(list_subscribers))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 840,
+			"line": 900,
 			"declaration": ".route(\"/subscribers/{id}\", delete(delete_subscriber))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 841,
+			"line": 901,
 			"declaration": ".route(\"/subscribers/{id}/export\", get(export_subscriber))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 842,
+			"line": 902,
 			"declaration": ".route(\"/stats\", get(get_stats))"
 		},
 		{
 			"file": "api/src/routes/newsletter.rs",
-			"line": 843,
+			"line": 903,
 			"declaration": ".route(\"/bulk-send\", post(send_bulk_email))"
 		},
 		{
@@ -7230,16 +7417,6 @@
 			"file": "api/src/routes/organization/mod.rs",
 			"line": 99,
 			"declaration": ".route("
-		},
-		{
-			"file": "api/src/routes/organization/mod.rs",
-			"line": 103,
-			"declaration": ".nest(\"/teams\", teams_router())"
-		},
-		{
-			"file": "api/src/routes/organization/mod.rs",
-			"line": 104,
-			"declaration": ".nest(\"/departments\", departments_router())"
 		},
 		{
 			"file": "api/src/routes/payments/mod.rs",
@@ -12318,5 +12495,17 @@
 			"links": ["/admin/watchlist"]
 		}
 	],
-	"inventory_limitations": "Generated declarations and references are trace starting points. Dynamic paths, provider contracts, every action and worker still require manual verification. Page records were refreshed after company/list/template repairs; declaration/reference/action lists reflect the earlier inventory and require reconciliation after implementation."
+	"inventory_limitations": "Raw backend/route/service/endpoint lists refreshed after campaign delivery and public newsletter callbacks. Admin page count remains 170. UI action/import and SQL-reference snapshots still need full reconciliation. Dynamic mounts, providers and every action/worker require manual cross-layer evidence; declarations do not prove completeness. Campaign core has scoped local API/DB/worker/browser evidence; legacy bulk-email integration and broader audit remain open. Static navigation sweep visited 127 non-parameterized in-scope pages; 26 showed API/runtime or redirect issues (some redirects may be intended aliases). Dynamic routes and actual actions remain separate requirements; no workflow-completion inference from successful navigation.",
+	"public_dependencies": [
+		"frontend/src/routes/newsletter/+layout.ts",
+		"frontend/src/routes/newsletter/+error.svelte",
+		"frontend/src/routes/newsletter/confirm/+page.server.ts",
+		"frontend/src/routes/newsletter/confirm/+page.svelte",
+		"frontend/src/routes/newsletter/unsubscribe/+page.server.ts",
+		"frontend/src/routes/newsletter/unsubscribe/+page.svelte",
+		"frontend/src/routes/newsletter/unsubscribe/+server.ts",
+		"frontend/src/lib/server/newsletter-callback.ts",
+		"api/src/routes/newsletter.rs",
+		"api/src/routes/campaign_events.rs"
+	]
 }

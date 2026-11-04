@@ -114,15 +114,15 @@ describe('setLocalStorage', () => {
 	});
 
 	it('NEGATIVE: setItem throw is swallowed (Safari private mode pattern)', () => {
-		const original = Storage.prototype.setItem;
-		Storage.prototype.setItem = vi.fn(() => {
+		const storageWrite = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
 			throw new Error('QuotaExceededError');
 		});
-
-		// Should NOT throw — the helper swallows the error.
-		expect(() => setLocalStorage('k', { v: 1 })).not.toThrow();
-
-		Storage.prototype.setItem = original;
+		try {
+			// Should NOT throw — the helper swallows the error.
+			expect(() => setLocalStorage('k', { v: 1 })).not.toThrow();
+		} finally {
+			storageWrite.mockRestore();
+		}
 	});
 });
 

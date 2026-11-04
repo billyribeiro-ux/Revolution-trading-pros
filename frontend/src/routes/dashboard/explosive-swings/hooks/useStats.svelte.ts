@@ -1,3 +1,4 @@
+import { onMount } from 'svelte';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - useStats Hook
@@ -225,17 +226,15 @@ export function useStats(options: UseStatsOptions = {}): UseStatsReturn {
 	// EFFECTS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auto-refresh effect
-	$effect(() => {
+	// Options are captured when the hook is created. Start work after mount and
+	// release its timer when the component is removed.
+	onMount(() => {
+		void fetchStats();
 		if (!autoRefresh) return;
-
-		const interval = setInterval(fetchStats, refreshInterval);
+		const interval = setInterval(() => {
+			void fetchStats();
+		}, refreshInterval);
 		return () => clearInterval(interval);
-	});
-
-	// Initial fetch effect
-	$effect(() => {
-		fetchStats();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

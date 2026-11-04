@@ -4,6 +4,7 @@
 	interface Props {
 		searchQuery: string;
 		statusFilter: string;
+		tagFilter: string;
 		selectedCount: number;
 		onsearch: () => void;
 		onrefresh: () => void;
@@ -13,6 +14,7 @@
 	let {
 		searchQuery = $bindable(),
 		statusFilter = $bindable(),
+		tagFilter = $bindable(),
 		selectedCount,
 		onsearch,
 		onrefresh,
@@ -23,7 +25,9 @@
 <div class="filters-bar">
 	<div class="search-box">
 		<IconSearch size={18} />
-		<input autocomplete="email"
+		<input
+			autocomplete="email"
+			aria-label="Search subscribers"
 			id="page-searchquery"
 			name="page-searchquery"
 			type="text"
@@ -34,8 +38,15 @@
 	</div>
 
 	<div class="filter-group">
-		<select id="filtersbar-statusfilter" name="filtersbar_statusfilter" bind:value={statusFilter} onchange={onsearch}>
+		<select
+			aria-label="Subscriber status"
+			id="filtersbar-statusfilter"
+			name="filtersbar_statusfilter"
+			bind:value={statusFilter}
+			onchange={onsearch}
+		>
 			<option value="all">All Status</option>
+			<option value="pending">Pending confirmation</option>
 			<option value="subscribed">Subscribed</option>
 			<option value="unsubscribed">Unsubscribed</option>
 			<option value="bounced">Bounced</option>
@@ -43,7 +54,17 @@
 		</select>
 	</div>
 
-	<button class="btn-icon" onclick={onrefresh}>
+	<label
+		>Tags <input
+			aria-label="Filter subscriber tags"
+			placeholder="All of these tags"
+			bind:value={tagFilter}
+			onkeydown={(e) => {
+				if (e.key === 'Enter') onsearch();
+			}}
+		/></label
+	>
+	<button class="btn-icon" aria-label="Refresh subscribers" onclick={onrefresh}>
 		<IconRefresh size={18} />
 	</button>
 

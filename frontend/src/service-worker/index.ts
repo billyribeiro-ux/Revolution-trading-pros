@@ -209,12 +209,12 @@ sw.addEventListener('install', (event) => {
 			.then(() => {
 				log(`[SW] Installation complete, skipping waiting`);
 				// Skip waiting to activate immediately
-				return sw.skipWaiting();
+				return event.waitUntil(sw.skipWaiting());
 			})
 			.catch((err) => {
 				// Even if caching fails, still try to activate
 				error(`[SW] Installation error (continuing anyway):`, err);
-				return sw.skipWaiting();
+				return event.waitUntil(sw.skipWaiting());
 			})
 	);
 });
@@ -310,7 +310,12 @@ sw.addEventListener('fetch', (event) => {
 
 					// Cache the fresh response
 					const responseClone = response.clone();
-					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+					event.waitUntil(
+						caches
+							.open(CACHE_NAME)
+							.then((cache) => cache.put(event.request, responseClone))
+							.catch((error: unknown) => warn('[SW] Cache write failed:', error))
+					);
 
 					return response;
 				});
@@ -329,7 +334,12 @@ sw.addEventListener('fetch', (event) => {
 				// Cache successful responses (public paths only)
 				if (response.ok && !isPrivate) {
 					const responseClone = response.clone();
-					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+					event.waitUntil(
+						caches
+							.open(CACHE_NAME)
+							.then((cache) => cache.put(event.request, responseClone))
+							.catch((error: unknown) => warn('[SW] Cache write failed:', error))
+					);
 				}
 				return response;
 			})
@@ -346,7 +356,7 @@ sw.addEventListener('fetch', (event) => {
 // Handle messages from clients
 sw.addEventListener('message', (event) => {
 	if (event.data?.type === 'SKIP_WAITING') {
-		sw.skipWaiting();
+		event.waitUntil(sw.skipWaiting());
 	}
 });
 
@@ -432,7 +442,7 @@ async function getCachedVideo(request: Request): Promise<Response | null> {
 
 			if (age > ttl) {
 				// Stale - return but revalidate in background
-				revalidateInBackground(request, cache);
+				void revalidateInBackground(request, cache);
 			}
 		}
 

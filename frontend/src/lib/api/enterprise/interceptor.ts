@@ -311,7 +311,8 @@ export function createTokenRefreshInterceptor(options: {
 
 		// ICT 7: Skip auth endpoints to prevent infinite loops
 		// Check metadata for endpoint info (set by request interceptor)
-		const endpoint = String(context.metadata?.['endpoint'] || '');
+		const endpointValue = context.metadata?.['endpoint'];
+		const endpoint = typeof endpointValue === 'string' ? endpointValue : '';
 		if (
 			endpoint.includes('/auth/refresh') ||
 			endpoint.includes('/auth/login') ||
@@ -465,7 +466,9 @@ export function createDefaultInterceptorChain(): InterceptorChain {
 		createTokenRefreshInterceptor({
 			refreshToken: () => authStore.refreshToken(),
 			onRefreshFailed: () => {
-				authStore.logout('/login?session=expired');
+				void authStore.logout('/login?session=expired').catch((error: unknown) => {
+					logger.error('[Auth] Session cleanup failed', error);
+				});
 			}
 		})
 	);

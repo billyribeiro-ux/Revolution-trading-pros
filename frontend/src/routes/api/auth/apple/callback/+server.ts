@@ -7,7 +7,7 @@
  * @version 1.0.0 - January 2026
  */
 
-import { redirect } from '@sveltejs/kit';
+import { redirect, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
@@ -21,6 +21,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		// Get the form data from Apple's POST
 		const formData = await request.formData();
+		const encoded = new URLSearchParams();
+		for (const [key, value] of formData) {
+			if (typeof value !== 'string' || encoded.has(key))
+				return json({ error: 'Invalid Apple sign-in callback form' }, { status: 400 });
+			encoded.append(key, value);
+		}
 
 		// Forward to backend
 		const backendResponse = await fetch(`${API_URL}/api/auth/apple/callback`, {
@@ -28,11 +34,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
 			},
-			body: new URLSearchParams(
-				Object.fromEntries(
-					Array.from(formData.entries()).map(([key, value]) => [key, String(value)])
-				)
-			)
+			body: encoded
 		});
 
 		// If backend returns a redirect, follow it

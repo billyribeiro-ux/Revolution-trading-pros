@@ -36,6 +36,22 @@ function escapeHtml(str: string): string {
 	return str.replace(/[&<>"'/]/g, (char) => htmlEscapes[char]);
 }
 
+/** Preserve structured values instead of exporting "[object Object]". */
+function exportValue(value: unknown): string {
+	if (value === null || value === undefined) return '';
+	if (value instanceof Date)
+		return Number.isFinite(value.getTime()) ? value.toISOString() : 'Invalid Date';
+	if (typeof value === 'object') return JSON.stringify(value);
+	if (
+		typeof value === 'string' ||
+		typeof value === 'number' ||
+		typeof value === 'boolean' ||
+		typeof value === 'bigint'
+	)
+		return String(value);
+	return '';
+}
+
 export interface ExportColumn {
 	key: string;
 	label: string;
@@ -67,7 +83,7 @@ export function exportToCSV(options: ExportOptions): void {
 		return columns
 			.map((col) => {
 				const value = row[col.key];
-				const formatted = col.format ? col.format(value) : String(value ?? '');
+				const formatted = col.format ? col.format(value) : exportValue(value);
 				// FIX-2026-04-26 (07-marketing P2): CSV injection guard.
 				// Excel / Sheets treat cells starting with =, +, -, @, TAB, CR as
 				// formula prefixes — a classic RCE vector in exported spreadsheets.
@@ -124,7 +140,7 @@ export function exportToPDF(options: ExportOptions): void {
 			const cells = columns
 				.map((col) => {
 					const value = row[col.key];
-					const formatted = col.format ? col.format(value) : String(value ?? '');
+					const formatted = col.format ? col.format(value) : exportValue(value);
 					// SECURITY: Escape HTML to prevent XSS attacks
 					return `<td>${escapeHtml(formatted)}</td>`;
 				})
@@ -297,7 +313,7 @@ export function exportToJSON(options: ExportOptions): void {
 export const formatters = {
 	currency: (value: unknown) => {
 		const num = Number(value);
-		if (isNaN(num)) return String(value ?? '');
+		if (isNaN(num)) return exportValue(value);
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD'
@@ -306,26 +322,26 @@ export const formatters = {
 
 	number: (value: unknown) => {
 		const num = Number(value);
-		if (isNaN(num)) return String(value ?? '');
+		if (isNaN(num)) return exportValue(value);
 		return new Intl.NumberFormat('en-US').format(num);
 	},
 
 	percent: (value: unknown) => {
 		const num = Number(value);
-		if (isNaN(num)) return String(value ?? '');
+		if (isNaN(num)) return exportValue(value);
 		return `${num.toFixed(2)}%`;
 	},
 
 	date: (value: unknown) => {
 		if (!value) return '';
 		const date = new Date(value as string);
-		return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString();
+		return isNaN(date.getTime()) ? exportValue(value) : date.toLocaleDateString();
 	},
 
 	datetime: (value: unknown) => {
 		if (!value) return '';
 		const date = new Date(value as string);
-		return isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+		return isNaN(date.getTime()) ? exportValue(value) : date.toLocaleString();
 	},
 
 	boolean: (value: unknown) => {
@@ -491,7 +507,7 @@ function buildExportUrl(
 /**
  * Get authenticated headers for export requests
  */
-function getExportHeaders(): HeadersInit {
+function getExportHeaders(): Record<string, string> {
 	const token = authStore.getToken();
 	const headers: HeadersInit = {
 		Accept: 'text/csv, application/json'

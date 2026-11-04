@@ -13,6 +13,8 @@
  * - INP (Interaction to Next Paint) - target < 200ms
  */
 
+import { deliverPerformanceObservation } from './performance-delivery.js';
+
 interface WebVitalMetric {
 	name: 'LCP' | 'FID' | 'CLS' | 'FCP' | 'TTFB' | 'INP';
 	value: number;
@@ -32,6 +34,8 @@ interface LayoutShiftEntry extends PerformanceEntry {
 }
 
 interface WebVitalsOptions {
+	/** Stops observers and pending retries when consent or the app lifecycle ends. */
+	signal?: AbortSignal;
 	/** Analytics endpoint URL */
 	endpoint?: string;
 	/** Enable console logging in development */
@@ -84,6 +88,7 @@ function generateId(): string {
  * Report metric to analytics endpoint
  */
 async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): Promise<void> {
+	if (options.signal?.aborted) return;
 	// Apply sample rate
 	if (Math.random() > (options.sampleRate ?? 1)) return;
 
@@ -109,13 +114,9 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 	// Send to analytics endpoint
 	if (options.endpoint) {
 		try {
-			await fetch(options.endpoint, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					...options.headers
-				},
-				body: JSON.stringify({
+			await deliverPerformanceObservation(
+				options.endpoint,
+				{
 					metric: metric.name,
 					value: metric.value,
 					rating: metric.rating,
@@ -128,10 +129,10 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 					connection: (navigator as Navigator & { connection?: { effectiveType?: string } })
 						.connection?.effectiveType,
 					deviceMemory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory
-				}),
-				// Use keepalive for page unload scenarios
-				keepalive: true
-			});
+				},
+				options.headers,
+				options.signal
+			);
 		} catch (error) {
 			if (options.debug) {
 				console.error('[Web Vitals] Failed to report metric:', error);
@@ -143,10 +144,22 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 /**
  * Observe Largest Contentful Paint (LCP)
  */
-function observeLCP(options: WebVitalsOptions): void {
-	if (!('PerformanceObserver' in window)) return;
+function reportMetricInBackground(metric: WebVitalMetric, options: WebVitalsOptions): void {
+	void reportMetric(metric, options).catch((error: unknown) => {
+		console.error('[Web Vitals] Metric callback failed:', error);
+	});
+}
+
+function observeLCP(options: WebVitalsOptions): () => void {
+	if (
+		!('PerformanceObserver' in window) ||
+		!PerformanceObserver.supportedEntryTypes.includes('largest-contentful-paint')
+	)
+		return () => {};
 
 	let lcpValue = 0;
+	let lastReported: number | undefined;
+	const measurementId = generateId();
 
 	const observer = new PerformanceObserver((list) => {
 		const entries = list.getEntries();
@@ -160,32 +173,43 @@ function observeLCP(options: WebVitalsOptions): void {
 
 	// Report on page hide or visibility change
 	const reportLCP = () => {
-		if (lcpValue > 0) {
+		if (lcpValue > 0 && lcpValue !== lastReported) {
+			lastReported = lcpValue;
 			const metric: WebVitalMetric = {
 				name: 'LCP',
 				value: lcpValue,
 				rating: getRating('LCP', lcpValue),
 				delta: lcpValue,
-				id: generateId(),
+				id: measurementId,
 				navigationType: getNavigationType()
 			};
-			reportMetric(metric, options);
+			reportMetricInBackground(metric, options);
 			observer.disconnect();
 		}
 	};
 
 	// Multiple event listeners for reliability
-	addEventListener('visibilitychange', () => {
+	const onVisibility = () => {
 		if (document.visibilityState === 'hidden') reportLCP();
-	});
+	};
+	addEventListener('visibilitychange', onVisibility);
 	addEventListener('pagehide', reportLCP);
+	return () => {
+		observer.disconnect();
+		removeEventListener('visibilitychange', onVisibility);
+		removeEventListener('pagehide', reportLCP);
+	};
 }
 
 /**
  * Observe First Input Delay (FID)
  */
-function observeFID(options: WebVitalsOptions): void {
-	if (!('PerformanceObserver' in window)) return;
+function observeFID(options: WebVitalsOptions): () => void {
+	if (
+		!('PerformanceObserver' in window) ||
+		!PerformanceObserver.supportedEntryTypes.includes('first-input')
+	)
+		return () => {};
 
 	const observer = new PerformanceObserver((list) => {
 		const entries = list.getEntries();
@@ -200,20 +224,27 @@ function observeFID(options: WebVitalsOptions): void {
 				id: generateId(),
 				navigationType: getNavigationType()
 			};
-			reportMetric(metric, options);
+			reportMetricInBackground(metric, options);
 		}
 	});
 
 	observer.observe({ type: 'first-input', buffered: true });
+	return () => observer.disconnect();
 }
 
 /**
  * Observe Cumulative Layout Shift (CLS)
  */
-function observeCLS(options: WebVitalsOptions): void {
-	if (!('PerformanceObserver' in window)) return;
+function observeCLS(options: WebVitalsOptions): () => void {
+	if (
+		!('PerformanceObserver' in window) ||
+		!PerformanceObserver.supportedEntryTypes.includes('layout-shift')
+	)
+		return () => {};
 
 	let clsValue = 0;
+	let lastReported: number | undefined;
+	const measurementId = generateId();
 	let sessionValue = 0;
 	let sessionEntries: PerformanceEntry[] = [];
 
@@ -251,30 +282,41 @@ function observeCLS(options: WebVitalsOptions): void {
 		if (sessionValue > clsValue) {
 			clsValue = sessionValue;
 		}
-		if (clsValue > 0) {
+		if (clsValue !== lastReported) {
+			lastReported = clsValue;
 			const metric: WebVitalMetric = {
 				name: 'CLS',
 				value: clsValue,
 				rating: getRating('CLS', clsValue),
 				delta: clsValue,
-				id: generateId(),
+				id: measurementId,
 				navigationType: getNavigationType()
 			};
-			reportMetric(metric, options);
+			reportMetricInBackground(metric, options);
 		}
 	};
 
-	addEventListener('visibilitychange', () => {
+	const onVisibility = () => {
 		if (document.visibilityState === 'hidden') reportCLS();
-	});
+	};
+	addEventListener('visibilitychange', onVisibility);
 	addEventListener('pagehide', reportCLS);
+	return () => {
+		observer.disconnect();
+		removeEventListener('visibilitychange', onVisibility);
+		removeEventListener('pagehide', reportCLS);
+	};
 }
 
 /**
  * Observe First Contentful Paint (FCP)
  */
-function observeFCP(options: WebVitalsOptions): void {
-	if (!('PerformanceObserver' in window)) return;
+function observeFCP(options: WebVitalsOptions): () => void {
+	if (
+		!('PerformanceObserver' in window) ||
+		!PerformanceObserver.supportedEntryTypes.includes('paint')
+	)
+		return () => {};
 
 	const observer = new PerformanceObserver((list) => {
 		for (const entry of list.getEntries()) {
@@ -288,20 +330,25 @@ function observeFCP(options: WebVitalsOptions): void {
 					id: generateId(),
 					navigationType: getNavigationType()
 				};
-				reportMetric(metric, options);
+				reportMetricInBackground(metric, options);
 				observer.disconnect();
 			}
 		}
 	});
 
 	observer.observe({ type: 'paint', buffered: true });
+	return () => observer.disconnect();
 }
 
 /**
  * Observe Time to First Byte (TTFB)
  */
-function observeTTFB(options: WebVitalsOptions): void {
-	if (!('PerformanceObserver' in window)) return;
+function observeTTFB(options: WebVitalsOptions): () => void {
+	if (
+		!('PerformanceObserver' in window) ||
+		!PerformanceObserver.supportedEntryTypes.includes('navigation')
+	)
+		return () => {};
 
 	const observer = new PerformanceObserver((list) => {
 		for (const entry of list.getEntries()) {
@@ -316,22 +363,29 @@ function observeTTFB(options: WebVitalsOptions): void {
 					id: generateId(),
 					navigationType: getNavigationType()
 				};
-				reportMetric(metric, options);
+				reportMetricInBackground(metric, options);
 				observer.disconnect();
 			}
 		}
 	});
 
 	observer.observe({ type: 'navigation', buffered: true });
+	return () => observer.disconnect();
 }
 
 /**
  * Observe Interaction to Next Paint (INP)
  */
-function observeINP(options: WebVitalsOptions): void {
-	if (!('PerformanceObserver' in window)) return;
+function observeINP(options: WebVitalsOptions): () => void {
+	if (
+		!('PerformanceObserver' in window) ||
+		!PerformanceObserver.supportedEntryTypes.includes('event')
+	)
+		return () => {};
 
 	let maxINP = 0;
+	let lastReported: number | undefined;
+	const measurementId = generateId();
 	const interactions: number[] = [];
 
 	const observer = new PerformanceObserver((list) => {
@@ -364,23 +418,30 @@ function observeINP(options: WebVitalsOptions): void {
 
 	// Report on page hide
 	const reportINP = () => {
-		if (maxINP > 0) {
+		if (maxINP > 0 && maxINP !== lastReported) {
+			lastReported = maxINP;
 			const metric: WebVitalMetric = {
 				name: 'INP',
 				value: maxINP,
 				rating: getRating('INP', maxINP),
 				delta: maxINP,
-				id: generateId(),
+				id: measurementId,
 				navigationType: getNavigationType()
 			};
-			reportMetric(metric, options);
+			reportMetricInBackground(metric, options);
 		}
 	};
 
-	addEventListener('visibilitychange', () => {
+	const onVisibility = () => {
 		if (document.visibilityState === 'hidden') reportINP();
-	});
+	};
+	addEventListener('visibilitychange', onVisibility);
 	addEventListener('pagehide', reportINP);
+	return () => {
+		observer.disconnect();
+		removeEventListener('visibilitychange', onVisibility);
+		removeEventListener('pagehide', reportINP);
+	};
 }
 
 /**
@@ -415,22 +476,24 @@ function getNavigationType(): string {
  * }
  * ```
  */
-export function initWebVitals(userOptions: WebVitalsOptions = {}): void {
-	if (typeof window === 'undefined') return;
-
+export function initWebVitals(userOptions: WebVitalsOptions = {}): () => void {
+	if (typeof window === 'undefined' || userOptions.signal?.aborted) return () => {};
 	const options = { ...DEFAULT_OPTIONS, ...userOptions };
-
-	// Start observing all metrics
-	observeLCP(options);
-	observeFID(options);
-	observeCLS(options);
-	observeFCP(options);
-	observeTTFB(options);
-	observeINP(options);
-
-	if (options.debug) {
-		console.info('[Web Vitals] Monitoring initialized');
+	const stops: (() => void)[] = [];
+	const cleanup = () => {
+		for (const stop of stops.splice(0)) stop();
+		options.signal?.removeEventListener('abort', cleanup);
+	};
+	try {
+		for (const observe of [observeLCP, observeFID, observeCLS, observeFCP, observeTTFB, observeINP])
+			stops.push(observe(options));
+	} catch (error) {
+		cleanup();
+		throw error;
 	}
+	options.signal?.addEventListener('abort', cleanup, { once: true });
+	if (options.debug) console.info('[Web Vitals] Monitoring initialized');
+	return cleanup;
 }
 
 /**

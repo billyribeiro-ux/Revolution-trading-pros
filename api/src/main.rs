@@ -16,7 +16,7 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use revolution_api::cache::{CacheInvalidator, CacheService};
+use revolution_api::cache::CacheInvalidator;
 use revolution_api::jobs::{email_reminders, reconcile_stripe};
 use revolution_api::routes::realtime::EventBroadcaster;
 use revolution_api::routes::websocket::WsConnectionManager;
@@ -92,7 +92,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Initialize cache service for Explosive Swings room content
     // Uses Redis L2 cache if available, falls back to L1 in-memory cache
-    let cache = CacheService::new(services.redis.clone(), Some(10_000));
+    let cache = services.cache.clone();
     let cache_invalidator = CacheInvalidator::new(cache.clone());
     if cache.has_redis() {
         tracing::info!("✅ Cache service initialized with Redis L2 backend");
@@ -111,10 +111,17 @@ async fn main() -> anyhow::Result<()> {
         cache_invalidator,
     };
 
-    if state.services.media_processor.is_some() {
-        tokio::spawn(revolution_api::services::media_jobs::run(state.clone()));
-        tracing::info!("Media processing worker started");
-    }
+    tokio::spawn(revolution_api::routes::performance::run_host_sampler());
+    tokio::spawn(revolution_api::services::media_jobs::run(state.clone()));
+    tokio::spawn(revolution_api::services::crm_webhooks::run(
+        state.db.pool.clone(),
+    ));
+    tokio::spawn(revolution_api::services::campaign_delivery::run(
+        state.clone(),
+    ));
+    tracing::info!(
+        "Media upload cleanup worker started; image jobs require a configured processor"
+    );
 
     // Stripe reconciliation scheduler — daily 03:00 UTC
     reconcile_stripe::spawn_scheduler(state.clone());

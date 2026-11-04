@@ -252,6 +252,7 @@ export default [
 		ignores: [
 			'.svelte-kit/**',
 			'.svelte-kit-admin-verify/**',
+			'.svelte-kit-admin-build/**',
 			'build/**',
 			'dist/**',
 			'node_modules/**',

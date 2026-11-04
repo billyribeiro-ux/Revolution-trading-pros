@@ -12,6 +12,7 @@
  * - Enrollments & Progress
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '';
 
@@ -285,10 +286,12 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
 	try {
 		const response = await fetch(`${API_BASE}/admin/courses-enhanced${endpoint}`, {
 			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				...options.headers
-			},
+			headers: mergeHeaders(
+				{
+					'Content-Type': 'application/json'
+				},
+				options.headers
+			),
 			credentials: 'include'
 		});
 

@@ -67,6 +67,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			/^\/maintenance/,
 			/^\/media/,
 			/^\/my/,
+			/^\/newsletter\/(?:confirm|unsubscribe)(?:\/|$)/,
 			/^\/posts/,
 			/^\/register/,
 			/^\/reset-password/,

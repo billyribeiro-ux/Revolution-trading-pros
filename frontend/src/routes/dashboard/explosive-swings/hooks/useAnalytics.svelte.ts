@@ -1,3 +1,4 @@
+import { onMount } from 'svelte';
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings - useAnalytics Hook
@@ -298,7 +299,7 @@ export function useAnalytics(options: UseAnalyticsOptions = {}): UseAnalyticsRet
 	function setPeriod(newPeriod: AnalyticsPeriod): void {
 		if (newPeriod === selectedPeriod) return;
 		selectedPeriod = newPeriod;
-		fetchAnalytics();
+		void fetchAnalytics();
 	}
 
 	async function refresh(): Promise<void> {
@@ -309,17 +310,15 @@ export function useAnalytics(options: UseAnalyticsOptions = {}): UseAnalyticsRet
 	// EFFECTS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Auto-refresh effect
-	$effect(() => {
+	// Options are captured when the hook is created. Start work after mount and
+	// release its timer when the component is removed.
+	onMount(() => {
+		void fetchAnalytics();
 		if (!autoRefresh) return;
-
-		const interval = setInterval(fetchAnalytics, refreshInterval);
+		const interval = setInterval(() => {
+			void fetchAnalytics();
+		}, refreshInterval);
 		return () => clearInterval(interval);
-	});
-
-	// Initial fetch effect
-	$effect(() => {
-		fetchAnalytics();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════

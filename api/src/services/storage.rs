@@ -41,7 +41,7 @@ impl StorageService {
         Ok(Self {
             client,
             bucket: config.r2_bucket.clone(),
-            public_url: config.r2_public_url.clone(),
+            public_url: config.r2_public_url.trim_end_matches('/').to_owned(),
         })
     }
 
@@ -69,14 +69,17 @@ impl StorageService {
         data: Vec<u8>,
         content_type: &str,
     ) -> Result<String> {
-        self.client
-            .put_object()
-            .bucket(&self.bucket)
-            .key(key)
-            .body(ByteStream::from(data))
-            .content_type(content_type)
-            .send()
-            .await?;
+        tokio::time::timeout(
+            std::time::Duration::from_secs(30),
+            self.client
+                .put_object()
+                .bucket(&self.bucket)
+                .key(key)
+                .body(ByteStream::from(data))
+                .content_type(content_type)
+                .send(),
+        )
+        .await??;
 
         Ok(format!("{}/{}", self.public_url, key))
     }
@@ -113,12 +116,15 @@ impl StorageService {
 
     /// Delete a file from R2
     pub async fn delete(&self, key: &str) -> Result<()> {
-        self.client
-            .delete_object()
-            .bucket(&self.bucket)
-            .key(key)
-            .send()
-            .await?;
+        tokio::time::timeout(
+            std::time::Duration::from_secs(30),
+            self.client
+                .delete_object()
+                .bucket(&self.bucket)
+                .key(key)
+                .send(),
+        )
+        .await??;
         Ok(())
     }
 

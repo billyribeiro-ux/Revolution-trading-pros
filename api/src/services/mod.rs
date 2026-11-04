@@ -4,6 +4,9 @@
 
 pub mod analytics; // ICT 7+ Phase 4: Analytics Dashboard Service
 pub mod bunny;
+pub mod campaign_delivery;
+pub mod campaign_mailer;
+pub mod campaign_render;
 pub mod cms_audit;
 pub mod cms_content;
 pub mod cms_preview;
@@ -12,6 +15,8 @@ pub mod cms_upload;
 pub mod cms_webhooks;
 pub mod cms_workflow;
 pub mod credential_resolver; // PE7 invariant 2A: DB-backed credential lookup with env fallback
+pub mod crm_logs;
+pub mod crm_webhooks;
 pub mod email;
 pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
 pub mod export; // ICT 7+ Phase 4: Export Functionality
@@ -19,6 +24,7 @@ pub mod malware;
 pub mod media_jobs;
 pub mod media_processor;
 pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
+pub mod newsletter_delivery;
 pub mod order_service;
 // FIX-M-2 (2026-04-29): rate_limit module removed. The RateLimitService
 // struct it defined was never instantiated; login uses
@@ -45,10 +51,8 @@ pub struct Services {
     pub media_processor: Option<media_processor::MediaProcessorService>,
     pub stripe: stripe::StripeService,
     pub search: search::SearchService,
-    /// Batch 6: always present. Internally holds `Option<token>`; when
-    /// the token is unset the service writes `email_logs` rows with
-    /// status='skipped_no_token' and skips HTTP. Callers no longer
-    /// need to check for `None` before calling.
+    /// Always present; unavailable configuration is an explicit send error.
+    /// Transactional receipts persist acknowledged, failed or unknown outcomes.
     pub email: email::EmailService,
     /// Cache service for Explosive Swings content caching
     pub cache: CacheService,
@@ -75,10 +79,8 @@ impl Services {
             }
         });
 
-        // Batch 6: EmailService always exists. The service itself
-        // decides — based on POSTMARK_TOKEN presence — whether to
-        // actually call Postmark or run as a no-op (still writing
-        // email_logs rows for retry visibility).
+        // EmailService records truthful receipts and never treats missing
+        // provider configuration as successful delivery.
         let email = email::EmailService::from_env(&config.app_url);
 
         // ICT 7+: Initialize Redis with production requirement

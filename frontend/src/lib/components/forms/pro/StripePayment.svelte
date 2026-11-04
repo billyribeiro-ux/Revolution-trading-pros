@@ -139,12 +139,13 @@
 	const walletAmount = $derived(Math.round(amount * 100));
 	const walletCurrency = $derived(currency.toLowerCase());
 
-	// Keep the wallet sheet's total in sync if the parent changes the price
-	// after mount (the deferred-intent Elements group owns amount/currency).
-	// This is a sync to an external system — the effect assigns no state.
-	$effect(() => {
-		walletElements?.update({ amount: walletAmount, currency: walletCurrency });
-	});
+	// Synchronize the external wallet sheet when its amount/currency changes.
+	// This attachment updates the existing SDK instance without remounting it.
+	const synchronizeWallet: Attachment<HTMLDivElement> = () => {
+		const amount = walletAmount;
+		const currency = walletCurrency;
+		walletElements?.update({ amount, currency });
+	};
 
 	const attachCardElement: Attachment<HTMLDivElement> = (node) => {
 		cardElementNode = node;
@@ -167,9 +168,9 @@
 	function attachClientSecretConfirmation(secret: string): Attachment<HTMLDivElement> {
 		return () => {
 			// Track readiness state so the attachment re-runs after Stripe mounts.
-			mounted;
 
 			if (
+				!mounted ||
 				!secret ||
 				!stripe ||
 				!cardElement ||
@@ -484,6 +485,7 @@
 
 <!-- Responsive Stripe Payment Component - Mobile-first design -->
 <div
+	{@attach synchronizeWallet}
 	{@attach clientSecret ? attachClientSecretConfirmation(clientSecret) : false}
 	class={['stripe-payment', disabled && 'stripe-payment--disabled']}
 >

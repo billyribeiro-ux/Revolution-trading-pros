@@ -33,28 +33,12 @@
 		IconCheck,
 		IconX
 	} from '#lib/icons/index.js';
-	import { api } from '#lib/api/config.js';
+	import { crmAPI } from '#lib/api/crm.js';
+	import type { Campaign } from '#lib/crm/types.js';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	// TYPES
-
-	interface Campaign {
-		id: string;
-		title: string;
-		subject: string;
-		status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'failed';
-		recipients_count: number;
-		sent_count: number;
-		open_count: number;
-		click_count: number;
-		bounce_count: number;
-		unsubscribe_count: number;
-		scheduled_at?: string;
-		sent_at?: string;
-		created_at: string;
-		updated_at: string;
-	}
 
 	// STATE
 
@@ -63,6 +47,9 @@
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state<string>('all');
+	let currentPage = $state(1),
+		totalPages = $state(1),
+		total = $state(0);
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -92,25 +79,25 @@
 		error = '';
 
 		try {
-			// LATENT BUG FIX (R12-A): the previous call passed `{ params: {...} }`
-			// as the 2nd arg, but `api.get(endpoint, params)` expects the params
-			// object directly — the old code shipped `?params=[object+Object]`
-			// to the backend. With QueryParams typing the bug now surfaces at
-			// compile time.
-			const response = await api.get<{ data?: Campaign[] } | Campaign[]>(
-				'/api/admin/crm/campaigns',
-				{
-					search: searchQuery || undefined,
-					status: selectedStatus !== 'all' ? selectedStatus : undefined
-				}
-			);
-			campaigns = Array.isArray(response) ? response : response?.data || [];
-
+			const response = await crmAPI.getCampaigns({
+				page: currentPage,
+				per_page: 25,
+				search: searchQuery || undefined,
+				status: selectedStatus === 'all' ? undefined : selectedStatus
+			});
+			campaigns = response.data;
+			total = response.meta.total;
+			totalPages = response.meta.total_pages ?? 1;
+			if (currentPage > totalPages) {
+				currentPage = totalPages;
+				await loadCampaigns();
+				return;
+			}
 			stats = {
-				total: campaigns.length,
-				sent: campaigns.filter((c) => c.status === 'sent').length,
-				scheduled: campaigns.filter((c) => c.status === 'scheduled').length,
-				totalSent: campaigns.reduce((sum, c) => sum + (c.sent_count || 0), 0)
+				total: response.stats.total,
+				sent: response.stats.sent,
+				scheduled: response.stats.scheduled,
+				totalSent: response.stats.total_emails_sent
 			};
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';
@@ -121,7 +108,7 @@
 
 	async function duplicateCampaign(id: string) {
 		try {
-			await api.post(`/api/admin/crm/campaigns/${id}/duplicate`);
+			await crmAPI.duplicateCampaign(id);
 			toastStore.success('Campaign duplicated successfully');
 			await loadCampaigns();
 		} catch (err) {
@@ -143,7 +130,7 @@
 		pendingDeleteId = null;
 
 		try {
-			await api.delete(`/api/admin/crm/campaigns/${id}`);
+			await crmAPI.deleteCampaign(id);
 			toastStore.success('Campaign deleted successfully');
 			await loadCampaigns();
 		} catch (err) {
@@ -193,27 +180,22 @@
 
 	// DERIVED STATE
 
-	let filteredCampaigns = $derived(
-		campaigns.filter((campaign) => {
-			const matchesSearch =
-				!searchQuery ||
-				campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				campaign.subject?.toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesStatus = selectedStatus === 'all' || campaign.status === selectedStatus;
-			return matchesSearch && matchesStatus;
-		})
-	);
+	let filteredCampaigns = $derived(campaigns);
+	function applyFilters() {
+		currentPage = 1;
+		void loadCampaigns();
+	}
+	function changePage(next: number) {
+		currentPage = next;
+		void loadCampaigns();
+	}
 
 	// LIFECYCLE
 
 	onMount(() => {
-		loadCampaigns();
+		void loadCampaigns();
 	});
 </script>
-
-<svelte:head>
-	<title>Email Campaigns - FluentCRM Pro</title>
-</svelte:head>
 
 <div class="campaigns-page">
 	<!-- Header -->
@@ -280,15 +262,25 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input autocomplete="off"
+			<input
+				autocomplete="off"
 				type="text"
 				id="search-campaigns"
 				name="search"
 				placeholder="Search campaigns..."
 				bind:value={searchQuery}
+				onkeydown={(event) => {
+					if (event.key === 'Enter') applyFilters();
+				}}
 			/>
 		</div>
-		<select id="campaigns-selectedstatus" name="campaigns_selectedstatus" class="filter-select" bind:value={selectedStatus}>
+		<select
+			id="campaigns-selectedstatus"
+			name="campaigns_selectedstatus"
+			class="filter-select"
+			bind:value={selectedStatus}
+			onchange={applyFilters}
+		>
 			{#each statusOptions as option (option.value)}
 				<option value={option.value}>{option.label}</option>
 			{/each}
@@ -341,7 +333,7 @@
 									</div>
 									<div class="campaign-info">
 										<span class="campaign-title">{campaign.title}</span>
-										<span class="campaign-subject">{campaign.subject}</span>
+										<span class="campaign-subject">{campaign.email_subject}</span>
 									</div>
 								</div>
 							</td>
@@ -401,6 +393,15 @@
 	{/if}
 </div>
 
+<nav class="campaign-pagination" aria-label="Campaign pages">
+	<button disabled={isLoading || currentPage <= 1} onclick={() => changePage(currentPage - 1)}
+		>Previous</button
+	><span>Page {currentPage} of {totalPages} · {total} matching campaigns</span><button
+		disabled={isLoading || currentPage >= totalPages}
+		onclick={() => changePage(currentPage + 1)}>Next</button
+	><button onclick={applyFilters}>Search campaigns</button>
+</nav>
+
 <ConfirmationModal
 	isOpen={showDeleteModal}
 	title="Delete Campaign"
@@ -415,6 +416,22 @@
 />
 
 <style>
+	.campaign-pagination {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin: 1rem 0;
+		padding: 1rem 2rem;
+	}
+	.campaign-pagination button {
+		padding: 0.65rem;
+		border: 1px solid var(--border-color, #475569);
+		border-radius: 0.5rem;
+		background: var(--bg-secondary, #18181b);
+		color: inherit;
+		cursor: pointer;
+	}
 	.campaigns-page {
 		max-width: 1600px;
 		padding: 24px;
@@ -500,7 +517,6 @@
 		transition: all 0.2s;
 		text-decoration: none;
 	}
-
 
 	/* Stats Grid */
 	.stats-grid {

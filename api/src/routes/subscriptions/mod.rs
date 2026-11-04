@@ -28,6 +28,7 @@ mod lifecycle;
 mod my_subs;
 mod notifications;
 mod plans;
+pub(crate) use plans::{get_plan as warm_get_plan, list_plans as warm_list_plans};
 
 // Re-export the DTOs the integration tests import directly. Keeping
 // `routes::subscriptions::{MembershipPlanRow, ...}` resolvable preserves

@@ -14,7 +14,7 @@ export type LifecycleStage =
 export type ContactSource = 'website' | 'form' | 'import' | 'api' | 'manual' | 'referral' | 'event';
 export type SubscriptionStatus = 'none' | 'trial' | 'active' | 'paused' | 'cancelled' | 'expired';
 export type DealStatus = 'open' | 'won' | 'lost' | 'abandoned';
-export type DealPriority = 'low' | 'normal' | 'high' | 'urgent';
+export type DealPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type ActivityType =
 	| 'note'
 	| 'email_sent'
@@ -126,9 +126,9 @@ export interface Deal {
 	/**
 	 * Write-only on requests (Batch 5c). Integer cents.
 	 * Backend converts at the SQL boundary via `BIGINT / 100.0`.
-	 * Server responses do not include this field; use `amount` on read.
+	 * Server responses include this field for exact form round trips.
 	 */
-	amount_cents?: number;
+	amount_cents: number;
 	currency: string;
 	probability: number;
 	weighted_value: number;
@@ -151,9 +151,44 @@ export interface Deal {
 	stage_entered_at: string;
 	closed_at?: string;
 	contact?: Contact;
+	company?: { id: string; name: string };
 	pipeline?: Pipeline;
 	stage?: Stage;
 	owner?: User;
+}
+
+/** Write contract uses integer cents and numeric foreign keys. Null clears optional fields. */
+export interface DealSummary {
+	currency: string;
+	total_deals: number;
+	open_deals: number;
+	won_deals: number;
+	lost_deals: number;
+	open_value: number;
+	weighted_value: number;
+	filtered_count: number;
+	filtered_value: number;
+	filtered_weighted_value: number;
+}
+
+export interface DealWrite {
+	name: string;
+	pipeline_id: number;
+	stage_id: number;
+	amount_cents?: number;
+	currency?: string;
+	probability?: number;
+	priority?: DealPriority;
+	expected_close_date?: string | null;
+	contact_id?: number | null;
+	company_id?: number | null;
+	owner_id?: number | null;
+	source_channel?: string | null;
+	source_campaign?: string | null;
+	tags?: string[];
+	custom_fields?: Record<string, unknown>;
+	lost_reason?: string;
+	stage_change_reason?: string;
 }
 
 export interface Pipeline {
@@ -306,6 +341,9 @@ export interface ContactFilters {
 }
 
 export interface DealFilters {
+	page?: number;
+	search?: string;
+	currency?: string;
 	pipeline_id?: string;
 	stage_id?: string;
 	status?: DealStatus;
@@ -414,6 +452,8 @@ export interface MailerSettings {
 }
 
 export interface SubscriberSettings {
+	newsletter_segment?: string;
+	eligibility?: 'confirmed_only';
 	subscribers?: SubscriberFilter[];
 	excluded_subscribers?: SubscriberFilter[];
 	sending_filter?: string;
@@ -1073,7 +1113,9 @@ export interface Webhook {
 export interface WebhookLog {
 	id: string;
 	webhook_id: string;
-	event: WebhookEvent;
+	event: WebhookEvent | 'webhook_test';
+	status: 'queued' | 'processing' | 'delivered' | 'failed' | 'cancelled';
+	attempts: number;
 	payload: Record<string, unknown>;
 	response_code?: number;
 	response_body?: string;
@@ -1243,6 +1285,7 @@ export interface SystemLog {
 }
 
 export interface SystemLogFilters {
+	page?: number;
 	level?: LogLevel;
 	category?: LogCategory;
 	search?: string;
@@ -1255,13 +1298,37 @@ export interface SystemLogFilters {
 // FLUENTCRM PRO - ONE-TIME CAMPAIGNS
 // =====================================================
 
-export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'archived';
+export type CampaignStatus =
+	| 'draft'
+	| 'scheduled'
+	| 'sending'
+	| 'sent'
+	| 'paused'
+	| 'failed'
+	| 'archived';
 export type CampaignType = 'regular' | 'plain_text' | 'raw_html';
 
+export interface CampaignDelivery {
+	id: string;
+	email: string;
+	display_name: string;
+	status: 'queued' | 'processing' | 'accepted' | 'failed' | 'unknown' | 'skipped';
+	attempt_count: number;
+	attempts_remaining: number;
+	provider_message_id: string | null;
+	last_error: string | null;
+	accepted_at: string | null;
+	delivered_at: string | null;
+	opened_at: string | null;
+	clicked_at: string | null;
+	unsubscribed_at: string | null;
+}
+
 export interface Campaign {
+	text_body?: string | null;
 	id: string;
 	title: string;
-	slug: string;
+	slug?: string;
 	status: CampaignStatus;
 	type: CampaignType;
 	email_subject: string;
@@ -1276,20 +1343,51 @@ export interface Campaign {
 	sent_at?: string;
 	recipients_count: number;
 	sent_count: number;
-	failed_count: number;
+	failed_count: number | null;
 	open_count: number;
 	click_count: number;
-	unsubscribe_count: number;
-	bounce_count: number;
-	complaint_count: number;
-	revenue: number;
-	created_by?: string;
+	unsubscribe_count?: number | null;
+	bounce_count?: number | null;
+	complaint_count?: number | null;
+	revenue?: number | null;
+	created_by?: string | null;
+	template_id?: string | null;
+	last_error?: string | null;
+	pause_reason?: 'manual' | 'provider_unavailable' | 'uncertain_submission' | null;
+	delivery_stats?: Record<string, number> | null;
 	created_at: string;
 	updated_at: string;
 	deleted_at?: string;
 	creator?: User;
 	open_rate?: number;
 	click_rate?: number;
+}
+
+export interface CampaignAudiencePreview {
+	data: Pick<Contact, 'id' | 'email' | 'full_name'>[];
+	meta: { current_page: number; per_page: number; total: number; total_pages: number };
+	audience: {
+		source: 'live_preview' | 'newsletter';
+		matching_contacts: number;
+		eligible_recipients: number;
+		excluded_without_confirmation: number;
+		policy: string;
+	};
+}
+
+export interface CampaignWrite {
+	title: string;
+	email_subject?: string;
+	email_pre_header?: string;
+	email_body?: string;
+	text_body?: string | null;
+	type?: CampaignType;
+	design_template?: string;
+	template_id?: number | null;
+	template_config?: Record<string, unknown> | null;
+	settings?: SequenceSettings | null;
+	subscriber_settings?: SubscriberSettings | null;
+	utm_settings?: UtmSettings | null;
 }
 
 export interface UtmSettings {

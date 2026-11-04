@@ -7,6 +7,7 @@
  * graph. The barrel re-exports these functions unchanged.
  */
 
+import { logger } from '#lib/utils/logger.js';
 import { browser } from '$app/env';
 import { consentStore } from '#lib/consent/store.svelte.js';
 import { applyConsentMode } from '#lib/consent/google-consent-mode.js';
@@ -25,6 +26,7 @@ import { scanCookies } from '#lib/consent/cookie-scanner.js';
 // exports the banner/editor components.
 import { initializeTemplateStore } from '#lib/consent/templates/store.js';
 import type { ConsentState } from '#lib/consent/types.js';
+import { initConsentAwarePerformanceTracking } from '#lib/consent/performance-integration.js';
 
 /**
  * Initialize the complete consent system.
@@ -50,15 +52,20 @@ export function initializeConsent(): () => void {
 
 	// Step 1: Initialize store (includes privacy signal detection)
 	const initialConsent = consentStore.initialize();
+	const cleanupPerformance = initConsentAwarePerformanceTracking();
 
 	// Step 2: Capture URL parameters for attribution passthrough
 	captureUrlParameters();
 
 	// Step 3: Initialize consent-aware behavior tracking
-	initConsentAwareBehaviorTracking();
+	void initConsentAwareBehaviorTracking().catch((error: unknown) =>
+		logger.error('[Consent] Behavior initialization failed', { error })
+	);
 
 	// Step 4: Initialize banner template system
-	initializeTemplateStore();
+	void initializeTemplateStore().catch((error: unknown) =>
+		logger.error('[Consent] Template initialization failed', { error })
+	);
 
 	// Step 5: Track banner shown if needed
 	if (!initialConsent.hasInteracted) {
@@ -70,13 +77,16 @@ export function initializeConsent(): () => void {
 		applyConsentMode(consent);
 		applyBingConsentMode(consent);
 		applyUrlPassthrough(consent);
-		loadVendorsForConsent(consent, vendors);
+		void loadVendorsForConsent(consent, vendors).catch((error: unknown) =>
+			logger.error('[Consent] Vendor loading failed', { error })
+		);
 	});
 
 	// Return cleanup function
 	return () => {
 		unsubscribe();
 		cleanupBehaviorIntegration();
+		cleanupPerformance();
 	};
 }
 

@@ -16,18 +16,22 @@
 	import IconWebhook from '@tabler/icons-svelte-runes/icons/webhook';
 	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 	import { crmAPI } from '#lib/api/crm.js';
-        import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import type { SystemLog, LogLevel, LogCategory } from '#lib/crm/types.js';
 
 	let logs = $state<SystemLog[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
+	let currentPage = $state(1),
+		totalPages = $state(1),
+		matchingCount = $state(0);
+	let requestVersion = 0;
 	let levelFilter = $state<LogLevel | ''>('');
 	let categoryFilter = $state<LogCategory | ''>('');
 
-        // Clear logs confirmation modal state
-        let showClearLogsModal = $state(false);
+	// Clear logs confirmation modal state
+	let showClearLogsModal = $state(false);
 
 	let stats = $state({
 		total: 0,
@@ -36,6 +40,7 @@
 	});
 
 	async function loadLogs() {
+		const version = ++requestVersion;
 		isLoading = true;
 		error = '';
 
@@ -44,37 +49,53 @@
 				crmAPI.getSystemLogs({
 					level: levelFilter || undefined,
 					category: categoryFilter || undefined,
-					search: searchQuery || undefined
+					search: searchQuery || undefined,
+					page: currentPage,
+					per_page: 50
 				}),
 				crmAPI.getLogStats()
 			]);
 
+			if (version !== requestVersion) return;
 			logs = logsResponse.data || [];
+			totalPages = logsResponse.meta.total_pages ?? 1;
+			matchingCount = logsResponse.meta.total;
 			stats = statsResponse;
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load logs';
+			if (version === requestVersion)
+				error = err instanceof Error ? err.message : 'Failed to load logs';
 		} finally {
-			isLoading = false;
+			if (version === requestVersion) isLoading = false;
 		}
 	}
 
-        function clearLogs() {
-                showClearLogsModal = true;
-        }
+	function filterLogs() {
+		currentPage = 1;
+		void loadLogs();
+	}
+	function goToPage(next: number) {
+		currentPage = next;
+		void loadLogs();
+	}
+	function clearLogs() {
+		showClearLogsModal = true;
+	}
 
-        async function confirmClearLogs() {
-                showClearLogsModal = false;
+	async function confirmClearLogs() {
+		showClearLogsModal = false;
 
-                try {
-                        await crmAPI.clearSystemLogs({
-                                level: levelFilter || undefined,
-                                category: categoryFilter || undefined
-                        });
-                        await loadLogs();
-                } catch (err) {
-                        error = err instanceof Error ? err.message : 'Failed to clear logs';
-                }
-        }
+		try {
+			await crmAPI.clearSystemLogs({
+				level: levelFilter || undefined,
+				category: categoryFilter || undefined,
+				search: searchQuery || undefined
+			});
+			currentPage = 1;
+			await loadLogs();
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to clear logs';
+		}
+	}
 
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('en-US', {
@@ -133,7 +154,7 @@
 	);
 
 	onMount(() => {
-		loadLogs();
+		void loadLogs();
 	});
 </script>
 
@@ -203,14 +224,25 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input autocomplete="off"
-				id="page-searchquery" name="page-searchquery" type="text"
+			<input
+				autocomplete="off"
+				aria-label="Search logs"
+				id="page-searchquery"
+				name="page-searchquery"
+				type="text"
 				placeholder="Search logs..."
 				bind:value={searchQuery}
-				onchange={loadLogs}
+				onchange={filterLogs}
 			/>
 		</div>
-		<select id="logs-levelfilter" name="logs_levelfilter" bind:value={levelFilter} class="filter-select" onchange={loadLogs}>
+		<select
+			aria-label="Log level"
+			id="logs-levelfilter"
+			name="logs_levelfilter"
+			bind:value={levelFilter}
+			class="filter-select"
+			onchange={filterLogs}
+		>
 			<option value="">All Levels</option>
 			<option value="debug">Debug</option>
 			<option value="info">Info</option>
@@ -218,7 +250,14 @@
 			<option value="error">Error</option>
 			<option value="critical">Critical</option>
 		</select>
-		<select id="logs-categoryfilter" name="logs_categoryfilter" bind:value={categoryFilter} class="filter-select" onchange={loadLogs}>
+		<select
+			aria-label="Log category"
+			id="logs-categoryfilter"
+			name="logs_categoryfilter"
+			bind:value={categoryFilter}
+			class="filter-select"
+			onchange={filterLogs}
+		>
 			<option value="">All Categories</option>
 			<option value="email">Email</option>
 			<option value="automation">Automation</option>
@@ -251,7 +290,7 @@
 			{#each filteredLogs as log (log.id)}
 				{const LevelIcon = getLevelIcon(log.level)}
 				{const CategoryIcon = getCategoryIcon(log.category)}
-				<div class={['log-entry', getLevelColor(log.level)]}>
+				<div data-log-id={log.id} class={['log-entry', getLevelColor(log.level)]}>
 					<div class="log-header">
 						<div class="log-level">
 							<LevelIcon size={16} />
@@ -281,7 +320,29 @@
 			{/each}
 		</div>
 	{/if}
+	{#if !error}<nav aria-label="Log pages">
+			<button disabled={isLoading || currentPage <= 1} onclick={() => goToPage(currentPage - 1)}
+				>Previous</button
+			>
+			<span>Page {currentPage} of {totalPages} · {matchingCount} matching logs</span>
+			<button
+				disabled={isLoading || currentPage >= totalPages}
+				onclick={() => goToPage(currentPage + 1)}>Next</button
+			>
+		</nav>{/if}
 </div>
+
+<ConfirmationModal
+	isOpen={showClearLogsModal}
+	title="Clear System Logs"
+	message="Clear operational logs matching the current search, level and category? This action cannot be undone."
+	confirmText="Clear Logs"
+	variant="danger"
+	onConfirm={confirmClearLogs}
+	onCancel={() => {
+		showClearLogsModal = false;
+	}}
+/>
 
 <style>
 	.logs-page {
@@ -641,13 +702,3 @@
 		margin-bottom: 1rem;
 	}
 </style>
-
-<ConfirmationModal
-	isOpen={showClearLogsModal}
-	title="Clear System Logs"
-	message="Are you sure you want to clear system logs? This action cannot be undone."
-	confirmText="Clear Logs"
-	variant="danger"
-	onConfirm={confirmClearLogs}
-	onCancel={() => { showClearLogsModal = false; }}
-/>

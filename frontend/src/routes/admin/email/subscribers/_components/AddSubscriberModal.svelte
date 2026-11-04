@@ -10,11 +10,12 @@
 
 	interface Props {
 		newSubscriber: NewSubscriberForm;
+		saving: boolean;
 		onclose: () => void;
 		onsubmit: () => void;
 	}
 
-	let { newSubscriber = $bindable(), onclose, onsubmit }: Props = $props();
+	let { newSubscriber = $bindable(), saving, onclose, onsubmit }: Props = $props();
 </script>
 
 <div
@@ -37,12 +38,18 @@
 	>
 		<div class="modal-header">
 			<h2>Add Subscriber</h2>
-			<button class="close-btn" onclick={onclose}>
+			<button
+				aria-label="Close add subscriber"
+				class="close-btn"
+				disabled={saving}
+				onclick={onclose}
+			>
 				<IconX size={20} />
 			</button>
 		</div>
 
 		<div class="modal-body">
+			<p>The subscriber remains pending until they confirm using the email link.</p>
 			<div class="form-group">
 				<label for="email">Email Address *</label>
 				<input
@@ -80,7 +87,8 @@
 
 			<div class="form-group">
 				<label for="tags">Tags (comma-separated)</label>
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					id="tags"
 					name="tags"
 					type="text"
@@ -92,9 +100,9 @@
 
 		<div class="modal-footer">
 			<button class="btn-secondary" onclick={onclose}>Cancel</button>
-			<button class="btn-primary" onclick={onsubmit}>
+			<button class="btn-primary" disabled={saving} onclick={onsubmit}>
 				<IconUserPlus size={18} />
-				Add Subscriber
+				{saving ? 'Saving…' : 'Add Subscriber'}
 			</button>
 		</div>
 	</div>

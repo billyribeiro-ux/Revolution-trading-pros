@@ -16,6 +16,7 @@
  * - Drag & Drop Reorder
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import type { JsonValue, PaginationMeta } from './_types';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
@@ -269,10 +270,12 @@ async function apiRequest<T>(
 	try {
 		const response = await fetch(`${API_BASE}/api/video-advanced${endpoint}`, {
 			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				...options.headers
-			},
+			headers: mergeHeaders(
+				{
+					'Content-Type': 'application/json'
+				},
+				options.headers
+			),
 			credentials: 'include'
 		});
 

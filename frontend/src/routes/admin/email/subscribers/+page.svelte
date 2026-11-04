@@ -3,7 +3,12 @@
 	import { onMount } from 'svelte';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
-	import { emailApi, type EmailSubscriber } from '#lib/api/email.js';
+	import {
+		emailApi,
+		type EmailSubscriber,
+		type SubscriberStats,
+		type ConfirmationReceipt
+	} from '#lib/api/email.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	import PageHeader from './_components/PageHeader.svelte';
@@ -22,8 +27,13 @@
 	let perPage = $state(25);
 	let searchQuery = $state('');
 	let statusFilter = $state('all');
-	let selectedTags = $state<string[]>([]);
-	let selectedSubscribers = $state(new SvelteSet<string>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	let tagFilter = $state('');
+	let loadError = $state('');
+	let statsError = $state('');
+	let requestSequence = 0;
+	let mounted = false;
+	let saving = $state(false);
+	const selectedSubscribers = new SvelteSet<string>();
 
 	// Modal states
 	let showAddModal = $state(false);
@@ -39,51 +49,72 @@
 		tags: ''
 	});
 
-	// Stats
-	let stats = $state({
-		total: 0,
-		subscribed: 0,
-		unsubscribed: 0,
-		bounced: 0
+	let stats = $state<SubscriberStats | null>(null);
+	onMount(() => {
+		mounted = true;
+		void refresh();
+		return () => {
+			mounted = false;
+			requestSequence++;
+		};
 	});
-
-	onMount(async () => {
-		await loadSubscribers();
-		await loadStats();
-	});
-
+	function filters() {
+		return {
+			page,
+			per_page: perPage,
+			...(searchQuery.trim() && { search: searchQuery.trim() }),
+			...(statusFilter !== 'all' && { status: statusFilter }),
+			...(tagFilter.trim() && {
+				tags: tagFilter
+					.split(',')
+					.map((t) => t.trim())
+					.filter(Boolean)
+			})
+		};
+	}
+	async function refresh() {
+		await Promise.all([loadSubscribers(), loadStats()]);
+	}
 	async function loadSubscribers() {
+		const sequence = ++requestSequence;
 		loading = true;
+		loadError = '';
 		try {
-			const params: {
-				status?: string;
-				search?: string;
-				tags?: string[];
-				page?: number;
-				per_page?: number;
-			} = { page, per_page: perPage };
-			if (searchQuery) params.search = searchQuery;
-			if (statusFilter !== 'all') params.status = statusFilter;
-			if (selectedTags.length > 0) params.tags = selectedTags;
-
-			const response = await emailApi.getSubscribers(params);
+			const response = await emailApi.getSubscribers(filters());
+			if (!mounted || sequence !== requestSequence) return;
 			subscribers = response.subscribers;
 			total = response.total;
+			selectedSubscribers.clear();
+			if (page > 1 && subscribers.length === 0 && total > 0) {
+				page = Math.max(1, Math.ceil(total / perPage));
+				await loadSubscribers();
+			}
 		} catch (err) {
-			toastStore.error('Failed to load subscribers');
-			console.error(err);
+			if (mounted && sequence === requestSequence)
+				loadError = err instanceof Error ? err.message : 'Failed to load subscribers';
 		} finally {
-			loading = false;
+			if (mounted && sequence === requestSequence) loading = false;
 		}
 	}
-
 	async function loadStats() {
 		try {
-			const data = await adminFetch('/api/admin/email/subscribers/stats');
-			stats = data.data || data;
+			const result = await emailApi.getSubscriberStats();
+			if (mounted) {
+				stats = result;
+				statsError = '';
+			}
 		} catch (err) {
-			console.error('Failed to load stats:', err);
+			if (mounted) {
+				stats = null;
+				statsError = err instanceof Error ? err.message : 'Subscriber statistics unavailable';
+			}
 		}
+	}
+	function showConfirmation(receipt: ConfirmationReceipt) {
+		const message =
+			receipt.message || 'Subscriber saved as pending; recipient confirmation is required';
+		if (receipt.status === 'accepted') toastStore.info(message);
+		else toastStore.error(message);
 	}
 
 	async function handleAddSubscriber() {
@@ -92,19 +123,21 @@
 			return;
 		}
 
+		if (saving) return;
+		saving = true;
 		try {
 			const tags = newSubscriber.tags
 				.split(',')
 				.map((t) => t.trim())
 				.filter(Boolean);
-			await emailApi.createSubscriber({
+			const result = await emailApi.createSubscriber({
 				email: newSubscriber.email,
 				...(newSubscriber.first_name && { first_name: newSubscriber.first_name }),
 				...(newSubscriber.last_name && { last_name: newSubscriber.last_name }),
 				tags
 			});
 
-			toastStore.success('Subscriber added successfully');
+			showConfirmation(result.confirmation);
 			showAddModal = false;
 			newSubscriber = { email: '', first_name: '', last_name: '', tags: '' };
 			await loadSubscribers();
@@ -112,6 +145,8 @@
 		} catch (err) {
 			const message = err instanceof Error ? err.message : undefined;
 			toastStore.error(message || 'Failed to add subscriber');
+		} finally {
+			saving = false;
 		}
 	}
 
@@ -150,8 +185,8 @@
 
 	async function handleResubscribe(id: string) {
 		try {
-			await emailApi.resubscribe(id);
-			toastStore.success('Subscriber resubscribed');
+			const result = await emailApi.resubscribe(id);
+			showConfirmation(result.confirmation);
 			await loadSubscribers();
 			await loadStats();
 		} catch (err) {
@@ -163,10 +198,10 @@
 	function handleRowAction(action: RowAction) {
 		switch (action.type) {
 			case 'unsubscribe':
-				handleUnsubscribe(action.id);
+				void handleUnsubscribe(action.id);
 				break;
 			case 'resubscribe':
-				handleResubscribe(action.id);
+				void handleResubscribe(action.id);
 				break;
 			case 'delete':
 				handleDeleteSubscriber(action.id);
@@ -182,10 +217,8 @@
 	async function confirmBulkDelete() {
 		showBulkDeleteModal = false;
 		try {
-			for (const id of selectedSubscribers) {
-				await emailApi.deleteSubscriber(id);
-			}
-			toastStore.success(`Deleted ${selectedSubscribers.size} subscribers`);
+			const result = await emailApi.bulkDeleteSubscribers([...selectedSubscribers]);
+			toastStore.success(`Deleted ${result.deleted} subscribers`);
 			selectedSubscribers.clear();
 			await loadSubscribers();
 			await loadStats();
@@ -197,7 +230,11 @@
 
 	async function handleExport() {
 		try {
-			const response = await adminFetch<Response>('/api/admin/email/subscribers/export', {
+			const { page: _page, per_page: _size, ...exportFilters } = filters();
+			const query = new URLSearchParams(
+				Object.entries(exportFilters).map(([key, value]) => [key, String(value)])
+			);
+			const response = await adminFetch<Response>(`/api/admin/email/subscribers/export?${query}`, {
 				rawResponse: true
 			});
 			const blob = await response.blob();
@@ -221,10 +258,10 @@
 	}
 
 	function toggleAllSubscribers() {
-		if (selectedSubscribers.size === subscribers.length) {
+		if (subscribers.every((s) => selectedSubscribers.has(s.id))) {
 			selectedSubscribers.clear();
 		} else {
-			selectedSubscribers = new SvelteSet(subscribers.map((s) => s.id));
+			for (const subscriber of subscribers) selectedSubscribers.add(subscriber.id);
 		}
 	}
 
@@ -243,7 +280,7 @@
 		}
 	}
 
-	function formatDate(dateStr: string | undefined): string {
+	function formatDate(dateStr: string | null | undefined): string {
 		if (!dateStr) return '-';
 		return new Date(dateStr).toLocaleDateString('en-US', {
 			month: 'short',
@@ -254,32 +291,32 @@
 
 	function handleSearch() {
 		page = 1;
-		loadSubscribers();
+		void loadSubscribers();
 	}
 
 	function handlePageChange(newPage: number) {
 		page = newPage;
-		loadSubscribers();
+		void loadSubscribers();
 	}
 
 	let totalPages = $derived(Math.ceil(total / perPage));
 </script>
 
-<svelte:head>
-	<title>Email Subscribers | Admin</title>
-</svelte:head>
-
 <div class="subscribers-page">
 	<PageHeader onexport={handleExport} onadd={() => (showAddModal = true)} />
 
+	{#if statsError}<p role="alert">
+			{statsError} <button onclick={() => void loadStats()}>Retry statistics</button>
+		</p>{/if}
 	<StatsGrid {stats} />
 
 	<FiltersBar
 		bind:searchQuery
 		bind:statusFilter
+		bind:tagFilter
 		selectedCount={selectedSubscribers.size}
 		onsearch={handleSearch}
-		onrefresh={loadSubscribers}
+		onrefresh={() => void refresh()}
 		onbulkdelete={handleBulkDelete}
 	/>
 
@@ -290,12 +327,17 @@
 				<div class="spinner"></div>
 				<p>Loading subscribers...</p>
 			</div>
+		{:else if loadError}
+			<div role="alert">
+				<p>{loadError}</p>
+				<button onclick={() => void loadSubscribers()}>Retry subscribers</button>
+			</div>
 		{:else if subscribers.length === 0}
 			<EmptyState onadd={() => (showAddModal = true)} />
 		{:else}
 			<SubscribersTable
 				{subscribers}
-				bind:selectedSubscribers
+				{selectedSubscribers}
 				{getStatusColor}
 				{formatDate}
 				ontoggleAll={toggleAllSubscribers}
@@ -314,6 +356,7 @@
 {#if showAddModal}
 	<AddSubscriberModal
 		bind:newSubscriber
+		{saving}
 		onclose={() => (showAddModal = false)}
 		onsubmit={handleAddSubscriber}
 	/>

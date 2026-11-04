@@ -50,13 +50,18 @@ struct PostmarkEmail {
 
 /// Send an email via Postmark API
 async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<()> {
-    let postmark_token = std::env::var("POSTMARK_TOKEN")
-        .or_else(|_| std::env::var("POSTMARK_API_KEY"))
-        .unwrap_or_default();
-    let from_email = std::env::var("POSTMARK_FROM_EMAIL")
-        .or_else(|_| std::env::var("EMAIL_FROM_ADDRESS"))
-        .or_else(|_| std::env::var("FROM_EMAIL"))
-        .unwrap_or_default();
+    fn configured(keys: &[&str]) -> String {
+        keys.iter()
+            .find_map(|key| {
+                std::env::var(key)
+                    .ok()
+                    .filter(|value| !value.trim().is_empty())
+                    .map(|value| value.trim().to_owned())
+            })
+            .unwrap_or_default()
+    }
+    let postmark_token = configured(&["POSTMARK_TOKEN", "POSTMARK_API_KEY"]);
+    let from_email = configured(&["POSTMARK_FROM_EMAIL", "EMAIL_FROM_ADDRESS", "FROM_EMAIL"]);
 
     if postmark_token.is_empty() {
         anyhow::bail!("Postmark is unavailable: configure POSTMARK_TOKEN or POSTMARK_API_KEY");
@@ -67,7 +72,11 @@ async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<
     }
     send_email_request(
         &HTTP_CLIENT,
-        "https://api.postmarkapp.com/email",
+        crate::services::campaign_mailer::endpoint(
+            &std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".into()),
+            std::env::var("POSTMARK_TEST_ENDPOINT").ok().as_deref(),
+        )?
+        .as_str(),
         &postmark_token,
         PostmarkEmail {
             from: from_email,
@@ -86,26 +95,11 @@ async fn send_email_request(
     token: &str,
     email: PostmarkEmail,
 ) -> Result<()> {
-    let response: serde_json::Value = client
-        .post(endpoint)
-        .header("Accept", "application/json")
-        .header("Content-Type", "application/json")
-        .header("X-Postmark-Server-Token", token)
-        .json(&email)
-        .send()
-        .await?
-        .error_for_status()?
-        .json()
-        .await?;
-    if response["ErrorCode"].as_i64() != Some(0)
-        || response["MessageID"].as_str().is_none_or(str::is_empty)
-    {
-        anyhow::bail!(
-            "Postmark did not acknowledge email acceptance: {}",
-            response["ErrorCode"]
-        );
-    }
-    Ok(())
+    let endpoint = reqwest::Url::parse(endpoint)?;
+    crate::services::campaign_mailer::submit_request(client, &endpoint, token, &email)
+        .await
+        .into_result()
+        .map(|_| ())
 }
 
 /// Generate HMAC-SHA256 signature for webhook payload
@@ -478,6 +472,8 @@ pub async fn run(db: Database) {
 
 /// Claim work atomically; a crashed worker's expired lease can be retried.
 pub async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid>> {
+    // An email lease lost after HTTP may already have been accepted. Do not resend it.
+    sqlx::query("UPDATE jobs SET status='failed',error='Email submission outcome is unknown after an expired worker lease; reconcile before retrying',reserved_at=NULL WHERE job_type='send_email' AND status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes'").execute(&db.pool).await?;
     sqlx::query("UPDATE jobs SET status='failed',error='Worker lease expired after final attempt',reserved_at=NULL WHERE status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes' AND attempts>=max_attempts")
         .execute(&db.pool).await?;
     let job: Option<Job> = sqlx::query_as(
@@ -492,8 +488,14 @@ pub async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid
                 .bind(job.id).bind(job.attempts).execute(&db.pool).await?;
         }
         Err(error) => {
-            sqlx::query("UPDATE jobs SET status=CASE WHEN attempts>=max_attempts THEN 'failed' ELSE 'pending' END,error=$2,reserved_at=NULL,available_at=NOW()+make_interval(secs => (10*power(2,LEAST(attempts,6)))::int) WHERE id=$1 AND attempts=$3 AND status='processing'")
-                .bind(job.id).bind(error.to_string()).bind(job.attempts).execute(&db.pool).await?;
+            let terminal = error
+                .downcast_ref::<crate::services::campaign_mailer::UncertainSubmission>()
+                .is_some()
+                || error
+                    .downcast_ref::<crate::services::campaign_mailer::RejectedSubmission>()
+                    .is_some_and(|error| !error.retryable);
+            sqlx::query("UPDATE jobs SET status=CASE WHEN $4 OR attempts>=max_attempts THEN 'failed' ELSE 'pending' END,error=$2,reserved_at=NULL,available_at=NOW()+make_interval(secs => (10*power(2,LEAST(attempts,6)))::int) WHERE id=$1 AND attempts=$3 AND status='processing'")
+                .bind(job.id).bind(error.to_string()).bind(job.attempts).bind(terminal).execute(&db.pool).await?;
         }
     }
     Ok(Some(job.id))

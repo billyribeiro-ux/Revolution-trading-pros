@@ -20,6 +20,8 @@ export default defineConfig({
 		printWidth: 100,
 		ignorePatterns: [
 			'**/.svelte-kit/**',
+			'**/.svelte-kit-admin-build/**',
+			'**/.svelte-kit-admin-verify/**',
 			'**/build/**',
 			'**/dist/**',
 			'**/.netlify/**',
@@ -42,6 +44,8 @@ export default defineConfig({
 	lint: {
 		ignorePatterns: [
 			'**/.svelte-kit/**',
+			'**/.svelte-kit-admin-build/**',
+			'**/.svelte-kit-admin-verify/**',
 			'**/build/**',
 			'**/dist/**',
 			'**/node_modules/**',

@@ -33,6 +33,7 @@ pub(super) async fn bulk_delete(
     let mut deleted_count = 0;
     let mut failed_count = 0;
     let mut errors: Vec<String> = Vec::new();
+    let mut details = Vec::new();
 
     let mut seen = std::collections::HashSet::new();
     for id in &payload.ids {
@@ -43,6 +44,7 @@ pub(super) async fn bulk_delete(
             Ok(_) => deleted_count += 1,
             Err(error) => {
                 failed_count += 1;
+                details.push(serde_json::json!({"id":id,"error":error.message}));
                 errors.push(format!("ID {id}: {}", error.message));
             }
         }
@@ -54,6 +56,7 @@ pub(super) async fn bulk_delete(
             "deleted": deleted_count,
             "failed": failed_count,
             "errors": errors
+            ,"details":details
         },
         "message": format!("{} item(s) deleted, {} failed", deleted_count, failed_count)
     })))

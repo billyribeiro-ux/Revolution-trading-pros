@@ -58,7 +58,7 @@
 						{currentStage.name}
 					</span>
 				{/if}
-				{#if deal.priority && deal.priority !== 'normal'}
+				{#if deal.priority && deal.priority !== 'medium'}
 					<span class="meta-item priority" style:color={priorityColor}>
 						{deal.priority} priority
 					</span>
@@ -210,7 +210,6 @@
 		transition: all 0.2s;
 	}
 
-
 	.btn-success {
 		display: flex;
 		align-items: center;
@@ -225,7 +224,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.btn-danger-outline {
 		display: flex;

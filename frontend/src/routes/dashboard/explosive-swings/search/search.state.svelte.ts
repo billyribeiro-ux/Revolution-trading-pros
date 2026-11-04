@@ -134,7 +134,7 @@ export function createSearchState() {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let currentPage = $state(1);
-	let totalPages = $derived(results ? Math.ceil(results.total_count / RESULTS_PER_PAGE) : 1);
+	const totalPages = $derived(results ? Math.ceil(results.total_count / RESULTS_PER_PAGE) : 1);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// UI STATE
@@ -287,7 +287,7 @@ export function createSearchState() {
 		}
 
 		debounceTimer = setTimeout(() => {
-			performSearch();
+			void performSearch();
 		}, DEBOUNCE_DELAY);
 	}
 
@@ -335,7 +335,7 @@ export function createSearchState() {
 
 		// Re-search if there's a query
 		if (query.trim()) {
-			performSearch();
+			void performSearch();
 		}
 	}
 
@@ -353,7 +353,7 @@ export function createSearchState() {
 		}
 
 		if (query.trim()) {
-			performSearch();
+			void performSearch();
 		}
 	}
 
@@ -363,7 +363,7 @@ export function createSearchState() {
 	function setDateRange(from: string | null, to: string | null) {
 		dateRange = { from, to };
 		if (query.trim()) {
-			performSearch();
+			void performSearch();
 		}
 	}
 
@@ -376,7 +376,7 @@ export function createSearchState() {
 		tickerFilter = null;
 
 		if (query.trim()) {
-			performSearch();
+			void performSearch();
 		}
 	}
 
@@ -394,7 +394,7 @@ export function createSearchState() {
 	function selectSuggestion(suggestion: string) {
 		query = suggestion;
 		showSuggestions = false;
-		performSearch();
+		void performSearch();
 	}
 
 	/**
@@ -402,7 +402,7 @@ export function createSearchState() {
 	 */
 	function selectFromHistory(historyQuery: string) {
 		query = historyQuery;
-		performSearch();
+		void performSearch();
 	}
 
 	/**

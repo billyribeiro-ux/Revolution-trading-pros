@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { IconUsers, IconCheck, IconX, IconMail } from '#lib/icons/index.js';
 
-	interface Stats {
-		total: number;
-		subscribed: number;
-		unsubscribed: number;
-		bounced: number;
-	}
-
+	import type { SubscriberStats } from '#lib/api/email.js';
 	interface Props {
-		stats: Stats;
+		stats: SubscriberStats | null;
 	}
 
 	let { stats }: Props = $props();
@@ -21,7 +15,7 @@
 			<IconUsers size={24} />
 		</div>
 		<div class="stat-content">
-			<div class="stat-value">{stats.total.toLocaleString()}</div>
+			<div class="stat-value">{stats?.total.toLocaleString() ?? 'Unavailable'}</div>
 			<div class="stat-label">Total Subscribers</div>
 		</div>
 	</div>
@@ -30,7 +24,7 @@
 			<IconCheck size={24} />
 		</div>
 		<div class="stat-content">
-			<div class="stat-value">{stats.subscribed.toLocaleString()}</div>
+			<div class="stat-value">{stats?.subscribed.toLocaleString() ?? 'Unavailable'}</div>
 			<div class="stat-label">Active</div>
 		</div>
 	</div>
@@ -39,7 +33,7 @@
 			<IconX size={24} />
 		</div>
 		<div class="stat-content">
-			<div class="stat-value">{stats.unsubscribed.toLocaleString()}</div>
+			<div class="stat-value">{stats?.unsubscribed.toLocaleString() ?? 'Unavailable'}</div>
 			<div class="stat-label">Unsubscribed</div>
 		</div>
 	</div>
@@ -48,8 +42,20 @@
 			<IconMail size={24} />
 		</div>
 		<div class="stat-content">
-			<div class="stat-value">{stats.bounced.toLocaleString()}</div>
+			<div class="stat-value">{stats?.bounced.toLocaleString() ?? 'Unavailable'}</div>
 			<div class="stat-label">Bounced</div>
+		</div>
+	</div>
+	<div class="stat-card">
+		<div class="stat-content">
+			<div class="stat-value">{stats?.pending.toLocaleString() ?? 'Unavailable'}</div>
+			<div class="stat-label">Pending confirmation</div>
+		</div>
+	</div>
+	<div class="stat-card">
+		<div class="stat-content">
+			<div class="stat-value">{stats?.complained.toLocaleString() ?? 'Unavailable'}</div>
+			<div class="stat-label">Complaints</div>
 		</div>
 	</div>
 </div>
@@ -57,7 +63,7 @@
 <style>
 	.stats-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 	}

@@ -48,13 +48,27 @@
 				</button>
 			</div>
 			<ResponsivePreview
-				variants={(item.variants ?? []).map((v) => ({
-					sizeName: v.size ?? v.type,
-					width: v.width,
-					height: v.height,
-					url: v.url,
-					size: v.file_size
-				}))}
+				originalSize={item.file_size ?? 0}
+				showSizes={item.file_size !== null}
+				variants={item.variants?.length
+					? item.variants.map((v) => ({
+							sizeName: `${v.size ?? v.type} · ${v.format} · ${v.width}w${v.is_retina ? ' 2x' : ''}`,
+							width: v.width,
+							height: v.height,
+							url: v.preview_url || v.url,
+							size: v.file_size
+						}))
+					: item.width && item.height
+						? [
+								{
+									sizeName: 'Original',
+									width: item.width,
+									height: item.height,
+									url: item.preview_url || item.url,
+									size: item.file_size ?? 0
+								}
+							]
+						: []}
 			/>
 		</div>
 	</div>
@@ -79,7 +93,7 @@
 		max-width: 1200px;
 		max-height: 90vh;
 		width: 100%;
-		overflow: hidden;
+		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 	}

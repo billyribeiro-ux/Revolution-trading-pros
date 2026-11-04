@@ -23,7 +23,6 @@
 	 *
 	 * @since January 2026
 	 */
-	import { browser } from '$app/env';
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
@@ -31,7 +30,13 @@
 	import OptimizedImage from '#lib/components/media/OptimizedImage.svelte';
 	import ImageCropModal from '#lib/components/media/ImageCropModal.svelte';
 	import MediaSkeleton from '#lib/components/media/MediaSkeleton.svelte';
-	import { mediaApi, type MediaItem, type OptimizationStatistics } from '#lib/api/media.js';
+	import {
+		mediaApi,
+		type MediaItem,
+		type OptimizationStatistics,
+		mediaFromApi,
+		type RawMedia
+	} from '#lib/api/media.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import ToastContainer from './_components/ToastContainer.svelte';
 	import StatsPanel from './_components/StatsPanel.svelte';
@@ -40,6 +45,7 @@
 	import ContextMenu, { type ContextAction } from './_components/ContextMenu.svelte';
 	import ResponsivePreviewModal from './_components/ResponsivePreviewModal.svelte';
 	import PageHeader from './_components/PageHeader.svelte';
+	import VersionHistory from './_components/VersionHistory.svelte';
 	// FIX-2026-04-26-audit (P1-7): media uploads, AI calls, and replace now route through
 	// same-origin /api/admin/media/* proxies (see frontend/src/routes/api/admin/media/*).
 	// Cross-origin XHRs to API_BASE_URL silently 401'd because the rtp_access_token cookie
@@ -94,6 +100,8 @@
 	let showStatsPanel = $state(true);
 	let showCropModal = $state(false);
 	let showPreviewModal = $state(false);
+	let previewLoadingId = $state<string | null>(null);
+	let previewRequestGeneration = 0;
 	let detailItem = $state<MediaItem | null>(null);
 	let contextMenu = $state<{ x: number; y: number; item: MediaItem } | null>(null);
 
@@ -125,8 +133,6 @@
 
 	// Lifecycle
 	onMount(() => {
-		if (!browser) return;
-
 		isComponentMounted = true;
 
 		// Load initial data
@@ -135,11 +141,24 @@
 		// Setup keyboard and click listeners
 		document.addEventListener('keydown', handleKeydown);
 		document.addEventListener('click', handleClickOutside);
+		const processingPoll = setInterval(() => {
+			if (
+				!isLoading &&
+				items.some(
+					(item) => item.processing_status === 'pending' || item.processing_status === 'processing'
+				)
+			) {
+				void loadMedia();
+				void loadStatistics();
+			}
+		}, 2000);
 
 		// Cleanup on unmount
 		return () => {
 			isComponentMounted = false;
+			clearInterval(processingPoll);
 			mediaRequestGeneration++;
+			previewRequestGeneration++;
 			statisticsRequestGeneration++;
 			abortUploads();
 			clearToastTimers();
@@ -170,7 +189,18 @@
 
 			if (!isComponentMounted || requestGeneration !== mediaRequestGeneration) return;
 
+			const previous = new Map(items.map((item) => [item.id, item.processing_status]));
 			items = response.data;
+			if (detailItem) detailItem = items.find((item) => item.id === detailItem?.id) ?? detailItem;
+			for (const item of items) {
+				const before = previous.get(item.id);
+				if (before === 'pending' || before === 'processing') {
+					if (item.processing_status === 'completed')
+						showToast(`${item.filename} optimized`, 'success');
+					if (item.processing_status === 'failed')
+						showToast(`${item.filename}: processing failed`, 'error');
+				}
+			}
 			currentPage = response.meta.current_page;
 			totalPages = response.meta.last_page;
 			totalItems = response.meta.total;
@@ -256,9 +286,23 @@
 			const result = await new Promise<MediaItem>((resolve, reject) => {
 				xhr.onload = () => {
 					if (xhr.status >= 200 && xhr.status < 300) {
-						resolve(JSON.parse(xhr.responseText).data);
+						try {
+							const response = JSON.parse(xhr.responseText) as { data: RawMedia[] };
+							const record = response.data[0];
+							if (!record) throw new Error('Upload returned no stored file');
+							resolve(mediaFromApi(record));
+						} catch (error) {
+							reject(error);
+						}
 					} else {
-						reject(new Error(xhr.statusText));
+						let message = `Upload failed (${xhr.status})`;
+						try {
+							const body = JSON.parse(xhr.responseText) as { message?: string };
+							message = body.message ?? message;
+						} catch {
+							/* Use the HTTP status when response is not JSON. */
+						}
+						reject(new Error(message));
 					}
 				};
 				xhr.onerror = () => reject(new Error('Upload failed'));
@@ -349,8 +393,58 @@
 	}
 
 	function handleItemDoubleClick(item: MediaItem) {
+		void openResponsivePreview(item);
+	}
+	async function openResponsivePreview(item: MediaItem) {
 		detailItem = item;
-		showPreviewModal = true;
+		if (item.file_type !== 'image' || (!item.preview_url && !item.url)) {
+			showDetailsPanel = true;
+			return;
+		}
+		const generation = ++previewRequestGeneration;
+		previewLoadingId = item.id;
+		try {
+			const result = await mediaApi.getVariants(item.id);
+			if (
+				!isComponentMounted ||
+				generation !== previewRequestGeneration ||
+				detailItem?.id !== item.id
+			)
+				return;
+			let width = item.width,
+				height = item.height;
+			if (!width || !height) {
+				const dimensions = await new Promise<{ width: number; height: number }>(
+					(resolve, reject) => {
+						const image = new Image();
+						image.onload = () =>
+							resolve({ width: image.naturalWidth, height: image.naturalHeight });
+						image.onerror = () => reject(new Error('Preview image is unavailable'));
+						image.src = item.preview_url || item.url;
+					}
+				);
+				width = dimensions.width;
+				height = dimensions.height;
+			}
+			if (
+				!isComponentMounted ||
+				generation !== previewRequestGeneration ||
+				detailItem?.id !== item.id
+			)
+				return;
+			const updated = { ...item, width, height, variants: result.data };
+			items = items.map((entry) => (entry.id === item.id ? updated : entry));
+			detailItem = updated;
+			showPreviewModal = true;
+		} catch (error) {
+			if (isComponentMounted && generation === previewRequestGeneration)
+				showToast(
+					error instanceof Error ? error.message : 'Unable to load responsive preview',
+					'error'
+				);
+		} finally {
+			if (generation === previewRequestGeneration) previewLoadingId = null;
+		}
 	}
 
 	function handleContextMenu(event: MouseEvent, item: MediaItem) {
@@ -363,10 +457,10 @@
 			const response = await mediaApi.optimize(item.id);
 			if (!isComponentMounted) return;
 
-			const updatedItem = response.data as MediaItem;
+			const updatedItem = { ...item, processing_status: response.data.status };
 			items = items.map((i) => (i.id === item.id ? updatedItem : i));
 			if (detailItem?.id === item.id) detailItem = updatedItem;
-			showToast('Image optimized', 'success');
+			showToast('Image processing queued', 'success');
 			void loadStatistics();
 		} catch (e) {
 			if (isComponentMounted) {
@@ -504,7 +598,12 @@
 
 		try {
 			const formData = new FormData();
-			formData.append('file', cropResult.blob, cropTarget.filename);
+			formData.append(
+				'file',
+				cropResult.blob,
+				cropTarget.filename.replace(/\.[^.]+$/, '') + '.png'
+			);
+			formData.append('changes', 'Cropped image');
 
 			// FIX-2026-04-26-audit (P1-7): same-origin admin proxy; multipart streamed verbatim.
 			const response = await fetch(`/api/admin/media/${cropTarget.id}/replace`, {
@@ -515,11 +614,12 @@
 			if (!response.ok) throw new Error('Failed to save crop');
 			if (!isComponentMounted) return;
 
-			const apiResult = await response.json();
+			const apiResult = (await response.json()) as { data: RawMedia };
 			if (!isComponentMounted) return;
 
-			items = items.map((i) => (i.id === cropTarget.id ? apiResult.data : i));
-			detailItem = apiResult.data;
+			const updated = mediaFromApi(apiResult.data);
+			items = items.map((i) => (i.id === cropTarget.id ? updated : i));
+			detailItem = updated;
 
 			showCropModal = false;
 			showToast('Image cropped and saved', 'success');
@@ -551,11 +651,12 @@
 
 			showToast(`${response.success} images queued for optimization`, 'success');
 
-			items = items.map((i) =>
-				selectedIds.has(i.id) && i.file_type === 'image'
-					? { ...i, processing_status: 'processing' as const }
-					: i
-			);
+			if (response.failed > 0)
+				showToast(
+					`${response.failed} image(s) could not be queued: ${response.errors.map((error) => error.error).join('; ')}`,
+					'error'
+				);
+			void loadMedia();
 
 			selectedIds.clear();
 			void loadStatistics();
@@ -601,7 +702,7 @@
 			const item = items.find((i) => i.id === id);
 			if (item) {
 				const a = document.createElement('a');
-				a.href = item.url;
+				a.href = item.preview_url || item.url;
 				a.download = item.filename;
 				a.click();
 			}
@@ -810,7 +911,8 @@
 
 	// Helpers
 
-	function formatBytes(bytes: number): string {
+	function formatBytes(bytes: number | null): string {
+		if (bytes === null) return 'Unknown';
 		if (bytes < 1024) return bytes + ' B';
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
 		if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(2) + ' MB';
@@ -850,8 +952,6 @@
 
 <div class={['admin-media', { 'details-open': showDetailsPanel }]}>
 	<div class="admin-page-container">
-		
-
 		<!-- Header (extracted to _components/PageHeader.svelte) -->
 		<PageHeader
 			{totalItems}
@@ -887,21 +987,36 @@
 		<div class="toolbar">
 			<div class="toolbar-left">
 				<!-- Filters -->
-				<select id="media-filter-type" name="media_filter_type" bind:value={filterType} onchange={() => void loadMedia()}>
+				<select
+					id="media-filter-type"
+					name="media_filter_type"
+					bind:value={filterType}
+					onchange={() => void loadMedia()}
+				>
 					<option value="all">All Types</option>
 					<option value="image">Images</option>
 					<option value="video">Videos</option>
 					<option value="document">Documents</option>
 				</select>
 
-				<select id="media-filter-status" name="media_filter_status" bind:value={filterStatus} onchange={() => void loadMedia()}>
+				<select
+					id="media-filter-status"
+					name="media_filter_status"
+					bind:value={filterStatus}
+					onchange={() => void loadMedia()}
+				>
 					<option value="all">All Status</option>
 					<option value="optimized">Optimized</option>
 					<option value="pending">Needs Optimization</option>
 					<option value="processing">Processing</option>
 				</select>
 
-				<select id="media-sort-by" name="media_sort_by" bind:value={sortBy} onchange={() => void loadMedia()}>
+				<select
+					id="media-sort-by"
+					name="media_sort_by"
+					bind:value={sortBy}
+					onchange={() => void loadMedia()}
+				>
 					<option value="created_at">Date Added</option>
 					<option value="filename">Name</option>
 					<option value="size">Size</option>
@@ -988,9 +1103,9 @@
 							>
 								{#if viewMode === 'grid'}
 									<div class="item-thumbnail">
-										{#if item.file_type === 'image'}
+										{#if item.file_type === 'image' && (item.preview_url || item.url)}
 											<OptimizedImage
-												src={item.thumbnail_url || item.url}
+												src={item.thumbnail_url || item.preview_url || item.url}
 												alt={item.alt_text || item.filename}
 												blurhash={String(item.custom_properties?.['blurhash'] || '')}
 												aspectRatio="1"
@@ -1040,7 +1155,7 @@
 
 									<div class="item-info">
 										<span class="item-name" title={item.filename}>{item.filename}</span>
-										<span class="item-meta">{formatBytes(item.size ?? 0)}</span>
+										<span class="item-meta">{formatBytes(item.file_size)}</span>
 									</div>
 								{:else}
 									<!-- List view -->
@@ -1062,9 +1177,9 @@
 									</div>
 
 									<div class="item-thumbnail-small">
-										{#if item.file_type === 'image'}
+										{#if item.file_type === 'image' && (item.preview_url || item.url)}
 											<OptimizedImage
-												src={item.thumbnail_url || item.url}
+												src={item.thumbnail_url || item.preview_url || item.url}
 												alt={item.alt_text || item.filename}
 												aspectRatio="1"
 											/>
@@ -1078,7 +1193,7 @@
 										<span class="item-path">{item.collection || 'default'}</span>
 									</div>
 
-									<div class="item-size">{formatBytes(item.size ?? 0)}</div>
+									<div class="item-size">{formatBytes(item.file_size)}</div>
 
 									<div class="item-status">
 										{#if item.is_optimized}
@@ -1145,9 +1260,9 @@
 					</div>
 
 					<div class="details-preview">
-						{#if detailItem.file_type === 'image'}
+						{#if detailItem.file_type === 'image' && (detailItem.preview_url || detailItem.url)}
 							<OptimizedImage
-								src={detailItem.url}
+								src={detailItem.preview_url || detailItem.url}
 								alt={detailItem.alt_text || detailItem.filename}
 								blurhash={String(detailItem.custom_properties?.['blurhash'] || '')}
 							/>
@@ -1163,7 +1278,7 @@
 						</div>
 						<div class="detail-row">
 							<span class="detail-label">Size</span>
-							<span class="detail-value">{formatBytes(detailItem.size ?? 0)}</span>
+							<span class="detail-value">{formatBytes(detailItem.file_size)}</span>
 						</div>
 						{#if detailItem.dimensions}
 							<div class="detail-row">
@@ -1180,6 +1295,11 @@
 						<div class="detail-row">
 							<span class="detail-label">Created</span>
 							<span class="detail-value">{formatDate(detailItem.created_at)}</span>
+						</div>
+						<div class="detail-row">
+							<span class="detail-label">Malware scan</span><span class="detail-value"
+								>{detailItem.scan_status ?? 'Unknown'}</span
+							>
 						</div>
 						<div class="detail-row">
 							<span class="detail-label">Status</span>
@@ -1258,19 +1378,38 @@
 						</div>
 					{/if}
 
+					{#key detailItem.id}
+						<VersionHistory
+							mediaId={detailItem.id}
+							revision={detailItem.content_version}
+							onrestore={(file) => {
+								items = items.map((item) => (item.id === file.id ? file : item));
+								detailItem = file;
+								showToast('Version restored', 'success');
+								void loadStatistics();
+							}}
+						/>
+					{/key}
+
 					<!-- Actions -->
 					<div class="details-actions">
-						{#if detailItem.file_type === 'image'}
+						{#if detailItem.file_type === 'image' && (detailItem.preview_url || detailItem.url)}
 							<button class="btn-secondary" onclick={() => detailItem && handleCrop(detailItem)}>
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: crop -->
 								<IconCrop size={20} aria-hidden="true" />
 								Crop
 							</button>
 
-							<button class="btn-secondary" onclick={() => (showPreviewModal = true)}>
+							<button
+								class="btn-secondary"
+								disabled={previewLoadingId === detailItem.id}
+								onclick={() => {
+									if (detailItem) void openResponsivePreview(detailItem);
+								}}
+							>
 								<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: devices (responsive preview) -->
 								<IconDevices size={20} aria-hidden="true" />
-								Responsive Preview
+								{previewLoadingId === detailItem.id ? 'Loading preview…' : 'Responsive Preview'}
 							</button>
 						{/if}
 						<button
@@ -1308,7 +1447,7 @@
 <!-- Crop Modal -->
 {#if showCropModal && detailItem}
 	<ImageCropModal
-		src={detailItem.url}
+		src={detailItem.preview_url || detailItem.url}
 		oncrop={(cropResult) => void handleCropSave(cropResult)}
 		oncancel={() => (showCropModal = false)}
 	/>
@@ -1865,7 +2004,7 @@
 	.details-panel {
 		position: fixed;
 		right: 0;
-		top: 0;
+		top: var(--admin-header-height, 70px);
 		bottom: 0;
 		width: 320px;
 		background: var(--bg-base, #0d1117);
@@ -1873,6 +2012,11 @@
 		display: flex;
 		flex-direction: column;
 		z-index: 50;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+	.details-panel > :global(*) {
+		flex-shrink: 0;
 	}
 
 	.details-header {

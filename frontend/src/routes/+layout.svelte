@@ -172,11 +172,13 @@
 			logger.error('[Layout] Performance monitoring init failed (non-critical):', err);
 		}
 
+		let cleanupConsent: (() => void) | undefined;
 		try {
-			initializeConsent();
+			cleanupConsent = initializeConsent();
 		} catch (err) {
 			logger.error('[Layout] Consent init failed (non-critical):', err);
 		}
+		return () => cleanupConsent?.();
 	});
 </script>
 

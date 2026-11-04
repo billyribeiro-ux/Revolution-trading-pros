@@ -1343,6 +1343,7 @@ export function initPerformanceMonitoring(): void {
 // ============================================================================
 
 // Import from centralized config - single source of truth
+import { deliverPerformanceObservation } from './performance-delivery.js';
 import { API_ENDPOINTS } from '#lib/api/config.js';
 
 export interface LegacyPerformanceMetric {
@@ -1376,10 +1377,13 @@ export function reportLegacyMetric(metric: LegacyPerformanceMetric): void {
 			});
 		}
 
-		if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function') {
-			const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
-			navigator.sendBeacon(API_ENDPOINTS.analytics.performance, blob);
-		}
+		void deliverPerformanceObservation(API_ENDPOINTS.analytics.performance, {
+			...metric,
+			url: window.location.href,
+			userAgent: navigator.userAgent
+		}).catch((error: unknown) => {
+			console.warn('[Performance] Observation delivery failed:', error);
+		});
 	}
 }
 

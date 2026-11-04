@@ -48,6 +48,7 @@
  * @license MIT
  */
 
+import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { browser } from '$app/env';
 import { writable, derived as _derived, get } from 'svelte/store';
 import type { FormTheme } from '#lib/data/formTemplates.js';
@@ -646,12 +647,14 @@ class FormsService {
 		retriesLeft: number
 	): Promise<T> {
 		const token = this.getAuthToken();
-		const headers: HeadersInit = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			...(token ? { Authorization: `Bearer ${token}` } : {}),
-			...options.headers
-		};
+		const headers = mergeHeaders(
+			{
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
+			},
+			options.headers
+		);
 
 		try {
 			const response = await fetch(url, {
@@ -855,7 +858,7 @@ class FormsService {
 
 		window.addEventListener('online', () => {
 			this.offlineMode.set(false);
-			this.processOfflineQueue();
+			void this.processOfflineQueue();
 		});
 
 		window.addEventListener('offline', () => {
@@ -911,7 +914,7 @@ class FormsService {
 		setInterval(() => {
 			const form = get(this.currentForm);
 			if (form && form.status === 'draft') {
-				this.saveDraft(form);
+				void this.saveDraft(form);
 			}
 		}, AUTOSAVE_INTERVAL);
 	}
@@ -938,7 +941,7 @@ class FormsService {
 		});
 
 		if (this.analyticsQueue.length >= ANALYTICS_BATCH_SIZE) {
-			this.flushAnalytics();
+			void this.flushAnalytics();
 		}
 	}
 

@@ -25,7 +25,7 @@ export interface OpenGraph {
 	title?: string | null;
 	description?: string | null;
 	url?: string | null;
-	type?: 'website' | 'article' | 'profile' | 'product' | string;
+	type?: string;
 	siteName?: string | null;
 	locale?: string | null;
 	image?: string | null;

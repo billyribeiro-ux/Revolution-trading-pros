@@ -120,7 +120,7 @@ function disableTracking(): void {
 
 	try {
 		if (behaviorTracker && typeof behaviorTracker.destroy === 'function') {
-			behaviorTracker.destroy();
+			behaviorTracker.destroy({ flush: false });
 		}
 
 		behaviorTracker = null;

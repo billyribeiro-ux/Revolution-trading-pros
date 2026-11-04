@@ -15,6 +15,14 @@ export class BehaviorTracker {
 	private bufferTimer?: number;
 	private sessionStartTime: number;
 	private sequenceNumber: number = 0;
+	private enabled = false;
+	private closed = false;
+	private discarded = false;
+	private listeners: (() => void)[] = [];
+	private pendingBatches: BehaviorEventBatch[] = [];
+	private delivery: Promise<void> | null = null;
+	private deliveryController: AbortController | null = null;
+	private hoverTimer?: number;
 
 	// Tracking state
 	private maxScrollDepth: number = 0;
@@ -51,7 +59,7 @@ export class BehaviorTracker {
 		};
 
 		this.sessionId = generateSessionId();
-		this.visitorId = generateVisitorId();
+		this.visitorId = '';
 		this.sessionStartTime = Date.now();
 
 		this.init();
@@ -65,51 +73,67 @@ export class BehaviorTracker {
 		}
 
 		// Sample rate check
-		if (Math.random() > this.config.sampleRate) {
+		if (this.config.sampleRate <= 0 || Math.random() >= this.config.sampleRate) {
 			console.info('[BehaviorTracker] Session not sampled');
 			return;
 		}
 
+		this.visitorId = generateVisitorId();
+		this.enabled = true;
+		this.pendingBatches = this.loadFailedBatches();
 		this.setupEventListeners();
 		this.trackPageView();
 	}
 
+	private listen<E extends Event>(
+		target: EventTarget,
+		type: string,
+		handler: (event: E) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		const listener: EventListener = (event) => {
+			if (this.enabled && !this.closed) handler(event as E);
+		};
+		target.addEventListener(type, listener, options);
+		this.listeners.push(() => target.removeEventListener(type, listener, options));
+	}
+
 	private setupEventListeners() {
 		// Page visibility
-		document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-		window.addEventListener('beforeunload', this.handlePageExit.bind(this));
+		this.listen(document, 'visibilitychange', this.handleVisibilityChange.bind(this));
+		this.listen(window, 'beforeunload', this.handlePageExit.bind(this));
 
 		// Scroll tracking
 		if (this.config.trackScrollDepth) {
-			window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+			this.listen(window, 'scroll', this.handleScroll.bind(this), { passive: true });
 		}
 
 		// Click tracking
-		document.addEventListener('click', this.handleClick.bind(this), true);
+		this.listen(document, 'click', this.handleClick.bind(this), true);
 
 		// Hover tracking
 		if (this.config.trackHoverIntent) {
-			document.addEventListener('mouseover', this.handleMouseOver.bind(this), true);
-			document.addEventListener('mouseout', this.handleMouseOut.bind(this), true);
+			this.listen(document, 'mouseover', this.handleMouseOver.bind(this), true);
+			this.listen(document, 'mouseout', this.handleMouseOut.bind(this), true);
 		}
 
 		// Form tracking
 		if (this.config.trackFormBehavior) {
-			document.addEventListener('focus', this.handleFocus.bind(this), true);
-			document.addEventListener('blur', this.handleBlur.bind(this), true);
-			document.addEventListener('submit', this.handleFormSubmit.bind(this), true);
+			this.listen(document, 'focus', this.handleFocus.bind(this), true);
+			this.listen(document, 'blur', this.handleBlur.bind(this), true);
+			this.listen(document, 'submit', this.handleFormSubmit.bind(this), true);
 		}
 
 		// Idle tracking
 		if (this.config.trackIdleTime) {
 			this.resetIdleTimer();
 			['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach((event) => {
-				document.addEventListener(event, this.resetIdleTimer.bind(this), { passive: true });
+				this.listen(document, event, this.resetIdleTimer.bind(this), { passive: true });
 			});
 		}
 
 		// Exit intent
-		document.addEventListener('mouseout', this.handleExitIntent.bind(this));
+		this.listen(document, 'mouseout', this.handleExitIntent.bind(this));
 	}
 
 	private trackPageView() {
@@ -264,8 +288,9 @@ export class BehaviorTracker {
 		this.hoverElement = target;
 		this.hoverStartTime = Date.now();
 
-		setTimeout(() => {
-			if (this.hoverElement === target && this.hoverStartTime) {
+		if (this.hoverTimer) clearTimeout(this.hoverTimer);
+		this.hoverTimer = window.setTimeout(() => {
+			if (!this.closed && this.hoverElement === target && this.hoverStartTime) {
 				const hoverDuration = Date.now() - this.hoverStartTime;
 
 				if (hoverDuration >= this.config.hoverIntentDuration) {
@@ -291,6 +316,7 @@ export class BehaviorTracker {
 	}
 
 	private handleMouseOut() {
+		if (this.hoverTimer) clearTimeout(this.hoverTimer);
 		this.hoverElement = undefined;
 		this.hoverStartTime = undefined;
 	}
@@ -383,7 +409,7 @@ export class BehaviorTracker {
 			true
 		); // Immediate dispatch
 
-		this.flush();
+		void this.flush();
 	}
 
 	private handleExitIntent(event: MouseEvent) {
@@ -450,7 +476,7 @@ export class BehaviorTracker {
 	}
 
 	public trackEvent(event: BehaviorEvent, immediate: boolean = false) {
-		if (this.eventBuffer.length >= this.config.maxEventsPerSession) {
+		if (!this.enabled || this.closed || this.sequenceNumber >= this.config.maxEventsPerSession) {
 			return;
 		}
 
@@ -458,61 +484,175 @@ export class BehaviorTracker {
 		this.sequenceNumber++;
 
 		if (immediate || this.eventBuffer.length >= this.config.bufferSize) {
-			this.flush();
+			void this.flush();
 		} else if (!this.bufferTimer) {
-			this.bufferTimer = window.setTimeout(() => this.flush(), this.config.bufferTimeout);
+			this.bufferTimer = window.setTimeout(() => {
+				this.bufferTimer = undefined;
+				void this.flush();
+			}, this.config.bufferTimeout);
 		}
 	}
 
-	public async flush() {
-		if (this.eventBuffer.length === 0) return;
-
-		const batch: BehaviorEventBatch = {
-			session_id: this.sessionId,
-			visitor_id: this.visitorId,
-			user_id: this.userId,
-			events: [...this.eventBuffer],
-			client_timestamp: Date.now()
-		};
-
-		this.eventBuffer = [];
-
+	public flush(): Promise<void> {
+		if (!this.enabled || this.closed || this.discarded) return Promise.resolve();
 		if (this.bufferTimer) {
 			clearTimeout(this.bufferTimer);
 			this.bufferTimer = undefined;
 		}
+		// Keep batches within the Rust event and proxy byte limits.
+		while (this.eventBuffer.length) {
+			let size = Math.min(100, this.eventBuffer.length);
+			let batch = this.makeBatch(this.eventBuffer.slice(0, size));
+			while (size > 1 && this.batchBytes(batch) > 60 * 1024) {
+				size = Math.max(1, Math.floor(size / 2));
+				batch = this.makeBatch(this.eventBuffer.slice(0, size));
+			}
+			this.eventBuffer.splice(0, size);
+			if (this.batchBytes(batch) > 60 * 1024) {
+				console.warn('[BehaviorTracker] An event exceeded the ingestion byte limit');
+				continue;
+			}
+			this.pendingBatches.push(batch);
+		}
+		if (this.pendingBatches.length > 5) {
+			console.warn('[BehaviorTracker] Retry capacity exceeded; retaining the latest five batches');
+			this.pendingBatches = this.delivery
+				? [this.pendingBatches[0] as BehaviorEventBatch, ...this.pendingBatches.slice(-4)]
+				: this.pendingBatches.slice(-5);
+		}
+		this.persistBatches();
+		if (this.delivery) return this.delivery;
+		const delivery = this.deliverBatches();
+		this.delivery = delivery;
+		const complete = () => {
+			if (this.delivery === delivery) this.delivery = null;
+		};
+		void delivery.then(complete, complete);
+		return delivery;
+	}
 
+	private batchBytes(batch: BehaviorEventBatch): number {
 		try {
-			const response = await fetch(this.config.apiEndpoint, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(batch),
-				keepalive: true
-			});
-
-			// Silently handle non-OK responses (endpoint may not exist)
-			if (!response.ok && response.status !== 404) {
-				console.debug('[BehaviorTracker] Server returned:', response.status);
-			}
-		} catch (error) {
-			// Silently fail - behavior tracking is non-critical
-			// Only log in debug mode to avoid console spam
-			if (import.meta.env.DEV && import.meta.env.VITE_DEBUG_BEHAVIOR) {
-				console.debug('[BehaviorTracker] Failed to send events:', error);
-			}
-			// Store in localStorage for retry when endpoint becomes available
-			this.storeFailedBatch(batch);
+			return new TextEncoder().encode(JSON.stringify(batch)).byteLength;
+		} catch {
+			return Infinity;
 		}
 	}
 
-	private storeFailedBatch(batch: BehaviorEventBatch) {
+	private makeBatch(events: BehaviorEvent[]): BehaviorEventBatch {
+		return {
+			session_id: this.sessionId,
+			visitor_id: this.visitorId,
+			...(this.userId && { user_id: this.userId }),
+			events,
+			client_timestamp: Date.now()
+		};
+	}
+
+	private loadFailedBatches(): BehaviorEventBatch[] {
 		try {
-			const stored = localStorage.getItem('behavior_failed_batches');
-			const batches = stored ? JSON.parse(stored) : [];
-			batches.push(batch);
-			localStorage.setItem('behavior_failed_batches', JSON.stringify(batches.slice(-5)));
-		} catch (_e) {
-			// Ignore storage errors
+			const stored: unknown = JSON.parse(localStorage.getItem('behavior_failed_batches') || '[]');
+			if (!Array.isArray(stored)) return [];
+			return stored
+				.filter((value: unknown): value is BehaviorEventBatch => {
+					if (
+						!value ||
+						typeof value !== 'object' ||
+						!('session_id' in value) ||
+						typeof value.session_id !== 'string' ||
+						!('visitor_id' in value) ||
+						typeof value.visitor_id !== 'string' ||
+						!('events' in value) ||
+						!Array.isArray(value.events) ||
+						!value.events.length ||
+						value.events.length > 100
+					)
+						return false;
+					return value.events.every(
+						(event: unknown) =>
+							event &&
+							typeof event === 'object' &&
+							'event_type' in event &&
+							typeof event.event_type === 'string' &&
+							'page_url' in event &&
+							typeof event.page_url === 'string' &&
+							'timestamp' in event &&
+							typeof event.timestamp === 'number' &&
+							Number.isFinite(event.timestamp)
+					);
+				})
+				.slice(-5);
+		} catch {
+			return [];
+		}
+	}
+
+	private persistBatches(): void {
+		if (this.discarded) return;
+		try {
+			if (this.pendingBatches.length)
+				localStorage.setItem('behavior_failed_batches', JSON.stringify(this.pendingBatches));
+			else localStorage.removeItem('behavior_failed_batches');
+		} catch (error) {
+			console.warn(
+				'[BehaviorTracker] Browser storage unavailable; pending batches remain in memory',
+				error
+			);
+		}
+	}
+
+	private async deliverBatches(): Promise<void> {
+		while (this.pendingBatches.length && !this.discarded) {
+			const batch = this.pendingBatches[0];
+			if (!batch) return;
+			const controller = new AbortController();
+			this.deliveryController = controller;
+			try {
+				const response = await fetch(this.config.apiEndpoint, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(batch),
+					keepalive: true,
+					signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])
+				});
+				if (this.discarded) return;
+				if (response.status === 400 || response.status === 422 || response.status === 413) {
+					console.warn(
+						`[BehaviorTracker] Invalid or expired batch rejected (HTTP ${response.status})`
+					);
+					this.pendingBatches.shift();
+					this.persistBatches();
+					continue;
+				}
+				if (!response.ok) throw new Error(`Behavior storage unavailable (HTTP ${response.status})`);
+				const receipt: unknown = await response.json();
+				if (
+					!receipt ||
+					typeof receipt !== 'object' ||
+					!('success' in receipt) ||
+					receipt.success !== true ||
+					!('received' in receipt) ||
+					receipt.received !== batch.events.length ||
+					!('persisted' in receipt) ||
+					typeof receipt.persisted !== 'number' ||
+					!Number.isInteger(receipt.persisted) ||
+					receipt.persisted < 0 ||
+					receipt.persisted > batch.events.length
+				)
+					throw new Error('Behavior storage did not acknowledge the complete batch');
+				if (this.discarded) return;
+				this.pendingBatches.shift();
+				this.persistBatches();
+			} catch (error) {
+				if (!this.discarded) {
+					this.persistBatches();
+					if (import.meta.env.DEV && import.meta.env.VITE_DEBUG_BEHAVIOR)
+						console.debug('[BehaviorTracker] Batch retained for retry:', error);
+				}
+				return;
+			} finally {
+				if (this.deliveryController === controller) this.deliveryController = null;
+			}
 		}
 	}
 
@@ -520,9 +660,28 @@ export class BehaviorTracker {
 		this.userId = userId;
 	}
 
-	public destroy() {
-		this.flush();
+	public destroy(options: { flush?: boolean } = {}): void {
+		if (this.closed) return;
+		if (options.flush === false) {
+			this.discarded = true;
+			this.deliveryController?.abort();
+			this.eventBuffer = [];
+			this.pendingBatches = [];
+			try {
+				localStorage.removeItem('behavior_failed_batches');
+			} catch {
+				/* Storage may be disabled. */
+			}
+		} else {
+			void this.flush();
+		}
+		this.closed = true;
+		this.enabled = false;
+		for (const remove of this.listeners) remove();
+		this.listeners = [];
 		if (this.bufferTimer) clearTimeout(this.bufferTimer);
 		if (this.idleTimer) clearTimeout(this.idleTimer);
+		if (this.hoverTimer) clearTimeout(this.hoverTimer);
+		this.hoverElement = undefined;
 	}
 }

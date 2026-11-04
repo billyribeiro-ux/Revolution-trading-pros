@@ -324,7 +324,7 @@ export class VideoTracker {
 	 */
 	private startFlushInterval() {
 		this.flushInterval = window.setInterval(() => {
-			this.flush();
+			void this.flush();
 		}, 30000); // Flush every 30 seconds
 	}
 

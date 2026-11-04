@@ -75,7 +75,6 @@ vi.mock('blurhash', () => ({
 // `RangeError: offset is out of bounds`, and the helper would fall back
 // to null (defeating the test).
 beforeAll(() => {
-	const origGetContext = HTMLCanvasElement.prototype.getContext;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	(HTMLCanvasElement.prototype as any).getContext = function () {
 		return {
@@ -108,10 +107,6 @@ beforeAll(() => {
 			translate: () => {}
 		};
 	};
-	// Re-stash original for any after-suite cleanup callers that look it up;
-	// we don't actually restore because vitest tears down the module mock at
-	// file exit anyway and other test files re-set their own getContext.
-	void origGetContext;
 });
 
 import {

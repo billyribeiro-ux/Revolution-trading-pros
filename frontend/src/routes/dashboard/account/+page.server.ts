@@ -183,15 +183,20 @@ export const load: PageServerLoad = async ({
  * - No lazy ts-expect-error suppressions
  * - Full type safety with proper return types
  */
+function formText(data: FormData, key: string): string | undefined {
+	const value = data.get(key);
+	return typeof value === 'string' ? value : undefined;
+}
+
 export const actions: Actions = {
 	/**
 	 * Update user profile (name, email)
 	 */
 	updateProfile: async ({ request }: RequestEvent) => {
 		const formData = await request.formData();
-		const firstName = formData.get('first_name')?.toString().trim();
-		const lastName = formData.get('last_name')?.toString().trim();
-		const email = formData.get('email')?.toString().trim();
+		const firstName = formText(formData, 'first_name')?.trim();
+		const lastName = formText(formData, 'last_name')?.trim();
+		const email = formText(formData, 'email')?.trim();
 
 		// Validation
 		if (!firstName) {
@@ -262,9 +267,9 @@ export const actions: Actions = {
 	 */
 	updatePassword: async ({ request }: RequestEvent) => {
 		const formData = await request.formData();
-		const currentPassword = formData.get('current_password')?.toString();
-		const newPassword = formData.get('new_password')?.toString();
-		const confirmPassword = formData.get('confirm_password')?.toString();
+		const currentPassword = formText(formData, 'current_password');
+		const newPassword = formText(formData, 'new_password');
+		const confirmPassword = formText(formData, 'confirm_password');
 
 		// Validation
 		if (!currentPassword) {

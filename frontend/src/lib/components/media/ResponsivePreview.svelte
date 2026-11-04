@@ -67,6 +67,9 @@
 
 	// Derived state
 	const sortedVariants = $derived([...variants].sort((a, b) => a.width - b.width));
+	const comparisonMax = $derived(
+		Math.max(originalSize, ...variants.map((variant) => variant.size), 1)
+	);
 
 	// Format bytes
 	function formatBytes(bytes: number): string {
@@ -166,7 +169,17 @@
 						<div class="responsive-preview__variant-stats">
 							<span>{formatBytes(variant.size)}</span>
 							{#if originalSize > 0}
-								<span class="responsive-preview__savings">-{getSavings(variant.size)}%</span>
+								<span
+									class={[
+										'responsive-preview__savings',
+										{ 'responsive-preview__increase': getSavings(variant.size) < 0 }
+									]}
+									>{getSavings(variant.size) > 0
+										? '−'
+										: getSavings(variant.size) < 0
+											? '+'
+											: ''}{Math.abs(getSavings(variant.size))}%</span
+								>
 							{/if}
 						</div>
 					{/if}
@@ -176,7 +189,7 @@
 				<div class="responsive-preview__breakpoint-track">
 					<div
 						class="responsive-preview__breakpoint-fill"
-						style:width={`${((breakpointWidths[variant.sizeName] ?? 0) / 1920) * 100}%`}
+						style:width={`${Math.min(100, ((breakpointWidths[variant.sizeName] ?? variant.width) / 1920) * 100)}%`}
 					></div>
 				</div>
 			</button>
@@ -184,7 +197,7 @@
 	</div>
 
 	<!-- Size comparison chart -->
-	{#if showSizes && sortedVariants.length > 0}
+	{#if showSizes && originalSize > 0 && sortedVariants.length > 0}
 		<div class="responsive-preview__comparison">
 			<div class="responsive-preview__comparison-heading">
 				<span>Size Comparison</span>
@@ -194,7 +207,7 @@
 					<div class="responsive-preview__chart-item">
 						<div
 							class="responsive-preview__chart-bar responsive-preview__chart-bar--variant"
-							style:height={`${(variant.size / originalSize) * 100}%`}
+							style:height={`${(variant.size / comparisonMax) * 100}%`}
 						></div>
 						<span>{variant.sizeName}</span>
 					</div>
@@ -202,7 +215,7 @@
 				<div class="responsive-preview__chart-item">
 					<div
 						class="responsive-preview__chart-bar responsive-preview__chart-bar--original"
-						style:height="100%"
+						style:height={`${(originalSize / comparisonMax) * 100}%`}
 					></div>
 					<span>orig</span>
 				</div>
@@ -383,6 +396,9 @@
 	.responsive-preview__savings {
 		color: var(--success-emphasis, #3fb950);
 		font-weight: 500;
+	}
+	.responsive-preview__increase {
+		color: var(--admin-warning, #f2b84b);
 	}
 
 	.responsive-preview__breakpoint-track {

@@ -69,10 +69,8 @@
 		currentFormId: number,
 		startDate: string | undefined,
 		endDate: string | undefined,
-		reloadNonce: number
+		_reloadNonce: number
 	): Promise<ReportData> {
-		reloadNonce;
-
 		const params = new URLSearchParams();
 		if (startDate) params.append('start_date', startDate);
 		if (endDate) params.append('end_date', endDate);

@@ -14,6 +14,8 @@
 // Types
 // =============================================================================
 
+import { SvelteMap } from 'svelte/reactivity';
+
 export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'loading';
 
 export interface Toast {
@@ -50,7 +52,7 @@ const toastsValue = $derived(storeState.toasts);
 
 let idCounter = 0;
 // Track timeout IDs for cleanup
-const timeoutIds = new Map<string, ReturnType<typeof setTimeout>>();
+const timeoutIds = new SvelteMap<string, ReturnType<typeof setTimeout>>();
 
 function generateId(): string {
 	return `toast-${Date.now()}-${++idCounter}`;
@@ -146,7 +148,7 @@ export const toastStore = {
 	/**
 	 * Show a success toast
 	 */
-	success(message: string, duration = DEFAULT_DURATION): string {
+	success(this: void, message: string, duration = DEFAULT_DURATION): string {
 		return addToast({
 			type: 'success',
 			message,
@@ -158,7 +160,7 @@ export const toastStore = {
 	/**
 	 * Show an error toast (longer duration by default)
 	 */
-	error(message: string, duration = 6000): string {
+	error(this: void, message: string, duration = 6000): string {
 		return addToast({
 			type: 'error',
 			message,
@@ -170,7 +172,7 @@ export const toastStore = {
 	/**
 	 * Show a warning toast
 	 */
-	warning(message: string, duration = 5000): string {
+	warning(this: void, message: string, duration = 5000): string {
 		return addToast({
 			type: 'warning',
 			message,
@@ -182,7 +184,7 @@ export const toastStore = {
 	/**
 	 * Show an info toast
 	 */
-	info(message: string, duration = DEFAULT_DURATION): string {
+	info(this: void, message: string, duration = DEFAULT_DURATION): string {
 		return addToast({
 			type: 'info',
 			message,
@@ -195,7 +197,7 @@ export const toastStore = {
 	 * Show a loading toast (no auto-dismiss)
 	 * Returns ID so you can update it later
 	 */
-	loading(message: string): string {
+	loading(this: void, message: string): string {
 		return addToast({
 			type: 'loading',
 			message,
@@ -207,7 +209,7 @@ export const toastStore = {
 	/**
 	 * Show a custom toast
 	 */
-	show(options: Partial<Omit<Toast, 'id'>> & { message: string }): string {
+	show(this: void, options: Partial<Omit<Toast, 'id'>> & { message: string }): string {
 		return addToast({
 			type: options.type ?? 'info',
 			message: options.message,
@@ -226,6 +228,7 @@ export const toastStore = {
 	 * Shows loading, then success/error based on promise result
 	 */
 	async promise<T>(
+		this: void,
 		promise: Promise<T>,
 		options: {
 			loading: string;

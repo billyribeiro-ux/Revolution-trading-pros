@@ -379,7 +379,7 @@ describe('adminApi.* wrappers', () => {
 	it('adminApi.get sends GET', async () => {
 		const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(fakeResponse());
 		await adminApi.get('/admin/things');
-		expect((fetchSpy.mock.calls[0]?.[1] as RequestInit).method).toBe('GET');
+		expect(fetchSpy.mock.calls[0]?.[1]?.method).toBe('GET');
 	});
 
 	it('adminApi.post serializes JSON body and sends POST', async () => {
@@ -403,12 +403,12 @@ describe('adminApi.* wrappers', () => {
 		const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(fakeResponse());
 
 		await adminApi.put('/admin/x', { v: 1 });
-		expect((fetchSpy.mock.calls[0]?.[1] as RequestInit).method).toBe('PUT');
+		expect(fetchSpy.mock.calls[0]?.[1]?.method).toBe('PUT');
 
 		await adminApi.patch('/admin/x', { v: 2 });
-		expect((fetchSpy.mock.calls[1]?.[1] as RequestInit).method).toBe('PATCH');
+		expect(fetchSpy.mock.calls[1]?.[1]?.method).toBe('PATCH');
 
 		await adminApi.delete('/admin/x');
-		expect((fetchSpy.mock.calls[2]?.[1] as RequestInit).method).toBe('DELETE');
+		expect(fetchSpy.mock.calls[2]?.[1]?.method).toBe('DELETE');
 	});
 });

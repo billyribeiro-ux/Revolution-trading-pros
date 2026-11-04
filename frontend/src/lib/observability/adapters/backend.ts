@@ -233,7 +233,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 		document.removeEventListener('visibilitychange', this._handleVisibilityChange);
 
 		// Final flush
-		this._flushQueue(true);
+		void this._flushQueue(true);
 
 		this._state = 'disabled';
 	}
@@ -265,7 +265,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 
 		// Check if we should flush immediately
 		if (this._eventQueue.length >= this._maxBatchSize) {
-			this._flushQueue();
+			void this._flushQueue();
 		}
 	}
 
@@ -327,7 +327,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 		}
 
 		this._flushTimeoutId = setTimeout(() => {
-			this._flushQueue();
+			void this._flushQueue();
 			this._scheduleFlush();
 		}, this._flushIntervalMs);
 	}
@@ -414,7 +414,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 	 * Handle page unload.
 	 */
 	private _handlePageUnload = (): void => {
-		this._flushQueue(true);
+		void this._flushQueue(true);
 	};
 
 	/**
@@ -422,7 +422,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 	 */
 	private _handleVisibilityChange = (): void => {
 		if (document.visibilityState === 'hidden') {
-			this._flushQueue(true);
+			void this._flushQueue(true);
 		}
 	};
 

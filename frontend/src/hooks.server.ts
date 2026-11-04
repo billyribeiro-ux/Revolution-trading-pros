@@ -196,7 +196,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 						id: userData.id,
 						email: userData.email,
 						name: userData.name,
-						role: userData.role
+						role: userData.role,
+						is_superadmin: userData.is_superadmin === true,
+						is_developer: userData.is_developer === true
 					};
 					// ICT 7 FIX: Set accessToken in locals for non-protected routes too
 					event.locals.accessToken = token;
@@ -243,7 +245,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				id: userData.id,
 				email: userData.email,
 				name: userData.name,
-				role: userData.role
+				role: userData.role,
+				is_superadmin: userData.is_superadmin === true,
+				is_developer: userData.is_developer === true
 			};
 
 			// ICT 7 FIX: Store token in locals for server-side API calls
@@ -309,7 +313,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 						id: userData.id,
 						email: userData.email,
 						name: userData.name,
-						role: userData.role
+						role: userData.role,
+						is_superadmin: userData.is_superadmin === true,
+						is_developer: userData.is_developer === true
 					};
 
 					// ICT 7 FIX: Store refreshed token in locals for server-side API calls
@@ -418,7 +424,14 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	headers.set('X-Frame-Options', 'SAMEORIGIN');
 
 	// Referrer policy - balance between privacy and analytics
-	headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+	const newsletterCallback = ['/newsletter/confirm', '/newsletter/unsubscribe'].includes(
+		event.url.pathname
+	);
+	headers.set(
+		'Referrer-Policy',
+		newsletterCallback ? 'no-referrer' : 'strict-origin-when-cross-origin'
+	);
+	if (newsletterCallback) headers.set('Cache-Control', 'no-store');
 
 	// Permissions Policy - disable unnecessary browser features
 	headers.set(

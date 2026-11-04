@@ -55,44 +55,40 @@
 
 	// DERIVED STATE
 
-	let stats = $derived({
-		total: webhooks.length,
-		active: webhooks.filter((w) => w.is_active).length,
-		totalTriggers: webhooks.reduce((sum, w) => sum + w.trigger_count, 0),
-		totalFailures: webhooks.reduce((sum, w) => sum + w.failure_count, 0)
-	});
-
-	let filteredWebhooks = $derived(
-		webhooks.filter((webhook) => {
-			// Status filter
-			if (statusFilter === 'active' && !webhook.is_active) return false;
-			if (statusFilter === 'inactive' && webhook.is_active) return false;
-
-			// Search filter
-			if (searchQuery) {
-				const query = searchQuery.toLowerCase();
-				return (
-					webhook.name.toLowerCase().includes(query) || webhook.url.toLowerCase().includes(query)
-				);
-			}
-			return true;
-		})
-	);
+	let stats = $state({ total: 0, active: 0, totalTriggers: 0, totalFailures: 0 });
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let requestSequence = 0;
+	let filteredWebhooks = $derived(webhooks);
+	function filterChanged() {
+		currentPage = 1;
+		void loadWebhooks();
+	}
 
 	// API FUNCTIONS
 
 	async function loadWebhooks() {
+		const sequence = ++requestSequence;
 		isLoading = true;
 		error = '';
 
 		try {
-			const response = await crmAPI.getWebhooks();
+			const response = await crmAPI.getWebhooks({
+				page: currentPage,
+				per_page: 25,
+				search: searchQuery || undefined,
+				status: statusFilter
+			});
+			if (sequence !== requestSequence) return;
+			stats = response.stats;
+			totalPages = response.meta?.total_pages ?? 1;
 			webhooks = response.data || [];
 		} catch (err) {
+			if (sequence !== requestSequence) return;
 			error = err instanceof Error ? err.message : 'Failed to load webhooks';
 			showToast('error', error);
 		} finally {
-			isLoading = false;
+			if (sequence === requestSequence) isLoading = false;
 		}
 	}
 
@@ -138,11 +134,10 @@
 		testingWebhook = webhook.id;
 		try {
 			const result = await crmAPI.testWebhook(webhook.id);
-			if (result.success) {
-				showToast('success', `Test successful! Response code: ${result.response_code}`);
-			} else {
-				showToast('error', `Test failed! Response code: ${result.response_code}`);
-			}
+			showToast(
+				'info',
+				`Test queued. View delivery history for its actual response (${result.delivery_id}).`
+			);
 			// Refresh to update trigger count
 			await loadWebhooks();
 		} catch (err) {
@@ -193,20 +188,14 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Webhooks - FluentCRM Pro</title>
-</svelte:head>
-
 <div class="admin-crm-webhooks">
-	
-
 	<div class="admin-page-container">
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Webhooks</h1>
 			<p class="subtitle">Send real-time notifications to external services</p>
 			<div class="header-actions">
-				<button class="btn-refresh" onclick={() => loadWebhooks()} disabled={isLoading}>
+				<button class="btn-refresh" onclick={() => void loadWebhooks()} disabled={isLoading}>
 					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
 				<a href="/admin/crm/webhooks/new" class="btn-primary">
@@ -261,16 +250,25 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input autocomplete="off"
+			<input
+				autocomplete="off"
 				id="page-searchquery"
 				name="page-searchquery"
 				type="text"
 				placeholder="Search webhooks..."
 				bind:value={searchQuery}
+				onchange={filterChanged}
 				aria-label="Search webhooks"
 			/>
 			{#if searchQuery}
-				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
+				<button
+					class="search-clear"
+					onclick={() => {
+						searchQuery = '';
+						filterChanged();
+					}}
+					aria-label="Clear search"
+				>
 					<IconX size={16} />
 				</button>
 			{/if}
@@ -278,20 +276,29 @@
 		<div class="status-filter">
 			<button
 				class={['filter-btn', { active: statusFilter === 'all' }]}
-				onclick={() => (statusFilter = 'all')}
+				onclick={() => {
+					statusFilter = 'all';
+					filterChanged();
+				}}
 			>
 				All ({stats.total})
 			</button>
 			<button
 				class={['filter-btn', { active: statusFilter === 'active' }]}
-				onclick={() => (statusFilter = 'active')}
+				onclick={() => {
+					statusFilter = 'active';
+					filterChanged();
+				}}
 			>
 				<IconCheck size={14} />
 				Active ({stats.active})
 			</button>
 			<button
 				class={['filter-btn', { active: statusFilter === 'inactive' }]}
-				onclick={() => (statusFilter = 'inactive')}
+				onclick={() => {
+					statusFilter = 'inactive';
+					filterChanged();
+				}}
 			>
 				<IconX size={14} />
 				Inactive ({stats.total - stats.active})
@@ -308,7 +315,7 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<button onclick={() => loadWebhooks()}>Try Again</button>
+			<button onclick={() => void loadWebhooks()}>Try Again</button>
 		</div>
 	{:else if filteredWebhooks.length === 0}
 		<div class="empty-state">
@@ -323,7 +330,7 @@
 	{:else}
 		<div class="webhooks-list" role="list" aria-label="Webhooks">
 			{#each filteredWebhooks as webhook (webhook.id)}
-				<article class="webhook-card" role="listitem">
+				<article class="webhook-card" role="listitem" data-webhook-id={webhook.id}>
 					<div class="webhook-header">
 						<button
 							class={['webhook-toggle', { active: webhook.is_active }]}
@@ -420,6 +427,25 @@
 			{/each}
 		</div>
 	{/if}
+	<nav aria-label="Webhook pages" class="webhook-actions">
+		<button
+			class="btn-primary"
+			disabled={isLoading || currentPage <= 1}
+			onclick={() => {
+				currentPage--;
+				void loadWebhooks();
+			}}>Previous</button
+		>
+		<span>Page {currentPage} of {totalPages}</span>
+		<button
+			class="btn-primary"
+			disabled={isLoading || currentPage >= totalPages}
+			onclick={() => {
+				currentPage++;
+				void loadWebhooks();
+			}}>Next</button
+		>
+	</nav>
 </div>
 
 <!-- Toast Notifications -->
@@ -542,7 +568,6 @@
 		transition: all 0.2s;
 		text-decoration: none;
 	}
-
 
 	.stats-grid {
 		display: grid;

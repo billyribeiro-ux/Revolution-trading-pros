@@ -265,7 +265,7 @@ export const handleError: HandleClientError = async ({ kind, error, event }) => 
 	};
 
 	// Report error asynchronously
-	reportError(reportable, metadata, errorId);
+	void reportError(reportable, metadata, errorId);
 
 	// Development: Log full error details
 	if (import.meta.env.DEV) {
@@ -322,7 +322,7 @@ if (typeof window !== 'undefined') {
 			...(userId && { userId })
 		};
 
-		reportError(error, metadata, errorId);
+		void reportError(error, metadata, errorId);
 
 		if (import.meta.env.DEV) {
 			console.error(`[${errorId}] Unhandled promise rejection:`, error);
@@ -353,7 +353,7 @@ if (typeof window !== 'undefined') {
 			...(userId && { userId })
 		};
 
-		reportError(error, metadata, errorId);
+		void reportError(error, metadata, errorId);
 	});
 
 	/**

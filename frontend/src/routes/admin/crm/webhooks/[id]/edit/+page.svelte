@@ -42,7 +42,7 @@
 	let url = $state('');
 	let secret = $state('');
 	let isActive = $state(true);
-	let selectedEvents = $state(new SvelteSet<WebhookEvent>()); // eslint-disable-line svelte/no-unnecessary-state-wrap
+	const selectedEvents = new SvelteSet<WebhookEvent>();
 	let customHeaders = $state<Array<{ key: string; value: string }>>([]);
 
 	let availableEvents = $state<Record<string, string>>({});
@@ -113,7 +113,8 @@
 			url = webhook.url;
 			secret = webhook.secret || '';
 			isActive = webhook.is_active;
-			selectedEvents = new SvelteSet(webhook.events);
+			selectedEvents.clear();
+			for (const event of webhook.events) selectedEvents.add(event);
 
 			// Convert headers object to array
 			if (webhook.headers) {
@@ -171,15 +172,17 @@
 			await crmAPI.updateWebhook(webhookId, {
 				name: name.trim(),
 				url: url.trim(),
-				secret: secret.trim() || undefined,
+				secret: secret.trim(),
 				is_active: isActive,
 				events: Array.from(selectedEvents),
-				headers: Object.keys(headers).length > 0 ? headers : undefined
+				headers
 			});
 
 			showToast('success', 'Webhook updated successfully');
 			setTimeout(() => {
-				goto('/admin/crm/webhooks');
+				void goto('/admin/crm/webhooks').catch((err: unknown) => {
+					error = err instanceof Error ? err.message : 'Navigation failed';
+				});
 			}, 1000);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update webhook';
@@ -207,7 +210,8 @@
 	}
 
 	function selectAllEvents() {
-		selectedEvents = new SvelteSet(Object.keys(availableEvents) as WebhookEvent[]);
+		selectedEvents.clear();
+		for (const event of Object.keys(availableEvents) as WebhookEvent[]) selectedEvents.add(event);
 	}
 
 	function clearAllEvents() {
@@ -255,10 +259,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Edit Webhook - FluentCRM Pro</title>
-</svelte:head>
-
 <div class="webhook-form-page">
 	<!-- Header -->
 	<header class="page-header">
@@ -294,7 +294,7 @@
 			class="webhook-form"
 			onsubmit={(e) => {
 				e.preventDefault();
-				handleSubmit();
+				void handleSubmit();
 			}}
 		>
 			<!-- Basic Info Section -->
@@ -305,7 +305,8 @@
 					<label for="name">
 						Webhook Name <span class="required">*</span>
 					</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="text"
 						id="name"
 						name="name"
@@ -322,7 +323,8 @@
 					<label for="url">
 						Webhook URL <span class="required">*</span>
 					</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						type="url"
 						id="url"
 						name="url"
@@ -341,7 +343,8 @@
 				<div class="form-group">
 					<label for="secret"> Secret Key (Optional) </label>
 					<div class="input-with-action">
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							type="text"
 							id="secret"
 							name="secret"
@@ -435,16 +438,20 @@
 					<div class="headers-list">
 						{#each customHeaders as header, index (index)}
 							<div class="header-row">
-								<input autocomplete="off"
-									id="page-header-name"
+								<input
+									autocomplete="off"
+									id={`header-name-${index}`}
+									aria-label={`Header name ${index + 1}`}
 									name="page-header-name"
 									type="text"
 									placeholder="Header Name"
 									value={header.key}
 									oninput={(e) => updateHeaderKey(index, e.currentTarget.value)}
 								/>
-								<input autocomplete="off"
-									id="page-header-value"
+								<input
+									autocomplete="off"
+									id={`header-value-${index}`}
+									aria-label={`Header value ${index + 1}`}
 									name="page-header-value"
 									type="text"
 									placeholder="Header Value"
@@ -529,7 +536,11 @@
 					{/if}
 				</div>
 				<span class="toast-message">{toast.message}</span>
-				<button class="toast-dismiss" onclick={() => dismissToast(toast.id)}>
+				<button
+					class="toast-dismiss"
+					aria-label="Dismiss notification"
+					onclick={() => dismissToast(toast.id)}
+				>
 					<IconX size={16} />
 				</button>
 			</div>
@@ -762,6 +773,7 @@
 	   Toggle Switch
 	   ===================================================== */
 	.toggle-label {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
@@ -769,7 +781,18 @@
 	}
 
 	.toggle-input {
-		display: none;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+		z-index: 1;
+	}
+	.toggle-input:focus-visible + .toggle-switch {
+		outline: 2px solid var(--primary-400, #ffd11a);
+		outline-offset: 3px;
 	}
 
 	.toggle-switch {
@@ -1029,7 +1052,6 @@
 		transition: all 0.2s;
 	}
 
-
 	.btn-submit:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
@@ -1053,7 +1075,6 @@
 		transition: all 0.2s;
 		text-decoration: none;
 	}
-
 
 	@keyframes spin {
 		from {

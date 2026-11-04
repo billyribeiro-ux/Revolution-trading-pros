@@ -1,16 +1,4 @@
 /**
- * ⚠️ FIX-2026-04-26: ORPHAN — no matching backend route exists.
- * This client file was identified by the 2026-04-26 audit as having no Rust
- * handler under api/src/routes/. Calls from this file will 404.
- *
- * Decision required: either build the matching backend route or delete this
- * client. For now, exports are kept for git history; importers should not
- * call into this file in production code paths.
- *
- * See docs/audits/AUDIT_REPORT.md §10 Finding 2 + §12 Finding 1.
- */
-
-/**
  * Bing SEO API Client
  * ===============================================================================
  *
@@ -25,7 +13,6 @@ import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import type { JsonValue, QueryParams } from './_types';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
-const API_BASE = '';
 
 // ===============================================================================
 // Type Definitions
@@ -60,19 +47,28 @@ export interface BingSearchPerformance {
 }
 
 export interface CoreWebVitals {
-	url: string;
-	device: 'mobile' | 'desktop';
-	lcp: number;
-	fid: number;
-	cls: number;
-	inp: number;
-	ttfb: number;
-	fcp: number;
-	lcp_rating: 'good' | 'needs_improvement' | 'poor';
-	fid_rating: 'good' | 'needs_improvement' | 'poor';
-	cls_rating: 'good' | 'needs_improvement' | 'poor';
-	inp_rating: 'good' | 'needs_improvement' | 'poor';
-	overall_score: number;
+	url: string | null;
+	device: 'all' | 'mobile' | 'desktop' | 'unknown';
+	lcp: number | null;
+	fid: number | null;
+	cls: number | null;
+	inp: number | null;
+	ttfb: number | null;
+	fcp: number | null;
+	lcp_rating: string | null;
+	fid_rating: string | null;
+	cls_rating: string | null;
+	inp_rating: string | null;
+	overall_score: number | null;
+	sample_counts: Record<string, number>;
+	window_days: number;
+	aggregation: 'p75';
+	source: 'first_party_observations';
+}
+export interface PerformanceFilters {
+	url?: string;
+	device?: string;
+	days?: number;
 }
 
 export interface BingMetaTags {
@@ -96,24 +92,41 @@ export interface BingSeoStats {
 
 export interface PerformanceDashboard {
 	server: {
-		cpu_usage: number;
-		memory_usage: number;
-		disk_usage: number;
-		uptime: string;
+		cpu_usage: number | null;
+		memory_usage: number | null;
+		disk_usage: number | null;
+		uptime: string | null;
+		status: string;
+		scope: string;
+		measured_at: string | null;
 	};
 	database: {
-		query_count: number;
-		slow_queries: number;
+		query_count: number | null;
+		slow_queries: number | null;
 		connection_pool: number;
-		avg_query_time: number;
+		avg_query_time: number | null;
+		query_statistics_status: string;
+		query_statistics_requirement: string | null;
 	};
 	cache: {
-		hit_rate: number;
+		hit_rate: number | null;
 		memory_used: string;
 		keys_count: number;
 		evictions: number;
+		scope: string;
+		redis_configured: boolean;
 	};
-	core_web_vitals: CoreWebVitals | null;
+	core_web_vitals: CoreWebVitals;
+}
+export interface CacheWarmResult {
+	success: boolean;
+	views: number;
+	routes: number;
+	configs: number;
+	rooms: number;
+	plans: number;
+	total: number;
+	errors: string[];
 }
 
 export interface OptimizationRecommendation {
@@ -141,7 +154,7 @@ class BingSeoAPI {
 
 		// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
 		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
-		const url = new URL(`${API_BASE}${apiEndpoint}`);
+		const search = new URLSearchParams();
 		if (params) {
 			// R13-A: handle `QueryParams` arrays (`?tag=a&tag=b`) — pre-R13-A
 			// `Record<string, any>` typed the input, but the loop body called
@@ -150,9 +163,9 @@ class BingSeoAPI {
 			for (const [key, value] of Object.entries(params)) {
 				if (value === undefined || value === null) continue;
 				if (Array.isArray(value)) {
-					for (const item of value) url.searchParams.append(key, String(item));
+					for (const item of value) search.append(key, String(item));
 				} else {
-					url.searchParams.append(key, String(value));
+					search.append(key, String(value));
 				}
 			}
 		}
@@ -172,16 +185,20 @@ class BingSeoAPI {
 			credentials: 'include'
 		};
 
-		const response = await fetch(url.toString(), fetchOptions);
+		const response = await fetch(`${apiEndpoint}${search.size ? `?${search}` : ''}`, fetchOptions);
 
 		if (!response.ok) {
 			// R13-A: `response.json()` is `Promise<unknown>` after tightening;
 			// narrow to read `.message` instead of letting `any` paper over it.
 			const parsed: unknown = await response.json().catch(() => null);
+			const detail =
+				parsed && typeof parsed === 'object' && 'error' in parsed ? parsed.error : parsed;
 			const message =
-				parsed !== null && typeof parsed === 'object' && 'message' in parsed
-					? String((parsed as { message: unknown }).message)
-					: `HTTP ${response.status}`;
+				detail && typeof detail === 'object' && 'message' in detail
+					? String(detail.message)
+					: typeof detail === 'string'
+						? detail
+						: `HTTP ${response.status}`;
 			throw new Error(message);
 		}
 
@@ -298,10 +315,12 @@ class BingSeoAPI {
 	/**
 	 * Get comprehensive performance dashboard
 	 */
-	async getPerformanceDashboard(): Promise<PerformanceDashboard> {
+	async getPerformanceDashboard(filters: PerformanceFilters = {}): Promise<PerformanceDashboard> {
 		const response = await this.request<{ data: PerformanceDashboard }>(
 			'GET',
-			'/performance/dashboard'
+			'/performance/dashboard',
+			undefined,
+			{ ...filters }
 		);
 		return response.data;
 	}
@@ -322,7 +341,7 @@ class BingSeoAPI {
 	/**
 	 * Get optimization recommendations
 	 */
-	async getRecommendations(): Promise<{
+	async getRecommendations(filters: PerformanceFilters = {}): Promise<{
 		recommendations: OptimizationRecommendation[];
 		cdn: JsonValue | null;
 		core_web_vitals: JsonValue | null;
@@ -338,17 +357,18 @@ class BingSeoAPI {
 				cdn: JsonValue | null;
 				core_web_vitals: JsonValue | null;
 			};
-		}>('GET', '/performance/recommendations');
+		}>('GET', '/performance/recommendations', undefined, { ...filters });
 		return response.data;
 	}
 
 	/**
 	 * Warm caches for optimal performance
 	 */
-	async warmCaches(): Promise<{ views: number; routes: number; configs: number }> {
-		const response = await this.request<{
-			data: { views: number; routes: number; configs: number };
-		}>('POST', '/performance/warm-caches');
+	async warmCaches(): Promise<CacheWarmResult> {
+		const response = await this.request<{ data: CacheWarmResult }>(
+			'POST',
+			'/performance/warm-caches'
+		);
 		return response.data;
 	}
 

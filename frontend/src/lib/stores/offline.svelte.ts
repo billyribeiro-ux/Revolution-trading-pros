@@ -139,7 +139,10 @@ if (browser) {
 			lastOnline: Date.now()
 		};
 		// Trigger sync when back online
-		syncPendingActions();
+		void syncPendingActions().catch((error: unknown) => {
+			offlineState = { ...offlineState, syncInProgress: false };
+			logger.error('Offline synchronization failed:', error);
+		});
 	});
 
 	window.addEventListener('offline', () => {
@@ -208,7 +211,10 @@ export const offlineStore = {
 
 		// Try to sync immediately if online
 		if (offlineState.isOnline) {
-			syncPendingActions();
+			void syncPendingActions().catch((error: unknown) => {
+				offlineState = { ...offlineState, syncInProgress: false };
+				logger.error('Offline synchronization failed:', error);
+			});
 		}
 	},
 

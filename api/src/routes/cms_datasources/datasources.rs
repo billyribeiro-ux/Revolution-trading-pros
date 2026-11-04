@@ -40,8 +40,10 @@ pub(super) async fn list_datasources(
     CmsEditorUser(_user): CmsEditorUser,
     Query(query): Query<ListDatasourcesQuery>,
 ) -> ApiResult<PaginatedDatasourcesResponse> {
-    let limit = query.limit.unwrap_or(50).min(200);
-    let offset = query.offset.unwrap_or(0);
+    let (limit, offset) = super::helpers::pagination(query.limit, query.offset, 50, 200)?;
+    if let Some(search) = &query.search {
+        super::helpers::text(search, "Search", 500, false)?;
+    }
 
     let sort_column = match query.sort_by.as_deref() {
         Some("name") => "name",
@@ -70,7 +72,7 @@ pub(super) async fn list_datasources(
     .bind(query.is_system)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     let total = count_result.0;
 
@@ -93,7 +95,7 @@ pub(super) async fn list_datasources(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     Ok(Json(PaginatedDatasourcesResponse {
         data: datasources,
@@ -137,7 +139,7 @@ pub(super) async fn get_datasource(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(ApiError::from)?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
     })?;
@@ -176,7 +178,7 @@ pub(super) async fn get_datasource_by_slug(
     .bind(&slug)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(ApiError::from)?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
     })?;
@@ -202,6 +204,7 @@ pub(super) async fn create_datasource(
     CmsEditorUser(user): CmsEditorUser,
     Json(request): Json<CreateDatasourceRequest>,
 ) -> Result<(StatusCode, Json<CmsDatasource>), ApiError> {
+    request.validate()?;
     // Validate
     if request.name.trim().is_empty() {
         return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
@@ -212,7 +215,7 @@ pub(super) async fn create_datasource(
     let base_slug = request
         .slug
         .clone()
-        .unwrap_or_else(|| generate_slug(&request.name));
+        .unwrap_or_else(|| generate_slug(&request.name).chars().take(100).collect());
     let slug = ensure_unique_slug(&state.db.pool, &base_slug, None).await?;
 
     // Get CMS user ID
@@ -221,9 +224,7 @@ pub(super) async fn create_datasource(
             .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e: sqlx::Error| {
-                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?;
+            .map_err(ApiError::from)?;
 
     let new_id = Uuid::new_v4();
     let datasource: CmsDatasource = sqlx::query_as(
@@ -244,7 +245,7 @@ pub(super) async fn create_datasource(
     .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     tracing::info!(
         "Datasource created: {} ({})",
@@ -277,6 +278,10 @@ pub(super) async fn update_datasource(
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateDatasourceRequest>,
 ) -> ApiResult<CmsDatasource> {
+    request.validate()?;
+    if request.is_locked.is_some() {
+        require_cms_admin(&user)?;
+    }
     // Check if exists and is not locked/system
     #[derive(Debug, sqlx::FromRow)]
     struct ExistingDatasource {
@@ -289,7 +294,7 @@ pub(super) async fn update_datasource(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(ApiError::from)?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
     })?;
@@ -312,9 +317,7 @@ pub(super) async fn update_datasource(
             .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e: sqlx::Error| {
-                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?;
+            .map_err(ApiError::from)?;
 
     let datasource: CmsDatasource = sqlx::query_as(
         r"
@@ -343,7 +346,7 @@ pub(super) async fn update_datasource(
     .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     tracing::info!(
         "Datasource updated: {} ({})",
@@ -386,7 +389,7 @@ pub(super) async fn delete_datasource(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(ApiError::from)?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
     })?;
@@ -403,9 +406,7 @@ pub(super) async fn delete_datasource(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e: sqlx::Error| {
-            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-        })?;
+        .map_err(ApiError::from)?;
 
     tracing::info!("Datasource deleted: {} ({})", existing.name, id);
 
@@ -434,6 +435,10 @@ pub(super) async fn duplicate_datasource(
     CmsEditorUser(user): CmsEditorUser,
     Path(id): Path<Uuid>,
 ) -> Result<(StatusCode, Json<CmsDatasource>), ApiError> {
+    let mut tx = state.db.pool.begin().await?;
+    sqlx::query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+        .execute(&mut *tx)
+        .await?;
     // Fetch original
     let original: CmsDatasource = sqlx::query_as(
         r"
@@ -445,32 +450,33 @@ pub(super) async fn duplicate_datasource(
         ",
     )
     .bind(id)
-    .fetch_optional(&state.db.pool)
+    .fetch_optional(&mut *tx)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(ApiError::from)?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Datasource not found").with_code("NOT_FOUND")
     })?;
 
     // Generate new name and slug
-    let new_name = format!("{} (Copy)", original.name);
-    let base_slug = generate_slug(&new_name);
+    let new_name = format!(
+        "{} (Copy)",
+        original.name.chars().take(93).collect::<String>()
+    );
+    let base_slug: String = generate_slug(&new_name).chars().take(100).collect();
     let new_slug = ensure_unique_slug(&state.db.pool, &base_slug, None).await?;
 
     // Get CMS user ID
     let cms_user_id: Option<Uuid> =
         sqlx::query_scalar("SELECT id FROM cms_users WHERE user_id = $1")
             .bind(user.id)
-            .fetch_optional(&state.db.pool)
+            .fetch_optional(&mut *tx)
             .await
-            .map_err(|e: sqlx::Error| {
-                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?;
+            .map_err(ApiError::from)?;
 
     let dup_id = Uuid::new_v4();
 
     // Create duplicated datasource
-    let duplicated: CmsDatasource = sqlx::query_as(
+    let mut duplicated: CmsDatasource = sqlx::query_as(
         r"
         INSERT INTO cms_datasources (id, name, slug, description, icon, color, is_system, is_locked, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, false, false, $7)
@@ -486,9 +492,9 @@ pub(super) async fn duplicate_datasource(
     .bind(&original.icon)
     .bind(&original.color)
     .bind(cms_user_id)
-    .fetch_one(&state.db.pool)
+    .fetch_one(&mut *tx)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
     // Copy all entries
     sqlx::query(
@@ -501,10 +507,16 @@ pub(super) async fn duplicate_datasource(
     )
     .bind(original.id)
     .bind(dup_id)
-    .execute(&state.db.pool)
+    .execute(&mut *tx)
     .await
-    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(ApiError::from)?;
 
+    duplicated.entry_count =
+        sqlx::query_scalar("SELECT entry_count FROM cms_datasources WHERE id=$1")
+            .bind(dup_id)
+            .fetch_one(&mut *tx)
+            .await?;
+    tx.commit().await?;
     tracing::info!(
         "Datasource duplicated: {} -> {} ({})",
         original.name,

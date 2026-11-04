@@ -577,7 +577,7 @@ class PopupEngagementService {
 		this.setupBehavioralTracking();
 
 		// Load active popups for current page
-		this.loadActivePopups();
+		void this.loadActivePopups();
 
 		// Setup event listeners
 		this.setupEventListeners();
@@ -1044,7 +1044,7 @@ class PopupEngagementService {
 		this.activePopup.set(popup);
 
 		// Track impression
-		this.recordImpression(popup.id);
+		void this.recordImpression(popup.id);
 
 		// Set display cookie
 		this.setDisplayCookie(popup);

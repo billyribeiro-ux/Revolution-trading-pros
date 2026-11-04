@@ -26,12 +26,14 @@ use axum::{
 use crate::AppState;
 
 mod bulk;
+mod content;
 mod crud;
 mod dto;
 mod helpers;
 mod processing;
 mod scanning;
 mod uploads;
+mod versions;
 
 // Re-export every DTO that `tests/media_test.rs` reaches into via
 // `revolution_api::routes::media::{...}`. Keeping the same flat
@@ -47,10 +49,29 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(crud::index))
         .route("/files", get(crud::index)) // Frontend uses /admin/media/files
-        .route("/upload", post(uploads::direct_upload))
+        .route(
+            "/upload",
+            post(uploads::direct_upload)
+                .layer(axum::extract::DefaultBodyLimit::max(51 * 1024 * 1024)),
+        )
         .route("/presigned-upload", post(uploads::presigned_upload))
         .route("/confirm-upload", post(uploads::confirm_upload))
         .route("/statistics", get(crud::statistics))
+        .route("/content/{id}", get(content::content))
+        .route(
+            "/{id}/replace",
+            post(versions::replace).layer(axum::extract::DefaultBodyLimit::max(51 * 1024 * 1024)),
+        )
+        .route(
+            "/files/{id}/versions",
+            get(versions::index)
+                .post(versions::replace)
+                .layer(axum::extract::DefaultBodyLimit::max(51 * 1024 * 1024)),
+        )
+        .route(
+            "/files/{id}/versions/{version_id}/restore",
+            post(versions::restore),
+        )
         .route("/processor/health", get(processing::health))
         .route("/presets", get(processing::presets))
         .route("/queue/status", get(processing::queue))

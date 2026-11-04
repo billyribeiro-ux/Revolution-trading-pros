@@ -15,7 +15,7 @@ import { browser } from '$app/env';
 import { authStore } from '#lib/stores/auth.svelte.js';
 import { logger } from '#lib/utils/logger.js';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
-import { isSuperadminEmail, isDeveloperEmail } from '#lib/config/roles.js';
+import { isSuperadmin, isDeveloper } from '#lib/config/roles.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -248,12 +248,11 @@ export async function getUserMemberships(options?: {
 		return categorizeMemberships([]);
 	}
 
-	// ICT 7: ENTERPRISE DEVELOPER ACCESS - Check via environment-based config
+	// Development access comes from the authenticated API and shared role policy.
 	// Developers get all memberships to test the complete member experience
-	const isDeveloper =
-		storeUser && (isDeveloperEmail(storeUser.email) || isSuperadminEmail(storeUser.email));
+	const hasDevelopmentAccess = isDeveloper(storeUser) || isSuperadmin(storeUser);
 
-	if (isDeveloper) {
+	if (hasDevelopmentAccess) {
 		// Skip cache to always get latest products
 		return await getDeveloperMemberships();
 	}

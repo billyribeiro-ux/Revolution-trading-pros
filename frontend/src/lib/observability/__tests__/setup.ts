@@ -29,7 +29,7 @@ let timerId = 0;
 const mockSetTimeout = vi.fn((cb: () => void, ms?: number) => {
 	const id = ++timerId;
 	if (ms === 0 || ms === undefined) {
-		Promise.resolve().then(cb);
+		queueMicrotask(cb);
 	}
 	return id;
 });
@@ -82,7 +82,7 @@ const mockDocument = {
 			// Simulate async script load
 			const onload = element.onload;
 			if (onload) {
-				Promise.resolve().then(() => onload());
+				queueMicrotask(() => onload());
 			}
 		})
 	},

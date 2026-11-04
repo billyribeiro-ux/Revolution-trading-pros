@@ -129,7 +129,7 @@
 	];
 
 	let heroVisible = $state(false);
-	let modulesVisible = $state<boolean[]>(new Array(modules.length).fill(false));
+	let modulesVisible = $state<boolean[]>(Array.from({ length: modules.length }, () => false));
 
 	onMount(() => {
 		if (!browser) return;
