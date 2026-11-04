@@ -62,6 +62,7 @@ pub mod cms_seo; // ICT 11+: Server-side SEO validation
 pub mod connections;
 pub mod consent; // FIX-2026-04-26: Admin consent management settings backend
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
+pub mod email_settings;
 pub mod email_templates;
 pub mod export; // ICT 7+ Phase 4: Export Functionality (CSV/PDF)
 pub mod favorites; // ICT 7: User favorites persistence

@@ -73,7 +73,9 @@ pub(super) fn get_service_definitions() -> Vec<serde_json::Value> {
             "fields": [
                 {"key": "api_key", "label": "Storage Zone Password", "type": "password", "required": true},
                 {"key": "storage_zone", "label": "Storage Zone", "type": "text", "required": true},
-                {"key": "library_id", "label": "Video Library ID", "type": "text", "required": false}
+                {"key": "storage_hostname", "label": "Storage Endpoint Hostname", "type": "text", "required": false, "placeholder":"storage.bunnycdn.com", "help":"Use your zone's official regional endpoint, for example ny.storage.bunnycdn.com."},
+                {"key": "library_id", "label": "Video Library ID", "type": "text", "required": false},
+                {"key": "stream_api_key", "label": "Stream API Key", "type": "password", "required": false, "help":"Required when a Video Library ID is configured; separate from the storage zone password."}
             ]
         }),
         json!({

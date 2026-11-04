@@ -19,6 +19,38 @@ use super::crypto::{decrypt_credentials, encrypt_credentials, mask_credentials};
 use super::definitions::{get_categories, get_service_definitions};
 use super::{ConnectServiceRequest, ListQuery, ServiceConnection};
 
+fn validate_credential_fields(
+    definition: &serde_json::Value,
+    credentials: &HashMap<String, String>,
+) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let fields = definition["fields"].as_array();
+    let invalid = credentials.len() > 32
+        || credentials.iter().any(|(key, value)| {
+            key.len() > 100
+                || value.len() > 8192
+                || value.contains(['\r', '\n', '\0'])
+                || value.contains("********")
+                || fields
+                    .is_none_or(|fields| !fields.iter().any(|field| field["key"] == key.as_str()))
+        });
+    if invalid {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid or unknown credential fields"})),
+        ));
+    }
+    if credentials
+        .get("from_email")
+        .is_some_and(|email| !email.is_empty() && !crate::routes::newsletter::is_valid_email(email))
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid sender email address"})),
+        ));
+    }
+    Ok(())
+}
+
 /// GET /admin/connections - Get all connections with status
 #[tracing::instrument(skip(state, admin))]
 pub(super) async fn get_connections_status(
@@ -32,7 +64,14 @@ pub(super) async fn get_connections_status(
         "Admin fetching connections"
     );
 
-    let environment = query.environment.as_deref().unwrap_or("production");
+    let runtime_environment =
+        crate::services::credential_resolver::runtime_environment(&state.config);
+    let requested_environment = query.environment.as_deref().unwrap_or("production");
+    let environment = if requested_environment == "runtime" {
+        runtime_environment
+    } else {
+        requested_environment
+    };
     if !["production", "sandbox"].contains(&environment) {
         return Err((
             StatusCode::BAD_REQUEST,
@@ -51,6 +90,15 @@ pub(super) async fn get_connections_status(
     }
     let db_connections:Vec<ServiceConnection>=sqlx::query_as("SELECT * FROM service_connections WHERE environment=$1 OR environment IS NULL ORDER BY (environment=$1) DESC NULLS LAST,updated_at DESC,id DESC")
         .bind(environment).fetch_all(state.db.pool()).await.map_err(crate::utils::errors::db_error)?;
+    let revoked_keys: std::collections::HashSet<String> = sqlx::query_scalar::<_, String>(
+        "SELECT service_key FROM service_connection_revocations WHERE environment=$1",
+    )
+    .bind(environment)
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(crate::utils::errors::db_error)?
+    .into_iter()
+    .collect();
     // Build a map of existing connections by service_key
     let existing_keys: std::collections::HashSet<String> = db_connections
         .iter()
@@ -69,10 +117,14 @@ pub(super) async fn get_connections_status(
             .iter()
             .find(|c| c.service_key == key && !is_builtin)
         {
-            let verified = db_conn.status == "connected"
+            let revoked = revoked_keys.contains(key);
+            let verified = !revoked
+                && db_conn.status == "connected"
                 && db_conn.health_status.as_deref() == Some("verified")
                 && db_conn.environment.as_deref() == Some(environment);
-            let status = if db_conn.status == "connected" && !verified {
+            let status = if revoked {
+                "disconnected"
+            } else if db_conn.status == "connected" && !verified {
                 "pending"
             } else {
                 db_conn.status.as_str()
@@ -186,7 +238,7 @@ pub(super) async fn get_connections_status(
                 "is_oauth": def["is_oauth"],
                 "is_builtin": false,
                 "is_connected": false,
-                "status": "pending",
+                "status": if revoked_keys.contains(key){"disconnected"}else{"pending"},
                 "health_score": 0,
                 "environments": def["environments"],
                 "fields": def["fields"],
@@ -207,6 +259,8 @@ pub(super) async fn get_connections_status(
     });
     Ok(Json(json!({
         "success": true,
+        "environment": environment,
+        "runtime_environment": runtime_environment,
         "connections": connections,
         "categories": get_categories()
     })))
@@ -287,6 +341,17 @@ pub(super) async fn connect_service(
         Json(json!({"error": "Service not found"})),
     ))?;
 
+    validate_credential_fields(def, &input.credentials)?;
+    if input
+        .settings
+        .as_ref()
+        .is_some_and(|settings| !settings.is_object() || settings.to_string().len() > 32768)
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Settings must be an object of at most 32 KiB"})),
+        ));
+    }
     // Validate required fields
     if let Some(fields) = def["fields"].as_array() {
         for field in fields {
@@ -364,6 +429,16 @@ pub(super) async fn connect_service(
         .fetch_one(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
     sqlx::query("INSERT INTO admin_audit_logs(admin_id,admin_email,action,entity_type,entity_id,new_value) VALUES($1,$2,'connection.verification','service_connection',$3,$4)")
         .bind(admin.0.id).bind(&admin.0.email).bind(connection.id).bind(json!({"service_key":key,"environment":environment,"verification":result}).to_string()).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+    if result.success {
+        sqlx::query(
+            "DELETE FROM service_connection_revocations WHERE service_key=$1 AND environment=$2",
+        )
+        .bind(&key)
+        .bind(environment)
+        .execute(&mut *tx)
+        .await
+        .map_err(crate::utils::errors::db_error)?;
+    }
     tx.commit().await.map_err(crate::utils::errors::db_error)?;
 
     // PE7 invariant 2A: drop any cached creds so the next request reads the
@@ -453,6 +528,14 @@ pub(super) async fn test_connection(
             Json(json!({"error":"Service not found"})),
         ));
     }
+    let definition = get_service_definitions()
+        .into_iter()
+        .find(|definition| definition["key"] == key)
+        .ok_or((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error":"Service not found"})),
+        ))?;
+    validate_credential_fields(&definition, credentials)?;
     let result = super::probe::check(&state.config, &key, credentials, environment).await;
     let mut persisted = false;
     if let Some(stored) = stored.filter(|_| saved.as_ref() == Some(credentials)) {
@@ -473,6 +556,9 @@ pub(super) async fn test_connection(
         }
         sqlx::query("INSERT INTO admin_audit_logs(admin_id,admin_email,action,entity_type,entity_id,new_value) VALUES($1,$2,'connection.verification','service_connection',$3,$4)")
             .bind(admin.0.id).bind(&admin.0.email).bind(stored.id).bind(json!({"service_key":key,"environment":environment,"verification":result}).to_string()).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+        if result.success {
+            sqlx::query("DELETE FROM service_connection_revocations WHERE service_key=$1 AND environment=$2").bind(&key).bind(environment).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+        }
         tx.commit().await.map_err(crate::utils::errors::db_error)?;
         state
             .services
@@ -530,6 +616,15 @@ async fn revoke_connection(
         sqlx::query("UPDATE integration_webhooks SET is_active=FALSE,updated_at=NOW() WHERE connection_id=$1").bind(connection.id).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
         "connection.disconnected"
     };
+    let scopes = if connection.environment.is_none() {
+        vec!["production", "sandbox"]
+    } else {
+        vec![environment]
+    };
+    for scope in scopes {
+        sqlx::query("INSERT INTO service_connection_revocations(service_key,environment,revoked_by,reason) VALUES($1,$2,$3,$4) ON CONFLICT(service_key,environment) DO UPDATE SET revoked_at=NOW(),revoked_by=EXCLUDED.revoked_by,reason=EXCLUDED.reason")
+            .bind(&key).bind(scope).bind(admin.0.id).bind(if remove{"deleted"}else{"disconnected"}).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+    }
     sqlx::query("INSERT INTO admin_audit_logs(admin_id,admin_email,action,entity_type,entity_id,old_value) VALUES($1,$2,$3,'service_connection',$4,$5)")
         .bind(admin.0.id).bind(&admin.0.email).bind(action).bind(connection.id).bind(json!({"service_key":key,"environment":connection.environment,"status":connection.status}).to_string())
         .execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;

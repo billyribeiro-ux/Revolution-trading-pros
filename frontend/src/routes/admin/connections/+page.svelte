@@ -9,6 +9,7 @@
 	 */
 
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { SvelteDate } from 'svelte/reactivity';
 	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
@@ -104,7 +105,8 @@
 	let categories = $state<Record<string, Category>>({});
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
-	let listEnvironment = $state('production');
+	let listEnvironment = $state('runtime');
+	let runtimeEnvironment = $state<string | null>(null);
 	let loadGeneration = 0;
 	let selectedCategory = $state<string | null>(null);
 	let searchQuery = $state('');
@@ -156,11 +158,24 @@
 			const data = await adminFetch<{
 				connections: Service[];
 				categories: Record<string, Category>;
+				environment: 'production' | 'sandbox';
+				runtime_environment: 'production' | 'sandbox';
 			}>(`/api/admin/connections?environment=${listEnvironment}`, {
 				signal: AbortSignal.timeout(15000)
 			});
 			if (!Array.isArray(data.connections) || !data.categories)
 				throw new Error('Invalid connections response');
+			if (generation !== loadGeneration) return;
+			if (
+				!['production', 'sandbox'].includes(data.environment) ||
+				!['production', 'sandbox'].includes(data.runtime_environment)
+			)
+				throw new Error('Invalid connection environment');
+			listEnvironment = data.environment;
+			runtimeEnvironment = data.runtime_environment;
+			const url = new URL(page.url.href);
+			url.searchParams.set('environment', data.environment);
+			await goto(url, { state: page.state, shallow: true, replace: true });
 			if (generation !== loadGeneration) return;
 			connections = data.connections;
 			categories = data.categories;
@@ -220,7 +235,7 @@
 			const data = await adminFetch(`/api/admin/connections/${selectedService.key}/test`, {
 				method: 'POST',
 				body: JSON.stringify({ credentials: credentialValues, environment: selectedEnvironment }),
-				signal: AbortSignal.timeout(20000)
+				signal: AbortSignal.timeout(25000)
 			});
 			testResult = data;
 		} catch (error) {
@@ -316,6 +331,9 @@
 	}
 
 	onMount(async () => {
+		const requestedEnvironment = page.url.searchParams.get('environment');
+		if (requestedEnvironment === 'production' || requestedEnvironment === 'sandbox')
+			listEnvironment = requestedEnvironment;
 		await fetchConnections();
 
 		const urlParams = page.url.searchParams;
@@ -408,9 +426,15 @@
 				bind:value={listEnvironment}
 				onchange={() => void fetchConnections()}
 			>
+				<option value="runtime" disabled>Current application environment</option>
 				<option value="production">Production</option>
 				<option value="sandbox">Sandbox</option>
 			</select>
+			{#if runtimeEnvironment}
+				<span
+					>Application uses {runtimeEnvironment === 'production' ? 'Production' : 'Sandbox'}</span
+				>
+			{/if}
 		</div>
 		{#if loadError}
 			<div role="alert" class="connection-error">
@@ -1402,7 +1426,20 @@
 	}
 
 	.connect-panel {
+		display: flex;
+		flex-direction: column;
+		max-height: calc(100dvh - 2rem);
 		max-width: 28rem;
+	}
+
+	.connect-panel .modal-header,
+	.connect-panel .modal-footer {
+		flex-shrink: 0;
+	}
+
+	.connect-panel .modal-form {
+		min-height: 0;
+		overflow-y: auto;
 	}
 
 	.confirm-panel {

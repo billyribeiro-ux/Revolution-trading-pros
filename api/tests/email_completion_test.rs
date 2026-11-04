@@ -9,6 +9,8 @@ mod crm_webhook_proof;
 mod email_subscriber_proof;
 #[path = "support/performance.rs"]
 mod performance_proof;
+#[path = "support/smtp.rs"]
+mod smtp_proof;
 use axum::{
     Json, Router,
     body::Body,
@@ -120,6 +122,9 @@ async fn app(db: Database, email: Option<EmailService>) -> Router {
     config.r2_endpoint = "http://127.0.0.1:1".into();
     config.superadmin_emails = vec!["configured-auth-proof@example.test".into()];
     config.developer_emails = config.superadmin_emails.clone();
+    config.stripe_secret_key = "sk_test_environment_fixture".into();
+    config.stripe_publishable_key = "pk_test_environment_fixture".into();
+    config.stripe_webhook_secret = "whsec_environment_fixture".into();
     let mut services = Services::new(&config).await.unwrap();
     if let Some(email) = email {
         services.email = email;
@@ -1690,5 +1695,6 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     email_subscriber_proof::proof(&api, &disabled_app, &pool, &tokens, &adapter).await;
     authorization_parity_proof::proof(&api, &pool).await;
     connections_proof::proof(&api, &pool, &tokens).await;
+    smtp_proof::proof(&api, &pool, &tokens).await;
     server.abort();
 }

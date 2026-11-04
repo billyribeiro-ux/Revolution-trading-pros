@@ -29,6 +29,15 @@ use crate::services::stripe::StripeService;
 /// still self-corrects within a minute.
 const CACHE_TTL: Duration = Duration::from_secs(60);
 
+/// Provider scope used by request-time application clients.
+pub fn runtime_environment(config: &Config) -> &'static str {
+    if config.environment == "production" {
+        "production"
+    } else {
+        "sandbox"
+    }
+}
+
 /// Resolved credential set for a single service/environment pair.
 #[derive(Clone)]
 pub struct ResolvedCreds {
@@ -50,10 +59,7 @@ impl std::fmt::Debug for ResolvedCreds {
             .debug_struct("ResolvedCreds")
             .field("service", &self.service)
             .field("environment", &self.environment)
-            .field(
-                "credential_fields",
-                &self.credentials.keys().collect::<Vec<_>>(),
-            )
+            .field("credential_count", &self.credentials.len())
             .field("webhook_secret_set", &self.webhook_secret.is_some())
             .field("source", &self.source)
             .finish()
@@ -145,13 +151,7 @@ impl CredentialResolver {
         match environment {
             "production" => Some("production"),
             "sandbox" | "development" | "staging" | "test" => Some("sandbox"),
-            "" => {
-                if self.config.environment == "production" {
-                    Some("production")
-                } else {
-                    Some("sandbox")
-                }
-            }
+            "" => Some(runtime_environment(&self.config)),
             _ => None,
         }
     }
@@ -197,12 +197,18 @@ impl CredentialResolver {
     }
 
     async fn fetch_fresh(&self, pool: &PgPool, service: &str, environment: &str) -> ResolvedCreds {
-        let row=sqlx::query_as::<_,DbCreds>("SELECT credentials_encrypted,webhook_secret,environment,status,health_status FROM service_connections WHERE service_key=$1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,last_verified_at DESC NULLS LAST,id DESC LIMIT 1")
+        let row=sqlx::query_as::<_,DbCreds>("SELECT c.id,c.credentials_encrypted,c.webhook_secret,c.environment,c.status,c.health_status,EXISTS(SELECT 1 FROM service_connection_revocations r WHERE r.service_key=$1 AND r.environment=$2) AS revoked FROM (SELECT 1) seed LEFT JOIN LATERAL (SELECT id,credentials_encrypted,webhook_secret,environment,status,health_status FROM service_connections WHERE service_key=$1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,last_verified_at DESC NULLS LAST,id DESC LIMIT 1) c ON TRUE")
             .bind(service).bind(environment).fetch_optional(pool).await;
         match row {
             Ok(Some(db)) => {
+                if db.revoked {
+                    return self.empty(service, environment, "blocked");
+                }
+                if db.id.is_none() {
+                    return self.env_fallback(service, environment);
+                }
                 if db.environment.as_deref() != Some(environment)
-                    || db.status != "connected"
+                    || db.status.as_deref() != Some("connected")
                     || db.health_status.as_deref() != Some("verified")
                 {
                     return self.empty(service, environment, "blocked");
@@ -309,10 +315,12 @@ fn cache_key(service: &str, environment: &str) -> String {
 
 #[derive(sqlx::FromRow)]
 struct DbCreds {
+    id: Option<i64>,
+    revoked: bool,
     credentials_encrypted: Option<String>,
     webhook_secret: Option<String>,
     environment: Option<String>,
-    status: String,
+    status: Option<String>,
     health_status: Option<String>,
 }
 
@@ -434,6 +442,16 @@ mod tests {
     #[test]
     fn scope_normalizes_application_environments_without_mixing_live_keys() {
         let resolver = CredentialResolver::new(dummy_config("sk_test_fixture"));
+        for (environment, expected) in [
+            ("production", "production"),
+            ("development", "sandbox"),
+            ("staging", "sandbox"),
+            ("test", "sandbox"),
+        ] {
+            let mut config = dummy_config("sk_test_fixture");
+            config.environment = environment.into();
+            assert_eq!(runtime_environment(&config), expected);
+        }
         assert_eq!(resolver.scope("development"), Some("sandbox"));
         assert_eq!(resolver.scope("staging"), Some("sandbox"));
         assert!(

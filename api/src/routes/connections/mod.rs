@@ -35,6 +35,7 @@ mod crypto;
 mod definitions;
 mod handlers;
 mod probe;
+mod response;
 mod webhooks;
 
 // ═══════════════════════════════════════════════════════════════════════════

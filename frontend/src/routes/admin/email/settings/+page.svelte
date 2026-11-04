@@ -11,7 +11,7 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { apiFetch } from '#lib/api/config.js';
+	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import { connections, getIsEmailConnected } from '#lib/stores/connections.svelte.js';
 	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
 
@@ -41,6 +41,9 @@
 	let message = $state('');
 	let messageType: 'success' | 'error' = $state('success');
 	let testing = $state(false);
+	let settingsLoading = $state(true);
+	let settingsLoaded = $state(false);
+	let settingsError = $state<string | null>(null);
 
 	// Lifecycle
 
@@ -65,8 +68,27 @@
 	}
 
 	async function loadSettings() {
+		settingsLoading = true;
+		settingsError = null;
 		try {
-			const data = (await apiFetch('/admin/email/settings')) as EmailSettingsResponse;
+			const data = await adminFetch<EmailSettingsResponse>('/admin/email/settings', {
+				signal: AbortSignal.timeout(25000)
+			});
+			if (
+				data?.provider !== 'smtp' ||
+				typeof data.host !== 'string' ||
+				typeof data.port !== 'number' ||
+				!Number.isInteger(data.port) ||
+				data.port < 1 ||
+				data.port > 65535 ||
+				typeof data.username !== 'string' ||
+				typeof data.has_password !== 'boolean' ||
+				typeof data.encryption !== 'string' ||
+				!['tls', 'ssl', 'null'].includes(data.encryption) ||
+				typeof data.from_address !== 'string' ||
+				typeof data.from_name !== 'string'
+			)
+				throw new Error('Invalid SMTP settings response');
 			// FIX-2026-04-26 (07-marketing P0-2): never store plaintext password
 			// in client state. Server returns `has_password: boolean`; we treat
 			// the password field as a write-only secondary input.
@@ -81,14 +103,19 @@
 				from_address: data?.from_address ?? '',
 				from_name: data?.from_name ?? 'Revolution Trading Pros'
 			};
+			settingsLoaded = true;
 		} catch (error) {
-			console.error('Failed to load settings:', error);
+			settingsLoaded = false;
+			settingsError = error instanceof Error ? error.message : 'Failed to load SMTP settings';
+		} finally {
+			settingsLoading = false;
 		}
 	}
 
 	// Actions
 
 	async function saveSettings() {
+		if (!settingsLoaded) return;
 		loading = true;
 		message = '';
 
@@ -101,19 +128,25 @@
 				delete payload.password;
 			}
 
-			await apiFetch('/admin/email/settings', {
-				method: 'POST',
-				body: JSON.stringify(payload)
-			});
+			const saved = await adminFetch<{ success: boolean; settings: { has_password: boolean } }>(
+				'/admin/email/settings',
+				{
+					method: 'POST',
+					signal: AbortSignal.timeout(25000),
+					body: JSON.stringify(payload)
+				}
+			);
 
-			message = 'Settings saved successfully!';
+			if (saved.success !== true || typeof saved.settings?.has_password !== 'boolean')
+				throw new Error('Invalid SMTP save response; reload before retrying');
+			message = 'SMTP settings saved. Test the connection to verify relay access.';
 			messageType = 'success';
 			// Clear the password field after a successful save so it isn't
 			// kept in DOM state across navigations.
 			settings.password = '';
-			hasStoredPassword = hasStoredPassword || Boolean(payload.password);
-		} catch (_error) {
-			message = 'Failed to save settings';
+			hasStoredPassword = saved.settings.has_password;
+		} catch (error) {
+			message = error instanceof Error ? error.message : 'Failed to save SMTP settings';
 			messageType = 'error';
 		} finally {
 			loading = false;
@@ -121,6 +154,7 @@
 	}
 
 	async function testConnection() {
+		if (!settingsLoaded) return;
 		testing = true;
 		message = '';
 
@@ -142,13 +176,14 @@
 				delete testPayload.password;
 			}
 
-			const result = (await apiFetch('/admin/email/settings/test', {
+			const result = (await adminFetch('/admin/email/settings/test', {
 				method: 'POST',
+				signal: AbortSignal.timeout(25000),
 				body: JSON.stringify(testPayload)
 			})) as { success?: boolean; message?: string; error?: string } | null;
 
 			if (result && result.success === true) {
-				message = result.message || 'Connection test successful! Email delivery is working.';
+				message = result.message || 'SMTP connection check passed; no email was sent.';
 				messageType = 'success';
 			} else if (result && result.success === false) {
 				message =
@@ -157,8 +192,8 @@
 					'Connection test failed. Please check your SMTP credentials.';
 				messageType = 'error';
 			} else {
-				message = result?.message || 'Test completed. Check your inbox for a test email.';
-				messageType = 'success';
+				message = 'Invalid SMTP verification response';
+				messageType = 'error';
 			}
 		} catch (error) {
 			const err = error as { name?: string; message?: string; status?: number };
@@ -179,7 +214,6 @@
 				message = 'Test failed: An unexpected error occurred. Please try again.';
 			}
 			messageType = 'error';
-			console.error('Email test connection error:', error);
 		} finally {
 			testing = false;
 		}
@@ -191,25 +225,45 @@
 </svelte:head>
 
 <div class="admin-email-settings">
-	
-
 	<div class="admin-page-container">
 		<header class="page-header">
 			<h1>Email Settings</h1>
 			<p class="subtitle">Configure your SMTP server settings for sending emails</p>
 			<div class="header-actions">
-				<button class="btn-secondary" onclick={testConnection} disabled={testing}>
+				<button
+					class="btn-secondary"
+					onclick={testConnection}
+					disabled={testing || !settingsLoaded || settingsLoading}
+				>
 					{testing ? 'Testing...' : 'Test Connection'}
 				</button>
-				<button class="btn-primary" onclick={saveSettings} disabled={loading}>
+				<button
+					class="btn-primary"
+					onclick={saveSettings}
+					disabled={loading || !settingsLoaded || settingsLoading}
+				>
 					{loading ? 'Saving...' : 'Save Settings'}
 				</button>
 			</div>
 		</header>
 	</div>
 
+	{#if settingsError}
+		<div role="alert" class="alert alert-error">
+			{settingsError}
+			<button
+				type="button"
+				class="btn-secondary"
+				onclick={() => void loadSettings()}
+				disabled={settingsLoading}>Retry SMTP settings</button
+			>
+		</div>
+	{:else if settingsLoading}
+		<p role="status">Loading SMTP settings...</p>
+	{/if}
+
 	<!-- Connection Status Banner -->
-	{#if !connectionLoading && !getIsEmailConnected}
+	{#if !connectionLoading && !getIsEmailConnected()}
 		<ServiceConnectionStatus feature="email" variant="banner" />
 	{/if}
 
@@ -237,7 +291,8 @@
 				<!-- Host -->
 				<div class="form-group">
 					<label for="host">SMTP Host</label>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						id="host"
 						name="host"
 						type="text"
@@ -250,7 +305,14 @@
 				<!-- Port -->
 				<div class="form-group">
 					<label for="port">Port</label>
-					<input autocomplete="off" id="port" name="port" type="number" bind:value={settings.port} required />
+					<input
+						autocomplete="off"
+						id="port"
+						name="port"
+						type="number"
+						bind:value={settings.port}
+						required
+					/>
 				</div>
 
 				<!-- Encryption -->
@@ -319,7 +381,8 @@
 			<!-- From Name -->
 			<div class="form-group">
 				<label for="from_name">From Name</label>
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					id="from_name"
 					name="from_name"
 					type="text"
@@ -389,7 +452,6 @@
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 
 	.btn-secondary {
 		background: var(--bg-hover, #252b33);

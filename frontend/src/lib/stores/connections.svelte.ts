@@ -199,7 +199,7 @@ async function fetchConnectionStatus(): Promise<Record<string, ConnectionStatus>
 	const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
 	try {
-		const response = await fetch('/api/admin/connections', {
+		const response = await fetch('/api/admin/connections?environment=runtime', {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				'Content-Type': 'application/json'

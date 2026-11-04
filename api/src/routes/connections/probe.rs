@@ -135,7 +135,15 @@ pub(super) async fn check(
     environment: &str,
 ) -> Probe {
     let start = Instant::now();
-    let result = check_inner(config, key, credentials, environment).await;
+    let result = match tokio::time::timeout(
+        Duration::from_secs(20),
+        check_inner(config, key, credentials, environment),
+    )
+    .await
+    {
+        Ok(result) => result,
+        Err(_) => Err(Probe::unavailable("Provider verification timed out")),
+    };
     match result {
         Ok(mut probe) => {
             probe.latency_ms = Some(start.elapsed().as_millis().try_into().unwrap_or(i64::MAX));
@@ -156,16 +164,7 @@ async fn check_inner(
         "sendgrid" => "/v3/scopes".to_owned(),
         "openai" => "/v1/models".to_owned(),
         "meilisearch" => "/version".to_owned(),
-        "bunny_cdn" => {
-            let zone = credential(credentials, "storage_zone")?;
-            if !zone
-                .bytes()
-                .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-' || byte == b'_')
-            {
-                return Err(Probe::unavailable("Invalid storage zone name"));
-            }
-            format!("/{zone}/")
-        }
+        "bunny_cdn" => return check_bunny(config, credentials).await,
         "google_analytics" => {
             let property = credential(credentials, "property_id")?;
             let stream = credential(credentials, "stream_id")?;
@@ -190,7 +189,6 @@ async fn check_inner(
         "stripe" => "https://api.stripe.com",
         "sendgrid" => "https://api.sendgrid.com",
         "openai" => "https://api.openai.com",
-        "bunny_cdn" => "https://storage.bunnycdn.com",
         "google_analytics" => "https://analyticsadmin.googleapis.com",
         "meilisearch" => credential(credentials, "host")?,
         _ => unreachable!(),
@@ -212,7 +210,6 @@ async fn check_inner(
     let mut request = client.get(url).header("Accept", "application/json");
     request = match key {
         "stripe" => request.bearer_auth(credential(credentials, "secret_key")?),
-        "bunny_cdn" => request.header("AccessKey", credential(credentials, "api_key")?),
         "google_analytics" => request.bearer_auth(credential(credentials, "access_token")?),
         _ => request.bearer_auth(credential(credentials, "api_key")?),
     };
@@ -241,7 +238,14 @@ async fn check_inner(
             status_code,
         });
     }
-    let payload = bounded_json(response).await?;
+    let payload = if key == "openai" {
+        let valid = super::response::models(response)
+            .await
+            .map_err(|_| Probe::unavailable("Provider returned an invalid model list"))?;
+        serde_json::json!({"object":if valid{"list"}else{"invalid"},"data":[]})
+    } else {
+        bounded_json(response).await?
+    };
     let valid = match key {
         "stripe" => {
             payload["object"] == "balance"
@@ -255,7 +259,6 @@ async fn check_inner(
         "meilisearch" => payload["pkgVersion"]
             .as_str()
             .is_some_and(|version| !version.is_empty()),
-        "bunny_cdn" => payload.is_array(),
         "google_analytics" => {
             payload["webStreamData"]["measurementId"].as_str()
                 == Some(credential(credentials, "measurement_id")?)
@@ -273,6 +276,164 @@ async fn check_inner(
         },
         latency_ms: None,
         status_code,
+    })
+}
+
+fn bunny_origin(hostname: &str) -> Result<String, Probe> {
+    const HOSTS: &[&str] = &[
+        "storage.bunnycdn.com",
+        "uk.storage.bunnycdn.com",
+        "ny.storage.bunnycdn.com",
+        "la.storage.bunnycdn.com",
+        "sg.storage.bunnycdn.com",
+        "se.storage.bunnycdn.com",
+        "br.storage.bunnycdn.com",
+        "jh.storage.bunnycdn.com",
+        "syd.storage.bunnycdn.com",
+    ];
+    if !HOSTS.contains(&hostname) {
+        return Err(Probe::unavailable(
+            "Choose an official Bunny storage endpoint hostname",
+        ));
+    }
+    Ok(format!("https://{hostname}"))
+}
+async fn bunny_request(
+    config: &Config,
+    key: &str,
+    origin: &str,
+    path: &str,
+    token: &str,
+    video: bool,
+) -> Result<reqwest::Response, Probe> {
+    let adapter = adapter_base(
+        &config.environment,
+        std::env::var("CONNECTION_TEST_BASE_URL").ok().as_deref(),
+    )
+    .map_err(Probe::unavailable)?;
+    let mut url = if let Some(mut base) = adapter {
+        base.set_path(&format!(
+            "{}/{key}{path}",
+            base.path().trim_end_matches('/')
+        ));
+        base
+    } else {
+        Url::parse(&format!("{origin}{path}"))
+            .map_err(|_| Probe::unavailable("Invalid provider origin"))?
+    };
+    let client = client_for(&url, &config.environment).await?;
+    if video {
+        url.query_pairs_mut()
+            .append_pair("page", "1")
+            .append_pair("itemsPerPage", "10");
+    }
+    let response = client
+        .get(url)
+        .header("Accept", "application/json")
+        .header("AccessKey", token)
+        .send()
+        .await
+        .map_err(|_| Probe::unavailable("Bunny could not be reached or timed out"))?;
+    if !response.status().is_success() {
+        return Err(Probe {
+            success: false,
+            status: if response.status().is_client_error() && response.status().as_u16() != 429 {
+                "rejected"
+            } else {
+                "unavailable"
+            },
+            message: format!(
+                "Bunny {} returned HTTP {}",
+                if video { "Stream" } else { "Storage" },
+                response.status().as_u16()
+            ),
+            latency_ms: None,
+            status_code: Some(i32::from(response.status().as_u16())),
+        });
+    }
+    Ok(response)
+}
+async fn check_bunny(
+    config: &Config,
+    credentials: &HashMap<String, String>,
+) -> Result<Probe, Probe> {
+    let zone = credential(credentials, "storage_zone")?;
+    if !zone
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-' || byte == b'_')
+    {
+        return Err(Probe::unavailable("Invalid storage zone name"));
+    }
+    let hostname = credentials
+        .get("storage_hostname")
+        .filter(|value| !value.is_empty())
+        .map(String::as_str)
+        .unwrap_or("storage.bunnycdn.com");
+    let origin = bunny_origin(hostname)?;
+    let library = credentials
+        .get("library_id")
+        .filter(|value| !value.is_empty());
+    if let Some(library) = library {
+        if !library.parse::<i64>().is_ok_and(|value| value > 0) {
+            return Err(Probe::unavailable(
+                "Video library ID must be a positive integer",
+            ));
+        }
+        credential(credentials, "stream_api_key")?;
+    } else if credentials
+        .get("stream_api_key")
+        .is_some_and(|value| !value.is_empty())
+    {
+        return Err(Probe::unavailable(
+            "A video library ID is required with its Stream API key",
+        ));
+    }
+    let response = bunny_request(
+        config,
+        "bunny_cdn",
+        &origin,
+        &format!("/{zone}/"),
+        credential(credentials, "api_key")?,
+        false,
+    )
+    .await?;
+    super::response::directory(response)
+        .await
+        .map_err(|_| Probe::unavailable("Bunny returned an invalid storage directory"))?;
+    if let Some(library) = library {
+        let response = bunny_request(
+            config,
+            "bunny_stream",
+            "https://video.bunnycdn.com",
+            &format!("/library/{library}/videos"),
+            credential(credentials, "stream_api_key")?,
+            true,
+        )
+        .await?;
+        if !super::response::videos(
+            response,
+            library
+                .parse::<i64>()
+                .map_err(|_| Probe::unavailable("Invalid video library ID"))?,
+        )
+        .await
+        .map_err(|_| Probe::unavailable("Bunny returned an invalid video list"))?
+        {
+            return Err(Probe::unavailable(
+                "Bunny video pagination did not match its response",
+            ));
+        }
+    }
+    Ok(Probe {
+        success: true,
+        status: "verified",
+        message: if library.is_some() {
+            format!("Storage directory ({hostname}) and video library access verified")
+        } else {
+            format!("Storage directory access verified ({hostname}); no video library configured")
+        },
+        latency_ms: None,
+        status_code: Some(200),
     })
 }
 

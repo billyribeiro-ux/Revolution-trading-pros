@@ -1626,4 +1626,47 @@ mod tests {
         assert!(!constant_time_compare("abc", "abd"));
         assert!(!constant_time_compare("abc", "ab"));
     }
+    #[tokio::test]
+    async fn unavailable_credentials_never_open_a_provider_connection() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        for secret in ["", "sk_test_placeholder"] {
+            let mut stripe = StripeService::new(secret);
+            stripe.client = reqwest::Client::builder()
+                .no_proxy()
+                .proxy(
+                    reqwest::Proxy::all(format!("http://{}", listener.local_addr().unwrap()))
+                        .unwrap(),
+                )
+                .timeout(std::time::Duration::from_millis(300))
+                .build()
+                .unwrap();
+            for error in [
+                stripe
+                    .get_checkout_session("fixture-session")
+                    .await
+                    .unwrap_err(),
+                stripe
+                    .get_or_create_customer("fixture@example.test", None, None)
+                    .await
+                    .unwrap_err(),
+                stripe.delete_coupon("fixture-coupon").await.unwrap_err(),
+            ] {
+                assert!(
+                    error.to_string().contains("credentials are unavailable"),
+                    "{error}"
+                );
+            }
+        }
+        assert!(
+            tokio::time::timeout(std::time::Duration::from_millis(20), listener.accept())
+                .await
+                .is_err(),
+            "No provider socket should open; even an accidental request is pinned to loopback"
+        );
+        let stripe = StripeService::new("sk_test_fixture").with_webhook_secret("whsec_placeholder");
+        assert!(
+            stripe.webhook_secret.is_none(),
+            "Public default webhook secrets are disabled"
+        );
+    }
 }
