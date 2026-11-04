@@ -254,7 +254,9 @@ class PerformanceReporter {
 		window.addEventListener('online', () => {
 			this.isOnline = true;
 			this.log('Connection restored, flushing pending metrics');
-			this.flushPendingPayloads();
+			this.flushPendingPayloads().catch((error) => {
+				logger.error('[PerformanceReporter] Async reporting failed', { error });
+			});
 		});
 
 		window.addEventListener('offline', () => {
@@ -300,7 +302,9 @@ class PerformanceReporter {
 		}
 
 		this.batchInterval = setInterval(() => {
-			this.sendMetrics();
+			this.sendMetrics().catch((error) => {
+				logger.error('[PerformanceReporter] Async reporting failed', { error });
+			});
 		}, this.config.batchInterval);
 	}
 
@@ -309,7 +313,9 @@ class PerformanceReporter {
 	 */
 	private handleVisibilityChange(): void {
 		if (document.visibilityState === 'hidden') {
-			this.sendMetrics(true);
+			this.sendMetrics(true).catch((error) => {
+				logger.error('[PerformanceReporter] Async reporting failed', { error });
+			});
 		}
 	}
 
@@ -317,7 +323,9 @@ class PerformanceReporter {
 	 * Handle before unload
 	 */
 	private handleBeforeUnload(): void {
-		this.sendMetrics(true);
+		this.sendMetrics(true).catch((error) => {
+			logger.error('[PerformanceReporter] Async reporting failed', { error });
+		});
 	}
 
 	/**
@@ -730,7 +738,9 @@ class PerformanceReporter {
 		window.removeEventListener('beforeunload', this.beforeUnloadListener);
 
 		// Final flush
-		this.sendMetrics(true);
+		this.sendMetrics(true).catch((error) => {
+			logger.error('[PerformanceReporter] Async reporting failed', { error });
+		});
 
 		this.log('Performance reporter destroyed');
 	}

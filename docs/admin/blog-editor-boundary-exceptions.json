@@ -1,0 +1,38 @@
+{
+	"authorization_date": "2026-11-03",
+	"user_approvals": [
+		"Allow targeted fixes for these four warnings",
+		"Allow warning-only fixes for these remaining ten"
+	],
+	"scope": "Only the 14 approved lint warnings; broader blog editor work remains excluded. Original hashes stay in blog-editor-boundary.json.",
+	"files": {
+		"frontend/src/lib/components/blog/BlockEditor/error-handling.ts": {
+			"original_sha256": "18173b2fe1c3706d4746f4aa1dd6a23a440d2ac4f9333a08839997c0afb2f2a3",
+			"approved_sha256": "e55eab22bc0ba69bd2f73a851b7f33aed8cde97a7fafc261d37fbae30b0dec0c",
+			"changes": ["Remove two redundant empty-object spread fallbacks (original lines 366,373)."]
+		},
+		"frontend/src/lib/components/blog/BlockEditor/performance/reporter.ts": {
+			"original_sha256": "3a676b6eee58e1ab1de2c4e254ee08152fde37ade3aec9725aba8ecd1fbb6d44",
+			"approved_sha256": "5183a32e144cb5aa264c933339b9330a2480b9001e869bfe4a51669a8c0ea511",
+			"changes": [
+				"Use stable event-listener references for registration/removal (original lines 727,728).",
+				"Handle five previously floating reporting promises."
+			]
+		},
+		"frontend/src/lib/components/blog/BlockEditor/offline/db.ts": {
+			"original_sha256": "b068f32540525326958c831e243d3848505df818eaac1bb78407829b4d452be3",
+			"approved_sha256": "3b4e566612a70dcd5f30c6efc89deb50384686be54ebc62d5b5c1f4c7fa0f449",
+			"changes": ["Simplify unknown | null to the equivalent unknown type."]
+		},
+		"frontend/src/lib/components/blog/BlockEditor/offline/sync.ts": {
+			"original_sha256": "cac80952ba165470bb9823ffdd5960f59ef56bdfd4e73978d44514c5675337a2",
+			"approved_sha256": "f81b08c96d9cdb68dedb1ac9671ed224427445ed2db8250bfdb7e58db9694c05",
+			"changes": ["Handle rejected pending-count initialization and record the error."]
+		},
+		"frontend/src/lib/components/blog/BlockEditor/offline/index.ts": {
+			"original_sha256": "8535969d6c1ce047ac2a02280b4451e8e9d0a7598c795a5a708a2d802dcd2eec",
+			"approved_sha256": "e60e6014a77689bbed1dd5f99a8f0a842e31929b53f2581c313bfc9046a3a119",
+			"changes": ["Handle three previously floating initialization/pending-count promises."]
+		}
+	}
+}

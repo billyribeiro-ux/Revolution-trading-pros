@@ -174,7 +174,12 @@ pub(super) async fn confirm_upload(
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-    super::scanning::scan_stored(&state, &media).await?;
+    let scan = super::scanning::scan_stored(&state, &media).await?;
+    if scan.status == "infected" {
+        return Err(ApiError::validation_error(
+            "Malware detected; stored object removed",
+        ));
+    }
     super::crud::show(State(state), _admin, axum::extract::Path(media.id)).await
 }
 

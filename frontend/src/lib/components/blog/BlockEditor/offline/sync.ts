@@ -148,7 +148,11 @@ class SyncManager {
 		if (browser) {
 			this.setupNetworkListeners();
 			this.startPeriodicSync();
-			this.updatePendingCount();
+			this.updatePendingCount().catch((error) => {
+				this.status.lastError =
+					error instanceof Error ? error.message : 'Unable to read pending changes';
+				logger.error('[SyncManager] Failed to initialize pending count', { error });
+			});
 		}
 	}
 

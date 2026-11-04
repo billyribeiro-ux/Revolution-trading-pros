@@ -103,7 +103,11 @@ class OfflineEditorStore {
 
 	constructor() {
 		if (browser) {
-			this.initialize();
+			this.initialize().catch((error) => {
+				this._syncError = error instanceof Error ? error.message : 'Offline initialization failed';
+				console.error('[OfflineEditorStore] Failed to initialize:', error);
+				this.notifySubscribers();
+			});
 		}
 	}
 
@@ -143,7 +147,9 @@ class OfflineEditorStore {
 				this._isSyncing = false;
 				this._lastSynced = new Date(event.timestamp);
 				this._syncError = null;
-				this.updatePendingCount();
+				this.updatePendingCount().catch((error) => {
+					console.error('[OfflineEditorStore] Failed to refresh pending count:', error);
+				});
 				this.updateIndicatorState();
 				this.notifySubscribers();
 			}
@@ -159,7 +165,9 @@ class OfflineEditorStore {
 
 		const handleConflict = (event: SyncEvent) => {
 			if (event.type === 'conflict') {
-				this.updatePendingCount();
+				this.updatePendingCount().catch((error) => {
+					console.error('[OfflineEditorStore] Failed to refresh pending count:', error);
+				});
 				this.updateIndicatorState();
 				this.notifySubscribers();
 			}

@@ -54,6 +54,11 @@ pub(super) async fn bulk_delete(
                 && let Err(e) = storage.delete(file_key).await
             {
                 tracing::warn!("Failed to delete file from R2: {} - {}", file_key, e);
+                failed_count += 1;
+                errors.push(format!(
+                    "ID {id}: Storage deletion failed; record retained for retry"
+                ));
+                continue;
             }
 
             // Delete from database
@@ -75,7 +80,7 @@ pub(super) async fn bulk_delete(
     }
 
     Ok(Json(serde_json::json!({
-        "success": true,
+        "success": failed_count == 0,
         "data": {
             "deleted": deleted_count,
             "failed": failed_count,

@@ -48,7 +48,7 @@ export interface Draft {
 	meta_title: string | null;
 	meta_description: string | null;
 	canonical_url: string | null;
-	schema_markup: unknown | null;
+	schema_markup: unknown;
 	indexable: boolean;
 	authorId: number | null;
 	createdAt: number;

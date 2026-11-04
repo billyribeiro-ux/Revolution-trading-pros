@@ -6,10 +6,10 @@ Task: execute `move-prompt.md`, finish source before copying, exclude the blog e
 
 ## Current state
 
-- Inventory: 168 admin pages and source client/proxy/route/service/job declarations, SQL references and page actions/navigation in `admin-inventory.json`. Manual cross-layer tracing is incomplete.
+- Inventory: 169 admin pages and source client/proxy/route/service/job declarations, SQL references and page actions/navigation in `admin-inventory.json`. Manual cross-layer tracing is incomplete.
 - Completion and remaining gaps: `completion-matrix.md`.
 - Actual verification evidence and limitations: `verification-results.md`.
-- Blog editor: excluded; all 55 file hashes in `blog-editor-boundary.json` match the pre-edit source. Do not change editor-specific integrations outside those paths either.
+- Blog editor: excluded except the user-authorized 14 warning fixes in five files. `blog-editor-boundary-exceptions.json` records both approvals, exact scope and expected changed hashes; the other 50 original file hashes remain unchanged. No broader editor repair is authorized.
 - Initial working tree contained only the user's untracked `move-prompt.md`. HEAD advanced externally during this session to `92532a21e`, incorporating the first repair batch; the agent did not make that commit. Preserve subsequent user changes.
 
 ## Latest continuation (companies, lists, templates, scheduling)
@@ -33,7 +33,28 @@ Task: execute `move-prompt.md`, finish source before copying, exclude the blog e
 - Independent baseline proof passed after 076/077: 69 applied migration versions, 215 tables. Latest root unit gate: 65 files / 2,796 passed / 32 skips. Latest completed SEO: 112 passed. Root check exits 0 with 301 warnings, still below the required zero-warning gate.
 - Latest Rust build/check/clippy passed before the small recursive-null-validation and email sender-alias adjustments; recursive-null regression passed. Rerun final checks after new work. Latest verification API includes the recurring CMS worker and latest contact/lead/stats endpoints on 8281; original source 8080/5173 stays running.
 - HEAD remains 92532a21e. Files were staged externally during this continuation; do not reset or unstage the user's index.
-- Current open implementation focus: CRM segments (new/edit stubs, no PUT/contact retrieval, sync only changes timestamp). Investigated only; **no segment changes yet**. Other major gaps listed below remain.
+- CRM segment repairs are now implemented and verified as described below. Other major gaps remain.
+
+## Latest segment and editor-warning continuation
+
+- Dynamic segment rule evaluation, create/update/read/delete/duplicate/sync, current matching contacts and server pagination/search/active filters implemented. Rules support text, numeric/date comparisons, tags, lists/null checks and all/any/mixed connectors; identifiers/operators are whitelisted and values are bound.
+- Segment new/edit rule builder and missing contacts page added. Nullable legacy rules normalize correctly; invalid legacy rules show a per-record validation state with an unknown current count and remain editable through definition metadata. No fake sync/count success.
+- Fresh r13 DB regression passed (22.41s), including 12 rule cases, SQL-like bound values, rejected malformed fields/reversed ranges, dynamic changes, persistence/partial updates, pagination, duplicate/delete safety and legacy repair.
+- Latest seven-workflow browser run passed (31.7s), with console/page/API failure checks; frontend units 2,796 passed / 32 skipped, check 0/0, production build passed with the existing 76-exclusion adapter warning. New lint/SEO runs are pending.
+- User explicitly authorized the four identified editor warnings, then the remaining ten editor warnings after the full lint output exposed an earlier undercount. Only those warnings were fixed: spread fallbacks, stable listener references, handled promises, and redundant type union. Preserve original hashes plus the explicit exception manifest; do not claim all 55 files unchanged now.
+- Media work has begun with read-only tracing. **No new media implementation edits yet.** Confirmed mismatched client data/meta and CRUD/bulk paths, upload array handling, optimization contracts and false deletion success on storage failures. Next: prove real S3 object/scanner effects, then repair the UI/contracts/processing.
+- MinIO Quay/Docker Hub pulls were denied by their registries. Adobe's official S3Mock test adapter was downloaded instead, pinned by digest below. This validates local S3 API effects, not production R2 or presigned signature/expiry enforcement; S3Mock intentionally does not validate signatures.
+- Running task-owned S3Mock container `admin-move-s3mock-20261103`, loopback 19000, bucket `admin-move-media`, named volume `admin-move-s3mock-data-20261103`; image `adobe/s3mock@sha256:ab01a6946750f451ca215a47e91030695b260e4003b8a5a6201d25029b8fca92`. API 8281 has NOT yet been restarted with its S3/ClamAV env; it still uses unavailable storage. Do not call real providers.
+
+## Latest media and processor work
+
+- Media API now rejects infected stored-upload confirmation after actual removal, rather than returning upload success. Single/bulk delete retain the database row when storage deletion fails; bulk success reflects failures. Backend build/clippy passed; failure-retention regression still needs to be added/run.
+- New committed-style test file `frontend/tests/admin/media-storage.spec.ts`: three API integration tests passed (4.2s) against real local ClamAV and Adobe S3Mock: clean upload/object retrieval/stored-object rescan/delete, direct EICAR rejection without object/row creation, and stored EICAR deletion plus persisted infected state. These are local S3 adapter effects, not R2 signature/expiry/provider verification.
+- Verification API 8281 now uses S3Mock `http://127.0.0.1:19000`, bucket `admin-move-media`, public URL `http://127.0.0.1:19000/admin-move-media`, explicit fake S3 credentials, and `CLAMD_ADDRESS=127.0.0.1:13310`. Continue starting it with env -i from /private/tmp. Current API exec session 2282 (read lsof before restarting); original source 8080/5173 remains untouched.
+- The client expects a Sharp image processor, but none existed. Added `services/media-processor` workspace with actual Sharp 0.35.5 (already locked/cached), Node/TypeScript runtime, authenticated byte-only HTTP inspect/process operations, raster validation, bounded input/pixels/concurrency, no URL/path access, actual JPEG/PNG/WebP/AVIF/GIF encoders and animation preservation. It is NOT wired into Rust/jobs yet and no permanent processor server has been started.
+- Processor strict TypeScript check and eight real HTTP/codec tests passed. Tests cover auth/config, dimensions/size, resized transparent WebP, AVIF/no enlargement, animated frame preservation/rejected flattening, byte/pixel/type/options limits, and busy/recovery behavior. Root Vite test projects now include the processor. pnpm workspace/lockfile updated offline with scripts disabled; no Rust image dependency was added.
+- Next work: wire the authenticated processor client and worker into Rust, persist actual processing/variant/job results and repair the media client/UI contracts. Do not claim optimization works until this chain is finished. Native Rust image processing was considered but not implemented; use the intended actual Sharp service.
+- Approved editor warning fixes are complete. Root check now exits 0 with **287 warnings outside the editor**, and no BlockEditor warnings. Frontend check is still 0/0. See the exception manifest; five approved files changed, other 50 hashes unchanged. Latest completed SEO is 112 passed (21.1s). Latest filtered lint still needs polling/rerun after editor changes.
 
 ## Implemented in this session
 
@@ -60,7 +81,7 @@ Task: execute `move-prompt.md`, finish source before copying, exclude the blog e
 Existing source services on 8080/5173 were not stopped. Verification used:
 
 - API `8281`, frontend `5274`, no live provider credentials; process output `/tmp/admin-move-api.log`, `/tmp/admin-move-web.log`.
-- Disposable databases `admin_move_verify_20261103`, `_r2`, `_r3`, `_r4`, `_r5`, `_r6`, `_r7`, `_r8`, `_r9`, `_r10`, `_r11`, `_baseline` on local PostgreSQL `127.0.0.1:55432`.
+- Disposable databases `admin_move_verify_20261103`, `_r2`, `_r3`, `_r4`, `_r5`, `_r6`, `_r7`, `_r8`, `_r9`, `_r10`, `_r11`, `_r12`, `_r13`, `_baseline` on local PostgreSQL `127.0.0.1:55432`.
 - Created Docker containers `admin-move-redis-20261103` (loopback `16380`) and `admin-move-clamav-20261103` (loopback `13310`, amd64 image on ARM).
 - Fixture accounts only: `admin@admin-completion.test`, `user@admin-completion.test`; password `OnlyForDisposableTest123!` (test data, never use outside disposable environments).
 - Tests use an empty environment and explicit local configuration. See the generated-environment isolation correction above; failed fixture auth attempts touched source API rate/audit state. No live campaigns, charges, production DB changes or deployments were made.
@@ -70,7 +91,7 @@ Stop/remove only these task-owned test containers/processes after verification. 
 ## Resume work
 
 1. Re-read `move-prompt.md`, this progress file and the completion matrix. Verify the editor hashes and current working tree.
-2. Finish the remaining 13 CRM stubs and their actual backend contracts. Settings configuration persistence alone is not complete CRM behavior.
+2. Finish the remaining 11 CRM stubs and their actual backend contracts. Settings configuration persistence alone is not complete CRM behavior.
 3. Fix media UI `files/pagination` versus backend `data/meta` and incorrect CRUD/bulk/optimization paths. Finish actual processing and verify uploads/scanning/removal with an isolated S3-compatible service.
 4. Implement mounted boards routes and workflows; heatmaps/replay and other analytics endpoints; SEO loaders/contracts; member-segment edit/export/analytics actions.
 5. Finish background job implementations: several branches currently only log and return `Ok(())`; the email worker also claims success when credentials are absent. Prove scheduling/retries/worker effects against isolated providers.

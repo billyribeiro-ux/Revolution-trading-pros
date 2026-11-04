@@ -334,8 +334,10 @@ pub(super) async fn destroy(
                     file_key,
                     e
                 );
-                // Continue with database deletion even if R2 deletion fails
-                // The file might have already been deleted or the path is invalid
+                return Err(ApiError::new(
+                    axum::http::StatusCode::SERVICE_UNAVAILABLE,
+                    "Storage deletion failed; media record retained so deletion can be retried",
+                ));
             }
             _ => {
                 tracing::info!("Deleted file from R2 storage: {}", file_key);

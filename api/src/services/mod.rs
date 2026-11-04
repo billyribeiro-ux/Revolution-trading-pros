@@ -16,6 +16,7 @@ pub mod email;
 pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
 pub mod export; // ICT 7+ Phase 4: Export Functionality
 pub mod malware;
+pub mod media_processor;
 pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
 pub mod order_service;
 // FIX-M-2 (2026-04-29): rate_limit module removed. The RateLimitService
@@ -40,6 +41,7 @@ use anyhow::{Result, anyhow};
 pub struct Services {
     pub redis: Option<redis::RedisService>,
     pub storage: storage::StorageService,
+    pub media_processor: Option<media_processor::MediaProcessorService>,
     pub stripe: stripe::StripeService,
     pub search: search::SearchService,
     /// Batch 6: always present. Internally holds `Option<token>`; when
@@ -160,6 +162,7 @@ impl Services {
         Ok(Self {
             redis,
             storage: storage::StorageService::new(config).await?,
+            media_processor: media_processor::MediaProcessorService::from_env()?,
             stripe,
             search,
             email,

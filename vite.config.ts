@@ -8,7 +8,7 @@ export default defineConfig({
 		pack: './svelte-click-to-source'
 	},
 	test: {
-		projects: ['frontend']
+		projects: ['frontend', 'services/media-processor']
 	},
 	staged: {
 		'*': 'vp check --fix'
