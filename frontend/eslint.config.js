@@ -103,6 +103,7 @@ export default [
 			'tests/**/*.{ts,js}',
 			'e2e/**/*.{ts,js}',
 			'scripts/**/*.{ts,js}',
+			'config/**/*.{ts,js}',
 			'playwright.config.ts',
 			'vite.config.ts',
 			'src/service-worker/**/*.{ts,js}'

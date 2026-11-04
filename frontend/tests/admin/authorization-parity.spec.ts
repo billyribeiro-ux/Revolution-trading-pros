@@ -46,13 +46,9 @@ test('configured email elevation agrees across API, SvelteKit and the live auth 
 	expect(ordinaryBody.user.is_developer).toBe(false);
 	expect(
 		(
-			await outsider.post(
-				'/api/admin/connections/unknown_auth_fixture/test',
-				{
-					data: { is_superadmin: true }
-				},
-				authModuleUrl!
-			)
+			await outsider.post('/api/admin/connections/unknown_auth_fixture/test', {
+				data: { is_superadmin: true }
+			})
 		).status()
 	).toBe(403);
 	const login = await page.request.post('/api/auth/login', {
@@ -82,6 +78,8 @@ test('configured email elevation agrees across API, SvelteKit and the live auth 
 	expect((await invalid.json()).error).toBe('No credentials provided');
 	await page.goto('/admin', { waitUntil: 'networkidle' });
 	expect(authModuleUrl, 'Inspect the exact module loaded by the application').toBeTruthy();
+	const loadedAuthModuleUrl = authModuleUrl;
+	if (!loadedAuthModuleUrl) throw new Error('The application auth module was not loaded');
 	await expect
 		.poll(() =>
 			page.evaluate(async (path) => {
@@ -98,7 +96,7 @@ test('configured email elevation agrees across API, SvelteKit and the live auth 
 					superadmin: module.authStore.isSuperAdmin,
 					highestRole: module.authStore.userRole
 				};
-			}, authModuleUrl!)
+			}, loadedAuthModuleUrl)
 		)
 		.toEqual({ role: 'admin', flag: true, superadmin: true, highestRole: 'super-admin' });
 	await page.reload({ waitUntil: 'networkidle' });
