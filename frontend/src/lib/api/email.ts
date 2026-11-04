@@ -430,6 +430,7 @@ class EmailAPI {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async getTemplates(params?: {
+		search?: string;
 		category?: string;
 		page?: number;
 		per_page?: number;

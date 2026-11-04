@@ -6,7 +6,8 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { emailApi, type EmailTemplate } from '#lib/api/email.js';
 	import { emailStore, getIsEmailLoading } from '#lib/stores/email.svelte.js';
 	import {
 		IconMail,
@@ -22,16 +23,50 @@
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		$state('campaigns');
 
+	let templateCatalog = $state<EmailTemplate[]>([]);
+	let templateLoading = $state(true);
+	let templateError = $state('');
+	let templateSearch = $state('');
+	let templateCategory = $state('');
+	let templatePage = $state(1);
+	let templateTotal = $state(0);
+	let templateGeneration = 0;
+	const templatePerPage = 20;
 	onMount(() => {
-		loadData();
+		void loadData();
+		void loadTemplates();
 	});
+	onDestroy(() => {
+		templateGeneration++;
+	});
+	async function loadTemplates(page = 1) {
+		const generation = ++templateGeneration;
+		templateLoading = true;
+		templateError = '';
+		try {
+			const result = await emailApi.getTemplates({
+				page,
+				per_page: templatePerPage,
+				search: templateSearch.trim() || undefined,
+				category: templateCategory.trim() || undefined
+			});
+			if (generation !== templateGeneration) return;
+			templateCatalog = result.templates;
+			templateTotal = result.total;
+			templatePage = page;
+		} catch (error) {
+			if (generation === templateGeneration)
+				templateError = error instanceof Error ? error.message : 'Unable to load templates';
+		} finally {
+			if (generation === templateGeneration) templateLoading = false;
+		}
+	}
 
 	async function loadData() {
 		await Promise.all([
 			emailStore.loadCampaigns(),
 			emailStore.loadSequences(),
 			emailStore.loadAutomations(),
-			emailStore.loadTemplates(),
 			emailStore.loadAnalytics()
 		]);
 	}
@@ -158,7 +193,7 @@
 
 	<!-- Content -->
 	<div class="tab-content">
-		{#if getIsEmailLoading()}
+		{#if selectedTab === 'templates' ? templateLoading : getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="state-text state-text--spaced">Loading...</p>
@@ -281,15 +316,33 @@
 			<div class="templates-list">
 				<div class="list-header">
 					<h2 class="section-heading">Email Templates</h2>
-					<button class="btn-primary">
+					<a class="btn-primary" href="/admin/email/templates/new">
 						<IconPlus size={18} />
 						Create Template
-					</button>
+					</a>
 				</div>
 
-				{#if emailStore.templates.length > 0}
+				<form
+					class="catalog-filters"
+					onsubmit={(event) => {
+						event.preventDefault();
+						void loadTemplates();
+					}}
+				>
+					<label>Search templates<input bind:value={templateSearch} type="search" /></label>
+					<label>Template category<input bind:value={templateCategory} maxlength="50" /></label>
+					<button class="btn-secondary" type="submit">Filter templates</button>
+				</form>
+				{#if templateError}
+					<div role="alert" class="empty-state">
+						<p class="empty-copy">{templateError}</p>
+						<button class="btn-secondary" onclick={() => loadTemplates(templatePage)}
+							>Retry templates</button
+						>
+					</div>
+				{:else if templateCatalog.length > 0}
 					<div class="templates-grid">
-						{#each emailStore.templates as template (template.id)}
+						{#each templateCatalog as template (template.id)}
 							<div class="template-card">
 								{#if template.thumbnail}
 									<img
@@ -319,7 +372,9 @@
 
 								<div class="template-actions">
 									<button class="action-btn">Use Template</button>
-									<button class="action-btn">Preview</button>
+									<a class="action-btn" href={`/admin/email/templates/preview/${template.id}`}
+										>Preview</a
+									>
 								</div>
 							</div>
 						{/each}
@@ -329,12 +384,25 @@
 						<IconFileText size={64} class="empty-icon" />
 						<h3 class="empty-title">No templates yet</h3>
 						<p class="empty-copy">Create reusable email templates</p>
-						<button class="btn-primary empty-action">
+						<a class="btn-primary empty-action" href="/admin/email/templates/new">
 							<IconPlus size={18} />
 							Create Template
-						</button>
+						</a>
 					</div>
 				{/if}
+				<nav class="catalog-pagination" aria-label="Template pages">
+					<button
+						class="btn-secondary"
+						disabled={templatePage <= 1}
+						onclick={() => loadTemplates(templatePage - 1)}>Previous templates</button
+					>
+					<span>Page {templatePage} · {templateTotal} templates</span>
+					<button
+						class="btn-secondary"
+						disabled={templatePage * templatePerPage >= templateTotal}
+						onclick={() => loadTemplates(templatePage + 1)}>Next templates</button
+					>
+				</nav>
 			</div>
 		{:else}
 			<div class="analytics-view">
@@ -346,6 +414,34 @@
 </div>
 
 <style>
+	.catalog-filters,
+	.catalog-pagination {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		gap: 1rem;
+		margin-block: 1rem;
+		color: #d1d5db;
+	}
+	.catalog-filters label {
+		display: grid;
+		gap: 0.4rem;
+	}
+	.catalog-filters input {
+		background: #0f172a;
+		border: 1px solid #64748b;
+		border-radius: 0.4rem;
+		color: white;
+		padding: 0.5rem;
+	}
+	a.btn-primary,
+	a.action-btn {
+		text-decoration: none;
+	}
+	.catalog-pagination {
+		align-items: center;
+	}
+
 	.email-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;

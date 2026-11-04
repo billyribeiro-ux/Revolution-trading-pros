@@ -29,6 +29,9 @@ pub struct Member {
 
 #[derive(Debug, Deserialize)]
 pub struct MemberQuery {
+    pub segment: Option<i64>,
+    pub tag: Option<i64>,
+    pub spending_tier: Option<String>,
     pub search: Option<String>,
     pub status: Option<String>,
     pub date_from: Option<String>,
@@ -85,84 +88,158 @@ pub async fn index(
     _admin: AdminUser,
     Query(params): Query<MemberQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let per_page = params.per_page.unwrap_or(25).min(100);
-    let page = params.page.unwrap_or(1).max(1);
-    let offset = (page - 1) * per_page;
-
-    let sort_column = validate_sort_column(params.sort_by.as_deref().unwrap_or("created_at"));
-    let sort_direction = validate_sort_direction(params.sort_dir.as_deref().unwrap_or("desc"));
-
-    // Prepare search pattern
-    let search_pattern = params
+    use crate::services::member_segmentation::{self as evaluation, Condition, Definition};
+    let size = params.per_page.unwrap_or(25);
+    let page = params.page.unwrap_or(1);
+    if !(1..=100).contains(&size) || !(1..=10_000).contains(&page) {
+        return Err(ApiError::validation_error(
+            "Invalid member page or page size",
+        ));
+    }
+    if params
         .search
         .as_ref()
-        .filter(|s| !s.is_empty() && s.len() <= 100)
-        .map(|s| format!("%{s}%"));
-
-    // Validate dates
+        .is_some_and(|v| v.chars().count() > 100 || v.contains('\0'))
+    {
+        return Err(ApiError::validation_error(
+            "Member search exceeds100 characters or contains invalid characters",
+        ));
+    }
     let date_from = params
         .date_from
-        .as_ref()
-        .filter(|d| is_valid_date_format(d))
-        .cloned();
+        .as_deref()
+        .map(|v| chrono::NaiveDate::parse_from_str(v, "%Y-%m-%d"))
+        .transpose()
+        .map_err(|_| ApiError::validation_error("Invalid start date"))?;
     let date_to = params
         .date_to
-        .as_ref()
-        .filter(|d| is_valid_date_format(d))
-        .cloned();
-
-    // Build dynamic query with parameterized bindings
-    // Using a single query with COALESCE/NULL checks for optional filters
-    let members: Vec<Member> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
-        r"
-            SELECT id, name, email, created_at, updated_at
-            FROM users
-            WHERE
-                ($1::TEXT IS NULL OR (name ILIKE $1 OR email ILIKE $1))
-                AND ($2::DATE IS NULL OR created_at >= $2::DATE)
-                AND ($3::DATE IS NULL OR created_at <= $3::DATE + INTERVAL '1 day')
-            ORDER BY {sort_column} {sort_direction}
-            LIMIT $4 OFFSET $5
-            "
-    )))
-    .bind(&search_pattern)
-    .bind(&date_from)
-    .bind(&date_to)
-    .bind(per_page)
-    .bind(offset)
-    .fetch_all(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    // Get total count with same filters
-    let total: i64 = sqlx::query_scalar(
-        r"
-        SELECT COUNT(*)
-        FROM users
-        WHERE
-            ($1::TEXT IS NULL OR (name ILIKE $1 OR email ILIKE $1))
-            AND ($2::DATE IS NULL OR created_at >= $2::DATE)
-            AND ($3::DATE IS NULL OR created_at <= $3::DATE + INTERVAL '1 day')
-        ",
-    )
-    .bind(&search_pattern)
-    .bind(&date_from)
-    .bind(&date_to)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    let last_page = (total as f64 / per_page as f64).ceil() as i64;
-
-    Ok(Json(serde_json::json!({
-        "members": members,
-        "pagination": {
-            "total": total,
-            "per_page": per_page,
-            "current_page": page,
-            "last_page": last_page.max(1)
+        .as_deref()
+        .map(|v| chrono::NaiveDate::parse_from_str(v, "%Y-%m-%d"))
+        .transpose()
+        .map_err(|_| ApiError::validation_error("Invalid end date"))?;
+    if date_from.zip(date_to).is_some_and(|(from, to)| from > to) {
+        return Err(ApiError::validation_error(
+            "Start date must not follow end date",
+        ));
+    }
+    let mut definition = if let Some(id) = params.segment {
+        evaluation::load(&state.db.pool, id, false).await?
+    } else {
+        Definition {
+            conditions: vec![],
+            static_id: None,
+            is_system: false,
         }
-    })))
+    };
+    if let Some(status) = &params.status {
+        if !status.is_empty() {
+            definition.conditions.push(Condition {
+                field: "status".into(),
+                operator: "eq".into(),
+                value: serde_json::json!(status),
+            });
+        }
+    }
+    if let Some(tag) = params.tag {
+        if tag <= 0 {
+            return Err(ApiError::validation_error("Invalid member tag"));
+        }
+        definition.conditions.push(Condition {
+            field: "tag".into(),
+            operator: "has".into(),
+            value: serde_json::json!(tag),
+        });
+    }
+    if let Some(tier) = params.spending_tier.as_deref().filter(|v| !v.is_empty()) {
+        let (min, max) = match tier {
+            "whale" => (5000, None),
+            "high" => (1000, Some(5000)),
+            "medium" => (100, Some(1000)),
+            "low" => (0, Some(100)),
+            _ => return Err(ApiError::validation_error("Invalid spending tier")),
+        };
+        definition.conditions.push(Condition {
+            field: "total_spent".into(),
+            operator: "gte".into(),
+            value: serde_json::json!(min),
+        });
+        if let Some(max) = max {
+            definition.conditions.push(Condition {
+                field: "total_spent".into(),
+                operator: "lt".into(),
+                value: serde_json::json!(max),
+            });
+        }
+    }
+    let build = |prefix| -> Result<sqlx::QueryBuilder<sqlx::Postgres>, ApiError> {
+        let mut query = evaluation::segment_query(prefix, &definition)?;
+        if let Some(search) = params.search.as_ref().filter(|v| !v.is_empty()) {
+            let pattern = format!("%{search}%");
+            query
+                .push(" AND (m.name ILIKE ")
+                .push_bind(pattern.clone())
+                .push(" OR m.email ILIKE ")
+                .push_bind(pattern)
+                .push(")");
+        }
+        if let Some(date) = date_from {
+            query.push(" AND m.created_at>=").push_bind(date);
+        }
+        if let Some(date) = date_to {
+            query
+                .push(" AND m.created_at<")
+                .push_bind(date)
+                .push("+INTERVAL '1 day'");
+        }
+        if let Some(plan) = params.plan_id {
+            if plan <= 0 {
+                return Err(ApiError::validation_error("Invalid membership plan"));
+            }
+            query.push(" AND EXISTS(SELECT 1 FROM user_memberships s WHERE s.user_id=m.id AND s.plan_id=").push_bind(plan).push(" AND s.deleted_at IS NULL)");
+        }
+        if let Some(product) = params.product_id {
+            query.push(" AND EXISTS(SELECT 1 FROM order_items item JOIN orders o ON o.id=item.order_id WHERE o.user_id=m.id AND item.product_id=").push_bind(product).push(" AND o.status IN ('completed','paid'))");
+        }
+        Ok(query)
+    };
+    let total: i64 = build("SELECT COUNT(*)")?
+        .build_query_scalar()
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(evaluation::storage)?;
+    let mut query = build(
+        "SELECT to_jsonb(m) || jsonb_build_object('status_label',initcap(replace(m.status,'_',' ')))",
+    )?;
+    let sort = match params.sort_by.as_deref().unwrap_or("created_at") {
+        "id" => "m.id",
+        "name" => "m.name",
+        "email" => "m.email",
+        "total_spent" => "m.total_spent",
+        "updated_at" => "m.updated_at",
+        "joined_at" | "created_at" => "m.created_at",
+        _ => return Err(ApiError::validation_error("Unsupported member sort field")),
+    };
+    let direction = match params.sort_dir.as_deref().unwrap_or("desc") {
+        "asc" | "ASC" => " ASC",
+        "desc" | "DESC" => " DESC",
+        _ => return Err(ApiError::validation_error("Invalid member sort direction")),
+    };
+    query
+        .push(" ORDER BY ")
+        .push(sort)
+        .push(direction)
+        .push(",m.id LIMIT ")
+        .push_bind(size)
+        .push(" OFFSET ")
+        .push_bind((page - 1) * size);
+    let members: Vec<serde_json::Value> = query
+        .build_query_scalar()
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(evaluation::storage)?;
+    Ok(Json(
+        serde_json::json!({"members":members,"pagination":{"total":total,"per_page":size,"current_page":page,"last_page":((total+size-1)/size).max(1)}}),
+    ))
 }
 
 /// GET /admin/members/stats - Comprehensive member statistics

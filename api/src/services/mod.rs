@@ -24,6 +24,7 @@ pub mod export; // ICT 7+ Phase 4: Export Functionality
 pub mod malware;
 pub mod media_jobs;
 pub mod media_processor;
+pub mod member_segmentation;
 pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
 pub mod newsletter_delivery;
 pub mod order_service;
