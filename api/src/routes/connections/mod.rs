@@ -34,6 +34,7 @@ mod audit_log;
 mod crypto;
 mod definitions;
 mod handlers;
+mod probe;
 mod webhooks;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -114,6 +115,7 @@ pub struct UpdateWebhookRequest {
 pub struct ListQuery {
     pub category: Option<String>,
     pub status: Option<String>,
+    pub environment: Option<String>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -124,7 +126,10 @@ pub struct ListQuery {
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         // Main connection routes
-        .route("/", get(handlers::get_connections_status))
+        .route(
+            "/",
+            get(handlers::get_connections_status).post(handlers::initiate_service),
+        )
         .route("/status", get(handlers::get_connections_status))
         .route("/summary", get(handlers::get_connections_summary))
         .route("/categories", get(handlers::get_categories_handler))

@@ -71,7 +71,7 @@ pub(super) fn get_service_definitions() -> Vec<serde_json::Value> {
             "is_oauth": false,
             "is_builtin": false,
             "fields": [
-                {"key": "api_key", "label": "API Key", "type": "password", "required": true},
+                {"key": "api_key", "label": "Storage Zone Password", "type": "password", "required": true},
                 {"key": "storage_zone", "label": "Storage Zone", "type": "text", "required": true},
                 {"key": "library_id", "label": "Video Library ID", "type": "text", "required": false}
             ]
@@ -106,7 +106,10 @@ pub(super) fn get_service_definitions() -> Vec<serde_json::Value> {
             "is_builtin": false,
             "fields": [
                 {"key": "measurement_id", "label": "Measurement ID", "type": "text", "required": true, "placeholder": "G-XXXXXXXXXX"},
-                {"key": "api_secret", "label": "API Secret", "type": "password", "required": false}
+                {"key": "api_secret", "label": "API Secret", "type": "password", "required": false},
+                {"key": "property_id", "label": "Property ID", "type": "text", "required": false},
+                {"key": "stream_id", "label": "Web Data Stream ID", "type": "text", "required": false},
+                {"key": "access_token", "label": "OAuth Access Token (analytics.readonly)", "type": "password", "required": false, "help":"Required to verify the stream identity; measurement configuration alone cannot verify access."}
             ]
         }),
         json!({

@@ -1,5 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { secureAuthCookie } from '#lib/server/auth-response.js';
 
 // FIX-2026-04-26: env.VITE_API_URL → canonical pattern
 // const PROD_API_ROOT = 'http://localhost:8080';
@@ -29,7 +30,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	const startTime = performance.now();
 
 	// ICT 7 FIX: secure=false on localhost (http), true in production (https)
-	const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
+	const isSecure = secureAuthCookie(request.url);
 
 	try {
 		const sessionId = request.headers.get('X-Session-ID') || '';

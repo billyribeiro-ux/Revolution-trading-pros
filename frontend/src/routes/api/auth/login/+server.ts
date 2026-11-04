@@ -8,6 +8,7 @@
 
 import type { RequestEvent } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { secureAuthCookie } from '#lib/server/auth-response.js';
 
 const API_URL = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
@@ -47,7 +48,7 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 		// If successful, set httpOnly cookies for the tokens
 		if (response.ok && data.token) {
 			// ICT 7 FIX: secure=false on localhost (http), true in production (https)
-			const isSecure = process.env.NODE_ENV === 'production' || !request.url.includes('localhost');
+			const isSecure = secureAuthCookie(request.url);
 
 			// Set access token cookie
 			cookies.set('rtp_access_token', data.token, {

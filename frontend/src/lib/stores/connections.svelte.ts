@@ -341,46 +341,24 @@ export const connections = {
 					error: null
 				};
 			} catch (error) {
-				// On error, set default state with built-in services marked as connected.
-				const defaultConnections: Record<string, ConnectionStatus> = {
-					fluent_crm_pro: {
-						key: 'fluent_crm_pro',
-						name: 'FluentCRM Pro',
-						category: 'Fluent',
-						isConnected: true,
-						status: 'connected',
-						healthScore: 100,
-						lastVerified: new Date().toISOString(),
-						error: null
-					},
-					fluent_forms_pro: {
-						key: 'fluent_forms_pro',
-						name: 'FluentForms Pro',
-						category: 'Fluent',
-						isConnected: true,
-						status: 'connected',
-						healthScore: 100,
-						lastVerified: new Date().toISOString(),
-						error: null
-					},
-					fluent_smtp: {
-						key: 'fluent_smtp',
-						name: 'FluentSMTP',
-						category: 'Fluent',
-						isConnected: true,
-						status: 'connected',
-						healthScore: 100,
-						lastVerified: new Date().toISOString(),
-						error: null
-					}
-				};
-
+				const message = error instanceof Error ? error.message : 'Failed to load connections';
 				connectionsState = {
 					...connectionsState,
-					connections: defaultConnections,
+					connections: Object.fromEntries(
+						Object.entries(connectionsState.connections).map(([key, value]) => [
+							key,
+							{
+								...value,
+								isConnected: false,
+								status: 'pending' as const,
+								healthScore: 0,
+								error: message
+							}
+						])
+					),
 					isLoading: false,
-					lastFetched: Date.now(),
-					error: error instanceof Error ? error.message : 'Failed to load connections'
+					lastFetched: null,
+					error: message
 				};
 			} finally {
 				// FIX-2026-04-26: clear the in-flight guard so subsequent `load()`

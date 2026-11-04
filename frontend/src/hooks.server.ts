@@ -1,6 +1,13 @@
-import { redirect, isRedirect } from '@sveltejs/kit';
 import { building } from '$app/env';
+import { SvelteDate } from 'svelte/reactivity';
 import { isAdminRole } from '#lib/config/role-policy.js';
+import { isAuthenticatedPath } from '#lib/config/private-routes.js';
+import {
+	authenticatedUser,
+	privateAuthRedirect,
+	privateAuthHeaders,
+	secureAuthCookie
+} from '#lib/server/auth-response.js';
 
 /**
  * SvelteKit Server Hooks - Auth, Security Headers & Performance
@@ -138,7 +145,6 @@ const maintenanceHandler: Handle = async ({ event, resolve }) => {
  * Protected routes that require authentication
  * These routes will redirect to login if user is not authenticated
  */
-const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room', '/admin'];
 
 /**
  * Authentication Handler - ICT 11+ Server-Side Pattern
@@ -170,8 +176,17 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		return null;
 	};
 
+	// Authentication is a runtime policy. Let Kit inspect each route's prerender
+	// option, so crawler redirects cannot become static login pages for private
+	// routes explicitly marked prerender=false (or conceal missing destinations).
+	if (building) return resolve(event);
+	let refreshedCookie: string | undefined;
+	function privateRedirect(location: string): Response {
+		return privateAuthRedirect(event, location, refreshedCookie);
+	}
+
 	// Check if this is a protected route
-	const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+	const isProtectedRoute = isAuthenticatedPath(pathname);
 
 	if (!isProtectedRoute) {
 		// Not a protected route - but still try to get user if token exists
@@ -191,15 +206,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				});
 				if (response.ok) {
 					const json = await response.json();
-					const userData = json.data || json;
-					event.locals.user = {
-						id: userData.id,
-						email: userData.email,
-						name: userData.name,
-						role: userData.role,
-						is_superadmin: userData.is_superadmin === true,
-						is_developer: userData.is_developer === true
-					};
+					event.locals.user = authenticatedUser(json);
 					// ICT 7 FIX: Set accessToken in locals for non-protected routes too
 					event.locals.accessToken = token;
 				}
@@ -213,15 +220,11 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	if (!token && !refreshToken) {
 		// No tokens - redirect to login with return URL
 		const returnUrl = encodeURIComponent(pathname);
-		redirect(303, `/login?redirect=${returnUrl}`);
+		return privateRedirect(`/login?redirect=${returnUrl}`);
 	}
 
 	// ICT 7 FIX: Validate token with proper timeout and error handling
 	try {
-		// Add timeout to prevent hanging requests
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
 		// ICT7 FIX: Backend /me endpoint is under /auth router
 		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 			method: 'GET',
@@ -230,25 +233,13 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				'Content-Type': 'application/json',
 				Accept: 'application/json'
 			},
-			signal: controller.signal
+			signal: AbortSignal.timeout(10000)
 		});
-
-		clearTimeout(timeoutId);
 
 		if (response.ok) {
 			const json = await response.json();
 			// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
-			const userData = json.data || json;
-
-			// Set user in locals for use in load functions
-			event.locals.user = {
-				id: userData.id,
-				email: userData.email,
-				name: userData.name,
-				role: userData.role,
-				is_superadmin: userData.is_superadmin === true,
-				is_developer: userData.is_developer === true
-			};
+			event.locals.user = authenticatedUser(json);
 
 			// ICT 7 FIX: Store token in locals for server-side API calls
 			// This allows +page.server.ts load functions to make authenticated API calls
@@ -259,7 +250,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				// No refresh token - permanent auth failure
 				console.info('[Auth Hook] 401 with no refresh token - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
-				redirect(303, `/login?redirect=${returnUrl}`);
+				return privateRedirect(`/login?redirect=${returnUrl}`);
 			}
 
 			// SERVER-SIDE TOKEN REFRESH
@@ -277,7 +268,8 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					'Content-Type': 'application/json',
 					Accept: 'application/json'
 				},
-				body: JSON.stringify({ refresh_token: refreshToken })
+				body: JSON.stringify({ refresh_token: refreshToken }),
+				signal: AbortSignal.timeout(10000)
 			});
 
 			if (refreshResponse.ok) {
@@ -286,15 +278,26 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				const refreshData = refreshJson.data || refreshJson;
 
 				// Set new access token cookie (backend sends access_token, not token)
+
 				const newToken = refreshData.access_token || refreshData.token;
-				const isSecure = import.meta.env.PROD || !event.url.hostname.includes('localhost');
-				event.cookies.set('rtp_access_token', newToken, {
+				const expiresIn = refreshData.expires_in;
+				if (
+					typeof newToken !== 'string' ||
+					!newToken ||
+					typeof expiresIn !== 'number' ||
+					!Number.isFinite(expiresIn) ||
+					expiresIn <= 0
+				)
+					throw new Error('API_UNEXPECTED_RESPONSE_INVALID_REFRESH');
+				const cookieOptions = {
 					path: '/',
 					httpOnly: true,
-					secure: isSecure,
-					sameSite: 'lax',
-					maxAge: refreshData.expires_in || 3600
-				});
+					secure: secureAuthCookie(event.url),
+					sameSite: 'lax' as const,
+					maxAge: expiresIn
+				};
+				event.cookies.set('rtp_access_token', newToken, cookieOptions);
+				refreshedCookie = event.cookies.serialize('rtp_access_token', newToken, cookieOptions);
 
 				// ICT7 FIX: Fetch user data with new token - /me is under /auth router
 				const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
@@ -302,30 +305,29 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					headers: {
 						Authorization: `Bearer ${newToken}`,
 						'Content-Type': 'application/json'
-					}
+					},
+					signal: AbortSignal.timeout(10000)
 				});
 
 				if (userResponse.ok) {
 					const userJson = await userResponse.json();
 					// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
-					const userData = userJson.data || userJson;
-					event.locals.user = {
-						id: userData.id,
-						email: userData.email,
-						name: userData.name,
-						role: userData.role,
-						is_superadmin: userData.is_superadmin === true,
-						is_developer: userData.is_developer === true
-					};
+					event.locals.user = authenticatedUser(userJson);
 
 					// ICT 7 FIX: Store refreshed token in locals for server-side API calls
 					event.locals.accessToken = newToken;
+				} else if (userResponse.status === 401 || userResponse.status === 403) {
+					return privateRedirect(`/login?redirect=${encodeURIComponent(pathname)}`);
+				} else {
+					throw new Error(`Identity service returned ${userResponse.status}`);
 				}
+			} else if (refreshResponse.status !== 401 && refreshResponse.status !== 403) {
+				throw new Error(`Refresh service returned ${refreshResponse.status}`);
 			} else {
-				// Refresh failed - permanent auth failure
+				// Refresh rejected the credentials.
 				console.info('[Auth Hook] Token refresh failed - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
-				redirect(303, `/login?redirect=${returnUrl}`);
+				return privateRedirect(`/login?redirect=${returnUrl}`);
 			}
 		} else if (response.status >= 500) {
 			// ICT 7: 5xx = Server error (transient) - preserve session
@@ -336,65 +338,32 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// ICT 7: 403 = Forbidden (permanent) - redirect to login
 			console.info('[Auth Hook] 403 Forbidden - redirecting to login');
 			const returnUrl = encodeURIComponent(pathname);
-			redirect(303, `/login?redirect=${returnUrl}`);
+			return privateRedirect(`/login?redirect=${returnUrl}`);
 		} else {
 			// ICT 7: Other errors (4xx) - treat as transient, preserve session
 			console.warn(`[Auth Hook] Unexpected response (${response.status}) - preserving session`);
 			throw new Error(`API_UNEXPECTED_RESPONSE_${response.status}`);
 		}
-	} catch (error) {
-		// ICT 7: Sophisticated error handling with transient vs permanent failure detection
-
-		// If it's a redirect, rethrow it (permanent auth failure)
-		if (isRedirect(error)) {
-			throw error;
-		}
-
-		// Determine if this is a transient or permanent failure
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		const isNetworkError =
-			errorMessage.includes('fetch') ||
-			errorMessage.includes('network') ||
-			errorMessage.includes('ECONNREFUSED') ||
-			errorMessage.includes('ETIMEDOUT') ||
-			errorMessage.includes('aborted') ||
-			errorMessage.includes('API_SERVER_ERROR') ||
-			errorMessage.includes('API_UNEXPECTED_RESPONSE');
-
-		if (isNetworkError && (token || refreshToken)) {
-			// FIX-C-2 (2026-04-29): the old "decode JWT payload locally and
-			// trust it" fallback has been removed. Decoding without verifying
-			// the signature trusted the contents of any value sitting in the
-			// rtp_access_token cookie — including a forged one. Combined
-			// with a transient API failure (easy to induce), an attacker
-			// could land on admin pages whose +page.server.ts load function
-			// uses event.locals.user.role for gating.
-			//
-			// New behavior: any auth failure (transient or permanent),
-			// when we cannot reach the API, leaves event.locals.user = null
-			// and forces re-authentication. The frontend is never the
-			// authority on identity; the API is. Removing this code means:
-			//   - During a real API outage, users see "please log in" rather
-			//     than partial UI rendered with bogus identity.
-			//   - The console.log that echoed payload.email is also gone
-			//     (PII into server logs).
-			//
-			// Original block (REMOVED) included:
-			//   const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-			//   event.locals.user = { id, email, name, role: payload.role || 'user' };
-			console.warn(
-				'[Auth Hook] Transient API failure — clearing session, user must re-authenticate',
-				errorMessage
-			);
-			event.locals.user = null;
-		} else {
-			// ICT 7: Permanent failure or no tokens - redirect to login
-			console.error('[Auth Hook] Permanent auth failure:', error);
-			const returnUrl = encodeURIComponent(pathname);
-			redirect(303, `/login?redirect=${returnUrl}`);
-		}
+	} catch {
+		// Unexpected/transport failures are not evidence of invalid credentials.
+		// Fail closed, preserve the session, and never authorize from decoded JWT claims.
+		event.locals.user = null;
+		const headers = privateAuthHeaders(refreshedCookie);
+		headers.set('Retry-After', '5');
+		return new Response('Authentication service is temporarily unavailable. Please retry.', {
+			status: 503,
+			headers
+		});
 	}
 
+	// Protect the HTML request as well as layout data, including CSR admin pages.
+	if (
+		(pathname === '/admin' || pathname.startsWith('/admin/')) &&
+		event.locals.user &&
+		!isAdminRole(event.locals.user.role)
+	) {
+		return privateRedirect('/?error=admin_required');
+	}
 	return resolve(event);
 };
 
@@ -438,7 +407,9 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		'/admin',
 		'/dashboard',
 		'/account',
-		'/checkout'
+		'/checkout',
+		'/my',
+		'/api/my'
 	].some((prefix) => event.url.pathname === prefix || event.url.pathname.startsWith(`${prefix}/`));
 	if (
 		newsletterCallback ||
@@ -660,7 +631,7 @@ export const handleError: HandleServerError = async ({ kind, error, event }) => 
 						message,
 						// Do NOT include stack in the outbound payload — it may contain
 						// internal file paths. Log it locally above instead.
-						timestamp: new Date().toISOString(),
+						timestamp: new SvelteDate().toISOString(),
 						source: 'server'
 					})
 				});

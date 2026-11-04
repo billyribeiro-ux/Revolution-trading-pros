@@ -10,6 +10,7 @@
 
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { SvelteDate } from 'svelte/reactivity';
 	import IconBrain from '@tabler/icons-svelte-runes/icons/brain';
 	import IconBrandFacebook from '@tabler/icons-svelte-runes/icons/brand-facebook';
 	import IconBrandPaypal from '@tabler/icons-svelte-runes/icons/brand-paypal';
@@ -102,6 +103,9 @@
 	let connections = $state<Service[]>([]);
 	let categories = $state<Record<string, Category>>({});
 	let isLoading = $state(true);
+	let loadError = $state<string | null>(null);
+	let listEnvironment = $state('production');
+	let loadGeneration = 0;
 	let selectedCategory = $state<string | null>(null);
 	let searchQuery = $state('');
 	let showConnectModal = $state(false);
@@ -122,7 +126,7 @@
 	let availableExternal = $derived(externalServices.filter((c) => !c.is_connected));
 
 	let filteredConnections = $derived.by(() => {
-		let result = externalServices;
+		let result = availableExternal;
 
 		if (selectedCategory) {
 			result = result.filter((c) => c.category === selectedCategory);
@@ -145,14 +149,26 @@
 
 	// Fetch data
 	async function fetchConnections() {
+		const generation = ++loadGeneration;
+		isLoading = true;
+		loadError = null;
 		try {
-			const data = await adminFetch('/api/admin/connections');
+			const data = await adminFetch<{
+				connections: Service[];
+				categories: Record<string, Category>;
+			}>(`/api/admin/connections?environment=${listEnvironment}`, {
+				signal: AbortSignal.timeout(15000)
+			});
+			if (!Array.isArray(data.connections) || !data.categories)
+				throw new Error('Invalid connections response');
+			if (generation !== loadGeneration) return;
 			connections = data.connections;
 			categories = data.categories;
 		} catch (error) {
-			console.error('Failed to fetch connections:', error);
+			if (generation === loadGeneration)
+				loadError = error instanceof Error ? error.message : 'Failed to fetch connections';
 		} finally {
-			isLoading = false;
+			if (generation === loadGeneration) isLoading = false;
 		}
 	}
 
@@ -175,14 +191,19 @@
 			if (data.success) {
 				showConnectModal = false;
 				await fetchConnections();
-				toastStore.success(`${selectedService.name} connected successfully!`);
+				if (data.verified) toastStore.success(data.message);
+				else
+					toastStore.warning(
+						data.verification?.message || 'Credentials saved; provider verification is pending'
+					);
 			} else {
 				testResult = { success: false, error: data.error || 'Connection failed' };
 				toastStore.error(data.error || 'Connection failed. Please check your credentials.');
 			}
-		} catch (_error) {
-			testResult = { success: false, error: 'Network error. Please try again.' };
-			toastStore.error('Network error. Please check your connection and try again.');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Unable to save connection';
+			testResult = { success: false, error: message };
+			toastStore.error(message);
 		} finally {
 			isConnecting = false;
 		}
@@ -198,11 +219,15 @@
 		try {
 			const data = await adminFetch(`/api/admin/connections/${selectedService.key}/test`, {
 				method: 'POST',
-				body: JSON.stringify({ credentials: credentialValues })
+				body: JSON.stringify({ credentials: credentialValues, environment: selectedEnvironment }),
+				signal: AbortSignal.timeout(20000)
 			});
 			testResult = data;
-		} catch (_error) {
-			testResult = { success: false, error: 'Network error. Please try again.' };
+		} catch (error) {
+			testResult = {
+				success: false,
+				error: error instanceof Error ? error.message : 'Unable to test connection'
+			};
 		} finally {
 			isTesting = false;
 		}
@@ -214,7 +239,7 @@
 
 		try {
 			const data = await adminFetch(
-				`/api/admin/connections/${disconnectingService.key}/disconnect`,
+				`/api/admin/connections/${disconnectingService.key}/disconnect?environment=${listEnvironment}`,
 				{ method: 'POST' }
 			);
 
@@ -234,7 +259,7 @@
 		selectedService = service;
 		credentialValues = {};
 		testResult = null;
-		selectedEnvironment = 'production';
+		selectedEnvironment = listEnvironment;
 		showConnectModal = true;
 	}
 
@@ -246,9 +271,8 @@
 	// Format date
 	function formatDate(dateStr: string | null): string {
 		if (!dateStr) return 'Never';
-		const date = new Date(dateStr);
-		const now = new Date();
-		const diff = now.getTime() - date.getTime();
+		const date = new SvelteDate(dateStr);
+		const diff = Date.now() - date.getTime();
 		const minutes = Math.floor(diff / 60000);
 		const hours = Math.floor(diff / 3600000);
 		const days = Math.floor(diff / 86400000);
@@ -330,8 +354,6 @@
 
 <div class="admin-connections">
 	<div class="admin-page-container">
-		
-
 		<!-- Header -->
 		<header class="connections-header" in:fly={{ y: -20, duration: 500, easing: cubicOut }}>
 			<div class="header-content">
@@ -379,6 +401,21 @@
 			</div>
 		</header>
 
+		<label for="connection-environment">Environment</label>
+		<select
+			id="connection-environment"
+			bind:value={listEnvironment}
+			onchange={() => void fetchConnections()}
+		>
+			<option value="production">Production</option>
+			<option value="sandbox">Sandbox</option>
+		</select>
+		{#if loadError}
+			<div role="alert">
+				<p>{loadError}</p>
+				<button onclick={() => void fetchConnections()}>Retry connections</button>
+			</div>
+		{/if}
 		{#if isLoading}
 			<!-- Loading State -->
 			<div class="loading-container">
@@ -403,7 +440,7 @@
 						</div>
 						<div>
 							<h2 class="section-heading">Built-in Features</h2>
-							<p class="section-subheading">Pre-installed and ready to use</p>
+							<p class="section-subheading">Current native module availability</p>
 						</div>
 					</div>
 
@@ -420,7 +457,9 @@
 									<div class="service-info">
 										<div class="service-name-row">
 											<h3 class="service-name">{service.name}</h3>
-											<span class="status-badge active">Active</span>
+											<span class={['status-badge', { active: service.is_connected }]}
+												>{service.connection?.health_status || service.status}</span
+											>
 										</div>
 										<p class="service-description line-clamp-2">{service.description}</p>
 									</div>
@@ -579,7 +618,10 @@
 								<p class="service-description line-clamp-2">
 									{service.description}
 								</p>
-
+								{#if service.connection?.last_error}<p role="status">
+										{service.connection.last_error}
+									</p>{/if}
+								<p>{service.status}</p>
 								<button onclick={() => openConnectModal(service)} class="btn-connect">
 									Connect
 								</button>
@@ -707,7 +749,7 @@
 				class="modal-form"
 				onsubmit={(e) => {
 					e.preventDefault();
-					connectService();
+					void connectService();
 				}}
 			>
 				{#if selectedService.environments && selectedService.environments.length > 1}

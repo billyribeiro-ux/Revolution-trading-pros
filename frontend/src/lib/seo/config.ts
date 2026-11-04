@@ -13,6 +13,15 @@
 
 export const PRODUCTION_ORIGIN = 'https://revolutiontradingpros.com' as const;
 export const PREFERRED_HOST = 'revolutiontradingpros.com' as const;
+
+/** Cloudflare static assets bypass hooks; host rules share the SEO origin policy. */
+export const STATIC_NOINDEX_HOST_PATTERNS = [
+	'https://localhost/*',
+	'https://127.0.0.1/*',
+	'https://[::1]/*',
+	'https://:project.pages.dev/*',
+	'https://:version.:project.pages.dev/*'
+] as const;
 export const TRAILING_SLASH = 'never' as const;
 export const DEFAULT_LOCALE = 'en' as const;
 export const DEFAULT_OG_LOCALE = 'en_US' as const;

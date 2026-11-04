@@ -10,7 +10,10 @@ use axum::{
 use serde_json::json;
 use std::collections::HashMap;
 
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{
+    AppState,
+    middleware::admin::{AdminUser, SuperAdminUser},
+};
 
 use super::audit::log_connection_audit;
 use super::crypto::{decrypt_credentials, encrypt_credentials, mask_credentials};
@@ -30,49 +33,25 @@ pub(super) async fn get_connections_status(
         "Admin fetching connections"
     );
 
-    let now = chrono::Utc::now();
-
-    // Get database connections
-    let mut sql = String::from(
-        r"
-        SELECT id, service_key, name, category, description, status, health_score,
-               health_status, environment, credentials_encrypted, settings,
-               webhook_url, webhook_secret, api_calls_today, api_calls_total,
-               last_error, last_verified_at, connected_at, created_at, updated_at
-        FROM service_connections
-        WHERE 1=1
-        ",
-    );
-
-    let mut bind_count = 0;
-
-    if query.category.is_some() {
-        bind_count += 1;
-        sql.push_str(&format!(" AND category = ${bind_count}"));
+    let environment = query.environment.as_deref().unwrap_or("production");
+    if !["production", "sandbox"].contains(&environment) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid environment"})),
+        ));
     }
-
-    if query.status.is_some() {
-        bind_count += 1;
-        sql.push_str(&format!(" AND status = ${bind_count}"));
+    if query
+        .status
+        .as_deref()
+        .is_some_and(|status| !["connected", "pending", "error", "disconnected"].contains(&status))
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid connection status"})),
+        ));
     }
-
-    sql.push_str(" ORDER BY category, name");
-
-    let mut query_builder =
-        sqlx::query_as::<_, ServiceConnection>(sqlx::AssertSqlSafe(sql.as_str()));
-
-    if let Some(ref category) = query.category {
-        query_builder = query_builder.bind(category);
-    }
-    if let Some(ref status) = query.status {
-        query_builder = query_builder.bind(status);
-    }
-
-    let db_connections: Vec<ServiceConnection> = query_builder
-        .fetch_all(state.db.pool())
-        .await
-        .map_err(crate::utils::errors::db_error)?;
-
+    let db_connections:Vec<ServiceConnection>=sqlx::query_as("SELECT * FROM service_connections WHERE environment=$1 OR environment IS NULL ORDER BY (environment=$1) DESC NULLS LAST,updated_at DESC,id DESC")
+        .bind(environment).fetch_all(state.db.pool()).await.map_err(crate::utils::errors::db_error)?;
     // Build a map of existing connections by service_key
     let existing_keys: std::collections::HashSet<String> = db_connections
         .iter()
@@ -130,33 +109,53 @@ pub(super) async fn get_connections_status(
                 }
             }));
         } else if is_builtin {
-            // Built-in services are always "connected"
-            connections.push(json!({
-                "key": key,
-                "name": def["name"],
-                "category": def["category"],
-                "description": def["description"],
-                "icon": def["icon"],
-                "color": def["color"],
-                "is_oauth": false,
-                "is_builtin": true,
-                "is_connected": true,
-                "status": "connected",
-                "health_score": 100,
-                "fields": [],
-                "connection": {
-                    "id": format!("builtin-{}", key),
-                    "service_key": key,
-                    "status": "connected",
-                    "health_score": 100,
-                    "health_status": "healthy",
-                    "connected_at": now,
-                    "last_verified_at": now,
-                    "api_calls_today": 0,
-                    "api_calls_total": 0,
-                    "last_error": null
+            let (available, checked_at, error) = match key {
+                "fluent_crm_pro" | "fluent_forms_pro" => {
+                    let sql = if key == "fluent_crm_pro" {
+                        "SELECT id FROM contacts LIMIT 1"
+                    } else {
+                        "SELECT id FROM forms LIMIT 1"
+                    };
+                    sqlx::query(sqlx::AssertSqlSafe(sql))
+                        .fetch_optional(state.db.pool())
+                        .await
+                        .map_err(crate::utils::errors::db_error)?;
+                    (true, Some(chrono::Utc::now()), None)
                 }
-            }));
+                _ => {
+                    let verified: Option<chrono::DateTime<chrono::Utc>> = if state
+                        .services
+                        .email
+                        .is_enabled()
+                    {
+                        sqlx::query_scalar("SELECT MAX(sent_at) FROM email_logs WHERE provider='postmark' AND provider_message_id IS NOT NULL AND status='sent' AND sent_at>NOW()-INTERVAL '15 minutes'")
+                            .fetch_one(state.db.pool()).await.map_err(crate::utils::errors::db_error)?
+                    } else {
+                        None
+                    };
+                    let error = if verified.is_some() {
+                        None
+                    } else {
+                        Some(
+                            state
+                                .services
+                                .email
+                                .configuration_error()
+                                .unwrap_or_else(|| {
+                                    "Email configured; no recent provider-acknowledged receipt"
+                                        .into()
+                                }),
+                        )
+                    };
+                    (verified.is_some(), verified, error)
+                }
+            };
+            let mut value = def.clone();
+            value["is_connected"] = json!(available);
+            value["status"] = json!(if available { "connected" } else { "pending" });
+            value["health_score"] = json!(if available { 100 } else { 0 });
+            value["connection"] = json!({"id":format!("native-{key}"),"service_key":key,"status":value["status"],"health_score":value["health_score"],"health_status":if available{"last_check_passed"}else{"unverified"},"connected_at":null,"last_verified_at":checked_at,"last_error":error,"api_calls_today":0,"api_calls_total":0});
+            connections.push(value);
         } else {
             // Service not connected
             connections.push(json!({
@@ -180,6 +179,16 @@ pub(super) async fn get_connections_status(
         }
     }
 
+    connections.retain(|connection| {
+        query
+            .category
+            .as_ref()
+            .is_none_or(|category| connection["category"] == category.as_str())
+            && query
+                .status
+                .as_ref()
+                .is_none_or(|status| connection["status"] == status.as_str())
+    });
     Ok(Json(json!({
         "success": true,
         "connections": connections,
@@ -192,47 +201,30 @@ pub(super) async fn get_connections_status(
 pub(super) async fn get_connections_summary(
     State(state): State<AppState>,
     admin: AdminUser,
+    Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     tracing::info!(admin_id = admin.0.id, "Admin fetching connections summary");
 
-    let connected: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM service_connections WHERE status = 'connected'")
-            .fetch_one(state.db.pool())
-            .await
-            .unwrap_or(0);
-
-    let pending: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM service_connections WHERE status = 'pending'")
-            .fetch_one(state.db.pool())
-            .await
-            .unwrap_or(0);
-
-    let error: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM service_connections WHERE status = 'error'")
-            .fetch_one(state.db.pool())
-            .await
-            .unwrap_or(0);
-
-    let avg_health: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(AVG(health_score), 0) FROM service_connections WHERE status = 'connected'",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0.0);
-
-    // Add builtin services count
-    let builtin_count = 3; // fluent_crm_pro, fluent_forms_pro, fluent_smtp
-
-    Ok(Json(json!({
-        "success": true,
-        "connections": {
-            "total": connected + pending + error + builtin_count,
-            "connected": connected + builtin_count,
-            "pending": pending,
-            "error": error
-        },
-        "health_score": avg_health.round() as i32
-    })))
+    let Json(data) = get_connections_status(State(state), admin, Query(query)).await?;
+    let values = data["connections"].as_array().ok_or((
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({"error":"Invalid connection summary"})),
+    ))?;
+    let count = |status: &str| {
+        values
+            .iter()
+            .filter(|value| value["status"] == status)
+            .count()
+    };
+    let connected = count("connected");
+    let health: Vec<f64> = values
+        .iter()
+        .filter(|value| value["status"] == "connected")
+        .filter_map(|value| value["health_score"].as_f64())
+        .collect();
+    Ok(Json(
+        json!({"success":true,"connections":{"total":values.len(),"connected":connected,"pending":count("pending"),"error":count("error"),"disconnected":count("disconnected")},"health_score":if health.is_empty(){None}else{Some((health.iter().sum::<f64>()/health.len() as f64).round() as i32)}}),
+    ))
 }
 
 /// GET /admin/connections/:key - Get single connection details
@@ -241,115 +233,26 @@ pub(super) async fn get_connection(
     State(state): State<AppState>,
     admin: AdminUser,
     Path(key): Path<String>,
+    Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    tracing::info!(
-        admin_id = admin.0.id,
-        service_key = %key,
-        "Admin fetching connection"
-    );
-
-    // Validate key
-    if key.contains(';') || key.contains("--") || key.len() > 100 {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": "Invalid service key"})),
-        ));
-    }
-
-    let connection: Option<ServiceConnection> = sqlx::query_as(
-        r"
-        SELECT id, service_key, name, category, description, status, health_score,
-               health_status, environment, credentials_encrypted, settings,
-               webhook_url, webhook_secret, api_calls_today, api_calls_total,
-               last_error, last_verified_at, connected_at, created_at, updated_at
-        FROM service_connections
-        WHERE service_key = $1
-        ",
-    )
-    .bind(&key)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
-
-    // Get service definition
-    let definitions = get_service_definitions();
-    let def = definitions.iter().find(|d| d["key"].as_str() == Some(&key));
-
-    match (connection, def) {
-        (Some(conn), Some(def)) => {
-            let masked_creds = conn.credentials_encrypted.as_ref().map(|e| {
-                mask_credentials(&decrypt_credentials(
-                    &state.config.credentials_encryption_key,
-                    e,
-                ))
-            });
-
-            Ok(Json(json!({
-                "success": true,
-                "data": {
-                    "key": conn.service_key,
-                    "name": conn.name,
-                    "category": conn.category,
-                    "description": conn.description,
-                    "icon": def["icon"],
-                    "color": def["color"],
-                    "is_connected": conn.status == "connected",
-                    "status": conn.status,
-                    "health_score": conn.health_score,
-                    "fields": def["fields"],
-                    "connection": {
-                        "id": conn.id,
-                        "environment": conn.environment,
-                        "credentials": masked_creds,
-                        "settings": conn.settings,
-                        "webhook_url": conn.webhook_url,
-                        "connected_at": conn.connected_at,
-                        "last_verified_at": conn.last_verified_at,
-                        "api_calls_today": conn.api_calls_today,
-                        "api_calls_total": conn.api_calls_total,
-                        "last_error": conn.last_error
-                    }
-                }
-            })))
-        }
-        (None, Some(def)) => {
-            // Service exists in definitions but not connected
-            Ok(Json(json!({
-                "success": true,
-                "data": {
-                    "key": key,
-                    "name": def["name"],
-                    "category": def["category"],
-                    "description": def["description"],
-                    "icon": def["icon"],
-                    "color": def["color"],
-                    "is_connected": false,
-                    "status": "pending",
-                    "health_score": 0,
-                    "fields": def["fields"],
-                    "connection": null
-                }
-            })))
-        }
-        _ => Err((
+    let Json(data) = get_connections_status(State(state), admin, Query(query)).await?;
+    let connection = data["connections"]
+        .as_array()
+        .and_then(|values| values.iter().find(|value| value["key"] == key))
+        .ok_or((
             StatusCode::NOT_FOUND,
-            Json(json!({"error": "Service not found"})),
-        )),
-    }
+            Json(json!({"error":"Service not found"})),
+        ))?;
+    Ok(Json(json!({"success":true,"data":connection})))
 }
 
 /// POST /admin/connections/:key/connect - Connect a service
 #[tracing::instrument(skip(state, admin, input))]
 pub(super) async fn connect_service(
     State(state): State<AppState>,
-    admin: AdminUser,
+    admin: SuperAdminUser,
     Path(key): Path<String>,
-    Json(input): Json<ConnectServiceRequest>,
+    Json(mut input): Json<ConnectServiceRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Validate key
     if key.contains(';') || key.contains("--") || key.len() > 100 {
@@ -374,7 +277,12 @@ pub(super) async fn connect_service(
             let field_key = field["key"].as_str().unwrap_or("");
             let required = field["required"].as_bool().unwrap_or(false);
 
-            if required && !input.credentials.contains_key(field_key) {
+            if required
+                && input
+                    .credentials
+                    .get(field_key)
+                    .is_none_or(|value| value.trim().is_empty())
+            {
                 return Err((
                     StatusCode::BAD_REQUEST,
                     Json(json!({"error": format!("Missing required field: {}", field_key)})),
@@ -383,110 +291,71 @@ pub(super) async fn connect_service(
         }
     }
 
-    // Encrypt credentials
+    input
+        .credentials
+        .retain(|_, value| !value.trim().is_empty());
+    let environment = input.environment.as_deref().unwrap_or("production");
+    if !["production", "sandbox"].contains(&environment) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid environment"})),
+        ));
+    }
+    if input.credentials.is_empty()
+        || input.credentials.len() > 32
+        || input.credentials.values().any(|value| {
+            value.trim().is_empty()
+                || value.len() > 8192
+                || value.contains(['\r', '\n', '\0'])
+                || value.contains("********")
+        })
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Missing or invalid credentials"})),
+        ));
+    }
+    if def["is_builtin"] == true {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Built-in services use native configuration"})),
+        ));
+    }
+    let result = super::probe::check(&state.config, &key, &input.credentials, environment).await;
     let encrypted_creds =
         encrypt_credentials(&state.config.credentials_encryption_key, &input.credentials);
-
-    // Check if connection already exists
-    let existing: Option<i64> =
-        sqlx::query_scalar("SELECT id FROM service_connections WHERE service_key = $1")
-            .bind(&key)
-            .fetch_optional(state.db.pool())
-            .await
-            .ok()
-            .flatten();
-
-    let connection: ServiceConnection = if let Some(id) = existing {
-        // Update existing connection
-        sqlx::query_as(
-            r"
-            UPDATE service_connections
-            SET credentials_encrypted = $2,
-                environment = $3,
-                settings = $4,
-                status = 'connected',
-                health_score = 100,
-                health_status = 'healthy',
-                connected_at = NOW(),
-                last_verified_at = NOW(),
-                updated_at = NOW()
-            WHERE id = $1
-            RETURNING id, service_key, name, category, description, status, health_score,
-                      health_status, environment, credentials_encrypted, settings,
-                      webhook_url, webhook_secret, api_calls_today, api_calls_total,
-                      last_error, last_verified_at, connected_at, created_at, updated_at
-            ",
-        )
-        .bind(id)
-        .bind(&encrypted_creds)
-        .bind(&input.environment)
-        .bind(&input.settings)
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?
+    if encrypted_creds.is_empty() {
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error":"Credential encryption failed"})),
+        ));
+    }
+    let status = if result.success {
+        "connected"
+    } else if result.status == "rejected" {
+        "error"
     } else {
-        // Create new connection
-        sqlx::query_as(
-            r"
-            INSERT INTO service_connections (
-                service_key, name, category, description, credentials_encrypted,
-                environment, settings, status, health_score, health_status,
-                connected_at, last_verified_at, created_at, updated_at
-            ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, 'connected', 100, 'healthy',
-                NOW(), NOW(), NOW(), NOW()
-            )
-            RETURNING id, service_key, name, category, description, status, health_score,
-                      health_status, environment, credentials_encrypted, settings,
-                      webhook_url, webhook_secret, api_calls_today, api_calls_total,
-                      last_error, last_verified_at, connected_at, created_at, updated_at
-            ",
-        )
-        .bind(&key)
-        .bind(def["name"].as_str().unwrap_or(&key))
-        .bind(def["category"].as_str().unwrap_or("Other"))
-        .bind(def["description"].as_str())
-        .bind(&encrypted_creds)
-        .bind(&input.environment)
-        .bind(&input.settings)
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?
+        "pending"
     };
-
-    // Audit log
-    log_connection_audit(
-        state.db.pool(),
-        admin.0.id,
-        &admin.0.email,
-        "connection.connected",
-        "service_connection",
-        Some(connection.id),
-        None,
-        Some(json!({
-            "service_key": key,
-            "environment": input.environment
-        })),
-        None,
-    )
-    .await;
+    let mut tx = state
+        .db
+        .pool()
+        .begin()
+        .await
+        .map_err(crate::utils::errors::db_error)?;
+    let connection: ServiceConnection=sqlx::query_as("INSERT INTO service_connections(service_key,name,category,description,credentials_encrypted,environment,settings,status,health_score,health_status,last_verified_at,last_error,connected_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,CASE WHEN $11 THEN NOW() END,$12,CASE WHEN $11 THEN NOW() END) ON CONFLICT(service_key,(COALESCE(environment,''))) DO UPDATE SET credentials_encrypted=EXCLUDED.credentials_encrypted,settings=EXCLUDED.settings,status=EXCLUDED.status,health_score=EXCLUDED.health_score,health_status=EXCLUDED.health_status,last_verified_at=EXCLUDED.last_verified_at,last_error=EXCLUDED.last_error,connected_at=EXCLUDED.connected_at,updated_at=NOW() RETURNING *")
+        .bind(&key).bind(def["name"].as_str()).bind(def["category"].as_str()).bind(def["description"].as_str()).bind(&encrypted_creds).bind(environment).bind(&input.settings).bind(status).bind(if result.success{100}else{0}).bind(result.status).bind(result.success).bind(if result.success{None}else{Some(result.message.as_str())})
+        .fetch_one(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+    sqlx::query("INSERT INTO admin_audit_logs(admin_id,admin_email,action,entity_type,entity_id,new_value) VALUES($1,$2,'connection.verification','service_connection',$3,$4)")
+        .bind(admin.0.id).bind(&admin.0.email).bind(connection.id).bind(json!({"service_key":key,"environment":environment,"verification":result}).to_string()).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+    tx.commit().await.map_err(crate::utils::errors::db_error)?;
 
     // PE7 invariant 2A: drop any cached creds so the next request reads the
     // freshly-pasted keys without waiting on the 60s TTL.
     state
         .services
         .credentials
-        .invalidate(&key, input.environment.as_deref().unwrap_or(""))
+        .invalidate(&key, environment)
         .await;
 
     tracing::info!(
@@ -497,7 +366,9 @@ pub(super) async fn connect_service(
 
     Ok(Json(json!({
         "success": true,
-        "message": format!("Service {} connected successfully", key),
+        "message": if result.success {"Credentials saved and read-only provider check passed"} else {"Credentials saved; provider verification did not pass"},
+        "verified": result.success,
+        "verification": result,
         "connection": {
             "id": connection.id,
             "service_key": connection.service_key,
@@ -511,9 +382,9 @@ pub(super) async fn connect_service(
 #[tracing::instrument(skip(state, admin, input))]
 pub(super) async fn test_connection(
     State(state): State<AppState>,
-    admin: AdminUser,
+    admin: SuperAdminUser,
     Path(key): Path<String>,
-    Json(input): Json<Option<HashMap<String, String>>>,
+    Json(input): Json<Option<TestConnectionInput>>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     tracing::info!(
         admin_id = admin.0.id,
@@ -529,157 +400,91 @@ pub(super) async fn test_connection(
         ));
     }
 
-    // Get existing connection or use provided credentials
-    let credentials: HashMap<String, String> = if let Some(creds) = input {
-        creds
-    } else {
-        // Get from database
-        let encrypted: Option<String> = sqlx::query_scalar(
-            "SELECT credentials_encrypted FROM service_connections WHERE service_key = $1",
-        )
-        .bind(&key)
-        .fetch_optional(state.db.pool())
-        .await
-        .ok()
-        .flatten();
-
-        encrypted
-            .map(|e| decrypt_credentials(&state.config.credentials_encryption_key, &e))
-            .unwrap_or_default()
+    let (provided, environment) = match input {
+        Some(TestConnectionInput::Wrapped(fields)) => (fields.credentials, fields.environment),
+        Some(TestConnectionInput::Flat(credentials)) => (Some(credentials), None),
+        None => (None, None),
     };
-
+    let environment = environment.as_deref().unwrap_or("production");
+    if !["production", "sandbox"].contains(&environment) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid environment"})),
+        ));
+    }
+    let stored: Option<ServiceConnection>=sqlx::query_as("SELECT * FROM service_connections WHERE service_key=$1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,id DESC LIMIT 1")
+        .bind(&key).bind(environment).fetch_optional(state.db.pool()).await.map_err(crate::utils::errors::db_error)?;
+    let saved = stored
+        .as_ref()
+        .and_then(|row| row.credentials_encrypted.as_ref())
+        .map(|encrypted| decrypt_credentials(&state.config.credentials_encryption_key, encrypted));
+    let credentials = provided.as_ref().or(saved.as_ref()).ok_or((
+        StatusCode::BAD_REQUEST,
+        Json(json!({"error":"No credentials provided"})),
+    ))?;
     if credentials.is_empty() {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(json!({"error": "No credentials provided"})),
+            Json(json!({"error":"No credentials provided"})),
         ));
     }
-
-    // Perform connection test based on service type
-    let (success, latency_ms, error_msg) = match key.as_str() {
-        "stripe" => {
-            // Test Stripe API
-            if let Some(secret_key) = credentials.get("secret_key") {
-                if secret_key.starts_with("sk_") {
-                    (true, 45, None)
-                } else {
-                    (
-                        false,
-                        0,
-                        Some("Invalid Stripe secret key format".to_string()),
-                    )
-                }
-            } else {
-                (false, 0, Some("Missing secret_key".to_string()))
-            }
-        }
-        "bunny_cdn" => {
-            // Test Bunny API
-            if credentials.contains_key("api_key") && credentials.contains_key("storage_zone") {
-                (true, 120, None)
-            } else {
-                (false, 0, Some("Missing required credentials".to_string()))
-            }
-        }
-        "sendgrid" => {
-            // Test SendGrid API
-            if let Some(api_key) = credentials.get("api_key") {
-                if api_key.starts_with("SG.") {
-                    (true, 85, None)
-                } else {
-                    (
-                        false,
-                        0,
-                        Some("Invalid SendGrid API key format".to_string()),
-                    )
-                }
-            } else {
-                (false, 0, Some("Missing api_key".to_string()))
-            }
-        }
-        "openai" => {
-            // Test OpenAI API
-            if let Some(api_key) = credentials.get("api_key") {
-                if api_key.starts_with("sk-") {
-                    (true, 250, None)
-                } else {
-                    (false, 0, Some("Invalid OpenAI API key format".to_string()))
-                }
-            } else {
-                (false, 0, Some("Missing api_key".to_string()))
-            }
-        }
-        _ => {
-            // Generic test - just check credentials exist
-            if !credentials.is_empty() {
-                (true, 50, None)
-            } else {
-                (false, 0, Some("No credentials provided".to_string()))
-            }
-        }
-    };
-
-    // Update connection status in database
-    if success {
-        let _ = sqlx::query(
-            r"
-            UPDATE service_connections
-            SET health_score = 100,
-                health_status = 'healthy',
-                last_verified_at = NOW(),
-                last_error = NULL,
-                updated_at = NOW()
-            WHERE service_key = $1
-            ",
-        )
-        .bind(&key)
-        .execute(state.db.pool())
-        .await;
-    } else {
-        let _ = sqlx::query(
-            r"
-            UPDATE service_connections
-            SET health_score = 0,
-                health_status = 'error',
-                last_verified_at = NOW(),
-                last_error = $2,
-                updated_at = NOW()
-            WHERE service_key = $1
-            ",
-        )
-        .bind(&key)
-        .bind(&error_msg)
-        .execute(state.db.pool())
-        .await;
+    if !get_service_definitions()
+        .iter()
+        .any(|def| def["key"] == key)
+    {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error":"Service not found"})),
+        ));
     }
-
-    if success {
-        Ok(Json(json!({
-            "success": true,
-            "message": format!("Connection test for {} passed", key),
-            "latency_ms": latency_ms,
-            "status": "healthy"
-        })))
-    } else {
-        Err((
-            StatusCode::BAD_REQUEST,
-            Json(json!({
-                "success": false,
-                "message": format!("Connection test for {} failed", key),
-                "error": error_msg,
-                "status": "error"
-            })),
-        ))
+    let result = super::probe::check(&state.config, &key, credentials, environment).await;
+    let mut persisted = false;
+    if let Some(stored) = stored.filter(|_| saved.as_ref() == Some(credentials)) {
+        let mut tx = state
+            .db
+            .pool()
+            .begin()
+            .await
+            .map_err(crate::utils::errors::db_error)?;
+        let changed=sqlx::query("UPDATE service_connections SET status=$2,health_score=$3,health_status=$4,last_verified_at=CASE WHEN $5 THEN NOW() ELSE last_verified_at END,last_error=$6,updated_at=NOW() WHERE id=$1 AND credentials_encrypted=$7 AND status<>'disconnected'")
+            .bind(stored.id).bind(if result.success{"connected"}else if result.status=="rejected"{"error"}else{"pending"}).bind(if result.success{100}else{0}).bind(result.status).bind(result.success).bind(if result.success{None}else{Some(result.message.as_str())}).bind(&stored.credentials_encrypted)
+            .execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+        if changed.rows_affected() != 1 {
+            return Err((
+                StatusCode::CONFLICT,
+                Json(json!({"error":"Connection changed during verification; reload and retry"})),
+            ));
+        }
+        sqlx::query("INSERT INTO admin_audit_logs(admin_id,admin_email,action,entity_type,entity_id,new_value) VALUES($1,$2,'connection.verification','service_connection',$3,$4)")
+            .bind(admin.0.id).bind(&admin.0.email).bind(stored.id).bind(json!({"service_key":key,"environment":environment,"verification":result}).to_string()).execute(&mut *tx).await.map_err(crate::utils::errors::db_error)?;
+        tx.commit().await.map_err(crate::utils::errors::db_error)?;
+        state
+            .services
+            .credentials
+            .invalidate(&key, environment)
+            .await;
+        persisted = true;
     }
+    Ok(Json(
+        json!({"success":result.success,"message":result.message,"error":if result.success{None}else{Some(&result.message)},"status":result.status,"latency_ms":result.latency_ms,"status_code":result.status_code,"persisted":persisted}),
+    ))
 }
 
 /// POST /admin/connections/:key/disconnect - Disconnect a service
 #[tracing::instrument(skip(state, admin))]
 pub(super) async fn disconnect_service(
     State(state): State<AppState>,
-    admin: AdminUser,
+    admin: SuperAdminUser,
     Path(key): Path<String>,
+    Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let environment = query.environment.as_deref().unwrap_or("production");
+    if !["production", "sandbox"].contains(&environment) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid environment"})),
+        ));
+    }
     // Validate key
     if key.contains(';') || key.contains("--") || key.len() > 100 {
         return Err((
@@ -690,12 +495,12 @@ pub(super) async fn disconnect_service(
 
     // Get connection for audit
     let connection: Option<ServiceConnection> =
-        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1")
+        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,id DESC LIMIT 1")
             .bind(&key)
+            .bind(environment)
             .fetch_optional(state.db.pool())
             .await
-            .ok()
-            .flatten();
+            .map_err(crate::utils::errors::db_error)?;
 
     let Some(connection) = connection else {
         return Err((
@@ -715,10 +520,10 @@ pub(super) async fn disconnect_service(
             webhook_url = NULL,
             webhook_secret = NULL,
             updated_at = NOW()
-        WHERE service_key = $1
+        WHERE id = $1
         ",
     )
-    .bind(&key)
+    .bind(connection.id)
     .execute(state.db.pool())
     .await
     .map_err(|e| {
@@ -766,9 +571,17 @@ pub(super) async fn disconnect_service(
 #[tracing::instrument(skip(state, admin))]
 pub(super) async fn delete_connection(
     State(state): State<AppState>,
-    admin: AdminUser,
+    admin: SuperAdminUser,
     Path(key): Path<String>,
+    Query(query): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let environment = query.environment.as_deref().unwrap_or("production");
+    if !["production", "sandbox"].contains(&environment) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Invalid environment"})),
+        ));
+    }
     // Validate key
     if key.contains(';') || key.contains("--") || key.len() > 100 {
         return Err((
@@ -779,12 +592,12 @@ pub(super) async fn delete_connection(
 
     // Get connection for audit
     let connection: Option<ServiceConnection> =
-        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1")
+        sqlx::query_as("SELECT * FROM service_connections WHERE service_key = $1 AND (environment=$2 OR environment IS NULL) ORDER BY (environment=$2) DESC NULLS LAST,id DESC LIMIT 1")
             .bind(&key)
+            .bind(environment)
             .fetch_optional(state.db.pool())
             .await
-            .ok()
-            .flatten();
+            .map_err(crate::utils::errors::db_error)?;
 
     let Some(connection) = connection else {
         return Err((
@@ -818,8 +631,8 @@ pub(super) async fn delete_connection(
         })?;
 
     // Delete connection
-    sqlx::query("DELETE FROM service_connections WHERE service_key = $1")
-        .bind(&key)
+    sqlx::query("DELETE FROM service_connections WHERE id = $1")
+        .bind(connection.id)
         .execute(&mut *tx)
         .await
         .map_err(|e| {
@@ -886,4 +699,31 @@ pub(super) async fn get_categories_handler(
         "success": true,
         "categories": get_categories()
     })))
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct TestConnectionFields {
+    credentials: Option<HashMap<String, String>>,
+    environment: Option<String>,
+}
+#[derive(serde::Deserialize)]
+#[serde(untagged)]
+pub(super) enum TestConnectionInput {
+    Wrapped(TestConnectionFields),
+    Flat(HashMap<String, String>),
+}
+#[derive(serde::Deserialize)]
+pub(super) struct InitiateRequest {
+    #[serde(alias = "service_key")]
+    key: String,
+    #[serde(flatten)]
+    input: ConnectServiceRequest,
+}
+pub(super) async fn initiate_service(
+    state: State<AppState>,
+    admin: SuperAdminUser,
+    Json(request): Json<InitiateRequest>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    connect_service(state, admin, Path(request.key), Json(request.input)).await
 }

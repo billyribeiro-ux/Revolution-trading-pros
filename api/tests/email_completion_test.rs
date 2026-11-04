@@ -1,6 +1,8 @@
 //! Real API/DB/provider-adapter proof. Never run with live email credentials.
 #[path = "support/authorization_parity.rs"]
 mod authorization_parity_proof;
+#[path = "support/connections.rs"]
+mod connections_proof;
 #[path = "support/crm_webhooks.rs"]
 mod crm_webhook_proof;
 #[path = "support/email_subscribers.rs"]
@@ -1661,5 +1663,6 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     performance_proof::proof(&api, &pool, &tokens).await;
     email_subscriber_proof::proof(&api, &disabled_app, &pool, &tokens, &adapter).await;
     authorization_parity_proof::proof(&api, &pool).await;
+    connections_proof::proof(&api, &pool, &tokens).await;
     server.abort();
 }

@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-cloudflare';
+import { createCloudflareAdapter } from './config/cloudflare-adapter.js';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { sveltekit } from '@sveltejs/kit/vite';
@@ -65,7 +65,7 @@ export default defineConfig(({ mode, command }) => {
 				// Svelte 5 auto-detects runes mode per component, so first-party code
 				// still compiles as runes without the override.
 				experimental: { remoteFunctions: true },
-				adapter: adapter({ routes: { include: ['/*'], exclude: ['<all>'] } }),
+				adapter: createCloudflareAdapter(),
 				// `alias` dropped in the SvelteKit 3 migration: `$lib` is replaced by
 				// the `#lib/*` subpath import declared in package.json#imports, and
 				// $components/$stores/$utils/$api had zero usages left in src/.

@@ -2983,6 +2983,18 @@
 			"evidence": "Source inspection only"
 		},
 		{
+			"route": "/admin/popups/create",
+			"files": [
+				"frontend/src/routes/admin/popups/create/+page.server.ts",
+				"frontend/src/routes/admin/popups/create/+page.svelte"
+			],
+			"expected": "Preserve established create link with an authenticated 307 redirect to /admin/popups/new, retaining the query string",
+			"gap": "Alias repaired; destination authoring workflow still needs its full module audit",
+			"status": "alias verified; destination workflow unverified",
+			"imports": ["@sveltejs/kit"],
+			"evidence": "/tmp/admin-move-private-rendering-browser3.log (production build6, 1 passed3.8s)"
+		},
+		{
 			"route": "/admin/popups/new",
 			"files": ["frontend/src/routes/admin/popups/new/+page.svelte"],
 			"expected": "Existing page actions persist and update UI; enforce authorization and surface failures",
