@@ -132,36 +132,48 @@
 	color: inherit;
 }
 
-/* Viewport scrollbar.
-   The `.admin-layout ::-webkit-scrollbar` rules below can't reach the page's own scrollbar:
-   it belongs to <html>, an ANCESTOR of .admin-layout. Measured on /admin at 1440px: html
-   had `color-scheme: normal` and `scrollbar-color: auto` (transparent html/body background),
-   so Chrome drew its default light-grey thumb on a mid-grey track beside the #0d1117 page.
-   Colour it from the same tokens as the page (track = page background, thumb = the subtle
-   border colour) so it recedes. :has() keeps this to admin pages only - marketing/dashboard
-   routes are untouched even though this stylesheet stays loaded after navigation. */
+/* Scrollbars (viewport + every inner scroller in admin).
+   The page's own scrollbar belongs to <html>, an ANCESTOR of .admin-layout, so selectors
+   scoped under .admin-layout never reached it. Measured on /admin at 1440px: html had
+   `color-scheme: normal` / `scrollbar-color: auto`, i.e. Chrome's default light-grey thumb
+   on a mid-grey track beside the #0d1117 page. The thumb hover used --admin-border-interactive
+   (#8b949e), a bright grey that reads as a flash on the dark UI.
+   Now: a thin 6px track that is the page background, a thumb in the subtle border colour,
+   and a hover that is only a small step lighter. :has() keeps the viewport rules to admin
+   pages even though this stylesheet stays loaded after client-side navigation.
+   NB: `scrollbar-color` must not be set where the ::-webkit-scrollbar rules apply - Chrome
+   ignores the pseudo-elements whenever it is non-auto - so Firefox gets it via @supports. */
 html:has(.admin-layout) {
 	color-scheme: dark;
-	scrollbar-color: var(--border-default, #30363d) var(--bg-base, #0d1117);
 }
 
-/* Custom Scrollbars in Admin */
+html:has(.admin-layout)::-webkit-scrollbar,
 .admin-layout ::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
+	width: 6px;
+	height: 6px;
 }
 
+html:has(.admin-layout)::-webkit-scrollbar-track,
 .admin-layout ::-webkit-scrollbar-track {
-	background: var(--admin-surface-sunken);
+	background: var(--bg-base, #0d1117);
 }
 
+html:has(.admin-layout)::-webkit-scrollbar-thumb,
 .admin-layout ::-webkit-scrollbar-thumb {
-	background: var(--admin-border);
+	background: var(--border-default, #30363d);
 	border-radius: var(--radius-full, 9999px);
 }
 
+html:has(.admin-layout)::-webkit-scrollbar-thumb:hover,
 .admin-layout ::-webkit-scrollbar-thumb:hover {
-	background: var(--admin-border-interactive);
+	background: color-mix(in srgb, var(--border-default, #30363d) 88%, white);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+	html:has(.admin-layout) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--border-default, #30363d) var(--bg-base, #0d1117);
+	}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

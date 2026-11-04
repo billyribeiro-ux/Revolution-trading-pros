@@ -1390,6 +1390,10 @@
 	.toolbar-right {
 		display: flex;
 		align-items: center;
+		/* Wrap: three selects + a button are ~500px wide and the row could not shrink, so at
+		   375px the filters were pushed past the page and clipped by .admin-media. */
+		flex-wrap: wrap;
+		min-width: 0;
 		gap: 0.5rem;
 	}
 
