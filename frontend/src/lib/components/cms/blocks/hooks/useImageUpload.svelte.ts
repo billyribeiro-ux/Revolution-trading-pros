@@ -379,7 +379,7 @@ export function useImageUpload(options: ImageUploadOptions) {
 					reject(err);
 				};
 
-				upload(file);
+				void upload(file);
 			});
 		}
 
@@ -421,7 +421,7 @@ export function useImageUpload(options: ImageUploadOptions) {
 			const imageFile = Array.from(files).find((file) => allowedTypes.includes(file.type));
 
 			if (imageFile) {
-				upload(imageFile);
+				void upload(imageFile);
 			} else {
 				error = 'No valid image file found';
 				onError?.(new Error(error));
@@ -443,7 +443,7 @@ export function useImageUpload(options: ImageUploadOptions) {
 		const file = input.files?.[0];
 
 		if (file) {
-			upload(file);
+			void upload(file);
 		}
 
 		// Reset input to allow re-selecting the same file
@@ -471,7 +471,7 @@ export function useImageUpload(options: ImageUploadOptions) {
 				const file = item.getAsFile();
 				if (file) {
 					event.preventDefault();
-					upload(file);
+					void upload(file);
 					return;
 				}
 			}

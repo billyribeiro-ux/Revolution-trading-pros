@@ -1179,7 +1179,7 @@ describe('ImageBlock - Loading and Error States', () => {
 			});
 
 			// Don't await - we want to check loading state immediately after triggering
-			fireEvent.change(fileInput);
+			void fireEvent.change(fileInput);
 
 			// Loading state should appear briefly
 			// Note: The loading state is very quick (500ms simulated), so we check the container

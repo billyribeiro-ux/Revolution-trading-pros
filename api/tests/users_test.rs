@@ -191,6 +191,8 @@ fn user_response_bigserial_i64_pk_and_is_admin_signal() {
         mfa_enabled: true,
         // LOAD-BEARING: frontend reads this to gate the admin nav.
         is_admin: true,
+        is_superadmin: false,
+        is_developer: false,
         created_at: chrono::NaiveDateTime::default(),
         updated_at: chrono::NaiveDateTime::default(),
     };

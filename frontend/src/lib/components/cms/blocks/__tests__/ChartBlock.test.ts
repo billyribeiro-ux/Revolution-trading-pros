@@ -775,7 +775,7 @@ describe('ChartBlock - Accessibility', () => {
 // ===============================================================================
 
 describe('ChartBlock - Error Handling', () => {
-	it('should show error state with retry button', () => {
+	it('should show error state with retry button', async () => {
 		const block = createMockBlock();
 
 		const { container } = render(ChartBlock, {
@@ -791,11 +791,11 @@ describe('ChartBlock - Error Handling', () => {
 		// Simulate error state by triggering iframe error
 		const iframe = container.querySelector('iframe');
 		if (iframe) {
-			fireEvent.error(iframe);
+			await fireEvent.error(iframe);
 		}
 	});
 
-	it('should call onError callback when provided', () => {
+	it('should call onError callback when provided', async () => {
 		const block = createMockBlock();
 		const onError = vi.fn();
 
@@ -812,7 +812,7 @@ describe('ChartBlock - Error Handling', () => {
 
 		const iframe = container.querySelector('iframe');
 		if (iframe) {
-			fireEvent.error(iframe);
+			await fireEvent.error(iframe);
 		}
 
 		// onError should be called on error

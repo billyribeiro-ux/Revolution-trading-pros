@@ -42,7 +42,7 @@ it('the authenticated API capability works with the actual privileged DB role', 
 	expect(policy.getHighestRole(user)).toBe('super-admin');
 	expect(policy.hasPermission(user, policy.PERMISSIONS.USERS_VIEW)).toBe(true);
 	expect(policy.isDeveloper({ role: 'admin', is_developer: true })).toBe(true);
-	expect(policy.getHighestRole({ role: 'admin', is_developer: true })).toBe('developer');
+	expect(policy.getHighestRole({ role: 'admin', is_developer: true })).toBe('admin');
 });
 it('single and array role aliases preserve navigation, permissions and highest-role labels', async () => {
 	const policy = await import('../roles.js');

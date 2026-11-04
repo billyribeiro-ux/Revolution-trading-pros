@@ -448,7 +448,7 @@ describe('useAIGeneration', () => {
 				onSuccess: vi.fn()
 			});
 
-			hook.generate('Test prompt');
+			void hook.generate('Test prompt');
 			hook.clear();
 
 			// Verify state was cleared
@@ -734,7 +734,7 @@ describe('useAIGeneration', () => {
 				onSuccess: vi.fn()
 			});
 
-			hook.generate('Test prompt');
+			void hook.generate('Test prompt');
 			hook.cancel();
 
 			expect(abortSignal?.aborted).toBe(true);
@@ -812,10 +812,11 @@ describe('useAIGeneration', () => {
 
 	describe('Copy to Clipboard', () => {
 		it('copies output to clipboard', async () => {
+			const writeText = vi.fn().mockResolvedValue(undefined);
 			// Re-mock clipboard since mockReset: true resets it between tests
 			Object.assign(navigator, {
 				clipboard: {
-					writeText: vi.fn().mockResolvedValue(undefined),
+					writeText,
 					readText: vi.fn().mockResolvedValue('')
 				}
 			});
@@ -835,7 +836,7 @@ describe('useAIGeneration', () => {
 
 			const result = await hook.copyToClipboard();
 
-			expect(navigator.clipboard.writeText).toHaveBeenCalledWith('Content to copy');
+			expect(writeText).toHaveBeenCalledWith('Content to copy');
 			expect(result).toBe(true);
 		});
 

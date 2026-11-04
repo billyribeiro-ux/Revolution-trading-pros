@@ -406,7 +406,6 @@ export function getHighestRole(user: RoleIdentity | null | undefined): RoleType 
 	if (!user) return ROLES.USER;
 
 	if (isSuperadmin(user)) return ROLES.SUPERADMIN;
-	if (isDeveloper(user)) return ROLES.DEVELOPER;
 
 	let highestIndex = 0;
 

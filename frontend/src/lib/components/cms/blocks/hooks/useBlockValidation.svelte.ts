@@ -424,7 +424,7 @@ export function useBlockValidation(block: Block, rules: ValidationRule[]) {
 	// Derived State
 	// ========================================================================
 
-	let result = $derived(validate());
+	const result = $derived(validate());
 
 	// ========================================================================
 	// Helper Methods
@@ -553,8 +553,8 @@ export const BLOCK_VALIDATION_RULES: Partial<Record<string, ValidationRule[]>> =
 			field: 'content.countdownTarget',
 			custom: (value) => {
 				if (typeof value !== 'string') return false;
-				const date = new Date(value);
-				return !isNaN(date.getTime()) && date > new Date();
+				const targetTime = Date.parse(value);
+				return !isNaN(targetTime) && targetTime > Date.now();
 			},
 			message: 'Target date must be a valid future date'
 		}

@@ -2,9 +2,10 @@
 	"authorization_date": "2026-11-03",
 	"user_approvals": [
 		"Allow targeted fixes for these four warnings",
-		"Allow warning-only fixes for these remaining ten"
+		"Allow warning-only fixes for these remaining ten",
+		"Allow these warning-only fixes (31 CMS integration warnings in 10 files)"
 	],
-	"scope": "Only the 14 approved lint warnings; broader blog editor work remains excluded. Original hashes stay in blog-editor-boundary.json.",
+	"scope": "Only the 14 previously approved warnings and the additional 31 warnings in 10 CMS integration files; broader blog editor work remains excluded. Original hashes remain in the boundary manifests.",
 	"files": {
 		"frontend/src/lib/components/blog/BlockEditor/error-handling.ts": {
 			"original_sha256": "18173b2fe1c3706d4746f4aa1dd6a23a440d2ac4f9333a08839997c0afb2f2a3",
@@ -33,6 +34,76 @@
 			"original_sha256": "8535969d6c1ce047ac2a02280b4451e8e9d0a7598c795a5a708a2d802dcd2eec",
 			"approved_sha256": "e60e6014a77689bbed1dd5f99a8f0a842e31929b53f2581c313bfc9046a3a119",
 			"changes": ["Handle three previously floating initialization/pending-count promises."]
+		},
+		"frontend/src/lib/components/cms/blocks/hooks/useAIGeneration.svelte.ts": {
+			"original_sha256": "2fb4427fc8be1c7c30771e7e87313f724ed3017a4b52751d269aa7f0e1080b15",
+			"approved_sha256": "0213bced75b9ff0e0d1ce65c31974b9d2390965a1e2c04750e313c018c11a5ae",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/hooks/useBlockValidation.svelte.ts": {
+			"original_sha256": "d08bab8b80cc085c9a260515181ef31d78e17d4cdca603bf2853b06557a5dd93",
+			"approved_sha256": "2be3049bffc8ff3e49854f0238c2e24a9a2d31e985d6f713920fa3edae94b314",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/hooks/useImageUpload.svelte.ts": {
+			"original_sha256": "fd17c4578244529a59da357e91f6c38e8309f7db5477bca9354c104e2d6809b9",
+			"approved_sha256": "8a47f0fc7d409a38e843681fb0cd729db282005b330bdcb3beb5ace7f3237250",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/hooks/__tests__/setup.ts": {
+			"original_sha256": "d0db741a2446de539a2edd00abd0141adc1a30518524dab9257b86042b2150ee",
+			"approved_sha256": "48589fd546d90200b7155af0748f1020aae4002761884da837b208f1cec12f56",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/__tests__/setup.ts": {
+			"original_sha256": "4bedd996b322e69e4c671e9d35b7b46ae37f52acbb5c1998f385a9d1ab83a48b",
+			"approved_sha256": "2c2ff352f977f03796497d8aede3297fb91cab126c60af60c8fc25f5ae33707a",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/hooks/__tests__/useImageUpload.test.ts": {
+			"original_sha256": "1a6b3182dc9c123591f280d7fba799ab8437a068a0db9be64e4cdf2179e40cb6",
+			"approved_sha256": "48081a359db2fdff1f01254ef5b15af485b03959cdaf3c35adb3d3fd6cb1985d",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/hooks/__tests__/useAIGeneration.test.ts": {
+			"original_sha256": "20e05d9fcc5125dc9b44ae6248468e8410fe130ce1e3ebe5897d15dd227c288c",
+			"approved_sha256": "cba610a8c9c638fb1b81b09e214cd5dfa20963e6fa9f0f7377b3f2aeb9daf9ac",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/__tests__/ChartBlock.test.ts": {
+			"original_sha256": "23ccc34e0419b8fe1f59c9663bfacb66ea405cfcbbcf8b7ba31258a728555f78",
+			"approved_sha256": "3eee48868a0fe6ee8d45196b18c9e6b7548066cb8ea55938f644e66260605d4f",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/__tests__/ImageBlock.test.ts": {
+			"original_sha256": "ca95e3cad4f51d6523c262005f1fef37ca509a1d5888d3fbb9cb6fa45d4af11a",
+			"approved_sha256": "7d70e8899d4c4081260846b0413c260e004f6c6a44ec28c9d8126221d287564d",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
+		},
+		"frontend/src/lib/components/cms/blocks/__tests__/RiskDisclaimerBlock.test.ts": {
+			"original_sha256": "7ff83b168bb301585147facdc6636cfd2a58f12d0600ef8d88fa080ecd43aaec",
+			"approved_sha256": "92bc408ddea69bc0d886ce0b7c85fbeeccbe90abd3fe29957e898da2fe906919",
+			"changes": [
+				"Warning-only fixes approved 2026-11-04: explicit async ownership, const runes, test arrays and mock method references as applicable."
+			]
 		}
 	}
 }

@@ -199,7 +199,7 @@ export function createMockFile(
 	type: string = 'image/jpeg',
 	size: number = 1024
 ): File {
-	const content = new Array(size).fill('a').join('');
+	const content = 'a'.repeat(size);
 	return new File([content], name, { type });
 }
 

@@ -1,4 +1,6 @@
 //! Real API/DB/provider-adapter proof. Never run with live email credentials.
+#[path = "support/authorization_parity.rs"]
+mod authorization_parity_proof;
 #[path = "support/crm_webhooks.rs"]
 mod crm_webhook_proof;
 #[path = "support/email_subscribers.rs"]
@@ -81,11 +83,19 @@ async fn provider(
         ),
     }
 }
+// Test-only probe exercises the real extractor; no such endpoint is mounted by production.
+async fn superadmin_fixture(
+    _user: revolution_api::middleware::admin::SuperAdminUser,
+) -> StatusCode {
+    StatusCode::NO_CONTENT
+}
 async fn app(db: Database, email: Option<EmailService>) -> Router {
     let mut config = Config::from_env().unwrap();
     config.redis_url = "redis://127.0.0.1:1".into();
     config.meilisearch_host = "http://127.0.0.1:1".into();
     config.r2_endpoint = "http://127.0.0.1:1".into();
+    config.superadmin_emails = vec!["configured-auth-proof@example.test".into()];
+    config.developer_emails = config.superadmin_emails.clone();
     let mut services = Services::new(&config).await.unwrap();
     if let Some(email) = email {
         services.email = email;
@@ -101,6 +111,10 @@ async fn app(db: Database, email: Option<EmailService>) -> Router {
         cache_invalidator: CacheInvalidator::new(cache),
     };
     Router::new()
+        .route(
+            "/fixture/superadmin",
+            axum::routing::get(superadmin_fixture),
+        )
         .nest("/api", routes::api_router())
         .with_state(state)
 }
@@ -1646,5 +1660,6 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     crm_webhook_proof::proof(&api, &pool, &tokens).await;
     performance_proof::proof(&api, &pool, &tokens).await;
     email_subscriber_proof::proof(&api, &disabled_app, &pool, &tokens, &adapter).await;
+    authorization_parity_proof::proof(&api, &pool).await;
     server.abort();
 }

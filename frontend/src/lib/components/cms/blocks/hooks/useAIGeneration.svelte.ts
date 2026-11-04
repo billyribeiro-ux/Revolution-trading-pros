@@ -73,7 +73,7 @@ export function useAIGeneration(options: AIGenerationOptions) {
 	const { blockId, type, onSuccess, onError } = options;
 
 	// Get reactive state from manager based on type
-	let state = $derived.by((): AIBlockState => {
+	const state = $derived.by((): AIBlockState => {
 		switch (type) {
 			case 'generate':
 				return stateManager.getAIGeneratedState(blockId);
@@ -295,7 +295,7 @@ export function useAIGeneration(options: AIGenerationOptions) {
 
 	function retry(prompt: string, config?: AIGenerationConfig): void {
 		if (state.error) {
-			generate(prompt, config);
+			void generate(prompt, config);
 		}
 	}
 

@@ -56,7 +56,7 @@ function createMockFile(
 	type: string = 'image/jpeg',
 	size: number = 1024
 ): File {
-	const content = new Array(size).fill('a').join('');
+	const content = 'a'.repeat(size);
 	return new File([content], name, { type });
 }
 
@@ -341,7 +341,7 @@ describe('useImageUpload', () => {
 			);
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1000);
-			hook.upload(file);
+			void hook.upload(file);
 
 			// Flush microtasks so upload reaches XHR stage (Image.onload + createThumbnail)
 			await vi.advanceTimersByTimeAsync(50);
@@ -411,7 +411,7 @@ describe('useImageUpload', () => {
 			});
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			hook.upload(file);
+			void hook.upload(file);
 
 			await vi.advanceTimersByTimeAsync(50);
 
@@ -447,7 +447,7 @@ describe('useImageUpload', () => {
 			});
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			hook.upload(file);
+			void hook.upload(file);
 
 			await vi.advanceTimersByTimeAsync(50);
 
@@ -473,7 +473,7 @@ describe('useImageUpload', () => {
 			});
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			hook.upload(file);
+			void hook.upload(file);
 
 			await vi.advanceTimersByTimeAsync(50);
 
@@ -499,7 +499,7 @@ describe('useImageUpload', () => {
 			});
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			hook.upload(file);
+			void hook.upload(file);
 
 			await vi.advanceTimersByTimeAsync(50);
 
@@ -562,7 +562,7 @@ describe('useImageUpload', () => {
 			const hook = useImageUpload({ onSuccess: vi.fn() });
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			hook.upload(file);
+			void hook.upload(file);
 
 			// Flush microtasks so upload reaches XHR stage (Image.onload + createThumbnail)
 			await vi.advanceTimersByTimeAsync(50);
@@ -582,7 +582,7 @@ describe('useImageUpload', () => {
 			const hook = useImageUpload({ onSuccess: vi.fn() });
 
 			const file = createMockFile('test.jpg', 'image/jpeg', 1024);
-			hook.upload(file);
+			void hook.upload(file);
 
 			// Flush microtasks so upload reaches XHR stage
 			await vi.advanceTimersByTimeAsync(50);
@@ -604,9 +604,11 @@ describe('useImageUpload', () => {
 			const hook = useImageUpload({ onSuccess });
 
 			const file = createMockFile('dropped.jpg', 'image/jpeg', 1024);
+			const preventDefault = vi.fn();
+			const stopPropagation = vi.fn();
 			const dropEvent = {
-				preventDefault: vi.fn(),
-				stopPropagation: vi.fn(),
+				preventDefault,
+				stopPropagation,
 				dataTransfer: {
 					files: [file]
 				}
@@ -614,8 +616,8 @@ describe('useImageUpload', () => {
 
 			hook.handleDrop(dropEvent);
 
-			expect(dropEvent.preventDefault).toHaveBeenCalled();
-			expect(dropEvent.stopPropagation).toHaveBeenCalled();
+			expect(preventDefault).toHaveBeenCalled();
+			expect(stopPropagation).toHaveBeenCalled();
 		});
 
 		it('handles drop event with no valid image', async () => {
@@ -643,15 +645,17 @@ describe('useImageUpload', () => {
 		it('handles dragOver event', () => {
 			const hook = useImageUpload({ onSuccess: vi.fn() });
 
+			const preventDefault = vi.fn();
+			const stopPropagation = vi.fn();
 			const dragOverEvent = {
-				preventDefault: vi.fn(),
-				stopPropagation: vi.fn()
+				preventDefault,
+				stopPropagation
 			} as unknown as DragEvent;
 
 			hook.handleDragOver(dragOverEvent);
 
-			expect(dragOverEvent.preventDefault).toHaveBeenCalled();
-			expect(dragOverEvent.stopPropagation).toHaveBeenCalled();
+			expect(preventDefault).toHaveBeenCalled();
+			expect(stopPropagation).toHaveBeenCalled();
 		});
 	});
 
@@ -664,8 +668,9 @@ describe('useImageUpload', () => {
 			const hook = useImageUpload({ onSuccess: vi.fn() });
 
 			const file = createMockFile('pasted.png', 'image/png', 1024);
+			const preventDefault = vi.fn();
 			const pasteEvent = {
-				preventDefault: vi.fn(),
+				preventDefault,
 				clipboardData: {
 					items: [
 						{
@@ -678,7 +683,7 @@ describe('useImageUpload', () => {
 
 			hook.handlePaste(pasteEvent);
 
-			expect(pasteEvent.preventDefault).toHaveBeenCalled();
+			expect(preventDefault).toHaveBeenCalled();
 		});
 
 		it('ignores paste event without image', () => {
@@ -959,13 +964,13 @@ describe('Edge Cases', () => {
 			const file2 = createMockFile('file2.jpg', 'image/jpeg', 1024);
 
 			// Start first upload
-			hook.upload(file1);
+			void hook.upload(file1);
 
 			// Flush microtasks so first upload reaches XHR stage
 			await vi.advanceTimersByTimeAsync(50);
 
 			// Start second upload (should abort first)
-			hook.upload(file2);
+			void hook.upload(file2);
 
 			await vi.advanceTimersByTimeAsync(50);
 		} finally {

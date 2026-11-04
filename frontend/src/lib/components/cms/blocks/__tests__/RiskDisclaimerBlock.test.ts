@@ -56,15 +56,17 @@ function createMockBlock(overrides: Partial<Block> = {}): Block {
 // ===============================================================================
 
 const mockSessionStorage: Record<string, string> = {};
+const setItemMock = vi.fn<Storage['setItem']>();
 
 beforeEach(() => {
 	// Mock sessionStorage
 	vi.spyOn(Storage.prototype, 'getItem').mockImplementation(
 		(key) => mockSessionStorage[key] || null
 	);
-	vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key, value) => {
+	setItemMock.mockImplementation((key, value) => {
 		mockSessionStorage[key] = value;
 	});
+	vi.spyOn(Storage.prototype, 'setItem').mockImplementation(setItemMock);
 	vi.spyOn(Storage.prototype, 'removeItem').mockImplementation((key) => {
 		delete mockSessionStorage[key];
 	});
@@ -477,7 +479,7 @@ describe('RiskDisclaimerBlock - Acknowledgment Checkbox', () => {
 		const checkbox = screen.getByRole('checkbox');
 		await fireEvent.click(checkbox);
 
-		expect(sessionStorage.setItem).toHaveBeenCalledWith('risk-ack-disclaimer-1', 'true');
+		expect(setItemMock).toHaveBeenCalledWith('risk-ack-disclaimer-1', 'true');
 	});
 
 	it('should not show checkbox in edit mode', () => {
