@@ -979,7 +979,11 @@
 		background: rgba(22, 27, 34, 0.85);
 		border: 1px solid var(--border-muted);
 		border-radius: 12px;
-		overflow: hidden;
+		/* Scroll horizontally when the table is wider than the card. Was `overflow: hidden`
+		   with `overflow-x: auto` only <= 767px, so at 768-1023px (rail sidebar) the 929px
+		   table was clipped at 707px with no way to reach the right-hand columns. */
+		overflow-x: auto;
+		overflow-y: hidden;
 	}
 
 	.empty-state {
