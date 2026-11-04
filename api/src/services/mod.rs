@@ -16,6 +16,7 @@ pub mod email;
 pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
 pub mod export; // ICT 7+ Phase 4: Export Functionality
 pub mod malware;
+pub mod media_jobs;
 pub mod media_processor;
 pub mod mfa; // ICT 7: TOTP/2FA Multi-Factor Authentication
 pub mod order_service;

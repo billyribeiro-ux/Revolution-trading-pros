@@ -307,50 +307,7 @@ pub(super) async fn destroy(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Get media info first (for file deletion)
-    let media: Option<Media> = sqlx::query_as(
-        "SELECT id, filename, original_filename, mime_type, size, path, url,
-                title, alt_text, caption, description, collection, is_optimized,
-                width, height, scan_status, scan_result, created_at, updated_at
-         FROM media WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    let media = match media {
-        Some(m) => m,
-        None => return Err(ApiError::not_found("Media not found")),
-    };
-
-    // Delete file from R2 storage if path exists
-    if let Some(file_key) = &media.path {
-        let storage = &state.services.storage;
-        match storage.delete(file_key).await {
-            Err(e) => {
-                tracing::warn!(
-                    "Failed to delete file from R2 storage: {} - {}",
-                    file_key,
-                    e
-                );
-                return Err(ApiError::new(
-                    axum::http::StatusCode::SERVICE_UNAVAILABLE,
-                    "Storage deletion failed; media record retained so deletion can be retried",
-                ));
-            }
-            _ => {
-                tracing::info!("Deleted file from R2 storage: {}", file_key);
-            }
-        }
-    }
-
-    // Delete from database
-    sqlx::query("DELETE FROM media WHERE id = $1")
-        .bind(id)
-        .execute(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let media = super::helpers::delete_media(&state, id).await?;
 
     Ok(Json(serde_json::json!({
         "success": true,

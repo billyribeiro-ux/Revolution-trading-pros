@@ -52,17 +52,27 @@ impl StorageService {
             "image/png" => "png",
             "image/webp" => "webp",
             "image/gif" => "gif",
+            "image/avif" => "avif",
             "video/mp4" => "mp4",
             "application/pdf" => "pdf",
             _ => "bin",
         };
 
         let key = format!("{}/{}.{}", folder, Uuid::new_v4(), extension);
+        self.upload_at_key(&key, data, content_type).await
+    }
 
+    /// Callers generate this key internally; no client URL or path is fetched.
+    pub async fn upload_at_key(
+        &self,
+        key: &str,
+        data: Vec<u8>,
+        content_type: &str,
+    ) -> Result<String> {
         self.client
             .put_object()
             .bucket(&self.bucket)
-            .key(&key)
+            .key(key)
             .body(ByteStream::from(data))
             .content_type(content_type)
             .send()

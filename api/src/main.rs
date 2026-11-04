@@ -111,6 +111,11 @@ async fn main() -> anyhow::Result<()> {
         cache_invalidator,
     };
 
+    if state.services.media_processor.is_some() {
+        tokio::spawn(revolution_api::services::media_jobs::run(state.clone()));
+        tracing::info!("Media processing worker started");
+    }
+
     // Stripe reconciliation scheduler — daily 03:00 UTC
     reconcile_stripe::spawn_scheduler(state.clone());
     tracing::info!("Stripe reconciliation scheduler started");

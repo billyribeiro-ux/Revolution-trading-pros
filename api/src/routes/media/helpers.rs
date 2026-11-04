@@ -4,6 +4,39 @@
 //! statistics handlers. They have no router-facing surface, so they
 //! stay `pub(super)`.
 
+pub(super) async fn delete_media(
+    state: &crate::AppState,
+    id: i64,
+) -> Result<super::dto::Media, crate::utils::errors::ApiError> {
+    use crate::utils::errors::ApiError;
+    let db = |error: sqlx::Error| ApiError::database_error(&error.to_string());
+    let mut tx = state.db.pool().begin().await.map_err(db)?;
+    let media: super::dto::Media = sqlx::query_as("SELECT id,filename,original_filename,mime_type,size,path,url,title,alt_text,caption,description,collection,is_optimized,width,height,scan_status,scan_result,created_at,updated_at FROM media WHERE id=$1 FOR UPDATE")
+        .bind(id).fetch_optional(&mut *tx).await.map_err(db)?.ok_or_else(||ApiError::not_found("Media not found"))?;
+    let deletion = async {
+        crate::services::media_jobs::delete_variants(state, &mut tx, id).await?;
+        if let Some(path) = &media.path {
+            state.services.storage.delete(path).await?;
+        }
+        Ok::<(), anyhow::Error>(())
+    }
+    .await;
+    if let Err(error) = deletion {
+        tracing::warn!(media_id=id,%error,"Storage deletion failed; media retained");
+        return Err(ApiError::new(
+            axum::http::StatusCode::SERVICE_UNAVAILABLE,
+            "Storage deletion failed; media record retained so deletion can be retried",
+        ));
+    }
+    sqlx::query("DELETE FROM media WHERE id=$1")
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(db)?;
+    tx.commit().await.map_err(db)?;
+    Ok(media)
+}
+
 /// ICT 7 SECURITY: Validate file content matches declared MIME type
 /// Checks magic bytes/file signatures to prevent content-type spoofing
 pub(super) fn validate_file_signature(data: &[u8], content_type: &str) -> bool {

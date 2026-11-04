@@ -1,6 +1,6 @@
 //! Authenticated client for the optional, real Sharp processing service.
 use anyhow::{Context, Result, bail};
-use bytes::Bytes;
+use axum::body::Bytes;
 use reqwest::{Client, Response, Url};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -205,11 +205,15 @@ fn validate_input(data: &Bytes) -> Result<()> {
     Ok(())
 }
 fn validate_info(info: &ImageInfo) -> Result<()> {
+    let pixels = u64::from(info.width)
+        .checked_mul(u64::from(info.height))
+        .and_then(|pixels| pixels.checked_mul(u64::from(info.pages)));
     if info.width == 0
         || info.height == 0
         || info.pages == 0
         || info.pages > 256
-        || u64::from(info.width) * u64::from(info.height) * u64::from(info.pages) > MAX_PIXELS
+        || pixels.is_none_or(|pixels| pixels > MAX_PIXELS)
+        || info.size == 0
         || info.size > MAX_BYTES as u64
     {
         bail!("Processor returned image dimensions or size outside configured limits");

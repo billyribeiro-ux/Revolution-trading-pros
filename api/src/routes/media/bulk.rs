@@ -30,52 +30,21 @@ pub(super) async fn bulk_delete(
         ));
     }
 
-    let storage = &state.services.storage;
     let mut deleted_count = 0;
     let mut failed_count = 0;
     let mut errors: Vec<String> = Vec::new();
 
+    let mut seen = std::collections::HashSet::new();
     for id in &payload.ids {
-        // Get media info first
-        let media: Option<Media> = sqlx::query_as(
-            "SELECT id, filename, original_filename, mime_type, size, path, url,
-                    title, alt_text, caption, description, collection, is_optimized,
-                    width, height, scan_status, scan_result, created_at, updated_at
-             FROM media WHERE id = $1",
-        )
-        .bind(id)
-        .fetch_optional(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-        if let Some(media) = media {
-            // Delete from R2 if path exists
-            if let Some(file_key) = &media.path
-                && let Err(e) = storage.delete(file_key).await
-            {
-                tracing::warn!("Failed to delete file from R2: {} - {}", file_key, e);
+        if !seen.insert(*id) {
+            continue;
+        }
+        match super::helpers::delete_media(&state, *id).await {
+            Ok(_) => deleted_count += 1,
+            Err(error) => {
                 failed_count += 1;
-                errors.push(format!(
-                    "ID {id}: Storage deletion failed; record retained for retry"
-                ));
-                continue;
+                errors.push(format!("ID {id}: {}", error.message));
             }
-
-            // Delete from database
-            match sqlx::query("DELETE FROM media WHERE id = $1")
-                .bind(id)
-                .execute(state.db.pool())
-                .await
-            {
-                Ok(_) => deleted_count += 1,
-                Err(e) => {
-                    failed_count += 1;
-                    errors.push(format!("ID {id}: {e}"));
-                }
-            }
-        } else {
-            failed_count += 1;
-            errors.push(format!("ID {id}: Not found"));
         }
     }
 

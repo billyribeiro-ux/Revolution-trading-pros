@@ -29,6 +29,7 @@ mod bulk;
 mod crud;
 mod dto;
 mod helpers;
+mod processing;
 mod scanning;
 mod uploads;
 
@@ -50,6 +51,15 @@ pub fn admin_router() -> Router<AppState> {
         .route("/presigned-upload", post(uploads::presigned_upload))
         .route("/confirm-upload", post(uploads::confirm_upload))
         .route("/statistics", get(crud::statistics))
+        .route("/processor/health", get(processing::health))
+        .route("/presets", get(processing::presets))
+        .route("/queue/status", get(processing::queue))
+        .route("/jobs/{id}", get(processing::job))
+        .route("/files/{id}/optimize", post(processing::optimize))
+        .route("/files/{id}/regenerate", post(processing::optimize))
+        .route("/files/{id}/variants", get(processing::variants))
+        .route("/bulk/optimize", post(processing::bulk_optimize))
+        .route("/optimize-all", post(processing::optimize_all))
         .route("/bulk-delete", post(bulk::bulk_delete))
         .route("/bulk-update", post(bulk::bulk_update))
         .route("/cleanup-orphans", post(bulk::cleanup_orphaned_files))
