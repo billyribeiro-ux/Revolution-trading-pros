@@ -7,7 +7,7 @@
  * @version 2.0.0 - December 2025 - Connected to real backend
  */
 
-import { error } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
@@ -65,6 +65,10 @@ export const GET: RequestHandler = async (event) => {
 		if (owner_id) queryParams.set('owner_id', owner_id);
 		if (sort_by) queryParams.set('sort_by', sort_by);
 		if (sort_order) queryParams.set('sort_order', sort_order);
+		for (const key of ['list_id', 'tag']) {
+			const value = url.searchParams.get(key);
+			if (value) queryParams.set(key, value);
+		}
 
 		const backendUrl = `${BACKEND_URL}/api/admin/crm/contacts${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
@@ -80,7 +84,7 @@ export const GET: RequestHandler = async (event) => {
 			return Response.json(
 				{
 					success: false,
-					error: errorData.message || 'Failed to fetch contacts',
+					error: errorData.message || errorData.error || 'Failed to fetch contacts',
 					data: [],
 					meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
 				},
@@ -90,17 +94,11 @@ export const GET: RequestHandler = async (event) => {
 
 		const data = await response.json();
 
-		// Transform backend pagination response to match frontend expected format
-		return Response.json({
-			success: true,
-			data: data.data || [],
-			meta: {
-				page: data.current_page || 1,
-				limit: data.per_page || 20,
-				total: data.total || 0,
-				total_pages: data.last_page || 0
-			}
-		});
+		// Preserve the Rust data/meta contract; pagination lives under meta.
+		if (!Array.isArray(data.data) || typeof data.meta?.total !== 'number') {
+			return Response.json({ error: 'Invalid contacts response from backend' }, { status: 502 });
+		}
+		return Response.json({ success: true, data: data.data, meta: data.meta });
 	} catch (err) {
 		console.error('CRM Contacts API proxy error:', err);
 		return Response.json(
@@ -135,6 +133,9 @@ export const POST: RequestHandler = async (event) => {
 				first_name: body.first_name || body.name?.split(' ')[0] || '',
 				last_name: body.last_name || body.name?.split(' ').slice(1).join(' ') || '',
 				phone: body.phone,
+				company: body.company,
+				tags: body.tags,
+				custom_fields: body.custom_fields,
 				job_title: body.job_title,
 				source: body.source || 'manual',
 				owner_id: body.owner_id,
@@ -155,7 +156,7 @@ export const POST: RequestHandler = async (event) => {
 			return Response.json(
 				{
 					success: false,
-					error: errorData.message || 'Failed to create contact',
+					error: errorData.message || errorData.error || 'Failed to create contact',
 					errors: errorData.errors
 				},
 				{ status: response.status }
@@ -166,7 +167,7 @@ export const POST: RequestHandler = async (event) => {
 
 		return Response.json({ success: true, data }, { status: 201 });
 	} catch (err) {
-		if (err instanceof Error && 'status' in err) {
+		if (isHttpError(err)) {
 			throw err;
 		}
 		console.error('CRM Contacts API create error:', err);

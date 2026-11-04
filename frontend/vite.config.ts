@@ -35,10 +35,15 @@ export default defineConfig(({ mode, command }) => {
 		process.argv.includes('dev');
 
 	return {
+		// Keep verification servers independent from production build artifacts.
+		...(process.env.ADMIN_VERIFY_VITE_CACHE_DIR
+			? { cacheDir: process.env.ADMIN_VERIFY_VITE_CACHE_DIR }
+			: {}),
 		plugins: lazyPlugins(() => [
 			tailwindcss(),
 			enhancedImages(),
 			sveltekit({
+				outDir: process.env.ADMIN_VERIFY_KIT_DIR || '.svelte-kit',
 				preprocess: vitePreprocess(),
 				// Remote functions require BOTH `kit.experimental.remoteFunctions` AND
 				// `compilerOptions.experimental.async` (per the SvelteKit remote-functions

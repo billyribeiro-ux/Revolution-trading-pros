@@ -21,34 +21,29 @@ database built by replaying **all 60** migrations on top of a
 reconstructed pre-sqlx baseline. Proven: 60/60 replay; loads into an
 empty DB with **0 errors / 204 tables**.
 
-## Fresh-environment bootstrap (CI / local / DR)
+## Automatic empty-database initialization
 
-Production keeps using the historical chain unchanged. A _new_ empty
-database is brought to the current schema in **two steps**, then the app
-runs normally:
+`Database::migrate()` initializes an empty `public` schema at API startup:
+
+1. Take a transaction-scoped advisory lock to serialize first boot.
+2. Load `schema.sql` and `sqlx-seed.sql` atomically, only when there are no application tables.
+3. Restore `search_path`, commit the baseline, and execute the embedded migrator.
+4. Run every forward migration absent from the baseline ledger, including 073's structural defaults and the media/behavior tables.
+
+No existing application schema is automatically marked as migrated. A non-empty, unbaselined historical database must be reconciled separately. Checksum mismatches and failed migrations abort startup before workers or the HTTP listener start. `SKIP_MIGRATIONS` no longer bypasses readiness. The migration connection is closed even on failure so SQLx cannot retain a session advisory lock in the application pool.
+
+A new local database therefore needs only `DATABASE_URL` plus the ordinary API configuration; no manual SQL baseline step is required. Do not run this against production during development.
+
+For explicit baseline tooling, these two steps still work:
 
 ```bash
-# 1. Load the full reconstructed current schema.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f api/migrations/schema.sql
-
-# 2. Seed _sqlx_migrations so the app's sqlx::migrate!("./migrations")
-#    call treats the entire historical chain as already-applied.
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f api/migrations/sqlx-seed.sql
 ```
 
-After that the app boots normally: `sqlx::migrate!` finds every version
-already recorded with a matching checksum and runs **nothing** (proven a
-no-op by `api/tests/g03_schema_baseline_test.rs`). You may equivalently
-set `SKIP_MIGRATIONS=true`, but seeding `_sqlx_migrations` is preferred —
-it keeps the migrator lineage honest and lets _future_ migrations
-(069+) apply normally.
+Then start the API to execute all forward migrations. The ledger represents **only** the migrations embodied in `schema.sql` (currently through 072); never seed later migrations without applying their actual SQL. The full schema/defaults proof is `api/tests/admin_completion_test.rs`. `api/tests/g03_schema_baseline_test.rs` independently verifies baseline + ledger + forward migrations when `G03_VERIFY_DB_URL` is provided.
 
-> Filenames here matter: `sqlx::migrate!` scans this directory and
-> **errors on any `*.sql` whose name lacks an integer version prefix once
-> split on the first `_`**. `schema.sql` (no `_`) and `sqlx-seed.sql`
-> (hyphen, no `_`) are both ignored by that scanner; do **not** name the
-> seed `_sqlx_seed.sql` — a leading `_` makes the macro try to parse an
-> empty version and the whole crate fails to compile.
+> SQLx ignores `schema.sql` and `sqlx-seed.sql` because their names have no numeric underscore-separated migration prefix. Preserve these names.
 
 ### Generating `sqlx-seed.sql`
 
@@ -76,9 +71,7 @@ generated mechanically from the committed files — never hand-written:
 
 `version` = leading digits of the filename (e.g. `068_…` → `68`);
 `description` = filename minus the numeric prefix and `.sql`. These match
-sqlx 0.8's own filename parsing. Regenerate the seed **and** `schema.sql`
-whenever the chain changes (see the G0.3 audit note for the full
-regeneration procedure that uses the scratch content-patches).
+sqlx 0.8's own filename parsing. Regenerate the seed **and** `schema.sql` together only when intentionally rebuilding the baseline; do not add forward migrations to the baseline ledger alone. See the G0.3 audit note for the full regeneration procedure using scratch content patches.
 
 ## Regenerating `schema.sql`
 

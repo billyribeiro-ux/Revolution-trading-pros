@@ -10,7 +10,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import {
 		IconList,
 		IconPlus,
@@ -23,10 +23,15 @@
 		IconLock
 	} from '#lib/icons/index.js';
 	import { crmAPI } from '#lib/api/crm.js';
+	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
 	import type { ContactList } from '#lib/crm/types.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let lists = $state<ContactList[]>([]);
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let generation = 0;
+	let searchTimer: ReturnType<typeof setTimeout> | undefined;
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
@@ -44,15 +49,19 @@
 	});
 
 	async function loadLists(nextSearchQuery = searchQuery, nextFilterPublic = filterPublic) {
+		const requestGeneration = ++generation;
 		isLoading = true;
 		error = '';
 
 		try {
 			const response = await crmAPI.getContactLists({
+				page: currentPage,
 				search: nextSearchQuery || undefined,
 				is_public: nextFilterPublic !== 'all' ? nextFilterPublic : undefined
 			});
-			lists = response.data || [];
+			if (requestGeneration !== generation) return;
+			lists = response.data;
+			totalPages = response.meta.total_pages ?? 1;
 
 			stats = {
 				total: lists.length,
@@ -61,21 +70,25 @@
 				totalContacts: lists.reduce((sum, l) => sum + l.contacts_count, 0)
 			};
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load lists';
+			if (requestGeneration === generation) error = apiErrorMessage(err, 'Failed to load lists');
 		} finally {
-			isLoading = false;
+			if (requestGeneration === generation) isLoading = false;
 		}
 	}
 
 	function handleSearchInput(event: Event) {
 		const nextSearchQuery = (event.currentTarget as HTMLInputElement).value;
 		searchQuery = nextSearchQuery;
-		void loadLists(nextSearchQuery, filterPublic);
+		currentPage = 1;
+		if (searchTimer) clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => void loadLists(searchQuery, filterPublic), 250);
 	}
 
 	function handlePublicFilterChange(event: Event) {
 		const value = (event.currentTarget as HTMLSelectElement).value;
 		filterPublic = value === 'true' ? true : value === 'false' ? false : 'all';
+		currentPage = 1;
+		if (searchTimer) clearTimeout(searchTimer);
 		void loadLists(searchQuery, filterPublic);
 	}
 
@@ -94,7 +107,7 @@
 			await crmAPI.deleteContactList(id);
 			await loadLists();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete list';
+			error = apiErrorMessage(err, 'Failed to delete list');
 		}
 	}
 
@@ -118,11 +131,11 @@
 	onMount(() => {
 		void loadLists();
 	});
+	onDestroy(() => {
+		if (searchTimer) clearTimeout(searchTimer);
+		generation++;
+	});
 </script>
-
-<svelte:head>
-	<title>Contact Lists - FluentCRM Pro</title>
-</svelte:head>
 
 <div class="lists-page">
 	<!-- Header -->
@@ -142,6 +155,7 @@
 		</div>
 	</div>
 
+	<p class="subtitle">List metrics summarize the current page.</p>
 	<!-- Stats Cards -->
 	<div class="stats-grid">
 		<div class="stat-card">
@@ -186,7 +200,8 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input autocomplete="off"
+			<input
+				autocomplete="off"
 				type="text"
 				id="search-lists"
 				name="search"
@@ -195,7 +210,13 @@
 				oninput={handleSearchInput}
 			/>
 		</div>
-		<select id="lists-string-filterpublic" name="lists_string_filterpublic" class="filter-select" value={String(filterPublic)} onchange={handlePublicFilterChange}>
+		<select
+			id="lists-string-filterpublic"
+			name="lists_string_filterpublic"
+			class="filter-select"
+			value={String(filterPublic)}
+			onchange={handlePublicFilterChange}
+		>
 			<option value="all">All Lists</option>
 			<option value="true">Public</option>
 			<option value="false">Private</option>
@@ -287,6 +308,25 @@
 			</table>
 		</div>
 	{/if}
+	<nav aria-label="Contact list pagination">
+		<button
+			class="btn-secondary"
+			disabled={isLoading || currentPage <= 1}
+			onclick={() => {
+				currentPage--;
+				void loadLists();
+			}}>Previous</button
+		>
+		<span>Page {currentPage} of {totalPages}</span>
+		<button
+			class="btn-secondary"
+			disabled={isLoading || currentPage >= totalPages}
+			onclick={() => {
+				currentPage++;
+				void loadLists();
+			}}>Next</button
+		>
+	</nav>
 </div>
 
 <ConfirmationModal
@@ -379,7 +419,6 @@
 		transition: all 0.2s;
 		text-decoration: none;
 	}
-
 
 	.stats-grid {
 		display: grid;

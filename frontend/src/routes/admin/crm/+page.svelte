@@ -11,7 +11,6 @@
 	 * @version 2.0.0 (December 2025)
 	 */
 
-	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
 	import {
 		IconUsers,
@@ -38,8 +37,6 @@
 		IconTarget
 	} from '#lib/icons/index.js';
 	import { api } from '#lib/api/config.js';
-	import { connections, getIsCrmConnected } from '#lib/stores/connections.svelte.js';
-	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -87,7 +84,6 @@
 	let contacts = $state<CrmContact[]>([]);
 	let deals = $state<CrmDeal[]>([]);
 	let isLoading = $state(true);
-	let connectionLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state('all');
@@ -196,6 +192,8 @@
 				api.get<StatsRes>('/api/admin/crm/stats')
 			]);
 
+			if (contactsRes.status === 'rejected') throw new Error('Unable to load saved contacts');
+			if (statsRes.status === 'rejected') throw new Error('Unable to load CRM statistics');
 			if (contactsRes.status === 'fulfilled') {
 				const v = contactsRes.value;
 				contacts = Array.isArray(v) ? v : v?.data || v?.contacts || [];
@@ -209,9 +207,9 @@
 			if (statsRes.status === 'fulfilled') {
 				const data = statsRes.value?.data || statsRes.value;
 				stats = {
-					totalContacts: data?.total_contacts || contacts.length,
+					totalContacts: data?.total_contacts ?? contacts.length,
 					newThisMonth: data?.new_this_month || 0,
-					activeDeals: data?.active_deals || deals.length,
+					activeDeals: data?.active_deals ?? deals.length,
 					dealValue: data?.deal_value || 0,
 					highScoreContacts: data?.high_score_contacts || 0,
 					atRiskContacts: data?.at_risk_contacts || 0
@@ -280,37 +278,8 @@
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// FIX-2026-04-26: $effect → onMount; calling connections.load() (writes connectionsState) AND reading via getIsCrmConnected() inside $effect is the classic write-while-reading-tracked-dep cascade.
-	// $effect(() => {
-	// 	if (!browser) return;
-	//
-	// 	const init = async () => {
-	// 		await connections.load();
-	// 		connectionLoading = false;
-	//
-	// 		if (getIsCrmConnected()) {
-	// 			await loadData();
-	// 		} else {
-	// 			isLoading = false;
-	// 		}
-	// 	};
-	// 	init();
-	// });
-	onMount(() => {
-		if (!browser) return;
+	onMount(() => { void loadData(); });
 
-		const init = async () => {
-			await connections.load();
-			connectionLoading = false;
-
-			if (getIsCrmConnected()) {
-				await loadData();
-			} else {
-				isLoading = false;
-			}
-		};
-		init();
-	});
 </script>
 
 <!--
@@ -324,8 +293,6 @@
 	- Sidebar navigation to all CRM modules
 	- Full Svelte 5 $state/$derived reactivity
 -->
-<svelte:head><title>Contacts | CRM - Admin Dashboard</title></svelte:head>
-
 <div class="admin-crm">
 	
 
@@ -347,22 +314,8 @@
 		</header>
 
 		<!-- Connection Check -->
-		{#if connectionLoading}
+		{#if isLoading}
 			<SkeletonLoader variant="dashboard" />
-		{:else if !getIsCrmConnected()}
-			<ApiNotConnected
-				serviceName="CRM"
-				description="Connect to manage contacts, track deals, and streamline customer relationships."
-				serviceKey="hubspot"
-				color="#6366f1"
-				features={[
-					'Centralized contact management',
-					'Email sequences and automations',
-					'Dynamic contact segments',
-					'Campaign management',
-					'Smart link tracking'
-				]}
-			/>
 		{:else}
 			<!-- Quick Links Navigation -->
 			<nav class="quick-links-bar">
@@ -415,7 +368,7 @@
 					</div>
 					<div class="stat-content">
 						<span class="stat-value">{formatCurrency(stats.dealValue)}</span>
-						<span class="stat-label">Deal Value</span>
+						<span class="stat-label">Open Deal Value (USD)</span>
 					</div>
 				</div>
 			</section>

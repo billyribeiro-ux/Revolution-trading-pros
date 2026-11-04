@@ -25,7 +25,9 @@ pub mod contacts;
 pub mod deals_pipelines;
 pub mod import_export;
 pub mod leads;
+mod list_members;
 pub mod lists_tags;
+mod segment_rules;
 pub mod segments;
 pub mod sequences_campaigns;
 pub mod settings;
@@ -56,67 +58,13 @@ async fn get_crm_stats(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Get total contacts count
-    let total_contacts: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
-
-    // Get active contacts (not churned/unqualified)
-    let active_contacts: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM contacts WHERE status NOT IN ('churned', 'unqualified')",
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
-
-    // Get new contacts this month
-    let new_this_month: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM contacts WHERE created_at >= date_trunc('month', CURRENT_DATE)",
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
-
-    // Get leads stats (leads are contacts with status 'lead')
-    let total_leads: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'lead'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
-
-    // Get campaigns stats
-    let campaigns_sent: (i64,) =
-        sqlx::query_as("SELECT COALESCE(SUM(emails_sent), 0) FROM crm_campaigns")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-
-    let campaigns_opened: (i64,) =
-        sqlx::query_as("SELECT COALESCE(SUM(opens), 0) FROM crm_campaigns")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-
-    let campaigns_clicked: (i64,) =
-        sqlx::query_as("SELECT COALESCE(SUM(clicks), 0) FROM crm_campaigns")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-
-    Ok(Json(json!({
-        "total_contacts": total_contacts.0,
-        "active_contacts": active_contacts.0,
-        "new_this_month": new_this_month.0,
-        "total_leads": total_leads.0,
-        "total_deals": 0,
-        "deals_value_cents": 0_i64,
-        "open_deals": 0,
-        "won_deals": 0,
-        "lost_deals": 0,
-        "email_sent": campaigns_sent.0,
-        "email_opened": campaigns_opened.0,
-        "email_clicked": campaigns_clicked.0
-    })))
+    let (stats,):(serde_json::Value,)=sqlx::query_as(
+        "SELECT json_build_object('total_contacts',(SELECT COUNT(*) FROM contacts),'active_contacts',(SELECT COUNT(*) FROM contacts WHERE status NOT IN ('churned','unqualified')),'new_this_month',(SELECT COUNT(*) FROM contacts WHERE created_at>=date_trunc('month',CURRENT_DATE)),'total_leads',(SELECT COUNT(*) FROM contacts WHERE status IN ('new','contacted','qualified','proposal','negotiation','won','lost','lead')),'high_score_contacts',(SELECT COUNT(*) FROM contacts WHERE score>=75),'total_deals',(SELECT COUNT(*) FROM crm_deals),'active_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='open'),'open_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='open'),'won_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='won'),'lost_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='lost'),'deals_value_cents',(SELECT ROUND(COALESCE(SUM(amount),0)*100)::bigint FROM crm_deals WHERE status='open' AND currency='USD'),'deal_value',(SELECT COALESCE(SUM(amount),0) FROM crm_deals WHERE status='open' AND currency='USD'),'email_sent',(SELECT COALESCE(SUM(emails_sent),0) FROM crm_campaigns),'email_opened',(SELECT COALESCE(SUM(opens),0) FROM crm_campaigns),'email_clicked',(SELECT COALESCE(SUM(clicks),0) FROM crm_campaigns))"
+    ).fetch_one(&state.db.pool).await.map_err(|error| {
+        tracing::error!(%error,"CRM statistics query failed");
+        (StatusCode::INTERNAL_SERVER_ERROR,Json(json!({"error":"Unable to load CRM statistics"})))
+    })?;
+    Ok(Json(stats))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -132,6 +80,7 @@ pub fn router() -> Router<AppState> {
         .merge(deals_pipelines::router())
         .merge(contacts::router())
         .merge(lists_tags::router())
+        .merge(list_members::router())
         .merge(segments::router())
         .merge(sequences_campaigns::router())
         .merge(automations::router())

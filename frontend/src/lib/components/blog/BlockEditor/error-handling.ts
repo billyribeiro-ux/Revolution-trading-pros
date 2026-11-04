@@ -363,14 +363,14 @@ export function recoverBlock(block: Block): Block {
 	// Reset content to defaults if corrupted
 	if (!recovered.content || typeof recovered.content !== 'object') {
 		recovered.content = {
-			...(definition?.defaultContent ?? {})
+			...definition?.defaultContent
 		} as BlockContent;
 	}
 
 	// Reset settings to defaults if corrupted
 	if (!recovered.settings || typeof recovered.settings !== 'object') {
 		recovered.settings = {
-			...(definition?.defaultSettings ?? {})
+			...definition?.defaultSettings
 		} as BlockSettings;
 	}
 

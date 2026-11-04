@@ -14,6 +14,7 @@ use super::helpers::hash_token_for_blacklist;
 use crate::{
     AppState,
     models::{MessageResponse, User, UserResponse},
+    utils::verify_jwt,
 };
 
 /// Get current user (requires auth)
@@ -22,12 +23,22 @@ pub(super) async fn me(user: User) -> Json<UserResponse> {
     Json(user.into())
 }
 
+fn revocation_error(error: anyhow::Error) -> (StatusCode, Json<serde_json::Value>) {
+    tracing::error!(%error, "Session revocation failed");
+    (
+        StatusCode::SERVICE_UNAVAILABLE,
+        Json(json!({"error":"Session revocation failed"})),
+    )
+}
+
 /// Logout request with session ID and optional token
 #[derive(Debug, Deserialize)]
 pub(super) struct LogoutRequest {
     session_id: Option<String>,
     #[serde(default)]
     token: Option<String>,
+    #[serde(default)]
+    refresh_token: Option<String>,
 }
 
 /// Logout user - ICT L11+ Security: Proper session and token invalidation
@@ -38,41 +49,72 @@ pub(super) async fn logout(
     user: User,
     Json(input): Json<LogoutRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
-    // Invalidate session in Redis if session_id provided
-    if let Some(session_id) = input.session_id
-        && let Some(redis) = &state.services.redis
-        && let Err(e) = redis.invalidate_session(&session_id).await
-    {
-        tracing::warn!("Failed to invalidate session: {}", e);
+    let redis = state.services.redis.as_ref().ok_or_else(|| {
+        (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error":"Session revocation is unavailable"})),
+        )
+    })?;
+    let refresh = input
+        .refresh_token
+        .as_deref()
+        .map(|token| {
+            verify_jwt(token, &state.config.jwt_secret, "refresh")
+                .map_err(|_| {
+                    (
+                        StatusCode::BAD_REQUEST,
+                        Json(json!({"error":"Invalid refresh token"})),
+                    )
+                })
+                .and_then(|claims| {
+                    if claims.sub == user.id {
+                        Ok((token, claims.exp))
+                    } else {
+                        Err((
+                            StatusCode::FORBIDDEN,
+                            Json(json!({"error":"Refresh token belongs to another user"})),
+                        ))
+                    }
+                })
+        })
+        .transpose()?;
+    let access =
+        verify_jwt(auth_header.token(), &state.config.jwt_secret, "access").map_err(|_| {
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error":"Invalid access token"})),
+            )
+        })?;
+    // Use each token's actual remaining validity; never report revocation
+    // success after a failed write to the authoritative blacklist.
+    let now = chrono::Utc::now().timestamp();
+    redis
+        .blacklist_token(
+            &hash_token_for_blacklist(auth_header.token()),
+            (access.exp - now).max(1) as u64,
+        )
+        .await
+        .map_err(revocation_error)?;
+    if let Some((token, expiry)) = refresh {
+        redis
+            .blacklist_token(
+                &hash_token_for_blacklist(token),
+                (expiry - now).max(1) as u64,
+            )
+            .await
+            .map_err(revocation_error)?;
     }
-
-    // ICT 7 SECURITY: Blacklist the current JWT token to prevent reuse
-    if let Some(redis) = &state.services.redis {
-        let token = auth_header.token();
-        let token_hash = hash_token_for_blacklist(token);
-
-        // Blacklist for the remaining token lifetime (max 24 hours for safety)
-        let blacklist_duration = (state.config.jwt_expires_in * 3600).min(86400) as u64;
-
-        match redis.blacklist_token(&token_hash, blacklist_duration).await {
-            Err(e) => {
-                tracing::warn!(
-                    target: "security",
-                    event = "token_blacklist_failed",
-                    user_id = %user.id,
-                    error = %e,
-                    "Failed to blacklist token on logout"
-                );
-            }
-            _ => {
-                tracing::info!(
-                    target: "security_audit",
-                    event = "token_blacklisted",
-                    user_id = %user.id,
-                    "JWT token blacklisted on logout"
-                );
-            }
-        }
+    if let Some(session_id) = input.session_id
+        && let Some(session) = redis
+            .get_session(&session_id)
+            .await
+            .map_err(revocation_error)?
+        && session.user_id == user.id
+    {
+        redis
+            .invalidate_session(&session_id)
+            .await
+            .map_err(revocation_error)?;
     }
 
     tracing::info!(

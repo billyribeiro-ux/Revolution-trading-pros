@@ -27,11 +27,14 @@
 		IconCopy
 	} from '#lib/icons/index.js';
 	import { crmAPI } from '#lib/api/crm.js';
+	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '#lib/crm/types.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 
 	let companies = $state<CrmCompany[]>([]);
+	let currentPage = $state(1);
+	let totalPages = $state(1);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
@@ -72,19 +75,24 @@
 		{ value: '5001+', label: '5001+ employees' }
 	];
 
+	let requestGeneration = 0;
 	async function loadCompanies() {
+		const generation = ++requestGeneration;
 		isLoading = true;
 		error = '';
 
 		try {
 			const filters: CompanyFilters = {
+				page: currentPage,
 				search: searchQuery || undefined,
 				industry: selectedIndustry !== 'all' ? selectedIndustry : undefined,
 				size: selectedSize !== 'all' ? selectedSize : undefined
 			};
 
 			const response = await crmAPI.getCompanies(filters);
-			companies = response.data || [];
+			if (generation !== requestGeneration) return;
+			companies = response.data;
+			totalPages = response.meta.total_pages ?? 1;
 
 			stats = {
 				total: companies.length,
@@ -93,10 +101,16 @@
 				totalDealValue: companies.reduce((sum, c) => sum + c.total_deal_value, 0)
 			};
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load companies';
+			if (generation === requestGeneration)
+				error = apiErrorMessage(err, 'Failed to load companies');
 		} finally {
-			isLoading = false;
+			if (generation === requestGeneration) isLoading = false;
 		}
+	}
+
+	function applyFilters() {
+		currentPage = 1;
+		void loadCompanies();
 	}
 
 	function deleteCompany(id: string) {
@@ -114,7 +128,7 @@
 			await crmAPI.deleteCompany(id);
 			await loadCompanies();
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete company';
+			error = apiErrorMessage(err, 'Failed to delete company');
 		}
 	}
 
@@ -124,7 +138,7 @@
 			toastStore.success(`Company "${company.name}" duplicated successfully`);
 			await loadCompanies();
 		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to duplicate company';
+			const message = apiErrorMessage(err, 'Failed to duplicate company');
 			toastStore.error(message);
 			error = message;
 		}
@@ -155,36 +169,12 @@
 		})
 	);
 
-	let isInitialized = $state(false);
-
 	onMount(() => {
-		(async () => {
-			await loadCompanies();
-			isInitialized = true;
-		})();
-	});
-
-	// Audit P1 #6: backend filters (search, industry, size) only fired on
-	// the initial mount fetch — switching them never re-ran the query, so
-	// any matching company outside page-1 was invisible. Now we explicitly
-	// track the three filter fields and refetch on change.
-	$effect(() => {
-		searchQuery;
-		selectedIndustry;
-		selectedSize;
-		if (isInitialized) {
-			loadCompanies();
-		}
+		void loadCompanies();
 	});
 </script>
 
-<svelte:head>
-	<title>CRM Companies - FluentCRM Pro</title>
-</svelte:head>
-
 <div class="admin-crm-companies">
-	
-
 	<div class="admin-page-container">
 		<!-- Page Header - CENTERED -->
 		<header class="page-header">
@@ -202,6 +192,7 @@
 			</div>
 		</header>
 
+		<p class="subtitle">Company metrics summarize the current page.</p>
 		<!-- Stats Cards -->
 		<div class="stats-grid">
 			<div class="stat-card">
@@ -243,10 +234,17 @@
 		</div>
 
 		<!-- Search & Filters -->
-		<div class="filters-bar">
+		<form
+			class="filters-bar"
+			onsubmit={(event) => {
+				event.preventDefault();
+				applyFilters();
+			}}
+		>
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					type="text"
 					id="search-companies"
 					name="search"
@@ -254,17 +252,30 @@
 					bind:value={searchQuery}
 				/>
 			</div>
-			<select id="companies-selectedindustry" name="companies_selectedindustry" class="filter-select" bind:value={selectedIndustry}>
+			<select
+				id="companies-selectedindustry"
+				name="companies_selectedindustry"
+				class="filter-select"
+				bind:value={selectedIndustry}
+				onchange={applyFilters}
+			>
 				{#each industryOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
-			<select id="companies-selectedsize" name="companies_selectedsize" class="filter-select" bind:value={selectedSize}>
+			<select
+				id="companies-selectedsize"
+				name="companies_selectedsize"
+				class="filter-select"
+				bind:value={selectedSize}
+				onchange={applyFilters}
+			>
 				{#each sizeOptions as option (option.value)}
 					<option value={option.value}>{option.label}</option>
 				{/each}
 			</select>
-		</div>
+			<button type="submit" class="btn-secondary">Apply Filters</button>
+		</form>
 
 		<!-- Companies Table -->
 		{#if isLoading}
@@ -369,6 +380,25 @@
 				</table>
 			</div>
 		{/if}
+		<nav aria-label="Company pagination" class="header-actions">
+			<button
+				class="btn-secondary"
+				disabled={isLoading || currentPage <= 1}
+				onclick={() => {
+					currentPage--;
+					void loadCompanies();
+				}}>Previous</button
+			>
+			<span>Page {currentPage} of {totalPages}</span>
+			<button
+				class="btn-secondary"
+				disabled={isLoading || currentPage >= totalPages}
+				onclick={() => {
+					currentPage++;
+					void loadCompanies();
+				}}>Next</button
+			>
+		</nav>
 	</div>
 	<!-- End admin-page-container -->
 </div>

@@ -53,34 +53,58 @@ async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<
     let postmark_token = std::env::var("POSTMARK_TOKEN")
         .or_else(|_| std::env::var("POSTMARK_API_KEY"))
         .unwrap_or_default();
-    let from_email = std::env::var("EMAIL_FROM_ADDRESS")
+    let from_email = std::env::var("POSTMARK_FROM_EMAIL")
+        .or_else(|_| std::env::var("EMAIL_FROM_ADDRESS"))
         .or_else(|_| std::env::var("FROM_EMAIL"))
-        .unwrap_or_else(|_| "noreply@revolution-trading-pros.pages.dev".to_string());
+        .unwrap_or_default();
 
     if postmark_token.is_empty() {
-        tracing::warn!("POSTMARK_TOKEN / POSTMARK_API_KEY not set, skipping email send");
-        return Ok(());
+        anyhow::bail!("Postmark is unavailable: configure POSTMARK_TOKEN or POSTMARK_API_KEY");
     }
 
-    let email = PostmarkEmail {
-        from: from_email,
-        to: to.to_string(),
-        subject: subject.to_string(),
-        html_body: body.to_string(),
-        message_stream: "outbound".to_string(),
-    };
+    if from_email.trim().is_empty() {
+        anyhow::bail!("Configure POSTMARK_FROM_EMAIL, EMAIL_FROM_ADDRESS or FROM_EMAIL");
+    }
+    send_email_request(
+        &HTTP_CLIENT,
+        "https://api.postmarkapp.com/email",
+        &postmark_token,
+        PostmarkEmail {
+            from: from_email,
+            to: to.to_string(),
+            subject: subject.to_string(),
+            html_body: body.to_string(),
+            message_stream: "outbound".to_string(),
+        },
+    )
+    .await
+}
 
-    HTTP_CLIENT
-        .post("https://api.postmarkapp.com/email")
+async fn send_email_request(
+    client: &Client,
+    endpoint: &str,
+    token: &str,
+    email: PostmarkEmail,
+) -> Result<()> {
+    let response: serde_json::Value = client
+        .post(endpoint)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
-        .header("X-Postmark-Server-Token", &postmark_token)
+        .header("X-Postmark-Server-Token", token)
         .json(&email)
         .send()
         .await?
-        .error_for_status()?;
-
-    tracing::info!("Email sent successfully to: {}", to);
+        .error_for_status()?
+        .json()
+        .await?;
+    if response["ErrorCode"].as_i64() != Some(0)
+        || response["MessageID"].as_str().is_none_or(str::is_empty)
+    {
+        anyhow::bail!(
+            "Postmark did not acknowledge email acceptance: {}",
+            response["ErrorCode"]
+        );
+    }
     Ok(())
 }
 
@@ -93,440 +117,278 @@ fn generate_webhook_signature(payload: &str, secret: &str) -> String {
     hex::encode(result.into_bytes())
 }
 
-/// Process pending webhook deliveries
-/// ICT 7: Fails silently if tables/columns don't exist
+/// Claim one delivery at a time with a recoverable lease and bounded retries.
 async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
-    #[derive(Debug, sqlx::FromRow)]
-    struct WebhookDeliveryRow {
+    #[derive(sqlx::FromRow)]
+    struct Delivery {
         id: i64,
-        webhook_id: i64,
         event_type: String,
         payload: serde_json::Value,
-        attempt_count: i32, // Fixed: use actual column name
-    }
-
-    #[derive(Debug, sqlx::FromRow)]
-    struct WebhookRow {
+        attempt_count: i32,
         url: String,
         secret: Option<String>,
         timeout_seconds: i32,
         retry_count: i32,
         headers: Option<serde_json::Value>,
     }
-
-    // Get pending webhook deliveries - fail silently if table doesn't exist
-    let deliveries: Vec<WebhookDeliveryRow> = match sqlx::query_as(
-        r"
-        SELECT wd.id, wd.webhook_id, wd.event_type, wd.payload, wd.attempt_count
-        FROM webhook_deliveries wd
-        JOIN webhooks w ON w.id = wd.webhook_id AND w.is_active = true
-        WHERE wd.status = 'pending'
-          AND (wd.next_retry_at IS NULL OR wd.next_retry_at <= NOW())
-        ORDER BY wd.created_at ASC
-        LIMIT 10
-        FOR UPDATE OF wd SKIP LOCKED
-        ",
-    )
-    .fetch_all(pool)
-    .await
-    {
-        Ok(d) => d,
-        Err(e) => {
-            tracing::debug!("Webhook deliveries table not ready: {}", e);
-            return Ok(0);
-        }
-    };
-
-    let mut processed = 0u32;
-
-    for delivery in deliveries {
-        // Get webhook config
-        let webhook: Option<WebhookRow> = sqlx::query_as(
-            "SELECT url, secret, timeout_seconds, retry_count, headers FROM webhooks WHERE id = $1",
+    sqlx::query("UPDATE webhook_deliveries d SET status='failed',error_message='Delivery lease expired after final attempt',next_retry_at=NULL FROM webhooks w WHERE d.webhook_id=w.id AND d.status='processing' AND d.next_retry_at<=NOW() AND d.attempt_count>=GREATEST(1,w.retry_count)")
+        .execute(pool).await?;
+    let mut processed = 0;
+    for _ in 0..10 {
+        let delivery:Option<Delivery>=sqlx::query_as("WITH next AS (SELECT d.id,w.url,w.secret,w.timeout_seconds,w.retry_count,w.headers FROM webhook_deliveries d JOIN webhooks w ON w.id=d.webhook_id WHERE w.is_active=true AND d.status IN ('pending','processing') AND (d.next_retry_at IS NULL OR d.next_retry_at<=NOW()) AND d.attempt_count<GREATEST(1,w.retry_count) ORDER BY d.created_at,d.id LIMIT 1 FOR UPDATE OF d SKIP LOCKED) UPDATE webhook_deliveries d SET status='processing',attempt_count=attempt_count+1,attempts=attempt_count+1,next_retry_at=NOW()+INTERVAL '2 minutes' FROM next WHERE d.id=next.id RETURNING d.id,d.event_type,d.payload,d.attempt_count,next.url,next.secret,next.timeout_seconds,next.retry_count,next.headers")
+            .fetch_optional(pool).await?;
+        let Some(delivery) = delivery else {
+            break;
+        };
+        let url = delivery.url.clone();
+        let validated = tokio::time::timeout(
+            Duration::from_secs(10),
+            tokio::task::spawn_blocking(move || {
+                crate::services::cms_webhooks::validate_webhook_url(&url)
+            }),
         )
-        .bind(delivery.webhook_id)
-        .fetch_optional(pool)
-        .await?;
-
-        let webhook = match webhook {
-            Some(w) => w,
-            None => {
-                // Webhook deleted, mark delivery as failed
-                sqlx::query(
-                    "UPDATE webhook_deliveries SET status = 'failed', error_message = 'Webhook not found' WHERE id = $1"
-                )
-                .bind(delivery.id)
-                .execute(pool)
-                .await?;
-                continue;
-            }
-        };
-
-        // Validate webhook URL against SSRF egress guard
-        let validated_url = match crate::services::cms_webhooks::validate_webhook_url(&webhook.url)
-        {
-            Ok(u) => u,
-            Err(e) => {
-                let error_msg = format!("Blocked by SSRF egress policy: {e}");
-                tracing::warn!(
-                    target: "security",
-                    webhook_id = %delivery.webhook_id,
-                    delivery_id = %delivery.id,
-                    error = %e,
-                    "Webhook delivery blocked by SSRF egress guard"
-                );
-                sqlx::query(
-                    "UPDATE webhook_deliveries SET status = 'failed', error_message = $1 WHERE id = $2",
-                )
-                .bind(&error_msg)
-                .bind(delivery.id)
-                .execute(pool)
-                .await?;
-                continue;
-            }
-        };
-
-        // Prepare the payload
-        let payload_str = serde_json::to_string(&serde_json::json!({
-            "event": delivery.event_type,
-            "timestamp": Utc::now().to_rfc3339(),
-            "data": delivery.payload
-        }))?;
-
-        let timeout_secs = webhook.timeout_seconds.clamp(1, 30) as u64;
-
-        let mut request = HTTP_CLIENT
-            .post(validated_url)
-            .timeout(Duration::from_secs(timeout_secs))
-            .header("Content-Type", "application/json")
-            .header("X-Webhook-Event", &delivery.event_type)
-            .header("X-Webhook-Delivery-Id", delivery.id.to_string());
-
-        // Add HMAC signature if secret is set
-        if let Some(ref secret) = webhook.secret {
-            let signature = generate_webhook_signature(&payload_str, secret);
-            request = request.header("X-Webhook-Signature", format!("sha256={signature}"));
-        }
-
-        // Add custom headers (filtering restricted transport/security headers)
-        if let Some(ref headers) = webhook.headers
-            && let Some(headers_obj) = headers.as_object()
-        {
-            for (key, value) in headers_obj {
-                let key_lower = key.to_ascii_lowercase();
-                if matches!(
-                    key_lower.as_str(),
-                    "host"
-                        | "content-length"
-                        | "transfer-encoding"
-                        | "connection"
-                        | "x-webhook-signature"
-                        | "x-webhook-event"
-                        | "x-webhook-delivery-id"
-                ) {
-                    continue;
-                }
-                if let Some(value_str) = value.as_str() {
-                    request = request.header(key, value_str);
-                }
-            }
-        }
-
-        let response = request.body(payload_str).send().await;
-
-        match response {
-            Ok(resp) => {
-                let status = resp.status().as_u16() as i32;
-                let body = resp.text().await.unwrap_or_default();
-                let body_truncated = &body[..body.floor_char_boundary(1000)];
-
-                if status >= 200 && status < 300 {
-                    // Success
-                    sqlx::query(
-                        r"
-                        UPDATE webhook_deliveries SET
-                            status = 'delivered',
-                            response_status = $1,
-                            response_body = $2,
-                            completed_at = NOW(),
-                            attempts = attempts + 1
-                        WHERE id = $3
-                        ",
-                    )
-                    .bind(status)
-                    .bind(body_truncated)
-                    .bind(delivery.id)
-                    .execute(pool)
-                    .await?;
-
-                    tracing::info!(
-                        "Webhook delivered: {} -> {}",
-                        delivery.event_type,
-                        webhook.url
+        .await;
+        let mut permanent = false;
+        let outcome = match validated {
+            Ok(Ok(Ok(url))) => {
+                let payload = serde_json::to_string(
+                    &serde_json::json!({"event":delivery.event_type,"timestamp":Utc::now().to_rfc3339(),"data":delivery.payload}),
+                )?;
+                let mut request = HTTP_CLIENT
+                    .post(url)
+                    .timeout(Duration::from_secs(
+                        delivery.timeout_seconds.clamp(1, 30) as u64
+                    ))
+                    .header("Content-Type", "application/json")
+                    .header("X-Webhook-Event", &delivery.event_type)
+                    .header("X-Webhook-Delivery-Id", delivery.id.to_string());
+                if let Some(secret) = &delivery.secret {
+                    request = request.header(
+                        "X-Webhook-Signature",
+                        format!("sha256={}", generate_webhook_signature(&payload, secret)),
                     );
-                } else {
-                    // HTTP error, schedule retry if attempts remaining
-                    let new_attempts = delivery.attempt_count + 1;
-                    if new_attempts >= webhook.retry_count {
-                        sqlx::query(
-                            r"
-                            UPDATE webhook_deliveries SET
-                                status = 'failed',
-                                response_status = $1,
-                                response_body = $2,
-                                error_message = 'Max retries exceeded',
-                                attempts = attempts + 1
-                            WHERE id = $3
-                            ",
-                        )
-                        .bind(status)
-                        .bind(body_truncated)
-                        .bind(delivery.id)
-                        .execute(pool)
-                        .await?;
-                    } else {
-                        // Exponential backoff: 1min, 5min, 15min, 1hr, 4hr
-                        let backoff_seconds = match new_attempts {
-                            1 => 60,
-                            2 => 300,
-                            3 => 900,
-                            4 => 3600,
-                            _ => 14400,
-                        };
-
-                        sqlx::query(
-                            r"
-                            UPDATE webhook_deliveries SET
-                                response_status = $1,
-                                response_body = $2,
-                                attempts = attempts + 1,
-                                next_retry_at = NOW() + INTERVAL '1 second' * $3
-                            WHERE id = $4
-                            ",
-                        )
-                        .bind(status)
-                        .bind(body_truncated)
-                        .bind(backoff_seconds)
-                        .bind(delivery.id)
-                        .execute(pool)
-                        .await?;
-
-                        tracing::warn!(
-                            "Webhook delivery failed (attempt {}), retry in {}s: {} -> {}",
-                            new_attempts,
-                            backoff_seconds,
-                            delivery.event_type,
-                            webhook.url
-                        );
+                }
+                if let Some(headers) = delivery
+                    .headers
+                    .as_ref()
+                    .and_then(serde_json::Value::as_object)
+                {
+                    for (key, value) in headers {
+                        if !matches!(
+                            key.to_ascii_lowercase().as_str(),
+                            "host"
+                                | "content-length"
+                                | "transfer-encoding"
+                                | "connection"
+                                | "x-webhook-signature"
+                                | "x-webhook-event"
+                                | "x-webhook-delivery-id"
+                        ) && let Some(value) = value.as_str()
+                        {
+                            request = request.header(key, value);
+                        }
                     }
                 }
-            }
-            Err(e) => {
-                // Network error, schedule retry
-                let new_attempts = delivery.attempt_count + 1;
-                let error_msg = e.to_string();
-
-                if new_attempts >= webhook.retry_count {
-                    sqlx::query(
-                        r"
-                        UPDATE webhook_deliveries SET
-                            status = 'failed',
-                            error_message = $1,
-                            attempts = attempts + 1
-                        WHERE id = $2
-                        ",
-                    )
-                    .bind(&error_msg)
-                    .bind(delivery.id)
-                    .execute(pool)
-                    .await?;
-                } else {
-                    let backoff_seconds = match new_attempts {
-                        1 => 60,
-                        2 => 300,
-                        3 => 900,
-                        4 => 3600,
-                        _ => 14400,
-                    };
-
-                    sqlx::query(
-                        r"
-                        UPDATE webhook_deliveries SET
-                            error_message = $1,
-                            attempts = attempts + 1,
-                            next_retry_at = NOW() + INTERVAL '1 second' * $2
-                        WHERE id = $3
-                        ",
-                    )
-                    .bind(&error_msg)
-                    .bind(backoff_seconds)
-                    .bind(delivery.id)
-                    .execute(pool)
-                    .await?;
-
-                    tracing::warn!(
-                        "Webhook network error (attempt {}): {} - {}",
-                        new_attempts,
-                        webhook.url,
-                        error_msg
-                    );
+                match request.body(payload).send().await {
+                    Ok(mut response) => {
+                        let status = response.status().as_u16() as i32;
+                        let mut bytes = Vec::new();
+                        let mut read_error = None;
+                        while bytes.len() < 1000 {
+                            match response.chunk().await {
+                                Ok(Some(chunk)) => {
+                                    let take = chunk.len().min(1000 - bytes.len());
+                                    bytes.extend_from_slice(&chunk[..take]);
+                                }
+                                Ok(None) => break,
+                                Err(error) => {
+                                    read_error = Some(error.to_string());
+                                    break;
+                                }
+                            }
+                        }
+                        let error = read_error.or_else(|| {
+                            (!(200..300).contains(&status))
+                                .then(|| format!("Webhook returned HTTP {status}"))
+                        });
+                        (
+                            Some(status),
+                            String::from_utf8_lossy(&bytes).into_owned(),
+                            error,
+                        )
+                    }
+                    Err(error) => (None, String::new(), Some(error.to_string())),
                 }
             }
-        }
-
+            Ok(Ok(Err(error))) => {
+                permanent = !matches!(
+                    error,
+                    crate::services::cms_webhooks::WebhookEgressError::ResolutionFailed
+                );
+                (
+                    None,
+                    String::new(),
+                    Some(format!("Blocked by SSRF egress policy: {error}")),
+                )
+            }
+            Ok(Err(error)) => (
+                None,
+                String::new(),
+                Some(format!("Webhook validation worker failed: {error}")),
+            ),
+            Err(_) => (
+                None,
+                String::new(),
+                Some("Webhook URL validation timed out".to_owned()),
+            ),
+        };
+        let (http_status, body, error) = outcome;
+        let status = if error.is_none() {
+            "delivered"
+        } else if permanent || delivery.attempt_count >= delivery.retry_count.max(1) {
+            "failed"
+        } else {
+            "pending"
+        };
+        let backoff = match delivery.attempt_count {
+            1 => 60,
+            2 => 300,
+            3 => 900,
+            4 => 3600,
+            _ => 14400,
+        };
+        sqlx::query("UPDATE webhook_deliveries SET status=$2,response_status=$3,response_body=$4,error_message=$5,delivered_at=CASE WHEN $2='delivered' THEN NOW() ELSE NULL END,next_retry_at=CASE WHEN $2='pending' THEN NOW()+make_interval(secs => $6) ELSE NULL END WHERE id=$1 AND status='processing' AND attempt_count=$7")
+            .bind(delivery.id).bind(status).bind(http_status).bind(body).bind(error).bind(backoff).bind(delivery.attempt_count).execute(pool).await?;
         processed += 1;
     }
-
     Ok(processed)
 }
 
-/// Process scheduled content publishing
+/// Execute legacy numeric-ID content schedules atomically with their status.
 async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
-    #[derive(Debug, sqlx::FromRow)]
-    struct ScheduledRow {
-        id: i64,
-        content_type: String,
-        content_id: i64,
-        scheduled_action: String,
-    }
-
-    // Get due scheduled content
-    let scheduled: Vec<ScheduledRow> = sqlx::query_as(
-        r"
-        SELECT id, content_type, content_id, scheduled_action
-        FROM scheduled_content
-        WHERE status = 'scheduled' AND scheduled_at <= NOW()
-        ORDER BY scheduled_at ASC
-        LIMIT 10
-        FOR UPDATE SKIP LOCKED
-        ",
-    )
-    .fetch_all(pool)
-    .await?;
-
-    let mut processed = 0u32;
-
-    for item in scheduled {
-        tracing::info!(
-            "Processing scheduled {}: {} ({})",
-            item.scheduled_action,
-            item.content_type,
-            item.content_id
-        );
-
-        let result = match item.content_type.as_str() {
-            "post" | "posts" => {
-                // Publish the post
-                sqlx::query(
-                    "UPDATE posts SET status = 'published', published_at = NOW(), updated_at = NOW() WHERE id = $1"
-                )
-                .bind(item.content_id)
-                .execute(pool)
-                .await
+    use sqlx::Acquire;
+    let mut processed = 0;
+    for _ in 0..10 {
+        let mut tx = pool.begin().await?;
+        let item:Option<(i64,String,i64,String,Option<serde_json::Value>)>=sqlx::query_as("SELECT id,content_type,content_id,scheduled_action,payload FROM scheduled_content WHERE status='scheduled' AND scheduled_at<=NOW() ORDER BY scheduled_at,id LIMIT 1 FOR UPDATE SKIP LOCKED")
+            .fetch_optional(&mut *tx).await?;
+        let Some((id, content_type, content_id, action, payload)) = item else {
+            break;
+        };
+        let mut effect = tx.begin().await?;
+        let result = apply_legacy_content(
+            &mut effect,
+            &content_type,
+            content_id,
+            &action,
+            payload.as_ref(),
+        )
+        .await;
+        let error = match result {
+            Ok(()) => {
+                effect.commit().await?;
+                None
             }
-            "product" | "products" => {
-                // Activate the product
-                sqlx::query(
-                    "UPDATE products SET is_active = true, updated_at = NOW() WHERE id = $1",
-                )
-                .bind(item.content_id)
-                .execute(pool)
-                .await
-            }
-            "course" | "courses" => {
-                // Publish the course
-                sqlx::query(
-                    "UPDATE courses SET status = 'published', published_at = NOW(), updated_at = NOW() WHERE id = $1"
-                )
-                .bind(item.content_id)
-                .execute(pool)
-                .await
-            }
-            "video" | "videos" => {
-                // Publish the video
-                sqlx::query(
-                    "UPDATE videos SET status = 'published', published_at = NOW(), updated_at = NOW() WHERE id = $1"
-                )
-                .bind(item.content_id)
-                .execute(pool)
-                .await
-            }
-            _ => {
-                tracing::warn!(
-                    "Unknown content type for scheduled publish: {}",
-                    item.content_type
-                );
-                Ok(sqlx::postgres::PgQueryResult::default())
+            Err(error) => {
+                effect.rollback().await?;
+                Some(error.to_string())
             }
         };
-
-        match result {
-            Ok(_) => {
-                // Mark as executed
-                sqlx::query(
-                    r"
-                    UPDATE scheduled_content SET
-                        status = 'executed',
-                        executed_at = NOW(),
-                        updated_at = NOW()
-                    WHERE id = $1
-                    ",
-                )
-                .bind(item.id)
-                .execute(pool)
-                .await?;
-
-                // Also update workflow status if exists
-                sqlx::query(
-                    r"
-                    UPDATE content_workflow_status SET
-                        current_stage = 'published',
-                        updated_at = NOW()
-                    WHERE content_type = $1 AND content_id = $2
-                    ",
-                )
-                .bind(&item.content_type)
-                .bind(item.content_id)
-                .execute(pool)
-                .await?;
-
-                tracing::info!(
-                    "Scheduled {} executed successfully: {} ({})",
-                    item.scheduled_action,
-                    item.content_type,
-                    item.content_id
-                );
-            }
-            Err(e) => {
-                // Mark as failed
-                sqlx::query(
-                    r"
-                    UPDATE scheduled_content SET
-                        status = 'failed',
-                        error_message = $1,
-                        updated_at = NOW()
-                    WHERE id = $2
-                    ",
-                )
-                .bind(e.to_string())
-                .bind(item.id)
-                .execute(pool)
-                .await?;
-
-                tracing::error!(
-                    "Scheduled {} failed: {} ({}) - {}",
-                    item.scheduled_action,
-                    item.content_type,
-                    item.content_id,
-                    e
-                );
-            }
-        }
-
+        sqlx::query("UPDATE scheduled_content SET status=$2,executed_at=CASE WHEN $2='executed' THEN NOW() ELSE NULL END,error_message=$3,updated_at=NOW() WHERE id=$1")
+            .bind(id).bind(if error.is_none() {"executed"} else {"failed"}).bind(&error).execute(&mut *tx).await?;
+        tx.commit().await?;
         processed += 1;
     }
-
     Ok(processed)
+}
+
+async fn apply_legacy_content(
+    connection: &mut sqlx::PgConnection,
+    content_type: &str,
+    id: i64,
+    action: &str,
+    payload: Option<&serde_json::Value>,
+) -> Result<()> {
+    let published = match action {
+        "publish" => true,
+        "unpublish" => false,
+        "update" => false,
+        _ => anyhow::bail!("Unsupported scheduled action: {action}"),
+    };
+    let result = if action == "update" {
+        let data = payload
+            .and_then(serde_json::Value::as_object)
+            .ok_or_else(|| anyhow::anyhow!("Scheduled update requires an object payload"))?;
+        if data.is_empty()
+            || data.len() > 8
+            || payload.is_some_and(|v| v.to_string().len() > 2_000_000)
+        {
+            anyhow::bail!("Invalid scheduled update payload");
+        }
+        let allowed = match content_type {
+            "post" | "posts" => &["title", "excerpt", "content_blocks"][..],
+            "product" | "products" => &["name", "description", "long_description"][..],
+            "course" | "courses" | "video" | "videos" => &["title", "description"][..],
+            _ => anyhow::bail!("Unsupported content type: {content_type}"),
+        };
+        if data.iter().any(|(key, value)| {
+            !allowed.contains(&key.as_str())
+                || if key == "content_blocks" {
+                    !value.is_array()
+                } else {
+                    value.as_str().is_none_or(|s| {
+                        s.contains('\0')
+                            || ((key == "title" || key == "name")
+                                && (s.trim().is_empty() || s.chars().count() > 255))
+                    })
+                }
+        }) {
+            anyhow::bail!("Invalid staged content fields");
+        }
+        let query = match content_type {
+            "post" | "posts" => {
+                "UPDATE posts SET title=COALESCE($2->>'title',title),excerpt=COALESCE($2->>'excerpt',excerpt),content_blocks=COALESCE($2->'content_blocks',content_blocks),updated_at=NOW() WHERE id=$1"
+            }
+            "product" | "products" => {
+                "UPDATE products SET name=COALESCE($2->>'name',name),description=COALESCE($2->>'description',description),long_description=COALESCE($2->>'long_description',long_description),updated_at=NOW() WHERE id=$1"
+            }
+            "course" | "courses" => {
+                "UPDATE courses_enhanced SET title=COALESCE($2->>'title',title),description=COALESCE($2->>'description',description),updated_at=NOW() WHERE id=$1 AND deleted_at IS NULL"
+            }
+            "video" | "videos" => {
+                "UPDATE videos SET title=COALESCE($2->>'title',title),description=COALESCE($2->>'description',description),updated_at=NOW() WHERE id=$1"
+            }
+            _ => unreachable!(),
+        };
+        sqlx::query(query)
+            .bind(id)
+            .bind(payload)
+            .execute(&mut *connection)
+            .await?
+    } else {
+        let query = match content_type {
+            "post" | "posts" => {
+                "UPDATE posts SET status=CASE WHEN $2 THEN 'published' ELSE 'draft' END,published_at=CASE WHEN $2 THEN COALESCE(published_at,NOW()) ELSE published_at END,updated_at=NOW() WHERE id=$1"
+            }
+            "product" | "products" => {
+                "UPDATE products SET is_active=$2,updated_at=NOW() WHERE id=$1"
+            }
+            "course" | "courses" => {
+                "UPDATE courses_enhanced SET is_published=$2,published_at=CASE WHEN $2 THEN COALESCE(published_at,NOW()) ELSE published_at END,updated_at=NOW() WHERE id=$1 AND deleted_at IS NULL"
+            }
+            "video" | "videos" => "UPDATE videos SET is_public=$2,updated_at=NOW() WHERE id=$1",
+            _ => anyhow::bail!("Unsupported content type: {content_type}"),
+        };
+        sqlx::query(query)
+            .bind(id)
+            .bind(published)
+            .execute(&mut *connection)
+            .await?
+    };
+    if result.rows_affected() != 1 {
+        anyhow::bail!("Scheduled content was not found");
+    }
+    Ok(())
 }
 
 /// Clean up expired preview tokens
@@ -614,84 +476,26 @@ pub async fn run(db: Database) {
     }
 }
 
-/// Fetch and process the next available job
-/// ICT 7: Fails silently if jobs table doesn't exist or has wrong schema
-async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
-    // Fetch next job using SELECT FOR UPDATE SKIP LOCKED
-    // Fail silently if table/columns don't exist
-    let job: Option<Job> = match sqlx::query_as(
-        r"
-        SELECT * FROM jobs
-        WHERE status = 'pending'
-          AND available_at <= NOW()
-          AND attempts < max_attempts
-        ORDER BY available_at ASC
-        LIMIT 1
-        FOR UPDATE SKIP LOCKED
-        ",
-    )
-    .fetch_optional(&db.pool)
-    .await
-    {
-        Ok(j) => j,
-        Err(e) => {
-            tracing::debug!("Jobs table not ready: {}", e);
-            return Ok(None);
-        }
+/// Claim work atomically; a crashed worker's expired lease can be retried.
+pub async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid>> {
+    sqlx::query("UPDATE jobs SET status='failed',error='Worker lease expired after final attempt',reserved_at=NULL WHERE status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes' AND attempts>=max_attempts")
+        .execute(&db.pool).await?;
+    let job: Option<Job> = sqlx::query_as(
+        "WITH next AS (SELECT id FROM jobs WHERE ((status='pending' AND available_at<=NOW()) OR (status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes')) AND attempts<max_attempts ORDER BY available_at,id LIMIT 1 FOR UPDATE SKIP LOCKED) UPDATE jobs j SET status='processing',started_at=NOW(),reserved_at=NOW(),attempts=attempts+1 FROM next WHERE j.id=next.id RETURNING j.*"
+    ).fetch_optional(&db.pool).await?;
+    let Some(job) = job else {
+        return Ok(None);
     };
-
-    let job = match job {
-        Some(j) => j,
-        None => return Ok(None),
-    };
-
-    // Mark as processing
-    sqlx::query(
-        "UPDATE jobs SET status = 'processing', started_at = NOW(), attempts = attempts + 1 WHERE id = $1",
-    )
-    .bind(job.id)
-    .execute(&db.pool)
-    .await?;
-
-    // Process the job
-    let result = process_job(&job).await;
-
-    match result {
-        Ok(_) => {
-            // Mark as completed
-            sqlx::query("UPDATE jobs SET status = 'completed', completed_at = NOW() WHERE id = $1")
-                .bind(job.id)
-                .execute(&db.pool)
-                .await?;
+    match process_job(&job).await {
+        Ok(()) => {
+            sqlx::query("UPDATE jobs SET status='completed',completed_at=NOW(),reserved_at=NULL,error=NULL WHERE id=$1 AND attempts=$2 AND status='processing'")
+                .bind(job.id).bind(job.attempts).execute(&db.pool).await?;
         }
-        Err(e) => {
-            let error_msg = e.to_string();
-            let new_status = if job.attempts + 1 >= job.max_attempts {
-                "failed"
-            } else {
-                "pending" // Will be retried
-            };
-
-            sqlx::query(
-                r"
-                UPDATE jobs SET
-                    status = $1,
-                    error = $2,
-                    available_at = CASE
-                        WHEN $1 = 'pending' THEN NOW() + make_interval(secs => (10 * power(2, LEAST(attempts, 6)))::int)
-                        ELSE available_at
-                    END
-                WHERE id = $3
-                ",
-            )
-            .bind(new_status)
-            .bind(&error_msg)
-            .bind(job.id)
-            .execute(&db.pool)
-            .await?;
+        Err(error) => {
+            sqlx::query("UPDATE jobs SET status=CASE WHEN attempts>=max_attempts THEN 'failed' ELSE 'pending' END,error=$2,reserved_at=NULL,available_at=NOW()+make_interval(secs => (10*power(2,LEAST(attempts,6)))::int) WHERE id=$1 AND attempts=$3 AND status='processing'")
+                .bind(job.id).bind(error.to_string()).bind(job.attempts).execute(&db.pool).await?;
         }
     }
-
     Ok(Some(job.id))
 }
 
@@ -712,47 +516,71 @@ async fn process_job(job: &Job) -> anyhow::Result<()> {
             tracing::info!("Sending email to: {} - {}", to, subject);
             send_email_via_postmark(to, subject, body).await
         }
-        "process_payment" => {
-            let user_id = job.payload["user_id"].as_str().unwrap_or("");
-            let amount = job.payload["amount_cents"].as_i64().unwrap_or(0);
-            tracing::info!(
-                "Processing payment for user: {} - {} cents",
-                user_id,
-                amount
+        "process_payment" | "generate_report" | "sync_data" | "reindex_search"
+        | "send_notification" => {
+            anyhow::bail!(
+                "Job handler '{}' is not configured or implemented",
+                job.job_type
+            )
+        }
+        _ => anyhow::bail!("Unknown job type: {}", job.job_type),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::{Json, Router, extract::State, http::HeaderMap, routing::post};
+    use std::sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    };
+
+    #[tokio::test]
+    async fn postmark_adapter_requires_provider_acknowledgement() {
+        async fn provider(
+            State(calls): State<Arc<AtomicUsize>>,
+            headers: HeaderMap,
+            Json(body): Json<serde_json::Value>,
+        ) -> Json<serde_json::Value> {
+            assert_eq!(
+                headers["X-Postmark-Server-Token"],
+                "controlled-adapter-token"
             );
-            // Process payment here
-            Ok(())
+            assert_eq!(body["To"], "fixture@completion.test");
+            assert_eq!(body["HtmlBody"], "<p>Fixture</p>");
+            Json(match calls.fetch_add(1, Ordering::SeqCst) {
+                0 => serde_json::json!({"ErrorCode":10,"MessageID":"not-accepted"}),
+                1 => serde_json::json!({"ErrorCode":0}),
+                _ => serde_json::json!({"ErrorCode":0,"MessageID":"controlled-adapter-message"}),
+            })
         }
-        "generate_report" => {
-            let report_type = job.payload["report_type"].as_str().unwrap_or("");
-            tracing::info!("Generating report: {}", report_type);
-            // Generate report here
-            Ok(())
+        let calls = Arc::new(AtomicUsize::new(0));
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let endpoint = format!("http://{}/email", listener.local_addr().unwrap());
+        let router = Router::new()
+            .route("/email", post(provider))
+            .with_state(calls.clone());
+        let server = tokio::spawn(async move {
+            axum::serve(listener, router).await.unwrap();
+        });
+        for accepted in [false, false, true] {
+            let result = send_email_request(
+                &HTTP_CLIENT,
+                &endpoint,
+                "controlled-adapter-token",
+                PostmarkEmail {
+                    from: "sender@completion.test".into(),
+                    to: "fixture@completion.test".into(),
+                    subject: "Fixture".into(),
+                    html_body: "<p>Fixture</p>".into(),
+                    message_stream: "outbound".into(),
+                },
+            )
+            .await;
+            assert_eq!(result.is_ok(), accepted, "{result:?}");
         }
-        "sync_data" => {
-            let source = job.payload["source"].as_str().unwrap_or("");
-            tracing::info!("Syncing data from: {}", source);
-            // Sync data here
-            Ok(())
-        }
-        "reindex_search" => {
-            let content_type = job.payload["content_type"].as_str().unwrap_or("");
-            tracing::info!("Reindexing search for: {}", content_type);
-            // Reindex search here
-            Ok(())
-        }
-        "send_notification" => {
-            let user_id = job.payload["user_id"].as_i64().unwrap_or(0);
-            let title = job.payload["title"].as_str().unwrap_or("");
-            let message = job.payload["message"].as_str().unwrap_or("");
-            tracing::info!("Sending notification to user {}: {}", user_id, title);
-            // Send push notification or email here
-            let _ = (user_id, title, message);
-            Ok(())
-        }
-        _ => {
-            tracing::warn!("Unknown job type: {}", job.job_type);
-            Ok(())
-        }
+        assert_eq!(calls.load(Ordering::SeqCst), 3);
+        server.abort();
     }
 }

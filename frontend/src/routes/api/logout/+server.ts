@@ -1,50 +1,59 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 
-// FIX-2026-04-26: env.VITE_API_URL → canonical pattern
-// const PROD_API_ROOT = 'http://localhost:8080';
-// const API_ROOT = env.VITE_API_URL || env.BACKEND_URL || PROD_API_ROOT;
 const API_ROOT = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
-const API_URL = `${API_ROOT}/api`;
 
-/**
- * Logout Proxy Endpoint - ICT11+ Principal Engineer Grade
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Proxies logout requests to Rust API backend with proper cookie handling.
- *
- * SECURITY:
- * - Forwards Authorization header for token validation
- * - Forwards X-Session-ID for session revocation
- * - ALWAYS clears httpOnly cookies regardless of backend response
- *
- * @version 2.0.0 - FIX: Always clear cookies on logout
- * @author Revolution Trading Pros
- */
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	// Get tokens from cookies for backend call
-	const token = cookies.get('rtp_access_token');
-	const sessionId = request.headers.get('X-Session-ID') || '';
-
-	// Call backend to invalidate session (best effort)
+/** Clear local cookies on every path; report server revocation truthfully. */
+export const POST: RequestHandler = async ({ request, cookies, fetch }) => {
+	const token =
+		cookies.get('rtp_access_token') ||
+		request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+	const refreshToken = cookies.get('rtp_refresh_token');
+	const sessionId = request.headers.get('X-Session-ID');
 	try {
-		await fetch(`${API_URL}/logout`, {
+		if (!token) {
+			return Response.json({
+				success: true,
+				server_revoked: false,
+				message: 'Local session cleared'
+			});
+		}
+		const response = await fetch(`${API_ROOT}/api/auth/logout`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
-				...(token && { Authorization: `Bearer ${token}` }),
-				...(sessionId && { 'X-Session-ID': sessionId })
-			}
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({ session_id: sessionId, refresh_token: refreshToken }),
+			signal: AbortSignal.timeout(5000)
 		});
-	} catch (error) {
-		// Backend failure shouldn't prevent logout
-		console.error('[Logout Proxy] Backend logout failed:', error);
+		if (!response.ok) {
+			return Response.json(
+				{
+					success: false,
+					server_revoked: false,
+					message: 'Local session cleared; server revocation failed'
+				},
+				{ status: response.status }
+			);
+		}
+		return Response.json({
+			success: true,
+			server_revoked: true,
+			message: 'Logged out successfully'
+		});
+	} catch {
+		return Response.json(
+			{
+				success: false,
+				server_revoked: false,
+				message: 'Local session cleared; session service unavailable'
+			},
+			{ status: 503 }
+		);
+	} finally {
+		cookies.delete('rtp_access_token', { path: '/' });
+		cookies.delete('rtp_refresh_token', { path: '/' });
 	}
-
-	// ALWAYS clear cookies regardless of backend response
-	cookies.delete('rtp_access_token', { path: '/' });
-	cookies.delete('rtp_refresh_token', { path: '/' });
-
-	return Response.json({ success: true, message: 'Logged out successfully' });
 };

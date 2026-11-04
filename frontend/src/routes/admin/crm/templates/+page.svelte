@@ -155,6 +155,7 @@
 				crmAPI.getEmailTemplates({
 					search: searchQuery || undefined,
 					category: selectedCategory || undefined,
+					page: currentPage,
 					per_page: perPage
 				}),
 				crmAPI.getTemplateCategories()
@@ -340,10 +341,6 @@
 
 	onDestroy(clearSearchTimeout);
 </script>
-
-<svelte:head>
-	<title>Email Templates - FluentCRM Pro</title>
-</svelte:head>
 
 <svelte:window onkeydown={handleKeydown} />
 

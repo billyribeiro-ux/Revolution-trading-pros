@@ -43,7 +43,6 @@ import type {
 	// FluentCRM Pro - CRM Companies
 	CrmCompany,
 	CompanyFilters,
-	CompanyStats,
 	// FluentCRM Pro - Abandoned Carts
 	AbandonedCart,
 	AbandonedCartFilters,
@@ -76,10 +75,32 @@ import type {
 import { apiClient } from './client.svelte';
 import type { JsonValue, PaginatedResponse } from './_types';
 
+type CompanyWire = Omit<CrmCompany, 'id' | 'slug' | 'total_deal_value'> & {
+	id: string | number;
+	total_deal_value_cents: number;
+};
+
+function companyFromWire(company: CompanyWire): CrmCompany {
+	return {
+		...company,
+		id: String(company.id),
+		slug: company.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+		total_deal_value: company.total_deal_value_cents / 100
+	};
+}
+
+type SegmentWire = Omit<ContactSegment, 'id'> & { id: string | number };
+function segmentFromWire(segment: SegmentWire): ContactSegment {
+	return { ...segment, id: String(segment.id), name: segment.title };
+}
+
 export class CrmAPI {
 	// Contacts
 	async getContacts(filters?: ContactFilters): Promise<PaginatedResponse<Contact>> {
-		return apiClient.get('/admin/crm/contacts', { params: filters ?? undefined });
+		return apiClient.get('/admin/crm/contacts', {
+			preserveEnvelope: true,
+			params: filters ?? undefined
+		});
 	}
 
 	async getContact(id: string): Promise<Contact> {
@@ -108,7 +129,10 @@ export class CrmAPI {
 
 	// Deals
 	async getDeals(filters?: DealFilters): Promise<PaginatedResponse<Deal>> {
-		return apiClient.get('/admin/crm/deals', { params: filters ?? undefined });
+		return apiClient.get('/admin/crm/deals', {
+			preserveEnvelope: true,
+			params: filters ?? undefined
+		});
 	}
 
 	async getDeal(id: string): Promise<Deal> {
@@ -172,7 +196,10 @@ export class CrmAPI {
 	// =====================================================
 
 	async getSequences(filters?: SequenceFilters): Promise<PaginatedResponse<EmailSequence>> {
-		return apiClient.get('/admin/crm/sequences', { params: filters ?? undefined });
+		return apiClient.get('/admin/crm/sequences', {
+			preserveEnvelope: true,
+			params: filters ?? undefined
+		});
 	}
 
 	async getSequence(id: string): Promise<{ sequence: EmailSequence; stats: SequenceStats }> {
@@ -229,6 +256,7 @@ export class CrmAPI {
 		filters?: { status?: string; per_page?: number }
 	): Promise<PaginatedResponse<SequenceTracker>> {
 		return apiClient.get(`/admin/crm/sequences/${id}/subscribers`, {
+			preserveEnvelope: true,
 			params: filters ?? undefined
 		});
 	}
@@ -262,7 +290,10 @@ export class CrmAPI {
 	async getRecurringCampaigns(
 		filters?: RecurringCampaignFilters
 	): Promise<PaginatedResponse<RecurringCampaign>> {
-		return apiClient.get('/admin/crm/recurring-campaigns', { params: filters });
+		return apiClient.get('/admin/crm/recurring-campaigns', {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async getRecurringCampaign(
@@ -295,6 +326,7 @@ export class CrmAPI {
 		filters?: { status?: string; per_page?: number }
 	): Promise<PaginatedResponse<RecurringMail>> {
 		return apiClient.get(`/admin/crm/recurring-campaigns/${campaignId}/emails`, {
+			preserveEnvelope: true,
 			params: filters
 		});
 	}
@@ -308,7 +340,7 @@ export class CrmAPI {
 	// =====================================================
 
 	async getSmartLinks(filters?: SmartLinkFilters): Promise<PaginatedResponse<SmartLink>> {
-		return apiClient.get('/admin/crm/smart-links', { params: filters });
+		return apiClient.get('/admin/crm/smart-links', { preserveEnvelope: true, params: filters });
 	}
 
 	async getSmartLink(id: string): Promise<{ link: SmartLink; stats: SmartLinkStats }> {
@@ -331,7 +363,10 @@ export class CrmAPI {
 		id: string,
 		filters?: { per_page?: number }
 	): Promise<PaginatedResponse<SmartLinkClick>> {
-		return apiClient.get(`/admin/crm/smart-links/${id}/clicks`, { params: filters });
+		return apiClient.get(`/admin/crm/smart-links/${id}/clicks`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async getSmartLinkAnalytics(id: string): Promise<SmartLinkAnalytics> {
@@ -345,7 +380,7 @@ export class CrmAPI {
 	async getAutomationFunnels(
 		filters?: FunnelFilters
 	): Promise<PaginatedResponse<AutomationFunnel>> {
-		return apiClient.get('/admin/crm/automations', { params: filters });
+		return apiClient.get('/admin/crm/automations', { preserveEnvelope: true, params: filters });
 	}
 
 	async getAutomationFunnel(id: string): Promise<{
@@ -422,7 +457,10 @@ export class CrmAPI {
 		funnelId: string,
 		filters?: { status?: string; per_page?: number }
 	): Promise<PaginatedResponse<FunnelSubscriber>> {
-		return apiClient.get(`/admin/crm/automations/${funnelId}/subscribers`, { params: filters });
+		return apiClient.get(`/admin/crm/automations/${funnelId}/subscribers`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async addToFunnel(funnelId: string, contactIds: string[]): Promise<{ added_count: number }> {
@@ -445,15 +483,20 @@ export class CrmAPI {
 	// =====================================================
 
 	async getContactLists(filters?: {
+		page?: number;
 		search?: string;
 		is_public?: boolean;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ContactList>> {
-		return apiClient.get('/admin/crm/lists', { params: filters });
+		return apiClient.get('/admin/crm/lists', {
+			preserveEnvelope: true,
+			cache: { enabled: false },
+			params: filters
+		});
 	}
 
 	async getContactList(id: string): Promise<{ list: ContactList; contacts_count: number }> {
-		return apiClient.get(`/admin/crm/lists/${id}`);
+		return apiClient.get(`/admin/crm/lists/${id}`, { cache: { enabled: false } });
 	}
 
 	async createContactList(data: Partial<ContactList>): Promise<ContactList> {
@@ -465,14 +508,18 @@ export class CrmAPI {
 	}
 
 	async deleteContactList(id: string): Promise<void> {
-		return apiClient.delete(`/admin/crm/lists/${id}`);
+		return apiClient.delete(`/admin/crm/lists/${id}`, { cache: { enabled: false } });
 	}
 
 	async getListContacts(
 		id: string,
-		filters?: { per_page?: number }
+		filters?: { page?: number; per_page?: number; search?: string }
 	): Promise<PaginatedResponse<Contact>> {
-		return apiClient.get(`/admin/crm/lists/${id}/contacts`, { params: filters });
+		return apiClient.get(`/admin/crm/lists/${id}/contacts`, {
+			preserveEnvelope: true,
+			cache: { enabled: false },
+			params: filters
+		});
 	}
 
 	async addContactsToList(id: string, contactIds: string[]): Promise<{ added_count: number }> {
@@ -496,7 +543,7 @@ export class CrmAPI {
 		search?: string;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ContactTag>> {
-		return apiClient.get('/admin/crm/contact-tags', { params: filters });
+		return apiClient.get('/admin/crm/contact-tags', { preserveEnvelope: true, params: filters });
 	}
 
 	async getContactTag(id: string): Promise<{ tag: ContactTag; contacts_count: number }> {
@@ -519,7 +566,10 @@ export class CrmAPI {
 		id: string,
 		filters?: { per_page?: number; page?: number }
 	): Promise<PaginatedResponse<Contact>> {
-		return apiClient.get(`/admin/crm/contact-tags/${id}/contacts`, { params: filters });
+		return apiClient.get(`/admin/crm/contact-tags/${id}/contacts`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async applyTagToContacts(id: string, contactIds: string[]): Promise<{ applied_count: number }> {
@@ -545,24 +595,30 @@ export class CrmAPI {
 	// =====================================================
 
 	async getCompanies(filters?: CompanyFilters): Promise<PaginatedResponse<CrmCompany>> {
-		return apiClient.get('/admin/crm/companies', { params: filters });
+		const response = await apiClient.get<PaginatedResponse<CompanyWire>>('/admin/crm/companies', {
+			params: filters,
+			preserveEnvelope: true,
+			cache: { enabled: false }
+		});
+		return { ...response, data: response.data.map(companyFromWire) };
 	}
 
-	async getCompany(id: string): Promise<{
-		company: CrmCompany;
-		stats: CompanyStats;
-		industries: Record<string, string>;
-		sizes: Record<string, string>;
-	}> {
-		return apiClient.get(`/admin/crm/companies/${id}`);
+	async getCompany(id: string): Promise<CrmCompany> {
+		return companyFromWire(
+			await apiClient.get<CompanyWire>(`/admin/crm/companies/${encodeURIComponent(id)}`, {
+				cache: { enabled: false }
+			})
+		);
 	}
 
 	async createCompany(data: Partial<CrmCompany>): Promise<CrmCompany> {
-		return apiClient.post('/admin/crm/companies', data);
+		return companyFromWire(await apiClient.post<CompanyWire>('/admin/crm/companies', data));
 	}
 
 	async updateCompany(id: string, data: Partial<CrmCompany>): Promise<CrmCompany> {
-		return apiClient.put(`/admin/crm/companies/${id}`, data);
+		return companyFromWire(
+			await apiClient.put<CompanyWire>(`/admin/crm/companies/${encodeURIComponent(id)}`, data)
+		);
 	}
 
 	async deleteCompany(id: string): Promise<void> {
@@ -570,21 +626,29 @@ export class CrmAPI {
 	}
 
 	async duplicateCompany(id: string): Promise<CrmCompany> {
-		return apiClient.post(`/admin/crm/companies/${id}/duplicate`);
+		return companyFromWire(
+			await apiClient.post<CompanyWire>(`/admin/crm/companies/${encodeURIComponent(id)}/duplicate`)
+		);
 	}
 
 	async getCompanyContacts(
 		id: string,
 		filters?: { per_page?: number }
 	): Promise<PaginatedResponse<Contact>> {
-		return apiClient.get(`/admin/crm/companies/${id}/contacts`, { params: filters });
+		return apiClient.get(`/admin/crm/companies/${id}/contacts`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async getCompanyDeals(
 		id: string,
 		filters?: { status?: string; per_page?: number }
 	): Promise<PaginatedResponse<Deal>> {
-		return apiClient.get(`/admin/crm/companies/${id}/deals`, { params: filters });
+		return apiClient.get(`/admin/crm/companies/${id}/deals`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async getIndustries(): Promise<Record<string, string>> {
@@ -602,7 +666,7 @@ export class CrmAPI {
 	async getAbandonedCarts(
 		filters?: AbandonedCartFilters
 	): Promise<PaginatedResponse<AbandonedCart> & { haveAutomation: boolean }> {
-		return apiClient.get('/admin/crm/abandoned-carts', { params: filters });
+		return apiClient.get('/admin/crm/abandoned-carts', { preserveEnvelope: true, params: filters });
 	}
 
 	async getAbandonedCart(id: string): Promise<AbandonedCart> {
@@ -641,13 +705,18 @@ export class CrmAPI {
 	async getEmailTemplates(filters?: {
 		search?: string;
 		category?: string;
+		page?: number;
 		per_page?: number;
 	}): Promise<PaginatedResponse<EmailTemplate>> {
-		return apiClient.get('/admin/crm/templates', { params: filters });
+		return apiClient.get('/admin/crm/templates', {
+			preserveEnvelope: true,
+			cache: { enabled: false },
+			params: filters
+		});
 	}
 
 	async getEmailTemplate(id: string): Promise<EmailTemplate> {
-		return apiClient.get(`/admin/crm/templates/${id}`);
+		return apiClient.get(`/admin/crm/templates/${id}`, { cache: { enabled: false } });
 	}
 
 	async createEmailTemplate(data: Partial<EmailTemplate>): Promise<EmailTemplate> {
@@ -667,11 +736,11 @@ export class CrmAPI {
 	}
 
 	async getTemplateCategories(): Promise<TemplateCategory[]> {
-		return apiClient.get('/admin/crm/templates/categories');
+		return apiClient.get('/admin/crm/templates/categories', { cache: { enabled: false } });
 	}
 
 	async getPrebuiltTemplates(): Promise<EmailTemplate[]> {
-		return apiClient.get('/admin/crm/templates/prebuilt');
+		return apiClient.get('/admin/crm/templates/prebuilt', { cache: { enabled: false } });
 	}
 
 	// =====================================================
@@ -679,7 +748,7 @@ export class CrmAPI {
 	// =====================================================
 
 	async getWebhooks(filters?: { per_page?: number }): Promise<PaginatedResponse<Webhook>> {
-		return apiClient.get('/admin/crm/webhooks', { params: filters });
+		return apiClient.get('/admin/crm/webhooks', { preserveEnvelope: true, params: filters });
 	}
 
 	async getWebhook(id: string): Promise<Webhook> {
@@ -706,7 +775,10 @@ export class CrmAPI {
 		id: string,
 		filters?: { per_page?: number }
 	): Promise<PaginatedResponse<WebhookLog>> {
-		return apiClient.get(`/admin/crm/webhooks/${id}/logs`, { params: filters });
+		return apiClient.get(`/admin/crm/webhooks/${id}/logs`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	async getWebhookEvents(): Promise<Record<string, string>> {
@@ -722,7 +794,7 @@ export class CrmAPI {
 		status?: string;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ImportJob>> {
-		return apiClient.get('/admin/crm/imports', { params: filters });
+		return apiClient.get('/admin/crm/imports', { preserveEnvelope: true, params: filters });
 	}
 
 	async getImportJob(id: string): Promise<ImportJob> {
@@ -757,7 +829,7 @@ export class CrmAPI {
 		type?: string;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ExportJob>> {
-		return apiClient.get('/admin/crm/exports', { params: filters });
+		return apiClient.get('/admin/crm/exports', { preserveEnvelope: true, params: filters });
 	}
 
 	async createExportJob(
@@ -801,7 +873,7 @@ export class CrmAPI {
 	}
 
 	async getManagerUsers(filters?: { per_page?: number }): Promise<PaginatedResponse<ManagerUser>> {
-		return apiClient.get('/admin/crm/managers', { params: filters });
+		return apiClient.get('/admin/crm/managers', { preserveEnvelope: true, params: filters });
 	}
 
 	async addManager(userId: string, roleId: string): Promise<ManagerUser> {
@@ -861,7 +933,7 @@ export class CrmAPI {
 	// =====================================================
 
 	async getSystemLogs(filters?: SystemLogFilters): Promise<PaginatedResponse<SystemLog>> {
-		return apiClient.get('/admin/crm/logs', { params: filters });
+		return apiClient.get('/admin/crm/logs', { preserveEnvelope: true, params: filters });
 	}
 
 	async getSystemLog(id: string): Promise<SystemLog> {
@@ -893,7 +965,7 @@ export class CrmAPI {
 		search?: string;
 		per_page?: number;
 	}): Promise<PaginatedResponse<Campaign>> {
-		return apiClient.get('/admin/crm/campaigns', { params: filters });
+		return apiClient.get('/admin/crm/campaigns', { preserveEnvelope: true, params: filters });
 	}
 
 	async getCampaign(id: string): Promise<{ campaign: Campaign; stats: CampaignStats }> {
@@ -940,7 +1012,10 @@ export class CrmAPI {
 		id: string,
 		filters?: { per_page?: number }
 	): Promise<PaginatedResponse<Contact>> {
-		return apiClient.get(`/admin/crm/campaigns/${id}/recipients`, { params: filters });
+		return apiClient.get(`/admin/crm/campaigns/${id}/recipients`, {
+			preserveEnvelope: true,
+			params: filters
+		});
 	}
 
 	// =====================================================
@@ -949,23 +1024,33 @@ export class CrmAPI {
 
 	async getContactSegments(filters?: {
 		search?: string;
+		page?: number;
+		is_active?: boolean;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ContactSegment>> {
-		return apiClient.get('/admin/crm/segments', { params: filters });
+		const response = await apiClient.get<PaginatedResponse<SegmentWire>>('/admin/crm/segments', {
+			preserveEnvelope: true,
+			cache: { enabled: false },
+			params: filters
+		});
+		return { ...response, data: response.data.map(segmentFromWire) };
 	}
 
 	async getContactSegment(
 		id: string
-	): Promise<{ segment: ContactSegment; contacts_count: number }> {
-		return apiClient.get(`/admin/crm/segments/${id}`);
+	): Promise<{ segment: ContactSegment; contacts_count: number | null }> {
+		const segment = segmentFromWire(
+			await apiClient.get<SegmentWire>(`/admin/crm/segments/${id}`, { cache: { enabled: false } })
+		);
+		return { segment, contacts_count: segment.contacts_count };
 	}
 
 	async createContactSegment(data: Partial<ContactSegment>): Promise<ContactSegment> {
-		return apiClient.post('/admin/crm/segments', data);
+		return segmentFromWire(await apiClient.post<SegmentWire>('/admin/crm/segments', data));
 	}
 
 	async updateContactSegment(id: string, data: Partial<ContactSegment>): Promise<ContactSegment> {
-		return apiClient.put(`/admin/crm/segments/${id}`, data);
+		return segmentFromWire(await apiClient.put<SegmentWire>(`/admin/crm/segments/${id}`, data));
 	}
 
 	async deleteContactSegment(id: string): Promise<void> {
@@ -973,7 +1058,9 @@ export class CrmAPI {
 	}
 
 	async duplicateContactSegment(id: string): Promise<ContactSegment> {
-		return apiClient.post(`/admin/crm/segments/${id}/duplicate`);
+		return segmentFromWire(
+			await apiClient.post<SegmentWire>(`/admin/crm/segments/${id}/duplicate`)
+		);
 	}
 
 	async syncContactSegment(id: string): Promise<{ contacts_count: number }> {
@@ -982,9 +1069,13 @@ export class CrmAPI {
 
 	async getSegmentContacts(
 		id: string,
-		filters?: { per_page?: number }
+		filters?: { per_page?: number; page?: number }
 	): Promise<PaginatedResponse<Contact>> {
-		return apiClient.get(`/admin/crm/segments/${id}/contacts`, { params: filters });
+		return apiClient.get(`/admin/crm/segments/${id}/contacts`, {
+			preserveEnvelope: true,
+			cache: { enabled: false },
+			params: filters
+		});
 	}
 }
 

@@ -278,6 +278,7 @@ async fn create_lead(
     _admin: AdminUser,
     Json(input): Json<CreateContactInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    input.validate(true)?;
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
     let status = input.status.unwrap_or_else(|| "new".to_string());
 
@@ -336,6 +337,26 @@ async fn create_lead(
     })))
 }
 
+/// GET /admin/crm/leads/:id - Read a persisted lead for detail/edit workflows.
+async fn get_lead(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let lead:CrmLead=sqlx::query_as("SELECT id,email,first_name,last_name,phone,company,job_title,status,source,score,tags,custom_fields,last_contacted_at,created_at,updated_at FROM contacts WHERE id=$1 AND status IN ('new','contacted','qualified','proposal','negotiation','won','lost','lead')")
+        .bind(id).fetch_optional(&state.db.pool).await.map_err(super::contacts::contact_db_error)?.ok_or_else(||(StatusCode::NOT_FOUND,Json(json!({"error":"Lead not found"}))))?;
+    let full_name = format!(
+        "{} {}",
+        lead.first_name.as_deref().unwrap_or(""),
+        lead.last_name.as_deref().unwrap_or("")
+    )
+    .trim()
+    .to_owned();
+    Ok(Json(
+        json!({"id":lead.id.to_string(),"email":lead.email,"first_name":lead.first_name,"last_name":lead.last_name,"full_name":full_name,"phone":lead.phone,"company_name":lead.company,"job_title":lead.job_title,"status":lead.status,"source":lead.source,"lead_score":lead.score,"is_hot":lead.score.is_some_and(|score|score>=75),"tags":lead.tags,"custom_fields":lead.custom_fields,"last_contacted_at":lead.last_contacted_at,"created_at":lead.created_at,"updated_at":lead.updated_at}),
+    ))
+}
+
 /// PUT /admin/crm/leads/:id - Update a lead
 async fn update_lead(
     State(state): State<AppState>,
@@ -343,6 +364,7 @@ async fn update_lead(
     Path(id): Path<i64>,
     Json(input): Json<UpdateContactInput>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    input.validate(true)?;
     let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
 
     let lead: CrmLead = sqlx::query_as(
@@ -375,7 +397,7 @@ async fn update_lead(
     .bind(&input.custom_fields)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .map_err(super::contacts::contact_db_error)?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Lead not found"}))))?;
 
     let full_name = match (&lead.first_name, &lead.last_name) {
@@ -540,11 +562,13 @@ async fn bulk_delete_abandoned_carts(
 // ═══════════════════════════════════════════════════════════════════════════
 
 pub(super) fn router() -> Router<AppState> {
-    use axum::routing::put;
     Router::new()
         .route("/leads", get(list_leads).post(create_lead))
         .route("/leads/stats", get(get_lead_stats))
-        .route("/leads/{id}", put(update_lead).delete(delete_lead))
+        .route(
+            "/leads/{id}",
+            get(get_lead).put(update_lead).delete(delete_lead),
+        )
         // Bulk operations
         .route("/leads/bulk-delete", post(bulk_delete_leads))
         .route("/leads/bulk-status", post(bulk_update_lead_status))

@@ -78,6 +78,10 @@ async fn main() -> anyhow::Result<()> {
     });
     tracing::info!("Job queue worker started");
 
+    let cms_pool = db.pool.clone();
+    tokio::spawn(revolution_api::services::cms_scheduler::run(cms_pool));
+    tracing::info!("CMS scheduling worker started");
+
     // Initialize real-time event broadcaster - ICT 11+ SSE Updates
     let event_broadcaster = EventBroadcaster::new();
     tracing::info!("Real-time SSE event broadcaster initialized");

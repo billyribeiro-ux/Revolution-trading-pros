@@ -1,12 +1,5 @@
-<!-- Stub — audit 06-crm.md P0 #1 (orphan-link epidemic). Backend deferred: docs/audits/admin-2026-04-26/06-crm-DEFERRED.md -->
 <script lang="ts">
-	import { page } from '$app/state';
-	import ComingSoonStub from '#lib/components/admin/ComingSoonStub.svelte';
+ import { page } from '$app/state';
+ import ContactForm from '#lib/components/admin/crm/ContactForm.svelte';
 </script>
-
-<ComingSoonStub
-	entity="Edit Lead"
-	backHref="/admin/crm/leads"
-	backLabel="Leads"
-	id={page.params.id ?? ''}
-/>
+{#key page.params.id}<ContactForm id={page.params.id ?? ''} kind="leads" />{/key}

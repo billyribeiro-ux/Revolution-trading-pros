@@ -26,7 +26,6 @@
 	 */
 
 	import {
-		IconTarget,
 		IconUsers,
 		IconUserPlus,
 		IconSearch,
@@ -43,8 +42,6 @@
 		IconArrowRight
 	} from '#lib/icons/index.js';
 	import { api } from '#lib/api/config.js';
-	import { connections, getIsCrmConnected } from '#lib/stores/connections.svelte.js';
-	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import PageHeader from './_components/PageHeader.svelte';
@@ -114,7 +111,6 @@
 		conversion_rate: 0
 	});
 	let isLoading = $state(true);
-	let connectionLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
 	let selectedStatus = $state<string>('all');
@@ -269,6 +265,8 @@
 				api.get<StatsRes>('/api/admin/crm/leads/stats')
 			]);
 
+			if (leadsRes.status === 'rejected') throw new Error('Unable to load saved leads');
+			if (statsRes.status === 'rejected') throw new Error('Unable to load CRM statistics');
 			if (leadsRes.status === 'fulfilled') {
 				const v = leadsRes.value;
 				leads = Array.isArray(v) ? v : v?.data || v?.leads || [];
@@ -574,28 +572,9 @@
 
 	// LIFECYCLE
 
-	// Svelte 5: Initialize on mount.
-	// Was previously a `$effect` that read `getIsCrmConnected()` after writing
-	// to `connections.load()` — same write-while-reading-tracked-dep cascade
-	// that was fixed elsewhere in commit 34a0bd070. Migrating to `onMount`
-	// to keep the lifecycle init off the reactive graph.
-	onMount(() => {
-		(async () => {
-			await connections.load();
-			connectionLoading = false;
+	onMount(() => { void loadData(); });
 
-			if (getIsCrmConnected()) {
-				await loadData();
-			} else {
-				isLoading = false;
-			}
-		})();
-	});
 </script>
-
-<svelte:head>
-	<title>Leads | CRM - Admin Dashboard</title>
-</svelte:head>
 
 <div class="admin-crm-leads">
 	
@@ -604,23 +583,8 @@
 		<!-- Header - CENTERED -->
 		<PageHeader />
 
-		{#if connectionLoading}
+		{#if isLoading}
 			<SkeletonLoader variant="dashboard" />
-		{:else if !getIsCrmConnected()}
-			<ApiNotConnected
-				serviceName="CRM"
-				description="Connect to manage leads, track opportunities, and grow your sales pipeline."
-				serviceKey="hubspot"
-				icon={IconTarget}
-				color="#f97316"
-				features={[
-					'Lead scoring and qualification',
-					'Pipeline stage management',
-					'Lead source tracking',
-					'Conversion analytics',
-					'Bulk operations'
-				]}
-			/>
 		{:else}
 			<!-- Stats Overview -->
 			<StatsGrid {stats} {formatCurrency} />

@@ -11,8 +11,8 @@
 //! (`sqlx::migrate!("./migrations").run(&pool)` in `src/db/mod.rs`):
 //! after loading `schema.sql` and seeding `_sqlx_migrations` with the
 //! real SHA-384 checksums of the committed migration files, the embedded
-//! migrator must run as a clean no-op (no `VersionMismatch`, nothing
-//! pending) — i.e. production's migration path is fully honored.
+//! migrator must validate the baseline and execute forward migrations
+//! (including their schema changes and structural defaults) — i.e. production's migration path is fully honored.
 //!
 //! Gated on `G03_VERIFY_DB_URL` (a throwaway empty database) so it does
 //! not run in the standard no-DB test set. It creates only its own
@@ -24,7 +24,7 @@
 use std::path::Path;
 
 #[tokio::test]
-async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
+async fn schema_and_seed_apply_forward_schema_and_defaults() {
     let Ok(db_url) = std::env::var("G03_VERIFY_DB_URL") else {
         eprintln!("G03_VERIFY_DB_URL not set — skipping (gated DB proof).");
         return;
@@ -79,7 +79,7 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
     sqlx::migrate!("./migrations")
         .run(&pool)
         .await
-        .expect("embedded migrator must be a clean no-op after baseline+seed");
+        .expect("embedded migrator must validate the baseline and execute forward migrations");
 
     let applied: i64 = sqlx::query_scalar("SELECT count(*) FROM public._sqlx_migrations")
         .fetch_one(&pool)
@@ -118,7 +118,7 @@ async fn schema_sql_plus_seed_makes_embedded_migrator_a_noop() {
     );
 
     eprintln!(
-        "G0.3 PROOF OK: schema.sql + seed -> embedded migrator no-op; \
+        "G0.3 PROOF OK: schema.sql + seed -> baseline validation and forward migration; \
                {applied} versions applied, {tables} tables."
     );
 }

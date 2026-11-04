@@ -51,3 +51,4 @@ coverage/
 # Do's/  — kept tracked
 
 .vitest/
+.svelte-kit-admin-verify/

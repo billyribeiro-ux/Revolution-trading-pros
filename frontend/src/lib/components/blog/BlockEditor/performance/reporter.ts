@@ -167,6 +167,8 @@ class PerformanceReporter {
 	private unsubscribeMetrics: (() => void) | null = null;
 	private lastSnapshot: MetricsSnapshot | null = null;
 	private retryCount: number = 0;
+	private readonly visibilityChangeListener = this.handleVisibilityChange.bind(this);
+	private readonly beforeUnloadListener = this.handleBeforeUnload.bind(this);
 
 	constructor(config: Partial<ReporterConfig> = {}) {
 		this.config = { ...DEFAULT_CONFIG, ...config };
@@ -194,10 +196,10 @@ class PerformanceReporter {
 		this.startBatchInterval();
 
 		// Send pending metrics on visibility change
-		document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+		document.addEventListener('visibilitychange', this.visibilityChangeListener);
 
 		// Send metrics before page unload
-		window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+		window.addEventListener('beforeunload', this.beforeUnloadListener);
 
 		this.log('Performance reporter initialized');
 	}
@@ -724,8 +726,8 @@ class PerformanceReporter {
 			this.unsubscribeMetrics();
 		}
 
-		document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-		window.removeEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+		document.removeEventListener('visibilitychange', this.visibilityChangeListener);
+		window.removeEventListener('beforeunload', this.beforeUnloadListener);
 
 		// Final flush
 		this.sendMetrics(true);

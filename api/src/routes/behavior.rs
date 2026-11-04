@@ -132,6 +132,13 @@ async fn ingest(
             .as_ref()
             .and_then(Value::as_f64)
             .filter(|n| n.is_finite());
+        if event.event_type == "scroll_depth"
+            && !value.is_some_and(|depth| (0.0..=100.0).contains(&depth))
+        {
+            return Err(ApiError::validation_error(
+                "Scroll depth must be between 0 and 100",
+            ));
+        }
         let coordinates = event.coordinates.as_ref().map(|c| json!(c));
         let hash = hex::encode(Sha256::digest(
             serde_json::to_vec(&json!([
@@ -198,11 +205,13 @@ async fn summary(
         .bind(days).fetch_all(&state.db.pool).await.map_err(db_error)?;
     let scrolls: Vec<(String, f64, i64)> = sqlx::query_as("SELECT page_url, COALESCE(AVG(event_value),0)::float8, COUNT(*)::bigint FROM behavior_events WHERE happened_at >= NOW() - $1 * INTERVAL '1 day' AND event_type='scroll_depth' GROUP BY page_url ORDER BY COUNT(*) DESC LIMIT 20")
         .bind(days).fetch_all(&state.db.pool).await.map_err(db_error)?;
+    let heatmap_views: i64 = sqlx::query_scalar("SELECT COUNT(*)::bigint FROM analytics_events WHERE event_type='heatmap_view' AND created_at >= NOW() - $1 * INTERVAL '1 day'")
+        .bind(days).fetch_one(&state.db.pool).await.map_err(db_error)?;
     Ok(Json(json!({
         "total_sessions": totals.0, "avg_session_duration": format!("{}s", totals.1.round()),
         "pages_per_session": totals.2, "avg_scroll_depth": engagement.0,
         "click_rate": if engagement.2 > 0 { engagement.1 as f64 / engagement.2 as f64 * 100.0 } else { 0.0 },
-        "heatmap_views": engagement.1,
+        "heatmap_views": heatmap_views,
         "top_clicks": clicks.into_iter().map(|(element,count,page)| json!({"element":element,"count":count,"page":page})).collect::<Vec<_>>(),
         "top_scrolls": scrolls.into_iter().map(|(page,depth,views)| json!({"page":page,"avgDepth":depth,"views":views})).collect::<Vec<_>>(),
         "recordings": []

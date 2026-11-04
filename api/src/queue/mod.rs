@@ -15,16 +15,17 @@ pub async fn enqueue(
     queue: &str,
     job_type: &str,
     payload: serde_json::Value,
-) -> Result<i64> {
+) -> Result<uuid::Uuid> {
     let job = Job::new(queue, job_type, payload);
 
-    let result = sqlx::query_scalar::<_, i64>(
+    let result = sqlx::query_scalar::<_, uuid::Uuid>(
         r"
-        INSERT INTO jobs (queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO jobs (id, queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id
         ",
     )
+    .bind(job.id)
     .bind(&job.queue)
     .bind(&job.job_type)
     .bind(&job.payload)
@@ -47,17 +48,18 @@ pub async fn enqueue_delayed(
     job_type: &str,
     payload: serde_json::Value,
     run_at: DateTime<Utc>,
-) -> Result<i64> {
+) -> Result<uuid::Uuid> {
     let mut job = Job::new(queue, job_type, payload);
     job.available_at = run_at;
 
-    let result = sqlx::query_scalar::<_, i64>(
+    let result = sqlx::query_scalar::<_, uuid::Uuid>(
         r"
-        INSERT INTO jobs (queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO jobs (id, queue, job_type, payload, status, attempts, max_attempts, available_at, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id
         ",
     )
+    .bind(job.id)
     .bind(&job.queue)
     .bind(&job.job_type)
     .bind(&job.payload)

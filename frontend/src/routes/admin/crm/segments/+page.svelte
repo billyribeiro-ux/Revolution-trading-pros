@@ -19,7 +19,7 @@
 	 *
 	 */
 
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import {
 		IconFilter,
 		IconPlus,
@@ -46,7 +46,8 @@
 		description?: string;
 		conditions: SegmentCondition[];
 		match_type: 'all' | 'any';
-		contacts_count: number;
+		contacts_count: number | null;
+		validation_error?: string;
 		is_active: boolean;
 		last_synced_at?: string;
 		created_at: string;
@@ -65,6 +66,15 @@
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let generation = 0;
+	let searchTimer: ReturnType<typeof setTimeout> | undefined;
+	function searchChanged() {
+		currentPage = 1; clearTimeout(searchTimer);
+		searchTimer = setTimeout(() => { void loadSegments(); }, 300);
+	}
+	onDestroy(() => clearTimeout(searchTimer));
 	let filterActive = $state<boolean | 'all'>('all');
 
 	// Delete confirmation modal state
@@ -80,23 +90,21 @@
 	// API FUNCTIONS
 
 	async function loadSegments() {
+		const request = ++generation;
 		isLoading = true;
 		error = '';
 
 		try {
-			type SegmentsRes = { data?: DynamicSegment[] } | DynamicSegment[];
-			const response = await api.get<SegmentsRes>('/api/admin/crm/segments');
-			segments = Array.isArray(response) ? response : response?.data || [];
-
-			stats = {
-				total: segments.length,
-				active: segments.filter((s) => s.is_active).length,
-				totalContacts: segments.reduce((sum, s) => sum + (s.contacts_count || 0), 0)
-			};
+			type SegmentsRes = { data: DynamicSegment[]; meta: { total: number; total_pages: number; active_total: number } };
+			const response = await api.get<SegmentsRes>('/api/admin/crm/segments', { page: currentPage, per_page: 25, search: searchQuery || undefined, is_active: filterActive === 'all' ? undefined : filterActive });
+			if (request !== generation) return;
+			segments = response.data;
+			totalPages = response.meta.total_pages;
+			stats = { total: response.meta.total, active: response.meta.active_total, totalContacts: segments.reduce((sum, segment) => sum + (segment.contacts_count ?? 0), 0) };
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load segments';
+			if (request === generation) error = err instanceof Error ? err.message : 'Failed to load segments';
 		} finally {
-			isLoading = false;
+			if (request === generation) isLoading = false;
 		}
 	}
 
@@ -148,8 +156,8 @@
 
 	// HELPERS
 
-	function formatNumber(num: number): string {
-		return num.toLocaleString();
+	function formatNumber(num: number | null): string {
+		return num === null ? '—' : num.toLocaleString();
 	}
 
 	function segmentStatusClass(segment: DynamicSegment) {
@@ -191,13 +199,9 @@
 	// LIFECYCLE
 
 	onMount(() => {
-		loadSegments();
+		void loadSegments();
 	});
 </script>
-
-<svelte:head>
-	<title>Dynamic Segments - FluentCRM Pro</title>
-</svelte:head>
 
 <div class="segments-page">
 	<!-- Header -->
@@ -230,7 +234,7 @@
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.total)}</span>
-				<span class="stat-label">Total Segments</span>
+				<span class="stat-label">Matching Segments</span>
 			</div>
 		</div>
 		<div class="stat-card">
@@ -248,7 +252,7 @@
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">{formatNumber(stats.totalContacts)}</span>
-				<span class="stat-label">Total Contacts</span>
+				<span class="stat-label">Known Memberships (Page)</span>
 			</div>
 		</div>
 		<div class="stat-card">
@@ -257,9 +261,9 @@
 			</div>
 			<div class="stat-content">
 				<span class="stat-value">
-					{stats.total > 0 ? Math.round(stats.totalContacts / stats.total) : 0}
+					{segments.some((segment) => segment.validation_error) ? '—' : segments.length > 0 ? Math.round(stats.totalContacts / segments.length) : 0}
 				</span>
-				<span class="stat-label">Avg per Segment</span>
+				<span class="stat-label">Avg per Visible Segment</span>
 			</div>
 		</div>
 	</div>
@@ -274,9 +278,10 @@
 				name="search"
 				placeholder="Search segments..."
 				bind:value={searchQuery}
+				oninput={searchChanged}
 			/>
 		</div>
-		<select id="segments-filteractive" name="segments_filteractive" class="filter-select" bind:value={filterActive}>
+		<select id="segments-filteractive" name="segments_filteractive" class="filter-select" bind:value={filterActive} onchange={() => { currentPage = 1; clearTimeout(searchTimer); void loadSegments(); }}>
 			<option value="all">All Segments</option>
 			<option value={true}>Active</option>
 			<option value={false}>Inactive</option>
@@ -327,7 +332,7 @@
 					<div class="segment-stats">
 						<div class="stat">
 							<IconUsers size={16} />
-							<span>{formatNumber(segment.contacts_count)} contacts</span>
+							<span>{segment.validation_error ? 'Rules need attention' : `${formatNumber(segment.contacts_count)} contacts`}</span>
 						</div>
 						<div class="stat">
 							<IconFilter size={16} />
@@ -335,6 +340,7 @@
 						</div>
 					</div>
 
+					{#if segment.validation_error}<p role="alert">{segment.validation_error}</p>{/if}
 					<div class="segment-meta">
 						<span>Last synced: {formatDate(segment.last_synced_at)}</span>
 					</div>
@@ -368,6 +374,7 @@
 			{/each}
 		</div>
 	{/if}
+	<nav aria-label="Segment pagination"><button disabled={isLoading || currentPage <= 1} onclick={() => { currentPage--; void loadSegments(); }}>Previous</button><span>Page {currentPage} of {totalPages}</span><button disabled={isLoading || currentPage >= totalPages} onclick={() => { currentPage++; void loadSegments(); }}>Next</button></nav>
 </div>
 
 <ConfirmationModal

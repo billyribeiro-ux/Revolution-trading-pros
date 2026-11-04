@@ -151,6 +151,8 @@ export interface RequestConfig {
 	 */
 	transform?: (data: unknown) => unknown;
 	responseType?: 'json' | 'blob' | 'text' | 'arraybuffer';
+	/** Retain data/meta for paginated callers; single-resource callers still unwrap data. */
+	preserveEnvelope?: boolean;
 }
 
 export interface RetryConfig {
@@ -549,7 +551,12 @@ class EnterpriseApiClient {
 		}
 
 		// Check for duplicate requests
-		const existingRequest = this.activeRequests.get(cacheKey) as Promise<T> | undefined;
+		// Mutations with the same endpoint can carry different payloads. Only
+		// share an in-flight request for reads; never silently drop a write.
+		const existingRequest =
+			config.method === 'GET'
+				? (this.activeRequests.get(cacheKey) as Promise<T> | undefined)
+				: undefined;
 		if (existingRequest) {
 			// audit 2026-05-20: removed per-request endpoint-leaking debug log (auth-path; fires every request)
 			return existingRequest;
@@ -623,7 +630,7 @@ class EnterpriseApiClient {
 			signal: this.createAbortSignal(config.timeout)
 		};
 
-		if (config.body && ['POST', 'PUT', 'PATCH'].includes(requestConfig.method ?? '')) {
+		if (config.body !== undefined && !['GET', 'HEAD'].includes(requestConfig.method ?? 'GET')) {
 			requestConfig.body = JSON.stringify(config.body);
 		}
 
@@ -671,6 +678,7 @@ class EnterpriseApiClient {
 						// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
 						const json: unknown = await response.json();
 						if (
+							!config.preserveEnvelope &&
 							typeof json === 'object' &&
 							json !== null &&
 							'data' in json &&
@@ -1273,7 +1281,7 @@ class EnterpriseApiClient {
 
 	private getCacheKey(endpoint: string, config: RequestConfig): string {
 		const params = config.params ? JSON.stringify(config.params) : '';
-		return `${config.method || 'GET'}_${endpoint}_${params}`;
+		return `${config.method || 'GET'}_${endpoint}_${params}_${config.preserveEnvelope ? 'envelope' : 'data'}`;
 	}
 
 	/**

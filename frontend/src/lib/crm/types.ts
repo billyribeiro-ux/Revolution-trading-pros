@@ -229,14 +229,20 @@ export interface Note {
 
 export interface ContactSegment {
 	id: string;
-	name: string;
+	title: string;
+	name?: string;
+	slug?: string;
 	description?: string;
 	conditions: SegmentCondition[];
-	is_dynamic: boolean;
-	contacts_count: number;
+	match_type: 'all' | 'any';
+	is_active: boolean;
+	is_dynamic?: boolean;
+	contacts_count: number | null;
+	validation_error?: string;
+	last_synced_at?: string;
 	last_calculated_at?: string;
-	created_by_id: string;
-	is_shared: boolean;
+	created_by_id?: string;
+	is_shared?: boolean;
 	created_at: string;
 	updated_at: string;
 }
@@ -876,6 +882,7 @@ export interface FunnelFilters {
 }
 
 export interface CompanyFilters {
+	page?: number;
 	search?: string;
 	industry?: CompanyIndustry;
 	size?: CompanySize;

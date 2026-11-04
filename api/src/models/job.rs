@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Job {
-    pub id: i64,
+    pub id: Uuid,
     pub queue: String,
     pub job_type: String,
     pub payload: serde_json::Value,
@@ -51,7 +51,7 @@ impl Job {
     #[allow(dead_code)]
     pub fn new(queue: &str, job_type: &str, payload: serde_json::Value) -> Self {
         Self {
-            id: 0, // Will be assigned by database
+            id: Uuid::new_v4(),
             queue: queue.to_string(),
             job_type: job_type.to_string(),
             payload,
