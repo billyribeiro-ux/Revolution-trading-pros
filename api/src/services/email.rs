@@ -558,11 +558,15 @@ impl EmailService {
             .bind(id).bind(error.to_string()).execute(pool).await?;
         Ok(())
     }
-    async fn record_outcome(pool: &PgPool, id: i64, outcome: Submission) -> Result<String> {
+    pub(crate) async fn record_outcome(
+        pool: &PgPool,
+        id: i64,
+        outcome: Submission,
+    ) -> Result<String> {
         match outcome {
             Submission::Accepted { message_id } => {
                 if sqlx::query("UPDATE email_logs SET status='sent',sent_at=NOW(),provider_message_id=$2,error=NULL,error_message=NULL WHERE id=$1")
-                    .bind(id).bind(&message_id).execute(pool).await.is_err() {
+                    .bind(id).bind(&message_id).execute(pool).await.map_or(true, |result| result.rows_affected()!=1) {
                     return Err(UncertainSubmission(format!("Provider accepted message {message_id}, but its local receipt could not be persisted; reconcile before retrying")).into());
                 }
                 Ok(message_id)

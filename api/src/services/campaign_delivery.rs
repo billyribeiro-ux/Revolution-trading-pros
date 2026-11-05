@@ -30,7 +30,7 @@ struct Claimed {
 async fn claim(pool: &PgPool) -> Result<Option<Claimed>> {
     let mut tx = pool.begin().await?;
     // Lock campaign before delivery everywhere, including lease recovery.
-    let campaign:Option<i64>=sqlx::query_scalar("SELECT c.id FROM crm_campaigns c WHERE EXISTS(SELECT 1 FROM crm_campaign_deliveries d WHERE d.campaign_id=c.id AND ((d.status='processing' AND d.lease_expires_at<NOW()) OR (d.status='queued' AND d.due_at<=NOW() AND c.status IN ('scheduled','sending') AND (c.next_delivery_at IS NULL OR c.next_delivery_at<=NOW())))) ORDER BY c.scheduled_at NULLS FIRST,c.id FOR UPDATE SKIP LOCKED LIMIT 1").fetch_optional(&mut *tx).await?;
+    let campaign:Option<i64>=sqlx::query_scalar("SELECT c.id FROM crm_campaigns c WHERE EXISTS(SELECT 1 FROM crm_campaign_deliveries d WHERE d.campaign_id=c.id AND ((d.status='processing' AND d.lease_expires_at<NOW()) OR (d.status='queued' AND d.due_at<=NOW() AND c.status IN ('scheduled','sending') AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e JOIN crm_sequences s ON s.id=e.sequence_id WHERE e.campaign_id=c.id AND (s.status IS DISTINCT FROM 'active' OR s.deleted_at IS NOT NULL)) AND (c.next_delivery_at IS NULL OR c.next_delivery_at<=NOW())))) ORDER BY c.scheduled_at NULLS FIRST,c.id FOR UPDATE SKIP LOCKED LIMIT 1").fetch_optional(&mut *tx).await?;
     let Some(campaign) = campaign else {
         return Ok(None);
     };
@@ -40,12 +40,12 @@ async fn claim(pool: &PgPool) -> Result<Option<Claimed>> {
         tx.commit().await?;
         return Ok(None);
     }
-    let next:Option<Uuid>=sqlx::query_scalar("SELECT d.id FROM crm_campaign_deliveries d JOIN crm_campaigns c ON c.id=d.campaign_id WHERE d.campaign_id=$1 AND d.status='queued' AND d.due_at<=NOW() AND c.status IN ('scheduled','sending') ORDER BY d.due_at,d.id FOR UPDATE OF d SKIP LOCKED LIMIT 1").bind(campaign).fetch_optional(&mut *tx).await?;
+    let next:Option<Uuid>=sqlx::query_scalar("SELECT d.id FROM crm_campaign_deliveries d JOIN crm_campaigns c ON c.id=d.campaign_id WHERE d.campaign_id=$1 AND d.status='queued' AND d.due_at<=NOW() AND c.status IN ('scheduled','sending') AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e JOIN crm_sequences s ON s.id=e.sequence_id WHERE e.campaign_id=c.id AND (s.status IS DISTINCT FROM 'active' OR s.deleted_at IS NOT NULL)) ORDER BY d.due_at,d.id FOR UPDATE OF d SKIP LOCKED LIMIT 1").bind(campaign).fetch_optional(&mut *tx).await?;
     let Some(next) = next else {
         tx.commit().await?;
         return Ok(None);
     };
-    let eligible:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries d JOIN crm_campaign_revisions r ON r.id=d.revision_id WHERE d.id=$1 AND EXISTS(SELECT 1 FROM newsletter_subscribers n WHERE n.id=(SELECT latest.id FROM newsletter_subscribers latest WHERE LOWER(latest.email)=d.email ORDER BY latest.updated_at DESC NULLS LAST,latest.id DESC LIMIT 1) AND n.status='confirmed' AND n.confirmed_at IS NOT NULL AND n.unsubscribed_at IS NULL) AND (COALESCE(r.definition->'subscriber_settings'->>'members','false')<>'true' OR EXISTS(SELECT 1 FROM users u WHERE to_jsonb(u.id)=d.contact_snapshot->'member_id' AND u.deleted_at IS NULL AND LOWER(u.email)=d.email)))").bind(next).fetch_one(&mut *tx).await?;
+    let eligible:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries d JOIN crm_campaign_revisions r ON r.id=d.revision_id WHERE d.id=$1 AND EXISTS(SELECT 1 FROM newsletter_subscribers n WHERE n.id=(SELECT latest.id FROM newsletter_subscribers latest WHERE LOWER(latest.email)=d.email ORDER BY latest.updated_at DESC NULLS LAST,latest.id DESC LIMIT 1) AND n.status='confirmed' AND n.confirmed_at IS NOT NULL AND n.unsubscribed_at IS NULL) AND (d.sequence_tracker_id IS NULL OR EXISTS(SELECT 1 FROM crm_sequence_trackers t JOIN crm_sequences s ON s.id=t.sequence_id JOIN contacts c ON c.id=t.contact_id WHERE t.id=d.sequence_tracker_id AND t.status='active' AND s.status='active' AND s.deleted_at IS NULL AND t.next_sequence_mail_id=d.sequence_mail_id AND LOWER(c.email)=d.email AND t.contact_email=d.email)) AND (COALESCE(r.definition->'subscriber_settings'->>'members','false')<>'true' OR EXISTS(SELECT 1 FROM users u WHERE to_jsonb(u.id)=d.contact_snapshot->'member_id' AND u.deleted_at IS NULL AND LOWER(u.email)=d.email)))").bind(next).fetch_one(&mut *tx).await?;
     if !eligible {
         sqlx::query("UPDATE crm_campaign_deliveries SET status='skipped',last_error='Recipient is no longer confirmed or the audience member is no longer available',updated_at=NOW() WHERE id=$1").bind(next).execute(&mut *tx).await?;
         refresh(&mut tx, campaign).await?;
@@ -209,6 +209,10 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
     tx.commit().await?;
     Ok(true)
 }
+/// Configuration recovery cannot override an operator's sequence pause.
+pub async fn recover_provider_paused(pool: &PgPool) -> Result<u64> {
+    Ok(sqlx::query("UPDATE crm_campaigns c SET status=CASE WHEN scheduled_at>NOW() THEN 'scheduled' ELSE 'sending' END,pause_reason=NULL,last_error=NULL,updated_at=NOW() WHERE status='paused' AND pause_reason='provider_unavailable' AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e JOIN crm_sequences s ON s.id=e.sequence_id WHERE e.campaign_id=c.id AND (s.status IS DISTINCT FROM 'active' OR s.deleted_at IS NOT NULL))").execute(pool).await?.rows_affected())
+}
 pub async fn run(state: crate::AppState) {
     let mut interval = tokio::time::interval(std::time::Duration::from_secs(5));
     loop {
@@ -229,7 +233,10 @@ pub async fn run(state: crate::AppState) {
             }
         }
         // Configuration recovery resumes only provider-paused work, never manual or uncertain work.
-        if let Err(error)=sqlx::query("UPDATE crm_campaigns SET status=CASE WHEN scheduled_at>NOW() THEN 'scheduled' ELSE 'sending' END,pause_reason=NULL,last_error=NULL,updated_at=NOW() WHERE status='paused' AND pause_reason='provider_unavailable'").execute(&state.db.pool).await{tracing::error!(%error,"Unable to recover campaign provider state");continue;}
+        if let Err(error) = recover_provider_paused(&state.db.pool).await {
+            tracing::error!(%error,"Unable to recover campaign provider state");
+            continue;
+        }
         for _ in 0..25 {
             // A batch can take minutes. Re-read saved configuration before each
             // claim so rotation/revocation takes effect for the next recipient.

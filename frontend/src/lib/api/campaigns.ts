@@ -3,6 +3,11 @@
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
 import { campaignAnalytics } from './email-analytics.js';
+import {
+	campaignTestEnvelope,
+	campaignTestHistory,
+	type CampaignTestOptions
+} from './campaign-test.js';
 import type { QueryParams } from './_types';
 import {
 	campaignEnvelope,
@@ -25,6 +30,7 @@ const API_BASE = '/api';
 
 export interface Campaign {
 	id: number;
+	authoring_version?: number;
 	name: string;
 	subject: string;
 	template_id: number | null;
@@ -331,8 +337,34 @@ class CampaignsApiClient {
 			id
 		);
 	}
-	async sendTestEmail(id: number, email: string): Promise<void> {
-		await this.request('POST', `/admin/email/campaigns/${id}/test`, { email });
+	async sendTestEmail(id: number, email: string | string[], options: CampaignTestOptions = {}) {
+		const recipients = typeof email === 'string' ? [email] : email;
+		const requestId = options.request_id ?? crypto.randomUUID();
+		const response = await fetch(`${API_BASE}/admin/email/campaigns/${id}/test`, {
+			method: 'POST',
+			headers: this.getAuthHeaders(),
+			body: JSON.stringify({ emails: recipients, ...options, request_id: requestId })
+		});
+		const value: unknown = await response.json();
+		if (value && typeof value === 'object' && 'data' in value)
+			return campaignTestEnvelope(value, id, requestId, recipients);
+		const message =
+			value && typeof value === 'object' && 'message' in value && typeof value.message === 'string'
+				? value.message
+				: `Test message outcome is unconfirmed (HTTP ${response.status}); check receipts before another request`;
+		throw new Error(message);
+	}
+	async getTestHistory(id: number, requestId?: string) {
+		return campaignTestHistory(
+			await this.request<unknown>(
+				'GET',
+				`/admin/email/campaigns/${id}/tests`,
+				undefined,
+				requestId ? { request_id: requestId } : undefined
+			),
+			id,
+			requestId
+		);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -380,7 +412,13 @@ export const sendCampaign = (id: number) => campaignsApi.sendCampaign(id);
 export const scheduleCampaign = (id: number, scheduledAt: string) =>
 	campaignsApi.scheduleCampaign(id, scheduledAt);
 export const cancelCampaign = (id: number) => campaignsApi.cancelCampaign(id);
-export const sendTestEmail = (id: number, email: string) => campaignsApi.sendTestEmail(id, email);
+export const sendTestEmail = (
+	id: number,
+	email: string | string[],
+	options?: CampaignTestOptions
+) => campaignsApi.sendTestEmail(id, email, options);
+export const getCampaignTestHistory = (id: number, requestId?: string) =>
+	campaignsApi.getTestHistory(id, requestId);
 export const getCampaignStats = () => campaignsApi.getStats();
 export const getCampaignAnalytics = (id: number) => campaignsApi.getAnalytics(id);
 export const getCampaignPreview = (id: number) => campaignsApi.getPreview(id);

@@ -32,6 +32,7 @@ impl Identity {
         Ok(formatted)
     }
 }
+#[derive(Clone)]
 pub struct Message {
     pub to: String,
     pub subject: String,
@@ -127,6 +128,9 @@ pub(crate) fn endpoint(environment: &str, override_url: Option<&str>) -> Result<
     Ok(parsed)
 }
 impl CampaignMailer {
+    pub(crate) fn validate(&self, message: &Message) -> Result<()> {
+        self.payload(message.clone()).map(|_| ())
+    }
     pub fn stream(&self) -> &str {
         match &self.provider {
             Provider::Postmark { stream, .. } => stream,

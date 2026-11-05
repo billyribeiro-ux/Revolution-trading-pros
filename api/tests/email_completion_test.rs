@@ -11,6 +11,8 @@ mod email_campaign_analytics_proof;
 mod email_campaign_authoring_proof;
 #[path = "support/email_campaign_delivery.rs"]
 mod email_campaign_delivery_proof;
+#[path = "support/email_campaign_tests.rs"]
+mod email_campaign_tests_proof;
 #[path = "support/email_subscribers.rs"]
 mod email_subscriber_proof;
 #[path = "support/email_template_catalog.rs"]
@@ -31,6 +33,12 @@ mod member_segment_analytics_proof;
 mod member_segments_proof;
 #[path = "support/performance.rs"]
 mod performance_proof;
+#[path = "support/sequence_authoring.rs"]
+mod sequence_authoring_proof;
+#[path = "support/sequence_delivery.rs"]
+mod sequence_delivery_proof;
+#[path = "support/sequence_edges.rs"]
+mod sequence_edges_proof;
 #[path = "support/smtp_delivery.rs"]
 mod smtp_delivery_proof;
 #[path = "support/smtp.rs"]
@@ -88,6 +96,7 @@ async fn provider(
         .as_str()
         .or_else(|| payload["Subject"].as_str())
         .unwrap_or("");
+    let scenario = scenario.strip_prefix("[Test] ").unwrap_or(scenario);
     let scenario = match payload["To"].as_str() {
         Some("subscriber-rejected@example.test") => "fixture-rejected",
         Some("subscriber-unknown@example.test") => "fixture-unknown",
@@ -1737,6 +1746,10 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     member_campaign_audience_proof::proof(&api, &pool, &tokens, &adapter).await;
     email_campaign_authoring_proof::proof(&api, &pool, &tokens).await;
     email_campaign_delivery_proof::proof(&api, &pool, &tokens, &adapter).await;
+    email_campaign_tests_proof::proof(&api, &pool, &tokens, &adapter).await;
+    sequence_authoring_proof::proof(&api, &pool, &tokens, &adapter).await;
+    sequence_delivery_proof::proof(&api, &pool, &tokens, &adapter).await;
+    sequence_edges_proof::proof(&api, &pool, &tokens, &adapter).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

@@ -14,7 +14,8 @@ export async function proxyEmailCampaigns(event: RequestEvent): Promise<Response
 	const method = event.request.method;
 	const record = /^[1-9]\d{0,18}$/.test(rest);
 	const read =
-		rest === 'stats' || /^[1-9]\d{0,18}\/(?:preview|analytics|report|stats|recipients)$/.test(rest);
+		rest === 'stats' ||
+		/^[1-9]\d{0,18}\/(?:preview|analytics|report|stats|recipients|tests)$/.test(rest);
 	const action = /^[1-9]\d{0,18}\/(?:duplicate|test|send|schedule|cancel|pause|resume)$/.test(rest);
 	if (
 		!(rest === ''
@@ -70,7 +71,7 @@ export async function proxyEmailCampaigns(event: RequestEvent): Promise<Response
 				body,
 				credentials: 'omit',
 				redirect: 'error',
-				signal: AbortSignal.timeout(20000)
+				signal: AbortSignal.timeout(rest.endsWith('/test') ? 45000 : 20000)
 			}
 		);
 		for (const name of ['Content-Type', 'Retry-After']) {

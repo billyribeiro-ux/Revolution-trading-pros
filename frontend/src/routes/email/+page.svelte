@@ -11,7 +11,8 @@
 		emailApi,
 		type EmailTemplate,
 		type EmailCampaign,
-		type EmailAnalytics
+		type EmailAnalytics,
+		type EmailSequence
 	} from '#lib/api/email.js';
 	import { emailStore, getIsEmailLoading } from '#lib/stores/email.svelte.js';
 	import {
@@ -28,6 +29,21 @@
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		$state('campaigns');
 
+	let sequenceCatalog = $state<EmailSequence[]>([]);
+	let sequenceLoading = $state(false), sequenceError = $state('');
+	let sequenceSearch = $state(''), sequenceStatus = $state('');
+	let sequencePage = $state(1), sequenceTotal = $state(0), sequencePages = $state(1);
+	let sequenceGeneration = 0;
+	async function loadSequences(page = 1) {
+		const generation = ++sequenceGeneration;
+		sequenceLoading = true; sequenceError = '';
+		try {
+			const result = await emailApi.getSequences({ page, per_page: 20, status: sequenceStatus || undefined, search: sequenceSearch || undefined });
+			if (generation !== sequenceGeneration) return;
+			sequenceCatalog = result.sequences; sequencePage = result.page; sequenceTotal = result.total; sequencePages = result.last_page;
+		} catch (cause) { if (generation === sequenceGeneration) sequenceError = cause instanceof Error ? cause.message : 'Saved sequences are unavailable'; }
+		finally { if (generation === sequenceGeneration) sequenceLoading = false; }
+	}
 	let campaignCatalog = $state<EmailCampaign[]>([]);
 	let campaignLoading = $state(true),
 		campaignError = $state('');
@@ -111,7 +127,7 @@
 	}
 	function selectTab(tab: typeof selectedTab) {
 		selectedTab = tab;
-		if (tab === 'sequences') void emailStore.loadSequences();
+		if (tab === 'sequences') void loadSequences();
 		else if (tab === 'automations') void emailStore.loadAutomations();
 	}
 	function formatChange(value: number | null, suffix: string): string {
@@ -137,6 +153,7 @@
 		templateGeneration++;
 		campaignGeneration++;
 		analyticsGeneration++;
+		sequenceGeneration++;
 	});
 	async function loadTemplates(page = 1) {
 		const generation = ++templateGeneration;
@@ -307,7 +324,7 @@
 
 	<!-- Content -->
 	<div class="tab-content">
-		{#if selectedTab === 'templates' ? templateLoading : selectedTab === 'campaigns' ? campaignLoading : selectedTab === 'analytics' ? analyticsLoading : getIsEmailLoading()}
+		{#if selectedTab === 'templates' ? templateLoading : selectedTab === 'campaigns' ? campaignLoading : selectedTab === 'analytics' ? analyticsLoading : selectedTab === 'sequences' ? sequenceLoading : getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="state-text state-text--spaced">Loading...</p>
@@ -429,18 +446,19 @@
 			<div class="sequences-list">
 				<div class="list-header">
 					<h2 class="section-heading">Email Sequences</h2>
-					<button class="btn-primary">
-						<IconPlus size={18} />
-						Create Sequence
-					</button>
+					<a class="btn-primary" href="/admin/crm/sequences/new"><IconPlus size={18} />Create Sequence</a>
 				</div>
 
-				{#if emailStore.error}<p role="alert">{emailStore.error}</p>
-					<button class="btn-secondary" onclick={() => emailStore.loadSequences()}
+				<form class="campaign-filters" onsubmit={(event) => { event.preventDefault(); void loadSequences(); }}>
+					<label for="sequence-search">Search sequences</label><input id="sequence-search" bind:value={sequenceSearch} maxlength={255} />
+					<label for="sequence-status">Sequence status</label><select id="sequence-status" bind:value={sequenceStatus}><option value="">All statuses</option><option value="draft">Draft</option><option value="active">Active</option><option value="paused">Paused</option><option value="completed">Completed</option></select><button class="btn-secondary" type="submit">Filter sequences</button>
+				</form>
+				{#if sequenceError}<p role="alert">{sequenceError}</p>
+					<button class="btn-secondary" onclick={() => loadSequences(sequencePage)}
 						>Retry sequences</button
-					>{:else if emailStore.sequences.length > 0}
+					>{:else if sequenceCatalog.length > 0}
 					<div class="sequences-grid">
-						{#each emailStore.sequences as sequence (sequence.id)}
+						{#each sequenceCatalog as sequence (sequence.id)}
 							<div class="sequence-card">
 								<div class="sequence-header">
 									<h3 class="sequence-name">{sequence.name}</h3>
@@ -450,11 +468,14 @@
 								</div>
 
 								<p class="sequence-description">{sequence.description || 'No description'}</p>
+								{#if sequence.definition_error}<p role="alert">{sequence.definition_error}</p>{/if}
 
 								<div class="sequence-info">
 									<div class="info-item">
 										<span class="info-label">Emails</span>
-										<span class="info-value">{sequence.emails?.length || 0}</span>
+										<span class="info-value"
+											>{sequence.definition_error ? 'Needs review' : sequence.emails.length}</span
+										>
 									</div>
 									<div class="info-item">
 										<span class="info-label">Subscribers</span>
@@ -463,8 +484,8 @@
 								</div>
 
 								<div class="sequence-actions">
-									<button class="action-btn">View</button>
-									<button class="action-btn">Edit</button>
+									<a class="action-btn" href="/admin/crm/sequences/{sequence.id}">View</a>
+									<a class="action-btn" href="/admin/crm/sequences/{sequence.id}/edit">Edit</a>
 								</div>
 							</div>
 						{/each}
@@ -474,12 +495,13 @@
 						<IconBolt size={64} class="empty-icon" />
 						<h3 class="empty-title">No sequences yet</h3>
 						<p class="empty-copy">Create automated email sequences</p>
-						<button class="btn-primary empty-action">
+						<a class="btn-primary empty-action" href="/admin/crm/sequences/new">
 							<IconPlus size={18} />
 							Create Sequence
-						</button>
+						</a>
 					</div>
 				{/if}
+				<nav aria-label="Sequence pages"><button onclick={() => void loadSequences(sequencePage - 1)} disabled={sequencePage <= 1}>Previous page</button><span>{sequenceTotal} matching sequences · Page {sequencePage} of {sequencePages}</span><button onclick={() => void loadSequences(sequencePage + 1)} disabled={sequencePage >= sequencePages}>Next page</button></nav>
 			</div>
 		{:else if selectedTab === 'templates'}
 			<div class="templates-list">
@@ -540,7 +562,10 @@
 								</div>
 
 								<div class="template-actions">
-									<button class="action-btn">Use Template</button>
+									<a
+										class="action-btn"
+										href={`/admin/email/campaigns?new=1&template=${template.id}`}>Use Template</a
+									>
 									<a class="action-btn" href={`/admin/email/templates/preview/${template.id}`}
 										>Preview</a
 									>

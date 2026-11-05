@@ -1,8 +1,10 @@
 import { createServer, type Socket } from 'node:net';
 export async function fixtureRelay(port: number, allowed: Set<string>) {
+	let connections = 0;
 	const messages: Array<{ raw: string; receivedAt: number }> = [],
 		sockets = new Set<Socket>();
 	const relay = createServer((socket) => {
+		connections += 1;
 		sockets.add(socket);
 		socket.on('close', () => sockets.delete(socket));
 		socket.on('error', () => socket.destroy());
@@ -55,6 +57,9 @@ export async function fixtureRelay(port: number, allowed: Set<string>) {
 	});
 	return {
 		messages,
+		get connections() {
+			return connections;
+		},
 		close: async () => {
 			for (const socket of sockets) socket.destroy();
 			await new Promise<void>((resolve, reject) =>

@@ -3,6 +3,7 @@ mod analytics;
 pub(crate) use analytics::{EmailAnalyticsQuery, global_analytics};
 mod delivery;
 mod reports;
+mod test_messages;
 use crate::{
     AppState,
     middleware::admin::AdminUser,
@@ -548,4 +549,5 @@ pub fn router() -> Router<AppState> {
         .merge(delivery::router())
         .merge(reports::router())
         .merge(analytics::router())
+        .merge(test_messages::router())
 }

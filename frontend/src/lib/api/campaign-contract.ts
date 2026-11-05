@@ -47,6 +47,8 @@ export function campaignRecord(value: unknown): Campaign {
 		if (!count(value[key])) throw new Error('Invalid recorded campaign counts');
 	if (value.failed_count !== undefined && !count(value.failed_count))
 		throw new Error('Invalid recorded campaign failures');
+	if (value.authoring_version !== undefined && !count(value.authoring_version, 1))
+		throw new Error('Invalid campaign authoring version');
 	for (const key of ['last_error', 'pause_reason'])
 		if (value[key] != null && typeof value[key] !== 'string')
 			throw new Error('Invalid campaign failure state');

@@ -12,7 +12,9 @@ pub struct Recipient<'a> {
 pub fn render(definition: &Value, recipient: Recipient<'_>, subject: &str) -> Result<Value> {
     let mut resolved = definition.clone();
     resolved["email_subject"] = json!(subject);
-    if definition["native_email_campaign_id"].as_i64().is_none() {
+    if definition["native_email_campaign_id"].as_i64().is_none()
+        && definition["sequence_id"].as_i64().is_none()
+    {
         return Ok(resolved);
     }
     let first = recipient.snapshot["first_name"].as_str().unwrap_or("");
@@ -20,7 +22,7 @@ pub fn render(definition: &Value, recipient: Recipient<'_>, subject: &str) -> Re
     let company = recipient.snapshot["company"].as_str().unwrap_or("");
     let person =
         json!({"email":recipient.email,"name":recipient.name,"first_name":first,"last_name":last});
-    let model = json!({"email":recipient.email,"name":recipient.name,"full_name":recipient.name,"first_name":first,"last_name":last,"company":company,"user":person,"subscriber":person,"unsubscribe_url":recipient.unsubscribe_url});
+    let model = json!({"email":recipient.email,"name":recipient.name,"full_name":recipient.name,"first_name":first,"last_name":last,"company":company,"user":person,"subscriber":person,"contact":{"email":recipient.email,"name":recipient.name,"full_name":recipient.name,"first_name":first,"last_name":last,"company":company},"unsubscribe_url":recipient.unsubscribe_url});
     let plain = definition["type"] == "plain_text";
     let body = definition["email_body"]
         .as_str()

@@ -773,7 +773,15 @@
 										class="btn-icon"
 										type="button"
 										title="Send campaign"
-										onclick={(e) => e.stopPropagation()}
+										onclick={(e) => {
+											e.stopPropagation();
+											void goto(`/admin/email/campaigns?new=1&segment=${segment.id}`).catch(
+												(error: unknown) =>
+													toastStore.error(
+														error instanceof Error ? error.message : 'Unable to open campaign draft'
+													)
+											);
+										}}
 									>
 										<IconMail size={16} />
 									</button>

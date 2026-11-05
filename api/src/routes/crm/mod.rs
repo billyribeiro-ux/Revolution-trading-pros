@@ -38,6 +38,11 @@ pub mod lists_tags;
 mod logs;
 mod segment_rules;
 pub mod segments;
+mod sequence_delivery;
+mod sequence_enrollment;
+pub use sequence_delivery::{run as run_sequences, stage_one as stage_sequence_delivery};
+mod sequence_model;
+mod sequences;
 pub mod sequences_campaigns;
 pub mod settings;
 pub mod smart_links;
@@ -68,7 +73,7 @@ async fn get_crm_stats(
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let (stats,):(serde_json::Value,)=sqlx::query_as(
-        "SELECT json_build_object('total_contacts',(SELECT COUNT(*) FROM contacts),'active_contacts',(SELECT COUNT(*) FROM contacts WHERE status NOT IN ('churned','unqualified')),'new_this_month',(SELECT COUNT(*) FROM contacts WHERE created_at>=date_trunc('month',CURRENT_DATE)),'total_leads',(SELECT COUNT(*) FROM contacts WHERE status IN ('new','contacted','qualified','proposal','negotiation','won','lost','lead')),'high_score_contacts',(SELECT COUNT(*) FROM contacts WHERE score>=75),'total_deals',(SELECT COUNT(*) FROM crm_deals),'active_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='open'),'open_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='open'),'won_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='won'),'lost_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='lost'),'deals_value_cents',(SELECT ROUND(COALESCE(SUM(amount),0)*100)::bigint FROM crm_deals WHERE status='open' AND currency='USD'),'deal_value',(SELECT COALESCE(SUM(amount),0) FROM crm_deals WHERE status='open' AND currency='USD'),'email_sent',(SELECT COALESCE(SUM(emails_sent),0) FROM crm_campaigns WHERE native_email_campaign_id IS NULL),'email_opened',(SELECT COALESCE(SUM(opens),0) FROM crm_campaigns WHERE native_email_campaign_id IS NULL),'email_clicked',(SELECT COALESCE(SUM(clicks),0) FROM crm_campaigns WHERE native_email_campaign_id IS NULL))"
+        "SELECT json_build_object('total_contacts',(SELECT COUNT(*) FROM contacts),'active_contacts',(SELECT COUNT(*) FROM contacts WHERE status NOT IN ('churned','unqualified')),'new_this_month',(SELECT COUNT(*) FROM contacts WHERE created_at>=date_trunc('month',CURRENT_DATE)),'total_leads',(SELECT COUNT(*) FROM contacts WHERE status IN ('new','contacted','qualified','proposal','negotiation','won','lost','lead')),'high_score_contacts',(SELECT COUNT(*) FROM contacts WHERE score>=75),'total_deals',(SELECT COUNT(*) FROM crm_deals),'active_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='open'),'open_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='open'),'won_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='won'),'lost_deals',(SELECT COUNT(*) FROM crm_deals WHERE status='lost'),'deals_value_cents',(SELECT ROUND(COALESCE(SUM(amount),0)*100)::bigint FROM crm_deals WHERE status='open' AND currency='USD'),'deal_value',(SELECT COALESCE(SUM(amount),0) FROM crm_deals WHERE status='open' AND currency='USD'),'email_sent',(SELECT COALESCE(SUM(emails_sent),0) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id)),'email_opened',(SELECT COALESCE(SUM(opens),0) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id)),'email_clicked',(SELECT COALESCE(SUM(clicks),0) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id)))"
     ).fetch_one(&state.db.pool).await.map_err(|error| {
         tracing::error!(%error,"CRM statistics query failed");
         (StatusCode::INTERNAL_SERVER_ERROR,Json(json!({"error":"Unable to load CRM statistics"})))
@@ -93,6 +98,8 @@ pub fn router() -> Router<AppState> {
         .merge(list_members::router())
         .merge(segments::router())
         .merge(sequences_campaigns::router())
+        .merge(sequences::router())
+        .merge(sequence_enrollment::router())
         .merge(campaigns::router())
         .merge(automations::router())
         .merge(smart_links::router())

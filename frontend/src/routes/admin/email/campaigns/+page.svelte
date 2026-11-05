@@ -22,6 +22,7 @@
 		campaignWrite
 	} from '#lib/api/campaign-form.js';
 	import { formatCampaignRate } from '#lib/api/campaign-report.js';
+	import { campaignReferences } from '#lib/api/campaign-intent.js';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import { memberSegment, listMemberSegments } from '#lib/api/member-segments.js';
@@ -45,6 +46,7 @@
 		IconArrowLeft
 	} from '#lib/icons/index.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import CampaignTestDialog from '#lib/components/admin/email/CampaignTestDialog.svelte';
 	import {
 		getCampaigns,
 		getCampaign,
@@ -95,6 +97,7 @@
 
 	// Campaign data
 	let campaigns = $state<APICampaign[]>([]);
+	let testingCampaignId = $state<number | null>(null);
 	let stats = $state<CampaignStats | null>(null);
 
 	// Create modal
@@ -113,6 +116,10 @@
 		segmentsLoading = $state(false);
 	let templateGeneration = 0,
 		segmentGeneration = 0;
+	let formGeneration = 0;
+	let referenceIntentLoading = $state(false),
+		referenceIntentError = $state('');
+	let referenceIntentQuery = '';
 
 	// Segments - dynamically loaded from API
 	let segments = $state<Segment[]>([]);
@@ -131,14 +138,77 @@
 			: segments
 	);
 	function openNew() {
+		formGeneration += 1;
+		referenceIntentLoading = false;
+		referenceIntentError = '';
 		editingCampaign = null;
 		newCampaign = emptyCampaignForm();
 		selectedTemplate = null;
 		selectedSegment = null;
 		showCreateModal = true;
 	}
+	async function openNewFromReferences(query: string) {
+		openNew();
+		referenceIntentQuery = query;
+		const generation = formGeneration;
+		referenceIntentLoading = true;
+		try {
+			const requested = campaignReferences(new URLSearchParams(query));
+			const [template, rawSegment] = await Promise.all([
+				requested.template === null
+					? null
+					: adminFetch<unknown>(`/api/admin/email/templates/${requested.template}`).then(
+							catalogTemplateEnvelope
+						),
+				requested.segment === null
+					? null
+					: adminFetch<unknown>(`/api/admin/members/segments/${requested.segment}`)
+			]);
+			if (generation !== formGeneration || !showCreateModal) return;
+			if (
+				template &&
+				(!template.template.is_active || Number(template.template.id) !== requested.template)
+			)
+				throw new Error('Choose an active email template with the requested identity');
+			if (
+				rawSegment !== null &&
+				(typeof rawSegment !== 'object' ||
+					!rawSegment ||
+					!('is_active' in rawSegment) ||
+					rawSegment.is_active !== true)
+			)
+				throw new Error('Choose an active member segment');
+			const segment = rawSegment === null ? null : memberSegment(rawSegment);
+			if (segment && segment.id !== requested.segment)
+				throw new Error('Member segment identity did not match the requested draft');
+			selectedTemplate = template
+				? { id: Number(template.template.id), name: template.template.name }
+				: null;
+			selectedSegment = segment
+				? { id: segment.id, name: segment.name, count: segment.memberCount }
+				: null;
+			newCampaign = {
+				...emptyCampaignForm(),
+				name: template?.template.name ?? '',
+				subject: template?.template.subject ?? '',
+				templateId: template?.template.id ?? '',
+				segmentId: segment ? String(segment.id) : ''
+			};
+		} catch (failure) {
+			if (generation === formGeneration && showCreateModal)
+				referenceIntentError =
+					failure instanceof Error
+						? failure.message
+						: 'Unable to load requested campaign references';
+		} finally {
+			if (generation === formGeneration) referenceIntentLoading = false;
+		}
+	}
 	async function openEdit(campaign: APICampaign | number) {
 		if (actionPending !== null) return;
+		const generation = ++formGeneration;
+		referenceIntentLoading = false;
+		referenceIntentError = '';
 		const id = typeof campaign === 'number' ? campaign : campaign.id;
 		actionPending = id;
 		try {
@@ -157,6 +227,7 @@
 							memberSegment
 						)
 			]);
+			if (generation !== formGeneration) return;
 			selectedTemplate = template
 				? { id: Number(template.template.id), name: template.template.name }
 				: null;
@@ -180,7 +251,7 @@
 		const edit = page.url.searchParams.get('edit');
 		if (edit && /^[1-9]\d*$/.test(edit) && Number.isSafeInteger(Number(edit)))
 			void openEdit(Number(edit));
-		else if (page.url.searchParams.get('new') === '1') openNew();
+		else if (page.url.searchParams.get('new') === '1') void openNewFromReferences(intent);
 	});
 	// Derived State
 
@@ -397,7 +468,7 @@
 	}
 
 	async function handleCreateCampaign() {
-		if (creating) return;
+		if (creating || referenceIntentLoading || referenceIntentError) return;
 		if (templatesError || segmentsError) {
 			toastStore.error(
 				'Reload the unavailable template or segment options before creating a campaign'
@@ -780,6 +851,9 @@
 							{campaign.last_error}
 						</p>{/if}
 					<div class="campaign-actions">
+						<button class="btn-secondary small" onclick={() => (testingCampaignId = campaign.id)}
+							>Test message</button
+						>
 						{#if ['draft', 'paused', 'failed'].includes(campaign.status)}<button
 								class="btn-secondary small"
 								disabled={actionPending !== null}
@@ -884,6 +958,13 @@
 </div>
 
 <!-- Create Campaign Modal -->
+{#if testingCampaignId !== null}
+	{#key testingCampaignId}<CampaignTestDialog
+			campaignId={testingCampaignId}
+			onclose={() => (testingCampaignId = null)}
+		/>{/key}
+{/if}
+
 {#if showCreateModal}
 	<div
 		class="modal-overlay"
@@ -904,6 +985,11 @@
 			</div>
 
 			<div class="modal-body">
+				{#if referenceIntentLoading}<p role="status">Loading requested campaign references…</p>{/if}
+				{#if referenceIntentError}<p role="alert">{referenceIntentError}</p>
+					<button class="btn-secondary" onclick={() => openNewFromReferences(referenceIntentQuery)}
+						>Retry selected references</button
+					>{/if}
 				{#if templatesError}<p role="alert">
 						{templatesError}
 						<button class="btn-secondary" onclick={loadTemplates}>Retry templates</button>
@@ -912,7 +998,7 @@
 						{segmentsError}
 						<button class="btn-secondary" onclick={loadSegments}>Retry segments</button>
 					</p>{/if}
-				<div class="form-grid">
+				<div class="form-grid" inert={referenceIntentLoading || Boolean(referenceIntentError)}>
 					<div class="form-group full-width">
 						<label for="campaign-name">Campaign Name</label>
 						<input
@@ -1093,7 +1179,11 @@
 				<button
 					class="btn-primary"
 					onclick={handleCreateCampaign}
-					disabled={creating || templatesLoading || segmentsLoading}
+					disabled={creating ||
+						templatesLoading ||
+						segmentsLoading ||
+						referenceIntentLoading ||
+						Boolean(referenceIntentError)}
 				>
 					{#if editingCampaign}
 						<IconEdit size={18} />Save Changes

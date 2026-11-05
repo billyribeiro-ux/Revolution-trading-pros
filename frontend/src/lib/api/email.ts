@@ -18,6 +18,18 @@ import {
 	emailCampaignReportStats
 } from './email-campaign-catalog.js';
 import { emailAnalytics } from './email-analytics.js';
+import {
+	catalogSequenceEnvelope,
+	catalogSequencePage,
+	catalogSequenceEmail,
+	sequenceCatalogWrite,
+	sequenceEmailWrite,
+	sequenceId as checkedSequenceId,
+	sequenceEmailId,
+	catalogSequenceStats
+} from './email-sequence-catalog.js';
+import { campaignsApi } from './campaigns.js';
+import type { CampaignTestOptions } from './campaign-test.js';
 import type { ABTestConfig } from './campaigns.js';
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
@@ -122,7 +134,9 @@ export interface EmailSequence {
 	 * Modelled as opaque JSON because the backend stores the DSL verbatim.
 	 */
 	trigger_config?: JsonValue;
-	status: 'active' | 'paused' | 'draft';
+	status: 'active' | 'paused' | 'draft' | 'completed';
+	definition_error?: string | null;
+	historical_steps?: JsonValue;
 	emails: SequenceEmail[];
 	stats?: SequenceStats;
 	subscribers_count: number;
@@ -265,10 +279,18 @@ export interface EmailStats {
 	revenue?: number;
 }
 
-export interface SequenceStats extends EmailStats {
+export interface SequenceStats extends Omit<
+	EmailStats,
+	'open_rate' | 'click_rate' | 'bounce_rate' | 'complaint_rate' | 'revenue'
+> {
+	open_rate: number | null;
+	click_rate: number | null;
+	bounce_rate: number | null;
+	complaint_rate: number | null;
+	revenue?: number | null;
 	active_subscribers: number;
 	completed_subscribers: number;
-	completion_rate: number;
+	completion_rate: number | null;
 }
 
 export interface AutomationStats {
@@ -507,8 +529,17 @@ class EmailAPI {
 		return { campaign };
 	}
 
-	async sendTestEmail(id: string, emails: string[]): Promise<{ success: boolean }> {
-		return this.request('POST', `/admin/email/campaigns/${id}/test`, { emails });
+	async sendTestEmail(
+		id: string,
+		emails: string[],
+		options: CampaignTestOptions = {}
+	): Promise<{ success: boolean }> {
+		const receipt = await campaignsApi.sendTestEmail(campaignId(id), emails, options);
+		if (!receipt.submissions.every((sample) => sample.status === 'accepted'))
+			throw new Error(
+				'Test message acceptance is unconfirmed; review the saved campaign test receipts'
+			);
+		return { success: true };
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -569,44 +600,106 @@ class EmailAPI {
 
 	async getSequences(params?: {
 		status?: string;
+		search?: string;
 		page?: number;
 		per_page?: number;
-	}): Promise<{ sequences: EmailSequence[]; total: number }> {
-		return this.request('GET', '/admin/email/sequences', undefined, params);
+	}): Promise<{
+		sequences: EmailSequence[];
+		total: number;
+		page: number;
+		per_page: number;
+		last_page: number;
+	}> {
+		return catalogSequencePage(
+			await this.request<unknown>('GET', '/admin/email/sequences', undefined, params)
+		);
 	}
 
 	async getSequence(id: string): Promise<{ sequence: EmailSequence }> {
-		return this.request('GET', `/admin/email/sequences/${id}`);
+		return {
+			sequence: catalogSequenceEnvelope(
+				await this.request<unknown>('GET', `/admin/email/sequences/${checkedSequenceId(id)}`),
+				id
+			)
+		};
 	}
 
 	async createSequence(data: Partial<EmailSequence>): Promise<{ sequence: EmailSequence }> {
-		return this.request('POST', '/admin/email/sequences', data);
+		return {
+			sequence: catalogSequenceEnvelope(
+				await this.request<unknown>('POST', '/admin/email/sequences', sequenceCatalogWrite(data))
+			)
+		};
 	}
 
 	async updateSequence(
 		id: string,
 		data: Partial<EmailSequence>
 	): Promise<{ sequence: EmailSequence }> {
-		return this.request('PUT', `/admin/email/sequences/${id}`, data);
+		return {
+			sequence: catalogSequenceEnvelope(
+				await this.request<unknown>(
+					'PUT',
+					`/admin/email/sequences/${checkedSequenceId(id)}`,
+					sequenceCatalogWrite(data, id)
+				),
+				id
+			)
+		};
 	}
 
 	async deleteSequence(id: string): Promise<{ success: boolean }> {
-		return this.request('DELETE', `/admin/email/sequences/${id}`);
+		const raw: unknown = await this.request(
+			'DELETE',
+			`/admin/email/sequences/${checkedSequenceId(id)}`
+		);
+		if (
+			!raw ||
+			typeof raw !== 'object' ||
+			!('deleted' in raw) ||
+			raw.deleted !== true ||
+			!('id' in raw) ||
+			raw.id !== id
+		)
+			throw new Error('Sequence deletion was not confirmed');
+		return { success: true };
 	}
 
 	async activateSequence(id: string): Promise<{ success: boolean }> {
-		return this.request('POST', `/admin/email/sequences/${id}/activate`);
+		const sequence = catalogSequenceEnvelope(
+			await this.request<unknown>(
+				'POST',
+				`/admin/email/sequences/${checkedSequenceId(id)}/activate`
+			),
+			id
+		);
+		if (sequence.status !== 'active') throw new Error('Sequence activation was not confirmed');
+		return { success: true };
 	}
 
 	async pauseSequence(id: string): Promise<{ success: boolean }> {
-		return this.request('POST', `/admin/email/sequences/${id}/pause`);
+		const sequence = catalogSequenceEnvelope(
+			await this.request<unknown>('POST', `/admin/email/sequences/${checkedSequenceId(id)}/pause`),
+			id
+		);
+		if (sequence.status !== 'paused') throw new Error('Sequence pause was not confirmed');
+		return { success: true };
 	}
 
 	async addSequenceEmail(
 		sequenceId: string,
 		data: Partial<SequenceEmail>
 	): Promise<{ email: SequenceEmail }> {
-		return this.request('POST', `/admin/email/sequences/${sequenceId}/emails`, data);
+		sequenceId = checkedSequenceId(sequenceId);
+		return {
+			email: catalogSequenceEmail(
+				await this.request<unknown>('POST', `/admin/email/sequences/${sequenceId}/emails`, {
+					...sequenceEmailWrite(data, sequenceId),
+					status: 'active'
+				}),
+				sequenceId
+			)
+		};
 	}
 
 	async updateSequenceEmail(
@@ -614,11 +707,39 @@ class EmailAPI {
 		emailId: string,
 		data: Partial<SequenceEmail>
 	): Promise<{ email: SequenceEmail }> {
-		return this.request('PUT', `/admin/email/sequences/${sequenceId}/emails/${emailId}`, data);
+		sequenceId = checkedSequenceId(sequenceId);
+		emailId = sequenceEmailId(emailId);
+		const email = catalogSequenceEmail(
+			await this.request<unknown>(
+				'PUT',
+				`/admin/email/sequences/${sequenceId}/emails/${emailId}`,
+				sequenceEmailWrite(data, sequenceId)
+			),
+			sequenceId
+		);
+		if (email.id !== emailId) throw new Error('Sequence email update identity did not match');
+		return { email };
 	}
 
 	async deleteSequenceEmail(sequenceId: string, emailId: string): Promise<{ success: boolean }> {
-		return this.request('DELETE', `/admin/email/sequences/${sequenceId}/emails/${emailId}`);
+		sequenceId = checkedSequenceId(sequenceId);
+		emailId = sequenceEmailId(emailId);
+		const result: unknown = await this.request(
+			'DELETE',
+			`/admin/email/sequences/${sequenceId}/emails/${emailId}`
+		);
+		if (
+			!result ||
+			typeof result !== 'object' ||
+			!('deleted' in result) ||
+			result.deleted !== true ||
+			!('id' in result) ||
+			result.id !== emailId ||
+			!('sequence_id' in result) ||
+			result.sequence_id !== sequenceId
+		)
+			throw new Error('Sequence email deletion was not confirmed');
+		return { success: true };
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -780,7 +901,12 @@ class EmailAPI {
 	}
 
 	async getSequenceStats(id: string): Promise<{ stats: SequenceStats }> {
-		return this.request('GET', `/admin/email/sequences/${id}/stats`);
+		return {
+			stats: catalogSequenceStats(
+				await this.request<unknown>('GET', `/admin/email/sequences/${checkedSequenceId(id)}/stats`),
+				id
+			)
+		};
 	}
 
 	async getAutomationStats(id: string): Promise<{ stats: AutomationStats }> {

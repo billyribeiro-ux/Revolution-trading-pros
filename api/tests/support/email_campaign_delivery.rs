@@ -483,7 +483,7 @@ async fn report_proof(api: &Router, pool: &PgPool, tokens: &[String], native: i6
     let (delivery,email,message,variant):(uuid::Uuid,String,String,String)=sqlx::query_as("SELECT id,email,provider_message_id,variant FROM crm_campaign_deliveries WHERE campaign_id=$1 ORDER BY email LIMIT 1").bind(engine).fetch_one(pool).await.unwrap();
     let now = chrono::Utc::now();
     for (index, kind) in ["Delivery", "Open", "Open", "Click"].iter().enumerate() {
-        let at = (now + chrono::Duration::milliseconds(index as i64)).to_rfc3339();
+        let at = (now - chrono::Duration::milliseconds(4 - index as i64)).to_rfc3339();
         let event = json!({"RecordType":kind,"MessageStream":"fixture-broadcast","MessageID":message,"Recipient":email,"DeliveredAt":at,"ReceivedAt":at,"Metadata":{"delivery_id":delivery},"OriginalLink":if *kind=="Click" {Some("https://offer.example.test/recorded?a=1&b=2")} else {None},"Platform":"Mobile","Client":{"Name":"Fixture Mail"},"Geo":{"CountryISOCode":"US","Country":"United States","IP":"192.0.2.50"}});
         let receive = request(
             api,

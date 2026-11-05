@@ -79,6 +79,20 @@ import type {
 } from '#lib/crm/types.js';
 import { apiClient, type RequestConfig } from './client.svelte';
 import type { JsonValue, PaginatedResponse } from './_types';
+import { sequenceId as checkedSequenceId, sequenceEmailId } from './email-sequence-catalog.js';
+import {
+	crmSequence,
+	crmSequenceEnvelope,
+	crmSequenceMail,
+	crmSequenceTracker,
+	sequencePage,
+	sequenceAcknowledgement,
+	sequenceDeletion,
+	sequenceMailList,
+	type SequenceWrite,
+	type SequenceMailWrite
+} from './crm-sequence-contract.js';
+const sequenceWriteConfig: RequestConfig = { retry: { attempts: 1, condition: () => false } };
 
 // Administrative records must reflect completed writes and explicit Refresh actions.
 function freshGet<T>(endpoint: string, config?: RequestConfig): Promise<T> {
@@ -221,91 +235,169 @@ export class CrmAPI {
 	// =====================================================
 
 	async getSequences(filters?: SequenceFilters): Promise<PaginatedResponse<EmailSequence>> {
-		return freshGet('/admin/crm/sequences', {
-			preserveEnvelope: true,
-			params: filters ?? undefined
-		});
+		return sequencePage(
+			await freshGet('/admin/crm/sequences', {
+				preserveEnvelope: true,
+				params: filters ?? undefined
+			}),
+			crmSequence
+		);
 	}
 
 	async getSequence(id: string): Promise<{ sequence: EmailSequence; stats: SequenceStats }> {
-		return freshGet(`/admin/crm/sequences/${id}`);
+		id = checkedSequenceId(id);
+		return crmSequenceEnvelope(await freshGet(`/admin/crm/sequences/${id}`), id);
 	}
 
-	async createSequence(data: Partial<EmailSequence>): Promise<EmailSequence> {
-		return apiClient.post('/admin/crm/sequences', data);
+	async createSequence(data: SequenceWrite): Promise<EmailSequence> {
+		return crmSequence(await apiClient.post('/admin/crm/sequences', data, sequenceWriteConfig));
 	}
 
-	async updateSequence(id: string, data: Partial<EmailSequence>): Promise<EmailSequence> {
-		return apiClient.put(`/admin/crm/sequences/${id}`, data);
+	async updateSequence(id: string, data: SequenceWrite): Promise<EmailSequence> {
+		id = checkedSequenceId(id);
+		return crmSequence(
+			await apiClient.put(`/admin/crm/sequences/${id}`, data, sequenceWriteConfig),
+			id
+		);
 	}
 
 	async deleteSequence(id: string): Promise<void> {
-		return apiClient.delete(`/admin/crm/sequences/${id}`);
+		id = checkedSequenceId(id);
+		sequenceDeletion(await apiClient.delete(`/admin/crm/sequences/${id}`, sequenceWriteConfig), id);
 	}
 
 	async duplicateSequence(id: string): Promise<EmailSequence> {
-		return apiClient.post(`/admin/crm/sequences/${id}/duplicate`);
+		id = checkedSequenceId(id);
+		const copy = crmSequence(
+			await apiClient.post(`/admin/crm/sequences/${id}/duplicate`, undefined, sequenceWriteConfig)
+		);
+		if (copy.id === id || copy.status !== 'draft')
+			throw new Error('Sequence duplication was not confirmed');
+		return copy;
 	}
 
 	async getSequenceEmails(sequenceId: string): Promise<SequenceMail[]> {
-		return freshGet(`/admin/crm/sequences/${sequenceId}/emails`);
+		sequenceId = checkedSequenceId(sequenceId);
+		return sequenceMailList(
+			await freshGet(`/admin/crm/sequences/${sequenceId}/emails`),
+			sequenceId
+		);
 	}
 
 	async createSequenceEmail(
 		sequenceId: string,
-		data: Partial<SequenceMail>
+		data: Partial<SequenceMailWrite>
 	): Promise<SequenceMail> {
-		return apiClient.post(`/admin/crm/sequences/${sequenceId}/emails`, data);
+		sequenceId = checkedSequenceId(sequenceId);
+		return crmSequenceMail(
+			await apiClient.post(`/admin/crm/sequences/${sequenceId}/emails`, data, sequenceWriteConfig),
+			sequenceId,
+			data.id
+		);
 	}
 
 	async updateSequenceEmail(
 		sequenceId: string,
 		emailId: string,
-		data: Partial<SequenceMail>
+		data: Partial<SequenceMailWrite>
 	): Promise<SequenceMail> {
-		return apiClient.put(`/admin/crm/sequences/${sequenceId}/emails/${emailId}`, data);
+		sequenceId = checkedSequenceId(sequenceId);
+		emailId = sequenceEmailId(emailId);
+		return crmSequenceMail(
+			await apiClient.put(
+				`/admin/crm/sequences/${sequenceId}/emails/${emailId}`,
+				data,
+				sequenceWriteConfig
+			),
+			sequenceId,
+			emailId
+		);
 	}
 
 	async deleteSequenceEmail(sequenceId: string, emailId: string): Promise<void> {
-		return apiClient.delete(`/admin/crm/sequences/${sequenceId}/emails/${emailId}`);
+		sequenceId = checkedSequenceId(sequenceId);
+		emailId = sequenceEmailId(emailId);
+		sequenceDeletion(
+			await apiClient.delete(
+				`/admin/crm/sequences/${sequenceId}/emails/${emailId}`,
+				sequenceWriteConfig
+			),
+			emailId,
+			sequenceId
+		);
 	}
 
 	async reorderSequenceEmails(sequenceId: string, emailIds: string[]): Promise<SequenceMail[]> {
-		return apiClient.post(`/admin/crm/sequences/${sequenceId}/emails/reorder`, {
-			email_ids: emailIds
-		});
+		sequenceId = checkedSequenceId(sequenceId);
+		emailIds = emailIds.map(sequenceEmailId);
+		return sequenceMailList(
+			await apiClient.post(
+				`/admin/crm/sequences/${sequenceId}/emails/reorder`,
+				{
+					email_ids: emailIds
+				},
+				sequenceWriteConfig
+			),
+			sequenceId
+		);
 	}
 
 	async getSequenceSubscribers(
 		id: string,
-		filters?: { status?: string; per_page?: number }
+		filters?: { status?: string; per_page?: number; page?: number; search?: string }
 	): Promise<PaginatedResponse<SequenceTracker>> {
-		return freshGet(`/admin/crm/sequences/${id}/subscribers`, {
-			preserveEnvelope: true,
-			params: filters ?? undefined
-		});
+		id = checkedSequenceId(id);
+		return sequencePage(
+			await freshGet(`/admin/crm/sequences/${id}/subscribers`, {
+				preserveEnvelope: true,
+				params: filters ?? undefined
+			}),
+			(value) => crmSequenceTracker(value, id)
+		);
 	}
 
 	async subscribeToSequence(
 		id: string,
 		contactIds: string[],
-		startPosition?: number
+		startPosition?: number,
+		expectedVersion?: number
 	): Promise<{ subscribed_count: number }> {
-		return apiClient.post(`/admin/crm/sequences/${id}/subscribe`, {
-			contact_ids: contactIds,
-			start_position: startPosition
-		});
+		id = checkedSequenceId(id);
+		const saved = await apiClient.post(
+			`/admin/crm/sequences/${id}/subscribe`,
+			{
+				contact_ids: contactIds,
+				start_position: startPosition,
+				expected_version: expectedVersion
+			},
+			sequenceWriteConfig
+		);
+		const count = sequenceAcknowledgement(saved, id, 'subscribed_count');
+		if (count > contactIds.length)
+			throw new Error('Enrollment acknowledgement exceeded the requested contacts');
+		return { subscribed_count: count };
 	}
 
 	async unsubscribeFromSequence(
 		id: string,
 		contactIds: string[],
-		reason?: string
+		reason?: string,
+		expectedVersion?: number
 	): Promise<{ unsubscribed_count: number }> {
-		return apiClient.post(`/admin/crm/sequences/${id}/unsubscribe`, {
-			contact_ids: contactIds,
-			reason
-		});
+		id = checkedSequenceId(id);
+		const saved = await apiClient.post(
+			`/admin/crm/sequences/${id}/unsubscribe`,
+			{
+				contact_ids: contactIds,
+				reason,
+				expected_version: expectedVersion
+			},
+			sequenceWriteConfig
+		);
+		const count = sequenceAcknowledgement(saved, id, 'unsubscribed_count');
+		if (count > contactIds.length)
+			throw new Error('Removal acknowledgement exceeded the requested contacts');
+		return { unsubscribed_count: count };
 	}
 
 	// =====================================================

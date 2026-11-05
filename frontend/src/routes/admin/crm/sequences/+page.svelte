@@ -33,6 +33,9 @@
 	let searchQuery = $state('');
 	let selectedStatus = $state<SequenceStatus | 'all'>('all');
 	let isInitialized = $state(false);
+	let currentPage = $state(1);
+	let totalPages = $state(1);
+	let loadGeneration = 0;
 
 	let stats = $state({
 		total: 0,
@@ -69,32 +72,38 @@
 	// API FUNCTIONS
 
 	async function loadSequences() {
+		const generation = ++loadGeneration;
 		isLoading = true;
 		error = '';
 
 		try {
 			const filters: SequenceFilters = {
-				search: searchQuery || undefined,
+				search: searchQuery || undefined, page: currentPage, per_page: 20,
 				status: selectedStatus !== 'all' ? selectedStatus : undefined
 			};
 
 			const response = await crmAPI.getSequences(filters);
-			sequences = response.data || [];
+			if (generation !== loadGeneration) return;
+			sequences = response.data;
+			totalPages = response.meta.total_pages ?? 1;
 
 			stats = {
-				total: sequences.length,
+				total: response.meta.total,
 				active: sequences.filter((s) => s.status === 'active').length,
 				totalSubscribers: sequences.reduce((sum, s) => sum + s.subscribers_count, 0),
 				totalSent: sequences.reduce((sum, s) => sum + s.total_sent, 0)
 			};
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load sequences';
+			if (generation === loadGeneration) error = err instanceof Error ? err.message : 'Failed to load sequences';
 		} finally {
-			isLoading = false;
+			if (generation === loadGeneration) isLoading = false;
 		}
 	}
 
+	function changePage(by: number) { currentPage += by; void loadSequences(); }
+
 	function scheduleSequencesReload() {
+		loadGeneration += 1; currentPage = 1; isLoading = true;
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
 		}
@@ -117,7 +126,7 @@
 	}
 
 	function handleStatusChange(value: SequenceStatus | 'all') {
-		selectedStatus = value;
+		selectedStatus = value; currentPage = 1; loadGeneration += 1;
 
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
@@ -167,7 +176,7 @@
 		actionInProgress = sequence.id;
 		try {
 			const newStatus: SequenceStatus = sequence.status === 'active' ? 'paused' : 'active';
-			await crmAPI.updateSequence(sequence.id, { status: newStatus });
+			await crmAPI.updateSequence(sequence.id, { status: newStatus, expected_version: sequence.authoring_version });
 			await loadSequences();
 		} catch (err) {
 			error =
@@ -258,7 +267,7 @@
 	}
 
 	function formatRate(sent: number, opened: number): string {
-		if (sent === 0) return '0%';
+		if (sent === 0) return 'Unavailable';
 		return ((opened / sent) * 100).toFixed(1) + '%';
 	}
 
@@ -288,14 +297,6 @@
 
 	// DERIVED STATE
 
-	let filteredSequences = $derived(
-		sequences.filter((seq) => {
-			const matchesSearch =
-				!searchQuery || seq.title.toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesStatus = selectedStatus === 'all' || seq.status === selectedStatus;
-			return matchesSearch && matchesStatus;
-		})
-	);
 
 	let canSendTestEmail = $derived(
 		sendEmailForm.testEmail.length > 0 &&
@@ -314,12 +315,11 @@
 	onMount(() => {
 		if (!browser) return;
 
-		(async () => {
-			await loadSequences();
-			isInitialized = true;
-		})();
+		void loadSequences();
+		isInitialized = true;
 
 		return () => {
+			loadGeneration += 1; isInitialized = false;
 			if (searchTimeout) {
 				clearTimeout(searchTimeout);
 			}
@@ -342,7 +342,7 @@
 	- Debounced reload on search/filter changes
 	- Full Svelte 5 $state/$derived reactivity
 -->
-<svelte:head><title>Email Sequences - FluentCRM Pro</title></svelte:head>
+
 <!-- Handle escape key for modal -->
 
 <svelte:window onkeydown={showSendEmailModal ? handleModalKeydown : undefined} />
@@ -374,7 +374,7 @@
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.total)}</span>
-					<span class="stat-label">Total Sequences</span>
+					<span class="stat-label">Matching Sequences</span>
 				</div>
 			</div>
 			<div class="stat-card">
@@ -383,7 +383,7 @@
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.active)}</span>
-					<span class="stat-label">Active</span>
+					<span class="stat-label">Active on this page</span>
 				</div>
 			</div>
 			<div class="stat-card">
@@ -392,7 +392,7 @@
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.totalSubscribers)}</span>
-					<span class="stat-label">Total Subscribers</span>
+					<span class="stat-label">Enrollments on this page</span>
 				</div>
 			</div>
 			<div class="stat-card">
@@ -401,7 +401,7 @@
 				</div>
 				<div class="stat-content">
 					<span class="stat-value">{formatNumber(stats.totalSent)}</span>
-					<span class="stat-label">Emails Sent</span>
+					<span class="stat-label">Accepted on this page</span>
 				</div>
 			</div>
 		</div>
@@ -454,7 +454,7 @@
 				<div class="spinner"></div>
 				<p>Loading sequences...</p>
 			</div>
-		{:else if filteredSequences.length === 0}
+		{:else if sequences.length === 0}
 			<div class="empty-state">
 				<IconMail size={48} />
 				<h3>No sequences found</h3>
@@ -479,7 +479,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filteredSequences as sequence (sequence.id)}
+						{#each sequences as sequence (sequence.id)}
 							{@const StatusIcon = getStatusIcon(sequence.status)}
 							<tr class={{ 'action-in-progress': actionInProgress === sequence.id }}>
 								<td>
@@ -502,7 +502,7 @@
 										{sequence.status}
 									</span>
 								</td>
-								<td>{sequence.emails_count}</td>
+								<td>{sequence.emails_count ?? 'Needs review'}</td>
 								<td>{formatNumber(sequence.subscribers_count)}</td>
 								<td
 									><span class="rate-value"
@@ -579,6 +579,7 @@
 				</table>
 			</div>
 		{/if}
+	<nav aria-label="Sequence pages"><button onclick={() => changePage(-1)} disabled={currentPage <= 1 || isLoading}>Previous page</button><span> Page {currentPage} of {totalPages} </span><button onclick={() => changePage(1)} disabled={currentPage >= totalPages || isLoading}>Next page</button></nav>
 	</div>
 	<!-- End admin-page-container -->
 </div>

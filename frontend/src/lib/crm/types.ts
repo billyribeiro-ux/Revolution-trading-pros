@@ -2,6 +2,9 @@
  * RevolutionCRM-L8-System - Type Definitions
  */
 
+import type { JsonValue } from '#lib/api/_types.js';
+import type { SequenceCondition } from '#lib/api/email.js';
+
 export type ContactStatus = 'lead' | 'prospect' | 'customer' | 'churned' | 'unqualified';
 export type LifecycleStage =
 	| 'subscriber'
@@ -362,6 +365,12 @@ export type TrackerStatus = 'active' | 'paused' | 'completed' | 'cancelled' | 'f
 
 export interface EmailSequence {
 	id: string;
+	authoring_version: number;
+	definition_error: string | null;
+	historical_steps: JsonValue;
+	last_error: string | null;
+	trigger_type: 'manual' | 'signup' | 'purchase' | 'tag_added' | 'custom_event';
+	trigger_config: JsonValue;
 	title: string;
 	slug: string;
 	status: SequenceStatus;
@@ -369,13 +378,13 @@ export interface EmailSequence {
 	design_template: string;
 	settings?: SequenceSettings;
 	subscriber_settings?: SubscriberSettings;
-	emails_count: number;
+	emails_count: number | null;
 	subscribers_count: number;
 	total_sent: number;
 	total_opened: number;
 	total_clicked: number;
-	total_revenue: number;
-	currency: string;
+	total_revenue: number | null;
+	currency: string | null;
 	created_by?: string;
 	created_at: string;
 	updated_at: string;
@@ -391,6 +400,8 @@ export interface SequenceMail {
 	email_subject: string;
 	email_pre_header?: string;
 	email_body: string;
+	text_body?: string | null;
+	conditions: SequenceCondition[];
 	delay: number;
 	delay_unit: DelayUnit;
 	delay_value: number;
@@ -401,18 +412,21 @@ export interface SequenceMail {
 	open_count: number;
 	click_count: number;
 	unsubscribe_count: number;
-	revenue: number;
+	revenue: number | null;
 	created_by?: string;
 	created_at: string;
 	updated_at: string;
 	delay_for_humans?: string;
-	open_rate?: number;
-	click_rate?: number;
+	open_rate?: number | null;
+	click_rate?: number | null;
 }
 
 export interface SequenceTracker {
 	id: string;
-	contact_id: string;
+	contact_id: string | null;
+	contact_email: string;
+	revision_id: string;
+	last_error: string | null;
 	sequence_id: string;
 	last_sequence_mail_id?: string;
 	next_sequence_mail_id?: string;
@@ -467,18 +481,27 @@ export interface SubscriberFilter {
 }
 
 export interface SequenceStats {
-	emails: number;
+	sequence_id: string;
+	emails: number | null;
 	subscribers: number;
 	active_subscribers: number;
 	completed: number;
 	total_sent: number;
 	total_opened: number;
 	total_clicked: number;
-	open_rate: number;
-	click_rate: number;
+	total_delivered: number;
+	total_bounced: number;
+	total_complained: number;
+	total_unsubscribed: number;
+	failed: number;
+	unknown: number;
+	queued: number;
+	processing: number;
+	open_rate: number | null;
+	click_rate: number | null;
 	revenue: {
-		amount: string;
-		currency: string;
+		amount: string | null;
+		currency: string | null;
 	};
 }
 
@@ -889,6 +912,7 @@ export interface CompanyStats {
 // =====================================================
 
 export interface SequenceFilters {
+	page?: number;
 	status?: SequenceStatus;
 	search?: string;
 	sort_by?: string;
