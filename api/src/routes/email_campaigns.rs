@@ -101,9 +101,8 @@ impl Config {
             if let Some(subject) = &ab.subject_b {
                 text(subject, 255, ab.enabled, true)?;
             }
-            if ab.enabled
-                && (ab.subject_b.as_ref().is_none_or(|v| v.trim().is_empty())
-                    || ab.split_percentage.is_some_and(|v| !(1..=99).contains(&v)))
+            if (ab.enabled && ab.subject_b.as_ref().is_none_or(|v| v.trim().is_empty()))
+                || ab.split_percentage.is_some_and(|v| !(1..=99).contains(&v))
             {
                 return Err(invalid(
                     "A/B testing requires Subject B and a split from1to99percent",
@@ -192,7 +191,7 @@ impl Input {
 }
 macro_rules! campaign_sql {
  ($before:literal,$after:literal)=>{concat!($before,
- "c.id,c.name,c.subject,c.template_id,c.segment_id,COALESCE(c.html_content,'') AS html_content,c.text_content AS plain_text_content,COALESCE(c.authoring_config->>'from_name','') AS from_name,COALESCE(c.authoring_config->>'from_email','') AS from_email,c.authoring_config->>'reply_to' AS reply_to,COALESCE(c.authoring_config->>'preview_text','') AS preview_text,COALESCE(NULLIF(c.authoring_config->>'type',''),'broadcast') AS type,COALESCE(c.authoring_config->'tags','[]'::jsonb) AS tags,c.authoring_config->'ab_test_config' AS ab_test_config,COALESCE(d.status,c.status,'draft') AS status,COALESCE(d.scheduled_at,c.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,c.authoring_config->>'planned_at' AS planned_at,COALESCE(d.sent_at,c.sent_at AT TIME ZONE 'UTC') AS sent_at,c.created_by,c.authoring_version,c.created_at AT TIME ZONE 'UTC' AS created_at,GREATEST(d.updated_at,c.updated_at AT TIME ZONE 'UTC') AS updated_at,COALESCE(d.recipients_count,0)::bigint AS total_recipients,COALESCE(d.emails_sent,0)::bigint AS sent_count,COALESCE(d.opens,0)::bigint AS opened_count,COALESCE(d.clicks,0)::bigint AS clicked_count,COALESCE((d.delivery_stats->>'bounced')::bigint,0) AS bounced_count,COALESCE((d.delivery_stats->>'unsubscribed')::bigint,0) AS unsubscribed_count,d.open_rate,d.click_rate,'recorded_outbox'::text AS metrics_scope,jsonb_build_object('recipients',c.recipient_count,'sent',c.sent_count,'opened',c.open_count,'clicked',c.click_count,'bounced',c.bounce_count,'unsubscribed',c.unsubscribe_count) AS historical_counts,CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('id',t.id,'name',t.name) END AS template,CASE WHEN u.id IS NULL THEN NULL ELSE jsonb_build_object('id',u.id,'name',u.name) END AS creator FROM email_campaigns c LEFT JOIN crm_campaigns d ON d.id=c.delivery_campaign_id LEFT JOIN email_templates t ON t.id=c.template_id LEFT JOIN users u ON u.id=c.created_by ",$after)};
+ "c.id,c.name,c.subject,c.template_id,c.segment_id,COALESCE(c.html_content,'') AS html_content,c.text_content AS plain_text_content,COALESCE(c.authoring_config->>'from_name','') AS from_name,COALESCE(c.authoring_config->>'from_email','') AS from_email,c.authoring_config->>'reply_to' AS reply_to,COALESCE(c.authoring_config->>'preview_text','') AS preview_text,COALESCE(NULLIF(c.authoring_config->>'type',''),'broadcast') AS type,COALESCE(c.authoring_config->'tags','[]'::jsonb) AS tags,c.authoring_config->'ab_test_config' AS ab_test_config,COALESCE(d.status,c.status,'draft') AS status,COALESCE(d.scheduled_at,c.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,c.authoring_config->>'planned_at' AS planned_at,COALESCE(d.sent_at,c.sent_at AT TIME ZONE 'UTC') AS sent_at,c.created_by,c.authoring_version,c.created_at AT TIME ZONE 'UTC' AS created_at,GREATEST(d.updated_at,c.updated_at AT TIME ZONE 'UTC') AS updated_at,COALESCE(d.recipients_count,0)::bigint AS total_recipients,COALESCE(d.emails_sent,0)::bigint AS sent_count,COALESCE(d.opens,0)::bigint AS opened_count,COALESCE(d.clicks,0)::bigint AS clicked_count,COALESCE((d.delivery_stats->>'bounced')::bigint,0) AS bounced_count,COALESCE((d.delivery_stats->>'unsubscribed')::bigint,0) AS unsubscribed_count,CASE WHEN d.emails_sent>0 THEN d.open_rate ELSE NULL END AS open_rate,CASE WHEN d.emails_sent>0 THEN d.click_rate ELSE NULL END AS click_rate,'recorded_outbox'::text AS metrics_scope,jsonb_build_object('recipients',c.recipient_count,'sent',c.sent_count,'opened',c.open_count,'clicked',c.click_count,'bounced',c.bounce_count,'unsubscribed',c.unsubscribe_count) AS historical_counts,CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('id',t.id,'name',t.name) END AS template,CASE WHEN u.id IS NULL THEN NULL ELSE jsonb_build_object('id',u.id,'name',u.name) END AS creator FROM email_campaigns c LEFT JOIN crm_campaigns d ON d.id=c.delivery_campaign_id LEFT JOIN email_templates t ON t.id=c.template_id LEFT JOIN users u ON u.id=c.created_by ",$after)};
 }
 async fn row(pool: &PgPool, id: i64) -> Result<Value, ApiError> {
     sqlx::query_scalar(campaign_sql!(
@@ -440,14 +439,15 @@ async fn update(
     let html = input.html_content.clone();
     let plain = input.plain_text_content.clone();
     let config = input.merge(config)?;
-    if delivery_change && (old_ab || config.ab_test_config.as_ref().is_some_and(|ab| ab.enabled)) {
-        if let Some(engine) = engine {
-            let accepted:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries WHERE campaign_id=$1 AND accepted_at IS NOT NULL)").bind(engine).fetch_one(&mut *tx).await.map_err(db)?;
-            if accepted {
-                return Err(errors::conflict(
-                    "Duplicate a started A/B campaign before changing its creative or audience",
-                ));
-            }
+    if delivery_change
+        && (old_ab || config.ab_test_config.as_ref().is_some_and(|ab| ab.enabled))
+        && let Some(engine) = engine
+    {
+        let accepted:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries WHERE campaign_id=$1 AND accepted_at IS NOT NULL)").bind(engine).fetch_one(&mut *tx).await.map_err(db)?;
+        if accepted {
+            return Err(errors::conflict(
+                "Duplicate a started A/B campaign before changing its creative or audience",
+            ));
         }
     }
 

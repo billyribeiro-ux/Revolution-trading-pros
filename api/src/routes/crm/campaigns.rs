@@ -248,8 +248,23 @@ pub(crate) async fn row_on(
     .ok_or_else(|| ApiError::not_found("Campaign not found"))
 }
 
+pub(super) async fn require_crm_owner(pool: &sqlx::PgPool, id: i64) -> Result<(), ApiError> {
+    let origin: Option<Option<i64>> =
+        sqlx::query_scalar("SELECT native_email_campaign_id FROM crm_campaigns WHERE id=$1")
+            .bind(id)
+            .fetch_optional(pool)
+            .await
+            .map_err(db)?;
+    match origin {
+        None => Err(ApiError::not_found("Campaign")),
+        Some(Some(_)) => Err(crate::utils::errors::conflict(
+            "Manage this campaign through Email Campaigns",
+        )),
+        Some(None) => Ok(()),
+    }
+}
 async fn stats_value(pool: &sqlx::PgPool) -> Result<Value, ApiError> {
-    sqlx::query_scalar("SELECT jsonb_build_object('total',COUNT(*),'sent',COUNT(*) FILTER(WHERE status='sent'),'scheduled',COUNT(*) FILTER(WHERE status='scheduled'),'draft',COUNT(*) FILTER(WHERE status='draft'),'total_emails_sent',COALESCE(SUM(emails_sent),0),'total_opens',COALESCE(SUM(opens),0),'total_clicks',COALESCE(SUM(clicks),0),'avg_open_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(opens)*100.0/SUM(emails_sent),2) END,'avg_click_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(clicks)*100.0/SUM(emails_sent),2) END) FROM crm_campaigns").fetch_one(pool).await.map_err(db)
+    sqlx::query_scalar("SELECT jsonb_build_object('total',COUNT(*),'sent',COUNT(*) FILTER(WHERE status='sent'),'scheduled',COUNT(*) FILTER(WHERE status='scheduled'),'draft',COUNT(*) FILTER(WHERE status='draft'),'total_emails_sent',COALESCE(SUM(emails_sent),0),'total_opens',COALESCE(SUM(opens),0),'total_clicks',COALESCE(SUM(clicks),0),'avg_open_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(opens)*100.0/SUM(emails_sent),2) END,'avg_click_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(clicks)*100.0/SUM(emails_sent),2) END) FROM crm_campaigns WHERE native_email_campaign_id IS NULL").fetch_one(pool).await.map_err(db)
 }
 async fn list(
     State(state): State<AppState>,
@@ -258,7 +273,7 @@ async fn list(
 ) -> Result<Json<Value>, ApiError> {
     let (page, size, offset) = filters.bounds()?;
     let search = filters.search.map(|v| format!("%{v}%"));
-    let rows: Vec<Value> = sqlx::query_scalar(campaign_sql!("SELECT to_jsonb(c) FROM (SELECT "," FROM crm_campaigns WHERE ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2) ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4) c"))
+    let rows: Vec<Value> = sqlx::query_scalar(campaign_sql!("SELECT to_jsonb(c) FROM (SELECT "," FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2) ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4) c"))
         .bind(&search)
         .bind(&filters.status)
         .bind(size)
@@ -266,7 +281,7 @@ async fn list(
         .fetch_all(&state.db.pool)
         .await
         .map_err(db)?;
-    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaigns WHERE ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2)").bind(search).bind(filters.status).fetch_one(&state.db.pool).await.map_err(db)?;
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2)").bind(search).bind(filters.status).fetch_one(&state.db.pool).await.map_err(db)?;
     Ok(Json(
         json!({"data":rows,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":((total+size-1)/size).max(1)},"stats":stats_value(&state.db.pool).await?}),
     ))
@@ -316,6 +331,7 @@ async fn update(
     Path(id): Path<i64>,
     Json(input): Json<Input>,
 ) -> Result<Json<Value>, ApiError> {
+    require_crm_owner(&state.db.pool, id).await?;
     input.validate(false)?;
     validate_sender(&input)?;
     validate_audience(&state.db.pool, &input).await?;
@@ -352,6 +368,7 @@ async fn duplicate(
     admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
+    require_crm_owner(&state.db.pool, id).await?;
     let new_id:Option<i64>=sqlx::query_scalar("INSERT INTO crm_campaigns(name,title,subject,content,status,campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,created_by,failed_count,text_body,delivery_rate_limit) SELECT LEFT(COALESCE(title,name),248)||' (Copy)',LEFT(COALESCE(title,name),248)||' (Copy)',subject,content,'draft',campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,$2,0,text_body,delivery_rate_limit FROM crm_campaigns WHERE id=$1 RETURNING id").bind(id).bind(admin.0.id).fetch_optional(&state.db.pool).await.map_err(db)?;
     Ok(Json(
         row(
@@ -366,6 +383,7 @@ async fn delete(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
+    require_crm_owner(&state.db.pool, id).await?;
     let mut tx = state.db.pool.begin().await.map_err(db)?;
     let status: Option<String> =
         sqlx::query_scalar("SELECT status FROM crm_campaigns WHERE id=$1 FOR UPDATE")

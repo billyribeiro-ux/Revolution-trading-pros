@@ -28,10 +28,10 @@ struct Source {
     authoring_config: Value,
     authoring_version: i64,
     scheduled_at: Option<DateTime<Utc>>,
-    sent_count: Option<i32>,
+    has_legacy_activity: bool,
 }
 async fn source(pool: &sqlx::PgPool, id: i64) -> Result<Source, ApiError> {
-    sqlx::query_as("SELECT id,name,subject,html_content,text_content,template_id,segment_id,authoring_config,authoring_version,scheduled_at AT TIME ZONE 'UTC' AS scheduled_at,(COALESCE(sent_count,0)>0 OR COALESCE(open_count,0)>0 OR COALESCE(click_count,0)>0 OR COALESCE(bounce_count,0)>0 OR COALESCE(unsubscribe_count,0)>0 OR sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns WHERE id=$1").bind(id).fetch_optional(pool).await.map_err(db)?.ok_or_else(||ApiError::not_found("Campaign"))
+    sqlx::query_as("SELECT n.id,n.name,n.subject,n.html_content,n.text_content,n.template_id,n.segment_id,n.authoring_config,n.authoring_version,COALESCE(d.scheduled_at,n.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,(COALESCE(n.sent_count,0)>0 OR COALESCE(n.open_count,0)>0 OR COALESCE(n.click_count,0)>0 OR COALESCE(n.bounce_count,0)>0 OR COALESCE(n.unsubscribe_count,0)>0 OR n.sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns n LEFT JOIN crm_campaigns d ON d.id=n.delivery_campaign_id WHERE n.id=$1").bind(id).fetch_optional(pool).await.map_err(db)?.ok_or_else(||ApiError::not_found("Campaign"))
 }
 fn audience(source: &Source) -> Value {
     json!({"members":true,"member_segment":source.segment_id,"eligibility":"confirmed_only"})
@@ -58,7 +58,7 @@ pub(super) async fn synchronize(
     id: i64,
     engine: i64,
 ) -> Result<(), ApiError> {
-    let source:Source=sqlx::query_as("SELECT id,name,subject,html_content,text_content,template_id,segment_id,authoring_config,authoring_version,scheduled_at AT TIME ZONE 'UTC' AS scheduled_at,(COALESCE(sent_count,0)>0 OR COALESCE(open_count,0)>0 OR COALESCE(click_count,0)>0 OR COALESCE(bounce_count,0)>0 OR COALESCE(unsubscribe_count,0)>0 OR sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns WHERE id=$1").bind(id).fetch_one(&mut **tx).await.map_err(db)?;
+    let source:Source=sqlx::query_as("SELECT n.id,n.name,n.subject,n.html_content,n.text_content,n.template_id,n.segment_id,n.authoring_config,n.authoring_version,COALESCE(d.scheduled_at,n.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,(COALESCE(n.sent_count,0)>0 OR COALESCE(n.open_count,0)>0 OR COALESCE(n.click_count,0)>0 OR COALESCE(n.bounce_count,0)>0 OR COALESCE(n.unsubscribe_count,0)>0 OR n.sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns n LEFT JOIN crm_campaigns d ON d.id=n.delivery_campaign_id WHERE n.id=$1").bind(id).fetch_one(&mut **tx).await.map_err(db)?;
     let config: Config = serde_json::from_value(source.authoring_config.clone())
         .map_err(|_| ApiError::database_error("Stored campaign configuration is invalid"))?;
     let (body, text, kind) = content(&source);
@@ -101,17 +101,17 @@ async fn prepare(state: &AppState, id: i64) -> Result<Prepared, ApiError> {
                 "Campaign template has unsupported variables, invalid syntax or excessive output",
             )
         })?;
-    if let Some(ab) = &config.ab_test_config {
-        if ab.enabled {
-            crate::services::campaign_personalization::render(
-                &definition,
-                recipient(),
-                ab.subject_b.as_deref().unwrap_or(""),
-            )
-            .map_err(|_| {
-                invalid("Subject B has unsupported variables, invalid syntax or excessive output")
-            })?;
-        }
+    if let Some(ab) = &config.ab_test_config
+        && ab.enabled
+    {
+        crate::services::campaign_personalization::render(
+            &definition,
+            recipient(),
+            ab.subject_b.as_deref().unwrap_or(""),
+        )
+        .map_err(|_| {
+            invalid("Subject B has unsupported variables, invalid syntax or excessive output")
+        })?;
     }
     Ok(Prepared {
         source,
@@ -170,17 +170,29 @@ async fn submit(
             "Campaign cannot be submitted from its current state",
         ));
     }
-    if existing.is_none() && (resume || prepared.source.sent_count.is_some_and(|v| v > 0)) {
+    if existing.is_none() && (resume || prepared.source.has_legacy_activity) {
         return Err(errors::conflict(
             "Historical campaign has no verified recipient ledger; duplicate it for a new submission",
         ));
     }
     quiescent(&mut tx, existing).await?;
+    if !resume {
+        let planned = if matches!(mode, Submission::Schedule(_)) {
+            Some(due)
+        } else {
+            None
+        };
+        if planned != prepared.config.planned_at {
+            sqlx::query("UPDATE email_campaigns SET authoring_config=jsonb_set(authoring_config,'{planned_at}',$2::jsonb,true),authoring_version=authoring_version+1,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1").bind(id).bind(json!(planned)).execute(&mut *tx).await.map_err(db)?;
+        }
+    }
+
     let engine = if let Some(engine) = existing {
         synchronize(&mut tx, id, engine).await?;
         engine
     } else {
-        let engine:i64=sqlx::query_scalar("INSERT INTO crm_campaigns(name,title,status,campaign_type,design_template,native_email_campaign_id,created_by,failed_count) VALUES($1,$1,'draft','raw_html','raw',$2,$3,0) RETURNING id").bind(&prepared.source.name).bind(id).bind(actor).fetch_one(&mut *tx).await.map_err(db)?;
+        let (body, text, kind) = content(&prepared.source);
+        let engine:i64=sqlx::query_scalar("INSERT INTO crm_campaigns(name,title,status,campaign_type,design_template,native_email_campaign_id,created_by,failed_count,subject,content,text_body,email_pre_header,settings,subscriber_settings,email_template_id,ab_test_config,authoring_version) VALUES($1,$1,'draft',$4,'raw',$2,$3,0,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id").bind(&prepared.source.name).bind(prepared.source.id).bind(actor).bind(kind).bind(&prepared.source.subject).bind(body).bind(text).bind(&prepared.config.preview_text).bind(settings(&prepared.config)).bind(audience(&prepared.source)).bind(prepared.source.template_id).bind(prepared.config.ab_test_config.as_ref().map(|ab|json!(ab))).bind(prepared.source.authoring_version).fetch_one(&mut *tx).await.map_err(db)?;
         sqlx::query("UPDATE email_campaigns SET delivery_campaign_id=$2 WHERE id=$1 AND delivery_campaign_id IS NULL").bind(id).bind(engine).execute(&mut *tx).await.map_err(db)?;
         synchronize(&mut tx, id, engine).await?;
         engine

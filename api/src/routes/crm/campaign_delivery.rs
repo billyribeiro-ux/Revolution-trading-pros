@@ -34,6 +34,7 @@ async fn submit(
 ) -> Result<Value, ApiError> {
     // Resolve references before holding a transaction connection. The row version
     // check below prevents concurrent authoring from changing the frozen content.
+    campaigns::require_crm_owner(pool, id).await?;
     let campaign = campaigns::row(pool, id).await?;
     let audience =
         campaign_audience::resolve(pool, campaign.get("subscriber_settings").cloned()).await?;
@@ -100,7 +101,11 @@ pub(crate) async fn freeze_on(
     let ab = &campaign["ab_test_config"];
     let enabled = ab["enabled"].as_bool().unwrap_or(false);
     let subject_b = ab["subject_b"].as_str().unwrap_or("");
-    let split = ab["split_percentage"].as_i64().unwrap_or(50);
+    let split = if enabled {
+        ab["split_percentage"].as_i64().unwrap_or(50)
+    } else {
+        50
+    };
     if enabled
         && (subject_b.trim().is_empty()
             || subject_b.contains(['\r', '\n', '\0'])
@@ -137,8 +142,8 @@ pub(crate) async fn freeze_on(
     recipients.push(" ORDER BY LOWER(c.email),c.id LIMIT 100001), variants AS (SELECT selected.*,CASE WHEN ")
         .push_bind(enabled).push(" THEN CASE WHEN (get_byte(decode(md5(")
         .push_bind(id.to_string()).push(" || ':' || email),'hex'),0)*256+get_byte(decode(md5(")
-        .push_bind(id.to_string()).push(" || ':' || email),'hex'),1))%10000 < ")
-        .push_bind(split*100).push(" THEN 'a' ELSE 'b' END ELSE NULL END AS variant FROM selected), staged AS (INSERT INTO crm_campaign_deliveries(campaign_id,revision_id,contact_id,email,display_name,contact_snapshot,due_at,email_template_id,variant,subject_template) SELECT ")
+        .push_bind(id.to_string()).push(" || ':' || email),'hex'),1))*100 < ")
+        .push_bind(split*65536).push(" THEN 'a' ELSE 'b' END ELSE NULL END AS variant FROM selected), staged AS (INSERT INTO crm_campaign_deliveries(campaign_id,revision_id,contact_id,email,display_name,contact_snapshot,due_at,email_template_id,variant,subject_template) SELECT ")
         .push_bind(id).push(",").push_bind(revision)
         .push(if audience.is_newsletter() || audience.is_member() { ",NULL::bigint,email,name,snapshot," } else { ",id,email,name,snapshot," })
         .push_bind(due).push(",").push_bind(template).push(",variant,CASE WHEN variant='b' THEN ")
@@ -228,6 +233,7 @@ async fn pause(
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
+    campaigns::require_crm_owner(&state.db.pool, id).await?;
     let result=sqlx::query("UPDATE crm_campaigns SET status='paused',pause_reason='manual',updated_at=NOW() WHERE id=$1 AND status IN ('scheduled','sending')").bind(id).execute(&state.db.pool).await.map_err(db)?;
     if result.rows_affected() == 0 {
         return Err(errors::conflict(
