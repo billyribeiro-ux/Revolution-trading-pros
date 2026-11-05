@@ -1,5 +1,6 @@
 //! Resolve the established audience filters against real contacts and confirmations.
 use super::segment_rules::{self, Condition};
+use crate::services::member_segmentation;
 use crate::utils::errors::ApiError;
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -21,6 +22,8 @@ struct Audience {
     advanced_filters: Vec<Condition>,
     newsletter_segment: Option<String>,
     eligibility: Option<String>,
+    members: bool,
+    member_segment: Option<i64>,
 }
 struct ResolvedFilter {
     list: Option<i64>,
@@ -33,6 +36,8 @@ pub(super) struct ResolvedAudience {
     segment: Vec<Condition>,
     segment_match: String,
     newsletter_segment: Option<String>,
+    members: bool,
+    member_segment: Option<(i64, member_segmentation::Definition)>,
 }
 fn invalid(message: &str) -> ApiError {
     ApiError::validation_error(message)
@@ -131,6 +136,33 @@ pub(super) async fn resolve(
             "Choose a newsletter segment or CRM contact filters, without mixing audience sources",
         ));
     }
+    if audience.member_segment.is_some() && !audience.members {
+        return Err(invalid(
+            "Member segment requires the member audience source",
+        ));
+    }
+    if audience.members
+        && (audience.newsletter_segment.is_some()
+            || !audience.subscribers.is_empty()
+            || !audience.excluded_subscribers.is_empty()
+            || !audience.advanced_filters.is_empty()
+            || audience
+                .dynamic_segment
+                .as_ref()
+                .is_some_and(|value| !value.is_empty()))
+    {
+        return Err(invalid(
+            "Choose member audiences without mixing CRM or newsletter filters",
+        ));
+    }
+    let member_segment = if let Some(id) = audience.member_segment {
+        if id <= 0 {
+            return Err(invalid("Member segment must be a positive record ID"));
+        }
+        Some((id, member_segmentation::load(pool, id, true).await?))
+    } else {
+        None
+    };
     let includes = resolve_filters(pool, audience.subscribers).await?;
     let excludes = resolve_filters(pool, audience.excluded_subscribers).await?;
     let mut segment = Vec::new();
@@ -157,6 +189,8 @@ pub(super) async fn resolve(
         segment,
         segment_match,
         newsletter_segment: audience.newsletter_segment,
+        members: audience.members,
+        member_segment,
     };
     // Validate all conditions before constructing either count or data queries.
     resolved.query("SELECT COUNT(*) FROM contacts c", false)?;
@@ -186,19 +220,37 @@ impl ResolvedAudience {
     pub(super) fn is_newsletter(&self) -> bool {
         self.newsletter_segment.is_some()
     }
+    pub(super) fn is_member(&self) -> bool {
+        self.members
+    }
+    pub(super) fn snapshot(&self) -> Value {
+        if self.members {
+            json!({"source":"members","segment":self.member_segment.as_ref().map(|(id, definition)|json!({"id":id,"authoring_version":definition.version,"conditions":definition.conditions,"static_id":definition.static_id})),"policy":"confirmed_only"})
+        } else {
+            json!({"source":if self.is_newsletter(){"newsletter"}else{"contacts"},"policy":"confirmed_only"})
+        }
+    }
     pub(super) fn query(
         &self,
         prefix: &'static str,
         eligible: bool,
     ) -> Result<QueryBuilder<Postgres>, ApiError> {
         const NEWSLETTER: &str = "FROM (SELECT n.id,n.email,n.name AS first_name,''::text AS last_name,NULL::text AS company,n.status,n.tags FROM (SELECT DISTINCT ON(LOWER(email)) * FROM newsletter_subscribers ORDER BY LOWER(email),updated_at DESC NULLS LAST,id DESC) n) c";
-        let sql = if self.newsletter_segment.is_some() {
+        const MEMBERS: &str = "FROM (SELECT id,email,COALESCE(NULLIF(first_name,''),name) AS first_name,COALESCE(last_name,'') AS last_name,NULL::text AS company,status,tags FROM admin_member_facts) c";
+        let sql = if self.members {
+            prefix.replace("FROM contacts c", MEMBERS)
+        } else if self.newsletter_segment.is_some() {
             prefix.replace("FROM contacts c", NEWSLETTER)
         } else {
             prefix.to_string()
         };
         let mut query = QueryBuilder::new(sql);
         query.push(" WHERE ");
+        if let Some((_, definition)) = &self.member_segment {
+            query.push("EXISTS(SELECT 1 FROM admin_member_facts m WHERE m.id=c.id");
+            member_segmentation::append_definition(&mut query, definition)?;
+            query.push(") AND ");
+        }
         segment_rules::append_group(&mut query, &self.advanced, "all")?;
         if let Some(tag) = self
             .newsletter_segment
@@ -267,6 +319,6 @@ pub(super) async fn preview(
         .await
         .map_err(db)?;
     Ok(
-        json!({"data":rows,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":((total+size-1)/size).max(1)},"audience":{"source":if audience.is_newsletter(){"newsletter"}else{"live_preview"},"matching_contacts":candidate_count,"eligible_recipients":total,"excluded_without_confirmation":candidate_count-total,"policy":"Only confirmed newsletter subscribers are eligible; unsubscribe is checked again before delivery."}}),
+        json!({"data":rows,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":((total+size-1)/size).max(1)},"audience":{"source":if audience.is_member(){"members"}else if audience.is_newsletter(){"newsletter"}else{"live_preview"},"matching_contacts":candidate_count,"eligible_recipients":total,"excluded_without_confirmation":candidate_count-total,"policy":"Only confirmed newsletter subscribers are eligible; unsubscribe is checked again before delivery."}}),
     )
 }

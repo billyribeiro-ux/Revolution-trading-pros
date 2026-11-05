@@ -67,6 +67,16 @@ pub fn query(
 ) -> Result<QueryBuilder<Postgres>, ApiError> {
     let mut query = QueryBuilder::new(prefix);
     query.push(" FROM admin_member_facts m WHERE true");
+    append_rules(&mut query, rules)?;
+    Ok(query)
+}
+
+/// Append validated predicates against the `admin_member_facts m` alias.
+/// Used by both member lists and frozen, consent-checked campaign audiences.
+pub fn append_rules(
+    query: &mut QueryBuilder<Postgres>,
+    rules: &[Condition],
+) -> Result<(), ApiError> {
     for condition in rules {
         let field = match condition.field.as_str() {
             "status" => "m.status",
@@ -154,7 +164,7 @@ pub fn query(
         }
         query.push(")");
     }
-    Ok(query)
+    Ok(())
 }
 pub async fn count(pool: &PgPool, rules: &[Condition]) -> Result<i64, ApiError> {
     query("SELECT COUNT(*)", rules)?
@@ -196,11 +206,19 @@ pub fn segment_query(
     prefix: &'static str,
     definition: &Definition,
 ) -> Result<QueryBuilder<Postgres>, ApiError> {
-    let mut builder = query(prefix, &definition.conditions)?;
+    let mut builder = query(prefix, &[])?;
+    append_definition(&mut builder, definition)?;
+    Ok(builder)
+}
+pub fn append_definition(
+    builder: &mut QueryBuilder<Postgres>,
+    definition: &Definition,
+) -> Result<(), ApiError> {
+    append_rules(builder, &definition.conditions)?;
     if let Some(id) = definition.static_id {
         builder.push(" AND EXISTS(SELECT 1 FROM user_member_segments membership WHERE membership.user_id=m.id AND membership.segment_id=").push_bind(id).push(")");
     }
-    Ok(builder)
+    Ok(())
 }
 pub fn storage(error: sqlx::Error) -> ApiError {
     tracing::error!(%error,"Member segmentation persistence failed");
