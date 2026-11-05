@@ -96,6 +96,33 @@ pub fn query(
             } else {
                 query.push("EXISTS(SELECT 1 FROM order_items item JOIN orders o ON o.id=item.order_id JOIN products p ON p.id=item.product_id WHERE o.user_id=m.id AND o.status IN ('completed','paid') AND (p.id::text=").push_bind(value.clone()).push(" OR LOWER(p.name)=LOWER(").push_bind(value).push(")))");
             }
+        } else if condition.field == "subscription_status" {
+            if !matches!(condition.operator.as_str(), "eq" | "neq") {
+                return Err(invalid("Subscription status requires eq or neq"));
+            }
+            let status = text(&condition.value)?.to_ascii_lowercase();
+            if (condition.operator == "neq") != (status == "none") {
+                query.push("NOT ");
+            }
+            query.push("EXISTS(SELECT 1 FROM user_memberships membership WHERE membership.user_id=m.id AND membership.deleted_at IS NULL");
+            if status != "none" {
+                if matches!(status.as_str(), "trial" | "trialing") {
+                    query.push(" AND membership.status IN ('trial','trialing')");
+                } else {
+                    query
+                        .push(" AND membership.status=")
+                        .push_bind(status.clone());
+                }
+                if matches!(status.as_str(), "active" | "trial" | "trialing") {
+                    query.push(" AND membership.starts_at<=NOW() AND (membership.expires_at IS NULL OR membership.expires_at>NOW())");
+                }
+                if matches!(status.as_str(), "trial" | "trialing") {
+                    query.push(
+                        " AND (membership.trial_ends_at IS NULL OR membership.trial_ends_at>NOW())",
+                    );
+                }
+            }
+            query.push(")");
         } else {
             let numeric = matches!(
                 condition.field.as_str(),

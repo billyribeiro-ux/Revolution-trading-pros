@@ -1,3 +1,4 @@
+import { adminUtcTimestamp } from './admin-timestamp.js';
 import { adminFetch } from '#lib/utils/adminFetch.js';
 
 export interface MemberCondition {
@@ -54,7 +55,7 @@ export function memberSegment(value: unknown): MemberSegment {
 		type: row.type as 'smart' | 'static',
 		conditions,
 		memberCount: integer(row.memberCount),
-		lastUpdated: text(row, 'lastUpdated'),
+		lastUpdated: adminUtcTimestamp(text(row, 'lastUpdated')),
 		isSystem: row.isSystem
 	};
 }

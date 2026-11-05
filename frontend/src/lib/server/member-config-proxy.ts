@@ -17,7 +17,8 @@ export async function proxyMemberConfig(
 	const numeric = /^[1-9]\d{0,18}$/.test(rest);
 	const action = resource === 'tags' && ['assign', 'unassign', 'bulk-assign'].includes(rest);
 	const segmentRead = resource === 'segments' && /^[1-9]\d{0,18}\/(?:analytics|export)$/.test(rest);
-	if (rest && !numeric && !action && !segmentRead)
+	const filterAction = resource === 'filters' && /^[1-9]\d{0,18}\/(?:apply|duplicate)$/.test(rest);
+	if (rest && !numeric && !action && !segmentRead && !filterAction)
 		return fail(404, 'Member configuration endpoint not found');
 	const { token } =
 		event.request.method === 'DELETE' && numeric ? requireSuperadmin(event) : requireAdmin(event);

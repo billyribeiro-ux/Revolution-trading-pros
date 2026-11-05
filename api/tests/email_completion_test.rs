@@ -13,6 +13,10 @@ mod email_template_catalog_proof;
 mod email_template_policy_proof;
 #[path = "support/email_templates_workflows.rs"]
 mod email_templates_workflows;
+#[path = "support/member_configuration.rs"]
+mod member_configuration_proof;
+#[path = "support/member_current_memberships.rs"]
+mod member_current_memberships_proof;
 #[path = "support/member_segment_analytics.rs"]
 mod member_segment_analytics_proof;
 #[path = "support/member_segments.rs"]
@@ -1714,6 +1718,8 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     email_template_policy_proof::proof(&api, &pool, &tokens[0], &adapter).await;
     email_template_catalog_proof::proof(&api, &pool, &tokens, &adapter).await;
     member_segments_proof::proof(&api, &pool, &tokens).await;
+    member_configuration_proof::proof(&api, &pool, &tokens).await;
+    member_current_memberships_proof::proof(&api, &pool, &tokens).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

@@ -18,6 +18,19 @@
 		exportMemberSegment
 	} from '#lib/api/member-segments.js';
 	import { goto } from '$app/navigation';
+	import { authStore } from '#lib/stores/auth.svelte.js';
+	import {
+		memberTag as tag,
+		savedMemberFilter as savedFilter,
+		memberConfigPage,
+		saveMemberFilter,
+		duplicateMemberFilter,
+		applyMemberFilter,
+		deleteMemberConfiguration,
+		memberFilterFields,
+		type MemberTag as Tag,
+		type SavedMemberFilter as SavedFilter
+	} from '#lib/api/member-configuration.js';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
 	import {
@@ -46,6 +59,7 @@
 	// State - Svelte 5 Runes
 
 	let loading = $state(true);
+	let canDelete = $derived(authStore.isSuperAdmin);
 	let loadGeneration = 0;
 	let loadErrors = $state({ segments: '', tags: '', saved: '' });
 	let editSegmentId = $state<number | undefined>(undefined);
@@ -57,6 +71,12 @@
 	let isExporting = $state(false);
 	let savingAction = $state(false);
 	let editTagId = $state<number | undefined>(undefined);
+	let editFilterId = $state<number | undefined>(undefined);
+	let filterSettings = $state('{}');
+	let configurationError = $state('');
+	let configPages = $state({ tags: 1, filters: 1 });
+	let configTotals = $state({ tags: 0, filters: 0 });
+	let configSearch = $state({ tags: '', filters: '' });
 	let segmentPage = $state(1);
 	let segmentTotal = $state(0);
 	let segmentSearch = $state('');
@@ -64,6 +84,7 @@
 		loadGeneration++;
 	});
 	let activeTab = $state<'segments' | 'tags' | 'saved'>('segments');
+	let configKind = $derived<'tags' | 'filters'>(activeTab === 'tags' ? 'tags' : 'filters');
 
 	// Segments
 	let segments = $state<Segment[]>([]);
@@ -112,21 +133,6 @@
 		field: string;
 		operator: string;
 		value: string | number;
-	}
-
-	interface Tag {
-		id: number;
-		name: string;
-		color: string;
-		memberCount: number | null;
-	}
-
-	interface SavedFilter {
-		id: number;
-		name: string;
-		filters: Record<string, string | number>;
-		createdAt: string;
-		usageCount: number | null;
 	}
 
 	// Condition field options
@@ -200,54 +206,14 @@
 
 	// Data Loading - Real API Integration
 
-	function object(value: unknown): Record<string, unknown> {
-		if (!value || typeof value !== 'object' || Array.isArray(value))
-			throw new Error('Invalid member configuration response');
-		return value as Record<string, unknown>;
-	}
-	function integer(value: unknown): number {
-		if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0)
-			throw new Error('Invalid member configuration count');
-		return value;
-	}
-	function text(value: unknown): string {
-		if (typeof value !== 'string') throw new Error('Invalid member configuration text');
-		return value;
-	}
-	function tag(value: unknown): Tag {
-		const row = object(value);
-		return {
-			id: integer(row.id),
-			name: text(row.name),
-			color: row.color === null ? '#64748b' : text(row.color),
-			memberCount: integer(row.member_count)
-		};
-	}
-	function savedFilter(value: unknown): SavedFilter {
-		const row = object(value),
-			filters = object(row.filters);
-		const fields: Record<string, string | number> = {};
-		for (const [key, value] of Object.entries(filters)) {
-			if (typeof value !== 'string' && (typeof value !== 'number' || !Number.isFinite(value)))
-				throw new Error('Invalid saved member filter');
-			fields[key] = value;
-		}
-		return {
-			id: integer(row.id),
-			name: text(row.name),
-			filters: fields,
-			createdAt: text(row.created_at),
-			usageCount: row.usage_count === undefined ? null : integer(row.usage_count)
-		};
-	}
 	async function loadData(page = segmentPage) {
 		const generation = ++loadGeneration;
 		loading = true;
 		loadErrors = { segments: '', tags: '', saved: '' };
 		const results = await Promise.allSettled([
 			listMemberSegments({ page, per_page: 20, search: segmentSearch.trim() || undefined }),
-			adminFetch<unknown>('/api/admin/members/tags?per_page=100'),
-			adminFetch<unknown>('/api/admin/members/filters?per_page=100')
+			memberConfigPage('tags', configPages.tags, configSearch.tags),
+			memberConfigPage('filters', configPages.filters, configSearch.filters)
 		]);
 		if (generation !== loadGeneration) return;
 		const [segmentResult, tagResult, filterResult] = results;
@@ -262,17 +228,17 @@
 		}
 		try {
 			if (tagResult.status === 'rejected') throw tagResult.reason;
-			const value = object(tagResult.value);
-			if (!Array.isArray(value.tags)) throw new Error('Invalid member tag list');
-			tags = value.tags.map(tag);
+			tags = tagResult.value.rows.map(tag);
+			configTotals.tags = tagResult.value.total;
+			configPages.tags = tagResult.value.page;
 		} catch (error) {
 			loadErrors.tags = error instanceof Error ? error.message : 'Unable to load member tags';
 		}
 		try {
 			if (filterResult.status === 'rejected') throw filterResult.reason;
-			const value = object(filterResult.value);
-			if (!Array.isArray(value.filters)) throw new Error('Invalid saved member filter list');
-			savedFilters = value.filters.map(savedFilter);
+			savedFilters = filterResult.value.rows.map(savedFilter);
+			configTotals.filters = filterResult.value.total;
+			configPages.filters = filterResult.value.page;
 		} catch (error) {
 			loadErrors.saved =
 				error instanceof Error ? error.message : 'Unable to load saved member filters';
@@ -363,12 +329,15 @@
 					{ method: editTagId === undefined ? 'POST' : 'PUT', body: JSON.stringify(newTag) }
 				)
 			);
+			if (editTagId !== undefined && saved.id !== editTagId)
+				throw new Error('Saved member tag identity was not confirmed');
 			tags =
 				editTagId === undefined
 					? [saved, ...tags]
 					: tags.map((row) => (row.id === saved.id ? saved : row));
 			showCreateTagModal = false;
 			toastStore.success(editTagId === undefined ? 'Tag created' : 'Tag updated');
+			await loadData();
 		} catch (error) {
 			actionError = error instanceof Error ? error.message : 'Unable to save tag';
 		} finally {
@@ -406,6 +375,10 @@
 
 	// Delete confirmation handlers
 	function confirmDeleteSegment(segment: Segment) {
+		if (!canDelete) {
+			configurationError = 'Superadmin permission is required to delete records';
+			return;
+		}
 		if (segment.isSystem) {
 			toastStore.error('Cannot delete system segments');
 			return;
@@ -415,11 +388,19 @@
 	}
 
 	function confirmDeleteTag(tag: Tag) {
+		if (!canDelete) {
+			configurationError = 'Superadmin permission is required to delete records';
+			return;
+		}
 		deleteTarget = { type: 'tag', item: tag };
 		showDeleteModal = true;
 	}
 
 	function confirmDeleteFilter(filter: SavedFilter) {
+		if (!canDelete) {
+			configurationError = 'Superadmin permission is required to delete records';
+			return;
+		}
 		deleteTarget = { type: 'filter', item: filter };
 		showDeleteModal = true;
 	}
@@ -448,15 +429,16 @@
 				}
 			} else if (targetType === 'tag') {
 				const tag = targetItem as Tag;
-				await adminFetch(`/api/admin/members/tags/${tag.id}`, { method: 'DELETE' });
+				await deleteMemberConfiguration('tags', tag.id);
 				tags = tags.filter((t) => t.id !== tag.id);
 				toastStore.success('Tag deleted');
 			} else if (targetType === 'filter') {
 				const filter = targetItem as SavedFilter;
-				await adminFetch(`/api/admin/members/filters/${filter.id}`, { method: 'DELETE' });
+				await deleteMemberConfiguration('filters', filter.id);
 				savedFilters = savedFilters.filter((f) => f.id !== filter.id);
 				toastStore.success('Filter deleted');
 			}
+			await loadData();
 		} catch (err) {
 			console.error('Delete failed:', err);
 			toastStore.error(err instanceof Error ? err.message : 'Delete failed — re-syncing');
@@ -501,13 +483,24 @@
 		}
 	});
 
-	function applySavedFilter(filter: SavedFilter) {
-		// Navigate to members page with filter applied
-		const params = new URLSearchParams();
-		Object.entries(filter.filters).forEach(([key, value]) => {
-			params.set(key, String(value));
-		});
-		goto(`/admin/members?${params.toString()}`);
+	async function applySavedFilter(filter: SavedFilter) {
+		if (savingAction) return;
+		savingAction = true;
+		configurationError = '';
+		try {
+			const result = await applyMemberFilter(filter.id);
+			savedFilters = savedFilters.map((row) =>
+				row.id === filter.id ? { ...row, usageCount: result.usageCount } : row
+			);
+			const params = new URLSearchParams();
+			for (const [key, value] of Object.entries(result.filters)) params.set(key, String(value));
+			await goto(`/admin/members?${params}`);
+		} catch (error) {
+			configurationError =
+				error instanceof Error ? error.message : 'Unable to apply saved member filter';
+		} finally {
+			savingAction = false;
+		}
 	}
 
 	function viewSegmentMembers(segment: Segment) {
@@ -536,6 +529,15 @@
 		}
 	}
 
+	function beginFilter(filter?: SavedFilter) {
+		editFilterId = filter?.id;
+		newFilter = filter
+			? { name: filter.name, filters: { ...filter.filters } }
+			: { name: '', filters: {} };
+		filterSettings = JSON.stringify(newFilter.filters, null, 2);
+		actionError = '';
+		showSaveFilterModal = true;
+	}
 	async function handleSaveFilter() {
 		if (savingAction) return;
 		actionError = '';
@@ -545,18 +547,20 @@
 		}
 		savingAction = true;
 		try {
-			const saved = savedFilter(
-				await adminFetch<unknown>('/api/admin/members/filters', {
-					method: 'POST',
-					body: JSON.stringify(newFilter)
-				})
+			const parsed: unknown = JSON.parse(filterSettings);
+			const saved = await saveMemberFilter(
+				{ name: newFilter.name, filters: memberFilterFields(parsed) },
+				editFilterId
 			);
-			savedFilters = [saved, ...savedFilters];
+			savedFilters =
+				editFilterId === undefined
+					? [saved, ...savedFilters]
+					: savedFilters.map((row) => (row.id === saved.id ? saved : row));
 			showSaveFilterModal = false;
-			newFilter = { name: '', filters: {} };
-			toastStore.success('Filter saved');
+			toastStore.success('Member filter saved');
+			await loadData();
 		} catch (error) {
-			actionError = error instanceof Error ? error.message : 'Unable to save filter';
+			actionError = error instanceof Error ? error.message : 'Unable to save member filter';
 		} finally {
 			savingAction = false;
 		}
@@ -564,28 +568,37 @@
 	async function duplicateFilter(filter: SavedFilter) {
 		if (savingAction) return;
 		savingAction = true;
+		configurationError = '';
 		try {
-			const saved = savedFilter(
-				await adminFetch<unknown>('/api/admin/members/filters', {
-					method: 'POST',
-					body: JSON.stringify({
-						name: `${filter.name.slice(0, 248)} (Copy)`,
-						filters: filter.filters
-					})
-				})
-			);
+			const saved = await duplicateMemberFilter(filter.id);
 			savedFilters = [saved, ...savedFilters];
-			toastStore.success('Filter duplicated');
+			toastStore.success('Member filter duplicated');
+			await loadData();
 		} catch (error) {
-			toastStore.error(error instanceof Error ? error.message : 'Unable to duplicate filter');
+			configurationError =
+				error instanceof Error ? error.message : 'Unable to duplicate member filter';
 		} finally {
 			savingAction = false;
 		}
+	}
+	function searchConfiguration(event: SubmitEvent) {
+		event.preventDefault();
+		if (activeTab === 'segments') {
+			void loadData(1);
+		} else {
+			configPages[configKind] = 1;
+			void loadData();
+		}
+	}
+	function configPage(page: number) {
+		configPages[configKind] = page;
+		return loadData();
 	}
 </script>
 
 <div class="admin-segments">
 	<div class="admin-page-container">
+		{#if configurationError}<p role="alert">{configurationError}</p>{/if}
 		{#if exportError}<p role="alert">{exportError}</p>{/if}
 		<!-- Header -->
 		<header class="page-header">
@@ -602,7 +615,7 @@
 					<IconRefresh size={18} />
 					Refresh
 				</button>
-				<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
+				<button class="btn-secondary" onclick={() => beginFilter()}>
 					<IconDownload size={18} />
 					Save Filter
 				</button>
@@ -617,15 +630,15 @@
 					onclick={() => (activeTab = 'segments')}
 				>
 					<IconFilter size={18} />
-					Smart Segments ({segments.length})
+					Smart Segments ({loading ? '…' : loadErrors.segments ? '—' : segmentTotal})
 				</button>
 				<button class={{ active: activeTab === 'tags' }} onclick={() => (activeTab = 'tags')}>
 					<IconTag size={18} />
-					Tags ({tags.length})
+					Tags ({loading ? '…' : loadErrors.tags ? '—' : configTotals.tags})
 				</button>
 				<button class={{ active: activeTab === 'saved' }} onclick={() => (activeTab = 'saved')}>
 					<IconSearch size={18} />
-					Saved Filters ({savedFilters.length})
+					Saved Filters ({loading ? '…' : loadErrors.saved ? '—' : configTotals.filters})
 				</button>
 			</div>
 
@@ -644,6 +657,16 @@
 			</div>
 		</div>
 
+		<form class="segment-search" onsubmit={searchConfiguration}>
+			<label
+				>Search {activeTab === 'saved' ? 'saved filters' : activeTab}
+				{#if activeTab === 'segments'}<input
+						type="search"
+						bind:value={segmentSearch}
+					/>{:else}<input type="search" bind:value={configSearch[configKind]} />{/if}
+			</label><button class="btn-secondary" type="submit">Search</button>
+		</form>
+
 		{#if loading}
 			<div class="loading-grid">
 				{#each [1, 2, 3, 4] as _, i (i)}
@@ -658,16 +681,6 @@
 		{:else}
 			<!-- Segments Tab -->
 			{#if activeTab === 'segments'}
-				<form
-					onsubmit={(event) => {
-						event.preventDefault();
-						void loadData(1);
-					}}
-					class="segment-search"
-				>
-					<label>Search segments<input type="search" bind:value={segmentSearch} /></label>
-					<button class="btn-secondary" type="submit">Search</button>
-				</form>
 				{#if !segments.length}<p class="empty-state">No matching member segments.</p>{/if}
 				<div class="segments-grid">
 					{#each segments as segment (segment.id)}
@@ -783,7 +796,8 @@
 												e.stopPropagation();
 												confirmDeleteSegment(segment);
 											}}
-											title="Delete"
+											title={canDelete ? 'Delete' : 'Superadmin permission required'}
+											disabled={!canDelete}
 										>
 											<IconTrash size={16} />
 										</button>
@@ -839,7 +853,8 @@
 									class="btn-icon danger"
 									type="button"
 									onclick={() => confirmDeleteTag(tag)}
-									title="Delete"
+									title={canDelete ? 'Delete' : 'Superadmin permission required'}
+									disabled={!canDelete}
 								>
 									<IconTrash size={16} />
 								</button>
@@ -859,9 +874,7 @@
 								<div class="filter-meta">
 									<span>Created {formatDate(filter.createdAt)}</span>
 									<span
-										>{filter.usageCount === null
-											? 'Usage history unavailable'
-											: `Recorded uses: ${filter.usageCount}`}</span
+										>Recorded applies: {filter.usageCount === null ? '—' : filter.usageCount}</span
 									>
 								</div>
 							</div>
@@ -885,6 +898,12 @@
 								<button
 									class="btn-icon"
 									type="button"
+									title="Edit Filter"
+									onclick={() => beginFilter(filter)}><IconEdit size={16} /></button
+								>
+								<button
+									class="btn-icon"
+									type="button"
 									title="Duplicate"
 									disabled={savingAction}
 									onclick={() => duplicateFilter(filter)}
@@ -895,7 +914,8 @@
 									class="btn-icon danger"
 									type="button"
 									onclick={() => confirmDeleteFilter(filter)}
-									title="Delete"
+									title={canDelete ? 'Delete' : 'Superadmin permission required'}
+									disabled={!canDelete}
 								>
 									<IconTrash size={16} />
 								</button>
@@ -912,6 +932,21 @@
 					{/if}
 				</div>
 			{/if}
+		{/if}
+		{#if !loading && !loadErrors[activeTab] && activeTab !== 'segments'}
+			<nav class="segment-search" aria-label="Member configuration pages">
+				<button
+					class="btn-secondary"
+					disabled={configPages[configKind] <= 1}
+					onclick={() => configPage(configPages[configKind] - 1)}>Previous</button
+				>
+				<span>Page {configPages[configKind]} · {configTotals[configKind]} records</span>
+				<button
+					class="btn-secondary"
+					disabled={configPages[configKind] * 20 >= configTotals[configKind]}
+					onclick={() => configPage(configPages[configKind] + 1)}>Next</button
+				>
+			</nav>
 		{/if}
 	</div>
 </div>
@@ -1120,7 +1155,7 @@
 	>
 		<div class="modal-content" role="document">
 			<div class="modal-header">
-				<h2>Save Current Filter</h2>
+				<h2>{editFilterId === undefined ? 'Save Current Filter' : 'Edit Saved Filter'}</h2>
 				<button class="close-btn" onclick={() => (showSaveFilterModal = false)}>
 					<IconX size={20} />
 				</button>
@@ -1139,9 +1174,16 @@
 						placeholder="e.g., High Value Active Members"
 					/>
 				</div>
+				<div class="form-group">
+					<label for="filter-settings">Filter settings (JSON)</label><textarea
+						id="filter-settings"
+						class="filter-json"
+						bind:value={filterSettings}></textarea>
+				</div>
+
 				<p class="help-text">
 					<IconCalendar size={14} />
-					This will save your current filter settings for quick access later.
+					Use existing member filter fields, such as status, search, tag, segment, or spending_tier.
 				</p>
 			</div>
 
@@ -1165,6 +1207,7 @@
 	onClose={closeSegmentDrawer}
 	onEdit={handleEditSegment}
 	onDelete={confirmDeleteSegment}
+	{canDelete}
 	onExport={handleExportSegment}
 />
 
@@ -1181,6 +1224,17 @@
 />
 
 <style>
+	.filter-json {
+		width: 100%;
+		min-height: 8rem;
+		background: var(--bg-tertiary);
+		color: var(--text-primary);
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		padding: 0.75rem;
+		font-family: ui-monospace, monospace;
+	}
+
 	.segment-search {
 		display: flex;
 		flex-wrap: wrap;

@@ -62,6 +62,7 @@
 		onClose: () => void;
 		onEdit?: (segment: Segment) => void;
 		onDelete?: (segment: Segment) => void;
+		canDelete?: boolean;
 		onExport?: (segment: Segment) => void;
 	}
 
@@ -73,6 +74,7 @@
 	const onClose = $derived(props.onClose);
 	const onEdit = $derived(props.onEdit);
 	const onDelete = $derived(props.onDelete);
+	const canDelete = $derived(props.canDelete === true);
 	const onExport = $derived(props.onExport);
 
 	// State
@@ -496,7 +498,13 @@
 		<!-- Footer Actions -->
 		{#if !segment.isSystem && onDelete}
 			<footer class="drawer-footer">
-				<button type="button" class="btn-danger" onclick={() => onDelete?.(segment)}>
+				<button
+					type="button"
+					class="btn-danger"
+					disabled={!canDelete}
+					title={canDelete ? 'Delete segment' : 'Superadmin permission required'}
+					onclick={() => onDelete?.(segment)}
+				>
 					<IconTrash size={16} />
 					Delete Segment
 				</button>

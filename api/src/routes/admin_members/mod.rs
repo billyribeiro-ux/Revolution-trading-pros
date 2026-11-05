@@ -91,6 +91,11 @@ pub fn router() -> Router<AppState> {
                 .put(filters::update_member_filter)
                 .delete(filters::delete_member_filter),
         )
+        .route("/filters/{id}/apply", post(filters::apply_member_filter))
+        .route(
+            "/filters/{id}/duplicate",
+            post(filters::duplicate_member_filter),
+        )
         // Analytics (ICT 7 FIX: Missing endpoints)
         .route("/analytics/metrics", get(analytics::analytics_metrics))
         .route("/analytics/growth", get(analytics::analytics_growth))
