@@ -6,6 +6,7 @@ pub mod analytics; // ICT 7+ Phase 4: Analytics Dashboard Service
 pub mod bunny;
 pub mod campaign_delivery;
 pub mod campaign_mailer;
+pub mod campaign_personalization;
 pub mod campaign_render;
 pub mod campaign_tracking;
 pub mod cms_audit;

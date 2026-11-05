@@ -66,7 +66,7 @@ export function campaignRecord(value: unknown): Campaign {
 			(ab.subject_b != null && typeof ab.subject_b !== 'string') ||
 			(ab.split_percentage != null &&
 				(!count(ab.split_percentage, 1) || ab.split_percentage > 99)) ||
-			(ab.winner != null && !['a', 'b'].includes(String(ab.winner)))
+			(ab.winner != null && ab.winner !== 'a' && ab.winner !== 'b')
 		)
 			throw new Error('Invalid campaign A/B configuration');
 		for (const key of ['variant_a', 'variant_b'] as const)

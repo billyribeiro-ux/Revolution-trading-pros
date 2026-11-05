@@ -20,6 +20,10 @@ struct Claimed {
     email: String,
     unsubscribe_token: Uuid,
     definition: Value,
+    display_name: String,
+    contact_snapshot: Value,
+    subject_template: Option<String>,
+    variant: Option<String>,
     lease: Uuid,
 }
 
@@ -49,7 +53,7 @@ async fn claim(pool: &PgPool) -> Result<Option<Claimed>> {
         return Ok(None);
     }
     let lease = Uuid::new_v4();
-    let claimed:Claimed=sqlx::query_as("UPDATE crm_campaign_deliveries d SET status='processing',attempt_count=attempt_count+1,attempts_remaining=attempts_remaining-1,lease_token=$2,lease_expires_at=NOW()+INTERVAL '2 minutes',updated_at=NOW() FROM crm_campaign_revisions r WHERE d.id=$1 AND r.id=d.revision_id RETURNING d.id,d.campaign_id,d.email,d.unsubscribe_token,r.definition,d.lease_token AS lease").bind(next).bind(lease).fetch_one(&mut *tx).await?;
+    let claimed:Claimed=sqlx::query_as("UPDATE crm_campaign_deliveries d SET status='processing',attempt_count=attempt_count+1,attempts_remaining=attempts_remaining-1,lease_token=$2,lease_expires_at=NOW()+INTERVAL '2 minutes',updated_at=NOW() FROM crm_campaign_revisions r WHERE d.id=$1 AND r.id=d.revision_id RETURNING d.id,d.campaign_id,d.email,d.unsubscribe_token,r.definition,d.display_name,d.contact_snapshot,d.subject_template,d.variant,d.lease_token AS lease").bind(next).bind(lease).fetch_one(&mut *tx).await?;
     sqlx::query("UPDATE crm_campaigns SET status='sending',next_delivery_at=CASE WHEN delivery_rate_limit IS NOT NULL THEN NOW()+INTERVAL '60 seconds'/delivery_rate_limit ELSE next_delivery_at END,updated_at=NOW() WHERE id=$1")
         .bind(campaign)
         .execute(&mut *tx)
@@ -99,21 +103,55 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
     } else {
         None
     };
-    let metadata = BTreeMap::from([
+    let mut metadata = BTreeMap::from([
         ("campaign_id".into(), job.campaign_id.to_string()),
         ("delivery_id".into(), job.id.to_string()),
     ]);
+    if let Some(variant) = &job.variant {
+        metadata.insert("variant".into(), variant.clone());
+    }
+    let subject = job
+        .subject_template
+        .as_deref()
+        .unwrap_or_else(|| job.definition["email_subject"].as_str().unwrap_or(""));
+    let prepared = if job.definition["ab_test_config"]["enabled"] == true
+        && (job.variant.is_none() || job.subject_template.is_none())
+    {
+        Err(anyhow!(
+            "A/B subject assignment is missing; no provider request was sent"
+        ))
+    } else {
+        super::campaign_personalization::render(
+            &job.definition,
+            super::campaign_personalization::Recipient {
+                email: &job.email,
+                name: &job.display_name,
+                snapshot: &job.contact_snapshot,
+                app_url,
+                unsubscribe_url: unsubscribe.as_str(),
+                brand: &mailer.sender().name,
+            },
+            subject,
+        )
+    };
+    let rendered_subject = prepared
+        .as_ref()
+        .ok()
+        .and_then(|value| value["email_subject"].as_str());
     let sender_identity = from.as_ref().unwrap_or(mailer.sender()).formatted().ok();
-    let owned=sqlx::query("UPDATE crm_campaign_deliveries SET sender_identity=$3,provider_stream=$4,provider=$5 WHERE id=$1 AND lease_token=$2 AND status='processing' AND lease_expires_at>NOW()").bind(job.id).bind(job.lease).bind(sender_identity).bind(mailer.stream()).bind(mailer.provider()).execute(pool).await?;
+    let owned=sqlx::query("UPDATE crm_campaign_deliveries SET sender_identity=$3,provider_stream=$4,provider=$5,rendered_subject=$6 WHERE id=$1 AND lease_token=$2 AND status='processing' AND lease_expires_at>NOW()").bind(job.id).bind(job.lease).bind(sender_identity).bind(mailer.stream()).bind(mailer.provider()).bind(rendered_subject).execute(pool).await?;
     if owned.rows_affected() != 1 {
         return Err(anyhow!(
             "Campaign lease changed before provider submission; no request was sent"
         ));
     }
-    let body = super::campaign_render::render(&job.definition, app_url, unsubscribe.as_str());
-    let outcome = if let Ok(body) = body {
-        let plain = job.definition["type"] == "plain_text";
-        let text = job.definition["text_body"]
+    let content = prepared.and_then(|definition| {
+        super::campaign_render::render(&definition, app_url, unsubscribe.as_str())
+            .map(|body| (definition, body))
+    });
+    let outcome = if let Ok((definition, body)) = content {
+        let plain = definition["type"] == "plain_text";
+        let text = definition["text_body"]
             .as_str()
             .filter(|text| !text.is_empty())
             .map(|text| format!("{text}\n\nUnsubscribe: {}", unsubscribe.as_str()));
@@ -134,10 +172,7 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
         mailer
             .submit(Message {
                 to: job.email,
-                subject: job.definition["email_subject"]
-                    .as_str()
-                    .unwrap_or("")
-                    .into(),
+                subject: definition["email_subject"].as_str().unwrap_or("").into(),
                 body,
                 plain_text: plain,
                 text_body,
@@ -149,7 +184,7 @@ pub async fn process_one(pool: &PgPool, mailer: &CampaignMailer, app_url: &str) 
             .await
     } else {
         Submission::Rejected {
-            reason: "Unable to render campaign content".into(),
+            reason: "Unable to render campaign content or its required recipient variables; no provider request was sent".into(),
             retryable: false,
         }
     };

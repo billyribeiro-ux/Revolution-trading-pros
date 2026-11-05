@@ -29,7 +29,7 @@ struct ResolvedFilter {
     list: Option<i64>,
     tag: Option<String>,
 }
-pub(super) struct ResolvedAudience {
+pub(crate) struct ResolvedAudience {
     includes: Vec<ResolvedFilter>,
     excludes: Vec<ResolvedFilter>,
     advanced: Vec<Condition>,

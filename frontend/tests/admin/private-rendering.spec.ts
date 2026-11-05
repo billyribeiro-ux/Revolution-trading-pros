@@ -9,6 +9,7 @@ test('production private routes enforce authentication and do not become static 
 	for (const path of [
 		'/admin',
 		'/admin/email/subscribers',
+		'/admin/email/campaigns',
 		'/email',
 		'/dashboard',
 		'/dashboard/classes',
@@ -46,6 +47,9 @@ test('production private routes enforce authentication and do not become static 
 	expect(denied.status()).toBe(303);
 	expect(denied.headers().location).toBe('/?error=admin_required');
 	expect((await request.get('/api/admin/connections')).status()).toBe(403);
+	const campaignDenied = await request.get('/admin/email/campaigns', { maxRedirects: 0 });
+	expect(campaignDenied.status()).toBe(303);
+	expect(campaignDenied.headers().location).toBe('/?error=admin_required');
 	const emailDenied = await request.get('/email', { maxRedirects: 0 });
 	expect(emailDenied.status()).toBe(303);
 	expect(emailDenied.headers().location).toBe('/?error=admin_required');
@@ -55,7 +59,7 @@ test('production private routes enforce authentication and do not become static 
 		data: { email: 'admin@admin-completion.test', password: 'OnlyForDisposableTest123!' }
 	});
 	expect(login.ok()).toBe(true);
-	for (const path of ['/admin', '/admin/email/subscribers', '/email']) {
+	for (const path of ['/admin', '/admin/email/subscribers', '/admin/email/campaigns', '/email']) {
 		const response = await request.get(path, { maxRedirects: 0 });
 		expect(response.status(), path).toBe(200);
 		expect(response.headers()['cache-control']).toBe('no-store');

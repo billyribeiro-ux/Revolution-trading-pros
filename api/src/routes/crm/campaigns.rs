@@ -8,7 +8,10 @@ use axum::{
 use serde::Deserialize;
 use serde_json::{Value, json};
 
-const COLS: &str = "id::text AS id,COALESCE(title,name) AS title,subject,subject AS email_subject,content AS email_body,text_body,status,campaign_type AS type,email_pre_header,design_template,template_id::text AS template_id,template_config,settings,subscriber_settings,utm_settings,created_by::text AS created_by,scheduled_at,sent_at,recipients_count,emails_sent,emails_sent AS sent_count,opens,opens AS open_count,clicks,clicks AS click_count,open_rate,click_rate,failed_count,last_error,pause_reason,delivery_stats,authoring_version,created_at,updated_at";
+macro_rules! campaign_sql {
+    ($before:literal,$after:literal)=>{concat!($before,"id::text AS id,COALESCE(title,name) AS title,subject,subject AS email_subject,content AS email_body,text_body,status,campaign_type AS type,email_pre_header,design_template,template_id::text AS template_id,template_config,settings,subscriber_settings,utm_settings,email_template_id::text AS email_template_id,ab_test_config,(SELECT e.id FROM email_campaigns e WHERE e.delivery_campaign_id=crm_campaigns.id) AS native_email_campaign_id,created_by::text AS created_by,scheduled_at,sent_at,recipients_count,emails_sent,emails_sent AS sent_count,opens,opens AS open_count,clicks,clicks AS click_count,open_rate,click_rate,failed_count,last_error,pause_reason,delivery_stats,authoring_version,created_at,updated_at",$after)};
+}
+
 fn db(error: sqlx::Error) -> ApiError {
     tracing::error!(%error,"CRM campaign persistence failed");
     ApiError::database_error("Unable to access campaigns")
@@ -227,14 +230,24 @@ impl Filters {
     }
 }
 pub(super) async fn row(pool: &sqlx::PgPool, id: i64) -> Result<Value, ApiError> {
-    let sql = format!("SELECT to_jsonb(c) FROM (SELECT {COLS} FROM crm_campaigns WHERE id=$1) c");
-    sqlx::query_scalar(sqlx::AssertSqlSafe(sql.as_str()))
-        .bind(id)
-        .fetch_optional(pool)
-        .await
-        .map_err(db)?
-        .ok_or_else(|| ApiError::not_found("Campaign not found"))
+    let mut connection = pool.acquire().await.map_err(db)?;
+    row_on(&mut connection, id).await
 }
+pub(crate) async fn row_on(
+    connection: &mut sqlx::PgConnection,
+    id: i64,
+) -> Result<Value, ApiError> {
+    sqlx::query_scalar(campaign_sql!(
+        "SELECT to_jsonb(c) FROM (SELECT ",
+        " FROM crm_campaigns WHERE id=$1) c"
+    ))
+    .bind(id)
+    .fetch_optional(connection)
+    .await
+    .map_err(db)?
+    .ok_or_else(|| ApiError::not_found("Campaign not found"))
+}
+
 async fn stats_value(pool: &sqlx::PgPool) -> Result<Value, ApiError> {
     sqlx::query_scalar("SELECT jsonb_build_object('total',COUNT(*),'sent',COUNT(*) FILTER(WHERE status='sent'),'scheduled',COUNT(*) FILTER(WHERE status='scheduled'),'draft',COUNT(*) FILTER(WHERE status='draft'),'total_emails_sent',COALESCE(SUM(emails_sent),0),'total_opens',COALESCE(SUM(opens),0),'total_clicks',COALESCE(SUM(clicks),0),'avg_open_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(opens)*100.0/SUM(emails_sent),2) END,'avg_click_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(clicks)*100.0/SUM(emails_sent),2) END) FROM crm_campaigns").fetch_one(pool).await.map_err(db)
 }
@@ -245,10 +258,7 @@ async fn list(
 ) -> Result<Json<Value>, ApiError> {
     let (page, size, offset) = filters.bounds()?;
     let search = filters.search.map(|v| format!("%{v}%"));
-    let sql = format!(
-        "SELECT to_jsonb(c) FROM (SELECT {COLS} FROM crm_campaigns WHERE ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2) ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4) c"
-    );
-    let rows: Vec<Value> = sqlx::query_scalar(sqlx::AssertSqlSafe(sql.as_str()))
+    let rows: Vec<Value> = sqlx::query_scalar(campaign_sql!("SELECT to_jsonb(c) FROM (SELECT "," FROM crm_campaigns WHERE ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2) ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4) c"))
         .bind(&search)
         .bind(&filters.status)
         .bind(size)
