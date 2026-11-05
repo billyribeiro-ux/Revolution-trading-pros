@@ -4,18 +4,27 @@
 	import { formatDateTime } from './helpers';
 
 	interface Props {
+		error: string;
+		loading: boolean;
+		meta: { current_page: number; total_pages: number; total: number } | null;
+		onPage: (page: number) => void;
+		onRefresh: () => void;
 		timeline: TimelineEvent[];
 	}
 
-	let { timeline }: Props = $props();
+	let { timeline, error, loading, meta, onPage, onRefresh }: Props = $props();
 </script>
 
 <div class="activity-section">
-	{#if timeline.length === 0}
+	{#if loading}<p role="status">Loading activity…</p>{:else if error}<p role="alert">{error}</p>
+		<button onclick={onRefresh}>Retry activity</button>{:else if timeline.length === 0}
 		<div class="empty-state">
 			<IconActivity size={48} />
-			<h3>No activity yet</h3>
-			<p>Activity timeline will appear here as events occur</p>
+			<h3>No recorded activity on this page</h3>
+			<p>
+				Coverage includes recorded contact links; unlinked address history and human email
+				engagement are unavailable.
+			</p>
 		</div>
 	{:else}
 		<div class="timeline">
@@ -38,9 +47,27 @@
 			{/each}
 		</div>
 	{/if}
+	{#if meta && !error}<nav aria-label="activity pages">
+			<button
+				disabled={loading || meta.current_page <= 1}
+				onclick={() => onPage(meta.current_page - 1)}>Previous</button
+			><span>Page {meta.current_page} of {meta.total_pages}; {meta.total} records</span><button
+				disabled={loading || meta.current_page >= meta.total_pages}
+				onclick={() => onPage(meta.current_page + 1)}>Next</button
+			>
+		</nav>{/if}
 </div>
 
 <style>
+	nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+	[role='alert'] {
+		color: #fca5a5;
+	}
 	.activity-section {
 		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);

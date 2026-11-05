@@ -1,5 +1,17 @@
 # Revolution Trading Pros - Rust API
 # Multi-stage build for minimal image size
+# Build from the repository root: docker build -f api/Dockerfile .
+# Canonical author/media JSON is shared with the frontend; keep one source.
+
+FROM scratch AS sources
+COPY api/Cargo.toml api/Cargo.lock /api/
+COPY api/src /api/src
+COPY api/migrations /api/migrations
+COPY api/.sqlx /api/.sqlx
+COPY api/role-policy.json /api/role-policy.json
+COPY api/assets /api/assets
+COPY frontend/src/lib/authors/authors.json /frontend/src/lib/authors/authors.json
+COPY frontend/src/lib/seo/public-media.json /frontend/src/lib/seo/public-media.json
 
 # FIX-2026-04-26: pinned from rust:latest to explicit version (Phase 7.3)
 # FROM rust:latest AS builder
@@ -15,26 +27,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config libssl-dev perl make \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /app/api
 
 # Copy manifests
-COPY Cargo.toml Cargo.lock* ./
+COPY --from=sources /api/Cargo.toml /api/Cargo.lock ./
 
 # Create dummy main.rs to cache dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 
 # Build dependencies (cached layer)
-RUN cargo build --release && rm -rf src
+RUN cargo build --release --locked && rm -rf src
 
 # Copy source code and SQLx offline cache
-COPY src ./src
-COPY migrations ./migrations
-COPY .sqlx ./.sqlx
-COPY role-policy.json ./role-policy.json
+COPY --from=sources /api/src ./src
+COPY --from=sources /api/migrations ./migrations
+COPY --from=sources /api/.sqlx ./.sqlx
+COPY --from=sources /api/role-policy.json ./role-policy.json
+COPY --from=sources /api/assets ./assets
+COPY --from=sources /frontend /app/frontend
 
 # Build the actual application with SQLx offline mode
 ENV SQLX_OFFLINE=true
-RUN touch src/main.rs && cargo build --release
+RUN touch src/main.rs && cargo build --release --locked
 
 # FIX-2026-04-26 moved this stage to bookworm-slim while trixie was still
 # Debian testing. Trixie has since become Debian 13 stable, so on 2026-10-09
@@ -57,8 +71,8 @@ RUN groupadd -g 1000 app && useradd -u 1000 -g app -d /app -m app
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/target/release/revolution-api ./
-COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/api/target/release/revolution-api ./
+COPY --from=builder /app/api/migrations ./migrations
 
 # Set ownership
 RUN chown -R app:app /app

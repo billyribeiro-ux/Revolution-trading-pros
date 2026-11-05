@@ -7,10 +7,14 @@ pub mod campaign_tracking;
 pub mod categories;
 pub mod health;
 pub mod media;
+pub(crate) mod member_selection;
+pub(crate) mod member_services;
+pub(crate) mod member_statistics;
 pub mod members;
 pub mod oauth; // ICT 7: Google & Apple OAuth authentication
 pub mod redirects;
 pub mod robots;
+pub mod seo_sitemaps;
 pub mod sitemap;
 pub mod tags;
 pub mod user; // Singular /user routes for frontend compatibility
@@ -257,6 +261,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/reconciliation", reconciliation::router())
         .merge(robots::router())
         .merge(sitemap::router())
+        .merge(seo_sitemaps::router())
         .merge(categories::router())
         .merge(tags::router())
         .merge(redirects::router())

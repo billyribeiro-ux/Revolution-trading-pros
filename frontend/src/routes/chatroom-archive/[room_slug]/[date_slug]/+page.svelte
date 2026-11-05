@@ -126,16 +126,20 @@
 						</header>
 
 						<div class="video-player-container">
-							<video
-								controls
-								width="100%"
-								poster={video.thumbnail_url || getTraderPoster(video.trader?.slug)}
-								title={video.title}
-								preload="metadata"
-							>
-								<source src={video.video_url} type="video/mp4" />
-								Your browser does not support the video tag.
-							</video>
+							{#if video.video_url}
+								<video
+									controls
+									width="100%"
+									poster={video.thumbnail_url || getTraderPoster(video.trader?.slug)}
+									title={video.title}
+									preload="metadata"
+								>
+									<source src={video.video_url} type="video/mp4" />
+									Your browser does not support the video tag.
+								</video>
+							{:else}
+								<p>Video unavailable</p>
+							{/if}
 						</div>
 
 						{#if video.description}

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import type { ContactRecord } from '#lib/crm/contact-types.js';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '#lib/api/crm.js';
 	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
-	import type { DealPriority, Pipeline, Contact, CrmCompany, DealWrite } from '#lib/crm/types.js';
+	import type { DealPriority, Pipeline, CrmCompany, DealWrite } from '#lib/crm/types.js';
 
 	let { id }: { id?: string } = $props();
 	let loading = $state(true);
@@ -30,14 +31,14 @@
 	let companyLabel = $state('');
 	let contactSearch = $state('');
 	let companySearch = $state('');
-	let contacts = $state<Contact[]>([]);
+	let contacts = $state<ContactRecord[]>([]);
 	let companies = $state<CrmCompany[]>([]);
 	let searching = $state<'contact' | 'company' | null>(null);
 	let searchError = $state('');
 	const stages = $derived(pipelines.find((p) => p.id === pipelineId)?.stages ?? []);
 	const targetStage = $derived(stages.find((s) => s.id === stageId));
 
-	function contactName(contact: Contact): string {
+	function contactName(contact: ContactRecord): string {
 		return (
 			contact.full_name ||
 			[contact.first_name, contact.last_name].filter(Boolean).join(' ') ||

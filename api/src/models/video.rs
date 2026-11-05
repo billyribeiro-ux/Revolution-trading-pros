@@ -8,6 +8,9 @@ use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
+#[path = "video_temporal.rs"]
+pub mod temporal;
+
 // ═══════════════════════════════════════════════════════════════════════════
 // AVAILABLE TAGS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -111,6 +114,7 @@ pub struct CreateVideoRequest {
     pub category: Option<String>,
     pub session_type: Option<String>,
     pub duration: Option<i32>,
+    pub published_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -132,6 +136,7 @@ pub struct UpdateVideoRequest {
     pub category: Option<String>,
     pub session_type: Option<String>,
     pub duration: Option<i32>,
+    pub published_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -179,23 +184,23 @@ pub struct VideoResponse {
     pub title: String,
     pub slug: String,
     pub description: Option<String>,
-    pub video_url: String,
-    pub embed_url: String,
-    pub video_platform: String,
+    pub video_url: Option<String>,
+    pub embed_url: Option<String>,
+    pub video_platform: Option<String>,
     pub thumbnail_url: Option<String>,
     pub duration: Option<i32>,
-    pub formatted_duration: String,
+    pub formatted_duration: Option<String>,
     pub content_type: String,
-    pub video_date: String,
-    pub formatted_date: String,
-    pub is_published: bool,
-    pub is_featured: bool,
+    pub video_date: Option<String>,
+    pub formatted_date: Option<String>,
+    pub is_published: Option<bool>,
+    pub is_featured: Option<bool>,
     pub tags: Vec<String>,
     pub tag_details: Vec<TagDetail>,
-    pub views_count: i32,
+    pub views_count: Option<i32>,
     pub trader: Option<TraderInfo>,
     pub rooms: Vec<RoomInfo>,
-    pub created_at: String,
+    pub created_at: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -245,7 +250,7 @@ pub struct VideoStats {
     pub total: i64,
     pub published: i64,
     pub by_type: VideoTypeStats,
-    pub total_views: i64,
+    pub total_views: Option<i64>,
     pub this_week: i64,
     pub this_month: i64,
 }

@@ -21,6 +21,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Icon from '#lib/components/Icon.svelte';
+	import {
+		recordedVideoDate,
+		videoDateSlug,
+		formatRecordedVideoDate,
+		videoPlaybackUnavailable
+	} from '#lib/utils/unified-video-metadata.js';
 
 	// Video type from API
 	interface VideoData {
@@ -28,14 +34,14 @@
 		title: string;
 		slug: string;
 		description?: string | null;
-		video_url?: string;
+		video_url?: string | null;
 		thumbnail_url?: string | null;
 		duration?: number | null;
-		formatted_duration?: string;
+		formatted_duration?: string | null;
 		content_type?: string;
-		video_date?: string;
-		formatted_date?: string;
-		is_published?: boolean;
+		video_date?: string | null;
+		formatted_date?: string | null;
+		is_published?: boolean | null;
 		trader?: {
 			id: number;
 			name: string;
@@ -83,7 +89,7 @@
 		title: string;
 		trader: string;
 		date: string;
-		href: string;
+		href: string | null;
 	}
 
 	// Group sessions by date
@@ -99,25 +105,22 @@
 	let totalPages = $derived(meta?.last_page || 1);
 	let totalItems = $derived(meta?.total || 0);
 
-	// Format date to slug (MMDDYYYY)
-	function dateToSlug(dateStr: string): string {
-		if (!dateStr) return '';
-		const date = new Date(dateStr);
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		const year = date.getFullYear();
-		return `${month}${day}${year}`;
-	}
-
-	// Transform API videos to sessions
+	// Only actual recording dates can identify the existing date-based archive route.
 	let allSessions = $derived<ArchiveSession[]>(
-		(videos || []).map((video) => ({
-			id: String(video.id),
-			title: video.title,
-			trader: video.trader?.name || '',
-			date: video.video_date?.split('T')[0] || '',
-			href: `/chatroom-archive/${roomSlug}/${dateToSlug(video.video_date || '')}`
-		}))
+		(videos || []).map((video) => {
+			const date = recordedVideoDate(video.video_date);
+			const dateSlug = videoDateSlug(date);
+			return {
+				id: String(video.id),
+				title: video.title,
+				trader: video.trader?.name || '',
+				date: date ?? '',
+				href:
+					dateSlug && !videoPlaybackUnavailable(video)
+						? `/chatroom-archive/${roomSlug}/${dateSlug}`
+						: null
+			};
+		})
 	);
 
 	// Client-side filtering - compare against prop for server-side match
@@ -131,13 +134,6 @@
 						session.trader.toLowerCase().includes(searchQuery.toLowerCase())
 				)
 	);
-
-	// Format date for display
-	function formatDate(dateStr: string): string {
-		if (!dateStr) return 'Unknown Date';
-		const date = new Date(dateStr);
-		return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-	}
 
 	// Group sessions by date
 	let groupedSessions = $derived.by(() => {
@@ -154,14 +150,12 @@
 		});
 
 		// Sort dates descending
-		const sortedDates = Object.keys(dateMap).sort(
-			(a, b) => new Date(b).getTime() - new Date(a).getTime()
-		);
+		const sortedDates = Object.keys(dateMap).sort((a, b) => b.localeCompare(a));
 
 		sortedDates.forEach((date) => {
 			groups.push({
 				date,
-				displayDate: formatDate(date),
+				displayDate: formatRecordedVideoDate(date) ?? 'Date unavailable',
 				sessions: dateMap[date] || []
 			});
 		});
@@ -315,7 +309,11 @@
 											<p class="card-trader"><i>With {session.trader}</i></p>
 										{/if}
 									</div>
-									<a href={session.href} class="btn btn-tiny btn-default"> Watch Now </a>
+									{#if session.href}
+										<a href={session.href} class="btn btn-tiny btn-default">Watch Now</a>
+									{:else}
+										<span class="btn btn-tiny btn-default">Video unavailable</span>
+									{/if}
 								</div>
 							</article>
 						{/each}

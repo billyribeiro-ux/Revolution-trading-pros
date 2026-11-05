@@ -57,12 +57,12 @@
 //!    None of these qualify as money. The i32 choice is the correct
 //!    Reserved exception.
 //!
-//! 4. **`video_date: NaiveDate` (NOT String).** The DTO accepts a
+//! 4. **`video_date: Option<NaiveDate>` (NOT String).** The DTO accepts a
 //!    typed date — a regression to `String` would let malformed
 //!    dates (e.g., "tomorrow") flow into SQL where they'd 500 on
 //!    binding. Pin the typed contract.
 //!
-//! 5. **Soft-delete via `deleted_at: Option<NaiveDateTime>`.** Per
+//! 5. **Soft-delete via `deleted_at: Option<DateTime<Utc>>`.** Per
 //!    schema.sql:10270 the column exists; soft-delete is the only
 //!    safe deletion path because `unified_videos` is referenced by
 //!    `video_room_assignments`, `video_chapters`, `video_series`,
@@ -152,11 +152,11 @@ fn admin_videos_analytics_router_builds_and_idempotent() {
 /// `duration: Option<i32>` — Reserved exception (seconds; capped
 /// at ~24h × 3600 = 86400 per video by the upload UI).
 ///
-/// `video_date: NaiveDate` — typed date. R9-D NEGATIVE: a regression
+/// `video_date: Option<NaiveDate>` — typed date. R9-D NEGATIVE: a regression
 /// to `String` would let malformed dates flow to SQL where they'd
 /// 500 on binding.
 ///
-/// `deleted_at: Option<NaiveDateTime>` — soft-delete contract;
+/// `deleted_at: Option<DateTime<Utc>>` — soft-delete contract;
 /// hard-deleting would cascade to `video_watch_progress` and lose
 /// user data.
 #[test]
@@ -170,8 +170,8 @@ fn unified_video_row_bigserial_and_reserved_i32_counters() {
         title: "ES weekly recap — 2026-05-20".to_string(),
         slug: "es-weekly-2026-05-20".to_string(),
         description: None,
-        video_url: "https://video.bunnycdn.com/.../play.mp4".to_string(),
-        video_platform: "bunny".to_string(),
+        video_url: Some("https://video.bunnycdn.com/.../play.mp4".to_string()),
+        video_platform: Some("bunny".to_string()),
         video_id: Some("vid_abc123".to_string()),
         bunny_video_guid: Some("guid-abc".to_string()),
         thumbnail_url: Some("https://cdn.example/thumb.jpg".to_string()),
@@ -185,14 +185,14 @@ fn unified_video_row_bigserial_and_reserved_i32_counters() {
         session_type: Some("post_close".to_string()),
         chapter_timestamps: None,
         trader_id: Some(above_i32),
-        video_date: chrono::NaiveDate::from_ymd_opt(2026, 5, 20).unwrap(),
-        is_published: true,
-        is_featured: false,
+        video_date: Some(chrono::NaiveDate::from_ymd_opt(2026, 5, 20).unwrap()),
+        is_published: Some(true),
+        is_featured: Some(false),
         published_at: None,
         scheduled_at: None,
         tags: None,
         // Reserved exception: per-video ≤ 2B views on a B2B platform.
-        views_count: 0,
+        views_count: Some(0),
         likes_count: 0,
         completion_rate: 0,
         bunny_library_id: Some(above_i32),
@@ -201,8 +201,8 @@ fn unified_video_row_bigserial_and_reserved_i32_counters() {
         metadata: None,
         created_by: Some(above_i32),
         updated_by: Some(above_i32),
-        created_at: chrono::NaiveDateTime::default(),
-        updated_at: chrono::NaiveDateTime::default(),
+        created_at: Some(chrono::DateTime::<chrono::Utc>::UNIX_EPOCH),
+        updated_at: Some(chrono::DateTime::<chrono::Utc>::UNIX_EPOCH),
         // Soft-delete contract — hard delete would cascade to
         // video_watch_progress and lose user data.
         deleted_at: None,
@@ -224,7 +224,7 @@ fn unified_video_row_bigserial_and_reserved_i32_counters() {
 
 // ── 3. UnifiedVideoRow deserialize: typed video_date enforced ────────
 
-/// `UnifiedVideoRow.video_date: NaiveDate` MUST stay typed. A
+/// `UnifiedVideoRow.video_date: Option<NaiveDate>` MUST stay typed. A
 /// regression to `String` would let malformed dates flow through
 /// serde to SQL where they'd 500 on binding (sqlx will reject
 /// non-ISO-8601 dates at the parameter binding step, but the
@@ -251,13 +251,13 @@ fn unified_video_row_video_date_is_typed_naive_date() {
         "views_count": 0,
         "likes_count": 0,
         "completion_rate": 0,
-        "created_at": "2026-05-20T12:00:00",
-        "updated_at": "2026-05-20T12:00:00",
+        "created_at": "2026-05-20T12:00:00Z",
+        "updated_at": "2026-05-20T12:00:00Z",
     }))
     .expect("valid UnifiedVideoRow must deserialize");
     assert_eq!(
         row.video_date,
-        chrono::NaiveDate::from_ymd_opt(2026, 5, 20).unwrap()
+        Some(chrono::NaiveDate::from_ymd_opt(2026, 5, 20).unwrap())
     );
 
     // R9-D NEGATIVE: malformed date MUST fail at the DTO boundary
@@ -275,8 +275,8 @@ fn unified_video_row_video_date_is_typed_naive_date() {
         "views_count": 0,
         "likes_count": 0,
         "completion_rate": 0,
-        "created_at": "2026-05-20T12:00:00",
-        "updated_at": "2026-05-20T12:00:00",
+        "created_at": "2026-05-20T12:00:00Z",
+        "updated_at": "2026-05-20T12:00:00Z",
     }));
     assert!(
         err.is_err(),
@@ -284,9 +284,49 @@ fn unified_video_row_video_date_is_typed_naive_date() {
     );
 }
 
+#[test]
+fn nullable_historical_metadata_stays_unknown_and_offset_dates_preserve_their_instant() {
+    use revolution_api::routes::admin_videos::UnifiedVideoRow;
+    let mut input = serde_json::json!({
+        "id": 1_i64, "title": "Actual incomplete historical video", "slug": "actual-incomplete-historical-video",
+        "content_type": "learning_center", "video_url": null, "video_platform": null, "video_date": null,
+        "is_published": null, "is_featured": null, "views_count": null, "likes_count": 0, "completion_rate": 0,
+        "created_at": null, "updated_at": null, "published_at": null
+    });
+    let row: UnifiedVideoRow = serde_json::from_value(input.clone()).unwrap();
+    let wire = serde_json::to_value(row).unwrap();
+    for key in [
+        "video_url",
+        "video_platform",
+        "video_date",
+        "views_count",
+        "created_at",
+        "updated_at",
+        "published_at",
+        "is_published",
+        "is_featured",
+    ] {
+        assert!(
+            wire[key].is_null(),
+            "Unknown {key} must not become an invented date, URL, status or measurement"
+        );
+    }
+    input["published_at"] = serde_json::json!("2026-05-20T17:45:30+05:30");
+    let row: UnifiedVideoRow = serde_json::from_value(input.clone()).unwrap();
+    assert_eq!(
+        row.published_at.unwrap().to_rfc3339(),
+        "2026-05-20T12:15:30+00:00"
+    );
+    input.as_object_mut().unwrap().remove("title");
+    assert!(
+        serde_json::from_value::<UnifiedVideoRow>(input).is_err(),
+        "A nullable metadata contract must retain required identity/title fields"
+    );
+}
+
 // ── 4. UnifiedVideoRow soft-delete contract (deleted_at Optional) ────
 
-/// `UnifiedVideoRow.deleted_at: Option<NaiveDateTime>` IS the soft-
+/// `UnifiedVideoRow.deleted_at: Option<DateTime<Utc>>` IS the soft-
 /// delete sentinel. Per schema.sql:10270, the column exists; the
 /// admin `delete_video` handler (referenced in mod.rs:91) uses
 /// `UPDATE unified_videos SET deleted_at = now() WHERE id = $1`
@@ -320,8 +360,8 @@ fn unified_video_row_soft_delete_deleted_at_optional() {
         "views_count": 0,
         "likes_count": 0,
         "completion_rate": 0,
-        "created_at": "2026-05-20T12:00:00",
-        "updated_at": "2026-05-20T12:00:00",
+        "created_at": "2026-05-20T12:00:00Z",
+        "updated_at": "2026-05-20T12:00:00Z",
         // deleted_at omitted — Optional defaults to None
     }))
     .expect("UnifiedVideoRow without deleted_at must deserialize");
@@ -330,7 +370,7 @@ fn unified_video_row_soft_delete_deleted_at_optional() {
         "active rows MUST have deleted_at = None"
     );
 
-    // Soft-deleted row — deleted_at is Some(NaiveDateTime).
+    // Soft-deleted row — deleted_at is Some(DateTime<Utc>).
     let soft_deleted: UnifiedVideoRow = serde_json::from_value(serde_json::json!({
         "id": 1i64,
         "title": "x",
@@ -344,9 +384,9 @@ fn unified_video_row_soft_delete_deleted_at_optional() {
         "views_count": 0,
         "likes_count": 0,
         "completion_rate": 0,
-        "created_at": "2026-05-20T12:00:00",
-        "updated_at": "2026-05-20T12:00:00",
-        "deleted_at": "2026-05-21T09:30:00",
+        "created_at": "2026-05-20T12:00:00Z",
+        "updated_at": "2026-05-20T12:00:00Z",
+        "deleted_at": "2026-05-21T09:30:00Z",
     }))
     .expect("soft-deleted UnifiedVideoRow must deserialize");
     assert!(
@@ -355,6 +395,8 @@ fn unified_video_row_soft_delete_deleted_at_optional() {
     );
     assert_eq!(
         soft_deleted.deleted_at.unwrap(),
-        chrono::NaiveDateTime::parse_from_str("2026-05-21T09:30:00", "%Y-%m-%dT%H:%M:%S").unwrap()
+        chrono::DateTime::parse_from_rfc3339("2026-05-21T09:30:00Z")
+            .unwrap()
+            .with_timezone(&chrono::Utc)
     );
 }

@@ -1,0 +1,22 @@
+# This allowlist applies only to api/Dockerfile with repository-root context.
+# Credentials, local caches, databases and frontend source are never sent.
+**
+!api
+!api/Cargo.toml
+!api/Cargo.lock
+!api/src
+!api/src/**
+!api/migrations
+!api/migrations/**
+!api/.sqlx
+!api/.sqlx/**
+!api/role-policy.json
+!api/assets
+!api/assets/**
+!frontend
+!frontend/src
+!frontend/src/lib
+!frontend/src/lib/authors
+!frontend/src/lib/authors/authors.json
+!frontend/src/lib/seo
+!frontend/src/lib/seo/public-media.json

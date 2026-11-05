@@ -29,9 +29,23 @@ Initial browser attempts with an omitted Redis dependency, an inherited developm
 
 This is controlled local-adapter verification. No live Postmark service, external inbox, human engagement or real customer campaign has been verified or submitted.
 
+## Source triggers, test messages and secondary actions (November 5)
+
+Migrations106/107 add durable test-message requests and actual source-event enrollment. Both were applied and are immutable. Test messages bind a UUID to the saved sequence version, selected email, recipient and creative. Replaying that UUID returns its recorded provider outcome after edits or archival, without a second submission. An ambiguous same-address CRM identity is rejected. QA receipts use `sequence_test` scope and do not inflate production sequence metrics.
+
+Triggers capture actual signup, newsletter confirmation, added contact tags, completed-order transitions and authenticated custom events in their source transactions. Only sequences active at capture receive a frozen revision match. The worker rechecks current source identity, audience, consent and order state before enrollment. Paused work remains held; archived work is cancelled. An unsupported historical trigger remains visible with an explicit repair state, and its original revision survives repair.
+
+Current evidence:
+
+- Fresh runner `/private/tmp/revolution-completion-fresh109b.log`: full guarded suite passed **151.51 seconds**, with101 successful migrations through109. It includes every prior regression plus actual QA provider acceptance/rejection/uncertainty and replay, source-event capture and enrollment, an overlapping source-write/worker deadlock regression, legacy trigger repair and atomic rollback. The runner stopped its owned PostgreSQL cluster and retained its logs.
+- `sequences.spec.ts` and `sequence-actions.spec.ts`: **all9 browser cases passed in1.1 minutes**, log `/private/tmp/revolution-sequences109-browser2.log`. Cases cover both admin interfaces, actual selected-email SMTP QA and receipt history, rejection and replay without reconnecting, actual custom-event worker enrollment/history, legacy repair,21-record pagination and last-page deletion, malformed-response recovery, ordered authoring/reload/version barriers, role rejection and actual timer delivery without repeated-enrollment resend. Relay19027 accepted only explicit `.test` recipients.
+- The first browser attempt failed because an in-flight shared contact import was duplicated. Its log is retained; the owner corrected the source before the passing rerun. No sequence assertions were weakened.
+
+The verified browser database had zero active sequences and zero processing deliveries after cleanup. A controlled process-restart proof and the broader CRM permission work remain separate outstanding checks; no live-provider delivery or human engagement is claimed.
+
 ## Remaining work
 
-The canonical client, new/edit form, enrollment/activity views, primary list actions and running timer have local browser verification. Implement the established triggers and test-send workflow, and finish secondary navigation and its loading/failure states. Additional process-restart and broader module coverage remain open. Broader CRM manager scopes and the source-wide completion gate remain open.
+The canonical and secondary clients, source triggers, test messages, enrollment/activity views and actual running timers have the local verification above. A read-only reconciliation found no remaining visible sequence action stub; sequence import/export controls belong to the separate Automations module. Some advanced field interactions and subscriber cancellation/filter paging have backend proof rather than individual browser-click evidence. A controlled process restart and finer CRM manager scopes remain open. The source-wide completion gate remains open.
 
 One enrollment per sequence/contact and normalized address prevents accidental resubmission. Existing cohorts retain their revision. A deliberately new sequence identity can be created through duplication; it does not inherit enrollments or submit messages. Live-provider configuration and account verification remain external requirements, distinct from the adapter proofs above.
 

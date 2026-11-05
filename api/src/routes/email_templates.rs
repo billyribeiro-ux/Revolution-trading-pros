@@ -356,12 +356,19 @@ fn model(value: &serde_json::Value) -> Result<(), Failure> {
 // HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════
 
-/// List all email templates (admin)
-async fn list_templates(
-    State(state): State<AppState>,
-    AdminUser(_user): AdminUser,
-    Query(query): Query<TemplateListQuery>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+pub(crate) struct TemplateCatalogPage {
+    pub(crate) rows: Vec<EmailTemplateRow>,
+    pub(crate) page: i64,
+    pub(crate) per_page: i64,
+    pub(crate) total: i64,
+}
+/// Pure catalog read shared by the global API and narrowly scoped CRM picker.
+/// No privileged extractor is constructed or accepted by this function.
+pub(crate) async fn read_catalog(
+    pool: &sqlx::PgPool,
+    query: &TemplateListQuery,
+    active_only: bool,
+) -> Result<TemplateCatalogPage, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).clamp(1, 10_000);
     let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
     let offset = (page - 1).saturating_mul(per_page);
@@ -372,42 +379,38 @@ async fn list_templates(
     if let Some(value) = category {
         validate_text(value, 50, true, true)?;
     }
-
-    let search_pattern: Option<String> = query
+    let search = query
         .search
         .as_ref()
-        .map(|s| format!("%{}%", s.replace('\0', "")));
+        .map(|value| format!("%{}%", value.replace('\0', "")));
+    let mut tx = pool.begin().await.map_err(storage)?;
+    sqlx::query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+        .execute(&mut *tx)
+        .await
+        .map_err(storage)?;
+    let rows=sqlx::query_as(template_sql!("SELECT "," FROM email_templates WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1 OR slug ILIKE $1) AND ($2::text IS NULL OR LOWER(COALESCE(template_type,'transactional'))=LOWER($2)) AND (NOT $5 OR is_active=true) ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4"))
+        .bind(search.as_deref()).bind(category).bind(per_page).bind(offset).bind(active_only).fetch_all(&mut *tx).await.map_err(storage)?;
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM email_templates WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1 OR slug ILIKE $1) AND ($2::text IS NULL OR LOWER(COALESCE(template_type,'transactional'))=LOWER($2)) AND (NOT $3 OR is_active=true)")
+        .bind(search.as_deref()).bind(category).bind(active_only).fetch_one(&mut *tx).await.map_err(storage)?;
+    tx.commit().await.map_err(storage)?;
+    Ok(TemplateCatalogPage {
+        rows,
+        page,
+        per_page,
+        total,
+    })
+}
 
-    let templates: Vec<EmailTemplateRow> = sqlx::query_as(template_sql!("\n        SELECT ","\n        FROM email_templates\n        WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1 OR slug ILIKE $1) AND ($2::text IS NULL OR LOWER(COALESCE(template_type,'transactional'))=LOWER($2))\n        ORDER BY created_at DESC,id DESC\n        LIMIT $3 OFFSET $4\n        "))
-    .bind(search_pattern.as_deref())
-    .bind(category)
-    .bind(per_page)
-    .bind(offset)
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(storage)?;
-
-    let total: (i64,) = sqlx::query_as(
-        r"
-        SELECT COUNT(*) FROM email_templates
-        WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1 OR slug ILIKE $1) AND ($2::text IS NULL OR LOWER(COALESCE(template_type,'transactional'))=LOWER($2))
-        ",
-    )
-    .bind(search_pattern.as_deref())
-    .bind(category)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(storage)?;
-
-    Ok(Json(json!({
-        "data": templates,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
-        }
-    })))
+/// Native catalog entry keeps its existing global AdminUser boundary and DTO.
+async fn list_templates(
+    State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
+    Query(query): Query<TemplateListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let result = read_catalog(&state.db.pool, &query, false).await?;
+    Ok(Json(
+        json!({"data":result.rows,"meta":{"current_page":result.page,"per_page":result.per_page,"total":result.total,"total_pages":(result.total+result.per_page-1)/result.per_page}}),
+    ))
 }
 
 /// Get single email template by ID (admin)

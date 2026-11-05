@@ -2,7 +2,7 @@
 use super::{campaign_audience, campaigns};
 use crate::{
     AppState,
-    middleware::admin::AdminUser,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
     utils::errors::{self, ApiError},
 };
 use axum::{
@@ -28,20 +28,22 @@ struct Schedule {
 async fn submit(
     pool: &PgPool,
     id: i64,
-    actor: i64,
+    actor: &AdminUser,
     due: DateTime<Utc>,
     resume: bool,
 ) -> Result<Value, ApiError> {
     // Resolve references before holding a transaction connection. The row version
     // check below prevents concurrent authoring from changing the frozen content.
     campaigns::require_crm_owner(pool, id).await?;
-    let campaign = campaigns::row(pool, id).await?;
+    let campaign = campaigns::authorized(pool, actor, id).await?;
     let audience =
         campaign_audience::resolve(pool, campaign.get("subscriber_settings").cloned()).await?;
     let mut tx = pool.begin().await.map_err(db)?;
-    freeze_on(&mut tx, id, actor, due, resume, &campaign, &audience).await?;
+    campaigns::lock_authorized(&mut tx, actor, id).await?;
+    freeze_on(&mut tx, id, actor.0.id, due, resume, &campaign, &audience).await?;
+    let saved = campaigns::authorized_on(&mut tx, actor, id).await?;
     tx.commit().await.map_err(db)?;
-    campaigns::row(pool, id).await
+    Ok(saved)
 }
 
 /// Stage a complete immutable submission in the caller's transaction.
@@ -189,7 +191,7 @@ async fn send(
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     Ok(Json(
-        submit(&state.db.pool, id, admin.0.id, Utc::now(), false).await?,
+        submit(&state.db.pool, id, &admin, Utc::now(), false).await?,
     ))
 }
 async fn schedule(
@@ -202,7 +204,7 @@ async fn schedule(
         return Err(ApiError::validation_error("Schedule must be in the future"));
     }
     Ok(Json(
-        submit(&state.db.pool, id, admin.0.id, input.scheduled_at, false).await?,
+        submit(&state.db.pool, id, &admin, input.scheduled_at, false).await?,
     ))
 }
 async fn resume(
@@ -221,7 +223,7 @@ async fn resume(
         submit(
             &state.db.pool,
             id,
-            admin.0.id,
+            &admin,
             due.unwrap_or_else(Utc::now).max(Utc::now()),
             true,
         )
@@ -230,17 +232,21 @@ async fn resume(
 }
 async fn pause(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     campaigns::require_crm_owner(&state.db.pool, id).await?;
-    let result=sqlx::query("UPDATE crm_campaigns SET status='paused',pause_reason='manual',updated_at=NOW() WHERE id=$1 AND status IN ('scheduled','sending')").bind(id).execute(&state.db.pool).await.map_err(db)?;
+    let mut tx = state.db.pool.begin().await.map_err(db)?;
+    campaigns::lock_authorized(&mut tx, &admin, id).await?;
+    let result=sqlx::query("UPDATE crm_campaigns SET status='paused',pause_reason='manual',updated_at=NOW() WHERE id=$1 AND status IN ('scheduled','sending')").bind(id).execute(&mut *tx).await.map_err(db)?;
     if result.rows_affected() == 0 {
         return Err(errors::conflict(
             "Only a scheduled or sending campaign can be paused",
         ));
     }
-    Ok(Json(campaigns::row(&state.db.pool, id).await?))
+    let saved = campaigns::authorized_on(&mut tx, &admin, id).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(Json(saved))
 }
 pub(super) fn router() -> Router<AppState> {
     Router::new()
@@ -259,7 +265,7 @@ struct DeliveryPage {
 }
 async fn deliveries(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Query(filters): Query<DeliveryPage>,
 ) -> Result<Json<Value>, ApiError> {
@@ -283,9 +289,11 @@ async fn deliveries(
             "Invalid delivery page or status",
         ));
     }
-    campaigns::row(&state.db.pool, id).await?;
-    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2)").bind(id).bind(&filters.status).fetch_one(&state.db.pool).await.map_err(db)?;
-    let data:Vec<Value>=sqlx::query_scalar("SELECT to_jsonb(receipt) FROM (SELECT id,email,display_name,status,attempt_count,attempts_remaining,due_at,provider_message_id,last_error,sender_identity,provider,provider_stream,accepted_at,delivered_at,opened_at,clicked_at,bounced_at,complained_at,unsubscribed_at,created_at,updated_at FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2) ORDER BY created_at,id LIMIT $3 OFFSET $4) receipt").bind(id).bind(filters.status).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&state.db.pool).await.map_err(db)?;
+    let mut tx = super::manager_sources::read_transaction(&state.db.pool).await?;
+    campaigns::authorized_on(&mut tx, &admin, id).await?;
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2)").bind(id).bind(&filters.status).fetch_one(&mut *tx).await.map_err(db)?;
+    let data:Vec<Value>=sqlx::query_scalar("SELECT to_jsonb(receipt) FROM (SELECT id,email,display_name,status,attempt_count,attempts_remaining,due_at,provider_message_id,last_error,sender_identity,provider,provider_stream,accepted_at,delivered_at,opened_at,clicked_at,bounced_at,complained_at,unsubscribed_at,created_at,updated_at FROM crm_campaign_deliveries WHERE campaign_id=$1 AND ($2::text IS NULL OR status=$2) ORDER BY created_at,id LIMIT $3 OFFSET $4) receipt").bind(id).bind(filters.status).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&mut *tx).await.map_err(db)?;
+    tx.commit().await.map_err(db)?;
     Ok(Json(
         json!({"data":data,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":(total+size-1)/size}}),
     ))

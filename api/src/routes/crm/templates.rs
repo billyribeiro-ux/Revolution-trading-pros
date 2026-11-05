@@ -1,5 +1,7 @@
 //! Durable CRM email templates and the library's category/prebuilt contracts.
-use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
+use crate::{
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, utils::errors::ApiError,
+};
 use axum::{
     Json, Router,
     extract::{Path, Query, State},

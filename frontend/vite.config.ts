@@ -1,3 +1,4 @@
+import publicMediaPolicy from './src/lib/seo/public-media.json' with { type: 'json' };
 import { createCloudflareAdapter } from './config/cloudflare-adapter.js';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { enhancedImages } from '@sveltejs/enhanced-img';
@@ -6,6 +7,18 @@ import { defineConfig, lazyPlugins } from 'vite-plus';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 
+// Validate shared media host patterns before creating typed CSP sources.
+function mediaCspHost(host: string): `https://${string}.${string}` {
+	if (!/^(?:\*\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+$/.test(host))
+		throw new Error('Invalid configured public media host');
+	const dot = host.indexOf('.');
+	return `https://${host.slice(0, dot)}.${host.slice(dot + 1)}`;
+}
+function fixtureMediaOrigin(): 'http://127.0.0.1:19030' {
+	if (publicMediaPolicy.development_origin !== 'http://127.0.0.1:19030')
+		throw new Error('Invalid owned development media origin');
+	return publicMediaPolicy.development_origin;
+}
 // Build-unique app version (`kit.version.name`). Kit's update polling, the
 // `_app/version.json` file, and the service worker's cache names (via
 // `version` from `$app/env`) all read this one identifier.
@@ -111,14 +124,18 @@ export default defineConfig(({ mode, command }) => {
 						],
 						'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
 						'font-src': ['self', 'https://fonts.gstatic.com', 'data:'],
-						'img-src': ['self', 'data:', 'https:', 'blob:'],
+						'img-src': [
+							'self',
+							'data:',
+							'https:',
+							'blob:',
+							...(isDev ? ([fixtureMediaOrigin()] as const) : [])
+						],
 						'worker-src': ['self', ...(isDev ? (['blob:'] as const) : [])],
 						'media-src': [
 							'self',
-							'https://*.mediadelivery.net',
-							'https://vz-5a23b520-193.b-cdn.net',
-							'https://*.b-cdn.net',
-							'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev'
+							...publicMediaPolicy.file_hosts.map(mediaCspHost),
+							...(isDev ? ([fixtureMediaOrigin()] as const) : [])
 						],
 						'connect-src': [
 							'self',
@@ -155,8 +172,7 @@ export default defineConfig(({ mode, command }) => {
 							'self',
 							'https://js.stripe.com',
 							'https://hooks.stripe.com',
-							'https://iframe.mediadelivery.net',
-							'https://*.mediadelivery.net'
+							...publicMediaPolicy.iframe_hosts.map(mediaCspHost)
 						],
 						'frame-ancestors': ['none'],
 						'base-uri': ['self'],

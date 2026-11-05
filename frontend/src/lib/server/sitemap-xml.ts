@@ -12,19 +12,18 @@ import {
 
 /** Required extension fields only; dates and authors always come from saved facts. */
 export function xmlText(value: string): string {
-	if (
-		[...value].some((character) => {
-			const code = character.codePointAt(0);
-			return (
-				code === undefined ||
-				(code < 32 && ![9, 10, 13].includes(code)) ||
-				code === 65534 ||
-				code === 65535 ||
-				(code >= 55296 && code <= 57343)
-			);
-		})
-	)
-		throw new Error('A source contains characters that XML cannot represent');
+	for (const character of value) {
+		const code = character.codePointAt(0);
+		if (
+			code === undefined ||
+			(code < 32 && ![9, 10, 13].includes(code)) ||
+			code === 65534 ||
+			code === 65535 ||
+			(code >= 55296 && code <= 57343)
+		)
+			throw new Error('A source contains characters that XML cannot represent');
+	}
+
 	return value
 		.replaceAll('&', '&amp;')
 		.replaceAll('<', '&lt;')

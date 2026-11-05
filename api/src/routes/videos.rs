@@ -6,8 +6,8 @@
 
 use axum::{
     Json, Router,
-    extract::{Path, Query, State},
-    http::StatusCode,
+    extract::{FromRequestParts, Path, Query, State},
+    http::{HeaderValue, StatusCode, request::Parts},
     routing::{get, post},
 };
 use chrono::NaiveDate;
@@ -15,10 +15,10 @@ use serde::Deserialize;
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::AppState;
 use crate::models::video::{
     PaginationMeta, RoomInfo, TagDetail, TraderInfo, VideoResponse, get_all_tags,
 };
+use crate::{AppState, models::User};
 
 /// RUST_DEEP_AUDIT_2026-06-07 (P1-7): return a 500 for a failed video-list query
 /// instead of swallowing the DB error into an empty list (which presented as
@@ -39,9 +39,9 @@ pub struct UnifiedVideoRow {
     #[sqlx(default)]
     pub description: Option<String>,
     #[sqlx(default)]
-    pub video_url: String,
+    pub video_url: Option<String>,
     #[sqlx(default)]
-    pub video_platform: String,
+    pub video_platform: Option<String>,
     #[sqlx(default)]
     pub video_id: Option<String>,
     #[sqlx(default)]
@@ -56,20 +56,24 @@ pub struct UnifiedVideoRow {
     pub difficulty_level: Option<String>,
     #[sqlx(default)]
     pub category: Option<String>,
-    pub video_date: NaiveDate,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalDate")]
+    pub video_date: Option<NaiveDate>,
     #[sqlx(default)]
-    pub is_published: bool,
+    pub is_published: Option<bool>,
     #[sqlx(default)]
-    pub is_featured: bool,
+    pub is_featured: Option<bool>,
     #[sqlx(default)]
     pub tags: Option<serde_json::Value>,
     #[sqlx(default)]
-    pub views_count: i32,
+    pub views_count: Option<i32>,
     #[sqlx(default)]
     pub trader_id: Option<i64>,
     #[sqlx(default)]
     pub bunny_library_id: Option<i64>,
-    pub created_at: chrono::NaiveDateTime,
+    #[sqlx(default)]
+    pub approved_public: bool,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -78,6 +82,8 @@ pub struct VideoListQuery {
     pub per_page: Option<i64>,
     pub content_type: Option<String>,
     pub room_id: Option<i64>,
+    pub room_slug: Option<String>,
+    pub video_date: Option<NaiveDate>,
     pub tags: Option<String>,
     pub difficulty_level: Option<String>,
     pub search: Option<String>,
@@ -89,25 +95,27 @@ pub struct TrackEventRequest {
     pub timestamp_seconds: Option<i32>,
 }
 
-fn get_embed_url(video: &UnifiedVideoRow) -> String {
-    match video.video_platform.as_str() {
-        "bunny" => {
+fn get_embed_url(video: &UnifiedVideoRow) -> Option<String> {
+    match video.video_platform.as_deref() {
+        Some("bunny") => {
             if let (Some(guid), Some(lib_id)) = (&video.bunny_video_guid, video.bunny_library_id) {
-                format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}")
+                Some(format!(
+                    "https://iframe.mediadelivery.net/embed/{lib_id}/{guid}"
+                ))
             } else {
                 video.video_url.clone()
             }
         }
-        "vimeo" => {
+        Some("vimeo") => {
             if let Some(id) = &video.video_id {
-                format!("https://player.vimeo.com/video/{id}")
+                Some(format!("https://player.vimeo.com/video/{id}"))
             } else {
                 video.video_url.clone()
             }
         }
-        "youtube" => {
+        Some("youtube") => {
             if let Some(id) = &video.video_id {
-                format!("https://www.youtube.com/embed/{id}")
+                Some(format!("https://www.youtube.com/embed/{id}"))
             } else {
                 video.video_url.clone()
             }
@@ -145,21 +153,41 @@ fn get_tag_details(tags: &Option<serde_json::Value>) -> Vec<TagDetail> {
         .collect()
 }
 
-fn video_to_response(video: UnifiedVideoRow) -> VideoResponse {
-    VideoResponse {
+fn video_to_response(
+    video: UnifiedVideoRow,
+    development: bool,
+) -> Result<VideoResponse, VideoError> {
+    let (video_url, embed_url) = if video.approved_public {
+        let (url, _) = super::seo_sitemaps::approved_playback(&json!({
+            "video_url": video.video_url,
+            "video_platform": video.video_platform,
+            "video_id": video.video_id,
+            "bunny_video_guid": video.bunny_video_guid,
+            "bunny_library_id": video.bunny_library_id,
+        }), development).map_err(|_| (StatusCode::SERVICE_UNAVAILABLE, Json(json!({"error":"Approved public playback is unavailable; review the video source"}))))?;
+        (Some(url.clone()), Some(url))
+    } else {
+        (video.video_url.clone(), get_embed_url(&video))
+    };
+    Ok(VideoResponse {
         id: video.id,
         title: video.title.clone(),
         slug: video.slug.clone(),
         description: video.description.clone(),
-        video_url: video.video_url.clone(),
-        embed_url: get_embed_url(&video),
+        video_url,
+        embed_url,
         video_platform: video.video_platform.clone(),
         thumbnail_url: video.thumbnail_url.clone(),
         duration: video.duration,
-        formatted_duration: format_duration(video.duration),
+        formatted_duration: video
+            .duration
+            .filter(|duration| *duration > 0)
+            .map(|duration| format_duration(Some(duration))),
         content_type: video.content_type.clone(),
-        video_date: video.video_date.to_string(),
-        formatted_date: video.video_date.format("%B %d, %Y").to_string(),
+        video_date: video.video_date.map(|date| date.to_string()),
+        formatted_date: video
+            .video_date
+            .map(|date| date.format("%B %d, %Y").to_string()),
         is_published: video.is_published,
         is_featured: video.is_featured,
         tags: get_tags_vec(&video.tags),
@@ -167,8 +195,8 @@ fn video_to_response(video: UnifiedVideoRow) -> VideoResponse {
         views_count: video.views_count,
         trader: None,
         rooms: vec![],
-        created_at: video.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
-    }
+        created_at: video.created_at.map(|date| date.to_rfc3339()),
+    })
 }
 
 /// List videos (public) - supports filtering by content_type, room, tags
@@ -190,25 +218,164 @@ fn video_to_response(video: UnifiedVideoRow) -> VideoResponse {
 /// New implementation builds the WHERE clause as `Vec<String>` of `${N}` placeholders
 /// only — column names are static literals; values bind via `sqlx::query_as_with`.
 /// Tag containment uses bound JSONB; ILIKE search escapes `%` and `_` wildcards.
+type VideoError = (StatusCode, Json<serde_json::Value>);
+/// Missing credentials are public. Invalid/revoked credentials remain an authentication error.
+struct VideoViewer(Option<User>);
+impl FromRequestParts<AppState> for VideoViewer {
+    type Rejection = (StatusCode, &'static str);
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Self, Self::Rejection> {
+        if parts.headers.contains_key("authorization") {
+            Ok(Self(Some(User::from_request_parts(parts, state).await?)))
+        } else {
+            Ok(Self(None))
+        }
+    }
+}
+struct Visibility {
+    cte: String,
+    registry: serde_json::Value,
+    origin: String,
+    user_id: Option<i64>,
+    staff: bool,
+}
+impl Visibility {
+    fn new(state: &AppState, viewer: &VideoViewer) -> Result<Self, VideoError> {
+        let (sources, registry) = super::seo_sitemaps::approved_video_source().map_err(|_| {
+            (
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error":"Public publication policy is unavailable"})),
+            )
+        })?;
+        let cte = format!(
+            "WITH public_sources AS ({sources}), visible AS (SELECT v.id,EXISTS(SELECT 1 FROM public_sources approved WHERE approved.reason IS NULL AND (approved.item->>'id')::bigint=v.id) AS approved_public FROM unified_videos v WHERE v.is_published AND v.deleted_at IS NULL AND ($5::boolean OR EXISTS(SELECT 1 FROM public_sources approved WHERE approved.reason IS NULL AND (approved.item->>'id')::bigint=v.id) OR EXISTS(SELECT 1 FROM video_room_assignments assignment JOIN membership_plans plan ON plan.room_id=assignment.room_id JOIN user_memberships membership ON membership.plan_id=plan.id WHERE assignment.video_id=v.id AND membership.user_id=$4 AND membership.status IN ('active','trial','trialing') AND membership.deleted_at IS NULL AND (membership.status='active' OR membership.trial_ends_at IS NULL OR membership.trial_ends_at>NOW() AT TIME ZONE 'UTC') AND membership.starts_at<=NOW() AT TIME ZONE 'UTC' AND (membership.expires_at IS NULL OR membership.expires_at>NOW() AT TIME ZONE 'UTC') AND (membership.current_period_end IS NULL OR membership.current_period_end>NOW() AT TIME ZONE 'UTC'))))"
+        );
+        Ok(Self {
+            cte,
+            registry,
+            origin: state.config.app_url.clone(),
+            user_id: viewer.0.as_ref().map(|user| user.id),
+            staff: viewer
+                .0
+                .as_ref()
+                .is_some_and(|user| crate::middleware::admin::is_admin_role(user.role.as_deref())),
+        })
+    }
+    fn args(&self, args: &mut sqlx::postgres::PgArguments) -> Result<(), VideoError> {
+        use sqlx::Arguments;
+        args.add(self.registry.clone()).map_err(args_err)?;
+        args.add(json!({})).map_err(args_err)?;
+        args.add(self.origin.clone()).map_err(args_err)?;
+        args.add(self.user_id).map_err(args_err)?;
+        args.add(self.staff).map_err(args_err)?;
+        Ok(())
+    }
+}
+async fn room_filter(
+    state: &AppState,
+    viewer: &VideoViewer,
+    query: &mut VideoListQuery,
+) -> Result<(), VideoError> {
+    if let Some(slug) = &query.room_slug {
+        let id: Option<i64> = sqlx::query_scalar("SELECT id FROM trading_rooms WHERE slug=$1")
+            .bind(slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|error| video_load_error(&error))?;
+        let id = id.ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error":"Trading room not found"})),
+            )
+        })?;
+        if query.room_id.is_some_and(|actual| actual != id) {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error":"Room identity and slug do not match"})),
+            ));
+        }
+        query.room_id = Some(id);
+    }
+    if let Some(room) = query.room_id {
+        let user = viewer.0.as_ref().ok_or_else(|| {
+            (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error":"Authentication required for room videos"})),
+            )
+        })?;
+        if room <= 0 {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error":"Choose a positive room identity"})),
+            ));
+        }
+        if crate::middleware::admin::is_admin_role(user.role.as_deref()) {
+            return Ok(());
+        }
+        let allowed:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM user_memberships membership JOIN membership_plans plan ON plan.id=membership.plan_id WHERE membership.user_id=$1 AND plan.room_id=$2 AND membership.status IN ('active','trial','trialing') AND membership.deleted_at IS NULL AND (membership.status='active' OR membership.trial_ends_at IS NULL OR membership.trial_ends_at>NOW() AT TIME ZONE 'UTC') AND membership.starts_at<=NOW() AT TIME ZONE 'UTC' AND (membership.expires_at IS NULL OR membership.expires_at>NOW() AT TIME ZONE 'UTC') AND (membership.current_period_end IS NULL OR membership.current_period_end>NOW() AT TIME ZONE 'UTC'))").bind(user.id).bind(room).fetch_one(&state.db.pool).await.map_err(|error|video_load_error(&error))?;
+        if !allowed {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(json!({"error":"Current membership for this room is required"})),
+            ));
+        }
+    }
+    Ok(())
+}
+async fn visible_video(
+    state: &AppState,
+    viewer: &VideoViewer,
+    identity: &str,
+) -> Result<UnifiedVideoRow, VideoError> {
+    let scope = Visibility::new(state, viewer)?;
+    let sql = format!(
+        "{} SELECT v.*,permitted.approved_public FROM unified_videos v JOIN visible permitted ON permitted.id=v.id WHERE (($6::bigint IS NOT NULL AND v.id=$6) OR ($6::bigint IS NULL AND v.slug=$7))",
+        scope.cte
+    );
+    sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
+        .bind(scope.registry)
+        .bind(json!({}))
+        .bind(scope.origin)
+        .bind(scope.user_id)
+        .bind(scope.staff)
+        .bind(identity.parse::<i64>().ok())
+        .bind(identity)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|error| video_load_error(&error))?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error":"Video not found"})),
+            )
+        })
+}
 async fn list_videos(
     State(state): State<AppState>,
-    Query(query): Query<VideoListQuery>,
+    viewer: VideoViewer,
+    Query(mut query): Query<VideoListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     use sqlx::Arguments;
+    room_filter(&state, &viewer, &mut query).await?;
+    let visibility = Visibility::new(&state, &viewer)?;
 
     let page = query.page.unwrap_or(1).max(1);
     let per_page = query.per_page.unwrap_or(20).clamp(1, 100);
-    let offset = (page - 1) * per_page;
+    let offset = page.saturating_sub(1).saturating_mul(per_page);
 
     // Static base — no user input.
     let mut where_clauses: Vec<String> = vec![
         "v.is_published = true".to_string(),
         "v.deleted_at IS NULL".to_string(),
+        "v.id IN (SELECT id FROM visible)".to_string(),
     ];
 
     // Sqlx Postgres arguments: bound values, never string-spliced.
     let mut args = sqlx::postgres::PgArguments::default();
-    let mut idx: i32 = 0;
+    visibility.args(&mut args)?;
+    let mut idx: i32 = 5;
 
     // Helper to push a placeholder reference like "$N".
     macro_rules! next_placeholder {
@@ -230,7 +397,7 @@ async fn list_videos(
         let ph = next_placeholder!();
         where_clauses.push(format!(
             "EXISTS (SELECT 1 FROM video_room_assignments vra \
-             WHERE vra.video_id = v.id AND vra.trading_room_id = {ph})"
+             WHERE vra.video_id = v.id AND vra.room_id = {ph})"
         ));
         args.add(room_id).map_err(args_err)?;
     }
@@ -273,6 +440,11 @@ async fn list_videos(
         args.add(pattern).map_err(args_err)?;
     }
 
+    if let Some(date) = query.video_date {
+        let ph = next_placeholder!();
+        where_clauses.push(format!("v.video_date = {ph}"));
+        args.add(date).map_err(args_err)?;
+    }
     // LIMIT and OFFSET — bound, even though they're already clamped i64.
     let limit_ph = next_placeholder!();
     let offset_ph = next_placeholder!();
@@ -281,16 +453,21 @@ async fn list_videos(
 
     let where_sql = where_clauses.join(" AND ");
     let sql = format!(
-        "SELECT v.* FROM unified_videos v WHERE {where_sql} \
+        "{} SELECT v.*,(SELECT permitted.approved_public FROM visible permitted WHERE permitted.id=v.id) AS approved_public FROM unified_videos v WHERE {where_sql} \
          ORDER BY v.video_date DESC, v.created_at DESC \
-         LIMIT {limit_ph} OFFSET {offset_ph}"
+         LIMIT {limit_ph} OFFSET {offset_ph}",
+        visibility.cte
     );
 
     // Build a separate args bag for the COUNT query (sqlx PgArguments isn't Clone).
     // `where_sql` only contains AND-joined clauses (no LIMIT/OFFSET), so we reuse it as-is.
     let mut count_args = sqlx::postgres::PgArguments::default();
+    visibility.args(&mut count_args)?;
     rebuild_count_args(&mut count_args, &query)?;
-    let count_sql = format!("SELECT COUNT(*) FROM unified_videos v WHERE {where_sql}");
+    let count_sql = format!(
+        "{} SELECT COUNT(*) FROM unified_videos v WHERE {where_sql}",
+        visibility.cte
+    );
 
     let videos: Vec<UnifiedVideoRow> = sqlx::query_as_with(sqlx::AssertSqlSafe(sql.as_str()), args)
         .fetch_all(&state.db.pool)
@@ -305,10 +482,13 @@ async fn list_videos(
     let total: (i64,) = sqlx::query_as_with(sqlx::AssertSqlSafe(count_sql.as_str()), count_args)
         .fetch_one(&state.db.pool)
         .await
-        .unwrap_or((0,));
+        .map_err(|error| video_load_error(&error))?;
 
-    let responses: Vec<VideoResponse> = videos.into_iter().map(video_to_response).collect();
-    let last_page = ((total.0 as f64) / (per_page as f64)).ceil() as i64;
+    let responses: Vec<VideoResponse> = videos
+        .into_iter()
+        .map(|video| video_to_response(video, state.config.environment == "development"))
+        .collect::<Result<_, _>>()?;
+    let last_page = ((total.0 + per_page - 1) / per_page).max(1);
 
     Ok(Json(json!({
         "success": true,
@@ -366,51 +546,38 @@ fn rebuild_count_args(
         let pattern = format!("%{escaped}%");
         args.add(pattern).map_err(args_err)?;
     }
+    if let Some(date) = query.video_date {
+        args.add(date).map_err(args_err)?;
+    }
     Ok(())
 }
 
 /// Get video by ID or slug
 async fn get_video(
     State(state): State<AppState>,
-    Path(id_or_slug): Path<String>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let video: UnifiedVideoRow = if let Ok(id) = id_or_slug.parse::<i64>() {
-        sqlx::query_as(
-            "SELECT * FROM unified_videos WHERE id = $1 AND is_published = true AND deleted_at IS NULL"
-        )
-        .bind(id)
-        .fetch_optional(&state.db.pool)
-        .await
-    } else {
-        sqlx::query_as(
-            "SELECT * FROM unified_videos WHERE slug = $1 AND is_published = true AND deleted_at IS NULL"
-        )
-        .bind(&id_or_slug)
-        .fetch_optional(&state.db.pool)
-        .await
-    }
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Video not found"}))))?;
-
-    // Increment view count
-    let _ = sqlx::query("UPDATE unified_videos SET views_count = views_count + 1 WHERE id = $1")
+    viewer: VideoViewer,
+    Path(identity): Path<String>,
+) -> Result<Json<serde_json::Value>, VideoError> {
+    let video = visible_video(&state, &viewer, &identity).await?;
+    sqlx::query("UPDATE unified_videos SET views_count=views_count+1 WHERE id=$1")
         .bind(video.id)
         .execute(&state.db.pool)
-        .await;
-
-    Ok(Json(json!({
-        "success": true,
-        "data": video_to_response(video)
-    })))
+        .await
+        .map_err(|error| video_load_error(&error))?;
+    Ok(Json(
+        json!({"success":true,"data":video_to_response(video, state.config.environment == "development")?}),
+    ))
 }
 
 /// Track video event
 async fn track_event(
     State(state): State<AppState>,
+    viewer: VideoViewer,
     Path(id): Path<i64>,
     Json(input): Json<TrackEventRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let _ = sqlx::query(
+    visible_video(&state, &viewer, &id.to_string()).await?;
+    sqlx::query(
         "INSERT INTO analytics_events (event_type, event_name, properties, created_at) VALUES ('video', $1, $2, NOW())"
     )
     .bind(&input.event_type)
@@ -419,7 +586,7 @@ async fn track_event(
         "timestamp_seconds": input.timestamp_seconds
     }))
     .execute(&state.db.pool)
-    .await;
+    .await.map_err(|error|video_load_error(&error))?;
 
     Ok(Json(json!({"success": true, "status": "ok"})))
 }
@@ -428,96 +595,61 @@ async fn track_event(
 /// ICT 7 ADDITION: Provides related video suggestions
 async fn get_related_videos(
     State(state): State<AppState>,
+    viewer: VideoViewer,
     Path(id): Path<i64>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Get the current video's tags and content_type
-    let video: Option<(serde_json::Value, String)> = sqlx::query_as(
-        "SELECT COALESCE(tags, '[]'::jsonb), content_type FROM unified_videos WHERE id = $1 AND deleted_at IS NULL"
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .unwrap_or(None);
-
-    let (tags, content_type) = match video {
-        Some((t, c)) => (t, c),
-        None => {
-            return Err((
-                StatusCode::NOT_FOUND,
-                Json(json!({"error": "Video not found"})),
-            ));
-        }
-    };
-
-    // Find related videos with same content_type or overlapping tags
-    let related: Vec<UnifiedVideoRow> = sqlx::query_as(
-        r"SELECT * FROM unified_videos
-           WHERE id != $1
-             AND is_published = true
-             AND deleted_at IS NULL
-             AND (content_type = $2 OR tags ?| (SELECT array_agg(value::text) FROM jsonb_array_elements_text($3)))
-           ORDER BY
-             CASE WHEN content_type = $2 THEN 1 ELSE 2 END,
-             video_date DESC
-           LIMIT 6"
-    )
-    .bind(id)
-    .bind(&content_type)
-    .bind(&tags)
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| video_load_error(&e))?;
-
-    let responses: Vec<VideoResponse> = related.into_iter().map(video_to_response).collect();
-
-    Ok(Json(json!({
-        "success": true,
-        "data": responses
-    })))
+) -> Result<Json<serde_json::Value>, VideoError> {
+    let current = visible_video(&state, &viewer, &id.to_string()).await?;
+    let scope = Visibility::new(&state, &viewer)?;
+    let sql = format!(
+        "{} SELECT v.*,permitted.approved_public FROM unified_videos v JOIN visible permitted ON permitted.id=v.id WHERE v.id<>$6 AND (v.content_type=$7 OR v.tags ?| ARRAY(SELECT jsonb_array_elements_text($8))) ORDER BY CASE WHEN v.content_type=$7 THEN 1 ELSE 2 END,v.video_date DESC,v.id DESC LIMIT 6",
+        scope.cte
+    );
+    let related: Vec<UnifiedVideoRow> = sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
+        .bind(scope.registry)
+        .bind(json!({}))
+        .bind(scope.origin)
+        .bind(scope.user_id)
+        .bind(scope.staff)
+        .bind(id)
+        .bind(current.content_type)
+        .bind(current.tags.unwrap_or(json!([])))
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|error| video_load_error(&error))?;
+    Ok(Json(
+        json!({"success":true,"data":related.into_iter().map(|video| video_to_response(video, state.config.environment == "development")).collect::<Result<Vec<_>, _>>()?}),
+    ))
 }
 
 /// Get weekly watchlist videos (current week)
 /// ICT 7 ADDITION: Dedicated weekly videos endpoint
 async fn get_weekly_videos(
     State(state): State<AppState>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Get current week's start and end dates
-    let videos: Vec<UnifiedVideoRow> = sqlx::query_as(
-        r"SELECT * FROM unified_videos
-           WHERE content_type = 'weekly_watchlist'
-             AND is_published = true
-             AND deleted_at IS NULL
-             AND video_date >= date_trunc('week', CURRENT_DATE)
-             AND video_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
-           ORDER BY video_date DESC, created_at DESC",
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| video_load_error(&e))?;
-
-    // If no videos for current week, get most recent weekly videos
-    let videos = if videos.is_empty() {
-        sqlx::query_as(
-            r"SELECT * FROM unified_videos
-               WHERE content_type = 'weekly_watchlist'
-                 AND is_published = true
-                 AND deleted_at IS NULL
-               ORDER BY video_date DESC
-               LIMIT 10",
-        )
+    viewer: VideoViewer,
+) -> Result<Json<serde_json::Value>, VideoError> {
+    if viewer.0.is_none() {
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error":"Authentication required for weekly member videos"})),
+        ));
+    }
+    let scope = Visibility::new(&state, &viewer)?;
+    let sql = format!(
+        "{}, weekly AS (SELECT v.*,permitted.approved_public FROM unified_videos v JOIN visible permitted ON permitted.id=v.id WHERE v.content_type='weekly_watchlist'), current_week AS (SELECT * FROM weekly WHERE video_date>=date_trunc('week',CURRENT_DATE) AND video_date<date_trunc('week',CURRENT_DATE)+INTERVAL '7 days') SELECT * FROM current_week UNION ALL (SELECT * FROM weekly WHERE NOT EXISTS(SELECT 1 FROM current_week) ORDER BY video_date DESC,created_at DESC LIMIT 10) ORDER BY video_date DESC,created_at DESC",
+        scope.cte
+    );
+    let videos: Vec<UnifiedVideoRow> = sqlx::query_as(sqlx::AssertSqlSafe(sql.as_str()))
+        .bind(scope.registry)
+        .bind(json!({}))
+        .bind(scope.origin)
+        .bind(scope.user_id)
+        .bind(scope.staff)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| video_load_error(&e))?
-    } else {
-        videos
-    };
-
-    let responses: Vec<VideoResponse> = videos.into_iter().map(video_to_response).collect();
-
-    Ok(Json(json!({
-        "success": true,
-        "data": responses
-    })))
+        .map_err(|error| video_load_error(&error))?;
+    Ok(Json(
+        json!({"success":true,"data":videos.into_iter().map(|video| video_to_response(video, state.config.environment == "development")).collect::<Result<Vec<_>, _>>()?}),
+    ))
 }
 
 /// Get user's watch history with progress
@@ -527,7 +659,7 @@ async fn get_watch_history(
     user: crate::models::user::User,
     Query(params): Query<WatchHistoryQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id = user.id;
+    let scope = Visibility::new(&state, &VideoViewer(Some(user)))?;
     let limit = params.limit.unwrap_or(20).clamp(1, 50);
 
     #[allow(clippy::type_complexity)]
@@ -540,17 +672,9 @@ async fn get_watch_history(
         String,
         Option<String>,
         Option<i32>,
-    )> = sqlx::query_as(
-        r"SELECT wp.video_id, wp.current_time_seconds, wp.completion_percent, wp.completed,
-                  wp.last_watched_at, v.title, v.thumbnail_url, v.duration
-           FROM video_watch_progress wp
-           JOIN unified_videos v ON v.id = wp.video_id
-           WHERE wp.user_id = $1 AND v.deleted_at IS NULL
-           ORDER BY wp.last_watched_at DESC
-           LIMIT $2",
-    )
-    .bind(user_id)
-    .bind(limit as i32)
+
+    )> = sqlx::query_as(sqlx::AssertSqlSafe(format!("{} SELECT wp.video_id,wp.current_time_seconds,wp.completion_percent,wp.completed,wp.last_watched_at,v.title,v.thumbnail_url,v.duration FROM video_watch_progress wp JOIN unified_videos v ON v.id=wp.video_id JOIN visible permitted ON permitted.id=v.id WHERE wp.user_id=$4 ORDER BY wp.last_watched_at DESC LIMIT $6",scope.cte).as_str()))
+    .bind(scope.registry).bind(json!({})).bind(scope.origin).bind(scope.user_id).bind(scope.staff).bind(limit as i32)
     .fetch_all(&state.db.pool)
     .await
     .map_err(|e| video_load_error(&e))?;
@@ -586,4 +710,17 @@ pub fn router() -> Router<AppState> {
         .route("/{id_or_slug}", get(get_video))
         .route("/{id}/related", get(get_related_videos))
         .route("/{id}/track", post(track_event))
+        .layer(axum::middleware::from_fn(
+            |request: axum::extract::Request, next: axum::middleware::Next| async move {
+                let mut response = next.run(request).await;
+                response.headers_mut().insert(
+                    "Cache-Control",
+                    HeaderValue::from_static("private, no-store"),
+                );
+                response
+                    .headers_mut()
+                    .insert("Vary", HeaderValue::from_static("Authorization, Cookie"));
+                response
+            },
+        ))
 }

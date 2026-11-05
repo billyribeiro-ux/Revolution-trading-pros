@@ -1,6 +1,9 @@
 //! Bounded contact transfers: durable intent, atomic effects and actual downloads.
 use super::contacts::CreateContactInput;
-use crate::{AppState, middleware::admin::AdminUser, services::crm_logs, utils::errors::ApiError};
+use crate::{
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, services::crm_logs,
+    utils::errors::ApiError,
+};
 use axum::{
     Json, Router,
     body::to_bytes,
@@ -11,7 +14,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
-use sqlx::{PgConnection, Postgres, QueryBuilder};
+use sqlx::{PgConnection, Postgres, QueryBuilder, Transaction};
 use std::collections::{BTreeMap, BTreeSet};
 use uuid::Uuid;
 
@@ -275,12 +278,21 @@ async fn public_job(
         .ok_or_else(|| ApiError::not_found("Transfer job not found"))
 }
 async fn save_upload(state: &AppState, actor: i64, upload: Upload) -> Result<Value, ApiError> {
-    let parsed = parse(&upload)?;
     let mut tx = state.db.pool.begin().await.map_err(db)?;
+    let saved = save_upload_on(&mut tx, actor, upload).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(saved)
+}
+async fn save_upload_on(
+    tx: &mut Transaction<'_, Postgres>,
+    actor: i64,
+    upload: Upload,
+) -> Result<Value, ApiError> {
+    let parsed = parse(&upload)?;
     let id:Uuid=sqlx::query_scalar("INSERT INTO crm_transfer_jobs(direction,kind,file_name,file_type,status,headers,source_rows,total_rows,created_by) VALUES('import',$1,$2,$3,'pending',$4,$5,$6,$7) RETURNING id")
-        .bind(upload.kind).bind(upload.file_name).bind(upload.file_type).bind(json!(parsed.headers)).bind(json!(parsed.rows)).bind(parsed.rows.len() as i32).bind(actor).fetch_one(&mut *tx).await.map_err(db)?;
+        .bind(upload.kind).bind(upload.file_name).bind(upload.file_type).bind(json!(parsed.headers)).bind(json!(parsed.rows)).bind(parsed.rows.len() as i32).bind(actor).fetch_one(&mut **tx).await.map_err(db)?;
     crm_logs::record(
-        &mut tx,
+        tx,
         "info",
         "import",
         "Contact import file saved",
@@ -289,8 +301,7 @@ async fn save_upload(state: &AppState, actor: i64, upload: Upload) -> Result<Val
     )
     .await
     .map_err(db)?;
-    let job = public_job(&mut tx, id, "import").await?;
-    tx.commit().await.map_err(db)?;
+    let job = public_job(tx, id, "import").await?;
     Ok(job)
 }
 async fn create_import(
@@ -519,7 +530,7 @@ impl Default for Settings {
         }
     }
 }
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 struct Start {
     mapping: BTreeMap<String, String>,
@@ -619,22 +630,34 @@ struct SavedImport {
     settings: Value,
 }
 struct Change {
+    tags_changed: bool,
     id: Option<i64>,
     contact: CreateContactInput,
 }
 
 async fn execute_import(
     state: &AppState,
-    actor: i64,
+    actor: &AdminUser,
+    id: Uuid,
+    input: Start,
+) -> Result<Value, ApiError> {
+    let mut tx = state.db.pool.begin().await.map_err(db)?;
+    let saved = execute_import_on(&mut tx, actor, id, input).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(saved)
+}
+async fn execute_import_on(
+    tx: &mut Transaction<'_, Postgres>,
+    actor: &AdminUser,
     id: Uuid,
     mut input: Start,
 ) -> Result<Value, ApiError> {
-    let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let job:SavedImport=sqlx::query_as("SELECT status,headers,source_rows,field_mapping,settings FROM crm_transfer_jobs WHERE id=$1 AND direction='import' FOR UPDATE").bind(id).fetch_optional(&mut *tx).await.map_err(db)?.ok_or_else(||ApiError::not_found("Import job not found"))?;
+    let job:SavedImport=sqlx::query_as("SELECT status,headers,source_rows,field_mapping,settings FROM crm_transfer_jobs WHERE id=$1 AND direction='import' FOR UPDATE").bind(id).fetch_optional(&mut **tx).await.map_err(db)?.ok_or_else(||ApiError::not_found("Import job not found"))?;
     if job.status == "cancelled" {
         return Err(conflict("A cancelled import cannot be started"));
     }
     input.mapping = mapping(&job.headers, &input.mapping)?;
+    actor.body(&json!({"mapping":input.mapping,"settings":input.settings}))?;
     let list_ids = ids(&input.settings.add_to_lists)?;
     let tag_ids = ids(&input.settings.apply_tags)?;
     input.settings.add_to_lists = list_ids.iter().map(ToString::to_string).collect();
@@ -669,18 +692,18 @@ async fn execute_import(
                 "This import already ran with different mapping or settings",
             ));
         }
-        return public_job(&mut tx, id, "import").await;
+        return public_job(tx, id, "import").await;
     }
     // Existing addresses are not unique. Keep bounded duplicate decisions
     // stable against all concurrent contact writes, not only other imports.
     sqlx::query("LOCK TABLE contacts IN SHARE ROW EXCLUSIVE MODE")
-        .execute(&mut *tx)
+        .execute(&mut **tx)
         .await
         .map_err(db)?;
     let found_lists: Vec<i64> =
         sqlx::query_scalar("SELECT id FROM crm_lists WHERE id=ANY($1) ORDER BY id FOR UPDATE")
             .bind(&list_ids)
-            .fetch_all(&mut *tx)
+            .fetch_all(&mut **tx)
             .await
             .map_err(db)?;
     if found_lists != list_ids {
@@ -690,7 +713,7 @@ async fn execute_import(
         "SELECT id,COALESCE(title,name) FROM crm_tags WHERE id=ANY($1) ORDER BY id FOR UPDATE",
     )
     .bind(&tag_ids)
-    .fetch_all(&mut *tx)
+    .fetch_all(&mut **tx)
     .await
     .map_err(db)?;
     if tags.iter().map(|row| row.0).collect::<Vec<_>>() != tag_ids {
@@ -734,7 +757,7 @@ async fn execute_import(
             "SELECT to_jsonb(c) FROM contacts c WHERE LOWER(BTRIM(email))=$1 ORDER BY id",
         )
         .bind(&email)
-        .fetch_all(&mut *tx)
+        .fetch_all(&mut **tx)
         .await
         .map_err(db)?;
         if !existing.is_empty() && input.settings.skip_duplicates {
@@ -745,6 +768,7 @@ async fn execute_import(
             errors.push(json!({"row":index+1,"field":"email","message":"Email already exists or identifies multiple CRM contacts"}));
             continue;
         }
+        let previous_tags = existing.first().map(|value| value["tags"].clone());
         let contact_id = existing.first().and_then(|v| v["id"].as_i64());
         if let Some(existing) = existing.first().and_then(Value::as_object) {
             let mut merged: Map<String, Value> = existing
@@ -780,20 +804,31 @@ async fn execute_import(
             errors.push(json!({"row":index+1,"message":message.0["error"].as_str().unwrap_or("Invalid contact fields")}));
             continue;
         }
+        let tags_changed = previous_tags.map_or_else(
+            || contact.tags.as_ref().is_some_and(|tags| !tags.is_empty()),
+            |previous| previous != json!(contact.tags),
+        );
         changes.push(Change {
+            tags_changed,
             id: contact_id,
             contact,
         });
     }
+    actor.import_plan(
+        changes.iter().any(|change| change.id.is_none()),
+        changes.iter().any(|change| change.id.is_some()),
+        changes.iter().any(|change| change.tags_changed),
+        !changes.is_empty() && !list_ids.is_empty(),
+    )?;
     if !errors.is_empty() {
-        sqlx::query("UPDATE crm_transfer_jobs SET status='failed',field_mapping=$2,settings=$3,processed_rows=total_rows,error_count=$4,errors=$5,started_at=NOW(),completed_at=NOW(),updated_at=NOW() WHERE id=$1").bind(id).bind(mapping_value).bind(settings_value).bind(errors.len() as i32).bind(json!(errors)).execute(&mut *tx).await.map_err(db)?;
+        sqlx::query("UPDATE crm_transfer_jobs SET status='failed',field_mapping=$2,settings=$3,processed_rows=total_rows,error_count=$4,errors=$5,started_at=NOW(),completed_at=NOW(),updated_at=NOW() WHERE id=$1").bind(id).bind(mapping_value).bind(settings_value).bind(errors.len() as i32).bind(json!(errors)).execute(&mut **tx).await.map_err(db)?;
         crm_logs::record(
-            &mut tx,
+            tx,
             "warning",
             "import",
             "Contact import validation failed; no contacts changed",
             json!({"job_id":id,"error_count":errors.len()}),
-            Some(actor),
+            Some(actor.0.id),
         )
         .await
         .map_err(db)?;
@@ -805,19 +840,18 @@ async fn execute_import(
             let tags = json!(contact.tags.unwrap_or_default());
             let saved: i64 = if let Some(contact_id) = change.id {
                 updated += 1;
-                sqlx::query_scalar("UPDATE contacts SET first_name=$2,last_name=$3,phone=$4,company=$5,job_title=$6,status=COALESCE($7,status),source=$8,tags=$9,custom_fields=$10,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1 RETURNING id").bind(contact_id).bind(contact.first_name).bind(contact.last_name).bind(contact.phone).bind(contact.company).bind(contact.job_title).bind(contact.status).bind(contact.source).bind(tags).bind(contact.custom_fields).fetch_one(&mut *tx).await.map_err(db)?
+                sqlx::query_scalar("UPDATE contacts SET first_name=$2,last_name=$3,phone=$4,company=$5,job_title=$6,status=COALESCE($7,status),source=$8,tags=$9,custom_fields=$10,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1 RETURNING id").bind(contact_id).bind(contact.first_name).bind(contact.last_name).bind(contact.phone).bind(contact.company).bind(contact.job_title).bind(contact.status).bind(contact.source).bind(tags).bind(contact.custom_fields).fetch_one(&mut **tx).await.map_err(db)?
             } else {
                 created += 1;
-                sqlx::query_scalar("INSERT INTO contacts(email,first_name,last_name,phone,company,job_title,status,source,tags,custom_fields,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,COALESCE($7,'lead'),$8,$9,$10,NOW() AT TIME ZONE 'UTC',NOW() AT TIME ZONE 'UTC') RETURNING id").bind(contact.email).bind(contact.first_name).bind(contact.last_name).bind(contact.phone).bind(contact.company).bind(contact.job_title).bind(contact.status).bind(contact.source).bind(tags).bind(contact.custom_fields).fetch_one(&mut *tx).await.map_err(db)?
+                sqlx::query_scalar("INSERT INTO contacts(email,first_name,last_name,phone,company,job_title,status,source,tags,custom_fields,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,COALESCE($7,'lead'),$8,$9,$10,NOW() AT TIME ZONE 'UTC',NOW() AT TIME ZONE 'UTC') RETURNING id").bind(contact.email).bind(contact.first_name).bind(contact.last_name).bind(contact.phone).bind(contact.company).bind(contact.job_title).bind(contact.status).bind(contact.source).bind(tags).bind(contact.custom_fields).fetch_one(&mut **tx).await.map_err(db)?
             };
-            sqlx::query("INSERT INTO crm_list_members(list_id,contact_id) SELECT UNNEST($1::bigint[]),$2 ON CONFLICT DO NOTHING").bind(&list_ids).bind(saved).execute(&mut *tx).await.map_err(db)?;
+            sqlx::query("INSERT INTO crm_list_members(list_id,contact_id) SELECT UNNEST($1::bigint[]),$2 ON CONFLICT DO NOTHING").bind(&list_ids).bind(saved).execute(&mut **tx).await.map_err(db)?;
         }
-        sqlx::query("UPDATE crm_lists SET contacts_count=(SELECT COUNT(*) FROM crm_list_members WHERE list_id=crm_lists.id),updated_at=NOW() WHERE id=ANY($1)").bind(&list_ids).execute(&mut *tx).await.map_err(db)?;
-        sqlx::query("UPDATE crm_transfer_jobs SET status='completed',field_mapping=$2,settings=$3,processed_rows=total_rows,success_count=$4,created_count=$5,updated_count=$6,skipped_count=$7,started_at=NOW(),completed_at=NOW(),updated_at=NOW() WHERE id=$1").bind(id).bind(mapping_value).bind(settings_value).bind(created+updated).bind(created).bind(updated).bind(skipped).execute(&mut *tx).await.map_err(db)?;
-        crm_logs::record(&mut tx,"info","import","Contact import completed",json!({"job_id":id,"created_count":created,"updated_count":updated,"skipped_count":skipped}),Some(actor)).await.map_err(db)?;
+        sqlx::query("UPDATE crm_lists SET contacts_count=(SELECT COUNT(*) FROM crm_list_members WHERE list_id=crm_lists.id),updated_at=NOW() WHERE id=ANY($1)").bind(&list_ids).execute(&mut **tx).await.map_err(db)?;
+        sqlx::query("UPDATE crm_transfer_jobs SET status='completed',field_mapping=$2,settings=$3,processed_rows=total_rows,success_count=$4,created_count=$5,updated_count=$6,skipped_count=$7,started_at=NOW(),completed_at=NOW(),updated_at=NOW() WHERE id=$1").bind(id).bind(mapping_value).bind(settings_value).bind(created+updated).bind(created).bind(updated).bind(skipped).execute(&mut **tx).await.map_err(db)?;
+        crm_logs::record(tx,"info","import","Contact import completed",json!({"job_id":id,"created_count":created,"updated_count":updated,"skipped_count":skipped}),Some(actor.0.id)).await.map_err(db)?;
     }
-    let job = public_job(&mut tx, id, "import").await?;
-    tx.commit().await.map_err(db)?;
+    let job = public_job(tx, id, "import").await?;
     Ok(job)
 }
 async fn start_import(
@@ -826,7 +860,7 @@ async fn start_import(
     Path(id): Path<Uuid>,
     Json(input): Json<Start>,
 ) -> Result<Json<Value>, ApiError> {
-    Ok(Json(execute_import(&state, admin.0.id, id, input).await?))
+    Ok(Json(execute_import(&state, &admin, id, input).await?))
 }
 async fn cancel_import(
     State(state): State<AppState>,
@@ -903,7 +937,12 @@ fn csv_cell(value: &Value) -> String {
         _ => value.to_string(),
     }
 }
-async fn save_export(state: &AppState, actor: i64, input: Export) -> Result<Value, ApiError> {
+async fn save_export(
+    state: &AppState,
+    actor: &AdminUser,
+    input: Export,
+) -> Result<Value, ApiError> {
+    actor.body(&json!({"filters":input.filters}))?;
     supported(&input.kind)?;
     if !["csv", "json"].contains(&input.file_type.as_str()) {
         return Err(invalid("Choose csv or json file_type"));
@@ -1028,14 +1067,14 @@ async fn save_export(state: &AppState, actor: i64, input: Export) -> Result<Valu
     let id = Uuid::new_v4();
     let file_name = format!("crm-contacts-{id}.{}", input.file_type);
     sqlx::query("INSERT INTO crm_transfer_jobs(id,direction,kind,file_name,file_type,status,filters,fields,total_rows,processed_rows,export_bytes,created_by,started_at,completed_at) VALUES($1,'export',$2,$3,$4,'completed',$5,$6,$7,$7,$8,$9,NOW(),NOW())")
-        .bind(id).bind(input.kind).bind(file_name).bind(input.file_type).bind(json!(input.filters)).bind(json!(fields)).bind(rows.len() as i32).bind(bytes).bind(actor).execute(&mut *tx).await.map_err(db)?;
+        .bind(id).bind(input.kind).bind(file_name).bind(input.file_type).bind(json!(input.filters)).bind(json!(fields)).bind(rows.len() as i32).bind(bytes).bind(actor.0.id).execute(&mut *tx).await.map_err(db)?;
     crm_logs::record(
         &mut tx,
         "info",
         "import",
         "Contact export snapshot created",
         json!({"job_id":id,"total_records":rows.len(),"fields":fields}),
-        Some(actor),
+        Some(actor.0.id),
     )
     .await
     .map_err(db)?;
@@ -1048,14 +1087,19 @@ async fn create_export(
     admin: AdminUser,
     Json(input): Json<Export>,
 ) -> Result<Json<Value>, ApiError> {
-    Ok(Json(save_export(&state, admin.0.id, input).await?))
+    Ok(Json(save_export(&state, &admin, input).await?))
 }
 async fn download(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Response, ApiError> {
-    let (name,kind,bytes):(String,String,Vec<u8>)=sqlx::query_as("SELECT file_name,file_type,export_bytes FROM crm_transfer_jobs WHERE id=$1 AND direction='export' AND status='completed'").bind(id).fetch_optional(&state.db.pool).await.map_err(db)?.ok_or_else(||ApiError::not_found("Completed export not found"))?;
+    let mut tx = super::manager_sources::read_transaction(&state.db.pool).await?;
+    let filters:Value=sqlx::query_scalar("SELECT filters FROM crm_transfer_jobs WHERE id=$1 AND direction='export' AND status='completed'")
+        .bind(id).fetch_optional(&mut *tx).await.map_err(db)?.ok_or_else(||ApiError::not_found("Completed export not found"))?;
+    admin.export_record(&json!({"filters":filters}))?;
+    let (name,kind,bytes):(String,String,Vec<u8>)=sqlx::query_as("SELECT file_name,file_type,export_bytes FROM crm_transfer_jobs WHERE id=$1 AND direction='export' AND status='completed'").bind(id).fetch_optional(&mut *tx).await.map_err(db)?.ok_or_else(||ApiError::not_found("Completed export not found"))?;
+    tx.commit().await.map_err(db)?;
     Ok((
         [
             (
@@ -1103,8 +1147,10 @@ async fn legacy_import(
 ) -> Result<Json<Value>, ApiError> {
     let start: Start = serde_json::from_value(input.options.unwrap_or_else(|| json!({})))
         .map_err(|_| invalid("Import options must contain mapping and settings"))?;
-    let job = save_upload(
-        &state,
+    admin.body(&json!({"mapping":start.mapping,"settings":start.settings}))?;
+    let mut tx = state.db.pool.begin().await.map_err(db)?;
+    let job = save_upload_on(
+        &mut tx,
         admin.0.id,
         Upload {
             kind: contacts_kind(),
@@ -1118,7 +1164,9 @@ async fn legacy_import(
         .as_str()
         .and_then(|value| value.parse().ok())
         .ok_or_else(|| ApiError::internal_error("Invalid saved import identity"))?;
-    Ok(Json(execute_import(&state, admin.0.id, id, start).await?))
+    let result = execute_import_on(&mut tx, &admin, id, start).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(Json(result))
 }
 pub(super) fn router() -> Router<AppState> {
     Router::new()

@@ -25,22 +25,22 @@
 		thumbnail_url?: string | null;
 		tag_details?: Array<{ slug: string; name: string; color: string }>;
 		trader?: { id: number; name: string; slug: string } | null;
-		formatted_date?: string;
+		formatted_date?: string | null;
 		duration?: number | null;
-		formatted_duration?: string;
+		formatted_duration?: string | null;
 
 		// Allow any additional properties from API responses
-		video_url?: string;
-		embed_url?: string;
-		video_platform?: string;
+		video_url?: string | null;
+		embed_url?: string | null;
+		video_platform?: string | null;
 		content_type?: string;
-		video_date?: string;
-		is_published?: boolean;
-		is_featured?: boolean;
+		video_date?: string | null;
+		is_published?: boolean | null;
+		is_featured?: boolean | null;
 		tags?: string[];
-		views_count?: number;
+		views_count?: number | null;
 		rooms?: Array<{ id: number; name: string; slug: string }>;
-		created_at?: string;
+		created_at?: string | null;
 
 		// Catch-all for any other properties
 		[key: string]: unknown;

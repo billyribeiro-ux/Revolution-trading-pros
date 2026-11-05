@@ -25,25 +25,22 @@
 		<div class="contact-identity">
 			<div class="name-row">
 				<h1>{contact.full_name}</h1>
-				{#if contact.is_vip}
-					<span class="vip-badge">VIP</span>
-				{/if}
 			</div>
-			{#if contact.job_title || contact.company_name}
+			{#if contact.job_title || contact.company}
 				<p class="job-info">
 					{contact.job_title || ''}
-					{#if contact.job_title && contact.company_name}
+					{#if contact.job_title && contact.company}
 						at
 					{/if}
-					{contact.company_name || ''}
+					{contact.company || ''}
 				</p>
 			{/if}
 			<div class="status-badges">
 				<span class={['status-badge', getStatusColor(contact.status)]}>
-					{contact.status}
+					{contact.status ?? 'Unknown status'}
 				</span>
 				<span class={['status-badge', getLifecycleColor(contact.lifecycle_stage)]}>
-					{contact.lifecycle_stage}
+					{contact.lifecycle_stage ?? 'Unknown lifecycle'}
 				</span>
 			</div>
 		</div>
@@ -120,15 +117,6 @@
 		color: #ffffff;
 	}
 
-	.vip-badge {
-		padding: 4px 10px;
-		background: var(--warning-emphasis, #d29922);
-		border-radius: 20px;
-		font-size: 0.7rem;
-		font-weight: 700;
-		color: #1e293b;
-	}
-
 	.job-info {
 		margin: 0;
 		font-size: 0.95rem;
@@ -197,7 +185,6 @@
 		text-decoration: none;
 		transition: all 0.2s;
 	}
-
 
 	.btn-secondary {
 		display: flex;

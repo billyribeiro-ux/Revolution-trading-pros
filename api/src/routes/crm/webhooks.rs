@@ -1,6 +1,7 @@
 //! Authenticated CRM webhook authoring and durable delivery history.
 use crate::{
-    AppState, middleware::admin::AdminUser, services::crm_webhooks, utils::errors::ApiError,
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, services::crm_webhooks,
+    utils::errors::ApiError,
 };
 use axum::{
     Json, Router,

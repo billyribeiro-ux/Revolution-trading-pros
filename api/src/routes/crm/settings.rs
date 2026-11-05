@@ -5,7 +5,9 @@ use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
+use crate::{
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, utils::errors::ApiError,
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -255,16 +257,6 @@ async fn save_email_preferences(
     .await
 }
 
-async fn list_managers(
-    State(_state): State<AppState>,
-    _admin: AdminUser,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    Ok(Json(json!({
-        "data": [],
-        "meta": { "total": 0 }
-    })))
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════
@@ -280,5 +272,4 @@ pub(super) fn router() -> Router<AppState> {
             "/settings/email-preferences",
             get(get_email_preferences).post(save_email_preferences),
         )
-        .route("/managers", get(list_managers))
 }

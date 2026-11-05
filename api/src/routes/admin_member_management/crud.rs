@@ -140,14 +140,28 @@ pub(super) async fn get_member_full(
     .await
     .map_err(crate::utils::errors::db_error)?;
 
-    // Calculate stats
-    let total_spent_cents: i64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM((total * 100)::BIGINT), 0)::BIGINT FROM orders WHERE user_id = $1 AND status = 'completed'",
-    )
-    .bind(id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or(0);
+    // Share the actual net USD order predicate and its explicit coverage.
+    // Release this connection before subsequent queries (including pool size1).
+    let recorded_order_value = {
+        let mut connection = state
+            .db
+            .pool
+            .acquire()
+            .await
+            .map_err(crate::utils::errors::db_error)?;
+        crate::routes::member_statistics::recorded_order_value_on(&mut connection, id)
+            .await
+            .map_err(|error| {
+                let (status, body) = error.into_response_tuple();
+                (status, Json(json!(body.0)))
+            })?
+    };
+    let total_spent_cents = recorded_order_value["net_cents"].as_i64().ok_or_else(|| {
+        (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error":"Recorded member order value is unavailable"})),
+        )
+    })?;
     let active_subs = subscriptions
         .iter()
         .filter(|s| s.status == "active")
@@ -195,6 +209,7 @@ pub(super) async fn get_member_full(
         "notes": notes,
         "stats": {
             "total_spent_cents": total_spent_cents,
+            "recorded_order_value": recorded_order_value,
             "active_subscriptions": active_subs,
             "total_orders": orders.len(),
             "member_since_days": (Utc::now().naive_utc() - member.created_at).num_days()

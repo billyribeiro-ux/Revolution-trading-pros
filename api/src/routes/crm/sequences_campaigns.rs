@@ -1,6 +1,6 @@
 //! Recurring-campaign catalog. Sequence authoring lives in sequences.rs.
 use super::ListFilters;
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{AppState, routes::crm::manager_permissions::CrmUser as AdminUser};
 use axum::{
     Json, Router,
     extract::{Query, State},

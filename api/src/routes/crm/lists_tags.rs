@@ -12,7 +12,7 @@ use serde_json::json;
 use sqlx::FromRow;
 
 use super::ListFilters;
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{AppState, routes::crm::manager_permissions::CrmUser as AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -339,7 +339,7 @@ async fn get_contact_tag(
 }
 async fn save_contact_tag(
     state: AppState,
-    actor: i64,
+    actor: &AdminUser,
     id: Option<i64>,
     mut input: CreateTagInput,
 ) -> Result<Json<ContactTag>, TagError> {
@@ -376,6 +376,15 @@ async fn save_contact_tag(
                         Json(json!({"error":"Contact tag not found"})),
                     )
                 })?;
+        actor
+            .record(&json!({"old_title":old,"new_title":input.title}))
+            .map_err(|error| {
+                (
+                    StatusCode::from_u16(error.status.parse().unwrap_or(503))
+                        .unwrap_or(StatusCode::SERVICE_UNAVAILABLE),
+                    Json(json!({"error":error.message})),
+                )
+            })?;
         if old != input.title {
             let ambiguous: bool = sqlx::query_scalar(
                 "SELECT EXISTS(SELECT 1 FROM crm_tags WHERE COALESCE(title,name)=$1 AND id<>$2)",
@@ -411,7 +420,7 @@ async fn save_contact_tag(
             "Contact tag created"
         },
         json!({"tag_id":saved.to_string()}),
-        Some(actor),
+        Some(actor.0.id),
     )
     .await
     .map_err(tag_db)?;
@@ -424,7 +433,7 @@ async fn create_contact_tag(
     admin: AdminUser,
     Json(input): Json<CreateTagInput>,
 ) -> Result<Json<ContactTag>, TagError> {
-    save_contact_tag(state, admin.0.id, None, input).await
+    save_contact_tag(state, &admin, None, input).await
 }
 async fn update_contact_tag(
     State(state): State<AppState>,
@@ -432,7 +441,7 @@ async fn update_contact_tag(
     Path(id): Path<i64>,
     Json(input): Json<CreateTagInput>,
 ) -> Result<Json<ContactTag>, TagError> {
-    save_contact_tag(state, admin.0.id, Some(id), input).await
+    save_contact_tag(state, &admin, Some(id), input).await
 }
 async fn delete_contact_tag(
     State(state): State<AppState>,

@@ -9,11 +9,15 @@ use axum::{
     routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{Value, json};
 use sqlx::FromRow;
 
 use super::contacts::{CreateContactInput, UpdateContactInput};
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{
+    AppState,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
+    utils::errors::{self, ApiError},
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -39,7 +43,10 @@ pub struct CrmLead {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct LeadFilters {
+    pub lifecycle_stage: Option<String>,
+    pub owner_id: Option<String>,
     pub page: Option<i64>,
     pub per_page: Option<i64>,
     pub status: Option<String>,
@@ -79,378 +86,117 @@ pub struct BulkStatusInput {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// GET /admin/crm/leads - List all leads
+fn lead_status(status: &str) -> bool {
+    matches!(
+        status,
+        "new" | "contacted" | "qualified" | "proposal" | "negotiation" | "won" | "lost" | "lead"
+    )
+}
+fn lead_view(mut row: Value) -> Value {
+    if let Some(id) = row["id"].as_i64() {
+        row["id"] = json!(id.to_string());
+    }
+    row["company_name"] = row["company"].clone();
+    row["is_hot"] = row["lead_score"]
+        .as_i64()
+        .map_or(Value::Null, |score| json!(score >= 75));
+    row["is_starred"] = Value::Null;
+    row["estimated_value"] = Value::Null;
+    row
+}
+type LeadResponse = Result<Json<Value>, ApiError>;
 async fn list_leads(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Query(filters): Query<LeadFilters>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = filters.page.unwrap_or(1).max(1);
-    let per_page = filters.per_page.unwrap_or(25).clamp(1, 100);
-    let offset = page.saturating_sub(1).saturating_mul(per_page);
-    let search_pattern = filters
-        .search
-        .as_ref()
-        .map(|s| format!("%{}%", s.replace('\0', "")));
-
-    // Lead statuses from the frontend Lead interface
-    let lead_statuses = [
-        "new",
-        "contacted",
-        "qualified",
-        "proposal",
-        "negotiation",
-        "won",
-        "lost",
-        "lead",
-    ];
-
-    let leads: Vec<CrmLead> = sqlx::query_as(
-        r"
-        SELECT id, email, first_name, last_name, phone, company, job_title,
-               status, source, COALESCE(score, 0) as score, tags, custom_fields,
-               last_contacted_at, created_at, updated_at
-        FROM contacts
-        WHERE status IN ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'lead')
-          AND ($1::text IS NULL OR status = $1)
-          AND ($2::text IS NULL OR source = $2)
-          AND ($3::text IS NULL OR email ILIKE $3 OR first_name ILIKE $3 OR last_name ILIKE $3 OR company ILIKE $3)
-        ORDER BY created_at DESC
-        LIMIT $4 OFFSET $5
-        ",
-    )
-    .bind(filters.status.as_deref())
-    .bind(filters.source.as_deref())
-    .bind(search_pattern.as_deref())
-    .bind(per_page)
-    .bind(offset)
-    .fetch_all(&state.db.pool)
-    .await
-    // FIX-2026-04-26: .unwrap_or_default();
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
-
-    // Transform to match frontend Lead interface
-    let transformed_leads: Vec<serde_json::Value> = leads
-        .iter()
-        .map(|lead| {
-            let full_name = match (&lead.first_name, &lead.last_name) {
-                (Some(f), Some(l)) => format!("{f} {l}"),
-                (Some(f), None) => f.clone(),
-                (None, Some(l)) => l.clone(),
-                (None, None) => lead.email.clone(),
-            };
-            let is_hot = lead.score.unwrap_or(0) >= 75;
-            json!({
-                "id": lead.id.to_string(),
-                "email": lead.email,
-                "phone": lead.phone,
-                "first_name": lead.first_name,
-                "last_name": lead.last_name,
-                "full_name": full_name,
-                "company_name": lead.company,
-                "job_title": lead.job_title,
-                "status": lead.status,
-                "source": lead.source.clone().unwrap_or_else(|| "other".to_string()),
-                "lead_score": lead.score.unwrap_or(0),
-                "is_hot": is_hot,
-                "is_starred": false,
-                "tags": lead.tags,
-                "estimated_value": 0,
-                "notes_count": 0,
-                "activities_count": 0,
-                "last_contacted_at": lead.last_contacted_at,
-                "created_at": lead.created_at,
-                "updated_at": lead.updated_at
-            })
-        })
-        .collect();
-
-    // Get total count
-    let total: (i64,) = sqlx::query_as(
-        r"
-        SELECT COUNT(*) FROM contacts
-        WHERE status IN ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'lead')
-          AND ($1::text IS NULL OR status = $1)
-          AND ($2::text IS NULL OR source = $2)
-          AND ($3::text IS NULL OR email ILIKE $3 OR first_name ILIKE $3 OR last_name ILIKE $3 OR company ILIKE $3)
-        ",
-    )
-    .bind(filters.status.as_deref())
-    .bind(filters.source.as_deref())
-    .bind(search_pattern.as_deref())
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
-
-    Ok(Json(json!({
-        "data": transformed_leads,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
-        }
-    })))
-}
-
-/// GET /admin/crm/leads/stats - Lead statistics
-async fn get_lead_stats(
-    State(state): State<AppState>,
-    _admin: AdminUser,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Get counts by status
-    let new_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'new'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
-    let contacted_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'contacted'")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-    let qualified_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'qualified'")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-    let proposal_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'proposal'")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-    let negotiation_count: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'negotiation'")
-            .fetch_one(&state.db.pool)
-            .await
-            .unwrap_or((0,));
-    let won_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'won'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
-    let lost_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'lost'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
-    let lead_count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'lead'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
-
-    // Hot leads (score >= 75)
-    let hot_leads: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM contacts WHERE status IN ('new', 'contacted', 'qualified', 'proposal', 'negotiation', 'lead') AND score >= 75"
-    ).fetch_one(&state.db.pool).await.unwrap_or((0,));
-
-    let total = new_count.0
-        + contacted_count.0
-        + qualified_count.0
-        + proposal_count.0
-        + negotiation_count.0
-        + won_count.0
-        + lost_count.0
-        + lead_count.0;
-
-    // Calculate conversion rate (won / total closed)
-    let total_closed = won_count.0 + lost_count.0;
-    let conversion_rate = if total_closed > 0 {
-        (won_count.0 as f64 / total_closed as f64) * 100.0
-    } else {
-        0.0
+) -> LeadResponse {
+    if filters
+        .status
+        .as_deref()
+        .is_some_and(|status| !lead_status(status))
+    {
+        return Err(ApiError::validation_error("Choose a supported lead status"));
+    }
+    let filters = super::contacts::ContactFilters {
+        page: filters.page,
+        per_page: filters.per_page,
+        status: filters.status,
+        search: filters.search,
+        source: filters.source,
+        lifecycle_stage: filters.lifecycle_stage,
+        owner_id: filters.owner_id,
+        sort_by: filters.sort_by,
+        sort_order: filters.sort_order,
+        lead_only: true,
+        ..Default::default()
     };
-
-    Ok(Json(json!({
-        "total": total,
-        "new": new_count.0 + lead_count.0,
-        "contacted": contacted_count.0,
-        "qualified": qualified_count.0,
-        "proposal": proposal_count.0,
-        "negotiation": negotiation_count.0,
-        "won": won_count.0,
-        "lost": lost_count.0,
-        "hot_leads": hot_leads.0,
-        "total_value": 0,
-        "conversion_rate": conversion_rate
-    })))
+    let Json(mut response) =
+        super::contacts::list_contacts(State(state), admin, Query(filters)).await?;
+    if let Some(rows) = response["data"].as_array_mut() {
+        for row in rows {
+            *row = lead_view(row.take());
+        }
+    }
+    Ok(Json(response))
 }
-
-/// POST /admin/crm/leads - Create a new lead
+async fn get_lead_stats(State(state): State<AppState>, _: AdminUser) -> LeadResponse {
+    let value:Value=sqlx::query_scalar("WITH leads AS (SELECT c.*,CASE WHEN c.score_assessment->>'status'='calculated' AND c.score_assessed_at IS NOT NULL AND c.score_assessment->'policy'=(SELECT value->'scoring_settings' FROM settings WHERE key='crm.settings') AND c.score_assessment->'score'=to_jsonb(c.score) THEN c.score ELSE NULL END AS measured_score FROM contacts c WHERE c.status IN ('new','contacted','qualified','proposal','negotiation','won','lost','lead')) SELECT jsonb_build_object('total',COUNT(*),'new',COUNT(*) FILTER(WHERE status IN ('new','lead')),'contacted',COUNT(*) FILTER(WHERE status='contacted'),'qualified',COUNT(*) FILTER(WHERE status='qualified'),'proposal',COUNT(*) FILTER(WHERE status='proposal'),'negotiation',COUNT(*) FILTER(WHERE status='negotiation'),'won',COUNT(*) FILTER(WHERE status='won'),'lost',COUNT(*) FILTER(WHERE status='lost'),'hot_leads',COUNT(*) FILTER(WHERE status NOT IN ('won','lost') AND measured_score>=75),'measured_score_leads',COUNT(measured_score),'unknown_score_leads',COUNT(*) FILTER(WHERE measured_score IS NULL),'total_value',NULL,'conversion_rate',ROUND(100.0*COUNT(*) FILTER(WHERE status='won')/NULLIF(COUNT(*) FILTER(WHERE status IN ('won','lost')),0),2),'metrics_scope','recorded_lead_status_and_current_assessments') FROM leads")
+        .fetch_one(&state.db.pool).await.map_err(|error|{tracing::error!(%error,"CRM lead stats unavailable");errors::service_unavailable("Lead statistics are unavailable")})?;
+    Ok(Json(value))
+}
 async fn create_lead(
     State(state): State<AppState>,
-    _admin: AdminUser,
-    Json(input): Json<CreateContactInput>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    input.validate(true)?;
-    let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
-    let status = input.status.unwrap_or_else(|| "new".to_string());
-
-    let lead: CrmLead = sqlx::query_as(
-        r"
-        INSERT INTO contacts (email, first_name, last_name, phone, company, job_title,
-                              source, status, tags, custom_fields, score, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0, NOW(), NOW())
-        RETURNING id, email, first_name, last_name, phone, company, job_title,
-                  status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        ",
-    )
-    .bind(&input.email)
-    .bind(&input.first_name)
-    .bind(&input.last_name)
-    .bind(&input.phone)
-    .bind(&input.company)
-    .bind(&input.job_title)
-    .bind(&input.source)
-    .bind(&status)
-    .bind(&tags)
-    .bind(&input.custom_fields)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        if e.to_string().contains("duplicate") {
-            (StatusCode::CONFLICT, Json(json!({"error": "Lead with this email already exists"})))
-        } else {
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-        }
+    admin: AdminUser,
+    Json(mut input): Json<CreateContactInput>,
+) -> LeadResponse {
+    input.validate(true).map_err(|(status, Json(value))| {
+        ApiError::new(
+            status,
+            value["error"].as_str().unwrap_or("Invalid lead fields"),
+        )
     })?;
-
-    let full_name = match (&lead.first_name, &lead.last_name) {
-        (Some(f), Some(l)) => format!("{f} {l}"),
-        (Some(f), None) => f.clone(),
-        (None, Some(l)) => l.clone(),
-        (None, None) => lead.email.clone(),
-    };
-
-    Ok(Json(json!({
-        "id": lead.id.to_string(),
-        "email": lead.email,
-        "first_name": lead.first_name,
-        "last_name": lead.last_name,
-        "full_name": full_name,
-        "phone": lead.phone,
-        "company_name": lead.company,
-        "job_title": lead.job_title,
-        "status": lead.status,
-        "source": lead.source,
-        "lead_score": lead.score.unwrap_or(0),
-        "is_hot": false,
-        "is_starred": false,
-        "created_at": lead.created_at,
-        "updated_at": lead.updated_at
-    })))
+    if input.status.is_none() {
+        input.status = Some("new".into());
+    }
+    let Json(row) = super::contacts::create_contact(State(state), admin, Json(input)).await?;
+    Ok(Json(lead_view(row)))
 }
-
-/// GET /admin/crm/leads/:id - Read a persisted lead for detail/edit workflows.
 async fn get_lead(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let lead:CrmLead=sqlx::query_as("SELECT id,email,first_name,last_name,phone,company,job_title,status,source,score,tags,custom_fields,last_contacted_at,created_at,updated_at FROM contacts WHERE id=$1 AND status IN ('new','contacted','qualified','proposal','negotiation','won','lost','lead')")
-        .bind(id).fetch_optional(&state.db.pool).await.map_err(super::contacts::contact_db_error)?.ok_or_else(||(StatusCode::NOT_FOUND,Json(json!({"error":"Lead not found"}))))?;
-    let full_name = format!(
-        "{} {}",
-        lead.first_name.as_deref().unwrap_or(""),
-        lead.last_name.as_deref().unwrap_or("")
-    )
-    .trim()
-    .to_owned();
-    Ok(Json(
-        json!({"id":lead.id.to_string(),"email":lead.email,"first_name":lead.first_name,"last_name":lead.last_name,"full_name":full_name,"phone":lead.phone,"company_name":lead.company,"job_title":lead.job_title,"status":lead.status,"source":lead.source,"lead_score":lead.score,"is_hot":lead.score.is_some_and(|score|score>=75),"tags":lead.tags,"custom_fields":lead.custom_fields,"last_contacted_at":lead.last_contacted_at,"created_at":lead.created_at,"updated_at":lead.updated_at}),
-    ))
+) -> LeadResponse {
+    let Json(row) = super::contacts::get_contact(State(state), admin, Path(id)).await?;
+    if row["status"]
+        .as_str()
+        .is_none_or(|status| !lead_status(status))
+    {
+        return Err(errors::not_found("Lead"));
+    }
+    Ok(Json(lead_view(row)))
 }
-
-/// PUT /admin/crm/leads/:id - Update a lead
 async fn update_lead(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateContactInput>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    input.validate(true)?;
-    let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
-
-    let lead: CrmLead = sqlx::query_as(
-        r"
-        UPDATE contacts SET
-            email = COALESCE($2, email),
-            first_name = COALESCE($3, first_name),
-            last_name = COALESCE($4, last_name),
-            phone = COALESCE($5, phone),
-            company = COALESCE($6, company),
-            job_title = COALESCE($7, job_title),
-            status = COALESCE($8, status),
-            tags = COALESCE($9, tags),
-            custom_fields = COALESCE($10, custom_fields),
-            updated_at = NOW()
-        WHERE id = $1
-        RETURNING id, email, first_name, last_name, phone, company, job_title,
-                  status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        ",
-    )
-    .bind(id)
-    .bind(&input.email)
-    .bind(&input.first_name)
-    .bind(&input.last_name)
-    .bind(&input.phone)
-    .bind(&input.company)
-    .bind(&input.job_title)
-    .bind(&input.status)
-    .bind(&tags)
-    .bind(&input.custom_fields)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(super::contacts::contact_db_error)?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Lead not found"}))))?;
-
-    let full_name = match (&lead.first_name, &lead.last_name) {
-        (Some(f), Some(l)) => format!("{f} {l}"),
-        (Some(f), None) => f.clone(),
-        (None, Some(l)) => l.clone(),
-        (None, None) => lead.email.clone(),
-    };
-
-    Ok(Json(json!({
-        "id": lead.id.to_string(),
-        "email": lead.email,
-        "first_name": lead.first_name,
-        "last_name": lead.last_name,
-        "full_name": full_name,
-        "phone": lead.phone,
-        "company_name": lead.company,
-        "job_title": lead.job_title,
-        "status": lead.status,
-        "source": lead.source,
-        "lead_score": lead.score.unwrap_or(0),
-        "is_hot": lead.score.unwrap_or(0) >= 75,
-        "is_starred": false,
-        "created_at": lead.created_at,
-        "updated_at": lead.updated_at
-    })))
+) -> LeadResponse {
+    input.validate(true).map_err(|(status, Json(value))| {
+        ApiError::new(
+            status,
+            value["error"].as_str().unwrap_or("Invalid lead fields"),
+        )
+    })?;
+    let Json(row) =
+        super::contacts::update_contact(State(state), admin, Path(id), Json(input)).await?;
+    Ok(Json(lead_view(row)))
 }
-
-/// DELETE /admin/crm/leads/:id - Delete a lead
 async fn delete_lead(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let result = sqlx::query("DELETE FROM contacts WHERE id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
-
-    if result.rows_affected() == 0 {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Lead not found"})),
-        ));
-    }
-
-    Ok(Json(json!({"message": "Lead deleted successfully"})))
+) -> LeadResponse {
+    super::contacts::delete_contact(State(state), admin, Path(id)).await
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -508,18 +254,19 @@ async fn bulk_update_lead_status(
         ));
     }
 
-    let updated =
-        sqlx::query("UPDATE contacts SET status = $1, updated_at = NOW() WHERE id = ANY($2)")
-            .bind(&input.status)
-            .bind(&input.ids)
-            .execute(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
+    let updated = sqlx::query(
+        "UPDATE contacts SET status = $1, updated_at = NOW() AT TIME ZONE 'UTC' WHERE id = ANY($2)",
+    )
+    .bind(&input.status)
+    .bind(&input.ids)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "message": "Lead statuses updated successfully",

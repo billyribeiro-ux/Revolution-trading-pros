@@ -10,6 +10,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
+	import { videoPlaybackUnavailable } from '#lib/utils/unified-video-metadata.js';
 	interface VideoData {
 		// Core required properties
 		id: number | string;
@@ -21,22 +22,22 @@
 		thumbnail_url?: string | null;
 		tag_details?: Array<{ slug: string; name: string; color: string }>;
 		trader?: { id: number; name: string; slug: string } | null;
-		formatted_date?: string;
+		formatted_date?: string | null;
 		duration?: number | null;
-		formatted_duration?: string;
+		formatted_duration?: string | null;
 
 		// Allow any additional properties from API responses
-		video_url?: string;
-		embed_url?: string;
-		video_platform?: string;
+		video_url?: string | null;
+		embed_url?: string | null;
+		video_platform?: string | null;
 		content_type?: string;
-		video_date?: string;
-		is_published?: boolean;
-		is_featured?: boolean;
+		video_date?: string | null;
+		is_published?: boolean | null;
+		is_featured?: boolean | null;
 		tags?: string[];
-		views_count?: number;
+		views_count?: number | null;
 		rooms?: Array<{ id: number; name: string; slug: string }>;
-		created_at?: string;
+		created_at?: string | null;
 
 		// Catch-all for any other properties
 		[key: string]: unknown;
@@ -67,8 +68,10 @@
 		style:background-image={`url(${video.thumbnail_url || defaultThumbnail})`}
 	>
 		<img src={defaultThumbnail} alt={video.title} loading="lazy" width="320" height="180" />
-		{#if showDuration && video.formatted_duration}
-			<span class="article-card__duration">{video.formatted_duration}</span>
+		{#if showDuration}
+			<span class="article-card__duration"
+				>{video.formatted_duration ?? 'Duration unavailable'}</span
+			>
 		{/if}
 	</figure>
 
@@ -86,8 +89,8 @@
 		{#if video.trader}
 			<span class="trader_name"><i>With {video.trader.name}</i></span>
 		{/if}
-		{#if showDate && video.formatted_date}
-			<span class="video-date">{video.formatted_date}</span>
+		{#if showDate}
+			<span class="video-date">{video.formatted_date ?? 'Date unavailable'}</span>
 		{/if}
 	</div>
 
@@ -95,7 +98,11 @@
 		<p>{video.description || ''}</p>
 	</div>
 
-	<a href="{basePath}/{video.slug}" class="btn btn-tiny btn-default watch-now-btn"> Watch Now </a>
+	{#if videoPlaybackUnavailable(video)}
+		<span class="btn btn-tiny btn-default watch-now-btn">Video unavailable</span>
+	{:else}
+		<a href="{basePath}/{video.slug}" class="btn btn-tiny btn-default watch-now-btn">Watch Now</a>
+	{/if}
 </article>
 
 <style>

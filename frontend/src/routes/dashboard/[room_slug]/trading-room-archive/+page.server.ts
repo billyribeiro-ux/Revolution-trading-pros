@@ -1,3 +1,4 @@
+import { memberVideoHeaders, MEMBER_VIDEO_CACHE } from '#lib/server/member-videos.js';
 /**
  * Trading Room Archive Page Server (Dynamic Route)
  * ═══════════════════════════════════════════════════════════════════════════
@@ -37,14 +38,14 @@ interface VideoResponse {
 	title: string;
 	slug: string;
 	description: string | null;
-	video_url: string;
+	video_url: string | null;
 	thumbnail_url: string | null;
 	duration: number | null;
-	formatted_duration: string;
+	formatted_duration: string | null;
 	content_type: string;
-	video_date: string;
-	formatted_date: string;
-	is_published: boolean;
+	video_date: string | null;
+	formatted_date: string | null;
+	is_published: boolean | null;
 	trader: {
 		id: number;
 		name: string;
@@ -80,8 +81,12 @@ export interface DynamicArchivePageData {
 export const load: PageServerLoad = async ({
 	url,
 	params,
-	fetch
+	fetch,
+	locals,
+	setHeaders
 }): Promise<DynamicArchivePageData> => {
+	const videoHeaders = memberVideoHeaders(locals);
+	setHeaders(MEMBER_VIDEO_CACHE);
 	const roomSlug = params.room_slug;
 
 	// Get room config
@@ -152,7 +157,9 @@ export const load: PageServerLoad = async ({
 		});
 		if (search) qs.set('search', search);
 
-		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`, {
+			headers: videoHeaders
+		});
 		if (!vidRes.ok) {
 			return {
 				...baseReturn,

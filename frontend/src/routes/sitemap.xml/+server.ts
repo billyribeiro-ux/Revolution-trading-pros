@@ -10,8 +10,7 @@
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { response } from 'super-sitemap/sveltekit';
-import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
-import type { PaginatedPosts } from '#lib/types/post.js';
+import { readIndexableArticlePaths, readPublicVideoPaths } from '#lib/server/seo-publications.js';
 import { indicators } from '../indicators/data';
 import { authors } from '#lib/authors/authors.js';
 import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
@@ -28,17 +27,11 @@ const STATIC_SLUGS = {
 	resources: ['etf-stocks-list', 'stock-indexes-list']
 };
 
-async function fetchBlogSlugs(fetch: typeof globalThis.fetch): Promise<string[]> {
-	try {
-		const res = await apiFetch<PaginatedPosts>(API_ENDPOINTS.posts.list, { fetch });
-		return res.data.filter((p) => p.indexable !== false).map((p) => `/blog/${p.slug}`);
-	} catch {
-		return [];
-	}
-}
-
-export const GET: RequestHandler = async ({ fetch }) => {
-	const blogPaths = await fetchBlogSlugs(fetch);
+export const GET: RequestHandler = async () => {
+	const [blogPaths, videoPaths] = await Promise.all([
+		readIndexableArticlePaths(),
+		readPublicVideoPaths()
+	]);
 	const indicatorPaths = indicators.map((i) => `/indicators/${i.slug}`);
 	const authorPaths = authors.map((a) => `/authors/${a.slug}`);
 	const coursePaths = STATIC_SLUGS.courses.map((s) => `/courses/${s}`);
@@ -76,7 +69,6 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			/^\/signup/,
 			/^\/verify-email/,
 			/^\/watchlist/,
-			/^\/learning-center/,
 			/^\/daily/,
 			/^\/alerts\/.*\/checkout/,
 			/^\/tools\/options-calculator\/embed/,
@@ -112,6 +104,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			'/alerts/explosive-swings',
 			'/alerts/spx-profit-pulse',
 			'/blog',
+			'/learning-center',
 			'/careers',
 			'/classes',
 			'/contact',
@@ -134,6 +127,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			'/tutorials',
 			...authorPaths,
 			...blogPaths,
+			...videoPaths,
 			...indicatorPaths,
 			...coursePaths,
 			...guidePaths,

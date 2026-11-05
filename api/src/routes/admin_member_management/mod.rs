@@ -25,7 +25,7 @@ use crate::AppState;
 
 mod activity;
 mod crud;
-mod export;
+pub(crate) mod export;
 mod moderation;
 mod notes;
 
@@ -123,12 +123,40 @@ pub struct CreateNoteRequest {
     pub content: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ExportQuery {
     pub format: Option<String>, // csv, xlsx, pdf
     pub status: Option<String>,
     pub date_from: Option<String>,
     pub date_to: Option<String>,
+    pub segment: Option<i64>,
+    pub tag: Option<i64>,
+    pub search: Option<String>,
+    pub product_id: Option<i64>,
+    pub plan_id: Option<i64>,
+    pub spending_tier: Option<String>,
+    pub sort_by: Option<String>,
+    pub sort_dir: Option<String>,
+}
+impl ExportQuery {
+    pub(crate) fn member_filters(&self) -> super::members::MemberQuery {
+        super::members::MemberQuery {
+            segment: self.segment,
+            tag: self.tag,
+            search: self.search.clone(),
+            status: self.status.clone(),
+            product_id: self.product_id,
+            plan_id: self.plan_id,
+            spending_tier: self.spending_tier.clone(),
+            date_from: self.date_from.clone(),
+            date_to: self.date_to.clone(),
+            sort_by: self.sort_by.clone(),
+            sort_dir: self.sort_dir.clone(),
+            page: None,
+            per_page: None,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]

@@ -1,3 +1,5 @@
+import { videoPlaybackUnavailable } from '#lib/utils/unified-video-metadata.js';
+import { memberVideoHeaders, MEMBER_VIDEO_CACHE } from '#lib/server/member-videos.js';
 /**
  * Premium Daily Videos - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
@@ -45,17 +47,27 @@ export interface PageData {
 // FIX-2026-04-26: thin shape of the backend video row we actually consume here.
 // (Full shape lives in api/src/models/video.rs::VideoResponse.)
 interface BackendVideo {
+	video_url: string | null;
+	embed_url: string | null;
 	id: number;
 	title: string;
 	slug: string;
 	description: string | null;
 	thumbnail_url: string | null;
-	formatted_date: string;
-	formatted_duration: string;
+	formatted_date: string | null;
+	formatted_duration: string | null;
 	trader: { id: number; name: string; slug: string } | null;
 }
 
-export const load: PageServerLoad = async ({ params, url, fetch }): Promise<PageData> => {
+export const load: PageServerLoad = async ({
+	params,
+	url,
+	fetch,
+	locals,
+	setHeaders
+}): Promise<PageData> => {
+	const videoHeaders = memberVideoHeaders(locals);
+	setHeaders(MEMBER_VIDEO_CACHE);
 	const { room_slug } = params;
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
@@ -97,7 +109,9 @@ export const load: PageServerLoad = async ({ params, url, fetch }): Promise<Page
 		});
 		if (search) qs.set('search', search);
 
-		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`, {
+			headers: videoHeaders
+		});
 		if (!vidRes.ok) return baseError(`Backend returned ${vidRes.status}`);
 
 		const body = (await vidRes.json()) as {
@@ -109,14 +123,14 @@ export const load: PageServerLoad = async ({ params, url, fetch }): Promise<Page
 			id: v.id,
 			title: v.title,
 			slug: v.slug,
-			date: v.formatted_date,
+			date: v.formatted_date ?? 'Date unavailable',
 			trader: v.trader?.name ?? '',
 			excerpt: v.description ?? '',
 			thumbnail:
 				v.thumbnail_url ||
 				'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			duration: v.formatted_duration || undefined,
-			isVideo: true
+			isVideo: !videoPlaybackUnavailable(v)
 		}));
 
 		const meta = body.meta ?? { current_page: page, per_page: perPage, total: 0, last_page: 1 };

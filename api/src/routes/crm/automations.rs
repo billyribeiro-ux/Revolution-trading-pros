@@ -12,7 +12,7 @@ use serde_json::json;
 use sqlx::FromRow;
 
 use super::ListFilters;
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{AppState, routes::crm::manager_permissions::CrmUser as AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -33,6 +33,7 @@ pub struct AutomationFunnel {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CreateAutomationInput {
     pub title: String,
     pub trigger_type: Option<String>,

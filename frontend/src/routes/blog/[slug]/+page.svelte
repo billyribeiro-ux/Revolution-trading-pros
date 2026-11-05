@@ -6,9 +6,7 @@
 	 * @version 4.0.0 - January 2026
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/env';
 	import type { Attachment } from 'svelte/attachments';
 	import BlurHashImage from '#lib/components/ui/BlurHashImage.svelte';
 	import TableOfContents from '#lib/components/blog/TableOfContents.svelte';
@@ -16,7 +14,6 @@
 	import ReadingProgress from '#lib/components/blog/ReadingProgress.svelte';
 	import SocialShare from '#lib/components/blog/SocialShare.svelte';
 	import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
-	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 	import type { Post } from '#lib/types/post.js';
 	import { safeUrl, sanitizeBlogContent } from '#lib/utils/sanitize.js';
 	import {
@@ -50,24 +47,17 @@
 		featured_image_blurhash?: string | null;
 	}
 
-	// Derived values from page store
-	let slug = $derived(page.params['slug'] ?? '');
-	let postPromise = $derived(fetchPost(slug));
-
-	async function fetchPost(currentSlug: string): Promise<BlogPost> {
-		if (!currentSlug) {
-			throw new Error('Missing blog post slug');
-		}
-
-		return apiFetch<BlogPost>(API_ENDPOINTS.posts.single(currentSlug));
-	}
+	let { data }: { data: import('./$types').PageData } = $props();
+	const post = $derived(data.post as BlogPost);
+	const readingTime = $derived(calculatePostReadingTime(post));
 
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
-			day: 'numeric'
+			day: 'numeric',
+			timeZone: 'UTC'
 		});
 	}
 
@@ -92,10 +82,6 @@
 			caption: raw['caption'] ?? raw['mediaCaption'],
 			alt: raw['alt'] ?? raw['mediaAlt']
 		};
-	}
-
-	function getErrorMessage(err: unknown): string {
-		return err instanceof Error ? err.message : 'An error occurred';
 	}
 
 	function getChecklistItemClass(checked: boolean): string {
@@ -132,7 +118,6 @@
 
 	function readingAnalytics(currentPost: BlogPost): Attachment<HTMLElement> {
 		return () => {
-			if (!browser) return;
 			return initReadingAnalytics({
 				postId: currentPost.id,
 				slug: currentPost.slug,
@@ -158,302 +143,282 @@
 <ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />
 
 <div class="blog-post-container">
-	{#await postPromise}
-		<div class="loading" role="status" aria-live="polite" aria-busy="true">
-			<div class="spinner" aria-hidden="true"></div>
-			<p>Loading post...</p>
-		</div>
-	{:then post}
-		{@const readingTime = calculatePostReadingTime(post)}
-		{#key post.id}
-			<article class="blog-post" {@attach readingAnalytics(post)}>
-				<div class="post-header">
-					<button class="btn-back-header" onclick={goBack} aria-label="Go back to blog listing">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							aria-hidden="true"
-						>
-							<polyline points="15 18 9 12 15 6"></polyline>
-						</svg>
-						Back to Blog
-					</button>
+	{#key post.id}
+		<article class="blog-post" {@attach readingAnalytics(post)}>
+			<div class="post-header">
+				<button class="btn-back-header" onclick={goBack} aria-label="Go back to blog listing">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<polyline points="15 18 9 12 15 6"></polyline>
+					</svg>
+					Back to Blog
+				</button>
 
-					{#if post.categories && post.categories.length > 0}
-						<div class="header-categories">
-							{#each post.categories as category (category.id)}
-								<span class="category-badge">{category.name}</span>
-							{/each}
-						</div>
-					{/if}
-
-					<h1 class="post-title">{post.title}</h1>
-
-					{#if post.excerpt}
-						<p class="post-lead">{post.excerpt}</p>
-					{/if}
-
-					<div class="post-meta">
-						<div class="author-info">
-							{#if post.author_image}
-								<img
-									src={post.author_image}
-									alt={post.author?.name ?? 'Author'}
-									class="author-avatar"
-									width="56"
-									height="56"
-									loading="lazy"
-								/>
-							{:else if post.author}
-								<div class="author-avatar-placeholder">
-									{post.author.name.charAt(0).toUpperCase()}
-								</div>
-							{/if}
-							<div class="author-details">
-								{#if post.author}
-									<span class="author-name">{post.author.name}</span>
-								{/if}
-								<div class="meta-row">
-									<span class="date">{formatDate(post.published_at)}</span>
-									<span class="separator">•</span>
-									<span class="reading-time">{formatReadingTime(readingTime)}</span>
-									{#if post.views !== undefined}
-										<span class="separator">•</span>
-										<span class="views">{post.views.toLocaleString()} views</span>
-									{/if}
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{#if post.featured_image}
-					<div class="featured-image">
-						<BlurHashImage
-							src={post.featured_image}
-							alt={post.title}
-							blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
-							width="100%"
-							height="100%"
-							loading="eager"
-							decoding="async"
-							sizes="(max-width: 768px) 100vw, 800px"
-						/>
+				{#if post.categories && post.categories.length > 0}
+					<div class="header-categories">
+						{#each post.categories as category (category.id)}
+							<span class="category-badge">{category.name}</span>
+						{/each}
 					</div>
 				{/if}
 
-				<div class="post-body">
-					<!-- Table of Contents -->
-					{#if post.content_blocks && post.content_blocks.length > 0}
-						<TableOfContents
-							contentBlocks={post.content_blocks}
-							title="In This Article"
-							minHeadings={2}
-							maxDepth={4}
-							showNumbers={true}
-							collapsible={true}
-							defaultExpanded={true}
-							sticky={false}
-							showProgress={true}
-							smoothScroll={true}
-							highlightActive={true}
-							position="inline"
-						/>
-					{/if}
+				<h1 class="post-title">{post.title}</h1>
 
-					<div class="content">
-						{#if post.content_blocks && post.content_blocks.length > 0}
-							<!-- Structured content blocks (sanitized for XSS protection).
-						     Reads via blockData() so both legacy {data} and editor {content} shapes work. -->
-							{#each post.content_blocks as block, _bi (_bi)}
-								{@const d = blockData(block)}
-								{#if block.type === 'paragraph'}
-									<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
-								{:else if block.type === 'heading'}
-									{#if d['level'] === 1 || d['level'] === 2}
-										<h2>{@html sanitizeBlogContent((d['text'] as string) || '')}</h2>
-									{:else if d['level'] === 3}
-										<h3>{@html sanitizeBlogContent((d['text'] as string) || '')}</h3>
-									{:else if d['level'] === 4}
-										<h4>{@html sanitizeBlogContent((d['text'] as string) || '')}</h4>
-									{:else}
-										<h5>{@html sanitizeBlogContent((d['text'] as string) || '')}</h5>
-									{/if}
-								{:else if block.type === 'list'}
-									{#if d['style'] === 'ordered'}
-										<ol>
-											{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
-												<li>{@html sanitizeBlogContent(item)}</li>
-											{/each}
-										</ol>
-									{:else}
-										<ul>
-											{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
-												<li>{@html sanitizeBlogContent(item)}</li>
-											{/each}
-										</ul>
-									{/if}
-								{:else if block.type === 'checklist'}
-									<ul class="checklist">
-										{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item, _ci (_ci)}
-											<li class={getChecklistItemClass(item.checked)}>
-												<input type="checkbox" checked={item.checked} disabled />
-												{@html sanitizeBlogContent(item.text)}
-											</li>
-										{/each}
-									</ul>
-								{:else if block.type === 'quote' || block.type === 'pullquote'}
-									<blockquote>{@html sanitizeBlogContent((d['text'] as string) || '')}</blockquote>
-								{:else if block.type === 'code' || block.type === 'preformatted'}
-									<pre><code>{(d['code'] as string) || (d['text'] as string) || ''}</code></pre>
-								{:else if block.type === 'image'}
-									<figure aria-label={(d['caption'] as string) || 'Blog image'}>
-										<img
-											src={(d['url'] as string) || ''}
-											alt={(d['alt'] as string) || (d['caption'] as string) || 'Blog post image'}
-											loading="lazy"
-											decoding="async"
-											width={(d['width'] as number) || undefined}
-											height={(d['height'] as number) || undefined}
-										/>
-										{#if d['caption']}
-											<figcaption>{d['caption']}</figcaption>
-										{/if}
-									</figure>
-								{:else if block.type === 'video' || block.type === 'embed'}
-									<!-- Block URLs are author input: only relative and http(s)/mailto/tel
-									     URLs reach an attribute (a javascript: src or href would run in
-									     this origin). -->
-									{@const embedUrl = safeUrl(String(d['url'] ?? ''))}
-									{#if embedUrl}
-										<div class="video-embed">
-											<iframe
-												src={embedUrl}
-												title={(d['caption'] as string) || 'Embedded video'}
-												frameborder="0"
-												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-												allowfullscreen
-											></iframe>
-										</div>
-									{/if}
-								{:else if block.type === 'callout'}
-									<aside class={getCalloutClass(d['type'])}>
-										{#if d['title']}
-											<strong>{d['title']}</strong>
-										{/if}
+				{#if post.excerpt}
+					<p class="post-lead">{post.excerpt}</p>
+				{/if}
 
-										<div>
-											{@html sanitizeBlogContent(
-												(d['text'] as string) || (d['content'] as string) || ''
-											)}
-										</div>
-									</aside>
-								{:else if block.type === 'html'}
-									<!-- Raw HTML block — sanitized -->
-									<div>{@html sanitizeBlogContent((d['html'] as string) || '')}</div>
-								{:else if block.type === 'separator' || block.type === 'divider'}
-									<hr />
-								{:else if block.type === 'spacer'}
-									<div style:height={getSpacerHeight(d['height'])}></div>
-								{:else if block.type === 'button'}
-									{@const buttonUrl = safeUrl(String(d['url'] ?? ''))}
-									{#if buttonUrl}
-										<a class="block-button" href={buttonUrl}
-											>{(d['text'] as string) || (d['label'] as string) || 'Learn more'}</a
-										>
-									{/if}
-								{/if}
-							{/each}
-						{:else}
-							<!-- Fallback: HTML content -->
-							<p class="no-content">Content coming soon...</p>
+				<div class="post-meta">
+					<div class="author-info">
+						{#if post.author_image}
+							<img
+								src={post.author_image}
+								alt={post.author?.name ?? 'Author'}
+								class="author-avatar"
+								width="56"
+								height="56"
+								loading="lazy"
+							/>
+						{:else if post.author}
+							<div class="author-avatar-placeholder">
+								{post.author.name.charAt(0).toUpperCase()}
+							</div>
 						{/if}
-					</div>
-
-					{#if post.tags && post.tags.length > 0}
-						<div class="tags-section">
-							<h3>Tags</h3>
-							<div class="tags">
-								{#each post.tags as tag (tag.id)}
-									<span class="tag">{tag.name}</span>
-								{/each}
+						<div class="author-details">
+							{#if post.author}
+								{#if data.authorProfile}<a
+										class="author-name"
+										href="/authors/{data.authorProfile.slug}">{post.author.name}</a
+									>{:else}<span class="author-name">{post.author.name}</span>{/if}
+							{/if}
+							<div class="meta-row">
+								{#if post.published_at}<time class="date" datetime={post.published_at}
+										>{formatDate(post.published_at)} UTC</time
+									>{:else}<span class="date">Publication date unavailable</span>{/if}
+								<span class="separator">•</span>
+								<span class="reading-time">{formatReadingTime(readingTime)}</span>
+								{#if post.views !== undefined}
+									<span class="separator">•</span>
+									<span class="views">{post.views.toLocaleString()} views</span>
+								{/if}
 							</div>
 						</div>
-					{/if}
-
-					<!-- Social Share Section -->
-					<div class="share-section">
-						<SocialShare
-							url={`${PRODUCTION_ORIGIN}/blog/${post.slug}`}
-							title={post.title}
-							description={post.excerpt || post.meta_description || ''}
-							hashtags="trading,forex,stocks"
-							onShare={(platform) => handleSocialShare(platform, post.slug)}
-							size="medium"
-						/>
 					</div>
 				</div>
+			</div>
 
-				<div class="post-footer">
-					<button class="btn-back-footer" onclick={goBack} aria-label="Go back to blog listing">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							aria-hidden="true"
-						>
-							<polyline points="15 18 9 12 15 6"></polyline>
-						</svg>
-						Back to Blog
-					</button>
+			{#if post.featured_image}
+				<div class="featured-image">
+					<BlurHashImage
+						src={post.featured_image}
+						alt={post.title}
+						blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
+						width="100%"
+						height="100%"
+						loading="eager"
+						decoding="async"
+						sizes="(max-width: 768px) 100vw, 800px"
+					/>
 				</div>
-			</article>
-
-			<!-- Floating Table of Contents Widget -->
-			{#if post.content_blocks && post.content_blocks.length > 0}
-				<FloatingTocWidget
-					contentBlocks={post.content_blocks}
-					showAfterScroll={400}
-					title="Contents"
-				/>
 			{/if}
-		{/key}
-	{:catch err}
-		<div class="error" role="alert" aria-live="assertive">
-			<h2>Oops!</h2>
-			<p>{getErrorMessage(err)}</p>
-			<button class="btn-back" onclick={goBack} aria-label="Go back to blog listing">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<polyline points="15 18 9 12 15 6"></polyline>
-				</svg>
-				Back to Blog
-			</button>
-		</div>
-	{/await}
+
+			<div class="post-body">
+				<!-- Table of Contents -->
+				{#if post.content_blocks && post.content_blocks.length > 0}
+					<TableOfContents
+						contentBlocks={post.content_blocks}
+						title="In This Article"
+						minHeadings={2}
+						maxDepth={4}
+						showNumbers={true}
+						collapsible={true}
+						defaultExpanded={true}
+						sticky={false}
+						showProgress={true}
+						smoothScroll={true}
+						highlightActive={true}
+						position="inline"
+					/>
+				{/if}
+
+				<div class="content">
+					{#if post.content_blocks && post.content_blocks.length > 0}
+						<!-- Structured content blocks (sanitized for XSS protection).
+						     Reads via blockData() so both legacy {data} and editor {content} shapes work. -->
+						{#each post.content_blocks as block, _bi (_bi)}
+							{@const d = blockData(block)}
+							{#if block.type === 'paragraph'}
+								<p>{@html sanitizeBlogContent((d['text'] as string) || '')}</p>
+							{:else if block.type === 'heading'}
+								{#if d['level'] === 1 || d['level'] === 2}
+									<h2>{@html sanitizeBlogContent((d['text'] as string) || '')}</h2>
+								{:else if d['level'] === 3}
+									<h3>{@html sanitizeBlogContent((d['text'] as string) || '')}</h3>
+								{:else if d['level'] === 4}
+									<h4>{@html sanitizeBlogContent((d['text'] as string) || '')}</h4>
+								{:else}
+									<h5>{@html sanitizeBlogContent((d['text'] as string) || '')}</h5>
+								{/if}
+							{:else if block.type === 'list'}
+								{#if d['style'] === 'ordered'}
+									<ol>
+										{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
+											<li>{@html sanitizeBlogContent(item)}</li>
+										{/each}
+									</ol>
+								{:else}
+									<ul>
+										{#each (d['items'] as string[]) || [] as item, _ii (_ii)}
+											<li>{@html sanitizeBlogContent(item)}</li>
+										{/each}
+									</ul>
+								{/if}
+							{:else if block.type === 'checklist'}
+								<ul class="checklist">
+									{#each (d['checklistItems'] as Array<{ text: string; checked: boolean }>) || [] as item, _ci (_ci)}
+										<li class={getChecklistItemClass(item.checked)}>
+											<input type="checkbox" checked={item.checked} disabled />
+											{@html sanitizeBlogContent(item.text)}
+										</li>
+									{/each}
+								</ul>
+							{:else if block.type === 'quote' || block.type === 'pullquote'}
+								<blockquote>{@html sanitizeBlogContent((d['text'] as string) || '')}</blockquote>
+							{:else if block.type === 'code' || block.type === 'preformatted'}
+								<pre><code>{(d['code'] as string) || (d['text'] as string) || ''}</code></pre>
+							{:else if block.type === 'image'}
+								<figure aria-label={(d['caption'] as string) || 'Blog image'}>
+									<img
+										src={(d['url'] as string) || ''}
+										alt={(d['alt'] as string) || (d['caption'] as string) || 'Blog post image'}
+										loading="lazy"
+										decoding="async"
+										width={(d['width'] as number) || undefined}
+										height={(d['height'] as number) || undefined}
+									/>
+									{#if d['caption']}
+										<figcaption>{d['caption']}</figcaption>
+									{/if}
+								</figure>
+							{:else if block.type === 'video' || block.type === 'embed'}
+								<!-- Block URLs are author input: only relative and http(s)/mailto/tel
+									     URLs reach an attribute (a javascript: src or href would run in
+									     this origin). -->
+								{@const embedUrl = safeUrl(String(d['url'] ?? ''))}
+								{#if embedUrl}
+									<div class="video-embed">
+										<iframe
+											src={embedUrl}
+											title={(d['caption'] as string) || 'Embedded video'}
+											frameborder="0"
+											allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+											allowfullscreen
+										></iframe>
+									</div>
+								{/if}
+							{:else if block.type === 'callout'}
+								<aside class={getCalloutClass(d['type'])}>
+									{#if d['title']}
+										<strong>{d['title']}</strong>
+									{/if}
+
+									<div>
+										{@html sanitizeBlogContent(
+											(d['text'] as string) || (d['content'] as string) || ''
+										)}
+									</div>
+								</aside>
+							{:else if block.type === 'html'}
+								<!-- Raw HTML block — sanitized -->
+								<div>{@html sanitizeBlogContent((d['html'] as string) || '')}</div>
+							{:else if block.type === 'separator' || block.type === 'divider'}
+								<hr />
+							{:else if block.type === 'spacer'}
+								<div style:height={getSpacerHeight(d['height'])}></div>
+							{:else if block.type === 'button'}
+								{@const buttonUrl = safeUrl(String(d['url'] ?? ''))}
+								{#if buttonUrl}
+									<a class="block-button" href={buttonUrl}
+										>{(d['text'] as string) || (d['label'] as string) || 'Learn more'}</a
+									>
+								{/if}
+							{/if}
+						{/each}
+					{:else}
+						<!-- Fallback: HTML content -->
+						<p class="no-content">Content coming soon...</p>
+					{/if}
+				</div>
+
+				{#if post.tags && post.tags.length > 0}
+					<div class="tags-section">
+						<h3>Tags</h3>
+						<div class="tags">
+							{#each post.tags as tag (tag.id)}
+								<span class="tag">{tag.name}</span>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Social Share Section -->
+				<div class="share-section">
+					<SocialShare
+						url={`${PRODUCTION_ORIGIN}/blog/${post.slug}`}
+						title={post.title}
+						description={post.excerpt || post.meta_description || ''}
+						hashtags="trading,forex,stocks"
+						onShare={(platform) => handleSocialShare(platform, post.slug)}
+						size="medium"
+					/>
+				</div>
+			</div>
+
+			<div class="post-footer">
+				<button class="btn-back-footer" onclick={goBack} aria-label="Go back to blog listing">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<polyline points="15 18 9 12 15 6"></polyline>
+					</svg>
+					Back to Blog
+				</button>
+			</div>
+		</article>
+
+		<!-- Floating Table of Contents Widget -->
+		{#if post.content_blocks && post.content_blocks.length > 0}
+			<FloatingTocWidget
+				contentBlocks={post.content_blocks}
+				showAfterScroll={400}
+				title="Contents"
+			/>
+		{/if}
+	{/key}
+
+	<p class="risk-disclosure">
+		This material is for education. Trading involves a risk of loss and does not constitute
+		personalized investment advice or a guarantee of future results.
+	</p>
 </div>
 
 <style>
@@ -833,47 +798,6 @@
 
 	.post-footer {
 		text-align: center;
-	}
-
-	.loading,
-	.error {
-		max-width: 600px;
-		margin: 4rem auto;
-		text-align: center;
-	}
-
-	.loading {
-		color: var(--post-text-muted);
-	}
-
-	.error {
-		--error-color: oklch(0.65 0.2 25);
-		color: var(--error-color);
-	}
-
-	.error h2 {
-		font-size: 2rem;
-		margin-bottom: 1rem;
-	}
-
-	.error button {
-		margin-top: 2rem;
-	}
-
-	.spinner {
-		width: 48px;
-		height: 48px;
-		border: 4px solid color-mix(in oklch, var(--post-text-muted) 20%, transparent);
-		border-top-color: var(--post-accent-blue);
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin: 0 auto 1rem;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	/* Container query responsive adjustments */

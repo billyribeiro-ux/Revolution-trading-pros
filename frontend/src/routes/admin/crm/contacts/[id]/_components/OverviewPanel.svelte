@@ -1,417 +1,207 @@
 <script lang="ts">
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconPhone from '@tabler/icons-svelte-runes/icons/phone';
-	import IconBuilding from '@tabler/icons-svelte-runes/icons/building';
-	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
-	import IconWorld from '@tabler/icons-svelte-runes/icons/world';
-	import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import IconTag from '@tabler/icons-svelte-runes/icons/tag';
-	import IconList from '@tabler/icons-svelte-runes/icons/list';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import type { Contact } from './types';
-	import { formatDate } from './helpers';
-
-	interface Props {
-		contact: Contact;
+	import type {
+		ContactRecord,
+		ContactTag,
+		ContactListMembership,
+		ContactPage
+	} from '#lib/crm/contact-types.js';
+	import { formatDateTime } from './helpers';
+	let {
+		contact,
+		tags,
+		lists,
+		tagsError,
+		listsError,
+		tagsLoading,
+		listsLoading,
+		busy,
+		onAddTag,
+		onRemoveTag,
+		onAddList,
+		onRemoveFromList,
+		onRefreshTags,
+		onRefreshLists,
+		onListsPage
+	}: {
+		contact: ContactRecord;
+		tags: ContactTag[];
+		lists: ContactPage<ContactListMembership> | null;
+		tagsError: string;
+		listsError: string;
+		tagsLoading: boolean;
+		listsLoading: boolean;
+		busy: boolean;
 		onAddTag: () => void;
-		onRemoveTag: (tagId: string) => void;
+		onRemoveTag: (id: string) => void;
 		onAddList: () => void;
-		onRemoveFromList: (listId: string) => void;
-	}
-
-	let { contact, onAddTag, onRemoveTag, onAddList, onRemoveFromList }: Props = $props();
+		onRemoveFromList: (id: string) => void;
+		onRefreshTags: () => void;
+		onRefreshLists: () => void;
+		onListsPage: (page: number) => void;
+	} = $props();
 </script>
 
-<div class="overview-grid">
-	<!-- Contact Info Card -->
-	<div class="info-card">
-		<h3>Contact Information</h3>
-		<div class="info-grid">
-			<div class="info-item">
-				<IconMail size={16} />
-				<div>
-					<span class="info-label">Email</span>
-					<a href="mailto:{contact.email || ''}" class="info-value link">{contact.email || ''}</a>
-				</div>
-			</div>
-			{#if contact.phone}
-				<div class="info-item">
-					<IconPhone size={16} />
-					<div>
-						<span class="info-label">Phone</span>
-						<a href="tel:{contact.phone}" class="info-value link">{contact.phone}</a>
-					</div>
-				</div>
-			{/if}
-			{#if contact.mobile}
-				<div class="info-item">
-					<IconPhone size={16} />
-					<div>
-						<span class="info-label">Mobile</span>
-						<a href="tel:{contact.mobile}" class="info-value link">{contact.mobile}</a>
-					</div>
-				</div>
-			{/if}
-			{#if contact.company_name}
-				<div class="info-item">
-					<IconBuilding size={16} />
-					<div>
-						<span class="info-label">Company</span>
-						<span class="info-value">{contact.company_name}</span>
-					</div>
-				</div>
-			{/if}
-			{#if contact.job_title}
-				<div class="info-item">
-					<IconBriefcase size={16} />
-					<div>
-						<span class="info-label">Job Title</span>
-						<span class="info-value">{contact.job_title}</span>
-					</div>
-				</div>
-			{/if}
-			{#if contact.website}
-				<div class="info-item">
-					<IconWorld size={16} />
-					<div>
-						<span class="info-label">Website</span>
-						<a href={contact.website} target="_blank" class="info-value link">{contact.website}</a>
-					</div>
-				</div>
-			{/if}
-			{#if contact.city || contact.country}
-				<div class="info-item">
-					<IconWorld size={16} />
-					<div>
-						<span class="info-label">Location</span>
-						<span class="info-value">
-							{[contact.city, contact.state, contact.country].filter(Boolean).join(', ')}
-						</span>
-					</div>
-				</div>
-			{/if}
-			<div class="info-item">
-				<IconCalendar size={16} />
-				<div>
-					<span class="info-label">Created</span>
-					<span class="info-value">{formatDate(contact.created_at)}</span>
-				</div>
-			</div>
-			<div class="info-item">
-				<IconClock size={16} />
-				<div>
-					<span class="info-label">Last Activity</span>
-					<span class="info-value">{formatDate(contact.last_activity_at)}</span>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Tags Card -->
-	<div class="info-card">
-		<div class="card-header">
-			<h3>
-				<IconTag size={18} />
-				Tags
-			</h3>
-			<button class="btn-add" onclick={onAddTag}>
-				<IconPlus size={14} />
-				Add
-			</button>
-		</div>
-		<div class="tags-list">
-			{#if contact.tags && contact.tags.length > 0}
-				{#each contact.tags as tag (tag.id)}
-					{const tagColor = tag.color || '#E6B800'}
-					<span class="tag-pill" style:background-color={`${tagColor}20`} style:color={tagColor}>
-						{tag.name}
-						<button class="tag-remove" onclick={() => onRemoveTag(tag.id)}>
-							<IconX size={12} />
-						</button>
-					</span>
-				{/each}
-			{:else}
-				<p class="empty-text">No tags assigned</p>
-			{/if}
-		</div>
-	</div>
-
-	<!-- Lists Card -->
-	<div class="info-card">
-		<div class="card-header">
-			<h3>
-				<IconList size={18} />
-				Lists
-			</h3>
-			<button class="btn-add" onclick={onAddList}>
-				<IconPlus size={14} />
-				Add
-			</button>
-		</div>
-		<div class="lists-section">
-			{#if contact.lists && contact.lists.length > 0}
-				{#each contact.lists as list (list.id)}
-					<div class="list-item">
-						<IconList size={16} />
-						<span>{list.name}</span>
-						<button class="list-remove" onclick={() => onRemoveFromList(list.id)}>
-							<IconX size={12} />
-						</button>
-					</div>
-				{/each}
-			{:else}
-				<p class="empty-text">Not added to any list</p>
-			{/if}
-		</div>
-	</div>
-
-	<!-- Engagement Card -->
-	<div class="info-card">
-		<h3>Engagement Metrics</h3>
-		<div class="metrics-grid">
-			<div class="metric-item">
-				<span class="metric-label">Total Sessions</span>
-				<span class="metric-value">{contact.total_sessions}</span>
-			</div>
-			<div class="metric-item">
-				<span class="metric-label">Avg Engagement</span>
-				<span class="metric-value">{contact.avg_engagement_score?.toFixed(1) || 0}</span>
-			</div>
-			<div class="metric-item">
-				<span class="metric-label">Avg Intent</span>
-				<span class="metric-value">{contact.avg_intent_score?.toFixed(1) || 0}</span>
-			</div>
-			<div class="metric-item">
-				<span class="metric-label">Friction Events</span>
-				<span class="metric-value">{contact.friction_events_count || 0}</span>
-			</div>
-			<div class="metric-item">
-				<span class="metric-label">Deals</span>
-				<span class="metric-value">{contact.deals_count || 0}</span>
-			</div>
-			<div class="metric-item">
-				<span class="metric-label">MRR</span>
-				<span class="metric-value">${contact.subscription_mrr?.toFixed(0) || 0}</span>
-			</div>
-		</div>
-	</div>
+<div class="overview">
+	<section>
+		<h2>Contact information</h2>
+		<dl>
+			<dt>Email</dt>
+			<dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
+			<dt>Phone</dt>
+			<dd>
+				{#if contact.phone}<a href={`tel:${contact.phone}`}>{contact.phone}</a>{:else}Unknown{/if}
+			</dd>
+			<dt>Company</dt>
+			<dd>{contact.company || 'Unknown'}</dd>
+			<dt>Job title</dt>
+			<dd>{contact.job_title || 'Unknown'}</dd>
+			<dt>Source</dt>
+			<dd>{contact.source || 'Unknown'}</dd>
+			<dt>Created</dt>
+			<dd>{formatDateTime(contact.created_at)}</dd>
+			<dt>Updated</dt>
+			<dd>{formatDateTime(contact.updated_at)}</dd>
+			<dt>Last recorded activity</dt>
+			<dd>{formatDateTime(contact.last_activity_at)}</dd>
+			<dt>Owner record</dt>
+			<dd>{contact.owner_id ?? 'Unassigned'}</dd>
+			<dt>Last contacted</dt>
+			<dd>{formatDateTime(contact.last_contacted_at)}</dd>
+		</dl>
+	</section>
+	<section>
+		<header>
+			<h2>Tags</h2>
+			<button onclick={onAddTag} disabled={busy}>Add tag</button>
+		</header>
+		{#if tagsLoading}<p role="status">Loading tags…</p>{:else if tagsError}<p role="alert">
+				{tagsError}
+			</p>
+			<button onclick={onRefreshTags}>Retry tags</button>{:else if tags.length === 0}<p>
+				No tags assigned.
+			</p>{:else}<ul>
+				{#each tags as tag (`${tag.id ?? 'legacy'}:${tag.name}`)}<li>
+						<span style:color={tag.color ?? undefined}>{tag.name}</span>{#if tag.id}<button
+								aria-label={`Remove tag ${tag.name}`}
+								onclick={() => tag.id && onRemoveTag(tag.id)}
+								disabled={busy}>Remove</button
+							>{:else}<span>Unregistered label; register a matching tag to manage it.</span>{/if}
+					</li>{/each}
+			</ul>{/if}
+	</section>
+	<section>
+		<header>
+			<h2>Lists</h2>
+			<button onclick={onAddList} disabled={busy}>Add to list</button>
+		</header>
+		{#if listsLoading}<p role="status">Loading lists…</p>{:else if listsError}<p role="alert">
+				{listsError}
+			</p>
+			<button onclick={onRefreshLists}>Retry lists</button>{:else if lists}<p>
+				{lists.meta.total} recorded list memberships.
+			</p>
+			{#if lists.data.length === 0}<p>No list memberships on this page.</p>{:else}<ul>
+					{#each lists.data as list (list.id)}<li>
+							<span>{list.name}<small>Added {formatDateTime(list.subscribed_at)}</small></span
+							><button
+								aria-label={`Remove from list ${list.name}`}
+								onclick={() => onRemoveFromList(list.id)}
+								disabled={busy}>Remove</button
+							>
+						</li>{/each}
+				</ul>{/if}
+			<nav aria-label="List membership pages">
+				<button
+					disabled={lists.meta.current_page <= 1 || busy}
+					onclick={() => onListsPage(lists.meta.current_page - 1)}>Previous</button
+				><span>Page {lists.meta.current_page} of {lists.meta.total_pages}</span><button
+					disabled={lists.meta.current_page >= lists.meta.total_pages || busy}
+					onclick={() => onListsPage(lists.meta.current_page + 1)}>Next</button
+				>
+			</nav>{/if}
+	</section>
+	<section>
+		<h2>Recorded linked facts</h2>
+		{#if contact.facts}<p>
+				Deals: {contact.facts.deals.total} total, {contact.facts.deals.open} open, {contact.facts
+					.deals.won} won. Recorded deal activities: {contact.facts.deals.activities}; deal notes: {contact
+					.facts.deals.notes}.
+			</p>
+			<p>CRM outbox provider acceptances: {contact.facts.email.accepted}.</p>
+			{#if contact.facts.orders}<p>
+					Linked member orders: {contact.facts.orders.total} total, {contact.facts.orders.completed} completed,
+					{contact.facts.orders.refunded} refunded.
+				</p>{:else}<p>Member orders: no recorded contact-to-member link.</p>{/if}{:else}<p>
+				Linked facts unavailable.
+			</p>{/if}
+		<p>
+			Behavior sessions, intent, friction, subscription MRR and lifetime value are not measured by
+			this contact profile.
+		</p>
+	</section>
+	<section>
+		<h2>Custom fields</h2>
+		{#if contact.custom_fields}<pre>{JSON.stringify(contact.custom_fields, null, 2)}</pre>{:else}<p>
+				No custom fields recorded.
+			</p>{/if}
+	</section>
 </div>
 
 <style>
-	.overview-grid {
+	.overview {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 20px;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+		gap: 1rem;
 	}
-
-	.info-card {
-		padding: 20px;
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid var(--border-default, #30363d);
-		border-radius: 14px;
+	section {
+		padding: 1.2rem;
+		border: 1px solid #334155;
+		border-radius: 0.8rem;
+		background: #0f172a;
 	}
-
-	.info-card h3 {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin: 0 0 16px;
+	h2 {
 		font-size: 1rem;
-		font-weight: 600;
-		color: #ffffff;
 	}
-
-	.info-card h3 :global(svg) {
-		color: var(--primary-500);
-	}
-
-	.card-header {
+	header,
+	nav,
+	li {
 		display: flex;
+		gap: 0.8rem;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 16px;
 	}
-
-	.card-header h3 {
-		margin: 0;
-	}
-
-	.btn-add {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		padding: 6px 12px;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.3);
-		border-radius: 6px;
-		color: var(--primary-500);
-		font-size: 0.75rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-add:hover {
-		background: rgba(230, 184, 0, 0.2);
-	}
-
-	.info-grid {
+	ul {
+		padding: 0;
+		list-style: none;
 		display: grid;
-		gap: 12px;
+		gap: 0.8rem;
 	}
-
-	.info-item {
-		display: flex;
-		align-items: flex-start;
-		gap: 12px;
-		padding: 10px;
-		background: var(--bg-base, #0d1117);
-		border-radius: 8px;
+	dd {
+		margin: 0.2rem 0 1rem;
 	}
-
-	.info-item :global(svg) {
-		color: var(--text-tertiary, #6e7681);
-		flex-shrink: 0;
-		margin-top: 2px;
+	dt,
+	p,
+	small {
+		color: #94a3b8;
 	}
-
-	.info-item > div {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
+	small {
+		display: block;
 	}
-
-	.info-label {
-		font-size: 0.7rem;
-		color: var(--text-tertiary, #6e7681);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
+	a {
+		color: #7dd3fc;
 	}
-
-	.info-value {
-		font-size: 0.875rem;
-		color: var(--text-primary, #f0f6fc);
+	button {
+		padding: 0.5rem;
+		border-radius: 0.4rem;
+		color: #e2e8f0;
+		border: 1px solid #475569;
+		background: #1e293b;
 	}
-
-	.info-value.link {
-		color: var(--info-emphasis, #58a6ff);
-		text-decoration: none;
+	[role='alert'] {
+		color: #fca5a5;
 	}
-
-	.info-value.link:hover {
-		text-decoration: underline;
-	}
-
-	.tags-list {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.tag-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 6px 12px;
-		border-radius: 20px;
-		font-size: 0.8rem;
-		font-weight: 500;
-	}
-
-	.tag-remove {
-		display: flex;
-		padding: 2px;
-		background: transparent;
-		border: none;
-		color: inherit;
-		opacity: 0.6;
-		cursor: pointer;
-	}
-
-	.tag-remove:hover {
-		opacity: 1;
-	}
-
-	.lists-section {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.list-item {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 10px 12px;
-		background: var(--bg-base, #0d1117);
-		border-radius: 8px;
-		font-size: 0.875rem;
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.list-item :global(svg) {
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.list-remove {
-		margin-left: auto;
-		display: flex;
-		padding: 4px;
-		background: transparent;
-		border: none;
-		color: var(--text-tertiary, #6e7681);
-		cursor: pointer;
-		opacity: 0;
-		transition: opacity 0.2s;
-	}
-
-	.list-item:hover .list-remove {
-		opacity: 1;
-	}
-
-	.list-remove:hover {
-		color: var(--error-emphasis, #f85149);
-	}
-
-	.metrics-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 12px;
-	}
-
-	.metric-item {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		padding: 12px;
-		background: var(--bg-base, #0d1117);
-		border-radius: 8px;
-	}
-
-	.metric-label {
-		font-size: 0.7rem;
-		color: var(--text-tertiary, #6e7681);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.metric-value {
-		font-size: 1.25rem;
-		font-weight: 700;
-		color: #ffffff;
-	}
-
-	.empty-text {
-		color: var(--text-tertiary, #6e7681);
-		font-size: 0.875rem;
-		margin: 0;
-	}
-
-	@media (max-width: 900px) {
-		.overview-grid {
-			grid-template-columns: 1fr;
-		}
+	pre {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
 	}
 </style>

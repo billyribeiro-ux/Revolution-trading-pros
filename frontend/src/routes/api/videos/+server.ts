@@ -33,7 +33,7 @@ function getAuthHeaders(request: Request): HeadersInit {
 }
 
 // GET - List videos (proxies to backend)
-export const GET: RequestHandler = async ({ url, request }) => {
+export const GET: RequestHandler = async ({ url, request, cookies, locals }) => {
 	try {
 		// Forward query params to backend
 		const queryParams = new URLSearchParams();
@@ -54,6 +54,8 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		const room_id = url.searchParams.get('room_id');
 		const tags = url.searchParams.get('tags');
 		const difficulty_level = url.searchParams.get('difficulty_level');
+		const room_slug = url.searchParams.get('room_slug'),
+			video_date = url.searchParams.get('video_date');
 
 		if (page) queryParams.set('page', page);
 		if (limit) queryParams.set('per_page', limit);
@@ -67,12 +69,19 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		if (room_id) queryParams.set('room_id', room_id);
 		if (tags) queryParams.set('tags', tags);
 		if (difficulty_level) queryParams.set('difficulty_level', difficulty_level);
+		if (room_slug) queryParams.set('room_slug', room_slug);
+		if (video_date) queryParams.set('video_date', video_date);
 
 		const backendUrl = `${BACKEND_URL}/videos${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
+		const headers = new Headers(getAuthHeaders(request));
+		const token = locals.accessToken || cookies.get('rtp_access_token');
+		if (token) headers.set('Authorization', `Bearer ${token}`);
 		const response = await fetch(backendUrl, {
 			method: 'GET',
-			headers: getAuthHeaders(request)
+			headers,
+			credentials: 'omit',
+			redirect: 'error'
 		});
 
 		if (!response.ok) {
@@ -84,34 +93,73 @@ export const GET: RequestHandler = async ({ url, request }) => {
 					error: errorData.message || 'Failed to fetch videos',
 					data: { videos: [], pagination: { page: 1, limit: 12, total: 0, total_pages: 0 } }
 				},
-				{ status: response.status }
+				{
+					status: response.status,
+					headers: { 'Cache-Control': 'private, no-store', Vary: 'Authorization, Cookie' }
+				}
 			);
 		}
 
-		const data = await response.json();
+		const value: unknown = await response.json();
+		if (!value || typeof value !== 'object' || Array.isArray(value))
+			throw new Error('Video catalog response is invalid');
+		const data = value as Record<string, unknown>,
+			rawMeta = data.meta;
+		if (!rawMeta || typeof rawMeta !== 'object' || Array.isArray(rawMeta))
+			throw new Error('Video catalog pagination is missing');
+		const meta = rawMeta as Record<string, unknown>;
+		const current = meta.current_page,
+			size = meta.per_page,
+			total = meta.total,
+			last = meta.last_page;
+		if (
+			data.success !== true ||
+			!Array.isArray(data.data) ||
+			typeof current !== 'number' ||
+			!Number.isSafeInteger(current) ||
+			current < 1 ||
+			typeof size !== 'number' ||
+			!Number.isSafeInteger(size) ||
+			size < 1 ||
+			typeof total !== 'number' ||
+			!Number.isSafeInteger(total) ||
+			total < 0 ||
+			typeof last !== 'number' ||
+			last !== Math.max(1, Math.ceil(total / size)) ||
+			data.data.length !== Math.max(0, Math.min(size, total - (current - 1) * size))
+		)
+			throw new Error('Video catalog response is invalid');
 
 		// Transform backend pagination response to match frontend expected format
-		return Response.json({
-			success: true,
-			data: {
-				videos: data.data || [],
-				pagination: {
-					page: data.current_page || 1,
-					limit: data.per_page || 12,
-					total: data.total || 0,
-					total_pages: data.last_page || 0
+		return Response.json(
+			{
+				success: true,
+				data: {
+					videos: data.data,
+					pagination: {
+						page: current,
+						limit: size,
+						total: total,
+						total_pages: last
+					}
 				}
-			}
-		});
+			},
+			{ headers: { 'Cache-Control': 'private, no-store', Vary: 'Authorization, Cookie' } }
+		);
 	} catch (err) {
-		console.error('Videos API proxy error:', err);
+		console.error(
+			'Videos API proxy error:',
+			err instanceof Error ? err.message : 'Unavailable video catalog'
+		);
 		return Response.json(
 			{
 				success: false,
-				error: 'Failed to connect to backend',
-				data: { videos: [], pagination: { page: 1, limit: 12, total: 0, total_pages: 0 } }
+				error: 'Video catalog is unavailable or returned invalid pagination'
 			},
-			{ status: 503 }
+			{
+				status: 503,
+				headers: { 'Cache-Control': 'private, no-store', Vary: 'Authorization, Cookie' }
+			}
 		);
 	}
 };

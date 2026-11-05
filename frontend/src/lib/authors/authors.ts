@@ -1,4 +1,4 @@
-import authorRecords from './authors.json';
+import authorRecords from './authors.json' with { type: 'json' };
 
 /**
  * Author / instructor registry.

@@ -130,7 +130,6 @@ export const NOINDEX_PREFIXES = [
 	'/email',
 	'/embed',
 	'/forgot-password',
-	'/learning-center',
 	'/login',
 	'/logout',
 	'/maintenance',

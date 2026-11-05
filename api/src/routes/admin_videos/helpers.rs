@@ -19,25 +19,27 @@ pub(super) fn slugify(s: &str) -> String {
         .join("-")
 }
 
-pub(super) fn get_embed_url(video: &UnifiedVideoRow) -> String {
-    match video.video_platform.as_str() {
-        "bunny" => {
+pub(super) fn get_embed_url(video: &UnifiedVideoRow) -> Option<String> {
+    match video.video_platform.as_deref() {
+        Some("bunny") => {
             if let (Some(guid), Some(lib_id)) = (&video.bunny_video_guid, video.bunny_library_id) {
-                format!("https://iframe.mediadelivery.net/embed/{lib_id}/{guid}")
+                Some(format!(
+                    "https://iframe.mediadelivery.net/embed/{lib_id}/{guid}"
+                ))
             } else {
                 video.video_url.clone()
             }
         }
-        "vimeo" => {
+        Some("vimeo") => {
             if let Some(id) = &video.video_id {
-                format!("https://player.vimeo.com/video/{id}")
+                Some(format!("https://player.vimeo.com/video/{id}"))
             } else {
                 video.video_url.clone()
             }
         }
-        "youtube" => {
+        Some("youtube") => {
             if let Some(id) = &video.video_id {
-                format!("https://www.youtube.com/embed/{id}")
+                Some(format!("https://www.youtube.com/embed/{id}"))
             } else {
                 video.video_url.clone()
             }
@@ -90,10 +92,15 @@ pub(super) fn video_to_response(
         video_platform: video.video_platform.clone(),
         thumbnail_url: video.thumbnail_url.clone(),
         duration: video.duration,
-        formatted_duration: format_duration(video.duration),
+        formatted_duration: video
+            .duration
+            .filter(|duration| *duration > 0)
+            .map(|duration| format_duration(Some(duration))),
         content_type: video.content_type.clone(),
-        video_date: video.video_date.to_string(),
-        formatted_date: video.video_date.format("%B %d, %Y").to_string(),
+        video_date: video.video_date.map(|date| date.to_string()),
+        formatted_date: video
+            .video_date
+            .map(|date| date.format("%B %d, %Y").to_string()),
         is_published: video.is_published,
         is_featured: video.is_featured,
         tags: get_tags_vec(&video.tags),
@@ -101,6 +108,6 @@ pub(super) fn video_to_response(
         views_count: video.views_count,
         trader,
         rooms,
-        created_at: video.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
+        created_at: video.created_at.map(|date| date.to_rfc3339()),
     }
 }

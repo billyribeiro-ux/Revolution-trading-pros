@@ -6,9 +6,22 @@
 	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
 	import IconSend from '@tabler/icons-svelte-runes/icons/send';
 	import type { Contact, EmailTemplateOption } from './types';
+	import type { ContactMessageReceipt, ContactEmailActivity } from '#lib/crm/contact-types.js';
 
 	interface Props {
 		open: boolean;
+		locked: boolean;
+		error: string;
+		templateError: string;
+		templateSearch: string;
+		templatePage: number;
+		templatePages: number;
+		receipt: ContactMessageReceipt | null;
+		recovered: ContactEmailActivity[];
+		onRefreshReceipt: () => void;
+		onNewMessage: () => void;
+		onTemplateSearch: () => void;
+		onTemplatePage: (page: number) => void;
 		contact: Contact | null;
 		templates: EmailTemplateOption[];
 		loadingTemplates: boolean;
@@ -23,6 +36,18 @@
 
 	let {
 		open,
+		locked,
+		error,
+		templateError,
+		templateSearch = $bindable(),
+		templatePage,
+		templatePages,
+		receipt,
+		recovered,
+		onRefreshReceipt,
+		onNewMessage,
+		onTemplateSearch,
+		onTemplatePage,
 		contact,
 		templates,
 		loadingTemplates,
@@ -39,8 +64,8 @@
 {#if open}
 	<div
 		class="modal-overlay"
-		onclick={(e: MouseEvent) => e.target === e.currentTarget && onClose()}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
+		onclick={(e: MouseEvent) => !sending && e.target === e.currentTarget && onClose()}
+		onkeydown={(e: KeyboardEvent) => !sending && e.key === 'Escape' && onClose()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="send-email-title"
@@ -51,7 +76,7 @@
 				<div class="modal-title-section">
 					<h3 id="send-email-title">
 						<IconMailFast size={22} />
-						Send Email
+						{locked ? 'Retry same message' : 'Send Email'}
 					</h3>
 					{#if contact}
 						<span class="email-recipient">
@@ -59,12 +84,55 @@
 						</span>
 					{/if}
 				</div>
-				<button class="modal-close" onclick={onClose} aria-label="Close modal">
+				<button class="modal-close" onclick={onClose} disabled={sending} aria-label="Close modal">
 					<IconX size={20} />
 				</button>
 			</div>
 
 			<div class="modal-body email-form">
+				{#if error}<p role="alert">{error}</p>{/if}
+				{#if locked}<section aria-label="Message receipt">
+						<p>
+							This message intent is frozen. Refresh its recorded outcome before deciding whether to
+							retry.
+						</p>
+						{#if receipt}<p>Request {receipt.request_id}</p>
+							{#each receipt.submissions as submission (submission.id)}<p>
+									<strong>{submission.status}</strong> — {submission.recipient}; subject {submission.subject};
+									provider {submission.provider}; reference {submission.provider_message_id ??
+										'Unavailable'}; accepted {submission.accepted_at ?? 'Not recorded'}.
+								</p>
+								{#if submission.error}<p role="alert">
+										{submission.error}
+									</p>{/if}{/each}{/if}{#each recovered as activity (activity.id)}<p>
+								Recorded outcome: {activity.status}; provider {activity.provider ?? 'Unknown'};
+								accepted {activity.accepted_at ?? 'Not recorded'}. {activity.error ?? ''}
+							</p>{/each}<button onclick={onRefreshReceipt} disabled={sending}
+							>Refresh message outcome</button
+						><button onclick={onNewMessage} disabled={sending}>Compose new message</button>
+					</section>{/if}
+				<form
+					onsubmit={(event) => {
+						event.preventDefault();
+						onTemplateSearch();
+					}}
+				>
+					<label for="template-search">Search templates</label><input
+						id="template-search"
+						bind:value={templateSearch}
+						disabled={sending || locked || loadingTemplates}
+					/><button disabled={sending || locked || loadingTemplates}>Search templates</button>
+				</form>
+				{#if templateError}<p role="alert">{templateError}</p>{/if}
+				<nav aria-label="Template catalog pages">
+					<button
+						disabled={sending || locked || loadingTemplates || templatePage <= 1}
+						onclick={() => onTemplatePage(templatePage - 1)}>Previous templates</button
+					><span>Page {templatePage} of {templatePages}</span><button
+						disabled={sending || locked || loadingTemplates || templatePage >= templatePages}
+						onclick={() => onTemplatePage(templatePage + 1)}>Next templates</button
+					>
+				</nav>
 				<!-- Template Selector -->
 				<div class="form-group">
 					<label for="email-template" class="form-label">
@@ -77,7 +145,7 @@
 						class="form-select"
 						value={selectedTemplateId ?? ''}
 						onchange={(e) => onTemplateChange((e.target as HTMLSelectElement).value || null)}
-						disabled={loadingTemplates}
+						disabled={loadingTemplates || sending || locked}
 					>
 						<option value="">
 							{loadingTemplates ? 'Loading templates...' : '-- Select a template --'}
@@ -86,7 +154,7 @@
 							<option value={template.id}>{template.name}</option>
 						{/each}
 					</select>
-					{#if templates.length === 0 && !loadingTemplates}
+					{#if templates.length === 0 && !loadingTemplates && !templateError}
 						<p class="form-hint">No templates available. You can compose a custom email below.</p>
 					{/if}
 				</div>
@@ -97,14 +165,15 @@
 						<IconTag size={16} />
 						Subject Line
 					</label>
-					<input autocomplete="email"
+					<input
+						autocomplete="email"
 						id="email-subject"
 						name="email-subject"
 						type="text"
 						class="form-input"
 						placeholder="Enter email subject..."
 						bind:value={subject}
-						disabled={sending}
+						disabled={sending || locked}
 					/>
 				</div>
 
@@ -120,8 +189,11 @@
 						placeholder="Compose your email message here..."
 						bind:value={body}
 						rows="10"
-						disabled={sending}></textarea>
-					<p class="form-hint">You can use basic text formatting. HTML tags will be preserved.</p>
+						disabled={sending || locked}></textarea>
+					<p class="form-hint">
+						You can use basic text formatting. HTML tags will be preserved. Provider acceptance does
+						not establish delivery or human engagement.
+					</p>
 				</div>
 			</div>
 
@@ -130,14 +202,18 @@
 				<button
 					class="btn-primary send-btn"
 					onclick={onSend}
-					disabled={sending || !subject.trim() || !body.trim()}
+					disabled={sending ||
+						!subject.trim() ||
+						!body.trim() ||
+						receipt?.submissions.some((item) => item.status === 'accepted') ||
+						recovered.some((item) => item.status === 'accepted')}
 				>
 					{#if sending}
 						<div class="btn-spinner"></div>
 						Sending...
 					{:else}
 						<IconSend size={18} />
-						Send Email
+						{locked ? 'Retry same message' : 'Send Email'}
 					{/if}
 				</button>
 			</div>
@@ -158,6 +234,9 @@
 	}
 
 	.modal {
+		display: flex;
+		flex-direction: column;
+		max-height: calc(100dvh - 40px);
 		width: 100%;
 		max-width: 480px;
 		background: var(--bg-elevated, #161b22);
@@ -171,6 +250,7 @@
 	}
 
 	.modal-header {
+		flex-shrink: 0;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -221,10 +301,13 @@
 	}
 
 	.modal-body {
+		min-height: 0;
+		overflow-y: auto;
 		padding: 20px;
 	}
 
 	.modal-footer {
+		flex-shrink: 0;
 		display: flex;
 		justify-content: flex-end;
 		gap: 12px;
@@ -388,7 +471,6 @@
 		transition: all 0.2s;
 	}
 
-
 	.btn-primary:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
@@ -441,7 +523,7 @@
 	@media (max-width: 720px) {
 		.modal-large {
 			max-width: 100%;
-			margin: 16px;
+			margin: 0;
 		}
 	}
 

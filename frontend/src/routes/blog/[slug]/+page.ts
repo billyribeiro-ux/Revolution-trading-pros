@@ -3,90 +3,72 @@ import { error } from '@sveltejs/kit';
 import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 import type { Post } from '#lib/types/post.js';
 import type { SEOInput } from '#lib/seo/types.js';
-import { articleSchema, breadcrumbSchema, speakableSchema } from '#lib/seo/jsonld.js';
-
+import { articleSchema } from '#lib/seo/jsonld.js';
+import { authors } from '#lib/authors/authors.js';
 import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
-
-const SITE_URL = PRODUCTION_ORIGIN;
-
-export const prerender = false; // Disable prerendering - dynamic content
-// SSR enabled for SEO - blog content should be server-rendered
-
-export const load: Load = async ({ params, url }) => {
+export const prerender = false;
+export const load: Load = async ({ params, fetch }) => {
 	let post: Post;
-
 	try {
-		post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''));
-	} catch (err) {
-		console.error('Failed to load post:', err);
-		error(404, 'Blog post not found');
+		post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''), { fetch });
+	} catch (cause) {
+		if (cause instanceof Error && 'status' in cause && cause.status === 404)
+			error(404, 'Blog post not found');
+		error(503, 'Blog post is temporarily unavailable');
 	}
-
-	const postUrl = `${SITE_URL}${url.pathname}`;
-	const postTitle = post.title ?? params.slug ?? 'Blog Post';
-	const postDescription =
-		post.excerpt ?? post.meta_description ?? `Read ${postTitle} on Revolution Trading Pros`;
-	const postImage = post.featured_image ?? `${SITE_URL}/revolution-trading-pros.png`;
-	const authorName = post.author?.name ?? 'Revolution Trading Pros';
-	const publishedDate = post.published_at ?? new Date().toISOString();
-
+	const path = `/blog/${post.slug}`,
+		postUrl = `${PRODUCTION_ORIGIN}${path}`;
+	const author = authors.find((author) => author.name === post.author?.name) ?? null;
+	const published =
+		post.published_at &&
+		Number.isFinite(
+			Date.parse(`${post.published_at}${/Z$|[+-]\d\d:\d\d$/.test(post.published_at) ? '' : 'Z'}`)
+		)
+			? new Date(
+					`${post.published_at}${/Z$|[+-]\d\d:\d\d$/.test(post.published_at) ? '' : 'Z'}`
+				).toISOString()
+			: null;
+	const description = post.excerpt || post.meta_description || '';
+	const indexable =
+		post.indexable !== false &&
+		!!author &&
+		!!published &&
+		Date.parse(published) <= Date.now() &&
+		!!post.featured_image &&
+		!!post.excerpt &&
+		post.excerpt.length >= 50;
 	const seo: SEOInput = {
-		title: postTitle,
-		description: postDescription,
-		canonical: postUrl,
+		title: post.title,
+		description,
+		canonical: post.canonical_url || path,
+		robots: { index: indexable, follow: true },
 		og: {
-			title: postTitle,
-			description: postDescription,
 			type: 'article',
-			image: postImage,
-			imageAlt: postTitle,
+			image: post.featured_image,
+			imageAlt: post.title,
 			article: {
-				publishedTime: publishedDate,
-				modifiedTime: publishedDate,
-				author: authorName,
-				section: 'Trading'
+				...(published ? { publishedTime: published } : {}),
+				...(author ? { author: `${PRODUCTION_ORIGIN}/authors/${author.slug}` } : {})
 			}
 		},
-		twitter: {
-			title: postTitle,
-			description: postDescription,
-			image: postImage,
-			imageAlt: postTitle
-		},
-		jsonld: [
-			articleSchema({
-				headline: postTitle,
-				url: postUrl,
-				datePublished: publishedDate,
-				dateModified: publishedDate,
-				authorName,
-				publisherName: 'Revolution Trading Pros',
-				publisherLogo: `${SITE_URL}/icon-512.png`,
-				type: 'BlogPosting',
-				description: postDescription,
-				image: postImage,
-				articleSection: 'Trading',
-				id: `${postUrl}#article`
-			}),
-			breadcrumbSchema(
-				[
-					{ name: 'Home', url: SITE_URL },
-					{ name: 'Blog', url: `${SITE_URL}/blog` },
-					{ name: postTitle, url: postUrl }
-				],
-				`${postUrl}#breadcrumb`
-			),
-			speakableSchema({
-				url: postUrl,
-				name: postTitle,
-				cssSelector: ['.post-title', '.post-lead'],
-				id: `${postUrl}#speakable`
-			})
-		]
+		jsonld:
+			author && published
+				? [
+						articleSchema({
+							headline: post.title,
+							url: postUrl,
+							datePublished: published,
+							authorName: author.name,
+							authorUrl: `${PRODUCTION_ORIGIN}/authors/${author.slug}`,
+							publisherName: 'Revolution Trading Pros',
+							publisherLogo: `${PRODUCTION_ORIGIN}/icon-512.png`,
+							type: 'BlogPosting',
+							description,
+							...(post.featured_image ? { image: post.featured_image } : {}),
+							id: `${postUrl}#article`
+						})
+					]
+				: []
 	};
-
-	return {
-		post,
-		seo
-	};
+	return { post: { ...post, published_at: published ?? '' }, authorProfile: author, seo };
 };

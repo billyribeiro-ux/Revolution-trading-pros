@@ -256,9 +256,10 @@
 	}
 
 	async function handleExport() {
+		if (exporting) return;
 		exporting = true;
 		try {
-			const blob = await membersApi.exportMembers({ status: statusFilter || undefined });
+			const blob = await membersApi.exportMembers({ ...membersStore.state.filters, status: statusFilter ? statusFilter as MemberFilters['status'] : undefined });
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
@@ -268,8 +269,8 @@
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
 			toastStore.success('Members exported successfully');
-		} catch {
-			toastStore.error('Failed to export members');
+		} catch (cause) {
+			toastStore.error(cause instanceof Error ? cause.message : 'Failed to export members');
 		} finally {
 			exporting = false;
 		}
@@ -385,11 +386,13 @@
 	}
 
 	async function handleExportAdvanced(format: 'csv' | 'xlsx' | 'pdf') {
+		if (exporting) return;
 		exporting = true;
 		try {
 			const blob = await membersApi.exportMembersAdvanced({
+				...membersStore.state.filters,
 				format,
-				status: statusFilter || undefined
+				status: statusFilter ? statusFilter as MemberFilters['status'] : undefined
 			});
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
@@ -401,8 +404,8 @@
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
 			toastStore.success(`Members exported as ${format.toUpperCase()}`);
-		} catch {
-			toastStore.error('Failed to export members');
+		} catch (cause) {
+			toastStore.error(cause instanceof Error ? cause.message : 'Failed to export members');
 		} finally {
 			exporting = false;
 		}
@@ -581,7 +584,7 @@
 					</button>
 				{/if}
 
-				<button class="btn-export" onclick={handleExport}>
+				<button class="btn-export" onclick={handleExport} disabled={exporting}>
 					<IconDownload size={18} />
 					Export CSV
 				</button>

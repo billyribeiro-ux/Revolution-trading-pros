@@ -1,6 +1,15 @@
 import { authors } from '#lib/authors/authors.js';
 
 export type SitemapKind = 'news' | 'video';
+export const SITEMAP_VIDEO_PLATFORMS = [
+	'self-hosted',
+	'bunny',
+	'youtube',
+	'vimeo',
+	'dailymotion',
+	'ted',
+	'wistia'
+] as const;
 export interface NewsSitemapSettings {
 	enabled: boolean;
 	publication_name: string;
@@ -13,6 +22,7 @@ export interface VideoSitemapSettings {
 	include_thumbnails: boolean;
 	include_uploader: boolean;
 	detect_from_content: boolean;
+	platforms: string[];
 }
 export type SitemapSettings = NewsSitemapSettings | VideoSitemapSettings;
 export interface SourceRecord {
@@ -38,9 +48,10 @@ export interface PublicVideo extends SourceRecord {
 	published_at: string;
 }
 export interface VideoCandidate extends SourceRecord {
+	trader_id: string | null;
 	description: string | null;
-	video_url: string;
-	video_platform: string;
+	video_url: string | null;
+	video_platform: string | null;
 	thumbnail_url: string | null;
 	duration: number | null;
 	mapping_id: string | null;
@@ -136,12 +147,21 @@ export function sitemapSettings(value: unknown, kind: SitemapKind): SitemapSetti
 			exclude_categories: row.exclude_categories as string[]
 		};
 	}
+	if (
+		!Array.isArray(row.platforms) ||
+		row.platforms.some(
+			(platform) =>
+				typeof platform !== 'string' || !SITEMAP_VIDEO_PLATFORMS.some((known) => known === platform)
+		)
+	)
+		throw new Error('Invalid saved video platforms');
 	if (row.include_thumbnails !== true) throw new Error('Video sitemaps require actual thumbnails');
 	return {
 		enabled: bool(row.enabled),
 		include_thumbnails: true,
 		include_uploader: bool(row.include_uploader),
-		detect_from_content: bool(row.detect_from_content)
+		detect_from_content: bool(row.detect_from_content),
+		platforms: row.platforms as string[]
 	};
 }
 export function sitemapSource(
@@ -170,11 +190,13 @@ export function sitemapSource(
 	if (kind === 'news') return { ...common, canonical: nullable(row.canonical) };
 	return {
 		...common,
+		trader_id: row.trader_id === null ? null : id(row.trader_id),
 		description: nullable(row.description),
-		video_url: text(row.video_url),
-		video_platform: text(row.video_platform),
+		video_url: allowUnreviewed ? nullable(row.video_url) : text(row.video_url),
+		video_platform: allowUnreviewed ? nullable(row.video_platform) : text(row.video_platform),
 		thumbnail_url: nullable(row.thumbnail_url),
-		duration: row.duration === null ? null : integer(row.duration),
+		duration:
+			row.duration === null ? null : integer(row.duration, allowUnreviewed ? -2147483648 : 0),
 		mapping_id: row.mapping_id === null ? null : id(row.mapping_id),
 		source_hash: hash(row.source_hash)
 	};
@@ -247,6 +269,8 @@ export function publicVideo(value: unknown): PublicVideo {
 		source.description.length < 50 ||
 		source.description.length > 2048 ||
 		!source.thumbnail_url ||
+		!source.video_url ||
+		!source.video_platform ||
 		source.duration === null ||
 		source.duration < 1 ||
 		source.duration > 28800 ||
@@ -260,6 +284,8 @@ export function publicVideo(value: unknown): PublicVideo {
 	}
 	return {
 		...source,
+		video_url: source.video_url,
+		video_platform: source.video_platform,
 		description: source.description,
 		thumbnail_url: source.thumbnail_url,
 		duration: source.duration,
@@ -302,18 +328,26 @@ export async function saveSitemapSettings(
 	config: SitemapSettings,
 	expectedVersion: number
 ) {
+	const expected = sitemapSettings(config, kind);
+	if ('publication_name' in expected) {
+		expected.publication_name = expected.publication_name.trim();
+		expected.exclude_categories = [...new Set(expected.exclude_categories)].sort();
+	}
+	if ('platforms' in expected) expected.platforms = [...new Set(expected.platforms)].sort();
 	const row = object(
 		await request(`/api/admin/seo/sitemaps/${kind}`, 'PUT', {
-			config: sitemapSettings(config, kind),
+			config: expected,
 			expected_version: integer(expectedVersion, 1)
 		})
 	);
 	if (row.saved !== true || row.kind !== kind || row.settings_version !== expectedVersion + 1)
 		throw new Error('Sitemap settings save was not confirmed');
-	return {
-		settings: sitemapSettings(row.settings, kind),
-		version: integer(row.settings_version, 1)
-	};
+	const actual = sitemapSettings(row.settings, kind);
+	if (JSON.stringify(actual) !== JSON.stringify(expected))
+		throw new Error(
+			'Saved sitemap settings did not match the submitted intent; reload before retrying'
+		);
+	return { settings: actual, version: integer(row.settings_version, 1) };
 }
 export async function generateSitemap(kind: SitemapKind): Promise<SitemapGeneration> {
 	const row = object(await request(`/api/admin/seo/sitemaps/${kind}/generate`, 'POST', {}));
@@ -331,6 +365,7 @@ export async function approveVideo(video: VideoCandidate, authorSlug: string) {
 			expected_source_hash: hash(video.source_hash)
 		})
 	);
+	id(row.publication_id);
 	if (row.approved !== true || row.video_id !== video.id || row.path !== video.path)
 		throw new Error('Public video approval was not confirmed');
 	return row;
@@ -339,4 +374,87 @@ export async function removeVideoPublication(videoId: string) {
 	const row = object(await request(`/api/admin/seo/video-publications/${id(videoId)}`, 'DELETE'));
 	if (row.removed !== true || row.video_id !== videoId)
 		throw new Error('Video publication removal was not confirmed');
+}
+export async function getVideoCandidate(videoId: string): Promise<VideoCandidate> {
+	const row = object(await request(`/api/admin/seo/video-publications/${id(videoId)}`));
+	const source = sitemapSource(row.record, 'video', true);
+	if (!('source_hash' in source) || source.id !== videoId)
+		throw new Error('Video source identity did not match');
+	return source;
+}
+export async function getVideoTraders(): Promise<Array<{ id: string; name: string }>> {
+	const row = object(await request('/api/admin/seo/video-sources/options')),
+		data = object(row.data);
+	if (row.success !== true || !Array.isArray(data.traders))
+		throw new Error('Saved video authors are unavailable');
+	return data.traders.map((value) => {
+		const trader = object(value);
+		const key =
+			typeof trader.id === 'number' && Number.isSafeInteger(trader.id)
+				? String(trader.id)
+				: id(trader.id);
+		return { id: id(key), name: text(trader.name) };
+	});
+}
+export interface VideoSourceWrite {
+	title: string;
+	description: string;
+	video_url: string;
+	video_platform: string;
+	thumbnail_url: string;
+	duration: number;
+	published_at: string;
+	trader_id: string;
+}
+export async function saveVideoSource(
+	fields: VideoSourceWrite,
+	videoId?: string
+): Promise<VideoCandidate> {
+	const traderId = Number(id(fields.trader_id));
+	if (!Number.isSafeInteger(traderId))
+		throw new Error('Saved trader identity exceeds the supported request range');
+	const payload = {
+		...fields,
+		trader_id: traderId,
+		duration: integer(fields.duration, 1),
+		published_at: timestamp(fields.published_at),
+		...(videoId
+			? {}
+			: {
+					video_date: fields.published_at.slice(0, 10),
+					content_type: 'learning_center',
+					is_published: true,
+					room_ids: []
+				})
+	};
+	const row = object(
+			await request(
+				videoId ? `/api/admin/seo/video-sources/${id(videoId)}` : '/api/admin/seo/video-sources',
+				videoId ? 'PUT' : 'POST',
+				payload
+			)
+		),
+		saved = object(row.data);
+	const key =
+		typeof saved.id === 'number' && Number.isSafeInteger(saved.id)
+			? String(saved.id)
+			: id(saved.id);
+	if (row.success !== true || (videoId && key !== videoId))
+		throw new Error('Video source save was not confirmed');
+	const actual = await getVideoCandidate(key);
+	if (
+		actual.title !== fields.title ||
+		actual.description !== fields.description ||
+		actual.video_url !== fields.video_url ||
+		actual.video_platform !== fields.video_platform ||
+		actual.thumbnail_url !== fields.thumbnail_url ||
+		actual.duration !== fields.duration ||
+		!actual.published_at ||
+		Date.parse(actual.published_at) !== Date.parse(fields.published_at) ||
+		actual.trader_id !== fields.trader_id
+	)
+		throw new Error(
+			'Saved video metadata did not match the submitted fields; reload before retrying'
+		);
+	return actual;
 }

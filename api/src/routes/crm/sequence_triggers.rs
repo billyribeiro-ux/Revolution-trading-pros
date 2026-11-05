@@ -2,7 +2,7 @@
 use super::{sequence_model as model, sequences};
 use crate::{
     AppState,
-    middleware::admin::AdminUser,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
     utils::errors::{self, ApiError},
 };
 use axum::{
@@ -150,11 +150,10 @@ struct Filters {
 }
 async fn history(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Query(filters): Query<Filters>,
 ) -> Result<Json<Value>, ApiError> {
-    sequences::row(&state.db.pool, id).await?;
     let page = filters.page.unwrap_or(1);
     let size = filters.per_page.unwrap_or(20);
     if page < 1 || !(1..=100).contains(&size) {
@@ -167,6 +166,7 @@ async fn history(
         .execute(&mut *tx)
         .await
         .map_err(sequences::db)?;
+    sequences::authorized_on(&mut tx, &admin, id).await?;
     let total: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM crm_sequence_trigger_matches WHERE sequence_id=$1",
     )

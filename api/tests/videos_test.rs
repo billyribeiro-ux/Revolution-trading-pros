@@ -80,7 +80,7 @@
 //! `tests/cms_revisions_test.rs`, `tests/posts_test.rs`,
 //! `tests/categories_test.rs`.
 
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{DateTime, NaiveDate, Utc};
 use revolution_api::models::video::{
     PaginationMeta, RoomInfo, TagDetail, TraderInfo, VideoResponse,
 };
@@ -107,8 +107,8 @@ fn unified_video_row_pk_is_i64_bigserial() {
         title: "Test".to_string(),
         slug: "test".to_string(),
         description: None,
-        video_url: "https://example.com/v.mp4".to_string(),
-        video_platform: "bunny".to_string(),
+        video_url: Some("https://example.com/v.mp4".to_string()),
+        video_platform: Some("bunny".to_string()),
         video_id: None,
         bunny_video_guid: Some("abc-123".to_string()),
         thumbnail_url: None,
@@ -116,14 +116,15 @@ fn unified_video_row_pk_is_i64_bigserial() {
         content_type: "daily_video".to_string(),
         difficulty_level: None,
         category: None,
-        video_date: NaiveDate::from_ymd_opt(2026, 5, 20).expect("valid date"),
-        is_published: true,
-        is_featured: false,
+        video_date: Some(NaiveDate::from_ymd_opt(2026, 5, 20).expect("valid date")),
+        is_published: Some(true),
+        is_featured: Some(false),
         tags: None,
-        views_count: 42,
+        views_count: Some(42),
         trader_id: Some(7_i64),
         bunny_library_id: Some(123_i64),
-        created_at: NaiveDateTime::default(),
+        approved_public: false,
+        created_at: Some(DateTime::<Utc>::UNIX_EPOCH),
     };
     let _: i64 = row.id;
     let _: Option<i64> = row.trader_id;
@@ -142,7 +143,7 @@ fn unified_video_row_pk_is_i64_bigserial() {
     // 2.1B seconds is ~68 years per video, unreachable).
     let _: Option<i32> = row.duration;
     // Compile-pin: views_count is i32 (Reserved exception, see test #5).
-    let _: i32 = row.views_count;
+    let _: Option<i32> = row.views_count;
 }
 
 // ── 2. VideoListQuery — fully optional with negative i64 accepted ───
@@ -337,20 +338,20 @@ fn video_response_id_i64_views_i32_reserved_exception() {
         title: "Daily Watch".to_string(),
         slug: "daily-watch".to_string(),
         description: None,
-        video_url: "https://example.com/v.mp4".to_string(),
-        embed_url: "https://iframe.mediadelivery.net/embed/1/abc".to_string(),
-        video_platform: "bunny".to_string(),
+        video_url: Some("https://example.com/v.mp4".to_string()),
+        embed_url: Some("https://iframe.mediadelivery.net/embed/1/abc".to_string()),
+        video_platform: Some("bunny".to_string()),
         thumbnail_url: None,
         duration: Some(180),
-        formatted_duration: "3:00".to_string(),
+        formatted_duration: Some("3:00".to_string()),
         content_type: "daily_video".to_string(),
-        video_date: "2026-05-20".to_string(),
-        formatted_date: "May 20, 2026".to_string(),
-        is_published: true,
-        is_featured: false,
+        video_date: Some("2026-05-20".to_string()),
+        formatted_date: Some("May 20, 2026".to_string()),
+        is_published: Some(true),
+        is_featured: Some(false),
         tags: vec![],
         tag_details: vec![],
-        views_count: i32::MAX, // pin: max i32 — at the ceiling
+        views_count: Some(i32::MAX), // pin: max i32 — at the ceiling
         trader: Some(TraderInfo {
             id: (i32::MAX as i64) + 1,
             name: "T".to_string(),
@@ -361,10 +362,10 @@ fn video_response_id_i64_views_i32_reserved_exception() {
             name: "R".to_string(),
             slug: "r".to_string(),
         }],
-        created_at: "2026-05-20T00:00:00".to_string(),
+        created_at: Some("2026-05-20T00:00:00+00:00".to_string()),
     };
     let _: i64 = resp.id;
-    let _: i32 = resp.views_count;
+    let _: Option<i32> = resp.views_count;
     let _: i64 = resp.trader.as_ref().expect("trader present").id;
     let _: i64 = resp.rooms[0].id;
 

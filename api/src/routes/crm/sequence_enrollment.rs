@@ -5,7 +5,7 @@ use super::{
 };
 use crate::{
     AppState,
-    middleware::admin::AdminUser,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
     utils::errors::{self, ApiError},
 };
 use axum::{
@@ -85,14 +85,14 @@ async fn enroll(
         return Err(invalid("Enrollment does not accept an unsubscribe reason"));
     }
     // Resolve referenced filters before holding the transaction connection.
-    let current = sequences::row(&state.db.pool, id).await?;
+    let current = sequences::authorized(&state.db.pool, &admin, id).await?;
     let audience = super::resolve_campaign_audience(
         &state.db.pool,
         Some(current["subscriber_settings"].clone()),
     )
     .await?;
     let mut tx = state.db.pool.begin().await.map_err(sequences::db)?;
-    let saved = sequences::lock(&mut tx, id).await?;
+    let saved = sequences::lock_authorized(&mut tx, &admin, id).await?;
     let version = saved["authoring_version"]
         .as_i64()
         .ok_or_else(|| invalid("Stored sequence version is invalid"))?;
@@ -224,7 +224,7 @@ async fn unsubscribe(
         return Err(invalid("Unsubscribe does not accept a starting position"));
     }
     let mut tx = state.db.pool.begin().await.map_err(sequences::db)?;
-    let saved = sequences::lock(&mut tx, id).await?;
+    let saved = sequences::lock_authorized(&mut tx, &admin, id).await?;
     if input
         .expected_version
         .is_some_and(|version| saved["authoring_version"].as_i64() != Some(version))
@@ -256,11 +256,12 @@ struct Filters {
 }
 async fn subscribers(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Query(query): Query<Filters>,
 ) -> Result<Json<Value>, ApiError> {
-    sequences::row(&state.db.pool, id).await?;
+    let mut tx = super::manager_sources::read_transaction(&state.db.pool).await?;
+    sequences::authorized_on(&mut tx, &admin, id).await?;
     let page = query.page.unwrap_or(1);
     let size = query.per_page.unwrap_or(20);
     if page < 1 || !(1..=100).contains(&size) {
@@ -279,9 +280,10 @@ async fn subscribers(
     }
     let search = query.search.map(|search| format!("%{search}%"));
     let rows:Vec<Value>=sqlx::query_scalar("SELECT jsonb_build_object('id',t.id::text,'contact_id',t.contact_id::text,'sequence_id',t.sequence_id::text,'revision_id',t.revision_id,'contact_email',t.contact_email,'status',t.status,'last_sequence_mail_id',t.last_sequence_mail_id,'next_sequence_mail_id',t.next_sequence_mail_id,'started_at',t.started_at,'last_executed_at',t.last_executed_at,'next_execution_at',t.next_execution_at,'completed_at',t.completed_at,'notes',t.notes,'last_error',t.last_error,'created_at',t.created_at,'updated_at',t.updated_at,'emails_sent',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.sequence_tracker_id=t.id AND d.accepted_at IS NOT NULL),'emails_opened',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.sequence_tracker_id=t.id AND d.opened_at IS NOT NULL),'emails_clicked',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.sequence_tracker_id=t.id AND d.clicked_at IS NOT NULL),'progress_percentage',ROUND(100.0*t.completed_steps/NULLIF(t.total_steps,0),2),'contact',CASE WHEN c.id IS NULL THEN NULL ELSE jsonb_build_object('id',c.id::text,'email',c.email,'first_name',c.first_name,'last_name',c.last_name) END) FROM crm_sequence_trackers t LEFT JOIN contacts c ON c.id=t.contact_id WHERE t.sequence_id=$1 AND ($2::text IS NULL OR t.status=$2) AND ($3::text IS NULL OR t.contact_email ILIKE $3 OR concat_ws(' ',c.first_name,c.last_name) ILIKE $3) ORDER BY t.created_at DESC,t.id DESC LIMIT $4 OFFSET $5")
-        .bind(id).bind(&query.status).bind(&search).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&state.db.pool).await.map_err(sequences::db)?;
+        .bind(id).bind(&query.status).bind(&search).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&mut *tx).await.map_err(sequences::db)?;
     let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_sequence_trackers t LEFT JOIN contacts c ON c.id=t.contact_id WHERE t.sequence_id=$1 AND ($2::text IS NULL OR t.status=$2) AND ($3::text IS NULL OR t.contact_email ILIKE $3 OR concat_ws(' ',c.first_name,c.last_name) ILIKE $3)")
-        .bind(id).bind(query.status).bind(search).fetch_one(&state.db.pool).await.map_err(sequences::db)?;
+        .bind(id).bind(query.status).bind(search).fetch_one(&mut *tx).await.map_err(sequences::db)?;
+    tx.commit().await.map_err(sequences::db)?;
     Ok(Json(
         json!({"data":rows,"meta":{"total":total,"current_page":page,"per_page":size,"last_page":((total+size-1)/size).max(1)}}),
     ))

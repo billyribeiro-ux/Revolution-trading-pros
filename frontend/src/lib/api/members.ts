@@ -5,6 +5,7 @@
 
 import { apiClient } from './client.svelte';
 import { getAuthToken } from '#lib/stores/auth.svelte.js';
+import { downloadMemberExport } from './member-export';
 
 // Types
 export interface Member {
@@ -128,6 +129,33 @@ export interface MemberFilters {
 	sort_dir?: 'asc' | 'desc';
 	per_page?: number;
 	page?: number;
+}
+
+/** Export every matching member, independently of list pagination. */
+export type MemberExportFilters = Omit<MemberFilters, 'page' | 'per_page'>;
+
+function memberExportQuery(
+	filters?: MemberExportFilters & { format?: 'csv' | 'xlsx' | 'pdf' }
+): string {
+	const params = new URLSearchParams();
+	for (const key of [
+		'format',
+		'segment',
+		'tag',
+		'search',
+		'status',
+		'product_id',
+		'plan_id',
+		'date_from',
+		'date_to',
+		'spending_tier',
+		'sort_by',
+		'sort_dir'
+	] as const) {
+		const value = filters?.[key];
+		if (value !== undefined && value !== '') params.set(key, String(value));
+	}
+	return params.toString();
 }
 
 export interface ChurnedFilters {
@@ -290,23 +318,15 @@ export const membersApi = {
 	/**
 	 * Export members to CSV
 	 */
-	async exportMembers(filters?: { status?: string }): Promise<Blob> {
-		const params = new URLSearchParams();
-		if (filters?.status) {
-			params.append('status', filters.status);
-		}
-		const queryString = params.toString();
+	async exportMembers(filters?: MemberExportFilters): Promise<Blob> {
+		const queryString = memberExportQuery(filters);
 		// Use secure auth store token (memory-only, not localStorage)
 		const token = getAuthToken();
-		const response = await fetch(
+		return downloadMemberExport(
 			`/api/admin/members/export${queryString ? `?${queryString}` : ''}`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			}
+			'csv',
+			token
 		);
-		return response.blob();
 	},
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -420,28 +440,16 @@ export const membersApi = {
 	/**
 	 * Export members to Excel/PDF
 	 */
-	async exportMembersAdvanced(filters?: {
-		format?: 'csv' | 'xlsx' | 'pdf';
-		status?: string;
-		date_from?: string;
-		date_to?: string;
-	}): Promise<Blob> {
-		const params = new URLSearchParams();
-		if (filters?.format) params.append('format', filters.format);
-		if (filters?.status) params.append('status', filters.status);
-		if (filters?.date_from) params.append('date_from', filters.date_from);
-		if (filters?.date_to) params.append('date_to', filters.date_to);
-		const queryString = params.toString();
+	async exportMembersAdvanced(
+		filters?: MemberExportFilters & { format?: 'csv' | 'xlsx' | 'pdf' }
+	): Promise<Blob> {
+		const queryString = memberExportQuery(filters);
 		const token = getAuthToken();
-		const response = await fetch(
+		return downloadMemberExport(
 			`/api/admin/member-management/export${queryString ? `?${queryString}` : ''}`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			}
+			filters?.format ?? 'csv',
+			token
 		);
-		return response.blob();
 	}
 };
 

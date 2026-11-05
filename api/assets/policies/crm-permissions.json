@@ -1,0 +1,4811 @@
+{
+	"policy_version": 1,
+	"api_prefix": "/api/admin/crm",
+	"capabilities_path": "/permissions",
+	"actions": ["view", "create", "edit", "delete", "manage"],
+	"manage_implies": ["view", "create", "edit", "delete"],
+	"modules": [
+		{
+			"id": "dashboard",
+			"name": "Dashboard statistics",
+			"notes": []
+		},
+		{
+			"id": "contacts",
+			"name": "Contacts and leads",
+			"notes": [
+				"Directory/detail/timeline/update/recalculate responses include deal-derived facts and require deals.view in addition to contact permissions.",
+				"Leads use contact permissions. Deleting a contact/lead can unlink retained deals and additionally requires deals.edit.",
+				"Custom personal sending requires contacts.manage. A native template picker or template_id additionally requires templates.view.",
+				"Writing raw contact tags additionally requires tags.edit; validating a non-null owner reference requires managers.view."
+			]
+		},
+		{
+			"id": "deals",
+			"name": "Deals and deal activities",
+			"notes": [
+				"Full deal reads and mutation acknowledgements require deals.view, contacts.view, companies.view and managers.view for linked contact/company/owner labels.",
+				"Creating or changing a deal stage also requires pipelines.view. managers.view does not grant the global user roster or security operations."
+			]
+		},
+		{
+			"id": "pipelines",
+			"name": "Deal pipelines",
+			"notes": []
+		},
+		{
+			"id": "lists",
+			"name": "Contact lists",
+			"notes": [
+				"Membership reads require contacts.view and lists.view. Assignment and removal require contacts.edit and lists.edit.",
+				"Full catalog DTO counts require contacts.view; deleting a list removes memberships and requires contacts.edit."
+			]
+		},
+		{
+			"id": "tags",
+			"name": "Contact tags",
+			"notes": [
+				"Assignment reads require contacts.view and tags.view. Assignment and removal require contacts.edit and tags.edit.",
+				"Full catalog DTO counts require contacts.view; renaming/removing linked tag names requires contacts.edit."
+			]
+		},
+		{
+			"id": "segments",
+			"name": "Contact segments",
+			"notes": ["Reading segment contact results also requires contacts.view."]
+		},
+		{
+			"id": "campaigns",
+			"name": "CRM campaigns",
+			"notes": [
+				"Recipient and delivery histories also require contacts.view. Sending, scheduling, pausing and resuming require campaigns.manage.",
+				"Native campaigns and sequence delivery engines must use their source APIs; CRM campaign aliases cannot expose them.",
+				"Template origin references require templates.view. Explicit member-directory/member-segment audiences remain global-admin-only across authoring, preview, sending and captured receipt history."
+			]
+		},
+		{
+			"id": "sequences",
+			"name": "Email sequences",
+			"notes": [
+				"Subscriber, test and trigger histories also require contacts.view. Activation, enrollment, removal, event capture and test sending require sequences.manage.",
+				"Explicit member-directory/member-segment audiences remain global-admin-only across authoring, enrollment and captured receipt history. Consented signup/purchase event capture alone is a separate concept.",
+				"Generic PUT status assertions also require sequences.manage because they invoke engine control. Ordinary authoring patches must omit unchanged status; expected_version still protects the save."
+			]
+		},
+		{
+			"id": "recurring_campaigns",
+			"name": "Recurring campaigns",
+			"notes": []
+		},
+		{
+			"id": "templates",
+			"name": "CRM email templates",
+			"notes": []
+		},
+		{
+			"id": "automations",
+			"name": "CRM automations",
+			"notes": []
+		},
+		{
+			"id": "smart_links",
+			"name": "Smart links",
+			"notes": []
+		},
+		{
+			"id": "webhooks",
+			"name": "CRM webhooks",
+			"notes": []
+		},
+		{
+			"id": "companies",
+			"name": "Companies",
+			"notes": [
+				"Full company DTOs contain contact/deal counts and value and require contacts.view plus deals.view. Deleting a company can unlink retained deals and additionally requires deals.edit."
+			]
+		},
+		{
+			"id": "imports",
+			"name": "Contact imports",
+			"notes": [
+				"Import execution requires imports.manage and contacts.view. The actual plan separately requires contacts.create for new records, contacts.edit for updates, tags.edit for tag changes and lists.edit for memberships.",
+				"Combined legacy /import must authorize all effects before saving a job; a denied operation must not leave a partial job/audit."
+			]
+		},
+		{
+			"id": "exports",
+			"name": "Contact exports",
+			"notes": [
+				"Generating or downloading contact records requires exports.manage and contacts.view. Saved list/tag filter references additionally require lists.view/tags.view, including downloads."
+			]
+		},
+		{
+			"id": "settings",
+			"name": "CRM settings",
+			"notes": ["Reading and changing CRM settings requires settings.manage."]
+		},
+		{
+			"id": "logs",
+			"name": "CRM operational logs",
+			"notes": ["Clearing CRM operational logs requires logs.manage."]
+		},
+		{
+			"id": "managers",
+			"name": "CRM managers and roles",
+			"notes": [
+				"Changing security roles or assignments and reading the general user picker additionally requires a global administrator. CRM permissions never grant that global identity.",
+				"The default role is not assigned automatically. Current default and assigned roles cannot be deleted."
+			]
+		}
+	],
+	"facts": [
+		{
+			"id": "body_native_template",
+			"context": "body",
+			"source_fields": ["/template_id"],
+			"description": "The submitted personal message contains a non-null native template_id. Check before intent/source/template lookup, including replay.",
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_contact_tags",
+			"context": "body",
+			"source_fields": ["/tags"],
+			"description": "A contact or lead write contains a tags array, including an empty array that clears tags.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_owner_reference",
+			"context": "body",
+			"source_fields": ["/owner_id"],
+			"description": "A submitted contact/lead owner_id is non-null. This grants reference validation, not the global user roster.",
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_sequence_execution_status",
+			"context": "body",
+			"source_fields": ["/status"],
+			"description": "A sequence update supplies status. The existing engine_status path can pause/resume engines even for unchanged status; ordinary authoring must omit an unchanged status.",
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_crm_template",
+			"context": "body",
+			"source_fields": ["/template_id"],
+			"description": "A campaign write contains a non-null CRM template_id. Check before catalog lookup.",
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "record_template",
+			"context": "record",
+			"source_fields": ["/template_id", "/email_template_id"],
+			"description": "The stored campaign being returned, copied or submitted contains a CRM or native template origin reference.",
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_member_audience",
+			"context": "body",
+			"source_fields": ["/subscriber_settings/members", "/subscriber_settings/member_segment"],
+			"description": "Explicit member-directory selection: members is true or member_segment is non-null. Consented signup/purchase event capture alone does not set this fact.",
+			"all": [],
+			"global_admin_only": true
+		},
+		{
+			"id": "body_audience_lists",
+			"context": "body",
+			"source_fields": [
+				"/subscriber_settings/subscribers",
+				"/subscriber_settings/excluded_subscribers"
+			],
+			"description": "At least one selected audience group contains a nonempty list reference.",
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_audience_tags",
+			"context": "body",
+			"source_fields": [
+				"/subscriber_settings/subscribers",
+				"/subscriber_settings/excluded_subscribers"
+			],
+			"description": "At least one selected audience group contains a nonempty tag reference.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_audience_segment",
+			"context": "body",
+			"source_fields": ["/subscriber_settings/dynamic_segment"],
+			"description": "The audience contains a nonempty saved CRM segment reference.",
+			"all": [
+				{
+					"module": "segments",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "record_member_audience",
+			"context": "record",
+			"source_fields": ["/subscriber_settings/members", "/subscriber_settings/member_segment"],
+			"description": "Explicit member-directory selection: members is true or member_segment is non-null. Consented signup/purchase event capture alone does not set this fact.",
+			"all": [],
+			"global_admin_only": true
+		},
+		{
+			"id": "record_audience_lists",
+			"context": "record",
+			"source_fields": [
+				"/subscriber_settings/subscribers",
+				"/subscriber_settings/excluded_subscribers"
+			],
+			"description": "At least one selected audience group contains a nonempty list reference.",
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "record_audience_tags",
+			"context": "record",
+			"source_fields": [
+				"/subscriber_settings/subscribers",
+				"/subscriber_settings/excluded_subscribers"
+			],
+			"description": "At least one selected audience group contains a nonempty tag reference.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "record_audience_segment",
+			"context": "record",
+			"source_fields": ["/subscriber_settings/dynamic_segment"],
+			"description": "The audience contains a nonempty saved CRM segment reference.",
+			"all": [
+				{
+					"module": "segments",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "history_member_audience",
+			"context": "history",
+			"source_fields": ["/captured_revisions/subscriber_settings"],
+			"description": "Any source revision represented by this response explicitly selected the member directory. Evaluate immutable captured revisions, not only the current definition.",
+			"all": [],
+			"global_admin_only": true
+		},
+		{
+			"id": "record_tag_rename",
+			"context": "record",
+			"source_fields": ["/old_title", "/new_title"],
+			"description": "The locked tag title changes and therefore rewrites linked contact tag values.",
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "import_plan_creates",
+			"context": "import_plan",
+			"source_fields": ["/creates_contacts"],
+			"description": "The normalized import plan contains new contacts. Check before any import write.",
+			"all": [
+				{
+					"module": "contacts",
+					"action": "create"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "import_plan_updates",
+			"context": "import_plan",
+			"source_fields": ["/updates_contacts"],
+			"description": "The normalized import plan changes existing contacts. Check before any import write.",
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "import_plan_tags",
+			"context": "import_plan",
+			"source_fields": ["/changes_contact_tags"],
+			"description": "The normalized import plan assigns, replaces or clears contact tags, including a mapped tags column. Check before any import write.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "import_plan_lists",
+			"context": "import_plan",
+			"source_fields": ["/changes_list_memberships"],
+			"description": "The normalized import plan adds contact-list memberships. Check before any import write.",
+			"all": [
+				{
+					"module": "lists",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_import_tags",
+			"context": "body",
+			"source_fields": ["/settings/apply_tags", "/mapping"],
+			"description": "The input applies selected tag IDs or maps contact tags. Check before tag resolution or saving the combined legacy import.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_import_lists",
+			"context": "body",
+			"source_fields": ["/settings/add_to_lists"],
+			"description": "The input selects list membership IDs. Check before list resolution or saving the combined legacy import.",
+			"all": [
+				{
+					"module": "lists",
+					"action": "edit"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_export_lists",
+			"context": "body",
+			"source_fields": ["/filters/list_id"],
+			"description": "The export filters by a saved list reference; downloading rechecks the frozen export definition.",
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "body_export_tags",
+			"context": "body",
+			"source_fields": ["/filters/tag"],
+			"description": "The export filters by a tag reference; downloading rechecks the frozen export definition.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "export_record_export_lists",
+			"context": "export_record",
+			"source_fields": ["/filters/list_id"],
+			"description": "The export filters by a saved list reference; downloading rechecks the frozen export definition.",
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		},
+		{
+			"id": "export_record_export_tags",
+			"context": "export_record",
+			"source_fields": ["/filters/tag"],
+			"description": "The export filters by a tag reference; downloading rechecks the frozen export definition.",
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"global_admin_only": false
+		}
+	],
+	"routes": [
+		{
+			"path": "/stats",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "dashboard",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "campaigns",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/contacts",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/notes",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/emails",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/leads",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/leads/stats",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/timeline",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/leads/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "create"
+				}
+			],
+			"conditional": ["body_contact_tags", "body_owner_reference"],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/leads",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "create"
+				}
+			],
+			"conditional": ["body_contact_tags", "body_owner_reference"],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/contacts/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": ["body_contact_tags", "body_owner_reference"],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/leads/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": ["body_contact_tags", "body_owner_reference"],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/contacts/{id}/notes",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "delete"
+				},
+				{
+					"module": "deals",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/leads/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "delete"
+				},
+				{
+					"module": "deals",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/leads/bulk-delete",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "delete"
+				},
+				{
+					"module": "deals",
+					"action": "edit"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/send-email",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": ["body_native_template"],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/contacts/{id}/recalculate-score",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "manage"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/leads/bulk-status",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "manage"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/tags",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags/{id}/contacts",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/tags",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags/{id}/apply",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags/{id}/remove",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags/bulk-apply",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/tags/{tag}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "tags",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer",
+				"tag": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/lists",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists/{id}/contacts",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/lists",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "lists",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists/{id}/contacts",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "lists",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contacts/{id}/lists/{list}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "lists",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer",
+				"list": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists/{id}/contacts",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "edit"
+				},
+				{
+					"module": "lists",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/pipelines",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/pipelines/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/pipelines",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "pipelines",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/pipelines/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "pipelines",
+					"action": "edit"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/pipelines/{id}/stages",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "pipelines",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/pipelines/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "pipelines",
+					"action": "delete"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/forecast",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}/notes",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}/timeline",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "create"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "edit"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}/stage",
+			"methods": ["PATCH"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "edit"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}/win",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "edit"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}/lose",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "edit"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				},
+				{
+					"module": "pipelines",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}/notes",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "edit"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				},
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/deals/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "deals",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "lists",
+					"action": "create"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "lists",
+					"action": "edit"
+				},
+				{
+					"module": "lists",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/lists/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "lists",
+					"action": "delete"
+				},
+				{
+					"module": "contacts",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "tags",
+					"action": "create"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/contact-tags/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "tags",
+					"action": "edit"
+				},
+				{
+					"module": "tags",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_tag_rename"]
+		},
+		{
+			"path": "/contact-tags/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "tags",
+					"action": "delete"
+				},
+				{
+					"module": "contacts",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments/{id}/contacts",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "create"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments/{id}/duplicate",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "create"
+				},
+				{
+					"module": "segments",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "edit"
+				},
+				{
+					"module": "segments",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments/{id}/sync",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "edit"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/segments/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "segments",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/campaigns",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience",
+				"record_template"
+			]
+		},
+		{
+			"path": "/campaigns/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience",
+				"record_template"
+			]
+		},
+		{
+			"path": "/campaigns/stats",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/campaigns/{id}/recipients",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"history_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment"
+			]
+		},
+		{
+			"path": "/campaigns/{id}/deliveries",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/campaigns",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "create"
+				}
+			],
+			"conditional": [
+				"body_member_audience",
+				"body_audience_lists",
+				"body_audience_tags",
+				"body_audience_segment",
+				"body_crm_template"
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/campaigns/{id}/duplicate",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "create"
+				},
+				{
+					"module": "campaigns",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": [
+				"record_template",
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment"
+			],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/campaigns/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "edit"
+				},
+				{
+					"module": "campaigns",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience",
+				"record_template",
+				"body_member_audience",
+				"body_audience_lists",
+				"body_audience_tags",
+				"body_audience_segment",
+				"body_crm_template"
+			],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/campaigns/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/campaigns/{id}/send",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": [
+				"record_template",
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/campaigns/{id}/schedule",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": [
+				"record_template",
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/campaigns/{id}/pause",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_template",
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/campaigns/{id}/resume",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "campaigns",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"conditional": [
+				"record_template",
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			],
+			"query_equals": {},
+			"global_admin_only": false
+		},
+		{
+			"path": "/sequences",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/sequences/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/sequences/{id}/stats",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/emails",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/subscribers",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/tests",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/triggers",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"body_member_audience",
+				"body_audience_lists",
+				"body_audience_tags",
+				"body_audience_segment"
+			]
+		},
+		{
+			"path": "/sequences/{id}/duplicate",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "create"
+				},
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment"
+			]
+		},
+		{
+			"path": "/sequences/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "edit"
+				},
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience",
+				"body_member_audience",
+				"body_audience_lists",
+				"body_audience_tags",
+				"body_audience_segment",
+				"body_sequence_execution_status"
+			]
+		},
+		{
+			"path": "/sequences/{id}/emails/{key}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "edit"
+				},
+				{
+					"module": "sequences",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer",
+				"key": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/emails",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/emails/reorder",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/emails/{key}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer",
+				"key": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience", "history_member_audience"]
+		},
+		{
+			"path": "/sequences/{id}/activate",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/sequences/{id}/pause",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/sequences/{id}/subscribe",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/sequences/{id}/unsubscribe",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"record_member_audience",
+				"record_audience_lists",
+				"record_audience_tags",
+				"record_audience_segment",
+				"history_member_audience"
+			]
+		},
+		{
+			"path": "/sequences/{id}/test",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["record_member_audience"]
+		},
+		{
+			"path": "/sequences/events",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "sequences",
+					"action": "manage"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/recurring-campaigns",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "recurring_campaigns",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates/categories",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates/prebuilt",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates/{id}/duplicate",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "create"
+				},
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "edit"
+				},
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/templates/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "templates",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/automations",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "automations",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/automations/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "automations",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/automations",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "automations",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/automations/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "automations",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/smart-links",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "smart_links",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/smart-links",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "smart_links",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/smart-links/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "smart_links",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks/events",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks/{id}/logs",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "edit"
+				},
+				{
+					"module": "webhooks",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "delete"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/webhooks/{id}/test",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "webhooks",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/companies",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/companies/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/companies",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "companies",
+					"action": "create"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/companies/{id}/duplicate",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "companies",
+					"action": "create"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/companies/{id}",
+			"methods": ["PUT"],
+			"all": [
+				{
+					"module": "companies",
+					"action": "edit"
+				},
+				{
+					"module": "companies",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				},
+				{
+					"module": "deals",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/companies/{id}",
+			"methods": ["DELETE"],
+			"all": [
+				{
+					"module": "companies",
+					"action": "delete"
+				},
+				{
+					"module": "deals",
+					"action": "edit"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/imports",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/import/history",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/imports/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/imports/{id}/preview",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "view"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/imports/options",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "lists",
+					"action": "view"
+				}
+			],
+			"query_equals": {
+				"kind": "lists"
+			},
+			"params": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/imports/options",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "tags",
+					"action": "view"
+				}
+			],
+			"query_equals": {
+				"kind": "tags"
+			},
+			"params": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/imports",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "create"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/import",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"body_import_tags",
+				"body_import_lists",
+				"import_plan_creates",
+				"import_plan_updates",
+				"import_plan_tags",
+				"import_plan_lists"
+			]
+		},
+		{
+			"path": "/imports/{id}/start",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": [
+				"body_import_tags",
+				"body_import_lists",
+				"import_plan_creates",
+				"import_plan_updates",
+				"import_plan_tags",
+				"import_plan_lists"
+			]
+		},
+		{
+			"path": "/imports/{id}/cancel",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "imports",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/exports",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "exports",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/exports/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "exports",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/exports/fields/{kind}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "exports",
+					"action": "view"
+				}
+			],
+			"params": {
+				"kind": "slug"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/exports",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "exports",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["body_export_lists", "body_export_tags"]
+		},
+		{
+			"path": "/export",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "exports",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["body_export_lists", "body_export_tags"]
+		},
+		{
+			"path": "/exports/{id}/download",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "exports",
+					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "uuid"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": ["export_record_export_lists", "export_record_export_tags"]
+		},
+		{
+			"path": "/settings",
+			"methods": ["GET", "PUT", "HEAD"],
+			"all": [
+				{
+					"module": "settings",
+					"action": "manage"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/settings/double-optin",
+			"methods": ["GET", "POST", "HEAD"],
+			"all": [
+				{
+					"module": "settings",
+					"action": "manage"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/settings/email-preferences",
+			"methods": ["GET", "POST", "HEAD"],
+			"all": [
+				{
+					"module": "settings",
+					"action": "manage"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/logs",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "logs",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/system-logs",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "logs",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/logs/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "logs",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/logs/stats",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "logs",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/logs/clear",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "logs",
+					"action": "manage"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/abandoned-carts/bulk-delete",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "delete"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/managers",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/managers/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/managers/users",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"global_admin_only": true,
+			"params": {},
+			"query_equals": {},
+			"conditional": []
+		},
+		{
+			"path": "/manager-roles",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/manager-roles/{id}",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/manager-roles/modules",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		},
+		{
+			"path": "/managers",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "manage"
+				}
+			],
+			"global_admin_only": true,
+			"params": {},
+			"query_equals": {},
+			"conditional": []
+		},
+		{
+			"path": "/manager-roles",
+			"methods": ["POST"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "manage"
+				}
+			],
+			"global_admin_only": true,
+			"params": {},
+			"query_equals": {},
+			"conditional": []
+		},
+		{
+			"path": "/managers/{id}",
+			"methods": ["PUT", "DELETE"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"global_admin_only": true,
+			"query_equals": {},
+			"conditional": []
+		},
+		{
+			"path": "/manager-roles/{id}",
+			"methods": ["PUT", "DELETE"],
+			"all": [
+				{
+					"module": "managers",
+					"action": "manage"
+				}
+			],
+			"params": {
+				"id": "positive_integer"
+			},
+			"global_admin_only": true,
+			"query_equals": {},
+			"conditional": []
+		},
+		{
+			"path": "/contacts/native-templates",
+			"methods": ["GET", "HEAD"],
+			"all": [
+				{
+					"module": "contacts",
+					"action": "manage"
+				},
+				{
+					"module": "templates",
+					"action": "view"
+				}
+			],
+			"params": {},
+			"query_equals": {},
+			"global_admin_only": false,
+			"conditional": []
+		}
+	],
+	"pages": [
+		{
+			"path": "/admin/crm",
+			"params": {},
+			"mode": "any",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contacts",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/deals",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/campaigns",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/sequences",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/templates",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/managers",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/lists",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/contact-tags",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/segments",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/companies",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/imports",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/exports",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/settings",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/logs",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/stats",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/automations",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/smart-links",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/webhooks",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/recurring-campaigns",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/contacts",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/crm/contacts",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/contacts/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/contacts/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/contacts/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contacts/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/contacts/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/contacts/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contacts/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/crm/contacts/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contacts/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/leads",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/leads",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/leads/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/leads/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/leads/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/leads/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/leads/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/deals",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/deals",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/crm/deals",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/deals",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/deals/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/deals/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/crm/deals/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/deals/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/deals/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/pipelines",
+					"query_equals": {}
+				},
+				{
+					"method": "POST",
+					"path": "/deals",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/deals/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/deals/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/pipelines",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/deals/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/companies",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/companies",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/companies/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/companies/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/companies/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/companies",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/companies/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/companies/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/companies/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/lists",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/lists",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/lists/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/lists",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/lists/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/lists/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/lists/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/lists/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/lists/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/lists/{id}/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/tags",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contact-tags",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/tags/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/contact-tags/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/contact-tags/{id}/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/segments",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/segments",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/segments/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/segments",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/segments/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/segments/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/segments/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/segments/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/segments/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/segments/{id}/contacts",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/campaigns",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/campaigns",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/campaigns/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/campaigns",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/campaigns/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/campaigns/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/campaigns/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/campaigns/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/campaigns/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/sequences",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/sequences",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/sequences/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/sequences",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/sequences/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/sequences/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/sequences/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/sequences/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/sequences/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/sequences/{id}/subscribers",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/sequences/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/sequences/{id}/subscribers",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/templates",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/templates",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/templates/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/templates",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/templates/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/templates/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/templates/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/templates/prebuilt",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/templates/prebuilt",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/automations",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/automations",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/automations/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/automations",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/automations/{id}",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/automations/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/automations/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/automations/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/recurring-campaigns",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/recurring-campaigns",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/smart-links",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/smart-links",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/webhooks",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/webhooks",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/webhooks/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/webhooks/events",
+					"query_equals": {}
+				},
+				{
+					"method": "POST",
+					"path": "/webhooks",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/webhooks/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/webhooks/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/webhooks/events",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/webhooks/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/webhooks/{id}/logs",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/webhooks/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/webhooks/{id}/logs",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/import-export",
+			"params": {},
+			"mode": "any",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/imports",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/exports",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/import-export/new",
+			"params": {},
+			"mode": "any",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/imports",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/imports/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/import-export/import/{type}",
+			"params": {
+				"type": "slug"
+			},
+			"mode": "any",
+			"operations": [
+				{
+					"method": "POST",
+					"path": "/imports",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/imports/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/settings",
+			"params": {},
+			"mode": "any",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/settings/double-optin",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/settings/email-preferences",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/logs",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/logs",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/managers",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/managers",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/manager-roles",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/managers/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/managers/users",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/manager-roles",
+					"query_equals": {}
+				},
+				{
+					"method": "POST",
+					"path": "/managers",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/managers/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/managers/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/managers/users",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/manager-roles",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/managers/{id}",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/managers/roles/new",
+			"params": {},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/manager-roles/modules",
+					"query_equals": {}
+				},
+				{
+					"method": "POST",
+					"path": "/manager-roles",
+					"query_equals": {}
+				}
+			]
+		},
+		{
+			"path": "/admin/crm/managers/roles/{id}/edit",
+			"params": {
+				"id": "positive_integer"
+			},
+			"mode": "all",
+			"operations": [
+				{
+					"method": "GET",
+					"path": "/manager-roles/{id}",
+					"query_equals": {}
+				},
+				{
+					"method": "GET",
+					"path": "/manager-roles/modules",
+					"query_equals": {}
+				},
+				{
+					"method": "PUT",
+					"path": "/manager-roles/{id}",
+					"query_equals": {}
+				}
+			]
+		}
+	]
+}

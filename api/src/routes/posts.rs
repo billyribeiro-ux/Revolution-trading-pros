@@ -376,8 +376,15 @@ async fn get_post(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+    let author: Option<serde_json::Value> =
+        sqlx::query_scalar("SELECT jsonb_build_object('id',id,'name',name) FROM users WHERE id=$1")
+            .bind(post.author_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(crate::utils::errors::db_error)?;
     let mut value = serde_json::to_value(post).unwrap_or_else(|_| json!({}));
     if let Some(obj) = value.as_object_mut() {
+        obj.insert("author".into(), author.unwrap_or(serde_json::Value::Null));
         obj.insert("categories".into(), serde_json::Value::from(categories));
         obj.insert("tags".into(), serde_json::Value::from(tags));
     }

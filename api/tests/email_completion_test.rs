@@ -3,6 +3,8 @@
 mod authorization_parity_proof;
 #[path = "support/connections.rs"]
 mod connections_proof;
+#[path = "support/contact_interactions.rs"]
+mod contact_interactions_proof;
 #[path = "support/crm_contacts.rs"]
 mod crm_contacts_proof;
 #[path = "support/crm_import_export.rs"]
@@ -25,18 +27,26 @@ mod email_template_catalog_proof;
 mod email_template_policy_proof;
 #[path = "support/email_templates_workflows.rs"]
 mod email_templates_workflows;
+#[path = "support/manager_permissions.rs"]
+mod manager_permissions_proof;
 #[path = "support/member_campaign_audience.rs"]
 mod member_campaign_audience_proof;
 #[path = "support/member_configuration.rs"]
 mod member_configuration_proof;
 #[path = "support/member_current_memberships.rs"]
 mod member_current_memberships_proof;
+#[path = "support/member_exports.rs"]
+mod member_exports_proof;
 #[path = "support/member_segment_analytics.rs"]
 mod member_segment_analytics_proof;
 #[path = "support/member_segments.rs"]
 mod member_segments_proof;
+#[path = "support/member_statistics.rs"]
+mod member_statistics_proof;
 #[path = "support/performance.rs"]
 mod performance_proof;
+#[path = "support/seo_sitemaps.rs"]
+mod seo_sitemaps_proof;
 #[path = "support/sequence_authoring.rs"]
 mod sequence_authoring_proof;
 #[path = "support/sequence_delivery.rs"]
@@ -51,6 +61,8 @@ mod sequence_triggers_proof;
 mod smtp_delivery_proof;
 #[path = "support/smtp.rs"]
 mod smtp_proof;
+#[path = "support/video_privacy.rs"]
+mod video_privacy_proof;
 use axum::{
     Json, Router,
     body::Body,
@@ -1390,6 +1402,16 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     assert!(endpoint.query().is_none());
     assert!(endpoint.fragment().is_none());
     assert!(endpoint.username().is_empty());
+    // Keep real application failures visible in the retained fixture log. The
+    // guards above establish this process has only explicit local test inputs.
+    if let Err(error) = tracing_subscriber::fmt()
+        .with_ansi(false)
+        .with_test_writer()
+        .with_env_filter("revolution_api=error")
+        .try_init()
+    {
+        eprintln!("Fixture tracing already configured: {error}");
+    }
     let address = SocketAddr::from((
         [127, 0, 0, 1],
         endpoint
@@ -1762,6 +1784,12 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     sequence_triggers_proof::proof(&api, &pool, &tokens, &adapter).await;
     crm_import_export_proof::proof(&api, &pool, &tokens).await;
     crm_contacts_proof::proof(&api, &pool, &tokens, &adapter).await;
+    contact_interactions_proof::proof(&api, &pool, &tokens, &adapter).await;
+    manager_permissions_proof::proof(&api, &pool, &tokens, &adapter).await;
+    seo_sitemaps_proof::proof(&api, &pool, &tokens).await;
+    video_privacy_proof::proof(&api, &pool, &tokens).await;
+    member_statistics_proof::proof(&api, &pool, &tokens).await;
+    member_exports_proof::proof(&api, &pool, &tokens).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

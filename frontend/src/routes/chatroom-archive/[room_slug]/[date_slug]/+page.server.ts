@@ -1,3 +1,4 @@
+import { memberVideoHeaders, MEMBER_VIDEO_CACHE } from '#lib/server/member-videos.js';
 /**
  * Chatroom Archive Video Detail Page Server
  * ═══════════════════════════════════════════════════════════════════════════
@@ -38,14 +39,14 @@ interface VideoData {
 	title: string;
 	slug: string;
 	description: string | null;
-	video_url: string;
+	video_url: string | null;
 	thumbnail_url: string | null;
 	duration: number | null;
-	formatted_duration: string;
+	formatted_duration: string | null;
 	content_type: string;
-	video_date: string;
-	formatted_date: string;
-	is_published: boolean;
+	video_date: string | null;
+	formatted_date: string | null;
+	is_published: boolean | null;
 	trader: {
 		id: number;
 		name: string;
@@ -113,7 +114,14 @@ function dateToSlug(date: Date): string {
 	return `${month}${day}${year}`;
 }
 
-export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDetailPageData> => {
+export const load: PageServerLoad = async ({
+	params,
+	fetch,
+	locals,
+	setHeaders
+}): Promise<ArchiveDetailPageData> => {
+	const videoHeaders = memberVideoHeaders(locals);
+	setHeaders(MEMBER_VIDEO_CACHE);
 	const API_URL = ENV_API_URL || 'http://localhost:8080';
 	const roomSlug = params.room_slug as string;
 	const dateSlug = params.date_slug as string;
@@ -153,7 +161,9 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<ArchiveDe
 			per_page: '50'
 		});
 
-		const response = await fetch(`${API_URL}/api/videos?${apiParams.toString()}`);
+		const response = await fetch(`${API_URL}/api/videos?${apiParams.toString()}`, {
+			headers: videoHeaders
+		});
 
 		if (!response.ok) {
 			console.error('Failed to fetch archive videos:', response.status);

@@ -89,8 +89,8 @@ services:
   # ──────────────────────────────────────────────────────────────────────
   api:
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: api/Dockerfile
     container_name: rtp-api
     ports:
       - '8080:8080'

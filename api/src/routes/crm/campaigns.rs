@@ -1,5 +1,7 @@
 //! CRM campaign authoring. Delivery state is owned by the delivery worker.
-use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
+use crate::{
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, utils::errors::ApiError,
+};
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
@@ -229,10 +231,6 @@ impl Filters {
         Ok((page, size, page.saturating_sub(1).saturating_mul(size)))
     }
 }
-pub(super) async fn row(pool: &sqlx::PgPool, id: i64) -> Result<Value, ApiError> {
-    let mut connection = pool.acquire().await.map_err(db)?;
-    row_on(&mut connection, id).await
-}
 pub(crate) async fn row_on(
     connection: &mut sqlx::PgConnection,
     id: i64,
@@ -249,10 +247,17 @@ pub(crate) async fn row_on(
 }
 
 pub(super) async fn require_crm_owner(pool: &sqlx::PgPool, id: i64) -> Result<(), ApiError> {
+    let mut connection = pool.acquire().await.map_err(db)?;
+    require_crm_owner_on(&mut connection, id).await
+}
+pub(super) async fn require_crm_owner_on(
+    connection: &mut sqlx::PgConnection,
+    id: i64,
+) -> Result<(), ApiError> {
     let origin: Option<(Option<i64>,bool)> =
         sqlx::query_as("SELECT native_email_campaign_id,EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id) FROM crm_campaigns WHERE id=$1")
             .bind(id)
-            .fetch_optional(pool)
+            .fetch_optional(connection)
             .await
             .map_err(db)?;
     match origin {
@@ -266,14 +271,52 @@ pub(super) async fn require_crm_owner(pool: &sqlx::PgPool, id: i64) -> Result<()
         Some((None, false)) => Ok(()),
     }
 }
-async fn stats_value(pool: &sqlx::PgPool) -> Result<Value, ApiError> {
-    sqlx::query_scalar("SELECT jsonb_build_object('total',COUNT(*),'sent',COUNT(*) FILTER(WHERE status='sent'),'scheduled',COUNT(*) FILTER(WHERE status='scheduled'),'draft',COUNT(*) FILTER(WHERE status='draft'),'total_emails_sent',COALESCE(SUM(emails_sent),0),'total_opens',COALESCE(SUM(opens),0),'total_clicks',COALESCE(SUM(clicks),0),'avg_open_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(opens)*100.0/SUM(emails_sent),2) END,'avg_click_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(clicks)*100.0/SUM(emails_sent),2) END) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id)").fetch_one(pool).await.map_err(db)
+pub(super) async fn authorized_on(
+    connection: &mut sqlx::PgConnection,
+    actor: &AdminUser,
+    id: i64,
+) -> Result<Value, ApiError> {
+    require_crm_owner_on(connection, id).await?;
+    let source = row_on(connection, id).await?;
+    super::manager_sources::campaign_on(connection, actor, id, &source).await?;
+    Ok(source)
+}
+pub(super) async fn authorized(
+    pool: &sqlx::PgPool,
+    actor: &AdminUser,
+    id: i64,
+) -> Result<Value, ApiError> {
+    let mut tx = super::manager_sources::read_transaction(pool).await?;
+    let source = authorized_on(&mut tx, actor, id).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(source)
+}
+pub(super) async fn lock_authorized(
+    connection: &mut sqlx::PgConnection,
+    actor: &AdminUser,
+    id: i64,
+) -> Result<Value, ApiError> {
+    let found: Option<i64> =
+        sqlx::query_scalar("SELECT id FROM crm_campaigns WHERE id=$1 FOR UPDATE")
+            .bind(id)
+            .fetch_optional(&mut *connection)
+            .await
+            .map_err(db)?;
+    if found.is_none() {
+        return Err(ApiError::not_found("Campaign"));
+    }
+    authorized_on(connection, actor, id).await
+}
+async fn stats_value(connection: &mut sqlx::PgConnection) -> Result<Value, ApiError> {
+    sqlx::query_scalar("SELECT jsonb_build_object('total',COUNT(*),'sent',COUNT(*) FILTER(WHERE status='sent'),'scheduled',COUNT(*) FILTER(WHERE status='scheduled'),'draft',COUNT(*) FILTER(WHERE status='draft'),'total_emails_sent',COALESCE(SUM(emails_sent),0),'total_opens',COALESCE(SUM(opens),0),'total_clicks',COALESCE(SUM(clicks),0),'avg_open_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(opens)*100.0/SUM(emails_sent),2) END,'avg_click_rate',CASE WHEN COALESCE(SUM(emails_sent),0)=0 THEN 0 ELSE ROUND(SUM(clicks)*100.0/SUM(emails_sent),2) END) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id)").fetch_one(connection).await.map_err(db)
 }
 async fn list(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Query(filters): Query<Filters>,
 ) -> Result<Json<Value>, ApiError> {
+    let mut tx = super::manager_sources::read_transaction(&state.db.pool).await?;
+    super::manager_sources::campaign_all_on(&mut tx, &admin).await?;
     let (page, size, offset) = filters.bounds()?;
     let search = filters.search.map(|v| format!("%{v}%"));
     let rows: Vec<Value> = sqlx::query_scalar(campaign_sql!("SELECT to_jsonb(c) FROM (SELECT "," FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id) AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2) ORDER BY created_at DESC,id DESC LIMIT $3 OFFSET $4) c"))
@@ -281,20 +324,22 @@ async fn list(
         .bind(&filters.status)
         .bind(size)
         .bind(offset)
-        .fetch_all(&state.db.pool)
+        .fetch_all(&mut *tx)
         .await
         .map_err(db)?;
-    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id) AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2)").bind(search).bind(filters.status).fetch_one(&state.db.pool).await.map_err(db)?;
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_campaigns WHERE native_email_campaign_id IS NULL AND NOT EXISTS(SELECT 1 FROM crm_sequence_engines e WHERE e.campaign_id=crm_campaigns.id) AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR subject ILIKE $1) AND ($2::text IS NULL OR status=$2)").bind(search).bind(filters.status).fetch_one(&mut *tx).await.map_err(db)?;
+    let stats = stats_value(&mut tx).await?;
+    tx.commit().await.map_err(db)?;
     Ok(Json(
-        json!({"data":rows,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":((total+size-1)/size).max(1)},"stats":stats_value(&state.db.pool).await?}),
+        json!({"data":rows,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":((total+size-1)/size).max(1)},"stats":stats}),
     ))
 }
 async fn get_one(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
-    Ok(Json(row(&state.db.pool, id).await?))
+    Ok(Json(authorized(&state.db.pool, &admin, id).await?))
 }
 async fn check_template(
     tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
@@ -318,6 +363,7 @@ async fn create(
     admin: AdminUser,
     Json(input): Json<Input>,
 ) -> Result<Json<Value>, ApiError> {
+    admin.body(&json!({"template_id":input.template_id.flatten(),"subscriber_settings":input.subscriber_settings.as_ref().and_then(|value|value.as_ref())}))?;
     input.validate(true)?;
     validate_sender(&input)?;
     validate_audience(&state.db.pool, &input).await?;
@@ -325,20 +371,24 @@ async fn create(
     check_template(&mut tx, input.template_id.flatten()).await?;
     let id:i64=sqlx::query_scalar("INSERT INTO crm_campaigns(name,title,subject,content,status,campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,created_by,failed_count,text_body) VALUES($1,$1,$2,$3,'draft',$4,$5,$6,$7,$8,$9,$10,$11,$12,0,$13) RETURNING id")
   .bind(input.title.as_deref().unwrap_or("").trim()).bind(input.email_subject.unwrap_or_default()).bind(input.email_body.unwrap_or_default()).bind(input.campaign_type.as_deref().unwrap_or("regular")).bind(input.email_pre_header).bind(input.design_template.as_deref().unwrap_or("raw")).bind(input.template_id.flatten()).bind(input.template_config.flatten()).bind(input.settings.flatten()).bind(input.subscriber_settings.flatten()).bind(input.utm_settings.flatten()).bind(admin.0.id).bind(input.text_body.flatten()).fetch_one(&mut *tx).await.map_err(db)?;
+    let saved = row_on(&mut tx, id).await?;
+    super::manager_sources::campaign_on(&mut tx, &admin, id, &saved).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, id).await?))
+    Ok(Json(saved))
 }
 async fn update(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<Input>,
 ) -> Result<Json<Value>, ApiError> {
     require_crm_owner(&state.db.pool, id).await?;
+    admin.body(&json!({"template_id":input.template_id.flatten(),"subscriber_settings":input.subscriber_settings.as_ref().and_then(|value|value.as_ref())}))?;
     input.validate(false)?;
     validate_sender(&input)?;
     validate_audience(&state.db.pool, &input).await?;
     let mut tx = state.db.pool.begin().await.map_err(db)?;
+    let _source = lock_authorized(&mut tx, &admin, id).await?;
     let status: Option<String> =
         sqlx::query_scalar("SELECT status FROM crm_campaigns WHERE id=$1 FOR UPDATE")
             .bind(id)
@@ -363,8 +413,10 @@ async fn update(
     check_template(&mut tx, input.template_id.flatten()).await?;
     sqlx::query("UPDATE crm_campaigns SET name=COALESCE($2,name),title=COALESCE($2,title),subject=COALESCE($3,subject),content=COALESCE($4,content),campaign_type=COALESCE($5,campaign_type),email_pre_header=COALESCE($6,email_pre_header),design_template=COALESCE($7,design_template),template_id=CASE WHEN $8 THEN $9 ELSE template_id END,template_config=CASE WHEN $10 THEN $11 ELSE template_config END,settings=CASE WHEN $12 THEN $13 ELSE settings END,subscriber_settings=CASE WHEN $14 THEN $15 ELSE subscriber_settings END,utm_settings=CASE WHEN $16 THEN $17 ELSE utm_settings END,text_body=CASE WHEN $18 THEN $19 ELSE text_body END,authoring_version=authoring_version+1,updated_at=NOW() WHERE id=$1")
  .bind(id).bind(input.title.as_deref().map(str::trim)).bind(input.email_subject).bind(input.email_body).bind(input.campaign_type).bind(input.email_pre_header).bind(input.design_template).bind(input.template_id.is_some()).bind(input.template_id.flatten()).bind(input.template_config.is_some()).bind(input.template_config.flatten()).bind(input.settings.is_some()).bind(input.settings.flatten()).bind(input.subscriber_settings.is_some()).bind(input.subscriber_settings.flatten()).bind(input.utm_settings.is_some()).bind(input.utm_settings.flatten()).bind(input.text_body.is_some()).bind(input.text_body.flatten()).execute(&mut *tx).await.map_err(db)?;
+    let saved = row_on(&mut tx, id).await?;
+    super::manager_sources::campaign_on(&mut tx, &admin, id, &saved).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, id).await?))
+    Ok(Json(saved))
 }
 async fn duplicate(
     State(state): State<AppState>,
@@ -372,22 +424,26 @@ async fn duplicate(
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     require_crm_owner(&state.db.pool, id).await?;
-    let new_id:Option<i64>=sqlx::query_scalar("INSERT INTO crm_campaigns(name,title,subject,content,status,campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,created_by,failed_count,text_body,delivery_rate_limit) SELECT LEFT(COALESCE(title,name),248)||' (Copy)',LEFT(COALESCE(title,name),248)||' (Copy)',subject,content,'draft',campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,$2,0,text_body,delivery_rate_limit FROM crm_campaigns WHERE id=$1 RETURNING id").bind(id).bind(admin.0.id).fetch_optional(&state.db.pool).await.map_err(db)?;
-    Ok(Json(
-        row(
-            &state.db.pool,
-            new_id.ok_or_else(|| ApiError::not_found("Campaign not found"))?,
-        )
-        .await?,
-    ))
+    let mut tx = state.db.pool.begin().await.map_err(db)?;
+    lock_authorized(&mut tx, &admin, id).await?;
+    let new_id:Option<i64>=sqlx::query_scalar("INSERT INTO crm_campaigns(name,title,subject,content,status,campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,created_by,failed_count,text_body,delivery_rate_limit) SELECT LEFT(COALESCE(title,name),248)||' (Copy)',LEFT(COALESCE(title,name),248)||' (Copy)',subject,content,'draft',campaign_type,email_pre_header,design_template,template_id,template_config,settings,subscriber_settings,utm_settings,$2,0,text_body,delivery_rate_limit FROM crm_campaigns WHERE id=$1 RETURNING id").bind(id).bind(admin.0.id).fetch_optional(&mut *tx).await.map_err(db)?;
+    let saved = row_on(
+        &mut tx,
+        new_id.ok_or_else(|| ApiError::not_found("Campaign"))?,
+    )
+    .await?;
+    super::manager_sources::campaign_on(&mut tx, &admin, id, &saved).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(Json(saved))
 }
 async fn delete(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     require_crm_owner(&state.db.pool, id).await?;
     let mut tx = state.db.pool.begin().await.map_err(db)?;
+    lock_authorized(&mut tx, &admin, id).await?;
     let status: Option<String> =
         sqlx::query_scalar("SELECT status FROM crm_campaigns WHERE id=$1 FOR UPDATE")
             .bind(id)
@@ -413,8 +469,12 @@ async fn delete(
     tx.commit().await.map_err(db)?;
     Ok(Json(json!({"deleted":true})))
 }
-async fn stats(State(state): State<AppState>, _admin: AdminUser) -> Result<Json<Value>, ApiError> {
-    Ok(Json(stats_value(&state.db.pool).await?))
+async fn stats(State(state): State<AppState>, admin: AdminUser) -> Result<Json<Value>, ApiError> {
+    let mut tx = super::manager_sources::read_transaction(&state.db.pool).await?;
+    super::manager_sources::campaign_all_on(&mut tx, &admin).await?;
+    let stats = stats_value(&mut tx).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(Json(stats))
 }
 #[derive(Deserialize)]
 struct RecipientPage {
@@ -423,11 +483,11 @@ struct RecipientPage {
 }
 async fn recipients(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Query(page): Query<RecipientPage>,
 ) -> Result<Json<Value>, ApiError> {
-    let campaign = row(&state.db.pool, id).await?;
+    let campaign = authorized(&state.db.pool, &admin, id).await?;
     Ok(Json(
         super::campaign_audience::preview(
             &state.db.pool,

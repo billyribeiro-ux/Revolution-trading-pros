@@ -8,6 +8,7 @@
 	 */
 
 	import Icon from '#lib/components/Icon.svelte';
+	import { on } from 'svelte/events';
 
 	interface Props {
 		src: string;
@@ -104,9 +105,17 @@
 	}
 
 	function trackCachedImage(element: HTMLImageElement) {
-		if (element.complete && element.naturalHeight !== 0) {
-			isLoaded = true;
+		// Attach after hydration so SSR emits no inline image event handlers under strict CSP.
+		const removeLoad = on(element, 'load', handleLoad);
+		const removeError = on(element, 'error', handleError);
+		if (element.complete) {
+			if (element.naturalHeight !== 0) handleLoad();
+			else handleError();
 		}
+		return () => {
+			removeLoad();
+			removeError();
+		};
 	}
 </script>
 
@@ -137,8 +146,6 @@
 			sizes={generateSizes() || sizes}
 			srcset={generateSrcset(src, breakpoints) || srcset}
 			class={{ image: true, loaded: isLoaded }}
-			onload={handleLoad}
-			onerror={handleError}
 		/>
 	{:else}
 		<!-- Error fallback -->

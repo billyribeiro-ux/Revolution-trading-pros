@@ -1,5 +1,5 @@
 import { expect, it } from 'vite-plus/test';
-import { renderSourceSitemap } from '../sitemap-xml.js';
+import { renderSourceSitemap, xmlText } from '../sitemap-xml.js';
 import { authors } from '#lib/authors/authors.js';
 const author = authors[0];
 if (!author) throw new Error('Actual author registry is empty');
@@ -81,6 +81,7 @@ it('emits only complete approved video metadata and never turns missing duration
 			'Actual saved fixture description used by both the watch page and its video sitemap.',
 		video_url: 'https://media.example.test/fixture.mp4',
 		video_platform: 'self-hosted',
+		trader_id: '3',
 		thumbnail_url: 'https://media.example.test/thumbnail.jpg?a=1&b=2',
 		duration: 600,
 		mapping_id: '5',
@@ -96,7 +97,8 @@ it('emits only complete approved video metadata and never turns missing duration
 			enabled: true,
 			include_thumbnails: true,
 			include_uploader: true,
-			detect_from_content: true
+			detect_from_content: true,
+			platforms: ['self-hosted', 'bunny', 'youtube', 'vimeo', 'dailymotion', 'ted', 'wistia']
 		},
 		entries: {
 			data: [{ eligible: true, exclusion_reason: null, record: video }],
@@ -130,4 +132,10 @@ it('emits only complete approved video metadata and never turns missing duration
 				now
 			)
 		).toThrow();
+});
+
+it('preserves astral Unicode while refusing XML controls and lone surrogates', () => {
+	expect(xmlText('Actual 🧭 title & source')).toBe('Actual 🧭 title &amp; source');
+	for (const value of ['bad\u0000title', 'bad\uD800title', 'bad\uFFFFtitle'])
+		expect(() => xmlText(value)).toThrow('XML cannot represent');
 });

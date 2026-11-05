@@ -4,19 +4,21 @@
 
 	interface Props {
 		open: boolean;
+		busy: boolean;
+		error: string;
 		content: string;
 		onClose: () => void;
 		onSave: () => void;
 	}
 
-	let { open, content = $bindable(), onClose, onSave }: Props = $props();
+	let { open, busy, error, content = $bindable(), onClose, onSave }: Props = $props();
 </script>
 
 {#if open}
 	<div
 		class="modal-overlay"
-		onclick={(e: MouseEvent) => e.target === e.currentTarget && onClose()}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
+		onclick={(e: MouseEvent) => !busy && e.target === e.currentTarget && onClose()}
+		onkeydown={(e: KeyboardEvent) => !busy && e.key === 'Escape' && onClose()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="add-note-title"
@@ -25,22 +27,38 @@
 		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3 id="add-note-title">Add Note</h3>
-				<button class="modal-close" onclick={onClose}>
+				<button
+					class="modal-close"
+					onclick={onClose}
+					disabled={busy}
+					aria-label="Close note dialog"
+				>
 					<IconX size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
-				<textarea id="addnotemodal-content" name="addnotemodal_content"
+				{#if error}<p role="alert">{error}</p>{/if}<label for="addnotemodal-content"
+					>Note content</label
+				><textarea
+					disabled={busy}
+					maxlength={10000}
+					id="addnotemodal-content"
+					name="addnotemodal_content"
 					class="note-input"
 					placeholder="Write your note here..."
 					bind:value={content}
 					rows="4"></textarea>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={onClose}>Cancel</button>
-				<button class="btn-primary" onclick={onSave} disabled={!content.trim()}>
+				<button
+					class="btn-secondary"
+					onclick={onClose}
+					disabled={busy}
+					aria-label="Close note dialog">Cancel</button
+				>
+				<button class="btn-primary" onclick={onSave} disabled={busy || !content.trim()}>
 					<IconCheck size={18} />
-					Save Note
+					{busy ? 'Saving…' : 'Save Note'}
 				</button>
 			</div>
 		</div>
@@ -140,7 +158,6 @@
 		text-decoration: none;
 		transition: all 0.2s;
 	}
-
 
 	.btn-primary:disabled {
 		opacity: 0.5;

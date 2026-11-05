@@ -27,7 +27,7 @@ pub struct Member {
     pub updated_at: Option<NaiveDateTime>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct MemberQuery {
     pub segment: Option<i64>,
     pub tag: Option<i64>,
@@ -88,7 +88,7 @@ pub async fn index(
     _admin: AdminUser,
     Query(params): Query<MemberQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    use crate::services::member_segmentation::{self as evaluation, Condition, Definition};
+    use crate::services::member_segmentation as evaluation;
     let size = params.per_page.unwrap_or(25);
     let page = params.page.unwrap_or(1);
     if !(1..=100).contains(&size) || !(1..=10_000).contains(&page) {
@@ -96,113 +96,9 @@ pub async fn index(
             "Invalid member page or page size",
         ));
     }
-    if params
-        .search
-        .as_ref()
-        .is_some_and(|v| v.chars().count() > 100 || v.contains('\0'))
-    {
-        return Err(ApiError::validation_error(
-            "Member search exceeds100 characters or contains invalid characters",
-        ));
-    }
-    let date_from = params
-        .date_from
-        .as_deref()
-        .map(|v| chrono::NaiveDate::parse_from_str(v, "%Y-%m-%d"))
-        .transpose()
-        .map_err(|_| ApiError::validation_error("Invalid start date"))?;
-    let date_to = params
-        .date_to
-        .as_deref()
-        .map(|v| chrono::NaiveDate::parse_from_str(v, "%Y-%m-%d"))
-        .transpose()
-        .map_err(|_| ApiError::validation_error("Invalid end date"))?;
-    if date_from.zip(date_to).is_some_and(|(from, to)| from > to) {
-        return Err(ApiError::validation_error(
-            "Start date must not follow end date",
-        ));
-    }
-    let mut definition = if let Some(id) = params.segment {
-        evaluation::load(&state.db.pool, id, false).await?
-    } else {
-        Definition {
-            conditions: vec![],
-            static_id: None,
-            is_system: false,
-            version: 1,
-        }
-    };
-    if let Some(status) = &params.status
-        && !status.is_empty()
-    {
-        definition.conditions.push(Condition {
-            field: "status".into(),
-            operator: "eq".into(),
-            value: serde_json::json!(status),
-        });
-    }
-    if let Some(tag) = params.tag {
-        if tag <= 0 {
-            return Err(ApiError::validation_error("Invalid member tag"));
-        }
-        definition.conditions.push(Condition {
-            field: "tag".into(),
-            operator: "has".into(),
-            value: serde_json::json!(tag),
-        });
-    }
-    if let Some(tier) = params.spending_tier.as_deref().filter(|v| !v.is_empty()) {
-        let (min, max) = match tier {
-            "whale" => (5000, None),
-            "high" => (1000, Some(5000)),
-            "medium" => (100, Some(1000)),
-            "low" => (0, Some(100)),
-            _ => return Err(ApiError::validation_error("Invalid spending tier")),
-        };
-        definition.conditions.push(Condition {
-            field: "total_spent".into(),
-            operator: "gte".into(),
-            value: serde_json::json!(min),
-        });
-        if let Some(max) = max {
-            definition.conditions.push(Condition {
-                field: "total_spent".into(),
-                operator: "lt".into(),
-                value: serde_json::json!(max),
-            });
-        }
-    }
-    let build = |prefix| -> Result<sqlx::QueryBuilder<sqlx::Postgres>, ApiError> {
-        let mut query = evaluation::segment_query(prefix, &definition)?;
-        if let Some(search) = params.search.as_ref().filter(|v| !v.is_empty()) {
-            let pattern = format!("%{search}%");
-            query
-                .push(" AND (m.name ILIKE ")
-                .push_bind(pattern.clone())
-                .push(" OR m.email ILIKE ")
-                .push_bind(pattern)
-                .push(")");
-        }
-        if let Some(date) = date_from {
-            query.push(" AND m.created_at>=").push_bind(date);
-        }
-        if let Some(date) = date_to {
-            query
-                .push(" AND m.created_at<")
-                .push_bind(date)
-                .push("+INTERVAL '1 day'");
-        }
-        if let Some(plan) = params.plan_id {
-            if plan <= 0 {
-                return Err(ApiError::validation_error("Invalid membership plan"));
-            }
-            query.push(" AND EXISTS(SELECT 1 FROM user_memberships s WHERE s.user_id=m.id AND s.plan_id=").push_bind(plan).push(" AND s.deleted_at IS NULL)");
-        }
-        if let Some(product) = params.product_id {
-            query.push(" AND EXISTS(SELECT 1 FROM order_items item JOIN orders o ON o.id=item.order_id WHERE o.user_id=m.id AND item.product_id=").push_bind(product).push(" AND o.status IN ('completed','paid'))");
-        }
-        Ok(query)
-    };
+    let selection =
+        super::member_selection::MemberSelection::new(&state.db.pool, params.clone()).await?;
+    let build = |prefix| selection.query(prefix);
     let total: i64 = build("SELECT COUNT(*)")?
         .build_query_scalar()
         .fetch_one(&state.db.pool)
@@ -211,20 +107,7 @@ pub async fn index(
     let mut query = build(
         "SELECT to_jsonb(m) || jsonb_build_object('status_label',initcap(replace(m.status,'_',' ')))",
     )?;
-    let sort = match params.sort_by.as_deref().unwrap_or("created_at") {
-        "id" => "m.id",
-        "name" => "m.name",
-        "email" => "m.email",
-        "total_spent" => "m.total_spent",
-        "updated_at" => "m.updated_at",
-        "joined_at" | "created_at" => "m.created_at",
-        _ => return Err(ApiError::validation_error("Unsupported member sort field")),
-    };
-    let direction = match params.sort_dir.as_deref().unwrap_or("desc") {
-        "asc" | "ASC" => " ASC",
-        "desc" | "DESC" => " DESC",
-        _ => return Err(ApiError::validation_error("Invalid member sort direction")),
-    };
+    let (sort, direction) = selection.order()?;
     query
         .push(" ORDER BY ")
         .push(sort)
@@ -249,156 +132,17 @@ pub async fn stats(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Total members
-    let total_members: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM users")
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
-
-    // New this month
-    let new_this_month: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM users WHERE created_at >= date_trunc('month', CURRENT_DATE)",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // New last month
-    let new_last_month: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM users
-         WHERE created_at >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
-         AND created_at < date_trunc('month', CURRENT_DATE)",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // Growth rate
-    let growth_rate = if new_last_month > 0 {
-        ((new_this_month - new_last_month) as f64 / new_last_month as f64 * 100.0 * 10.0).round()
-            / 10.0
-    } else {
-        0.0
-    };
-
-    // Active subscribers (users with active subscriptions)
-    let active_subscribers: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'active'",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // Trial members
-    let trial_members: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'trial'",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // Churned members
-    let churned_members: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_memberships
-         WHERE status IN ('cancelled', 'expired')
-         AND user_id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // MRR — integer cents, joined to membership_plans (user_memberships has no price/billing_period columns)
-    let mrr_cents: i64 = sqlx::query_scalar(
-        r"SELECT COALESCE(SUM(
-              CASE LOWER(mp.billing_cycle)
-                  WHEN 'yearly'    THEN ((mp.price * 100) / 12)::BIGINT
-                  WHEN 'annual'    THEN ((mp.price * 100) / 12)::BIGINT
-                  WHEN 'quarterly' THEN ((mp.price * 100) / 3)::BIGINT
-                  ELSE                  (mp.price * 100)::BIGINT
-              END
-           ), 0)::BIGINT
-           FROM user_memberships um
-           JOIN membership_plans mp ON mp.id = um.plan_id
-           WHERE um.status IN ('active', 'trialing')",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // Total revenue (cents) — sum across ALL memberships (lifetime), joined to plans
-    let total_revenue_cents: i64 = sqlx::query_scalar(
-        r"SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
-           FROM user_memberships um
-           JOIN membership_plans mp ON mp.id = um.plan_id",
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    Ok(Json(serde_json::json!({
-        "overview": {
-            "total_members": total_members,
-            "new_this_month": new_this_month,
-            "new_last_month": new_last_month,
-            "growth_rate": growth_rate
-        },
-        "subscriptions": {
-            "active": active_subscribers,
-            "trial": trial_members,
-            "churned": churned_members,
-            "churn_rate": 0.0
-        },
-        "revenue": {
-            "mrr_cents": mrr_cents,
-            "total_cents": total_revenue_cents,
-            "avg_ltv_cents": 0_i64
-        }
-    })))
+    Ok(Json(super::member_statistics::load(&state).await?))
 }
 
-/// GET /admin/members/services - Get all services/products for filtering
+/// GET /admin/members/services - Paged membership-plan catalog, including inactive plans.
 #[tracing::instrument(skip(state, _admin))]
 pub async fn services(
     State(state): State<AppState>,
     _admin: AdminUser,
+    Query(params): Query<super::member_services::CatalogQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Distinct services. user_memberships has no product_id/product_name/price; canonical is membership_plans.
-    let services: Vec<(i64, Option<String>, Option<String>, Option<i64>, i64)> = sqlx::query_as(
-        r"
-        SELECT
-            mp.id as id,
-            mp.name as name,
-            'subscription' as type,
-            (mp.price * 100)::BIGINT as price_cents,
-            COUNT(DISTINCT um.user_id) as members_count
-        FROM user_memberships um
-        JOIN membership_plans mp ON mp.id = um.plan_id
-        WHERE um.status IN ('active', 'trialing')
-        GROUP BY mp.id, mp.name, mp.price
-        ORDER BY members_count DESC
-        LIMIT 50
-        ",
-    )
-    .fetch_all(state.db.pool())
-    .await?;
-
-    let services_json: Vec<serde_json::Value> = services
-        .into_iter()
-        .map(|(id, name, svc_type, price_cents, count)| {
-            serde_json::json!({
-                "id": id,
-                "name": name.unwrap_or_else(|| format!("Service {id}")),
-                "type": svc_type.unwrap_or_else(|| "subscription".to_string()),
-                "price_cents": price_cents.unwrap_or(0),
-                "is_active": true,
-                "members_count": count
-            })
-        })
-        .collect();
-
-    Ok(Json(serde_json::json!({
-        "services": services_json
-    })))
+    Ok(Json(super::member_services::catalog(&state, params).await?))
 }
 
 /// GET /admin/members/email-templates - Get email templates for member communications
@@ -457,145 +201,17 @@ pub async fn email_templates(
     })))
 }
 
-/// GET /admin/members/service/:id - Get members by service/product ID
-/// ICT Level 7 SECURITY: All filters use parameterized queries
+/// GET /admin/members/service/:id - Exact membership-plan-local cohort.
 #[tracing::instrument(skip(state, _admin))]
 pub async fn members_by_service(
     State(state): State<AppState>,
     _admin: AdminUser,
     Path(service_id): Path<i64>,
-    Query(params): Query<MemberQuery>,
+    Query(params): Query<super::member_services::ServiceMemberQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Get service info — service_id is a membership_plans.id (canonical)
-    let service_info: Option<(i64, Option<String>, Option<String>)> = sqlx::query_as(
-        "SELECT id, name, 'subscription' as type FROM membership_plans WHERE id = $1 LIMIT 1",
-    )
-    .bind(service_id)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    let (svc_id, svc_name, svc_type) = service_info.unwrap_or((service_id, None, None));
-
-    let per_page = params.per_page.unwrap_or(25).min(100);
-    let page = params.page.unwrap_or(1).max(1);
-    let offset = (page - 1) * per_page;
-
-    // Prepare search pattern
-    let search_pattern = params
-        .search
-        .as_ref()
-        .filter(|s| !s.is_empty() && s.len() <= 100)
-        .map(|s| format!("%{s}%"));
-
-    // Validate status against allowlist
-    let status_filter = params.status.as_ref().and_then(|s| match s.as_str() {
-        "active" | "trial" | "cancelled" | "expired" | "pending" | "past_due" => Some(s.clone()),
-        _ => None,
-    });
-
-    // Get members using parameterized queries
-    let members: Vec<Member> = sqlx::query_as(
-        r"
-        SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
-        FROM users u
-        JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.plan_id = $1)
-            AND ($2::TEXT IS NULL OR us.status = $2)
-            AND ($3::TEXT IS NULL OR (u.name ILIKE $3 OR u.email ILIKE $3))
-        ORDER BY u.created_at DESC
-        LIMIT $4 OFFSET $5
-        ",
-    )
-    .bind(service_id)
-    .bind(&status_filter)
-    .bind(&search_pattern)
-    .bind(per_page)
-    .bind(offset)
-    .fetch_all(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    // Get total count
-    let total: i64 = sqlx::query_scalar(
-        r"
-        SELECT COUNT(DISTINCT u.id)
-        FROM users u
-        JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.plan_id = $1)
-            AND ($2::TEXT IS NULL OR us.status = $2)
-            AND ($3::TEXT IS NULL OR (u.name ILIKE $3 OR u.email ILIKE $3))
-        ",
-    )
-    .bind(service_id)
-    .bind(&status_filter)
-    .bind(&search_pattern)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // Get stats
-    let active_count: i64 = sqlx::query_scalar(
-        r"
-        SELECT COUNT(DISTINCT u.id) FROM users u
-        JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.plan_id = $1) AND us.status = 'active'
-        ",
-    )
-    .bind(service_id)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    let trial_count: i64 = sqlx::query_scalar(
-        r"
-        SELECT COUNT(DISTINCT u.id) FROM users u
-        JOIN user_memberships us ON u.id = us.user_id
-        WHERE (us.plan_id = $1) AND us.status = 'trial'
-        ",
-    )
-    .bind(service_id)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    // Service revenue (cents) — joined to membership_plans for canonical price
-    let total_revenue_cents: i64 = sqlx::query_scalar(
-        r"
-        SELECT COALESCE(SUM((mp.price * 100)::BIGINT), 0)::BIGINT
-        FROM user_memberships um
-        JOIN membership_plans mp ON mp.id = um.plan_id
-        WHERE um.plan_id = $1
-        ",
-    )
-    .bind(service_id)
-    .fetch_one(state.db.pool())
-    .await
-    .unwrap_or(0);
-
-    let last_page = (total as f64 / per_page as f64).ceil() as i64;
-
-    Ok(Json(serde_json::json!({
-        "service": {
-            "id": svc_id,
-            "name": svc_name.unwrap_or_else(|| format!("Service {svc_id}")),
-            "type": svc_type.unwrap_or_else(|| "subscription".to_string())
-        },
-        "stats": {
-            "total_members": total,
-            "active_members": active_count,
-            "trial_members": trial_count,
-            "churned_members": total - active_count - trial_count,
-            "total_revenue_cents": total_revenue_cents
-        },
-        "members": members,
-        "pagination": {
-            "total": total,
-            "per_page": per_page,
-            "current_page": page,
-            "last_page": last_page.max(1)
-        }
-    })))
+    Ok(Json(
+        super::member_services::members(&state, service_id, params).await?,
+    ))
 }
 
 /// GET /admin/members/churned - Get churned/past members
@@ -717,111 +333,13 @@ pub async fn churned_members(
     })))
 }
 
-/// GET /admin/members/export - Export members as CSV
-/// ICT Level 7 SECURITY: Status filter uses allowlist validation
-#[tracing::instrument(skip(state, _admin))]
+/// GET /admin/members/export - CSV snapshot with the established column layout.
 pub async fn export_members(
-    State(state): State<AppState>,
-    _admin: AdminUser,
-    Query(params): Query<MemberQuery>,
+    state: State<AppState>,
+    admin: AdminUser,
+    query: Query<crate::routes::admin_member_management::ExportQuery>,
 ) -> Result<axum::response::Response, ApiError> {
-    use axum::http::header;
-    use axum::response::IntoResponse;
-
-    // Validate status against allowlist and select appropriate query
-    let members: Vec<Member> = match params.status.as_deref() {
-        Some("active") => {
-            sqlx::query_as(
-                r"
-                SELECT u.id, u.name, u.email, u.created_at, u.updated_at
-                FROM users u
-                WHERE u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')
-                ORDER BY u.created_at DESC
-                LIMIT 10000
-                ",
-            )
-            .fetch_all(state.db.pool())
-            .await
-        }
-        Some("churned") => {
-            sqlx::query_as(
-                r"
-                SELECT u.id, u.name, u.email, u.created_at, u.updated_at
-                FROM users u
-                WHERE u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status IN ('cancelled', 'expired'))
-                AND u.id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')
-                ORDER BY u.created_at DESC
-                LIMIT 10000
-                ",
-            )
-            .fetch_all(state.db.pool())
-            .await
-        }
-        Some("trial") => {
-            sqlx::query_as(
-                r"
-                SELECT u.id, u.name, u.email, u.created_at, u.updated_at
-                FROM users u
-                WHERE u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'trial')
-                ORDER BY u.created_at DESC
-                LIMIT 10000
-                ",
-            )
-            .fetch_all(state.db.pool())
-            .await
-        }
-        _ => {
-            sqlx::query_as(
-                r"
-                SELECT u.id, u.name, u.email, u.created_at, u.updated_at
-                FROM users u
-                ORDER BY u.created_at DESC
-                LIMIT 10000
-                ",
-            )
-            .fetch_all(state.db.pool())
-            .await
-        }
-    }
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    // Build CSV with proper escaping
-    let mut csv = String::from("id,name,email,created_at,updated_at\n");
-    for m in members {
-        // Properly escape CSV fields (handle commas, quotes, newlines)
-        let name = escape_csv_field(m.name.as_deref().unwrap_or(""));
-        let email = escape_csv_field(&m.email);
-        csv.push_str(&format!(
-            "{},{},{},{},{}\n",
-            m.id,
-            name,
-            email,
-            m.created_at.map(|d| d.to_string()).unwrap_or_default(),
-            m.updated_at.map(|d| d.to_string()).unwrap_or_default()
-        ));
-    }
-
-    let response = (
-        [
-            (header::CONTENT_TYPE, "text/csv; charset=utf-8"),
-            (
-                header::CONTENT_DISPOSITION,
-                "attachment; filename=\"members.csv\"",
-            ),
-        ],
-        csv,
-    );
-
-    Ok(response.into_response())
-}
-
-/// Properly escape CSV field values
-fn escape_csv_field(value: &str) -> String {
-    if value.contains(',') || value.contains('"') || value.contains('\n') || value.contains('\r') {
-        format!("\"{}\"", value.replace('"', "\"\""))
-    } else {
-        value.to_string()
-    }
+    crate::routes::admin_member_management::export::export_members_csv(state, admin, query).await
 }
 
 /// GET /admin/members/:id - Get single member details

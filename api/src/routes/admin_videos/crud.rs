@@ -293,13 +293,22 @@ pub(super) async fn create_video(
         .map(|t| serde_json::to_value(t).unwrap_or(json!([])))
         .unwrap_or(json!([]));
 
+    // Decode the inserted row and persist its room assignments before committing.
+    // A decoding/assignment failure must not leave an unacknowledged video behind.
+    let mut tx = state
+        .db
+        .pool
+        .begin()
+        .await
+        .map_err(crate::utils::errors::db_error)?;
+
     let video: UnifiedVideoRow = sqlx::query_as(
         r"INSERT INTO unified_videos (
             title, slug, description, video_url, video_platform, content_type,
             video_date, trader_id, is_published, is_featured, tags,
-            thumbnail_url, difficulty_level, category, session_type, duration
+            thumbnail_url, difficulty_level, category, session_type, duration, published_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
         RETURNING *",
     )
     .bind(&input.title)
@@ -318,7 +327,8 @@ pub(super) async fn create_video(
     .bind(&input.category)
     .bind(&input.session_type)
     .bind(input.duration)
-    .fetch_one(&state.db.pool)
+    .bind(input.published_at)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| {
         (
@@ -335,11 +345,13 @@ pub(super) async fn create_video(
             )
             .bind(video.id)
             .bind(room_id)
-            .execute(&state.db.pool)
+            .execute(&mut *tx)
             .await
             .map_err(crate::utils::errors::db_error)?;
         }
     }
+
+    tx.commit().await.map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -387,6 +399,27 @@ pub(super) async fn update_video(
         bind_count += 1;
     }
 
+    if input.video_platform.is_some() {
+        updates.push(format!("video_platform = ${bind_count}"));
+        bind_count += 1;
+    }
+    if input.content_type.is_some() {
+        updates.push(format!("content_type = ${bind_count}"));
+        bind_count += 1;
+    }
+    if input.trader_id.is_some() {
+        updates.push(format!("trader_id = ${bind_count}"));
+        bind_count += 1;
+    }
+    if input.duration.is_some() {
+        updates.push(format!("duration = ${bind_count}"));
+        bind_count += 1;
+    }
+    if input.published_at.is_some() {
+        updates.push(format!("published_at = ${bind_count}"));
+        bind_count += 1;
+    }
+
     if updates.is_empty() {
         return Err((
             StatusCode::BAD_REQUEST,
@@ -427,10 +460,32 @@ pub(super) async fn update_video(
         query = query.bind(tags_json);
     }
 
+    if let Some(value) = input.video_platform {
+        query = query.bind(value);
+    }
+    if let Some(value) = input.content_type {
+        query = query.bind(value);
+    }
+    if let Some(value) = input.trader_id {
+        query = query.bind(value);
+    }
+    if let Some(value) = input.duration {
+        query = query.bind(value);
+    }
+    if let Some(value) = input.published_at {
+        query = query.bind(value);
+    }
+
     query = query.bind(id);
 
+    let mut tx = state
+        .db
+        .pool
+        .begin()
+        .await
+        .map_err(crate::utils::errors::db_error)?;
     let video = query
-        .fetch_optional(&state.db.pool)
+        .fetch_optional(&mut *tx)
         .await
         .map_err(|e| {
             (
@@ -444,6 +499,8 @@ pub(super) async fn update_video(
                 Json(json!({"error": "Video not found"})),
             )
         })?;
+
+    tx.commit().await.map_err(crate::utils::errors::db_error)?;
 
     Ok(Json(json!({
         "success": true,
@@ -522,8 +579,8 @@ pub(super) async fn get_stats(
         .await
         .map_err(crate::utils::errors::db_error)?;
 
-    let total_views: (i64,) = sqlx::query_as(
-        "SELECT COALESCE(SUM(views_count), 0) FROM unified_videos WHERE deleted_at IS NULL",
+    let total_views: (Option<i64>,) = sqlx::query_as(
+        "SELECT CASE WHEN COUNT(*) FILTER (WHERE views_count IS NULL)>0 THEN NULL ELSE COALESCE(SUM(views_count),0) END FROM unified_videos WHERE deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await

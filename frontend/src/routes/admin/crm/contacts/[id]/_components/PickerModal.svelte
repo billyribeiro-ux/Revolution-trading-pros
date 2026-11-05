@@ -19,11 +19,35 @@
 		open: boolean;
 		kind: 'tag' | 'list';
 		items: Item[];
+		busy: boolean;
+		loading: boolean;
+		error: string;
+		search: string;
+		page: number;
+		pages: number;
+		total: number;
+		onSearch: () => void;
+		onPage: (page: number) => void;
 		onClose: () => void;
 		onSelect: (id: string) => void;
 	}
 
-	let { open, kind, items, onClose, onSelect }: Props = $props();
+	let {
+		open,
+		kind,
+		items,
+		busy,
+		loading,
+		error,
+		search = $bindable(),
+		page,
+		pages,
+		total,
+		onSearch,
+		onPage,
+		onClose,
+		onSelect
+	}: Props = $props();
 
 	const titleId = $derived(`${kind === 'tag' ? 'add-tag' : 'add-list'}-title`);
 	const title = $derived(kind === 'tag' ? 'Add Tag' : 'Add to List');
@@ -33,8 +57,8 @@
 {#if open}
 	<div
 		class="modal-overlay"
-		onclick={(e: MouseEvent) => e.target === e.currentTarget && onClose()}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
+		onclick={(e: MouseEvent) => !busy && e.target === e.currentTarget && onClose()}
+		onkeydown={(e: KeyboardEvent) => !busy && e.key === 'Escape' && onClose()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby={titleId}
@@ -43,17 +67,32 @@
 		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3 id={titleId}>{title}</h3>
-				<button class="modal-close" onclick={onClose}>
+				<button class="modal-close" onclick={onClose} disabled={busy} aria-label="Close picker">
 					<IconX size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
-				{#if items.length === 0}
+				<form
+					onsubmit={(event) => {
+						event.preventDefault();
+						onSearch();
+					}}
+				>
+					<label for={`${kind}-search`}>Search {kind}s</label><input
+						id={`${kind}-search`}
+						bind:value={search}
+						disabled={busy || loading}
+					/><button disabled={busy || loading}>Search</button>
+				</form>
+				{#if loading}<p role="status">Loading catalog…</p>{:else if error}<p role="alert">
+						{error}
+					</p>
+					<button onclick={onSearch}>Retry catalog</button>{:else if items.length === 0}
 					<p class="empty-text">{emptyText}</p>
 				{:else}
 					<div class="picker-options">
 						{#each items as item (item.id)}
-							<button class="picker-option" onclick={() => onSelect(item.id)}>
+							<button class="picker-option" disabled={busy} onclick={() => onSelect(item.id)}>
 								{#if kind === 'tag'}
 									<IconTag size={16} />
 								{:else}
@@ -64,6 +103,14 @@
 						{/each}
 					</div>
 				{/if}
+				<nav aria-label={`${kind} catalog pages`}>
+					<button disabled={busy || loading || page <= 1} onclick={() => onPage(page - 1)}
+						>Previous</button
+					><span>Page {page} of {pages}; {total} records</span><button
+						disabled={busy || loading || page >= pages}
+						onclick={() => onPage(page + 1)}>Next</button
+					>
+				</nav>
 			</div>
 		</div>
 	</div>

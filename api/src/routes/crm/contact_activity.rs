@@ -2,7 +2,7 @@
 use super::super::segment_rules::{self, Condition};
 use crate::{
     AppState,
-    middleware::admin::AdminUser,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
     services::crm_logs,
     utils::errors::{self, ApiError},
 };
@@ -133,6 +133,20 @@ fn parse_policy(value: &Value) -> Result<Policy, ApiError> {
     Ok(policy)
 }
 pub(super) fn dto(mut contact: Value, current_policy: &Value) -> Value {
+    for field in ["created_at", "updated_at", "last_contacted_at"] {
+        if let Some(value) = contact[field].as_str().and_then(|value| {
+            chrono::NaiveDateTime::parse_from_str(value, "%Y-%m-%dT%H:%M:%S%.f").ok()
+        }) {
+            contact[field] = json!(value.and_utc().to_rfc3339());
+        }
+    }
+    if contact.get("last_activity_at").is_none() {
+        contact["last_activity_at"] = Value::Null;
+    }
+    contact["lifecycle_stage"] = contact["custom_fields"]["lifecycle_stage"]
+        .as_str()
+        .filter(|value| super::lifecycle(value))
+        .map_or(Value::Null, |value| json!(value));
     let recorded = contact["score"].clone();
     let assessment = contact["score_assessment"].clone();
     let parsed = parse_policy(current_policy);
@@ -204,7 +218,7 @@ pub(super) fn dto(mut contact: Value, current_policy: &Value) -> Value {
     contact
 }
 pub(super) async fn facts(connection: &mut PgConnection, id: i64) -> Result<Value, ApiError> {
-    sqlx::query_scalar("SELECT jsonb_build_object('scope','recorded_contact_links','deals',jsonb_build_object('total',(SELECT COUNT(*) FROM crm_deals d WHERE d.contact_id=c.id),'open',(SELECT COUNT(*) FROM crm_deals d WHERE d.contact_id=c.id AND d.status='open'),'won',(SELECT COUNT(*) FROM crm_deals d WHERE d.contact_id=c.id AND d.status='won'),'activities',(SELECT COUNT(*) FROM crm_deal_activities a JOIN crm_deals d ON d.id=a.deal_id WHERE d.contact_id=c.id),'notes',(SELECT COUNT(*) FROM crm_deal_activities a JOIN crm_deals d ON d.id=a.deal_id WHERE d.contact_id=c.id AND a.activity_type='note')),'email',jsonb_build_object('scope','crm_outbox','accepted',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.contact_id=c.id AND d.accepted_at IS NOT NULL),'open_signals',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.contact_id=c.id AND d.accepted_at IS NOT NULL AND d.opened_at IS NOT NULL),'click_signals',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.contact_id=c.id AND d.accepted_at IS NOT NULL AND d.clicked_at IS NOT NULL),'human_engagement',NULL),'orders',CASE WHEN c.user_id IS NULL THEN NULL ELSE jsonb_build_object('scope','linked_member_orders','total',(SELECT COUNT(*) FROM orders o WHERE o.user_id=c.user_id),'completed',(SELECT COUNT(*) FROM orders o WHERE o.user_id=c.user_id AND o.status='completed'),'refunded',(SELECT COUNT(*) FROM orders o WHERE o.user_id=c.user_id AND (o.refunded_at IS NOT NULL OR o.refund_amount>0))) END,'unmeasured',jsonb_build_object('health_score',NULL,'engagement_score',NULL,'value_score',NULL,'lifetime_value',NULL,'human_email_opens',NULL)) FROM contacts c WHERE c.id=$1")
+    sqlx::query_scalar("SELECT jsonb_build_object('scope','recorded_contact_links','contact_notes',(SELECT COUNT(*) FROM crm_contact_notes n WHERE n.contact_id=c.id),'personal_messages',(SELECT COUNT(*) FROM crm_contact_mail_requests r WHERE r.original_contact_id=c.id),'deals',jsonb_build_object('total',(SELECT COUNT(*) FROM crm_deals d WHERE d.contact_id=c.id),'open',(SELECT COUNT(*) FROM crm_deals d WHERE d.contact_id=c.id AND d.status='open'),'won',(SELECT COUNT(*) FROM crm_deals d WHERE d.contact_id=c.id AND d.status='won'),'activities',(SELECT COUNT(*) FROM crm_deal_activities a JOIN crm_deals d ON d.id=a.deal_id WHERE d.contact_id=c.id),'notes',(SELECT COUNT(*) FROM crm_deal_activities a JOIN crm_deals d ON d.id=a.deal_id WHERE d.contact_id=c.id AND a.activity_type='note')),'email',jsonb_build_object('scope','crm_outbox','accepted',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.contact_id=c.id AND d.accepted_at IS NOT NULL),'open_signals',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.contact_id=c.id AND d.accepted_at IS NOT NULL AND d.opened_at IS NOT NULL),'click_signals',(SELECT COUNT(*) FROM crm_campaign_deliveries d WHERE d.contact_id=c.id AND d.accepted_at IS NOT NULL AND d.clicked_at IS NOT NULL),'human_engagement',NULL),'orders',CASE WHEN c.user_id IS NULL THEN NULL ELSE jsonb_build_object('scope','linked_member_orders','total',(SELECT COUNT(*) FROM orders o WHERE o.user_id=c.user_id),'completed',(SELECT COUNT(*) FROM orders o WHERE o.user_id=c.user_id AND o.status='completed'),'refunded',(SELECT COUNT(*) FROM orders o WHERE o.user_id=c.user_id AND (o.refunded_at IS NOT NULL OR o.refund_amount>0))) END,'unmeasured',jsonb_build_object('health_score',NULL,'engagement_score',NULL,'value_score',NULL,'lifetime_value',NULL,'human_email_opens',NULL)) FROM contacts c WHERE c.id=$1")
         .bind(id).fetch_one(connection).await.map_err(db)
 }
 pub(super) async fn recalculate(
@@ -275,7 +289,7 @@ pub(super) async fn recalculate(
         .execute(&mut *tx)
         .await
         .map_err(db)?;
-    let saved:Value=sqlx::query_scalar("UPDATE contacts c SET score=CASE WHEN $2::integer IS NULL THEN score ELSE $2 END,score_assessment=$3,score_assessed_at=clock_timestamp() WHERE id=$1 RETURNING to_jsonb(c)")
+    let mut saved:Value=sqlx::query_scalar("UPDATE contacts c SET score=CASE WHEN $2::integer IS NULL THEN score ELSE $2 END,score_assessment=$3,score_assessed_at=clock_timestamp() WHERE id=$1 RETURNING to_jsonb(c)")
         .bind(id).bind(score).bind(&assessment).fetch_one(&mut *tx).await.map_err(db)?;
     crm_logs::record(
         &mut tx,
@@ -287,6 +301,13 @@ pub(super) async fn recalculate(
     )
     .await
     .map_err(db)?;
+    saved["last_activity_at"] = sqlx::query_scalar::<_, Value>(
+        "SELECT COALESCE(to_jsonb(crm_contact_last_activity($1)),'null'::jsonb)",
+    )
+    .bind(id)
+    .fetch_one(&mut *tx)
+    .await
+    .map_err(db)?;
     tx.commit().await.map_err(db)?;
     Ok(Json(dto(saved, &raw)))
 }
@@ -296,10 +317,13 @@ macro_rules! timeline_sql { ($tail:literal) => { concat!(r#"WITH events AS (
  CASE e.kind WHEN 'created' THEN 'Contact record created' WHEN 'updated' THEN 'Contact fields updated' WHEN 'deleted' THEN 'Contact record deleted' ELSE 'Contact score assessed' END AS title,
  NULL::text AS description,e.metadata,e.occurred_at,e.created_by AS actor_id FROM crm_contact_events e WHERE e.contact_id=$1
  UNION ALL SELECT 'legacy-created-'||c.id,'created','contact','Stored contact creation',NULL,jsonb_build_object('source','contacts.created_at'),c.created_at AT TIME ZONE 'UTC',NULL FROM contacts c WHERE c.id=$1 AND c.created_at IS NOT NULL AND NOT EXISTS(SELECT 1 FROM crm_contact_events e WHERE e.contact_id=c.id AND e.kind='created')
+ UNION ALL SELECT 'contact-note-'||n.id,'note','contact','Contact note added',n.content,jsonb_build_object('note_id',n.id::text),n.created_at,n.created_by FROM crm_contact_notes n WHERE n.contact_id=$1
+ UNION ALL SELECT 'personal-staged-'||r.request_id,'message_staged','email','Personal message staged',NULL,jsonb_build_object('request_id',r.request_id,'source','contact_message'),r.created_at,r.created_by FROM crm_contact_mail_requests r WHERE r.original_contact_id=$1
+ UNION ALL SELECT 'personal-message-'||r.request_id||'-'||signal.kind,signal.kind,'email',signal.title,NULL,jsonb_build_object('source','contact_message','request_id',r.request_id,'email_log_id',e.id::text,'human_engagement',NULL),signal.at,CASE WHEN signal.kind='email_accepted' THEN r.created_by ELSE NULL END FROM crm_contact_mail_requests r JOIN email_logs e ON e.id=r.email_log_id CROSS JOIN LATERAL (VALUES ('email_accepted',e.sent_at,'Provider accepted personal message'),('email_open_signal',e.opened_at AT TIME ZONE 'UTC','Provider recorded a personal-message open signal'),('email_click_signal',e.clicked_at AT TIME ZONE 'UTC','Provider recorded a personal-message click signal')) AS signal(kind,at,title) WHERE r.original_contact_id=$1 AND e.status IN ('sent','delivered','opened','clicked','bounced') AND e.sent_at IS NOT NULL AND NULLIF(e.provider_message_id,'') IS NOT NULL AND signal.at IS NOT NULL
  UNION ALL SELECT 'deal-activity-'||a.id,a.activity_type,'deal',COALESCE(a.title,'Recorded deal activity'),LEFT(a.description,10000),jsonb_build_object('deal_id',d.id::text,'description_truncated',length(a.description)>10000),a.created_at,a.created_by FROM crm_deal_activities a JOIN crm_deals d ON d.id=a.deal_id WHERE d.contact_id=$1 AND a.activity_type<>'stage_changed' AND a.created_at IS NOT NULL
  UNION ALL SELECT 'deal-stage-'||h.id,'deal_stage_changed','deal','Deal stage changed',LEFT(h.reason,10000),jsonb_build_object('deal_id',d.id::text,'from_stage_id',h.from_stage_id,'to_stage_id',h.to_stage_id),h.created_at,h.changed_by FROM crm_deal_stage_history h JOIN crm_deals d ON d.id=h.deal_id WHERE d.contact_id=$1 AND h.created_at IS NOT NULL
  UNION ALL SELECT 'delivery-'||d.id||'-'||signal.kind,signal.kind,'email',signal.title,NULL,jsonb_build_object('source','crm_outbox','delivery_id',d.id,'campaign_id',d.campaign_id::text,'human_engagement',NULL),signal.at,NULL FROM crm_campaign_deliveries d CROSS JOIN LATERAL (VALUES ('email_accepted',d.accepted_at,'Provider accepted message'),('email_open_signal',d.opened_at,'Provider recorded an open signal'),('email_click_signal',d.clicked_at,'Provider recorded a click signal')) AS signal(kind,at,title) WHERE d.contact_id=$1 AND d.accepted_at IS NOT NULL AND signal.at IS NOT NULL
- UNION ALL SELECT 'application-email-'||e.id||'-'||signal.kind,signal.kind,'email',signal.title,NULL,jsonb_build_object('source','linked_member_email_log','email_log_id',e.id::text,'human_engagement',NULL),signal.at,NULL FROM email_logs e JOIN contacts c ON c.user_id=e.user_id CROSS JOIN LATERAL (VALUES ('email_accepted',e.sent_at,'Provider accepted application message'),('email_open_signal',e.opened_at AT TIME ZONE 'UTC','Provider recorded an application open signal'),('email_click_signal',e.clicked_at AT TIME ZONE 'UTC','Provider recorded an application click signal')) AS signal(kind,at,title) WHERE c.id=$1 AND e.sent_at IS NOT NULL AND NULLIF(e.provider_message_id,'') IS NOT NULL AND e.status IN ('sent','delivered','opened','clicked','bounced') AND COALESCE(e.template_type,'') NOT IN ('native_campaign_test','sequence_test') AND signal.at IS NOT NULL
+ UNION ALL SELECT 'application-email-'||e.id||'-'||signal.kind,signal.kind,'email',signal.title,NULL,jsonb_build_object('source','linked_member_email_log','email_log_id',e.id::text,'human_engagement',NULL),signal.at,NULL FROM email_logs e JOIN contacts c ON c.user_id=e.user_id CROSS JOIN LATERAL (VALUES ('email_accepted',e.sent_at,'Provider accepted application message'),('email_open_signal',e.opened_at AT TIME ZONE 'UTC','Provider recorded an application open signal'),('email_click_signal',e.clicked_at AT TIME ZONE 'UTC','Provider recorded an application click signal')) AS signal(kind,at,title) WHERE c.id=$1 AND e.sent_at IS NOT NULL AND NULLIF(e.provider_message_id,'') IS NOT NULL AND e.status IN ('sent','delivered','opened','clicked','bounced') AND COALESCE(e.template_type,'') NOT IN ('native_campaign_test','sequence_test','crm_contact_mail') AND signal.at IS NOT NULL
  UNION ALL SELECT 'order-'||o.id||'-'||signal.kind,signal.kind,'order',signal.title,NULL,jsonb_build_object('source','linked_member_orders','order_id',o.id::text,'order_number',o.order_number,'currency',o.currency),signal.at,NULL FROM orders o JOIN contacts c ON c.user_id=o.user_id CROSS JOIN LATERAL (VALUES ('order_created',o.created_at AT TIME ZONE 'UTC','Linked member order created'),('order_completed',o.completed_at AT TIME ZONE 'UTC','Order completion recorded'),('order_refunded',o.refunded_at AT TIME ZONE 'UTC','Order refund recorded')) AS signal(kind,at,title) WHERE c.id=$1 AND signal.at IS NOT NULL
 ) "#, $tail) }; }
 #[derive(Default, Deserialize)]

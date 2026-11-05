@@ -5,11 +5,16 @@
 	import { formatDateTime } from './helpers';
 
 	interface Props {
+		error: string;
+		loading: boolean;
+		meta: { current_page: number; total_pages: number; total: number } | null;
+		onPage: (page: number) => void;
+		onRefresh: () => void;
 		notes: Note[];
 		onAddNote: () => void;
 	}
 
-	let { notes, onAddNote }: Props = $props();
+	let { notes, onAddNote, error, loading, meta, onPage, onRefresh }: Props = $props();
 </script>
 
 <div class="notes-section">
@@ -19,10 +24,11 @@
 			Add Note
 		</button>
 	</div>
-	{#if notes.length === 0}
+	{#if loading}<p role="status">Loading notes…</p>{:else if error}<p role="alert">{error}</p>
+		<button onclick={onRefresh}>Retry notes</button>{:else if notes.length === 0}
 		<div class="empty-state">
 			<IconNotes size={48} />
-			<h3>No notes yet</h3>
+			<h3>No notes on this page</h3>
 			<p>Add notes to keep track of important information about this contact</p>
 		</div>
 	{:else}
@@ -30,7 +36,7 @@
 			{#each notes as note (note.id)}
 				<div class="note-item">
 					<div class="note-header">
-						<span class="note-author">{note.created_by?.name || 'Unknown'}</span>
+						<span class="note-author">{note.created_by?.name ?? 'Author unavailable'}</span>
 						<span class="note-date">{formatDateTime(note.created_at)}</span>
 					</div>
 					<p class="note-content">{note.content}</p>
@@ -38,9 +44,27 @@
 			{/each}
 		</div>
 	{/if}
+	{#if meta && !error}<nav aria-label="notes pages">
+			<button
+				disabled={loading || meta.current_page <= 1}
+				onclick={() => onPage(meta.current_page - 1)}>Previous</button
+			><span>Page {meta.current_page} of {meta.total_pages}; {meta.total} records</span><button
+				disabled={loading || meta.current_page >= meta.total_pages}
+				onclick={() => onPage(meta.current_page + 1)}>Next</button
+			>
+		</nav>{/if}
 </div>
 
 <style>
+	nav {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+	[role='alert'] {
+		color: #fca5a5;
+	}
 	.notes-section {
 		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-default, #30363d);
@@ -66,7 +90,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.notes-list {
 		display: flex;

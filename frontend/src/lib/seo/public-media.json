@@ -1,0 +1,19 @@
+{
+	"file_hosts": [
+		"*.mediadelivery.net",
+		"*.b-cdn.net",
+		"pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
+	],
+	"iframe_hosts": [
+		"iframe.mediadelivery.net",
+		"*.mediadelivery.net",
+		"www.youtube-nocookie.com",
+		"player.vimeo.com",
+		"www.dailymotion.com",
+		"geo.dailymotion.com",
+		"embed.ted.com",
+		"fast.wistia.net",
+		"fast.wistia.com"
+	],
+	"development_origin": "http://127.0.0.1:19030"
+}

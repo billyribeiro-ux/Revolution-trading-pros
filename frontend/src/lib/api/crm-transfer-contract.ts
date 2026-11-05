@@ -241,17 +241,20 @@ export async function transferRequest(
 	body?: unknown
 ): Promise<Response> {
 	const multipart = body instanceof FormData;
+	if (method === 'GET' && body !== undefined)
+		throw new Error('A GET transfer request cannot contain a body');
+	const init: RequestInit = {
+		method,
+		credentials: 'same-origin',
+		redirect: 'error',
+		cache: 'no-store',
+		headers: multipart ? {} : { 'Content-Type': 'application/json' },
+		signal: AbortSignal.timeout(30000)
+	};
+	if (method !== 'GET' && body !== undefined) init.body = multipart ? body : JSON.stringify(body);
 	let response: Response;
 	try {
-		response = await fetch(`/api/admin/crm/${endpoint}`, {
-			method,
-			credentials: 'same-origin',
-			redirect: 'error',
-			cache: 'no-store',
-			headers: multipart ? {} : { 'Content-Type': 'application/json' },
-			body: body === undefined ? undefined : multipart ? body : JSON.stringify(body),
-			signal: AbortSignal.timeout(30000)
-		});
+		response = await fetch(`/api/admin/crm/${endpoint}`, init);
 	} catch {
 		throw new Error(
 			'The transfer service could not confirm the request. Refresh its saved status before retrying.'

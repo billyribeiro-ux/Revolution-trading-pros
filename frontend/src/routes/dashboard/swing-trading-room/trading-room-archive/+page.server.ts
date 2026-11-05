@@ -1,3 +1,9 @@
+import {
+	recordedVideoDate,
+	formatRecordedVideoDate,
+	formatRecordedVideoDuration
+} from '#lib/utils/unified-video-metadata.js';
+import { memberVideoHeaders, MEMBER_VIDEO_CACHE } from '#lib/server/member-videos.js';
 /**
  * Swing Trading Room Archive Page Server
  * ===============================================================================
@@ -17,14 +23,14 @@ interface VideoResponse {
 	title: string;
 	slug: string;
 	description: string | null;
-	video_url: string;
+	video_url: string | null;
 	thumbnail_url: string | null;
 	duration: number | null;
-	formatted_duration: string;
+	formatted_duration: string | null;
 	content_type: string;
-	video_date: string;
-	formatted_date: string;
-	is_published: boolean;
+	video_date: string | null;
+	formatted_date: string | null;
+	is_published: boolean | null;
 	trader: {
 		id: number;
 		name: string;
@@ -64,7 +70,14 @@ export interface ArchivePageData {
 	error: string | null;
 }
 
-export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageData> => {
+export const load: PageServerLoad = async ({
+	url,
+	fetch,
+	locals,
+	setHeaders
+}): Promise<ArchivePageData> => {
+	const videoHeaders = memberVideoHeaders(locals);
+	setHeaders(MEMBER_VIDEO_CACHE);
 	const API_URL = ENV_API_URL || 'http://localhost:8080';
 	const ROOM_SLUG = 'swing-trading-room';
 
@@ -108,7 +121,10 @@ export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageD
 
 			if (roomId) {
 				queryParams.set('room_id', roomId.toString());
-				const publicVideosResponse = await fetch(`${API_URL}/api/videos?${queryParams.toString()}`);
+				const publicVideosResponse = await fetch(
+					`${API_URL}/api/videos?${queryParams.toString()}`,
+					{ headers: videoHeaders }
+				);
 
 				if (publicVideosResponse.ok) {
 					const data: ApiResponse = await publicVideosResponse.json();
@@ -138,14 +154,18 @@ export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageD
 			title: video.title as string,
 			slug: video.slug as string,
 			description: (video.description as string) || null,
-			video_url: video.video_url as string,
+			video_url: typeof video.video_url === 'string' ? video.video_url : null,
 			thumbnail_url: (video.thumbnail_url as string) || null,
-			duration: (video.duration as number) || null,
-			formatted_duration: formatDuration((video.duration as number) || 0),
+			duration: typeof video.duration === 'number' ? video.duration : null,
+			formatted_duration: formatRecordedVideoDuration(
+				typeof video.duration === 'number' ? video.duration : null
+			),
 			content_type: (video.content_type as string) || 'room_archive',
-			video_date: (video.created_at as string) || new Date().toISOString(),
-			formatted_date: formatDate((video.created_at as string) || new Date().toISOString()),
-			is_published: (video.is_published as boolean) ?? true,
+			video_date: recordedVideoDate(typeof video.video_date === 'string' ? video.video_date : null),
+			formatted_date: formatRecordedVideoDate(
+				typeof video.video_date === 'string' ? video.video_date : null
+			),
+			is_published: typeof video.is_published === 'boolean' ? video.is_published : null,
 			trader: null,
 			rooms: [],
 			tags: []
@@ -172,29 +192,3 @@ export const load: PageServerLoad = async ({ url, fetch }): Promise<ArchivePageD
 		};
 	}
 };
-
-// Helper function to format duration (seconds to MM:SS or HH:MM:SS)
-function formatDuration(seconds: number): string {
-	if (!seconds || seconds <= 0) return '';
-	const hours = Math.floor(seconds / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
-	const secs = seconds % 60;
-	if (hours > 0) {
-		return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-	}
-	return `${minutes}:${String(secs).padStart(2, '0')}`;
-}
-
-// Helper function to format date
-function formatDate(dateStr: string): string {
-	try {
-		const date = new Date(dateStr);
-		return date.toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		});
-	} catch {
-		return dateStr;
-	}
-}

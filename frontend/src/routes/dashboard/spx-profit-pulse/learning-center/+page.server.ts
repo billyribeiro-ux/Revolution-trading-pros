@@ -1,3 +1,4 @@
+import { memberVideoHeaders, MEMBER_VIDEO_CACHE } from '#lib/server/member-videos.js';
 /**
  * SPX Profit Pulse Learning Center Server-Side Loader
  * ═══════════════════════════════════════════════════════════════════════════
@@ -20,23 +21,23 @@ export interface VideoResponse {
 	title: string;
 	slug: string;
 	description: string | null;
-	video_url: string;
-	embed_url: string;
-	video_platform: string;
+	video_url: string | null;
+	embed_url: string | null;
+	video_platform: string | null;
 	thumbnail_url: string | null;
 	duration: number | null;
-	formatted_duration: string;
+	formatted_duration: string | null;
 	content_type: string;
-	video_date: string;
-	formatted_date: string;
-	is_published: boolean;
-	is_featured: boolean;
+	video_date: string | null;
+	formatted_date: string | null;
+	is_published: boolean | null;
+	is_featured: boolean | null;
 	tags: string[];
 	tag_details: Array<{ slug: string; name: string; color: string }>;
-	views_count: number;
+	views_count: number | null;
 	trader: { id: number; name: string; slug: string } | null;
 	rooms: Array<{ id: number; name: string; slug: string }>;
-	created_at: string;
+	created_at: string | null;
 }
 
 export interface ApiResponse {
@@ -50,7 +51,9 @@ export interface ApiResponse {
 	};
 }
 
-export const load: PageServerLoad = async ({ url, fetch }) => {
+export const load: PageServerLoad = async ({ url, fetch, locals, setHeaders }) => {
+	const videoHeaders = memberVideoHeaders(locals);
+	setHeaders(MEMBER_VIDEO_CACHE);
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const category = url.searchParams.get('category');
 	const perPage = 9;
@@ -106,7 +109,9 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 			qs.set('tags', category);
 		}
 
-		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`, {
+			headers: videoHeaders
+		});
 		if (!vidRes.ok) {
 			return {
 				...baseReturn,

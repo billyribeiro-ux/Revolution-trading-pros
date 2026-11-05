@@ -12,9 +12,7 @@ import type {
 	Pipeline,
 	Stage,
 	ContactSegment,
-	TimelineEvent,
 	DealForecast,
-	ContactFilters,
 	DealFilters,
 	// FluentCRM Pro - Email Sequences
 	EmailSequence,
@@ -105,6 +103,35 @@ import {
 	transferOptions,
 	type TransferOptionPage
 } from './crm-transfer-contract.js';
+import type {
+	ContactRecord,
+	ContactWrite,
+	ContactQuery,
+	ContactPage,
+	ContactTimelinePage,
+	ContactNote,
+	ContactTag as ContactAssignmentTag,
+	ContactListMembership,
+	ContactMessageIntent,
+	ContactMessageReceipt,
+	ContactEmailActivity
+} from '#lib/crm/contact-types.js';
+import {
+	contactId,
+	contactNumericId,
+	contactRecord,
+	contactPage,
+	contactTimeline,
+	contactNote,
+	contactOwned,
+	contactTags,
+	contactLists,
+	contactMembership,
+	contactMessage,
+	contactEmails,
+	contactQuery,
+	contactRequest
+} from './crm-contact-contract.js';
 
 // Administrative records must reflect completed writes and explicit Refresh actions.
 function freshGet<T>(endpoint: string, config?: RequestConfig): Promise<T> {
@@ -132,35 +159,111 @@ function segmentFromWire(segment: SegmentWire): ContactSegment {
 
 export class CrmAPI {
 	// Contacts
-	async getContacts(filters?: ContactFilters): Promise<PaginatedResponse<Contact>> {
-		return freshGet('/admin/crm/contacts', {
-			preserveEnvelope: true,
-			params: filters ?? undefined
-		});
+	async getContacts(filters?: ContactQuery): Promise<ContactPage<ContactRecord>> {
+		return contactPage(await contactRequest(contactQuery(filters)), contactRecord);
 	}
 
-	async getContact(id: string): Promise<Contact> {
-		return freshGet(`/admin/crm/contacts/${id}`);
+	async getContact(id: string): Promise<ContactRecord> {
+		return contactRecord(await contactRequest(`/${contactId(id)}`), id, true);
 	}
 
-	async createContact(data: Partial<Contact>): Promise<Contact> {
-		return apiClient.post('/admin/crm/contacts', data);
+	async createContact(data: ContactWrite): Promise<ContactRecord> {
+		return contactRecord(await contactRequest('', 'POST', data));
 	}
 
-	async updateContact(id: string, data: Partial<Contact>): Promise<Contact> {
-		return apiClient.put(`/admin/crm/contacts/${id}`, data);
+	async updateContact(id: string, data: ContactWrite): Promise<ContactRecord> {
+		return contactRecord(await contactRequest(`/${contactId(id)}`, 'PUT', data), id);
 	}
 
 	async deleteContact(id: string): Promise<void> {
-		return apiClient.delete(`/admin/crm/contacts/${id}`);
+		const value = await contactRequest(`/${contactId(id)}`, 'DELETE');
+		if (
+			!value ||
+			typeof value !== 'object' ||
+			!('deleted' in value) ||
+			value.deleted !== true ||
+			!('id' in value) ||
+			contactId(value.id) !== contactId(id)
+		)
+			throw new Error('Contact deletion was not confirmed');
 	}
 
-	async getContactTimeline(id: string): Promise<TimelineEvent[]> {
-		return freshGet(`/admin/crm/contacts/${id}/timeline`);
+	async getContactTimeline(id: string, page = 1): Promise<ContactTimelinePage> {
+		return contactTimeline(
+			await contactRequest(`/${contactId(id)}/timeline?page=${page}&per_page=25`),
+			id
+		);
 	}
 
-	async recalculateContactScore(id: string): Promise<Contact> {
-		return apiClient.post(`/admin/crm/contacts/${id}/recalculate-score`);
+	async recalculateContactScore(id: string): Promise<ContactRecord> {
+		return contactRecord(await contactRequest(`/${contactId(id)}/recalculate-score`, 'POST'), id);
+	}
+	async getContactNotes(id: string, page = 1): Promise<ContactPage<ContactNote>> {
+		const value = await contactRequest(`/${contactId(id)}/notes?page=${page}&per_page=25`);
+		contactOwned(value, id);
+		return contactPage(value, contactNote, true);
+	}
+	async addContactNote(id: string, content: string): Promise<ContactNote> {
+		const row = contactOwned(
+				await contactRequest(`/${contactId(id)}/notes`, 'POST', { content }),
+				id
+			),
+			note = contactNote(row.data);
+		if (note.content !== content)
+			throw new Error('The saved note did not match the submitted content');
+		return note;
+	}
+	async getContactTagAssignments(id: string): Promise<ContactAssignmentTag[]> {
+		return contactTags(await contactRequest(`/${contactId(id)}/tags`), id);
+	}
+	async getContactListMemberships(
+		id: string,
+		page = 1
+	): Promise<ContactPage<ContactListMembership>> {
+		return contactLists(
+			await contactRequest(`/${contactId(id)}/lists?page=${page}&per_page=25`),
+			id
+		);
+	}
+	async changeContactMembership(
+		id: string,
+		kind: 'tag' | 'list',
+		reference: string,
+		action: 'add' | 'remove'
+	): Promise<number> {
+		return contactMembership(
+			await contactRequest(
+				`/${contactId(id)}/${kind}s${action === 'remove' ? `/${contactId(reference)}` : ''}`,
+				action === 'add' ? 'POST' : 'DELETE',
+				action === 'add' ? { [`${kind}_id`]: contactNumericId(reference) } : undefined
+			),
+			id,
+			kind,
+			reference,
+			action
+		);
+	}
+	async sendContactMessage(
+		id: string,
+		intent: ContactMessageIntent
+	): Promise<ContactMessageReceipt> {
+		return contactMessage(
+			await contactRequest(`/${contactId(id)}/send-email`, 'POST', intent, true),
+			id,
+			intent
+		);
+	}
+	async getContactEmails(
+		id: string,
+		page = 1,
+		requestId?: string
+	): Promise<ContactPage<ContactEmailActivity>> {
+		return contactEmails(
+			await contactRequest(
+				`/${contactId(id)}/emails?page=${page}&per_page=25${requestId ? `&request_id=${encodeURIComponent(requestId)}` : ''}`
+			),
+			id
+		);
 	}
 
 	// Deals

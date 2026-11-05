@@ -1,139 +1,90 @@
 <script lang="ts">
-	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
-	import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
-	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
-	import IconMailOpen from '@tabler/icons-svelte-runes/icons/mail-opened';
-	import IconClick from '@tabler/icons-svelte-runes/icons/click';
-	import IconCurrencyDollar from '@tabler/icons-svelte-runes/icons/currency-dollar';
-	import type { Contact } from './types';
-
-	interface Props {
-		contact: Contact;
-	}
-
-	let { contact }: Props = $props();
+	import type { ContactRecord } from '#lib/crm/contact-types.js';
+	let {
+		contact,
+		recalculating = false,
+		onRecalculate
+	}: { contact: ContactRecord; recalculating?: boolean; onRecalculate: () => void } = $props();
 </script>
 
-<section class="quick-stats">
-	<div class="stat-box">
-		<IconTrendingUp size={20} class="stat-icon green" />
-		<div class="stat-info">
-			<span class="stat-value">{contact.lead_score}</span>
-			<span class="stat-label">Lead Score</span>
+<section aria-label="Recorded contact measurements">
+	<div class="stats">
+		<div>
+			<strong
+				>{contact.lead_score === null
+					? 'Not measured'
+					: `${contact.lead_score} / ${contact.scoring.max_score}`}</strong
+			><span>Configured lead score</span>
 		</div>
-	</div>
-	<div class="stat-box">
-		<IconChartBar size={20} class="stat-icon blue" />
-		<div class="stat-info">
-			<span class="stat-value">{contact.health_score}</span>
-			<span class="stat-label">Health Score</span>
+		<div><strong>Not measured</strong><span>Health score</span></div>
+		<div><strong>Not measured</strong><span>Engagement score</span></div>
+		<div>
+			<strong>{contact.facts?.email.open_signals ?? 'Unavailable'}</strong><span
+				>CRM outbox open signals</span
+			>
 		</div>
-	</div>
-	<div class="stat-box">
-		<IconActivity size={20} class="stat-icon gold" />
-		<div class="stat-info">
-			<span class="stat-value">{contact.engagement_score}</span>
-			<span class="stat-label">Engagement</span>
+		<div>
+			<strong>{contact.facts?.email.click_signals ?? 'Unavailable'}</strong><span
+				>CRM outbox click signals</span
+			>
 		</div>
+		<div><strong>Not measured</strong><span>Lifetime value</span></div>
 	</div>
-	<div class="stat-box">
-		<IconMailOpen size={20} class="stat-icon cyan" />
-		<div class="stat-info">
-			<span class="stat-value">{contact.email_opens}</span>
-			<span class="stat-label">Email Opens</span>
-		</div>
-	</div>
-	<div class="stat-box">
-		<IconClick size={20} class="stat-icon amber" />
-		<div class="stat-info">
-			<span class="stat-value">{contact.email_clicks}</span>
-			<span class="stat-label">Email Clicks</span>
-		</div>
-	</div>
-	<div class="stat-box">
-		<IconCurrencyDollar size={20} class="stat-icon emerald" />
-		<div class="stat-info">
-			<span class="stat-value">${(contact.lifetime_value || 0).toLocaleString()}</span>
-			<span class="stat-label">Lifetime Value</span>
-		</div>
-	</div>
+	<p>
+		Scoring: {contact.scoring.status.replaceAll('_', ' ')}. {contact.scoring.reason ??
+			'Calculated from the configured contact rules.'}
+	</p>
+	<button onclick={onRecalculate} disabled={recalculating}
+		>{recalculating ? 'Recalculating…' : 'Recalculate lead score'}</button
+	>
+	<details>
+		<summary>Score evidence</summary>
+		<p>
+			Scope: configured contact rules. Assessed: {contact.scoring.evaluated_at ?? 'Not assessed'}.
+			Policy: {contact.scoring.policy_hash ?? 'Unavailable'}.
+		</p>
+		<p>
+			Recorded raw score: {contact.recorded_score ?? 'Unknown'}. Historical raw score: {contact.historical_score ??
+				'Unknown'}. Raw scores are not current measurements.
+		</p>
+		{#each contact.scoring.contributions as contribution (contribution.rule_id)}<p>
+				Rule {contribution.rule_id}: {contribution.matched ? 'matched' : 'not matched'}, {contribution.applied_points}
+				applied points ({contribution.points} configured).
+			</p>{/each}
+	</details>
+	<p>Open and click signals are recorded observations; human engagement has not been measured.</p>
 </section>
 
 <style>
-	.quick-stats {
+	section {
+		padding: 1rem;
+		border: 1px solid #334155;
+		border-radius: 1rem;
+		margin-bottom: 1rem;
+	}
+	.stats {
 		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		gap: 12px;
-		margin-bottom: 24px;
+		grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+		gap: 1rem;
 	}
-
-	.stat-box {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 16px;
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid var(--border-default, #30363d);
-		border-radius: 12px;
+	.stats div {
+		display: grid;
+		gap: 0.4rem;
 	}
-
-	.stat-box :global(.stat-icon) {
-		flex-shrink: 0;
+	span,
+	p,
+	details {
+		color: #94a3b8;
+		font-size: 0.85rem;
 	}
-
-	.stat-box :global(.green) {
-		color: var(--success-emphasis, #3fb950);
+	button {
+		padding: 0.6rem;
+		border-radius: 0.4rem;
+		border: 1px solid #475569;
+		background: #0f172a;
+		color: #e2e8f0;
 	}
-	.stat-box :global(.blue) {
-		color: var(--info-emphasis, #58a6ff);
-	}
-	.stat-box :global(.gold) {
-		color: var(--primary-500);
-	}
-	.stat-box :global(.cyan) {
-		color: var(--info-emphasis, #58a6ff);
-	}
-	.stat-box :global(.amber) {
-		color: var(--warning-emphasis, #d29922);
-	}
-	.stat-box :global(.emerald) {
-		color: var(--success-emphasis, #3fb950);
-	}
-
-	.stat-info {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-	}
-
-	.stat-value {
-		font-size: 1.25rem;
-		font-weight: 700;
-		color: #ffffff;
-	}
-
-	.stat-label {
-		font-size: 0.7rem;
-		color: var(--text-tertiary, #6e7681);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	@media (max-width: 1199.98px) {
-		.quick-stats {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	@media (max-width: 900px) {
-		.quick-stats {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (max-width: 639.98px) {
-		.quick-stats {
-			grid-template-columns: 1fr;
-		}
+	details {
+		margin-top: 1rem;
 	}
 </style>

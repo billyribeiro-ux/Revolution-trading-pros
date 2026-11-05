@@ -665,7 +665,7 @@ impl EmailService {
             outcome.into_result()
         }
     }
-    async fn submit_raw(
+    pub(crate) async fn submit_raw(
         &self,
         to: &str,
         subject: &str,

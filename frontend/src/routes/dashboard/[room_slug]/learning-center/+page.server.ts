@@ -1,3 +1,4 @@
+import { memberVideoHeaders, MEMBER_VIDEO_CACHE } from '#lib/server/member-videos.js';
 /**
  * Learning Center Server-Side Loader - Dynamic Room
  * ═══════════════════════════════════════════════════════════════════════════
@@ -21,23 +22,23 @@ export interface VideoResponse {
 	title: string;
 	slug: string;
 	description: string | null;
-	video_url: string;
-	embed_url: string;
-	video_platform: string;
+	video_url: string | null;
+	embed_url: string | null;
+	video_platform: string | null;
 	thumbnail_url: string | null;
 	duration: number | null;
-	formatted_duration: string;
+	formatted_duration: string | null;
 	content_type: string;
-	video_date: string;
-	formatted_date: string;
-	is_published: boolean;
-	is_featured: boolean;
+	video_date: string | null;
+	formatted_date: string | null;
+	is_published: boolean | null;
+	is_featured: boolean | null;
 	tags: string[];
 	tag_details: Array<{ slug: string; name: string; color: string }>;
-	views_count: number;
+	views_count: number | null;
 	trader: { id: number; name: string; slug: string } | null;
 	rooms: Array<{ id: number; name: string; slug: string }>;
-	created_at: string;
+	created_at: string | null;
 	[key: string]: unknown; // Index signature for compatibility with VideoData
 }
 
@@ -70,7 +71,9 @@ function getRoomName(slug: string): string {
 	);
 }
 
-export const load: PageServerLoad = async ({ params, url, fetch }) => {
+export const load: PageServerLoad = async ({ params, url, fetch, locals, setHeaders }) => {
+	const videoHeaders = memberVideoHeaders(locals);
+	setHeaders(MEMBER_VIDEO_CACHE);
 	const { room_slug } = params;
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const category = url.searchParams.get('category');
@@ -136,7 +139,9 @@ export const load: PageServerLoad = async ({ params, url, fetch }) => {
 		if (category && category !== 'all' && category !== '0') {
 			qs.set('tags', category);
 		}
-		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`);
+		const vidRes = await fetch(`${API_ROOT}/api/videos?${qs.toString()}`, {
+			headers: videoHeaders
+		});
 		if (!vidRes.ok) {
 			return {
 				...baseReturn,

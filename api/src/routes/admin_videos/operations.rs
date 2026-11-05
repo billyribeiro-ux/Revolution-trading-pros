@@ -190,12 +190,23 @@ pub(super) async fn export_videos_csv(
     use axum::response::IntoResponse;
 
     // Fetch all videos for export
-    #[allow(clippy::type_complexity)]
-    let videos: Vec<(i64, String, String, String, i32, i32, bool, chrono::NaiveDateTime)> = sqlx::query_as(
-        r"SELECT id, title, slug, content_type, views_count, COALESCE(duration, 0), is_published, created_at
+    #[derive(sqlx::FromRow)]
+    struct ExportRow {
+        id: i64,
+        title: String,
+        slug: String,
+        content_type: String,
+        views_count: Option<i32>,
+        duration: Option<i32>,
+        is_published: Option<bool>,
+        #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+        created_at: Option<chrono::DateTime<chrono::Utc>>,
+    }
+    let videos: Vec<ExportRow> = sqlx::query_as(
+        r"SELECT id, title, slug, content_type, views_count, duration, is_published, created_at
            FROM unified_videos
            WHERE deleted_at IS NULL
-           ORDER BY created_at DESC"
+           ORDER BY created_at DESC",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -206,19 +217,31 @@ pub(super) async fn export_videos_csv(
         "id,title,slug,content_type,views_count,duration_seconds,is_published,created_at\n",
     );
 
-    for (id, title, slug, content_type, views, duration, published, created_at) in videos {
+    for video in videos {
         // Escape CSV fields properly
-        let escaped_title = title.replace('"', "\"\"");
+        let escaped_title = video.title.replace('"', "\"\"");
         csv.push_str(&format!(
             "{},\"{}\",{},{},{},{},{},{}\n",
-            id,
+            video.id,
             escaped_title,
-            slug,
-            content_type,
-            views,
-            duration,
-            published,
-            created_at.format("%Y-%m-%d %H:%M:%S")
+            video.slug,
+            video.content_type,
+            video
+                .views_count
+                .map(|value| value.to_string())
+                .unwrap_or_default(),
+            video
+                .duration
+                .map(|value| value.to_string())
+                .unwrap_or_default(),
+            video
+                .is_published
+                .map(|value| value.to_string())
+                .unwrap_or_default(),
+            video
+                .created_at
+                .map(|date| date.to_rfc3339())
+                .unwrap_or_default()
         ));
     }
 

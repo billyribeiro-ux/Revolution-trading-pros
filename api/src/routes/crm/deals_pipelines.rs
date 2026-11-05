@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{AppState, routes::crm::manager_permissions::CrmUser as AdminUser};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

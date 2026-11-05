@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
+	import { formatVideoViews, videoPlaybackUnavailable } from '#lib/utils/unified-video-metadata.js';
 	import { decodeBlurhash, DEFAULT_BLURHASHES } from '#lib/utils/blurhash.js';
 	import { videoPreloader, type VideoPreloadInfo } from '#lib/utils/videoPreloader.js';
 	import Icon from '#lib/components/Icon.svelte';
@@ -18,22 +18,22 @@
 		blurhash?: string | null;
 		tag_details?: Array<{ slug: string; name: string; color: string }>;
 		trader?: { id: number; name: string; slug: string } | null;
-		formatted_date?: string;
+		formatted_date?: string | null;
 		duration?: number | null;
-		formatted_duration?: string;
-		video_url?: string;
-		embed_url?: string;
-		video_platform?: string;
+		formatted_duration?: string | null;
+		video_url?: string | null;
+		embed_url?: string | null;
+		video_platform?: string | null;
 		bunny_video_guid?: string;
 		bunny_library_id?: number;
 		content_type?: string;
-		video_date?: string;
-		is_published?: boolean;
-		is_featured?: boolean;
+		video_date?: string | null;
+		is_published?: boolean | null;
+		is_featured?: boolean | null;
 		tags?: string[];
-		views_count?: number;
+		views_count?: number | null;
 		rooms?: Array<{ id: number; name: string; slug: string }>;
-		created_at?: string;
+		created_at?: string | null;
 		[key: string]: unknown;
 	}
 
@@ -82,7 +82,7 @@
 
 	// Extract Bunny info for preloading
 	let bunnyInfo = $derived.by<VideoPreloadInfo | null>(() => {
-		if (video.bunny_video_guid && video.bunny_library_id) {
+		if (!videoPlaybackUnavailable(video) && video.bunny_video_guid && video.bunny_library_id) {
 			return {
 				videoId: video.bunny_video_guid,
 				libraryId: String(video.bunny_library_id),
@@ -103,8 +103,6 @@
 	// ═══════════════════════════════════════════════════════════════════════
 
 	onMount(() => {
-		if (!browser) return;
-
 		// Decode blurhash for instant placeholder
 		const hash = video.blurhash || DEFAULT_BLURHASHES.video;
 		blurhashDataUrl = decodeBlurhash(hash, { width: 32, height: 18 });
@@ -170,13 +168,6 @@
 	function handleThumbnailLoad() {
 		thumbnailLoaded = true;
 	}
-
-	function formatViews(views: number | undefined): string {
-		if (!views) return '0 views';
-		if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M views`;
-		if (views >= 1000) return `${(views / 1000).toFixed(1)}K views`;
-		return `${views} views`;
-	}
 </script>
 
 <!--
@@ -232,14 +223,18 @@
 			/>
 
 			<!-- Duration Badge -->
-			{#if showDuration && video.formatted_duration}
-				<span class="video-card__duration">{video.formatted_duration}</span>
+			{#if showDuration}
+				<span class="video-card__duration"
+					>{video.formatted_duration ?? 'Duration unavailable'}</span
+				>
 			{/if}
 
 			<!-- Play Icon Overlay -->
-			<div class="video-card__play-overlay" aria-hidden="true">
-				<Icon name="IconPlayerPlay" size={48} />
-			</div>
+			{#if !videoPlaybackUnavailable(video)}
+				<div class="video-card__play-overlay" aria-hidden="true">
+					<Icon name="IconPlayerPlay" size={48} />
+				</div>
+			{/if}
 		</figure>
 	</a>
 
@@ -264,11 +259,11 @@
 			{#if video.trader}
 				<span class="video-card__trader">With {video.trader.name}</span>
 			{/if}
-			{#if showDate && video.formatted_date}
-				<span class="video-card__date">{video.formatted_date}</span>
+			{#if showDate}
+				<span class="video-card__date">{video.formatted_date ?? 'Date unavailable'}</span>
 			{/if}
-			{#if showViews && video.views_count}
-				<span class="video-card__views">{formatViews(video.views_count)}</span>
+			{#if showViews}
+				<span class="video-card__views">{formatVideoViews(video.views_count)}</span>
 			{/if}
 		</div>
 
@@ -278,7 +273,11 @@
 		{/if}
 
 		<!-- CTA Button -->
-		<a href="{basePath}/{video.slug}" class="video-card__cta"> Watch Now </a>
+		{#if videoPlaybackUnavailable(video)}
+			<span class="video-card__cta">Video unavailable</span>
+		{:else}
+			<a href="{basePath}/{video.slug}" class="video-card__cta">Watch Now</a>
+		{/if}
 	</div>
 </article>
 

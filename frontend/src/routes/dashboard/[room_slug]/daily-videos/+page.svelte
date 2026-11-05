@@ -287,9 +287,14 @@
 							</section>
 
 							<footer class="card-footer">
-								<a class="btn btn-tiny btn-default" href="/dashboard/{roomSlug}/video/{video.slug}">
-									Watch Now
-								</a>
+								{#if video.isVideo}
+									<a
+										class="btn btn-tiny btn-default"
+										href="/dashboard/{roomSlug}/video/{video.slug}">Watch Now</a
+									>
+								{:else}
+									<span class="btn btn-tiny btn-default">Video unavailable</span>
+								{/if}
 							</footer>
 						</div>
 					</article>

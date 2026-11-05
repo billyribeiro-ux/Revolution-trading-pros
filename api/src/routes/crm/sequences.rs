@@ -2,7 +2,7 @@
 use super::sequence_model::{self as model, Mail, MailInput, Settings, invalid, text};
 use crate::{
     AppState,
-    middleware::admin::AdminUser,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
     utils::errors::{self, ApiError},
 };
 use axum::{
@@ -160,14 +160,33 @@ fn normalized(mut row: Value) -> Result<Value, ApiError> {
     }
     Ok(row)
 }
-pub(super) async fn row(pool: &PgPool, id: i64) -> Result<Value, ApiError> {
+pub(super) async fn row_on(connection: &mut PgConnection, id: i64) -> Result<Value, ApiError> {
     let row: Value = sqlx::query_scalar(sequence_sql!("WHERE s.id=$1 AND s.deleted_at IS NULL"))
         .bind(id)
-        .fetch_optional(pool)
+        .fetch_optional(connection)
         .await
         .map_err(db)?
         .ok_or_else(|| ApiError::not_found("Sequence"))?;
     normalized(row)
+}
+pub(super) async fn authorized_on(
+    connection: &mut PgConnection,
+    actor: &AdminUser,
+    id: i64,
+) -> Result<Value, ApiError> {
+    let source = row_on(connection, id).await?;
+    super::manager_sources::sequence_on(connection, actor, id, &source).await?;
+    Ok(source)
+}
+pub(super) async fn authorized(
+    pool: &PgPool,
+    actor: &AdminUser,
+    id: i64,
+) -> Result<Value, ApiError> {
+    let mut tx = super::manager_sources::read_transaction(pool).await?;
+    let source = authorized_on(&mut tx, actor, id).await?;
+    tx.commit().await.map_err(db)?;
+    Ok(source)
 }
 fn stats(row: &Value) -> Value {
     json!({"sequence_id":row["id"],"emails":row["emails_count"],"subscribers":row["subscribers_count"],"active_subscribers":row["active_subscribers"],"completed":row["completed_subscribers"],"total_sent":row["total_sent"],"total_opened":row["total_opened"],"total_clicked":row["total_clicked"],"total_delivered":row["total_delivered"],"total_bounced":row["total_bounced"],"total_complained":row["total_complained"],"total_unsubscribed":row["total_unsubscribed"],"failed":row["total_failed"],"unknown":row["total_unknown"],"queued":row["total_queued"],"processing":row["total_processing"],"open_rate":row["open_rate"],"click_rate":row["click_rate"],"revenue":{"amount":null,"currency":null},"metrics_scope":"sequence_outbox"})
@@ -201,9 +220,11 @@ struct Filters {
 }
 async fn list(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Query(query): Query<Filters>,
 ) -> Result<Json<Value>, ApiError> {
+    let mut tx = super::manager_sources::read_transaction(&state.db.pool).await?;
+    super::manager_sources::sequence_all_on(&mut tx, &admin).await?;
     let page = query.page.unwrap_or(1);
     let size = query.per_page.unwrap_or(20);
     if page < 1 || !(1..=100).contains(&size) {
@@ -230,30 +251,31 @@ async fn list(
     }
     let search = query.search.map(|value| format!("%{value}%"));
     let rows:Vec<Value>=sqlx::query_scalar(sequence_sql!("WHERE s.deleted_at IS NULL AND ($1::text IS NULL OR COALESCE(s.title,s.name) ILIKE $1 OR s.description ILIKE $1) AND ($2::text IS NULL OR COALESCE(s.status,'draft')=$2) ORDER BY CASE WHEN $3='title' AND $4='asc' THEN LOWER(COALESCE(s.title,s.name)) END ASC,CASE WHEN $3='title' AND $4='desc' THEN LOWER(COALESCE(s.title,s.name)) END DESC,CASE WHEN $3='created_at' AND $4='asc' THEN s.created_at END ASC,CASE WHEN $3='created_at' AND $4='desc' THEN s.created_at END DESC,CASE WHEN $3='updated_at' AND $4='asc' THEN s.updated_at END ASC,CASE WHEN $3='updated_at' AND $4='desc' THEN s.updated_at END DESC,s.id DESC LIMIT $5 OFFSET $6"))
-        .bind(&search).bind(&query.status).bind(sort).bind(direction).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&state.db.pool).await.map_err(db)?;
-    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_sequences WHERE deleted_at IS NULL AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR description ILIKE $1) AND ($2::text IS NULL OR COALESCE(status,'draft')=$2)").bind(search).bind(query.status).fetch_one(&state.db.pool).await.map_err(db)?;
+        .bind(&search).bind(&query.status).bind(sort).bind(direction).bind(size).bind(page.saturating_sub(1).saturating_mul(size)).fetch_all(&mut *tx).await.map_err(db)?;
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM crm_sequences WHERE deleted_at IS NULL AND ($1::text IS NULL OR COALESCE(title,name) ILIKE $1 OR description ILIKE $1) AND ($2::text IS NULL OR COALESCE(status,'draft')=$2)").bind(search).bind(query.status).fetch_one(&mut *tx).await.map_err(db)?;
     let rows = rows
         .into_iter()
         .map(normalized)
         .collect::<Result<Vec<_>, _>>()?;
+    tx.commit().await.map_err(db)?;
     Ok(Json(
         json!({"data":rows,"meta":{"total":total,"current_page":page,"per_page":size,"last_page":((total+size-1)/size).max(1)}}),
     ))
 }
 async fn get_one(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
-    let row = row(&state.db.pool, id).await?;
+    let row = authorized(&state.db.pool, &admin, id).await?;
     Ok(Json(json!({"stats":stats(&row),"sequence":row})))
 }
 async fn get_stats(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
-    Ok(Json(stats(&row(&state.db.pool, id).await?)))
+    Ok(Json(stats(&authorized(&state.db.pool, &admin, id).await?)))
 }
 #[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -338,7 +360,7 @@ impl Input {
             || self.trigger_config.is_some()
     }
 }
-pub(super) async fn lock(connection: &mut PgConnection, id: i64) -> Result<Value, ApiError> {
+async fn lock_source(connection: &mut PgConnection, id: i64) -> Result<Value, ApiError> {
     // Sequence writes and the scheduler serialize before engine creation. The
     // provider worker takes engine locks only and never waits on this advisory lock.
     sqlx::query(
@@ -350,7 +372,7 @@ pub(super) async fn lock(connection: &mut PgConnection, id: i64) -> Result<Value
     .map_err(db)?;
     let _:Vec<i64>=sqlx::query_scalar("SELECT c.id FROM crm_campaigns c JOIN crm_sequence_engines e ON e.campaign_id=c.id WHERE e.sequence_id=$1 ORDER BY c.id FOR UPDATE OF c")
         .bind(id).fetch_all(&mut *connection).await.map_err(db)?;
-    let mut row: Value = sqlx::query_scalar(
+    let row: Value = sqlx::query_scalar(
         // The advisory lock serializes sequence writes. A non-key row lock also
         // permits source-event foreign-key checks while their contact row is
         // locked, avoiding a sequence/contact lock-order cycle.
@@ -361,9 +383,22 @@ pub(super) async fn lock(connection: &mut PgConnection, id: i64) -> Result<Value
     .await
     .map_err(db)?
     .ok_or_else(|| ApiError::not_found("Sequence"))?;
-    let revision = revision(connection, id, &row).await?;
-    row["revision_id"] = json!(revision);
     Ok(row)
+}
+pub(super) async fn lock(connection: &mut PgConnection, id: i64) -> Result<Value, ApiError> {
+    let mut source = lock_source(connection, id).await?;
+    source["revision_id"] = json!(revision(connection, id, &source).await?);
+    Ok(source)
+}
+pub(super) async fn lock_authorized(
+    connection: &mut PgConnection,
+    actor: &AdminUser,
+    id: i64,
+) -> Result<Value, ApiError> {
+    let mut source = lock_source(connection, id).await?;
+    super::manager_sources::sequence_on(connection, actor, id, &source).await?;
+    source["revision_id"] = json!(revision(connection, id, &source).await?);
+    Ok(source)
 }
 pub(super) async fn revision(
     connection: &mut PgConnection,
@@ -431,6 +466,7 @@ async fn create(
     Json(mut input): Json<Input>,
 ) -> Result<Json<Value>, ApiError> {
     input.validate(true)?;
+    admin.body(&json!({"status":input.status,"subscriber_settings":input.subscriber_settings}))?;
     super::sequence_triggers::validate(
         input.trigger_type.as_deref().unwrap_or("manual"),
         input.trigger_config.as_ref().unwrap_or(&json!({})),
@@ -459,8 +495,9 @@ async fn create(
             .map_err(db)?;
     }
     record(&mut tx, admin.0.id, id, "Sequence draft created").await?;
+    let saved = authorized_on(&mut tx, &admin, id).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, id).await?))
+    Ok(Json(saved))
 }
 pub(super) fn activation(row: &Value, app_url: &str) -> Result<(), ApiError> {
     super::sequence_triggers::validate(
@@ -508,11 +545,12 @@ async fn update(
     Json(mut input): Json<Input>,
 ) -> Result<Json<Value>, ApiError> {
     input.validate(false)?;
+    admin.body(&json!({"status":input.status,"subscriber_settings":input.subscriber_settings}))?;
     if !input.authoring() && input.status.is_none() {
         return Err(invalid("Specify sequence changes"));
     }
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     super::sequence_triggers::validate(
         input
             .trigger_type
@@ -563,8 +601,9 @@ async fn update(
     sqlx::query("UPDATE crm_sequences SET name=COALESCE($2,name),title=COALESCE($2,title),description=COALESCE($3,description),slug=COALESCE($4,slug),status=COALESCE($5,status),is_active=CASE WHEN $5::text IS NULL THEN is_active ELSE $5='active' END,trigger_type=COALESCE($6,trigger_type),design_template=COALESCE($7,design_template),settings=COALESCE($8,settings),subscriber_settings=COALESCE($9,subscriber_settings),trigger_config=COALESCE($10,trigger_config),authoring_version=authoring_version+CASE WHEN $11 THEN 1 ELSE 0 END,steps=COALESCE($12,steps),updated_at=NOW() WHERE id=$1")
         .bind(id).bind(input.title.as_deref().map(str::trim)).bind(input.description).bind(input.slug).bind(input.status).bind(input.trigger_type).bind(input.design_template).bind(input.settings.map(|value|json!(value))).bind(input.subscriber_settings).bind(input.trigger_config).bind(authoring).bind(steps).execute(&mut *tx).await.map_err(db)?;
     record(&mut tx, admin.0.id, id, "Sequence updated").await?;
+    let saved = authorized_on(&mut tx, &admin, id).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, id).await?))
+    Ok(Json(saved))
 }
 async fn delete(
     State(state): State<AppState>,
@@ -572,7 +611,7 @@ async fn delete(
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     editable(&saved)?;
     let active:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries d JOIN crm_sequence_trackers t ON t.id=d.sequence_tracker_id WHERE t.sequence_id=$1 AND d.status='processing')").bind(id).fetch_one(&mut *tx).await.map_err(db)?;
     if active {
@@ -592,10 +631,10 @@ async fn delete(
 }
 async fn emails(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
-    let saved = row(&state.db.pool, id).await?;
+    let saved = authorized(&state.db.pool, &admin, id).await?;
     if !saved["definition_error"].is_null() {
         return Err(invalid(
             saved["definition_error"]
@@ -624,20 +663,20 @@ async fn add_mail(
     Json(input): Json<MailInput>,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     editable(&saved)?;
     let mut mails = model::mails(saved["steps"].clone(), id)?;
     let mail = Mail::new(id, admin.0.id, input, mails.len())?;
     let key = mail.id;
     mails.push(mail);
     save_mails(&mut tx, id, mails, admin.0.id, "Sequence email added").await?;
-    tx.commit().await.map_err(db)?;
-    let saved = row(&state.db.pool, id).await?;
+    let saved = authorized_on(&mut tx, &admin, id).await?;
     let mail = saved["emails"]
         .as_array()
         .and_then(|mails| mails.iter().find(|mail| mail["id"] == key.to_string()))
         .cloned()
         .ok_or_else(|| errors::service_unavailable("Saved sequence email is unavailable"))?;
+    tx.commit().await.map_err(db)?;
     Ok(Json(mail))
 }
 async fn update_mail(
@@ -647,7 +686,7 @@ async fn update_mail(
     Json(input): Json<MailInput>,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     editable(&saved)?;
     let mut mails = model::mails(saved["steps"].clone(), id)?;
     let index = mails
@@ -656,13 +695,13 @@ async fn update_mail(
         .ok_or_else(|| ApiError::not_found("Sequence email"))?;
     mails[index] = mails[index].clone().apply(input)?;
     save_mails(&mut tx, id, mails, admin.0.id, "Sequence email updated").await?;
-    tx.commit().await.map_err(db)?;
-    let saved = row(&state.db.pool, id).await?;
+    let saved = authorized_on(&mut tx, &admin, id).await?;
     let mail = saved["emails"]
         .as_array()
         .and_then(|mails| mails.iter().find(|mail| mail["id"] == key.to_string()))
         .cloned()
         .ok_or_else(|| errors::service_unavailable("Saved sequence email is unavailable"))?;
+    tx.commit().await.map_err(db)?;
     Ok(Json(mail))
 }
 async fn delete_mail(
@@ -671,7 +710,7 @@ async fn delete_mail(
     Path((id, key)): Path<(i64, Uuid)>,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     editable(&saved)?;
     let mut mails = model::mails(saved["steps"].clone(), id)?;
     let index = mails
@@ -700,7 +739,7 @@ async fn reorder(
     Json(input): Json<Order>,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     editable(&saved)?;
     let mut mails = model::mails(saved["steps"].clone(), id)?;
     if input.email_ids.len() != mails.len() {
@@ -726,8 +765,9 @@ async fn reorder(
         "Sequence emails reordered",
     )
     .await?;
+    let saved = authorized_on(&mut tx, &admin, id).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, id).await?["emails"].clone()))
+    Ok(Json(saved["emails"].clone()))
 }
 pub(super) fn router() -> Router<AppState> {
     Router::new()
@@ -777,7 +817,7 @@ async fn change_status(
     status: &str,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     if status == "active" {
         activation(&saved, &state.config.app_url)?;
     }
@@ -801,8 +841,9 @@ async fn change_status(
         },
     )
     .await?;
+    let saved = authorized_on(&mut tx, &admin, id).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, id).await?))
+    Ok(Json(saved))
 }
 async fn activate(
     State(state): State<AppState>,
@@ -824,7 +865,7 @@ async fn duplicate(
     Path(id): Path<i64>,
 ) -> Result<Json<Value>, ApiError> {
     let mut tx = state.db.pool.begin().await.map_err(db)?;
-    let source = lock(&mut tx, id).await?;
+    let source = lock_authorized(&mut tx, &admin, id).await?;
     let mut mails = model::mails(source["steps"].clone(), id)?;
     let new:i64=sqlx::query_scalar("INSERT INTO crm_sequences(name,title,description,slug,status,is_active,steps,trigger_type,design_template,settings,subscriber_settings,trigger_config,created_by) SELECT LEFT(COALESCE(title,name),248)||' (Copy)',LEFT(COALESCE(title,name),248)||' (Copy)',description,'sequence-'||gen_random_uuid()::text,'draft',false,'[]'::jsonb,trigger_type,design_template,settings,subscriber_settings,trigger_config,$2 FROM crm_sequences WHERE id=$1 RETURNING id")
         .bind(id).bind(admin.0.id).fetch_one(&mut *tx).await.map_err(db)?;
@@ -853,6 +894,7 @@ async fn duplicate(
         }
     }
     save_mails(&mut tx, new, mails, admin.0.id, "Sequence duplicated").await?;
+    let saved = authorized_on(&mut tx, &admin, new).await?;
     tx.commit().await.map_err(db)?;
-    Ok(Json(row(&state.db.pool, new).await?))
+    Ok(Json(saved))
 }

@@ -6,7 +6,8 @@
 		IconFileSpreadsheet,
 		IconPdf,
 		IconAlertTriangle,
-		IconUserPlus
+		IconUserPlus,
+		IconChevronDown
 	} from '#lib/icons/index.js';
 
 	export type HeaderAction =
@@ -23,6 +24,7 @@
 	}
 
 	let { exportFormat, exporting, onAction }: Props = $props();
+	const formatId = $props.id();
 </script>
 
 <header class="page-header">
@@ -50,16 +52,49 @@
 				<IconDownload size={18} />
 				{exporting ? 'Exporting...' : `Export ${exportFormat.toUpperCase()}`}
 			</button>
-			<div class="export-options">
-				<button onclick={() => onAction({ type: 'export', format: 'csv' })} disabled={exporting}>
+			<button
+				type="button"
+				class="btn-secondary export-format-toggle"
+				popovertarget={formatId}
+				aria-label="Choose export format"
+				disabled={exporting}
+			>
+				<IconChevronDown size={18} />
+			</button>
+			<div
+				class="export-options"
+				id={formatId}
+				popover="auto"
+				role="group"
+				aria-label="Export formats"
+			>
+				<button
+					type="button"
+					popovertarget={formatId}
+					popovertargetaction="hide"
+					onclick={() => onAction({ type: 'export', format: 'csv' })}
+					disabled={exporting}
+				>
 					<IconDownload size={14} />
 					CSV
 				</button>
-				<button onclick={() => onAction({ type: 'export', format: 'xlsx' })} disabled={exporting}>
+				<button
+					type="button"
+					popovertarget={formatId}
+					popovertargetaction="hide"
+					onclick={() => onAction({ type: 'export', format: 'xlsx' })}
+					disabled={exporting}
+				>
 					<IconFileSpreadsheet size={14} />
 					Excel
 				</button>
-				<button onclick={() => onAction({ type: 'export', format: 'pdf' })} disabled={exporting}>
+				<button
+					type="button"
+					popovertarget={formatId}
+					popovertargetaction="hide"
+					onclick={() => onAction({ type: 'export', format: 'pdf' })}
+					disabled={exporting}
+				>
 					<IconPdf size={14} />
 					PDF
 				</button>
@@ -95,29 +130,53 @@
 	}
 
 	.export-dropdown {
-		position: relative;
-		display: inline-block;
+		display: inline-flex;
+		gap: 0.25rem;
 	}
 
-	.export-dropdown:hover .export-options {
+	.export-dropdown button {
+		scroll-margin-block: calc(var(--admin-header-height, 70px) + 1rem);
+	}
+
+	.export-format-toggle {
+		padding-inline: 0.75rem;
+	}
+
+	.export-options:popover-open {
 		display: flex;
 	}
 
 	.export-options {
 		display: none;
-		position: absolute;
-		top: 100%;
-		left: 0;
-		z-index: 20;
+		position: fixed;
+		inset: 0;
+		width: max-content;
+		max-width: calc(100vw - 2rem);
+		max-height: calc(100dvh - 2rem);
+		overflow: auto;
 		flex-direction: column;
 		min-width: 140px;
 		background: var(--admin-surface-primary, var(--bg-elevated, #161b22));
 		border: 1px solid var(--admin-border-subtle, var(--border-muted, #21262d));
 		border-radius: var(--radius-md, 0.5rem);
 		padding: 0.375rem;
-		margin-top: 0.25rem;
+		margin: auto;
 		box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
 		animation: exportDropIn 0.15s ease;
+	}
+
+	@supports (top: anchor(bottom)) {
+		.export-options {
+			position-anchor: auto;
+			inset: auto;
+			top: calc(anchor(bottom) + 0.25rem);
+			left: anchor(left);
+			margin: 0;
+			position-try-fallbacks:
+				flip-block,
+				flip-inline,
+				flip-block flip-inline;
+		}
 	}
 
 	@keyframes exportDropIn {
@@ -187,12 +246,10 @@
 	.btn-primary {
 		background: var(--primary-500);
 		color: var(--bg-base);
-		
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		background: var(--primary-400);
-		
 	}
 
 	.btn-primary:disabled {

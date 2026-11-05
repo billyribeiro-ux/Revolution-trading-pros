@@ -1,8 +1,8 @@
 //! Durable, explicit QA samples; replays report receipts and never resubmit.
-use super::{db, invalid, lock, model, record, row};
+use super::{authorized, db, invalid, lock_authorized, model, record};
 use crate::{
     AppState,
-    middleware::admin::AdminUser,
+    routes::crm::manager_permissions::CrmUser as AdminUser,
     services::{
         campaign_mailer::{CampaignMailer, Identity, Message},
         campaign_personalization::{self, Recipient},
@@ -58,6 +58,26 @@ struct Intent {
 async fn intent(pool: &PgPool, request: Uuid) -> Result<Option<Intent>, ApiError> {
     sqlx::query_as("SELECT request_id,sequence_id,email_id,created_by,authoring_version,recipient,created_at FROM crm_sequence_test_requests WHERE request_id=$1")
         .bind(request).fetch_optional(pool).await.map_err(db)
+}
+async fn authorize_receipt(
+    pool: &PgPool,
+    actor: &AdminUser,
+    saved: &Intent,
+) -> Result<(), ApiError> {
+    let mut tx = crate::routes::crm::manager_sources::read_transaction(pool).await?;
+    let current: Value = sqlx::query_scalar("SELECT to_jsonb(s) FROM crm_sequences s WHERE id=$1")
+        .bind(saved.sequence_id)
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(db)?
+        .ok_or_else(|| ApiError::not_found("Sequence"))?;
+    crate::routes::crm::manager_sources::sequence_on(&mut tx, actor, saved.sequence_id, &current)
+        .await?;
+    let frozen:Value=sqlx::query_scalar("SELECT r.definition FROM crm_sequence_test_requests q JOIN crm_sequence_revisions r ON r.id=q.revision_id WHERE q.request_id=$1")
+        .bind(saved.request_id).fetch_optional(&mut *tx).await.map_err(db)?.ok_or_else(||errors::service_unavailable("Test source revision is unavailable"))?;
+    actor.record(&frozen)?;
+    tx.commit().await.map_err(db)?;
+    Ok(())
 }
 fn same_intent(
     saved: &Intent,
@@ -139,10 +159,11 @@ async fn submit(
     // Resolve persisted intent before reading edited/archived creative or
     // provider configuration. An earlier submission cannot become another send.
     if let Some(saved) = intent(&state.db.pool, input.request_id).await? {
+        authorize_receipt(&state.db.pool, &admin, &saved).await?;
         same_intent(&saved, id, admin.0.id, &input, &email)?;
         return response(&state.db.pool, &saved).await;
     }
-    let source = row(&state.db.pool, id).await?;
+    let source = authorized(&state.db.pool, &admin, id).await?;
     if source["authoring_version"].as_i64() != Some(input.expected_version) {
         return Err(errors::conflict(
             "Sequence changed; reload before sending a test",
@@ -257,10 +278,11 @@ async fn submit(
         .bind(input.request_id).fetch_optional(&mut *tx).await.map_err(db)?;
     if let Some(saved) = replay {
         tx.rollback().await.map_err(db)?;
+        authorize_receipt(&state.db.pool, &admin, &saved).await?;
         same_intent(&saved, id, admin.0.id, &input, &email)?;
         return response(&state.db.pool, &saved).await;
     }
-    let saved = lock(&mut tx, id).await?;
+    let saved = lock_authorized(&mut tx, &admin, id).await?;
     if saved["authoring_version"].as_i64() != Some(input.expected_version)
         || source_hash(&saved)? != hash
     {
@@ -288,6 +310,7 @@ async fn submit(
         let saved = intent(&state.db.pool, input.request_id)
             .await?
             .ok_or_else(|| errors::service_unavailable("Test request is unavailable"))?;
+        authorize_receipt(&state.db.pool, &admin, &saved).await?;
         same_intent(&saved, id, admin.0.id, &input, &email)?;
         return response(&state.db.pool, &saved).await;
     }
@@ -332,25 +355,27 @@ struct History {
 }
 async fn history(
     State(state): State<AppState>,
-    _: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Query(query): Query<History>,
 ) -> Result<Json<Value>, ApiError> {
     if query.request_id.is_some_and(|request| request.is_nil()) {
         return Err(invalid("Provide a nonzero request UUID"));
     }
-    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_sequences WHERE id=$1)")
+    let mut tx = crate::routes::crm::manager_sources::read_transaction(&state.db.pool).await?;
+    let source: Value = sqlx::query_scalar("SELECT to_jsonb(s) FROM crm_sequences s WHERE id=$1")
         .bind(id)
-        .fetch_one(&state.db.pool)
+        .fetch_optional(&mut *tx)
         .await
-        .map_err(db)?;
-    if !exists {
-        return Err(ApiError::not_found("Sequence"));
-    }
+        .map_err(db)?
+        .ok_or_else(|| ApiError::not_found("Sequence"))?;
+    crate::routes::crm::manager_sources::sequence_on(&mut tx, &admin, id, &source).await?;
+    tx.commit().await.map_err(db)?;
     let requests:Vec<Intent>=sqlx::query_as("SELECT request_id,sequence_id,email_id,created_by,authoring_version,recipient,created_at FROM crm_sequence_test_requests WHERE sequence_id=$1 AND ($2::uuid IS NULL OR request_id=$2) ORDER BY created_at DESC,request_id DESC LIMIT 20")
         .bind(id).bind(query.request_id).fetch_all(&state.db.pool).await.map_err(db)?;
     let mut data = Vec::with_capacity(requests.len());
     for saved in requests {
+        authorize_receipt(&state.db.pool, &admin, &saved).await?;
         data.push(receipt(&state.db.pool, &saved).await?);
     }
     Ok(Json(

@@ -1,5 +1,7 @@
 //! Persisted deal notes and an activity/history timeline, never synthetic events.
-use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
+use crate::{
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, utils::errors::ApiError,
+};
 use axum::{
     Json, Router,
     extract::{Path, Query, State},

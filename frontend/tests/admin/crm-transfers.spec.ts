@@ -1,6 +1,7 @@
 import { expect, request as playwrightRequest, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 const password = 'OnlyForDisposableTest123!';
+const blockedResources = new WeakMap<Page, Set<string>>();
 let cookies: Awaited<
 	ReturnType<Awaited<ReturnType<typeof playwrightRequest.newContext>>['storageState']>
 >['cookies'];
@@ -22,23 +23,34 @@ test.beforeAll(async ({ baseURL }) => {
 });
 test.beforeEach(async ({ context, page }) => {
 	await context.addCookies(cookies);
+	const blocked = new Set<string>();
+	blockedResources.set(page, blocked);
 	await page.route('**/*', (route) => {
 		const url = new URL(route.request().url());
-		return ['127.0.0.1', 'localhost'].includes(url.hostname) ||
+		if (
+			['127.0.0.1', 'localhost'].includes(url.hostname) ||
 			!['http:', 'https:'].includes(url.protocol)
-			? route.continue()
-			: route.abort();
+		)
+			return route.continue();
+		blocked.add(route.request().url());
+		return route.abort();
 	});
 });
 function watch(page: Page) {
 	const errors: string[] = [];
 	page.on('pageerror', (error) => errors.push(error.message));
 	page.on('console', (message) => {
-		if (message.type() === 'error') errors.push(message.text());
+		if (message.type() !== 'error') return;
+		if (
+			blockedResources.get(page)?.has(message.location().url) &&
+			message.text() === 'Failed to load resource: net::ERR_FAILED'
+		)
+			return;
+		errors.push(`${message.text()} ${message.location().url}`);
 	});
 	page.on('requestfailed', (request) => {
 		if (
-			new URL(request.url()).pathname.startsWith('/api/') &&
+			!blockedResources.get(page)?.has(request.url()) &&
 			!request.failure()?.errorText.includes('ERR_ABORTED')
 		)
 			errors.push(`${request.failure()?.errorText} ${request.url()}`);
@@ -94,7 +106,7 @@ test('actual upload, mapping, saved reference selection, atomic apply and CSV/JS
 		await expect(
 			page.getByRole('option', { name: `Browser transfer list ${stamp}`, exact: true })
 		).toHaveCount(1);
-		await page.getByLabel('Selected lists', { exact: true }).selectOption(listId);
+		await page.getByRole('listbox', { name: 'Selected lists', exact: true }).selectOption(listId);
 		await page
 			.getByLabel('Search saved tags', { exact: true })
 			.fill(`Browser transfer tag ${stamp}`);
@@ -102,7 +114,7 @@ test('actual upload, mapping, saved reference selection, atomic apply and CSV/JS
 		await expect(
 			page.getByRole('option', { name: `Browser transfer tag ${stamp}`, exact: true })
 		).toHaveCount(1);
-		await page.getByLabel('Selected tags', { exact: true }).selectOption(tagId);
+		await page.getByRole('listbox', { name: 'Selected tags', exact: true }).selectOption(tagId);
 		const applied = page.waitForResponse(
 			(response) => new URL(response.url()).pathname === `/api/admin/crm/imports/${job}/start`
 		);
@@ -123,8 +135,12 @@ test('actual upload, mapping, saved reference selection, atomic apply and CSV/JS
 		await page.reload({ waitUntil: 'networkidle' });
 		await expect(page.getByLabel('Saved import summary')).toContainText('completed');
 		await expect(page.getByLabel('Map Mail', { exact: true })).toHaveValue('email');
-		await expect(page.getByLabel('Selected lists', { exact: true })).toHaveValues([listId]);
-		await expect(page.getByLabel('Selected tags', { exact: true })).toHaveValues([tagId]);
+		await expect(page.getByRole('listbox', { name: 'Selected lists', exact: true })).toHaveValues([
+			listId
+		]);
+		await expect(page.getByRole('listbox', { name: 'Selected tags', exact: true })).toHaveValues([
+			tagId
+		]);
 		const contacts = await page.request.get(`/api/admin/crm/contacts?search=${prefix}`);
 		expect(contacts.status()).toBe(200);
 		const rows = (await contacts.json()).data;
@@ -165,7 +181,7 @@ test('actual upload, mapping, saved reference selection, atomic apply and CSV/JS
 		await page.getByRole('button', { name: 'Export', exact: true }).click();
 		await expect(page.locator(`[data-export-id="${exportJob.id}"]`)).toContainText('2');
 		await page.getByLabel('Contact search', { exact: true }).fill(prefix);
-		await page.getByLabel('File format', { exact: true }).selectOption('json');
+		await page.getByRole('combobox', { name: 'File format', exact: true }).selectOption('json');
 		const jsonReady = page.waitForResponse(
 			(response) =>
 				new URL(response.url()).pathname === '/api/admin/crm/exports' &&

@@ -6,7 +6,8 @@ import {
 	exportJob,
 	transferOptions,
 	transferPage,
-	transferPreview
+	transferPreview,
+	transferRequest
 } from '../crm-transfer-contract.js';
 const id = '34ad48b0-615b-49e8-86ee-c0d9f77206ee',
 	other = '18afd4a8-d2eb-46c7-852c-6b788b414dec',
@@ -74,6 +75,17 @@ function exported() {
 afterEach(() => {
 	vi.unstubAllGlobals();
 	vi.clearAllMocks();
+});
+it('omits GET bodies and rejects accidental GET payloads before issuing a request', async () => {
+	const transport = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ data: [] }));
+	vi.stubGlobal('fetch', transport);
+	await expect(transferRequest('imports', 'GET', {})).rejects.toThrow(
+		'GET transfer request cannot contain a body'
+	);
+	expect(transport).not.toHaveBeenCalled();
+	await transferRequest('imports');
+	expect(transport).toHaveBeenCalledOnce();
+	expect(transport.mock.calls[0]?.[1]).not.toHaveProperty('body');
 });
 it('requires actual counts, lifecycle identity and a completed snapshot download', () => {
 	expect(importJob(completed()).skipped_count).toBe(1);

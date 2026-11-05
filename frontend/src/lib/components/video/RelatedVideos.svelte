@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { browser } from '$app/env';
+	import { onMount } from 'svelte';
 	import Icon from '#lib/components/Icon.svelte';
+	import { formatVideoViews, videoPlaybackUnavailable } from '#lib/utils/unified-video-metadata.js';
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// TYPES
@@ -10,12 +11,14 @@
 		id: number;
 		title: string;
 		slug: string;
+		video_url: string | null;
+		embed_url: string | null;
 		thumbnail_url: string | null;
 		duration: number | null;
-		formatted_duration: string;
-		video_date: string;
-		formatted_date: string;
-		views_count: number;
+		formatted_duration: string | null;
+		video_date: string | null;
+		formatted_date: string | null;
+		views_count: number | null;
 		content_type: string;
 	}
 
@@ -44,14 +47,18 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	let relatedVideos = $derived(fetchRelated(videoId, limit));
+	let mounted = $state(false);
+	onMount(() => {
+		mounted = true;
+	});
+	let relatedVideos = $derived(mounted ? fetchRelated(videoId, limit) : Promise.resolve([]));
 
 	// ═══════════════════════════════════════════════════════════════════════
 	// METHODS
 	// ═══════════════════════════════════════════════════════════════════════
 
 	async function fetchRelated(currentVideoId: number, currentLimit: number): Promise<Video[]> {
-		if (!browser || !currentVideoId) return [];
+		if (!currentVideoId) return [];
 
 		try {
 			const response = await fetch(`/api/videos/${currentVideoId}/related`);
@@ -65,16 +72,6 @@
 		}
 
 		return [];
-	}
-
-	function formatViews(count: number): string {
-		if (count >= 1000000) {
-			return `${(count / 1000000).toFixed(1)}M views`;
-		}
-		if (count >= 1000) {
-			return `${(count / 1000).toFixed(1)}K views`;
-		}
-		return `${count} views`;
 	}
 </script>
 
@@ -141,10 +138,11 @@
 						<!-- Info -->
 						<div class="related-card__info">
 							<h4 class="related-card__title">{video.title}</h4>
+							{#if videoPlaybackUnavailable(video)}<span>Video unavailable</span>{/if}
 							<p class="related-card__meta">
-								<span>{formatViews(video.views_count)}</span>
+								<span>{formatVideoViews(video.views_count)}</span>
 								<span class="related-card__dot"></span>
-								<span>{video.formatted_date}</span>
+								<span>{video.formatted_date ?? 'Date unavailable'}</span>
 							</p>
 						</div>
 					</a>

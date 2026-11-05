@@ -1,6 +1,8 @@
 //! Durable contact-list membership. Removing a membership never deletes a contact.
 use super::contacts::CrmContact;
-use crate::{AppState, middleware::admin::AdminUser, utils::errors::ApiError};
+use crate::{
+    AppState, routes::crm::manager_permissions::CrmUser as AdminUser, utils::errors::ApiError,
+};
 use axum::{
     Json, Router,
     extract::{Path, Query, State},

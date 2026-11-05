@@ -45,9 +45,9 @@ pub struct UnifiedVideoRow {
     #[sqlx(default)]
     pub description: Option<String>,
     #[sqlx(default)]
-    pub video_url: String,
+    pub video_url: Option<String>,
     #[sqlx(default)]
-    pub video_platform: String,
+    pub video_platform: Option<String>,
     #[sqlx(default)]
     pub video_id: Option<String>,
     #[sqlx(default)]
@@ -72,19 +72,22 @@ pub struct UnifiedVideoRow {
     pub chapter_timestamps: Option<serde_json::Value>,
     #[sqlx(default)]
     pub trader_id: Option<i64>,
-    pub video_date: NaiveDate,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalDate")]
+    pub video_date: Option<NaiveDate>,
     #[sqlx(default)]
-    pub is_published: bool,
+    pub is_published: Option<bool>,
     #[sqlx(default)]
-    pub is_featured: bool,
+    pub is_featured: Option<bool>,
     #[sqlx(default)]
-    pub published_at: Option<chrono::NaiveDateTime>,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+    pub published_at: Option<chrono::DateTime<chrono::Utc>>,
     #[sqlx(default)]
-    pub scheduled_at: Option<chrono::NaiveDateTime>,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+    pub scheduled_at: Option<chrono::DateTime<chrono::Utc>>,
     #[sqlx(default)]
     pub tags: Option<serde_json::Value>,
     #[sqlx(default)]
-    pub views_count: i32,
+    pub views_count: Option<i32>,
     #[sqlx(default)]
     pub likes_count: i32,
     #[sqlx(default)]
@@ -101,10 +104,13 @@ pub struct UnifiedVideoRow {
     pub created_by: Option<i64>,
     #[sqlx(default)]
     pub updated_by: Option<i64>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
     #[sqlx(default)]
-    pub deleted_at: Option<chrono::NaiveDateTime>,
+    #[sqlx(try_from = "crate::models::video::temporal::PgSafeOptionalTimestamp")]
+    pub deleted_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
