@@ -273,16 +273,17 @@ pub async fn recover_expired(pool: &PgPool) -> Result<u64> {
 pub async fn unsubscribe(pool: &PgPool, token: Uuid) -> Result<bool> {
     let mut tx = pool.begin().await?;
     let email: Option<String> =
-        sqlx::query_scalar("SELECT email FROM crm_campaign_deliveries WHERE unsubscribe_token=$1")
+        sqlx::query_scalar("SELECT email FROM campaign_unsubscribe_links WHERE token=$1")
             .bind(token)
             .fetch_optional(&mut *tx)
             .await?;
     let Some(email) = email else { return Ok(false) };
     let campaigns:Vec<i64>=sqlx::query_scalar("SELECT DISTINCT campaign_id FROM crm_campaign_deliveries WHERE email=$1 ORDER BY campaign_id").bind(&email).fetch_all(&mut *tx).await?;
     for id in &campaigns {
+        // A concurrent campaign deletion cannot invalidate the recipient's token.
         sqlx::query("SELECT id FROM crm_campaigns WHERE id=$1 FOR UPDATE")
             .bind(id)
-            .fetch_one(&mut *tx)
+            .fetch_optional(&mut *tx)
             .await?;
     }
     sqlx::query("UPDATE newsletter_subscribers SET status='unsubscribed',unsubscribed_at=COALESCE(unsubscribed_at,NOW()),updated_at=NOW() WHERE LOWER(email)=$1").bind(&email).execute(&mut *tx).await?;

@@ -18,3 +18,24 @@ ALTER TABLE crm_campaigns ADD CONSTRAINT crm_campaign_native_pair UNIQUE(native_
 ALTER TABLE email_campaigns ADD CONSTRAINT email_campaign_engine_identity
  FOREIGN KEY(id,delivery_campaign_id) REFERENCES crm_campaigns(native_email_campaign_id,id)
  DEFERRABLE INITIALLY DEFERRED;
+
+-- Opt-out remains possible after an administrator deletes a campaign. Only
+-- existing, exact token/email mappings are retained; none are inferred.
+CREATE TABLE campaign_unsubscribe_links (
+ token UUID PRIMARY KEY,
+ email VARCHAR(255) NOT NULL CHECK(email=LOWER(email)),
+ delivery_id UUID UNIQUE REFERENCES crm_campaign_deliveries(id) ON DELETE SET NULL,
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+INSERT INTO campaign_unsubscribe_links(token,email,delivery_id,created_at)
+ SELECT unsubscribe_token,email,id,created_at FROM crm_campaign_deliveries;
+CREATE FUNCTION preserve_campaign_unsubscribe_link() RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+ INSERT INTO campaign_unsubscribe_links(token,email,delivery_id)
+ VALUES(NEW.unsubscribe_token,NEW.email,NEW.id);
+ RETURN NEW;
+END $$;
+CREATE TRIGGER preserve_campaign_unsubscribe_link AFTER INSERT ON crm_campaign_deliveries
+ FOR EACH ROW EXECUTE FUNCTION preserve_campaign_unsubscribe_link();
+CREATE INDEX email_logs_accepted_template ON email_logs(email_template_id)
+ WHERE email_template_id IS NOT NULL AND status IN ('sent','delivered','opened','clicked','bounced');
