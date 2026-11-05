@@ -7,7 +7,8 @@ import {
 	campaignEnvelope,
 	campaignPage,
 	campaignStats,
-	campaignDeleted
+	campaignDeleted,
+	campaignDeliveryStatus
 } from './campaign-contract.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -44,6 +45,10 @@ export interface Campaign {
 		| 'archived';
 	total_recipients: number;
 	sent_count: number;
+	failed_count?: number;
+	last_error?: string | null;
+	pause_reason?: string | null;
+	delivery_stats?: Record<string, number>;
 	opened_count: number;
 	clicked_count: number;
 	bounced_count: number;
@@ -130,7 +135,7 @@ export interface CampaignAnalytics {
 export interface CreateCampaignData {
 	name: string;
 	subject: string;
-	template_id: number;
+	template_id: number | null;
 	segment_id?: number | null;
 	from_name?: string;
 	from_email?: string;
@@ -330,6 +335,9 @@ class CampaignsApiClient {
 	// Stats & Analytics
 	// ═══════════════════════════════════════════════════════════════════════
 
+	async getDeliveryStatus() {
+		return campaignDeliveryStatus(await this.request<unknown>('GET', '/admin/email/status'));
+	}
 	async getStats(): Promise<CampaignStats> {
 		return campaignStats(await this.request<unknown>('GET', '/admin/email/campaigns/stats'));
 	}
@@ -378,3 +386,5 @@ export const getCampaignPreview = (id: number) => campaignsApi.getPreview(id);
 
 export const pauseCampaign = (id: number) => campaignsApi.pauseCampaign(id);
 export const resumeCampaign = (id: number) => campaignsApi.resumeCampaign(id);
+
+export const getCampaignDeliveryStatus = () => campaignsApi.getDeliveryStatus();

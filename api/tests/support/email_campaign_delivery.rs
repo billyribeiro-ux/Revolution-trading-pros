@@ -34,6 +34,16 @@ async fn segment(api: &Router, token: &str, name: &str, tag: i64) -> i64 {
 }
 pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Adapter) {
     let admin = Some(tokens[0].as_str());
+    let before_status = adapter.requests.lock().unwrap().len();
+    let diagnostics = request(api, "GET", "/api/admin/email/status", admin, Value::Null).await;
+    assert_eq!(diagnostics.0, StatusCode::OK, "{diagnostics:?}");
+    assert_eq!(diagnostics.1["broadcast_configured"], true);
+    assert_eq!(diagnostics.1["broadcast_provider"], "postmark");
+    assert_eq!(
+        adapter.requests.lock().unwrap().len(),
+        before_status,
+        "Reading configuration status never submits mail or probes a recipient"
+    );
     let tag:i64=sqlx::query_scalar("INSERT INTO member_tags(name,slug) VALUES('Native delivery members','native-delivery-members') RETURNING id").fetch_one(pool).await.unwrap();
     member(
         pool,
@@ -207,12 +217,48 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Ada
         .execute(pool)
         .await
         .unwrap();
-    for _ in 0..2 {
+    // Advance both persisted fixture clocks before exercising another resume.
+    sqlx::query("UPDATE email_campaigns SET authoring_config=jsonb_set(authoring_config,'{planned_at}',to_jsonb(NOW())) WHERE id=$1")
+        .bind(id).execute(pool).await.unwrap();
+    for step in 0..2 {
         assert!(
             campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
                 .await
                 .unwrap()
         );
+        if step == 0 {
+            assert_eq!(
+                request(api, "POST", &format!("{path}/pause"), admin, Value::Null)
+                    .await
+                    .0,
+                StatusCode::OK
+            );
+            let rename = request(
+                api,
+                "PUT",
+                &path,
+                admin,
+                json!({"name":"Native started A/B renamed"}),
+            )
+            .await;
+            assert_eq!(rename.0, StatusCode::OK, "{rename:?}");
+            for change in [
+                json!({"subject":"Changed after first acceptance"}),
+                json!({"template_id":template_id}),
+                json!({"ab_test_config":null}),
+            ] {
+                assert_eq!(
+                    request(api, "PUT", &path, admin, change).await.0,
+                    StatusCode::CONFLICT
+                );
+            }
+            assert_eq!(
+                request(api, "POST", &format!("{path}/resume"), admin, Value::Null)
+                    .await
+                    .0,
+                StatusCode::OK
+            );
+        }
     }
     let sent = request(api, "GET", &path, admin, Value::Null).await;
     assert_eq!(sent.0, StatusCode::OK, "{sent:?}");
@@ -366,6 +412,30 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Ada
             .unwrap(),
         "Changed before acceptance"
     );
+    let changed = request(
+        api,
+        "PUT",
+        &cp,
+        admin,
+        json!({"scheduled_at":due+chrono::Duration::days(1)}),
+    )
+    .await;
+    assert_eq!(changed.0, StatusCode::OK, "{changed:?}");
+    let cleared = request(api, "PUT", &cp, admin, json!({"scheduled_at":null})).await;
+    assert_eq!(cleared.0, StatusCode::OK, "{cleared:?}");
+    assert_eq!(cleared.1["data"]["planned_at"], Value::Null);
+    assert_eq!(cleared.1["data"]["scheduled_at"], Value::Null);
+    assert_eq!(cleared.1["data"]["status"], "paused");
+    let resumed = request(api, "POST", &format!("{cp}/resume"), admin, Value::Null).await;
+    assert_eq!(resumed.0, StatusCode::OK, "{resumed:?}");
+    assert_eq!(resumed.1["data"]["status"], "sending");
+    let actual_due =
+        chrono::DateTime::parse_from_rfc3339(resumed.1["data"]["scheduled_at"].as_str().unwrap())
+            .unwrap();
+    assert!(
+        (chrono::Utc::now().timestamp() - actual_due.timestamp()).abs() < 5,
+        "A cleared paused request must resume now rather than inherit its earlier future due time"
+    );
     let stopped = request(api, "POST", &format!("{cp}/cancel"), admin, Value::Null).await;
     assert_eq!(stopped.0, StatusCode::OK, "{stopped:?}");
     assert_eq!(stopped.1["data"]["status"], "cancelled");
@@ -380,6 +450,10 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Ada
         0
     );
     assert_eq!(adapter.requests.lock().unwrap().len(), before + 2);
+    single_connection_proof(pool, tokens, selected, due).await;
+    assert_eq!(adapter.requests.lock().unwrap().len(), before + 2);
+    failure_proof(api, pool, tokens, adapter, selected).await;
+    segment_race_proof(api, pool, tokens, adapter, selected).await;
 }
 
 async fn report_proof(api: &Router, pool: &PgPool, tokens: &[String], native: i64, engine: i64) {
@@ -498,5 +572,353 @@ async fn report_proof(api: &Router, pool: &PgPool, tokens: &[String], native: i6
         .await
         .0,
         StatusCode::NOT_FOUND
+    );
+}
+
+async fn single_connection_proof(
+    pool: &PgPool,
+    tokens: &[String],
+    segment: i64,
+    due: chrono::DateTime<chrono::Utc>,
+) {
+    let one = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(1)
+        .acquire_timeout(std::time::Duration::from_secs(2))
+        .connect_with((*pool.connect_options()).clone())
+        .await
+        .unwrap();
+    let api = super::app(revolution_api::db::Database { pool: one.clone() }, None).await;
+    let id=draft(&api,&tokens[0],json!({"name":"Native single connection fixture","subject":"Single connection","html_content":"<p>Source</p>","segment_id":segment})).await;
+    let path = format!("{ROOT}/{id}");
+    for (method, suffix, body) in [
+        ("POST", "/schedule", json!({"scheduled_at":due})),
+        ("POST", "/pause", Value::Null),
+        (
+            "PUT",
+            "",
+            json!({"name":"Native single connection edited","scheduled_at":null}),
+        ),
+        ("POST", "/resume", Value::Null),
+        ("GET", "/report", Value::Null),
+        ("POST", "/cancel", Value::Null),
+    ] {
+        let response = tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            request(
+                &api,
+                method,
+                &format!("{path}{suffix}"),
+                Some(&tokens[0]),
+                body,
+            ),
+        )
+        .await
+        .expect(
+            "Native workflow must not wait for a second connection while holding its transaction",
+        );
+        assert_eq!(
+            response.0,
+            StatusCode::OK,
+            "{method} {suffix}: {response:?}"
+        );
+    }
+    one.close().await;
+}
+
+async fn failure_proof(
+    api: &Router,
+    pool: &PgPool,
+    tokens: &[String],
+    adapter: &Adapter,
+    segment: i64,
+) {
+    let admin = Some(tokens[0].as_str());
+    let mailer = CampaignMailer::from_env("development").unwrap();
+    for subject in ["fixture-rejected", "fixture-unknown"] {
+        let id=draft(api,&tokens[0],json!({"name":format!("Native {subject}"),"subject":subject,"html_content":"<p>Native failure fixture</p>","segment_id":segment})).await;
+        let path = format!("{ROOT}/{id}");
+        let before = adapter.requests.lock().unwrap().len();
+        assert_eq!(
+            request(api, "POST", &format!("{path}/send"), admin, Value::Null)
+                .await
+                .0,
+            StatusCode::OK
+        );
+        assert!(
+            campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+                .await
+                .unwrap()
+        );
+        if subject == "fixture-unknown" {
+            let unknown = request(api, "GET", &path, admin, Value::Null).await;
+            assert_eq!(unknown.1["data"]["status"], "paused");
+            assert_eq!(unknown.1["data"]["sent_count"], 0);
+            assert_eq!(unknown.1["data"]["delivery_stats"]["unknown"], 1);
+            assert_eq!(unknown.1["data"]["pause_reason"], "uncertain_submission");
+            assert!(
+                unknown.1["data"]["last_error"]
+                    .as_str()
+                    .unwrap()
+                    .contains("reconciliation")
+            );
+            assert_eq!(
+                request(api, "POST", &format!("{path}/resume"), admin, Value::Null)
+                    .await
+                    .0,
+                StatusCode::CONFLICT
+            );
+            assert!(
+                !campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+                    .await
+                    .unwrap()
+            );
+            assert_eq!(
+                adapter.requests.lock().unwrap().len(),
+                before + 1,
+                "An unknown native result must not be submitted again"
+            );
+        } else {
+            assert!(
+                campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+                    .await
+                    .unwrap()
+            );
+            let failed = request(api, "GET", &path, admin, Value::Null).await;
+            assert_eq!(failed.1["data"]["status"], "failed");
+            assert_eq!(failed.1["data"]["failed_count"], 2);
+            assert_eq!(failed.1["data"]["sent_count"], 0);
+            assert_eq!(
+                request(
+                    api,
+                    "PUT",
+                    &path,
+                    admin,
+                    json!({"subject":"Native recovered from explicit rejection"})
+                )
+                .await
+                .0,
+                StatusCode::OK
+            );
+            assert_eq!(
+                request(api, "POST", &format!("{path}/resume"), admin, Value::Null)
+                    .await
+                    .0,
+                StatusCode::OK
+            );
+            for _ in 0..2 {
+                assert!(
+                    campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+                        .await
+                        .unwrap()
+                );
+            }
+            let recovered = request(api, "GET", &path, admin, Value::Null).await;
+            assert_eq!(recovered.1["data"]["status"], "sent");
+            assert_eq!(recovered.1["data"]["sent_count"], 2);
+            assert_eq!(recovered.1["data"]["failed_count"], 0);
+            assert_eq!(adapter.requests.lock().unwrap().len(), before + 4);
+        }
+    }
+    let id=draft(api,&tokens[0],json!({"name":"Native actual in-flight fixture","subject":"fixture-inflight","html_content":"<p>In-flight fixture</p>","segment_id":segment})).await;
+    let path = format!("{ROOT}/{id}");
+    assert_eq!(
+        request(api, "POST", &format!("{path}/send"), admin, Value::Null)
+            .await
+            .0,
+        StatusCode::OK
+    );
+    let during = async {
+        tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            adapter.inflight_started.notified(),
+        )
+        .await
+        .unwrap();
+        assert_eq!(
+            request(api, "POST", &format!("{path}/pause"), admin, Value::Null)
+                .await
+                .0,
+            StatusCode::OK
+        );
+        for (method, suffix, body) in [
+            ("POST", "/cancel", Value::Null),
+            ("POST", "/resume", Value::Null),
+            ("PUT", "", json!({"subject":"Must not edit in flight"})),
+        ] {
+            assert_eq!(
+                request(api, method, &format!("{path}{suffix}"), admin, body)
+                    .await
+                    .0,
+                StatusCode::CONFLICT
+            );
+        }
+        adapter.inflight_release.notify_one();
+    };
+    let (processed, ()) = tokio::join!(
+        campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274"),
+        during
+    );
+    assert!(processed.unwrap());
+    let paused = request(api, "GET", &path, admin, Value::Null).await;
+    assert_eq!(paused.1["data"]["status"], "paused");
+    assert_eq!(
+        paused.1["data"]["sent_count"], 1,
+        "Pause does not recall an in-flight provider acceptance"
+    );
+    assert_eq!(
+        request(
+            api,
+            "PUT",
+            &path,
+            admin,
+            json!({"subject":"Native in-flight remainder"})
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    assert_eq!(
+        request(api, "POST", &format!("{path}/resume"), admin, Value::Null)
+            .await
+            .0,
+        StatusCode::OK
+    );
+    assert!(
+        campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+            .await
+            .unwrap()
+    );
+    let sent = request(api, "GET", &path, admin, Value::Null).await;
+    assert_eq!(sent.1["data"]["status"], "sent");
+    assert_eq!(sent.1["data"]["sent_count"], 2);
+    // Actual429 backs off only its recipient; elapsed time is advanced in this fixture.
+    adapter
+        .rate_limits
+        .store(0, std::sync::atomic::Ordering::SeqCst);
+    let id=draft(api,&tokens[0],json!({"name":"Native safe backoff fixture","subject":"fixture-rate-limit","html_content":"<p>Backoff fixture</p>","segment_id":segment})).await;
+    let path = format!("{ROOT}/{id}");
+    let before = adapter.requests.lock().unwrap().len();
+    assert_eq!(
+        request(api, "POST", &format!("{path}/send"), admin, Value::Null)
+            .await
+            .0,
+        StatusCode::OK
+    );
+    assert!(
+        campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+            .await
+            .unwrap()
+    );
+    let retry:(String,i32,bool)=sqlx::query_as("SELECT r.status,r.attempt_count,r.due_at>NOW() FROM crm_campaign_deliveries r JOIN email_campaigns c ON c.delivery_campaign_id=r.campaign_id WHERE c.id=$1 AND r.attempt_count=1").bind(id).fetch_one(pool).await.unwrap();
+    assert_eq!(retry, ("queued".into(), 1, true));
+    assert!(
+        campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+            .await
+            .unwrap()
+    );
+    sqlx::query("UPDATE crm_campaign_deliveries r SET due_at=NOW() FROM email_campaigns c WHERE c.delivery_campaign_id=r.campaign_id AND c.id=$1 AND r.status='queued'").bind(id).execute(pool).await.unwrap();
+    let (one, two) = tokio::join!(
+        campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274"),
+        campaign_delivery::process_one(pool, &mailer, "http://127.0.0.1:5274")
+    );
+    assert_eq!(u8::from(one.unwrap()) + u8::from(two.unwrap()), 1);
+    assert_eq!(adapter.requests.lock().unwrap().len(), before + 3);
+    let complete = request(api, "GET", &path, admin, Value::Null).await;
+    assert_eq!(complete.1["data"]["status"], "sent");
+    assert_eq!(complete.1["data"]["sent_count"], 2);
+}
+async fn segment_race_proof(
+    api: &Router,
+    pool: &PgPool,
+    tokens: &[String],
+    adapter: &Adapter,
+    segment: i64,
+) {
+    let admin = Some(tokens[0].as_str());
+    let before = adapter.requests.lock().unwrap().len();
+    let prior = request(
+        api,
+        "GET",
+        &format!("/api/admin/members/segments/{segment}"),
+        admin,
+        Value::Null,
+    )
+    .await;
+    assert_eq!(prior.0, StatusCode::OK);
+    let id=draft(api,&tokens[0],json!({"name":"Native segment version race","subject":"No stale audience","html_content":"<p>Race fixture</p>","segment_id":segment})).await;
+    let mut held = pool.begin().await.unwrap();
+    sqlx::query("SELECT id FROM email_campaigns WHERE id=$1 FOR UPDATE")
+        .bind(id)
+        .fetch_one(&mut *held)
+        .await
+        .unwrap();
+    let pending = tokio::spawn({
+        let api = api.clone();
+        let token = tokens[0].clone();
+        async move {
+            request(
+                &api,
+                "POST",
+                &format!("{ROOT}/{id}/send"),
+                Some(&token),
+                Value::Null,
+            )
+            .await
+        }
+    });
+    tokio::time::timeout(std::time::Duration::from_secs(5),async {
+        loop {
+            let waiting:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE '%authoring_config,delivery_campaign_id%FOR UPDATE%')").fetch_one(pool).await.unwrap();
+            if waiting {break;}
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    }).await.expect("Observe the actual submission row-lock barrier after its audience preflight");
+    let changed = request(
+        api,
+        "PUT",
+        &format!("/api/admin/members/segments/{segment}"),
+        admin,
+        json!({"rules":[{"field":"days_since_signup","operator":"gte","value":100000}]}),
+    )
+    .await;
+    assert_eq!(changed.0, StatusCode::OK, "{changed:?}");
+    held.commit().await.unwrap();
+    let outcome = tokio::time::timeout(std::time::Duration::from_secs(5), pending)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(outcome.0, StatusCode::CONFLICT, "{outcome:?}");
+    assert_eq!(
+        sqlx::query_scalar::<_, Option<i64>>(
+            "SELECT delivery_campaign_id FROM email_campaigns WHERE id=$1"
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .unwrap(),
+        None
+    );
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>(
+            "SELECT COUNT(*) FROM crm_campaigns WHERE native_email_campaign_id=$1"
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .unwrap(),
+        0
+    );
+    assert_eq!(adapter.requests.lock().unwrap().len(), before);
+    assert_eq!(
+        request(
+            api,
+            "PUT",
+            &format!("/api/admin/members/segments/{segment}"),
+            admin,
+            json!({"rules":prior.1["conditions"]})
+        )
+        .await
+        .0,
+        StatusCode::OK
     );
 }

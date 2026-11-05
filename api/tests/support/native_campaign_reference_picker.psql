@@ -1,0 +1,21 @@
+\set ON_ERROR_STOP 1
+BEGIN;
+SELECT set_config('admin_move.fixture_prefix', :'fixture_prefix', true);
+DO $$ BEGIN
+ IF current_database() NOT LIKE 'admin_move_verify_%' OR inet_server_port() <> 55432
+ OR current_setting('admin_move.fixture_prefix') !~ '^admin-move-picker-[0-9]+$' THEN
+  RAISE EXCEPTION 'This fixture requires the disposable verification database, port and owned prefix';
+ END IF;
+END $$;
+INSERT INTO email_templates(name,slug,subject,html_content,text_content,is_active)
+SELECT current_setting('admin_move.fixture_prefix')||' '||lpad(n::text,3,'0'),
+ current_setting('admin_move.fixture_prefix')||'-template-'||n,'Picker template subject',
+ '<p>Saved picker source '||n||'</p>','Saved picker alternative '||n,true
+FROM generate_series(1,105) n ON CONFLICT(slug) DO NOTHING;
+INSERT INTO member_segments(name,slug,filter_criteria,is_dynamic,is_active,created_by)
+SELECT current_setting('admin_move.fixture_prefix')||' '||lpad(n::text,3,'0'),
+ current_setting('admin_move.fixture_prefix')||'-segment-'||n,
+ '[{"field":"days_since_signup","operator":"gte","value":0}]'::jsonb,true,true,u.id
+FROM generate_series(1,105) n CROSS JOIN users u WHERE u.email='admin@admin-completion.test'
+ON CONFLICT(slug) DO NOTHING;
+COMMIT;

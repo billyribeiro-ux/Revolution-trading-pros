@@ -289,6 +289,10 @@ test('campaigns recover from malformed success and unavailable statistics withou
 	);
 	const listing = /\/api\/admin\/email\/campaigns\?/;
 	const stats = '**/api/admin/email/campaigns/stats';
+	const diagnostics = '**/api/admin/email/status';
+	await page.route(diagnostics, (route) =>
+		route.fulfill({ status: 503, json: { error: 'Fixture broadcast diagnostics unavailable' } })
+	);
 	await page.route(listing, (route) =>
 		route.fulfill({
 			json: { success: true, data: [{ id: 42 }], meta: { total: 1, current_page: 1, last_page: 1 } }
@@ -302,6 +306,19 @@ test('campaigns recover from malformed success and unavailable statistics withou
 		page.getByText('Invalid campaign identity or status', { exact: true })
 	).toBeVisible();
 	await expect(page.locator('.campaign-card')).toHaveCount(0);
+	await expect(
+		page.getByText('Broadcast configuration status is unavailable.', { exact: false })
+	).toBeVisible();
+	await page.getByRole('button', { name: 'New Campaign', exact: true }).click();
+	await expect(
+		page.getByRole('dialog').getByRole('heading', { name: 'Create New Campaign', exact: true })
+	).toBeVisible();
+	await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click();
+	await page.unroute(diagnostics);
+	await page.getByRole('button', { name: 'Refresh delivery configuration', exact: true }).click();
+	await expect(
+		page.getByText('Fixture broadcast diagnostics unavailable', { exact: false })
+	).toHaveCount(0);
 	await page.unroute(listing);
 	await page.getByRole('button', { name: 'Try Again', exact: true }).click();
 	await expect(

@@ -60,6 +60,13 @@ test('native timed campaign uses actual opt-in, stays paused across its deadline
 	});
 	expect(checking.status(), await checking.text()).toBe(200);
 	expect((await checking.json()).success).toBe(true);
+	const diagnostics = await page.request.get('/api/admin/email/status');
+	expect(diagnostics.status()).toBe(200);
+	expect(await diagnostics.json()).toMatchObject({
+		broadcast_configured: true,
+		broadcast_provider: 'smtp',
+		broadcast_configuration_error: null
+	});
 	expect(relay.messages).toHaveLength(0);
 	const errors: string[] = [],
 		blocked = new Set<string>();
@@ -141,7 +148,8 @@ test('native timed campaign uses actual opt-in, stays paused across its deadline
 			name: `Native worker template ${stamp}`,
 			slug: `native-worker-template-${stamp}`,
 			subject: 'Native worker source',
-			body_html: '<p>Hello {{name}}. Native scheduled fixture.</p>',
+			body_html:
+				'<p>Hello {{name}}. Native scheduled fixture.</p><a href="https://native-offer.example.test/offer?a=1&amp;b=2">Fixture offer</a>',
 			body_text: 'Hello {{name}}. Native scheduled fixture.'
 		}
 	});
@@ -212,6 +220,44 @@ test('native timed campaign uses actual opt-in, stays paused across its deadline
 	if (!actual) throw new Error('No actual native campaign SMTP message received');
 	expect(actual.receivedAt).toBeGreaterThanOrEqual(due);
 	expect(mimeText(actual.raw)).toContain(name);
+	const tracking = await page.evaluate((html) => {
+		const doc = new DOMParser().parseFromString(html, 'text/html');
+		return {
+			open: doc.querySelector('img[src*="/tracking/open/"]')?.getAttribute('src'),
+			click: doc.querySelector('a[href*="/tracking/click/"]')?.getAttribute('href')
+		};
+	}, mimeText(actual.raw));
+	if (!tracking.open || !tracking.click)
+		throw new Error('Actual native tracking capabilities were not received');
+	expect(new URL(tracking.open).origin).toBe(baseURL);
+	expect(new URL(tracking.click).origin).toBe(baseURL);
+	await page.goto(`/admin/email/campaigns/${campaign}/report`, { waitUntil: 'networkidle' });
+	const metric = (label: string) =>
+		page
+			.locator('.metric-card')
+			.filter({ has: page.getByText(label, { exact: true }) })
+			.locator('.metric-value');
+	await expect(metric('Provider Accepted')).toHaveText('1');
+	await expect(metric('Recorded Deliveries')).toHaveText('0');
+	await expect(metric('Unique Opens')).toHaveText('0');
+	expect((await page.request.head(tracking.open)).status()).toBe(200);
+	expect((await page.request.get(tracking.open)).status()).toBe(200);
+	expect((await page.request.get(tracking.open)).status()).toBe(200);
+	const clicked = await page.request.get(tracking.click, { maxRedirects: 0 });
+	expect(clicked.status()).toBe(302);
+	expect(clicked.headers().location).toBe('https://native-offer.example.test/offer?a=1&b=2');
+	await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+	await expect(metric('Unique Opens')).toHaveText('1');
+	await expect(metric('Unique Clicks')).toHaveText('1');
+	await expect(metric('Recorded Deliveries')).toHaveText('0');
+	await expect(page.getByText('Unknown device observations: 1', { exact: true })).toBeVisible();
+	await expect(
+		page.getByText('No geographic observations supplied.', { exact: true })
+	).toBeVisible();
+	await expect(page.locator('.links-table .link-row')).toHaveCount(1);
+	await page.reload({ waitUntil: 'networkidle' });
+	await expect(metric('Unique Opens')).toHaveText('1');
+	await expect(metric('Unique Clicks')).toHaveText('1');
 	expect(errors).toEqual([]);
 	// Retain this completed, uniquely named disposable fixture for inspection.
 	// It contains only the local example.test address and no queued submissions.

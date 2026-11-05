@@ -34,7 +34,7 @@ WITH c AS (
 ), ev AS (
  SELECT COUNT(*) FILTER(WHERE record_type='Open') opened,COUNT(*) FILTER(WHERE record_type='Click') clicked FROM e
 ), timeline AS (
- SELECT FLOOR(EXTRACT(EPOCH FROM (e.occurred_at-m.first_accepted_at))/3600)::integer hour,
+ SELECT FLOOR(EXTRACT(EPOCH FROM (e.occurred_at-m.first_accepted_at))/3600)::integer AS hour,
  COUNT(*) FILTER(WHERE record_type='Open') opens,COUNT(*) FILTER(WHERE record_type='Click') clicks
  FROM e CROSS JOIN m WHERE record_type IN ('Open','Click') AND occurred_at>=m.first_accepted_at
  AND occurred_at<m.first_accepted_at+INTERVAL '48 hours' GROUP BY 1

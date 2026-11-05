@@ -1,6 +1,7 @@
 import { expect, it } from 'vite-plus/test';
 import {
 	campaignDeleted,
+	campaignDeliveryStatus,
 	campaignEnvelope,
 	campaignPage,
 	campaignRecord,
@@ -86,4 +87,31 @@ it('rejects missing or invalid statistics while preserving an unmeasured rate', 
 		campaignStats({ success: true, data: { ...stats, total_sent: undefined } })
 	).toThrow();
 	expect(() => campaignStats({ success: true, data: { ...stats, avg_open_rate: 101 } })).toThrow();
+});
+
+it('distinguishes usable broadcast configuration from unavailable diagnostics without asserting live delivery', () => {
+	expect(
+		campaignDeliveryStatus({
+			broadcast_configured: true,
+			broadcast_provider: 'smtp',
+			broadcast_configuration_error: null
+		})
+	).toEqual({ configured: true, provider: 'smtp', error: null });
+	expect(
+		campaignDeliveryStatus({
+			broadcast_configured: false,
+			broadcast_provider: null,
+			broadcast_configuration_error: 'Configure a broadcast stream'
+		})
+	).toEqual({ configured: false, provider: null, error: 'Configure a broadcast stream' });
+	for (const malformed of [
+		{ email_service_enabled: true },
+		{ broadcast_configured: true, broadcast_provider: null, broadcast_configuration_error: null },
+		{
+			broadcast_configured: true,
+			broadcast_provider: 'unknown',
+			broadcast_configuration_error: null
+		}
+	])
+		expect(() => campaignDeliveryStatus(malformed)).toThrow(/status/);
 });

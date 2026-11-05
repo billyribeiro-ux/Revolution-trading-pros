@@ -65,6 +65,8 @@ use tower::ServiceExt;
 struct Adapter {
     requests: Arc<Mutex<Vec<Value>>>,
     rate_limits: Arc<AtomicUsize>,
+    inflight_started: Arc<tokio::sync::Notify>,
+    inflight_release: Arc<tokio::sync::Notify>,
 }
 async fn provider(
     State(adapter): State<Adapter>,
@@ -89,6 +91,10 @@ async fn provider(
         Some("subscriber-unknown@example.test") => "fixture-unknown",
         _ => scenario,
     };
+    if scenario == "fixture-inflight" {
+        adapter.inflight_started.notify_one();
+        adapter.inflight_release.notified().await;
+    }
     match scenario {
         "fixture-rejected" => (
             StatusCode::OK,

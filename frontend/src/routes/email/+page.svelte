@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { emailApi, type EmailTemplate } from '#lib/api/email.js';
+	import { emailApi, type EmailTemplate, type EmailCampaign } from '#lib/api/email.js';
 	import { emailStore, getIsEmailLoading } from '#lib/stores/email.svelte.js';
 	import {
 		IconMail,
@@ -23,6 +23,63 @@
 	let selectedTab: 'campaigns' | 'sequences' | 'automations' | 'templates' | 'analytics' =
 		$state('campaigns');
 
+	let campaignCatalog = $state<EmailCampaign[]>([]);
+	let campaignLoading = $state(true),
+		campaignError = $state('');
+	let campaignSearch = $state(''),
+		campaignStatus = $state('');
+	let campaignPage = $state(1),
+		campaignTotal = $state(0),
+		campaignPerPage = $state(20);
+	let campaignGeneration = 0;
+	let campaignActionPending = $state<string | null>(null),
+		campaignActionError = $state('');
+	async function loadCampaigns(targetPage = 1) {
+		const generation = ++campaignGeneration;
+		campaignLoading = true;
+		campaignError = '';
+		try {
+			const result = await emailApi.getCampaigns({
+				page: targetPage,
+				per_page: campaignPerPage,
+				search: campaignSearch.trim() || undefined,
+				status: campaignStatus || undefined
+			});
+			if (generation !== campaignGeneration) return;
+			const lastPage = Math.max(1, Math.ceil(result.total / result.per_page));
+			if (result.page > lastPage) {
+				await loadCampaigns(lastPage);
+				return;
+			}
+			campaignCatalog = result.campaigns;
+			campaignTotal = result.total;
+			campaignPage = result.page;
+			campaignPerPage = result.per_page;
+		} catch (error) {
+			if (generation === campaignGeneration) {
+				campaignCatalog = [];
+				campaignTotal = 0;
+				campaignError = error instanceof Error ? error.message : 'Unable to load campaigns';
+			}
+		} finally {
+			if (generation === campaignGeneration) campaignLoading = false;
+		}
+	}
+	async function duplicateCampaign(id: string) {
+		if (campaignActionPending !== null) return;
+		campaignActionPending = id;
+		campaignActionError = '';
+		try {
+			await emailApi.duplicateCampaign(id);
+			campaignSearch = '';
+			campaignStatus = '';
+			await loadCampaigns(1);
+		} catch (error) {
+			campaignActionError = `Duplication was not confirmed. Refresh before retrying: ${error instanceof Error ? error.message : 'Unable to duplicate campaign'}`;
+		} finally {
+			campaignActionPending = null;
+		}
+	}
 	let templateCatalog = $state<EmailTemplate[]>([]);
 	let templateLoading = $state(true);
 	let templateError = $state('');
@@ -35,9 +92,11 @@
 	onMount(() => {
 		void loadData();
 		void loadTemplates();
+		void loadCampaigns();
 	});
 	onDestroy(() => {
 		templateGeneration++;
+		campaignGeneration++;
 	});
 	async function loadTemplates(page = 1) {
 		const generation = ++templateGeneration;
@@ -64,7 +123,6 @@
 
 	async function loadData() {
 		await Promise.all([
-			emailStore.loadCampaigns(),
 			emailStore.loadSequences(),
 			emailStore.loadAutomations(),
 			emailStore.loadAnalytics()
@@ -75,7 +133,8 @@
 		return num.toLocaleString();
 	}
 
-	function formatPercent(num: number): string {
+	function formatPercent(num: number | null | undefined): string {
+		if (num == null) return '—';
 		return num.toFixed(1) + '%';
 	}
 </script>
@@ -96,10 +155,9 @@
 				<IconFileText size={18} />
 				Templates
 			</button>
-			<button class="btn-primary" onclick={() => (selectedTab = 'campaigns')}>
-				<IconPlus size={18} />
-				New Campaign
-			</button>
+			<a class="btn-primary" href="/admin/email/campaigns?new=1"
+				><IconPlus size={18} />New Campaign</a
+			>
 		</div>
 	</div>
 
@@ -193,7 +251,7 @@
 
 	<!-- Content -->
 	<div class="tab-content">
-		{#if selectedTab === 'templates' ? templateLoading : getIsEmailLoading()}
+		{#if selectedTab === 'templates' ? templateLoading : selectedTab === 'campaigns' ? campaignLoading : getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="state-text state-text--spaced">Loading...</p>
@@ -202,15 +260,45 @@
 			<div class="campaigns-list">
 				<div class="list-header">
 					<h2 class="section-heading">Email Campaigns</h2>
-					<button class="btn-primary">
-						<IconPlus size={18} />
-						Create Campaign
-					</button>
+					<a class="btn-primary" href="/admin/email/campaigns?new=1"
+						><IconPlus size={18} />Create Campaign</a
+					>
 				</div>
 
-				{#if emailStore.campaigns.length > 0}
+				<form
+					class="campaign-filters"
+					onsubmit={(event) => {
+						event.preventDefault();
+						void loadCampaigns(1);
+					}}
+				>
+					<label for="secondary-campaign-search">Search campaigns</label><input
+						id="secondary-campaign-search"
+						type="search"
+						bind:value={campaignSearch}
+					/>
+					<label for="secondary-campaign-status">Campaign status</label><select
+						id="secondary-campaign-status"
+						bind:value={campaignStatus}
+						><option value="">All statuses</option
+						>{#each ['draft', 'scheduled', 'sending', 'sent', 'paused', 'failed', 'cancelled', 'archived'] as status (status)}<option
+								value={status}>{status}</option
+							>{/each}</select
+					>
+					<button class="btn-secondary" type="submit">Search campaigns</button><button
+						class="btn-secondary"
+						type="button"
+						onclick={() => loadCampaigns(campaignPage)}>Refresh campaigns</button
+					>
+				</form>
+				{#if campaignActionError}<p role="alert">{campaignActionError}</p>{/if}
+				{#if campaignError}<p role="alert">{campaignError}</p>
+					<button class="btn-secondary" onclick={() => loadCampaigns(campaignPage)}
+						>Retry campaigns</button
+					>
+				{:else if campaignCatalog.length > 0}
 					<div class="campaigns-grid">
-						{#each emailStore.campaigns as campaign (campaign.id)}
+						{#each campaignCatalog as campaign (campaign.id)}
 							<div class="campaign-card">
 								<div class="campaign-header">
 									<div class={['campaign-status', { active: campaign.status === 'sending' }]}>
@@ -240,9 +328,18 @@
 								{/if}
 
 								<div class="campaign-actions">
-									<button class="action-btn">View</button>
-									<button class="action-btn">Edit</button>
-									<button class="action-btn">Duplicate</button>
+									<a class="action-btn" href={`/admin/email/campaigns/${campaign.id}/report`}
+										>View</a
+									>
+									{#if ['draft', 'paused', 'failed'].includes(campaign.status)}<a
+											class="action-btn"
+											href={`/admin/email/campaigns?edit=${campaign.id}`}>Edit</a
+										>{/if}
+									<button
+										class="action-btn"
+										disabled={campaignActionPending !== null}
+										onclick={() => duplicateCampaign(campaign.id)}>Duplicate</button
+									>
 								</div>
 							</div>
 						{/each}
@@ -252,12 +349,25 @@
 						<IconMail size={64} class="empty-icon" />
 						<h3 class="empty-title">No campaigns yet</h3>
 						<p class="empty-copy">Create your first email campaign to get started</p>
-						<button class="btn-primary empty-action">
-							<IconPlus size={18} />
-							Create Campaign
-						</button>
+						<a class="btn-primary empty-action" href="/admin/email/campaigns?new=1"
+							><IconPlus size={18} />Create Campaign</a
+						>
 					</div>
 				{/if}
+				{#if campaignTotal > 0}<nav aria-label="Campaign pages">
+						<button
+							class="btn-secondary"
+							disabled={campaignPage <= 1}
+							onclick={() => loadCampaigns(campaignPage - 1)}>Previous campaigns</button
+						><span
+							>Page {campaignPage} of {Math.max(1, Math.ceil(campaignTotal / campaignPerPage))} · {campaignTotal}
+							campaigns</span
+						><button
+							class="btn-secondary"
+							disabled={campaignPage * campaignPerPage >= campaignTotal}
+							onclick={() => loadCampaigns(campaignPage + 1)}>Next campaigns</button
+						>
+					</nav>{/if}
 			</div>
 		{:else if selectedTab === 'sequences'}
 			<div class="sequences-list">
@@ -434,14 +544,38 @@
 		color: white;
 		padding: 0.5rem;
 	}
-	a.btn-primary,
-	a.action-btn {
-		text-decoration: none;
-	}
 	.catalog-pagination {
 		align-items: center;
 	}
 
+	.campaign-filters {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-bottom: 1rem;
+	}
+	.campaign-filters input,
+	.campaign-filters select {
+		color: var(--text-primary);
+		background: var(--bg-elevated);
+		border: 1px solid var(--border-default);
+		border-radius: 0.5rem;
+		padding: 0.5rem;
+	}
+	.campaigns-list nav {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-top: 1rem;
+	}
+	a.btn-primary,
+	a.action-btn {
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
 	.email-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;

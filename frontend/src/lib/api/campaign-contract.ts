@@ -45,6 +45,16 @@ export function campaignRecord(value: unknown): Campaign {
 		'unsubscribed_count'
 	] as const)
 		if (!count(value[key])) throw new Error('Invalid recorded campaign counts');
+	if (value.failed_count !== undefined && !count(value.failed_count))
+		throw new Error('Invalid recorded campaign failures');
+	for (const key of ['last_error', 'pause_reason'])
+		if (value[key] != null && typeof value[key] !== 'string')
+			throw new Error('Invalid campaign failure state');
+	if (
+		value.delivery_stats !== undefined &&
+		(!object(value.delivery_stats) || !Object.values(value.delivery_stats).every((v) => count(v)))
+	)
+		throw new Error('Invalid campaign delivery summary');
 	for (const key of ['created_at', 'updated_at'] as const)
 		if (typeof value[key] !== 'string' || !Number.isFinite(Date.parse(value[key])))
 			throw new Error('Invalid campaign timestamps');
@@ -135,4 +145,21 @@ export function campaignStats(value: unknown): CampaignStats {
 }
 export function campaignDeleted(value: unknown, id: number): void {
 	if (successful(value).deleted_id !== id) throw new Error('Campaign deletion was not confirmed');
+}
+
+export function campaignDeliveryStatus(value: unknown) {
+	if (
+		!object(value) ||
+		typeof value.broadcast_configured !== 'boolean' ||
+		![null, 'smtp', 'postmark'].includes(value.broadcast_provider as null | string) ||
+		(value.broadcast_configuration_error !== null &&
+			typeof value.broadcast_configuration_error !== 'string') ||
+		(value.broadcast_configured && value.broadcast_provider === null)
+	)
+		throw new Error('Invalid broadcast configuration status');
+	return {
+		configured: value.broadcast_configured,
+		provider: value.broadcast_provider as 'smtp' | 'postmark' | null,
+		error: value.broadcast_configuration_error as string | null
+	};
 }

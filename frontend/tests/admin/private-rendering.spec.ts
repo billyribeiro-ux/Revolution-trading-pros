@@ -10,6 +10,7 @@ test('production private routes enforce authentication and do not become static 
 		'/admin',
 		'/admin/email/subscribers',
 		'/admin/email/campaigns',
+		'/admin/email/campaigns/1/report',
 		'/email',
 		'/dashboard',
 		'/dashboard/classes',
@@ -106,5 +107,34 @@ test('production private routes enforce authentication and do not become static 
 	await page.goto('/admin/email/subscribers', { waitUntil: 'networkidle' });
 	await expect(page.getByRole('heading', { name: 'Email Subscribers', exact: true })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Refresh subscribers' })).toBeVisible();
-	expect(failures).toEqual([]);
+	const reportFixture = await request.post('/api/admin/email/campaigns', {
+		data: {
+			name: `Production report fixture ${Date.now()}`,
+			subject: 'Production report source',
+			html_content: '<p>Actual report fixture</p>'
+		}
+	});
+	expect(reportFixture.status()).toBe(200);
+	const campaign = (await reportFixture.json()).data.id;
+	expect(Number.isSafeInteger(campaign)).toBe(true);
+	try {
+		const html = await request.get(`/admin/email/campaigns/${campaign}/report`);
+		expect(html.status()).toBe(200);
+		expect(html.headers()['cache-control']).toBe('no-store');
+		expect(html.headers()['x-robots-tag']).toContain('noindex');
+		await page.goto(`/admin/email/campaigns/${campaign}/report`, { waitUntil: 'networkidle' });
+		await expect(page.getByRole('heading', { name: 'Campaign Report', exact: true })).toBeVisible();
+		await expect(
+			page
+				.locator('.metric-card')
+				.filter({ has: page.getByText('Provider Accepted', { exact: true }) })
+				.locator('.metric-value')
+		).toHaveText('0');
+		expect(failures).toEqual([]);
+	} finally {
+		const cleanup = await request.delete(`/api/admin/email/campaigns/${campaign}`, {
+			headers: { Origin: baseURL ?? '', 'Content-Type': 'application/json' }
+		});
+		expect(cleanup.status(), await cleanup.text()).toBe(200);
+	}
 });

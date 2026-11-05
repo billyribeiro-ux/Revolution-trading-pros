@@ -473,7 +473,16 @@ pub(super) async fn get_email_status(
         ),
         Err(error) => (false, Some(error.to_string()), String::new(), None),
     };
+    let broadcast = crate::services::campaign_mailer::CampaignMailer::from_state(&state).await;
+    let (broadcast_configured, broadcast_provider, broadcast_configuration_error) = match broadcast
+    {
+        Ok(mailer) => (true, Some(mailer.provider()), None),
+        Err(error) => (false, None, Some(error.to_string())),
+    };
     Ok(Json(json!({
+        "broadcast_configured":broadcast_configured,
+        "broadcast_provider":broadcast_provider,
+        "broadcast_configuration_error":broadcast_configuration_error,
         "provider":provider,
         "postmark_token_set": state.services.email.is_token_configured(),
         "email_service_enabled":enabled,

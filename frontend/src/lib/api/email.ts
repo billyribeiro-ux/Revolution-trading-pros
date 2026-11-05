@@ -8,6 +8,15 @@
  * @version 1.0.0
  */
 
+import {
+	emailCampaignEnvelope,
+	emailCampaignPage,
+	emailCampaignWrite,
+	campaignId,
+	emailCampaignDeleted,
+	emailCampaignAction
+} from './email-campaign-catalog.js';
+import type { ABTestConfig } from './campaigns.js';
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
 import type { JsonValue, QueryParams } from './_types';
@@ -33,21 +42,44 @@ export interface EmailCampaign {
 	preview_text?: string;
 	from_name: string;
 	from_email: string;
-	reply_to?: string;
-	template_id?: string;
+	reply_to?: string | null;
+	template_id?: string | null;
 	html_content: string;
-	plain_text_content?: string;
-	status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'cancelled';
+	plain_text_content?: string | null;
+	status:
+		| 'draft'
+		| 'scheduled'
+		| 'sending'
+		| 'sent'
+		| 'paused'
+		| 'failed'
+		| 'cancelled'
+		| 'archived';
 	type: 'broadcast' | 'automation' | 'sequence' | 'transactional';
-	segment_id?: string;
-	send_at?: string;
-	sent_at?: string;
-	stats?: EmailStats;
-	ab_test?: ABTest;
+	segment_id?: string | null;
+	send_at?: string | null;
+	sent_at?: string | null;
+	stats?: RecordedCampaignEmailStats;
+	ab_test?: ABTest | null;
+	ab_test_config?: ABTestConfig | null;
 	tags: string[];
-	created_by: number;
+	created_by: number | null;
 	created_at: string;
 	updated_at: string;
+}
+
+export interface RecordedCampaignEmailStats {
+	sent: number;
+	delivered: number | null;
+	opened: number;
+	clicked: number;
+	bounced: number;
+	complained: number | null;
+	unsubscribed: number;
+	open_rate: number | null;
+	click_rate: number | null;
+	bounce_rate: number | null;
+	complaint_rate: number | null;
 }
 
 export interface EmailTemplate {
@@ -380,45 +412,82 @@ class EmailAPI {
 	async getCampaigns(params?: {
 		status?: string;
 		type?: string;
+		search?: string;
 		page?: number;
 		per_page?: number;
-	}): Promise<{ campaigns: EmailCampaign[]; total: number; page: number; per_page: number }> {
-		return this.request('GET', '/admin/email/campaigns', undefined, params);
+	}) {
+		return emailCampaignPage(
+			await this.request<unknown>('GET', '/admin/email/campaigns', undefined, params)
+		);
 	}
-
 	async getCampaign(id: string): Promise<{ campaign: EmailCampaign }> {
-		return this.request('GET', `/admin/email/campaigns/${id}`);
+		return {
+			campaign: emailCampaignEnvelope(
+				await this.request<unknown>('GET', `/admin/email/campaigns/${campaignId(id)}`),
+				campaignId(id)
+			)
+		};
 	}
-
 	async createCampaign(data: Partial<EmailCampaign>): Promise<{ campaign: EmailCampaign }> {
-		return this.request('POST', '/admin/email/campaigns', data);
+		const campaign = emailCampaignEnvelope(
+			await this.request<unknown>('POST', '/admin/email/campaigns', emailCampaignWrite(data))
+		);
+		if (campaign.status !== 'draft') throw new Error('Campaign draft creation was not confirmed');
+		return { campaign };
 	}
-
 	async updateCampaign(
 		id: string,
 		data: Partial<EmailCampaign>
 	): Promise<{ campaign: EmailCampaign }> {
-		return this.request('PUT', `/admin/email/campaigns/${id}`, data);
+		return {
+			campaign: emailCampaignEnvelope(
+				await this.request<unknown>(
+					'PUT',
+					`/admin/email/campaigns/${campaignId(id)}`,
+					emailCampaignWrite(data)
+				),
+				campaignId(id)
+			)
+		};
 	}
-
 	async deleteCampaign(id: string): Promise<{ success: boolean }> {
-		return this.request('DELETE', `/admin/email/campaigns/${id}`);
+		emailCampaignDeleted(
+			await this.request<unknown>('DELETE', `/admin/email/campaigns/${campaignId(id)}`),
+			campaignId(id)
+		);
+		return { success: true };
 	}
-
 	async sendCampaign(id: string, options?: { send_at?: string }): Promise<{ success: boolean }> {
-		return this.request('POST', `/admin/email/campaigns/${id}/send`, options);
+		emailCampaignAction(
+			await this.request<unknown>('POST', `/admin/email/campaigns/${campaignId(id)}/send`, options),
+			campaignId(id),
+			'submit'
+		);
+		return { success: true };
 	}
-
 	async pauseCampaign(id: string): Promise<{ success: boolean }> {
-		return this.request('POST', `/admin/email/campaigns/${id}/pause`);
+		emailCampaignAction(
+			await this.request<unknown>('POST', `/admin/email/campaigns/${campaignId(id)}/pause`),
+			campaignId(id),
+			'pause'
+		);
+		return { success: true };
 	}
-
 	async resumeCampaign(id: string): Promise<{ success: boolean }> {
-		return this.request('POST', `/admin/email/campaigns/${id}/resume`);
+		emailCampaignAction(
+			await this.request<unknown>('POST', `/admin/email/campaigns/${campaignId(id)}/resume`),
+			campaignId(id),
+			'submit'
+		);
+		return { success: true };
 	}
-
 	async duplicateCampaign(id: string): Promise<{ campaign: EmailCampaign }> {
-		return this.request('POST', `/admin/email/campaigns/${id}/duplicate`);
+		const campaign = emailCampaignEnvelope(
+			await this.request<unknown>('POST', `/admin/email/campaigns/${campaignId(id)}/duplicate`)
+		);
+		if (campaign.id === id || campaign.status !== 'draft' || campaign.stats?.sent !== 0)
+			throw new Error('Campaign duplication was not confirmed');
+		return { campaign };
 	}
 
 	async sendTestEmail(id: string, emails: string[]): Promise<{ success: boolean }> {

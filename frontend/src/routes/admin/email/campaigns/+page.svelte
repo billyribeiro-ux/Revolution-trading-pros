@@ -13,13 +13,19 @@
 
 	// FIX-2026-04-26: onMount imported for $effect-cascade fix below.
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { afterNavigate } from '$app/navigation';
+	import { page } from '$app/state';
+	import {
+		emptyCampaignForm,
+		campaignForm,
+		campaignPatch,
+		campaignWrite
+	} from '#lib/api/campaign-form.js';
+	import { formatCampaignRate } from '#lib/api/campaign-report.js';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
-	import { listMemberSegments } from '#lib/api/member-segments.js';
-	import { catalogTemplatePage } from '#lib/api/email-template-catalog.js';
-	import { connections, getIsEmailConnected } from '#lib/stores/connections.svelte.js';
-	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
+	import { memberSegment, listMemberSegments } from '#lib/api/member-segments.js';
+	import { catalogTemplateEnvelope, catalogTemplatePage } from '#lib/api/email-template-catalog.js';
 	import {
 		IconMail,
 		IconPlus,
@@ -41,7 +47,10 @@
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
 	import {
 		getCampaigns,
+		getCampaign,
+		updateCampaign,
 		getCampaignStats,
+		getCampaignDeliveryStatus,
 		createCampaign,
 		deleteCampaign as apiDeleteCampaign,
 		duplicateCampaign as apiDuplicateCampaign,
@@ -66,6 +75,8 @@
 
 	// Connection-aware state
 	let connectionLoading = $state(true);
+	let deliveryConfigured = $state<boolean | null>(null);
+	let deliveryConfigurationError = $state('');
 
 	// State
 	let loading = $state(true);
@@ -88,16 +99,20 @@
 
 	// Create modal
 	let showCreateModal = $state(false);
-	let newCampaign = $state({
-		name: '',
-		subject: '',
-		subjectB: '',
-		useABTest: false,
-		abTestSplit: 50,
-		scheduledFor: '',
-		segmentId: '',
-		templateId: ''
-	});
+	let newCampaign = $state(emptyCampaignForm());
+	let editingCampaign = $state<APICampaign | null>(null);
+	let selectedTemplate = $state<{ id: number; name: string } | null>(null);
+	let selectedSegment = $state<Segment | null>(null);
+	let templateSearch = $state(''),
+		segmentSearch = $state('');
+	let templatePage = $state(1),
+		segmentPage = $state(1);
+	let templateLastPage = $state(1),
+		segmentLastPage = $state(1);
+	let templatesLoading = $state(false),
+		segmentsLoading = $state(false);
+	let templateGeneration = 0,
+		segmentGeneration = 0;
 
 	// Segments - dynamically loaded from API
 	let segments = $state<Segment[]>([]);
@@ -105,6 +120,68 @@
 	// Templates (loaded from API)
 	let templates = $state<{ id: number; name: string }[]>([]);
 
+	let templateOptions = $derived(
+		selectedTemplate && !templates.some((t) => t.id === selectedTemplate?.id)
+			? [selectedTemplate, ...templates]
+			: templates
+	);
+	let segmentOptions = $derived(
+		selectedSegment && !segments.some((t) => t.id === selectedSegment?.id)
+			? [selectedSegment, ...segments]
+			: segments
+	);
+	function openNew() {
+		editingCampaign = null;
+		newCampaign = emptyCampaignForm();
+		selectedTemplate = null;
+		selectedSegment = null;
+		showCreateModal = true;
+	}
+	async function openEdit(campaign: APICampaign | number) {
+		if (actionPending !== null) return;
+		const id = typeof campaign === 'number' ? campaign : campaign.id;
+		actionPending = id;
+		try {
+			const actual = await getCampaign(id);
+			if (!['draft', 'paused', 'failed'].includes(actual.status))
+				throw new Error('Pause before editing; duplicate a sent campaign');
+			const [template, segment] = await Promise.all([
+				actual.template_id == null
+					? null
+					: adminFetch<unknown>(`/api/admin/email/templates/${actual.template_id}`).then(
+							catalogTemplateEnvelope
+						),
+				actual.segment_id == null
+					? null
+					: adminFetch<unknown>(`/api/admin/members/segments/${actual.segment_id}`).then(
+							memberSegment
+						)
+			]);
+			selectedTemplate = template
+				? { id: Number(template.template.id), name: template.template.name }
+				: null;
+			selectedSegment = segment
+				? { id: segment.id, name: segment.name, count: segment.memberCount }
+				: null;
+			editingCampaign = actual;
+			newCampaign = campaignForm(actual);
+			showCreateModal = true;
+		} catch (error) {
+			toastStore.error(error instanceof Error ? error.message : 'Unable to open saved campaign');
+		} finally {
+			actionPending = null;
+		}
+	}
+	let handledIntent = '';
+	afterNavigate(() => {
+		const intent = page.url.search;
+		if (intent === handledIntent) return;
+		handledIntent = intent;
+		const edit = page.url.searchParams.get('edit');
+		if (edit && /^[1-9]\d*$/.test(edit) && Number.isSafeInteger(Number(edit)))
+			void openEdit(Number(edit));
+		else if (page.url.searchParams.get('new') === '1') openNew();
+	});
 	// Derived State
 
 	let filteredCampaigns = $derived(campaigns);
@@ -117,17 +194,7 @@
 		await Promise.all([loadCampaigns(), loadStats()]);
 	}
 
-	// Lifecycle - onMount (NOT $effect)
-	// FIX-2026-04-26: converted from $effect to onMount.
-	// `initializeData()` calls `connections.load()` which mutates `connectionsState`
-	// AND reads it back via `getIsEmailConnected()`. Inside an $effect that's the
-	// classic write-while-reading-tracked-dep pattern that fires
-	// effect_update_depth_exceeded on the post-login `goto('/admin/email/campaigns')`
-	// flush. Same recipe as the dashboard fix at admin/analytics/+page.svelte:131-163
-	// (commit dad9af2cf).
-	// See https://svelte.dev/docs/svelte/$effect#When-not-to-use-$effect.
-	//
-	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
+	// Read configuration and persisted authoring independently.
 	onMount(() => {
 		void initializeData();
 		let polling = false;
@@ -175,9 +242,24 @@
 			'Campaign scheduled'
 		);
 	}
+	async function loadDeliveryStatus() {
+		connectionLoading = true;
+		deliveryConfigurationError = '';
+		try {
+			const status = await getCampaignDeliveryStatus();
+			deliveryConfigured = status.configured;
+			deliveryConfigurationError = status.error ?? '';
+		} catch (error) {
+			deliveryConfigured = null;
+			deliveryConfigurationError =
+				error instanceof Error ? error.message : 'Broadcast configuration status unavailable';
+		} finally {
+			connectionLoading = false;
+		}
+	}
 	async function initializeData() {
 		await Promise.allSettled([
-			connections.load(),
+			loadDeliveryStatus(),
 			loadCampaigns(),
 			loadStats(),
 			loadTemplates(),
@@ -226,34 +308,64 @@
 		}
 	}
 	async function loadTemplates() {
+		const generation = ++templateGeneration;
+		templatesLoading = true;
 		templatesError = '';
 		try {
+			const query = new URLSearchParams({
+				per_page: '20',
+				page: String(templatePage),
+				search: templateSearch.trim()
+			});
 			const result = catalogTemplatePage(
-				await adminFetch<unknown>('/api/admin/email/templates?per_page=100')
+				await adminFetch<unknown>(`/api/admin/email/templates?${query}`)
 			);
+			if (generation !== templateGeneration) return;
+			templateLastPage = Math.max(1, Math.ceil(result.total / 20));
+			if (templatePage > templateLastPage) {
+				templatePage = templateLastPage;
+				await loadTemplates();
+				return;
+			}
 			templates = result.templates
 				.filter((t) => t.is_active)
 				.map((t) => ({ id: Number(t.id), name: t.name }));
 		} catch (err) {
-			templates = [];
-			templatesError = err instanceof Error ? err.message : 'Email templates unavailable';
+			if (generation === templateGeneration) {
+				templates = [];
+				templatesError = err instanceof Error ? err.message : 'Email templates unavailable';
+			}
+		} finally {
+			if (generation === templateGeneration) templatesLoading = false;
 		}
 	}
 	async function loadSegments() {
+		const generation = ++segmentGeneration;
+		segmentsLoading = true;
 		segmentsError = '';
 		try {
-			const result = await listMemberSegments({ per_page: 100, is_active: true });
+			const result = await listMemberSegments({
+				per_page: 20,
+				page: segmentPage,
+				search: segmentSearch.trim(),
+				is_active: true
+			});
+			if (generation !== segmentGeneration) return;
+			segmentLastPage = Math.max(1, Math.ceil(result.total / 20));
+			if (segmentPage > segmentLastPage) {
+				segmentPage = segmentLastPage;
+				await loadSegments();
+				return;
+			}
 			segments = result.segments.map((s) => ({ id: s.id, name: s.name, count: s.memberCount }));
 		} catch (err) {
-			segments = [];
-			segmentsError = err instanceof Error ? err.message : 'Member segments unavailable';
+			if (generation === segmentGeneration) {
+				segments = [];
+				segmentsError = err instanceof Error ? err.message : 'Member segments unavailable';
+			}
+		} finally {
+			if (generation === segmentGeneration) segmentsLoading = false;
 		}
-	}
-
-	// View Report Handler
-
-	function viewCampaignReport(campaign: APICampaign) {
-		goto(`/admin/email/campaigns/${campaign.id}/report`);
 	}
 
 	function formatDate(dateStr: string | null): string {
@@ -297,7 +409,7 @@
 			toastStore.error('Please fill in campaign name and subject');
 			return;
 		}
-		if (!newCampaign.templateId) {
+		if (!editingCampaign && !newCampaign.templateId) {
 			toastStore.error('Please select an email template');
 			return;
 		}
@@ -308,31 +420,24 @@
 
 		creating = true;
 		try {
-			const campaignData = {
-				name: newCampaign.name,
-				subject: newCampaign.subject,
-				template_id: parseInt(newCampaign.templateId),
-				segment_id: newCampaign.segmentId ? parseInt(newCampaign.segmentId) : null,
-				scheduled_at: newCampaign.scheduledFor
-					? new Date(newCampaign.scheduledFor).toISOString()
-					: null,
-				ab_test_config: newCampaign.useABTest
-					? {
-							enabled: true,
-							subject_b: newCampaign.subjectB,
-							split_percentage: newCampaign.abTestSplit
-						}
-					: null
-			};
-
-			if (campaignData.scheduled_at && new Date(campaignData.scheduled_at).getTime() <= Date.now())
+			const campaignData = campaignWrite(newCampaign);
+			const editing = editingCampaign;
+			if (
+				!editing &&
+				campaignData.scheduled_at &&
+				new Date(campaignData.scheduled_at).getTime() <= Date.now()
+			)
 				throw new Error('Choose a future time to schedule this campaign');
-			const saved = await createCampaign(campaignData);
+			const saved = editing
+				? await updateCampaign(editing.id, campaignPatch(editing, newCampaign))
+				: await createCampaign(campaignData);
 			showCreateModal = false;
-			activeTab = 'drafts';
+			activeTab = editing ? 'all' : 'drafts';
 			currentPage = 1;
 			search = '';
-			if (campaignData.scheduled_at) {
+			if (editing) {
+				toastStore.success('Campaign changes saved; no submission was requested');
+			} else if (campaignData.scheduled_at) {
 				try {
 					const submitted = await scheduleCampaign(saved.id, campaignData.scheduled_at);
 					activeTab = submitted.status === 'scheduled' ? 'scheduled' : 'all';
@@ -347,21 +452,15 @@
 			}
 
 			// Reset form
-			newCampaign = {
-				name: '',
-				subject: '',
-				subjectB: '',
-				useABTest: false,
-				abTestSplit: 50,
-				scheduledFor: '',
-				segmentId: '',
-				templateId: ''
-			};
+			newCampaign = emptyCampaignForm();
+			editingCampaign = null;
+			selectedTemplate = null;
+			selectedSegment = null;
 
 			// Reload campaigns
 			await Promise.all([loadCampaigns(), loadStats()]);
 		} catch (err) {
-			toastStore.error(err instanceof Error ? err.message : 'Failed to create campaign');
+			toastStore.error(err instanceof Error ? err.message : 'Failed to save campaign');
 		} finally {
 			creating = false;
 		}
@@ -439,10 +538,10 @@
 <div class="campaigns-page">
 	<!-- Header -->
 	<div class="page-header">
-		<button class="back-btn" onclick={() => goto('/admin/email/templates')}>
+		<a class="back-btn" href="/admin/email/templates">
 			<IconArrowLeft size={20} />
 			Back to Templates
-		</button>
+		</a>
 
 		<div class="header-content">
 			<div class="header-title">
@@ -460,7 +559,7 @@
 					<IconRefresh size={18} />
 					Refresh
 				</button>
-				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
+				<button class="btn-primary" onclick={openNew}>
 					<IconPlus size={18} />
 					New Campaign
 				</button>
@@ -468,16 +567,21 @@
 		</div>
 	</div>
 
-	{#if !connectionLoading && !getIsEmailConnected()}
+	{#if !connectionLoading && deliveryConfigured !== true}
 		<p role="status">
-			Email delivery is disconnected. Saved drafts remain available. Configure a delivery provider
-			in Settings → Connections before sending.
+			{deliveryConfigured === false
+				? 'Broadcast delivery is not configured.'
+				: 'Broadcast configuration status is unavailable.'} Saved drafts remain available. {deliveryConfigurationError}
+			<a href="/admin/email/smtp">SMTP settings</a> ·
+			<a href="/admin/connections">Provider connections</a>
+			<button class="btn-secondary" onclick={loadDeliveryStatus}
+				>Refresh delivery configuration</button
+			>
 		</p>
 	{/if}
 	<!-- Connection Check -->
-	{#if connectionLoading}
-		<SkeletonLoader variant="dashboard" />
-	{:else if loading}
+	{#if connectionLoading}<p role="status">Checking broadcast configuration...</p>{/if}
+	{#if loading}
 		<div class="loading-grid">
 			{#each [1, 2, 3, 4] as _, i (i)}
 				<div class="skeleton skeleton-metric"></div>
@@ -647,20 +751,24 @@
 
 						{#if campaign.ab_test_config?.enabled && campaign.ab_test_config.variant_a}
 							<div class="ab-test-results">
-								<span class="ab-label">A/B Test Results:</span>
+								<span class="ab-label">A/B Subject Variants:</span>
 								<div class="ab-variants">
 									<div class={['ab-variant', { winner: campaign.ab_test_config.winner === 'a' }]}>
 										<span class="variant-label">A:</span>
 										<span class="variant-subject">{campaign.subject}</span>
 										<span class="variant-rate"
-											>{campaign.ab_test_config.variant_a?.open_rate || 0}%</span
+											>{formatCampaignRate(
+												campaign.ab_test_config.variant_a?.open_rate ?? null
+											)}</span
 										>
 									</div>
 									<div class={['ab-variant', { winner: campaign.ab_test_config.winner === 'b' }]}>
 										<span class="variant-label">B:</span>
 										<span class="variant-subject">{campaign.ab_test_config.subject_b}</span>
 										<span class="variant-rate"
-											>{campaign.ab_test_config.variant_b?.open_rate || 0}%</span
+											>{formatCampaignRate(
+												campaign.ab_test_config.variant_b?.open_rate ?? null
+											)}</span
 										>
 									</div>
 								</div>
@@ -668,7 +776,15 @@
 						{/if}
 					{/if}
 
+					{#if campaign.last_error}<p role="status" class="campaign-error">
+							{campaign.last_error}
+						</p>{/if}
 					<div class="campaign-actions">
+						{#if ['draft', 'paused', 'failed'].includes(campaign.status)}<button
+								class="btn-secondary small"
+								disabled={actionPending !== null}
+								onclick={() => openEdit(campaign)}><IconEdit size={16} />Edit</button
+							>{/if}
 						{#if campaign.status === 'draft'}
 							{#if campaign.planned_at}<button
 									class="btn-secondary small"
@@ -719,10 +835,9 @@
 									onclick={() => handleCancelCampaign(campaign.id)}>Cancel</button
 								>
 							{/if}
-							<button class="btn-secondary small" onclick={() => viewCampaignReport(campaign)}>
-								<IconChartBar size={16} />
-								View Report
-							</button>
+							<a class="btn-secondary small" href={`/admin/email/campaigns/${campaign.id}/report`}
+								><IconChartBar size={16} />View Report</a
+							>
 							<button class="btn-secondary small" onclick={() => handleDuplicateCampaign(campaign)}>
 								<IconCopy size={16} />
 								Duplicate
@@ -737,7 +852,7 @@
 					<IconMail size={48} stroke={1} />
 					<h3>No campaigns found</h3>
 					<p>Create a campaign or change the current filters</p>
-					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
+					<button class="btn-primary" onclick={openNew}>
 						<IconPlus size={18} />
 						Create Campaign
 					</button>
@@ -782,7 +897,7 @@
 	>
 		<div class="modal-content large" role="document">
 			<div class="modal-header">
-				<h2>Create New Campaign</h2>
+				<h2>{editingCampaign ? 'Edit Campaign' : 'Create New Campaign'}</h2>
 				<button class="close-btn" onclick={() => (showCreateModal = false)}>
 					<IconX size={20} />
 				</button>
@@ -863,21 +978,93 @@
 					{/if}
 
 					<div class="form-group">
+						<label for="segment-search">Find member segments</label>
+						<div class="reference-search">
+							<input id="segment-search" type="search" bind:value={segmentSearch} /><button
+								class="btn-secondary"
+								disabled={segmentsLoading}
+								onclick={() => {
+									segmentPage = 1;
+									void loadSegments();
+								}}>Search segments</button
+							>
+						</div>
+						<nav aria-label="Segment options pages">
+							<button
+								class="btn-secondary"
+								disabled={segmentsLoading || segmentPage <= 1}
+								onclick={() => {
+									segmentPage--;
+									void loadSegments();
+								}}>Previous segments</button
+							><span>Page {segmentPage} of {segmentLastPage}</span><button
+								class="btn-secondary"
+								disabled={segmentsLoading || segmentPage >= segmentLastPage}
+								onclick={() => {
+									segmentPage++;
+									void loadSegments();
+								}}>Next segments</button
+							>
+						</nav>
 						<label for="campaign-segment">Target Segment</label>
-						<select id="campaign-segment" bind:value={newCampaign.segmentId}>
+						<select
+							id="campaign-segment"
+							bind:value={newCampaign.segmentId}
+							onchange={(event) => {
+								selectedSegment =
+									segmentOptions.find((s) => String(s.id) === event.currentTarget.value) ?? null;
+							}}
+						>
 							<option value="">All members with newsletter confirmation</option>
-							{#each segments as segment (segment.id)}
-								<option value={segment.id}>{segment.name} ({formatNumber(segment.count)})</option>
+							{#each segmentOptions as segment (segment.id)}
+								<option value={String(segment.id)}
+									>{segment.name} ({formatNumber(segment.count)})</option
+								>
 							{/each}
 						</select>
 					</div>
 
 					<div class="form-group">
+						<label for="template-search">Find email templates</label>
+						<div class="reference-search">
+							<input id="template-search" type="search" bind:value={templateSearch} /><button
+								class="btn-secondary"
+								disabled={templatesLoading}
+								onclick={() => {
+									templatePage = 1;
+									void loadTemplates();
+								}}>Search templates</button
+							>
+						</div>
+						<nav aria-label="Template options pages">
+							<button
+								class="btn-secondary"
+								disabled={templatesLoading || templatePage <= 1}
+								onclick={() => {
+									templatePage--;
+									void loadTemplates();
+								}}>Previous templates</button
+							><span>Page {templatePage} of {templateLastPage}</span><button
+								class="btn-secondary"
+								disabled={templatesLoading || templatePage >= templateLastPage}
+								onclick={() => {
+									templatePage++;
+									void loadTemplates();
+								}}>Next templates</button
+							>
+						</nav>
 						<label for="campaign-template">Email Template</label>
-						<select id="campaign-template" bind:value={newCampaign.templateId}>
+						<select
+							id="campaign-template"
+							bind:value={newCampaign.templateId}
+							onchange={(event) => {
+								selectedTemplate =
+									templateOptions.find((t) => String(t.id) === event.currentTarget.value) ?? null;
+							}}
+						>
 							<option value="">Select template...</option>
-							{#each templates as template (template.id)}
-								<option value={template.id}>{template.name}</option>
+							{#each templateOptions as template (template.id)}
+								<option value={String(template.id)}>{template.name}</option>
 							{/each}
 						</select>
 					</div>
@@ -889,17 +1076,28 @@
 							id="campaign-schedule"
 							name="campaign-schedule"
 							type="datetime-local"
+							step="any"
 							bind:value={newCampaign.scheduledFor}
 						/>
-						<small>Leave empty to save as draft</small>
+						<small
+							>{editingCampaign
+								? 'Saving changes does not submit. A paused campaign uses this time when resumed; clearing it allows Resume to submit for now.'
+								: 'Leave empty to save as draft'}</small
+						>
 					</div>
 				</div>
 			</div>
 
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showCreateModal = false)}>Cancel</button>
-				<button class="btn-primary" onclick={handleCreateCampaign} disabled={creating}>
-					{#if newCampaign.scheduledFor}
+				<button
+					class="btn-primary"
+					onclick={handleCreateCampaign}
+					disabled={creating || templatesLoading || segmentsLoading}
+				>
+					{#if editingCampaign}
+						<IconEdit size={18} />Save Changes
+					{:else if newCampaign.scheduledFor}
 						<IconCalendar size={18} />
 						Schedule Campaign
 					{:else}
@@ -952,6 +1150,24 @@
 />
 
 <style>
+	.reference-search,
+	.form-group nav {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.reference-search input {
+		min-width: 0;
+		flex: 1;
+	}
+	.form-group nav {
+		margin: 0.5rem 0;
+		font-size: 0.8rem;
+	}
+	.campaign-error {
+		color: var(--admin-error-text, #f87171);
+	}
 	.campaigns-page {
 		padding: 2rem;
 		max-width: 1400px;

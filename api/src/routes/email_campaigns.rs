@@ -192,7 +192,7 @@ impl Input {
 }
 macro_rules! campaign_sql {
  ($before:literal,$after:literal)=>{concat!($before,
- "c.id,c.name,c.subject,c.template_id,c.segment_id,COALESCE(c.html_content,'') AS html_content,c.text_content AS plain_text_content,COALESCE(c.authoring_config->>'from_name','') AS from_name,COALESCE(c.authoring_config->>'from_email','') AS from_email,c.authoring_config->>'reply_to' AS reply_to,COALESCE(c.authoring_config->>'preview_text','') AS preview_text,COALESCE(NULLIF(c.authoring_config->>'type',''),'broadcast') AS type,COALESCE(c.authoring_config->'tags','[]'::jsonb) AS tags,c.authoring_config->'ab_test_config' AS ab_test_config,COALESCE(d.status,c.status,'draft') AS status,COALESCE(d.scheduled_at,c.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,c.authoring_config->>'planned_at' AS planned_at,COALESCE(d.sent_at,c.sent_at AT TIME ZONE 'UTC') AS sent_at,c.created_by,c.authoring_version,c.created_at AT TIME ZONE 'UTC' AS created_at,GREATEST(d.updated_at,c.updated_at AT TIME ZONE 'UTC') AS updated_at,COALESCE(d.recipients_count,0)::bigint AS total_recipients,COALESCE(d.emails_sent,0)::bigint AS sent_count,COALESCE(d.opens,0)::bigint AS opened_count,COALESCE(d.clicks,0)::bigint AS clicked_count,COALESCE((d.delivery_stats->>'bounced')::bigint,0) AS bounced_count,COALESCE((d.delivery_stats->>'unsubscribed')::bigint,0) AS unsubscribed_count,CASE WHEN d.emails_sent>0 THEN d.open_rate ELSE NULL END AS open_rate,CASE WHEN d.emails_sent>0 THEN d.click_rate ELSE NULL END AS click_rate,'recorded_outbox'::text AS metrics_scope,jsonb_build_object('recipients',c.recipient_count,'sent',c.sent_count,'opened',c.open_count,'clicked',c.click_count,'bounced',c.bounce_count,'unsubscribed',c.unsubscribe_count) AS historical_counts,CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('id',t.id,'name',t.name) END AS template,CASE WHEN u.id IS NULL THEN NULL ELSE jsonb_build_object('id',u.id,'name',u.name) END AS creator FROM email_campaigns c LEFT JOIN crm_campaigns d ON d.id=c.delivery_campaign_id LEFT JOIN email_templates t ON t.id=c.template_id LEFT JOIN users u ON u.id=c.created_by ",$after)};
+ "c.id,c.name,c.subject,c.template_id,c.segment_id,COALESCE(c.html_content,'') AS html_content,c.text_content AS plain_text_content,COALESCE(c.authoring_config->>'from_name','') AS from_name,COALESCE(c.authoring_config->>'from_email','') AS from_email,c.authoring_config->>'reply_to' AS reply_to,COALESCE(c.authoring_config->>'preview_text','') AS preview_text,COALESCE(NULLIF(c.authoring_config->>'type',''),'broadcast') AS type,COALESCE(c.authoring_config->'tags','[]'::jsonb) AS tags,c.authoring_config->'ab_test_config' AS ab_test_config,COALESCE(d.status,c.status,'draft') AS status,COALESCE(d.scheduled_at,c.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,c.authoring_config->>'planned_at' AS planned_at,COALESCE(d.sent_at,c.sent_at AT TIME ZONE 'UTC') AS sent_at,c.created_by,c.authoring_version,c.created_at AT TIME ZONE 'UTC' AS created_at,GREATEST(d.updated_at,c.updated_at AT TIME ZONE 'UTC') AS updated_at,COALESCE(d.recipients_count,0)::bigint AS total_recipients,COALESCE(d.emails_sent,0)::bigint AS sent_count,COALESCE(d.failed_count,0)::bigint AS failed_count,d.last_error,d.pause_reason,COALESCE(d.delivery_stats,'{}'::jsonb) AS delivery_stats,COALESCE(d.opens,0)::bigint AS opened_count,COALESCE(d.clicks,0)::bigint AS clicked_count,COALESCE((d.delivery_stats->>'bounced')::bigint,0) AS bounced_count,COALESCE((d.delivery_stats->>'unsubscribed')::bigint,0) AS unsubscribed_count,CASE WHEN d.emails_sent>0 THEN d.open_rate ELSE NULL END AS open_rate,CASE WHEN d.emails_sent>0 THEN d.click_rate ELSE NULL END AS click_rate,'recorded_outbox'::text AS metrics_scope,jsonb_build_object('recipients',c.recipient_count,'sent',c.sent_count,'opened',c.open_count,'clicked',c.click_count,'bounced',c.bounce_count,'unsubscribed',c.unsubscribe_count) AS historical_counts,CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('id',t.id,'name',t.name) END AS template,CASE WHEN u.id IS NULL THEN NULL ELSE jsonb_build_object('id',u.id,'name',u.name) END AS creator FROM email_campaigns c LEFT JOIN crm_campaigns d ON d.id=c.delivery_campaign_id LEFT JOIN email_templates t ON t.id=c.template_id LEFT JOIN users u ON u.id=c.created_by ",$after)};
 }
 async fn row(pool: &PgPool, id: i64) -> Result<Value, ApiError> {
     sqlx::query_scalar(campaign_sql!(
@@ -436,6 +436,7 @@ async fn update(
     let name = input.name.clone();
     let subject = input.subject.clone();
     let template = input.template_id;
+    let requested_at = input.scheduled_at;
     let segment = input.segment_id;
     let html = input.html_content.clone();
     let plain = input.plain_text_content.clone();
@@ -464,9 +465,19 @@ async fn update(
     let content = content.filter(|_| template.flatten() != previous_template);
     let html = html.or_else(|| content.as_ref().map(|v| v.0.clone()));
     let plain = plain.or_else(|| content.map(|v| v.1));
-    sqlx::query("UPDATE email_campaigns SET name=COALESCE($2,name),subject=COALESCE($3,subject),template_id=CASE WHEN $4 THEN $5 ELSE template_id END,segment_id=CASE WHEN $6 THEN $7 ELSE segment_id END,html_content=COALESCE($8,html_content),text_content=CASE WHEN $9 THEN $10 ELSE text_content END,authoring_config=$11,authoring_version=authoring_version+1,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1").bind(id).bind(name.as_deref().map(str::trim)).bind(subject).bind(template.is_some()).bind(template.flatten()).bind(segment.is_some()).bind(segment.flatten()).bind(html).bind(plain.is_some()).bind(plain.flatten()).bind(json!(config)).execute(&mut *tx).await.map_err(db)?;
+    sqlx::query("UPDATE email_campaigns SET name=COALESCE($2,name),subject=COALESCE($3,subject),template_id=CASE WHEN $4 THEN $5 ELSE template_id END,segment_id=CASE WHEN $6 THEN $7 ELSE segment_id END,html_content=COALESCE($8,html_content),text_content=CASE WHEN $9 THEN $10 ELSE text_content END,authoring_config=$11,scheduled_at=CASE WHEN $12 THEN $13::timestamptz AT TIME ZONE 'UTC' ELSE scheduled_at END,authoring_version=authoring_version+1,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1").bind(id).bind(name.as_deref().map(str::trim)).bind(subject).bind(template.is_some()).bind(template.flatten()).bind(segment.is_some()).bind(segment.flatten()).bind(html).bind(plain.is_some()).bind(plain.flatten()).bind(json!(config)).bind(requested_at.is_some()).bind(requested_at.flatten()).execute(&mut *tx).await.map_err(db)?;
     if let Some(engine) = engine {
         delivery::synchronize(&mut tx, id, engine).await?;
+        if let Some(requested) = requested_at {
+            // Editing a paused request never submits it. Resume will freeze the
+            // new due time; an explicit clear must not fall back to an old one.
+            sqlx::query("UPDATE crm_campaigns SET scheduled_at=$2 WHERE id=$1")
+                .bind(engine)
+                .bind(requested)
+                .execute(&mut *tx)
+                .await
+                .map_err(db)?;
+        }
     }
     record(&mut tx, admin.0.id, id, "Email campaign updated").await?;
     tx.commit().await.map_err(db)?;
