@@ -14,6 +14,7 @@ import {
 	sequenceMailer
 } from '../crm-sequence-contract.js';
 const mailId = '34ad48b0-615b-49e8-86ee-c0d9f77206ee';
+const secondMailId = '18afd4a8-d2eb-46c7-852c-6b788b414dec';
 const at = '2026-11-05T00:00:00Z';
 function fixture() {
 	return {
@@ -188,4 +189,56 @@ it('requires confirmed action identity and configures each write as one attempt 
 	await expect(api.subscribeToSequence('42', ['2'])).rejects.toThrow('exceeded');
 	await expect(api.deleteSequence('../settings')).rejects.toThrow('identity');
 	expect(transport.delete).toHaveBeenCalledTimes(1);
+});
+it('reads each sequence identity independently from its position in a paginated list', async () => {
+	transport.get.mockResolvedValue({
+		data: [
+			fixture(),
+			{
+				...fixture(),
+				id: '81',
+				emails: [{ ...fixture().emails[0], id: secondMailId, sequence_id: '81' }]
+			}
+		],
+		meta: { total: 22, current_page: 2, per_page: 20, last_page: 2 }
+	});
+	const result = await new CrmAPI().getSequences({ page: 2 });
+	expect(result.data.map((sequence) => sequence.id)).toEqual(['42', '81']);
+	expect(result.data[1]?.emails?.[0]?.sequence_id).toBe('81');
+});
+it('requires the saved email order and membership to match the requested reorder', async () => {
+	const api = new CrmAPI(),
+		first = fixture().emails[0],
+		second = { ...first, id: secondMailId, position: 1 };
+	transport.post.mockResolvedValue([first, second]);
+	await expect(api.reorderSequenceEmails('42', [secondMailId, mailId])).rejects.toThrow(
+		'order did not match'
+	);
+	transport.post.mockResolvedValue([{ ...second, position: 0 }]);
+	await expect(api.reorderSequenceEmails('42', [secondMailId, mailId])).rejects.toThrow(
+		'order did not match'
+	);
+	transport.post.mockResolvedValue([
+		{ ...second, position: 0 },
+		{ ...first, position: 1 }
+	]);
+	await expect(api.reorderSequenceEmails('42', [secondMailId, mailId])).resolves.toMatchObject([
+		{ id: secondMailId, position: 0 },
+		{ id: mailId, position: 1 }
+	]);
+	transport.post.mockClear();
+	await expect(api.reorderSequenceEmails('42', [mailId, mailId.toUpperCase()])).rejects.toThrow(
+		'once'
+	);
+	expect(transport.post).not.toHaveBeenCalled();
+});
+it('compares a caller-supplied email UUID using the canonical saved identity', async () => {
+	const api = new CrmAPI();
+	transport.post.mockResolvedValue(fixture().emails[0]);
+	await expect(api.createSequenceEmail('42', { id: mailId.toUpperCase() })).resolves.toMatchObject({
+		id: mailId
+	});
+	transport.post.mockClear();
+	await expect(api.createSequenceEmail('42', { id: '../invalid' })).rejects.toThrow('identity');
+	expect(transport.post).not.toHaveBeenCalled();
 });

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
 	import {
 		IconMail,
 		IconMailForward,
@@ -56,6 +55,7 @@
 
 	// Action States
 	let actionInProgress = $state<string | null>(null);
+	const showStats = $derived(!isLoading && !error);
 
 	// Delete confirmation modal state
 	let showDeleteModal = $state(false);
@@ -84,8 +84,14 @@
 
 			const response = await crmAPI.getSequences(filters);
 			if (generation !== loadGeneration) return;
+			const lastPage = response.meta.total_pages ?? 1;
+			if (currentPage > lastPage) {
+				currentPage = lastPage;
+				await loadSequences();
+				return;
+			}
 			sequences = response.data;
-			totalPages = response.meta.total_pages ?? 1;
+			totalPages = lastPage;
 
 			stats = {
 				total: response.meta.total,
@@ -100,7 +106,12 @@
 		}
 	}
 
-	function changePage(by: number) { currentPage += by; void loadSequences(); }
+	function changePage(by: number) {
+		const next = currentPage + by;
+		if (isLoading || actionInProgress || next < 1 || next > totalPages) return;
+		currentPage = next;
+		void loadSequences();
+	}
 
 	function scheduleSequencesReload() {
 		loadGeneration += 1; currentPage = 1; isLoading = true;
@@ -139,6 +150,7 @@
 	}
 
 	async function duplicateSequence(id: string) {
+		if (actionInProgress) return;
 		actionInProgress = id;
 		try {
 			await crmAPI.duplicateSequence(id);
@@ -151,12 +163,13 @@
 	}
 
 	function deleteSequence(id: string) {
+		if (actionInProgress) return;
 		pendingDeleteId = id;
 		showDeleteModal = true;
 	}
 
 	async function confirmDeleteSequence() {
-		if (!pendingDeleteId) return;
+		if (!pendingDeleteId || actionInProgress) return;
 		showDeleteModal = false;
 		const id = pendingDeleteId;
 		pendingDeleteId = null;
@@ -173,6 +186,7 @@
 	}
 
 	async function toggleSequenceStatus(sequence: EmailSequence) {
+		if (actionInProgress) return;
 		actionInProgress = sequence.id;
 		try {
 			const newStatus: SequenceStatus = sequence.status === 'active' ? 'paused' : 'active';
@@ -313,8 +327,6 @@
 	// Was previously a `$effect` — migrated to `onMount` per audit P2 #10
 	// to keep one-shot init off the reactive graph.
 	onMount(() => {
-		if (!browser) return;
-
 		void loadSequences();
 		isInitialized = true;
 
@@ -373,7 +385,7 @@
 					<IconMail size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{formatNumber(stats.total)}</span>
+					<span class="stat-value">{showStats ? formatNumber(stats.total) : '—'}</span>
 					<span class="stat-label">Matching Sequences</span>
 				</div>
 			</div>
@@ -382,7 +394,7 @@
 					<IconPlayerPlay size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{formatNumber(stats.active)}</span>
+					<span class="stat-value">{showStats ? formatNumber(stats.active) : '—'}</span>
 					<span class="stat-label">Active on this page</span>
 				</div>
 			</div>
@@ -391,7 +403,7 @@
 					<IconUsers size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{formatNumber(stats.totalSubscribers)}</span>
+					<span class="stat-value">{showStats ? formatNumber(stats.totalSubscribers) : '—'}</span>
 					<span class="stat-label">Enrollments on this page</span>
 				</div>
 			</div>
@@ -400,7 +412,7 @@
 					<IconMailForward size={24} />
 				</div>
 				<div class="stat-content">
-					<span class="stat-value">{formatNumber(stats.totalSent)}</span>
+					<span class="stat-value">{showStats ? formatNumber(stats.totalSent) : '—'}</span>
 					<span class="stat-label">Accepted on this page</span>
 				</div>
 			</div>
@@ -522,7 +534,7 @@
 												class="btn-icon"
 												title={sequence.status === 'active' ? 'Pause' : 'Activate'}
 												onclick={() => toggleSequenceStatus(sequence)}
-												disabled={actionInProgress === sequence.id}
+												disabled={actionInProgress !== null}
 											>
 												{#if sequence.status === 'active'}
 													<IconPlayerPause size={16} />
@@ -559,7 +571,7 @@
 											class="btn-icon"
 											title="Duplicate"
 											onclick={() => duplicateSequence(sequence.id)}
-											disabled={actionInProgress === sequence.id}
+											disabled={actionInProgress !== null}
 										>
 											<IconCopy size={16} />
 										</button>
@@ -567,7 +579,7 @@
 											class="btn-icon danger"
 											title="Delete"
 											onclick={() => deleteSequence(sequence.id)}
-											disabled={actionInProgress === sequence.id}
+											disabled={actionInProgress !== null}
 										>
 											<IconTrash size={16} />
 										</button>

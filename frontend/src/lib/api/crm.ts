@@ -289,10 +289,11 @@ export class CrmAPI {
 		data: Partial<SequenceMailWrite>
 	): Promise<SequenceMail> {
 		sequenceId = checkedSequenceId(sequenceId);
+		const expectedEmailId = data.id === undefined ? undefined : sequenceEmailId(data.id);
 		return crmSequenceMail(
 			await apiClient.post(`/admin/crm/sequences/${sequenceId}/emails`, data, sequenceWriteConfig),
 			sequenceId,
-			data.id
+			expectedEmailId
 		);
 	}
 
@@ -330,7 +331,9 @@ export class CrmAPI {
 	async reorderSequenceEmails(sequenceId: string, emailIds: string[]): Promise<SequenceMail[]> {
 		sequenceId = checkedSequenceId(sequenceId);
 		emailIds = emailIds.map(sequenceEmailId);
-		return sequenceMailList(
+		if (new Set(emailIds).size !== emailIds.length)
+			throw new Error('Specify each sequence email once');
+		const saved = sequenceMailList(
 			await apiClient.post(
 				`/admin/crm/sequences/${sequenceId}/emails/reorder`,
 				{
@@ -340,6 +343,12 @@ export class CrmAPI {
 			),
 			sequenceId
 		);
+		if (
+			saved.length !== emailIds.length ||
+			saved.some((mail, index) => mail.id !== emailIds[index])
+		)
+			throw new Error('Saved sequence email order did not match the requested order');
+		return saved;
 	}
 
 	async getSequenceSubscribers(

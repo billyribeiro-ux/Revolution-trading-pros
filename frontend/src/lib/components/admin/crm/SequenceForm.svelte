@@ -26,6 +26,8 @@
 	let notice = $state('');
 	let createSlug = '';
 	let pendingCreateTitle = '';
+	let disposed = false;
+	let loadGeneration = 0;
 	const active = $derived(saved?.status === 'active');
 	function apply(sequence: EmailSequence) {
 		saved = sequence; title = sequence.title; description = sequence.description ?? ''; format = sequence.design_template;
@@ -36,13 +38,26 @@
 	}
 	async function load() {
 		if (busy) return;
+		const generation = ++loadGeneration;
 		loading = true; ready = false; error = ''; notice = '';
 		try {
-			if (id) { const result = await crmAPI.getSequence(id); apply(result.sequence); stats = result.stats; }
+			if (id) {
+				const result = await crmAPI.getSequence(id);
+				if (disposed || generation !== loadGeneration) return;
+				apply(result.sequence); stats = result.stats;
+			}
 			else if (!createSlug) createSlug = `sequence-${crypto.randomUUID()}`;
 			ready = true;
-		} catch (cause) { error = apiErrorMessage(cause, 'Unable to load sequence'); }
-		finally { loading = false; }
+		} catch (cause) { if (!disposed && generation === loadGeneration) error = apiErrorMessage(cause, 'Unable to load sequence'); }
+		finally { if (!disposed && generation === loadGeneration) loading = false; }
+	}
+	async function refreshStats(sequenceId: string) {
+		try {
+			const result = await crmAPI.getSequence(sequenceId);
+			if (!disposed) stats = result.stats;
+		} catch (cause) {
+			if (!disposed) error = apiErrorMessage(cause, 'Saved sequence activity could not be refreshed');
+		}
 	}
 	function configuration(source: string, label: string): Record<string, JsonValue> {
 		const value: unknown = JSON.parse(source);
@@ -59,13 +74,15 @@
 	}
 	async function recoverDraft(): Promise<EmailSequence | null> {
 		let page = 1;
-		while (true) {
+		while (!disposed) {
 			const result = await crmAPI.getSequences({ search: pendingCreateTitle, page, per_page: 100 });
+			if (disposed) return null;
 			const existing = result.data.find(sequence => sequence.slug === createSlug);
 			if (existing) return existing;
 			if (page >= (result.meta.total_pages ?? 1)) return null;
 			page += 1;
 		}
+		return null;
 	}
 	async function save(event: SubmitEvent) {
 		event.preventDefault();
@@ -74,30 +91,34 @@
 		try {
 			if (!saved && pendingCreateTitle) {
 				const existing = await recoverDraft();
+				if (disposed) return;
 				if (existing) { apply(existing); await goto(`/admin/crm/sequences/${existing.id}/edit`); return; }
 			}
 			const fields: SequenceWrite = { title, description, design_template: format, settings: { mailer_settings: sender }, subscriber_settings: configuration(audience, 'Audience filters'), trigger_type: trigger, trigger_config: configuration(triggerConfig, 'Trigger settings'), emails: mails.map(({ conditionSource, ...mail }) => ({ ...mail, conditions: sequenceConditions(JSON.parse(conditionSource)) })) };
 			let result: EmailSequence;
 			if (saved) result = await crmAPI.updateSequence(saved.id, { ...fields, expected_version: saved.authoring_version });
 			else { pendingCreateTitle = title; result = await crmAPI.createSequence({ ...fields, slug: createSlug }); }
+			if (disposed) return;
 			apply(result); notice = 'Sequence saved. Existing enrollments retain their saved email revision.';
 			if (!id) await goto(`/admin/crm/sequences/${result.id}/edit`);
-			else stats = (await crmAPI.getSequence(result.id)).stats;
-		} catch (cause) { error = apiErrorMessage(cause, 'Save was not confirmed. Check saved state before retrying.'); }
-		finally { busy = false; }
+			else await refreshStats(result.id);
+		} catch (cause) { if (!disposed) error = apiErrorMessage(cause, 'Save was not confirmed. Check saved state before retrying.'); }
+		finally { if (!disposed) busy = false; }
 	}
 	async function status() {
 		if (busy || !saved) return;
 		busy = true; error = ''; notice = '';
 		try {
 			const result = await crmAPI.updateSequence(saved.id, { status: active ? 'paused' : 'active', expected_version: saved.authoring_version });
+			if (disposed) return;
 			// Retain unsaved edits while refreshing the server version and status.
-			saved = result; stats = (await crmAPI.getSequence(result.id)).stats;
+			saved = result;
 			notice = result.status === 'active' ? 'Saved sequence activated.' : 'Sequence paused. An in-flight submission retains its actual provider receipt.';
-		} catch (cause) { error = apiErrorMessage(cause, 'Status change was not confirmed; refresh saved state.'); }
-		finally { busy = false; }
+			await refreshStats(result.id);
+		} catch (cause) { if (!disposed) error = apiErrorMessage(cause, 'Status change was not confirmed; refresh saved state.'); }
+		finally { if (!disposed) busy = false; }
 	}
-	onMount(() => { void load(); });
+	onMount(() => { void load(); return () => { disposed = true; loadGeneration += 1; }; });
 </script>
 
 <section class="sequence-form">

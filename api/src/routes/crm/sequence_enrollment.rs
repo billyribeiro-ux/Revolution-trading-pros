@@ -143,20 +143,38 @@ async fn enroll(
         ));
     }
     audience.lock_member_definition(&mut tx).await?;
-    let mut selection = audience.query("SELECT DISTINCT LOWER(c.email) FROM contacts c", true)?;
-    selection
-        .push(" AND LOWER(c.email)=ANY(")
-        .push_bind(emails)
-        .push(")");
-    let eligible: Vec<String> = selection
-        .build_query_scalar()
-        .fetch_all(&mut *tx)
-        .await
-        .map_err(sequences::db)?;
-    if contacts
-        .iter()
-        .any(|contact| !eligible.contains(&contact.email))
-    {
+    let all_eligible = if audience.is_member() || audience.is_newsletter() {
+        // These audience sources have identities independent of CRM contacts.
+        // Match their confirmed addresses to the explicitly selected contacts.
+        let mut selection =
+            audience.query("SELECT DISTINCT LOWER(c.email) FROM contacts c", true)?;
+        selection
+            .push(" AND LOWER(c.email)=ANY(")
+            .push_bind(emails)
+            .push(")");
+        let eligible: Vec<String> = selection
+            .build_query_scalar()
+            .fetch_all(&mut *tx)
+            .await
+            .map_err(sequences::db)?;
+        contacts
+            .iter()
+            .all(|contact| eligible.contains(&contact.email))
+    } else {
+        // Contacts may share an address. A different contact's matching tags,
+        // lists or fields cannot qualify the selected contact for enrollment.
+        let mut selection = audience.query("SELECT c.id FROM contacts c", true)?;
+        selection.push(" AND c.id=ANY(").push_bind(&ids).push(")");
+        let eligible: Vec<i64> = selection
+            .build_query_scalar()
+            .fetch_all(&mut *tx)
+            .await
+            .map_err(sequences::db)?;
+        contacts
+            .iter()
+            .all(|contact| eligible.contains(&contact.id))
+    };
+    if !all_eligible {
         return Err(invalid(
             "Every enrolled contact must currently match the sequence filters and have a confirmed newsletter subscription",
         ));

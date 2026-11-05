@@ -4,6 +4,125 @@ use axum::{Router, http::StatusCode};
 use serde_json::{Value, json};
 use sqlx::PgPool;
 const ROOT: &str = "/api/admin/crm/sequences";
+
+async fn audience_identity_proof(api: &Router, pool: &PgPool, token: &str) {
+    let admin = Some(token);
+    let contacts: Vec<i64> = sqlx::query_scalar(
+        "INSERT INTO contacts(email,first_name,tags,source) VALUES
+         ('sequence-audience-identity@example.test','Matching','[\"Sequence eligible\"]','sequence-identity'),
+         ('SEQUENCE-AUDIENCE-IDENTITY@example.test','Outside filter','[]','sequence-identity') RETURNING id",
+    )
+    .fetch_all(pool)
+    .await
+    .unwrap();
+    let newsletter: i64 = sqlx::query_scalar(
+        "INSERT INTO newsletter_subscribers(email,name,status,confirmed_at,tags)
+         VALUES('sequence-audience-identity@example.test','Source fixture','confirmed',NOW(),'[\"Sequence source eligible\"]') RETURNING id",
+    )
+    .fetch_one(pool)
+    .await
+    .unwrap();
+    let member: i64 = sqlx::query_scalar(
+        "INSERT INTO users(email,name,password_hash,role,email_verified_at)
+         VALUES('sequence-audience-identity@example.test','Source fixture','not-a-login-password','user',NOW()) RETURNING id",
+    )
+    .fetch_one(pool)
+    .await
+    .unwrap();
+    // Independent source tables can share or differ in numeric IDs. Choose an
+    // actual CRM contact whose ID differs to exercise address-based mapping.
+    let newsletter_contact = *contacts.iter().find(|id| **id != newsletter).unwrap();
+    let member_contact = *contacts.iter().find(|id| **id != member).unwrap();
+    for (title, audience, selected, denied) in [
+        (
+            "Sequence contact identity",
+            json!({"advanced_filters":[{"field":"tags","operator":"contains","value":"Sequence eligible"}]}),
+            contacts[0],
+            Some(contacts[1]),
+        ),
+        (
+            "Sequence newsletter identity",
+            json!({"newsletter_segment":"Sequence source eligible"}),
+            newsletter_contact,
+            None,
+        ),
+        (
+            "Sequence member identity",
+            json!({"members":true}),
+            member_contact,
+            None,
+        ),
+    ] {
+        let created = request(
+            api,
+            "POST",
+            ROOT,
+            admin,
+            json!({"title":title,"subscriber_settings":audience,"emails":[{"title":"Identity email","subject":"Identity fixture","html_content":"<p>Actual selected contact</p>","status":"active","delay_value":0,"delay_unit":"minutes"}]}),
+        )
+        .await;
+        assert_eq!(created.0, StatusCode::OK, "{created:?}");
+        let id = created.1["id"].as_str().unwrap().parse::<i64>().unwrap();
+        let path = format!("{ROOT}/{id}");
+        let activated = request(api, "POST", &format!("{path}/activate"), admin, Value::Null).await;
+        assert_eq!(activated.0, StatusCode::OK, "{activated:?}");
+        if let Some(denied) = denied {
+            let rejected = request(
+                api,
+                "POST",
+                &format!("{path}/subscribe"),
+                admin,
+                json!({"contact_ids":[denied]}),
+            )
+            .await;
+            assert_eq!(
+                rejected.0,
+                StatusCode::BAD_REQUEST,
+                "A nonmatching contact cannot borrow a same-address contact's tags: {rejected:?}"
+            );
+            let count: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM crm_sequence_trackers WHERE sequence_id=$1",
+            )
+            .bind(id)
+            .fetch_one(pool)
+            .await
+            .unwrap();
+            assert_eq!(count, 0, "Rejected enrollment leaves no tracker");
+        }
+        let enrolled = request(
+            api,
+            "POST",
+            &format!("{path}/subscribe"),
+            admin,
+            json!({"contact_ids":[selected]}),
+        )
+        .await;
+        assert_eq!(enrolled.0, StatusCode::OK, "{enrolled:?}");
+        assert_eq!(enrolled.1["subscribed_count"], 1);
+        let tracker: (i64, String) = sqlx::query_as(
+            "SELECT contact_id,contact_email FROM crm_sequence_trackers WHERE sequence_id=$1",
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .unwrap();
+        assert_eq!(
+            tracker,
+            (selected, "sequence-audience-identity@example.test".into())
+        );
+        assert_eq!(
+            request(api, "POST", &format!("{path}/pause"), admin, Value::Null)
+                .await
+                .0,
+            StatusCode::OK
+        );
+        assert_eq!(
+            request(api, "DELETE", &path, admin, Value::Null).await.0,
+            StatusCode::OK
+        );
+    }
+}
+
 pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Adapter) {
     let admin = Some(tokens[0].as_str());
     let before = adapter.requests.lock().unwrap().len();
@@ -250,6 +369,7 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Ada
             .await
             .unwrap();
     assert_eq!(retained, 2);
+    audience_identity_proof(api, pool, &tokens[0]).await;
     assert_eq!(
         adapter.requests.lock().unwrap().len(),
         before,
