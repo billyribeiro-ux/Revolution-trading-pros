@@ -1,0 +1,33 @@
+-- Durable intent and actual snapshots for bounded synchronous CRM transfers.
+CREATE TABLE crm_transfer_jobs (
+ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ direction TEXT NOT NULL CHECK(direction IN ('import','export')),
+ kind TEXT NOT NULL CHECK(kind IN ('contacts','tags','lists','sequences','campaigns','automations','templates')),
+ file_name TEXT NOT NULL,
+ file_type TEXT NOT NULL CHECK(file_type IN ('csv','json')),
+ status TEXT NOT NULL CHECK(status IN ('pending','completed','failed','cancelled')),
+ headers JSONB NOT NULL DEFAULT '[]' CHECK(jsonb_typeof(headers)='array'),
+ source_rows JSONB NOT NULL DEFAULT '[]' CHECK(jsonb_typeof(source_rows)='array'),
+ field_mapping JSONB NOT NULL DEFAULT '{}' CHECK(jsonb_typeof(field_mapping)='object'),
+ settings JSONB NOT NULL DEFAULT '{}' CHECK(jsonb_typeof(settings)='object'),
+ filters JSONB NOT NULL DEFAULT '{}' CHECK(jsonb_typeof(filters)='object'),
+ fields JSONB NOT NULL DEFAULT '[]' CHECK(jsonb_typeof(fields)='array'),
+ total_rows INTEGER NOT NULL CHECK(total_rows BETWEEN 0 AND 1000),
+ processed_rows INTEGER NOT NULL DEFAULT 0 CHECK(processed_rows>=0 AND processed_rows<=total_rows),
+ success_count INTEGER NOT NULL DEFAULT 0 CHECK(success_count>=0),
+ created_count INTEGER NOT NULL DEFAULT 0 CHECK(created_count>=0),
+ updated_count INTEGER NOT NULL DEFAULT 0 CHECK(updated_count>=0),
+ skipped_count INTEGER NOT NULL DEFAULT 0 CHECK(skipped_count>=0),
+ error_count INTEGER NOT NULL DEFAULT 0 CHECK(error_count>=0),
+ errors JSONB NOT NULL DEFAULT '[]' CHECK(jsonb_typeof(errors)='array'),
+ export_bytes BYTEA CHECK(octet_length(export_bytes)<=8388608),
+ created_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+ started_at TIMESTAMPTZ,
+ completed_at TIMESTAMPTZ,
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ CHECK(success_count=created_count+updated_count),
+ CHECK(direction='import' OR (status='completed' AND export_bytes IS NOT NULL)),
+ CHECK(status<>'completed' OR processed_rows=total_rows)
+);
+CREATE INDEX crm_transfer_history ON crm_transfer_jobs(direction,created_at DESC,id DESC);

@@ -1,11 +1,5 @@
-<!-- Stub — audit 06-crm.md P0 #1 (orphan-link epidemic). Backend deferred: docs/audits/admin-2026-04-26/06-crm-DEFERRED.md -->
 <script lang="ts">
-	import ComingSoonStub from '#lib/components/admin/ComingSoonStub.svelte';
+    import {page} from '$app/state';
+    import TransferImportForm from '#lib/components/admin/crm/TransferImportForm.svelte';
 </script>
-
-<ComingSoonStub
-	entity="New Import"
-	backHref="/admin/crm/import-export"
-	backLabel="Import / Export"
-	description="Start a new bulk import of contacts, leads, or companies."
-/>
+{#key page.url.searchParams.get('job')}<TransferImportForm jobId={page.url.searchParams.get('job') ?? undefined} />{/key}

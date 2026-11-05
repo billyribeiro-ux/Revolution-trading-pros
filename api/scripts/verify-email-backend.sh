@@ -80,6 +80,12 @@ cleanup() {
   local result=$?
   trap - EXIT
   if ((cluster_start_attempted)) && "${clean_env[@]}" pg_ctl -D "$data_dir" status >/dev/null 2>&1; then
+    # Applied schema stays immutable even when a later assertion fails.
+    if ! "${clean_env[@]}" psql "$database_url" -v ON_ERROR_STOP=1 -Atc \
+      'SELECT COUNT(*), MAX(version) FROM _sqlx_migrations WHERE success' \
+      >"$fixture_dir/migration-summary.log" 2>"$fixture_dir/migration-summary-error.log"; then
+      printf 'Migration state unavailable; inspect %s\n' "$fixture_dir/migration-summary-error.log" >&2
+    fi
     if ! "${clean_env[@]}" pg_ctl -D "$data_dir" -m fast -w -t 30 stop >>"$fixture_dir/postgres-stop.log" 2>&1; then
       printf 'Could not stop the owned cluster; inspect %s\n' "$fixture_dir/postgres-stop.log" >&2
       result=1

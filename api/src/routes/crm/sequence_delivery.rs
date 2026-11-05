@@ -367,6 +367,16 @@ pub async fn run(state: crate::AppState) {
     loop {
         interval.tick().await;
         for _ in 0..100 {
+            match super::sequence_triggers::process_one(&state.db.pool).await {
+                Ok(true) => {}
+                Ok(false) => break,
+                Err(error) => {
+                    tracing::error!(message=%error.message,"Sequence trigger worker stopped this batch");
+                    break;
+                }
+            }
+        }
+        for _ in 0..100 {
             match stage_one(&state.db.pool).await {
                 Ok(true) => {}
                 Ok(false) => break,

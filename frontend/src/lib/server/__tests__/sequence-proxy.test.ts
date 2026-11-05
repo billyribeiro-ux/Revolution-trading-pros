@@ -53,6 +53,9 @@ it('accepts actual UUID email identities and rejects traversal, wrong methods an
 		['GET', '../settings'],
 		['GET', '42/activate'],
 		['POST', '42/subscribers'],
+		['POST', '42/tests'],
+		['POST', '42/triggers'],
+		['GET', 'events'],
 		['DELETE', '42/emails/reorder'],
 		['PUT', '42/emails/not-a-uuid'],
 		['POST', '42/unsupported']
@@ -60,6 +63,30 @@ it('accepts actual UUID email identities and rejects traversal, wrong methods an
 		expect((await proxySequences(event(method, path))).status).toBe(404);
 	expect((await proxySequences(event('POST', '', 'é'.repeat(4500001)))).status).toBe(413);
 	expect(fetch).not.toHaveBeenCalled();
+});
+it('forwards durable QA history, trigger history and explicit event ingress only through their exact methods', async () => {
+	const upstream = vi
+		.fn<typeof globalThis.fetch>()
+		.mockImplementation(async () => Response.json({ fixture: 'actual upstream response' }));
+	vi.stubGlobal('fetch', upstream);
+	for (const [method, rest] of [
+		['GET', '42/tests'],
+		['GET', '42/triggers'],
+		['POST', 'events']
+	] as const) {
+		const response = await proxySequences(
+			event(method, rest, method === 'POST' ? '{}' : undefined)
+		);
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ fixture: 'actual upstream response' });
+	}
+	expect(upstream).toHaveBeenCalledTimes(3);
+	expect(upstream.mock.calls[0]?.[0]).toBe(
+		'http://backend.test/api/admin/crm/sequences/42/tests?status=paused&page=2'
+	);
+	expect(upstream.mock.calls[2]?.[0]).toBe(
+		'http://backend.test/api/admin/crm/sequences/events?status=paused&page=2'
+	);
 });
 it('never retries an unconfirmed PUT or DELETE when the service fails', async () => {
 	const fetch = vi

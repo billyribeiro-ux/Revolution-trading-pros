@@ -20,9 +20,9 @@
 		IconAlertCircle
 	} from '#lib/icons/index.js';
 	import { crmAPI } from '#lib/api/crm.js';
-	import { api } from '#lib/api/config.js';
 	import type { EmailSequence, SequenceFilters, SequenceStatus } from '#lib/crm/types.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import SequenceTestDialog from '#lib/components/admin/crm/SequenceTestDialog.svelte';
 
 	// STATE
 
@@ -43,15 +43,7 @@
 		totalSent: 0
 	});
 
-	// Modal States
-	let showSendEmailModal = $state(false);
-	let selectedSequence = $state<EmailSequence | null>(null);
-	let sendEmailForm = $state({
-		testEmail: '',
-		isLoading: false,
-		success: false,
-		error: ''
-	});
+	let testSequenceId = $state<string | null>(null);
 
 	// Action States
 	let actionInProgress = $state<string | null>(null);
@@ -202,78 +194,6 @@
 		}
 	}
 
-	async function sendTestEmail() {
-		if (!selectedSequence || !sendEmailForm.testEmail) return;
-
-		sendEmailForm.isLoading = true;
-		sendEmailForm.error = '';
-		sendEmailForm.success = false;
-
-		try {
-			// Audit P1 #4: this used to fake a `setTimeout` "success" so the
-			// user saw "Test email sent successfully" even though nothing was
-			// dispatched. Now we actually POST to the test-email endpoint and
-			// surface whatever the backend returns. If the endpoint isn't yet
-			// wired up server-side, the user sees an honest error instead of
-			// a green checkmark.
-			const emails = await crmAPI.getSequenceEmails(selectedSequence.id);
-			if (emails.length === 0) {
-				sendEmailForm.error = 'This sequence has no emails to send';
-				return;
-			}
-
-			await api.post(`/api/admin/crm/sequences/${selectedSequence.id}/test`, {
-				email: sendEmailForm.testEmail,
-				email_id: emails[0]?.id
-			});
-
-			sendEmailForm.success = true;
-			setTimeout(() => {
-				closeSendEmailModal();
-			}, 2000);
-		} catch (err) {
-			sendEmailForm.error = err instanceof Error ? err.message : 'Failed to send test email';
-		} finally {
-			sendEmailForm.isLoading = false;
-		}
-	}
-
-	// MODAL FUNCTIONS
-
-	function openSendEmailModal(sequence: EmailSequence) {
-		selectedSequence = sequence;
-		sendEmailForm = {
-			testEmail: '',
-			isLoading: false,
-			success: false,
-			error: ''
-		};
-		showSendEmailModal = true;
-	}
-
-	function closeSendEmailModal() {
-		showSendEmailModal = false;
-		selectedSequence = null;
-		sendEmailForm = {
-			testEmail: '',
-			isLoading: false,
-			success: false,
-			error: ''
-		};
-	}
-
-	function handleModalKeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			closeSendEmailModal();
-		}
-	}
-
-	function handleModalBackdropClick(event: MouseEvent) {
-		if (event.target === event.currentTarget) {
-			closeSendEmailModal();
-		}
-	}
-
 	// HELPERS
 
 	function formatNumber(num: number): string {
@@ -304,19 +224,6 @@
 		};
 		return icons[status];
 	}
-
-	function isValidEmail(email: string): boolean {
-		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-	}
-
-	// DERIVED STATE
-
-
-	let canSendTestEmail = $derived(
-		sendEmailForm.testEmail.length > 0 &&
-			isValidEmail(sendEmailForm.testEmail) &&
-			!sendEmailForm.isLoading
-	);
 
 	// Debounced search timer. Cleared from the onMount cleanup below.
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -357,7 +264,7 @@
 
 <!-- Handle escape key for modal -->
 
-<svelte:window onkeydown={showSendEmailModal ? handleModalKeydown : undefined} />
+
 
 <div class="admin-crm-sequences">
 	
@@ -503,8 +410,9 @@
 											<span class="sequence-title">{sequence.title}</span>
 											<span class="sequence-meta">
 												<IconClock size={12} />
-												{sequence.emails_count} emails
+												{sequence.emails_count === null ? 'Emails need review' : `${sequence.emails_count} emails`}
 											</span>
+											{#if sequence.trigger_error}<span class="sequence-meta">Trigger needs review. <a href="/admin/crm/sequences/{sequence.id}/edit">Review trigger settings</a></span>{/if}
 										</div>
 									</div>
 								</td>
@@ -560,7 +468,7 @@
 										<button
 											class="btn-icon"
 											title="Send Test Email"
-											onclick={() => openSendEmailModal(sequence)}
+											onclick={() => { testSequenceId = sequence.id; }}
 										>
 											<IconSend size={16} />
 										</button>
@@ -596,88 +504,7 @@
 	<!-- End admin-page-container -->
 </div>
 
-<!-- Send Test Email Modal -->
-{#if showSendEmailModal}
-	<div
-		class="modal-backdrop"
-		onclick={handleModalBackdropClick}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeSendEmailModal()}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="modal-title"
-		tabindex="-1"
-	>
-		<div class="modal-container">
-			<div class="modal-header">
-				<h2 id="modal-title">
-					<IconSend size={20} />
-					Send Test Email
-				</h2>
-				<button class="modal-close" onclick={closeSendEmailModal} aria-label="Close modal">
-					<IconX size={20} />
-				</button>
-			</div>
-
-			<div class="modal-body">
-				{#if selectedSequence}
-					<p class="modal-description">
-						Send a test email from the sequence "<strong>{selectedSequence.title}</strong>" to
-						verify your content and design.
-					</p>
-
-					{#if sendEmailForm.success}
-						<div class="success-message">
-							<IconCheck size={20} />
-							<span>Test email sent successfully!</span>
-						</div>
-					{:else}
-						<div class="form-group">
-							<label for="test-email">Email Address</label>
-							<input
-								id="test-email"
-								name="test-email"
-								autocomplete="email"
-								type="email"
-								placeholder="Enter email address..."
-								bind:value={sendEmailForm.testEmail}
-								disabled={sendEmailForm.isLoading}
-								class={{ error: !!sendEmailForm.error }}
-							/>
-							{#if sendEmailForm.error}
-								<span class="error-message">{sendEmailForm.error}</span>
-							{/if}
-						</div>
-
-						<div class="modal-info">
-							<IconAlertCircle size={16} />
-							<span>This will send the first email in the sequence as a test.</span>
-						</div>
-					{/if}
-				{/if}
-			</div>
-
-			{#if !sendEmailForm.success}
-				<div class="modal-footer">
-					<button
-						class="btn-secondary"
-						onclick={closeSendEmailModal}
-						disabled={sendEmailForm.isLoading}>Cancel</button
-					>
-
-					<button class="btn-primary" onclick={sendTestEmail} disabled={!canSendTestEmail}>
-						{#if sendEmailForm.isLoading}
-							<div class="btn-spinner"></div>
-							Sending...
-						{:else}
-							<IconSend size={16} />
-							Send Test
-						{/if}
-					</button>
-				</div>
-			{/if}
-		</div>
-	</div>
-{/if}
+{#if testSequenceId}{#key testSequenceId}<SequenceTestDialog sequenceId={testSequenceId} onclose={() => { testSequenceId = null; }} />{/key}{/if}
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
@@ -1185,177 +1012,4 @@
 		margin-bottom: 1rem;
 	}
 
-	/* Modal */
-	.modal-backdrop {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1000;
-		padding: 1rem;
-	}
-
-	.modal-container {
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 16px;
-		width: 100%;
-		max-width: 480px;
-		max-height: 90vh;
-		overflow: hidden;
-		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-	}
-
-	.modal-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
-	}
-
-	.modal-header h2 {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		margin: 0;
-		font-size: 1.125rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.modal-header h2 :global(svg) {
-		color: var(--primary-500);
-	}
-
-	.modal-close {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		background: transparent;
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		color: var(--text-secondary, #8b949e);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.modal-close:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.modal-body {
-		padding: 1.5rem;
-	}
-
-	.modal-description {
-		color: var(--text-secondary, #8b949e);
-		margin: 0 0 1.5rem 0;
-		line-height: 1.6;
-	}
-
-	.modal-description strong {
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.form-group {
-		margin-bottom: 1rem;
-	}
-
-	.form-group label {
-		display: block;
-		margin-bottom: 0.5rem;
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.form-group input {
-		width: 100%;
-		padding: 0.75rem 1rem;
-		background: var(--bg-base, #0d1117);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 10px;
-		color: var(--text-primary, #f0f6fc);
-		font-size: 0.9rem;
-		outline: none;
-		transition: border-color 0.2s;
-	}
-
-	.form-group input:focus {
-		border-color: rgba(230, 184, 0, 0.5);
-	}
-
-	.form-group input.error {
-		border-color: rgba(248, 81, 73, 0.5);
-	}
-
-	.form-group input:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.form-group input::placeholder {
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.error-message {
-		display: block;
-		margin-top: 0.5rem;
-		font-size: 0.8rem;
-		color: var(--error-emphasis, #f85149);
-	}
-
-	.modal-info {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
-		padding: 0.75rem 1rem;
-		background: rgba(230, 184, 0, 0.1);
-		border-radius: 8px;
-		font-size: 0.8rem;
-		color: var(--text-secondary, #8b949e);
-	}
-
-	.modal-info :global(svg) {
-		color: var(--primary-500);
-		flex-shrink: 0;
-		margin-top: 0.125rem;
-	}
-
-	.success-message {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.75rem;
-		padding: 1.5rem;
-		background: rgba(63, 185, 80, 0.1);
-		border: 1px solid rgba(63, 185, 80, 0.3);
-		border-radius: 10px;
-		color: var(--success-emphasis, #3fb950);
-		font-weight: 500;
-	}
-
-	.modal-footer {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.75rem;
-		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
-		background: rgba(15, 23, 42, 0.3);
-	}
-
-	.btn-spinner {
-		width: 16px;
-		height: 16px;
-		border: 2px solid rgba(255, 255, 255, 0.3);
-		border-top-color: white;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
 </style>

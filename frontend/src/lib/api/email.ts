@@ -124,9 +124,12 @@ export interface EmailTemplate {
 
 export interface EmailSequence {
 	id: string;
+	authoring_version: number;
 	name: string;
 	description?: string;
-	trigger_type: 'manual' | 'signup' | 'purchase' | 'tag_added' | 'custom_event';
+	trigger_type: 'manual' | 'signup' | 'purchase' | 'tag_added' | 'custom_event' | 'legacy';
+	trigger_error?: string | null;
+	historical_trigger_type?: string | null;
 	/**
 	 * Trigger-specific configuration bag — keys vary by `trigger_type`
 	 * (e.g. `tag_added` carries `{ tag: string }`, `custom_event` carries
@@ -634,18 +637,33 @@ class EmailAPI {
 
 	async updateSequence(
 		id: string,
-		data: Partial<EmailSequence>
+		data: Partial<EmailSequence>,
+		expectedVersion?: number
 	): Promise<{ sequence: EmailSequence }> {
-		return {
-			sequence: catalogSequenceEnvelope(
-				await this.request<unknown>(
-					'PUT',
-					`/admin/email/sequences/${checkedSequenceId(id)}`,
-					sequenceCatalogWrite(data, id)
-				),
-				id
-			)
-		};
+		if (
+			expectedVersion !== undefined &&
+			(!Number.isSafeInteger(expectedVersion) || expectedVersion < 1)
+		)
+			throw new Error('Invalid saved sequence version');
+		const sequence = catalogSequenceEnvelope(
+			await this.request<unknown>('PUT', `/admin/email/sequences/${checkedSequenceId(id)}`, {
+				...sequenceCatalogWrite(data, id),
+				expected_version: expectedVersion
+			}),
+			id
+		);
+		if (data.status !== undefined && sequence.status !== data.status)
+			throw new Error('Sequence status change was not confirmed');
+		return { sequence };
+	}
+	async duplicateSequence(id: string): Promise<{ sequence: EmailSequence }> {
+		id = checkedSequenceId(id);
+		const sequence = catalogSequenceEnvelope(
+			await this.request<unknown>('POST', `/admin/email/sequences/${id}/duplicate`)
+		);
+		if (sequence.id === id || sequence.status !== 'draft' || sequence.subscribers_count !== 0)
+			throw new Error('Sequence duplication was not confirmed');
+		return { sequence };
 	}
 
 	async deleteSequence(id: string): Promise<{ success: boolean }> {

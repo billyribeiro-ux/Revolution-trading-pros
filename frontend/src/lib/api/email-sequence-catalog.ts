@@ -97,9 +97,20 @@ export function catalogSequence(value: unknown, expected?: string): EmailSequenc
 	if (row.success === false || row.error) throw new Error('Sequence operation was not confirmed');
 	if ((expected !== undefined && id !== expected) || row.metrics_scope !== 'sequence_outbox')
 		throw new Error('Invalid sequence identity or measurement scope');
+	const triggerError = row.trigger_error ?? null,
+		historicalTrigger = row.historical_trigger_type ?? null;
+	if (
+		row.trigger_type === 'legacy'
+			? typeof triggerError !== 'string' ||
+				!triggerError.trim() ||
+				typeof historicalTrigger !== 'string'
+			: (triggerError !== null && (typeof triggerError !== 'string' || !triggerError.trim())) ||
+				historicalTrigger !== null
+	)
+		throw new Error('Invalid saved sequence trigger review state');
 	if (
 		!['active', 'paused', 'draft', 'completed'].includes(String(row.status)) ||
-		!['manual', 'signup', 'purchase', 'tag_added', 'custom_event'].includes(
+		!['manual', 'signup', 'purchase', 'tag_added', 'custom_event', 'legacy'].includes(
 			String(row.trigger_type)
 		) ||
 		!Array.isArray(row.emails) ||
@@ -126,9 +137,12 @@ export function catalogSequence(value: unknown, expected?: string): EmailSequenc
 		throw new Error('Sequence email count does not match its reviewed definition');
 	return {
 		id,
+		authoring_version: integer(row.authoring_version, 1),
 		name: text(row, 'title'),
 		description: typeof row.description === 'string' ? row.description : undefined,
 		trigger_type: row.trigger_type as EmailSequence['trigger_type'],
+		trigger_error: triggerError as string | null,
+		historical_trigger_type: historicalTrigger as string | null,
 		trigger_config: row.trigger_config,
 		status: row.status as EmailSequence['status'],
 		emails,
@@ -191,6 +205,9 @@ export function sequenceCatalogWrite(
 ): Record<string, unknown> {
 	for (const key of [
 		'id',
+		'authoring_version',
+		'trigger_error',
+		'historical_trigger_type',
 		'stats',
 		'subscribers_count',
 		'created_at',
@@ -200,6 +217,7 @@ export function sequenceCatalogWrite(
 	] as const)
 		if (data[key] !== undefined) throw new Error('Send sequence authoring fields only');
 	const out: Record<string, unknown> = {};
+	if (data.trigger_type === 'legacy') throw new Error('Choose a supported trigger before saving');
 	if (data.name !== undefined) out.title = data.name;
 	for (const key of ['description', 'trigger_type', 'trigger_config', 'status'] as const)
 		if (data[key] !== undefined) out[key] = data[key];

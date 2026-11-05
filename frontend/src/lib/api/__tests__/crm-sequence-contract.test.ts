@@ -121,6 +121,19 @@ it('preserves recorded revision, nullable legacy count, unmeasured revenue and f
 	expect(() =>
 		crmSequence({ ...fixture(), emails: [{ ...fixture().emails[0], open_count: 2 }] })
 	).toThrow('receipt');
+	expect(
+		crmSequence({
+			...fixture(),
+			trigger_type: 'legacy',
+			trigger_error: 'Review stored trigger',
+			historical_trigger_type: 'legacy_signup'
+		})
+	).toMatchObject({
+		trigger_type: 'legacy',
+		trigger_error: 'Review stored trigger',
+		historical_trigger_type: 'legacy_signup',
+		emails_count: 1
+	});
 });
 it('retains deleted contact enrollment identity and rejects cross-sequence or malformed history records', () => {
 	const tracker = {

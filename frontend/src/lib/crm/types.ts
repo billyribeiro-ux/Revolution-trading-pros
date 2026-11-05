@@ -369,7 +369,9 @@ export interface EmailSequence {
 	definition_error: string | null;
 	historical_steps: JsonValue;
 	last_error: string | null;
-	trigger_type: 'manual' | 'signup' | 'purchase' | 'tag_added' | 'custom_event';
+	trigger_type: 'manual' | 'signup' | 'purchase' | 'tag_added' | 'custom_event' | 'legacy';
+	trigger_error?: string | null;
+	historical_trigger_type?: string | null;
 	trigger_config: JsonValue;
 	title: string;
 	slug: string;
@@ -1160,24 +1162,28 @@ export type ImportType =
 	| 'campaigns'
 	| 'automations'
 	| 'templates';
-export type ImportStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type ImportStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
 
 export interface ImportJob {
 	id: string;
 	type: ImportType;
 	file_name: string;
+	file_type: 'csv' | 'json';
 	file_path?: string;
 	total_rows: number;
 	processed_rows: number;
 	success_count: number;
+	created_count: number;
+	updated_count: number;
+	skipped_count: number;
 	error_count: number;
 	status: ImportStatus;
 	field_mapping?: Record<string, string>;
 	settings?: ImportSettings;
 	errors?: ImportError[];
-	created_by?: string;
-	started_at?: string;
-	completed_at?: string;
+	created_by?: string | null;
+	started_at?: string | null;
+	completed_at?: string | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -1187,7 +1193,7 @@ export interface ImportSettings {
 	skip_duplicates: boolean;
 	add_to_lists?: string[];
 	apply_tags?: string[];
-	contact_status?: string;
+	contact_status?: string | null;
 }
 
 export interface ImportError {
@@ -1199,14 +1205,16 @@ export interface ImportError {
 export interface ExportJob {
 	id: string;
 	type: ImportType;
+	file_name: string;
+	file_type: 'csv' | 'json';
 	filters?: Record<string, unknown>;
 	fields: string[];
 	total_records: number;
 	status: ImportStatus;
-	file_url?: string;
-	created_by?: string;
-	started_at?: string;
-	completed_at?: string;
+	file_url?: string | null;
+	created_by?: string | null;
+	started_at?: string | null;
+	completed_at?: string | null;
 	created_at: string;
 	updated_at: string;
 }

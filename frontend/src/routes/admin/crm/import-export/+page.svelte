@@ -1,41 +1,26 @@
-<!--
-	/admin/crm/import-export - Import/Export Data Management
-	Apple Principal Engineer ICT 7 Grade - January 2026
-	
-	Features:
-	- Import contacts, tags, lists, sequences, campaigns, automations, templates
-	- Export with download functionality
-	- Job status tracking with progress
-	- File type cards with icons
-	- Full Svelte 5 $state/$derived reactivity
--->
-
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
-	import IconDownload from '@tabler/icons-svelte-runes/icons/download';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconTags from '@tabler/icons-svelte-runes/icons/tags';
-	import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
-	import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
-	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
-	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
-	import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
-	import IconX from '@tabler/icons-svelte-runes/icons/x';
-	import IconClock from '@tabler/icons-svelte-runes/icons/clock';
-	import { crmAPI } from '#lib/api/crm.js';
-	import type { ImportJob, ExportJob } from '#lib/crm/types.js';
-	// FIX-2026-04-26: replaced native alert() with toastStore.
-	import { toastStore } from '#lib/stores/toast.svelte.js';
-
-	let importJobs = $state<ImportJob[]>([]);
-	let exportJobs = $state<ExportJob[]>([]);
-	let isLoading = $state(true);
-	let error = $state('');
-	let activeTab = $state<'import' | 'export'>('import');
-
+import {onMount} from 'svelte';
+import IconUpload from '@tabler/icons-svelte-runes/icons/upload';
+import IconDownload from '@tabler/icons-svelte-runes/icons/download';
+import IconUsers from '@tabler/icons-svelte-runes/icons/users';
+import IconTags from '@tabler/icons-svelte-runes/icons/tags';
+import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
+import IconMailForward from '@tabler/icons-svelte-runes/icons/mail-forward';
+import IconMail from '@tabler/icons-svelte-runes/icons/mail';
+import IconRoute from '@tabler/icons-svelte-runes/icons/route';
+import IconTemplate from '@tabler/icons-svelte-runes/icons/template';
+import {crmAPI} from '#lib/api/crm.js';
+import {contactExportFields} from '#lib/api/crm-transfer-contract.js';
+import {apiErrorMessage} from '#lib/utils/api-error-message.js';
+import type {ImportJob,ExportJob} from '#lib/crm/types.js';
+let importJobs=$state<ImportJob[]>([]),exportJobs=$state<ExportJob[]>([]);
+let importPage=$state(1),exportPage=$state(1),importPages=$state(1),exportPages=$state(1);
+let importTotal=$state<number|null>(null),exportTotal=$state<number|null>(null);
+let isLoading=$state(true),busy=$state(false),error=$state(''),notice=$state('');
+let activeTab=$state<'import'|'export'>('import'),format=$state<'csv'|'json'>('csv');
+let search=$state(''),status=$state('');
+let fields=$state<string[]>(['email','first_name','last_name','status','tags','custom_fields']);
+let disposed=false,generation=0;
 	const importTypes = [
 		{
 			type: 'contacts',
@@ -66,581 +51,64 @@
 		}
 	];
 
-	const exportTypes = [
-		{ type: 'contacts', name: 'Contacts', icon: IconUsers, description: 'Export all contacts' },
-		{ type: 'tags', name: 'Tags', icon: IconTags, description: 'Export contact tags' },
-		{ type: 'lists', name: 'Lists', icon: IconListDetails, description: 'Export contact lists' },
-		{
-			type: 'sequences',
-			name: 'Email Sequences',
-			icon: IconMailForward,
-			description: 'Export email sequences'
-		},
-		{ type: 'campaigns', name: 'Campaigns', icon: IconMail, description: 'Export campaigns' },
-		{
-			type: 'automations',
-			name: 'Automations',
-			icon: IconRoute,
-			description: 'Export automation funnels'
-		},
-		{
-			type: 'templates',
-			name: 'Templates',
-			icon: IconTemplate,
-			description: 'Export email templates'
-		}
-	];
-
-	async function loadJobs() {
-		isLoading = true;
-		error = '';
-
-		try {
-			const [importResponse, exportResponse] = await Promise.all([
-				crmAPI.getImportJobs(),
-				crmAPI.getExportJobs()
-			]);
-
-			importJobs = importResponse.data || [];
-			exportJobs = exportResponse.data || [];
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load jobs';
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	async function startExport(type: string) {
-		try {
-			const job = await crmAPI.createExportJob(type);
-			await loadJobs();
-			// FIX-2026-04-26: replaced native alert() with toastStore.success.
-			// Old: alert(`Export started. Job ID: ${job.id}`);
-			toastStore.success(`Export started. Job ID: ${job.id}`);
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to start export';
-		}
-	}
-
-	async function downloadExport(id: string) {
-		try {
-			const blob = await crmAPI.downloadExport(id);
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `export-${id}.csv`;
-			a.click();
-			window.URL.revokeObjectURL(url);
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to download export';
-		}
-	}
-
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', {
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
-
-	function getStatusIcon(status: string) {
-		switch (status) {
-			case 'completed':
-				return IconCheck;
-			case 'failed':
-				return IconX;
-			case 'processing':
-				return IconRefresh;
-			default:
-				return IconClock;
-		}
-	}
-
-	function getStatusColor(status: string): string {
-		switch (status) {
-			case 'completed':
-				return 'green';
-			case 'failed':
-				return 'red';
-			case 'processing':
-				return 'blue';
-			default:
-				return 'gray';
-		}
-	}
-
-	onMount(() => {
-		loadJobs();
-	});
+async function loadJobs(force=false) {
+    if (busy && !force) return;const current=++generation;isLoading=true;error='';
+    try {
+        const results=await Promise.allSettled([crmAPI.getImportJobs({page:importPage,per_page:20}),crmAPI.getExportJobs({page:exportPage,per_page:20})]);
+        if (disposed || current!==generation) return;
+        const errors:string[]=[];
+        const imported=results[0],exported=results[1];
+        if (imported.status==='fulfilled') {importJobs=imported.value.data;importTotal=imported.value.meta.total;importPages=imported.value.meta.total_pages ?? 1;}
+        else errors.push(apiErrorMessage(imported.reason,'Import history could not be loaded'));
+        if (exported.status==='fulfilled') {exportJobs=exported.value.data;exportTotal=exported.value.meta.total;exportPages=exported.value.meta.total_pages ?? 1;}
+        else errors.push(apiErrorMessage(exported.reason,'Export history could not be loaded'));
+        error=errors.join(' ');
+    } finally {if (!disposed && current===generation) isLoading=false;}
+}
+async function changePage(direction:'import'|'export',by:number) {if (busy || isLoading) return;if (direction==='import') importPage+=by;else exportPage+=by;await loadJobs();}
+async function startExport(type:string) {
+    if (busy) return;busy=true;error='';notice='';
+    try {
+        if (!fields.length) throw new Error('Select at least one export field');
+        const saved=await crmAPI.createExportJob(type,{...(search ? {search} : {}),...(status ? {status} : {})},fields,format);
+        if (disposed) return;exportJobs=[saved,...exportJobs.filter(job=>job.id!==saved.id)].slice(0,20);exportPage=1;
+        notice=`Export completed: ${saved.total_records} records saved as ${saved.file_type.toUpperCase()}.`;
+        await loadJobs(true);
+    } catch (cause) {if (!disposed) error=apiErrorMessage(cause,'Export creation was not confirmed');}
+    finally {if (!disposed) busy=false;}
+}
+async function downloadExport(job:ExportJob) {
+    if (busy) return;busy=true;error='';
+    try {
+        const blob=await crmAPI.downloadExport(job.id);if (disposed) return;
+        const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=job.file_name;link.click();setTimeout(()=>URL.revokeObjectURL(url),0);
+    } catch (cause) {if (!disposed) error=apiErrorMessage(cause,'Unable to download the saved export');}
+    finally {if (!disposed) busy=false;}
+}
+function at(value:string) {return new Date(value).toLocaleString();}
+onMount(()=>{void loadJobs();return()=>{disposed=true;generation+=1;};});
 </script>
 
-<svelte:head>
-	<title>Import / Export - FluentCRM Pro</title>
-</svelte:head>
-
 <div class="import-export-page">
-	<!-- Header -->
-	<div class="page-header">
-		<div>
-			<h1>Import / Export</h1>
-			<p class="page-description">Import and export your CRM data</p>
-		</div>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadJobs()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-		</div>
-	</div>
-
-	<!-- Tabs -->
-	<div class="tabs">
-		<button
-			class={{
-				tab: true,
-				active: activeTab === 'import'
-			}}
-			onclick={() => (activeTab = 'import')}
-		>
-			<IconUpload size={18} />
-			Import
-		</button>
-		<button
-			class={{
-				tab: true,
-				active: activeTab === 'export'
-			}}
-			onclick={() => (activeTab = 'export')}
-		>
-			<IconDownload size={18} />
-			Export
-		</button>
-	</div>
-
-	{#if activeTab === 'import'}
-		<!-- Import Section -->
-		<div class="section">
-			<h2>Import Data</h2>
-			<p class="section-description">Select what you want to import</p>
-
-			<div class="type-grid">
-				{#each importTypes as { type, name, icon: Icon, description } (type)}
-					<a href="/admin/crm/import-export/import/{type}" class="type-card">
-						<div class="type-icon">
-							<Icon size={24} />
-						</div>
-						<div class="type-info">
-							<h3>{name}</h3>
-							<p>{description}</p>
-						</div>
-					</a>
-				{/each}
-			</div>
-		</div>
-
-		<!-- Recent Imports -->
-		{#if importJobs.length > 0}
-			<div class="section">
-				<h2>Recent Imports</h2>
-				<div class="jobs-table">
-					<table>
-						<thead>
-							<tr>
-								<th>Type</th>
-								<th>File</th>
-								<th>Status</th>
-								<th>Progress</th>
-								<th>Created</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each importJobs as job (job.id)}
-								{@const StatusIcon = getStatusIcon(job.status)}
-								<tr>
-									<td>
-										<span class="type-badge">{job.type}</span>
-									</td>
-									<td>
-										<span class="file-name">{job.file_name}</span>
-									</td>
-									<td>
-										<span class={['status-badge', getStatusColor(job.status)]}>
-											<StatusIcon size={14} />
-											{job.status}
-										</span>
-									</td>
-									<td>
-										<div class="progress-info">
-											<span>{job.processed_rows} / {job.total_rows}</span>
-											{#if job.error_count > 0}
-												<span class="error-count">{job.error_count} errors</span>
-											{/if}
-										</div>
-									</td>
-									<td>
-										<span class="date">{formatDate(job.created_at)}</span>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		{/if}
-	{:else}
-		<!-- Export Section -->
-		<div class="section">
-			<h2>Export Data</h2>
-			<p class="section-description">Select what you want to export</p>
-
-			<div class="type-grid">
-				{#each exportTypes as { type, name, icon: Icon, description } (type)}
-					<button class="type-card" onclick={() => startExport(type)}>
-						<div class="type-icon">
-							<Icon size={24} />
-						</div>
-						<div class="type-info">
-							<h3>{name}</h3>
-							<p>{description}</p>
-						</div>
-					</button>
-				{/each}
-			</div>
-		</div>
-
-		<!-- Recent Exports -->
-		{#if exportJobs.length > 0}
-			<div class="section">
-				<h2>Recent Exports</h2>
-				<div class="jobs-table">
-					<table>
-						<thead>
-							<tr>
-								<th>Type</th>
-								<th>Records</th>
-								<th>Status</th>
-								<th>Created</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each exportJobs as job (job.id)}
-								{@const ExportStatusIcon = getStatusIcon(job.status)}
-								<tr>
-									<td>
-										<span class="type-badge">{job.type}</span>
-									</td>
-									<td>
-										<span>{job.total_records.toLocaleString()}</span>
-									</td>
-									<td>
-										<span class={['status-badge', getStatusColor(job.status)]}>
-											<ExportStatusIcon size={14} />
-											{job.status}
-										</span>
-									</td>
-									<td>
-										<span class="date">{formatDate(job.created_at)}</span>
-									</td>
-									<td>
-										{#if job.status === 'completed' && job.file_url}
-											<button class="btn-download" onclick={() => downloadExport(job.id)}>
-												<IconDownload size={16} />
-												Download
-											</button>
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		{/if}
-	{/if}
-
-	{#if error}
-		<div class="error-message">
-			<IconX size={18} />
-			<span>{error}</span>
-		</div>
-	{/if}
+    <div class="page-header"><div><h1>Import / Export</h1><p>Upload and validate CRM data or download a recorded export snapshot.</p></div><button type="button" onclick={()=>loadJobs()} disabled={isLoading || busy}>Refresh jobs</button></div>
+    <div class="tabs"><button class={{active:activeTab==='import'}} type="button" onclick={()=>activeTab='import'}><IconUpload size={18}/>Import</button><button class={{active:activeTab==='export'}} type="button" onclick={()=>activeTab='export'}><IconDownload size={18}/>Export</button></div>
+    {#if error}<div role="alert">{error}<button type="button" onclick={()=>loadJobs()} disabled={isLoading || busy}>Retry history</button></div>{/if}
+    {#if notice}<p role="status">{notice}</p>{/if}
+    <p class="scope">Contact transfers are implemented. Tags, lists, sequences, campaigns, automations and templates still require their transfer workflows; those requests return a service error.</p>
+    {#if activeTab==='import'}
+        <section><h2>Import Data</h2><div class="type-grid">{#each importTypes as item (item.type)}<a class="type-card" href={`/admin/crm/import-export/import/${item.type}`}><item.icon size={24}/><span><strong>{item.name}</strong><small>{item.description}</small></span></a>{/each}</div></section>
+        <section><h2>Recent Imports</h2>{#if isLoading}<p>Loading import history…</p>{:else if importTotal===0}<p>No saved imports.</p>{/if}
+            <div class="jobs-table"><table><thead><tr><th>Type / file</th><th>Status</th><th>Recorded results</th><th>Created</th><th>Action</th></tr></thead><tbody>{#each importJobs as job (job.id)}<tr data-import-id={job.id}><td>{job.type}<br/><strong>{job.file_name}</strong></td><td>{job.status}</td><td>{job.processed_rows} / {job.total_rows} rows · {job.created_count} created · {job.updated_count} updated · {job.skipped_count} skipped · {job.error_count} errors</td><td>{at(job.created_at)}</td><td><a href={`/admin/crm/import-export/new?job=${encodeURIComponent(job.id)}`}>{job.status==='pending' ? 'Review and apply' : 'View import'}</a></td></tr>{/each}</tbody></table></div>
+            <nav aria-label="Import history pagination"><button type="button" onclick={()=>changePage('import',-1)} disabled={busy || isLoading || importPage<=1}>Previous imports</button><span>Page{importPage} of{importPages} · {importTotal ?? '—'} imports</span><button type="button" onclick={()=>changePage('import',1)} disabled={busy || isLoading || importPage>=importPages}>Next imports</button></nav>
+        </section>
+    {:else}
+        <section><h2>Export Data</h2><div class="export-controls"><label>File format<select bind:value={format} disabled={busy}><option value="csv">CSV</option><option value="json">JSON</option></select></label><label>Contact search<input bind:value={search} maxlength="500" disabled={busy}/></label><label>Contact status<select bind:value={status} disabled={busy}><option value="">All statuses</option>{#each ['lead','prospect','customer','churned','unqualified','new','contacted','qualified','proposal','negotiation','won','lost'] as value (value)}<option value={value}>{value}</option>{/each}</select></label></div>
+            <fieldset disabled={busy}><legend>Contact fields</legend>{#each contactExportFields as field (field)}<label class="checkbox"><input type="checkbox" value={field} bind:group={fields}/>{field.replaceAll('_',' ')}</label>{/each}</fieldset><p>Exports contain at most1000matching contacts and8MiB. Narrow the search when the selection exceeds either limit.</p>
+            <div class="type-grid">{#each importTypes as item (item.type)}<button class="type-card" type="button" onclick={()=>startExport(item.type)} disabled={busy}><item.icon size={24}/><span><strong>{item.name}</strong><small>Export {item.name.toLowerCase()}</small></span></button>{/each}</div>
+        </section>
+        <section><h2>Recent Exports</h2>{#if isLoading}<p>Loading export history…</p>{:else if exportTotal===0}<p>No recorded exports.</p>{/if}<div class="jobs-table"><table><thead><tr><th>Type / format</th><th>Records</th><th>Status</th><th>Created</th><th>Action</th></tr></thead><tbody>{#each exportJobs as job (job.id)}<tr data-export-id={job.id}><td>{job.type} / {job.file_type.toUpperCase()}</td><td>{job.total_records}</td><td>{job.status}</td><td>{at(job.created_at)}</td><td><button type="button" onclick={()=>downloadExport(job)} disabled={busy}>Download {job.file_type.toUpperCase()}</button></td></tr>{/each}</tbody></table></div><nav aria-label="Export history pagination"><button type="button" onclick={()=>changePage('export',-1)} disabled={busy || isLoading || exportPage<=1}>Previous exports</button><span>Page{exportPage} of{exportPages} · {exportTotal ?? '—'} exports</span><button type="button" onclick={()=>changePage('export',1)} disabled={busy || isLoading || exportPage>=exportPages}>Next exports</button></nav></section>
+    {/if}
 </div>
-
 <style>
-	.import-export-page {
-		max-width: 1200px;
-	}
-
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 2rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.25rem 0;
-	}
-
-	.page-description {
-		color: var(--text-tertiary, #6e7681);
-		margin: 0;
-	}
-
-	.btn-refresh {
-		width: 42px;
-		height: 42px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 10px;
-		color: var(--text-secondary, #8b949e);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-refresh:hover {
-		background: rgba(230, 184, 0, 0.2);
-		color: var(--primary-400, #ffd11a);
-	}
-
-	.btn-refresh :global(.spinning) {
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.tabs {
-		display: flex;
-		gap: 0.5rem;
-		margin-bottom: 2rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
-		padding-bottom: 1rem;
-	}
-
-	.tab {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background: transparent;
-		border: 1px solid transparent;
-		border-radius: 10px;
-		color: var(--text-tertiary, #6e7681);
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.tab:hover {
-		color: var(--primary-400, #ffd11a);
-	}
-
-	.tab.active {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.3);
-		color: var(--primary-400, #ffd11a);
-	}
-
-	.section {
-		margin-bottom: 3rem;
-	}
-
-	.section h2 {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.5rem 0;
-	}
-
-	.section-description {
-		color: var(--text-tertiary, #6e7681);
-		margin: 0 0 1.5rem 0;
-	}
-
-	.type-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 1rem;
-	}
-
-	.type-card {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1.25rem;
-		background: var(--bg-base, #0d1117);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 14px;
-		text-decoration: none;
-		cursor: pointer;
-		transition: all 0.2s;
-		text-align: left;
-		width: 100%;
-	}
-
-	.type-card:hover {
-		border-color: rgba(230, 184, 0, 0.3);
-	}
-
-	.type-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
-		background: rgba(230, 184, 0, 0.15);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--primary-400, #ffd11a);
-		flex-shrink: 0;
-	}
-
-	.type-info h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.25rem 0;
-	}
-
-	.type-info p {
-		font-size: 0.85rem;
-		color: var(--text-tertiary, #6e7681);
-		margin: 0;
-	}
-
-	.jobs-table {
-		background: var(--bg-base, #0d1117);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 14px;
-		overflow: hidden;
-	}
-
-	.jobs-table table {
-		width: 100%;
-		border-collapse: collapse;
-	}
-
-	.jobs-table th,
-	.jobs-table td {
-		padding: 1rem;
-		text-align: left;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
-	}
-
-	.jobs-table th {
-		background: var(--bg-elevated, #161b22);
-		color: var(--text-secondary, #8b949e);
-		font-weight: 600;
-		font-size: 0.8rem;
-		text-transform: uppercase;
-	}
-
-	.jobs-table tr:last-child td {
-		border-bottom: none;
-	}
-
-	.type-badge {
-		padding: 0.25rem 0.75rem;
-		background: rgba(230, 184, 0, 0.1);
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--primary-400, #ffd11a);
-		text-transform: capitalize;
-	}
-
-	.file-name {
-		color: var(--text-primary, #f0f6fc);
-		font-family: monospace;
-		font-size: 0.85rem;
-	}
-
-	.status-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.25rem 0.75rem;
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: capitalize;
-	}
-
-	.status-badge.green {
-		background: rgba(63, 185, 80, 0.15);
-		color: var(--success-emphasis, #3fb950);
-	}
-	.status-badge.red {
-		background: rgba(248, 81, 73, 0.15);
-		color: var(--error-emphasis, #f85149);
-	}
-	.status-badge.blue {
-		background: rgba(88, 166, 255, 0.15);
-		color: var(--info-emphasis, #58a6ff);
-	}
-	.status-badge.gray {
-		background: var(--bg-hover, #252b33);
-		color: var(--text-secondary, #8b949e);
-	}
-
-	.progress-info {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.error-count {
-		font-size: 0.75rem;
-		color: var(--error-emphasis, #f85149);
-	}
-
-	.date {
-		color: var(--text-tertiary, #6e7681);
-		font-size: 0.85rem;
-	}
-
-	.btn-download {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		color: var(--primary-400, #ffd11a);
-		font-size: 0.85rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-download:hover {
-		background: rgba(230, 184, 0, 0.2);
-	}
-
-	.error-message {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		background: rgba(248, 81, 73, 0.1);
-		border: 1px solid rgba(248, 81, 73, 0.3);
-		border-radius: 10px;
-		color: var(--error-emphasis, #f85149);
-	}
+.import-export-page{max-width:1200px;color:var(--text-primary,#f0f6fc)}h1{font-size:1.8rem;margin:0}h2{font-size:1.25rem}p,small{color:var(--text-secondary,#b1bac4);line-height:1.6}.page-header{display:flex;align-items:center;justify-content:space-between;gap:1rem}.tabs{display:flex;gap:.5rem;border-bottom:1px solid #30363d;padding:1rem 0}.tabs button{display:flex;align-items:center;gap:.5rem}.active{border-color:#e6b800;color:#e6b800}section{margin:1.5rem 0}.type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}.type-card{display:flex;align-items:center;gap:1rem;padding:1.2rem;text-decoration:none;text-align:left;background:var(--bg-elevated,#161b22);border:1px solid #30363d;border-radius:10px;color:inherit}.type-card:hover{border-color:#e6b800}.type-card span{display:grid;gap:.3rem}button,input,select{font:inherit;padding:.6rem;border:1px solid #30363d;border-radius:7px;background:#0d1117;color:#f0f6fc}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}a{color:#e6b800}.jobs-table{overflow:auto}table{width:100%;border-collapse:collapse;background:#161b22}th,td{padding:.9rem;text-align:left;border-bottom:1px solid #30363d;vertical-align:top}nav{display:flex;align-items:center;gap:1rem;justify-content:flex-end;margin-top:1rem}.export-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}label{display:grid;gap:.4rem}fieldset{border:1px solid #30363d;border-radius:9px;margin-top:1rem}.checkbox{display:inline-flex;align-items:center;margin:.5rem}.scope{font-size:.9rem}[role='alert']{border:1px solid #f85149;padding:1rem;margin:1rem 0;border-radius:8px}[role='status']{color:#e6b800}@media(max-width:650px){.page-header,nav{flex-wrap:wrap;justify-content:flex-start}}
 </style>

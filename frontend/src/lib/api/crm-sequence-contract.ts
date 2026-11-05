@@ -115,6 +115,8 @@ export function crmSequence(value: unknown, expected?: string): EmailSequence {
 		historical_steps: common.historical_steps ?? null,
 		last_error: nullable(row.last_error),
 		trigger_type: common.trigger_type,
+		trigger_error: common.trigger_error ?? null,
+		historical_trigger_type: common.historical_trigger_type ?? null,
 		trigger_config: common.trigger_config ?? {},
 		design_template: text(row.design_template),
 		settings: { mailer_settings: sequenceMailer(settings.mailer_settings) },

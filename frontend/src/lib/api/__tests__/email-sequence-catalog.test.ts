@@ -10,6 +10,7 @@ import {
 const key = '34ad48b0-615b-49e8-86ee-c0d9f77206ee';
 const fixture = () => ({
 	id: '42',
+	authoring_version: 2,
 	title: 'Saved sequence',
 	description: null,
 	status: 'draft',
@@ -79,6 +80,37 @@ it('requires actual pagination and rejects explicit failure even with a plausibl
 	expect(() => catalogSequenceEnvelope({ success: false, sequence: fixture() }, '42')).toThrow(
 		'not confirmed'
 	);
+});
+it('keeps an unsupported stored trigger visible for explicit repair without changing valid email counts', () => {
+	const source = {
+		...fixture(),
+		trigger_type: 'legacy',
+		trigger_error: 'Unsupported stored trigger kind',
+		historical_trigger_type: 'legacy_signup_trigger'
+	};
+	expect(catalogSequence(source)).toMatchObject({
+		trigger_type: 'legacy',
+		trigger_error: 'Unsupported stored trigger kind',
+		historical_trigger_type: 'legacy_signup_trigger',
+		emails: [{ id: key }]
+	});
+	expect(() => catalogSequence({ ...source, trigger_error: null })).toThrow('review');
+	expect(() => catalogSequence({ ...source, historical_trigger_type: null })).toThrow('review');
+	expect(() => catalogSequence({ ...source, trigger_type: 'manual' })).toThrow('review');
+	expect(() => sequenceCatalogWrite({ trigger_type: 'legacy' })).toThrow('supported trigger');
+	expect(
+		catalogSequence({
+			...fixture(),
+			trigger_type: 'custom_event',
+			trigger_config: {},
+			trigger_error: 'Custom triggers require event_name',
+			historical_trigger_type: null
+		})
+	).toMatchObject({
+		trigger_type: 'custom_event',
+		trigger_error: 'Custom triggers require event_name',
+		emails: [{ id: key }]
+	});
 });
 it('round-trips native step numbers as checked canonical positions and prevents cross-parent or measurement writes', () => {
 	expect(

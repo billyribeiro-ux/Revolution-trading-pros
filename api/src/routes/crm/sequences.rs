@@ -14,6 +14,8 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::{PgConnection, PgPool, Postgres, Transaction};
 use uuid::Uuid;
+#[path = "sequence_tests.rs"]
+mod sequence_tests;
 pub(super) fn db(error: sqlx::Error) -> ApiError {
     tracing::error!(%error,"Sequence persistence failed");
     if error
@@ -141,6 +143,20 @@ fn normalized(mut row: Value) -> Result<Value, ApiError> {
     row["metrics_scope"] = json!("sequence_outbox");
     if row["trigger_type"].is_null() {
         row["trigger_type"] = json!("manual");
+    }
+    let trigger = row["trigger_type"].as_str().unwrap_or("").to_string();
+    row["trigger_error"] =
+        super::sequence_triggers::validate(&trigger, &row["trigger_config"], true)
+            .err()
+            .map(|error| json!(error.message))
+            .unwrap_or(Value::Null);
+    row["historical_trigger_type"] = Value::Null;
+    if !matches!(
+        trigger.as_str(),
+        "manual" | "signup" | "purchase" | "tag_added" | "custom_event"
+    ) {
+        row["historical_trigger_type"] = json!(trigger);
+        row["trigger_type"] = json!("legacy");
     }
     Ok(row)
 }
@@ -335,7 +351,10 @@ pub(super) async fn lock(connection: &mut PgConnection, id: i64) -> Result<Value
     let _:Vec<i64>=sqlx::query_scalar("SELECT c.id FROM crm_campaigns c JOIN crm_sequence_engines e ON e.campaign_id=c.id WHERE e.sequence_id=$1 ORDER BY c.id FOR UPDATE OF c")
         .bind(id).fetch_all(&mut *connection).await.map_err(db)?;
     let mut row: Value = sqlx::query_scalar(
-        "SELECT to_jsonb(s) FROM crm_sequences s WHERE id=$1 AND deleted_at IS NULL FOR UPDATE",
+        // The advisory lock serializes sequence writes. A non-key row lock also
+        // permits source-event foreign-key checks while their contact row is
+        // locked, avoiding a sequence/contact lock-order cycle.
+        "SELECT to_jsonb(s) FROM crm_sequences s WHERE id=$1 AND deleted_at IS NULL FOR NO KEY UPDATE",
     )
     .bind(id)
     .fetch_optional(&mut *connection)
@@ -412,6 +431,11 @@ async fn create(
     Json(mut input): Json<Input>,
 ) -> Result<Json<Value>, ApiError> {
     input.validate(true)?;
+    super::sequence_triggers::validate(
+        input.trigger_type.as_deref().unwrap_or("manual"),
+        input.trigger_config.as_ref().unwrap_or(&json!({})),
+        false,
+    )?;
     if input
         .status
         .as_deref()
@@ -439,6 +463,11 @@ async fn create(
     Ok(Json(row(&state.db.pool, id).await?))
 }
 pub(super) fn activation(row: &Value, app_url: &str) -> Result<(), ApiError> {
+    super::sequence_triggers::validate(
+        row["trigger_type"].as_str().unwrap_or("manual"),
+        &row["trigger_config"],
+        true,
+    )?;
     let id = row["id"]
         .as_i64()
         .ok_or_else(|| invalid("Invalid stored sequence identity"))?;
@@ -484,6 +513,18 @@ async fn update(
     }
     let mut tx = state.db.pool.begin().await.map_err(db)?;
     let saved = lock(&mut tx, id).await?;
+    super::sequence_triggers::validate(
+        input
+            .trigger_type
+            .as_deref()
+            .or_else(|| saved["trigger_type"].as_str())
+            .unwrap_or("manual"),
+        input
+            .trigger_config
+            .as_ref()
+            .unwrap_or(&saved["trigger_config"]),
+        false,
+    )?;
     if input
         .expected_version
         .is_some_and(|version| saved["authoring_version"].as_i64() != Some(version))
@@ -690,6 +731,7 @@ async fn reorder(
 }
 pub(super) fn router() -> Router<AppState> {
     Router::new()
+        .merge(sequence_tests::router())
         .route("/sequences", get(list).post(create))
         .route("/sequences/{id}", get(get_one).put(update).delete(delete))
         .route("/sequences/{id}/stats", get(get_stats))

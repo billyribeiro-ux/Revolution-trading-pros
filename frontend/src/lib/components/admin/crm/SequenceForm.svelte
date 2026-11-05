@@ -7,6 +7,7 @@
 	import type { EmailSequence, SequenceStats } from '#lib/crm/types.js';
 	import type { JsonValue } from '#lib/api/_types.js';
 	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
+	import SequenceTestDialog from './SequenceTestDialog.svelte';
 	let { id }: { id?: string } = $props();
 	type DraftMail = SequenceMailWrite & { id: string; conditionSource: string };
 	let saved = $state<EmailSequence | null>(null);
@@ -24,6 +25,7 @@
 	let busy = $state(false);
 	let error = $state('');
 	let notice = $state('');
+	let showTest = $state(false);
 	let createSlug = '';
 	let pendingCreateTitle = '';
 	let disposed = false;
@@ -89,6 +91,7 @@
 		if (busy || !ready || active) return;
 		busy = true; error = ''; notice = '';
 		try {
+			if (trigger === 'legacy') throw new Error('Choose a supported enrollment trigger and review its settings before saving');
 			if (!saved && pendingCreateTitle) {
 				const existing = await recoverDraft();
 				if (disposed) return;
@@ -128,8 +131,9 @@
 	{#if notice}<p role="status">{notice}</p>{/if}
 	{#if loading}<p role="status">Loading sequence…</p>{:else if ready}
 		{#if saved}
-			<div class="saved"><span>Saved status: <strong>{saved.status}</strong> · Version {saved.authoring_version}</span><button type="button" onclick={() => void status()} disabled={busy}>{active ? 'Pause sequence' : 'Activate saved sequence'}</button><a href="/admin/crm/sequences/{saved.id}">Analytics</a><a href="/admin/crm/sequences/{saved.id}/subscribers">Subscribers</a></div>
+			<div class="saved"><span>Saved status: <strong>{saved.status}</strong> · Version {saved.authoring_version}</span><button type="button" onclick={() => void status()} disabled={busy}>{active ? 'Pause sequence' : 'Activate saved sequence'}</button><button type="button" disabled={busy} onclick={() => { showTest = true; }}>Test saved email</button><a href="/admin/crm/sequences/{saved.id}">Analytics</a><a href="/admin/crm/sequences/{saved.id}/subscribers">Subscribers</a></div>
 			{#if saved.last_error}<p role="alert">{saved.last_error}</p>{/if}
+			{#if saved.trigger_error}<p role="alert">Trigger needs review: {saved.trigger_error}.{#if saved.trigger_type === 'legacy'} Stored trigger: <code>{saved.historical_trigger_type}</code>.{/if} Choose a supported trigger and review its settings to repair it explicitly.</p>{/if}
 			{#if saved.definition_error}<p role="alert">Stored emails need review: {saved.definition_error}. Saving reviewed emails preserves the original revision.</p><details><summary>Original stored emails</summary><pre>{JSON.stringify(saved.historical_steps, null, 2)}</pre></details>{/if}
 			{#if stats}<p>Recorded receipts: {stats.total_sent} accepted · {stats.total_delivered} delivered · {stats.failed} failed · {stats.unknown} awaiting reconciliation · {stats.queued} queued · {stats.processing} processing</p>{/if}
 		{/if}
@@ -140,8 +144,10 @@
 				<label for="sequence-title">Sequence title</label><input id="sequence-title" bind:value={title} required maxlength={255} />
 				<label for="sequence-description">Description</label><textarea id="sequence-description" bind:value={description} maxlength={4000} rows={3}></textarea>
 				<label for="sequence-format">Content format</label><select id="sequence-format" bind:value={format}><option value="raw_html">HTML with text alternative</option><option value="plain_text">Plain text</option></select>
-				<label for="sequence-trigger">Enrollment trigger</label><select id="sequence-trigger" bind:value={trigger}><option value="manual">Manual</option><option value="signup">Signup</option><option value="purchase">Purchase</option><option value="tag_added">Tag added</option><option value="custom_event">Custom event</option></select>
+				<label for="sequence-trigger">Enrollment trigger</label><select id="sequence-trigger" bind:value={trigger}>{#if saved?.trigger_type === 'legacy'}<option value="legacy">Unsupported stored trigger — review required</option>{/if}<option value="manual">Manual</option><option value="signup">Signup</option><option value="purchase">Purchase</option><option value="tag_added">Tag added</option><option value="custom_event">Custom event</option></select>
 				<label for="sequence-trigger-config">Trigger settings (JSON)</label><textarea id="sequence-trigger-config" bind:value={triggerConfig} rows={3} maxlength={65536}></textarea>
+				<p>Manual and signup triggers use <code>{'{}'}</code>. Tag added uses <code>{'{"tag":"newsletter"}'}</code>; custom events use <code>{'{"event_name":"requested_demo"}'}</code>. Purchase uses <code>{'{}'}</code> for any completed order or <code>{'{"product_id":123}'}</code> for one product.</p>
+				<p>Automatic enrollment captures new matching events while the sequence is active. Contacts still need current newsletter confirmation and must match the saved audience filters. Recorded trigger activity is shown in sequence analytics.</p>
 				<label for="sequence-audience">Audience filters (JSON)</label><textarea id="sequence-audience" bind:value={audience} rows={4} maxlength={65536}></textarea><p>Only confirmed contacts matching the saved filters can enroll. Consent is checked again before each submission.</p>
 			</fieldset>
 			<fieldset disabled={busy || active}><legend>Default sender</legend><label class="check"><input type="checkbox" bind:checked={sender.is_custom} /> Use a custom sender</label><label for="sequence-from-name">From name</label><input id="sequence-from-name" bind:value={sender.from_name} maxlength={255} /><label for="sequence-from-email">From email</label><input id="sequence-from-email" type="email" bind:value={sender.from_email} required={sender.is_custom} /><label for="sequence-reply-name">Reply-to name</label><input id="sequence-reply-name" bind:value={sender.reply_to_name} maxlength={255} /><label for="sequence-reply-email">Reply-to email</label><input id="sequence-reply-email" type="email" bind:value={sender.reply_to_email} /></fieldset>
@@ -163,6 +169,7 @@
 		</form>
 	{/if}
 </section>
+{#if showTest && saved}{#key saved.id}<SequenceTestDialog sequenceId={saved.id} onclose={() => { showTest = false; }} />{/key}{/if}
 
 <style>
 	.sequence-form { max-width: 76rem; padding: 2rem; color: #e2e8f0; }

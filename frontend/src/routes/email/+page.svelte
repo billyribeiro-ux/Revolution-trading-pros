@@ -15,6 +15,8 @@
 		type EmailSequence
 	} from '#lib/api/email.js';
 	import { emailStore, getIsEmailLoading } from '#lib/stores/email.svelte.js';
+	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
+	import SequenceTestDialog from '#lib/components/admin/crm/SequenceTestDialog.svelte';
 	import {
 		IconMail,
 		IconSend,
@@ -34,15 +36,41 @@
 	let sequenceSearch = $state(''), sequenceStatus = $state('');
 	let sequencePage = $state(1), sequenceTotal = $state(0), sequencePages = $state(1);
 	let sequenceGeneration = 0;
+	let sequenceActionPending = $state<string | null>(null), sequenceActionError = $state('');
+	let sequenceNotice = $state(''), sequenceCopyId = $state<string | null>(null);
+	let sequenceToDelete = $state<EmailSequence | null>(null);
+	let testSequenceId = $state<string | null>(null);
 	async function loadSequences(page = 1) {
 		const generation = ++sequenceGeneration;
 		sequenceLoading = true; sequenceError = '';
 		try {
 			const result = await emailApi.getSequences({ page, per_page: 20, status: sequenceStatus || undefined, search: sequenceSearch || undefined });
 			if (generation !== sequenceGeneration) return;
+			if (result.page > result.last_page) { await loadSequences(result.last_page); return; }
 			sequenceCatalog = result.sequences; sequencePage = result.page; sequenceTotal = result.total; sequencePages = result.last_page;
-		} catch (cause) { if (generation === sequenceGeneration) sequenceError = cause instanceof Error ? cause.message : 'Saved sequences are unavailable'; }
+		} catch (cause) { if (generation === sequenceGeneration) { sequenceCatalog = []; sequenceError = cause instanceof Error ? cause.message : 'Saved sequences are unavailable'; } }
 		finally { if (generation === sequenceGeneration) sequenceLoading = false; }
+	}
+	async function sequenceAction(sequence: EmailSequence, action: 'duplicate' | 'status' | 'delete') {
+		if (sequenceActionPending !== null) return;
+		sequenceActionPending = sequence.id; sequenceActionError = ''; sequenceNotice = ''; sequenceCopyId = null;
+		try {
+			if (action === 'duplicate') {
+				const result = await emailApi.duplicateSequence(sequence.id);
+				sequenceCopyId = result.sequence.id; sequenceNotice = 'Sequence duplicated as a separate draft.';
+				sequenceStatus = ''; await loadSequences(1);
+			} else if (action === 'status') {
+				const status = sequence.status === 'active' ? 'paused' : 'active';
+				await emailApi.updateSequence(sequence.id, { status }, sequence.authoring_version);
+				sequenceNotice = status === 'active' ? 'Saved sequence activated.' : 'Sequence paused. Existing in-flight submissions retain their actual receipts.';
+				await loadSequences(sequencePage);
+			} else {
+				await emailApi.deleteSequence(sequence.id); sequenceToDelete = null;
+				sequenceNotice = 'Sequence archived. Existing enrollment history is retained.';
+				await loadSequences(sequencePage);
+			}
+		} catch (cause) { sequenceActionError = `The action was not confirmed. Refresh saved state before retrying: ${cause instanceof Error ? cause.message : 'Sequence operation unavailable'}`; }
+		finally { sequenceActionPending = null; }
 	}
 	let campaignCatalog = $state<EmailCampaign[]>([]);
 	let campaignLoading = $state(true),
@@ -453,7 +481,10 @@
 					<label for="sequence-search">Search sequences</label><input id="sequence-search" bind:value={sequenceSearch} maxlength={255} />
 					<label for="sequence-status">Sequence status</label><select id="sequence-status" bind:value={sequenceStatus}><option value="">All statuses</option><option value="draft">Draft</option><option value="active">Active</option><option value="paused">Paused</option><option value="completed">Completed</option></select><button class="btn-secondary" type="submit">Filter sequences</button>
 				</form>
-				{#if sequenceError}<p role="alert">{sequenceError}</p>
+				{#if sequenceActionError}<p role="alert">{sequenceActionError}</p><button class="btn-secondary" disabled={sequenceLoading || sequenceActionPending !== null} onclick={() => void loadSequences(sequencePage)}>Refresh saved sequences</button>{/if}
+				{#if sequenceNotice}<p role="status">{sequenceNotice}{#if sequenceCopyId} <a href="/admin/crm/sequences/{sequenceCopyId}/edit">Edit duplicated sequence</a>{/if}</p>{/if}
+				{#if sequenceLoading}<p role="status">Loading saved sequences…</p>
+				{:else if sequenceError}<p role="alert">{sequenceError}</p>
 					<button class="btn-secondary" onclick={() => loadSequences(sequencePage)}
 						>Retry sequences</button
 					>{:else if sequenceCatalog.length > 0}
@@ -469,6 +500,7 @@
 
 								<p class="sequence-description">{sequence.description || 'No description'}</p>
 								{#if sequence.definition_error}<p role="alert">{sequence.definition_error}</p>{/if}
+								{#if sequence.trigger_error}<p role="alert">Trigger needs review: {sequence.trigger_error}.{#if sequence.trigger_type === 'legacy'} Stored value: <code>{sequence.historical_trigger_type}</code>.{/if} <a href="/admin/crm/sequences/{sequence.id}/edit">Review trigger</a></p>{/if}
 
 								<div class="sequence-info">
 									<div class="info-item">
@@ -486,6 +518,11 @@
 								<div class="sequence-actions">
 									<a class="action-btn" href="/admin/crm/sequences/{sequence.id}">View</a>
 									<a class="action-btn" href="/admin/crm/sequences/{sequence.id}/edit">Edit</a>
+									<a class="action-btn" href="/admin/crm/sequences/{sequence.id}/subscribers">Subscribers</a>
+									<button class="action-btn" disabled={sequenceActionPending !== null} onclick={() => void sequenceAction(sequence, 'duplicate')}>Duplicate</button>
+									<button class="action-btn" disabled={sequenceActionPending !== null} onclick={() => void sequenceAction(sequence, 'status')}>{sequence.status === 'active' ? 'Pause' : 'Activate'}</button>
+									<button class="action-btn" disabled={sequenceActionPending !== null} onclick={() => { testSequenceId = sequence.id; }}>Test message</button>
+									<button class="action-btn" disabled={sequenceActionPending !== null || sequence.status === 'active'} title={sequence.status === 'active' ? 'Pause the sequence before deleting it' : 'Archive this sequence and preserve enrollment history'} onclick={() => { sequenceToDelete = sequence; }}>Delete</button>
 								</div>
 							</div>
 						{/each}
@@ -501,7 +538,7 @@
 						</a>
 					</div>
 				{/if}
-				<nav aria-label="Sequence pages"><button onclick={() => void loadSequences(sequencePage - 1)} disabled={sequencePage <= 1}>Previous page</button><span>{sequenceTotal} matching sequences · Page {sequencePage} of {sequencePages}</span><button onclick={() => void loadSequences(sequencePage + 1)} disabled={sequencePage >= sequencePages}>Next page</button></nav>
+				{#if !sequenceLoading && !sequenceError}<nav aria-label="Sequence pages"><button onclick={() => void loadSequences(sequencePage - 1)} disabled={sequencePage <= 1 || sequenceActionPending !== null}>Previous page</button><span>{sequenceTotal} matching sequences · Page {sequencePage} of {sequencePages}</span><button onclick={() => void loadSequences(sequencePage + 1)} disabled={sequencePage >= sequencePages || sequenceActionPending !== null}>Next page</button></nav>{/if}
 			</div>
 		{:else if selectedTab === 'templates'}
 			<div class="templates-list">
@@ -687,6 +724,18 @@
 		{/if}
 	</div>
 </div>
+
+<ConfirmationModal
+	isOpen={sequenceToDelete !== null}
+	title="Delete Sequence"
+	message="Archive this sequence and stop future submissions? Saved revisions and enrollment history are retained."
+	confirmText="Delete"
+	variant="danger"
+	isLoading={sequenceActionPending !== null}
+	onConfirm={() => { if (sequenceToDelete) void sequenceAction(sequenceToDelete, 'delete'); }}
+	onCancel={() => { if (sequenceActionPending === null) sequenceToDelete = null; }}
+/>
+{#if testSequenceId}{#key testSequenceId}<SequenceTestDialog sequenceId={testSequenceId} onclose={() => { testSequenceId = null; }} />{/key}{/if}
 
 <style>
 	.catalog-filters,

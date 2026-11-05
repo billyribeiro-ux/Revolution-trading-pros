@@ -3,6 +3,8 @@
 	import { crmAPI } from '#lib/api/crm.js';
 	import type { EmailSequence, SequenceStats, SequenceTracker, TrackerStatus } from '#lib/crm/types.js';
 	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
+	import SequenceTestDialog from './SequenceTestDialog.svelte';
+	import { getSequenceTriggerHistory, type SequenceTriggerRecord } from '#lib/api/sequence-trigger.js';
 	let { id, showSubscribers = false }: { id: string; showSubscribers?: boolean } = $props();
 	let sequence = $state<EmailSequence | null>(null);
 	let stats = $state<SequenceStats | null>(null);
@@ -12,6 +14,7 @@
 	let busy = $state(false);
 	let error = $state('');
 	let notice = $state('');
+	let showTest = $state(false);
 	let search = $state('');
 	let status = $state<TrackerStatus | ''>('');
 	let page = $state(1);
@@ -22,9 +25,25 @@
 	let startPosition = $state(0);
 	let reason = $state('');
 	let readGeneration = 0;
+	let triggerRecords = $state<SequenceTriggerRecord[]>([]);
+	let triggerLoading = $state(true), triggerError = $state('');
+	let triggerPage = $state(1), triggerPages = $state(1), triggerTotal = $state(0);
+	let triggerGeneration = 0;
+	async function loadTriggers(targetPage = 1) {
+		const generation = ++triggerGeneration;
+		triggerLoading = true; triggerError = '';
+		try {
+			const result = await getSequenceTriggerHistory(id, targetPage);
+			if (generation !== triggerGeneration) return;
+			if (result.page > result.pages) { await loadTriggers(result.pages); return; }
+			triggerRecords = result.data; triggerPage = result.page; triggerPages = result.pages; triggerTotal = result.total;
+		} catch (cause) { if (generation === triggerGeneration) { triggerRecords = []; triggerError = apiErrorMessage(cause, 'Recorded trigger activity is unavailable'); } }
+		finally { if (generation === triggerGeneration) triggerLoading = false; }
+	}
 	async function load() {
 		const generation = ++readGeneration;
 		loading = true; ready = false; error = '';
+		void loadTriggers(triggerPage);
 		try {
 			const [saved, enrollments] = await Promise.all([
 				crmAPI.getSequence(id),
@@ -64,7 +83,7 @@
 	function filter(event: SubmitEvent) { event.preventDefault(); page = 1; void load(); }
 	function changePage(by: number) { page += by; void load(); }
 	function rate(value: number | null) { return value === null ? 'Unavailable' : `${value.toFixed(1)}%`; }
-	onMount(() => { void load(); return () => { readGeneration += 1; }; });
+	onMount(() => { void load(); return () => { readGeneration += 1; triggerGeneration += 1; }; });
 </script>
 
 <section class="sequence-detail">
@@ -73,9 +92,10 @@
 	{#if error}<p role="alert">{error}</p>{/if}
 	{#if notice}<p role="status">{notice}</p>{/if}
 	{#if loading}<p role="status">Loading saved activity…</p>{:else if sequence && stats && ready}
-		<nav aria-label="Sequence"><a href="/admin/crm/sequences/{id}/edit">Edit sequence</a><a href="/admin/crm/sequences/{id}">Analytics</a><a href="/admin/crm/sequences/{id}/subscribers">Subscribers</a></nav>
+		<nav aria-label="Sequence"><a href="/admin/crm/sequences/{id}/edit">Edit sequence</a><a href="/admin/crm/sequences/{id}">Analytics</a><a href="/admin/crm/sequences/{id}/subscribers">Subscribers</a><button type="button" disabled={busy} onclick={() => { showTest = true; }}>Test saved email</button></nav>
 		<p>Saved status: <strong>{sequence.status}</strong> · Authoring version {sequence.authoring_version}. Existing enrollments retain their original content revision.</p>
 		{#if sequence.last_error}<p role="alert">{sequence.last_error}</p>{/if}
+		{#if sequence.trigger_error}<p role="alert">Trigger needs review: {sequence.trigger_error}.{#if sequence.trigger_type === 'legacy'} Stored trigger: <code>{sequence.historical_trigger_type}</code>.{/if} Open the editor to review the trigger settings.</p>{/if}
 		{#if sequence.definition_error}<p role="alert">Stored emails need review: {sequence.definition_error}</p>{/if}
 		{#if showSubscribers}
 			<form onsubmit={(event) => void enroll(event)}><fieldset disabled={busy}><legend>Enroll confirmed contacts</legend><label for="enroll-ids">Contact IDs (separated by commas or spaces)</label><textarea id="enroll-ids" bind:value={contactIds} required rows={3}></textarea><a href="/admin/crm/contacts">Find contacts</a><label for="enroll-start">Starting email</label><select id="enroll-start" bind:value={startPosition}>{#each sequence.emails?.filter(mail => mail.status === 'active') ?? [] as mail (mail.id)}<option value={mail.position}>Email {mail.position + 1}: {mail.title}</option>{/each}</select><p>Contacts must match the saved filters and have current newsletter confirmation. Repeated enrollment keeps its existing progress.</p><button type="submit">Enroll contacts</button></fieldset></form>
@@ -90,8 +110,20 @@
 			<dl><dt>Recorded enrollments</dt><dd>{stats.subscribers}</dd><dt>Active enrollments</dt><dd>{stats.active_subscribers}</dd><dt>Completed enrollments</dt><dd>{stats.completed}</dd><dt>Accepted by provider</dt><dd>{stats.total_sent}</dd><dt>Delivered</dt><dd>{stats.total_delivered}</dd><dt>Opened</dt><dd>{stats.total_opened} ({rate(stats.open_rate)})</dd><dt>Clicked</dt><dd>{stats.total_clicked} ({rate(stats.click_rate)})</dd><dt>Bounced</dt><dd>{stats.total_bounced}</dd><dt>Complaints</dt><dd>{stats.total_complained}</dd><dt>Unsubscribed</dt><dd>{stats.total_unsubscribed}</dd><dt>Failed submissions</dt><dd>{stats.failed}</dd><dt>Awaiting reconciliation</dt><dd>{stats.unknown}</dd><dt>Queued / processing</dt><dd>{stats.queued} / {stats.processing}</dd><dt>Attributed revenue</dt><dd>Unavailable</dd></dl>
 			<p>Metrics come from recorded outbox receipts and authenticated provider events across saved revisions. Acceptance and recorded engagement do not establish inbox placement or human activity.</p>
 		{/if}
+		<section aria-label="Recorded trigger activity">
+			<header><h2>Recorded trigger activity</h2><button type="button" disabled={triggerLoading || busy} onclick={() => void loadTriggers(triggerPage)}>Refresh trigger activity</button></header>
+			<p>Each record links a captured source event to its saved sequence revision and actual enrollment outcome. A recorded event or enrollment does not establish email submission or delivery.</p>
+			{#if triggerLoading}<p role="status">Loading recorded trigger activity…</p>
+			{:else if triggerError}<p role="alert">{triggerError}</p><button type="button" onclick={() => void loadTriggers(triggerPage)}>Retry trigger activity</button>
+			{:else}<p>{triggerTotal} recorded trigger events · Page {triggerPage} of {triggerPages}.</p>
+				{#if !triggerRecords.length}<p>No trigger events have been recorded for this sequence.</p>
+				{:else}<div class="table-scroll"><table><thead><tr><th>Source event</th><th>Enrollment result</th><th>Contact</th><th>Saved revision</th><th>Processing</th></tr></thead><tbody>{#each triggerRecords as record (record.id)}<tr><td>{record.kind} · Event {record.event_id}<br /><time datetime={record.happened_at}>{new Date(record.happened_at).toLocaleString()}</time></td><td>{record.status}{#if record.tracker_id}<br />Enrollment {record.tracker_id}{/if}{#if record.last_error}<p>{record.last_error}</p>{/if}</td><td>{#if record.contact_id}<a href="/admin/crm/contacts/{record.contact_id}">Contact {record.contact_id}</a>{:else}Contact unavailable{/if}</td><td><code>{record.revision_id}</code></td><td>{record.attempts} recorded attempts{#if record.processed_at}<br /><time datetime={record.processed_at}>{new Date(record.processed_at).toLocaleString()}</time>{/if}</td></tr>{/each}</tbody></table></div>{/if}
+				<nav aria-label="Trigger history pages"><button type="button" disabled={triggerPage <= 1 || busy} onclick={() => void loadTriggers(triggerPage - 1)}>Previous trigger page</button><button type="button" disabled={triggerPage >= triggerPages || busy} onclick={() => void loadTriggers(triggerPage + 1)}>Next trigger page</button></nav>
+			{/if}
+		</section>
 	{/if}
 </section>
+{#if showTest}{#key id}<SequenceTestDialog sequenceId={id} onclose={() => { showTest = false; }} />{/key}{/if}
 
 <style>
 	.sequence-detail { padding: 2rem; color: #e2e8f0; max-width: 90rem; }

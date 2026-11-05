@@ -7,10 +7,17 @@ use axum::{
     routing::{get, post},
 };
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{Value, json};
 use sqlx::FromRow;
 
-use crate::{AppState, middleware::admin::AdminUser};
+use crate::{
+    AppState,
+    middleware::admin::AdminUser,
+    services::crm_logs,
+    utils::errors::{self, ApiError},
+};
+#[path = "contact_activity.rs"]
+mod activity;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -190,258 +197,169 @@ pub(super) fn contact_db_error(error: sqlx::Error) -> (StatusCode, Json<serde_js
 // HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════
 
+type Response = Result<Json<Value>, ApiError>;
+fn checked(result: ContactResult) -> Result<(), ApiError> {
+    result.map_err(|(status, Json(body))| {
+        ApiError::new(
+            status,
+            body["error"].as_str().unwrap_or("Invalid contact fields"),
+        )
+    })
+}
 async fn list_contacts(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    _: AdminUser,
     Query(filters): Query<ContactFilters>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let list_id = filters
+) -> Response {
+    let page = filters.page.unwrap_or(1);
+    let size = filters.per_page.unwrap_or(50);
+    if !(1..=100_000).contains(&page) || !(1..=100).contains(&size) {
+        return Err(errors::validation_error(
+            "Choose a positive bounded page and page size1–100",
+        ));
+    }
+    if filters
+        .search
+        .as_ref()
+        .is_some_and(|value| value.chars().count() > 255 || value.contains('\0'))
+        || filters.tag.as_ref().is_some_and(|value| {
+            value.is_empty() || value.chars().count() > 100 || value.contains('\0')
+        })
+    {
+        return Err(errors::validation_error(
+            "Provide bounded contact search and tag values without null characters",
+        ));
+    }
+    if let Some(status) = &filters.status {
+        checked(validate_fields(json!({"status":status}), false))?;
+    }
+    let list = filters
         .list_id
         .as_deref()
         .map(str::parse::<i64>)
         .transpose()
-        .map_err(|_| {
-            (
-                StatusCode::BAD_REQUEST,
-                Json(json!({"error":"Invalid list ID"})),
-            )
-        })?;
-    let page = filters.page.unwrap_or(1).max(1);
-    let per_page = filters.per_page.unwrap_or(50).clamp(1, 100);
-    let offset = page.saturating_sub(1).saturating_mul(per_page);
-    let search_pattern = filters
-        .search
-        .as_ref()
-        .map(|s| format!("%{}%", s.replace('\0', "")));
-
-    let contacts: Vec<CrmContact> = sqlx::query_as(
-        r"
-        SELECT id, email, first_name, last_name, phone, company, job_title,
-               status, source, COALESCE(score, 0) as score, tags, custom_fields,
-               last_contacted_at, created_at, updated_at
-        FROM contacts
-        WHERE ($1::text IS NULL OR status = $1)
-          AND ($2::text IS NULL OR email ILIKE $2 OR first_name ILIKE $2 OR last_name ILIKE $2)
-          AND ($5::bigint IS NULL OR EXISTS(SELECT 1 FROM crm_list_members m WHERE m.contact_id=contacts.id AND m.list_id=$5))
-        ORDER BY created_at DESC
-        LIMIT $3 OFFSET $4
-        ",
-    )
-    .bind(filters.status.as_deref())
-    .bind(search_pattern.as_deref())
-    .bind(per_page)
-    .bind(offset)
-    .bind(list_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| {
-        tracing::error!("CRM contacts list error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    let total: (i64,) = sqlx::query_as(
-        r"
-        SELECT COUNT(*) FROM contacts
-        WHERE ($1::text IS NULL OR status = $1)
-          AND ($2::text IS NULL OR email ILIKE $2 OR first_name ILIKE $2 OR last_name ILIKE $2)
-          AND ($3::bigint IS NULL OR EXISTS(SELECT 1 FROM crm_list_members m WHERE m.contact_id=contacts.id AND m.list_id=$3))
-        ",
-    )
-    .bind(filters.status.as_deref())
-    .bind(search_pattern.as_deref())
-    .bind(list_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        tracing::error!("CRM contacts count error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    Ok(Json(json!({
-        "data": contacts,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
-        }
-    })))
+        .map_err(|_| errors::validation_error("Invalid list ID"))?;
+    if list.is_some_and(|value| value <= 0) {
+        return Err(errors::validation_error("List ID must be positive"));
+    }
+    let search = filters.search.map(|value| format!("%{value}%"));
+    let mut tx = state.db.pool.begin().await.map_err(activity::db)?;
+    sqlx::query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+        .execute(&mut *tx)
+        .await
+        .map_err(activity::db)?;
+    let rows:Vec<Value>=sqlx::query_scalar("SELECT to_jsonb(c) FROM contacts c WHERE ($1::text IS NULL OR c.status=$1) AND ($2::text IS NULL OR c.email ILIKE $2 OR c.first_name ILIKE $2 OR c.last_name ILIKE $2) AND ($3::bigint IS NULL OR EXISTS(SELECT 1 FROM crm_list_members m WHERE m.contact_id=c.id AND m.list_id=$3)) AND ($4::text IS NULL OR COALESCE(c.tags,'[]'::jsonb) ? $4) ORDER BY c.created_at DESC NULLS LAST,c.id DESC LIMIT $5 OFFSET $6")
+        .bind(&filters.status).bind(&search).bind(list).bind(&filters.tag).bind(size).bind((page-1)*size).fetch_all(&mut *tx).await.map_err(activity::db)?;
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM contacts c WHERE ($1::text IS NULL OR c.status=$1) AND ($2::text IS NULL OR c.email ILIKE $2 OR c.first_name ILIKE $2 OR c.last_name ILIKE $2) AND ($3::bigint IS NULL OR EXISTS(SELECT 1 FROM crm_list_members m WHERE m.contact_id=c.id AND m.list_id=$3)) AND ($4::text IS NULL OR COALESCE(c.tags,'[]'::jsonb) ? $4)")
+        .bind(&filters.status).bind(search).bind(list).bind(&filters.tag).fetch_one(&mut *tx).await.map_err(activity::db)?;
+    let policy = activity::policy(&mut tx).await?;
+    let rows = rows
+        .into_iter()
+        .map(|row| activity::dto(row, &policy))
+        .collect::<Vec<_>>();
+    tx.commit().await.map_err(activity::db)?;
+    Ok(Json(
+        json!({"data":rows,"meta":{"current_page":page,"per_page":size,"total":total,"total_pages":((total+size-1)/size).max(1)}}),
+    ))
 }
-
-async fn get_contact(
-    State(state): State<AppState>,
-    _admin: AdminUser,
-    Path(id): Path<i64>,
-) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
-    let contact: CrmContact = sqlx::query_as(
-        r"SELECT id, email, first_name, last_name, phone, company, job_title,
-                  status, source, COALESCE(score, 0) as score, tags, custom_fields,
-                  last_contacted_at, created_at, updated_at
-           FROM contacts WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Contact not found"})),
-        )
-    })?;
-
-    Ok(Json(contact))
+async fn get_contact(State(state): State<AppState>, _: AdminUser, Path(id): Path<i64>) -> Response {
+    let mut tx = state.db.pool.begin().await.map_err(activity::db)?;
+    sqlx::query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+        .execute(&mut *tx)
+        .await
+        .map_err(activity::db)?;
+    let row: Value = sqlx::query_scalar("SELECT to_jsonb(c) FROM contacts c WHERE id=$1")
+        .bind(id)
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(activity::db)?
+        .ok_or_else(|| errors::not_found("Contact"))?;
+    let policy = activity::policy(&mut tx).await?;
+    let mut row = activity::dto(row, &policy);
+    row["facts"] = activity::facts(&mut tx, id).await?;
+    tx.commit().await.map_err(activity::db)?;
+    Ok(Json(row))
 }
-
 async fn create_contact(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Json(input): Json<CreateContactInput>,
-) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
-    input.validate(false)?;
-    let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
-    let status = input.status.unwrap_or_else(|| "lead".to_string());
-
-    let contact: CrmContact = sqlx::query_as(
-        r"
-        INSERT INTO contacts (email, first_name, last_name, phone, company, job_title,
-                              source, status, tags, custom_fields, score, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0, NOW(), NOW())
-        RETURNING id, email, first_name, last_name, phone, company, job_title,
-                  status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        ",
+) -> Response {
+    checked(input.validate(false))?;
+    let mut tx = state.db.pool.begin().await.map_err(activity::db)?;
+    activity::actor(&mut tx, admin.0.id).await?;
+    let row:Value=sqlx::query_scalar("INSERT INTO contacts(email,first_name,last_name,phone,company,job_title,source,status,tags,custom_fields,score,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NULL,NOW(),NOW()) RETURNING to_jsonb(contacts)")
+        .bind(&input.email).bind(&input.first_name).bind(&input.last_name).bind(&input.phone).bind(&input.company).bind(&input.job_title).bind(&input.source).bind(input.status.as_deref().unwrap_or("lead")).bind(input.tags.map(|tags|json!(tags))).bind(&input.custom_fields)
+        .fetch_one(&mut *tx).await.map_err(activity::db)?;
+    crm_logs::record(
+        &mut tx,
+        "info",
+        "api",
+        "CRM contact created",
+        json!({"contact_id":row["id"]}),
+        Some(admin.0.id),
     )
-    .bind(&input.email)
-    .bind(&input.first_name)
-    .bind(&input.last_name)
-    .bind(&input.phone)
-    .bind(&input.company)
-    .bind(&input.job_title)
-    .bind(&input.source)
-    .bind(&status)
-    .bind(&tags)
-    .bind(&input.custom_fields)
-    .fetch_one(&state.db.pool)
     .await
-    .map_err(contact_db_error)?;
-
-    Ok(Json(contact))
+    .map_err(activity::db)?;
+    let policy = activity::policy(&mut tx).await?;
+    tx.commit().await.map_err(activity::db)?;
+    Ok(Json(activity::dto(row, &policy)))
 }
-
 async fn update_contact(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
     Json(input): Json<UpdateContactInput>,
-) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
-    input.validate(false)?;
-    let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
-
-    let contact: CrmContact = sqlx::query_as(
-        r"
-        UPDATE contacts SET
-            email = COALESCE($2, email),
-            first_name = COALESCE($3, first_name),
-            last_name = COALESCE($4, last_name),
-            phone = COALESCE($5, phone),
-            company = COALESCE($6, company),
-            job_title = COALESCE($7, job_title),
-            status = COALESCE($8, status),
-            tags = COALESCE($9, tags),
-            custom_fields = COALESCE($10, custom_fields),
-            updated_at = NOW()
-        WHERE id = $1
-        RETURNING id, email, first_name, last_name, phone, company, job_title,
-                  status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        ",
+) -> Response {
+    checked(input.validate(false))?;
+    let mut tx = state.db.pool.begin().await.map_err(activity::db)?;
+    activity::actor(&mut tx, admin.0.id).await?;
+    let row:Value=sqlx::query_scalar("UPDATE contacts SET email=COALESCE($2,email),first_name=COALESCE($3,first_name),last_name=COALESCE($4,last_name),phone=COALESCE($5,phone),company=COALESCE($6,company),job_title=COALESCE($7,job_title),status=COALESCE($8,status),tags=COALESCE($9,tags),custom_fields=COALESCE($10,custom_fields),updated_at=NOW() WHERE id=$1 RETURNING to_jsonb(contacts)")
+        .bind(id).bind(&input.email).bind(&input.first_name).bind(&input.last_name).bind(&input.phone).bind(&input.company).bind(&input.job_title).bind(&input.status).bind(input.tags.map(|tags|json!(tags))).bind(&input.custom_fields)
+        .fetch_optional(&mut *tx).await.map_err(activity::db)?.ok_or_else(||errors::not_found("Contact"))?;
+    crm_logs::record(
+        &mut tx,
+        "info",
+        "api",
+        "CRM contact updated",
+        json!({"contact_id":id}),
+        Some(admin.0.id),
     )
-    .bind(id)
-    .bind(&input.email)
-    .bind(&input.first_name)
-    .bind(&input.last_name)
-    .bind(&input.phone)
-    .bind(&input.company)
-    .bind(&input.job_title)
-    .bind(&input.status)
-    .bind(&tags)
-    .bind(&input.custom_fields)
-    .fetch_optional(&state.db.pool)
     .await
-    .map_err(contact_db_error)?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Contact not found"}))))?;
-
-    Ok(Json(contact))
+    .map_err(activity::db)?;
+    let policy = activity::policy(&mut tx).await?;
+    tx.commit().await.map_err(activity::db)?;
+    Ok(Json(activity::dto(row, &policy)))
 }
-
 async fn delete_contact(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(id): Path<i64>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let result = sqlx::query("DELETE FROM contacts WHERE id = $1")
+) -> Response {
+    let mut tx = state.db.pool.begin().await.map_err(activity::db)?;
+    activity::actor(&mut tx, admin.0.id).await?;
+    let deleted = sqlx::query("DELETE FROM contacts WHERE id=$1")
         .bind(id)
-        .execute(&state.db.pool)
+        .execute(&mut *tx)
         .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
-
-    if result.rows_affected() == 0 {
-        return Err((
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Contact not found"})),
-        ));
+        .map_err(activity::db)?;
+    if deleted.rows_affected() != 1 {
+        return Err(errors::not_found("Contact"));
     }
-
-    Ok(Json(json!({"message": "Contact deleted successfully"})))
-}
-
-async fn get_contact_timeline(
-    State(_state): State<AppState>,
-    _admin: AdminUser,
-    Path(_id): Path<i64>,
-) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Return mock timeline for now - can be expanded with activity tracking
-    Ok(Json(json!([
-        {"type": "created", "message": "Contact was created", "timestamp": chrono::Utc::now()}
-    ])))
-}
-
-async fn recalculate_contact_score(
-    State(state): State<AppState>,
-    _admin: AdminUser,
-    Path(id): Path<i64>,
-) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
-    // Simple scoring algorithm - can be expanded
-    let contact: CrmContact = sqlx::query_as(
-        r"
-        UPDATE contacts SET score = 50, updated_at = NOW()
-        WHERE id = $1
-        RETURNING id, email, first_name, last_name, phone, company, job_title,
-                  status, source, score, tags, custom_fields, last_contacted_at, created_at, updated_at
-        ",
+    crm_logs::record(
+        &mut tx,
+        "info",
+        "api",
+        "CRM contact deleted",
+        json!({"contact_id":id}),
+        Some(admin.0.id),
     )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Contact not found"}))))?;
-
-    Ok(Json(contact))
+    .map_err(activity::db)?;
+    tx.commit().await.map_err(activity::db)?;
+    Ok(Json(
+        json!({"deleted":true,"id":id.to_string(),"message":"Contact deleted successfully"}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -455,10 +373,10 @@ pub(super) fn router() -> Router<AppState> {
             "/contacts/{id}",
             get(get_contact).put(update_contact).delete(delete_contact),
         )
-        .route("/contacts/{id}/timeline", get(get_contact_timeline))
+        .route("/contacts/{id}/timeline", get(activity::timeline))
         .route(
             "/contacts/{id}/recalculate-score",
-            post(recalculate_contact_score),
+            post(activity::recalculate),
         )
 }
 

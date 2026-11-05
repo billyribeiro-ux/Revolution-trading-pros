@@ -17,22 +17,24 @@ export async function proxySequences(event: RequestEvent): Promise<Response> {
 	const record = new RegExp(`^${id}$`).test(rest);
 	const emails = new RegExp(`^${id}/emails$`).test(rest);
 	const mail = new RegExp(`^${id}/emails/${uuid}$`).test(rest);
-	const read = new RegExp(`^${id}/(?:stats|subscribers)$`).test(rest);
+	const read = new RegExp(`^${id}/(?:stats|subscribers|tests|triggers)$`).test(rest);
 	const action = new RegExp(
 		`^${id}/(?:duplicate|activate|pause|subscribe|unsubscribe|test|emails/reorder)$`
 	).test(rest);
 	if (
-		!(rest === ''
-			? ['GET', 'POST'].includes(method)
-			: record
-				? ['GET', 'PUT', 'DELETE'].includes(method)
-				: emails
-					? ['GET', 'POST'].includes(method)
-					: mail
-						? ['PUT', 'DELETE'].includes(method)
-						: read
-							? method === 'GET'
-							: action && method === 'POST')
+		!(rest === 'events'
+			? method === 'POST'
+			: rest === ''
+				? ['GET', 'POST'].includes(method)
+				: record
+					? ['GET', 'PUT', 'DELETE'].includes(method)
+					: emails
+						? ['GET', 'POST'].includes(method)
+						: mail
+							? ['PUT', 'DELETE'].includes(method)
+							: read
+								? method === 'GET'
+								: action && method === 'POST')
 	)
 		return fail(404, 'Sequence endpoint not found');
 	let body: Uint8Array<ArrayBuffer> | undefined;

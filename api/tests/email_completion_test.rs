@@ -3,6 +3,10 @@
 mod authorization_parity_proof;
 #[path = "support/connections.rs"]
 mod connections_proof;
+#[path = "support/crm_contacts.rs"]
+mod crm_contacts_proof;
+#[path = "support/crm_import_export.rs"]
+mod crm_import_export_proof;
 #[path = "support/crm_webhooks.rs"]
 mod crm_webhook_proof;
 #[path = "support/email_campaign_analytics.rs"]
@@ -39,6 +43,10 @@ mod sequence_authoring_proof;
 mod sequence_delivery_proof;
 #[path = "support/sequence_edges.rs"]
 mod sequence_edges_proof;
+#[path = "support/sequence_tests.rs"]
+mod sequence_tests_proof;
+#[path = "support/sequence_triggers.rs"]
+mod sequence_triggers_proof;
 #[path = "support/smtp_delivery.rs"]
 mod smtp_delivery_proof;
 #[path = "support/smtp.rs"]
@@ -1750,6 +1758,10 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     sequence_authoring_proof::proof(&api, &pool, &tokens, &adapter).await;
     sequence_delivery_proof::proof(&api, &pool, &tokens, &adapter).await;
     sequence_edges_proof::proof(&api, &pool, &tokens, &adapter).await;
+    sequence_tests_proof::proof(&api, &pool, &tokens, &adapter).await;
+    sequence_triggers_proof::proof(&api, &pool, &tokens, &adapter).await;
+    crm_import_export_proof::proof(&api, &pool, &tokens).await;
+    crm_contacts_proof::proof(&api, &pool, &tokens, &adapter).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

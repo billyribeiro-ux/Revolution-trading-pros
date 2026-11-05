@@ -93,6 +93,18 @@ import {
 	type SequenceMailWrite
 } from './crm-sequence-contract.js';
 const sequenceWriteConfig: RequestConfig = { retry: { attempts: 1, condition: () => false } };
+import {
+	importJob,
+	exportJob,
+	transferPage,
+	transferPreview,
+	transferId,
+	transferJson,
+	transferRequest,
+	transferQuery,
+	transferOptions,
+	type TransferOptionPage
+} from './crm-transfer-contract.js';
 
 // Administrative records must reflect completed writes and explicit Refresh actions.
 function freshGet<T>(endpoint: string, config?: RequestConfig): Promise<T> {
@@ -932,60 +944,121 @@ export class CrmAPI {
 	async getImportJobs(filters?: {
 		type?: string;
 		status?: string;
+		page?: number;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ImportJob>> {
-		return freshGet('/admin/crm/imports', { preserveEnvelope: true, params: filters });
+		return transferPage(await transferJson(`imports${transferQuery(filters)}`), importJob);
 	}
-
 	async getImportJob(id: string): Promise<ImportJob> {
-		return freshGet(`/admin/crm/imports/${id}`);
+		return importJob(await transferJson(`imports/${transferId(id)}`), id);
 	}
-
+	async getTransferOptions(
+		kind: 'lists' | 'tags',
+		filters: { search?: string; page?: number; per_page?: number; selected?: string[] } = {}
+	): Promise<TransferOptionPage> {
+		const { selected, ...query } = filters;
+		const result = transferOptions(
+			await transferJson(
+				`imports/options${transferQuery({ ...query, kind, selected: selected?.join(',') })}`
+			)
+		);
+		if (
+			JSON.stringify([...new Set(selected ?? [])].sort()) !==
+			JSON.stringify([...result.selected.map((value) => value.id), ...result.missing].sort())
+		)
+			throw new Error('Saved reference options did not match the requested selections');
+		return result;
+	}
 	async createImportJob(data: FormData): Promise<ImportJob> {
-		return apiClient.post('/admin/crm/imports', data, {
-			headers: { 'Content-Type': 'multipart/form-data' }
-		});
+		const job = importJob(await transferJson('imports', 'POST', data));
+		if (job.type !== data.get('type') || job.status !== 'pending')
+			throw new Error('The saved import does not match the uploaded file');
+		return job;
 	}
-
 	async startImportJob(
 		id: string,
 		mapping: Record<string, string>,
 		settings: Record<string, JsonValue>
 	): Promise<ImportJob> {
-		return apiClient.post(`/admin/crm/imports/${id}/start`, { mapping, settings });
+		const job = importJob(
+			await transferJson(`imports/${transferId(id)}/start`, 'POST', { mapping, settings }),
+			id
+		);
+		if (!['completed', 'failed'].includes(job.status))
+			throw new Error('The import execution was not confirmed; refresh its saved state');
+		return job;
 	}
-
-	async cancelImportJob(id: string): Promise<void> {
-		return apiClient.post(`/admin/crm/imports/${id}/cancel`);
+	async cancelImportJob(id: string): Promise<ImportJob> {
+		const job = importJob(await transferJson(`imports/${transferId(id)}/cancel`, 'POST'), id);
+		if (job.status !== 'cancelled') throw new Error('Import cancellation was not confirmed');
+		return job;
 	}
-
 	async getImportPreview(
 		id: string
 	): Promise<{ headers: string[]; rows: Array<Record<string, JsonValue>>; total_rows: number }> {
-		return freshGet(`/admin/crm/imports/${id}/preview`);
+		return transferPreview(await transferJson(`imports/${transferId(id)}/preview`));
 	}
-
 	async getExportJobs(filters?: {
 		type?: string;
+		status?: string;
+		page?: number;
 		per_page?: number;
 	}): Promise<PaginatedResponse<ExportJob>> {
-		return freshGet('/admin/crm/exports', { preserveEnvelope: true, params: filters });
+		return transferPage(await transferJson(`exports${transferQuery(filters)}`), exportJob);
 	}
-
+	async getExportJob(id: string): Promise<ExportJob> {
+		return exportJob(await transferJson(`exports/${transferId(id)}`), id);
+	}
 	async createExportJob(
 		type: string,
 		filters?: Record<string, JsonValue>,
-		fields?: string[]
+		fields?: string[],
+		file_type: 'csv' | 'json' = 'csv'
 	): Promise<ExportJob> {
-		return apiClient.post('/admin/crm/exports', { type, filters, fields });
+		const job = exportJob(
+			await transferJson('exports', 'POST', { type, filters, fields, file_type })
+		);
+		if (
+			job.type !== type ||
+			job.file_type !== file_type ||
+			(fields && JSON.stringify(job.fields) !== JSON.stringify(fields))
+		)
+			throw new Error('The export snapshot does not match the requested data');
+		return job;
 	}
-
 	async downloadExport(id: string): Promise<Blob> {
-		return freshGet(`/admin/crm/exports/${id}/download`, { responseType: 'blob' });
+		const response = await transferRequest(`exports/${transferId(id)}/download`);
+		const type = response.headers.get('Content-Type') ?? '',
+			extension = type.startsWith('text/csv')
+				? 'csv'
+				: type.startsWith('application/json')
+					? 'json'
+					: '';
+		if (
+			!extension ||
+			response.headers.get('Content-Disposition') !==
+				`attachment; filename="crm-contacts-${transferId(id)}.${extension}"`
+		)
+			throw new Error('The transfer service did not return the expected export file');
+		const blob = await response.blob();
+		if (blob.size === 0 || blob.size > 8 * 1024 * 1024)
+			throw new Error('The export file has an invalid size');
+		return blob;
 	}
-
 	async getExportableFields(type: string): Promise<{ field: string; label: string }[]> {
-		return freshGet(`/admin/crm/exports/fields/${type}`);
+		const value = await transferJson(`exports/fields/${encodeURIComponent(type)}`);
+		if (
+			!Array.isArray(value) ||
+			value.some(
+				(item) =>
+					!item ||
+					typeof item !== 'object' ||
+					typeof item.field !== 'string' ||
+					typeof item.label !== 'string'
+			)
+		)
+			throw new Error('Unable to confirm export field options');
+		return value as { field: string; label: string }[];
 	}
 
 	// =====================================================
