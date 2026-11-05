@@ -2,12 +2,17 @@
 	Email Marketing Dashboard
 	═══════════════════════════════════════════════════════════════════════════
 	
-	Complete email marketing and automation dashboard.
+	Email campaign authoring, recorded analytics and automation navigation.
 -->
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { emailApi, type EmailTemplate, type EmailCampaign } from '#lib/api/email.js';
+	import {
+		emailApi,
+		type EmailTemplate,
+		type EmailCampaign,
+		type EmailAnalytics
+	} from '#lib/api/email.js';
 	import { emailStore, getIsEmailLoading } from '#lib/stores/email.svelte.js';
 	import {
 		IconMail,
@@ -80,6 +85,40 @@
 			campaignActionPending = null;
 		}
 	}
+	let analytics = $state<EmailAnalytics | null>(null);
+	let analyticsLoading = $state(true),
+		analyticsError = $state('');
+	let analyticsPeriod = $state<EmailAnalytics['period']>('30d');
+	let analyticsGeneration = 0;
+	async function loadAnalytics(period: string = analyticsPeriod) {
+		const generation = ++analyticsGeneration;
+		analyticsLoading = true;
+		analyticsError = '';
+		analytics = null;
+		try {
+			if (!['7d', '30d', '90d', '365d'].includes(period))
+				throw new Error('Choose a supported reporting period');
+			analyticsPeriod = period as EmailAnalytics['period'];
+			const response = await emailApi.getAnalytics(period);
+			if (generation === analyticsGeneration) analytics = response.analytics;
+		} catch (error) {
+			if (generation === analyticsGeneration)
+				analyticsError =
+					error instanceof Error ? error.message : 'Recorded analytics are unavailable';
+		} finally {
+			if (generation === analyticsGeneration) analyticsLoading = false;
+		}
+	}
+	function selectTab(tab: typeof selectedTab) {
+		selectedTab = tab;
+		if (tab === 'sequences') void emailStore.loadSequences();
+		else if (tab === 'automations') void emailStore.loadAutomations();
+	}
+	function formatChange(value: number | null, suffix: string): string {
+		return value === null
+			? 'No comparable prior cohort'
+			: `${value >= 0 ? '+' : ''}${value.toFixed(1)}${suffix} vs previous period`;
+	}
 	let templateCatalog = $state<EmailTemplate[]>([]);
 	let templateLoading = $state(true);
 	let templateError = $state('');
@@ -90,13 +129,14 @@
 	let templateGeneration = 0;
 	const templatePerPage = 20;
 	onMount(() => {
-		void loadData();
+		void loadAnalytics();
 		void loadTemplates();
 		void loadCampaigns();
 	});
 	onDestroy(() => {
 		templateGeneration++;
 		campaignGeneration++;
+		analyticsGeneration++;
 	});
 	async function loadTemplates(page = 1) {
 		const generation = ++templateGeneration;
@@ -119,14 +159,6 @@
 		} finally {
 			if (generation === templateGeneration) templateLoading = false;
 		}
-	}
-
-	async function loadData() {
-		await Promise.all([
-			emailStore.loadSequences(),
-			emailStore.loadAutomations(),
-			emailStore.loadAnalytics()
-		]);
 	}
 
 	function formatNumber(num: number): string {
@@ -161,17 +193,35 @@
 		</div>
 	</div>
 
+	<div class="analytics-controls">
+		<label for="email-analytics-period">Reporting period</label><select
+			id="email-analytics-period"
+			bind:value={analyticsPeriod}
+			onchange={(event) => loadAnalytics(event.currentTarget.value)}
+			><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option><option
+				value="90d">Last 90 days</option
+			><option value="365d">Last 365 days</option></select
+		><button class="btn-secondary" onclick={() => loadAnalytics()}>Refresh analytics</button>
+	</div>
+	{#if analyticsLoading}<p role="status">Loading recorded campaign analytics...</p>{/if}
+	{#if analyticsError}<p role="alert">
+			{analyticsError}<button class="btn-secondary" onclick={() => loadAnalytics()}
+				>Retry analytics</button
+			>
+		</p>{/if}
 	<!-- Stats Overview -->
-	{#if emailStore.analytics}
+	{#if analytics}
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon stat-icon--blue">
 					<IconSend size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-label">Emails Sent</div>
-					<div class="stat-value">{formatNumber(emailStore?.analytics?.emails_sent || 0)}</div>
-					<div class="stat-change positive">+12.5% vs last month</div>
+					<div class="stat-label">Campaign Provider Acceptances</div>
+					<div class="stat-value">{formatNumber(analytics.emails_sent)}</div>
+					<div class="stat-change">
+						{formatChange(analytics.comparison.emails_sent_change_pct, '%')}
+					</div>
 				</div>
 			</div>
 
@@ -180,9 +230,11 @@
 					<IconChartBar size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-label">Avg Open Rate</div>
-					<div class="stat-value">{formatPercent(emailStore.analytics.average_open_rate)}</div>
-					<div class="stat-change positive">+2.3% vs last month</div>
+					<div class="stat-label">Recipient Open Rate</div>
+					<div class="stat-value">{formatPercent(analytics.average_open_rate)}</div>
+					<div class="stat-change">
+						{formatChange(analytics.comparison.open_rate_change_points, ' pp')}
+					</div>
 				</div>
 			</div>
 
@@ -191,9 +243,11 @@
 					<IconUsers size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-label">Avg Click Rate</div>
-					<div class="stat-value">{formatPercent(emailStore.analytics.average_click_rate)}</div>
-					<div class="stat-change positive">+1.8% vs last month</div>
+					<div class="stat-label">Recipient Click Rate</div>
+					<div class="stat-value">{formatPercent(analytics.average_click_rate)}</div>
+					<div class="stat-change">
+						{formatChange(analytics.comparison.click_rate_change_points, ' pp')}
+					</div>
 				</div>
 			</div>
 
@@ -203,8 +257,10 @@
 				</div>
 				<div class="stat-content">
 					<div class="stat-label">Active Campaigns</div>
-					<div class="stat-value">{emailStore.analytics.campaigns}</div>
-					<div class="stat-change">Running now</div>
+					<div class="stat-value">{analytics.campaigns}</div>
+					<div class="stat-change">
+						Scheduled or sending · {analytics.new_campaigns} created this period
+					</div>
 				</div>
 			</div>
 		</div>
@@ -221,14 +277,14 @@
 		</button>
 		<button
 			class={['tab', { active: selectedTab === 'sequences' }]}
-			onclick={() => (selectedTab = 'sequences')}
+			onclick={() => selectTab('sequences')}
 		>
 			<IconBolt size={20} />
 			Sequences
 		</button>
 		<button
 			class={['tab', { active: selectedTab === 'automations' }]}
-			onclick={() => (selectedTab = 'automations')}
+			onclick={() => selectTab('automations')}
 		>
 			<IconRocket size={20} />
 			Automations
@@ -251,7 +307,7 @@
 
 	<!-- Content -->
 	<div class="tab-content">
-		{#if selectedTab === 'templates' ? templateLoading : selectedTab === 'campaigns' ? campaignLoading : getIsEmailLoading()}
+		{#if selectedTab === 'templates' ? templateLoading : selectedTab === 'campaigns' ? campaignLoading : selectedTab === 'analytics' ? analyticsLoading : getIsEmailLoading()}
 			<div class="loading-state">
 				<div class="spinner"></div>
 				<p class="state-text state-text--spaced">Loading...</p>
@@ -379,7 +435,10 @@
 					</button>
 				</div>
 
-				{#if emailStore.sequences.length > 0}
+				{#if emailStore.error}<p role="alert">{emailStore.error}</p>
+					<button class="btn-secondary" onclick={() => emailStore.loadSequences()}
+						>Retry sequences</button
+					>{:else if emailStore.sequences.length > 0}
 					<div class="sequences-grid">
 						{#each emailStore.sequences as sequence (sequence.id)}
 							<div class="sequence-card">
@@ -517,7 +576,88 @@
 		{:else}
 			<div class="analytics-view">
 				<h2 class="section-heading analytics-heading">Email Analytics</h2>
-				<p class="analytics-copy">Detailed analytics coming soon...</p>
+				<p class="analytics-copy">
+					Native campaign receipts and recorded observations in UTC. Recipient rates use unique
+					opens or clicks among messages accepted in the selected period, observed through the end
+					of the window. Signals may include automated requests. Historical totals and test messages
+					are excluded.
+				</p>
+				{#if analytics}
+					<p>
+						{new Date(analytics.window.start).toLocaleString()} – {new Date(
+							analytics.window.end
+						).toLocaleString()}
+					</p>
+					<div class="analytics-panels">
+						<section>
+							<h3>Recorded signals by UTC date</h3>
+							{#if analytics.engagement_trend.length}<table>
+									<thead
+										><tr
+											><th scope="col">UTC date</th><th scope="col">Open signals</th><th scope="col"
+												>Click signals</th
+											></tr
+										></thead
+									><tbody
+										>{#each analytics.engagement_trend as point (point.date)}<tr
+												><td>{point.date}</td><td>{formatNumber(point.opens)}</td><td
+													>{formatNumber(point.clicks)}</td
+												></tr
+											>{/each}</tbody
+									>
+								</table>{:else}<p>No recorded signals in this period.</p>{/if}
+						</section>
+						<section>
+							<h3>Campaigns with accepted messages</h3>
+							{#if analytics.top_campaigns.length}<table>
+									<thead
+										><tr
+											><th scope="col">Campaign</th><th scope="col">Accepted</th><th scope="col"
+												>Recipients with an open signal</th
+											><th scope="col">Open rate</th></tr
+										></thead
+									><tbody
+										>{#each analytics.top_campaigns as campaign (campaign.id)}<tr
+												><td
+													><a href={`/admin/email/campaigns/${campaign.id}/report`}
+														>{campaign.name}</a
+													></td
+												><td>{formatNumber(campaign.sent)}</td><td
+													>{formatNumber(campaign.opens)}</td
+												><td>{formatPercent(campaign.open_rate)}</td></tr
+											>{/each}</tbody
+									>
+								</table>{:else}<p>No messages accepted in this period.</p>{/if}
+						</section>
+						<section>
+							<h3>Devices supplied with open observations</h3>
+							<table>
+								<thead><tr><th scope="col">Device</th><th scope="col">Observations</th></tr></thead
+								><tbody
+									>{#each Object.entries(analytics.device_breakdown) as [device, count] (device)}<tr
+											><td>{device}</td><td>{formatNumber(count)}</td></tr
+										>{/each}</tbody
+								>
+							</table>
+						</section>
+						<section>
+							<h3>Email client observations</h3>
+							{#if Object.keys(analytics.client_breakdown).length}<table>
+									<thead
+										><tr><th scope="col">Reported client</th><th scope="col">Observations</th></tr
+										></thead
+									><tbody
+										>{#each Object.entries(analytics.client_breakdown) as [client, count] (client)}<tr
+												><td>{client}</td><td>{formatNumber(count)}</td></tr
+											>{/each}</tbody
+									>
+								</table>{:else}<p>No email client observations supplied.</p>{/if}
+							<p>
+								Other or unspecified client observations: {analytics.unlisted_client_observations}
+							</p>
+						</section>
+					</div>
+				{:else if !analyticsError}<p>No recorded analytics available.</p>{/if}
 			</div>
 		{/if}
 	</div>
@@ -575,6 +715,42 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
+	}
+	.analytics-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		margin-block: 1rem;
+	}
+	.analytics-controls select {
+		color: var(--text-primary);
+		background: var(--bg-elevated);
+		border: 1px solid var(--border-default);
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+	}
+	.analytics-panels {
+		display: grid;
+		gap: 1.5rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+	}
+	.analytics-panels section {
+		background: var(--bg-elevated);
+		border: 1px solid var(--border-default);
+		border-radius: 0.75rem;
+		padding: 1rem;
+		overflow: auto;
+	}
+	.analytics-panels table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	.analytics-panels th,
+	.analytics-panels td {
+		padding: 0.6rem;
+		text-align: left;
+		border-bottom: 1px solid var(--border-default);
 	}
 	.email-dashboard {
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
@@ -727,10 +903,6 @@
 		margin-top: 0.25rem;
 		font-size: 0.875rem;
 		color: #9ca3af;
-	}
-
-	.stat-change.positive {
-		color: #4ade80;
 	}
 
 	.tabs {

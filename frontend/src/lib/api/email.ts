@@ -14,8 +14,10 @@ import {
 	emailCampaignWrite,
 	campaignId,
 	emailCampaignDeleted,
-	emailCampaignAction
+	emailCampaignAction,
+	emailCampaignReportStats
 } from './email-campaign-catalog.js';
+import { emailAnalytics } from './email-analytics.js';
 import type { ABTestConfig } from './campaigns.js';
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
@@ -320,17 +322,32 @@ export interface DeliverabilityReport {
 }
 
 export interface EmailAnalytics {
-	period: string;
+	period: '7d' | '30d' | '90d' | '365d';
+	metrics_scope: 'native_campaign_outbox';
+	window: { start: string; end: string; previous_start: string; timezone: 'UTC' };
 	campaigns: number;
+	new_campaigns: number;
 	emails_sent: number;
 	total_opens: number;
 	total_clicks: number;
-	average_open_rate: number;
-	average_click_rate: number;
-	top_campaigns: Array<{ id: string; name: string; open_rate: number }>;
+	average_open_rate: number | null;
+	average_click_rate: number | null;
+	comparison: {
+		emails_sent_change_pct: number | null;
+		open_rate_change_points: number | null;
+		click_rate_change_points: number | null;
+	};
+	top_campaigns: Array<{
+		id: string;
+		name: string;
+		sent: number;
+		opens: number;
+		open_rate: number;
+	}>;
 	engagement_trend: Array<{ date: string; opens: number; clicks: number }>;
-	device_breakdown: { desktop: number; mobile: number; tablet: number };
+	device_breakdown: { desktop: number; mobile: number; tablet: number; unknown: number };
 	client_breakdown: Record<string, number>;
+	unlisted_client_observations: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -745,11 +762,21 @@ class EmailAPI {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async getAnalytics(period: string = '30d'): Promise<{ analytics: EmailAnalytics }> {
-		return this.request('GET', '/admin/email/analytics', undefined, { period });
+		return {
+			analytics: emailAnalytics(
+				await this.request<unknown>('GET', '/admin/email/analytics', undefined, { period })
+			)
+		};
 	}
 
-	async getCampaignStats(id: string): Promise<{ stats: EmailStats }> {
-		return this.request('GET', `/admin/email/campaigns/${id}/stats`);
+	async getCampaignStats(id: string): Promise<{ stats: RecordedCampaignEmailStats }> {
+		const numeric = campaignId(id);
+		return {
+			stats: emailCampaignReportStats(
+				await this.request<unknown>('GET', `/admin/email/campaigns/${numeric}/report`),
+				numeric
+			)
+		};
 	}
 
 	async getSequenceStats(id: string): Promise<{ stats: SequenceStats }> {

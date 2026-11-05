@@ -5,6 +5,8 @@ mod authorization_parity_proof;
 mod connections_proof;
 #[path = "support/crm_webhooks.rs"]
 mod crm_webhook_proof;
+#[path = "support/email_campaign_analytics.rs"]
+mod email_campaign_analytics_proof;
 #[path = "support/email_campaign_authoring.rs"]
 mod email_campaign_authoring_proof;
 #[path = "support/email_campaign_delivery.rs"]

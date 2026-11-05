@@ -111,6 +111,10 @@ pub fn router() -> Router<AppState> {
         .route("/coupons/validate/{code}", get(coupons::validate_coupon))
         // Batch 6: email diagnostics
         .route("/email/status", get(campaigns_stats::get_email_status))
+        .route(
+            "/email/analytics",
+            get(crate::routes::email_campaigns::global_analytics),
+        )
         .route("/email/logs", get(campaigns_stats::list_email_logs))
         // Settings
         .route("/settings", get(settings::get_settings))

@@ -1,11 +1,10 @@
 //! Reports count durable receipts and observed events in a single database snapshot.
 use super::*;
 
-async fn report(
-    State(state): State<AppState>,
-    _: AdminUser,
-    Path(id): Path<i64>,
-) -> Result<Json<Value>, ApiError> {
+pub(super) async fn data_on(
+    connection: &mut sqlx::PgConnection,
+    id: i64,
+) -> Result<Value, ApiError> {
     let report: Option<Value> = sqlx::query_scalar(r#"
 WITH c AS (
  SELECT c.*,COALESCE(d.status,c.status,'draft') current_status,
@@ -84,9 +83,17 @@ SELECT jsonb_build_object('id',c.id,'name',c.name,'subject',c.subject,'status',c
  'geographic_distribution',COALESCE((SELECT jsonb_agg(to_jsonb(geo) ORDER BY opens DESC,clicks DESC,country) FROM geo),'[]'::jsonb),
  'ab_test_results',CASE WHEN c.authoring_config->'ab_test_config'->>'enabled'='true' THEN jsonb_build_object('enabled',true,'winner',NULL,'variant_a',(SELECT value FROM variants WHERE variant='a'),'variant_b',(SELECT value FROM variants WHERE variant='b')) ELSE NULL END
 ) FROM c CROSS JOIN m CROSS JOIN ev
-"#).bind(id).fetch_optional(&state.db.pool).await.map_err(db)?;
+"#).bind(id).fetch_optional(connection).await.map_err(db)?;
+    report.ok_or_else(|| ApiError::not_found("Campaign"))
+}
+async fn report(
+    State(state): State<AppState>,
+    _: AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<Value>, ApiError> {
+    let mut connection = state.db.pool.acquire().await.map_err(db)?;
     Ok(Json(
-        json!({"success":true,"data":report.ok_or_else(||ApiError::not_found("Campaign"))?}),
+        json!({"success":true,"data":data_on(&mut connection,id).await?}),
     ))
 }
 pub fn router() -> Router<AppState> {

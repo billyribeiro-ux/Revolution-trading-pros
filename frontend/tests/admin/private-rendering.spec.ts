@@ -107,6 +107,14 @@ test('production private routes enforce authentication and do not become static 
 	await page.goto('/admin/email/subscribers', { waitUntil: 'networkidle' });
 	await expect(page.getByRole('heading', { name: 'Email Subscribers', exact: true })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Refresh subscribers' })).toBeVisible();
+	await page.goto('/email', { waitUntil: 'networkidle' });
+	await expect(page.getByRole('heading', { name: 'Email Marketing', exact: true })).toBeVisible();
+	await expect(page.locator('.stats-grid')).toBeVisible();
+	await page.getByRole('button', { name: 'Analytics', exact: true }).click();
+	await expect(
+		page.getByRole('heading', { name: 'Recorded signals by UTC date', exact: true })
+	).toBeVisible();
+
 	const reportFixture = await request.post('/api/admin/email/campaigns', {
 		data: {
 			name: `Production report fixture ${Date.now()}`,

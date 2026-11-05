@@ -2,6 +2,7 @@
 
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
+import { campaignAnalytics } from './email-analytics.js';
 import type { QueryParams } from './_types';
 import {
 	campaignEnvelope,
@@ -100,6 +101,9 @@ export interface CampaignStats {
 }
 
 export interface CampaignAnalytics {
+	metrics_scope: 'recorded_outbox';
+	period: '7d' | '30d' | '90d' | '365d';
+	window: { start: string; end: string; previous_start: string; timezone: 'UTC' };
 	campaign: {
 		id: number;
 		name: string;
@@ -108,9 +112,9 @@ export interface CampaignAnalytics {
 		clicked_count: number;
 		bounced_count: number;
 		unsubscribed_count: number;
-		open_rate: number;
-		click_rate: number;
-		bounce_rate: number;
+		open_rate: number | null;
+		click_rate: number | null;
+		bounce_rate: number | null;
 	};
 	hourly_stats: Array<{
 		date: string;
@@ -343,11 +347,8 @@ class CampaignsApiClient {
 	}
 
 	async getAnalytics(id: number): Promise<CampaignAnalytics> {
-		const response = await this.request<{ success: boolean; data: CampaignAnalytics }>(
-			'GET',
-			`/admin/email/campaigns/${id}/analytics`
-		);
-		return response.data;
+		const response = await this.request<unknown>('GET', `/admin/email/campaigns/${id}/analytics`);
+		return campaignAnalytics(response, id);
 	}
 
 	async getPreview(

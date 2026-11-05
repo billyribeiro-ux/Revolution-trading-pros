@@ -751,7 +751,7 @@ export const emailStore = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export function getActiveCampaigns() {
-	return emailState.campaigns.filter((c) => c.status === 'sending' || c.status === 'sent');
+	return emailState.campaigns.filter((c) => c.status === 'scheduled' || c.status === 'sending');
 }
 
 export function getDraftCampaigns() {

@@ -561,6 +561,7 @@ async fn report_proof(api: &Router, pool: &PgPool, tokens: &[String], native: i6
     let separate = request(api, "GET", &path, Some(&tokens[0]), Value::Null).await;
     assert_eq!(separate.1["data"]["metrics"]["sent"], 2);
     assert_eq!(separate.1["data"]["historical_counts"]["sent"], 99999);
+    super::email_campaign_analytics_proof::proof(api, pool, tokens, native).await;
     assert_eq!(
         request(
             api,
@@ -600,6 +601,7 @@ async fn single_connection_proof(
         ),
         ("POST", "/resume", Value::Null),
         ("GET", "/report", Value::Null),
+        ("GET", "/analytics", Value::Null),
         ("POST", "/cancel", Value::Null),
     ] {
         let response = tokio::time::timeout(

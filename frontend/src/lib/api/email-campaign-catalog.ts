@@ -1,4 +1,6 @@
 /** Adapt the secondary dashboard's string identities to the native campaign API. */
+import { campaignReport } from './campaign-report.js';
+import type { RecordedCampaignEmailStats } from './email.js';
 import type { EmailCampaign } from './email.js';
 import {
 	campaignEnvelope,
@@ -23,6 +25,8 @@ export function campaignId(value: unknown): number {
 function emailCampaign(value: unknown): EmailCampaign {
 	const native = campaignRecord(value),
 		row = record(value);
+	if (row.metrics_scope !== 'recorded_outbox')
+		throw new Error('Invalid campaign measurement scope');
 	if (
 		typeof row.html_content !== 'string' ||
 		(row.plain_text_content !== null && typeof row.plain_text_content !== 'string') ||
@@ -164,4 +168,23 @@ export function emailCampaignWrite(data: Partial<EmailCampaign>): Record<string,
 	}
 	if (!Object.keys(out).length) throw new Error('Specify campaign authoring changes');
 	return out;
+}
+
+export function emailCampaignReportStats(value: unknown, id: number): RecordedCampaignEmailStats {
+	const report = campaignReport(value, id),
+		m = report.metrics,
+		r = report.rates;
+	return {
+		sent: m.sent,
+		delivered: m.delivered,
+		opened: m.unique_opens,
+		clicked: m.unique_clicks,
+		bounced: m.bounced,
+		complained: m.complained,
+		unsubscribed: m.unsubscribed,
+		open_rate: r.unique_open_rate,
+		click_rate: r.unique_click_rate,
+		bounce_rate: r.bounce_rate,
+		complaint_rate: m.sent > 0 ? (100 * m.complained) / m.sent : null
+	};
 }

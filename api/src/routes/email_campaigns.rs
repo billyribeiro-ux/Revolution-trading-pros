@@ -1,4 +1,6 @@
 //! Legacy email campaign identities and authoring. Delivery uses the shared outbox.
+mod analytics;
+pub(crate) use analytics::{EmailAnalyticsQuery, global_analytics};
 mod delivery;
 mod reports;
 use crate::{
@@ -545,4 +547,5 @@ pub fn router() -> Router<AppState> {
         .route("/{id}/duplicate", post(duplicate))
         .merge(delivery::router())
         .merge(reports::router())
+        .merge(analytics::router())
 }

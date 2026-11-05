@@ -10,6 +10,7 @@ import {
 const fixture = () => ({
 	id: 9,
 	name: 'Saved campaign',
+	metrics_scope: 'recorded_outbox',
 	subject: 'Actual subject',
 	from_name: '',
 	from_email: '',
