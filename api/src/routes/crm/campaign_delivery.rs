@@ -98,7 +98,12 @@ async fn submit(
     // Previously accepted deliveries survive edits and resume. Removed recipients
     // retain their audit row as skipped; eligible unsent rows get the new snapshot.
     sqlx::query("UPDATE crm_campaign_deliveries SET status='skipped',last_error='Removed from the submitted audience',updated_at=NOW() WHERE campaign_id=$1 AND status IN ('queued','failed','skipped')").bind(id).execute(&mut *tx).await.map_err(db)?;
-    let mut recipients=audience.query("WITH selected AS (SELECT DISTINCT ON(LOWER(c.email)) c.id,LOWER(c.email) AS email,COALESCE(NULLIF(trim(concat_ws(' ',c.first_name,c.last_name)),''),c.email) AS name,jsonb_build_object('first_name',c.first_name,'last_name',c.last_name,'company',c.company) AS snapshot FROM contacts c",true)?;
+    let recipient_sql = if audience.is_member() {
+        "WITH selected AS (SELECT DISTINCT ON(LOWER(c.email)) c.id,LOWER(c.email) AS email,COALESCE(NULLIF(trim(concat_ws(' ',c.first_name,c.last_name)),''),c.email) AS name,jsonb_build_object('member_id',c.id,'first_name',c.first_name,'last_name',c.last_name,'company',c.company) AS snapshot FROM contacts c"
+    } else {
+        "WITH selected AS (SELECT DISTINCT ON(LOWER(c.email)) c.id,LOWER(c.email) AS email,COALESCE(NULLIF(trim(concat_ws(' ',c.first_name,c.last_name)),''),c.email) AS name,jsonb_build_object('first_name',c.first_name,'last_name',c.last_name,'company',c.company) AS snapshot FROM contacts c"
+    };
+    let mut recipients = audience.query(recipient_sql, true)?;
     recipients.push(" ORDER BY LOWER(c.email),c.id) INSERT INTO crm_campaign_deliveries(campaign_id,revision_id,contact_id,email,display_name,contact_snapshot,due_at) SELECT ").push_bind(id).push(",").push_bind(revision).push(if audience.is_newsletter() || audience.is_member() { ",NULL::bigint,email,name,snapshot," } else { ",id,email,name,snapshot," }).push_bind(due).push(" FROM selected ON CONFLICT(campaign_id,email) DO UPDATE SET revision_id=EXCLUDED.revision_id,contact_id=EXCLUDED.contact_id,display_name=EXCLUDED.display_name,contact_snapshot=EXCLUDED.contact_snapshot,due_at=EXCLUDED.due_at,status='queued',attempts_remaining=3,last_error=NULL,updated_at=NOW() WHERE crm_campaign_deliveries.status IN ('queued','failed','skipped')");
     recipients.build().execute(&mut *tx).await.map_err(db)?;
     sqlx::query("UPDATE crm_campaigns SET status=CASE WHEN $2>NOW() THEN 'scheduled' ELSE 'sending' END,scheduled_at=$2,pause_reason=NULL,last_error=NULL,audience_snapshot=$3,updated_at=NOW() WHERE id=$1").bind(id).bind(due).bind(json!({"revision_id":revision,"eligible_at_submission":count,"submitted_by":actor,"submitted_at":Utc::now(),"criteria":audience.snapshot()})).execute(&mut *tx).await.map_err(db)?;

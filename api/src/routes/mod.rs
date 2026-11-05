@@ -63,6 +63,7 @@ pub mod cms_seo; // ICT 11+: Server-side SEO validation
 pub mod connections;
 pub mod consent; // FIX-2026-04-26: Admin consent management settings backend
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
+pub mod email_campaigns;
 pub mod email_settings;
 pub mod email_templates;
 pub mod export; // ICT 7+ Phase 4: Export Functionality (CSV/PDF)
@@ -164,6 +165,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/forms", forms::admin_router())
         // Email Templates Admin - ICT 7 Grade
         .nest("/admin/email/subscribers", email_subscribers::router())
+        .nest("/admin/email/campaigns", email_campaigns::router())
         .nest("/admin/email/templates", email_templates::admin_router())
         // Email Settings - frontend compatibility
         .nest("/admin/email", email_templates::admin_router())

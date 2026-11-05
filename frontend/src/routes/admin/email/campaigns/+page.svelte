@@ -16,9 +16,9 @@
 	import { goto } from '$app/navigation';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
-	import { logger } from '#lib/utils/logger.js';
+	import { listMemberSegments } from '#lib/api/member-segments.js';
+	import { catalogTemplatePage } from '#lib/api/email-template-catalog.js';
 	import { connections, getIsEmailConnected } from '#lib/stores/connections.svelte.js';
-	import ApiNotConnected from '#lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import {
 		IconMail,
@@ -67,6 +67,15 @@
 	// State
 	let loading = $state(true);
 	let error = $state('');
+	let statsError = $state('');
+	let templatesError = $state('');
+	let segmentsError = $state('');
+	let creating = $state(false);
+	let currentPage = $state(1);
+	let total = $state(0);
+	let totalPages = $state(1);
+	let search = $state('');
+	let listGeneration = 0;
 	let activeTab = $state<'all' | 'scheduled' | 'sent' | 'drafts'>('all');
 
 	// Campaign data
@@ -94,17 +103,15 @@
 
 	// Derived State
 
-	let filteredCampaigns = $derived.by(() => {
-		if (activeTab === 'all') return campaigns;
-		if (activeTab === 'scheduled') return campaigns.filter((c) => c.status === 'scheduled');
-		if (activeTab === 'sent') return campaigns.filter((c) => c.status === 'sent');
-		if (activeTab === 'drafts') return campaigns.filter((c) => c.status === 'draft');
-		return campaigns;
-	});
-
-	let scheduledCount = $derived(campaigns.filter((c) => c.status === 'scheduled').length);
-	let sentCount = $derived(campaigns.filter((c) => c.status === 'sent').length);
-	let draftCount = $derived(campaigns.filter((c) => c.status === 'draft').length);
+	let filteredCampaigns = $derived(campaigns);
+	let scheduledCount = $derived(stats?.scheduled ?? '—');
+	let sentCount = $derived(stats?.sent ?? '—');
+	let draftCount = $derived(stats?.drafts ?? '—');
+	async function selectTab(tab: typeof activeTab) {
+		activeTab = tab;
+		currentPage = 1;
+		await Promise.all([loadCampaigns(), loadStats()]);
+	}
 
 	// Lifecycle - onMount (NOT $effect)
 	// FIX-2026-04-26: converted from $effect to onMount.
@@ -118,89 +125,81 @@
 	//
 	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
 	onMount(() => {
-		initializeData();
+		void initializeData();
 	});
 
 	async function initializeData() {
-		// Load connection status first
-		await connections.load();
+		await Promise.allSettled([
+			connections.load(),
+			loadCampaigns(),
+			loadStats(),
+			loadTemplates(),
+			loadSegments()
+		]);
 		connectionLoading = false;
-
-		// Only load data if email is connected
-		if (getIsEmailConnected()) {
-			await Promise.all([loadCampaigns(), loadStats(), loadTemplates(), loadSegments()]);
-		} else {
-			loading = false;
-		}
 	}
-
 	async function loadCampaigns() {
+		const generation = ++listGeneration;
 		loading = true;
 		error = '';
 		try {
-			const statusFilter =
-				activeTab === 'all' ? undefined : activeTab === 'drafts' ? 'draft' : activeTab;
-			const response = await getCampaigns(statusFilter ? { status: statusFilter } : {});
+			const response = await getCampaigns({
+				status: activeTab === 'all' ? undefined : activeTab === 'drafts' ? 'draft' : activeTab,
+				page: currentPage,
+				per_page: 20,
+				search: search.trim() || undefined
+			});
+			if (generation !== listGeneration) return;
+			if (response.meta.current_page > response.meta.last_page) {
+				currentPage = response.meta.last_page;
+				await Promise.all([loadCampaigns(), loadStats()]);
+				return;
+			}
 			campaigns = response.data;
+			total = response.meta.total;
+			currentPage = response.meta.current_page;
+			totalPages = response.meta.last_page;
 		} catch (err) {
+			if (generation !== listGeneration) return;
+			campaigns = [];
+			total = 0;
+			totalPages = 1;
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';
-			logger.error('Failed to load campaigns:', err);
 		} finally {
-			loading = false;
+			if (generation === listGeneration) loading = false;
 		}
 	}
-
 	async function loadStats() {
+		statsError = '';
 		try {
 			stats = await getCampaignStats();
 		} catch (err) {
-			logger.error('Failed to load stats:', err);
+			stats = null;
+			statsError = err instanceof Error ? err.message : 'Campaign statistics unavailable';
 		}
 	}
-
 	async function loadTemplates() {
+		templatesError = '';
 		try {
-			const data = await adminFetch('/api/admin/email/templates');
-			templates = (data.data || data || []).map((t: { id: number; name: string }) => ({
-				id: t.id,
-				name: t.name
-			}));
+			const result = catalogTemplatePage(
+				await adminFetch<unknown>('/api/admin/email/templates?per_page=100')
+			);
+			templates = result.templates
+				.filter((t) => t.is_active)
+				.map((t) => ({ id: Number(t.id), name: t.name }));
 		} catch (err) {
-			logger.error('Failed to load templates:', err);
+			templates = [];
+			templatesError = err instanceof Error ? err.message : 'Email templates unavailable';
 		}
 	}
-
-	// Load Segments from API
-
 	async function loadSegments() {
+		segmentsError = '';
 		try {
-			const data = await adminFetch('/api/admin/members/segments');
-			if (data?.segments) {
-				segments = data.segments.map((s: { id: number; name: string; memberCount?: number }) => ({
-					id: s.id,
-					name: s.name,
-					count: s.memberCount || 0
-				}));
-			} else {
-				// Fallback to default segments if API not available
-				segments = [
-					{ id: 1, name: 'All Members', count: 12847 },
-					{ id: 2, name: 'Active Subscribers', count: 8420 },
-					{ id: 3, name: 'Trial Users', count: 2690 },
-					{ id: 4, name: 'Churned (Win-back)', count: 1737 },
-					{ id: 5, name: 'High Value (>$500 LTV)', count: 847 },
-					{ id: 6, name: 'Highly Engaged', count: 3250 },
-					{ id: 7, name: 'At Risk of Churn', count: 620 }
-				];
-			}
+			const result = await listMemberSegments({ per_page: 100, is_active: true });
+			segments = result.segments.map((s) => ({ id: s.id, name: s.name, count: s.memberCount }));
 		} catch (err) {
-			logger.error('Failed to load segments:', err);
-			// Use fallback segments on error
-			segments = [
-				{ id: 1, name: 'All Members', count: 12847 },
-				{ id: 2, name: 'Active Subscribers', count: 8420 },
-				{ id: 3, name: 'Trial Users', count: 2690 }
-			];
+			segments = [];
+			segmentsError = err instanceof Error ? err.message : 'Member segments unavailable';
 		}
 	}
 
@@ -239,6 +238,13 @@
 	}
 
 	async function handleCreateCampaign() {
+		if (creating) return;
+		if (templatesError || segmentsError) {
+			toastStore.error(
+				'Reload the unavailable template or segment options before creating a campaign'
+			);
+			return;
+		}
 		// Validation
 		if (!newCampaign.name || !newCampaign.subject) {
 			toastStore.error('Please fill in campaign name and subject');
@@ -253,13 +259,16 @@
 			return;
 		}
 
+		creating = true;
 		try {
 			const campaignData = {
 				name: newCampaign.name,
 				subject: newCampaign.subject,
 				template_id: parseInt(newCampaign.templateId),
 				segment_id: newCampaign.segmentId ? parseInt(newCampaign.segmentId) : null,
-				scheduled_at: newCampaign.scheduledFor || null,
+				scheduled_at: newCampaign.scheduledFor
+					? new Date(newCampaign.scheduledFor).toISOString()
+					: null,
 				ab_test_config: newCampaign.useABTest
 					? {
 							enabled: true,
@@ -286,11 +295,11 @@
 			};
 
 			// Reload campaigns
-			await loadCampaigns();
+			await Promise.all([loadCampaigns(), loadStats()]);
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to create campaign');
 		} finally {
-			// loading state already handled
+			creating = false;
 		}
 	}
 
@@ -313,7 +322,7 @@
 		try {
 			await apiDeleteCampaign(id);
 			toastStore.success('Campaign deleted');
-			await loadCampaigns();
+			await Promise.all([loadCampaigns(), loadStats()]);
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to delete campaign');
 		}
@@ -323,7 +332,7 @@
 		try {
 			await apiDuplicateCampaign(campaign.id);
 			toastStore.success('Campaign duplicated');
-			await loadCampaigns();
+			await Promise.all([loadCampaigns(), loadStats()]);
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to duplicate campaign');
 		}
@@ -342,7 +351,7 @@
 		try {
 			await sendCampaign(id);
 			toastStore.success('Campaign is being sent');
-			await loadCampaigns();
+			await Promise.all([loadCampaigns(), loadStats()]);
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to send campaign');
 		}
@@ -361,7 +370,7 @@
 		try {
 			await cancelCampaign(id);
 			toastStore.success('Campaign cancelled');
-			await loadCampaigns();
+			await Promise.all([loadCampaigns(), loadStats()]);
 		} catch (err) {
 			toastStore.error(err instanceof Error ? err.message : 'Failed to cancel campaign');
 		}
@@ -374,10 +383,6 @@
 		return segment?.name || 'Unknown';
 	}
 </script>
-
-<svelte:head>
-	<title>Email Campaigns | Revolution Trading Pros</title>
-</svelte:head>
 
 <div class="campaigns-page">
 	<!-- Header -->
@@ -398,38 +403,28 @@
 				</div>
 			</div>
 
-			{#if getIsEmailConnected()}
-				<div class="header-actions">
-					<button class="btn-secondary" onclick={loadCampaigns}>
-						<IconRefresh size={18} />
-						Refresh
-					</button>
-					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
-						<IconPlus size={18} />
-						New Campaign
-					</button>
-				</div>
-			{/if}
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={loadCampaigns}>
+					<IconRefresh size={18} />
+					Refresh
+				</button>
+				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
+					<IconPlus size={18} />
+					New Campaign
+				</button>
+			</div>
 		</div>
 	</div>
 
+	{#if !connectionLoading && !getIsEmailConnected()}
+		<p role="status">
+			Email delivery is disconnected. Saved drafts remain available. Configure a delivery provider
+			in Settings → Connections before sending.
+		</p>
+	{/if}
 	<!-- Connection Check -->
 	{#if connectionLoading}
 		<SkeletonLoader variant="dashboard" />
-	{:else if !getIsEmailConnected()}
-		<ApiNotConnected
-			serviceName="Email Marketing"
-			description="Connect an email marketing service to create and manage email campaigns, track opens, clicks, and subscriber engagement."
-			serviceKey="mailchimp"
-			color="#E6B800"
-			features={[
-				'Create and schedule email campaigns',
-				'A/B test subject lines',
-				'Track opens, clicks, and conversions',
-				'Segment your audience',
-				'Automated email sequences'
-			]}
-		/>
 	{:else if loading}
 		<div class="loading-grid">
 			{#each [1, 2, 3, 4] as _, i (i)}
@@ -442,6 +437,9 @@
 			<button class="btn-primary" onclick={loadCampaigns}>Try Again</button>
 		</div>
 	{:else}
+		{#if statsError}<p role="alert">
+				{statsError} <button class="btn-secondary" onclick={loadStats}>Retry statistics</button>
+			</p>{/if}
 		<!-- Stats Overview -->
 		<div class="stats-grid">
 			<div class="stat-card">
@@ -449,8 +447,8 @@
 					<IconSend size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{formatNumber(stats?.total_sent || 0)}</div>
-					<div class="stat-label">Total Emails Sent</div>
+					<div class="stat-value">{stats ? formatNumber(stats.total_sent) : '—'}</div>
+					<div class="stat-label">Recorded Provider Acceptances</div>
 				</div>
 			</div>
 			<div class="stat-card">
@@ -458,8 +456,8 @@
 					<IconEye size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{formatNumber(stats?.total_opened || 0)}</div>
-					<div class="stat-label">Total Opens</div>
+					<div class="stat-value">{stats ? formatNumber(stats.total_opened) : '—'}</div>
+					<div class="stat-label">Recorded Open Signals</div>
 				</div>
 			</div>
 			<div class="stat-card">
@@ -467,7 +465,9 @@
 					<IconTrendingUp size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{stats?.avg_open_rate || 0}%</div>
+					<div class="stat-value">
+						{stats?.avg_open_rate == null ? '—' : `${stats.avg_open_rate}%`}
+					</div>
 					<div class="stat-label">Avg Open Rate</div>
 				</div>
 			</div>
@@ -476,7 +476,9 @@
 					<IconChartBar size={24} />
 				</div>
 				<div class="stat-content">
-					<div class="stat-value">{stats?.avg_click_rate || 0}%</div>
+					<div class="stat-value">
+						{stats?.avg_click_rate == null ? '—' : `${stats.avg_click_rate}%`}
+					</div>
 					<div class="stat-label">Avg Click Rate</div>
 				</div>
 			</div>
@@ -485,21 +487,21 @@
 		<!-- Tabs -->
 		<div class="tabs-container">
 			<div class="tabs">
-				<button class={{ active: activeTab === 'all' }} onclick={() => (activeTab = 'all')}>
-					All ({campaigns.length})
+				<button class={{ active: activeTab === 'all' }} onclick={() => selectTab('all')}>
+					All ({stats?.total_campaigns ?? '—'})
 				</button>
 				<button
 					class={{ active: activeTab === 'scheduled' }}
-					onclick={() => (activeTab = 'scheduled')}
+					onclick={() => selectTab('scheduled')}
 				>
 					<IconClock size={16} />
 					Scheduled ({scheduledCount})
 				</button>
-				<button class={{ active: activeTab === 'sent' }} onclick={() => (activeTab = 'sent')}>
+				<button class={{ active: activeTab === 'sent' }} onclick={() => selectTab('sent')}>
 					<IconCheck size={16} />
 					Sent ({sentCount})
 				</button>
-				<button class={{ active: activeTab === 'drafts' }} onclick={() => (activeTab = 'drafts')}>
+				<button class={{ active: activeTab === 'drafts' }} onclick={() => selectTab('drafts')}>
 					<IconEdit size={16} />
 					Drafts ({draftCount})
 				</button>
@@ -507,6 +509,17 @@
 		</div>
 
 		<!-- Campaigns List -->
+		<form
+			onsubmit={(event) => {
+				event.preventDefault();
+				currentPage = 1;
+				void loadCampaigns();
+			}}
+		>
+			<label for="campaign-search">Search campaigns</label>
+			<input id="campaign-search" type="search" bind:value={search} />
+			<button class="btn-secondary" type="submit">Search</button>
+		</form>
 		<div class="campaigns-list">
 			{#each filteredCampaigns as campaign (campaign.id)}
 				<div class="campaign-card">
@@ -529,7 +542,9 @@
 						<div class="meta-item">
 							<IconUsers size={16} />
 							<span>{getSegmentName(campaign.segment_id)}</span>
-							<span class="meta-count">({formatNumber(campaign.total_recipients)})</span>
+							<span class="meta-count"
+								>({formatNumber(campaign.total_recipients)} submitted recipients)</span
+							>
 						</div>
 						{#if campaign.scheduled_at}
 							<div class="meta-item">
@@ -604,7 +619,11 @@
 								<IconCopy size={16} />
 								Duplicate
 							</button>
-							<button class="btn-danger small" onclick={() => handleDeleteCampaign(campaign.id)}>
+							<button
+								class="btn-danger small"
+								aria-label={`Delete ${campaign.name}`}
+								onclick={() => handleDeleteCampaign(campaign.id)}
+							>
 								<IconTrash size={16} />
 							</button>
 						{:else if campaign.status === 'scheduled'}
@@ -642,6 +661,27 @@
 				</div>
 			{/if}
 		</div>
+		{#if totalPages > 1}
+			<nav aria-label="Campaign pagination">
+				<button
+					class="btn-secondary"
+					disabled={currentPage <= 1}
+					onclick={() => {
+						currentPage--;
+						void loadCampaigns();
+					}}>Previous</button
+				>
+				<span>Page {currentPage} of {totalPages} · {total} campaigns</span>
+				<button
+					class="btn-secondary"
+					disabled={currentPage >= totalPages}
+					onclick={() => {
+						currentPage++;
+						void loadCampaigns();
+					}}>Next</button
+				>
+			</nav>
+		{/if}
 	{/if}
 </div>
 
@@ -666,10 +706,19 @@
 			</div>
 
 			<div class="modal-body">
+				{#if templatesError}<p role="alert">
+						{templatesError}
+						<button class="btn-secondary" onclick={loadTemplates}>Retry templates</button>
+					</p>{/if}
+				{#if segmentsError}<p role="alert">
+						{segmentsError}
+						<button class="btn-secondary" onclick={loadSegments}>Retry segments</button>
+					</p>{/if}
 				<div class="form-grid">
 					<div class="form-group full-width">
 						<label for="campaign-name">Campaign Name</label>
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							id="campaign-name"
 							name="campaign-name"
 							type="text"
@@ -680,7 +729,8 @@
 
 					<div class="form-group full-width">
 						<label for="campaign-subject">Subject Line</label>
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							id="campaign-subject"
 							name="campaign-subject"
 							type="text"
@@ -704,7 +754,8 @@
 					{#if newCampaign.useABTest}
 						<div class="form-group full-width">
 							<label for="campaign-subject-b">Subject Line B</label>
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								id="campaign-subject-b"
 								name="campaign-subject-b"
 								type="text"
@@ -731,7 +782,7 @@
 					<div class="form-group">
 						<label for="campaign-segment">Target Segment</label>
 						<select id="campaign-segment" bind:value={newCampaign.segmentId}>
-							<option value="">Select segment...</option>
+							<option value="">All members with newsletter confirmation</option>
 							{#each segments as segment (segment.id)}
 								<option value={segment.id}>{segment.name} ({formatNumber(segment.count)})</option>
 							{/each}
@@ -750,7 +801,8 @@
 
 					<div class="form-group full-width">
 						<label for="campaign-schedule">Schedule (optional)</label>
-						<input autocomplete="off"
+						<input
+							autocomplete="off"
 							id="campaign-schedule"
 							name="campaign-schedule"
 							type="datetime-local"
@@ -763,7 +815,7 @@
 
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showCreateModal = false)}>Cancel</button>
-				<button class="btn-primary" onclick={handleCreateCampaign}>
+				<button class="btn-primary" onclick={handleCreateCampaign} disabled={creating}>
 					{#if newCampaign.scheduledFor}
 						<IconCalendar size={18} />
 						Schedule Campaign

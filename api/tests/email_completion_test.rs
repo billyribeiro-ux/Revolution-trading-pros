@@ -5,6 +5,8 @@ mod authorization_parity_proof;
 mod connections_proof;
 #[path = "support/crm_webhooks.rs"]
 mod crm_webhook_proof;
+#[path = "support/email_campaign_authoring.rs"]
+mod email_campaign_authoring_proof;
 #[path = "support/email_subscribers.rs"]
 mod email_subscriber_proof;
 #[path = "support/email_template_catalog.rs"]
@@ -13,6 +15,8 @@ mod email_template_catalog_proof;
 mod email_template_policy_proof;
 #[path = "support/email_templates_workflows.rs"]
 mod email_templates_workflows;
+#[path = "support/member_campaign_audience.rs"]
+mod member_campaign_audience_proof;
 #[path = "support/member_configuration.rs"]
 mod member_configuration_proof;
 #[path = "support/member_current_memberships.rs"]
@@ -1720,6 +1724,8 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     member_segments_proof::proof(&api, &pool, &tokens).await;
     member_configuration_proof::proof(&api, &pool, &tokens).await;
     member_current_memberships_proof::proof(&api, &pool, &tokens).await;
+    member_campaign_audience_proof::proof(&api, &pool, &tokens, &adapter).await;
+    email_campaign_authoring_proof::proof(&api, &pool, &tokens).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

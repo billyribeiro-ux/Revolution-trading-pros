@@ -41,9 +41,9 @@ async fn claim(pool: &PgPool) -> Result<Option<Claimed>> {
         tx.commit().await?;
         return Ok(None);
     };
-    let eligible:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM newsletter_subscribers n WHERE n.id=(SELECT id FROM newsletter_subscribers WHERE LOWER(email)=(SELECT email FROM crm_campaign_deliveries WHERE id=$1) ORDER BY updated_at DESC NULLS LAST,id DESC LIMIT 1) AND status='confirmed' AND confirmed_at IS NOT NULL AND unsubscribed_at IS NULL)").bind(next).fetch_one(&mut *tx).await?;
+    let eligible:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries d JOIN crm_campaign_revisions r ON r.id=d.revision_id WHERE d.id=$1 AND EXISTS(SELECT 1 FROM newsletter_subscribers n WHERE n.id=(SELECT latest.id FROM newsletter_subscribers latest WHERE LOWER(latest.email)=d.email ORDER BY latest.updated_at DESC NULLS LAST,latest.id DESC LIMIT 1) AND n.status='confirmed' AND n.confirmed_at IS NOT NULL AND n.unsubscribed_at IS NULL) AND (COALESCE(r.definition->'subscriber_settings'->>'members','false')<>'true' OR EXISTS(SELECT 1 FROM users u WHERE to_jsonb(u.id)=d.contact_snapshot->'member_id' AND u.deleted_at IS NULL AND LOWER(u.email)=d.email)))").bind(next).fetch_one(&mut *tx).await?;
     if !eligible {
-        sqlx::query("UPDATE crm_campaign_deliveries SET status='skipped',last_error='Recipient is no longer confirmed',updated_at=NOW() WHERE id=$1").bind(next).execute(&mut *tx).await?;
+        sqlx::query("UPDATE crm_campaign_deliveries SET status='skipped',last_error='Recipient is no longer confirmed or the audience member is no longer available',updated_at=NOW() WHERE id=$1").bind(next).execute(&mut *tx).await?;
         refresh(&mut tx, campaign).await?;
         tx.commit().await?;
         return Ok(None);

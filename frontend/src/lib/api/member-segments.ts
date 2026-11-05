@@ -60,7 +60,7 @@ export function memberSegment(value: unknown): MemberSegment {
 	};
 }
 export async function listMemberSegments(
-	params: { page?: number; per_page?: number; search?: string } = {}
+	params: { page?: number; per_page?: number; search?: string; is_active?: boolean } = {}
 ) {
 	const search = new URLSearchParams();
 	for (const [key, value] of Object.entries(params))

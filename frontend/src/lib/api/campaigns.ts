@@ -1,32 +1,14 @@
-/**
- * Email Campaigns API Service - Google L11+ Principal Engineer Grade
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Complete email campaign management with:
- * - Full CRUD operations
- * - A/B testing
- * - Scheduling
- * - Analytics
- * - Real-time updates
- *
- * @version 1.0.0
- *
- * ⚠️ FIX-2026-04-26: ORPHAN — no matching backend route exists.
- * This client calls `/api/admin/email/campaigns/*` (~10 endpoints) but neither
- * the SvelteKit proxy at frontend/src/routes/api/admin/email/campaigns/ nor a
- * Rust handler under api/src/routes/ exist. Every call from this file 404/400s.
- *
- * Decision required: either build the matching backend (Rust handlers + proxies)
- * or remove the campaigns page (frontend/src/routes/admin/email/campaigns/+page.svelte).
- * Until then, the campaigns page emits "Failed to load campaigns" toasts on every
- * mount.
- *
- * See docs/audits/AUDIT_REPORT.md §10 Finding 2 + docs/audits/ADMIN_DASHBOARD_REPORT.md (orphan API clients).
- */
+/** Same-origin email campaign authoring and delivery API. */
 
 import { get as _get } from 'svelte/store';
 import { authStore } from '#lib/stores/auth.svelte.js';
-import type { PaginationMeta, QueryParams } from './_types';
+import type { QueryParams } from './_types';
+import {
+	campaignEnvelope,
+	campaignPage,
+	campaignStats,
+	campaignDeleted
+} from './campaign-contract.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -43,14 +25,23 @@ export interface Campaign {
 	id: number;
 	name: string;
 	subject: string;
-	template_id: number;
+	template_id: number | null;
 	segment_id: number | null;
 	from_name: string;
 	from_email: string;
 	reply_to: string | null;
 	scheduled_at: string | null;
+	planned_at?: string | null;
 	sent_at: string | null;
-	status: 'draft' | 'scheduled' | 'sending' | 'sent';
+	status:
+		| 'draft'
+		| 'scheduled'
+		| 'sending'
+		| 'sent'
+		| 'paused'
+		| 'failed'
+		| 'cancelled'
+		| 'archived';
 	total_recipients: number;
 	sent_count: number;
 	opened_count: number;
@@ -58,18 +49,18 @@ export interface Campaign {
 	bounced_count: number;
 	unsubscribed_count: number;
 	ab_test_config: ABTestConfig | null;
-	created_by: number;
+	created_by: number | null;
 	created_at: string;
 	updated_at: string;
 	// Calculated
-	open_rate?: number;
-	click_rate?: number;
-	bounce_rate?: number;
-	unsubscribe_rate?: number;
+	open_rate?: number | null;
+	click_rate?: number | null;
+	bounce_rate?: number | null;
+	unsubscribe_rate?: number | null;
 	progress_percentage?: number;
 	// Relations
-	template?: { id: number; name: string };
-	creator?: { id: number; name: string };
+	template?: { id: number; name: string } | null;
+	creator?: { id: number; name: string } | null;
 }
 
 export interface ABTestConfig {
@@ -77,8 +68,8 @@ export interface ABTestConfig {
 	subject_b?: string;
 	split_percentage?: number;
 	winner?: 'a' | 'b' | null;
-	variant_a?: { subject: string; open_rate: number };
-	variant_b?: { subject: string; open_rate: number };
+	variant_a?: { subject: string; open_rate: number | null };
+	variant_b?: { subject: string; open_rate: number | null };
 }
 
 export interface CampaignStats {
@@ -92,9 +83,9 @@ export interface CampaignStats {
 	scheduled: number;
 	sending: number;
 	sent: number;
-	avg_open_rate: number;
-	avg_click_rate: number;
-	avg_bounce_rate: number;
+	avg_open_rate: number | null;
+	avg_click_rate: number | null;
+	avg_bounce_rate: number | null;
 	recent: {
 		campaigns: number;
 		sent: number;
@@ -213,14 +204,19 @@ class CampaignsApiClient {
 		const response = await fetch(url, fetchOptions);
 
 		if (!response.ok) {
-			const errorBody: unknown = await response.json().catch(() => null);
-			const message =
-				typeof errorBody === 'object' &&
-				errorBody !== null &&
-				'message' in errorBody &&
-				typeof (errorBody as { message: unknown }).message === 'string'
-					? (errorBody as { message: string }).message
-					: `HTTP ${response.status}`;
+			const raw = await response.text();
+			let payload: unknown = null;
+			try {
+				payload = JSON.parse(raw);
+			} catch {
+				/* Plain validation responses are supported below. */
+			}
+			let message = `HTTP ${response.status}`;
+			if (payload && typeof payload === 'object') {
+				if ('message' in payload && typeof payload.message === 'string') message = payload.message;
+				else if ('error' in payload && typeof payload.error === 'string') message = payload.error;
+			} else if (response.headers.get('Content-Type')?.includes('text/plain') && raw.trim())
+				message = raw.slice(0, 1000);
 			throw new Error(message);
 		}
 
@@ -235,27 +231,14 @@ class CampaignsApiClient {
 		data: Campaign[];
 		meta: { total: number; current_page: number; last_page: number };
 	}> {
-		// NB: The orphaned backend (see file header — no Rust handler exists yet)
-		// will eventually need to choose between Laravel-style `last_page` and the
-		// canonical `total_pages` emitted by every other paginated handler in this
-		// stack (`PaginationMeta` in `./_types.ts`). The public signature here
-		// keeps `last_page` to preserve the existing wire contract this client
-		// was built against. The internal response shape is widened to
-		// `PaginationMeta` (which contains `total` + optional fields); callers
-		// reading `last_page` are responsible for narrowing.
-		const response = await this.request<{
-			success: boolean;
-			data: Campaign[];
-			meta: PaginationMeta & { last_page?: number; current_page?: number };
-		}>('GET', '/admin/email/campaigns', undefined, filters as QueryParams | undefined);
-		return {
-			data: response.data,
-			meta: {
-				total: response.meta.total,
-				current_page: response.meta.current_page ?? 1,
-				last_page: response.meta.last_page ?? 1
-			}
-		};
+		return campaignPage(
+			await this.request<unknown>(
+				'GET',
+				'/admin/email/campaigns',
+				undefined,
+				filters as QueryParams | undefined
+			)
+		);
 	}
 
 	async getCampaign(id: number): Promise<Campaign> {
@@ -263,7 +246,7 @@ class CampaignsApiClient {
 			'GET',
 			`/admin/email/campaigns/${id}`
 		);
-		return response.data;
+		return campaignEnvelope(response, id);
 	}
 
 	async createCampaign(data: CreateCampaignData): Promise<Campaign> {
@@ -272,7 +255,7 @@ class CampaignsApiClient {
 			'/admin/email/campaigns',
 			data
 		);
-		return response.data;
+		return campaignEnvelope(response);
 	}
 
 	async updateCampaign(id: number, data: Partial<CreateCampaignData>): Promise<Campaign> {
@@ -281,11 +264,11 @@ class CampaignsApiClient {
 			`/admin/email/campaigns/${id}`,
 			data
 		);
-		return response.data;
+		return campaignEnvelope(response, id);
 	}
 
 	async deleteCampaign(id: number): Promise<void> {
-		await this.request('DELETE', `/admin/email/campaigns/${id}`);
+		campaignDeleted(await this.request<unknown>('DELETE', `/admin/email/campaigns/${id}`), id);
 	}
 
 	async duplicateCampaign(id: number): Promise<Campaign> {
@@ -293,7 +276,9 @@ class CampaignsApiClient {
 			'POST',
 			`/admin/email/campaigns/${id}/duplicate`
 		);
-		return response.data;
+		const clone = campaignEnvelope(response);
+		if (clone.id === id) throw new Error('Campaign duplication did not create a new record');
+		return clone;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════
@@ -305,7 +290,7 @@ class CampaignsApiClient {
 			'POST',
 			`/admin/email/campaigns/${id}/send`
 		);
-		return response.data;
+		return campaignEnvelope(response, id);
 	}
 
 	async scheduleCampaign(id: number, scheduledAt: string): Promise<Campaign> {
@@ -314,7 +299,7 @@ class CampaignsApiClient {
 			`/admin/email/campaigns/${id}/schedule`,
 			{ scheduled_at: scheduledAt }
 		);
-		return response.data;
+		return campaignEnvelope(response, id);
 	}
 
 	async cancelCampaign(id: number): Promise<Campaign> {
@@ -322,7 +307,7 @@ class CampaignsApiClient {
 			'POST',
 			`/admin/email/campaigns/${id}/cancel`
 		);
-		return response.data;
+		return campaignEnvelope(response, id);
 	}
 
 	async sendTestEmail(id: number, email: string): Promise<void> {
@@ -334,11 +319,7 @@ class CampaignsApiClient {
 	// ═══════════════════════════════════════════════════════════════════════
 
 	async getStats(): Promise<CampaignStats> {
-		const response = await this.request<{ success: boolean; data: CampaignStats }>(
-			'GET',
-			'/admin/email/campaigns/stats'
-		);
-		return response.data;
+		return campaignStats(await this.request<unknown>('GET', '/admin/email/campaigns/stats'));
 	}
 
 	async getAnalytics(id: number): Promise<CampaignAnalytics> {
